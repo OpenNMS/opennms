@@ -344,12 +344,20 @@ final class BroadcastEventProcessor
 			//
 			if(!pCfgFactory.interfaceInPackage(event.getInterface(), pkg))
 			{
-				if(log.isDebugEnabled())
-					log.debug(whichEvent + "interface " + event.getInterface() + 
-							" gained service " + event.getService() + 
-							", but the interface was not in package: " 
-							+ pkg.getName());
-				continue;
+                                // The interface might be a newly added one, rebuild the package
+                                // to ipList mapping and again verify if the interface is in the 
+                                // package.
+                                //
+                                pCfgFactory.rebuildPackageIpListMap();
+			        if(!pCfgFactory.interfaceInPackage(event.getInterface(), pkg))
+                                {
+				        if(log.isDebugEnabled())
+					        log.debug("nodeGainedService: interface " + event.getInterface() + 
+						          " gained service " + event.getService() + 
+							  ", but the interface was not in package: " 
+							  + pkg.getName());
+				        continue;
+                                }
 			}
 			
 			// Update Node Outage Hierarchy and schedule new service for polling

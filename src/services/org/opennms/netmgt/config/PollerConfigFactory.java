@@ -404,7 +404,11 @@ public final class PollerConfigFactory
                                         + ". filer rules are  "  + filterRules.toString());
                                         
 			        List ipList = filter.getIPList(filterRules.toString());
-				if (ipList.size() > 0)
+                                if (log.isDebugEnabled())
+			                log.debug("createPackageIpMap: package " + pkg.getName() 
+                                        + ": ipList size =  "  + ipList.size());
+				
+                                if (ipList.size() > 0)
 				{
 					m_pkgIpMap.put(pkg, ipList);
 				}
@@ -420,7 +424,19 @@ public final class PollerConfigFactory
 		}
         }
 
-        
+	/**
+	 * <p>This method is used to rebuild the package agaist iplist  
+         * mapping when needed. When a node gained service event occurs,
+         * poller has to determine which package the ip/service combination 
+         * is in, but if the interface is a newly added one, the package
+         * iplist should be rebuilt so that poller could know which package
+         * this ip/service pair is in.
+	 */
+	public synchronized void rebuildPackageIpListMap()
+	{
+                createPackageIpListMap();
+        }
+
 	/**
 	 * <p>This method is used to determine if the named interface is
 	 * included in the passed package definition. If the interface

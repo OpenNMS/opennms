@@ -295,6 +295,7 @@ public class Filter
 	public List getIPList(String rule)
 		throws FilterParseException
         {
+		Category log = ThreadCategory.getInstance(getClass());
 		List resultList = new ArrayList();
 		String sqlString = null;
 		
@@ -311,7 +312,9 @@ public class Filter
 			//parse the rule and get the sql select statement
 			//
 			sqlString = getSQLStatement();
-			
+		        if (log.isDebugEnabled())
+                                log.debug("Filter: SQL statement: \n" + sqlString);
+
 			//execute query and return the list of ip addresses
 			//
 			Statement stmt = conn.createStatement();
@@ -341,31 +344,26 @@ public class Filter
 		}
 		catch(ClassNotFoundException e)
 		{
-			Category log = ThreadCategory.getInstance(getClass());
 			log.info("Class Not Found Exception occured getting IP List", e);
 			throw new UndeclaredThrowableException(e);
 		}
 		catch(SQLException e)
 		{
-			Category log = ThreadCategory.getInstance(getClass());
 			log.info("SQL Exception occured getting IP List", e);
 			throw new UndeclaredThrowableException(e);
 		}
 		catch (IOException ie)
 		{
-			Category log = ThreadCategory.getInstance(getClass());
 			log.fatal("IOException getting database connection", ie);
 			throw new UndeclaredThrowableException(ie);
 		}
 		catch (MarshalException me)
 		{
-			Category log = ThreadCategory.getInstance(getClass());
 			log.fatal("Marshall Exception getting database connection", me);
 			throw new UndeclaredThrowableException(me);
 		}
 		catch (ValidationException ve)
 		{
-			Category log = ThreadCategory.getInstance(getClass());
 			log.fatal("Validation Exception getting database connection", ve);
 			throw new UndeclaredThrowableException(ve);
 		}

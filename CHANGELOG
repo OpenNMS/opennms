@@ -1,5 +1,6 @@
 1.1.2 to 1.1.3
 ----------------------------------------------------------------------
+- Merge some more changes from the Rackspace branch.
 - Made some serious performance enhancements to startup times.
 - Added an XML RPC daemon for sending OpenNMS to an external server
 - Added some new asset categories for use with notifications and

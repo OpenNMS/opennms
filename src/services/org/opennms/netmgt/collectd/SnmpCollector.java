@@ -1620,6 +1620,12 @@ final class SnmpCollector
 
 				if (snmpStorage.equals(SNMP_STORAGE_SELECT))
 				{
+					if (ifInfo.getCollType() == null)
+					{
+						if(log.isDebugEnabled())
+							log.debug("updateRRDs: selectively storing SNMP data for primary interface (" + primaryIfIndex + "), skipping ifIndex: " + ifIndex);
+						continue;
+					}
 					if (ifInfo.getCollType().equals("N"))
 					{
 						if(log.isDebugEnabled())
