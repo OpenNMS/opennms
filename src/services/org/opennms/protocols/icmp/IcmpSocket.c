@@ -51,9 +51,12 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <stdint.h>
 #include <sys/socket.h>
-#if defined(__DARWIN__) || defined(__SOLARIS__) || defined (__FreeBSD__)
+#if defined(__SOLARIS__) || defined (__FreeBSD__)
+# include <netinet/in_systm.h>
+#endif
+#if defined(__DARWIN__) 
+#include <stdint.h>
 # include <netinet/in_systm.h>
 # include <AvailabilityMacros.h>
 # ifndef MAC_OS_X_VERSION_10_3

@@ -55,6 +55,9 @@ JAVA_HEAP_SIZE=256
 # Additional options that should be passed to Java when starting OpenNMS.
 ADDITIONAL_MANAGER_OPTIONS=""
 
+# Classpath additions.  These go on the front of our classpath.
+ADDITIONAL_CLASSPATH=""
+
 # Use incremental garbage collection.
 USE_INCGC=""
 
@@ -455,7 +458,11 @@ cd "$OPENNMS_HOME" || { echo "could not \"cd $OPENNMS_HOME\"" >&2; exit 1; }
 # define needed for grep to find opennms easily
 JAVA_CMD="$OPENNMS_HOME/bin/runjava -r $RUNJAVA_OPTIONS --"
 
-APP_CLASSPATH="$OPENNMS_HOME/etc"
+if [ x"$ADDITIONAL_CLASSPATH" != x"" ]; then
+    APP_CLASSPATH="$ADDITIONAL_CLASSPATH:$OPENNMS_HOME/etc"
+else
+    APP_CLASSPATH="$OPENNMS_HOME/etc"
+fi
 for jar in $OPENNMS_HOME/lib/*.jar; do
     APP_CLASSPATH="$APP_CLASSPATH:$jar"
 done
