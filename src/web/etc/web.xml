@@ -634,6 +634,14 @@
     <servlet-class>org.opennms.web.admin.nodeManagement.DeleteNodesServlet</servlet-class>
   </servlet>
   <servlet>
+     <servlet-name>deleteInterface</servlet-name>
+     <servlet-class>org.opennms.web.admin.nodeManagement.DeleteInterfaceServlet</servlet-class>
+  </servlet>
+  <servlet>
+     <servlet-name>deleteService</servlet-name>
+     <servlet-class>org.opennms.web.admin.nodeManagement.DeleteServiceServlet</servlet-class>
+  </servlet>
+  <servlet>
     <!-- servlet for grabbing interfaces and services on a node -->
     <servlet-name>getInterfaces</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.GetInterfacesServlet</servlet-class>
@@ -1158,6 +1166,14 @@
   <servlet-mapping>
     <servlet-name>deleteNodes</servlet-name>
     <url-pattern>/admin/deleteNodes</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+     <servlet-name>deleteInterface</servlet-name>
+     <url-pattern>/admin/deleteInterface</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>deleteService</servlet-name>
+  	<url-pattern>/admin/deleteService</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>snmpGetNodes</servlet-name>

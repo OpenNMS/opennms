@@ -160,7 +160,18 @@
   <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
   <link rel="stylesheet" type="text/css" href="includes/styles.css" />
 </head>
+<% if (request.isUserInRole("OpenNMS Administrator")) { %>
 
+<script language="Javascript" type="text/javascript" >
+function doDelete() {
+     if (confirm("Are you sure you want to proceed? This action will permanently delete this interface and cannot be undone."))
+     {
+         document.forms["delete"].submit();
+     }
+     return false;
+}
+</script>
+<% } %>
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
 <% String breadcrumb1 = "<a href='element/index.jsp'>Search</a>"; %>
@@ -183,6 +194,12 @@
     <td width="100%" valign="top" >
       <h2>Interface: <%=intf_db.getIpAddress()%> <%=intf_db.getIpAddress().equals(intf_db.getHostname()) ? "" : "(" + intf_db.getHostname() + ")"%></h2>
 
+        <% if (request.isUserInRole("OpenNMS Administrator")) { %>
+
+      <form method="POST" name="delete" action="admin/deleteInterface">
+      <input type="hidden" name="nodeId" value="<%=nodeId%>">
+      <input type="hidden" name="intf" value="<%=ipAddr%>">
+      <% } %>
       <p>
         <a href="<%=eventUrl%>">View Events</a>
 
@@ -210,12 +227,17 @@
             &nbsp;&nbsp;&nbsp;<a href="performance/addReportsToUrl?node=<%=nodeId%>&intf=<%=ifLabel%>&relativetime=lastday">SNMP Performance</a>
           <% } %>
         <% } %>
-      
-         &nbsp;&nbsp;&nbsp;<a href="<%=deleteUrl%>">Delete</a>
+        
+        <% if (request.isUserInRole("OpenNMS Administrator")) { %>
+         &nbsp;&nbsp;&nbsp;<a href="admin/deleteInterface" onClick="return doDelete()">Delete</a>
+         <% } %>
          
         &nbsp;&nbsp;&nbsp;<a href="element/rescan.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Rescan</a>      
       </p>
 
+      <% if (request.isUserInRole("OpenNMS Administrator")) { %>
+      </form>
+      <% } %>
       <table width="100%" border="0" cellspacing="0" cellpadding="0">
         <tr>
           <td valign="top" width="48%">
