@@ -68,6 +68,8 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
 
     private long m_defaultPollInterval = 7654L;
 
+    private boolean m_pollAll = true;
+
     public void addDowntime(long interval, long begin, long end, boolean delete) {
         Downtime downtime = new Downtime();
         downtime.setDelete(delete ? "true" : "false");
@@ -280,7 +282,11 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
 
     public boolean pollAllIfNoCriticalServiceDefined() {
         // TODO Auto-generated method stub
-        return false;
+        return m_pollAll ;
+    }
+    
+    public void setPollAllIfNoCriticalServiceDefined(boolean pollAll) {
+        m_pollAll = pollAll;
     }
 
     public void rebuildPackageIpListMap() {
