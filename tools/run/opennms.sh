@@ -47,7 +47,7 @@ START_TIMEOUT=10
 
 # Number of seconds to wait between each "opennms status" check when
 # START_TIMEOUT > 0.
-STATUS_WAIT=0
+STATUS_WAIT=5
 
 # Value of the -Xmx<size>m option passed to Java.
 JAVA_HEAP_SIZE=256
