@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2004 Feb 12: Rebuild collectd package agaist IP List map when determining primary
+//              interface.
 // 2003 Nov 11: Merged changes from Rackspace project
 // 2003 Sep 09: Modifications to allow OpenNMS to handle duplicate IP addresses.
 // 2003 Mar 18: Fixed null pointer exceptions from some poorly written SNMP agents.
@@ -1445,6 +1447,7 @@ final class SuspectEventProcessor
 						if (newLBSnmpPrimaryIf == null)
 						{
 							List snmpAddresses = buildSnmpAddressList(collector);
+                                                        CollectdConfigFactory.getInstance().rebuildPackageIpListMap();
 							newSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpAddresses);
 							setPrimarySnmpInterface(dbc, entryNode, newSnmpPrimaryIf, oldSnmpPrimaryIf);
 						}
