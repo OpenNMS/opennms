@@ -54,14 +54,14 @@ public class EventConfData extends Object
 	/**
 	 * The map keyed with 'EventKey's
 	 */
-	private	TreeMap		m_eventMap;
+	private	LinkedHashMap		m_eventMap;
 
 	/**
 	 * The map of UEI to 'EventKey's list - used mainly to find matches for the
 	 * OpenNMS internal events faster(in cases where there are multiple masks
 	 * for the same UEI)
 	 */
-	private Hashtable		m_ueiToKeyListMap;
+	private LinkedHashMap		m_ueiToKeyListMap;
 
 	/** 
 	 * Purely used for debugging
@@ -140,12 +140,6 @@ public class EventConfData extends Object
 			// get the event value for this key
 			String eventvalue = EventKey.getMaskElementValue(event, key);
 
-			maskMatch = eventValueMatchesMaskValue(eventvalue, maskValues);
-			if (!maskMatch)
-			{
-				return maskMatch;
-			}
-
 			maskMatch = eventValuePassesMaskValue(eventvalue, maskValues);
 			if (!maskMatch)
 			{
@@ -189,27 +183,6 @@ public class EventConfData extends Object
 		return maskMatch;
 	}
 
-        private boolean eventValueMatchesMaskValue(String eventvalue, List maskValues)
-        {
-                boolean maskMatch = false;
-
-                Iterator valiter = maskValues.iterator();
-                while(valiter.hasNext() && !maskMatch)
-                {
-                        String keyvalue  = (String)valiter.next();
-                        if (keyvalue != null && eventvalue != null)
-                        {
-                                if (keyvalue.equals(eventvalue))
-                                {
-                                        maskMatch = true;
-                                }
-                        }
-                }
-
-                return maskMatch;
-        }
-
-
 
 	/**
 	 * Update the uei to keylist map
@@ -237,9 +210,9 @@ public class EventConfData extends Object
 	 */
 	public EventConfData()
 	{
-		m_eventMap = new TreeMap();
+		m_eventMap = new LinkedHashMap();
 		
-		m_ueiToKeyListMap = new Hashtable();
+		m_ueiToKeyListMap = new LinkedHashMap();
 	}
 
 	/**
