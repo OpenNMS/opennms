@@ -108,7 +108,7 @@
   </tr>
   <tr> 
     <td align="center" >
-      <font  SIZE="-1">OpenNMS <a href="help/about.jsp">Copyright</a> &copy; 2002-2004 <a HREF="http://www.blast.com/">Blast Internet Services, Inc.</a> OpenNMS&reg; is a registered trademark of <a href="http://www.blast.com">Blast Internet Services, Inc.</a> </font>
+      <font  SIZE="-1">OpenNMS <a href="help/about.jsp">Copyright</a> &copy; 2002-2004 <a HREF="http://www.blast.com/">The OpenNMS Group, Inc.</a> OpenNMS&reg; is a registered trademark of <a href="http://www.blast.com">The OpenNMS Group, Inc.</a> </font>
     </td>
   </tr>
 </table>

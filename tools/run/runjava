@@ -6,11 +6,11 @@
 # Wrapper script for starting a JRE within OpenNMS.
 # DJ Gregor
 # Copyright (c) Daniel J. Gregor, Jr.
-#    parts Copyright (c) Blast Internet Services
+#    parts Copyright (c) The OpenNMS Group
 # Tuesday, August 31, 2004
 #
 # Parts based on parseMib.sh, a Java MIB parser by David Hustace
-# Copyright (c) Blast Internet Services
+# Copyright (c) The OpenNMS Group
 # Friday, February 13, 2004
 #
 # This program is free software; you can redistribute it and/or modify

@@ -1,6 +1,6 @@
 /*
  * Created on Sep 8, 2004
- * Copyright (c) 2004, Blast Consulting Company.
+ * Copyright (c) 2004, The OpenNMS Group, Inc..
  *
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates

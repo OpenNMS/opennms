@@ -1,6 +1,6 @@
 --# create.sql -- SQL to build the initial tables for the OpenNMS Project
 --#
---# Copyright (C) 2004 Blast Consulting, Inc.  All rights reserved.
+--# Copyright (C) 2004 The OpenNMS Group, Inc., Inc.  All rights reserved.
 --# Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 --#
 --# This program is free software; you can redistribute it and/or modify

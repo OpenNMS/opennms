@@ -3,7 +3,7 @@
 //
 // Copyright (C) 2002-2003 John Rodriguez
 //
-// OpenNMS(R) is a registered trademark of Blast Internet Services, Inc.
+// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public

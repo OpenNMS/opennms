@@ -1,6 +1,6 @@
 /*
  * Created on Sep 8, 2004
- * Copyright (C) 2004, Blast Consulting Company.
+ * Copyright (C) 2004, The OpenNMS Group, Inc..
  * 
  */
 package org.opennms.netmgt.notifd;

@@ -3,12 +3,12 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 Blast Internet Services, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
 //
-// OpenNMS(R) is a registered trademark of Blast Internet Services, Inc.
+// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
 // Modifications:
 //
@@ -110,7 +110,7 @@
     <h3>License and Copyright</h3>
       
       <p>
-        The <a href="http://www.opennms.org/">OpenNMS&reg;</a> software, as distributed here, is copyright &copy; 2002-2004 <a href="http://www.blast.com">Blast Internet Services, Inc.</a> <a href="http://www.opennms.org/">OpenNMS&reg;</a> is a registered trademark of <a href="http://www.blast.com">Blast Internet Services, Inc.</a>
+        The <a href="http://www.opennms.org/">OpenNMS&reg;</a> software, as distributed here, is copyright &copy; 2002-2004 <a href="http://www.blast.com">The OpenNMS Group, Inc.</a> <a href="http://www.opennms.org/">OpenNMS&reg;</a> is a registered trademark of <a href="http://www.blast.com">The OpenNMS Group, Inc.</a>
       </p>
 
       <p>

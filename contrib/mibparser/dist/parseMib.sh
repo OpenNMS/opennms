@@ -3,7 +3,7 @@
 #
 # Wrapper script for Java MIB parser.
 # David Hustace
-# Copyright (c) Blast Internet Services
+# Copyright (c) The OpenNMS Group
 # Friday, February 13, 2004
 
 # This program is free software; you can redistribute it and/or modify
