@@ -406,7 +406,6 @@ else
     echo "      OpenNMS to start automatically.  You'll need to" >&2
     echo "      configure this your self." >&2
 fi
-echo "done"
 
 echo -e "- checking for old update files... \c"
 
