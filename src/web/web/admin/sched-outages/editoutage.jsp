@@ -1,4 +1,4 @@
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.netmgt.config.*,org.opennms.netmgt.config.poller.*,org.opennms.web.element.*,org.opennms.netmgt.EventConstants,org.opennms.netmgt.xml.event.Event,org.opennms.netmgt.utils.*,java.net.*,java.io.*" %>
+<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.netmgt.config.*,org.opennms.netmgt.config.common.*,org.opennms.netmgt.config.poller.*,org.opennms.web.element.*,org.opennms.netmgt.EventConstants,org.opennms.netmgt.xml.event.Event,org.opennms.netmgt.utils.*,java.net.*,java.io.*" %>
 <%!
 //A singleton instance of a "Match-any" interface, which can be used for generic tests/removals etc.
 private static org.opennms.netmgt.config.poller.Interface matchAnyInterface;
@@ -46,7 +46,7 @@ shortDayNames.put("saturday","Sat");
    		Outage tempOutage=pollFactory.getOutage(nameParam);
 		CharArrayWriter writer=new CharArrayWriter();
 		tempOutage.marshal(writer);
-		theOutage=Outage.unmarshal(new CharArrayReader(writer.toCharArray()));
+		theOutage=(Outage)Outage.unmarshal(new CharArrayReader(writer.toCharArray()));
 		request.getSession().setAttribute("opennms.editoutage",theOutage);
 		request.getSession().setAttribute("opennms.editoutage.origname", nameParam);
 	} else if("true".equals(request.getParameter("addNew"))) {
