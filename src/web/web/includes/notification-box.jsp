@@ -61,7 +61,7 @@
         <tr>
           <td>
             <%
-                int count = this.model.getOutstandingNoticeCount();
+                int count = this.model.getOutstandingNoticeCount(request.getRemoteUser());
                 String format = this.formatter.format( count );
                 out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
              %>
