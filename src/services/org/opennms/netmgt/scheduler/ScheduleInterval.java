@@ -29,16 +29,21 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.poller.schedule;
-
+package org.opennms.netmgt.scheduler;
 
 /**
- * Represents a ScheduleTimer 
+ * Represents a ScheduleInterval 
  *
  * @author brozow
  */
-public interface ScheduleTimer extends Timer {
-    
-    public void schedule(Runnable schedule, long interval);
+public interface ScheduleInterval {
+
+    long getInterval();
+
+    /**
+     * @param currentTime
+     * @return
+     */
+    boolean scheduledSuspension();
 
 }

@@ -35,8 +35,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.netmgt.poller.schedule.ScheduleInterval;
-import org.opennms.netmgt.poller.schedule.Timer;
+import org.opennms.netmgt.scheduler.ScheduleInterval;
+import org.opennms.netmgt.scheduler.Timer;
 
 
 public class MockInterval implements ScheduleInterval {

@@ -31,7 +31,7 @@
 //
 package org.opennms.netmgt.poller.pollables;
 
-import org.opennms.netmgt.poller.schedule.Timer;
+import org.opennms.netmgt.scheduler.Timer;
 
 
 /**

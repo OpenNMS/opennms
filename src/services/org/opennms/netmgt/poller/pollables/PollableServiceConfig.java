@@ -45,8 +45,8 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.poller.monitors.ServiceMonitor;
-import org.opennms.netmgt.poller.schedule.ScheduleInterval;
-import org.opennms.netmgt.poller.schedule.Timer;
+import org.opennms.netmgt.scheduler.ScheduleInterval;
+import org.opennms.netmgt.scheduler.Timer;
 
 /**
  * Represents a PollableServiceConfig 
@@ -156,6 +156,10 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 throw new RuntimeException("Downtime model is invalid, cannot schedule service " + m_service);
             }
         }
+        
+        if (when < 0)
+            m_service.delete();
+        
         return when;
     }
     

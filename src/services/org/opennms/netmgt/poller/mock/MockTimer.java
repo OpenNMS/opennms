@@ -31,7 +31,7 @@
 //
 package org.opennms.netmgt.poller.mock;
 
-import org.opennms.netmgt.poller.schedule.Timer;
+import org.opennms.netmgt.scheduler.Timer;
 
 /**
  * Represents a MockTimer 

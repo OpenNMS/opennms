@@ -29,7 +29,7 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.poller.schedule;
+package org.opennms.netmgt.scheduler;
 
 
 import org.opennms.netmgt.poller.mock.MockInterval;

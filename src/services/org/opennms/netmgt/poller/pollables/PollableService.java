@@ -38,7 +38,7 @@ import java.util.Date;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.poller.monitors.IPv4NetworkInterface;
 import org.opennms.netmgt.poller.monitors.NetworkInterface;
-import org.opennms.netmgt.poller.schedule.Schedule;
+import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -56,8 +56,6 @@ public class PollableService extends PollableElement implements Runnable {
     private PollStatus m_oldStatus;
     private Schedule m_schedule;
     private long m_statusChangeTime = 0L;
-
-
     /**
      * @param svcName
      * @param iface
@@ -159,13 +157,17 @@ public class PollableService extends PollableElement implements Runnable {
     }
 
     /**
-     * @return
+     * @return the top changed element whose status changes needs to be processed
      */
-    public PollStatus doPoll() {
-        if (getContext().isNodeProcessingEnabled())
-            return getParent().doPoll(this);
-        else
-            return poll();
+    public PollableElement doPoll() {
+        if (getContext().isNodeProcessingEnabled()) {
+            getParent().doPoll(this);
+            return getNode();
+        }
+        else {
+            poll();
+            return this;
+        }
     }
     
     public Event createDownEvent(Date date) {
@@ -255,6 +257,12 @@ public class PollableService extends PollableElement implements Runnable {
      * @see java.lang.Runnable#run()
      */
     public void run() {
-        doPoll();
+        PollableElement target = doPoll();
+        target.processStatusChange(new Date());
+    }
+
+    public void delete() {
+        super.delete();
+        m_schedule.unschedule();
     }
 }

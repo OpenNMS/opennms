@@ -46,6 +46,7 @@ abstract public class PollableElement {
     private PollStatus m_status = PollStatus.STATUS_UNKNOWN;
     private boolean m_statusChanged = false;
     private PollEvent m_cause;
+    private boolean m_deleted;
 
 
     protected PollableElement(PollableContainer parent) {
@@ -200,6 +201,17 @@ abstract public class PollableElement {
             resolveOutage(resolution);
     }
     
+    public boolean isDeleted() {
+        return m_deleted;
+    }
+    public void delete() {
+        m_deleted = true;
+        if (m_parent != null) {
+            getParent().deleteMember(this);
+            getParent().recalculateStatus();
+        }
+    }
+
     protected void processLingeringCauses(PollEvent resolvedCause, PollEvent resolution) {
         if (getStatus().isDown() && resolvedCause.equals(getCause())) {
             resolveAllOutages(resolvedCause, resolution);

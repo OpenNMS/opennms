@@ -63,8 +63,8 @@ import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.poller.mock.MockPollContext;
 import org.opennms.netmgt.poller.mock.MockScheduler;
 import org.opennms.netmgt.poller.mock.MockTimer;
-import org.opennms.netmgt.poller.schedule.Schedule;
-import org.opennms.netmgt.poller.schedule.ScheduleTimer;
+import org.opennms.netmgt.scheduler.Schedule;
+import org.opennms.netmgt.scheduler.ScheduleTimer;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -196,7 +196,8 @@ public class PollablesTest extends TestCase {
         m_pollerConfig.setDefaultPollInterval(1000L);
         m_pollerConfig.populatePackage(m_mockNetwork);
         m_pollerConfig.addPackage("TestPkg2");
-        m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
+        m_pollerConfig.addDowntime(500L, 0L, 1000L, false);
+        m_pollerConfig.addDowntime(500L, 1000L, -1L, true);
         m_pollerConfig.setDefaultPollInterval(2000L);
         m_pollerConfig.addService(m_mockNetwork.getService(2, "192.168.1.3", "HTTP"));
         
@@ -439,6 +440,164 @@ public class PollablesTest extends TestCase {
         assertEquals(1, counter.networkCount);
         assertEquals(19, counter.elementCount);
         assertEquals(9, counter.containerCount);
+    }
+    
+    public void testDeleteService() {
+
+        pDot1Icmp.delete();
+        
+        assertDeleted(pDot1Icmp);
+        assertNotDeleted(pDot1);
+        assertNotDeleted(pNode1);
+        
+        pDot1Smtp.delete();
+        
+        assertDeleted(pDot1Smtp);
+        assertDeleted(pDot1);
+        assertNotDeleted(pNode1);
+        
+        pDot2Smtp.delete();
+        
+        assertDeleted(pDot2Smtp);
+        assertNotDeleted(pDot2);
+        assertNotDeleted(pNode1);
+        
+        pDot2Icmp.delete();
+        
+        assertDeleted(pDot2Icmp);
+        assertDeleted(pDot2);
+        assertDeleted(pNode1);
+        
+    }
+    
+    private void assertDeleted(PollableService svc) {
+        assertTrue(svc.isDeleted());
+        assertNull(m_network.getService(svc.getNodeId(), svc.getAddress(), svc.getSvcName()));
+    }
+
+    private void assertNotDeleted(PollableService svc) {
+        assertFalse(svc.isDeleted());
+        assertNotNull(m_network.getService(svc.getNodeId(), svc.getAddress(), svc.getSvcName()));
+    }
+
+    private void assertDeleted(PollableInterface iface) {
+        assertTrue(iface.isDeleted());
+        assertNull(m_network.getInterface(iface.getNodeId(), iface.getAddress()));
+    }
+
+    private void assertNotDeleted(PollableInterface iface) {
+        assertFalse(iface.isDeleted());
+        assertNotNull(m_network.getInterface(iface.getNodeId(), iface.getAddress()));
+    }
+
+    private void assertDeleted(PollableNode node) {
+        assertTrue(node.isDeleted());
+        assertNull(m_network.getNode(node.getNodeId()));
+    }
+
+    private void assertNotDeleted(PollableNode node) {
+        assertFalse(node.isDeleted());
+        assertNotNull(m_network.getNode(node.getNodeId()));
+    }
+
+    public void testDeleteInterface() throws Exception {
+        
+        pDot1.delete();
+        
+        assertDeleted(pDot1Icmp);
+        assertDeleted(pDot1Smtp);
+        assertDeleted(pDot1);
+        assertNotDeleted(pDot2);
+        assertNotDeleted(pNode1);
+        
+        pDot2.delete();
+        
+        assertDeleted(pDot2Icmp);
+        assertDeleted(pDot2Smtp);
+        assertDeleted(pDot2);;
+        assertDeleted(pNode1);
+        
+    }
+    
+    public void testDeleteNode() throws Exception {
+        InetAddress dot1 = InetAddress.getByName("192.168.1.1");
+        InetAddress dot2 = InetAddress.getByName("192.168.1.2");
+        
+        pNode1.delete();
+        
+        assertDeleted(pDot1Icmp);
+        assertDeleted(pDot1Smtp);
+        assertDeleted(pDot1);
+        assertDeleted(pDot2Icmp);
+        assertDeleted(pDot2Smtp);
+        assertDeleted(pDot2);
+        assertDeleted(pNode1);
+    }
+    
+    public void testDeleteServiceStatus() {
+        anticipateDown(mDot1);
+
+        mDot1Icmp.bringDown();
+        
+        pDot1Icmp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        mDot1.removeService(mDot1Icmp);
+        
+        anticipateUp(mDot1);
+        
+        pDot1Icmp.delete();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        
+        
+    }
+    
+    public void testDowntimeDelete() {
+        pDot3Http.getSchedule().schedule();
+        
+        m_scheduler.next();
+        
+        assertTime(0);
+        assertNotDeleted(pDot3Http);
+        
+        m_scheduler.next();
+        
+        assertTime(2000);
+        assertNotDeleted(pDot3Http);
+        
+        anticipateDown(mDot3Http);
+        
+        mDot3Http.bringDown();
+        
+        m_scheduler.next();
+        
+        assertTime(4000);
+        assertNotDeleted(pDot3Http);
+        
+        verifyAnticipated();
+        
+        m_scheduler.next();
+        
+        assertTime(4500);
+        assertNotDeleted(pDot3Http);
+        
+        m_scheduler.next();
+        
+        assertTime(5000);
+        assertDeleted(pDot3Http);
+        
+        
+    }
+    
+    public void testReparentInterface() {
+        //fail("Not yet implemented");
     }
     
     public void testStatus() throws Exception {
@@ -736,7 +895,8 @@ public class PollablesTest extends TestCase {
 
         pDot1.updateStatus(PollStatus.STATUS_DOWN);
         pDot1Icmp.updateStatus(PollStatus.STATUS_DOWN);
-        
+        pDot1.setCause(new PollEvent(1, new Date()));
+
         m_network.recalculateStatus();
         m_network.resetStatusChanged();
 

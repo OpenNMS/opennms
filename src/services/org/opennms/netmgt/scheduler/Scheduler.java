@@ -60,7 +60,7 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * 
  */
-public class Scheduler implements Runnable, PausableFiber {
+public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
     /**
      * The map of queue that contain {@link ReadyRunnable ready runnable}
      * instances. The queues are mapped according to the interval of scheduling.
@@ -285,6 +285,41 @@ public class Scheduler implements Runnable, PausableFiber {
         }
     }
 
+    /**
+     * This method is used to schedule a ready runnable in the system. The
+     * interval is used as the key for determining which queue to add the
+     * runnable.
+     * 
+     * @param runnable
+     *            The element to run when interval expires.
+     * @param interval
+     *            The queue to add the runnable to.
+     * 
+     * @throws java.lang.RuntimeException
+     *             Thrown if an error occurs adding the element to the queue.
+     */
+    public synchronized void schedule(final Runnable runnable, long interval) {
+        final long timeToRun = getCurrentTime()+interval;
+        ReadyRunnable timeKeeper = new ReadyRunnable() {
+            public boolean isReady() {
+                return getCurrentTime() >= timeToRun;
+            }
+            
+            public void run() {
+                runnable.run();
+            }
+            
+            public String toString() { return runnable.toString(); }
+        };
+        schedule(timeKeeper, interval);
+    }
+    
+    /**
+     * This returns the current time for the scheduler
+     */
+    public long getCurrentTime() {
+        return System.currentTimeMillis();
+    }
     /**
      * Starts the fiber.
      * 

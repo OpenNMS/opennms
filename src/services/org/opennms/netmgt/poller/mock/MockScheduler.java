@@ -38,7 +38,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.opennms.netmgt.mock.MockUtil;
-import org.opennms.netmgt.poller.schedule.ScheduleTimer;
+import org.opennms.netmgt.scheduler.ScheduleTimer;
 
 
 public class MockScheduler implements ScheduleTimer {
