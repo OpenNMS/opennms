@@ -1,3 +1,9 @@
+1.1.1 to 1.1.2
+----------------------------------------------------------------------
+- Added security roles to web.xml. Bug 715. Thx DJ
+- Corrected issues with last day/week/month/year buttons in webUI.
+- Added check to handle null terminated strings in traps. Thx Dave W.
+
 1.1.0 to 1.1.1
 ----------------------------------------------------------------------
 - Fixed a small bug with RRAs. Bug 707. Thx Volker
