@@ -35,7 +35,8 @@ your distribution.
   <!-- Note: build.dir needs to be a path relative to ${basedir}, and
        the same thing might be the case for some properties that
        contain build.dir -->
-  <property name="build.dir" value="work"/>
+  <property name="relative.build.dir" value="work"/>
+  <property name="build.dir" value="${basedir}/${relative.build.dir}"/>
   <property name="build.castor.source.dir" value="${build.dir}/castor"/>
   <property name="build.sablecc.source.dir" value="${build.dir}/sablecc"/>
   <property name="build.docs.dir" value="${build.dir}/docs"/>
@@ -66,20 +67,26 @@ your distribution.
   <property name="compiler.deprecation" value="false"/>
 
   <!--source directories -->
-  <property name="core.source.dir" value="src/core"/>
-  <property name="joesnmp.source.dir" value="src/joesnmp"/>
-  <property name="postgresql.source.dir" value="src/postgresql"/>
-  <property name="report.source.dir" value="src/report"/>
-  <property name="services.source.dir" value="src/services"/>
-  <property name="install.source.dir" value="src/install"/>
-  <property name="web.source.dir" value="src/web/src"/>
-  <property name="docs.source.dir" value="docs"/>
+  <property name="source.dir" value="${basedir}/src"/>
+  <property name="core.source.dir" value="${source.dir}/core"/>
+  <property name="joesnmp.source.dir" value="${source.dir}/joesnmp"/>
+  <property name="postgresql.source.dir" value="${source.dir}/postgresql"/>
+  <property name="report.source.dir" value="${source.dir}/report"/>
+  <property name="services.source.dir" value="${source.dir}/services"/>
+  <property name="install.source.dir" value="${source.dir}/install"/>
+  <property name="web.source.dir" value="${source.dir}/web/src"/>
 
-  <!--library directory-->
-  <property name="packaged.lib.dir" value="lib"/>
+  <!-- docs source directory -->
+  <property name="docs.source.dir" value="${basedir}/docs"/>
+
+  <!--library directories-->
+  <!-- packaged libraries that are included in binary distributions -->
+  <property name="packaged.lib.dir" value="${basedir}/lib"/>
+  <!-- development libraries that are not included in binary distributions -->
+  <property name="dev.lib.dir" value="${basedir}/devlib"/>
 
   <!-- castor specific -->
-  <property name="castor.xsd.dir" value="schema/xsd"/>
+  <property name="castor.xsd.dir" value="${basedir}/schema/xsd"/>
   <property name="castor.config.dir"
 	    value="${services.source.dir}/org/opennms/netmgt/config"/>
   <property name="castor.typefactory" value="j2"/>
@@ -88,11 +95,9 @@ your distribution.
   <property name="sablecc.filter.dir" value="org/opennms/netmgt/filter"/>
 
   <!-- relative directories for use in filesets and for install.dir -->
-  <property name="relative.install" value="dist"/>
+  <property name="relative.install.dir" value="dist"/>
 
   <!-- dist options and archive names -->
-  <property name="dist.excludes"
-	    value="**/CVS/**, ${build.dir}/**, ${relative.install}/**"/>
   <property name="dist.source.archive.prefix"
 	    value="${ant.project.name}-${product.version}-src"/>
   <property name="dist.docs.archive.prefix"
@@ -101,7 +106,7 @@ your distribution.
   <!-- install directories -->
 
   <!-- install.dir: the top directory into which to install OpenNMS -->
-  <property name="install.dir" value="${basedir}/${relative.install}"/>
+  <property name="install.dir" value="${basedir}/${relative.install.dir}"/>
 
   <property name="install.init.dir" value="${install.dir}/bin"/>
   <property name="install.webapps.dir" value="${install.dir}/webapps" />
@@ -186,12 +191,12 @@ your distribution.
   <!-- The jars listed for Class-Path in the MANIFEST.MF for the installer's
        JAR file -->
   <path id="install.manifest.jars">
-    <pathelement path="${basedir}/${packaged.lib.dir}/${postgresql.jar}"/>
+    <pathelement path="${packaged.lib.dir}/${postgresql.jar}"/>
   </path>
 
   <pathconvert refid="install.manifest.jars" pathsep=" "
 	       property="install.manifest.classes">
-    <map from="${basedir}/${packaged.lib.dir}/" to=""/>
+    <map from="${packaged.lib.dir}/" to=""/>
   </pathconvert>
 
   <!-- Libraries that are linked into Tomcat's server/lib directory from
@@ -200,12 +205,12 @@ your distribution.
        make it into WEB-INF/lib.  See the "install.servlet" target to see
        how things are copied into WEB-INF/lib. -->
   <path id="tomcatlib.jars.path">
-    <pathelement path="${basedir}/${packaged.lib.dir}/log4j.jar"/>
-    <pathelement path="${basedir}/${packaged.lib.dir}/castor-0.9.3.9.jar"/>
-    <pathelement path="${basedir}/${packaged.lib.dir}/castor-0.9.3.9-xml.jar"/>
-    <pathelement path="${basedir}/${build.jar.dir}/opennms_core.jar"/>
-    <pathelement path="${basedir}/${build.jar.dir}/opennms_services.jar"/>
-    <pathelement path="${basedir}/${build.jar.dir}/opennms_web.jar"/>
+    <pathelement path="${packaged.lib.dir}/log4j.jar"/>
+    <pathelement path="${packaged.lib.dir}/castor-0.9.3.9.jar"/>
+    <pathelement path="${packaged.lib.dir}/castor-0.9.3.9-xml.jar"/>
+    <pathelement path="${build.jar.dir}/opennms_core.jar"/>
+    <pathelement path="${build.jar.dir}/opennms_services.jar"/>
+    <pathelement path="${build.jar.dir}/opennms_web.jar"/>
     <!-- These are the libraries that were in opennms.spec.in:
 	castor-0.9.3.9.jar \
 	log4j.jar \
@@ -218,8 +223,8 @@ your distribution.
 
   <pathconvert targetos="unix" refid="tomcatlib.jars.path"
 	       property="install.tomcat.serverlibs">
-    <map from="${basedir}/${packaged.lib.dir}/" to=""/>
-    <map from="${basedir}/${build.jar.dir}/" to=""/>
+    <map from="${packaged.lib.dir}/" to=""/>
+    <map from="${build.jar.dir}/" to=""/>
   </pathconvert>
 
   <!-- patterns and sets -->
@@ -271,9 +276,27 @@ your distribution.
     <include name="releasenotes/**"/>
   </patternset>
 
+  <patternset id="source.dirs">
+    <include name="**/*"/>
+    <include name="**/CVS/**"/>
+    <include name="${relative.build.dir}/**"/>
+    <exclude name="${relative.install.dir}/**"/>
+  </patternset>
+
   <!-- ant tasks -->
-  <taskdef name="sablecc" classname="org.sablecc.ant.taskdef.Sablecc"/>
-  <taskdef name="castor" classname="org.apache.tools.ant.taskdefs.optional.castor.SourceGeneratorTask"/>
+  <taskdef name="sablecc" classname="org.sablecc.ant.taskdef.Sablecc">
+    <classpath>
+      <pathelement location="${dev.lib.dir}/sablecc-anttask-1.1.0.jar" />
+      <pathelement location="${dev.lib.dir}/sablecc-2.17.2.jar" />
+    </classpath>
+  </taskdef>
+  <taskdef name="castor"
+	   classname="org.apache.tools.ant.taskdefs.optional.castor.SourceGeneratorTask">
+    <classpath>
+      <pathelement location="${dev.lib.dir}/castorAntTask.jar" />
+      <pathelement location="${dev.lib.dir}/castor-0.9.3.9.jar" />
+    </classpath>
+  </taskdef>
   <taskdef name="fop" classname="org.apache.fop.tools.anttasks.Fop">
     <classpath>
       <pathelement location="${packaged.lib.dir}/fop0203.jar"/>
@@ -282,8 +305,16 @@ your distribution.
       <pathelement location="${packaged.lib.dir}/batik.jar"/>
     </classpath>
   </taskdef>
-  <taskdef resource="cpptasks.tasks"/>
-  <taskdef resource="cpptasks.types"/>
+  <taskdef resource="cpptasks.tasks">
+    <classpath>
+      <pathelement location="${dev.lib.dir}/cpptasks.jar"/>
+    </classpath>
+  </taskdef>
+  <taskdef resource="cpptasks.types">
+    <classpath>
+      <pathelement location="${dev.lib.dir}/cpptasks.jar"/>
+    </classpath>
+  </taskdef>
 
   <!-- PREP target -->
   <target name="prep" depends="platform.check, java.check" unless="prep.done">
@@ -338,6 +369,7 @@ your distribution.
 	      value="${product.version}-${product.release.stamp}"/>
 
     <!-- release directories -->
+    <property name="release.install.dir" value="/opt/OpenNMS"/>
     <property name="release.docs.dir"
 	      value="${ant.project.name}-${product.fullversion}/docs"/>
     <property name="release.docs.archive.prefix"
@@ -559,7 +591,7 @@ your distribution.
  
  <!-- USAGE targets -->
  <target name="usage" description="How to use this build file">
-  <java classname="org.apache.tools.ant.launch.Launcher">
+  <java fork="true" dir="${basedir}" jar="${dev.lib.dir}/ant-launcher.jar">
     <arg value="-projecthelp"/>
   </java>
  </target>
@@ -593,9 +625,9 @@ your distribution.
    <arg value="--define"/>
    <arg value="platform ${rpm.platform}"/>
    <arg value="--define"/>
-   <arg value="_topdir ${basedir}/${build.rpm.dir}"/>
+   <arg value="_topdir ${build.rpm.dir}"/>
    <arg value="--define"/>
-   <arg value="_tmppath ${basedir}/${build.rpm.dir}/tmp"/>
+   <arg value="_tmppath ${build.rpm.dir}/tmp"/>
    <arg value="--define"/>
    <arg value="snapshot ${opennms.snapshot}"/>
    <arg value="--define"/>
@@ -621,9 +653,9 @@ your distribution.
    <arg value="--define"/>
    <arg value="platform ${rpm.platform}"/>
    <arg value="--define"/>
-   <arg value="_topdir ${basedir}/${build.rpm.dir}"/>
+   <arg value="_topdir ${build.rpm.dir}"/>
    <arg value="--define"/>
-   <arg value="_tmppath ${basedir}/${build.rpm.dir}/tmp"/>
+   <arg value="_tmppath ${build.rpm.dir}/tmp"/>
    <arg value="--define"/>
    <arg value="standalone 1"/>
    <arg value="--define"/>
@@ -685,13 +717,19 @@ your distribution.
 				     tbz2.source.dist"/>
 
  <target name="zip.source.dist" depends="prepare.dist" unless="skip.dist">
-  <zip destfile="${build.release.dir}/${dist.source.archive.prefix}.zip"
-       basedir="${basedir}" excludes="${dist.excludes}" includes="**/*"/>
+   <zip destfile="${build.release.dir}/${dist.source.archive.prefix}.zip">
+     <fileset dir="${basedir}">
+       <patternset refid="source.dirs" />
+     </fileset>
+   </zip>
  </target>
 
  <target name="tar.source.dist" depends="prepare.dist" unless="skip.dist">
-  <tar destfile="${build.release.dir}/${dist.source.archive.prefix}.tar"
-       basedir="${basedir}" excludes="${dist.excludes}" includes="**/*"/>
+   <tar destfile="${build.release.dir}/${dist.source.archive.prefix}.tar">
+     <fileset dir="${basedir}">
+       <patternset refid="source.dirs" />
+     </fileset>
+   </tar>
  </target>
 
  <target name="tgz.source.dist" depends="tar.source.dist" unless="skip.dist">
@@ -719,16 +757,18 @@ your distribution.
  <target name="docs.dist" depends="zip.docs.dist, tgz.docs.dist,
 				   tbz2.docs.dist" unless="skip.dist"/>
 
- <target name="zip.docs.dist" depends="prepare.dist, html.docs">
-  <zip destfile="${build.release.dir}/${dist.docs.archive.prefix}.zip"
-       basedir="${build.docs.dir}" excludes="${dist.excludes}"
-       includes="**/*"/>
+ <target name="zip.docs.dist" depends="prepare.dist, docs">
+   <zip destfile="${build.release.dir}/${dist.docs.archive.prefix}.zip">
+     <fileset dir="${build.docs.dir}">
+       <patternset refid="source.dirs" />
+     </fileset>
+   </zip>
  </target>
 
- <target name="tgz.docs.dist" depends="prepare.dist, html.docs">
+ <target name="tgz.docs.dist" depends="prepare.dist, docs">
  </target>
 
- <target name="tbz2.docs.dist" depends="prepare.dist, html.docs">
+ <target name="tbz2.docs.dist" depends="prepare.dist, docs">
  </target>
 
 
@@ -759,8 +799,8 @@ your distribution.
   <copy todir="${build.dir}/${release.source.dir}">
    <fileset dir="${basedir}">
     <include name="**/*"/>
-    <exclude name="${build.dir}/**"/>
-    <exclude name="${relative.install}/**"/>
+    <exclude name="${relative.build.dir}/**"/>
+    <exclude name="${relative.install.dir}/**"/>
     <exclude name="debian/opennms/**"/>
     <exclude name="CVSROOT/**"/>
     <exclude name="**/*.swp"/>
@@ -779,14 +819,16 @@ your distribution.
  </target>
 
 
+ <!-- XXX This needs to be reworked and the generated files need to be put
+      somewhere under ${build.dir} -->
  <target name="release.prepare.binary" depends="prep">
   <mkdir dir="${build.dir}/${release.binary.dir}"/>
   <antcall target="install" inheritAll="false">
-   <param name="install.dir" value="/opt/OpenNMS"/>
-   <param name="install.prefix" value="${basedir}/${build.dir}"/>
+   <param name="install.dir" value="${release.install.dir}"/>
+   <param name="install.prefix" value="${build.dir}"/>
   </antcall>
   <move todir="${build.dir}/${release.binary.dir}">
-   <fileset dir="${build.dir}/opt/OpenNMS" includes="**/*"/>
+   <fileset dir="${build.dir}${release.install.dir}" includes="**/*"/>
   </move>
   <delete dir="${build.dir}/opt" includeEmptyDirs="true"/>
  </target>
@@ -1230,32 +1272,33 @@ OpenNMS as part of the post-install.
      <excludesfile name="${services.source.dir}/classlist"/>
      <excludesfile name="${web.source.dir}/classlist"/>
      <excludesfile name="${install.source.dir}/classlist"/>
+     <exclude name="**/MANIFEST.MF"/>
     </patternset>
    </fileset>
   </jar>
  </target>
 
  <!-- DOCS targets -->
- <target name="docs" depends="javadoc.docs,html.docs,pdf.docs"
+ <target name="docs" depends="javadoc.docs, html.docs, pdf.docs"
 	 description="Build javadoc and manuals"/>
  
  <target name="javadoc.docs" depends="prep,sources,javadoc.docs.uptodate"
-  unless="javadoc.docs.uptodate">
+	 unless="javadoc.docs.uptodate">
   <mkdir dir="${build.api.dir}"/>
   <javadoc destdir="${build.api.dir}"
-   packagenames="HelpFrame.*,ToolTipTree.*,org.opennms.*"
-   author="true"
-   version="true"
-   private="true"
-   windowtitle="OpenNMS API"
-   doctitle="OpenNMS API ${product.version}"
-   header="OpenNMS API ${product.version}"
-   footer="OpenNMS API ${product.version}"
-   bottom="Generated by ${user.name} on ${TODAY} ${TSTAMP}."
-   splitindex="true"
-   failonerror="true"
-   classpathref="libraries.java.path"
-   maxmemory="128m" >
+	   packagenames="HelpFrame.*,ToolTipTree.*,org.opennms.*"
+	   author="true"
+	   version="true"
+	   private="true"
+	   windowtitle="OpenNMS API"
+	   doctitle="OpenNMS API ${product.version}"
+	   header="OpenNMS API ${product.version}"
+	   footer="OpenNMS API ${product.version}"
+	   bottom="Generated by ${user.name} on ${TODAY} ${TSTAMP}."
+	   splitindex="true"
+	   failonerror="true"
+	   classpathref="libraries.java.path"
+	   maxmemory="128m">
   <sourcepath>
    <path refid="sources.java.path"/>
   </sourcepath>
