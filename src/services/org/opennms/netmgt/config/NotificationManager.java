@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
@@ -122,21 +123,29 @@ public abstract class NotificationManager {
         return false;
     }
     public Notification[] getNotifForEvent(Event event) throws IOException, MarshalException, ValidationException {
+
         update();
+        Category log = ThreadCategory.getInstance(getClass());
     
         ArrayList notifList = new ArrayList();
         Notification[] notif = null;
-        // boolean matchAll =
-        // NotifdConfigFactory.getInstance().getConfiguration().getNextNotifId()
         boolean matchAll = getConfigManager().getNotificationMatch();
-        // ThreadCategory.getInstance(getClass()).debug("Notification Event
-        // Match All = " + matchAll);
     
         for (Enumeration e = m_notifications.enumerateNotification(); e.hasMoreElements();) {
             Notification curNotif = (Notification) e.nextElement();
     
             if (curNotif.getStatus().equals("on") && event.getUei().equals(curNotif.getUei()) && nodeInterfaceServiceValid(curNotif, event)) {
+
+                boolean parmsmatched = getConfigManager().matchNotificationParameters(event, curNotif);
+
+                if (!parmsmatched) {
+                    log.debug("Event " + event.getUei() + " did not match parameters for notice " + curNotif.getName());
+                    continue;
+                }
                 notifList.add(curNotif);
+
+                log.debug("Event " + event.getUei() + " matched notice " + curNotif.getName());
+                
                 if (!matchAll)
                     break;
             }

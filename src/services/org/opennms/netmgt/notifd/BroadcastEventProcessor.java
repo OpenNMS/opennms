@@ -47,7 +47,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -78,9 +77,6 @@ import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 
 /**
  * 
@@ -268,8 +264,8 @@ final class BroadcastEventProcessor implements EventListener {
     /**
      */
     private void scheduleNoticesForEvent(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
 
+        Category log = ThreadCategory.getInstance(getClass());
         boolean mapsToNotice = false;
 
         try {
@@ -296,23 +292,13 @@ final class BroadcastEventProcessor implements EventListener {
                     for (int i = 0; i < notifications.length; i++) {
 
                         Notification notification = notifications[i];
-
-                        boolean parmsmatched = matchNotificationParameters(event, notification);
-
-                        if (!parmsmatched) {
-                            log.debug("Event " + event.getUei() + " did not match parameters for notice " + notification.getName());
-                            return;
-                        }
-
-                        log.debug("Event " + event.getUei() + " matched notice " + notification.getName());
-
                         int noticeId = 0;
 
                         try {
                             noticeId = getNotificationManager().getNoticeId();
                         } catch (Exception e) {
                             log.error("Failed to get a unique id # for notification, exiting this notification", e);
-                            return;
+                            continue;
                         }
 
                         Map paramMap = buildParameterMap(notification, event, noticeId);
@@ -332,7 +318,10 @@ final class BroadcastEventProcessor implements EventListener {
                             path = m_notifd.getDestinationPathManager().getPath(notification.getDestinationPath());
                             if (path == null) {
                                 log.warn("Unknown destination path " + notification.getDestinationPath() + ". Please check the <destinationPath> tag for the notification " + notification.getName() + " in the notification.xml file.");
-                                return;
+                                
+                                //changing posted by Wiktor Wodecki
+                                //return;
+                                continue;
                             }
                         } catch (Exception e) {
                             log.error("Could not get destination path for " + notification.getDestinationPath() + ", please check the destinationPath.xml for errors.", e);
@@ -659,62 +648,6 @@ final class BroadcastEventProcessor implements EventListener {
      */
     public String getName() {
         return "Notifd:BroadcastEventProcessor";
-    }
-
-    /**
-     * See if the event parameters match the variables in the notification.
-     * 
-     * The purpose of this method is to match parameters, such as those in a
-     * threshold event, with parameters configured for a notification, such as
-     * ds-name.
-     * 
-     * @param event
-     *            The event to process.
-     * @param notification
-     *            The notification to process.
-     * 
-     */
-
-    // TODO This change only works for one parameter, need to expand it to many.
-    private boolean matchNotificationParameters(Event event, Notification notification) {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        boolean parmmatch = false;
-        Parms parms = event.getParms();
-        if (parms != null && notification.getVarbind() != null && notification.getVarbind().getVbname() != null) {
-            String parmName = null;
-            Value parmValue = null;
-            String parmContent = null;
-            String notfValue = null;
-            String notfName = notification.getVarbind().getVbname();
-
-            if (notification.getVarbind().getVbvalue() != null) {
-                notfValue = notification.getVarbind().getVbvalue();
-            } else if (log.isDebugEnabled()) {
-                log.debug("BroadcastEventProcessor:matchNotificationParameters:  Null value for varbind, assuming true.");
-                parmmatch = true;
-            }
-
-            Enumeration parmEnum = parms.enumerateParm();
-            while (parmEnum.hasMoreElements()) {
-                Parm parm = (Parm) parmEnum.nextElement();
-                parmName = parm.getParmName();
-                parmValue = parm.getValue();
-                if (parmValue == null)
-                    continue;
-                else
-                    parmContent = parmValue.getContent();
-
-                if (parmName.equals(notfName) && parmContent.equals(notfValue)) {
-                    parmmatch = true;
-                }
-
-            }
-        } else if (notification.getVarbind() == null || notification.getVarbind().getVbname() == null) {
-            parmmatch = true;
-        }
-
-        return parmmatch;
     }
 
 } // end class

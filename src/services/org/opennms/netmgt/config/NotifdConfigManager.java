@@ -36,15 +36,22 @@ package org.opennms.netmgt.config;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.util.Enumeration;
 
+import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
+import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
 
 /**
  * @author david
@@ -177,5 +184,48 @@ public abstract class NotifdConfigManager {
     public String getNextNotifIdSql() throws IOException, MarshalException, ValidationException {
         return getConfiguration().getNextNotifId();
     }
+    
+    // TODO This change only works for one parameter, need to expand it to many.
+    public boolean matchNotificationParameters(Event event, Notification notification) {
+        Category log = ThreadCategory.getInstance(getClass());
+
+        boolean parmmatch = false;
+        Parms parms = event.getParms();
+        if (parms != null && notification.getVarbind() != null && notification.getVarbind().getVbname() != null) {
+            String parmName = null;
+            Value parmValue = null;
+            String parmContent = null;
+            String notfValue = null;
+            String notfName = notification.getVarbind().getVbname();
+
+            if (notification.getVarbind().getVbvalue() != null) {
+                notfValue = notification.getVarbind().getVbvalue();
+            } else if (log.isDebugEnabled()) {
+                log.debug("BroadcastEventProcessor:matchNotificationParameters:  Null value for varbind, assuming true.");
+                parmmatch = true;
+            }
+
+            Enumeration parmEnum = parms.enumerateParm();
+            while (parmEnum.hasMoreElements()) {
+                Parm parm = (Parm) parmEnum.nextElement();
+                parmName = parm.getParmName();
+                parmValue = parm.getValue();
+                if (parmValue == null)
+                    continue;
+                else
+                    parmContent = parmValue.getContent();
+
+                if (parmName.equals(notfName) && parmContent.equals(notfValue)) {
+                    parmmatch = true;
+                }
+
+            }
+        } else if (notification.getVarbind() == null || notification.getVarbind().getVbname() == null) {
+            parmmatch = true;
+        }
+
+        return parmmatch;
+    }
+
 
 }

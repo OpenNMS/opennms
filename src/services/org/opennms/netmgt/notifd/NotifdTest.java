@@ -39,6 +39,7 @@ import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockUtil;
@@ -51,6 +52,7 @@ import org.opennms.netmgt.notifd.mock.MockNotificationManager;
 import org.opennms.netmgt.notifd.mock.MockNotificationStrategy;
 import org.opennms.netmgt.notifd.mock.MockUserManager;
 import org.opennms.netmgt.notifd.mock.NotificationAnticipator;
+import org.opennms.netmgt.xml.event.Event;
 /**
  * @author david
  *
@@ -67,6 +69,7 @@ public class NotifdTest extends TestCase {
     private NotificationManager m_notificationManager;
     private NotificationCommandManager m_notificationCommandManger;
     private MockDestinationPathManager m_destinationPathManager;
+
 
     private static String NOTIFD_CONFIG_MANAGER = "<?xml version=\"1.0\"?>\n" + 
             "<notifd-configuration \n" + 
@@ -112,7 +115,7 @@ public class NotifdTest extends TestCase {
             "                        <name>org.opennms.netmgt.notifd.DefaultQueueHandler</name>\n" + 
             "                </handler-class>\n" + 
             "        </queue>\n" + 
-            "</notifd-configuration>";
+            "</notifd-configuration>";    
     
     private static final String NOTIFICATION_MANAGER = "<?xml version=\"1.0\"?>\n" + 
             "<notifications xmlns=\"http://xmlns.opennms.org/xsd/notifications\">\n" + 
@@ -278,6 +281,30 @@ public class NotifdTest extends TestCase {
             "        <subject>Notice #%noticeid%: [OpenNMS] %interfaceresolve% (%interface%) on node %nodelabel% deleted.</subject>\n" + 
             "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
             "    </notification>\n" + 
+            "     <notification name=\"SNMP High disk Threshold Exceeded\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/threshold/highThresholdExceeded</uei>\n" + 
+            "        <description>high disk threshold exceeded on snmp interface</description>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>Email-Mock</destinationPath>\n" + 
+            "        <text-message>High disk Threshold exceeded on %interface%, %parm[ds]% with %parm[value]%%%</text-message>\n" + 
+            "        <subject>Notice #%noticeid%, High disk Threshold exceeded</subject>\n" + 
+            "        <varbind>\n" + 
+            "            <vbname>ds</vbname>\n" + 
+            "            <vbvalue>dsk-usr-pcent</vbvalue>\n" + 
+            "        </varbind>\n" + 
+            "    </notification>\n" + 
+            "    <notification name=\"SNMP High loadavg5 Threshold Exceeded\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/threshold/highThresholdExceeded</uei>\n" + 
+            "        <description>high loadavg5 threshold exceeded on snmp interface</description>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>Email-Mock</destinationPath>\n" + 
+            "        <text-message>High loadavg5 Threshold exceeded on %interface%, %parm[ds]% with %parm[value]%%%</text-message>\n" + 
+            "        <subject>High loadavg5 Threshold exceeded</subject>\n" + 
+            "        <varbind>\n" + 
+            "            <vbname>ds</vbname>\n" + 
+            "            <vbvalue>loadavg5</vbvalue>\n" + 
+            "        </varbind>\n" + 
+            "    </notification>" +
             "</notifications>\n" + 
             "";
     
@@ -695,6 +722,7 @@ public class NotifdTest extends TestCase {
             "</notification-commands>";
     private MockDatabase m_db;
     private MockNetwork m_network;
+    private NotificationAnticipator m_anticipator;
 
     /*
      * @see TestCase#setUp()
@@ -740,11 +768,14 @@ public class NotifdTest extends TestCase {
         m_notifd.setDestinationPathManager(m_destinationPathManager);
         m_notifd.setNotificationCommandManager(m_notificationCommandManger);
         m_notifd.setNotificationManager(m_notificationManager);
-        
-        m_notifd.setNotificationManager(m_notificationManager);
-        
+                
+        m_anticipator = new NotificationAnticipator();
+        MockNotificationStrategy.setAnticpator(m_anticipator);
+
         m_notifd.init();
         m_notifd.start();
+        
+        
     }
 
     /*
@@ -754,6 +785,7 @@ public class NotifdTest extends TestCase {
         super.tearDown();
         m_notifd.stop();
         m_db.drop();
+        MockNotificationStrategy.setAnticpator(null);
         assertTrue(MockUtil.noWarningsOrHigherLogged());
     }
     
@@ -770,48 +802,27 @@ public class NotifdTest extends TestCase {
      * @throws Exception
      */
     public void testWicktorBug() throws Exception {
+
+        m_anticipator.anticipateNotification(createMockNotification("High loadavg5 Threshold exceeded", "dhustace@nc.rr.com"));
+        m_anticipator.anticipateNotification(createMockNotification("High loadavg5 Threshold exceeded", "matt@opennms.org"));
+
+        MockInterface iface = m_network.getInterface(1, "192.168.1.1");
+        Event e = MockUtil.createInterfaceEvent("test", "uei.opennms.org/threshold/highThresholdExceeded", iface);
+        MockUtil.addEventParm(e, "ds", "loadavg5");
+        m_eventMgr.sendNow(e);
         
-        //setup the notifications that Wicktor discussed
-        String notifications = "<?xml version=\\\"1.0\\\"?>\\n\" + \n" + 
-                "            \"<notifications xmlns=\\\"http://xmlns.opennms.org/xsd/notifications\\\">\\n\" + \n" + 
-                "            \"    <header>\\n\" + \n" + 
-                "            \"        <rev>1.2</rev>\\n\" + \n" + 
-                "            \"        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\\n\" + \n" + 
-                "            \"        <mstation>localhost</mstation>\\n\" + \n" + 
-                "            \"    </header>\\n" +
-                "     <notification name=\"SNMP High disk Threshold Exceeded\" status=\"on\">\n" + 
-                "        <uei>uei.opennms.org/threshold/highThresholdExceeded</uei>\n" + 
-                "        <description>high disk threshold exceeded on snmp\n" + 
-                "interface</description>\n" + 
-                "        <rule>(IPADDR IPLIKE *.*.*.*) &amp; (isSNMP )</rule>\n" + 
-                "        <destinationPath>Email-Network/Systems</destinationPath>\n" + 
-                "        <text-message>High disk Threshold exceeded on %interface%, %parm[ds]%\n" + 
-                "with %parm[value]%%%</text-message>\n" + 
-                "        <subject>Notice #%noticeid%, High disk Threshold exceeded</subject>\n" + 
-                "        <varbind>\n" + 
-                "            <vbname>ds</vbname>\n" + 
-                "            <vbvalue>dsk-usr-pcent</vbvalue>\n" + 
-                "        </varbind>\n" + 
-                "    </notification>\n" + 
-                "    <notification name=\"SNMP High loadavg5 Threshold Exceeded\" status=\"on\">\n" + 
-                "        <uei>uei.opennms.org/threshold/highThresholdExceeded</uei>\n" + 
-                "        <description>high loadavg5 threshold exceeded on snmp\n" + 
-                "interface</description>\n" + 
-                "        <rule>(IPADDR IPLIKE *.*.*.*) &amp; (isSNMP )</rule>\n" + 
-                "        <destinationPath>Email-Network/Systems</destinationPath>\n" + 
-                "        <text-message>High loadavg5 Threshold exceeded on %interface%,\n" + 
-                "%parm[ds]% with %parm[value]%%%</text-message>\n" + 
-                "        <subject>Notice #%noticeid%, High loadavg5 Threshold\n" + 
-                "exceeded</subject>\n" + 
-                "        <varbind>\n" + 
-                "            <vbname>ds</vbname>\n" + 
-                "            <vbvalue>loadavg5</vbvalue>\n" + 
-                "        </varbind>\n" + 
-                "    </notification>" +
-                "</notifications>";
+        /*
+         * This is the notification config that Wicktor sent when reporting this bug.
+         * 
+         * We need to create and Threshold Exceeded event for loadavg5 to match his
+         * notification name = "SNMP High loadavg5 Threshold Exceeded" correctly parsing the varbind.
+         * 
+         * What happens (he sent us a patch for this) is that the code does a return instead of a continue
+         * when going through the notification names.
+         */
         
-        m_notificationManager = new MockNotificationManager(m_notifdConfig, m_db, NOTIFICATION_MANAGER);
-        m_notifd.setNotificationManager(m_notificationManager);
+        verifyAnticipated(3000);
+        
         
     }
 
@@ -833,40 +844,34 @@ public class NotifdTest extends TestCase {
     public void testMockNotificationBasic() throws Exception {
 
         MockNode node = m_network.getNode(1);
-        NotificationAnticipator na = new NotificationAnticipator();
-        MockNotificationStrategy.setAnticpator(na);
 
         String subject;
         String email;
         MockNotification notification;
 
         notification = createMockNotification("node 1 down.", "dhustace@nc.rr.com");
-        na.anticipateNotification(notification);
+        m_anticipator.anticipateNotification(notification);
 
         notification = createMockNotification("node 1 down.", "matt@opennms.org");
-        na.anticipateNotification(notification);
+        m_anticipator.anticipateNotification(notification);
 
         //bring node down now
         m_eventMgr.sendNow(node.createDownEvent());
 
-        assertEquals("Expected notifications not forthcoming.", 0, na.waitForAnticipated(3000).size());
-        sleep(1000);
-        assertEquals("Unexpected notifications forthcoming.", 0, na.getUnanticipated().size());
+        verifyAnticipated(3000);
         
-        na.reset();
+        m_anticipator.reset();
         
         notification = createMockNotification("node 1 up.", "dhustace@nc.rr.com");
-        na.anticipateNotification(notification);
+        m_anticipator.anticipateNotification(notification);
 
         notification = createMockNotification("node 1 up.", "matt@opennms.org");
-        na.anticipateNotification(notification);
+        m_anticipator.anticipateNotification(notification);
         
         //bring node back up now
         m_eventMgr.sendNow(node.createUpEvent());
 
-        assertEquals("Expected notifications not forthcoming.", 0, na.waitForAnticipated(3000).size());
-        sleep(1000);
-        assertEquals("Unexpected notifications forthcoming.", 0, na.getUnanticipated().size());
+        verifyAnticipated(3000);
 
     }
     
@@ -875,27 +880,28 @@ public class NotifdTest extends TestCase {
         m_destinationPathManager.getPath("Email-Mock").setInitialDelay("10s");
         
         MockNode node = m_network.getNode(1);
-        NotificationAnticipator na = new NotificationAnticipator();
-        MockNotificationStrategy.setAnticpator(na);
-
         MockNotification notification = new MockNotification();
         
         notification = createMockNotification("node 1 down.", "dhustace@nc.rr.com");
-        na.anticipateNotification(notification);
+        m_anticipator.anticipateNotification(notification);
 
         notification = createMockNotification("node 1 down.", "matt@opennms.org");
-        na.anticipateNotification(notification);
+        m_anticipator.anticipateNotification(notification);
 
         m_eventMgr.sendNow(node.createDownEvent());
 
-        assertEquals("Expected notifications not forthcoming.", 2, na.waitForAnticipated(3000).size());
+        assertEquals("Expected notifications not forthcoming.", 2, m_anticipator.waitForAnticipated(3000).size());
         sleep(1000);
-        assertEquals("Unexpected notifications forthcoming.", 0, na.getUnanticipated().size());
+        assertEquals("Unexpected notifications forthcoming.", 0, m_anticipator.getUnanticipated().size());
 
-        assertEquals("Expected notifications not forthcoming.", 0, na.waitForAnticipated(10000).size());
+        verifyAnticipated(10000);
+
+    }
+
+    private void verifyAnticipated(int waitTime) {
+        assertEquals("Expected notifications not forthcoming.", 0, m_anticipator.waitForAnticipated(waitTime).size());
         sleep(1000);
-        assertEquals("Unexpected notifications forthcoming.", 0, na.getUnanticipated().size());
-
+        assertEquals("Unexpected notifications forthcoming.", 0, m_anticipator.getUnanticipated().size());
     }
 
     private void sleep(long millis) {
