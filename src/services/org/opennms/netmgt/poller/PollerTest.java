@@ -619,13 +619,13 @@ public class PollerTest extends TestCase {
 
     private void verifyAnticipated(long millis) {
         // make sure the down events are received
-        assertEquals(0, m_anticipator.waitForAnticipated(millis).size());
+        assertEquals("Expected events not forthcoming", 0, m_anticipator.waitForAnticipated(millis).size());
         sleep(2000);
-        assertEquals(0, m_anticipator.unanticipatedEvents().size());
+        assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
         sleep(500);
-        assertEquals(m_outageAnticipator.getExpectedOpens(), m_outageAnticipator.getActualOpens());
-        assertEquals(m_outageAnticipator.getExpectedOutages(), m_outageAnticipator.getActualOutages());
-        assertTrue(m_outageAnticipator.checkAnticipated());
+        assertEquals("Wrong number of outages opened", m_outageAnticipator.getExpectedOpens(), m_outageAnticipator.getActualOpens());
+        assertEquals("Wrong number of outages in outage table", m_outageAnticipator.getExpectedOutages(), m_outageAnticipator.getActualOutages());
+        assertTrue("Created outages don't match the expected outages", m_outageAnticipator.checkAnticipated());
     }
 
     private void anticipateUp(MockElement element) {
