@@ -11,11 +11,11 @@ to make packages on solaris:
 
 ./build.sh docs
 
-2b: Run:
+2a: Run:
 
 cp -pr work/docs /tmp/opennms/usr/local/opennms/
 
-2. go into your directory and walk down to /usr/local (install things in
+2b. go into your directory and walk down to /usr/local (install things in
    /usr/local just to fit with sunfreeware)
 
 3. in the opennms package, don't forget to make jar symlinks for tomcat
@@ -41,6 +41,7 @@ cp -pr work/docs /tmp/opennms/usr/local/opennms/
 
 5. generate the file list from /usr/local/
 
+   # cd /tmp/opennms/usr/local
    # find . -print | pkgproto > prototype
 
 6. add the following line to the prototype file:

@@ -117,4 +117,18 @@
             <switch>-tm</switch>
         </argument>
     </command>
+    <command binary="false">
+        <name>growlMessage</name>
+        <execute>org.opennms.netmgt.notifd.GrowlNotificationStrategy</execute>
+        <comment>class for sending Growl notifications on Mac OS X</comment>
+        <argument streamed="false">
+            <switch>eventUEI</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tm</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-subject</switch>
+        </argument>
+    </command>
 </notification-commands>

@@ -146,6 +146,15 @@
 %define platform_match	true
 %endif
 
+%if "%{platform}" == "linux-i386-rhel-4"
+%define	initdir		/etc
+%define psql_service	rhdb
+%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
+%define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_rhel4
+%define platform_match	true
+%endif
+
 %if "%{platform}" == "linux-i386-suse-7"
 %define	initdir		/etc/rc.d
 %define psql_service	postgres
