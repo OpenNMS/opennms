@@ -13,9 +13,10 @@
 %{!?sharedir:%define sharedir /var/opennms}
 %{!?logdir:%define logdir /var/log/opennms}
 %{!?pidfile:%define pidfile /var/run/opennms.pid}
-%{!?tomcatdir:%define tomcatdir /var/tomcat4}
 %{!?pglibdir:%define pglibdir %instprefix/lib}
 %{!?tomcatserverlibs:%define tomcatserverlibs @install.tomcat.serverlibs@}
+%{!?webappsdir:%define webappsdir %instprefix/webapps}
+%{!?servletdir:%define servletdir %webappsdir/opennms}
 
 # build type modifiers
 %{!?standalone:%define standalone 1}
@@ -156,7 +157,6 @@
 %if "%{platform}" == "linux-i386-suse-8"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define tomcatdir	/opt/jakarta/tomcat
 %define requires	postgresql >= 7.2, postgresql-server >= 7.2, java2 >= 1.4
 %define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %define release_pkg     %{release}_suse8
@@ -166,7 +166,6 @@
 %if "%{platform}" == "linux-i386-suse-9"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define tomcatdir	/opt/jakarta/tomcat
 %define requires	postgresql >= 7.2, postgresql-server >= 7.2, java2 >= 1.4
 %define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %define release_pkg     %{release}_suse9
@@ -176,9 +175,6 @@
 %if "%{platform_match}" != "true"
 %error error - platform macro (or rpm.platform property when building from ant) not defined or set to an invalid platform.
 %endif
-
-%define webappsdir	%{tomcatdir}/webapps
-%define servletdir	%{instprefix}/webapps/%{name}
 
 %if "%{buildtests}" == "true"
 %define buildtests	1
@@ -270,8 +266,7 @@ fi
 echo "=== RUNNING INSTALL ==="
 sh ./build.sh $COMPILER_FLAG -Dinstall.prefix=$RPM_BUILD_ROOT \
     -Dinstall.dir=%{instprefix} -Dinstall.init.dir=%{initdir}/init.d \
-    -Dinstall.webapps.dir=%{webappsdir} \
-    -Dinstall.servlet.dir=%{servletdir} \
+    -Dinstall.webapps.dir=%{webappsdir} -Dinstall.servlet.dir=%{servletdir} \
     -Dinstall.share.dir=%{sharedir} -Dinstall.postgresql.dir=%{pglibdir} \
     -Dinstall.postgresql.service=%{psql_service} \
     -Dinstall.logs.dir=%{logdir} -Dinstall.pid.file=%{pidfile} \
@@ -324,24 +319,12 @@ rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README.build
 ln -sf %{logdir} $RPM_BUILD_ROOT%{instprefix}/logs
 ln -sf %{sharedir} $RPM_BUILD_ROOT%{instprefix}/share
 
-### ${tomcatdir}
-
-mkdir -p $RPM_BUILD_ROOT%{tomcatdir}/server/lib
-jars="`echo \"%{tomcatserverlibs}\" | sed 's/:/ /g'`"
-for jar in $jars; do
-	ln -sf %{instprefix}/lib/$jar \
-	    $RPM_BUILD_ROOT%{tomcatdir}/server/lib/$jar
-done
-
-mkdir -p $RPM_BUILD_ROOT%{servletdir}/WEB-INF/classes
-ln -sf %{instprefix}/etc/log4j.properties $RPM_BUILD_ROOT%{servletdir}/WEB-INF/classes
-
 pushd $RPM_BUILD_ROOT
 find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
     sort > %{_tmppath}/files.etc
 
-(find $RPM_BUILD_ROOT%{webappsdir} ! -type d ; find $RPM_BUILD_ROOT%{servletdir} ! -type d ) | \
+(find $RPM_BUILD_ROOT%{webappsdir} ! -type d ) | \
     sed -e "s,^$RPM_BUILD_ROOT,," | grep -v '/WEB-INF/web.xml' | \
     sort > %{_tmppath}/files.webapp
 popd
@@ -378,7 +361,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %files webapp -f %{_tmppath}/files.webapp
 %defattr(644 root root 755)
-%{tomcatdir}/server
 %config %{servletdir}/WEB-INF/web.xml
 
 %post
