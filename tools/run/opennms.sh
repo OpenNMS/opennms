@@ -589,8 +589,8 @@ case "$COMMAND" in
     restart)
         ## Stop the service and regardless of whether it was
         ## running or not, start it again.
-	$0 stop
-	$0 start
+	$OPENNMS_HOME/bin/opennms.sh stop
+	$OPENNMS_HOME/bin/opennms.sh start
 	ret=$?
 
 	if [ -f /etc/SuSE-release ]; then
