@@ -82,14 +82,14 @@ final class Poller
 	static final int  		DEFAULT_RETRIES = 2;
 
 	/**
- 	 * Default timeout
+	 * Default timeout
 	 */
 	static final long 		DEFAULT_TIMEOUT = 3000L; 
 	
 	/**
 	 * The message type for the DHCP request.
 	 */
-    	private static final int 	MESSAGE_TYPE 	= 53;
+	private static final int 	MESSAGE_TYPE 	= 53;
 
 	/** 
 	 * Holds the value for the next identifier sent to the 
@@ -154,15 +154,15 @@ final class Poller
 		
 		// fill DHCPMessage object 
 		//
-	    	messageOut.setOp((byte) 1);
-	    	messageOut.setHtype((byte) 1);
-	    	messageOut.setHlen((byte) 6);
-	    	messageOut.setHops((byte) 0);
-	    	messageOut.setXid(xid); 	
-	    	messageOut.setSecs((short) 0);
-	    	messageOut.setFlags(BROADCAST_FLAG);  // Force server to broadcast response
+		messageOut.setOp((byte) 1);
+		messageOut.setHtype((byte) 1);
+		messageOut.setHlen((byte) 6);
+		messageOut.setHops((byte) 0);
+		messageOut.setXid(xid); 	
+		messageOut.setSecs((short) 0);
+		messageOut.setFlags(BROADCAST_FLAG);  // Force server to broadcast response
 	
-	    	messageOut.setChaddr(s_hwAddress); // set hardware address
+		messageOut.setChaddr(s_hwAddress); // set hardware address
 	
 		messageOut.setOption(MESSAGE_TYPE, new byte[] { (byte)DHCPMessage.DISCOVER });
 		
@@ -188,7 +188,7 @@ final class Poller
 	 * @throws IOException if unable to establish the connection 
 	 *  			with the DHCP client daemon.
 	 */
-  	private Poller(long timeout)
+	private Poller(long timeout)
 		throws IOException 
 	{
 		Category log = ThreadCategory.getInstance(this.getClass());
@@ -226,7 +226,7 @@ final class Poller
 			}
 			throw new UndeclaredThrowableException(t);
 		}
-  	}
+	}
 
 	/**
 	 * Closes the client's socket connection to the DHCP daemon.
@@ -272,10 +272,11 @@ final class Poller
 	 * <p>Before returning, a client disconnect message (remote host 
 	 * field set to zero) is sent to the DHCP daemon.</p>
 	 * 
-	 * @return True if the specified host responded with a valid DHCP offer
-	 * 	datagram within the context of the specified timeout and retry values.
+	 * @return response time in milliseconds if the specified host responded 
+	 * 	with a valid DHCP offer	datagram within the context of the specified 
+	 * 	timeout and retry values or negative one (-1) otherwise.
 	 */
-	static boolean isServer(InetAddress host, long timeout, int retries) 
+	static long isServer(InetAddress host, long timeout, int retries) 
 		throws IOException
 	{
 		Category log = ThreadCategory.getInstance(Poller.class);
@@ -291,8 +292,9 @@ final class Poller
 				log.debug("isServer: setting hardware/MAC address to " + hwAddressStr);
 			setHwAddress(hwAddressStr);
 		}
-			 		
+					
 		Poller p = new Poller(timeout < 500L ? timeout : 500L);
+		long responseTime = -1;
 		try
 		{
 			// allocate an array to hold the retry count
@@ -307,8 +309,8 @@ final class Poller
 						" with Xid: " + 
 							ping.getMessage().getXid());
 				
-				p.m_outs.writeObject(ping);
 				long start = System.currentTimeMillis();
+				p.m_outs.writeObject(ping);
 				long end;
 
 				do
@@ -323,31 +325,33 @@ final class Poller
 						resp = null;
 					} 
 					
-					// DEBUG only
-					if (resp != null && log.isDebugEnabled())
+					if (resp != null)
 					{
+						responseTime = System.currentTimeMillis() - start;
+						
+						// DEBUG only
 						if (log.isDebugEnabled())
 							log.debug("isServer: got a DHCP poll response from host " + 
 								resp.getAddress().getHostAddress() + 
 								" with Xid: " + 
 								resp.getMessage().getXid());
-					}
-					
-					if(resp != null 
-					   && host.equals(resp.getAddress())
-					   && ping.getMessage().getXid() == resp.getMessage().getXid())
-					{
-						if (log.isDebugEnabled())
-							log.debug("isServer: got a DHCP poll response for this poller, validating OFFER message...");
-						// Inspect response message to see if it is a valid DHCP OFFER message
-	    					byte [] type = resp.getMessage().getOption(MESSAGE_TYPE);
-						if(type[0] == DHCPMessage.OFFER)
+	
+						if ( host.equals(resp.getAddress()) && 
+							ping.getMessage().getXid() == resp.getMessage().getXid())
 						{
 							if (log.isDebugEnabled())
-								log.debug("isServer: got a valid DHCP offer!");
-				
-							isDhcpServer = true;
-							break;
+								log.debug("isServer: got a DHCP poll response for this poller, validating OFFER message...");
+								
+							// Inspect response message to see if it is a valid DHCP OFFER message
+							byte [] type = resp.getMessage().getOption(MESSAGE_TYPE);
+							if(type[0] == DHCPMessage.OFFER)
+							{
+								if (log.isDebugEnabled())
+									log.debug("isServer: got a valid DHCP offer, responseTime= " + responseTime + "ms");
+					
+								isDhcpServer = true;
+								break;
+							}
 						}
 					}
 					
@@ -363,7 +367,7 @@ final class Poller
 
 				--retries;
 			}
-
+			
 			p.m_outs.writeObject(getDisconnectRequest());
 		}
 		catch(IOException ex)
@@ -379,7 +383,17 @@ final class Poller
 			throw new UndeclaredThrowableException(t);
 		}
 
-		return isDhcpServer;
+		// Return response time if the remote box IS a DHCP
+		// server or -1 if the remote box is NOT a DHCP server.
+		//
+		if (isDhcpServer)
+		{
+			return responseTime;
+		}
+		else
+		{
+			return -1;
+		}
 	}
 
 	// Converts the provided hardware address string (format= 00:00:00:00:00:00)

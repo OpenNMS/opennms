@@ -54,6 +54,8 @@ import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.utils.RelaxedX509TrustManager;
 
+import org.opennms.netmgt.utils.ParameterMap;
+
 /**
  * <P>This class is designed to be used by the service poller
  * framework to test the availability of the HTTPS service on 
@@ -90,54 +92,6 @@ final class HttpsMonitor
 	private static final int DEFAULT_TIMEOUT 	= 30000; // 30 second timeout on read()
 
 	/**
-	 * This method is used to lookup a specific key in 
-	 * the map. If the mapped value is a string is is converted
-	 * to an interger and the original string value is replaced
-	 * in the map. The converted value is returned to the caller.
-	 * If the value cannot be converted then the default value is
-	 * used.
-	 *
-	 * @return The int value associated with the key.
-	 */
-	final static int[] getKeyedIntegerList(Map map, String key, int[] defList)
-	{
-		int[] result = defList;
-		Object oValue = map.get(key);
-
-		if(oValue != null && oValue instanceof int[])
-		{
-			result = (int[]) oValue;
-		}
-		else if(oValue != null)
-		{
-			List tmpList = new ArrayList(5);
-
-			// Split on spaces, commas, colons, or semicolons
-			//
-			StringTokenizer ints = new StringTokenizer(oValue.toString(), " ;:,");
-			while(ints.hasMoreElements())
-			{
-				try
-				{
-					int x = Integer.parseInt(ints.nextToken());
-					tmpList.add(new Integer(x));
-				}
-				catch(NumberFormatException e)
-				{
-					ThreadCategory.getInstance(HttpMonitor.class).warn("getKeyedIntegerList: list member for key " + key + " is malformed", e);
-				}
-			}
-			result = new int[tmpList.size()];
-
-			for(int x = 0; x < result.length; x++)
-				result[x] = ((Integer)tmpList.get(x)).intValue();
-
-			map.put(key, result);
-		} 
-		return result;
-	}
-
-	/**
 	 * <P>Poll the specified address for HTTPS service availability</P>
 	 *
 	 * <P>During the poll an attempt is made to connect on the specified
@@ -165,13 +119,13 @@ final class HttpsMonitor
 
 		Category log = ThreadCategory.getInstance(getClass());
 
-		int retry   = getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-		int timeout = getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
-		int[] ports = getKeyedIntegerList(parameters, "ports", DEFAULT_PORTS);
-		String url  = getKeyedString(parameters, "url", DEFAULT_URL);
+		int retry   = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+		int[] ports = ParameterMap.getKeyedIntegerArray(parameters, "ports", DEFAULT_PORTS);
+		String url  = ParameterMap.getKeyedString(parameters, "url", DEFAULT_URL);
 
-		int response = getKeyedInteger(parameters, "response", -1);
-		String responseText = getKeyedString(parameters, "response text", null);
+		int response = ParameterMap.getKeyedInteger(parameters, "response", -1);
+		String responseText = ParameterMap.getKeyedString(parameters, "response text", null);
 
 		// Set to true if "response" property has a valid return code specified.
 		//  By default response will be deemed valid if the return code 

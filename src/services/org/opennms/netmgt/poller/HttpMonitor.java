@@ -26,6 +26,7 @@
 package org.opennms.netmgt.poller;
 
 import java.lang.*;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,6 +44,9 @@ import java.util.StringTokenizer;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
+import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.netmgt.rrd.Interface;
+
 /**
  * <P>This class is designed to be used by the service poller
  * framework to test the availability of the HTTP service on 
@@ -55,7 +59,7 @@ import org.opennms.core.utils.ThreadCategory;
  *
  */
 final class HttpMonitor
-	extends IPv4Monitor
+	extends IPv4LatencyMonitor
 {
 	/** 
 	 * Default HTTP ports.
@@ -77,55 +81,7 @@ final class HttpMonitor
 	 * for data from the monitored interface.
 	 */
 	private static final int DEFAULT_TIMEOUT 	= 3000; // 3 second timeout on read()
-
-	/**
-	 * This method is used to lookup a specific key in 
-	 * the map. If the mapped value is a string is is converted
-	 * to an interger and the original string value is replaced
-	 * in the map. The converted value is returned to the caller.
-	 * If the value cannot be converted then the default value is
-	 * used.
-	 *
-	 * @return The int value associated with the key.
-	 */
-	final static int[] getKeyedIntegerList(Map map, String key, int[] defList)
-	{
-		int[] result = defList;
-		Object oValue = map.get(key);
-
-		if(oValue != null && oValue instanceof int[])
-		{
-			result = (int[]) oValue;
-		}
-		else if(oValue != null)
-		{
-			List tmpList = new ArrayList(5);
-
-			// Split on spaces, commas, colons, or semicolons
-			//
-			StringTokenizer ints = new StringTokenizer(oValue.toString(), " ;:,");
-			while(ints.hasMoreElements())
-			{
-				try
-				{
-					int x = Integer.parseInt(ints.nextToken());
-					tmpList.add(new Integer(x));
-				}
-				catch(NumberFormatException e)
-				{
-					ThreadCategory.getInstance(HttpMonitor.class).warn("getKeyedIntegerList: list member for key " + key + " is malformed", e);
-				}
-			}
-			result = new int[tmpList.size()];
-
-			for(int x = 0; x < result.length; x++)
-				result[x] = ((Integer)tmpList.get(x)).intValue();
-
-			map.put(key, result);
-		} 
-		return result;
-	}
-
+	
 	/**
 	 * <P>Poll the specified address for HTTP service availability</P>
 	 *
@@ -154,17 +110,21 @@ final class HttpMonitor
 
 		Category log = ThreadCategory.getInstance(getClass());
 
-		int retry   = getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-		int timeout = getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
-		int[] ports = getKeyedIntegerList(parameters, "ports", DEFAULT_PORTS);
-		String url  = getKeyedString(parameters, "url", DEFAULT_URL);
-
-		int response = getKeyedInteger(parameters, "response", -1);
-		String responseText = getKeyedString(parameters, "response text", null);
+		int retry   = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+		int[] ports = ParameterMap.getKeyedIntegerArray(parameters, "ports", DEFAULT_PORTS);
+		String url  = ParameterMap.getKeyedString(parameters, "url", DEFAULT_URL);
+		String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
+		if (rrdPath == null)
+		{
+			log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
+		}
+		int response = ParameterMap.getKeyedInteger(parameters, "response", -1);
+		String responseText = ParameterMap.getKeyedString(parameters, "response text", null);
 
 		// Set to true if "response" property has a valid return code specified.
 		//  By default response will be deemed valid if the return code 
-		//  falls in the range:   100 < rc < 500
+		//  falls in the range:   99 < rc < 500
 		//  This is based on the following information from RFC 1945 (HTTP 1.0)
 		// 		HTTP 1.0 GET return codes:
 		//		 	1xx: Informational - Not used, future use
@@ -188,6 +148,7 @@ final class HttpMonitor
 		//
 		int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
 		int currentPort = -1;
+		long responseTime = -1;
 		for (int portIndex=0; portIndex < ports.length && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; portIndex++)
 		{
 			currentPort = ports[portIndex];
@@ -214,6 +175,7 @@ final class HttpMonitor
 					//
 					// Issue HTTP 'GET' command and check the return code in the response
 					//
+					long sentTime = System.currentTimeMillis();
 					portal.getOutputStream().write(cmd.getBytes());
 
 					//
@@ -222,11 +184,15 @@ final class HttpMonitor
 					//
 					BufferedReader lineRdr = new BufferedReader(new InputStreamReader(portal.getInputStream()));
 					String line = lineRdr.readLine();
+					responseTime = System.currentTimeMillis() - sentTime;
 					if (line == null)
 						continue;
 
 					if(log.isDebugEnabled())
-						log.debug("HttpPlugin.poll: Response = " + line);
+					{
+						log.debug("poll: response= " + line);
+						log.debug("poll: responseTime= " + responseTime + "ms");
+					}
 
 					if(line.startsWith("HTTP/"))
 					{
@@ -332,7 +298,6 @@ final class HttpMonitor
 				}
 
 			} // end for (attempts)
-
 		} // end for (ports)
 		
 		// Add the 'qualifier' parm to the parameter map.  This parm will
@@ -357,9 +322,13 @@ final class HttpMonitor
 			// Add to parameter map
 			parameters.put("qualifier", testedPorts);
 		}
-		else
+		else if (serviceStatus == ServiceMonitor.SERVICE_AVAILABLE)
 		{
 			parameters.put("qualifier", Integer.toString(currentPort));
+			
+			// Store response time in RRD
+			if (responseTime >= 0 && rrdPath != null)
+				this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, DS_NAME, responseTime);
 		}	
 		
 		//

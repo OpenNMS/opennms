@@ -42,6 +42,8 @@ import org.opennms.core.utils.ThreadCategory;
 
 import com.novell.ldap.*;
 
+import org.opennms.netmgt.utils.ParameterMap;
+
 /**
  * <P>This class is designed to be used by the service poller
  * framework to test the availability of a generic LDAP service on 
@@ -122,45 +124,14 @@ final class LdapMonitor
 		Category log = ThreadCategory.getInstance(getClass());
 		int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
 		
-		String version = (String)parameters.get("version");
-		int ldapVersion = LDAPConnection.LDAP_V3;
-		try {
-			ldapVersion = Integer.parseInt(version);
-		} catch (NumberFormatException e) {
-			//already set to default
-		}
-		
-		String port = (String)parameters.get("port");
-		int ldapPort = LDAPConnection.DEFAULT_PORT;
-		try {
-			ldapPort = Integer.parseInt("port");
-		} catch (NumberFormatException e) {
-			//already set to default
-		}
-		
-		String retryNum = (String)parameters.get("retry");
-		int retries = DEFAULT_RETRY;
-		try {
-			retries = Integer.parseInt(retryNum);
-		} catch (NumberFormatException e) {
-			//already set to default
-		}
-		
-		String timeoutNum = (String)parameters.get("timeout");
-		int timeout = DEFAULT_TIMEOUT;
-		try {
-			timeout = Integer.parseInt(timeoutNum);
-		} catch (NumberFormatException e) {
-			//already set to default
-		}
-		
-		String searchBase = (String)parameters.get("searchbase");
-		if (searchBase==null)
-			searchBase = DEFAULT_BASE;
-		
-		String searchFilter = (String)parameters.get("searchfilter");
-		if (searchFilter==null)
-			searchFilter = DEFAULT_FILTER;
+		// get the parameters
+		//
+		int ldapVersion = ParameterMap.getKeyedInteger(parameters, "version", LDAPConnection.LDAP_V3);
+		int ldapPort = ParameterMap.getKeyedInteger(parameters, "port", LDAPConnection.DEFAULT_PORT);
+		int retries = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+		String searchBase = ParameterMap.getKeyedString(parameters, "searchbase", DEFAULT_BASE);
+		String searchFilter = ParameterMap.getKeyedString(parameters, "searchfilter", DEFAULT_FILTER);
 		
 		String password = (String)parameters.get("password");
 		String ldapDn   = (String)parameters.get("dn");

@@ -43,7 +43,7 @@ import jcifs.netbios.NbtAddress;
 /**
  * <P>This class is designed to be used by the capabilities
  * daemon to test for SMB support on remote interfaces.
- * The class implements the CapsdPlugin interface that allows 
+ * The class implements the Plugin interface that allows 
  * it to be used along with other plugins by the daemon.</P>
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike</A>

@@ -26,10 +26,12 @@
 package org.opennms.netmgt.poller;
 
 import java.lang.*;
+import java.io.*;
 import java.net.InetAddress;
 import java.util.Map;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
@@ -47,68 +49,6 @@ import org.opennms.core.utils.ThreadCategory;
 abstract class IPv4Monitor
 	implements ServiceMonitor
 {
-	/**
-	 * This method is used to lookup a specific key in 
-	 * the map. If the mapped value is a string is is converted
-	 * to an interger and the original string value is replaced
-	 * in the map. The converted value is returned to the caller.
-	 * If the value cannot be converted then the default value is
-	 * used.
-	 *
-	 * @return The int value associated with the key.
-	 */
-	final static int getKeyedInteger(Map map, String key, int defValue)
-	{
-		int value = defValue;
-		Object oValue = map.get(key);
-
-		if(oValue != null && oValue instanceof String)
-		{
-			try
-			{
-				value = Integer.parseInt((String)oValue);
-			}
-			catch(NumberFormatException ne)
-			{
-				value = defValue;
-				ThreadCategory.getInstance(IPv4Monitor.class).info("getIntByKey: Failed to convert value " + oValue + " for key " + key);
-			}
-			map.put(key, new Integer(value));
-		} 
-		else if(oValue != null)
-		{
-			value = ((Integer)oValue).intValue();
-		}
-		return value;
-	}
-
-	/**
-	 * This method is used to lookup a specific key in 
-	 * the map. If the mapped value is a string is is converted
-	 * to an interger and the original string value is replaced
-	 * in the map. The converted value is returned to the caller.
-	 * If the value cannot be converted then the default value is
-	 * used.
-	 *
-	 * @return The int value associated with the key.
-	 */
-	final static String getKeyedString(Map map, String key, String defValue)
-	{
-		String value = defValue;
-		Object oValue = map.get(key);
-
-		if(oValue != null && oValue instanceof String)
-		{
-			value = (String)oValue;
-		} 
-		else if(oValue != null)
-		{
-			value = oValue.toString();
-			map.put(key, value);
-		}
-		return value;
-	}
-
 	/**
 	 * <P>This method is called after the framework creates an
 	 * instance of the plug-in. The framework passes the object a proxy
@@ -175,7 +115,7 @@ abstract class IPv4Monitor
 	{
 		if(!(iface.getAddress() instanceof InetAddress))
 			throw new NetworkInterfaceNotSupportedException("Address type not supported");
-	 	return;
+		return;
 	}
 	
 	/**

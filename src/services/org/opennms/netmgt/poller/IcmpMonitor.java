@@ -25,22 +25,27 @@
 package org.opennms.netmgt.poller;
 
 import java.lang.*;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.io.IOException;
+import java.io.File;
 
 import java.util.TreeMap;
 import java.util.Map;
 import java.util.Collections;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.ping.Reply;
 import org.opennms.netmgt.ping.Packet;
 import org.opennms.netmgt.ping.ReplyReceiver;
 import org.opennms.core.queue.FifoQueueImpl;
+import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.protocols.icmp.IcmpSocket;
+import org.opennms.netmgt.rrd.Interface;
 
 /**
  * <P>This class is designed to be used by the service poller
@@ -53,7 +58,7 @@ import org.opennms.protocols.icmp.IcmpSocket;
  *
  */
 final class IcmpMonitor
-	extends IPv4Monitor
+	extends IPv4LatencyMonitor
 {
 	/** 
 	 * Default retries.
@@ -118,6 +123,11 @@ final class IcmpMonitor
 		private boolean		m_signaled;
 
 		/**
+		 * The ping packet (contains sent/received time stamps)
+		 */
+		private Packet 		m_packet;
+		
+		/**
 		 * Constructs a new ping object
 		 */
 		Ping(InetAddress addr) 
@@ -150,6 +160,16 @@ final class IcmpMonitor
 		boolean isTarget(InetAddress addr)
 		{
 			return m_addr.equals(addr);
+		}
+		
+		void setPacket(Packet packet)
+		{
+			m_packet = packet;
+		}
+		
+		Packet getPacket()
+		{
+			return m_packet;
 		}
 	}
 
@@ -200,7 +220,14 @@ final class IcmpMonitor
 							Long key = new Long(pong.getPacket().getTID());
 							Ping ping = (Ping)m_waiting.get(key);
 							if(ping != null && ping.isTarget(pong.getAddress()))
+							{
+								// Save reference to packet so that the
+								// poll() method of the IcmpMonitor will
+								// have access to sent/received time stamps
+								// to calculate round trip time
+								ping.setPacket(pong.getPacket());
 								ping.signal();
+							}
 						}
 					}
 				}, "IcmpMonitor-Receiver" );
@@ -224,7 +251,7 @@ final class IcmpMonitor
 		byte[] data = iPkt.toBytes();
 		return new DatagramPacket(data, data.length, addr, 0);
 	}
-
+	
 	/**
 	 * <P>Poll the specified address for ICMP service availability.</P>
 	 *
@@ -253,10 +280,14 @@ final class IcmpMonitor
 
 		// get parameters
 		//
-		int retry = getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-		int timeout = getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
-
-
+		int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+		String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
+		if (rrdPath == null)
+		{
+			log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
+		}
+		
 		// Find an appropritate thread id
 		//
 		Long tidKey = null;
@@ -312,9 +343,22 @@ final class IcmpMonitor
 		m_waiting.remove(tidKey);
 
 		if(reply.isSignaled())
+		{
 			serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
-
-
+			
+			// Determine round-trip-time for the ping packet
+			Packet replyPkt = reply.getPacket();
+			if (replyPkt != null)
+			{
+				long rtt = replyPkt.getReceivedTime() - replyPkt.getSentTime();
+				log.debug("Ping round trip time for " + ipv4Addr + ": " + rtt + "ms");
+				
+				// Store round-trip-time in RRD database
+				if (rtt >= 0 && rrdPath != null)
+					this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, DS_NAME, rtt);
+			}
+		}
+		
 		return serviceStatus;
 	}
 }

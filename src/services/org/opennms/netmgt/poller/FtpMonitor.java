@@ -44,6 +44,8 @@ import org.opennms.core.utils.ThreadCategory;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 
+import org.opennms.netmgt.utils.ParameterMap;
+
 /**
  * <P>This class is designed to be used by the service poller
  * framework to test the availability of the FTP service on 
@@ -136,11 +138,11 @@ final class FtpMonitor
 
 		// get the parameters
 		//
-		int retry   = getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-		int port    = getKeyedInteger(parameters, "port", DEFAULT_PORT);
-		int timeout = getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
-		String userid   = getKeyedString(parameters, "userid", null);
-		String password = getKeyedString(parameters, "password", null);
+		int retry   = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+		int port    = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
+		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+		String userid   = ParameterMap.getKeyedString(parameters, "userid", null);
+		String password = ParameterMap.getKeyedString(parameters, "password", null);
 
 		// Extract the address
 		//

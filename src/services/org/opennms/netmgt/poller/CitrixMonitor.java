@@ -41,6 +41,8 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
+import org.opennms.netmgt.utils.ParameterMap;
+
 /**
  * <P>This class is designed to be used by the service poller
  * framework to test the availability of the Citrix service on 
@@ -103,9 +105,9 @@ final class CitrixMonitor
 
 		// get the parameters
 		//
-		int retry   = getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-		int port    = getKeyedInteger(parameters, "port", DEFAULT_PORT);
-		int timeout = getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+		int retry   = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+		int port    = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
+		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
 		//don't let the user set the timeout to 0, an infinite loop will occur if the server is down
 		if (timeout==0)
 			timeout=10;

@@ -39,6 +39,7 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * <P>This class is designed to be used by the service poller
@@ -128,9 +129,9 @@ final class ImapMonitor
 
 		// Retries
 		//
-		int retry   = getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-		int timeout = getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
-		int port    = getKeyedInteger(parameters, "port", DEFAULT_PORT);
+		int retry   = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+		int port    = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
 
 		// Get interface address from NetworkInterface
 		//

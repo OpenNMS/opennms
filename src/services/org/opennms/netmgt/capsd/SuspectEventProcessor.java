@@ -421,7 +421,7 @@ final class SuspectEventProcessor
 	 * @param ifaddr	Suspect interface
 	 * @param collector	Interface collector containing SMB and SNMP info 
 	 * 			collected from the remote device.
-	 **
+	 *
 	 * @throws SQLException if an error occurs adding interfaces to the ipInterface 
 	 *                      table.
 	 */
@@ -488,63 +488,13 @@ final class SuspectEventProcessor
 				}
 			}
 
-			// add the supported protocols
-			//
-			// NOTE!!!!!: (reference internal bug# 201)
-			// If the ip is 'managed', the service can still be 'not polled'
-			// based on the poller configuration - at this point the ip is already
-			// in the database, so package filter evaluation should go through OK
-			//
-			Iterator iproto = collector.getSupportedProtocols().iterator();
-			while(iproto.hasNext())
-			{
-				IfCollector.SupportedProtocol p = (IfCollector.SupportedProtocol)iproto.next();
-				Number sid = (Number)cFactory.getServiceIdentifier(p.getProtocolName());
-
-				DbIfServiceEntry ifSvcEntry = DbIfServiceEntry.create(node.getNodeId(), ifaddr, sid.intValue());
-
-				// now fill in the entry
-				//
-				if(addrUnmanaged)
-					ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_UNMANAGED);
-				else 
-				{
-					boolean svcToBePolled = false;
-					if (ipPkg != null)
-					{
-						svcToBePolled = pollerCfgFactory.isPolled(p.getProtocolName(), ipPkg);
-						if (!svcToBePolled)
-							svcToBePolled = pollerCfgFactory.isPolled(ifaddr.getHostAddress(), p.getProtocolName());
-					}
-
-					if (svcToBePolled)
-						ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_ACTIVE);
-					else
-						ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_NOT_POLLED);
-				}
-
-				// Set qualifier if available.  Currently the qualifier field
-				// is used to store the port at which the protocol was found.
-				//
-				if (p.getQualifiers() != null && p.getQualifiers().get("port") != null)
-				{
-					try
-					{
-						Integer port = (Integer)p.getQualifiers().get("port");
-						log.debug("addInterfaces: got a port qualifier: " + port);
-						ifSvcEntry.setQualifier(port.toString());
-					}
-					catch (ClassCastException ccE)
-					{
-						// Do nothing
-					}
-				}
-					
-				ifSvcEntry.setSource(DbIfServiceEntry.SOURCE_PLUGIN);
-				ifSvcEntry.setNotify(DbIfServiceEntry.NOTIFY_ON);
-
-				ifSvcEntry.store();
-			}
+			// Add supported protocols
+			addSupportedProtocols(node, 
+						ifaddr, 
+						collector.getSupportedProtocols(), 
+						addrUnmanaged, 
+						-1, 
+						ipPkg);
 		}
 		else
 		{
@@ -619,67 +569,13 @@ final class SuspectEventProcessor
 
 			ipIfEntry.store(dbc);
 
-			// add the supported protocols
-			//
-			// NOTE!!!!!: (reference internal bug# 201)
-			// If the ip is 'managed', the service can still be 'not polled'
-			// based on the poller configuration - at this point the ip is already
-			// in the database, so package filter evaluation should go through OK
-			//
-			Iterator iproto = collector.getSupportedProtocols().iterator();
-			while(iproto.hasNext())
-			{
-				IfCollector.SupportedProtocol p = (IfCollector.SupportedProtocol)iproto.next();
-				Number sid = (Number)cFactory.getServiceIdentifier(p.getProtocolName());
-
-				DbIfServiceEntry ifSvcEntry = DbIfServiceEntry.create(node.getNodeId(), ifaddr, sid.intValue());
-
-				// now fill in the entry
-				//
-				if(addrUnmanaged)
-					ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_UNMANAGED);
-				else 
-				{
-					boolean svcToBePolled = false;
-					if (ipPkg != null)
-					{
-						svcToBePolled = pollerCfgFactory.isPolled(p.getProtocolName(), ipPkg);
-						if (!svcToBePolled)
-							svcToBePolled = pollerCfgFactory.isPolled(ifaddr.getHostAddress(), p.getProtocolName());
-					}
-
-					if (svcToBePolled)
-						ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_ACTIVE);
-					else
-						ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_NOT_POLLED);
-				}
-
-
-				// Set qualifier if available.  Currently the qualifier field
-				// is used to store the port at which the protocol was found.
-				//
-				if (p.getQualifiers() != null && p.getQualifiers().get("port") != null)
-				{
-					try
-					{
-						Integer port = (Integer)p.getQualifiers().get("port");
-						log.debug("addInterfaces: got a port qualifier: " + port);
-						ifSvcEntry.setQualifier(port.toString());
-					}
-					catch (ClassCastException ccE)
-					{
-						// Do nothing
-					}
-					
-				}
-				
-				ifSvcEntry.setSource(DbIfServiceEntry.SOURCE_PLUGIN);
-				ifSvcEntry.setNotify(DbIfServiceEntry.NOTIFY_ON);
-				if(ifIndex != -1)
-					ifSvcEntry.setIfIndex(ifIndex);
-
-				ifSvcEntry.store();
-			}
+			// Add supported protocols
+			addSupportedProtocols(node, 
+						ifaddr, 
+						collector.getSupportedProtocols(), 
+						addrUnmanaged, 
+						ifIndex, 
+						ipPkg);
 
 			// If the useExistingNode flag is true, then we're done.  The interface
 			// is most likely an alias and the subinterfaces collected via SNMP should
@@ -729,16 +625,16 @@ final class SuspectEventProcessor
 					if(status != -1)
 						xipIfEntry.setStatus(status);
 
-				if (supportsSnmp((List)extraTargets.get(xifaddr)))					
-				{
-					// Just set primary state to secondary for now.  The primary SNMP interface
-					// won't be selected until after all interfaces have been inserted
-					// into the database. This is because the interface must already be in
-					// the database for filter rule evaluation to succeed.
+					if (supportsSnmp((List)extraTargets.get(xifaddr)))					
+					{
+						// Just set primary state to secondary for now.  The primary SNMP interface
+						// won't be selected until after all interfaces have been inserted
+						// into the database. This is because the interface must already be in
+						// the database for filter rule evaluation to succeed.
 						xipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_SECONDARY);
-				}
-				else
-				{
+					}
+					else
+					{
 						xipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
 					}
 				}
@@ -768,66 +664,12 @@ final class SuspectEventProcessor
 				}
 
 				// add the supported protocols
-				//
-				// NOTE!!!!!: (reference internal bug# 201)
-				// If the ip is 'managed', the service can still be 'not polled'
-				// based on the poller configuration - at this point the ip is already
-				// in the database, so package filter evaluation should go through OK
-				//
-				iproto = ((List)extraTargets.get(xifaddr)).iterator();
-				while(iproto.hasNext())
-				{
-					IfCollector.SupportedProtocol p = (IfCollector.SupportedProtocol)iproto.next();
-					Number sid = (Number)cFactory.getServiceIdentifier(p.getProtocolName());
-	
-					DbIfServiceEntry ifSvcEntry = DbIfServiceEntry.create(node.getNodeId(), xifaddr, sid.intValue());
-	
-					// now fill in the entry
-					//
-					if(xaddrUnmanaged)
-						ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_UNMANAGED);
-					else 
-					{
-						boolean svcToBePolled = false;
-						if (xipPkg != null)
-						{
-							svcToBePolled = pollerCfgFactory.isPolled(p.getProtocolName(), ipPkg);
-							if (!svcToBePolled)
-								svcToBePolled = pollerCfgFactory.isPolled(xifaddr.getHostAddress(), p.getProtocolName());
-						}
-
-						if (svcToBePolled)
-							ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_ACTIVE);
-						else
-							ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_NOT_POLLED);
-					}
-
-
-					// Set qualifier if available.  Currently the qualifier field
-					// is used to store the port at which the protocol was found.
-					//
-					if (p.getQualifiers() != null && p.getQualifiers().get("port") != null)
-					{
-						try
-						{
-							Integer port = (Integer)p.getQualifiers().get("port");
-							log.debug("addInterfaces: got a port qualifier: " + port);
-							ifSvcEntry.setQualifier(port.toString());
-						}
-						catch (ClassCastException ccE)
-						{
-							// Do nothing
-						}
-					}
-							
-					ifSvcEntry.setSource(DbIfServiceEntry.SOURCE_PLUGIN);
-					ifSvcEntry.setNotify(DbIfServiceEntry.NOTIFY_ON);	
-					
-					if(xifIndex != -1)
-						ifSvcEntry.setIfIndex(xifIndex);
-	
-					ifSvcEntry.store();
-				} // end while (iproto.hasNext())
+				addSupportedProtocols(node, 
+							xifaddr, 
+							(List)extraTargets.get(xifaddr), 
+							xaddrUnmanaged, 
+							xifIndex, 
+							xipPkg);
 			} // end while()
 
 			// Now add any non-IP interfaces
@@ -979,6 +821,88 @@ final class SuspectEventProcessor
 	}
 	
 	/**
+	 * Responsible for iterating inserting an entry into the ifServices
+	 * table for each protocol supported by the interface.
+	 *
+	 * @param node		Node entry
+	 * @param ifaddr 	Interface address
+	 * @param protocols	List of supported protocols
+	 * @param addrUnmanaged Boolean flag indicating if interface is managed or
+	 *                      unmanaged according to the Capsd configuration.
+	 * @param ifIndex 	Interface index or -1 if index is not known
+	 * @param ipPkg		Poller package to which the interface belongs
+	 *
+	 * @throws SQLException if an error occurs adding interfaces to the ipInterface 
+	 *                      table.
+	 */
+	private void addSupportedProtocols(DbNodeEntry node, 
+					InetAddress ifaddr, 
+					List protocols, 
+					boolean addrUnmanaged,
+					int ifIndex, 
+					org.opennms.netmgt.config.poller.Package ipPkg)
+		throws SQLException
+	{
+		// add the supported protocols
+		//
+		// NOTE!!!!!: (reference internal bug# 201)
+		// If the ip is 'managed', the service can still be 'not polled'
+		// based on the poller configuration - at this point the ip is already
+		// in the database, so package filter evaluation should go through OK
+		//
+		Iterator iproto = protocols.iterator();
+		while(iproto.hasNext())
+		{
+			IfCollector.SupportedProtocol p = (IfCollector.SupportedProtocol)iproto.next();
+			Number sid = (Number)CapsdConfigFactory.getInstance().getServiceIdentifier(p.getProtocolName());
+
+			DbIfServiceEntry ifSvcEntry = DbIfServiceEntry.create(node.getNodeId(), ifaddr, sid.intValue());
+
+			// now fill in the entry
+			//
+			if(addrUnmanaged)
+				ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_UNMANAGED);
+			else 
+			{
+				boolean svcToBePolled = false;
+				if (ipPkg != null)
+				{
+					svcToBePolled = PollerConfigFactory.getInstance().isPolled(p.getProtocolName(), ipPkg);
+					if (!svcToBePolled)
+						svcToBePolled = PollerConfigFactory.getInstance().isPolled(ifaddr.getHostAddress(), p.getProtocolName());
+				}
+
+				if (svcToBePolled)
+					ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_ACTIVE);
+				else
+					ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_NOT_POLLED);
+			}
+
+			// Set qualifier if available.  Currently the qualifier field
+			// is used to store the port at which the protocol was found.
+			//
+			if (p.getQualifiers() != null && p.getQualifiers().get("port") != null)
+			{
+				try
+				{
+					Integer port = (Integer)p.getQualifiers().get("port");
+					ifSvcEntry.setQualifier(port.toString());
+				}
+				catch (ClassCastException ccE)
+				{
+					// Do nothing
+				}
+			}
+				
+			ifSvcEntry.setSource(DbIfServiceEntry.SOURCE_PLUGIN);
+			ifSvcEntry.setNotify(DbIfServiceEntry.NOTIFY_ON);
+			if(ifIndex != -1)
+				ifSvcEntry.setIfIndex(ifIndex);
+			ifSvcEntry.store();
+		}
+	}
+	
+	/**
 	 * Utility method which checks the provided list of supported
 	 * protocols to determine if the SNMP service is present.
 	 * 
@@ -1039,8 +963,6 @@ final class SuspectEventProcessor
 	static InetAddress compareAndSelectPrimary(InetAddress currentIf, InetAddress oldPrimary, String method)
 	{
 		InetAddress newPrimary = null;
-		
-		CapsdConfigFactory cFactory = CapsdConfigFactory.getInstance();
 		if (oldPrimary == null)
 		{
 			if (!CapsdConfigFactory.getInstance().isAddressUnmanaged(currentIf))

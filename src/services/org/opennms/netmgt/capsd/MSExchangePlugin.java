@@ -42,11 +42,12 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * <P>This class is designed to be used by the capabilities
  * daemon to test for the existance of MS Exchange server on 
- * remote interfaces. The class implements the CapsdPlugin
+ * remote interfaces. The class implements the Plugin
  * interface that allows it to be used along with other
  * plugins by the daemon.</P>
  *
@@ -156,8 +157,7 @@ public final class MSExchangePlugin
 			{
 				// Connection refused!!  No need to perform retries.
 				//
-				e.fillInStackTrace();
-				log.debug("isServer: Connection to host " + host.getHostAddress() + " on port " + port + " failed", e);
+				log.debug("isServer: Connection refused to " + host.getHostAddress() + ":" + port);
 				break;
 			}
 			catch(NoRouteToHostException e)
@@ -294,11 +294,11 @@ public final class MSExchangePlugin
 
 		if(qualifiers != null)
 		{
-			retries = getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
-			timeout = getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
-			pop3port= getKeyedInteger(qualifiers, "pop3 port", DEFAULT_POP3_PORT);
-			imapport= getKeyedInteger(qualifiers, "imap port", DEFAULT_IMAP_PORT);
-			mapiport= getKeyedInteger(qualifiers, "mapi port", DEFAULT_MAPI_PORT);
+			retries = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
+			timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
+			pop3port= ParameterMap.getKeyedInteger(qualifiers, "pop3 port", DEFAULT_POP3_PORT);
+			imapport= ParameterMap.getKeyedInteger(qualifiers, "imap port", DEFAULT_IMAP_PORT);
+			mapiport= ParameterMap.getKeyedInteger(qualifiers, "mapi port", DEFAULT_MAPI_PORT);
 		}
 
 		boolean[] result = isServer(address, new int[] { pop3port, imapport, mapiport }, retries, timeout);

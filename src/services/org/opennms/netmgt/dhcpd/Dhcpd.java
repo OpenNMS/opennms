@@ -460,9 +460,12 @@ public final class Dhcpd
 	 * @param timeout	The time to wait between retries.
 	 * @param retries	The maximum number of attempts.
 	 *
+	 * @return response time in milliseconds if remote box is
+	 * 	a DHCP server or -1 if it is NOT.
+	 *
 	 * @throws java.io.IOException Thrown if an error occurs.
 	 */
-	public static boolean isServer(InetAddress address, long timeout, int retries)
+	public static long isServer(InetAddress address, long timeout, int retries)
 		throws IOException
 	{
 		return Poller.isServer(address, timeout, retries);
@@ -474,9 +477,12 @@ public final class Dhcpd
 	 *
 	 * @param address	The address to query.
 	 *
+	 * @return response time in milliseconds if remote box is
+	 * 	a DHCP server or -1 if it is NOT.
+	 *
 	 * @throws java.io.IOException Thrown if an error occurs.
 	 */
-	public static boolean isServer(InetAddress address)
+	public static long isServer(InetAddress address)
 		throws IOException
 	{
 		return Poller.isServer(address, Poller.DEFAULT_TIMEOUT, Poller.DEFAULT_RETRIES);

@@ -48,13 +48,13 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
+import org.opennms.netmgt.utils.ParameterMap;
 import com.novell.ldap.*;
 
 /**
  * <P>This class is designed to be used by the capabilities
  * daemon to test for the existance of an LDAP server on 
- * remote interfaces. The class implements the CapsdPlugin
+ * remote interfaces. The class implements the Plugin
  * interface that allows it to be used along with other
  * plugins by the daemon.</P>
  *
@@ -86,28 +86,28 @@ public final class LdapPlugin
 	 */
 	private final static int	DEFAULT_TIMEOUT	= 5000; // in milliseconds
 	
-        /**
-         * A class to add a timeout to the socket that the LDAP code uses to access an
-         * LDAP server
-         */
-        private class TimeoutLDAPSocket implements LDAPSocketFactory
-        {
-                private int m_timeout;
-                
-                public TimeoutLDAPSocket(int timeout)
-                {
-                        m_timeout = timeout;
-                }
-                
-                public Socket makeSocket(String host, int port)
-                        throws IOException, UnknownHostException
-                {
-                        Socket socket = new Socket(host, port);
-                        socket.setSoTimeout(m_timeout);
-                        return socket;
-                }
-        }
-        
+	/**
+	 * A class to add a timeout to the socket that the LDAP code uses to access an
+	 * LDAP server
+	 */
+	private class TimeoutLDAPSocket implements LDAPSocketFactory
+	{
+		private int m_timeout;
+		
+		public TimeoutLDAPSocket(int timeout)
+		{
+			m_timeout = timeout;
+		}
+		
+		public Socket makeSocket(String host, int port)
+			throws IOException, UnknownHostException
+		{
+			Socket socket = new Socket(host, port);
+			socket.setSoTimeout(m_timeout);
+			return socket;
+		}
+	}
+	
 	/**
 	 * <P>Test to see if the passed host-port pair is the 
 	 * endpoint for an LDAP server. If there is an LDAP server
@@ -127,39 +127,38 @@ public final class LdapPlugin
 
 		boolean isAServer = false;
 		
-                //first just try a connection to the box via socket. Just in case there is
-                //a no way to route to the address, don't iterate through the retries, as a
-                //NoRouteToHost exception will only be thrown after about 5 minutes, thus tying
-                //up the thread
-                Socket portal = null;
-                try
-                {
-                        portal = new Socket(host.getHostAddress(), port);
+		//first just try a connection to the box via socket. Just in case there is
+		//a no way to route to the address, don't iterate through the retries, as a
+		//NoRouteToHost exception will only be thrown after about 5 minutes, thus tying
+		//up the thread
+		Socket portal = null;
+		try
+		{
+			portal = new Socket(host.getHostAddress(), port);
 			portal.setSoTimeout(timeout);
-                        portal.close();
-                        
-                        //now go ahead and attempt to determin if LDAP is on this host
-                        for (int attempts=0; attempts <= retries && !isAServer; attempts++)
-                        {
-                                log.debug("LDAPPlugin.isServer: attempt " + attempts + " to connect host " + host.getHostAddress());
-                                
-                                try {
-                                        LDAPConnection lc = new LDAPConnection(new TimeoutLDAPSocket(timeout));
-                                        lc.connect(host.getHostAddress(),port);
-                                        isAServer = true;
-                                } catch (LDAPException e)
-                                {
-                                        isAServer = false;
-                                }
-                        }
-                }
-                catch(ConnectException e)
+			portal.close();
+			
+			//now go ahead and attempt to determin if LDAP is on this host
+			for (int attempts=0; attempts <= retries && !isAServer; attempts++)
+			{
+				log.debug("LDAPPlugin.isServer: attempt " + attempts + " to connect host " + host.getHostAddress());
+				
+				try {
+					LDAPConnection lc = new LDAPConnection(new TimeoutLDAPSocket(timeout));
+					lc.connect(host.getHostAddress(),port);
+					isAServer = true;
+				} catch (LDAPException e)
+				{
+					isAServer = false;
+				}
+			}
+		}
+		catch(ConnectException e)
 		{
 			// Connection refused!!  No need to perform retries.
 			//
-			e.fillInStackTrace();
-			log.debug(getClass().getName()+": connection refused to host " + host.getHostAddress() , e);
-                }
+			log.debug(getClass().getName()+": connection refused to " + host.getHostAddress() + ":" + port);
+		}
 		catch(NoRouteToHostException e)
 		{
 			// No route to host!! No need to perform retries.
@@ -172,7 +171,7 @@ public final class LdapPlugin
 			// ignore totally, we expect to get this
 			//
 		}
-                catch(Throwable t)
+		catch(Throwable t)
 		{
 			log.warn(getClass().getName()+": An undeclared throwable exception caught contacting host " + host.getHostAddress(), t);
 		}
@@ -187,53 +186,6 @@ public final class LdapPlugin
 		}
 
 		return isAServer;
-	}
-
-	/**
-	 * This method is used to lookup a specific key in 
-	 * the map. If the mapped value is a string is is converted
-	 * to an interger and the original string value is replaced
-	 * in the map. The converted value is returned to the caller.
-	 * If the value cannot be converted then the default value is
-	 * used.
-	 *
-	 * @return The int array value associated with the key.
-	 */
-	final static int[] getKeyedIntegerArray(Map map, String key, int[] defValue)
-	{
-		int[] result = defValue;
-		Object oValue = map.get(key);
-
-		if(oValue != null && oValue instanceof String)
-		{
-			List list = new ArrayList(8);
-			StringTokenizer ntoks = new StringTokenizer(oValue.toString(), ":,; ");
-			while(ntoks.hasMoreTokens())
-			{
-				String p = ntoks.nextToken();
-				try
-				{
-					int v = Integer.parseInt(p);
-					list.add(new Integer(v));
-				}
-				catch(NumberFormatException ne)
-				{
-					ThreadCategory.getInstance(HttpPlugin.class).info("getKeyedIntegerArray: Failed to convert token " + p + " for key " + key);
-				}
-			}
-			result = new int[list.size()];
-			Iterator i = list.iterator();
-			int ndx = 0;
-			while(i.hasNext())
-				result[ndx++] = ((Integer)i.next()).intValue();
-			
-			map.put(key, result);
-		} 
-		else if(oValue != null)
-		{
-			result = ((int[])oValue);
-		}
-		return result;
 	}
 
 	/**
@@ -284,9 +236,9 @@ public final class LdapPlugin
 	 */
 	public boolean isProtocolSupported(InetAddress address, Map qualifiers)
 	{
-		int retries = getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
-		int timeout = getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
-		int[] ports = getKeyedIntegerArray(qualifiers, "ports", DEFAULT_PORTS);
+		int retries = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
+		int timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
+		int[] ports = ParameterMap.getKeyedIntegerArray(qualifiers, "ports", DEFAULT_PORTS);
 
 		for(int i = 0; i < ports.length; i++)
 		{

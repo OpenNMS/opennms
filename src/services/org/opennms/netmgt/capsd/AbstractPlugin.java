@@ -33,9 +33,9 @@ import org.opennms.core.utils.ThreadCategory;
 
 /**
  * <p>This class provides a basic implementation for most of the interface
- * methods of the <code>ServiceMonitor</code> class. Since most pollers do not
+ * methods of the <code>Plugin</code> class. Since most plugins do not
  * do any special initialization, and only require that the interface is an
- * <code>InetAddress</code> object this class provides eveything by the
+ * <code>InetAddress</code> object this class provides eveything but the
  * <code>poll<code> interface.
  *
  * @author <A HREF="mike@opennms.org">Mike</A>
@@ -46,68 +46,6 @@ import org.opennms.core.utils.ThreadCategory;
 abstract class AbstractPlugin
 	implements Plugin
 {
-	/**
-	 * This method is used to lookup a specific key in
-	 * the map. If the mapped value is a string is is converted
-	 * to an interger and the original string value is replaced
-	 * in the map. The converted value is returned to the caller.
-	 * If the value cannot be converted then the default value is
-	 * used.
-	 *
-	 * @return The int value associated with the key.
-	 */
-	final static int getKeyedInteger(Map map, String key, int defValue)
-	{
-		int value = defValue;
-		Object oValue = map.get(key);
-
-		if(oValue != null && oValue instanceof String)
-		{
-			try
-			{
-				value = Integer.parseInt((String)oValue);
-			}
-			catch(NumberFormatException ne)
-			{
-				value = defValue;
-				ThreadCategory.getInstance(AbstractPlugin.class).info("getKeyedInteger(): Failed to convert value " + oValue + " for key " + key);
-			}
-			map.put(key, new Integer(value));
-		}
-		else if(oValue != null)
-		{
-			value = ((Integer)oValue).intValue();
-		}
-		return value;
-	}
-
-	/**
-	 * This method is used to lookup a specific key in 
-	 * the map. If the mapped value is a string is is converted
-	 * to an interger and the original string value is replaced
-	 * in the map. The converted value is returned to the caller.
-	 * If the value cannot be converted then the default value is
-	 * used.
-	 *
-	 * @return The int value associated with the key.
-	 */
-	final static String getKeyedString(Map map, String key, String defValue)
-	{
-		String value = defValue;
-		Object oValue = map.get(key);
-
-		if(oValue != null && oValue instanceof String)
-		{
-			value = (String)oValue;
-		}
-		else if(oValue != null)
-		{
-			value = oValue.toString();
-			map.put(key, value);
-		}
-		return value;
-	}
-
 	/**
 	 * Returns the name of the protocol that this plugin
 	 * checks on the target system for support.

@@ -35,7 +35,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.dhcpd.Dhcpd;
-
+import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * <P>This class is designed to be used by the capabilities
@@ -45,7 +45,7 @@ import org.opennms.netmgt.dhcpd.Dhcpd;
  * This class relies on the DHCP API provided by JDHCP v1.1.1.
  * (please refer to  http://www.dhcp.org/javadhcp).
  * 
- * The class implements the CapsdPlugin interface that allows 
+ * The class implements the Plugin interface that allows 
  * it to be used along with other plugins by the daemon.</P>
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike</A>
@@ -94,11 +94,15 @@ public final class DhcpPlugin
 		//
 		Category log = ThreadCategory.getInstance(getClass());
 
-		boolean isAServer = false;		
-			
+		boolean isAServer = false;
+		long responseTime = -1;
+	
 		try 
 		{
-			isAServer = Dhcpd.isServer(host, timeout, retries);
+			// Dhcpd.isServer() returns the response time in milliseconds
+			// if the remote host is a DHCP server or -1 if the remote
+			// host is not a DHCP server.
+			responseTime = Dhcpd.isServer(host, timeout, retries);
 		}
 		catch(InterruptedIOException ioE)
 		{
@@ -119,6 +123,11 @@ public final class DhcpPlugin
 			isAServer = false;
 		}
 
+		// If response time is equal to or greater than zero
+		// the remote host IS a DHCP server.
+		if (responseTime >= 0)
+			isAServer = true;
+	
 		// return the success/failure of this
 		// attempt to contact a DHCP server.
 		//
@@ -174,8 +183,8 @@ public final class DhcpPlugin
 
 		if(qualifiers != null)
 		{
-			retries = getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
-			timeout = getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
+			retries = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
+			timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
 		}
 
 		boolean isAServer = isServer(host, retries, timeout);

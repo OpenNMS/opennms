@@ -47,11 +47,12 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * <P>This class is designed to be used by the capabilities
  * daemon to test for the existance of an HTTP server on 
- * remote interfaces. The class implements the CapsdPlugin
+ * remote interfaces. The class implements the Plugin
  * interface that allows it to be used along with other
  * plugins by the daemon.
  *
@@ -112,21 +113,21 @@ public class HttpPlugin
 {
 	protected  String	PROTOCOL_NAME	= "HTTP";
 	
-        /**
-         * Boolean indicating whether to check for a return code
-         */
-        protected  boolean CHECK_RETURN_CODE = true;
-        
-        /**
-         * The query to send to the HTTP server
-         */
-        protected String QUERY_STRING = "GET / HTTP/1.0\r\n\r\n";
-        
-        /**
-         * A string to look for in the response from the server
-         */
-        protected String RESPONSE_STRING = "HTTP/";
-        
+	/**
+	 * Boolean indicating whether to check for a return code
+	 */
+	protected  boolean CHECK_RETURN_CODE = true;
+	
+	/**
+	 * The query to send to the HTTP server
+	 */
+	protected String QUERY_STRING = "GET / HTTP/1.0\r\n\r\n";
+	
+	/**
+	 * A string to look for in the response from the server
+	 */
+	protected String RESPONSE_STRING = "HTTP/";
+	
 	/**
 	 * <P>The default ports on which the host is checked to see if 
 	 * it supports HTTP.</P>
@@ -143,7 +144,7 @@ public class HttpPlugin
 	 */
 	private final static int	DEFAULT_TIMEOUT	= 5000; // in milliseconds
 	
-        /**
+	/**
 	 * <P>Test to see if the passed host-port pair is the 
 	 * endpoint for an HTTP server. If there is an HTTP server
 	 * at that destination then a value of true is returned
@@ -175,29 +176,29 @@ public class HttpPlugin
 				portal.setSoTimeout(timeout);	
 
 				BufferedReader lineRdr = new BufferedReader(new InputStreamReader(portal.getInputStream()));
-                                
+				
 				portal.getOutputStream().write(QUERY_STRING.getBytes());
-                                String line = null;
-                                StringBuffer response = new StringBuffer();
-                                while( (line=lineRdr.readLine())!=null)
-                                {
-                                        response.append(line).append(System.getProperty("line.separator"));
-                                }
-                                
-                                if(response.toString() != null && response.toString().indexOf(RESPONSE_STRING)>-1)
+				String line = null;
+				StringBuffer response = new StringBuffer();
+				while( (line=lineRdr.readLine())!=null)
 				{
-                                        if (CHECK_RETURN_CODE)
-                                        {
-                                                StringTokenizer t = new StringTokenizer(response.toString());
-                                                t.nextToken();
-                                                int rVal = Integer.parseInt(t.nextToken());
-                                                if(rVal >= 99 && rVal <= 600)
-                                                        isAServer = true;
-                                        }
-                                        else
-                                        {
-                                                isAServer = true;
-                                        }
+					response.append(line).append(System.getProperty("line.separator"));
+				}
+				
+				if(response.toString() != null && response.toString().indexOf(RESPONSE_STRING)>-1)
+				{
+					if (CHECK_RETURN_CODE)
+					{
+						StringTokenizer t = new StringTokenizer(response.toString());
+						t.nextToken();
+						int rVal = Integer.parseInt(t.nextToken());
+						if(rVal >= 99 && rVal <= 600)
+							isAServer = true;
+					}
+					else
+					{
+						isAServer = true;
+					}
 				}
 			}
 			catch(NumberFormatException e)
@@ -208,8 +209,7 @@ public class HttpPlugin
 			{
 				// Connection refused!!  No need to perform retries.
 				//
-				e.fillInStackTrace();
-				log.debug(getClass().getName()+": connection refused to host " + host.getHostAddress() , e);
+				log.debug(getClass().getName()+": connection refused to " + host.getHostAddress() + ":" + port);
 				break;
 			}
 			catch(NoRouteToHostException e)
@@ -219,7 +219,7 @@ public class HttpPlugin
 
 				log.warn(getClass().getName()+": No route to host " + host.getHostAddress(), e);
 				throw new UndeclaredThrowableException(e);
-                        }
+			}
 			catch(InterruptedIOException e)
 			{
 				// Timed out
@@ -245,53 +245,6 @@ public class HttpPlugin
 		}
 
 		return isAServer;
-	}
-
-	/**
-	 * This method is used to lookup a specific key in 
-	 * the map. If the mapped value is a string is is converted
-	 * to an interger and the original string value is replaced
-	 * in the map. The converted value is returned to the caller.
-	 * If the value cannot be converted then the default value is
-	 * used.
-	 *
-	 * @return The int array value associated with the key.
-	 */
-	final static int[] getKeyedIntegerArray(Map map, String key, int[] defValue)
-	{
-		int[] result = defValue;
-		Object oValue = map.get(key);
-
-		if(oValue != null && oValue instanceof String)
-		{
-			List list = new ArrayList(8);
-			StringTokenizer ntoks = new StringTokenizer(oValue.toString(), ":,; ");
-			while(ntoks.hasMoreTokens())
-			{
-				String p = ntoks.nextToken();
-				try
-				{
-					int v = Integer.parseInt(p);
-					list.add(new Integer(v));
-				}
-				catch(NumberFormatException ne)
-				{
-					ThreadCategory.getInstance(HttpPlugin.class).info("getKeyedIntegerArray: Failed to convert token " + p + " for key " + key);
-				}
-			}
-			result = new int[list.size()];
-			Iterator i = list.iterator();
-			int ndx = 0;
-			while(i.hasNext())
-				result[ndx++] = ((Integer)i.next()).intValue();
-			
-			map.put(key, result);
-		} 
-		else if(oValue != null)
-		{
-			result = ((int[])oValue);
-		}
-		return result;
 	}
 
 	/**
@@ -342,9 +295,9 @@ public class HttpPlugin
 	 */
 	public boolean isProtocolSupported(InetAddress address, Map qualifiers)
 	{
-		int retries = getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
-		int timeout = getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
-		int[] ports = getKeyedIntegerArray(qualifiers, "ports", DEFAULT_PORTS);
+		int retries = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
+		int timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
+		int[] ports = ParameterMap.getKeyedIntegerArray(qualifiers, "ports", DEFAULT_PORTS);
 
 		for(int i = 0; i < ports.length; i++)
 		{

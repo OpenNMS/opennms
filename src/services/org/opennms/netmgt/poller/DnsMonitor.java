@@ -46,6 +46,8 @@ import org.opennms.protocols.dns.DNSAddressRequest;
 import org.opennms.protocols.dns.DNSAddressRR;
 import org.opennms.protocols.dns.DNSInputStream;
 
+import org.opennms.netmgt.utils.ParameterMap;
+
 /**
  * <P>This class is designed to be used by the service poller
  * framework to test the availability of the DNS service on 
@@ -57,7 +59,7 @@ import org.opennms.protocols.dns.DNSInputStream;
  *
  */
 final class DnsMonitor
-	extends IPv4Monitor
+	extends IPv4LatencyMonitor
 {
 	/** 
 	 * Default DNS port.
@@ -75,49 +77,6 @@ final class DnsMonitor
 	 */
 	private static final int DEFAULT_TIMEOUT 	= 5000; 
 
-	/**
-	 * <P>Sends a DNSAddressRequest to the name server.</P>
-	 *
-	 * @param request	The address request to send to the name server.
-	 * @param socket	The datagram socket the request is sent on.
-	 * @param nameServer	The nameserver address for the packet destination.
-	 * @param port		The port number to send the address.
-	 *
-	 * @exception java.io.IOException	Thrown if an error occurs while
-	 *	sending the datagram packet.
-	 */
-	private void sendRequest(DNSAddressRequest 	request, 
-				 DatagramSocket 	socket, 
-				 InetAddress 		nameServer,
-				 int			port) 
-		throws IOException 
-	{
-		byte[] data = request.buildRequest();
-		DatagramPacket packet = new DatagramPacket(data, 
-							   data.length, 
-							   nameServer, 
-							   port);
-		socket.send(packet);
-	}
-
-	/**
-	 * <P>Receives the data packet and retrieves 
-	 * the address from the packet.</P> 
-	 *
-	 * @param request	the DNSAddressRequest whose response is to be got
-	 * @param socket	the socket on which the response  is recieved
-	 *
-	 * @exception java.io.IOException  Thrown if response is not decoded
-	 *	as expected.
-	 */
-	private void getResponse(DNSAddressRequest request, DatagramSocket socket) 
-		throws IOException 
-	{
-		byte[] buffer = new byte[512];
-		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-		socket.receive(packet);
-		request.verifyResponse(packet.getData(), packet.getLength());
-	}
 	/**
 	 * <P>Poll the specified address for DNS service availability.</P>
 	 *
@@ -150,13 +109,18 @@ final class DnsMonitor
 
 		// get the parameters
 		//
-		int retry = getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-		int port  = getKeyedInteger(parameters, "port", DEFAULT_PORT);
-		int timeout = getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+		int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+		int port  = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
+		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+		String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
+		if (rrdPath == null)
+		{
+			log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
+		}
 
 		// Host to lookup?
 		//
-		String lookup = getKeyedString(parameters, "lookup", null);
+		String lookup = ParameterMap.getKeyedString(parameters, "lookup", null);
 		if(lookup == null || lookup.length() == 0)
 		{
 			// Get hostname of local machine for future DNS lookups
@@ -181,6 +145,7 @@ final class DnsMonitor
 
 		int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
 		DatagramSocket socket = null;
+		long responseTime = -1;
 		try 
 		{
 			socket = new DatagramSocket();
@@ -190,8 +155,29 @@ final class DnsMonitor
 			{
 				try 
 				{
-					sendRequest(request, socket, ipv4Addr, port);
-					getResponse(request, socket);
+					// Send DNS request
+					//
+					byte[] data = request.buildRequest();
+					DatagramPacket outgoing = new DatagramPacket(data, 
+										   data.length, 
+										   ipv4Addr, 
+										   port);
+					long sentTime = System.currentTimeMillis();
+					socket.send(outgoing);
+					
+					// Get DNS Response
+					//
+					byte[] buffer = new byte[512];
+					DatagramPacket incoming = new DatagramPacket(buffer, buffer.length);
+					socket.receive(incoming);
+					responseTime = System.currentTimeMillis() - sentTime;
+					
+					// Validate DNS Response
+					// IOException thrown if packet does not decode as expected.
+					request.verifyResponse(incoming.getData(), incoming.getLength());
+					
+					if (log.isDebugEnabled())
+						log.debug("poll: valid DNS request received, responseTime= " + responseTime + "ms");
 					serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
 				} 
 				catch (InterruptedIOException ex) 
@@ -221,6 +207,16 @@ final class DnsMonitor
 				socket.close();
 		}
 	
+		// Store response time if available
+		//
+		if (serviceStatus == ServiceMonitor.SERVICE_AVAILABLE)
+		{
+			// Store response time in RRD
+			if (responseTime >= 0 && rrdPath != null)
+				this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, DS_NAME, responseTime);
+		}
+		
+		// 
 		//
 		// return the status of the service
 		//

@@ -42,6 +42,8 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 
+import org.opennms.netmgt.utils.ParameterMap;
+
 /**
  * <P>This class is designed to be used by the service poller
  * framework to test the availability of IIOP running on a Domino 
@@ -111,13 +113,13 @@ final class DominoIIOPMonitor
 		if (iface.getType() != iface.TYPE_IPV4)
 			throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
 		
-		int retry = getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-		int timeout = getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
-		int IORport = getKeyedInteger(parameters, "ior-port", DEFAULT_IORPORT);
+		int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+		int IORport = ParameterMap.getKeyedInteger(parameters, "ior-port", DEFAULT_IORPORT);
 		
 		// Port
 		//
-		int port = getKeyedInteger(parameters, "port", DEFAULT_PORT);
+		int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
 		
 		// Get the address instance.
 		//

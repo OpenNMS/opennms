@@ -46,11 +46,12 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
+import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * <P>This class is designed to be used by the capabilities
  * daemon to test for the existance of an SMTP server on 
- * remote interfaces. The class implements the CapsdPlugin
+ * remote interfaces. The class implements the Plugin
  * interface that allows it to be used along with other
  * plugins by the daemon.</P>
  *
@@ -258,8 +259,7 @@ public final class SmtpPlugin
 			{
 				// Connection refused!!  No need to perform retries.
 				//
-				cE.fillInStackTrace();
-				log.debug("SmtpPlugin: connection refused by host " + host.getHostAddress(), cE);
+				log.debug("SmtpPlugin: connection refused to " + host.getHostAddress() + ":" + port);
 				isAServer = false;
 				break;
 			}
@@ -354,9 +354,9 @@ public final class SmtpPlugin
 
 		if(qualifiers != null)
 		{
-			retries = getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
-			timeout = getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
-			port    = getKeyedInteger(qualifiers, "port", DEFAULT_PORT);
+			retries = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
+			timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
+			port    = ParameterMap.getKeyedInteger(qualifiers, "port", DEFAULT_PORT);
 		}
 
 		boolean result = isServer(address, port, retries, timeout);
