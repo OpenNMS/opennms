@@ -601,9 +601,9 @@
  &lt;tr&gt;&lt;td&gt;&lt;b&gt;
  hpicfFfLogFaultType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
- badDriver(1) badXcvr(2) badCable(3) tooLongCable(4) overBandwidth(5) bcastStorm(6) partition(7) 
- misconfiguredSQE(8) polarityReversal(9) networkLoop(10) lossOfLink(11) portSecurityViolation(12) 
- backupLinkTransition(13) meshingFault(14) fanFault(15) rpsFault(16) stuck10MbFault(17) lossOfStackMember(18) 
+ badDriver(1) badXcvr(2) badCable(3) tooLongCable(4) overBandwidth(5) bcastStorm(6) partition(7)
+ misconfiguredSQE(8) polarityReversal(9) networkLoop(10) lossOfLink(11) portSecurityViolation(12)
+ backupLinkTransition(13) meshingFault(14) fanFault(15) rpsFault(16) stuck10MbFault(17) lossOfStackMember(18)
  hotSwapReboot(19)
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
  hpicfFfLogAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
@@ -614,7 +614,9 @@
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
  informational(1) medium(2) critical(3)
  &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- hpicfFfFaultInfoURL&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
+ hpicfFfFaultInfoURL&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+ &lt;a HREF="%parm[#4]%"&gt;
+ Device fault message&lt;/a&gt;
  &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;HP Event: ICF Hub Fault Found.&lt;/p&gt;</logmsg>
