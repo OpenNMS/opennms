@@ -73,7 +73,7 @@ typedef struct icmphdr icmphdr_t;
 {				\
 	struct timeval tv;	\
 	gettimeofday(&tv,NULL); \
-	_dst_ = (unsigned long long)tv.tv_sec * 1000UL + (unsigned long long)tv.tv_usec / 1000UL; \
+	_dst_ = (uint64_t)tv.tv_sec * 1000UL + (uint64_t)tv.tv_usec / 1000UL; \
 }
 #endif
 
@@ -86,7 +86,7 @@ typedef struct icmphdr icmphdr_t;
 {				\
 	struct timeval tv;	\
 	gettimeofday(&tv,NULL); \
-	_dst_ = (unsigned long long)tv.tv_sec * 1000000UL + (unsigned long long)tv.tv_usec; \
+	_dst_ = (uint64_t)tv.tv_sec * 1000000UL + (uint64_t)tv.tv_usec; \
 }
 #endif
 
@@ -109,7 +109,7 @@ typedef struct icmphdr icmphdr_t;
  * time field in the buffer
  */
 #ifndef TIME_LENGTH
-# define TIME_LENGTH sizeof(unsigned long long)
+# define TIME_LENGTH sizeof(uint64_t)
 #endif
 
 /**
@@ -660,9 +660,9 @@ Java_org_opennms_protocols_icmp_IcmpSocket_receive (JNIEnv *env, jobject instanc
 	   && memcmp((char *)icmpHdr + OPENNMS_TAG_OFFSET, OPENNMS_TAG, OPENNMS_TAG_LEN) == 0)
 #endif
 	{
-		unsigned long long now;
-		unsigned long long sent;
-		unsigned long long diff;
+		uint64_t now;
+		uint64_t sent;
+		uint64_t diff;
 
 		/**
 		 * get the current time in microseconds and then
@@ -915,7 +915,7 @@ Java_org_opennms_protocols_icmp_IcmpSocket_send (JNIEnv *env, jobject instance, 
 	   && memcmp((char *)outBuffer + OPENNMS_TAG_OFFSET, OPENNMS_TAG, OPENNMS_TAG_LEN) == 0)
 #endif
 	{
-		unsigned long long now = 0;
+		uint64_t now = 0;
 
 		memcpy((char *)outBuffer + RECVTIME_OFFSET, (char *)&now, TIME_LENGTH);
 		memcpy((char *)outBuffer + RTT_OFFSET, (char *)&now, TIME_LENGTH);
