@@ -628,7 +628,7 @@ your distribution.
  </target>
 
  <!-- archive/package targets -->
- <target name="rpm" depends="prep, all, test, rpm.check, rpm.prepare"
+ <target name="rpm" depends="prep, rpm.check, all, test, rpm.prepare"
 	 description="Build an RPM package">
   <exec dir="${build.rpm.dir}" executable="${rpm.build.executable}"
 	failonerror="true">
