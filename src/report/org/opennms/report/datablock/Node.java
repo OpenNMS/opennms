@@ -163,6 +163,7 @@ public class Node extends StandardNamedObject
 	 *
 	 * @param name Name of the service.
 	 * @param interfaces interfaces to be set for this node.
+	 * @param id node id.
 	 */
 	public Node(String name, ArrayList interfaces, int id)
 	{
@@ -185,6 +186,8 @@ public class Node extends StandardNamedObject
 
 	/**
 	 * Indicates whether the node has outages.
+	 * 
+	 * @return True if has outages.
 	 */
 	public boolean hasOutages()
 	{
@@ -193,6 +196,8 @@ public class Node extends StandardNamedObject
 
 	/**
 	 * Returns the total outage on the node.
+	 * 
+	 * @return The down time.
 	 */
 	public long getDownTime()
 	{
@@ -201,6 +206,8 @@ public class Node extends StandardNamedObject
 
 	/**
 	 * Returns the total outage on the node during business hours.
+	 * 
+	 * @return The business hours down time.
 	 */
 	public long getBusDownTime()
 	{
@@ -209,6 +216,8 @@ public class Node extends StandardNamedObject
 
 	/**
 	 * Returns the percentage availability on the node.
+	 * 
+	 * @return The percentage availability
 	 */
 	public double getPercentAvail()
 	{
@@ -217,6 +226,8 @@ public class Node extends StandardNamedObject
 
 	/**
 	 * Returns the percentage availability on the node during business hours.
+	 * 
+	 * @return The percentage availability during business hours.
 	 */
 	public double getPercentBusAvail()
 	{
@@ -225,8 +236,8 @@ public class Node extends StandardNamedObject
 
 	/**
 	 * Returns the number of unique interface/service combinations.
-	/**
-	 * Returns the number of unique interface/service combinations.
+	 * 
+	 * @return The service count
 	 */
 	public int getServiceCount()
 	{
@@ -244,6 +255,11 @@ public class Node extends StandardNamedObject
                 return count;
 	}
 
+        /**
+         * Returns the number of interfaces.
+	 * 
+	 * @return The interface count
+         */
 	public int getInterfaceCount()
 	{
 		if(m_interfaces != null)
@@ -252,7 +268,9 @@ public class Node extends StandardNamedObject
 	}
 
         /**
-         * Returns the total window for this node durinf business hours.
+         * Returns the total window for this node during business hours.
+	 * 
+	 * @return The totals for the business hours window.
          */
         public long getBusTotalWindow()
         {
@@ -261,6 +279,8 @@ public class Node extends StandardNamedObject
 
 	/**
 	 * Returns the total window for this node.
+	 * 
+	 * @return The totals
 	 */
 	public long getTotalWindow()
 	{
@@ -270,7 +290,7 @@ public class Node extends StandardNamedObject
 	/**
 	 * Return the interfaces
 	 *
-	 * @return interfaces Returns the interfaces.
+	 * @return A list of interfaces.
 	 */
 	public ArrayList getInterfaces()
 	{
@@ -280,7 +300,7 @@ public class Node extends StandardNamedObject
 	/**
          * Return the nodeid
          *
-         * @return nodeid Returns the nodeid.
+         * @return This node's id.
          */
         public int getNodeID()
         {
@@ -289,6 +309,8 @@ public class Node extends StandardNamedObject
 
 	/**
 	 * Returns the service affected count.
+         *
+         * @return The number of affected services.
 	 */
 	public int getServiceAffectCount()
 	{
@@ -325,7 +347,7 @@ public class Node extends StandardNamedObject
 	}
 
 	/**
-	 * Add an Interface with interface and service name .
+	 * Add an Interface with interface and service name.
 	 * @param intfname interface name
 	 * @param service service name
 	 * Checks if the interface with name intfname exists. If so, 
@@ -434,7 +456,7 @@ public class Node extends StandardNamedObject
 	}
 
 	/**
-	 * This method computes the availability of the node. The rolling window 
+	 * Computes the availability of the node. The rolling window 
 	 * (in milliseconds) 
 	 * @param endTime End Time of the rolling window in milliseconds.
 	 * @return percentage availability of node for the last week.
@@ -477,6 +499,8 @@ public class Node extends StandardNamedObject
 
 	/**
 	 * Get the outage for this node.
+	 * 
+	 * @return The outage time.
 	 */
         public long getOutage(long endTime, long rollingWindow)
         {
@@ -509,6 +533,8 @@ public class Node extends StandardNamedObject
 
 	/**
 	 * Returns the string that displays the Node/Interface/Service/Outages combinations.
+	 * 
+	 * @return The string representation.
 	 */
 	public String toString()
 	{

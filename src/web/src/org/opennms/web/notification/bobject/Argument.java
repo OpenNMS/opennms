@@ -72,7 +72,7 @@ public class Argument
 	}
 	
 	/**Sets the switch member
-	   @param String aValue, the value of the switch
+	   @param aValue the value of the switch
 	*/
 	public void setSwitch(String aValue)
 	{
@@ -80,7 +80,7 @@ public class Argument
 	}
 	
 	/**Sets the substitution switch
-	   @param String aValue, the value of the substitution
+	   @param aValue the value of the substitution
 	*/
 	public void setSubstitution(String aValue)
 	{
@@ -88,7 +88,7 @@ public class Argument
 	}
 	
 	/**Sets the value of the argument
-	   @param String aValue, the value of the argument
+	   @param aValue the value of the argument
 	*/
 	public void setValue(String aValue)
 	{
@@ -96,7 +96,7 @@ public class Argument
 	}
 	
 	/**Returns the switch
-	   @return String, the switch string
+	   @return the switch string
 	*/
 	public String getSwitch()
 	{
@@ -104,7 +104,7 @@ public class Argument
 	}
 	
 	/**Returns the substitution switch
-	   @return String, the substitution
+	   @return the substitution
 	*/
 	public String getSubstitution()
 	{
@@ -112,7 +112,7 @@ public class Argument
 	}
 	
 	/**Returns the value of the argument
-	   @return String, the value of the argument
+	   @return the value of the argument
 	*/
 	public String getValue()
 	{
@@ -121,7 +121,7 @@ public class Argument
 	
 	/**Sets the boolean indicating if this argument should be sent to 
 	   an input stream
-	   @param boolean aBool, true if the argument should be sent to a input stream, false otherwise
+	   @param aBool true if the argument should be sent to a input stream, false otherwise
 	*/
 	public void setStreamed(boolean aBool)
 	{
@@ -130,7 +130,7 @@ public class Argument
 	
 	/**Returns the boolean indicating if this argument should be sent
 	   to an input stream.
-	   @param boolean, true if the argument should be sent to a input stream, false otherwise
+	   @return true if the argument should be sent to a input stream, false otherwise
 	*/
 	public boolean isStreamed()
 	{
@@ -138,7 +138,7 @@ public class Argument
 	}
 	
 	/**Returns a string representation of the argument, for purposes of debugging
-	   @return String, a string representation
+	   @return a string representation
 	*/
 	public String toString()
 	{

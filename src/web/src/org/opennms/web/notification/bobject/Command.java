@@ -84,7 +84,7 @@ public class Command
 	
 	/**Creates a new Command objects with identical values to 
 	   the current Command object.
-	   @param Command, a copy of this command
+	   @return a copy of this command
 	*/
 	public Command copy()
 	{
@@ -119,7 +119,7 @@ public class Command
 	}
 	
 	/**Sets the command name
-	   @param String aName, the name of the command
+	   @param aName the name of the command
 	*/
 	public void setCommandName(String aName)
 	{
@@ -127,7 +127,7 @@ public class Command
 	}
 	
 	/**Returns the command name
-	   @return String, the name of the command
+	   @return the name of the command
 	*/
 	public String getCommandName()
 	{
@@ -135,7 +135,7 @@ public class Command
 	}
 	
 	/**Adds an identifier type for command
-	   @param String aType, the notification type
+	   @param aType the notification type
 	*/
 	public void addType(String aType)
 	{
@@ -143,7 +143,7 @@ public class Command
 	}
 	
 	/**Returns the notification type of the command
-	   @return String, the notification type
+	   @return true if contains the type
 	*/
 	public boolean isOfType(String aType)
 	{
@@ -151,7 +151,7 @@ public class Command
 	}
 	
 	/**Returns the first type in the list as a string
-	   @return String
+	   @return the type
 	*/
 	public String getType()
 	{
@@ -159,7 +159,7 @@ public class Command
 	}
 	
 	/**Sets the comments for the command
-	   @param String someComments, the comments for the command
+	   @param someComments the comments for the command
 	*/
 	public void setCommandComments(String someComments)
 	{
@@ -167,7 +167,7 @@ public class Command
 	}
 	
 	/**Returns the comments for the command
-	   @return String, the comments for the command
+	   @return the comments for the command
 	*/
 	public String getCommandComments()
 	{
@@ -175,7 +175,7 @@ public class Command
 	}
 	
 	/**Adds a argument to the list of arguments
-	   @param String aUser, a new username
+	   @param aUser a new username
 	*/
 	public void addArgument(Argument anArgument)
 	{
@@ -184,7 +184,7 @@ public class Command
 	
 	/**This method sets the boolean that indicates if this command requires
 	   an input stream.
-	   @param boolean aBool, true if a stream should be used, false otherwise
+	   @param aBool true if a stream should be used, false otherwise
 	*/
 	public void setUseStream(boolean aBool)
 	{
@@ -192,7 +192,7 @@ public class Command
 	}
 	
 	/**Returns the list of arguments
-	   @return List, the list of arguments
+	   @return the list of arguments
 	*/
 	public List getArguments()
 	{
@@ -201,8 +201,8 @@ public class Command
 	
 	/**This method sets an argument specified by the switch param to 
 	   the given value param
-	   @param String aSwitch, the argument to set
-	   @param String aValue, the value to set
+	   @param aSwitch the argument to set
+	   @param aValue the value to set
 	*/
 	public void setArgumentValue(String aSwitch, String aValue)
 	{
@@ -222,8 +222,8 @@ public class Command
 	
 	/**This method determines if this command has a given
 	   switch as a member of its arguments
-	   @param String aSwitch, the switch to check for
-	   @return boolean, true if the command has the switch, false otherwise
+	   @param aSwitch the switch to check for
+	   @return true if the command has the switch, false otherwise
 	*/
 	public boolean hasSwitch(String aSwitch)
 	{
@@ -234,7 +234,7 @@ public class Command
 	
 	/**This method gets the list of switches that Notify knows about
 	   that will map to a given console command.
-	   @return List, a list of parameter switches
+	   @return a list of parameter switches
 	*/
 	public List getArgumentSwitches()
 	{
@@ -248,10 +248,11 @@ public class Command
 		return switches;
 	}
 	
-	/**This method executes the command using a Process. The method will decide if 
-	   an input stream needs to be used.
-	   @return int, the return code of the command
-	*/
+	/**This method executes the command using a Process. 
+         * The method will decide if 
+	 * an input stream needs to be used.
+	 * @return the return code of the command
+	 */
 	public int execute()
 	{
 		int returnCode = 0;
@@ -339,7 +340,7 @@ public class Command
 	
 	/**Returns a String representation of the command as it would look to execute on 
 	   the console.
-	   @return String, a string representation
+	   @return a string representation
 	*/
 	public String toString()
 	{

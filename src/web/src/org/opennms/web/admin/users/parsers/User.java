@@ -77,7 +77,8 @@ public class User implements Cloneable
 	*/
 	private PropertyChangeSupport m_propChange;
 	
-	/**Default constructor, intializes the member variables.
+	/**Creates a User.
+        * Default constructor, intializes the member variables.
 	*/
 	public User()
 	{
@@ -130,7 +131,7 @@ public class User implements Cloneable
 	}
 	
 	/**Returns the notification information for this user
-	   @return NotificationInfo, the notification info
+	   @return the notification info
 	*/
 	public NotificationInfo getNotificationInfo()
 	{
@@ -138,7 +139,7 @@ public class User implements Cloneable
 	}
 	
 	/**Sets the notificaton information for this user
-	   @param NotificationInfo someInfo, the notification info
+	   @param someInfo the notification info
 	*/
 	public void setNotificationInfo(NotificationInfo someInfo)
 	{
@@ -146,7 +147,7 @@ public class User implements Cloneable
 	}
 	
 	/**Sets the user id for this user
-	   @param String aUserId, the user id
+	   @param aUserId the user id
 	*/
 	public void setUserId(String aUserId)
 	{
@@ -156,7 +157,7 @@ public class User implements Cloneable
 	}
 	
 	/**Returns the user id for this user
-	   @return String, the user id
+	   @return the user id
 	*/
 	public String getUserId()
 	{
@@ -164,7 +165,7 @@ public class User implements Cloneable
 	}
 	
 	/**Sets the full name for this user
-	   @param String aFullName, the full name
+	   @param aFullName the full name
 	*/
 	public void setFullName(String aFullName)
 	{
@@ -172,7 +173,7 @@ public class User implements Cloneable
 	}
 	
 	/**Returns the full name of this user
-	   @return String, the full name
+	   @return the full name
 	*/
 	public String getFullName()
 	{
@@ -180,7 +181,7 @@ public class User implements Cloneable
 	}
 	
 	/**Sets the user comments for this user
-	   @param String someUserComments, the user comments
+	   @param someUserComments the user comments
 	*/
 	public void setUserComments(String someUserComments)
 	{
@@ -188,7 +189,7 @@ public class User implements Cloneable
 	}
 	
 	/**Returns the user comments for this user
-	   @return String, the user comments
+	   @return the user comments
 	*/
 	public String getUserComments()
 	{
@@ -197,7 +198,7 @@ public class User implements Cloneable
 	
 	/**Sets the password for this user, assuming that the value
 	   passed in is already encrypted properly
-	   @param String aPassword, the encrypted password
+	   @param aPassword the encrypted password
 	*/
 	public void setEncryptedPassword(String aPassword)
 	{
@@ -205,7 +206,7 @@ public class User implements Cloneable
 	}
 	
 	/**Sets the password for this user, first encrypting it
-	   @param String aPassword, the password
+	   @param aPassword the password
 	*/
 	public void setUnencryptedPassword(String aPassword)
 		throws IllegalStateException
@@ -214,8 +215,8 @@ public class User implements Cloneable
 	}
 	
 	/**This method encrypts the password using MD5 hashing.
-	   @param String aPassword, the password to encrypt
-	   @return String, the MD5 hash of the password, or null if the encryption fails
+	   @param aPassword the password to encrypt
+	   @return the MD5 hash of the password, or null if the encryption fails
 	*/
 	public static String encryptPassword(String aPassword)
 		throws IllegalStateException
@@ -240,8 +241,8 @@ public class User implements Cloneable
 	/** Converts a byte array into a hexadecimal String representation.
 	    The byte array must have an even number of elements (otherwise it
 	    would not be convertable to a valid String).
-	  * @param data[], Array containing the bytes to convert
-	  * @return String, the converted string, or null if encoding failed
+	  * @param data Array containing the bytes to convert
+	  * @return the converted string, or null if encoding failed
 	  */
 	private static String hexToString(byte data[])
 	{
@@ -267,8 +268,8 @@ public class User implements Cloneable
 	}
 	
 	/**This method compares two encrypted strings for equality
-	   @param String aPassword, the password to check for equality
-	   @return boolean, true if the two passwords are equal (after encryption), false otherwise
+	   @param aPassword the password to check for equality
+	   @return true if the two passwords are equal (after encryption), false otherwise
 	*/
 	public boolean comparePasswords(String aPassword)
 	{
@@ -276,7 +277,7 @@ public class User implements Cloneable
 	}
 	
 	/**Returns the password for this user
-	   @return String, the password for the user
+	   @return the password for the user
 	*/
 	public String getPassword()
 	{
@@ -285,7 +286,7 @@ public class User implements Cloneable
 	
 	/**Returns a String representation of the user info, used primarily for 
 	   debugging purposes.
-	   @return String, a string representation
+	   @return a string representation
 	*/
 	public String toString()
 	{

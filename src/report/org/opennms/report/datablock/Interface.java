@@ -212,7 +212,7 @@ public class Interface extends StandardNamedObject
 	/**
 	 * Return the services
 	 *
-	 * @return services Services to be set.
+	 * @return Services to be set.
 	 */
 	public List getServices()
 	{
@@ -222,7 +222,8 @@ public class Interface extends StandardNamedObject
 	/**
 	 * Return the Service object given the service name
 	 *
-	 * @return Service service with service name.
+	 * @param svcname The service name to lookup.
+	 * @return Service with matching service name.
 	 */
 	public Service getService(String svcname)
 	{
@@ -237,6 +238,8 @@ public class Interface extends StandardNamedObject
 
 	/**
 	 * Adds a new service object to this interface
+	 * 
+	 * @param service The service to be add.
 	 */ 
 	public void addService(Service service)
 	{
@@ -246,6 +249,8 @@ public class Interface extends StandardNamedObject
 
 	/**
 	 * Adds a new service to this interface
+	 * 
+	 * @param service The name of the service to add.
 	 */ 
 	public void addService(String service)
 	{

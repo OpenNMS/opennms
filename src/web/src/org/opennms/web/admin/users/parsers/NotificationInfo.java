@@ -121,7 +121,7 @@ public class NotificationInfo implements Cloneable
 	}
 	
 	/**Sets the email address
-	   @param String, the email address
+	   @param anEmail the email address
 	*/
 	public void setEmail(String anEmail)
 	{
@@ -129,7 +129,7 @@ public class NotificationInfo implements Cloneable
 	}
 	
 	/**Sets the pager email address
-	   @param String
+	   @param anEmail the new email address
 	*/
 	public void setPagerEmail(String anEmail)
 	{
@@ -137,7 +137,7 @@ public class NotificationInfo implements Cloneable
 	}
 	
 	/**Sets the numerical service string
-	   @param String, the numerical service
+	   @param aService the numerical service
 	*/
 	public void setNumericalService(String aService)
 	{
@@ -145,7 +145,7 @@ public class NotificationInfo implements Cloneable
 	}
 	
 	/**Sets the numerical pin
-	   @param String, the numerical pin
+	   @param aPin the numerical pin
 	*/
 	public void setNumericalPin(String aPin)
 	{
@@ -153,7 +153,7 @@ public class NotificationInfo implements Cloneable
 	}
 	
 	/**Sets the text service string
-	   @param String, the text service
+	   @param aService the text service
 	*/
 	public void setTextService(String aService)
 	{
@@ -161,7 +161,7 @@ public class NotificationInfo implements Cloneable
 	}
 	
 	/**Sets the text pin string
-	   @param String, the text pin
+	   @param aPin the text pin
 	*/
 	public void setTextPin(String aPin)
 	{
@@ -169,7 +169,7 @@ public class NotificationInfo implements Cloneable
 	}
 	
 	/**This method adds a duty schedule
-	   @param DutySchedule, a new duty schedule to associate with a user
+	   @param aSchedule a new duty schedule to associate with a user
 	*/
 	public void addDutySchedule(DutySchedule aSchedule)
 	{
@@ -177,7 +177,7 @@ public class NotificationInfo implements Cloneable
 	}
 	
 	/**This method sets a full list of duty schedules for a user
-	   @List, a list of DutySchedule objects for a user
+	   @param someSchedule a list of DutySchedule objects for a user
 	*/
 	public void setDutySchedule(List someSchedules)
 	{
@@ -185,7 +185,7 @@ public class NotificationInfo implements Cloneable
 	}
 	
 	/**Returns the email address
-	   @return String, 
+	   @return the email address
 	*/
 	public String getEmail()
 	{
@@ -193,7 +193,7 @@ public class NotificationInfo implements Cloneable
 	}
 	
 	/**Returns the pager email address
-	   @return String, 
+	   @return the pager email address
 	*/
 	public String getPagerEmail()
 	{
@@ -201,7 +201,7 @@ public class NotificationInfo implements Cloneable
 	}
 	
 	/**Returns the numerical service string
-	   @return String, the numerical service
+	   @return the numerical service
 	*/
 	public String getNumericalService()
 	{
@@ -209,7 +209,7 @@ public class NotificationInfo implements Cloneable
 	}
 	
 	/**Returns the numerical pin string
-	   @return String, the numerical pin
+	   @return the numerical pin
 	*/
 	public String getNumericalPin()
 	{
@@ -217,7 +217,7 @@ public class NotificationInfo implements Cloneable
 	}
 	
 	/**Returns the text service string
-	   @return String, the text service
+	   @return the text service
 	*/
 	public String getTextService()
 	{
@@ -225,7 +225,7 @@ public class NotificationInfo implements Cloneable
 	}
 	
 	/**Returns the text pin string
-	   @return String, the text pin
+	   @return the text pin
 	*/
 	public String getTextPin()
 	{
@@ -233,7 +233,7 @@ public class NotificationInfo implements Cloneable
 	}
 	
 	/**Returns the number of DutySchedule object for a user
-	   @return int, the number of DutySchedules
+	   @return the number of DutySchedules
 	*/
 	public int getDutyScheduleCount()
 	{
@@ -241,7 +241,7 @@ public class NotificationInfo implements Cloneable
 	}
 	
 	/**Returns the full list of DutySchedules
-	   @return List, the full list of DutySchedules
+	   @return the full list of DutySchedules
 	*/
 	public List getDutySchedules()
 	{
@@ -250,8 +250,8 @@ public class NotificationInfo implements Cloneable
 	
 	/**Returns a boolean indicating if the user is on duty at the 
 	   specified time.
-	   @param Calendar aTime, a time to see if the user is on duty
-	   @return boolean, true if the user is on duty, false otherwise
+	   @param aTime a time to see if the user is on duty
+	   @return true if the user is on duty, false otherwise
 	*/
 	public boolean isOnDuty(Calendar aTime)
 	{
@@ -280,7 +280,7 @@ public class NotificationInfo implements Cloneable
 	}
 	
 	/**A String representation of the notification information, primarily used for debugging.
-	   @return String, representation of the notification information
+	   @return String representation of the notification information
 	*/
 	public String toString()
 	{

@@ -42,7 +42,7 @@ package org.opennms.web.parsers;
 public class XMLWriteException extends Exception
 {
     /**Default constructor, calls the Exception constructor.
-       @param String detail, information on the exception
+       @param detail information about the exception
      */
     public XMLWriteException(String detail)
     {

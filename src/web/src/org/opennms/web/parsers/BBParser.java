@@ -54,8 +54,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 /**
- * <pre>BBParser provides basic XML parsing functionality to parse XML
- * from a file or an input stream
+ * Bluebird parser for XML.
+ *
+ * BBParser provides basic XML parsing functionality to parse XML
+ * from a file or an input stream.
  *
  * BBParser creates a DOMParser which creates a DOM tree of the XML being
  * parsed. BBParser provides the error handling routines for the DOM parser
@@ -81,7 +83,7 @@ import org.xml.sax.SAXParseException;
 public class BBParser 
 {
 	/**
-	 * Error number set when a typical <parm>..</parm> block does not
+	 * Error number set when a typical parm block does not
 	 * have both the parm name and value pair as expected
 	 */
 	protected final int ATTRIB_VALUE_PAIR_ERR	=-1000;
@@ -133,9 +135,10 @@ public class BBParser
 	protected InputSource	 	m_inpSource=null;
 
 	/**
+	 * The error handler.
+	 * 
 	 * Class BBErrorHandler implements the org.xml.sax.ErrorHandler interface
 	 * - this is then set as the error handler for the DOMParser to track errors
-	 *
 	 */
 	private class BBErrorHandler implements ErrorHandler 
 	{
@@ -224,6 +227,7 @@ public class BBParser
 	}
 
 	/**
+	 * Process an Element.
 	 * This is the method to be overridden by sub-classes to branch off and
 	 * go through the DOM tree to handle elements specific to the XML they
 	 * are parsing - does nothing here
@@ -279,7 +283,7 @@ public class BBParser
 	/**
 	 * Parse the already set 'm_inpSource' 
 	 *
-	 * @exception throws java.io.IOException if parse fails for any reason
+	 * @throws IOException if parse fails for any reason
 	 */
 	public synchronized void parse() throws IOException
 	{
@@ -294,9 +298,9 @@ public class BBParser
 	/**
 	 * Parse the fileName passed
 	 *
-	 * @param	fileName	  file to be parsed
+	 * @param fileName file to be parsed
 	 *
-	 * @exception throws java.io.IOException if parse fails for any reason
+	 * @throws IOException if parse fails for any reason
 	 */
 	public synchronized void parse(String fileName) throws IOException
 	{
@@ -306,9 +310,9 @@ public class BBParser
 	/**
 	 * Parses the input stream passed
 	 *
-	 * @param inpStream	the java.io.InputStream  that contains the XML to be parsed
+	 * @param inpStream the input stream that contains the XML to be parsed
 	 *
-	 * @exception throws java.io.IOException if parse fails for any reason
+	 * @throws IOException if parse fails for any reason
 	 */
 	public synchronized void parse(InputStream inpStream) throws IOException
 	{
@@ -318,9 +322,9 @@ public class BBParser
 	/**
 	 * Parses the input stream passed
 	 *
-	 * @param inpStream	the org.xml.sax.InputSource  that contains the XML to be parsed
+	 * @param inpSource the input source that contains the XML to be parsed
 	 *
-	 * @exception throws java.io.IOException if parse fails for any reason
+	 * @throws IOException if parse fails for any reason
 	 */
 	public synchronized void parse(InputSource inpSource) throws IOException
 	{
@@ -362,8 +366,7 @@ public class BBParser
 	/**
 	 * Returns the error number for the parse
 	 *
-	 * @returns the error number if any error occurred during parse
-	 *			 zero is returned if there was no error 
+	 * @return zero if no error, otherwise the error number
 	 */
 	public int getErrorNumber()
 	{
@@ -373,7 +376,7 @@ public class BBParser
 	/**
 	 * Returns the error message for the parse
 	 *
-	 * @returns the error message if any error occurred during parse
+	 * @return the error message if an error occurred while parsing
 	 */
 	public String getErrorMessage()
 	{

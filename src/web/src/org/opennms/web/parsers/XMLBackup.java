@@ -59,9 +59,9 @@ public class XMLBackup
 	   method is running from, or the absolute path to the file. The second parameter
 	   is the just the file name that will identify the backup. A default extension will
 	   be added to this filename.
-	   @param String original, a path and file name to the original file
-	   @param String fileName, the name to give the backup
-	   @exception XMLWriteException, if the backup was not able to be made
+	   @param original a path and file name to the original file
+	   @param fileName the name to give the backup
+	   @throws XMLWriteException if the backup was not able to be made
 	*/
 	public static void backup(String original, String fileName)
 		throws XMLWriteException

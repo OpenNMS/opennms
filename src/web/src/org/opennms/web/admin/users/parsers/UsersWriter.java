@@ -52,7 +52,8 @@ import org.w3c.dom.Element;
  */
 public class UsersWriter extends XMLWriter
 {
-	/**Default constructor, intializes the member variables
+	/**Create a UsersWriter.
+        * Default constructor, intializes the member variables
 	*/
 	public UsersWriter(String fileName)
 		throws XMLWriteException
@@ -61,7 +62,7 @@ public class UsersWriter extends XMLWriter
 	}
 	
 	/**This method saves the list of users to the specified file
-	   @exception XMLWriteException, if the save failed
+	   @throws XMLWriteException if the save failed
 	*/
 	protected void saveDocument(Collection users)
 		throws XMLWriteException

@@ -74,9 +74,9 @@ public class PropertyLoader
 	
 	/**This method decides which option the user wants and loads the 
 	   files according to the decision.
-	   @param String aFileName, the name of a specific property file to load
-	   @param int loadMask, an integer describing which load option to use
-	   @return Properties, the properties of the option
+	   @param aFileName the name of a specific property file to load
+	   @param loadMask an integer describing which load option to use
+	   @return the properties of the option
 	*/
 	public static Properties load(String aFileName, int loadMask)
 	{
@@ -101,8 +101,8 @@ public class PropertyLoader
 	}
 	
 	/**This method loads a single specific property file.
-	   @param String aFileName, name of the property file to load
-	   @return Properties, the loaded properties
+	   @param aFileName name of the property file to load
+	   @return the loaded properties
 	*/
 	public static Properties loadLocal(String aFileName)
 	{
@@ -127,9 +127,9 @@ public class PropertyLoader
 	/**This method loads a specific property file in combination with some
 	   existing properties. The specific properties will take precedence over
 	   the existing properties.
-	   @param String aFileName, name of the property file to load
-	   @param Properties someProperties, the existing properties
-	   @return Properties, the loaded properties
+	   @param aFileName name of the property file to load
+	   @param someProperties the existing properties
+	   @return the loaded properties
 	*/
 	public static Properties loadLocal(String aFileName, Properties someProperties)
 	{
@@ -154,8 +154,8 @@ public class PropertyLoader
 	/**This method loads the System properties into an already existing
 	   Properties object. The System properties will overwrite any duplicate
 	   properties that already exist.
-	   @param Properties someProperties, the existing properties
-	   @return Properties, the loaded properties
+	   @param someProperties the existing properties
+	   @return the loaded properties
 	*/
 	public static Properties loadSystem(Properties someProperties)
 	{

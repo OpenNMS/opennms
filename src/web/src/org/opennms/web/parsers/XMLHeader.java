@@ -95,8 +95,8 @@ public class XMLHeader
 		buildDocument();
 	}
 	
-	/**This method sets the version
-	   @param String aVersion, the version
+	/**Sets the version
+	   @param aVersion the version
 	*/
 	public void setVersion(String aVersion)
 	{
@@ -104,7 +104,7 @@ public class XMLHeader
 	}
 	
 	/**Returns the version
-	   @return String, the version
+	   @return the version
 	*/
 	public String getVersion()
 	{
@@ -112,7 +112,7 @@ public class XMLHeader
 	}
 	
 	/**Sets the master station
-	   @param String aStation, the master station
+	   @param aStation the master station
 	*/
 	public void setMasterStation(String aStation)
 	{
@@ -120,7 +120,7 @@ public class XMLHeader
 	}
 	
 	/**Returns the master station
-	   @return String, the master station
+	   @return the master station
 	*/
 	public String getMasterStation()
 	{
