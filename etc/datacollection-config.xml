@@ -254,6 +254,14 @@
 					<includeGroup>mib2-interfaces-net-snmp</includeGroup>
 				</collect>
 			</systemDef>		
+
+			<systemDef name = "APC UPS">
+				<sysoidMask>.1.3.6.1.4.1.318.</sysoidMask>
+                                <collect>
+					<includeGroup>mib2-interfaces</includeGroup>
+                                        <includeGroup>APC</includeGroup>
+				</collect>
+                        </systemDef>
 			
 			<systemDef name = "Bay Routers">
 				<sysoidMask>.1.3.6.1.4.1.18.</sysoidMask>
