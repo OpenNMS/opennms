@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 Blast Internet Services, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2004 Blast Consulting Company.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -53,7 +53,9 @@ import java.util.SortedMap;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ClassExecutor;
 import org.opennms.core.utils.CommandExecutor;
+import org.opennms.core.utils.ExecutorStrategy;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.NotificationFactory;
@@ -71,6 +73,9 @@ import org.opennms.netmgt.config.users.User;
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
+ * Modification to pick an ExecuteStrategy based on the
+ * "binary" flag in notificationCommands.xml by:
+ * @author <A HREF="mailto:david@opennms.org">David Hustace</A>
  */
 public class NotificationTask extends Thread
 {
@@ -181,71 +186,59 @@ public class NotificationTask extends Thread
 	}
 	
 	/**
-	*/
-	public void run()
-	{
+	 */
+	public void run() {
 		Category log = ThreadCategory.getInstance(getClass());
-		
-                boolean responded = false;
-                try { 
-                        responded = NotificationFactory.noticeOutstanding(m_notifyId);
-                }
-                catch (Exception e)
-                {
-                        log.error("Unable to get response status on notice #" + m_notifyId, e);
-                }
-                
-		//check to see if someone has responded, if so remove all the brothers 
-                if (responded)
-		{
-			try
-			{
-				if (UserFactory.getInstance().isUserOnDuty(m_user.getUserId(), Calendar.getInstance()))
-				{
-                                        //send the notice
-                                        CommandExecutor command = new CommandExecutor();
-					
-                                        for (int i = 0; i < m_commands.length; i++)
-					{
-						NotificationFactory.updateNoticeWithUserInfo(m_user.getUserId(), 
-                                                                                             m_notifyId, 
-                                                                                             m_commands[i].getName(),
-                                                                                             UserFactory.getInstance().getContactInfo(m_user.getUserId(),
-                                                                                                                                      m_commands[i].getName()));
-                                                
-                                                int returnCode = command.execute(m_commands[i].getExecute(), getArgumentList(m_commands[i]));
+
+		boolean responded = false;
+		try {
+			responded = NotificationFactory.noticeOutstanding(m_notifyId);
+		} catch (Exception e) {
+			log.error("Unable to get response status on notice #" + m_notifyId, e);
+		}
+
+		//check to see if someone has responded, if so remove all the brothers
+		if (responded) {
+			try {
+				if (UserFactory.getInstance().isUserOnDuty(m_user.getUserId(), Calendar.getInstance())) {
+					//send the notice
+
+					ExecutorStrategy command = null;
+
+					for (int i = 0; i < m_commands.length; i++) {
+						NotificationFactory.updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), UserFactory
+								.getInstance().getContactInfo(m_user.getUserId(), m_commands[i].getName()));
+
+						if (m_commands[i].getBinary() == "true") {
+							command = new CommandExecutor();
+						} else {
+							command = new ClassExecutor();
+						}
+						log.debug("Class created is: "+ command.getClass());
+						
+						int returnCode = command.execute(m_commands[i].getExecute(), getArgumentList(m_commands[i]));
 						log.debug("command " + m_commands[i].getName() + " return code = " + returnCode);
 					}
-				}
-				else
-				{
+				} else {
 					log.debug("User " + m_user.getUserId() + " is not on duty, skipping...");
 				}
-			}
-			catch (SQLException e)
-			{
+			} catch (SQLException e) {
 				log.debug("Could not insert notice info into database, aborting send notice...", e);
-			}
-			catch (IOException e)
-			{
+			} catch (IOException e) {
+				log.debug("Could not get user duty schedule information: ", e);
+			} catch (MarshalException e) {
+				log.debug("Could not get user duty schedule information: ", e);
+			} catch (ValidationException e) {
 				log.debug("Could not get user duty schedule information: ", e);
 			}
-			catch (MarshalException e)
-			{
-				log.debug("Could not get user duty schedule information: ", e);
-			}
-			catch (ValidationException e)
-			{
-				log.debug("Could not get user duty schedule information: ", e);
-			}
-		}
-		else
-		{
-                        //remove all the related notices that have yet to be sent
-			for (int i = 0; i < m_siblings.size(); i++)
-			{
-				NotificationTask task = (NotificationTask)m_siblings.get(i);
-				m_notifTree.remove(task);
+		} else {
+			//remove all the related notices that have yet to be sent
+			for (int i = 0; i < m_siblings.size(); i++) {
+				NotificationTask task = (NotificationTask) m_siblings.get(i);
+				
+				//FIXME: Reported on discuss list and not found to ever
+				//be initialized anywhere.
+				//m_notifTree.remove(task);
 			}
 		}
 	}

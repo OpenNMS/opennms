@@ -71,7 +71,7 @@ public class AvailabilityReport extends Object
 	 * Castor object that holds all the information required for the generating 
 	 * xml to be translated to the pdf.
 	 */
-	private static Report m_report = null;
+	private Report m_report = null;
 
 	/**
 	 * Default constructor 
@@ -215,9 +215,24 @@ public class AvailabilityReport extends Object
 		if(format == null || format.equals(""))
 			format = "SVG";
 
+		try {
+			generateReport(logourl, categoryName, format);
+		} catch (Exception e) {
+			log.error("Caught Exception generating report", e);
+		}
+	}
+
+	/**
+	 * @param logourl
+	 * @param categoryName
+	 * @param format
+	 */
+	public static void generateReport(String logourl, String categoryName, String format) throws Exception {
+
 		// This report will be invoked by the mailer script.
 		// Only SVG formatted reports are needed.
 		// 
+		Category log = ThreadCategory.getInstance(AvailabilityReport.class);
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
 		String catFileName = categoryName.replace(' ', '-');
 		String pdfFileName = null;

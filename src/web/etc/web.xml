@@ -228,6 +228,10 @@
     <servlet-name>availability</servlet-name>
     <servlet-class>org.opennms.web.availability.AvailabilityServlet</servlet-class>
     <init-param>
+      <param-name>report.logo</param-name>
+      <param-value>@install.servlet.dir@/images/logo.gif</param-value>
+    </init-param>
+    <init-param>
       <param-name>xslt.filename</param-name>
       <param-value>etc/AvailabilityReports.xsl</param-value>
     </init-param>
@@ -263,6 +267,11 @@
       <param-name>script.mailReport</param-name>
       <param-value>@install.bin.dir@/webreport.pl</param-value>
       <description>Use this script to mail a file to a user from the command line.</description>
+    </init-param>
+    <init-param>
+      <param-name>script.useScript</param-name>
+      <param-value>false</param-value>
+      <description>Set this to false to use the JavaMailer class instead of the script set in script.mailReport.</description>
     </init-param>
   </servlet>
   <servlet>

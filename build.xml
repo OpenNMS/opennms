@@ -165,6 +165,11 @@ your distribution.
     <pathelement path="${packaged.lib.dir}/xerces201.jar"/>
     <pathelement path="${packaged.lib.dir}/xmlrpc-1.2-b1.jar"/>
   	<pathelement path="${packaged.lib.dir}/jrobin-1.4.0.jar"/>
+    <pathelement path="${packaged.lib.dir}/mailapi.jar"/>
+    <pathelement path="${packaged.lib.dir}/smtp.jar"/>
+<!--  	<pathelement path="${packaged.lib.dir}/imap.jar"/> -->
+<!--  	<pathelement path="${packaged.lib.dir}/pop3.jar"/> -->
+    <pathelement path="${packaged.lib.dir}/activation.jar"/>
   </path>
 
   <path id="tomcatlib.jars.path">

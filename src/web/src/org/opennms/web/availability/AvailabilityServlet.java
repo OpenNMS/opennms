@@ -67,6 +67,8 @@ public class AvailabilityServlet extends HttpServlet
         protected String redirectNoEmail;
         protected String scriptGenerateReport;
         protected String scriptMailReport;
+        protected String useScript;
+        protected String logo;
 	
 	public void init() throws ServletException {
 		ServletConfig config = this.getServletConfig();
@@ -77,6 +79,8 @@ public class AvailabilityServlet extends HttpServlet
 
                 this.scriptGenerateReport = config.getInitParameter("script.generateReport");
                 this.scriptMailReport = config.getInitParameter("script.mailReport");
+                this.useScript = config.getInitParameter("script.useScript");
+                this.logo = config.getInitParameter("report.logo");
 
                 if( this.redirectSuccess == null ) {
                         throw new ServletException("Missing required init parameter: redirect.success");
@@ -96,6 +100,10 @@ public class AvailabilityServlet extends HttpServlet
 
                 if( this.scriptMailReport == null ) {
                         throw new ServletException("Missing required init parameter: script.mailReport");
+                }
+                
+                if( this.useScript == null) {
+                    throw new ServletException("Missing required init parameter: script.useScript");
                 }
 
 		this.xslFileName = config.getInitParameter( "xslt.filename" );
@@ -140,6 +148,7 @@ public class AvailabilityServlet extends HttpServlet
 			username = "";
 		}
 
+		//TODO: Rework this so that initialise doesn't get called and the nasty if then else is done better
 		try 
 		{
 
@@ -147,35 +156,47 @@ public class AvailabilityServlet extends HttpServlet
 			if(format.equals("HTML"))		
 			{
 				ReportMailer reportMailer = new ReportMailer();
-                                SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
-                                String catFileName = category.replace(' ', '-');
-                                String filename = ConfigFileConstants.getHome() + "/share/reports/AVAIL-HTML-" + catFileName+ fmt.format(new java.util.Date()) +".html";
+				SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+				String catFileName = category.replace(' ', '-');
+				String filename = ConfigFileConstants.getHome() + "/share/reports/AVAIL-HTML-" + catFileName+ fmt.format(new java.util.Date()) +".html";
 				reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "HTML");
+				reportMailer.setLogoUrl(logo);
+				reportMailer.setCategoryName(category);
+				reportMailer.setFormat("HTML");
+				
+				//call setter on flag to use the script else use JavaMail
+				reportMailer.setUseScript( "true".equalsIgnoreCase(useScript));
 				String emailAddr = reportMailer.getEmailAddress();
-                                if(emailAddr == null || emailAddr.trim().length() == 0)
-                                {
-                                        response.sendRedirect(this.redirectNoEmail);
-                                        return;
-                                }
-                                new Thread(reportMailer).start();
-                                response.sendRedirect(redirectSuccess);
+				if(emailAddr == null || emailAddr.trim().length() == 0)
+				{
+					response.sendRedirect(this.redirectNoEmail);
+					return;
+				}
+				new Thread(reportMailer).start();
+				response.sendRedirect(redirectSuccess);
 			}
 			// Report to be displayed in PDF format.
 			else if(format.equals("PDF"))	
 			{
 				ReportMailer reportMailer = new ReportMailer();
-                                SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
-                                String catFileName = category.replace(' ', '-');
-                                String filename = ConfigFileConstants.getHome() + "/share/reports/AVAIL-PDF-" + catFileName + fmt.format(new java.util.Date()) +".pdf";
-                                reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "PDF");
-                                String emailAddr = reportMailer.getEmailAddress();
-                                if(emailAddr == null || emailAddr.trim().length() == 0)
-                                {
-                                        response.sendRedirect(this.redirectNoEmail);
-                                        return;
-                                }
-                                new Thread(reportMailer).start();
-                                response.sendRedirect(redirectSuccess);
+				SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+				String catFileName = category.replace(' ', '-');
+				String filename = ConfigFileConstants.getHome() + "/share/reports/AVAIL-PDF-" + catFileName + fmt.format(new java.util.Date()) +".pdf";
+				reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "PDF");
+				reportMailer.setLogoUrl(logo);
+				reportMailer.setCategoryName(category);
+				reportMailer.setFormat("PDF");
+
+				//call setter on flag to use the script else use JavaMail
+				reportMailer.setUseScript( "true".equalsIgnoreCase(useScript));
+				String emailAddr = reportMailer.getEmailAddress();
+				if(emailAddr == null || emailAddr.trim().length() == 0)
+				{
+					response.sendRedirect(this.redirectNoEmail);
+					return;
+				}
+				new Thread(reportMailer).start();
+				response.sendRedirect(redirectSuccess);
 			}
 			else if(format.equals("SVG"))
 			{
@@ -184,12 +205,18 @@ public class AvailabilityServlet extends HttpServlet
 				String catFileName = category.replace(' ', '-');
 				String filename = ConfigFileConstants.getHome() + "/share/reports/AVAIL-SVG-" + catFileName + fmt.format(new java.util.Date()) +".pdf";
 				reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "SVG");
+				reportMailer.setLogoUrl(logo);
+				reportMailer.setCategoryName(category);
+				reportMailer.setFormat("SVG");
+
+				//call setter on flag to use the script else use JavaMail
+				reportMailer.setUseScript( "true".equalsIgnoreCase(useScript));
 				String emailAddr = reportMailer.getEmailAddress();
 				if(emailAddr == null || emailAddr.trim().length() == 0) 
 				{
 					response.sendRedirect(this.redirectNoEmail);
-                                	return;
-                        	}
+					return;
+				}
 				new Thread(reportMailer).start();
 				response.sendRedirect(redirectSuccess);
 			}

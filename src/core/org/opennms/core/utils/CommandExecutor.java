@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 Blast Internet Services, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2004 Blast Consulting Company.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -42,11 +42,12 @@ import org.apache.log4j.Category;
 
 /**This is a class to store and execute a console command
  * 
+ * @author <A HREF="mailto:david@opennms.org">David Hustace</A>
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */
-public class CommandExecutor
+public class CommandExecutor implements ExecutorStrategy
 {
 	/**This method executes the command using a Process. The method will decide if 
 	   an input stream needs to be used.

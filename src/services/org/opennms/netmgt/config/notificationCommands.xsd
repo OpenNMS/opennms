@@ -28,10 +28,17 @@
 		<complexType>
 			<sequence>
 				<element name="name" type="string" minOccurs="1" maxOccurs="1"/>
-                                <element name="execute" type="string" minOccurs="1" maxOccurs="1"/>
+                 <element name="execute" type="string" minOccurs="1" maxOccurs="1"/>
 				<element name="comment" type="string" minOccurs="0" maxOccurs="1"/>
 				<element ref="argument" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
+			<attribute name="binary" value="true">
+				<simpleType>
+					<restriction base="string">
+						<pattern value="(true|false)"/>
+					</restriction>
+				</simpleType>
+			</attribute>
 		</complexType>
 	</element>
 
@@ -39,7 +46,7 @@
 		<complexType>
 			<sequence>
 				<element name="substitution" type="string" minOccurs="0" maxOccurs="1"/>
-                                <element name="switch" type="string" minOccurs="0" maxOccurs="1"/>
+                 <element name="switch" type="string" minOccurs="0" maxOccurs="1"/>
 			</sequence>
 			<attribute name="streamed" use="required" value="false">
 				<simpleType>
@@ -52,4 +59,3 @@
 	</element>
 
 </schema>
-
