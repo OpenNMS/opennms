@@ -166,6 +166,7 @@ final class EventHandler implements Runnable {
 
         // close database related stuff in the eventwriter
         eventWriter.close();
+        alarmWriter.close();
     }
 
 }

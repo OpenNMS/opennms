@@ -96,6 +96,8 @@ final class EventWriter extends Persist {
             m_insStmt.close();
         } catch (SQLException sqle) {
             ThreadCategory.getInstance(EventWriter.class).warn("SQLException while closing prepared statements", sqle);
+        } finally {
+            super.close();
         }
     }
 
