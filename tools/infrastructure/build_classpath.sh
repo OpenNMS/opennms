@@ -23,24 +23,19 @@ build_classpath () {
 		local TYPE=`echo "$target" | awk -F: '{print $1}'`
 		local VAR=` echo "$target" | sed -e "s#^${TYPE}:##"`
 
-		VAR=`echo $VAR | sed -e "s,^${PREFIX}/,./,g"`
-
 		if [ -n "$VAR" ]; then
 			case "$TYPE" in
 				dir)
 					CP="$CP:$VAR"
 					;;
 				jar)
-					VAR=`find_jarfile $VAR`
-					VAR=`echo $VAR | sed -e "s,^${PREFIX}/,./,g"`
-					CP="$CP:$VAR"
+					CP="$CP:`find_jarfile $VAR`"
 					;;
 				jardir)
 					# some shells just put the "*.jar" literally in
 					# if there's no files :P
 					if [ `ls $VAR/*.jar 2>/dev/null | wc -l` -gt 0 ]; then
 						for jar in $VAR/*.jar; do
-							jar=`echo $jar | sed -e "s,^${PREFIX}/,./,g"`
 							CP="$CP:$jar"
 						done
 					fi
@@ -57,6 +52,7 @@ build_classpath () {
 	done
 
 	CP=`echo "$CP" | sed -e 's#^:*##'`
+	CP=`echo "$CP" | sed -e "s,${PREFIX}/,./,g"`
 	echo "$CP"
 	return
 
