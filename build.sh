@@ -126,5 +126,5 @@ if [ "$VERBOSE" = "1" ]; then
 		-mx256m org.apache.tools.ant.launch.Launcher "$@"
 fi
 
-$JAVA_HOME/bin/java $DEFINES -Dand.home=devlib -Droot.source="$PREFIX" -Djava.home="$JAVA_HOME" -cp "devlib/ant-launcher.jar:$CLASSPATH" \
+$JAVA_HOME/bin/java $DEFINES -Dant.home=devlib -Droot.source="$PREFIX" -Djava.home="$JAVA_HOME" -cp "devlib/ant-launcher.jar:$CLASSPATH" \
 	-mx256m org.apache.tools.ant.launch.Launcher "$@"
