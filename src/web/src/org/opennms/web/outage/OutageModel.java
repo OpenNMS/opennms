@@ -545,10 +545,7 @@ public class OutageModel extends Object
             element = rs.getString("servicename");
             outage.serviceName = (String)element;
 
-            element = new Integer(rs.getInt("outageid"));
-            if( element != null) {
-            	outage.outageId = ((Integer)element).intValue();
-            }
+            outage.outageId = rs.getInt("outageid");
             
             element = rs.getTimestamp("iflostservice");
             if( element != null) {
