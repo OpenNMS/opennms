@@ -774,20 +774,22 @@ final class SuspectEventProcessor implements Runnable {
                     // physical address
                     StringBuffer sbuf = new StringBuffer();
                     SnmpOctetString ostr = (SnmpOctetString) ifte.get(IfTableEntry.IF_PHYS_ADDR);
-
-                    byte[] bytes = ostr.getString();
-                    for (int i = 0; i < bytes.length; i++) {
-                        sbuf.append(Integer.toHexString(((int) bytes[i] >> 4) & 0xf));
-                        sbuf.append(Integer.toHexString((int) bytes[i] & 0xf));
-                    }
-
-                    String physAddr = sbuf.toString().trim();
-
-                    if (log.isDebugEnabled())
-                        log.debug("SuspectEventProcessor: " + aaddrs[0].getHostAddress() + " has physical address: -" + physAddr + "-");
-
-                    if (physAddr.length() == 12) {
-                        snmpEntry.setPhysicalAddress(physAddr);
+                    if (ostr != null) {
+                        
+                        byte[] bytes = ostr.getString();
+                        for (int i = 0; i < bytes.length; i++) {
+                            sbuf.append(Integer.toHexString(((int) bytes[i] >> 4) & 0xf));
+                            sbuf.append(Integer.toHexString((int) bytes[i] & 0xf));
+                        }
+                        
+                        String physAddr = sbuf.toString().trim();
+                        
+                        if (log.isDebugEnabled())
+                            log.debug("SuspectEventProcessor: " + aaddrs[0].getHostAddress() + " has physical address: -" + physAddr + "-");
+                        
+                        if (physAddr.length() == 12) {
+                            snmpEntry.setPhysicalAddress(physAddr);
+                        }
                     }
 
                     // type
