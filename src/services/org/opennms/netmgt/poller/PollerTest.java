@@ -98,6 +98,13 @@ public class PollerTest extends TestCase {
         m_network.addInterface("192.168.1.3");
         m_network.addService("ICMP");
         m_network.addService("HTTP");
+        m_network.addNode(3, "Firewall");
+        m_network.addInterface("192.168.1.4");
+        m_network.addService("SMTP");
+        m_network.addService("HTTP");
+        m_network.addInterface("192.168.1.5");
+        m_network.addService("SMTP");
+        m_network.addService("HTTP");
         
         m_db = new MockDatabase();
         m_db.populate(m_network);
@@ -225,6 +232,31 @@ public class PollerTest extends TestCase {
         bringDownCritSvcs(node);
 
         verifyAnticipated(8000);
+    }
+    
+    public void testInterfaceWithNoCriticalService() {
+        m_pollerConfig.setNodeOutageProcessingEnabled(true);
+
+        MockInterface iface = m_network.getInterface(3, "192.168.1.4");
+        MockService svc = iface.getService("SMTP");
+        MockService otherService = iface.getService("HTTP");
+
+        startDaemons();
+
+        anticipateDown(iface);
+
+        iface.bringDown();
+        
+        verifyAnticipated(8000);
+        
+        anticipateUp(iface);
+        anticipateDown(otherService, true);
+        
+        svc.bringUp();
+        
+        verifyAnticipated(8000);
+        
+        
     }
     
     // what about scheduled outages?
@@ -582,11 +614,11 @@ public class PollerTest extends TestCase {
 
         startDaemons();
 
-        MockNode node = m_network.addNode(3, "TestNode");
+        MockNode node = m_network.addNode(99, "TestNode");
         m_db.writeNode(node);
-        MockInterface iface = m_network.addInterface(3, "10.1.1.1");
+        MockInterface iface = m_network.addInterface(99, "10.1.1.1");
         m_db.writeInterface(iface);
-        MockService element = m_network.addService(3, "10.1.1.1", "HTTP");
+        MockService element = m_network.addService(99, "10.1.1.1", "HTTP");
         m_db.writeService(element);
         m_pollerConfig.addService(element);
 
@@ -635,6 +667,8 @@ public class PollerTest extends TestCase {
         assertTrue(0 < svc.getPollCount());
 
     }
+    
+    
     
     //
     // Utility methods
