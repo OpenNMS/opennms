@@ -89,7 +89,8 @@ public class MockInterface extends MockContainer {
 
     // FIXME: model?
     public int getPollStatus() {
-        final String critSvc = getNetwork().getCriticalService();
+        final String critSvcName = getNetwork().getCriticalService();
+        final MockService critSvc = getService(critSvcName);
         class IFStatusCalculator extends MockVisitorAdapter {
             int status = ServiceMonitor.SERVICE_UNAVAILABLE;
 
@@ -98,7 +99,7 @@ public class MockInterface extends MockContainer {
             }
 
             public void visitService(MockService svc) {
-                if (critSvc == null || critSvc.equals(svc.getName())) {
+                if (critSvc == null || critSvc.equals(svc)) {
                     if (svc.getPollStatus() == ServiceMonitor.SERVICE_AVAILABLE)
                         status = ServiceMonitor.SERVICE_AVAILABLE;
                 }
