@@ -32,7 +32,7 @@ your distribution.
 
   <!-- build options -->
   <!-- Warning: there are some internal ant properties named build.* -->
-  <property name="build.dir" value="work"/>
+  <property name="build.dir" value="${basedir}/work"/>
   <property name="build.castor.source.dir" value="${build.dir}/castor"/>
   <property name="build.sablecc.source.dir" value="${build.dir}/sablecc"/>
   <property name="build.docs.dir" value="${build.dir}/docs"/>
@@ -269,8 +269,18 @@ your distribution.
   </patternset>
 
   <!-- ant tasks -->
-  <taskdef name="sablecc" classname="org.sablecc.ant.taskdef.Sablecc"/>
-  <taskdef name="castor" classname="org.apache.tools.ant.taskdefs.optional.castor.SourceGeneratorTask"/>
+  <taskdef name="sablecc" classname="org.sablecc.ant.taskdef.Sablecc">
+  	<classpath>
+  		<pathelement location="${basedir}/devlib/sablecc-anttask-1.1.0.jar" />
+  		<pathelement location="${basedir}/devlib/sablecc-2.17.2.jar" />
+  	</classpath>
+  </taskdef>
+  <taskdef name="castor" classname="org.apache.tools.ant.taskdefs.optional.castor.SourceGeneratorTask">
+  	<classpath>
+  		<pathelement location="${basedir}/devlib/castorAntTask.jar" />
+  		<pathelement location="${basedir}/devlib/castor-0.9.3.9.jar" />
+  	</classpath>
+  </taskdef>
   <taskdef name="fop" classname="org.apache.fop.tools.anttasks.Fop">
     <classpath>
       <pathelement location="${packaged.lib.dir}/fop0203.jar"/>
