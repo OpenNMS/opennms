@@ -15,14 +15,12 @@
 - Made some improvements to the node page. Bug 1018. Thx Bill
 - Added notification selection to top of page. Bug 1017. Thx Bill
 - Added nodeid to modify asset page. Bug 785
-- Added a new an improved DHCP poller. Bug 663. Thx Bill
+- Added a new and improved DHCP poller. Bug 663. Thx Bill
 - Added a more descriptive error message when an invalid outage ID
   is entered in the webUI. Bug 498
 - Added display of ifAlias in an event or notification.  It uses the nodeid
   and the ipaddr to find it.  Use %ifalias% to see this in the event or 
   notification.  Bug 1140
-- Added the ability to collect strings via SNMP and use them
-  to label performance reports. Bug 1115. Thx Craig.
 - Fix the opennms init script so that it works properly with chkconfig.
   Bug 1177.  Thanks Julian Gomez <JulianJose.Gomez@getronics.com>.
 - Fixed the Configure SNMP Data Collection per Interface UI to be

@@ -173,7 +173,7 @@ report.netsnmp.disk1percent.command=--title="Percentage Disk Space on {ns-disk-1
       DHCP server being polled will unicast its responses directly back to the
       specified ip address rather than broadcasting its responses. This allows
       DHCP servers to be polled even though they are not on the same subnet as
-      the OpenNMS server, and without the aid of an external relay. </para>
+      the OpenNMS server, and without the aid of an external relay.</para>
 
       <para>usage: myIpAddress="10.11.12.13" or myIpAddress="broadcast"
       (default)</para>
@@ -198,11 +198,11 @@ report.netsnmp.disk1percent.command=--title="Percentage Disk Space on {ns-disk-1
       ip address is incremented or decremented by 1 to obtain an ip address
       that is on the same subnet. (The resulting address will not be on the
       same subnet if the DHCP server's subnet is a /32 or /31. Otherwise, the
-      algorithm used should be reliable.) </para>
+      algorithm used should be reliable.)</para>
 
       <para>usage: requestIpAddress="10.77.88.99" or
       requestIpAddress="targetHost" or requestIpAddress="targetSubnet"
-      (default) </para>
+      (default)</para>
 
       <para><emphasis role="bold">Caution on usage:</emphasis> If in extended
       mode, the time required to complete the poll for an unresponsive node is
@@ -210,6 +210,137 @@ report.netsnmp.disk1percent.command=--title="Percentage Disk Space on {ns-disk-1
       of retries to a small number.</para>
 
       <para>Thanks to Bill for his hard work on this.</para>
+
+      <bridgehead>GUI for <filename>snmp-config.xml</filename> </bridgehead>
+
+      <para>Gerald Turner has written a useful admin GUI for managing the
+      <filename>snmp-config.xml</filename> file. It allows you to add specific
+      IP addresses and IP address ranges and associate them with community
+      strings.</para>
+
+      <para>For example, if you have the following default
+      <filename>snmp-config.xml</filename> file:</para>
+
+      <programlisting>&lt;snmp-config retry="3" timeout="800" read-community="public" write-community="private"&gt;
+
+&lt;/snmp-config&gt;</programlisting>
+
+      <para>this will use the default community string of "public" for SNMP
+      requests. Using the GUI, one can add a range that, say, uses
+      "public2":</para>
+
+      <programlisting>&lt;snmp-config retry="3" timeout="800" read-community="public" write-community="private"&gt;
+    &lt;definition read-community="public2"&gt;
+        &lt;range begin="192.168.0.1" end="192.168.0.254"/&gt;
+    &lt;/definition&gt;
+&lt;/snmp-config&gt;</programlisting>
+
+      <para>You can also add specific IP addresses, say this one for
+      "public3":</para>
+
+      <programlisting>&lt;snmp-config retry="3" timeout="800" read-community="public" write-community="private"&gt;
+    &lt;definition read-community="public2"&gt;
+        &lt;range begin="192.168.0.1" end="192.168.0.254"/&gt;
+    &lt;/definition&gt;
+    &lt;definition read-community="public3"&gt;
+        &lt;specific&gt;192.168.1.1&lt;/specific&gt;
+    &lt;/definition&gt;
+&lt;/snmp-config&gt;</programlisting>
+
+      <para>This feature will automatically do things like split ranges. For
+      example, add "public4" as the string for 192.168.0.50:</para>
+
+      <programlisting>&lt;snmp-config retry="3" timeout="800" read-community="public" write-community="private"&gt;
+    &lt;definition read-community="public2"&gt;
+        &lt;range begin="192.168.0.1" end="192.168.0.49"/&gt;
+        &lt;range begin="192.168.0.51" end="192.168.0.254"/&gt;
+    &lt;/definition&gt;
+    &lt;definition read-community="public3"&gt;
+        &lt;specific&gt;192.168.1.1&lt;/specific&gt;
+    &lt;/definition&gt;
+    &lt;definition read-community="public4"&gt;
+        &lt;specific&gt;192.168.0.50&lt;/specific&gt;
+    &lt;/definition&gt;
+&lt;/snmp-config&gt;</programlisting>
+
+      <para>There is a caveat. If you add a specific entry like 192.168.1.1
+      above, and then go back and add a range that includes that specific IP,
+      the range will overwrite the specific entry, as in this example for
+      "public5":</para>
+
+      <programlisting>&lt;snmp-config retry="3" timeout="800" read-community="public" write-community="private"&gt;
+    &lt;definition read-community="public2"&gt;
+        &lt;range begin="192.168.0.1" end="192.168.0.49"/&gt;
+        &lt;range begin="192.168.0.51" end="192.168.0.254"/&gt;
+    &lt;/definition&gt;
+    &lt;definition read-community="public4"&gt;
+        &lt;specific&gt;192.168.0.50&lt;/specific&gt;
+    &lt;/definition&gt;
+    &lt;definition read-community="public5"&gt;
+        &lt;range begin="192.168.1.1" end="192.168.1.254"/&gt;
+    &lt;/definition&gt;
+&lt;/snmp-config&gt;</programlisting>
+
+      <para>This feature was designed to help manage this file before
+      discovery It will not update the community string for an SNMP agent that
+      is already being collectd. In the case that the community string for a
+      device changes, and this results in a data collection failure event, it
+      is possible to change the community string to the correct one without
+      restarting OpenNMS. Use this GUI to make sure the community string is
+      correctly in the <filename>snmp-config.xml</filename> file, and then go
+      to the device's node page. Click the link that says "Update SNMP" and
+      collection should resume.</para>
+
+      <para>This was bug 1167, and I'm leaving it open as an enhancement
+      because there is one thing left I'd like to see. I'd like to see the
+      current contents of the <filename>snmp-config.xml</filename> file
+      displayed on this page as well. It is hoped that it will be available
+      for the next release.</para>
+
+      <para>Hats of to Gerald for this work. </para>
+
+      <bridgehead>Other Features</bridgehead>
+
+      <para>There were a number of smaller features included in this
+      release:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Added the RESOLVED tag to the body as well as the subject of
+          notifications.</para>
+        </listitem>
+
+        <listitem>
+          <para>Added a Linksys event to stop connection traps from Linksys
+          gear.</para>
+        </listitem>
+
+        <listitem>
+          <para>Added a "focus" to the Add Interface admin page so that it is
+          no longer required to select the field before typing the IP
+          address.</para>
+        </listitem>
+
+        <listitem>
+          <para>Greatly improved the execution speed of "Configure SNMP Data
+          Collection per Interface" in the Admin webUI.</para>
+        </listitem>
+
+        <listitem>
+          <para>Added the ability to display the ifAlias in events or
+          notifications using %ifalias%.</para>
+        </listitem>
+
+        <listitem>
+          <para>Improved the error message when entering an invalid Outage ID
+          in a search.</para>
+        </listitem>
+
+        <listitem>
+          <para>Numerous small improvements to the node page in the web
+          UI.</para>
+        </listitem>
+      </itemizedlist>
     </section>
 
     <section>
@@ -226,8 +357,8 @@ report.netsnmp.disk1percent.command=--title="Percentage Disk Space on {ns-disk-1
         </listitem>
 
         <listitem>
-          <para>Added the notifd "RESOLVED" string to the body of
-          notifications (in addition to just the subject).</para>
+          <para>Applied the patch to help with 30 second outages. Bug
+          1180.</para>
         </listitem>
 
         <listitem>
@@ -238,10 +369,23 @@ report.netsnmp.disk1percent.command=--title="Percentage Disk Space on {ns-disk-1
         </listitem>
 
         <listitem>
-          <para>Greatly improved the execution speed of "Configure SNMP Data
-          Collection per Interface" in the Admin webUI.</para>
+          <para>Fixed an issue with the service unresponsive behavior being
+          active even when not configured. Bug 1151.</para>
+        </listitem>
+
+        <listitem>
+          <para>Corrected a problem with Top 20 availability reports including
+          the wrong services. Bug 945.</para>
+        </listitem>
+
+        <listitem>
+          <para>The correct time is now shown in notifications, versus GMT.
+          Bug 1114.</para>
         </listitem>
       </itemizedlist>
+
+      <para>In addition, DJ Gregor (OGP) has done a number of improvements to
+      the build system.</para>
     </section>
   </section>
 
