@@ -1,5 +1,6 @@
 1.1.2 to 1.1.3
 ----------------------------------------------------------------------
+- Added Backup Exec event definitions. Thx Chris
 - Corrected numbering at bottom of asset import page. Thx Jonathan
   Bug 806
 - Fixed Pop3Monitor exception error. Thx. Xavier. Bug 807
