@@ -43,15 +43,14 @@ import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.Enumeration;
-import java.text.DateFormat;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -700,11 +699,6 @@ public final class EventUtil {
 		return (retParmVal == null ? null : retParmVal.trim());
 	}
 
-	private static DateFormat ThreadCategory(Class class1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	/**
 	 * Expand the value if it has parms in one of the following formats -
 	 * %element% values are expanded to have the value of the element where
@@ -854,7 +848,7 @@ public final class EventUtil {
 		Statement stmt = null;
 		try {
 			// Get database connection from the factory
-			dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+			dbConn = m_dbConn.getConnection();
 			
 			// Issue query and extract ifAlias from result set
 			stmt = dbConn.createStatement();
