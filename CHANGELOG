@@ -1,5 +1,7 @@
 1.0.0 to 1.1.0
 ----------------------------------------------------------------------
+- Added the ability to choose NOT to notify on a given service
+  via the WebUI. (Thx Nick W).
 - Added two new fields for notifications: %nodelabel% will return
   the nodelabel for the nodeid in the event, and %interfaceresolve%
   will return the hostname for the IP address of the interface.
