@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 
 VERSION_BUILD='1.18'
 
@@ -21,6 +21,9 @@ else
 		PREFIX=`$PWD_CMD`"/"`dirname $0` export PREFIX
 	fi
 fi
+
+# Lets start some place standard like the head of the build tree ...
+cd $PREFIX
 
 # load libraries
 for script in pid_process arg_process build_classpath check_tools \
