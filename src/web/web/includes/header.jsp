@@ -10,7 +10,7 @@
       outage/index.jsp, give the location "outages")
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.text.DateFormat,org.opennms.web.authenticate.Authentication,org.opennms.netmgt.config.NotifdConfigFactory"%>
+<%@page language="java" contentType="text/html" session="true" import="java.text.DateFormat,java.io.File,org.opennms.web.authenticate.Authentication,org.opennms.netmgt.config.NotifdConfigFactory"%>
 
 <%!
     static DateFormat dateFormatter = DateFormat.getDateInstance( DateFormat.MEDIUM );
@@ -36,6 +36,8 @@
     java.util.Date now = new java.util.Date(); 
     String date = dateFormatter.format( now );
     String time = timeFormatter.format( now );
+    File file = new File("@root.install@/etc/map.enable");
+
 %>
 
 <!-- Header -->
@@ -130,12 +132,14 @@
             <%  } %>
         
 
+<% if( file.exists() ) { %>
             <%-- Map --%>                               
             <%  if( "map".equals( location ) ) { %>
                   Map&nbsp;|&nbsp;
             <%  } else { %>
                   <a href="map/index.jsp">Map</a>&nbsp;|&nbsp;
             <%  } %>
+<% } %>
         
     
 <% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %>

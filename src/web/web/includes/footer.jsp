@@ -9,10 +9,11 @@
       outage/index.jsp, give the location "outages")
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.authenticate.Authentication" %>
+<%@page language="java" contentType="text/html" session="true" import="java.io.File,org.opennms.web.authenticate.Authentication" %>
 
 <%
     String location = (String)request.getParameter( "location" );
+    File file = new File("@root.install@/etc/map.enable");
 %>
 
 <!-- Footer -->
@@ -71,12 +72,14 @@
               <a href="report/index.jsp">Reports</a>&nbsp;|&nbsp;
         <%  } %>
 
+<% if( file.exists() ) { %>
         <%-- Map --%>                               
         <%  if( "map".equals( location ) ) { %>
               Map&nbsp;|&nbsp;
         <%  } else { %>
               <a href="map/index.jsp">Map</a>&nbsp;|&nbsp;
         <%  } %>
+<% } %>
 
 <% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
         <%-- Admin --%>                               
@@ -98,7 +101,7 @@
   </tr>
   <tr> 
     <td align="center" >
-      <font  SIZE="-1">Copyright &copy; 2002-2003 <a HREF="http://www.sortova.com/">Sortova Consulting Group, Inc.</a>. Parts Copyright &copy; 1999-2002 <a HREF="http://www.oculan.com/">Oculan Corp.</a>. Parts Copyright &copy; 2003 <a href="http://www.nksi.com/">NKSi.com.</a>.  OpenNMS is a trademark of <a href="http://www.sortova.com">Sortova Consulting Group, Inc.</a>. </font>
+      <font  SIZE="-1">Copyright &copy; 2002-2003 <a HREF="http://www.sortova.com/">Sortova Consulting Group, Inc.</a>. Parts Copyright &copy; 1999-2002 <a HREF="http://www.oculan.com/">Oculan Corp.</a>. Parts Copyright &copy; 2003 <a href="http://www.nksi.com/">NKSi.com.</a>. <BR> OpenNMS is a trademark of <a href="http://www.sortova.com">Sortova Consulting Group, Inc.</a>. </font>
     </td>
   </tr>
 </table>

@@ -1,5 +1,9 @@
 1.1.1 to 1.1.2
 ----------------------------------------------------------------------
+- Added Derek's code to implement mapping in OpenNMS. This is the
+  initial attempt, and thus it is disabled by default. Please
+  read $OPENNMS_HOME/etc/map.disable in order to enable mapping.
+  Thx. Derek
 - Added a new JDBC poller which does a synthetic transaction. (Thx 
   Jose)
 - Added some new trap definitions from IBM and Intel.
