@@ -224,7 +224,7 @@ javaFind() {
 # Is quiet and returns 0 if things look good.
 #
 checkConfiguredJava() {
-    mantra="run \"$opennms_home/bin/runjava -s\""
+    mantra="run \"$opennms_home/bin/runjava -s\" to setup java.conf"
 
     if [ ! -f $java_conf ]; then
 	warn "error: $java_conf file not found"
