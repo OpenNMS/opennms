@@ -222,9 +222,26 @@ your distribution.
   	<include name="jrobin*.jar" />
   </patternset>
 
+  <!-- The includes in this patternset need to match the directories in
+       the <fop> tasks for the pdf.docs target, along with the common
+       directory. -->
+  <patternset id="doc.dirs">
+    <include name="common/**"/>
+    <include name="install/**"/>
+    <include name="releasenotes/**"/>
+  </patternset>
+
   <!-- ant tasks -->
   <taskdef name="sablecc" classname="org.sablecc.ant.taskdef.Sablecc"/>
   <taskdef name="castor" classname="org.apache.tools.ant.taskdefs.optional.castor.SourceGeneratorTask"/>
+  <taskdef name="fop" classname="org.apache.fop.tools.anttasks.Fop">
+    <classpath>
+      <pathelement location="${packaged.lib.dir}/fop0203.jar"/>
+      <pathelement location="${packaged.lib.dir}/logkit-1.0.jar"/>
+      <pathelement location="${packaged.lib.dir}/avalon-framework-4.0.jar"/>
+      <pathelement location="${packaged.lib.dir}/batik.jar"/>
+    </classpath>
+  </taskdef>
   <taskdef resource="cpptasks.tasks"/>
   <taskdef resource="cpptasks.types"/>
 
@@ -797,7 +814,6 @@ OpenNMS as part of the post-install.
    <fileset dir="${packaged.lib.dir}">
     <patternset refid="lib.jars" />
    </fileset>
-   <!-- classpathref="libraries.java.path" --> <!-- XXX what's this? -->
   </copy>
   <chmod perm="0664">
    <fileset dir="${install.prefix}${install.dir}/lib">
@@ -911,7 +927,9 @@ OpenNMS as part of the post-install.
   <mkdir dir="${build.filter.docs.dir}"/>
   <copy todir="${build.filter.docs.dir}" filtering="yes"
 	overwrite="${filter.overwrite}">
-   <fileset dir="${docs.source.dir}"/>
+   <fileset dir="${docs.source.dir}">
+     <patternset refid="doc.dirs"/>
+   </fileset>
   </copy>
  </target>
 				   
@@ -1864,9 +1882,7 @@ OpenNMS as part of the post-install.
  </target>
 
  <!-- DOCS targets -->
- <!-- Note: pdf.docs doesn't currently work, so it has been removed from the
-      depends list below -->
- <target name="docs" depends="javadoc.docs,html.docs"
+ <target name="docs" depends="javadoc.docs,html.docs,pdf.docs"
 	 description="Build javadoc and manuals"/>
  
  <target name="javadoc.docs" depends="prep,sources,javadoc.docs.uptodate"
@@ -1932,7 +1948,7 @@ OpenNMS as part of the post-install.
   <mkdir dir="${build.docs.dir}"/>
   <style basedir="${build.filter.docs.dir}"
 	destdir="${build.docs.dir}"
-	style="${build.filter.docs.dir}/xsl/man2html.xsl"
+	style="${docs.source.dir}/xsl/docbook/html/docbook.xsl"
 	includes="*/book.xml"/>
  </target>
  
@@ -1964,29 +1980,20 @@ OpenNMS as part of the post-install.
   <mkdir dir="${build.docs.dir}"/>
   <style basedir="${build.filter.docs.dir}"
 	destdir="${build.docs.dir}"
-	style="${build.filter.docs.dir}/xsl/docbook/fo/docbook.xsl"
+	style="${docs.source.dir}/xsl/docbook/fo/docbook.xsl"
 	includes="**/book.xml"
 	classpath="${packaged.lib.dir}/xalan231.jar"
 	extension=".fot"
 	 />
  </target>
 
- <!-- XXX target pdf.docs doesn't currently work due to errors from FOP:
-      [apply] [ERROR]: 'master-reference' for 'fo:page-sequence'matches no 'simple-page-master' or 'page-sequence-master'
-   -->
- <target name="pdf.docs" depends="prep,docs.fot">
-  <apply executable="${java.home}/bin/java"
-	 dest="${build.docs.dir}">
-   <arg line="-classpath '${packaged.lib.dir}/fop0203.jar:${packaged.lib.dir}/logkit-1.0.jar:${packaged.lib.dir}/avalon-framework-4.0.jar:${packaged.lib.dir}/batik.jar:${java.class.path}' org.apache.fop.apps.Fop"/>
-   <arg value="-fo"/>
-   <srcfile/>
-   <arg value="-pdf"/>
-   <targetfile/>
-   <fileset dir="${build.docs.dir}">
-    <include name="**/*.fot"/>
-   </fileset>
-   <mapper type="glob" from="*.fot" to="*.pdf"/>
-  </apply>
+ <!-- The directories in the <fop> targets need to match the includes
+      in the doc.dirs patternset. -->
+ <target name="pdf.docs" depends="prep, docs.fot">
+   <fop fofile="${build.docs.dir}/install/book.fot"
+	outfile="${build.docs.dir}/install/book.pdf"/>
+   <fop fofile="${build.docs.dir}/releasenotes/book.fot"
+	outfile="${build.docs.dir}/releasenotes/book.pdf"/>
  </target>
  
  <!-- copy web UI JSPs to the webapp directory -->
