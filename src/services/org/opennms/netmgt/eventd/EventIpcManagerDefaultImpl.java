@@ -94,7 +94,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
 
     private String m_getNextAlarmIdStr;
 
-    private DbConnectionFactory m_dbConnectionFactory;
+    private static DbConnectionFactory m_dbConnectionFactory;
 
     /**
      * A thread dedicated to each listener. The events meant for each listener

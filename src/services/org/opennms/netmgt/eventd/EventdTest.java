@@ -1167,13 +1167,11 @@ public class EventdTest extends TestCase {
         m_eventd.setConfigManager(m_eventdConfigMgr);
         m_eventd.setDbConnectionFactory(m_db);
 
-        m_eventd.init();
-//        m_eventMgr = new MockEventIpcManager();
         m_eventdIpcMgr = new EventIpcManagerDefaultImpl(m_eventdConfigMgr);
         EventIpcManagerFactory.setIpcManager(m_eventdIpcMgr);
         m_eventdIpcMgr.setDbConnectionFactory(m_db);
-//        m_eventdIpcMgr.setEventdConfigMgr(m_eventdConfigMgr);
         m_eventd.setEventIpcManager(m_eventdIpcMgr);
+        m_eventd.init();
         m_eventd.start();
     }
 

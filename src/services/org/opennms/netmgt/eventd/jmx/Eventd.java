@@ -48,6 +48,7 @@ import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.EventdConfigFactory;
 import org.opennms.netmgt.eventd.EventConfigurationManager;
 import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
 
@@ -66,7 +67,6 @@ public class Eventd implements EventdMBean {
         try {
             EventdConfigFactory.reload();
             DatabaseConnectionFactory.init();
-            EventIpcManagerFactory.init();
             
         } catch (FileNotFoundException ex) {
             log.error("Failed to load eventd configuration. File Not Found:", ex);
@@ -101,10 +101,12 @@ public class Eventd implements EventdMBean {
             throw new UndeclaredThrowableException(ex);
         }
         
-        e.setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
         e.setConfigManager(EventdConfigFactory.getInstance());
-        EventIpcManager ipcMgr = EventIpcManagerFactory.getIpcManager();
-        ipcMgr.setEventdConfigMgr(EventdConfigFactory.getInstance());
+        e.setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
+        
+        EventIpcManager ipcMgr = new EventIpcManagerDefaultImpl(EventdConfigFactory.getInstance());
+        EventIpcManagerFactory.setIpcManager(ipcMgr);
+        EventIpcManagerFactory.init();
         ipcMgr.setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
         e.setEventIpcManager(ipcMgr);
         e.init();
