@@ -256,7 +256,8 @@ final class BroadcastEventProcessor
 		}
 		catch (Exception e)
 		{
-			ThreadCategory.getInstance(getClass()).error("Not able to get notify status for service " + service + " on interface/node " + ipAddr + "/" + nodeID + ". Not sending notice... "  + e.getMessage());
+			continueNotice = true;
+			ThreadCategory.getInstance(getClass()).error("Not able to get notify status for service " + service + " on interface/node " + ipAddr + "/" + nodeID + ". Continuing notice... "  + e.getMessage());
 		}
 		
 		//in case of a error we will return false
