@@ -148,6 +148,7 @@ public class DestinationWizardServlet extends HttpServlet
                         {
                                 String oldName = (String)user.getAttribute("oldName");
                                 path.setName(request.getParameter("name"));
+                                path.setInitialDelay(request.getParameter("initialDelay"));
                                 
                                 try
                                 {
