@@ -310,9 +310,24 @@ TOMCAT_USER="tomcat"
     second, the installation process must be able to create the
     database.</para>
 
-    <para>OpenNMS requires version 7 of Postgres. Version 1.0 of OpenNMS
-    requires a version less than 7.2, while version 1.1 of OpenNMS requires a
-    version of at least 7.2.</para>
+    <para>OpenNMS requires version 7 of Postgres. Version 1.1 of OpenNMS
+    requires a version of at least 7.3.</para>
+
+    <para>The minimum packages you will need to install should be:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para><filename>postgresql</filename></para>
+      </listitem>
+
+      <listitem>
+        <para><filename>postgresql-server</filename></para>
+      </listitem>
+
+      <listitem>
+        <para><filename>postgresql-libs</filename></para>
+      </listitem>
+    </itemizedlist>
 
     <para>Once you have installed Postgres, you will need to make two changes
     to Postgres configuration files: <filename>postgresql.conf</filename> and
