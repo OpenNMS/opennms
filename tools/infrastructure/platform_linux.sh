@@ -34,7 +34,7 @@ if [ `uname` = 'Linux' ]; then
 
 		fedtest=`cat /etc/redhat-release | awk '{print $1}'`
 
-		if [ $fedtest != 'Fedora' ]; then
+		if [ $fedtest != 'Fedora' ] && [ $fedtest != 'CentOS' ] ; then
 
 			relnum=`cat /etc/redhat-release | awk '{print $5}'`
 			major=`echo $relnum | cut -d'.' -f1`
