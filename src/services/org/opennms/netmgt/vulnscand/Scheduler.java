@@ -194,10 +194,13 @@ final class Scheduler
 				log.info("Adding " + levelAddresses.size() + " addresses to the vulnerability scan scheduler.");
 
 				Iterator itr = levelAddresses.iterator();
-				while (itr.hasNext())
-				{
-					String nextAddress = (String)itr.next();
-					try
+ 				while (itr.hasNext())
+ 				{
+ 					Object next = itr.next();
+ 					String nextAddress = null;
+ 
+ 					if(next instanceof String) { nextAddress = (String)next;}
+ 					try
 					{
 						addToKnownAddresses(InetAddress.getByName(nextAddress), level);
 					}

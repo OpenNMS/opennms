@@ -182,7 +182,7 @@ public final class Pop3Plugin
 			catch(Throwable t)
 			{
 				isAServer = false;
-				log.error("Pop3Plugin: An undeclared throwable exception was caught contacting host " + host.getAddress(), t);
+				log.error("Pop3Plugin: An undeclared throwable exception was caught contacting host " + host.getHostAddress(), t);
 			}
 			finally
 			{

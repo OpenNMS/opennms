@@ -99,7 +99,7 @@
               </ol>
             </td>
             <td colspan="33%">
-              <ol start="13">
+              <ol start="14">
                 <li> Port
                 <li> Region
                 <li> Division
@@ -116,7 +116,7 @@
               </ol>
             </td>
             <td colspan="33%">
-              <ol start="25">
+              <ol start="27">
                 <li> VendorFax
                 <li> DateInstalled
                 <li> Lease
