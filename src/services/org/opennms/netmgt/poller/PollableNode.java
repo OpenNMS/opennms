@@ -113,5 +113,7 @@ public class PollableNode extends PollableContainer {
     public Event createUpEvent(Date date) {
         return getContext().createEvent(EventConstants.NODE_UP_EVENT_UEI, getNodeId(), null, null, date);
     }
+    
+    public String toString() { return String.valueOf(getNodeId()); }
 
 }

@@ -152,5 +152,7 @@ public class PollableInterface extends PollableContainer {
     public Event createUpEvent(Date date) {
         return getContext().createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, getNodeId(), getAddress(), null, date);
     }
+    
+    public String toString() { return getNode()+":"+getIpAddr(); }
 
 }

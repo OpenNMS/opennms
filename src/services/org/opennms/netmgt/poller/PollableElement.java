@@ -46,7 +46,7 @@ abstract public class PollableElement {
     private PollStatus m_status = PollStatus.STATUS_UNKNOWN;
     private boolean m_statusChanged = false;
     private long m_statusChangeTime = 0L;
-    private PollOutage m_outage = null;
+    private PollEvent m_cause;
 
 
     protected PollableElement(PollableContainer parent) {
@@ -142,17 +142,27 @@ abstract public class PollableElement {
     public abstract Event createUpEvent(Date date);
 
     /**
-     * @param e
+     * @param cause TODO
      */
-    protected void createOutage(Event e, Date date) {
+    protected void createOutage(PollEvent cause) {
+        if (!hasOpenOutage())
+            m_cause = cause;
+    
         resetStatusChanged();
     }
 
     /**
+     * @param resolution TODO
      * @param e
      */
-    protected void resolveOutage(Event e, Date date) {
+    protected void resolveOutage(PollEvent resolution) {
+        if (hasOpenOutage())
+            m_cause = null;
         resetStatusChanged();
+    }
+    
+    protected boolean hasOpenOutage() {
+        return m_cause != null;
     }
     
     /**
@@ -168,28 +178,30 @@ abstract public class PollableElement {
     }
 
     protected void processComingUp(Date date) {
-        resolveOutage(getContext().sendEvent(createUpEvent(date)), date);
+        Event upEvent = getContext().sendEvent(createUpEvent(date));
+        PollEvent resolution = new PollEvent(upEvent, date);
+        resolveOutage(resolution);
     }
 
     protected void processGoingDown(Date date) {
-        createOutage(getContext().sendEvent(createDownEvent(date)), date);
+        Event downEvent = getContext().sendEvent(createDownEvent(date));
+        PollEvent cause = new PollEvent(downEvent, date);
+        createOutage(cause);
     }
 
     /**
      * @param date
      */
-    public void processLingeringStatusChanges(Date date) {
-        if (getStatus().isDown())
-            createOutage(getContext().sendEvent(createDownEvent(date)), date);
-        
+    public void processLingeringStatusChanges(PollEvent cause, Date date) {
+        if (getStatus().isDown()) {
+            Event downEvent = getContext().sendEvent(createDownEvent(date));
+            PollEvent newCause = new PollEvent(downEvent, date);
+            createOutage(newCause);
+        }
     }
-
-    protected void setOutage(PollOutage outage) {
-        m_outage = outage;
-    }
-
-    protected PollOutage getOutage() {
-        return m_outage;
+    
+    public PollEvent getCause() {
+        return m_cause;
     }
 
 }

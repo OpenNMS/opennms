@@ -892,6 +892,34 @@ public class PollablesTest extends TestCase {
         verifyAnticipated();
     }
     
+    public void testCause() {
+        anticipateDown(mDot1Smtp);
+        
+        mDot1Smtp.bringDown();
+        
+        pDot1Smtp.doPoll();
+        
+        pDot1.processStatusChange(new Date());
+
+        anticipateDown(mDot1);
+        
+        mDot1.bringDown();
+        
+        pDot1Icmp.doPoll();
+        
+        pDot1.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        PollEvent cause = pDot1.getCause();
+        assertNotNull(cause);
+        
+        assertEquals(cause, pDot1.getCause());
+        assertEquals(cause, pDot1Icmp.getCause());
+        assertFalse(cause.equals(pDot1Smtp.getCause()));
+        
+    }
+    
     // TODO: make this work
     public void xxtestIndependentOutageEvents() throws Exception {
         anticipateDown(mDot1Smtp);

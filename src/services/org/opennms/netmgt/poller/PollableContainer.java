@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.opennms.netmgt.xml.event.Event;
 
 /**
  * Represents a PollableContainer 
@@ -230,16 +229,17 @@ abstract public class PollableContainer extends PollableElement {
     
     
     protected void processComingUp(Date date) {
+        PollEvent cause = getCause();
         super.processComingUp(date);
-        processMemberLingeringStatusChanges(date);
+        processMemberLingeringStatusChanges(cause, date);
     }
     /**
      * @param date
      */
-    private void processMemberLingeringStatusChanges(final Date date) {
+    private void processMemberLingeringStatusChanges(final PollEvent cause, final Date date) {
         Iter iter = new Iter() {
             public void forEachElement(PollableElement elem) {
-                elem.processLingeringStatusChanges(date);
+                elem.processLingeringStatusChanges(cause, date);
             }
             
         };
@@ -250,30 +250,34 @@ abstract public class PollableContainer extends PollableElement {
     protected void processGoingDown(Date date) {
         super.processGoingDown(date);
     }
-    public void processLingeringStatusChanges(Date date) {
-        super.processLingeringStatusChanges(date);
+    public void processLingeringStatusChanges(PollEvent cause, Date date) {
+        super.processLingeringStatusChanges(cause, date);
         if (getStatus().isUp())
-            processMemberLingeringStatusChanges(date);
+            processMemberLingeringStatusChanges(getCause(), date);
     }
  
-    protected void createOutage(final Event e, final Date date) {
-        Iter iter = new Iter() {
-            public void forEachElement(PollableElement member) {
-                member.createOutage(e, date);
-            }
-            
-        };
-        forEachMember(iter);
-        super.createOutage(e, date);
+    protected void createOutage(final PollEvent cause) {
+        if (!hasOpenOutage()) {
+            Iter iter = new Iter() {
+                public void forEachElement(PollableElement member) {
+                    member.createOutage(cause);
+                }
+                
+            };
+            forEachMember(iter);
+        }
+        super.createOutage(cause);
     }
-    protected void resolveOutage(final Event e, final Date date) {
-        Iter iter = new Iter() {
-            public void forEachElement(PollableElement member) {
-                member.resolveOutage(e, date);
-            }
-            
-        };
-        forEachMember(iter);
-        super.resolveOutage(e, date);
+    protected void resolveOutage(final PollEvent resolution) {
+        if (hasOpenOutage()) {
+            Iter iter = new Iter() {
+                public void forEachElement(PollableElement member) {
+                    member.resolveOutage(resolution);
+                }
+                
+            };
+            forEachMember(iter);
+        }
+        super.resolveOutage(resolution);
     }
 }

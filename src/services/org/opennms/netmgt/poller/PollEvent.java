@@ -36,74 +36,42 @@ import java.util.Date;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * Represents a PollOutage 
+ * Represents a PollEvent 
  *
  * @author brozow
  */
-public class PollOutage {
+public class PollEvent {
+
+    Event m_event;
+    Date m_date;
     
-    private Event m_lostEvent;
-    private Date m_lostDate;
-    private Event m_regainEvent;
-    private Date m_regainDate;
-    private PollableElement m_element;
-
-    /**
-     * @param element
-     * @param e
-     * @param date
-     */
-    public PollOutage(PollableElement element, Event lostEvent, Date lostDate) {
-        m_element = element;
-        m_lostEvent = lostEvent;
-        m_lostDate = lostDate;
-    }
-
-    /**
-     * @param e
-     * @param date
-     */
-    public void resolve(Event regainEvent, Date regainDate) {
-        m_regainEvent = regainEvent;
-        m_regainDate = regainDate;
-    }
-
-    /**
-     * 
-     */
-    public void open() {
+    public PollEvent(Event event, Date date) {
+        if (!event.hasDbid())
+            throw new IllegalArgumentException("The event must be sent before it can be used in a PollEvent");
         
+        m_event = event;
+        m_date = date;
     }
 
+    public Event getEvent() {
+        return m_event;
+    }
+    
+    public Date getDate() {
+        return m_date;
+    }
+    
+    public int hashCode() { return m_event.getDbid(); }
+    
+    public boolean equals(PollEvent e) {
+        if (e == null) return false;
+        return m_event.getDbid() == e.m_event.getDbid();
+    }
+    
+    public boolean equals(Object o) {
+        if (o instanceof PollEvent)
+            return equals((PollEvent)o);
+        return false;
+    }
 
-    public PollableElement getElement() {
-        return m_element;
-    }
-    public void setElement(PollableElement element) {
-        m_element = element;
-    }
-    public Date getLostDate() {
-        return m_lostDate;
-    }
-    public void setLostDate(Date lostDate) {
-        m_lostDate = lostDate;
-    }
-    public Event getLostEvent() {
-        return m_lostEvent;
-    }
-    public void setLostEvent(Event lostEvent) {
-        m_lostEvent = lostEvent;
-    }
-    public Date getRegainDate() {
-        return m_regainDate;
-    }
-    public void setRegainDate(Date regainDate) {
-        m_regainDate = regainDate;
-    }
-    public Event getRegainEvent() {
-        return m_regainEvent;
-    }
-    public void setRegainEvent(Event regainEvent) {
-        m_regainEvent = regainEvent;
-    }
 }
