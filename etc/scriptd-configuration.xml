@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<scriptd-configuration>
+	<engine language="beanshell" className="bsh.util.BeanShellBSFEngine" extensions="bsh"/>
+</scriptd-configuration>
+
