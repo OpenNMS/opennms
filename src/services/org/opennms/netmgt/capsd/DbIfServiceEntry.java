@@ -346,7 +346,7 @@ public final class DbIfServiceEntry {
             comma = ',';
         }
 
-        sqlText.append(" WHERE nodeID = ? AND ipAddr = ? AND serviceID = ?");
+        sqlText.append(" WHERE nodeID = ? AND ipAddr = ? AND serviceID = ? and status <> 'D'");
 
         log.debug("DbIfServiceEntry.update: SQL update statment = " + sqlText.toString());
 
