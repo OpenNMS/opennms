@@ -33,12 +33,16 @@
 package org.opennms.web.admin.views;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import javax.servlet.*;
-import javax.servlet.http.*;
 
-import org.opennms.netmgt.config.views.View;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.opennms.netmgt.config.ViewFactory;
+import org.opennms.netmgt.config.views.View;
 
 /**
  * A servlet that handles putting the View object into the 

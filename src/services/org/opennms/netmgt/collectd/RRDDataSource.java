@@ -34,7 +34,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.util.*;
 
 /**
  * This class encapsulates an RRDTool data source.  Data source information

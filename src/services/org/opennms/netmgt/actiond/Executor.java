@@ -38,20 +38,17 @@
 
 package org.opennms.netmgt.actiond;
 
-import java.lang.*;
-import java.util.List;
-import java.util.LinkedList;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.io.IOException;
-
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueException;
-
-import org.opennms.core.fiber.PausableFiber;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.log4j.Category;
+import org.opennms.core.fiber.PausableFiber;
+import org.opennms.core.queue.FifoQueue;
+import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
 
 /**

@@ -41,13 +41,12 @@
 
 package org.opennms.netmgt;
 
-import java.lang.*;
 import java.io.File;
-import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 
 /**
  * This class holds all OpenNMS related config filenames

@@ -33,7 +33,8 @@
 package org.opennms.web.outage;
 
 import java.util.ArrayList;
-import org.opennms.web.outage.filter.*;
+
+import org.opennms.web.outage.filter.Filter;
 
 
 /**

@@ -36,10 +36,9 @@
 
 package org.opennms.protocols.ip;
 
-import java.lang.*;
 import java.io.Serializable;
-import java.util.StringTokenizer;
 import java.net.InetAddress;
+import java.util.StringTokenizer;
 
 /**
  * Represents an Internet Protocol version 4 address.

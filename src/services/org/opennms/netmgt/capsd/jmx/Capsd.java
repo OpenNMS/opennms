@@ -31,7 +31,6 @@
 //
 
 package org.opennms.netmgt.capsd.jmx;
-import java.lang.*;
 import java.net.UnknownHostException;
 
 public class Capsd

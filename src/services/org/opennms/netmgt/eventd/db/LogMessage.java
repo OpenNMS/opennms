@@ -34,9 +34,7 @@
 
 package org.opennms.netmgt.eventd.db;
 
-import java.lang.*;
-
-import org.opennms.netmgt.xml.event.*;
+import org.opennms.netmgt.xml.event.Logmsg;
 
 /**
  * This is an utility class used to format the event log message

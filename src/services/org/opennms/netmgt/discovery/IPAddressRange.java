@@ -34,11 +34,8 @@
 
 package org.opennms.netmgt.discovery;
 
-import java.lang.*;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.NoSuchElementException;

@@ -31,9 +31,8 @@
 
 package org.opennms.web.eventconf.bobject;
 
-import java.io.*;
-import java.util.*;
-import java.security.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is a data class for storing event configuration information

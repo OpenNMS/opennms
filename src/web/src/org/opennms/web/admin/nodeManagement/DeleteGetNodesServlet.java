@@ -33,14 +33,21 @@
 package org.opennms.web.admin.nodeManagement;
 
 import java.io.IOException;
-import java.util.*;
-import java.sql.*;
 import java.sql.Connection;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.opennms.web.element.NetworkElementFactory;
-import org.opennms.netmgt.config.*;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
 
 /**
  * A servlet that handles querying the database for node information

@@ -38,22 +38,17 @@
 
 package org.opennms.netmgt.eventd.adaptors.tcp;
 
-import java.lang.*;
-import java.lang.reflect.UndeclaredThrowableException;
-
 import java.io.IOException;
-
-import java.util.List;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
+import java.util.List;
 
-import javax.management.MalformedObjectNameException;
 import javax.management.InstanceNotFoundException;
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.opennms.core.utils.ThreadCategory;
-
 import org.apache.log4j.Category;
-
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.eventd.adaptors.EventHandlerMBeanProxy;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;

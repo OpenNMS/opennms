@@ -32,7 +32,8 @@
 
 package org.opennms.web.admin.groups.parsers;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**This is a data class to store the group information from
  * the groups.xml file

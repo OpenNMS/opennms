@@ -38,19 +38,15 @@
 
 package org.opennms.netmgt.eventd.adaptors.tcp;
 
-import java.lang.*;
-
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.BufferedInputStream;
-import java.io.PipedOutputStream;
-import java.io.IOException;
 import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InterruptedIOException;
-
-import java.net.Socket;
+import java.io.OutputStream;
+import java.io.PipedOutputStream;
 import java.net.InetAddress;
-
+import java.net.Socket;
 import java.util.List;
 
 import org.apache.log4j.Category;

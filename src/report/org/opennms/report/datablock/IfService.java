@@ -34,7 +34,6 @@
 
 package org.opennms.report.datablock;
 
-import java.util.*;
 
 /**
  * This class holds the managed node/ip/service information for valid outage nodes. 

@@ -35,8 +35,6 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.Exception;
-import java.lang.System;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 

@@ -33,24 +33,17 @@
 package org.opennms.web.admin.config;
 
 import java.io.IOException;
-import java.io.*;
-import java.util.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import javax.servlet.*;
-import javax.servlet.http.*;
 
-import org.opennms.netmgt.config.*;
-import org.opennms.netmgt.utils.EventProxy;
-import org.opennms.netmgt.utils.TcpEventProxy;
-import org.opennms.netmgt.xml.event.*;
-import org.opennms.web.element.NetworkElementFactory;
-import org.opennms.netmgt.config.EventconfFactory;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.utils.TcpEventProxy;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * A servlet that handles signaling that the poller config has been updated

@@ -49,15 +49,13 @@ import java.util.Properties;
 import org.apache.catalina.Container;
 import org.apache.catalina.Realm;
 import org.apache.log4j.Category;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.BundleLists;
-import org.opennms.netmgt.config.*;
-import org.opennms.netmgt.config.users.*;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.users.User;
 
 
 /**

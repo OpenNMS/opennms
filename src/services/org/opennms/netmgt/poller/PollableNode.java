@@ -37,25 +37,29 @@
 
 package org.opennms.netmgt.poller;
 
-import java.net.*;
-import java.util.*;
-import java.sql.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-
-// Castor generated
-import org.opennms.netmgt.xml.event.Log;
-import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Value;
-import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Events;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
 
 /**
  * <P>The PollableNode class...</P>

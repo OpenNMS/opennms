@@ -41,21 +41,23 @@
 
 package org.opennms.netmgt.outage;
 
-import java.io.*;
-import java.util.*;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Enumeration;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.netmgt.config.OutageManagerConfigFactory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.OutageManagerConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-
-// castor generated classes
-import org.opennms.netmgt.xml.event.*;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
 
 /**
  * <p>When a 'nodeLostService' is received, it is made sure that there is no

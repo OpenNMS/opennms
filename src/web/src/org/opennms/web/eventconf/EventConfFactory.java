@@ -36,15 +36,19 @@
 
 package org.opennms.web.eventconf;
 
-import java.util.*;
-import java.io.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.web.parsers.*;
-import org.opennms.web.eventconf.parsers.*;
-import org.opennms.web.eventconf.bobject.*;
-import org.opennms.netmgt.PropertyConstants;
+import org.opennms.web.eventconf.bobject.Event;
+import org.opennms.web.eventconf.bobject.Global;
+import org.opennms.web.eventconf.parsers.EventConfParser;
+import org.opennms.web.eventconf.parsers.EventConfWriter;
+import org.opennms.web.parsers.XMLWriteException;
 
 /**
 */

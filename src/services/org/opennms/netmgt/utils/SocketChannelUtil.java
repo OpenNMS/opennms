@@ -37,7 +37,6 @@
 
 package org.opennms.netmgt.utils;
 
-import java.lang.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;

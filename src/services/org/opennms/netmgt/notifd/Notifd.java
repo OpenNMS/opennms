@@ -38,20 +38,15 @@
 
 package org.opennms.netmgt.notifd;
 
-import java.lang.*;
-import java.sql.*;
-import java.util.*;
-
 import java.lang.reflect.UndeclaredThrowableException;
-
-import org.opennms.core.utils.ThreadCategory;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.opennms.core.fiber.PausableFiber;
-import org.opennms.core.resource.*;
-import org.opennms.core.resource.db.*;
-
-import org.opennms.netmgt.config.*;
-import org.opennms.netmgt.config.notifd.*;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.NotifdConfigFactory;
+import org.opennms.netmgt.config.notifd.Queue;
 
 /**
  * This class is used to represent the notification execution

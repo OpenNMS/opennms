@@ -36,7 +36,6 @@
 
 package org.opennms.netmgt.poller;
 
-import java.lang.*;
 import java.util.Map;
 
 /**

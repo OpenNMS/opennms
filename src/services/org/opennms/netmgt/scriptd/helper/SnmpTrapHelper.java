@@ -34,48 +34,40 @@
 
 package org.opennms.netmgt.scriptd.helper;
 
-import java.io.*;
-import java.util.HashMap;
-import java.util.Date;
-
+import java.io.IOException;
 import java.net.InetAddress;
-
-import org.opennms.netmgt.trapd.EventConstants;
+import java.util.HashMap;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.ThreadCategory;
-
+import org.opennms.netmgt.trapd.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Value;
 import org.opennms.netmgt.xml.event.Snmp;
-
-import org.opennms.protocols.snmp.SnmpPduTrap;
+import org.opennms.netmgt.xml.event.Value;
 import org.opennms.protocols.ip.IPv4Address;
-import org.opennms.protocols.snmp.asn1.AsnEncodingException;
+import org.opennms.protocols.snmp.SnmpBadConversionException;
+import org.opennms.protocols.snmp.SnmpCounter32;
+import org.opennms.protocols.snmp.SnmpCounter64;
+import org.opennms.protocols.snmp.SnmpGauge32;
 import org.opennms.protocols.snmp.SnmpIPAddress;
-import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpInt32;
 import org.opennms.protocols.snmp.SnmpNull;
 import org.opennms.protocols.snmp.SnmpObjectId;
-import org.opennms.protocols.snmp.SnmpTimeTicks;
-import org.opennms.protocols.snmp.SnmpCounter32;
-import org.opennms.protocols.snmp.SnmpGauge32;
+import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpOpaque;
-import org.opennms.protocols.snmp.SnmpCounter64;
-import org.opennms.protocols.snmp.SnmpVarBind;
-import org.opennms.protocols.snmp.SnmpHandler;
-import org.opennms.protocols.snmp.SnmpTrapHandler;
-import org.opennms.protocols.snmp.SnmpSession;
-import org.opennms.protocols.snmp.SnmpTrapSession;
-import org.opennms.protocols.snmp.SnmpSyntax;
-import org.opennms.protocols.snmp.SnmpPduPacket;
-import org.opennms.protocols.snmp.SnmpPduRequest;
-import org.opennms.protocols.snmp.SnmpPeer;
 import org.opennms.protocols.snmp.SnmpParameters;
 import org.opennms.protocols.snmp.SnmpPduEncodingException;
-import org.opennms.protocols.snmp.SnmpBadConversionException;
-import org.opennms.core.utils.Base64;
+import org.opennms.protocols.snmp.SnmpPduPacket;
+import org.opennms.protocols.snmp.SnmpPduRequest;
+import org.opennms.protocols.snmp.SnmpPduTrap;
+import org.opennms.protocols.snmp.SnmpPeer;
+import org.opennms.protocols.snmp.SnmpTimeTicks;
+import org.opennms.protocols.snmp.SnmpTrapHandler;
+import org.opennms.protocols.snmp.SnmpTrapSession;
+import org.opennms.protocols.snmp.SnmpVarBind;
+import org.opennms.protocols.snmp.asn1.AsnEncodingException;
 
 /**
  * This "helper" class provides a convenience interface for generating

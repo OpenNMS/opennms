@@ -39,19 +39,24 @@
 package org.opennms.web.admin.nodeManagement;
 
 import java.io.IOException;
-import java.util.Date;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.sql.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import org.opennms.netmgt.xml.event.Event;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.TcpEventProxy;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * A servlet that handles adding a new interface

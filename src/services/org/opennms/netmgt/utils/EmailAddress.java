@@ -34,7 +34,9 @@
 
 package org.opennms.netmgt.utils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /** 
  * This class is used to hold an email address

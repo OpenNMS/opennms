@@ -32,7 +32,8 @@
 
 package org.opennms.web.notification;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Notify Bean, containing data from the notifications table.

@@ -32,8 +32,13 @@
 
 package org.opennms.web.parsers;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Properties;
 
 
 /**This class makes a backup of an xml file. The backup should be 

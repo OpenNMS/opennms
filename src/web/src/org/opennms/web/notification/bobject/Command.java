@@ -32,8 +32,12 @@
 
 package org.opennms.web.notification.bobject;
 
-import java.util.*;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 
 /**This is a class to store and execute a console command

@@ -36,7 +36,6 @@
 
 package org.opennms.core.queue;
 
-import java.lang.*;
 
 /**
  * <p>This interface is used to define a queue with <em>First

@@ -32,10 +32,8 @@
 
 package org.opennms.web.notification.bobject;
 
-import java.util.*;
-
-import org.opennms.core.utils.*;
-import org.opennms.web.admin.users.parsers.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**A NotificationTarget representing a user target

@@ -61,12 +61,15 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.*;
-import java.net.*;
-import java.io.*;
-import java.util.*;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
-import org.opennms.protocols.snmp.asn1.*;
+import org.opennms.protocols.snmp.asn1.ASN1;
+import org.opennms.protocols.snmp.asn1.AsnEncoder;
+import org.opennms.protocols.snmp.asn1.AsnEncodingException;
 
 /**
  * <P>The SnmpSession is the main connection between the SNMP manager

@@ -38,10 +38,11 @@
 
 package org.opennms.netmgt.rtc.datablock;
 
-import java.sql.*;
-import java.util.*;
-
-import org.opennms.netmgt.rtc.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The RTCHashMap has either a nodeid or a nodeid/ip as key and provides

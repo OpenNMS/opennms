@@ -44,15 +44,6 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.*;
-
-import org.opennms.protocols.snmp.SnmpSMI;
-import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpUtil;
-
-import org.opennms.protocols.snmp.asn1.AsnEncoder;
-import org.opennms.protocols.snmp.asn1.AsnEncodingException;
-import org.opennms.protocols.snmp.asn1.AsnDecodingException;
 
 /**
  * The SnmpOpaque class is an extension of the octet string

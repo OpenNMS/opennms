@@ -38,12 +38,9 @@
 
 package org.opennms.netmgt.discovery;
 
-import java.lang.*;
-
 import java.net.InetAddress;
-
-import java.util.Iterator;
 import java.util.Enumeration;
+import java.util.Iterator;
 
 /**
  * <p>This class is designed to encapsualte the information about

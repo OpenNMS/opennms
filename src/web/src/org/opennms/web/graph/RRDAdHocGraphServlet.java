@@ -32,13 +32,25 @@
 
 package org.opennms.web.graph;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.MessageFormat;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.util.Properties;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.opennms.core.resource.Vault;
-import org.opennms.core.utils.BundleLists;
 import org.opennms.web.Util;
 
 

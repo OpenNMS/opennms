@@ -34,8 +34,8 @@
 
 package org.opennms.netmgt.eventd.adaptors.tcp;
 
-import javax.management.MalformedObjectNameException;
 import javax.management.InstanceNotFoundException;
+import javax.management.MalformedObjectNameException;
 
 public interface TcpEventReceiverMBean
 {

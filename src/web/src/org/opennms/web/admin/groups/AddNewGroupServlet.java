@@ -33,13 +33,15 @@
 package org.opennms.web.admin.groups;
 
 import java.io.IOException;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 
-import org.opennms.web.admin.groups.parsers.*;
-import org.opennms.web.parsers.*;
-import org.opennms.web.admin.groups.*;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.opennms.web.admin.groups.parsers.Group;
 
 /**
  * A servlet that handles adding a new group

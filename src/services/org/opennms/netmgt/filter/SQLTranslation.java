@@ -39,27 +39,44 @@
 
 package org.opennms.netmgt.filter;
 
-import java.lang.*;
 import java.io.IOException;
-
 import java.lang.reflect.UndeclaredThrowableException;
-
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.StringTokenizer;
 import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
-import org.exolab.castor.xml.ValidationException;
 import org.exolab.castor.xml.MarshalException;
-
-import org.opennms.netmgt.filter.node.*;
-import org.opennms.netmgt.filter.analysis.*;
-
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
-
-// castor generated classes - from database-schema.xsd
-import org.opennms.netmgt.config.filter.*;
+import org.opennms.netmgt.config.filter.Column;
+import org.opennms.netmgt.config.filter.DatabaseSchema;
+import org.opennms.netmgt.config.filter.Join;
+import org.opennms.netmgt.config.filter.Table;
+import org.opennms.netmgt.filter.analysis.DepthFirstAdapter;
+import org.opennms.netmgt.filter.node.AAndRule;
+import org.opennms.netmgt.filter.node.ACompareExprPart;
+import org.opennms.netmgt.filter.node.AExprParensExpr;
+import org.opennms.netmgt.filter.node.AGtrThanEqualExprPart;
+import org.opennms.netmgt.filter.node.AGtrThanExprPart;
+import org.opennms.netmgt.filter.node.AIdentExprPart;
+import org.opennms.netmgt.filter.node.AIntegerCompareRight;
+import org.opennms.netmgt.filter.node.AIntegerOctet;
+import org.opennms.netmgt.filter.node.AIpaddrIpIdent;
+import org.opennms.netmgt.filter.node.AIplikeExprPart;
+import org.opennms.netmgt.filter.node.ALessThanEqualExprPart;
+import org.opennms.netmgt.filter.node.ALessThanExprPart;
+import org.opennms.netmgt.filter.node.ALikeExprPart;
+import org.opennms.netmgt.filter.node.ANotEqualExprPart;
+import org.opennms.netmgt.filter.node.ANotExprPart;
+import org.opennms.netmgt.filter.node.AOctetListOctet;
+import org.opennms.netmgt.filter.node.AOctetRangeListOctet;
+import org.opennms.netmgt.filter.node.AOctetRangeOctet;
+import org.opennms.netmgt.filter.node.AOrRule;
+import org.opennms.netmgt.filter.node.AStarOctet;
+import org.opennms.netmgt.filter.node.AStringCompareRight;
+import org.opennms.netmgt.filter.node.Start;
 
 /**
  * This class is responsible for mapping the

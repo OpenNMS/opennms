@@ -34,9 +34,9 @@
 
 package org.opennms.report.datablock;
 
-import java.util.*;
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * This class holds the interface whaich has service information and list of outages for the service. 

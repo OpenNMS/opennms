@@ -34,9 +34,14 @@ package org.opennms.web.event;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import org.opennms.web.event.EventFactory;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.opennms.web.MissingParameterException;
 
 

@@ -32,8 +32,13 @@
 
 package org.opennms.web.map;
 
-import java.awt.*;
-import java.io.*;
+import java.awt.HeadlessException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringReader;
+import java.io.Writer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

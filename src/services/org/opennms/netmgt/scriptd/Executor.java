@@ -34,37 +34,27 @@
 
 package org.opennms.netmgt.scriptd;
 
-import java.lang.*;
-import java.util.List;
-import java.util.LinkedList;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.StringTokenizer;
 import java.util.Hashtable;
-import java.io.IOException;
-
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueException;
-
-import org.opennms.core.fiber.PausableFiber;
+import java.util.StringTokenizer;
 
 import org.apache.log4j.Category;
+import org.opennms.core.fiber.PausableFiber;
+import org.opennms.core.queue.FifoQueue;
+import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.config.ScriptdConfigFactory;
 import org.opennms.netmgt.config.scriptd.Engine;
+import org.opennms.netmgt.config.scriptd.EventScript;
+import org.opennms.netmgt.config.scriptd.ReloadScript;
 import org.opennms.netmgt.config.scriptd.StartScript;
 import org.opennms.netmgt.config.scriptd.StopScript;
-import org.opennms.netmgt.config.scriptd.ReloadScript;
-import org.opennms.netmgt.config.scriptd.EventScript;
 import org.opennms.netmgt.config.scriptd.Uei;
-
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Script;
 
-import com.ibm.bsf.BSFManager;
 import com.ibm.bsf.BSFException;
+import com.ibm.bsf.BSFManager;
 
 /**
  * This class is used as a thread for launching scripts to

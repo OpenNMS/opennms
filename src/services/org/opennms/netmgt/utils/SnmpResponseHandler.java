@@ -34,9 +34,12 @@
 
 package org.opennms.netmgt.utils;
 
-import java.lang.*;
-
-import org.opennms.protocols.snmp.*;
+import org.opennms.protocols.snmp.SnmpHandler;
+import org.opennms.protocols.snmp.SnmpPduPacket;
+import org.opennms.protocols.snmp.SnmpPduRequest;
+import org.opennms.protocols.snmp.SnmpSession;
+import org.opennms.protocols.snmp.SnmpSyntax;
+import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
  * The SNMP handler used to receive responses from individual

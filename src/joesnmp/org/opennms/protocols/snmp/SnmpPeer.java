@@ -42,11 +42,7 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.*;
-import java.net.*;
-
-import org.opennms.protocols.snmp.SnmpSMI;
-import org.opennms.protocols.snmp.SnmpParameters;
+import java.net.InetAddress;
 
 /**
  * The peer object defines a SNMP peer agent that is communicated

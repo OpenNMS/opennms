@@ -36,7 +36,6 @@
 
 package org.opennms.core.fiber;
 
-import java.lang.*;
 
 /**
  * <p>This interface defines an extension to the core {@link Fiber Fiber} 

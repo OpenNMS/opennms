@@ -36,12 +36,12 @@
 
 package org.opennms.netmgt.utils;
 
-import java.util.Map;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.opennms.core.utils.ThreadCategory;
-import java.util.StringTokenizer;
 
 /**
  * Convenience class for looking up string and integer values 

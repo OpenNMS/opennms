@@ -37,54 +37,55 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.lang.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.net.SocketException;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Iterator;
-
+import java.net.UnknownHostException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
+import org.apache.log4j.Category;
+import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
-import org.apache.log4j.Priority;
-import org.apache.log4j.Category;
-
-import org.opennms.protocols.snmp.*;
-
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.rrd.Interface;
-import org.opennms.netmgt.utils.BarrierSignaler;
-import org.opennms.netmgt.utils.SnmpResponseHandler;
-import org.opennms.netmgt.utils.EventProxy;
-import org.opennms.netmgt.utils.AlphaNumeric;
-import org.opennms.netmgt.utils.ParameterMap;
-import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import org.opennms.netmgt.config.DataCollectionConfigFactory;
-
-// Database field values
 import org.opennms.netmgt.capsd.DbIpInterfaceEntry;
-
-// Castor generated
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.rrd.Interface;
+import org.opennms.netmgt.utils.AlphaNumeric;
+import org.opennms.netmgt.utils.BarrierSignaler;
+import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.netmgt.utils.SnmpResponseHandler;
 import org.opennms.netmgt.xml.event.Event;
-
-// castor classes generated from the collectd-configuration.xsd
-import org.opennms.netmgt.config.collectd.*;
+import org.opennms.protocols.snmp.SnmpCounter32;
+import org.opennms.protocols.snmp.SnmpCounter64;
+import org.opennms.protocols.snmp.SnmpGauge32;
+import org.opennms.protocols.snmp.SnmpInt32;
+import org.opennms.protocols.snmp.SnmpObjectId;
+import org.opennms.protocols.snmp.SnmpOctetString;
+import org.opennms.protocols.snmp.SnmpPduBulk;
+import org.opennms.protocols.snmp.SnmpPduPacket;
+import org.opennms.protocols.snmp.SnmpPduRequest;
+import org.opennms.protocols.snmp.SnmpPeer;
+import org.opennms.protocols.snmp.SnmpSMI;
+import org.opennms.protocols.snmp.SnmpSession;
+import org.opennms.protocols.snmp.SnmpSyntax;
+import org.opennms.protocols.snmp.SnmpTimeTicks;
+import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
  * <P>The SnmpCollector class ...</P>

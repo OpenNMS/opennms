@@ -30,17 +30,17 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-
-// castor classes generated from the opennms-server.xsd
-import org.opennms.netmgt.config.server.*;
-
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.server.LocalServer;
 
 /**
  * <p>This is the singleton class used to load the configuration for

@@ -38,20 +38,16 @@
 
 package org.opennms.netmgt.discovery;
 
-import java.lang.*;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
-import java.util.MissingResourceException;
-
 import java.sql.SQLException;
-
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueException;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.MissingResourceException;
+import java.util.NoSuchElementException;
 
 import org.apache.log4j.Category;
+import org.opennms.core.queue.FifoQueue;
+import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
 
 /**

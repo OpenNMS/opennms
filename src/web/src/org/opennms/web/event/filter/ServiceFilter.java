@@ -33,6 +33,7 @@
 package org.opennms.web.event.filter; 
 
 import java.sql.SQLException;
+
 import org.opennms.web.element.NetworkElementFactory;
 
 

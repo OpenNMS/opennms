@@ -38,31 +38,26 @@
 
 package org.opennms.netmgt.vmmgr;
 
-import java.lang.*;
-
-import java.net.URL;
 import java.io.InputStream;
-
 import java.lang.reflect.Constructor;
-
-import java.util.Iterator;
-import java.util.BitSet;
-import java.util.List;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Iterator;
+import java.util.List;
 
+import javax.management.Attribute;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
-import javax.management.ObjectName;
 import javax.management.ObjectInstance;
-import javax.management.Attribute;
+import javax.management.ObjectName;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.config.ServiceConfigFactory;
-import org.opennms.netmgt.config.service.Service;
-import org.opennms.netmgt.config.service.Invoke;
 import org.opennms.netmgt.config.service.Argument;
+import org.opennms.netmgt.config.service.Invoke;
+import org.opennms.netmgt.config.service.Service;
 
 /**
  * <p>The Manager is reponsible for launching/starting all services in the VM that

@@ -37,11 +37,8 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.*;
-
 import org.opennms.protocols.snmp.asn1.AsnEncoder;
 import org.opennms.protocols.snmp.asn1.BerEncoder;
-import org.opennms.protocols.snmp.SnmpSMI;
 
 /**
  * The SnmpParameters class is used to define the parameters for

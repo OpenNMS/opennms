@@ -38,28 +38,22 @@
 
 package org.opennms.netmgt.discovery;
 
-import java.lang.*;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.net.NoRouteToHostException;
 
-import org.opennms.core.fiber.PausableFiber;
-import org.opennms.core.fiber.ExtendedStatusFiber;
-
+import org.apache.log4j.Category;
 import org.opennms.core.concurrent.QuantumSemaphore;
-
+import org.opennms.core.fiber.ExtendedStatusFiber;
+import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueImpl;
-
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ping.Packet;
 import org.opennms.netmgt.ping.Reply;
 import org.opennms.netmgt.ping.ReplyReceiver;
-
 import org.opennms.protocols.icmp.IcmpSocket;
-
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
 
 final class PingManager
 	implements Runnable, PausableFiber

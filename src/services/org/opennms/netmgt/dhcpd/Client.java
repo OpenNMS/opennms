@@ -38,27 +38,22 @@
 
 package org.opennms.netmgt.dhcpd;
 
-import java.lang.*;
-
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.net.Socket;
-import java.net.DatagramSocket;
 import java.net.DatagramPacket;
-
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Observable;
 
-import org.opennms.core.fiber.Fiber;
-import edu.bucknell.net.JDHCP.DHCPMessage;
-
 import org.apache.log4j.Category;
+import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.ThreadCategory;
+
+import edu.bucknell.net.JDHCP.DHCPMessage;
 
 final class Client
 	extends Observable

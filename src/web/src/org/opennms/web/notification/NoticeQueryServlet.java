@@ -35,8 +35,12 @@ package org.opennms.web.notification;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import javax.servlet.*;
-import javax.servlet.http.*;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * A servlet that handles querying the notifications table and and then forwards

@@ -40,26 +40,23 @@
 package org.opennms.netmgt.eventd;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.queue.FifoQueueException;
-
+import org.opennms.core.queue.FifoQueueImpl;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.EventdConfigFactory;
-
-// castor generated classes
-import org.opennms.netmgt.xml.event.*;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Events;
+import org.opennms.netmgt.xml.event.Log;
 
 /**
  * An implementation of the EventIpcManager interface that can be used to

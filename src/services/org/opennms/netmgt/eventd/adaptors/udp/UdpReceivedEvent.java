@@ -36,23 +36,18 @@
 
 package org.opennms.netmgt.eventd.adaptors.udp;
 
-import java.lang.*;
-
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
-
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 
 /**
  *

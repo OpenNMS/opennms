@@ -32,7 +32,9 @@
 
 package org.opennms.report.datablock;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * <pre>This contains a list of service lost/regained set/pair. 

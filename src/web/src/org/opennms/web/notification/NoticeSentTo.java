@@ -32,7 +32,7 @@
 
 package org.opennms.web.notification;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * NoticeSentTo Bean, containing data from the usersNotified table for a single user/notice pair.

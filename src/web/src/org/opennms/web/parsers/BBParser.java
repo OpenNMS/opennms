@@ -38,11 +38,20 @@
 
 package org.opennms.web.parsers;
 
-import org.w3c.dom.*;
-import org.xml.sax.*;
-import org.apache.xerces.parsers.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
-import java.io.*;
+import org.apache.xerces.parsers.DOMParser;
+import org.w3c.dom.CDATASection;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.Text;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * <pre>BBParser provides basic XML parsing functionality to parse XML

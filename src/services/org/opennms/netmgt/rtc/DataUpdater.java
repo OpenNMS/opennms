@@ -34,16 +34,16 @@
 
 package org.opennms.netmgt.rtc;
 
-import java.util.*;
 import java.text.ParseException;
+import java.util.Enumeration;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.EventConstants;
-
-// castor generated classes
-import org.opennms.netmgt.xml.event.*;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
 
 /**
  * <P>The DataUpdater is created for each event by the event receiver.

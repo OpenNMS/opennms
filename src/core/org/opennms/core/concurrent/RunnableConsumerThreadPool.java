@@ -36,20 +36,16 @@
 
 package org.opennms.core.concurrent;
 
-import java.lang.*;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Iterator;
-import org.opennms.core.fiber.Fiber;
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.ClosableFifoQueue;
-import org.opennms.core.queue.FifoQueueImpl;
-import org.opennms.core.queue.FifoQueueException;
-import org.opennms.core.queue.FifoQueueClosedException;
+import java.util.List;
 
-import org.apache.log4j.Priority;
 import org.apache.log4j.Category;
+import org.opennms.core.fiber.Fiber;
+import org.opennms.core.queue.ClosableFifoQueue;
+import org.opennms.core.queue.FifoQueue;
+import org.opennms.core.queue.FifoQueueClosedException;
+import org.opennms.core.queue.FifoQueueException;
+import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
 
 public class RunnableConsumerThreadPool

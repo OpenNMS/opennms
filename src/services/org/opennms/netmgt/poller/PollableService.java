@@ -43,39 +43,32 @@
 
 package org.opennms.netmgt.poller;
 
-import java.lang.*;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
+import org.opennms.netmgt.config.poller.Downtime;
+import org.opennms.netmgt.config.poller.Parameter;
+import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
-import org.opennms.netmgt.utils.ParameterMap;
-
-// Castor generated
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Value;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Parm;
-
-import org.opennms.netmgt.config.PollOutagesConfigFactory;
- 
 import org.opennms.netmgt.scheduler.Scheduler;
-
-// castor classes generated from the poller-configuration.xsd
-import org.opennms.netmgt.config.poller.*;
+import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
 
 /**
  * <P>The PollableService class ...</P>

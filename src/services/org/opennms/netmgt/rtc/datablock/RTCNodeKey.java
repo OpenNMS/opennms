@@ -34,7 +34,6 @@
 
 package org.opennms.netmgt.rtc.datablock;
 
-import java.util.*;
 
 /**
  * The key used to look up items in the data map

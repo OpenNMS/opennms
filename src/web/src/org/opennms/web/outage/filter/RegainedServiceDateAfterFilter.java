@@ -34,6 +34,7 @@ package org.opennms.web.outage.filter;
 
 import java.text.DateFormat;
 import java.util.Date;
+
 import org.opennms.netmgt.EventConstants;
 
 

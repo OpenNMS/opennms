@@ -33,6 +33,7 @@
 package org.opennms.web.authenticate;
 
 import java.security.Principal;
+
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.users.User;
 

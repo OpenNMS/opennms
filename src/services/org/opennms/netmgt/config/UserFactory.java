@@ -38,17 +38,38 @@
 
 package org.opennms.netmgt.config;
 
-import java.util.*;
-import java.io.*;
-import java.security.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-
-import org.opennms.netmgt.config.users.*;
-import org.opennms.netmgt.*;
+import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.users.Contact;
+import org.opennms.netmgt.config.users.DutySchedule;
+import org.opennms.netmgt.config.users.Header;
+import org.opennms.netmgt.config.users.User;
+import org.opennms.netmgt.config.users.Userinfo;
+import org.opennms.netmgt.config.users.Users;
 
 public class UserFactory
 {

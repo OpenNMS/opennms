@@ -36,32 +36,25 @@
 
 package org.opennms.netmgt.eventd.adaptors.udp;
 
-import java.lang.*;
-
-import java.io.StringWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-
-import java.net.DatagramSocket;
 import java.net.DatagramPacket;
-
-import java.util.List;
+import java.net.DatagramSocket;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.HashMap;
-
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.EventReceipt;
-import org.opennms.core.utils.ThreadCategory;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Category;
-
-import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
-
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.EventReceipt;
 
 /**
  * This class implements the User Datagram Protocol (UDP) event

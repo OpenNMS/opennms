@@ -38,8 +38,6 @@
 
 package org.opennms.protocols.icmp;
 
-import java.lang.*;
-
 import org.opennms.protocols.ip.OC16ChecksumProducer;
 
 /**

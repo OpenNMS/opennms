@@ -32,26 +32,38 @@
 
 package org.opennms.web.admin.config;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.*;
-import java.util.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Properties;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
-
-import org.opennms.core.resource.*;
-import org.opennms.netmgt.*;
-import org.opennms.netmgt.config.*;
-import org.opennms.netmgt.config.poller.*;
-import org.opennms.netmgt.config.capsd.*;
+import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.BundleLists;
+import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.CapsdConfigFactory;
+import org.opennms.netmgt.config.PollerConfigFactory;
+import org.opennms.netmgt.config.capsd.CapsdConfiguration;
+import org.opennms.netmgt.config.capsd.ProtocolPlugin;
+import org.opennms.netmgt.config.poller.Monitor;
+import org.opennms.netmgt.config.poller.PollerConfiguration;
+import org.opennms.netmgt.config.poller.Service;
 
 /**
  * A servlet that handles managing or unmanaging interfaces and services on a node

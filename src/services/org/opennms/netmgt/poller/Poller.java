@@ -38,50 +38,39 @@
 
 package org.opennms.netmgt.poller;
 
-import java.lang.*;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.io.IOException;
-
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-import java.util.Map;
-import java.util.Set;
-import java.util.Collections;
-import java.util.TreeMap;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Iterator;
-import java.util.HashMap;
-import java.util.Date;
-
-import java.sql.Timestamp;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
-import org.apache.log4j.Priority;
 import org.apache.log4j.Category;
-
+import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.netmgt.scheduler.Scheduler;
-
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.CapsdConfigFactory;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
-
-
-// castor classes generated from the poller-configuration.xsd
-import org.opennms.netmgt.config.poller.*;
+import org.opennms.netmgt.config.PollerConfigFactory;
+import org.opennms.netmgt.config.poller.Monitor;
+import org.opennms.netmgt.config.poller.PollerConfiguration;
+import org.opennms.netmgt.scheduler.Scheduler;
 
 public final class Poller
 	implements PausableFiber

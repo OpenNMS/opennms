@@ -35,7 +35,6 @@
 //
 package org.opennms.protocols.snmp;
 
-import java.lang.Exception;
 
 /**
  * This class is thrown by the SNMP classes when an 

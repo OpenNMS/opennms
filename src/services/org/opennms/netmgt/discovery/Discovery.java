@@ -39,38 +39,34 @@
 
 package org.opennms.netmgt.discovery;
 
-import java.lang.*;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.io.File;
-import java.io.FileReader;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.net.UnknownHostException;
-
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueImpl;
-import org.opennms.core.fiber.PausableFiber;
-
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
-
+import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.opennms.netmgt.config.discovery.IncludeRange;
+import org.opennms.netmgt.config.discovery.IncludeUrl;
+import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-
-// castor classes generated from the discovery-configuration.xsd
-import org.opennms.netmgt.config.discovery.*;
 
 /**
  * This class is the main interface to the OpenNMS discovery service.

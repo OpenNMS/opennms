@@ -34,8 +34,6 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
-import java.lang.*;
-import java.util.*;
 
 /**
  * <P>The NamedSnmpVar class is used to associate a 

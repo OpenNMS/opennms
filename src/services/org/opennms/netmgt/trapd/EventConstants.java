@@ -37,8 +37,14 @@
 package org.opennms.netmgt.trapd;
 
 import java.math.BigInteger;
+
 import org.opennms.core.utils.Base64;
-import org.opennms.protocols.snmp.*;
+import org.opennms.protocols.snmp.SnmpCounter64;
+import org.opennms.protocols.snmp.SnmpIPAddress;
+import org.opennms.protocols.snmp.SnmpInt32;
+import org.opennms.protocols.snmp.SnmpObjectId;
+import org.opennms.protocols.snmp.SnmpOctetString;
+import org.opennms.protocols.snmp.SnmpUInt32;
 
 
 public class EventConstants extends Object

@@ -37,14 +37,7 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.*;
-import java.util.*;
 import java.io.IOException;
-
-import org.opennms.protocols.snmp.SnmpSession;
-import org.opennms.protocols.snmp.SnmpPduPacket;
-import org.opennms.protocols.snmp.SnmpHandler;
-import org.opennms.protocols.snmp.SnmpTimer;
 
 import org.opennms.protocols.snmp.asn1.AsnEncodingException;
 

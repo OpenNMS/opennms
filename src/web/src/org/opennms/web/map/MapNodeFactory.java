@@ -32,13 +32,17 @@
 
 package org.opennms.web.map;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.SQLException;
+import java.util.Hashtable;
+import java.util.Vector;
 
-import org.opennms.web.asset.*;
-import org.opennms.web.category.*;
-import org.opennms.web.element.*;
-import org.opennms.web.outage.*;
+import org.opennms.web.asset.Asset;
+import org.opennms.web.asset.AssetModel;
+import org.opennms.web.category.CategoryModel;
+import org.opennms.web.element.NetworkElementFactory;
+import org.opennms.web.element.Node;
+import org.opennms.web.outage.OutageModel;
+import org.opennms.web.outage.OutageSummary;
 
 /**
  * this class encapsulates the issue of generating a Collection of

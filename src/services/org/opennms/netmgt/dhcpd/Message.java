@@ -38,8 +38,6 @@
 
 package org.opennms.netmgt.dhcpd;
 
-import java.lang.*;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

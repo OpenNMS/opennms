@@ -38,42 +38,34 @@
 
 package org.opennms.netmgt.config;
 
-import java.lang.*;
-
 import java.io.File;
-import java.io.IOException;
 import java.io.FileInputStream;
-
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.PreparedStatement;
+import java.io.IOException;
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.Savepoint;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.sql.DriverManager;
-
+import java.sql.Savepoint;
+import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.xml.sax.InputSource;
-
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-
-import org.exolab.castor.jdo.conf.Database;
+import org.apache.log4j.Category;
 import org.exolab.castor.jdo.conf.DataSource;
+import org.exolab.castor.jdo.conf.Database;
 import org.exolab.castor.jdo.conf.Driver;
 import org.exolab.castor.jdo.conf.Jndi;
 import org.exolab.castor.jdo.conf.Mapping;
 import org.exolab.castor.jdo.conf.Param;
-
-import org.opennms.netmgt.ConfigFileConstants;
-
-import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.ConfigFileConstants;
+import org.xml.sax.InputSource;
 
 /**
  * <p>This is the singleton class used to load the OpenNMS database

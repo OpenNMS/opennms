@@ -34,7 +34,6 @@
 
 package org.opennms.core.queue;
 
-import java.lang.*;
 import java.util.LinkedList;
 
 /** 

@@ -34,24 +34,26 @@
 
 package org.opennms.report.availability;
 
-import java.util.*;
-import java.io.*;
-import java.net.*;
-import java.io.IOException;
-import org.exolab.castor.xml.*;
 import java.text.SimpleDateFormat;
-import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.filter.FilterParseException;
-import java.lang.reflect.UndeclaredThrowableException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
-import org.xml.sax.SAXException;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-import org.apache.fop.apps.*;
-import org.apache.xerces.parsers.*;
-import org.opennms.report.datablock.*;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.report.datablock.IfService;
+import org.opennms.report.datablock.Interface;
+import org.opennms.report.datablock.Node;
+import org.opennms.report.datablock.OutageSince;
+import org.opennms.report.datablock.OutageSvcTimesList;
+import org.opennms.report.datablock.Service;
 
 /**
  * AvailCalculations does all computations for all reports for a category. 

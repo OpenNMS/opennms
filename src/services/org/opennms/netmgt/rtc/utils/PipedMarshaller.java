@@ -34,20 +34,16 @@
 
 package org.opennms.netmgt.rtc.utils;
 
-import java.lang.reflect.UndeclaredThrowableException;
-
-import java.io.Reader;
+import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
-import java.io.IOException;
+import java.io.Reader;
+import java.lang.reflect.UndeclaredThrowableException;
 
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.MarshalException;
-
 import org.opennms.core.utils.ThreadCategory;
-
-// castor generated class
 import org.opennms.netmgt.xml.rtc.EuiLevel;
 
 

@@ -37,9 +37,7 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.*;
 import java.net.InetAddress;
-import org.opennms.protocols.snmp.*;
 
 /**
  * <P>The SnmpTrapHandler interface is implemented by an object that

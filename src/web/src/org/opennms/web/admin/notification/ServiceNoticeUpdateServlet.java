@@ -32,12 +32,19 @@
 
 package org.opennms.web.admin.notification;
 
-import java.util.*;
-import java.io.*;
-import java.sql.*;
+import java.io.IOException;
 import java.sql.Connection;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.StringTokenizer;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.opennms.core.resource.Vault;
 

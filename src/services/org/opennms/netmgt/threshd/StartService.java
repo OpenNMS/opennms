@@ -38,7 +38,6 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.lang.*;
 
 /**
  * This class is used to launch/start the thresholding daemon service

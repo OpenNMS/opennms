@@ -32,13 +32,13 @@
 
 package org.opennms.web.admin.users.parsers;
 
-import java.io.*;
-import java.util.*;
-import org.w3c.dom.*;
-import javax.xml.parsers.*;
+import java.util.Collection;
+import java.util.List;
 
-import org.opennms.web.admin.users.parsers.*;
-import org.opennms.web.parsers.*;
+import org.opennms.web.parsers.XMLHeader;
+import org.opennms.web.parsers.XMLWriteException;
+import org.opennms.web.parsers.XMLWriter;
+import org.w3c.dom.Element;
 
 
 /**This class is used to parse data from and save data to the

@@ -32,11 +32,9 @@
 
 package org.opennms.web.admin.users.parsers;
 
-import java.io.*;
-import java.security.*;
-import java.util.*;
-
-import org.opennms.web.admin.users.parsers.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 /**This is a data class for storing the information on a user.
  * This information is stored in the users.xml file and is 

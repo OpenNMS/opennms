@@ -36,22 +36,16 @@
 
 package org.opennms.netmgt.eventd.adaptors.udp;
 
-import java.lang.*;
-
 import java.net.DatagramSocket;
-
-import java.util.List;
 import java.util.Iterator;
-
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.core.utils.ThreadCategory;
+import java.util.List;
 
 import org.apache.log4j.Category;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * This class encapsulates the execution context for processing events received

@@ -34,9 +34,9 @@
 
 package org.opennms.protocols.ip;
 
-import java.lang.*;
-import java.util.*;
-import org.opennms.protocols.ip.UnknownIPVersionException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class defines a loaded IP header object. It does not allow 

@@ -32,15 +32,13 @@
 
 package org.opennms.web.parsers;
 
-import java.util.*;
-import java.net.*;
-import java.io.*;
+import java.net.InetAddress;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
-import org.w3c.dom.*;
-import org.apache.xerces.dom.*;
-import org.apache.xml.serialize.*;
-import org.apache.xerces.parsers.*;
-import javax.xml.parsers.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**This class holds the information parsed from a header of
  * an OpenNMS xml file.

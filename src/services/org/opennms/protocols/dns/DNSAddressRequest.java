@@ -32,9 +32,12 @@
 
 package org.opennms.protocols.dns;
 
-import java.lang.*;
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * <PRE>The DNSAddressRequest holds a DNS request to lookup the IP address of

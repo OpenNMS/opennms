@@ -34,7 +34,7 @@
 
 package org.opennms.netmgt.utils;
 
-import java.io.*;
+import java.io.IOException;
 
 /** 
  * This class is used to make a quick backup of a file

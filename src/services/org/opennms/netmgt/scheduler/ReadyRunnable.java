@@ -32,7 +32,6 @@
 
 package org.opennms.netmgt.scheduler;
 
-import java.lang.*;
 
 /**
  * This interface extends the {@link java.lang.Runnable runnable} interface

@@ -42,36 +42,28 @@
 
 package org.opennms.netmgt.capsd;
 
-import java.lang.*;
-import java.lang.reflect.UndeclaredThrowableException;
-
-import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
-
-import java.net.Socket;
-import java.net.InetAddress;
+import java.io.InterruptedIOException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.ConnectException;
+import java.net.InetAddress;
 import java.net.NoRouteToHostException;
-
+import java.net.Socket;
+import java.nio.channels.SocketChannel;
+import java.security.Security;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.security.*;
 
-import javax.net.ssl.*;
-import javax.security.cert.*;
-
-//import com.sun.net.ssl.internal.ssl.*;
-//import com.sun.net.ssl.*;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.netmgt.utils.RelaxedX509TrustManager;
 import org.opennms.netmgt.utils.ParameterMap;
-
-import java.nio.channels.SocketChannel;
+import org.opennms.netmgt.utils.RelaxedX509TrustManager;
 import org.opennms.netmgt.utils.SocketChannelUtil;
 
 /**

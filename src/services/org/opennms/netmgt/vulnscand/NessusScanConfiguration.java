@@ -38,9 +38,6 @@ import java.util.Date;
 
 import org.opennms.netmgt.config.VulnscandConfigFactory;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
 /**
 * This class encapsulates the information about an interface necessary
 * to schedule it for scans.

@@ -80,21 +80,6 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.*;
-import java.util.*;
-import java.net.*;
-
-import org.opennms.protocols.snmp.asn1.AsnEncoder;
-import org.opennms.protocols.snmp.asn1.AsnEncodingException;
-import org.opennms.protocols.snmp.asn1.AsnDecodingException;
-import org.opennms.protocols.snmp.asn1.ASN1;
-
-import org.opennms.protocols.snmp.SnmpSMI;
-import org.opennms.protocols.snmp.SnmpSyntax;
-import org.opennms.protocols.snmp.SnmpUtil;
-import org.opennms.protocols.snmp.SnmpInt32;
-import org.opennms.protocols.snmp.SnmpVarBind;
-import org.opennms.protocols.snmp.SnmpPduPacket;
 
 /**
  * This class defines the SNMPv2 GetBulk request sent

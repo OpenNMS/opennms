@@ -34,7 +34,10 @@
 
 package org.opennms.report.datablock;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * This class holds the interface information and list of services that belong to the interface. 

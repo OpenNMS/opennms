@@ -33,17 +33,19 @@
 package org.opennms.web.category;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.*;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
 import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.config.CategoryFactory;
 

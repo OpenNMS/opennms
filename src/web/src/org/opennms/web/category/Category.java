@@ -32,7 +32,8 @@
 
 package org.opennms.web.category;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Enumeration;
 
 
 /**

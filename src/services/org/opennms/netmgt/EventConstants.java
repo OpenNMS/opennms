@@ -40,9 +40,9 @@
 
 package org.opennms.netmgt;
 
-import java.util.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Date;
 
 /**
  * This class holds all OpenNMS events related constants -

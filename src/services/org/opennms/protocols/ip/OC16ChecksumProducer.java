@@ -34,7 +34,6 @@
 
 package org.opennms.protocols.ip;
 
-import java.lang.*;
 
 /**
  * Produces a one's compliment 16-bit checksum

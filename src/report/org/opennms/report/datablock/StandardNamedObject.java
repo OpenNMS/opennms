@@ -34,7 +34,6 @@
 
 package org.opennms.report.datablock;
 
-import java.util.*;
 
 /**
  * This class gives a name to the object. 

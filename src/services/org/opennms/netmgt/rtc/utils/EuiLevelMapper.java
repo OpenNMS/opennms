@@ -38,19 +38,18 @@
 
 package org.opennms.netmgt.rtc.utils;
 
-import java.util.*;
-import java.io.*;
+import java.util.Date;
+import java.util.Iterator;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.rtc.RTCManager;
 import org.opennms.netmgt.rtc.DataManager;
+import org.opennms.netmgt.rtc.RTCManager;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
-
-// castor generated classes
-import org.opennms.netmgt.xml.rtc.*;
+import org.opennms.netmgt.xml.rtc.EuiLevel;
+import org.opennms.netmgt.xml.rtc.Header;
+import org.opennms.netmgt.xml.rtc.Node;
 
 /**
  * This takes an object of type 'RTCCategory' and creates an XML (bytearray)stream

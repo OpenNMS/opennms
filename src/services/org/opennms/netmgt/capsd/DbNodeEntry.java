@@ -38,25 +38,21 @@
 
 package org.opennms.netmgt.capsd;
 
-import java.lang.*;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
-
-import java.sql.Timestamp;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.Types;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 

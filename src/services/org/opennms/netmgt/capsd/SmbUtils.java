@@ -36,12 +36,9 @@
 
 package org.opennms.netmgt.capsd;
 
-import java.lang.*;
+import jcifs.netbios.NbtAddress;
 
-import jcifs.netbios.*;
-
-// castor classes generated from the capsd-configuration.xsd
-import org.opennms.netmgt.config.capsd.*;
+import org.opennms.netmgt.config.capsd.SmbAuth;
 
 /**
  * This class contains several static convience methods utilized by Capsd

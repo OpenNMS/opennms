@@ -36,7 +36,6 @@
 
 package org.opennms.core.queue;
 
-import java.lang.*;
 
 /**
  * <p>The root of all exceptions dealing with queues that

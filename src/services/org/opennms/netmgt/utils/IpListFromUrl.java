@@ -36,10 +36,14 @@
 
 package org.opennms.netmgt.utils;
 
-import java.util.ArrayList;
-import java.net.URL;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.MalformedURLException;
-import java.io.*;
+import java.net.URL;
+import java.util.ArrayList;
 
 import org.opennms.core.utils.ThreadCategory;
 

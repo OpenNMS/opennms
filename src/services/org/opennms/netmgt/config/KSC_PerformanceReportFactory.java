@@ -34,22 +34,25 @@
 
 package org.opennms.netmgt.config;
 
-import java.util.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Calendar;
 
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.netmgt.*;
-
-import org.opennms.core.resource.Vault;
-
-import org.opennms.netmgt.config.kscReports.*;
+import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.kscReports.Graph;
+import org.opennms.netmgt.config.kscReports.Report;
+import org.opennms.netmgt.config.kscReports.ReportsList;
 
 public class KSC_PerformanceReportFactory
 {

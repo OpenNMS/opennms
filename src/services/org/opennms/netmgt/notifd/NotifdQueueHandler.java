@@ -34,7 +34,6 @@
 
 package org.opennms.netmgt.notifd;
 
-import org.opennms.netmgt.notifd.*;
 import org.opennms.core.fiber.PausableFiber;
 
 /**

@@ -39,22 +39,16 @@
 
 package org.opennms.netmgt.scriptd;
 
-import java.lang.*;
-
+import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 
-import java.io.IOException;
-
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueImpl;
-import org.opennms.core.fiber.PausableFiber;
-
+import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
-import org.apache.log4j.Category;
+import org.opennms.core.fiber.PausableFiber;
+import org.opennms.core.queue.FifoQueue;
+import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.config.ScriptdConfigFactory;
 
 /**

@@ -38,7 +38,9 @@
 
 package org.opennms.netmgt.eventd.datablock;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * The maskelement values in a 'EventKey' are stored in this ArrayList subclass

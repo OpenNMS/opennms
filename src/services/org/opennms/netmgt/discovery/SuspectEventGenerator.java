@@ -38,26 +38,21 @@
 
 package org.opennms.netmgt.discovery;
 
-import java.lang.*;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
+import org.opennms.core.fiber.Fiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
-import org.opennms.core.fiber.Fiber;
-
-import org.opennms.netmgt.ping.Reply;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Value;
-
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.ping.Reply;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
 
 /**
  * This class represents a suspect event generator that takes

@@ -34,35 +34,35 @@
 
 package org.opennms.report.availability;
 
-import java.util.*;
-import java.sql.*;
-import java.io.*;
-import java.net.*;
 import java.io.IOException;
-import org.exolab.castor.xml.*;
-import java.text.SimpleDateFormat;
-import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
-import org.opennms.netmgt.filter.Filter;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.categories.*;
 import java.lang.reflect.UndeclaredThrowableException;
-import org.opennms.netmgt.filter.FilterParseException;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Enumeration;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.TreeMap;
 
-//import org.opennms.netmgt.config.categories.Category;
-import org.opennms.netmgt.config.categories.Categorygroup;
+import org.apache.log4j.Priority;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CategoryFactory;
-
-//import org.apache.xalan.xslt.*;
-import org.xml.sax.SAXException;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-import org.apache.fop.apps.*;
-import org.apache.xerces.parsers.*;
-import org.opennms.report.datablock.*;
-
-import org.exolab.castor.xml.*;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.categories.Categorygroup;
+import org.opennms.netmgt.config.categories.Catinfo;
+import org.opennms.netmgt.filter.Filter;
+import org.opennms.netmgt.filter.FilterParseException;
+import org.opennms.report.datablock.Node;
+import org.opennms.report.datablock.Outage;
+import org.opennms.report.datablock.OutageSvcTimesList;
 
 /**
  * AvailabilityData collects all the outages for all node/ip/service combination

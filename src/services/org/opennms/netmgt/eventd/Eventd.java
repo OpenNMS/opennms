@@ -39,42 +39,30 @@
 
 package org.opennms.netmgt.eventd;
 
-import java.lang.*;
-import java.lang.reflect.UndeclaredThrowableException;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.HashMap;
-
 import java.io.File;
-import java.io.IOException;
 import java.io.FileNotFoundException;
-
+import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
 import org.opennms.core.fiber.PausableFiber;
-
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
-
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.EventdConfigFactory;
-
+import org.opennms.netmgt.eventd.adaptors.EventReceiver;
 import org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver;
 import org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver;
-//import org.opennms.netmgt.eventd.adaptors.EventHandler;
-import org.opennms.netmgt.eventd.adaptors.EventReceiver;
-
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
 

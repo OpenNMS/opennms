@@ -38,22 +38,23 @@
 
 package org.opennms.netmgt.config;
 
-import java.util.Iterator;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Collection;
-import java.util.Map;
 import java.util.HashMap;
-import java.io.*;
+import java.util.Iterator;
+import java.util.Map;
 
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.ConfigFileConstants;
-
-// castor classes generated from the thresholding-config.xsd 
-import org.opennms.netmgt.config.threshd.*;
+import org.opennms.netmgt.config.threshd.Group;
+import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 
 /**
  * This class is the main respository for thresholding 

@@ -32,13 +32,13 @@
 
 package org.opennms.core.utils;
 
-import java.util.*;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.netmgt.notifd.*;
 
 /**This is a class to store and execute a console command
  * 

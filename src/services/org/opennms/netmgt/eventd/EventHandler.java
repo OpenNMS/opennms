@@ -34,17 +34,15 @@
 
 package org.opennms.netmgt.eventd;
 
-import java.lang.*;
-import java.net.*;
-import java.io.*;
-import java.sql.*;
-import java.util.*;
+import java.sql.SQLException;
+import java.util.Enumeration;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-// castor generated classes - from the event.xsd
-import org.opennms.netmgt.xml.event.*;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Events;
+import org.opennms.netmgt.xml.event.Log;
+import org.opennms.netmgt.xml.event.Parm;
 
 /**
  * <P>The EventHandler is the Runnable that essentially does all the work

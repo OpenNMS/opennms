@@ -34,17 +34,20 @@ package org.opennms.web.nodelabel;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.*;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.xml.event.*;
 import org.opennms.netmgt.utils.EventProxy;
-import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.utils.NodeLabel;
+import org.opennms.netmgt.utils.TcpEventProxy;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
 import org.opennms.web.MissingParameterException;
 
 

@@ -37,18 +37,15 @@
 
 package org.opennms.netmgt.poller;
 
-import java.lang.*;
 import java.io.IOException;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import java.util.Map;
 
 import jcifs.netbios.NbtAddress;
 
-import org.apache.log4j.Priority;
 import org.apache.log4j.Category;
+import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.utils.ParameterMap;
 

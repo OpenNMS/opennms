@@ -46,12 +46,6 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.*;
-
-import org.opennms.protocols.snmp.SnmpSMI;
-import org.opennms.protocols.snmp.SnmpSyntax;
-import org.opennms.protocols.snmp.SnmpV2Error;
-import org.opennms.protocols.snmp.SnmpUtil;
 
 /**
  * The SnmpNoSuchObject object is typically returned by an

@@ -39,7 +39,6 @@
 
 package org.opennms.netmgt.scriptd.jmx;
 
-import java.lang.*;
 
 public class Scriptd implements ScriptdMBean
 {

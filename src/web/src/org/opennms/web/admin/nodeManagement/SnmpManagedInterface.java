@@ -37,7 +37,6 @@
 
 package org.opennms.web.admin.nodeManagement;
 
-import java.util.*;
 
 /**
  * A servlet that stores interface information used in setting

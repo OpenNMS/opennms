@@ -41,21 +41,19 @@
 
 package org.opennms.netmgt.capsd;
 
-import java.lang.*;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 
-import jcifs.netbios.*;
-import jcifs.smb.*;
+import jcifs.netbios.NbtAddress;
+import jcifs.smb.SmbAuthException;
+import jcifs.smb.SmbException;
+import jcifs.smb.SmbFile;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.config.CapsdConfigFactory;
-
-// castor classes generated from the capsd-configuration.xsd
-import org.opennms.netmgt.config.capsd.*;
+import org.opennms.netmgt.config.capsd.SmbAuth;
 
 /**
  * This class is designed to collect the necessary SMB information from

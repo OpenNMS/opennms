@@ -38,11 +38,7 @@
 
 package org.opennms.protocols.icmp;
 
-import java.lang.*;
-import java.util.Date;
-
 import org.opennms.protocols.ip.IPHeader;
-import org.opennms.protocols.ip.OC16ChecksumProducer;
 
 /**
  * Defines the default error handler object for processing

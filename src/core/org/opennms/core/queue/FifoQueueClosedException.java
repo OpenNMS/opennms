@@ -36,7 +36,6 @@
 
 package org.opennms.core.queue;
 
-import java.lang.*;
 
 /**
  * This exception is used to represent an error condition where an 

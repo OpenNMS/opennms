@@ -34,16 +34,12 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.*;
-import java.math.BigInteger;
 import java.io.Serializable;
+import java.math.BigInteger;
 
-import org.opennms.protocols.snmp.SnmpSMI;
-import org.opennms.protocols.snmp.SnmpSyntax;
-
+import org.opennms.protocols.snmp.asn1.AsnDecodingException;
 import org.opennms.protocols.snmp.asn1.AsnEncoder;
 import org.opennms.protocols.snmp.asn1.AsnEncodingException;
-import org.opennms.protocols.snmp.asn1.AsnDecodingException;
 
 /**
  * This class defines the 64-bit SNMP counter object used

@@ -38,9 +38,9 @@
 
 package org.opennms.protocols.icmp;
 
-import java.net.DatagramPacket;
 import java.io.FileDescriptor;
 import java.io.IOException;
+import java.net.DatagramPacket;
 
 /**
  * This class provides a bridge between the host operating

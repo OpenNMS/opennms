@@ -33,7 +33,8 @@
 package org.opennms.web.event;
 
 import java.util.ArrayList;
-import org.opennms.web.event.filter.*;
+
+import org.opennms.web.event.filter.Filter;
 
 
 /**

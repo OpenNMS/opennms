@@ -34,29 +34,32 @@
 
 package org.opennms.netmgt.eventd;
 
+import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.sql.Types;
-import java.sql.Timestamp;
-import java.sql.PreparedStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.io.IOException;
-import java.util.*;
-
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.MarshalException;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import org.opennms.netmgt.eventd.db.*;
-import org.opennms.netmgt.eventd.datablock.*;
-
-// castor generated classes
-import org.opennms.netmgt.xml.event.*;
+import org.opennms.netmgt.eventd.db.AutoAction;
+import org.opennms.netmgt.eventd.db.Constants;
+import org.opennms.netmgt.eventd.db.OperatorAction;
+import org.opennms.netmgt.eventd.db.Parameter;
+import org.opennms.netmgt.eventd.db.SnmpInfo;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Header;
+import org.opennms.netmgt.xml.event.Operaction;
 
 /**
  * <P>EventWriter loads the information in each 'Event' into the database</P>

@@ -38,8 +38,6 @@
 
 package org.opennms.netmgt.poller;
 
-import java.lang.*;
-import java.io.*;
 import java.net.InetAddress;
 import java.util.Map;
 

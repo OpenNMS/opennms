@@ -36,8 +36,13 @@
 //
 package org.opennms.core.utils;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import org.apache.log4j.Category;
 

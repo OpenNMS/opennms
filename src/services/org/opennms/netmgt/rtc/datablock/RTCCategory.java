@@ -34,10 +34,11 @@
 
 package org.opennms.netmgt.rtc.datablock;
 
-import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
 
-// castor generated classes from categories.xsd
 import org.opennms.netmgt.config.categories.Category;
 
 /**

@@ -41,10 +41,14 @@
 
 package org.opennms.netmgt.eventd;
 
-import java.lang.*;
 import java.util.Enumeration;
 
-import org.opennms.netmgt.xml.event.*;
+import org.opennms.netmgt.xml.event.Autoaction;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Logmsg;
+import org.opennms.netmgt.xml.event.Operaction;
+import org.opennms.netmgt.xml.event.Snmp;
+import org.opennms.netmgt.xml.event.Tticket;
 
 /**
  * <P>This class is responsible for looking up the matching evenconf entry

@@ -37,27 +37,19 @@
 
 package org.opennms.netmgt.poller;
 
-import java.lang.*;
 import java.lang.reflect.UndeclaredThrowableException;
-
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.Collections;
 import java.util.Iterator;
-
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueImpl;
-import org.opennms.core.queue.FifoQueueException;
-import org.opennms.core.fiber.PausableFiber;
-import org.opennms.core.concurrent.RunnableConsumerThreadPool;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.log4j.Category;
+import org.opennms.core.concurrent.RunnableConsumerThreadPool;
+import org.opennms.core.fiber.PausableFiber;
+import org.opennms.core.queue.FifoQueue;
+import org.opennms.core.queue.FifoQueueException;
+import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
-
-// castor classes generated from the poller-configuration.xsd
-import org.opennms.netmgt.config.poller.*;
-
-// ReadyRunnable is needed from the scheduler core
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 
 /**

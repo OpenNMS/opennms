@@ -39,27 +39,32 @@
 
 package org.opennms.netmgt.config;
 
-import java.util.Iterator;
-import java.util.List;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.HashMap;
-import java.io.*;
-import java.net.InetAddress;
-
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.collectd.MibObject;
-
-// castor classes generated from the datacollection-config.xsd 
-import org.opennms.netmgt.config.collectd.*;
+import org.opennms.netmgt.config.collectd.DatacollectionConfig;
+import org.opennms.netmgt.config.collectd.Group;
+import org.opennms.netmgt.config.collectd.Groups;
+import org.opennms.netmgt.config.collectd.MibObj;
+import org.opennms.netmgt.config.collectd.SystemDef;
+import org.opennms.netmgt.config.collectd.SystemDefChoice;
 
 /**
  * This class is the main respository for SNMP data collection 

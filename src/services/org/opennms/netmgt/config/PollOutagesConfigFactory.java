@@ -39,22 +39,30 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.*;
-import java.util.*;
-import java.text.SimpleDateFormat;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-
-// castor classes generated from the poll-outages.xsd
-import org.opennms.netmgt.config.poller.*;
-
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.poller.Interface;
+import org.opennms.netmgt.config.poller.Outage;
+import org.opennms.netmgt.config.poller.Outages;
+import org.opennms.netmgt.config.poller.Time;
 
 /**
  * <p>This is the singleton class used to load the configuration for

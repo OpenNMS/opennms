@@ -32,7 +32,7 @@
 
 package org.opennms.report.datablock;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * <B>OutageSince</B> holds the temporary storage for data used during availability report generation presented in the report.

@@ -34,7 +34,6 @@
 
 package org.opennms.netmgt.eventd.adaptors;
 
-import java.lang.*;
 import org.opennms.core.fiber.InitializableFiber;
 
 /**

@@ -39,30 +39,37 @@
 
 package org.opennms.netmgt.rtc;
 
-import java.io.*;
+import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.sql.*;
-import java.util.*;
-
-import org.xml.sax.*;
-
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.MarshalException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
 import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.CategoryFactory;
-
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.categories.Categories;
+import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.filter.Filter;
 import org.opennms.netmgt.filter.FilterParseException;
-
-import org.opennms.netmgt.rtc.datablock.*;
-
-// catory generated classes from categories.xml
-import org.opennms.netmgt.config.categories.*;
+import org.opennms.netmgt.rtc.datablock.RTCCategory;
+import org.opennms.netmgt.rtc.datablock.RTCHashMap;
+import org.opennms.netmgt.rtc.datablock.RTCNode;
+import org.opennms.netmgt.rtc.datablock.RTCNodeKey;
+import org.xml.sax.SAXException;
 
 /**
  * <pre>The DataManager contains and maintains all the data for the RTC.

@@ -36,28 +36,21 @@
 
 package org.opennms.netmgt.eventd.adaptors.udp;
 
-import java.lang.*;
-
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-
 import java.net.DatagramSocket;
-
-import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
-import javax.management.ObjectName;
-import javax.management.MalformedObjectNameException;
 import javax.management.InstanceNotFoundException;
-
-import org.opennms.core.utils.ThreadCategory;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
 
 import org.apache.log4j.Category;
-
-import org.opennms.netmgt.eventd.adaptors.EventReceiver;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.eventd.adaptors.EventHandlerMBeanProxy;
+import org.opennms.netmgt.eventd.adaptors.EventReceiver;
 
 /**
  * This class implements the User Datagram Protocol (UDP) event

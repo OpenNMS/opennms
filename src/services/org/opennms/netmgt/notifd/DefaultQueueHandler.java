@@ -38,14 +38,13 @@
 
 package org.opennms.netmgt.notifd;
 
-import java.lang.*;
-import java.util.*;
-import java.io.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.SortedMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.core.utils.*;
+import org.opennms.core.utils.TimeConverter;
 
 /**
  * This class is used as a thread for executing  notices 

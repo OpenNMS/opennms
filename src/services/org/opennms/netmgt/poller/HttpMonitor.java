@@ -45,25 +45,20 @@
 
 package org.opennms.netmgt.poller;
 
-import java.lang.*;
-import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.IOException;
-
-import java.nio.channels.SocketChannel;
-import org.opennms.netmgt.utils.SocketChannelUtil;
-
-import java.net.InetAddress;
+import java.io.InputStreamReader;
 import java.net.ConnectException;
+import java.net.InetAddress;
 import java.net.NoRouteToHostException;
-
+import java.nio.channels.SocketChannel;
 import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.netmgt.utils.SocketChannelUtil;
 
 /**
  * <P>This class is designed to be used by the service poller

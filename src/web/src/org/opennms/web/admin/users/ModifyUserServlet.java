@@ -33,12 +33,14 @@
 package org.opennms.web.admin.users;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import javax.servlet.*;
-import javax.servlet.http.*;
 
-//import org.opennms.web.admin.users.*;
-//import org.opennms.web.admin.users.parsers.*;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.users.User;
 

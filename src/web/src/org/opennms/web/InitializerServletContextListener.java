@@ -32,12 +32,13 @@
 
 package org.opennms.web;
 
-import java.io.FileInputStream;
-import java.net.URLEncoder;
-import java.util.Properties;
-import javax.servlet.*;
-import org.opennms.core.resource.Vault;
-import org.opennms.web.category.CategoryModel;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.ServletException;
+
+import org.opennms.netmgt.config.GroupFactory;
+import org.opennms.netmgt.config.UserFactory;
 import org.opennms.web.category.RTCPostSubscriber;
 
 

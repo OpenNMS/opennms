@@ -36,11 +36,7 @@
 
 package org.opennms.protocols.snmp.asn1;
 
-import java.lang.*;
 import java.math.BigInteger;
-import org.opennms.protocols.snmp.asn1.AsnEncodingException;
-import org.opennms.protocols.snmp.asn1.AsnDecodingException;
-import org.opennms.protocols.snmp.asn1.AsnEncoder;
 
 /**
  * The BerEncoder class is used to implement the AsnEncoder interface for

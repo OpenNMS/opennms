@@ -39,7 +39,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.util.*;
 
 /**
  * This class is responsible for holding information about a particular

@@ -32,24 +32,32 @@
 
 package org.opennms.netmgt.vulnscand;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
-import java.sql.*;
-import java.util.*;
-
-import org.apache.regexp.RE;
-
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import org.opennms.netmgt.config.VulnscandConfigFactory;
-
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueImpl;
-import org.opennms.core.queue.FifoQueueException;
-
-import org.opennms.netmgt.eventd.db.Constants;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.apache.log4j.Category;
+import org.apache.regexp.RE;
+import org.opennms.core.queue.FifoQueue;
+import org.opennms.core.queue.FifoQueueException;
+import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.VulnscandConfigFactory;
+import org.opennms.netmgt.eventd.db.Constants;
 
 /**
 * <p>This class is a proxy for communications with the

@@ -39,23 +39,20 @@
 
 package org.opennms.netmgt.capsd;
 
-import java.lang.*;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.opennms.protocols.snmp.SnmpSession;
+import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.netmgt.utils.SnmpResponseHandler;
 import org.opennms.protocols.snmp.SnmpPduBulk;
 import org.opennms.protocols.snmp.SnmpPduPacket;
 import org.opennms.protocols.snmp.SnmpPduRequest;
-import org.opennms.protocols.snmp.SnmpVarBind;
 import org.opennms.protocols.snmp.SnmpPeer;
 import org.opennms.protocols.snmp.SnmpSMI;
-
-import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.utils.SnmpResponseHandler;
-
-import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.protocols.snmp.SnmpSession;
+import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
  * This class is used to test passed address for

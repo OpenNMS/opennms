@@ -37,15 +37,18 @@
 
 package org.opennms.netmgt.poller;
 
-import java.net.*;
-import java.util.*;
+import java.net.InetAddress;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.netmgt.scheduler.Scheduler;
-
 import org.opennms.netmgt.config.PollerConfigFactory;
+import org.opennms.netmgt.scheduler.Scheduler;
 
 /**
  * <P>The PollableInterface class...</P>

@@ -34,7 +34,6 @@
 
 package org.opennms.netmgt.eventd;
 
-import java.lang.*;
 
 /**
  * <P>This class is a repository for constant, static information

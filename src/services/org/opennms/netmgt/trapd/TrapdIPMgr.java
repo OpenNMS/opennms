@@ -38,12 +38,11 @@
 
 package org.opennms.netmgt.trapd;
 
-import java.util.Map;
-import java.util.HashMap;
-
-import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 

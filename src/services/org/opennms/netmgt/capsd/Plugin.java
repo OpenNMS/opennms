@@ -34,7 +34,6 @@
 
 package org.opennms.netmgt.capsd;
 
-import java.lang.*;
 import java.net.InetAddress;
 import java.util.Map;
 

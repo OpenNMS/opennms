@@ -36,7 +36,6 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.RuntimeException;
 
 /**
  * Defines a runtime exception when the program attempts to send

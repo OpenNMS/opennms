@@ -40,25 +40,27 @@
 
 package org.opennms.netmgt.poller;
 
-import java.net.*;
-import java.util.*;
-import java.io.*;
-import java.lang.*;
+import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.util.Map;
 
+import org.apache.log4j.Category;
+import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
-import org.apache.log4j.Priority;
-import org.apache.log4j.Category;
-
-import org.opennms.protocols.ip.*;
-import org.opennms.protocols.snmp.*;
-
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.utils.SnmpResponseHandler;
 import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.netmgt.utils.SnmpResponseHandler;
+import org.opennms.protocols.snmp.SnmpObjectId;
+import org.opennms.protocols.snmp.SnmpPduPacket;
+import org.opennms.protocols.snmp.SnmpPduRequest;
+import org.opennms.protocols.snmp.SnmpPeer;
+import org.opennms.protocols.snmp.SnmpSMI;
+import org.opennms.protocols.snmp.SnmpSession;
+import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
  * <P>This class is designed to be used by the service poller

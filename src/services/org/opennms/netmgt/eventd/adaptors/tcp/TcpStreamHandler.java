@@ -38,44 +38,36 @@
 
 package org.opennms.netmgt.eventd.adaptors.tcp;
 
-import java.lang.*;
-
-import java.io.StringWriter;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.PipedOutputStream;
 import java.io.PipedInputStream;
-import java.io.IOException;
-
-import java.net.Socket;
+import java.io.PipedOutputStream;
+import java.io.StringWriter;
 import java.net.InetAddress;
-
-import java.util.List;
+import java.net.Socket;
+import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Iterator;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
-
-import java.text.DateFormat;
-
-import org.opennms.netmgt.xml.event.Log;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.EventReceipt;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.core.fiber.Fiber;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.log4j.Category;
-
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
+import org.opennms.core.fiber.Fiber;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.EventReceipt;
+import org.opennms.netmgt.xml.event.Log;
 
 /**
  * Provides the logic and context of execution necessary to actually process a 

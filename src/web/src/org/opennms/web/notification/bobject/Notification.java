@@ -32,9 +32,8 @@
 
 package org.opennms.web.notification.bobject;
 
-import java.util.*;
-
-import org.opennms.core.utils.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**This class holds the information parsed from the notifications.xml

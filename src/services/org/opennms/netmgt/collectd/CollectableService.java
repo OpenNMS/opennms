@@ -36,36 +36,29 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.lang.*;
-
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
-import org.opennms.netmgt.scheduler.Scheduler;
-import org.opennms.netmgt.scheduler.ReadyRunnable;
-import org.opennms.netmgt.poller.IPv4NetworkInterface;
-
+import org.opennms.netmgt.config.PollOutagesConfigFactory;
+import org.opennms.netmgt.config.collectd.Parameter;
+import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.poller.IPv4NetworkInterface;
+import org.opennms.netmgt.scheduler.ReadyRunnable;
+import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.utils.EventProxy;
-
-// Castor generated
-import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Event;
-
-// castor classes generated from the collectd-configuration.xsd
-import org.opennms.netmgt.config.collectd.*;
+import org.opennms.netmgt.xml.event.Log;
 
 /**
  * <P>The CollectableService class ...</P>

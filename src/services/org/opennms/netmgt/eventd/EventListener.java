@@ -35,7 +35,7 @@
 package org.opennms.netmgt.eventd;
 
 // castor generated event class
-import org.opennms.netmgt.xml.event.Event; 
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * The interface to be implemented by all services that wish to receive events

@@ -40,8 +40,6 @@
 
 package org.opennms.netmgt.ping;
 
-import java.lang.*;
-
 import org.opennms.protocols.icmp.ICMPHeader;
 import org.opennms.protocols.ip.OC16ChecksumProducer;
 

@@ -32,7 +32,8 @@
 
 package org.opennms.web.graph;
 
-import java.io.*;
+import java.io.File;
+import java.io.FilenameFilter;
 
 
 /**

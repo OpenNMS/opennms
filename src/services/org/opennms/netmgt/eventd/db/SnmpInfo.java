@@ -34,9 +34,7 @@
 
 package org.opennms.netmgt.eventd.db;
 
-import java.lang.*;
-
-import org.opennms.netmgt.xml.event.*;
+import org.opennms.netmgt.xml.event.Snmp;
 
 /**
  * This class is used to format the Snmp block into

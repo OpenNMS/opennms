@@ -37,14 +37,18 @@
 package org.opennms.web.response;
 
 import java.io.IOException;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
-import org.opennms.web.graph.*;
+import org.opennms.web.graph.PrefabGraph;
 
 
 public class AddReportsToUrlServlet extends HttpServlet 

@@ -34,20 +34,18 @@
 
 package org.opennms.netmgt.rtc;
 
+import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.io.*;
-import java.sql.*;
-import java.util.*;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
-import org.exolab.castor.xml.ValidationException;
 import org.exolab.castor.xml.MarshalException;
-
-import org.opennms.core.fiber.PausableFiber;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
-
+import org.opennms.core.fiber.PausableFiber;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.RTCConfigFactory;
 
 /**

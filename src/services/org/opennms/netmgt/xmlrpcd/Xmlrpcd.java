@@ -39,24 +39,18 @@
 package org.opennms.netmgt.xmlrpcd;
 
 import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Enumeration;
 
-import java.lang.reflect.UndeclaredThrowableException;
-
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
+import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueImpl;
-import org.opennms.core.queue.FifoQueueException;
-import org.opennms.core.fiber.PausableFiber;
-
-import org.opennms.netmgt.xml.event.*;
-import org.opennms.netmgt.config.XmlrpcdConfigFactory;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
+import org.opennms.netmgt.config.XmlrpcdConfigFactory;
 
 /**
  * <p>The Xmlrpcd receives events selectively and sends notification

@@ -34,24 +34,21 @@
 
 package org.opennms.netmgt.capsd;
 
-import java.lang.*;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.io.IOException;
-
-import java.util.TreeMap;
-import java.util.Map;
 import java.util.Collections;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.netmgt.ping.Reply;
-import org.opennms.netmgt.ping.Packet;
-import org.opennms.netmgt.ping.ReplyReceiver;
 import org.opennms.core.queue.FifoQueueImpl;
-import org.opennms.protocols.icmp.IcmpSocket;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.ping.Packet;
+import org.opennms.netmgt.ping.Reply;
+import org.opennms.netmgt.ping.ReplyReceiver;
 import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.protocols.icmp.IcmpSocket;
 
 /**
  * This class provides Capsd with the ability to check for ICMP support

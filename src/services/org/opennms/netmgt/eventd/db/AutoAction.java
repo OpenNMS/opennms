@@ -38,9 +38,7 @@
 
 package org.opennms.netmgt.eventd.db;
 
-import java.lang.*;
-
-import org.opennms.netmgt.xml.event.*;
+import org.opennms.netmgt.xml.event.Autoaction;
 
 /**
  * This is an utility class used to format the event autoaction

@@ -34,9 +34,9 @@
 
 package org.opennms.netmgt.utils;
 
-import java.security.cert.X509Certificate;
-import javax.net.ssl.X509TrustManager;
 import java.security.cert.CertificateException;
+
+import javax.net.ssl.X509TrustManager;
 
 /** 
  * This class is used to change the behaviour of the X509TrustManager

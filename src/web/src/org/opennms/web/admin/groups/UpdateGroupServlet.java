@@ -33,13 +33,15 @@
 package org.opennms.web.admin.groups;
 
 import java.io.IOException;
-import java.util.*;
-import java.text.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.opennms.netmgt.config.groups.Group;
-import org.opennms.netmgt.config.GroupFactory;
 
 /**
  * A servlet that handles saving a group

@@ -32,9 +32,9 @@
 
 package org.opennms.protocols.dns;
 
-import java.lang.*;
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayInputStream;
+import java.io.EOFException;
+import java.io.IOException;
 
 /**
  * <P>DNSInputStrean extends a ByteArrayInputStream and has methods to 

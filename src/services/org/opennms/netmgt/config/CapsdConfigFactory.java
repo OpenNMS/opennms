@@ -43,47 +43,48 @@
 
 package org.opennms.netmgt.config;
 
-import java.lang.*;
-
-import java.io.*;
-
-import java.net.URL;
-import java.net.MalformedURLException;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.UnknownHostException;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.HashMap;
-import java.util.Enumeration;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.capsd.Plugin;
-import org.opennms.netmgt.capsd.DbIpInterfaceEntry;
 import org.opennms.netmgt.capsd.DbIfServiceEntry;
-
+import org.opennms.netmgt.capsd.DbIpInterfaceEntry;
+import org.opennms.netmgt.capsd.Plugin;
+import org.opennms.netmgt.config.capsd.CapsdConfiguration;
+import org.opennms.netmgt.config.capsd.IpManagement;
+import org.opennms.netmgt.config.capsd.Property;
+import org.opennms.netmgt.config.capsd.ProtocolConfiguration;
+import org.opennms.netmgt.config.capsd.ProtocolPlugin;
+import org.opennms.netmgt.config.capsd.Range;
+import org.opennms.netmgt.config.capsd.SmbAuth;
+import org.opennms.netmgt.config.capsd.SmbConfig;
 import org.opennms.netmgt.utils.IPSorter;
-
-import org.opennms.netmgt.config.CollectdConfigFactory;
-
-
-// castor classes generated from the capsd-configuration.xsd
-import org.opennms.netmgt.config.capsd.*;
 
 /**
  * <p>This is the singleton class used to load the configuration for

@@ -32,27 +32,18 @@
 
 package org.opennms.web;
 
-import java.util.*;
-import java.io.*;
-import java.net.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+
+import javax.servlet.ServletException;
+
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.UserFactory;
-import org.opennms.web.*;
-import org.xml.sax.SAXException;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-import org.apache.fop.apps.*;
-import org.apache.fop.messaging.*;
-import org.apache.fop.render.awt.*;
-import org.apache.fop.viewer.*;
-import org.apache.xerces.parsers.*;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.UserFactory;
 
 
 /**

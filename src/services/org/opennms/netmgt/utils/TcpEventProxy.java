@@ -38,27 +38,22 @@
 
 package org.opennms.netmgt.utils;
 
-import java.lang.*;
-import java.lang.reflect.UndeclaredThrowableException;
-
-import java.io.IOException;
-import java.io.InterruptedIOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.io.Reader;
 import java.io.BufferedOutputStream;
-
-import java.net.Socket;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-
-import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.netmgt.xml.event.Log;
-import org.opennms.netmgt.xml.event.Events;
-import org.opennms.netmgt.xml.event.Event;
+import java.net.Socket;
 
 import org.exolab.castor.xml.Marshaller;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Events;
+import org.opennms.netmgt.xml.event.Log;
 
 /**
  * This is the interface used to send events into the event subsystem -

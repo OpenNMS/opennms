@@ -35,17 +35,22 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-
-// castor classes generated from the scriptd-configuration.xsd
-import org.opennms.netmgt.config.scriptd.*;
-
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.scriptd.Engine;
+import org.opennms.netmgt.config.scriptd.EventScript;
+import org.opennms.netmgt.config.scriptd.ReloadScript;
+import org.opennms.netmgt.config.scriptd.ScriptdConfiguration;
+import org.opennms.netmgt.config.scriptd.StartScript;
+import org.opennms.netmgt.config.scriptd.StopScript;
 
 /**
  * <p>This is the singleton class used to load the configuration for

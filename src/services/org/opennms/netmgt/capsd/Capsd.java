@@ -39,31 +39,23 @@
 
 package org.opennms.netmgt.capsd;
 
-import java.net.*;
-import java.io.*;
-import java.util.*;
-import java.sql.*;
+import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.sql.SQLException;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
-
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.core.fiber.PausableFiber;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CapsdConfigFactory;
-import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-
-
-// castor classes generated from the capsd-configuration.xsd
-import org.opennms.netmgt.config.capsd.*;
 
 /**
  * <P>The Capability daemon - it is notified by the discovery process when

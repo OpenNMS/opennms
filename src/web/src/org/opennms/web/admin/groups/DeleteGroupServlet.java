@@ -33,11 +33,13 @@
 package org.opennms.web.admin.groups;
 
 import java.io.IOException;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 
-import org.opennms.netmgt.config.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.opennms.netmgt.config.GroupFactory;
 
 
 /**

@@ -38,25 +38,21 @@
 
 package org.opennms.netmgt.dhcpd;
 
-import java.util.StringTokenizer;
-import java.lang.*;
-import java.lang.reflect.UndeclaredThrowableException;
-
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-
-import edu.bucknell.net.JDHCP.*;
+import java.util.StringTokenizer;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.DhcpdConfigFactory;
 
-import org.opennms.netmgt.config.DhcpdConfigFactory; 
+import edu.bucknell.net.JDHCP.DHCPMessage;
 
 /**
  * <P>Establishes a TCP socket connection with the DHCP daemon

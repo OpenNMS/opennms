@@ -34,11 +34,10 @@
 
 package org.opennms.netmgt.eventd.db;
 
-import java.lang.*;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 
-import org.opennms.netmgt.xml.event.*;
+import org.opennms.netmgt.xml.event.Operaction;
 
 /**
  * This is an utility class used to format the event operator actions

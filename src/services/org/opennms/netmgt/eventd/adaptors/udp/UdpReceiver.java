@@ -36,16 +36,12 @@
 
 package org.opennms.netmgt.eventd.adaptors.udp;
 
-import java.lang.*;
-
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.io.InterruptedIOException;
-
-import java.net.DatagramSocket;
+import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.SocketException;
-
 import java.util.List;
 
 import org.apache.log4j.Category;

@@ -35,7 +35,6 @@
 
 package org.opennms.core.utils;
 
-import java.lang.*;
 import org.apache.log4j.Category;
 
 /**

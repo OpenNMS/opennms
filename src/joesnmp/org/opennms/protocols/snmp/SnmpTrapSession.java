@@ -43,13 +43,13 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.*;
-import java.net.*;
-import java.io.*;
-import java.util.*;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.SocketException;
 
-import org.opennms.protocols.snmp.*;
-import org.opennms.protocols.snmp.asn1.*;
+import org.opennms.protocols.snmp.asn1.ASN1;
+import org.opennms.protocols.snmp.asn1.AsnEncoder;
+import org.opennms.protocols.snmp.asn1.AsnEncodingException;
 
 /**
  * <P>The trap session is used to send and receives

@@ -37,9 +37,8 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.*;
-import java.net.*;
-import org.opennms.protocols.snmp.*;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
 
 /**
  * The SnmpPacketHandler is implemented by an object that 

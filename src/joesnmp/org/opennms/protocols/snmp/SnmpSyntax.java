@@ -37,10 +37,9 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.*;
+import org.opennms.protocols.snmp.asn1.AsnDecodingException;
 import org.opennms.protocols.snmp.asn1.AsnEncoder;
 import org.opennms.protocols.snmp.asn1.AsnEncodingException;
-import org.opennms.protocols.snmp.asn1.AsnDecodingException;
 
 
 /**

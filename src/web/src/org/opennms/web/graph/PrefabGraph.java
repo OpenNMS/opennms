@@ -32,7 +32,10 @@
 
 package org.opennms.web.graph;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 import org.opennms.core.utils.BundleLists;
 
 

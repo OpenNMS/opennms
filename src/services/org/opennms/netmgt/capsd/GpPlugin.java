@@ -39,27 +39,17 @@
 
 package org.opennms.netmgt.capsd;
 
-import java.lang.*;
-import java.lang.reflect.UndeclaredThrowableException; 
-
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-
 import java.net.InetAddress;
-
 import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
-import org.opennms.core.utils.ThreadCategory;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
-import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.utils.ExecRunner;
+import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * <P>This class is designed to be used by the capabilities

@@ -32,12 +32,21 @@
 
 package org.opennms.web.eventconf.parsers;
 
-import java.io.*;
-import java.util.*;
-import org.w3c.dom.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.opennms.web.eventconf.bobject.*;
-import org.opennms.web.parsers.*;
+import org.opennms.web.eventconf.bobject.AutoAction;
+import org.opennms.web.eventconf.bobject.Correlation;
+import org.opennms.web.eventconf.bobject.Event;
+import org.opennms.web.eventconf.bobject.Forward;
+import org.opennms.web.eventconf.bobject.Global;
+import org.opennms.web.eventconf.bobject.MaskElement;
+import org.opennms.web.eventconf.bobject.OperatorAction;
+import org.opennms.web.eventconf.bobject.Snmp;
+import org.opennms.web.parsers.BBParser;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 
 /**This class is used to parse data from eventconf.xml file.

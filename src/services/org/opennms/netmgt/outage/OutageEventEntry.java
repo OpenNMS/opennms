@@ -33,7 +33,6 @@
 
 package org.opennms.netmgt.outage;
 
-import java.util.*;
 
 
 /**

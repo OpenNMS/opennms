@@ -38,9 +38,6 @@
 
 package org.opennms.netmgt.rrd;
 
-import java.lang.SecurityException;
-import java.lang.UnsatisfiedLinkError;
-
 import org.opennms.core.utils.ThreadCategory;
 
 /**

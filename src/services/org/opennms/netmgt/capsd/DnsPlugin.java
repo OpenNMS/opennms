@@ -34,15 +34,11 @@
 
 package org.opennms.netmgt.capsd;
 
-import java.lang.*;
-
 import java.io.IOException;
 import java.io.InterruptedIOException;
-
-import java.net.InetAddress;
-import java.net.DatagramSocket;
 import java.net.DatagramPacket;
-
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.Map;
 
 import org.apache.log4j.Category;

@@ -33,24 +33,18 @@
 package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
-import java.util.Map;
 import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.PreparedStatement;
-import java.sql.DriverManager;
-import org.opennms.netmgt.capsd.Plugin;
-import org.opennms.core.utils.ThreadCategory;
-import java.sql.SQLException;
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.ResultSet;
 import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Map;
 
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.utils.ParameterMap;
 import org.apache.log4j.Category;
-
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.DBTools;
+import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * This OpenNMS capsd plugin checks if a given server is running a server that can talk

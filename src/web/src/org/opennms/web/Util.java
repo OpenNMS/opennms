@@ -34,13 +34,23 @@
 
 package org.opennms.web;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.URLEncoder;
-import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
-import org.opennms.core.resource.Vault;
+
 import org.opennms.web.element.NetworkElementFactory;
 
 

@@ -34,8 +34,7 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.lang.*;
-import java.util.*;
+import java.util.List;
 
 /**
  * This class encapsulates all of the node-level data required by

@@ -36,7 +36,6 @@
 
 package org.opennms.core.fiber;
 
-import java.lang.*;
 
 /**
  * <p>This class is used to extend the <code>Fiber</code> interface so

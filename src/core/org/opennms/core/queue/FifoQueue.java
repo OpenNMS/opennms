@@ -36,7 +36,6 @@
 
 package org.opennms.core.queue;
 
-import java.lang.*;
 
 /** 
  * </p>This interface defines a queue that uses <em>F</em>irst

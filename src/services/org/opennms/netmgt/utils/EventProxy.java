@@ -34,8 +34,8 @@
 
 package org.opennms.netmgt.utils;
 
-import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Log;
 
 /**
  * This is the interface used to send events into the event subsystem -

@@ -38,25 +38,19 @@
 
 package org.opennms.netmgt.poller;
 
-import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.utils.EventProxy;
-import org.opennms.netmgt.poller.NetworkInterface;
-import java.util.Map;
 import java.net.InetAddress;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
-import java.sql.SQLException;
 import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import java.sql.DriverManager;
 import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Map;
 
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.utils.ParameterMap;
 import org.apache.log4j.Category;
-
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.DBTools;
+import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * This class implements a basic JDBC monitoring framework; The idea is than these tests doesn't take too long

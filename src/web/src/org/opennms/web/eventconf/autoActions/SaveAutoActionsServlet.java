@@ -32,11 +32,16 @@
 package org.opennms.web.eventconf.autoActions;
 
 import java.io.IOException;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import org.opennms.web.eventconf.bobject.*;
-import org.opennms.web.eventconf.*;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.opennms.web.eventconf.bobject.AutoAction;
+import org.opennms.web.eventconf.bobject.Event;
 
 
 /**

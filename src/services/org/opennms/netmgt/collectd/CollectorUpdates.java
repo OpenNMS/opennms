@@ -32,10 +32,8 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.lang.*;
-
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The CollectorUpdates class encapsulates changes to a SnmpCollector 

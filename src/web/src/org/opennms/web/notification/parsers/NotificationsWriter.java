@@ -32,14 +32,18 @@
 
 package org.opennms.web.notification.parsers;
 
-import java.io.*;
-import java.util.*;
-import org.w3c.dom.*;
-import javax.xml.parsers.*;
+import java.util.Collection;
+import java.util.List;
 
-import org.opennms.core.utils.*;
-import org.opennms.web.notification.bobject.*;
-import org.opennms.web.parsers.*;
+import org.opennms.web.notification.bobject.GroupTarget;
+import org.opennms.web.notification.bobject.NotifTarget;
+import org.opennms.web.notification.bobject.Notification;
+import org.opennms.web.notification.bobject.NotificationTarget;
+import org.opennms.web.notification.bobject.UserTarget;
+import org.opennms.web.parsers.XMLHeader;
+import org.opennms.web.parsers.XMLWriteException;
+import org.opennms.web.parsers.XMLWriter;
+import org.w3c.dom.Element;
 
 
 /**This class loads and saves information from the notifications.xml file

@@ -39,26 +39,32 @@
 
 package org.opennms.web.admin.nodeManagement;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.*;
-import java.util.*;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.util.ArrayList;
+import java.util.Properties;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.opennms.core.resource.Vault;
-import org.opennms.netmgt.config.*;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.TcpEventProxy;
-import org.opennms.netmgt.xml.event.*;
-import org.opennms.web.element.NetworkElementFactory;
-import org.opennms.netmgt.config.EventconfFactory;
-
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
 
 /**
  * A servlet that handles deleting nodes from the database

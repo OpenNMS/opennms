@@ -38,16 +38,19 @@
 
 package org.opennms.netmgt.utils;
 
-import java.io.*;
-import java.util.*;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.log4j.Category;
+import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.PropertyConstants;
 import org.opennms.protocols.ip.IPv4Address;
-import org.opennms.core.resource.Vault;
 
 
 /**

@@ -37,22 +37,19 @@
 //
 package org.opennms.netmgt.xmlrpcd;
 
-import java.util.ArrayList;
 import java.util.Enumeration;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
-
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-
-// castor generated
-import org.opennms.netmgt.xml.event.*;
-import org.opennms.netmgt.config.xmlrpcd.*;
+import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
 
 /**
  * The EventQueueProcessor processes the events recieved by xmlrpcd 

@@ -37,12 +37,8 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.lang.*;
-
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-// castor generated Threshold class (from threshold-config.xsd)
 import org.opennms.netmgt.config.threshd.Threshold;
 
 /**

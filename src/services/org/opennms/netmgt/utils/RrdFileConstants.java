@@ -32,7 +32,9 @@
 
 package org.opennms.netmgt.utils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
 
 /**
  * A convenience class containing RRD file and directory

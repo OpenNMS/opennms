@@ -32,9 +32,9 @@
 
 package org.opennms.protocols.dns;
 
-import java.lang.*;
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * <P>Holds a DNS resource record which is a DNS response that gives the IP 

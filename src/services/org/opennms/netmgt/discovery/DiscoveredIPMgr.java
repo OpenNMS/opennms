@@ -40,25 +40,20 @@ package org.opennms.netmgt.discovery;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Iterator;
-
-import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.utils.IPSorter;
-
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
-
-// Castor generated discovery configuration classes.
 import org.opennms.netmgt.config.discovery.ExcludeRange;
+import org.opennms.netmgt.utils.IPSorter;
 
 /**
  * This class represents a singular instance that is used

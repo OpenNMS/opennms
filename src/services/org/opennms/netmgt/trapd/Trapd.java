@@ -40,34 +40,27 @@
 
 package org.opennms.netmgt.trapd;
 
-import java.io.*;
-
+import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-
 import java.net.InetAddress;
 import java.net.SocketException;
-
 import java.sql.SQLException;
-
 import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueImpl;
-import org.opennms.core.queue.FifoQueueException;
-
 import org.opennms.core.fiber.PausableFiber;
-
-import org.opennms.netmgt.xml.event.*;
-
-import org.opennms.protocols.snmp.*;
-
+import org.opennms.core.queue.FifoQueue;
+import org.opennms.core.queue.FifoQueueException;
+import org.opennms.core.queue.FifoQueueImpl;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.TrapdConfigFactory;
+import org.opennms.protocols.snmp.SnmpOctetString;
+import org.opennms.protocols.snmp.SnmpPduPacket;
+import org.opennms.protocols.snmp.SnmpPduTrap;
+import org.opennms.protocols.snmp.SnmpTrapHandler;
+import org.opennms.protocols.snmp.SnmpTrapSession;
 
 /**
  * <p>The Trapd listens for SNMP traps on the standard port(162).

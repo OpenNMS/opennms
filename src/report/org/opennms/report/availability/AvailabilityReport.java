@@ -34,31 +34,24 @@
 
 package org.opennms.report.availability;
 
-import java.util.*;
-import java.sql.*;
-import java.io.*;
-import java.net.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import org.exolab.castor.xml.*;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-import java.lang.reflect.UndeclaredThrowableException;
 import org.opennms.netmgt.ConfigFileConstants;
-
-//import org.apache.xalan.xslt.*;
-import org.xml.sax.SAXException;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-import org.apache.fop.apps.*;
-import org.apache.fop.messaging.*;
-import org.apache.fop.render.awt.*;
-import org.apache.fop.viewer.*;
-import org.apache.xerces.parsers.*;
 import org.opennms.report.datablock.PDFWriter;
-
-import org.exolab.castor.xml.*;
 
 /**
  * AvailabilityReport generates the Availability report in pdf format

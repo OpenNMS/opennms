@@ -34,19 +34,18 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-
 import org.opennms.core.utils.ThreadCategory;
-
-// castor classes generated from the discovery-configuration.xsd
-import org.opennms.netmgt.config.discovery.*;
-
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 
 /**
  * <p>This is the singleton class used to load the configuration for

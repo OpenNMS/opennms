@@ -33,6 +33,7 @@
 package org.opennms.web.event.filter;
 
 import java.util.Date;
+
 import org.opennms.netmgt.EventConstants;
 
 public class BeforeDateFilter extends Object implements Filter 

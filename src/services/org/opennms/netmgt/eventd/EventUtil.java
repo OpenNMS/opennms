@@ -39,19 +39,25 @@
 
 package org.opennms.netmgt.eventd;
 
-import java.util.*;
-import java.text.*;
-import java.sql.*;
 import java.math.BigInteger;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Enumeration;
 
-import org.opennms.protocols.snmp.*;
 import org.opennms.core.utils.Base64;
-
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
-
-
-// castor generated classes
-import org.opennms.netmgt.xml.event.*;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Snmp;
+import org.opennms.netmgt.xml.event.Value;
+import org.opennms.protocols.snmp.SnmpCounter64;
+import org.opennms.protocols.snmp.SnmpIPAddress;
+import org.opennms.protocols.snmp.SnmpInt32;
+import org.opennms.protocols.snmp.SnmpObjectId;
+import org.opennms.protocols.snmp.SnmpOctetString;
+import org.opennms.protocols.snmp.SnmpUInt32;
 
 /**
  * EventUtil is used primarily for the event parm expansion - has methods

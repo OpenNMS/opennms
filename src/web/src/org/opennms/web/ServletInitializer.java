@@ -38,16 +38,14 @@
 
 package org.opennms.web;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Properties;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import org.apache.log4j.PropertyConfigurator; 
+
+import org.apache.log4j.PropertyConfigurator;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.resource.db.DbConnectionFactory;
 import org.opennms.core.utils.ThreadCategory;

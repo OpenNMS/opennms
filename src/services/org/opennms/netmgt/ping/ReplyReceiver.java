@@ -41,17 +41,14 @@
 
 package org.opennms.netmgt.ping;
 
-import java.lang.*;
 import java.net.DatagramPacket;
 
-import org.opennms.protocols.icmp.IcmpSocket;
-
+import org.apache.log4j.Category;
+import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
-import org.opennms.core.fiber.PausableFiber;
-
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.protocols.icmp.IcmpSocket;
 
 /**
  * <p>This class is designed to be a single point of reciept for

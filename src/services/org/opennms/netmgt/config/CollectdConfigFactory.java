@@ -39,26 +39,32 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
-
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.netmgt.filter.Filter;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.utils.IpListFromUrl;
+import org.opennms.netmgt.config.collectd.CollectdConfiguration;
+import org.opennms.netmgt.config.collectd.ExcludeRange;
+import org.opennms.netmgt.config.collectd.IncludeRange;
+import org.opennms.netmgt.config.collectd.Service;
+import org.opennms.netmgt.filter.Filter;
 import org.opennms.netmgt.utils.IPSorter;
-
-// castor classes generated from the collectd-configuration.xsd
-import org.opennms.netmgt.config.collectd.*;
-import org.opennms.netmgt.config.server.*;
+import org.opennms.netmgt.utils.IpListFromUrl;
 
  /**
  * @author <a href="mailto:jamesz@blast.com">James Zuo</a>

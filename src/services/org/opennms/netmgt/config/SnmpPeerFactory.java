@@ -38,28 +38,27 @@
 
 package org.opennms.netmgt.config;
 
-import java.lang.*;
-import java.io.*;
-import java.util.*;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
+import java.util.Enumeration;
 
 import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-
+import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.capsd.Definition;
+import org.opennms.netmgt.config.capsd.Range;
+import org.opennms.netmgt.config.capsd.SnmpConfig;
 import org.opennms.protocols.snmp.SnmpParameters;
 import org.opennms.protocols.snmp.SnmpPeer;
 import org.opennms.protocols.snmp.SnmpSMI;
-
-import org.opennms.netmgt.ConfigFileConstants;
-
-// castor classes generated from the snmp-config.xsd
-import org.opennms.netmgt.config.capsd.*;
 
 /**
  * This class is the main respository for SNMP configuration information

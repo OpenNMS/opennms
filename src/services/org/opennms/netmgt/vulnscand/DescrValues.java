@@ -34,9 +34,6 @@ package org.opennms.netmgt.vulnscand;
 
 import org.opennms.netmgt.eventd.db.Constants;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
 /**
 * Class that holds the return values
 * when parsing a description field from

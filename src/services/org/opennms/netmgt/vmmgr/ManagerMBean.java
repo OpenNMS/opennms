@@ -34,7 +34,6 @@
 
 package org.opennms.netmgt.vmmgr;
 
-import java.lang.*;
 import java.util.List;
 
 public interface ManagerMBean

@@ -39,11 +39,12 @@
 package org.opennms.netmgt.collectd;
 
 import java.util.List;
-import org.opennms.protocols.snmp.*;
 
-import org.apache.log4j.Priority;
 import org.apache.log4j.Category;
+import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.protocols.snmp.SnmpObjectId;
+import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
  *<P>The SNMPCollectorEntry class is designed to hold all SNMP 

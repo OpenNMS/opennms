@@ -37,25 +37,19 @@
 //
 package org.opennms.netmgt.xmlrpcd;
 
-import java.lang.*;
-
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
-
-import org.opennms.netmgt.eventd.EventListener;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.XmlrpcdConfigFactory;
-
-// castor generated classes
-import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.config.xmlrpcd.SubscribedEvent;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.eventd.EventListener;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  *

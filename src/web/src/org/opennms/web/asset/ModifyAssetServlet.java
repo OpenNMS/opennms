@@ -37,10 +37,13 @@ package org.opennms.web.asset;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
-import javax.servlet.*;
-import javax.servlet.http.*;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.opennms.web.MissingParameterException;
-import org.opennms.web.asset.*;
 
 
 public class ModifyAssetServlet extends HttpServlet

@@ -36,7 +36,6 @@
 
 package org.opennms.core.fiber;
 
-import java.lang.*;
 
 /**
  * <p>The <code>Fiber</code> interface is similar to the core Java language

@@ -34,7 +34,6 @@
 
 package org.opennms.protocols.ip;
 
-import java.lang.*;
 
 /**
  * This exception is thrown when the IP version is not supported

@@ -34,12 +34,8 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.*;
-import java.lang.reflect.Array;
 import java.io.PrintStream;
 import java.util.ArrayList;
-
-import org.opennms.protocols.snmp.SnmpSyntax;
 
 /**
  * This class provides a set of utilities that may be used

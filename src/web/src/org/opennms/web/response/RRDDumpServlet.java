@@ -36,11 +36,20 @@
 
 package org.opennms.web.response;
 
-import java.io.*;
-import java.util.Properties;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import org.opennms.core.resource.Vault;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
 

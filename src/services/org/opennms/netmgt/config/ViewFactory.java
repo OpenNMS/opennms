@@ -38,19 +38,36 @@
 
 package org.opennms.netmgt.config;
 
-import java.util.*;
-import java.io.*;
-import java.security.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.Marshaller;
+import org.apache.regexp.RE;
+import org.apache.regexp.RESyntaxException;
 import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-
-import org.apache.regexp.*;
-
-import org.opennms.netmgt.config.views.*;
-import org.opennms.netmgt.*;
+import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.views.Categories;
+import org.opennms.netmgt.config.views.Header;
+import org.opennms.netmgt.config.views.Member;
+import org.opennms.netmgt.config.views.Membership;
+import org.opennms.netmgt.config.views.View;
+import org.opennms.netmgt.config.views.Viewinfo;
+import org.opennms.netmgt.config.views.Views;
 
 public class ViewFactory
 {

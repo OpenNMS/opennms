@@ -34,10 +34,12 @@
 
 package org.opennms.netmgt.eventd.datablock;
 
-import java.util.*;
 import java.io.Serializable;
-
-import org.opennms.netmgt.xml.event.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * <pre>The key for an event - it extends the Hashtable and basically is a

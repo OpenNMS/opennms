@@ -34,7 +34,6 @@
 
 package org.opennms.netmgt.rtc.datablock;
 
-import java.util.*;
 
 /**
  * This contains a service lost/regained set/pair for the node - i.e each service

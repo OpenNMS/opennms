@@ -37,7 +37,6 @@
 
 package org.opennms.protocols.snmp.asn1;
 
-import java.lang.*;
 
 /**
  * Public ASN.1 definitions. See "SNMPv1, SNMPv2, SNMPv3

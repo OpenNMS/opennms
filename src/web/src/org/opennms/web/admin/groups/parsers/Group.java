@@ -32,8 +32,10 @@
 
 package org.opennms.web.admin.groups.parsers;
 
-import java.util.*;
-import java.beans.*;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
+import java.util.List;
 
 /**This is a data class to store the group information from
  * the groups.xml file

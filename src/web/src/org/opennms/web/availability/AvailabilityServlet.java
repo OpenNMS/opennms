@@ -32,32 +32,22 @@
 
 package org.opennms.web.availability;
 
-import java.util.*;
-import java.io.*;
-import java.net.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.text.SimpleDateFormat;
-import org.opennms.core.resource.Vault;
-import org.opennms.report.availability.*;
-import org.opennms.web.MissingParameterException;
-import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.web.ServletInitializer;
 
-import org.xml.sax.SAXException;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-import org.opennms.web.ReportMailer;
-import org.apache.xerces.parsers.*;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.stream.StreamResult;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.UnavailableException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Category;
+import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.web.MissingParameterException;
+import org.opennms.web.ReportMailer;
 
 /**
  * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios</A>

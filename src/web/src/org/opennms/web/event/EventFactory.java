@@ -32,15 +32,21 @@
 
 package org.opennms.web.event;
 
-import java.sql.*;
-import java.text.ParseException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Vector;
+
 import org.opennms.core.resource.Vault;
-import org.opennms.web.event.filter.*;
-import org.opennms.web.element.NetworkElementFactory;
+import org.opennms.web.event.filter.Filter;
+import org.opennms.web.event.filter.InterfaceFilter;
+import org.opennms.web.event.filter.NodeFilter;
+import org.opennms.web.event.filter.ServiceFilter;
+import org.opennms.web.event.filter.SeverityFilter;
 
 /**
  * Encapsulates all querying functionality for events.

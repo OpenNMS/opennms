@@ -32,19 +32,27 @@
 
 package org.opennms.web.performance;
 
-import java.io.*;
-import java.sql.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import org.opennms.core.resource.Vault;
-import org.opennms.core.utils.BundleLists;
-import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.PropertyConstants;
 import org.opennms.netmgt.utils.IfLabel;
-
 import org.opennms.web.Util;
-import org.opennms.web.element.NetworkElementFactory;
-import org.opennms.web.graph.*;
+import org.opennms.web.graph.GraphUtil;
+import org.opennms.web.graph.PrefabGraph;
 
 
 /**

@@ -43,25 +43,20 @@
 
 package org.opennms.netmgt.capsd;
 
-import java.lang.*;
-import java.lang.reflect.UndeclaredThrowableException; 
-
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.io.FileNotFoundException;
-
-import java.nio.channels.SocketChannel;
-import org.opennms.netmgt.utils.SocketChannelUtil;
-
-import java.net.InetAddress;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.ConnectException;
+import java.net.InetAddress;
 import java.net.NoRouteToHostException;
-
+import java.nio.channels.SocketChannel;
 import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.netmgt.utils.SocketChannelUtil;
 
 /**
  * <P>This class is designed to be used by the capabilities

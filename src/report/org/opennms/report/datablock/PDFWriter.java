@@ -34,34 +34,28 @@
 
 package org.opennms.report.datablock;
 
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import java.util.*;
-import java.sql.*;
-import java.io.*;
-import java.net.*;
-import org.apache.log4j.Priority;
-import java.text.SimpleDateFormat;
-import java.lang.reflect.UndeclaredThrowableException;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-import org.exolab.castor.xml.*;
-import org.opennms.netmgt.ConfigFileConstants;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.text.SimpleDateFormat;
 
-//import org.apache.xalan.xslt.*;
-import org.xml.sax.SAXException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
+import org.apache.fop.apps.Version;
+import org.apache.fop.messaging.MessageHandler;
+import org.apache.log4j.Category;
+import org.apache.log4j.Priority;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
-import org.apache.fop.apps.*;
-import org.apache.fop.messaging.*;
-import org.apache.fop.render.awt.*;
-import org.apache.fop.viewer.*;
-import org.apache.xerces.parsers.*;
-
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.stream.StreamResult;
 
 /**
  * PDFWriter is a XML to PDF generator. It uses apache's fop api for conversion. 

@@ -36,14 +36,9 @@
 
 package org.opennms.netmgt.poller;
 
-import java.lang.*;
-
 import java.net.InetAddress;
-import java.util.Map;
 import java.util.HashMap;
-
-// castor classes generated from the poller-configuration.xsd
-import org.opennms.netmgt.config.poller.*;
+import java.util.Map;
 
 /**
  * <P>The NetworkInterface class is designed to be a well defined front

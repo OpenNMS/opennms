@@ -36,11 +36,10 @@
 
 package org.opennms.core.concurrent;
 
-import java.lang.*;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 import org.opennms.core.fiber.Fiber;
 

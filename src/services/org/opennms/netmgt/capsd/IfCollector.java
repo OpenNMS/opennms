@@ -38,32 +38,25 @@
 
 package org.opennms.netmgt.capsd;
 
-import java.lang.*;
 import java.lang.reflect.UndeclaredThrowableException;
-
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.net.NoRouteToHostException;
-
-import java.util.List;
-import java.util.Map;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
-
-import jcifs.netbios.*;
-import jcifs.smb.*;
-
-import org.opennms.protocols.snmp.SnmpSMI;
-import org.opennms.protocols.snmp.SnmpPeer;
-import org.opennms.protocols.snmp.SnmpInt32;
-import org.opennms.netmgt.capsd.snmp.*;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
+import org.opennms.netmgt.capsd.snmp.IfTableEntry;
+import org.opennms.netmgt.capsd.snmp.IpAddrTable;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.protocols.snmp.SnmpInt32;
+import org.opennms.protocols.snmp.SnmpPeer;
+import org.opennms.protocols.snmp.SnmpSMI;
 
 /**
  * This class is designed to collect all the relevant information from the 

@@ -37,17 +37,14 @@
 package org.opennms.core.resource;
 
 import java.io.File;
-import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
-
-import java.util.Properties;
 import java.util.Iterator;
-import java.util.Enumeration;
 import java.util.Map;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.opennms.core.resource.db.DbConnectionFactory;

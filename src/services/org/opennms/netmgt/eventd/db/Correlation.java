@@ -40,13 +40,10 @@ package org.opennms.netmgt.eventd.db;
 
 import java.io.StringWriter;
 
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.MarshalException;
-
 import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.netmgt.xml.event.*;
 
 /**
  * This is an utility class used to format the event correlation

@@ -34,19 +34,15 @@
 
 package org.opennms.netmgt.capsd;
 
-import java.lang.*;
-
 import java.io.IOException;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import java.util.Map;
+
+import jcifs.netbios.NbtAddress;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-import jcifs.netbios.NbtAddress;
 
 
 /**

@@ -38,9 +38,8 @@
 
 package org.opennms.netmgt.poller;
 
-import java.lang.*;
+import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.io.*;
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.List;
@@ -49,9 +48,8 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.rrd.Interface;
-
 import org.opennms.netmgt.config.PollerConfigFactory;
+import org.opennms.netmgt.rrd.Interface;
 
 /**
  * <p>This class provides a basic implementation for most of the interface

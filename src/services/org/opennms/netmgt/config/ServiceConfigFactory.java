@@ -38,26 +38,20 @@
 
 package org.opennms.netmgt.config;
 
-import java.lang.*;
-import java.io.IOException;
-import java.io.FileInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Enumeration;
 
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-
-import org.xml.sax.InputSource;
-
 import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.ConfigFileConstants;
-
-// castor classes generated from the service-config.xsd
-//
-import org.opennms.netmgt.config.service.*;
+import org.opennms.netmgt.config.service.Service;
+import org.opennms.netmgt.config.service.ServiceConfiguration;
+import org.xml.sax.InputSource;
 
 /**
  * <p>This factory class is designed to be the main interface between the service

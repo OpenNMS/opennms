@@ -38,22 +38,18 @@
 
 package org.opennms.netmgt.dhcpd;
 
-import java.lang.*;
-
 import java.io.IOException;
 import java.io.InterruptedIOException;
-
-import java.net.DatagramSocket;
 import java.net.DatagramPacket;
-
-import java.util.List;
+import java.net.DatagramSocket;
 import java.util.Iterator;
-
-import org.opennms.core.fiber.Fiber;
-import edu.bucknell.net.JDHCP.DHCPMessage;
+import java.util.List;
 
 import org.apache.log4j.Category;
+import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.ThreadCategory;
+
+import edu.bucknell.net.JDHCP.DHCPMessage;
 
 final class Receiver
 	implements Runnable, Fiber

@@ -32,7 +32,11 @@
 
 package org.opennms.netmgt.config.users;
 
-import java.util.*;
+import java.util.BitSet;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 /**This class holds information on the duty schedules that users
  * can have. Converstion between different formats of the duty 

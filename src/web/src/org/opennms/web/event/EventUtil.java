@@ -33,11 +33,31 @@
 package org.opennms.web.event;
 
 import java.util.Calendar;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.StringTokenizer;
-import org.opennms.web.event.filter.*;
+
+import org.opennms.web.event.filter.AcknowledgedByFilter;
+import org.opennms.web.event.filter.AfterDateFilter;
+import org.opennms.web.event.filter.BeforeDateFilter;
+import org.opennms.web.event.filter.ExactUEIFilter;
+import org.opennms.web.event.filter.Filter;
+import org.opennms.web.event.filter.IPLikeFilter;
+import org.opennms.web.event.filter.InterfaceFilter;
+import org.opennms.web.event.filter.LogMessageMatchesAnyFilter;
+import org.opennms.web.event.filter.LogMessageSubstringFilter;
+import org.opennms.web.event.filter.NegativeAcknowledgedByFilter;
+import org.opennms.web.event.filter.NegativeExactUEIFilter;
+import org.opennms.web.event.filter.NegativeInterfaceFilter;
+import org.opennms.web.event.filter.NegativeNodeFilter;
+import org.opennms.web.event.filter.NegativePartialUEIFilter;
+import org.opennms.web.event.filter.NegativeServiceFilter;
+import org.opennms.web.event.filter.NegativeSeverityFilter;
+import org.opennms.web.event.filter.NodeFilter;
+import org.opennms.web.event.filter.NodeNameLikeFilter;
+import org.opennms.web.event.filter.PartialUEIFilter;
+import org.opennms.web.event.filter.ServiceFilter;
+import org.opennms.web.event.filter.SeverityFilter;
 
 
 public abstract class EventUtil extends Object

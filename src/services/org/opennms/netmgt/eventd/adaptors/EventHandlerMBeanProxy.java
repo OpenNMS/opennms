@@ -38,21 +38,18 @@
 
 package org.opennms.netmgt.eventd.adaptors;
 
-import java.lang.*;
-
 import java.util.Iterator;
 import java.util.List;
 
+import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
-import javax.management.ObjectName;
-import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
-
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.EventReceipt;
+import javax.management.ObjectName;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.EventReceipt;
 
 
 /**

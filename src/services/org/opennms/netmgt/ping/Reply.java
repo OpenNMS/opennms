@@ -40,8 +40,6 @@
 
 package org.opennms.netmgt.ping;
 
-import java.lang.*;
-
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 

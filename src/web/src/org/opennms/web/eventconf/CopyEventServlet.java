@@ -33,12 +33,15 @@
 package org.opennms.web.eventconf;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import org.opennms.web.eventconf.bobject.*;
-import org.opennms.web.eventconf.*;
-import org.opennms.web.parsers.*;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.opennms.web.eventconf.bobject.Event;
+import org.opennms.web.parsers.XMLWriteException;
 
 /**
  * 

@@ -35,7 +35,6 @@
 //
 package org.opennms.protocols.snmp.asn1;
 
-import java.lang.Exception;
 
 /**
  * The AsnDecodingException is generated whenever an error

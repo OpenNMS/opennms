@@ -34,7 +34,8 @@
 
 package org.opennms.netmgt.rtc.datablock;
 
-import java.net.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * Class containing the information for the HTTP POST operations

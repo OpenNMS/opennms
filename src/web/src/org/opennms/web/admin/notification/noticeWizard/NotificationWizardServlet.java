@@ -32,20 +32,23 @@
 
 package org.opennms.web.admin.notification.noticeWizard;
 
-import java.util.*;
-import java.io.*;
-import java.sql.*;
-import java.sql.Connection;
-import javax.servlet.http.*;
+import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-import org.opennms.web.*;
-import org.opennms.netmgt.config.*;
-import org.opennms.netmgt.config.notifications.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.opennms.netmgt.config.NotificationFactory;
+import org.opennms.netmgt.config.notifications.Notification;
+import org.opennms.netmgt.config.notifications.Parameter;
 import org.opennms.netmgt.filter.Filter;
 import org.opennms.netmgt.filter.FilterParseException;
-
-import javax.servlet.*;
 /**
  * A servlet that handles the data comming in from the notification wizard jsps.
  *

@@ -31,8 +31,8 @@
 
 package org.opennms.web.eventconf.bobject;
 
-import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is a data class for storing snmp event configuration information

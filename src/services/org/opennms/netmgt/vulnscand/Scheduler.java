@@ -32,35 +32,32 @@
 
 package org.opennms.netmgt.vulnscand;
 
-import java.lang.*;
 import java.lang.reflect.UndeclaredThrowableException;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-import java.util.*;
-
-import java.sql.Timestamp;
-import java.sql.Statement;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
-import java.text.ParseException;
-
-import org.opennms.core.fiber.Fiber;
+import org.apache.log4j.Category;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
-
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.VulnscandConfigFactory;
-
-import org.opennms.netmgt.config.vulnscand.*;
+import org.opennms.netmgt.config.vulnscand.ScanLevel;
+import org.opennms.netmgt.config.vulnscand.VulnscandConfiguration;
 
 /**
 * This class implements a simple scheduler to ensure

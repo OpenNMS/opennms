@@ -31,7 +31,8 @@
 
 package org.opennms.web.eventconf.bobject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is a data class for storing mask elements for the <mask> tag

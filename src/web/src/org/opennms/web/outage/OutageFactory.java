@@ -32,13 +32,21 @@
 
 package org.opennms.web.outage;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.resource.Vault;
-import org.opennms.web.element.*;
-import org.opennms.web.outage.filter.*;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.web.outage.filter.Filter;
+import org.opennms.web.outage.filter.InterfaceFilter;
+import org.opennms.web.outage.filter.NodeFilter;
+import org.opennms.web.outage.filter.ServiceFilter;
 
 
 /**

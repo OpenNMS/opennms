@@ -43,31 +43,41 @@
 
 package org.opennms.netmgt.config;
 
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Date;
-import java.io.*;
-import java.sql.*;
-import java.text.*;
-import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import org.opennms.netmgt.config.notifications.*;
+import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.notifications.Header;
-import org.opennms.netmgt.xml.event.*;
-import org.opennms.netmgt.filter.*;
-import org.opennms.netmgt.notifd.*;
-import org.opennms.netmgt.*;
-import org.opennms.core.resource.*;
-
-import org.opennms.netmgt.config.NotifdConfigFactory;
+import org.opennms.netmgt.config.notifications.Notification;
+import org.opennms.netmgt.config.notifications.Notifications;
+import org.opennms.netmgt.filter.Filter;
+import org.opennms.netmgt.filter.FilterParseException;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
 */

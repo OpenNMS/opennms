@@ -36,13 +36,10 @@
 
 package org.opennms.web.log;
 
-import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
-import java.io.CharArrayWriter;
-import java.io.PrintWriter;
-import javax.servlet.ServletException;
+import java.beans.PropertyChangeSupport;
+
 import org.apache.catalina.Container;
-import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Logger;
 import org.apache.log4j.Category;
 import org.apache.log4j.PropertyConfigurator;

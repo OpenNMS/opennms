@@ -37,8 +37,11 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.*;
-import java.util.*;
+import java.util.ConcurrentModificationException;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
 
 /**
  * Provides a simple timer scheduler for use by the

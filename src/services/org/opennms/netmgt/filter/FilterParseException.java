@@ -32,7 +32,6 @@
 
 package org.opennms.netmgt.filter;
 
-import java.lang.*;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 

@@ -38,21 +38,15 @@
 
 package org.opennms.netmgt.discovery;
 
-import java.lang.*;
-
 import java.net.UnknownHostException;
-
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-
-// castor generated classes
+import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 
 /**

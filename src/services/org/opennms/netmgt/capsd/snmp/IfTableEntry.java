@@ -40,11 +40,13 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
-import java.util.*;
-import org.opennms.protocols.snmp.*;
-
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.protocols.snmp.SnmpObjectId;
+import org.opennms.protocols.snmp.SnmpPduBulk;
+import org.opennms.protocols.snmp.SnmpPduPacket;
+import org.opennms.protocols.snmp.SnmpPduRequest;
+import org.opennms.protocols.snmp.SnmpVarBind;
 
 
 /**

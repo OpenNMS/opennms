@@ -32,9 +32,9 @@
 
 package org.opennms.web.admin.users.parsers;
 
-import java.util.*;
-
-import org.opennms.web.admin.users.parsers.*;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Vector;
 
 /**This class stores notification information for a user
  * 

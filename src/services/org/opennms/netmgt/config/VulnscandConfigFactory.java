@@ -38,33 +38,35 @@
 
 package org.opennms.netmgt.config;
 
-import java.lang.*;
-
-import java.io.*;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-import java.util.*;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Enumeration;
+import java.util.Set;
+import java.util.TreeSet;
 
-import org.apache.regexp.RE;
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
+import org.apache.regexp.RE;
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
-
-// Castor classes generated from the vulnscand-configuration.xsd
-import org.opennms.netmgt.config.vulnscand.*;
+import org.opennms.netmgt.config.vulnscand.Excludes;
+import org.opennms.netmgt.config.vulnscand.Range;
+import org.opennms.netmgt.config.vulnscand.ScanLevel;
+import org.opennms.netmgt.config.vulnscand.VulnscandConfiguration;
 
 /**
 * <p>This is the singleton class used to load the configuration for

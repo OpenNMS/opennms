@@ -32,20 +32,24 @@
 
 package org.opennms.web.admin.notification;
 
-import java.util.*;
-import java.io.*;
-import java.sql.*;
-import java.sql.Connection;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-import org.opennms.web.*;
-import org.opennms.netmgt.config.*;
-import org.opennms.netmgt.config.destinationPaths.*;
+import org.opennms.netmgt.config.DestinationPathFactory;
+import org.opennms.netmgt.config.destinationPaths.Escalate;
+import org.opennms.netmgt.config.destinationPaths.Path;
+import org.opennms.netmgt.config.destinationPaths.Target;
+import org.opennms.web.Util;
 
 /**
  * A servlet that handles the data comming in from the destination wizard jsps.

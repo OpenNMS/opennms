@@ -36,10 +36,7 @@
 
 package org.opennms.protocols.snmp.asn1;
 
-import java.lang.*;
 import java.math.BigInteger;
-import org.opennms.protocols.snmp.asn1.AsnEncodingException;
-import org.opennms.protocols.snmp.asn1.AsnDecodingException;
 
 /**
  * The AsnEncoder interface defines the contract that objects

@@ -42,28 +42,21 @@
 
 package org.opennms.netmgt.poller;
 
-import java.lang.*;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
-
-import java.net.InetAddress;
-import java.net.DatagramSocket;
-import java.net.DatagramPacket;
-import java.net.NoRouteToHostException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.ConnectException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.NoRouteToHostException;
 import java.net.UnknownHostException;
-
 import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.protocols.dns.DNSAddressRequest;
-import org.opennms.protocols.dns.DNSAddressRR;
-import org.opennms.protocols.dns.DNSInputStream;
-
 import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.protocols.dns.DNSAddressRequest;
 
 /**
  * <P>This class is designed to be used by the service poller

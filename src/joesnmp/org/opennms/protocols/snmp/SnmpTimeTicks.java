@@ -34,15 +34,6 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.*;
-
-import org.opennms.protocols.snmp.SnmpSMI;
-import org.opennms.protocols.snmp.SnmpUInt32;
-import org.opennms.protocols.snmp.SnmpUtil;
-
-import org.opennms.protocols.snmp.asn1.AsnEncoder;
-import org.opennms.protocols.snmp.asn1.AsnEncodingException;
-import org.opennms.protocols.snmp.asn1.AsnDecodingException;
 
 /**
  * Defines a SNMPv1 32-bit time ticks object. The object is a 

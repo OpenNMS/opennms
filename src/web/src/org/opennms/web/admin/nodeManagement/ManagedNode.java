@@ -32,7 +32,8 @@
 
 package org.opennms.web.admin.nodeManagement;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A servlet that stores node, interface, service information

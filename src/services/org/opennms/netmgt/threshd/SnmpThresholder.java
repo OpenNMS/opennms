@@ -38,48 +38,38 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.lang.*;
-import java.io.*;
+import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Date;
-import java.util.Iterator;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-import org.apache.log4j.Priority;
 import org.apache.log4j.Category;
-
-import org.opennms.protocols.snmp.*;
-
+import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.utils.EventProxy;
-import org.opennms.netmgt.utils.ParameterMap;
-import org.opennms.netmgt.utils.IfLabel;
-import org.opennms.netmgt.utils.RrdFileConstants;
-import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.capsd.DbIpInterfaceEntry;
-
-// Castor generated
-import org.opennms.netmgt.xml.event.Log;
-import org.opennms.netmgt.xml.event.Events;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.threshd.Threshold;
+import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.utils.IfLabel;
+import org.opennms.netmgt.utils.ParameterMap;
+import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Value;
-import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Events;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Parm;
-
-// castor classes generated from the threshd-configuration.xsd
-import org.opennms.netmgt.config.threshd.*;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
+import org.opennms.protocols.snmp.SnmpSession;
 
 /**
  * <P>The SnmpThresholder class ...</P>

@@ -32,8 +32,6 @@
 
 package org.opennms.web.notification.bobject;
 
-import org.opennms.core.utils.*;
-import org.opennms.web.admin.users.parsers.*;
 
 
 /**A NotificationTarget representing another notifcation group

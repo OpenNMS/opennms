@@ -34,9 +34,8 @@
 
 package org.opennms.netmgt.eventd.db;
 
-import java.lang.*;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class contains the constants and methods related to inserting

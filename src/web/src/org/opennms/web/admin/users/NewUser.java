@@ -32,7 +32,6 @@
 
 package org.opennms.web.admin.users;
 
-import java.util.*;
 
 /**
  * Add new user Bean, containing data from the user info page.

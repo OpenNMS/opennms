@@ -37,9 +37,6 @@
 
 package org.opennms.core.utils;
 
-import java.util.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 /**
  * <P> This class contains static functions used to convert

@@ -32,12 +32,10 @@
 
 package org.opennms.netmgt.vulnscand;
 
-import org.apache.regexp.RE;
-
-import org.opennms.netmgt.eventd.db.Constants;
-
 import org.apache.log4j.Category;
+import org.apache.regexp.RE;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.eventd.db.Constants;
 
 public class NessusParser
 {

@@ -37,16 +37,26 @@
 
 package org.opennms.netmgt.capsd;
 
-import java.lang.*;
 import java.net.InetAddress;
 import java.util.Iterator;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.protocols.snmp.*;
-import org.opennms.netmgt.capsd.snmp.*;
-import org.opennms.netmgt.utils.BarrierSignaler; 
+import org.opennms.netmgt.capsd.snmp.IfTable;
+import org.opennms.netmgt.capsd.snmp.IfTableEntry;
+import org.opennms.netmgt.capsd.snmp.IfXTable;
+import org.opennms.netmgt.capsd.snmp.IfXTableEntry;
+import org.opennms.netmgt.capsd.snmp.IpAddrTable;
+import org.opennms.netmgt.capsd.snmp.IpAddrTableEntry;
+import org.opennms.netmgt.capsd.snmp.SystemGroup;
+import org.opennms.netmgt.utils.BarrierSignaler;
+import org.opennms.protocols.snmp.SnmpBadConversionException;
+import org.opennms.protocols.snmp.SnmpIPAddress;
+import org.opennms.protocols.snmp.SnmpInt32;
+import org.opennms.protocols.snmp.SnmpOctetString;
+import org.opennms.protocols.snmp.SnmpPeer;
+import org.opennms.protocols.snmp.SnmpSMI;
+import org.opennms.protocols.snmp.SnmpSession;
 
 /**
  * This class is designed to collect the necessary SNMP information from

@@ -38,30 +38,24 @@
 
 package org.opennms.netmgt.dhcpd;
 
-import java.lang.*;
-import java.lang.reflect.UndeclaredThrowableException;
-
 import java.io.IOException;
 import java.io.InterruptedIOException;
-
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.net.ServerSocket;
-
+import java.net.Socket;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Observer;
 import java.util.Observable;
-import java.util.Collections;
+import java.util.Observer;
 
+import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DhcpdConfigFactory;
-
-import org.apache.log4j.Category;
-
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 
 /**
  * <P>The DHCP client daemon serves as a multiplexor for DHCP requests and responses.

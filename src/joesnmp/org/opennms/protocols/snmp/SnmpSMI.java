@@ -37,7 +37,6 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.*;
 import org.opennms.protocols.snmp.asn1.ASN1;
 
 /**

@@ -35,19 +35,18 @@
 package org.opennms.netmgt.outage;
 
 import java.io.IOException;
-import java.util.Vector;
-import java.sql.*;
 import java.net.MalformedURLException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Vector;
 
+import org.apache.log4j.Category;
 import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.XmlRpcException;
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import org.opennms.netmgt.EventConstants;
-
-// castor generated classes
 import org.opennms.netmgt.xml.event.Event;
 
 /**

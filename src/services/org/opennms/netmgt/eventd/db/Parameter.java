@@ -34,10 +34,11 @@
 
 package org.opennms.netmgt.eventd.db;
 
-import java.lang.*;
 import java.util.Enumeration;
 
-import org.opennms.netmgt.xml.event.*;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
 
 /**
  * This is an utility class used to format the event parameters

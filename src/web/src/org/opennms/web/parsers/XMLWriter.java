@@ -32,18 +32,23 @@
 
 package org.opennms.web.parsers;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Collection;
 
-import org.w3c.dom.*;
-import org.apache.xerces.dom.*;
-import org.apache.xml.serialize.*;
-import org.apache.xerces.parsers.*;
-import javax.xml.parsers.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.xml.serialize.OutputFormat;
+import org.apache.xml.serialize.XMLSerializer;
 import org.opennms.core.resource.Vault;
-import org.opennms.web.*;
-import org.opennms.web.parsers.*;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 
 /**This class is used to parse data from and save data to the

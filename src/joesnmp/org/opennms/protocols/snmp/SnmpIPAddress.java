@@ -34,18 +34,11 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.opennms.protocols.snmp.SnmpSMI;
-import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpUtil;
-import org.opennms.protocols.snmp.SnmpBadConversionException;
-
-import org.opennms.protocols.snmp.asn1.AsnEncoder;
-import org.opennms.protocols.snmp.asn1.AsnEncodingException;
 import org.opennms.protocols.snmp.asn1.AsnDecodingException;
+import org.opennms.protocols.snmp.asn1.AsnEncoder;
 
 /**
  * <p>This SnmpIPAddress is used to extend the Snmp 

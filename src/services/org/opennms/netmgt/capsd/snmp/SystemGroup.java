@@ -38,15 +38,18 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
-import java.lang.*;
-import java.util.*;
-
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.protocols.snmp.*;
 import org.opennms.netmgt.utils.Signaler;
+import org.opennms.protocols.snmp.SnmpHandler;
+import org.opennms.protocols.snmp.SnmpObjectId;
+import org.opennms.protocols.snmp.SnmpOctetString;
+import org.opennms.protocols.snmp.SnmpPduPacket;
+import org.opennms.protocols.snmp.SnmpPduRequest;
+import org.opennms.protocols.snmp.SnmpSession;
+import org.opennms.protocols.snmp.SnmpSyntax;
+import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
  * <P>SystemGroup holds the system group properties

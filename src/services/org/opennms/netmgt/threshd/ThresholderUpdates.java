@@ -32,10 +32,8 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.lang.*;
-
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The ThresholderUpdates class encapsulates changes to a SnmpThresholder 

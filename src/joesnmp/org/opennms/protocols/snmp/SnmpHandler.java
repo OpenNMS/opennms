@@ -37,10 +37,6 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.*;
-
-import org.opennms.protocols.snmp.SnmpPduPacket;
-import org.opennms.protocols.snmp.SnmpSession;
 
 /**
  * <P>The SnmpHandler interface is implemented by an object that

@@ -39,7 +39,6 @@ package org.opennms.core.resource.db;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Enumeration;
 import java.util.Properties;
 
 

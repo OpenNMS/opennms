@@ -32,10 +32,25 @@
 
 package org.opennms.web.outage;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.StringTokenizer;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.opennms.web.Util;
-import org.opennms.web.outage.filter.*;
+import org.opennms.web.outage.filter.Filter;
+import org.opennms.web.outage.filter.InterfaceFilter;
+import org.opennms.web.outage.filter.LostServiceDateAfterFilter;
+import org.opennms.web.outage.filter.LostServiceDateBeforeFilter;
+import org.opennms.web.outage.filter.NegativeInterfaceFilter;
+import org.opennms.web.outage.filter.NegativeNodeFilter;
+import org.opennms.web.outage.filter.NegativeServiceFilter;
+import org.opennms.web.outage.filter.NodeFilter;
+import org.opennms.web.outage.filter.OutageFilter;
+import org.opennms.web.outage.filter.RegainedServiceDateAfterFilter;
+import org.opennms.web.outage.filter.RegainedServiceDateBeforeFilter;
+import org.opennms.web.outage.filter.ServiceFilter;
  
 
 public abstract class OutageUtil extends Object

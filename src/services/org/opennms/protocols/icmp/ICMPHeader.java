@@ -38,8 +38,9 @@
 
 package org.opennms.protocols.icmp;
 
-import java.lang.*;
-import java.util.*;
+import java.util.Date;
+import java.util.Random;
+
 import org.opennms.protocols.ip.OC16ChecksumProducer;
 
 /**

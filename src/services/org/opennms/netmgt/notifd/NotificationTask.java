@@ -36,26 +36,32 @@
 
 package org.opennms.netmgt.notifd;
 
-import java.util.*;
-import java.util.Date;
-import java.io.*;
-import java.sql.*;
-import java.text.*;
+import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
-import org.opennms.netmgt.config.*;
-import org.opennms.netmgt.config.users.*;
-import org.opennms.netmgt.config.notificationCommands.*;
+import org.opennms.core.utils.CommandExecutor;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.NotificationFactory;
+import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.notificationCommands.Argument;
-import org.opennms.core.utils.*;
-import org.opennms.core.resource.*;
-import org.opennms.netmgt.*;
+import org.opennms.netmgt.config.notificationCommands.Command;
+import org.opennms.netmgt.config.users.Contact;
+import org.opennms.netmgt.config.users.User;
 
 /**This class holds all the data and logic for sending out a notification
  * Each notification that is sent will be accompanied by

@@ -32,34 +32,20 @@
 
 package org.opennms.netmgt.vulnscand;
 
-import java.net.*;
-import java.io.*;
-import java.util.*;
-import java.sql.*;
+import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.sql.SQLException;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Marshaller;
-
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
-
-import org.opennms.netmgt.xml.event.Events;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Log;
-
-import org.opennms.netmgt.EventConstants;
-
+import org.opennms.core.fiber.PausableFiber;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.VulnscandConfigFactory;
-
-// castor classes generated from the vulnscand-configuration.xsd
-import org.opennms.netmgt.config.vulnscand.*;
 
 /**
 * <P>Vulnerability scanning daemon. This process is used to provide

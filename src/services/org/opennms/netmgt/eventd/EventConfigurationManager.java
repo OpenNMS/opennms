@@ -39,25 +39,22 @@
 
 package org.opennms.netmgt.eventd;
 
-import java.lang.*;
-import java.util.Enumeration;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
-
-import org.opennms.netmgt.xml.eventconf.Events;
-import org.opennms.netmgt.xml.eventconf.Event;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-
-import org.opennms.netmgt.eventd.datablock.*;
+import java.util.Enumeration;
 
 import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.eventd.datablock.EventConfData;
+import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.Events;
 
 
 /**

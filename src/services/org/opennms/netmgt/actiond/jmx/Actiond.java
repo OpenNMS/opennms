@@ -34,7 +34,6 @@
 
 package org.opennms.netmgt.actiond.jmx;
 
-import java.lang.*;
 
 public class Actiond
 	implements ActiondMBean

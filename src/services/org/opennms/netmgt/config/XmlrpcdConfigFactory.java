@@ -37,21 +37,22 @@
 //
 package org.opennms.netmgt.config;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Enumeration;
 
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.ConfigFileConstants;
-
-// castor classes generated from the xmlrpcd-configuration.xsd
-import org.opennms.netmgt.config.xmlrpcd.*;
+import org.opennms.netmgt.config.xmlrpcd.SubscribedEvent;
+import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
+import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
 
 /**
  * <p>This is the singleton class used to load the configuration for

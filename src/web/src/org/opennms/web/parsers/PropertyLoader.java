@@ -32,8 +32,10 @@
 
 package org.opennms.web.parsers;
 
-import java.util.*;
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Properties;
 
 
 /**This class allows another class to load the appropriate property

@@ -32,23 +32,21 @@
 
 package org.opennms.web.category;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.URLDecoder;
-import java.util.*;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import org.exolab.castor.jdo.conf.Database;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-
 import org.opennms.core.utils.ThreadCategory;
-
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 
 public class RTCPostServlet extends HttpServlet

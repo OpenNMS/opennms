@@ -34,10 +34,9 @@
 
 package org.opennms.netmgt.rtc.datablock;
 
-import java.net.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.opennms.netmgt.rtc.DataManager;
 import org.opennms.netmgt.rtc.RTCConstants;
 
 /**

@@ -32,10 +32,8 @@
 
 package org.opennms.netmgt.eventd.adaptors.udp;
 
-import java.lang.*;
-
-import javax.management.MalformedObjectNameException;
 import javax.management.InstanceNotFoundException;
+import javax.management.MalformedObjectNameException;
 
 /**
  *

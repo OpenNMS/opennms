@@ -32,8 +32,8 @@
 
 package org.opennms.web.performance;
 
-import java.io.IOException;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;

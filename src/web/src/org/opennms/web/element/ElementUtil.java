@@ -34,7 +34,8 @@
 
 package org.opennms.web.element;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class ElementUtil extends Object

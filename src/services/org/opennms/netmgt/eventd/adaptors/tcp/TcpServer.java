@@ -38,23 +38,18 @@
 
 package org.opennms.netmgt.eventd.adaptors.tcp;
 
-import java.lang.*;
-
 import java.io.IOException;
 import java.io.InterruptedIOException;
-
-import java.net.Socket;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketException;
-
-import java.util.List;
-import java.util.LinkedList;
 import java.util.Iterator;
-
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.core.fiber.Fiber;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.log4j.Category;
+import org.opennms.core.fiber.Fiber;
+import org.opennms.core.utils.ThreadCategory;
 
 /**
  * This class implement the server features necessary to receive events

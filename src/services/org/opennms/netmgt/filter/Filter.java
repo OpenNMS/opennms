@@ -40,36 +40,29 @@
 
 package org.opennms.netmgt.filter;
 
-import java.lang.*;
-
-import java.lang.reflect.UndeclaredThrowableException;
-
+import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.StringReader;
-import java.io.IOException;
-
+import java.lang.reflect.UndeclaredThrowableException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.ArrayList;
-
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.MarshalException;
 
 import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.netmgt.filter.parser.*;
-import org.opennms.netmgt.filter.lexer.*;
-import org.opennms.netmgt.filter.analysis.*;
-import org.opennms.netmgt.filter.node.*;
-
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.filter.lexer.Lexer;
+import org.opennms.netmgt.filter.lexer.LexerException;
+import org.opennms.netmgt.filter.node.Start;
+import org.opennms.netmgt.filter.parser.Parser;
+import org.opennms.netmgt.filter.parser.ParserException;
 
 /**
  * This class is the main entry point for filtering the rules

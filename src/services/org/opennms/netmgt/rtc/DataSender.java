@@ -39,30 +39,30 @@
 
 package org.opennms.netmgt.rtc;
 
-import java.net.*;
-import java.util.*;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.HttpUtils;
-
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.RTCConfigFactory;
-
-import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.opennms.netmgt.rtc.datablock.HttpPostInfo;
-
-import org.opennms.netmgt.rtc.utils.PipedMarshaller;
+import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.opennms.netmgt.rtc.utils.EuiLevelMapper;
-
-// castor generated class
+import org.opennms.netmgt.rtc.utils.PipedMarshaller;
 import org.opennms.netmgt.xml.rtc.EuiLevel;
 
 /**

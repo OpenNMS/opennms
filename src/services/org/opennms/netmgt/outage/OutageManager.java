@@ -38,21 +38,22 @@
 
 package org.opennms.netmgt.outage;
 
-import java.io.*;
-import java.sql.*;
-import java.util.*;
-
+import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
-
+import org.opennms.core.fiber.PausableFiber;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.OutageManagerConfigFactory;
 

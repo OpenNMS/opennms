@@ -43,24 +43,35 @@
 
 package org.opennms.netmgt.trapd;
 
-import java.util.ArrayList;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.protocols.snmp.*;
-import org.opennms.protocols.ip.IPv4Address;
-
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
-
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-
-// castor generated
-import org.opennms.netmgt.xml.event.*;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Snmp;
+import org.opennms.netmgt.xml.event.Value;
+import org.opennms.protocols.ip.IPv4Address;
+import org.opennms.protocols.snmp.SnmpCounter32;
+import org.opennms.protocols.snmp.SnmpCounter64;
+import org.opennms.protocols.snmp.SnmpGauge32;
+import org.opennms.protocols.snmp.SnmpIPAddress;
+import org.opennms.protocols.snmp.SnmpInt32;
+import org.opennms.protocols.snmp.SnmpNull;
+import org.opennms.protocols.snmp.SnmpObjectId;
+import org.opennms.protocols.snmp.SnmpOctetString;
+import org.opennms.protocols.snmp.SnmpOpaque;
+import org.opennms.protocols.snmp.SnmpPduPacket;
+import org.opennms.protocols.snmp.SnmpPduTrap;
+import org.opennms.protocols.snmp.SnmpSyntax;
+import org.opennms.protocols.snmp.SnmpTimeTicks;
 
 /**
  * The TrapQueueProcessor handles the conversion of V1 and V2 traps to

@@ -38,51 +38,41 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.lang.*;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.io.IOException;
-
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-import java.util.Map;
-import java.util.Set;
-import java.util.Collections;
-import java.util.TreeMap;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Iterator;
-import java.util.HashMap;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
-import org.apache.log4j.Priority;
 import org.apache.log4j.Category;
-
+import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.netmgt.scheduler.Scheduler;
-
-import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
-
-import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.config.ThreshdConfigFactory;
+import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
+import org.opennms.netmgt.config.threshd.Thresholder;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
- 
-// castor classes generated from the threshd-configuration.xsd
-import org.opennms.netmgt.config.threshd.*;
 
 public final class Threshd
 	implements PausableFiber

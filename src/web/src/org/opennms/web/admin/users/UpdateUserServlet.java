@@ -33,15 +33,21 @@
 package org.opennms.web.admin.users;
 
 import java.io.IOException;
-import java.util.*;
-import java.text.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.text.ChoiceFormat;
+import java.util.Collection;
+import java.util.Vector;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.opennms.netmgt.config.UserFactory;
-import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.DutySchedule;
+import org.opennms.netmgt.config.users.User;
 
 /**
  * A servlet that handles saving a user

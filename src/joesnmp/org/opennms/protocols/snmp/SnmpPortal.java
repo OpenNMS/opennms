@@ -38,15 +38,20 @@
 //
 package org.opennms.protocols.snmp;
 
-import java.lang.*;
-import java.net.*;
-import java.io.*;
-import java.util.*;
-
+import java.io.ByteArrayOutputStream;
+import java.io.InterruptedIOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Method;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
+import java.util.Date;
+import java.util.LinkedList;
 
-import org.opennms.protocols.snmp.*;
-import org.opennms.protocols.snmp.asn1.*;
+import org.opennms.protocols.snmp.asn1.ASN1;
+import org.opennms.protocols.snmp.asn1.AsnDecodingException;
+import org.opennms.protocols.snmp.asn1.AsnEncoder;
 
 /**
  * Abstracts the communication related details from the SnmpSession and

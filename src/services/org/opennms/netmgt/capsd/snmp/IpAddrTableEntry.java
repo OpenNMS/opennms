@@ -34,13 +34,14 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
-import java.lang.*;
-import java.util.*;
-
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.protocols.snmp.*;
+import org.opennms.protocols.snmp.SnmpObjectId;
+import org.opennms.protocols.snmp.SnmpPduBulk;
+import org.opennms.protocols.snmp.SnmpPduPacket;
+import org.opennms.protocols.snmp.SnmpPduRequest;
+import org.opennms.protocols.snmp.SnmpSMI;
+import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
  *<P>The IpAddrTableEntry class is designed to hold all the MIB-II

@@ -36,7 +36,6 @@ package org.opennms.netmgt.eventd;
 
 import java.util.List;
 
-// castor generated event class
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 

@@ -36,16 +36,22 @@
 
 package org.opennms.netmgt.config;
 
-import java.util.*;
-import java.io.*;
-import java.sql.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-
-import org.opennms.netmgt.config.notificationCommands.*;
-import org.opennms.netmgt.*;
+import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.notificationCommands.Command;
+import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
 
 /**
 */

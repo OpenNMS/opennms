@@ -39,15 +39,26 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
-import java.lang.*;
-import java.util.*;
-import java.net.*;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.protocols.snmp.*;
 import org.opennms.netmgt.utils.Signaler;
+import org.opennms.protocols.snmp.SnmpBadConversionException;
+import org.opennms.protocols.snmp.SnmpHandler;
+import org.opennms.protocols.snmp.SnmpIPAddress;
+import org.opennms.protocols.snmp.SnmpInt32;
+import org.opennms.protocols.snmp.SnmpObjectId;
+import org.opennms.protocols.snmp.SnmpPduBulk;
+import org.opennms.protocols.snmp.SnmpPduPacket;
+import org.opennms.protocols.snmp.SnmpPduRequest;
+import org.opennms.protocols.snmp.SnmpSMI;
+import org.opennms.protocols.snmp.SnmpSession;
+import org.opennms.protocols.snmp.SnmpSyntax;
+import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
  * <P>IpAddrTable uses a SnmpSession to collect the ipAddrTable entries

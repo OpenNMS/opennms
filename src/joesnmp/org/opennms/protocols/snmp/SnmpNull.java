@@ -44,16 +44,11 @@
 
 package org.opennms.protocols.snmp;
 
-import java.lang.*;
 import java.io.Serializable;
 
-import org.opennms.protocols.snmp.SnmpSMI;
-import org.opennms.protocols.snmp.SnmpSyntax;
-import org.opennms.protocols.snmp.SnmpUtil;
-
+import org.opennms.protocols.snmp.asn1.AsnDecodingException;
 import org.opennms.protocols.snmp.asn1.AsnEncoder;
 import org.opennms.protocols.snmp.asn1.AsnEncodingException;
-import org.opennms.protocols.snmp.asn1.AsnDecodingException;
 
 /**
  * Implements the SNMP Null object as defined by the SNMPv1 and

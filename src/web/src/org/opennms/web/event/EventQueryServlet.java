@@ -33,13 +33,28 @@
 package org.opennms.web.event;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
-import org.opennms.web.event.filter.*;
+import org.opennms.web.event.filter.AfterDateFilter;
+import org.opennms.web.event.filter.BeforeDateFilter;
+import org.opennms.web.event.filter.Filter;
+import org.opennms.web.event.filter.IPLikeFilter;
+import org.opennms.web.event.filter.LogMessageMatchesAnyFilter;
+import org.opennms.web.event.filter.LogMessageSubstringFilter;
+import org.opennms.web.event.filter.NodeNameLikeFilter;
+import org.opennms.web.event.filter.ServiceFilter;
+import org.opennms.web.event.filter.SeverityFilter;
 
 
 /**

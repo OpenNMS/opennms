@@ -36,7 +36,6 @@
 
 package org.opennms.core.queue;
 
-import java.lang.*;
 
 /**
  * <p>This interface is implemented by FIFO queue implementations

@@ -38,19 +38,19 @@
 
 package org.opennms.netmgt.archive;
 
+import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.io.*;
-import java.util.*;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 
+import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
-import org.apache.log4j.*;
-
-import org.opennms.core.utils.TimeConverter;
 import org.opennms.core.utils.ThreadCategory;
-
+import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.EventsArchiverConfigFactory;
 
