@@ -236,7 +236,7 @@ final class DnsMonitor
 			{
                         	try
                         	{
-					this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime, pkg);
+					this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
                         	}
                         	catch(RuntimeException rex)
                         	{

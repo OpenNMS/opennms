@@ -39,9 +39,7 @@
 package org.opennms.netmgt.poller;
 
 import java.io.File;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +47,8 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollerConfigFactory;
-import org.opennms.netmgt.rrd.Interface;
+import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdUtils;
 
 /**
  * <p>This class provides a basic implementation for most of the interface
@@ -67,11 +66,6 @@ import org.opennms.netmgt.rrd.Interface;
 abstract class IPv4LatencyMonitor
 	implements ServiceMonitor
 {
-	/**
-	 * Interface object which provides access to RRD functions via JNI.
-	 */
-	Interface m_rrdInterface;
-	
 	/** 
 	 * RRD data source name which doubles as the RRD file name.
 	 */
@@ -102,27 +96,16 @@ abstract class IPv4LatencyMonitor
 		//
 		Category log = ThreadCategory.getInstance(getClass());
 		
-		// Initialize jni RRD interface.
-		// 
-		try
-		{
-			org.opennms.netmgt.rrd.Interface.init();
-		}
-		catch(SecurityException se)
-		{
-			log.fatal("initialize: Failed to initialize JNI RRD interface", se);
-			throw new UndeclaredThrowableException(se);
-		}
-		catch(UnsatisfiedLinkError ule)
-		{
-			log.fatal("initialize: Failed to initialize JNI RRD interface", ule);
-			throw new UndeclaredThrowableException(ule);
-		}
-		
-		// Save local reference to singleton instance 
-		//
-		m_rrdInterface = org.opennms.netmgt.rrd.Interface.getInstance();
-		if (log.isDebugEnabled())
+        try {
+            RrdUtils.initialize();
+        }
+        catch (RrdException e) {
+            if(log.isEnabledFor(Priority.ERROR))
+                log.error("initialize: Unable to initialize RrdUtils", e);
+            throw new RuntimeException("Unable to initialize RrdUtils", e);
+        }
+
+        if (log.isDebugEnabled())
 			log.debug("initialize: successfully instantiated JNI interface to RRD...");
 		
 		return;
@@ -204,82 +187,17 @@ abstract class IPv4LatencyMonitor
 	 * 
 	 * @return true if RRD file successfully created, false otherwise
 	 */
-	public boolean createRRD(Interface rrdJniInterface, String repository, InetAddress addr, String dsName, org.opennms.netmgt.config.poller.Package pkg)
+	public boolean createRRD(String repository, InetAddress addr, String dsName, org.opennms.netmgt.config.poller.Package pkg) throws RrdException
 	{
 		Category log = ThreadCategory.getInstance(this.getClass());
-		
-		// add interface address to RRD repository path
-		String path = repository + File.separator + addr.getHostAddress();
-		
-		// If a directory does not yet exist for this interface create it.
-		//
-		File f = new File(path);
-		if (!f.isDirectory())
-			if (!f.mkdirs())
-				throw new RuntimeException("Unable to create RRD file repository, path: " + path);
-		
-		// add RRD file name to path
-		String fullPath = path + File.separator + dsName + ".rrd";
-		
-		f = new File(fullPath);
-		if (f.exists())
-		{
-			// Already exists, no need to create
-			return false;
-		}
-		else
-		{
-                        // Build RRA portion of RRD create command
-                        //
-                        String cmdRRA = new String();
-                        List rraList = PollerConfigFactory.getInstance().getRRAList(pkg);
-                        Iterator j = rraList.iterator();
-                        while (j.hasNext())
-                        {
-                                String rra = (String)j.next();
-                                cmdRRA = cmdRRA.concat(" " + rra);
-                        }
-
-			// Build RRD create command
-			// 
-			// Step size: 	5 minutes
-			// RRAs:    	1 week of 5 minute average data
-			//              6 months worth of hourly min, max, average data
-			String cmd = "create " + fullPath + " --step " +
-				PollerConfigFactory.getInstance().getStep(pkg) +
-				" DS:" + dsName + ":GAUGE:600:U:U " + 
-				cmdRRA;
-			
-			if (log.isDebugEnabled())
-				log.debug("createRRD: issuing RRD create command: " + cmd);
-			
-			// Issue the RRD 'create' command
-			String[] results = Interface.launch(cmd);
-		    
-			if (log.isDebugEnabled())
-				log.debug("createRRD: RRD create command completed for " + addr.getHostAddress());
-				
-			// Sanity check results array
-			if (results == null)
-			{
-				if(log.isEnabledFor(Priority.ERROR))
-				{
-					log.error("createRRD: Unexpected failure calling native method launch() with command string: " + cmd);
-					log.error("createRRD: No error text available.");
-				}
-				throw new RuntimeException("RRD database 'create' failed for interface " + addr.getHostAddress());
-			}
-		    
-			// Check error string at index 0, will be null if create was successful
-			if (results[0] != null)
-			{
-				if(log.isEnabledFor(Priority.ERROR))
-					log.error("RRD database 'create' failed for " + addr.getHostAddress() + ", reason: " + results[0]);
-					throw new RuntimeException("RRD database 'create' failed for interface " + addr.getHostAddress() + ", reason: " + results[0]);
-			}
 	
-			return true;
-		}
+        List rraList = PollerConfigFactory.getInstance().getRRAList(pkg);
+
+        // add interface address to RRD repository path
+		String path = repository + File.separator + addr.getHostAddress();
+        
+		return RrdUtils.createRRD(addr.getHostAddress(), path, dsName, PollerConfigFactory.getInstance().getStep(pkg), "GAUGE", 600, "U", "U", rraList);
+        
 		
 	}
 	
@@ -293,46 +211,26 @@ abstract class IPv4LatencyMonitor
 	 * 
 	 * @return true if RRD file successfully created, false otherwise
 	 */
-	public void updateRRD(Interface rrdJniInterface, String repository, InetAddress addr, String dsName, long value, org.opennms.netmgt.config.poller.Package pkg)
+	public void updateRRD(String repository, InetAddress addr, String dsName, long value, org.opennms.netmgt.config.poller.Package pkg)
 	{
 		Category log = ThreadCategory.getInstance(this.getClass());
 		
-		// Create RRD if it doesn't already exist
-		createRRD(rrdJniInterface, repository, addr, dsName, pkg);
-		
-		// Build complete path
-		String fullPath = repository + File.separator + addr.getHostAddress() + File.separator + dsName + ".rrd";
-		
-		// update RRD database
-		String cmd = "update " + fullPath + " N:" + String.valueOf(value);
-		
-		if (log.isDebugEnabled())
-			log.debug("updateRRD: issuing RRD update command: " + cmd);
-
-		// Issue the RRD 'create' command
-		String[] results = Interface.launch(cmd);
-		
-		if (log.isDebugEnabled())
-			log.debug("updateRRD: RRD update command completed for " + addr.getHostAddress());
-			
-		// Sanity check results array
-		if (results == null)
-		{
-			if(log.isEnabledFor(Priority.ERROR))
-			{
-				log.error("updateRRD: Unexpected failure calling native method launch() with command string: " + cmd);
-				log.error("updateRRD: No error text available.");
-			}
-			throw new RuntimeException("RRD database 'update' failed for interface " + addr.getHostAddress());
-		}
-	    
-		// Check error string at index 0, will be null if create was successful
-		if (results[0] != null)
-		{
-			if(log.isEnabledFor(Priority.ERROR))
-				log.error("RRD database 'update' failed for " + addr.getHostAddress() + ", reason: " + results[0]);
-				throw new RuntimeException("RRD database 'update' failed for interface " + addr.getHostAddress() + ", reason: " + results[0]);
+		try {
+		    // Create RRD if it doesn't already exist
+		    createRRD(repository, addr, dsName, pkg);
+            
+		    // add interface address to RRD repository path
+		    String path = repository + File.separator + addr.getHostAddress();
+		    
+		    RrdUtils.updateRRD(addr.getHostAddress(), path, dsName, Long.toString(value));
+		    
+        }
+		catch (RrdException e) {
+			if(log.isEnabledFor(Priority.ERROR)) {
+                String msg = e.getMessage();
+                log.error(msg);
+                throw new RuntimeException(msg, e);
+            }
 		}
 	}
 }
-

@@ -268,7 +268,7 @@ final class JDBCMonitor
 					// Update response time
 				        if (responseTime >= 0 && rrdPath != null) {
                         			try {
-                            				this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime, pkg);
+                            				this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
                         			} catch (RuntimeException rex) {
                             				log.debug("There was a problem writing the RRD:" + rex);
                         			}

@@ -40,6 +40,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.util.Properties;
@@ -51,6 +52,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.web.Util;
 
 
@@ -101,12 +104,16 @@ public class RRDAdHocGraphServlet extends HttpServlet
 
             this.properties = new Properties();
             this.properties.load( new FileInputStream( propertiesFilename ));
+            
+            RrdUtils.initialize();
         }
         catch( FileNotFoundException e ) {
             throw new ServletException( "Could not find configuration file", e );
         }
         catch( IOException e ) {
             throw new ServletException( "Could not load configuration file", e );
+        } catch (RrdException  e) {
+            throw new ServletException( "Could not initialize graphing system", e);
         }
 
         this.workDir = new File( this.properties.getProperty( "command.input.dir" ));
@@ -135,7 +142,8 @@ public class RRDAdHocGraphServlet extends HttpServlet
             this.log("Illegal RRD directory: " + rrdDir);
             throw new IllegalArgumentException("Illegal RRD directory: " + rrdDir);
         }
-    
+
+        // begin inserted code
         String command = createAdHocCommand( request, rrdDir, start, end );
 
         if(command == null) {
@@ -143,43 +151,32 @@ public class RRDAdHocGraphServlet extends HttpServlet
             Util.streamToStream( this.getServletContext().getResourceAsStream( "/images/rrd/missingparams.png"), response.getOutputStream() );
             return;
         }
-
-        this.log( command );
-        String[] commandArray = Util.createCommandArray( command, '@' );
-        Process process = Runtime.getRuntime().exec( commandArray, null, workDir );
-
+        
+        InputStream tempIn = null;
         ServletOutputStream out = response.getOutputStream();
-        ByteArrayOutputStream tempOut = new ByteArrayOutputStream();
-        BufferedInputStream in = new BufferedInputStream( process.getInputStream() );
-
-        Util.streamToStream( in, tempOut );
-
-        in.close();
-        tempOut.close();
-
-        BufferedReader err = new BufferedReader( new InputStreamReader( process.getErrorStream() ));
-        String line = err.readLine();
-        StringBuffer buffer = new StringBuffer();
-
-        while( line != null ) {
-            buffer.append( line );
-            line = err.readLine();
-        }
-
-        if( buffer.length() > 0 ) {
-            this.log( "Read from stderr: " + buffer.toString() );
+        try {
+            
+            this.log( "Executing RRD command in this directory: " + workDir );
+            this.log( command );
+            
+            
+            tempIn = RrdUtils.createGraph(command, workDir);
+            
+        } catch (RrdException e) {
+            this.log("Read from stderr: "+e.getMessage());
             response.setContentType( "image/png" );
             Util.streamToStream( this.getServletContext().getResourceAsStream( "/images/rrd/error.png"), out );
         }
-        else {
-            byte[] byteArray = tempOut.toByteArray();
-            ByteArrayInputStream tempIn = new ByteArrayInputStream( byteArray );
+        
+        if (tempIn != null) {
             response.setContentType( this.mimeType );
-
             Util.streamToStream( tempIn, out );
+            
+            tempIn.close();
         }
-
         out.close();
+
+        // end inserted code
     }
 
 

@@ -57,7 +57,8 @@ import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.rrd.Interface;
+import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.utils.RrdFileConstants;
@@ -103,12 +104,6 @@ final class LatencyThresholder
 	 * Interface attribute key used to store the interface's node id
 	 */
 	static final String NODE_ID_KEY	= "org.opennms.netmgt.collectd.SnmpThresholder.NodeId";
-	
-	/**
-	 * Instance of org.opennms.netmgt.rrd.Interface singleton class
-	 * which provides access to RRD functions via JNI.
-	 */
-	private org.opennms.netmgt.rrd.Interface m_rrdInterface;
 	
 	/**
 	 * Specific service that this thresholder is responsible for 
@@ -168,29 +163,15 @@ final class LatencyThresholder
 			m_host = "unresolved.host";
 		}
 		
-		// Initialize jni RRD interface.
-		//
-		try
-		{
-			org.opennms.netmgt.rrd.Interface.init();
-		}
-		catch(SecurityException se)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("initialize: Failed to initialize JNI RRD interface", se);
-			throw new UndeclaredThrowableException(se);
-		}
-		catch(UnsatisfiedLinkError ule)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("initialize: Failed to initialize JNI RRD interface", ule);
-			throw new UndeclaredThrowableException(ule);
-		}
-		
-		// Save local reference to singleton instance 
-		//
-		m_rrdInterface = org.opennms.netmgt.rrd.Interface.getInstance();
-		
+        try {
+            RrdUtils.initialize();
+        }
+        catch (RrdException e) {
+            if(log.isEnabledFor(Priority.ERROR))
+                log.error("initialize: Unable to initialize RrdUtils", e);
+            throw new RuntimeException("Unable to initialize RrdUtils", e);
+        }
+        
 		if (log.isDebugEnabled())
 			log.debug("initialize: successfully instantiated JNI interface to RRD...");
 		
@@ -608,12 +589,15 @@ final class LatencyThresholder
 				Double dsValue = null;
 				try
 				{
-					dsValue = fetch(files[i].getAbsolutePath(), interval);
+					dsValue = RrdUtils.fetchLastValue(files[i].getAbsolutePath(), interval);
 				}
 				catch (NumberFormatException nfe)
 				{
 					log.warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
 				}
+                 catch (RrdException e) {
+                     log.error("An error occurred retriving the last value for datasource '"+ datasource + "'", e);
+                 }
 				
 				if (dsValue != null && !dsValue.isNaN())
 				{
@@ -673,117 +657,6 @@ final class LatencyThresholder
 				}
 			}
 		}
-	}
-	
-	/**
-	 * This method uses the RRD JNI interface to issue an RRD fetch command
-	 * to retrieve the last value of the datasource stored in the 
-	 * specified RRD file.  The retrieved value returned to the caller.
-	 * 
-	 * NOTE:  This method assumes that each RRD file contains a single datasource.
-	 *
-	 * @param rrdFile	RRD file from which to fetch the data.
-	 * @param interval	Thresholding interval (should equal RRD step size)
-	 * 
-	 * @return Retrived datasource value as a java.lang.Double
-	 * 
-	 * @throws NumberFormatException if the retrieved value fails to 
-	 * 	convert to a double
-	 */
-	private Double fetch(String rrdFile, int interval)
-		throws NumberFormatException
-	{
-		// Log4j category
-		//
-		Category log = ThreadCategory.getInstance(getClass());
-		
-		// Generate rrd_fetch() command through jrrd JNI interface in order to retrieve 
-		// LAST pdp for the datasource stored in the specified RRD file
-		//
-		// String array returned from launch() native method format:
-		//	String[0] - If success is null, otherwise contains reason for failure
-		//	String[1] - All data source names contained in the RRD (space delimited)
-		//	String[2]...String[n] - RRD fetch data in the following format:
-		//		<timestamp> <value1> <value2> ... <valueX> where X is
-		// 			the total number of data sources
-		//
-		// NOTE:  Specifying start time of 'now-<interval>' and
-		//        end time of 'now-<interval>' where <interval> is the
-		//	  configured thresholding interval (and should be the
-		// 	  same as the RRD step size) in order to guarantee that
-		//  	  we don't get a 'NaN' value from the fetch command.  This 
-		// 	  is necessary because the collection is being done by collectd
-		// 	  and there is nothing keeping us in sync.
-		// 
-		//	  interval argument is in milliseconds so must convert to seconds
-		//
-		String fetchCmd = "fetch " + rrdFile + " AVERAGE -s now-" + interval/1000 + " -e now-" + interval/1000;
-	
-		if (log.isDebugEnabled()) 
-			log.debug("fetch: Issuing RRD command: " + fetchCmd);
-	
-		String[] fetchStrings = fetchStrings = Interface.launch(fetchCmd);
-	
-		// Sanity check the returned string array
-		if (fetchStrings == null)
-		{
-			if(log.isEnabledFor(Priority.ERROR))
-			{
-				log.error("fetch: Unexpected error issuing RRD 'fetch' command, no error text available.");
-			}
-			return null;
-		}
-	
-		// Check error string at index 0, will be null if 'fetch' was successful
-		if (fetchStrings[0] != null)
-		{
-			if(log.isEnabledFor(Priority.ERROR))
-			{
-				log.error("fetch: RRD database 'fetch' failed, reason: " + fetchStrings[0]);
-			}
-			return null;
-		}	
-		
-		// Sanity check
-		if (fetchStrings[1] == null || fetchStrings[2] == null)
-		{
-			if(log.isEnabledFor(Priority.ERROR))
-			{
-				log.error("fetch: RRD database 'fetch' failed, no data retrieved.");
-			}
-			return null;
-		}	
-		
-		// String at index 1 contains the RRDs datasource names
-		//
-		String dsName = fetchStrings[1].trim();
-		
-		// String at index 2 contains fetched values for the current time
-		// Convert value string into a Double
-		//
-		Double dsValue = null;
-		if (fetchStrings[2].trim().equalsIgnoreCase("nan"))
-		{
-			dsValue = new Double(Double.NaN);
-		} 
-		else
-		{
-			try
-			{
-				dsValue = new Double(fetchStrings[2].trim());
-			}
-			catch (NumberFormatException nfe)
-			{
-				if(log.isEnabledFor(Priority.WARN))
-					log.warn("fetch: Unable to convert fetched value (" + fetchStrings[2].trim() + ") to Double for data source " + dsName);
-				throw nfe;
-			}
-		}
-				
-		if (log.isDebugEnabled()) 
-			log.debug("fetch: fetch successful: " + dsName + "= " + dsValue);
-					
-		return dsValue;
 	}
 	
 	/**

@@ -64,7 +64,9 @@ import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.rrd.Interface;
+import org.opennms.netmgt.rrd.RRDDataSource;
+import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.AlphaNumeric;
 import org.opennms.netmgt.utils.BarrierSignaler;
 import org.opennms.netmgt.utils.EventProxy;
@@ -177,11 +179,6 @@ final class SnmpCollector
 	 * SNMP PDU request..
 	 */
 	private int m_maxVarsPerPdu;
-	
-	/**
-	 * Interface object which provides access to RRD functions via JNI.
-	 */
-	private Interface m_rrdInterface;
 	
 	/**
 	 * Path to SNMP RRD file repository.
@@ -395,6 +392,7 @@ final class SnmpCollector
 		if(m_rrdPath == null)
 			throw new RuntimeException("Configuration error, failed to retrieve path to RRD repository.");
 
+        // TODO: make a path utils class that has the below in it
 		// Strip the File.separator char off of the end of the path
 		if (m_rrdPath.endsWith(File.separator))
 		{
@@ -410,28 +408,19 @@ final class SnmpCollector
 			if (!f.mkdirs())
 				throw new RuntimeException("Unable to create RRD file repository, path: " + m_rrdPath);
 
-		// Initialize jni RRD interface.
-		// 
-		try
-		{
-			org.opennms.netmgt.rrd.Interface.init();
-		}
-		catch(SecurityException se)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("initialize: Failed to initialize JNI RRD interface", se);
-			throw new UndeclaredThrowableException(se);
-		}
-		catch(UnsatisfiedLinkError ule)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("initialize: Failed to initialize JNI RRD interface", ule);
-			throw new UndeclaredThrowableException(ule);
-		}
+            
+        try {
+            RrdUtils.initialize();
+        }
+        catch (RrdException e) {
+            if(log.isEnabledFor(Priority.ERROR))
+                log.error("initialize: Unable to initialize RrdUtils", e);
+            throw new RuntimeException("Unable to initialize RrdUtils", e);
+        }
 		
 		// Save local reference to singleton instance 
 		//
-		m_rrdInterface = org.opennms.netmgt.rrd.Interface.getInstance();
+		//m_rrdInterface = org.opennms.netmgt.rrd.Interface.getInstance();
 		if (log.isDebugEnabled())
 			log.debug("initialize: successfully instantiated JNI interface to RRD...");
 		
@@ -1395,85 +1384,14 @@ final class SnmpCollector
 	 * @return TRUE if new RRD file created, FALSE if RRD file was not created 
 	 *            because it already existed.
 	 */
-	public boolean createRRD(String collectionName, InetAddress ipaddr, String directory, RRDDataSource ds)
+	public boolean createRRD(String collectionName, InetAddress ipaddr, String directory, RRDDataSource ds) throws RrdException
 	{
-		Category log = ThreadCategory.getInstance(getClass());
-		
-		String fileName = ds.getName() + ".rrd";
-		
-		if (log.isDebugEnabled())
-			log.debug("createRRD: rrd path and file name to create: " + directory + File.separator + fileName);
-
-		// Create directories if necessary
-		//
-		File f = new File(directory);
-		if (!f.isDirectory())
-			if (!f.mkdirs())
-				throw new RuntimeException("Unable to create RRD repository directory: " + directory);
-				
-		// Create the RRD file if it does not already exists for the current data source
-		String completePath = directory + File.separator + fileName;
-		f = new File(completePath);
-		if (f.exists())
-		{
-			// Already exists, no need to create
-			return false;
-		}
-		else
-		{
-			// Build RRD create command prefix
-			String cmdPrefix = "create " + completePath + " --step " + 
-				DataCollectionConfigFactory.getInstance().getStep(collectionName);
-		    
-			// Build datasource portion of RRD create command
-			//
-			String cmdDS = " DS:" + ds.getName() + ":" + 
-						ds.getType() + ":" + 
-						ds.getHeartbeat() + ":" + 
-						ds.getMin() + ":" + 
-						ds.getMax();
-
-			// Build RRA portion of RRD create command
-			//
-			String cmdRRA = new String();
-			List rraList = DataCollectionConfigFactory.getInstance().getRRAList(collectionName);
-			Iterator j = rraList.iterator();
-			while (j.hasNext())
-			{
-				String rra = (String)j.next();
-				cmdRRA = cmdRRA.concat(" " + rra);
-			}
-		    
-			// Put it all together...
-			String cmd = cmdPrefix + cmdDS + cmdRRA;
-		
-			// Issue the RRD 'create' command
-			if (log.isDebugEnabled())
-				log.debug("createRRD: issuing RRD create command: " + cmd);
-
-			String[] results = Interface.launch(cmd);
-		    
-			// Sanity check results array
-			if (results == null)
-			{
-				if(log.isEnabledFor(Priority.ERROR))
-				{
-					log.error("createRRD: Unexpected failure calling native method launch() with command string: " + cmd);
-					log.error("createRRD: No error text available.");
-				}
-				throw new RuntimeException("RRD database 'create' failed for primary SNMP interface " + ipaddr.getHostAddress());
-			}
-		    
-			// Check error string at index 0, will be null if create was successful
-			if (results[0] != null)
-			{
-				if(log.isEnabledFor(Priority.ERROR))
-					log.error("RRD database 'create' failed for " + ipaddr.getHostAddress() + ", reason: " + results[0]);
-					throw new RuntimeException("RRD database 'create' failed for primary SNMP interface " + ipaddr.getHostAddress() + ", reason: " + results[0]);
-			}
-	
-			return true;
-		}
+        String creator = "primary SNMP interface " + ipaddr.getHostAddress();
+        int step = DataCollectionConfigFactory.getInstance().getStep(collectionName);
+        List rraList = DataCollectionConfigFactory.getInstance().getRRAList(collectionName);
+       
+        
+        return RrdUtils.createRRD(creator, directory, ds.getName(), step, ds.getType(), ds.getHeartbeat(), ds.getMin(), ds.getMax(), rraList);
 	}
 	
 	/**
@@ -1537,54 +1455,38 @@ final class SnmpCollector
 			Iterator iter = nodeInfo.getDsList().iterator();
 			while (iter.hasNext())
 			{
-				RRDDataSource ds = (RRDDataSource)iter.next(); 	
-
-				String cmd = buildRRDUpdateCmd(nodeRepository, ds, nodeEntry);
-
-				if (cmd == null)
+				RRDDataSource ds = (RRDDataSource)iter.next();
+                
+                try {
+                
+                    String dsVal = getRRDValue(ds, nodeEntry);
+				if (dsVal == null)
 				{
 					// Do nothing, no update is necessary
 					if (log.isDebugEnabled())
 						log.debug("updateRRDs: Skipping update, no data retrieved for nodeId: " 
 							+ nodeInfo.getNodeId() + " datasource: " + ds.getName());
 				}
-				else if (cmd.equals(RRD_ERROR))
-				{
-					// Set rrdError flag
-					rrdError = true;
-					log.warn("updateRRDs: call to buildRRDUpdateCmd() failed for node: " + 
-							nodeInfo.getNodeId() + " datasource: " + ds.getName());
-				}
 				else 
 				{
 					// Call createRRD() to create RRD if it doesn't already exist
 					//
 					createRRD(collectionName, ipaddr, nodeRepository, ds);
-					
-					// Issue the RRD update
-					if (log.isDebugEnabled())
-						log.debug("updateRRDs: Issuing RRD update command: " + cmd);
-					String[] results = Interface.launch(cmd);
-					if (log.isDebugEnabled())
-						log.debug("updateRRDs: RRD update command completed.");
-					
-					// Sanity check results array
-					if (results == null)
-					{
-						if(log.isEnabledFor(Priority.ERROR))
-						{
-							log.error("updateRRDs: Unexpected failure calling native method launch() with command string: " + cmd);
-							log.error("updateRRDs: No error text available.");
-						}
-					}
-					    
-					// Check error string at index 0, will be null if 'update' was successful
-					if (results[0] != null)
-					{
-						if(log.isEnabledFor(Priority.ERROR))
-							log.error("updateRRDs: node RRD database 'update' failed for " + ipaddr.getHostAddress() + ", reason: " + results[0]);
-					}		
+					RrdUtils.updateRRD(ipaddr.getHostAddress(), nodeRepository, ds.getName(), dsVal);		
 				} 
+                }
+                catch (RrdException e) {
+                    if (log.isEnabledFor(Priority.ERROR))
+                        log.error("updateRRDs: "+e.getMessage());
+                }
+                catch(IllegalArgumentException e) {
+                    log.warn("getRRDValue: "+e.getMessage());
+                    // Set rrdError flag
+                    rrdError = true;
+                    log.warn("updateRRDs: call to getRRDValue() failed for node: " + 
+                            nodeInfo.getNodeId() + " datasource: " + ds.getName());
+                }
+                
 			} // end while(more datasources)
 		} // end if(nodeCollector != null)
 		
@@ -1662,56 +1564,45 @@ final class SnmpCollector
 					String ifRepository = m_rrdPath + File.separator + 
 							String.valueOf(nodeInfo.getNodeId()) + File.separator + 
 							ifInfo.getLabel();
+                    
+                    
+                    
+                    try {
+                    
+                        String dsVal = getRRDValue(ds, ifEntry);
 					
 					// Build RRD update command
 					//
-					String cmd = buildRRDUpdateCmd(ifRepository, ds, ifEntry);
-					if (cmd == null)
+					if (dsVal == null)
 					{
 						// Do nothing, no update is necessary
 						if (log.isDebugEnabled())
 							log.debug("updateRRDs: Skipping update, no data retrieved for node/ifindex: " + 
 								nodeInfo.getNodeId() + "/" + ifIndex + " datasource: " + ds.getName());
 					}
-					else if (cmd.equals(RRD_ERROR))
-					{
-						// Set rrdError flag
-						rrdError = true;
-						log.warn("updateRRDs: call to buildRRDUpdateCmd() failed for node/ifindex: " + 
-									nodeInfo.getNodeId() + "/" + ifIndex + " datasource: " + ds.getName());
-					}
 					else 
 					{
 						// Call createRRD() to create RRD if it doesn't already exist
 						//
 						createRRD(collectionName, ipaddr, ifRepository, ds);
+                        RrdUtils.updateRRD(ipaddr.getHostAddress(), ifRepository, ds.getName(), dsVal);
 							
-						// Issue the RRD update
-						if (log.isDebugEnabled())
-							log.debug("updateRRDs: Issuing RRD update command: " + cmd);
-						
-						String[] results = Interface.launch(cmd);
-						
-						if (log.isDebugEnabled())
-							log.debug("updateRRDs: RRD update command completed.");
-							
-						// Sanity check results array
-						if (results == null)
-						{
-							if(log.isEnabledFor(Priority.ERROR))
-							{
-								log.error("updateRRDs: Unexpected failure calling native method launch() with command string: " + cmd);
-								log.error("updateRRDs: No error text available.");
-							}
-						}
-					    
-						// Check error string at index 0, will be null if 'update' was successful
-						if (results[0] != null)
-						{
-							if(log.isEnabledFor(Priority.ERROR))
-								log.error("updateRRDs: interface RRD database 'update' failed for " + ipaddr.getHostAddress() + ", reason: " + results[0]);
-						}		
-					}
+                    }
+                    }
+                    catch (RrdException e) {
+                        if (log.isEnabledFor(Priority.ERROR)) {
+                            log.error("updateRRDs: "+e.getMessage());
+                        }
+                    }
+                    catch(IllegalArgumentException e) {
+                        log.warn("buildRRDUpdateCmd: "+e.getMessage());
+                        // Set rrdError flag
+                        rrdError = true;
+                        log.warn("updateRRDs: call to buildRRDUpdateCmd() failed for node/ifindex: " + 
+                                    nodeInfo.getNodeId() + "/" + ifIndex + " datasource: " + ds.getName());
+                    }
+                    
+					
 				} // end while(more datasources)
 			} // end while(more SNMP collector entries)
 		} // end if(ifCollector != null)
@@ -1719,42 +1610,21 @@ final class SnmpCollector
 	}
 	
 	/**
-	 * This method is responsible for building an RRD-style update command for 
-	 * the specified data source name.  Generated update command string has the
-	 * following format:
-	 *
-	 * 	update <rrdFile> N:<value>
-	 *
-	 * @param repository	Directory where RRD file resides
-	 * @param ds		RRD data source object.
-	 * @param collectorEntry  Map of retrieved SNMP values for node or interface from 
-	 * 			which the 'values' portion of the update command are taken.
-	 * 
-	 * @return "RRD_ERROR" if there was some error while attemnpting to build the 
-	 *   			update string. 
-	 *         RRD-style update command string if update is required.
-	 *         null if no update is required because no SNMP value was retrieved for 
-	 * 	 		the specified data source.
-	 */
-	private String buildRRDUpdateCmd(String repository, RRDDataSource ds, SNMPCollectorEntry collectorEntry)
-	{
-		// Log4j category
-		//
-		Category log = ThreadCategory.getInstance(getClass());
-		
-		String rrdFile = repository + File.separator + ds.getName() + ".rrd";
-		
-		boolean rrdError = false;
-		String dsValue = null;
-		
-		// Build RRD 'update' command
-		// Determine if the specified RRD data source matches a MIB object collected 
-		// via SNMP. 
-			
+     * @param ds
+     * @param collectorEntry
+     * @param log
+     * @param dsVal
+     * @return
+     * @throws Exception
+     */
+    public String getRRDValue(RRDDataSource ds, SNMPCollectorEntry collectorEntry) throws IllegalArgumentException {
+        Category log = ThreadCategory.getInstance(getClass());
+        String dsVal = null;
+        
 		// Make sure we have an actual object id value.
-		if (ds.getOid() == null)
+		if (ds.getOid() == null) 
 			return null;
-				
+        		
 		String instance = null;
 		if (ds.getInstance().equals(MibObject.INSTANCE_IFINDEX))
 			instance = (String)collectorEntry.get(SNMPCollectorEntry.IF_INDEX);
@@ -1765,13 +1635,10 @@ final class SnmpCollector
  
 		SnmpSyntax snmpVar = (SnmpSyntax)collectorEntry.get(fullOid);  
 		if (snmpVar == null)
-		{
 			// No value retrieved matching this oid
 			return null;
-		}
-		else
-		{
-			if (log.isDebugEnabled())
+
+        if (log.isDebugEnabled())
 				log.debug("issueRRDUpdate: name:oid:value -  " + ds.getName() + ":" + fullOid + ":" + snmpVar.toString());
 				
 			// RRD only supports the storage of integer data types.  If we see a
@@ -1781,69 +1648,44 @@ final class SnmpCollector
 			switch (snmpVar.typeId())
 			{
 				case SnmpSMI.SMI_INTEGER:
-					dsValue= String.valueOf(((SnmpInt32)snmpVar).getValue());
-					break;
+                     return snmpVar.toString();
 				case SnmpSMI.SMI_COUNTER32:
-					dsValue = String.valueOf(((SnmpCounter32)snmpVar).getValue());
-					break;
+					return snmpVar.toString();
 				case SnmpSMI.SMI_COUNTER64:
-					dsValue = String.valueOf(((SnmpCounter64)snmpVar).getValue());
-					break;
+					return snmpVar.toString();
 				case SnmpSMI.SMI_GAUGE32:
-					dsValue = String.valueOf(((SnmpGauge32)snmpVar).getValue());
-					break;
+					return snmpVar.toString();
 				// *NOTE* Same as SnmpSMI.SMI_GAUGE32
 				//case SnmpSMI.SMI_UNSIGNED32:
 				//	dsValue = ((SnmpUInt32)snmpVar).getValue();
 				//	break;
 				case SnmpSMI.SMI_TIMETICKS:
-					dsValue = String.valueOf(((SnmpTimeTicks)snmpVar).getValue());
-					break;
+					return snmpVar.toString();
 				case SnmpSMI.SMI_STRING:
-					dsValue = ((SnmpOctetString)snmpVar).toString();
+					String dsValue = ((SnmpOctetString)snmpVar).toString();
 					
 					// Validate that the octet string value represents an
 					// integer/double value, otherwise it can't be stored in the RRD database
 					try
 					{
 						new Double(dsValue);
+                          return dsValue;
 					}
 					catch (NumberFormatException nfE)
 					{
-						rrdError = true;
-						log.warn("buildRRDUpdateCmd: number format exception attempting to convert octet string value '" + 
+						throw new IllegalArgumentException("number format exception attempting to convert octet string value '" + 
 							dsValue + "' to a numeric value for data source '" + ds.getName() + "'");
+                       
 					}
-					break;
 				default:
-					rrdError = true;
-					if(log.isEnabledFor(Priority.WARN))
-					{
-						log.warn("buildRRDUpdateCmd: SNMP value of data source '" + 
-								ds.getName() + 
-								"' is not one of the supported data types by RRD, invalid typeID: " + 
-								snmpVar.typeId());
-						log.warn("buildRRDUpdateCmd: Valid RRD data types are:  COUNTER, GAUGE, DERIVE, & ABSOLUTE.  Please check content of 'DataCollection.xml' file.");
-					}
-					break;
+                    throw new IllegalArgumentException("SNMP value of data source '" + 
+                            ds.getName() + 
+                            "' is not one of the supported data types by RRD, invalid typeID: " + 
+                            snmpVar.typeId() + " Valid RRD data types are:  COUNTER, GAUGE, DERIVE, & ABSOLUTE.  Please check content of 'DataCollection.xml' file.");
 			}
-		}
-		
-		// Build  RRD 'update' command string
-		String cmd = null;
-		if (rrdError)
-		{
-			cmd = RRD_ERROR;
-		}
-		else if (dsValue != null)
-		{
-			cmd = "update " + rrdFile + " N:" + dsValue;
-		}
-		 
-		return cmd;
-		}
-			
-	/**
+    }
+
+    /**
 	 * This method is responsible for building a list of RRDDataSource 
 	 * objects from the provided list of MibObject objects.
 	 *

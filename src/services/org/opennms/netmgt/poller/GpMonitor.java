@@ -216,7 +216,7 @@ final class GpMonitor
 							}
 							if (responseTime >= 0 && rrdPath != null && dsName != null)
 							{
-								this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime, pkg);
+								this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
 							}
 						}
 					}
