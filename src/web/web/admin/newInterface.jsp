@@ -124,7 +124,7 @@
   
   <tr>
     <td>
-      <input type="button" value="Add" onClick="verifyIpAddress()">
+      <input type="submit" value="Add" onClick="verifyIpAddress()">
     </td>
     <td>
       <input type="button" value="Cancel" onClick="cancel()">
