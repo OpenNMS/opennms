@@ -678,7 +678,13 @@ public class Installer {
 		    minvalue = rs.getInt(1) + 1;
 		}
 	    } catch (SQLException e) {
-		if (e.toString().indexOf("does not exist") == -1) {
+		/*
+		  SQL Status codes:
+		  42P01: ERROR: relation "%s" does not exist
+		  42703: ERROR: column "%s" does not exist
+		*/
+		if (!e.getSQLState().equals("42P01") &&
+		    !e.getSQLState().equals("42703")) {
 		    throw e;
 		}
 	    }
@@ -914,10 +920,15 @@ public class Installer {
 		try {
 		    st.execute((String) j.next());
 		} catch (SQLException e) {
-		    if (e.toString().indexOf("duplicate key") != -1) {
+		    /*
+		      SQL Status codes:
+		        23505: ERROR: duplicate key violates unique
+			       constraint "%s"
+		    */
+		    if (e.getSQLState().equals("23505")) {
 			exists = true;
 		    } else {
-			throw new SQLException(e.toString());
+			throw e;
 		    }
 		}
 	    }
@@ -1386,10 +1397,14 @@ public class Installer {
 	    st.execute("DROP FUNCTION iplike(text,text)");
 	    m_out.println("REMOVED");
 	} catch (SQLException e) {
-	    if (e.toString().indexOf("does not exist") != -1) {
+	    /*
+	      SQL Status code:
+	        42883: ERROR: function %s does not exist
+	     */
+	    if (e.getSQLState().equals("42883")) {
 		m_out.println("CLEAN");
 	    } else {
-		throw new SQLException(e.toString());
+		throw e;
 	    }
 	}
 
@@ -1401,10 +1416,14 @@ public class Installer {
 	    st.execute("DROP FUNCTION eventtime(text)");
 	    m_out.println("REMOVED");
 	} catch (SQLException e) {
-	    if (e.toString().indexOf("does not exist") != -1) {
+	    /*
+	      SQL Status code:
+	        42883: ERROR: function %s does not exist
+	     */
+	    if (e.getSQLState().equals("42883")) {
 		m_out.println("CLEAN");
 	    } else {
-		throw new SQLException(e.toString());
+		throw e;
 	    }
 	}
 
