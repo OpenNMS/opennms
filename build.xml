@@ -1033,7 +1033,7 @@ OpenNMS as part of the post-install.
 
   <!-- generate .so files -->
   <apply executable="${compile.ld}" dir="${root.build}/jrrd" failonerror="true" dest="${root.build}/jrrd">
-   <arg line="${compile.ld.dynamic} ${compile.ld.shared} -L${compile.rrdtool.lib} -R{compile.rrdtool.lib} -lrrd -o"/>
+   <arg line="${compile.ld.dynamic} ${compile.ld.shared} -L${compile.rrdtool.lib} -R${compile.rrdtool.lib} -lrrd -o"/>
    <targetfile/>
    <srcfile/>
    <fileset dir="${root.build}/jrrd" includes="*.o"/>
