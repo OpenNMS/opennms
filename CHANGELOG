@@ -1,5 +1,8 @@
 1.0.0 to 1.1.0
 ----------------------------------------------------------------------
+- Added Event definitions for traps from 3Com, APC, Brocade, CIM,
+  Cisco, Fore, HP, Intel, Microsoft, Novell, Oracle, SonicWall,
+  and Xerox devices.
 - Changed most capsd plugins and poller service monitors to 
   use non-blocking I/O in case of NoRouteToHost.
 - Added the ability to choose NOT to notify on a given service

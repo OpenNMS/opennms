@@ -1,0 +1,373 @@
+<events>
+<!-- Start of INTEL Events -->
+<!-- Start of auto generated data from MIB: INTEL-GEN-MIB -->
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.6.3</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>1</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/snmpAuthViolation</uei>
+ <event-label>INTEL-GEN-MIB defined trap event: snmpAuthViolation</event-label>
+ <descr>&lt;p&gt;This trap is sent when a device attempting to access the device fails 
+ to pass the snmpAuthTable for any of the supported protocols. 
+ If it is the SNMP protocol that is violated then the device must also 
+ send the 'Authentication failure' trap defined in MIB-2.
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ snmpAccessIP&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ snmpAccessTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ snmpAccessProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ snmp(1) telnet(2) http(3) tftp(4) ftp(5)
+ &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ snmpAccessType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ noAccess(1) readOnly(2) writeOnly(3) readWrite(4) readOnlySecureSNMPObjects(5) 
+ readWriteSecureSNMPObjects(6)
+ &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Snmp Authentication Violation.&lt;/p&gt;</logmsg>
+ <severity>Warning</severity>
+</event>
+
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.7.2</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>1</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/chassisInserted</uei>
+ <event-label>INTEL-GEN-MIB defined trap event: chassisInserted</event-label>
+ <descr>&lt;p&gt;This trap is sent when a chassis is inserted in the
+ the stack.
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ chassisIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Chassis Inserted.&lt;/p&gt;</logmsg>
+ <severity>Normal</severity>
+</event>
+
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.7.2</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>2</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/chassisRemoved</uei>
+ <event-label>INTEL-GEN-MIB defined trap event: chassisRemoved</event-label>
+ <descr>&lt;p&gt;This trap is sent when a chassis is removed from
+ the stack.
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ chassisIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Chassis Removed.&lt;/p&gt;</logmsg>
+ <severity>Warning</severity>
+</event>
+
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.7.3</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>1</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/moduleInserted</uei>
+ <event-label>INTEL-GEN-MIB defined trap event: moduleInserted</event-label>
+ <descr>&lt;p&gt;This trap is sent when a module is inserted in
+ the chassis.
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ moduleChassisIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ moduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Module Inserted into Chassis.&lt;/p&gt;</logmsg>
+ <severity>Normal</severity>
+</event>
+
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.7.3</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>2</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/moduleRemoved</uei>
+ <event-label>INTEL-GEN-MIB defined trap event: moduleRemoved</event-label>
+ <descr>&lt;p&gt;This trap is sent when a module is removed from
+ the chassis.
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ moduleChassisIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ moduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Module Removed from Chassis.&lt;/p&gt;</logmsg>
+ <severity>Warning</severity>
+</event>
+
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.7.4</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>1</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/mediaModuleInserted</uei>
+ <event-label>INTEL-GEN-MIB defined trap event: mediaModuleInserted</event-label>
+ <descr>&lt;p&gt;This trap is sent when a media module is inserted in
+ the chassis/module.
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ moduleChassisIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ moduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ mediaModuleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Media Module Inserted.&lt;/p&gt;</logmsg>
+ <severity>Normal</severity>
+</event>
+
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.7.4</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>2</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/mediaModuleRemoved</uei>
+ <event-label>INTEL-GEN-MIB defined trap event: mediaModuleRemoved</event-label>
+ <descr>&lt;p&gt;This trap is sent when a media module is removed from
+ the chassis/module.
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ moduleChassisIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ moduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ mediaModuleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Media Module Removed.&lt;/p&gt;</logmsg>
+ <severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: INTEL-GEN-MIB -->
+<!-- Start of auto generated data from MIB: INTEL-S500-MIB -->
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.6.10</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>1</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/s500PermVioEvent</uei>
+ <event-label>INTEL-S500-MIB defined trap event: s500PermVioEvent</event-label>
+ <descr>&lt;p&gt;This trap is sent when there has been a permanent entry&lt;br&gt;
+ violation. A MAC address has been detected at a&lt;br&gt;
+ port, other than the port where it has been configured as a&lt;br&gt;
+ permanent entry.&lt;br&gt;
+ The variable portIfIndex indicates the port where the&lt;br&gt;
+ MAC incorrectly has been detected.&lt;br&gt;
+ The problem can be solved by re-configuring the MAC's&lt;br&gt;
+ permanent entry, or by physically moving the MAC to the&lt;br&gt;
+ port it has been configured for.
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ portConfChassisIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ portConfModuleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ portConfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Permanent Entry Violation.&lt;/p&gt;</logmsg>
+ <severity>Warning</severity>
+</event>
+
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.6.10</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>2</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/s500AdaptiveForwEvent</uei>
+ <event-label>INTEL-S500-MIB defined trap event: s500AdaptiveForwEvent</event-label>
+ <descr>&lt;p&gt;This trap is sent when a port automatically is&lt;br&gt;
+ changing forwarding mode. This will only happen when&lt;br&gt;
+ the port has been configured to Adaptive mode.&lt;br&gt;
+ The syntax is (Portnumber, New mode, Old mode)
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ portConfChassisIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ portConfModuleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ portConfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ portConfSwitchMode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ cutThrough(1) adaptiveCutThrough(2) fragmentFree(3) adaptiveFragmentFree(4) storeAndForward(5) 
+ adaptiveStoreAndForward(6) notAvailable(99)
+ &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ portConfSwitchMode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ cutThrough(1) adaptiveCutThrough(2) fragmentFree(3) adaptiveFragmentFree(4) storeAndForward(5) 
+ adaptiveStoreAndForward(6) notAvailable(99)
+ &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Forwarding Mode Changed.&lt;/p&gt;</logmsg>
+ <severity>Normal</severity>
+</event>
+
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.6.10</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>3</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/s500TemperatureEvent</uei>
+ <event-label>INTEL-S500-MIB defined trap event: s500TemperatureEvent</event-label>
+ <descr>&lt;p&gt;This trap indicates that the temperature of the&lt;br&gt;
+ chassis has changed
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ temperatureLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;normal(1) high(2) critical(3)
+ &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Temperature Status Change.&lt;/p&gt;</logmsg>
+ <severity>Major</severity>
+</event>
+
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.6.10</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>4</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/s500RedundantPowerSupplyEvent</uei>
+ <event-label>INTEL-S500-MIB defined trap event: s500RedundantPowerSupplyEvent</event-label>
+ <descr>&lt;p&gt;This trap indicates that the status of the redundant&lt;br&gt;
+ power supply has changed
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ redundantPowerSupplyStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ notPresent(1) present(2) active(3)
+ &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Redundant Power Supply Status Change.&lt;/p&gt;</logmsg>
+ <severity>Minor</severity>
+</event>
+<!-- End of auto generated data from MIB: INTEL-S500-MIB -->
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.%</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/vendor/intel/traps/EnterpriseDefault</uei>
+ <event-label>OpenNMS-defined trap event: Intel EnterpriseDefault</event-label>
+ <descr>
+ &lt;p&gt;This is the default event format used when an
+ enterprise specific event (trap) is received from a Intel device for which no
+ format has been configured (i.e. no event definition
+ exists).&lt;/p&gt;
+ </descr>
+ <logmsg dest='logndisplay'>
+ Received unformatted enterprise event (enterprise:%id% generic:%generic%
+ specific:%specific%). %parm[##]%
+ args: %parm[all]%
+ </logmsg>
+ <severity>Indeterminate</severity>
+</event>
+<!-- End of INTEL Events -->
+</events>
