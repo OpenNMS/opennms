@@ -522,9 +522,9 @@
                                         <includeGroup>altiga-hardware</includeGroup>
                                 </collect>
                         </systemDef>
-				
-                        <systemDef name = "Cisco PIX">
-                                <sysoid>.1.3.6.1.4.1.9.1.451</sysoid>
+
+                        <systemDef name = "Cisco PIX1">
+                                <sysoid>.1.3.6.1.4.1.9.1.390</sysoid>
                                 <collect>
                                         <includeGroup>cisco-pix</includeGroup>
                                 </collect>
@@ -532,6 +532,13 @@
 
                         <systemDef name = "Cisco PIX2">
                                 <sysoid>.1.3.6.1.4.1.9.1.417</sysoid>
+                                <collect>
+                                        <includeGroup>cisco-pix</includeGroup>
+                                </collect>
+                        </systemDef>
+				
+                        <systemDef name = "Cisco PIX3">
+                                <sysoid>.1.3.6.1.4.1.9.1.451</sysoid>
                                 <collect>
                                         <includeGroup>cisco-pix</includeGroup>
                                 </collect>
