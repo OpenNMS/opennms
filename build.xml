@@ -33,6 +33,7 @@
   <property name="install" value="${root.installprefix}${root.install}"/>
   <property name="install.initdir" value="${root.installprefix}${root.install.initdir}"/>
   <property name="install.sbindir" value="${root.installprefix}${root.install.sbindir}"/>
+  <property name="install.contrib" value="${root.installprefix}${root.install.contrib}"/>
   <property name="install.rrdtool" value="${root.installprefix}${root.install.rrdtool}"/>
   <property name="install.share" value="${root.installprefix}${root.install.share}"/>
   <property name="install.rrdtool" value="${root.installprefix}${root.install.rrdtool}"/>
@@ -78,6 +79,7 @@
   <filter token="root.install" value="${root.install}"/>
   <filter token="root.install.initdir" value="${root.install.initdir}"/>
   <filter token="root.install.sbindir" value="${root.install.sbindir}"/>
+  <filter token="root.install.contrib" value="${root.install.contrib}"/>
   <filter token="root.install.servlets" value="${root.install.servlets}"/>
   <filter token="root.install.share" value="${root.install.share}"/>
   <filter token="root.install.rrdtool" value="${root.install.rrdtool}"/>
@@ -89,6 +91,7 @@
   <filter token="relative.install" value="${relative.install}"/>
   <filter token="relative.install.initdir" value="${relative.install.initdir}"/>
   <filter token="relative.install.sbindir" value="${relative.install.sbindir}"/>
+  <filter token="relative.install.contrib" value="${relative.install.contrib}"/>
   <filter token="relative.install.servlets" value="${relative.install.servlets}"/>
   <filter token="relative.install.share" value="${relative.install.share}"/>
   <filter token="relative.install.rrdtool" value="${relative.install.rrdtool}"/>
@@ -486,7 +489,7 @@ ${root.install}/bin/opennms.sh $$@
  </target>
 
  <target name="install.contrib" depends="init,copy.contrib">
-  <copy todir="${install}/contrib">
+  <copy todir="${install.contrib}">
    <fileset dir="${root.build}/contrib"/>
   </copy>
  </target>
