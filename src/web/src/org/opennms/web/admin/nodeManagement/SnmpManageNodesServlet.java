@@ -119,13 +119,13 @@ public class SnmpManageNodesServlet extends HttpServlet {
                     String intKey = curInterface.getNodeid() + "+" + curInterface.getIfIndex();
 
                     // determine what is managed and unmanged
-                    if (interfaceList.contains(intKey) && curInterface.getStatus().equals("N")) {
+                    if (interfaceList.contains(intKey) && "N".equals(curInterface.getStatus())) {
                         stmt.setString(1, "C");
                         stmt.setInt(2, curInterface.getNodeid());
                         stmt.setInt(3, curInterface.getIfIndex());
                         this.log("DEBUG: executing SNMP Collection Type update to C for nodeid: " + curInterface.getNodeid() + " ifIndex: " + curInterface.getIfIndex());
                         stmt.executeUpdate();
-                    } else if (!interfaceList.contains(intKey) && curInterface.getNodeid() == currNodeId && curInterface.getStatus().equals("C")) {
+                    } else if (!interfaceList.contains(intKey) && curInterface.getNodeid() == currNodeId && "C".equals(curInterface.getStatus())) {
                         stmt.setString(1, "N");
                         stmt.setInt(2, curInterface.getNodeid());
                         stmt.setInt(3, curInterface.getIfIndex());
