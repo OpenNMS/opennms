@@ -23,7 +23,8 @@ for dir in /usr/ccs/bin /usr/local/bin /usr/bin /bin; do
 	fi
 done
 case `uname` in
-	Darwin|SunOS)
+	Darwin|Linux|SunOS)
+		# gcc is often smarter than ld  ;)
 		LD="$CC"
 		;;
 esac
