@@ -1136,7 +1136,7 @@ OpenNMS as part of the post-install.
    <sourcepath>
     <path refid="path.sources"/>
    </sourcepath>
-   <link href="http://java.sun.com/j2se/1.3/docs/api/"/>
+   <link href="http://java.sun.com/j2se/1.4/docs/api/"/>
    <!-- <link href="http://jakarta.apache.org/log4j/docs/api/"/> broken -->
   </javadoc>
  </target>
