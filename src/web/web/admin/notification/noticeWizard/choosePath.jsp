@@ -184,6 +184,7 @@
                 <td>%severity% = event severity</td>                          
               </tr>
               <tr>
+                <td>%nodelabel% = may be IP address or empty</td>
                 <td>%interface% = IP address, may be empty</td>
                 <td>%service% = service name, may be empty</td>
                 <td>&nbsp;</td>                                                    
