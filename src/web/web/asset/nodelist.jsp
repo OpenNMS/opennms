@@ -61,6 +61,12 @@
     }
 
     AssetModel.MatchingAsset[] assets = model.searchAssets( column, search );
+
+    String pageSizeString = request.getParameter( "pagesize" );
+    int defaultPageSize = 10;
+    int pageSize = (pageSizeString == null) ? defaultPageSize : Integer.parseInt( pageSizeString );
+    String offsetString = request.getParameter( "offset" );	
+    int offset = (offsetString == null) ? 0 : Integer.parseInt( offsetString );
 %>
 
 <html>
@@ -93,18 +99,84 @@
 
   <% if( assets.length > 0 ) { %>
     <td valign="top">
-      <table width="100%" cellspacing="2" cellpadding="2" border="0">
-        <tr>
-          <td width="10%"><b>Asset</b></td>
-          <td><b>Matching Text</b></td>
+      <table width="100%" cellspacing="2" cellpadding="2" border="1">
+        <tr bgcolor="#999999">
+          <td width="10%" align="center"><b>Asset</b></td>
+          <td align="center"><b>Matching Text</b></td>
+          <td align="center"><b>Category</b></td>
+          <td align="center"><b>Asset Number</b></td>
+          <td align="center"><b>Department</b></td>
+          <td align="center"><b>Building</b></td>
+          <td align="center"><b>Room ID</b></td>
+          <td align="center"><b>Vendor</b></td>
         </tr>
 
-      <% for( int i=0; i < assets.length; i++ ) { %>
-        <tr>
-          <td><a href="asset/modify.jsp?node=<%=assets[i].nodeId%>"><%=assets[i].nodeLabel%></a></td>
-          <td><%=assets[i].matchingValue%></td>
+      <% //for( int i=0; i < assets.length; i++ ) { 
+        int n = assets.length;
+	  for(int t = offset; t < ((n <(offset + pageSize))? n : offset + pageSize); t++){
+	%>
+        <tr  bgcolor="<%=(t%2 == 0) ? "white" : "#cccccc"%>">
+          <td><a href="asset/detail.jsp?node=<%=assets[t].nodeId%>"><%=assets[t].nodeLabel%></a></td>
+          <td><%=assets[t].matchingValue%>&nbsp;</td>
+<%
+			Asset asset = this.model.getAsset(assets[t].nodeId);
+%>
+          <td><%=asset.getCategory()%>&nbsp;</td>
+          <td><%=asset.getAssetNumber()%>&nbsp;</td>
+          <td><%=asset.getDepartment()%>&nbsp;</td>
+          <td><%=asset.getBuilding()%>&nbsp;</td>
+          <td><%=asset.getRoom()%>&nbsp;</td>
+          <td><%=asset.getVendor()%>&nbsp;</td>
         </tr>
       <% } %>
+<tr> 
+          <td colspan="8" align="center" bgcolor="#999999">
+<%
+		int npage = n / pageSize;
+		if (n%pageSize != 0) npage++;
+		int currentpage = 1 + offset / pageSize;
+		if (offset%pageSize != 0) currentpage++;
+		if (currentpage > 1)
+		{
+%> 
+            <a href="<%=request.getContextPath()%>/asset/nodelist.jsp?column=<%=column%>&searchvalue=<%=search%>&pagesize=<%=pageSize%>&offset=<%=pageSize*(currentpage-2)%>">&lt;&lt;&nbsp;Prev&nbsp;</a> 
+<%
+		}
+		else
+		{
+%> 
+		&lt;&lt;&nbsp;Prev&nbsp; 
+<%
+		}
+		for (int i = 1; i <= npage; i++)
+		{
+			if (i != currentpage) {
+%> 
+&nbsp;<a href="<%=request.getContextPath()%>/asset/nodelist.jsp?column=<%=column%>&searchvalue=<%=search%>&pagesize=<%=pageSize%>&offset=<%=pageSize*(i-1)%>"><%=i%></a> 
+            <%
+			}
+			else
+			{
+%> 
+&nbsp;<%=i%> 
+            <%		
+			}
+		}
+		if (currentpage < npage)
+		{
+		%> 
+            <a href="<%=request.getContextPath()%>/asset/nodelist.jsp?column=<%=column%>&searchvalue=<%=search%>&pagesize=<%=pageSize%>&offset=<%=pageSize*(currentpage)%>">&nbsp;Next&nbsp;&gt;&gt;</a> 
+            <%
+		}
+		else
+		{
+		%> 
+		&nbsp;Next&nbsp;&gt;&gt; 
+            <%
+		}
+%>
+</tr>
+
       </table>
    </td>
   <% } else { %>

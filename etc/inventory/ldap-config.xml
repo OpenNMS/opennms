@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<ldap-config>
+    <definition name="def 1" 
+		version="v3" 
+		ldapDn="cn=Administrator,cn=Users,DC=some,DC=place,DC=net" 
+		password="pass"
+	   	searchbase="DC=some,DC=place,DC=net" 
+		searchfilter="(objectclass=*)">
+    	<attributes>
+		<attrib>member</attrib>    
+    	</attributes>
+    </definition>
+</ldap-config>

@@ -104,6 +104,10 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>AddRefreshHeader-300</filter-name>
+    <url-pattern>/element/services.jsp</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-300</filter-name>
     <url-pattern>/outage/current.jsp</url-pattern>
   </filter-mapping>
   <filter-mapping>
@@ -374,6 +378,12 @@
   <servlet>
     <servlet-name>notificationWizard</servlet-name>
     <servlet-class>org.opennms.web.admin.notification.noticeWizard.NotificationWizardServlet</servlet-class>
+  </servlet>
+  
+  <!-- Servlet for building Asset Location from a wizard -->
+  <servlet>
+    <servlet-name>assetLocationWizard</servlet-name>
+    <servlet-class>org.opennms.web.admin.assetLocation.assetWizard.AssetLocationWizardServlet</servlet-class>
   </servlet>
   
   <!-- Servlets for configuration of users groups and views -->
@@ -927,6 +937,11 @@
     <url-pattern>/admin/notification/noticeWizard/notificationWizard</url-pattern>
   </servlet-mapping>
     
+  <!-- servlet mapping for the Asset Location wizard servlet -->
+  <servlet-mapping>
+    <servlet-name>assetLocationWizard</servlet-name>
+    <url-pattern>/admin/assetLocation/AssetWizard/assetLocationWizard</url-pattern>
+  </servlet-mapping>
   <!-- servlet mapping for configuring users groups and views -->
   <!-- user configuration servlets -->
   <servlet-mapping>

@@ -142,6 +142,8 @@
       <p>
         <a HREF="admin/notification/index.jsp">Configure Notifications</a>
       <p>
+        <a HREF="admin/assetLocation/index.jsp">Configure Asset Location</a>
+      <p>
         <a HREF="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a>
       <p>
         <a HREF="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a>
@@ -154,6 +156,7 @@
       <p>
         <a HREF="admin/asset/index.jsp">Import and Export Asset Information</a>
       <p>
+      	<a HREF="admin/confman/index.jsp">Application Configuration Management</a>
 
       <!-- security link -->
       
