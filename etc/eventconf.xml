@@ -18,6 +18,7 @@
         <event-file>@root.install@/etc/events/Fore.events.xml</event-file>
         <event-file>@root.install@/etc/events/FoundryNetworks.events.xml</event-file>
         <event-file>@root.install@/etc/events/HP.events.xml</event-file>
+        <event-file>@root.install@/etc/events/IBM.events.xml</event-file>
         <event-file>@root.install@/etc/events/Intel.events.xml</event-file>
         <event-file>@root.install@/etc/events/Microsoft.events.xml</event-file>
         <event-file>@root.install@/etc/events/Novell.events.xml</event-file>
