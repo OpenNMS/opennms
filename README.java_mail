@@ -1,0 +1,30 @@
+Adding support JavaMail API for Notifications
+
+David Hustace
+2004-09-10
+
+Summary of changes:
+	- Added JavaMail API to lib/ and build.xml
+	- Added activation.jar to lib/
+	- Used strategy pattern and created an Executor strategy interface now implemented by CommandExecutor.java
+		and a new ClassExecutor.java.
+	- Used strategy pattern and created a Notification strategy interface now implemented by
+		JavaMailNotificationStrategy.java and a stub for my experiments with JavaJabberNotificationStrategy.java.
+	- Made kludgy change to notificationCommands.xsd to support a command flag (true|false) identifying the
+		the command as a binary.
+		
+		To add your own Java based notifier, create a class based on the
+		NotificationStrategy.java interface and add an entry to the notificationCommands.xml file with
+		the binary flag set to "false" and name of your notification class
+		(i.e org.opennms.netmgt.notifd.JavaMailNotificationStrategy.java)
+	
+
+Very many more TODOs:
+	- Refine xml schemas and properties to support some of the mailer's arguments currently
+		not defined in the notification code: SMTP Host, From Address, mail protocol,
+		mail authentication, etc.
+	- Use JavaMail API for sending reports 
+	- Java docs and functional documentation
+	- Change to use javaMail for email address targets in path instead of /bin/mail
+		not working
+	

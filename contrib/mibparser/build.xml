@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+<!-- John Rodriguez snmpfactotum@yahoo.com -->
+<project name="MIB Compiler Buildfile" default="compile" basedir=".">
+  <property name="dir.src" value="src"/>
+  <property name="dir.build" value="build"/>
+  <property name="dir.dist" value="dist"/>
+  <property name="dir.mibs" value="mibs"/>
+  <property name="dir.lib" value="lib"/>
+  <property name="dir.log" value="log"/>
+  <!-- default parser properties, can be passed in with -DFLAGS=debug -->
+  <property name="FLAGS" value=""/>
+  <!-- only use this when building the parser, results in lots of debug -->
+  <property name="MAKEDEBUGPARSER" value="" />
+  <!-- you can pass in a list of MIBS to testmibs task -->
+  <property name="MIBS" value="" />
+  
+  <!-- Creates the output directories -->
+  <target name="prepare">
+    <mkdir dir="${dir.build}"/>
+    <mkdir dir="${dir.dist}"/>
+    <mkdir dir="${dir.log}"/>
+  </target>
+
+  <target name="clean"
+          description="Remove all generated files.">
+    <delete dir="${dir.build}"/>
+    <delete dir="${dir.dist}"/>
+  </target>
+
+  <!-- This always fails, so I have something wrong TBD-->
+  <target name="checkjjtreeproperties" >
+    <fail unless="env.JJTREE_EXE" >
+    
+    Set where jjtree is. 
+    ant -DJJTREE_EXE=fullpath/jjtree runjjtree 
+    </fail>
+  </target>
+  
+  <!-- this builds a file (from *.jjt to *.jj) for the parser generator -->
+  <target name="runjjtree" 
+          description="Remove all generated files."  >
+    <echo message="Make sure you want the following jjtree:" />
+    <echo message="  JJTREE_EXE=${JJTREE_EXE}" />
+    <echo message="To set where jjtree is:" />
+    <echo message="  ant -DJJTREE_EXE=/fullpath/jjtree runjjtree" />
+    
+    <apply executable="${JJTREE_EXE}" parallel="false"
+           dir="${dir.src}" output="${dir.log}/jjtree.log" >
+        <fileset dir="${dir.src}" >
+          <filename name="ParseMib.jjt"/>
+        </fileset>
+    </apply>
+  </target>
+
+  <!-- this is the parser generator -->
+  <target name="runjavacc" 
+          description="Remove all generated files."  >
+    <echo message="Make sure you want the following JavaCC:" />
+    <echo message="  JAVACC_EXE=${JAVACC_EXE}" />
+    <echo message="To set where JavaCC is:" />
+    <echo message="  ant -DJAVACC_EXE=/fullpath/JavaCC runjavacc" />
+    <echo> 
+        ant runjavacc
+      To get lots of debug from the parser itself use
+        ant -DMAKEDEBUGPARSER=-debug_parser runjavaccdebug
+    </echo>
+    
+    <apply executable="${JAVACC_EXE}" parallel="false"
+           dir="${dir.src}" output="${dir.log}/javacc.log" >
+        <fileset dir="${dir.src}" >
+          <filename name="ParseMib.jj"/>
+        </fileset>
+    </apply>
+  </target>
+
+  <!-- this is the parser generator, make a debug version -->
+  <target name="runjavaccdebug"
+          description="Remove all generated files."  >
+    <echo message="Make sure you want the following JavaCC:" />
+    <echo message="  JAVACC_EXE=${JAVACC_EXE}" />
+    <echo message="To set where JavaCC is:" />
+    <echo message="  ant -DJAVACC_EXE=/fullpath/JavaCC runjavacc" />
+    <echo>
+      To get lots of debug from the parser itself use
+        ant -DMAKEDEBUGPARSER=-debug_parser runjavacc
+    </echo>
+                                                                                                 
+    <apply executable="${JAVACC_EXE}" parallel="false"
+           dir="${dir.src}" output="${dir.log}/javacc.log" >
+        <arg value="${MAKEDEBUGPARSER}" />
+        <fileset dir="${dir.src}" >
+          <filename name="ParseMib.jj"/>
+        </fileset>
+    </apply>
+  </target>
+
+  <!-- debug="true" is -g because I don't care if the parser is 2 millis slower -->
+  <target name="compile" depends="prepare"
+          description="Compile all source code.">
+    <javac srcdir="${dir.src}" destdir="${dir.build}" debug="true"/>
+  </target>
+
+  <target name="jar" depends="compile"
+          description="Generates mibparser.jar in the 'dist' directory.">
+    <jar jarfile="${dir.dist}/mibparser.jar" 
+         basedir="${dir.build}"/>
+  </target>
+  
+  <target name="showversion" depends="jar" 
+          description="Parse some MIBs and output XML.">
+    <echo> 
+      Prints the version of the MIB parser
+    </echo>
+    <java dir="${dir.mibs}" classname="ParseMib" fork="true" >
+        <classpath>
+        <pathelement path=".:${dir.dist}/mibparser.jar:${dir.lib}/javacc.jar"/>
+        </classpath>
+    </java>
+  </target>
+
+  <target name="test" depends="jar" 
+          description="Parse some MIBs and output XML.">
+    <echo> 
+      To get lots of debug use
+        ant -DFLAGS=-debug test
+    </echo>
+    <java dir="${dir.mibs}" classname="ParseMib" output="${dir.log}/test.xml" 
+        fork="true" failonerror="true" >
+        <arg value="${FLAGS}"/>
+        <arg value="RFC1213-MIB"/>
+        <arg value="RFC1253-MIB"/>
+        <classpath>
+        <pathelement path=".:${dir.dist}/mibparser.jar:${dir.lib}/javacc.jar"/>
+        </classpath>
+    </java>
+  </target>
+
+  <!-- this provides a general facility to parse 1 or more MIBS
+       by passing the full MIB path names in -DMIBS="A-MIB B-MIB C-MIB" -->
+  <target name="testmibs" depends="jar" 
+          description="Parse some MIBs and output XML.">
+    <echo> 
+      To specifiy your MIBS use:
+        ant -DMIBS="A-MIB B-MIB C-MIB" testmibs
+        Full path to each MIB or just the file name if in mibs dir
+        
+      To get lots of debug use
+        ant -DMIBS="A-MIB B-MIB C-MIB" -DFLAGS=-debug testmibs
+        
+      Parsing ${MIBS}
+    </echo>
+    <java dir="${dir.mibs}" classname="ParseMib" output="${dir.log}/test.xml" 
+        fork="true" failonerror="true" >
+        <arg value="${FLAGS}"/>
+        <arg line="${MIBS}"/>
+        <classpath>
+        <pathelement path=".:${dir.dist}/mibparser.jar:${dir.lib}/javacc.jar"/>
+        </classpath>
+    </java>
+  </target>
+
+</project>

@@ -1,0 +1,10 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/dhcpd">
+	<element name="DhcpdConfiguration">
+ 		<complexType>
+  			<attribute name="port" type="positiveInteger" use="required"/>
+  			<attribute name="macAddress" type="string" use="required"/>
+ 		</complexType>
+	</element>
+</schema>
+

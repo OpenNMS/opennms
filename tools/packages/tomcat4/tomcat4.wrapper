@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# Wrapper script for Tomcat 4.0, to be sure it will allways
+# be run with correct user profile (tomcat4 by default)
+#
+# derived from stuff in tomcat4.init
+#
+# Gomez Henri <hgomez@slib.fr>
+# Keith Irwin <keith_irwin@non.hp.com>
+# Nicolas Mailhot <nicolas.mailhot@one2team.com>
+#
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Get Tomcat config
+
+TOMCAT_CFG="@@@TCCONF@@@/tomcat4.conf"
+
+[ -r "$TOMCAT_CFG" ] && . "${TOMCAT_CFG}"
+
+# Path to the tomcat launch script
+TOMCAT_SCRIPT=/usr/bin/dtomcat4
+
+# Tomcat name :)
+TOMCAT_PROG=tomcat4
+        
+# if TOMCAT_USER is not set, use tomcat4 
+if [ -z "$TOMCAT_USER" ]; then
+    TOMCAT_USER="tomcat4"
+fi
+
+# Since the daemon function will sandbox $tomcat
+# no environment stuff should be defined here anymore.
+# Please use the @@@TCCONF@@@/tomcat4.conf file instead ; it will
+# be read by the $tomcat script
+
+RETVAL=0
+
+su - $TOMCAT_USER -c "$TOMCAT_SCRIPT $@"
+RETVAL=$?
+exit $RETVAL

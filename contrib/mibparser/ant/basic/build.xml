@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<project name="Template Buildfile" default="compile" basedir=".">
+  <property name="dir.src" value="src"/>
+  <property name="dir.build" value="build"/>
+  <property name="dir.dist" value="dist"/>
+
+  <!-- Creates the output directories -->
+  <target name="prepare">
+    <mkdir dir="${dir.build}"/>
+    <mkdir dir="${dir.dist}"/>
+  </target>
+
+  <target name="clean"
+          description="Remove all generated files.">
+    <delete dir="${dir.build}"/>
+    <delete dir="${dir.dist}"/>
+  </target>
+
+  <target name="compile" depends="prepare"
+          description="Compile all source code.">
+    <javac srcdir="${dir.src}" destdir="${dir.build}"/>
+  </target>
+
+  <target name="jar" depends="compile"
+          description="Generates oreilly.jar in the 'dist' directory.">
+    <jar jarfile="${dir.dist}/oreilly.jar" 
+         basedir="${dir.build}"/>
+  </target>
+</project>
