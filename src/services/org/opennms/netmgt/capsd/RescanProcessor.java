@@ -651,15 +651,38 @@ final class RescanProcessor
 
 			// speed
 			SnmpUInt32 uint = (SnmpUInt32)ifte.get(IfTableEntry.IF_SPEED);
-			dbSnmpIfEntry.updateSpeed((int)uint.getValue());
+                        if (uint == null)
+                        {
+                                dbSnmpIfEntry.updateSpeed(0);
+                        }
+                        else
+                        {
+                                dbSnmpIfEntry.updateSpeed((int)uint.getValue());
+                        }
 
 			// admin status
 			sint = (SnmpInt32)ifte.get(IfTableEntry.IF_ADMIN_STATUS);
-			dbSnmpIfEntry.updateAdminStatus(sint.getValue());
+                        if (sint == null)
+                        {
+                                dbSnmpIfEntry.updateAdminStatus(0);
+                        }
+                        else
+                        {
+				dbSnmpIfEntry.updateAdminStatus(sint.getValue());
+                        }
+
 					
 			// oper status
 			sint = (SnmpInt32)ifte.get(IfTableEntry.IF_OPER_STATUS);
-			dbSnmpIfEntry.updateOperationalStatus(sint.getValue());
+                        if (sint == null)
+                        {
+                                dbSnmpIfEntry.updateOperationalStatus(0);
+                        }
+                        else
+                        {
+				dbSnmpIfEntry.updateOperationalStatus(sint.getValue());
+                        }
+
 			
 			// name (from interface extensions table)
 			SnmpOctetString snmpIfName = snmpc.getIfName(ifIndex);

@@ -782,15 +782,36 @@ final class SuspectEventProcessor
 				
 				// speed
 				SnmpUInt32 uint = (SnmpUInt32)ifte.get(IfTableEntry.IF_SPEED);
-				snmpEntry.setSpeed((int)uint.getValue());
+                        	if (uint == null)
+                        	{
+                                	snmpEntry.setSpeed(0);
+                        	}
+                        	else
+                        	{
+                                	snmpEntry.setSpeed((int)uint.getValue());
+                        	}
 
 				// admin status
 				sint = (SnmpInt32)ifte.get(IfTableEntry.IF_ADMIN_STATUS);
-				snmpEntry.setAdminStatus(sint.getValue());
+				if (sint == null)
+				{
+					snmpEntry.setAdminStatus(0);
+				}
+				else
+				{
+					snmpEntry.setAdminStatus(sint.getValue());
+				}
 				
 				// oper status
 				sint = (SnmpInt32)ifte.get(IfTableEntry.IF_OPER_STATUS);
-				snmpEntry.setOperationalStatus(sint.getValue());
+                                if (sint == null)
+                                {
+                                        snmpEntry.setOperationalStatus(0);
+                                }
+                                else
+                                {
+                                        snmpEntry.setOperationalStatus(sint.getValue());
+                                }
 
 				// name (from interface extensions table)
 				SnmpOctetString snmpIfName = snmpc.getIfName(xifIndex);
