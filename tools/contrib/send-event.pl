@@ -41,7 +41,7 @@ while (my ($option, $value) = nextOption()) {
         $DESCR     = $value if ($option eq "d");
         $SEVERITY  = $value if ($option eq "x");
 	$VERBOSE   = 1      if ($option eq "v");
-	$ZONE      = $value if ($option eq "z");
+	$ZONE      = $value if ($option eq "t");
 	$OPERINSTR = $value if ($option eq "o");
 	push(@PARMS, parse_parm($value)) if ($option eq "p");
 
@@ -226,6 +226,7 @@ Options:
          --nodeid, -n      node identifier (numeric)
          --interface, -i   IP address of the interface
          --descr, -d       a description for the event browser
+         --operinstr, -o        operator instruction
          --severity, -x    the severity of the event (numeric or name)
                            1 = Indeterminate
                            2 = Cleared (unimplemented at this time)
@@ -241,8 +242,8 @@ Example:
         Force discovery of a node
 
         send-event.pl \\
-        --interface 172.16.1.1
         uei.opennms.org/internal/discovery/newSuspect \\
+        --interface 172.16.1.1
 
 END
 }

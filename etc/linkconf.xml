@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<links xmlns="http://xml.opennms.org/bluebird/internal/linkconf">
+<vendors>
+	<vendor>
+		<sysoidMask>.1.3.6.1.4.1.45.</sysoidMask>
+		<descr>
+			Bay Networks
+		</descr>
+		<vlanoid>.1.3.6.1.2.1.17.7.1.4.3.1.1</vlanoid>
+	</vendor>
+	<vendor>
+		<sysoidMask>.1.3.6.1.4.1.9.</sysoidMask>
+		<descr>
+			Cisco Internetwork Operating System Software ..IOS (tm) 
+		</descr>
+		<vlanoid>.1.3.6.1.4.1.9.9.46.1.3.1.1.2</vlanoid>
+	</vendor>
+</vendors>
+</links>

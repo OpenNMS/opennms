@@ -14,6 +14,17 @@ Build file for OpenNMS' castor-generated Java files.
 <taskdef classname="com.tombrus.cleanImports.ant.CleanImports" classpath="${basedir}/devlib/cleanImports.jar" name="cleanimports"/>
 
  <!-- Generates Castor java files if necessary -->
+<!--
+        Some dependencies added by:
+        "Italian Adventure OpenNMS":
+		assetlocation
+		inventoryldap
+		inventorypluginconfig
+		linkdconfiguration
+		inventory
+		inventoryparser
+		inventorysshconfig
+-->
  <target name="castor.sources.generate"
   depends="castor.actiond.sources.generate,      castor.availability.sources.generate,
    castor.capsd.sources.generate,                castor.categories.sources.generate,
@@ -32,6 +43,10 @@ Build file for OpenNMS' castor-generated Java files.
    castor.threshd.sources.generate,              castor.vulnscand.sources.generate,
    castor.xmlrpcd.sources.generate,              castor.users.sources.generate,
    castor.views.sources.generate,                castor.viewsdisplay.sources.generate,
+	castor.assetlocation.sources.generate,			castor.inventory.sources.generate,
+	castor.inventoryldap.sources.generate,			castor.inventoryparser.sources.generate,	
+	castor.inventorypluginconfig.sources.generate,	castor.inventorysshconfig.sources.generate,
+	castor.linkdconfiguration.sources.generate,
    castor.webuiColors.sources.generate, clean.imports">
    </target>
  
@@ -265,6 +280,57 @@ Build file for OpenNMS' castor-generated Java files.
   <castor file="${castor.config.dir}/webui-colors.xsd" srcpackage="org.opennms.netmgt.config.webuiColors"
    destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
  </target>
+ 
+ <!--
+	Target added by:
+	"Italian Adventure OpenNMS"
+	
+	castor.assetlocation.sources.generate
+	castor.inventory.sources.generate
+	castor.inventoryldap.sources.generate			
+	castor.inventoryparser.sources.generate	
+	castor.inventorypluginconfig.sources.generate
+	castor.inventorysshconfig.sources.generate
+	castor.linkdconfiguration.sources.generate
+ --> 
+ <target name="castor.assetlocation.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.assetlocation.sources.uptodate">
+  <castor file="${castor.xsd.dir}/assetLocation.xsd" srcpackage="org.opennms.netmgt.config.assetLocation"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target> 
+ <target name="castor.inventory.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.inventory.sources.uptodate">
+  <castor file="${castor.config.dir}/inventory-configuration.xsd" srcpackage="org.opennms.netmgt.config.inventory"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target> 
+ <target name="castor.inventoryldap.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.inventoryldap.sources.uptodate">
+  <castor file="${castor.config.dir}/inventory-ldap-config.xsd" srcpackage="org.opennms.netmgt.config.inventory.plugin.ldap"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target> 
+ <target name="castor.inventoryparser.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.inventoryparser.sources.uptodate">
+  <castor file="${castor.config.dir}/inventory-parser.xsd" srcpackage="org.opennms.netmgt.config.inventory.parser"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target> 
+ <target name="castor.inventorypluginconfig.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.inventorypluginconfig.sources.uptodate">
+  <castor file="${castor.config.dir}/inventory-plugin-config.xsd" srcpackage="org.opennms.netmgt.config.inventory.plugin"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target> 
+ <target name="castor.inventorysshconfig.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.inventorysshconfig.sources.uptodate">
+  <castor file="${castor.config.dir}/inventory-ssh-config.xsd" srcpackage="org.opennms.netmgt.config.inventory.plugin.ssh"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target> 
+ <target name="castor.linkdconfiguration.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.linkdconfiguration.sources.uptodate">
+  <castor file="${castor.config.dir}/linkd-configuration.xsd" srcpackage="org.opennms.netmgt.config.linkd"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target> 
+ <!--
+	End Added by Italian Adventure OpenNMS
+ --> 
 
  <!-- This target is used to determine if the castor sources are up to date.
       First it uses a dependset rule to remove all files older than the xsd,
@@ -521,5 +587,77 @@ Build file for OpenNMS' castor-generated Java files.
   <condition property="castor.webuiColors.sources.uptodate">
    <available file="${build.castor.source.dir}/org/opennms/netmgt/config/webuiColors/CategoryColors.java" type="file"/>
   </condition>
+
+ <!--
+	Depenset added by:
+	"Italian Adventure OpenNMS"
+	
+	assetLocation.xsd
+	inventory-configuration.xsd
+	inventory-ldap-config.xsd
+	inventory-parser.xsd
+	inventory-plugin-config.xsd
+	inventory-ssh-config.xsd
+	linkd-configuration.xsd
+  --> 
+  <dependset>
+   <srcfilelist dir="${castor.xsd.dir}" files="assetLocation.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/assetLocation" includes="*.java"/>
+  </dependset>
+  <condition property="castor.assetlocation.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/assetLocation/AssetLocations.java" type="file"/>
+  </condition>
+
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="inventory-configuration.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/inventory" includes="*.java"/>
+  </dependset>
+  <condition property="castor.inventory.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/inventory/InventoryConfiguration.java" type="file"/>
+  </condition>
+
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="inventory-ldap-config.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/inventory/plugin/ldap" includes="*.java"/>
+  </dependset>
+  <condition property="castor.inventoryldap.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/inventory/plugin/ldap/LdapConfig.java" type="file"/>
+  </condition>
+
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="inventory-parser.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/inventory/parser" includes="*.java"/>
+  </dependset>
+  <condition property="castor.inventoryparser.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/inventory/parser/Inventory.java" type="file"/>
+  </condition>
+
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="inventory-plugin-config.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/inventory/plugin" includes="*.java"/>
+  </dependset>
+  <condition property="castor.inventorypluginconfig.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/inventory/plugin/PluginConfiguration.java" type="file"/>
+  </condition>
+
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="inventory-ssh-config.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/inventory/plugin/ssh" includes="*.java"/>
+  </dependset>
+  <condition property="castor.inventorysshconfig.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/inventory/plugin/ssh/SshConfig.java" type="file"/>
+  </condition>
+
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="linkd-configuration.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/linkd" includes="*.java"/>
+  </dependset>
+  <condition property="castor.linkdconfiguration.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/linkd/LinkdConfiguration.java" type="file"/>
+  </condition>  
+  <!--
+	End Added by Italian Adventure OpenNMS
+  --> 
+
  </target>
 </project>

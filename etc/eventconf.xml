@@ -9,6 +9,7 @@
 			<doNotOverride>script</doNotOverride>
 		</security>
 	</global>
+		<event-file>@install.etc.dir@/events/ia.events.xml</event-file>
         <event-file>@install.etc.dir@/events/3Com.events.xml</event-file>
         <event-file>@install.etc.dir@/events/ADIC-v2.events.xml</event-file>
         <event-file>@install.etc.dir@/events/APC.events.xml</event-file>

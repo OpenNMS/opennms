@@ -156,7 +156,15 @@
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="ds-name" value="pop3"/>
 		</service>
-
+        <service name="VNC" interval="300000" user-defined="false" status="on">
+            <parameter key="timeout" value="5000"/>
+            <parameter key="ports" value="5800"/>
+            <parameter key="url" value="/"/>
+        </service>
+        <service name="RDP" interval="300000" user-defined="false" status="on">
+            <parameter key="timeout" value="5000"/>
+            <parameter key="port" value="3389"/>
+        </service>
 		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
 
 		<downtime interval="30000" begin="0" end="300000"/>		<!-- 30s, 0, 5m -->
@@ -190,6 +198,7 @@
 	<monitor service="SSH"		class-name="org.opennms.netmgt.poller.TcpMonitor"/>
 	<monitor service="IMAP" 	class-name="org.opennms.netmgt.poller.ImapMonitor"/>
 	<monitor service="POP3" 	class-name="org.opennms.netmgt.poller.Pop3Monitor"/>
+    <monitor service="VNC" class-name="org.opennms.netmgt.poller.HttpMonitor"/>
+    <monitor service="RDP" class-name="org.opennms.netmgt.poller.TcpMonitor"/>
                	
 </poller-configuration>
-

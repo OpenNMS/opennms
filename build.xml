@@ -77,6 +77,11 @@ your distribution.
   <property name="install.source.dir" value="${source.dir}/install"/>
   <property name="web.source.dir" value="${source.dir}/web/src"/>
 
+  <!-- Italian Adventures Properties -->
+  <property name="base.perllib.dir" value="${source.dir}/coreperl"/>
+  <property name="base.discoveryservice.dir" value="${services.source.dir}/org/opennms/netmgt/linkd"/>
+  <!-- End Italian Adventures Properties -->
+
   <!-- docs source directory -->
   <property name="docs.source.dir" value="${basedir}/docs"/>
 
@@ -184,6 +189,8 @@ your distribution.
     <pathelement path="${packaged.lib.dir}/jrobin-1.4.0.jar"/>
     <pathelement path="${packaged.lib.dir}/mailapi.jar"/>
     <pathelement path="${packaged.lib.dir}/smtp.jar"/>
+    <pathelement path="${packaged.lib.dir}/sshtools.jar"/>
+    <pathelement path="${packaged.lib.dir}/commons-net-1.2.2.jar"/>
 <!--  	<pathelement path="${packaged.lib.dir}/imap.jar"/> -->
 <!--  	<pathelement path="${packaged.lib.dir}/pop3.jar"/> -->
     <pathelement path="${packaged.lib.dir}/activation.jar"/>
@@ -518,7 +525,7 @@ your distribution.
     </fail>
   </target>
 
-  <target name="compile.check" depends="prep">
+  <target name="compile.check" depends="prep,perl.check">
     <condition property="compile.check.postgresql.include">
       <available file="${build.postgresql.include.dir}/postgres.h"/>
     </condition>
@@ -1054,7 +1061,7 @@ OpenNMS as part of the post-install.
  <!-- COMPILE targets -->
  
  <target name="compile" depends="compile.check, java.compile, jicmp.compile,
-				 jrrd.compile, postgresql.compile"
+				 jrrd.compile, postgresql.compile, perl.compile"
 	 description="compile all code"/>
 
  <target name="java.compile" depends="prep,sources">
@@ -1483,5 +1490,41 @@ OpenNMS as part of the post-install.
     <include name="opennms_*.jar" />
    </fileset>
   </copy>
+ </target>
+
+<!-- Italian Adventures Section for Perl -->
+<!-- replace proper dir name in perl files -->
+ <target name="replace.perl">
+  <replace file="${base.perllib.dir}/DbUtil/DbUtil.pm" token="@install.etc.dir@" value="${install.etc.dir}" />
+  <replace file="${base.discoveryservice.dir}/discoverLink.pl" token="@install.etc.dir@" value="${install.etc.dir}" />
+  <replace file="${base.discoveryservice.dir}/discoverLink.pl" token="@install.logs.dir@" value="${install.logs.dir}" />	
+  <replace file="${base.discoveryservice.dir}/discoverLink.pl" token="@install.bin.dir@" value="${install.bin.dir}" />	
+ </target>
+
+ <!-- test perl for required library -->
+ <target name="perl.check">
+	<exec executable="perl" failonerror="true">
+		<arg line="check.depends.perl.pl"/>
+	</exec>
+ </target>
+
+<!-- install perl library and copy -->
+ <target name="perl.compile" depends="replace.perl">
+	<fixcrlf srcdir="${base.perllib.dir}/DbUtil"/>
+	<chmod dir="${base.perllib.dir}/DbUtil" perm="a+x"/>
+	<fixcrlf srcdir="${base.perllib.dir}/DbUtil/t"/>
+	<chmod dir="${base.perllib.dir}/DbUtil/t" perm="a+x"/>
+	<fixcrlf srcdir="${base.discoveryservice.dir}" includes="discoverLink.pl"/>
+	<chmod dir="${base.discoveryservice.dir}" perm="a+x" includes="discoverLink.pl"/>
+	<exec executable="perl" failonerror="true" dir="${base.perllib.dir}/DbUtil">
+		<arg line="Makefile.PL"/>
+	</exec>
+ 	<exec executable="make" failonerror="true" dir="${base.perllib.dir}/DbUtil"/>
+ 	<exec executable="make" failonerror="true" dir="${base.perllib.dir}/DbUtil">
+		<arg line="install"/>
+	</exec>
+	<copy file="${base.discoveryservice.dir}/discoverLink.pl" todir="${install.bin.dir}"/>
+	<fixcrlf srcdir="${install.bin.dir}" includes="discoverLink.pl"/>
+	<chmod dir="${install.bin.dir}" perm="a+x" includes="discoverLink.pl"/>
  </target>
 </project>

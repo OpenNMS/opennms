@@ -13,7 +13,7 @@
 
 <%
     String location = (String)request.getParameter( "location" );
-    File file = new File("@install.etc.dir@/map.enable");
+    File file = new File("/opt/OpenNMS/etc/map.enable");
 %>
 
 <!-- Footer -->
@@ -77,6 +77,12 @@
               Reports&nbsp;|&nbsp;
         <%  } else { %>
               <a href="report/index.jsp">Reports</a>&nbsp;|&nbsp;
+        <%  } %>
+
+        <%  if( "inventory".equals( location ) ) { %>
+              Inventory&nbsp;|&nbsp;
+        <%  } else { %>
+              <a href="conf/index.jsp">Inventory</a>&nbsp;|&nbsp;
         <%  } %>
 
 <% if( file.exists() ) { %>

@@ -115,10 +115,12 @@
     }
 
     Interface intf_db = null;
+    AtInterface atif_db = null;
     
     //see if we know the ifindex
     if (ifindexString == null) {
         intf_db = NetworkElementFactory.getInterface( nodeId, ipAddr );
+        atif_db = ExtendedNetworkElementFactory.getAtInterface(nodeId, ipAddr);
     }
     else {
         intf_db = NetworkElementFactory.getInterface( nodeId, ipAddr, ifindex );
@@ -267,6 +269,8 @@ function doDelete() {
                   <% String macAddr = intf_db.getPhysicalAddress(); %>
                   <% if( macAddr != null && macAddr.trim().length() > 0 ) { %>
                     <%=macAddr%>
+                  <% } else if ( atif_db != null && atif_db.get_physaddr().trim().length() > 0 ) { %>
+                  <%=atif_db.get_physaddr()%>
                   <% } else { %>
                     &nbsp;
                   <% } %>
@@ -274,7 +278,11 @@ function doDelete() {
               </tr>
             </table>
             <br>
-            
+
+            <!-- Node Link box -->
+            <jsp:include page="/includes/interfaceLink-box.jsp" flush="false" />
+            <br>            
+
             <!-- SNMP box, if info available -->
             <% if( hasSNMPData(intf_db) ) { %>
                   <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" bgcolor="#cccccc">
@@ -354,6 +362,13 @@ function doDelete() {
             
           </td>
 
+        </tr>
+		<tr>
+		<td colspan="3">
+            <!-- STP Info box -->
+            <jsp:include page="/includes/interfaceSTP-box.jsp" flush="false" />
+            <br>
+        </td>
         </tr>
       </table>
 
