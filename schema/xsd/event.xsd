@@ -125,6 +125,9 @@
 
 				<!-- The forwarding information for this event -->
 				<element ref="forward" minOccurs="0" maxOccurs="unbounded"/>
+				
+				<!-- The script information for this event -->
+				<element ref="script" minOccurs="0" maxOccurs="unbounded"/>
 
 				<!-- The text to be displayed on a 'mouseOver' event when this event is
      				     displayed in the event browser
@@ -196,6 +199,10 @@
 
 				<!-- The community name -->
 				<element name="community" type="string"
+					minOccurs="0" maxOccurs="1"/>
+				
+				<!-- The time stamp -->
+				<element name="time-stamp" type="long"
 					minOccurs="0" maxOccurs="1"/>
 			</sequence>
 		</complexType>
@@ -426,6 +433,18 @@
 							</restriction>
 						</simpleType>
 					</attribute>
+				</extension>
+			</simpleContent>
+		</complexType>
+	</element>
+
+	<!-- The script information for this event - describes a script to be executed
+		whenever the event occurs -->
+	<element name="script">
+		<complexType>
+			<simpleContent>
+				<extension base="string">
+					<attribute name="language" type="string" use="required"/>
 				</extension>
 			</simpleContent>
 		</complexType>

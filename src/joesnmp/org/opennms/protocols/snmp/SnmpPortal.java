@@ -146,11 +146,17 @@ public class SnmpPortal
 	SnmpPortal(SnmpPacketHandler handler, AsnEncoder encoder, int port)
 		throws SocketException
 	{
-		if(handler == null || encoder == null || port < 0)
+		if(handler == null || encoder == null)
 			throw new IllegalArgumentException("Invalid argument");
 
 		m_handler    = handler;
-		m_comm       = new DatagramSocket(port);
+
+            	if (port >= 0) {
+		  	m_comm = new DatagramSocket(port);
+            	}
+            	else {
+              		m_comm = new DatagramSocket();
+            	}
 
 		//
 		// Determine whether or not it is necessary to use the socket.setSoTimeout()
@@ -198,7 +204,7 @@ public class SnmpPortal
 
 		m_isClosing  = false;
 
-		m_recvThread = new Thread(new Receiver(), "SnmpPortal-" + port);
+		m_recvThread = new Thread(new Receiver(), "SnmpPortal-" + m_comm.getPort());
 		m_encoder    = encoder;
 
 		m_recvThread.start();

@@ -329,9 +329,30 @@ public final class EventExpander
 
 		return dest;
 	}
+	
+	/**
+	 * This method is used to transform a script event configuration instance
+	 * into a script event instance. This is used when the incoming event does
+	 * not have any script information and the information from the configuration
+	 * object is copied.
+	 *
+	 * @param src	The configuration source to transform.
+	 *
+	 * @return The transformed script information.
+	 *
+	 */
+	private static org.opennms.netmgt.xml.event.Script transform(org.opennms.netmgt.xml.eventconf.Script src)
+	{
+		org.opennms.netmgt.xml.event.Script dest = new org.opennms.netmgt.xml.event.Script();
+
+		dest.setContent(src.getContent());
+		dest.setLanguage(src.getLanguage());
+
+		return dest;
+	}
 
 	/**
-	 * <p>This method is used to find the matching event configuration 
+	 * <p>This method is used to find the matching event configuration
 	 * object by looking at the event's SNMP information. In particular,
 	 * the SNMP Enterprise Identifier is used first if it exist to find
 	 * the matching record. If the enterprise identifier exists then it
@@ -764,6 +785,20 @@ public final class EventExpander
 				}
 			}
 			
+			// Convert the script entry
+			//
+			if(EventConfigurationManager.isSecureTag("script"))
+				e.clearScript();
+			if(e.getScriptCount() == 0 && econf.getScriptCount() > 0)
+			{
+				Enumeration eter = econf.enumerateScript();
+				while(eter.hasMoreElements())
+				{
+					org.opennms.netmgt.xml.eventconf.Script src = (org.opennms.netmgt.xml.eventconf.Script)eter.nextElement();
+					e.addScript(transform(src));
+				}
+			}
+
 			// Copy the mouse over text
 			//
 			if(EventConfigurationManager.isSecureTag("mouseovertext"))

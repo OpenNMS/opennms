@@ -80,6 +80,9 @@
 
 				<!-- The forwarding information for this event -->
 				<element ref="forward" minOccurs="0" maxOccurs="unbounded"/>
+				
+				<!-- The script information for this event -->
+				<element ref="script" minOccurs="0" maxOccurs="unbounded"/>
 
 				<!-- The text to be displayed on a 'mouseOver' event when this event is
      				     displayed in the event browser
@@ -332,7 +335,19 @@
 			</simpleContent>
 		</complexType>
 	</element>
-	
+		
+	<!-- The script information for this event - describes a script to be executed
+		whenever the event occurs -->
+	<element name="script">
+		<complexType>
+			<simpleContent>
+				<extension base="string">
+					<attribute name="language" type="string" use="required"/>
+				</extension>
+			</simpleContent>
+		</complexType>
+	</element>
+
 	<!-- The varbind element -->
 	<element name="varbind">
 		<complexType>

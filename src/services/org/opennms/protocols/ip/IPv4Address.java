@@ -249,7 +249,7 @@ public class IPv4Address extends Object
 	}
 
 	/**
-	 * Returns the 32-bit IPv4 address. 
+	 * Returns the 32-bit IPv4 address.
 	 *
 	 * @return 32-bit IPv4 address
 	 *
@@ -262,6 +262,17 @@ public class IPv4Address extends Object
 		addr	 |= byteToInt(m_addr[3]);
 
 		return addr;
+	}
+	
+	/**
+	 * Returns the IPv4 address in the form of an array of 4 bytes
+	 *
+	 * @return the IPv4 address bytes
+	 *
+	 */
+	public byte[] getAddressBytes()
+	{
+		return m_addr;
 	}
 
 	/** 

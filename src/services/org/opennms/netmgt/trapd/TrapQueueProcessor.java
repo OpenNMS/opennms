@@ -97,9 +97,14 @@ class TrapQueueProcessor
 	private static final ArrayList GENERIC_TRAPS;
 
 	/**
+	 * The snmp sysUpTime OID is the first varbind
+	 */
+	private static final int SNMP_SYSUPTIME_OID_INDEX    = 0;
+
+	/**
 	 * The snmp trap OID is the second varbind
 	 */
-	private static final int SNMP_TRAP_OID_INDEX	= 1;
+	private static final int SNMP_TRAP_OID_INDEX    = 1;
 
 	/**
 	 * The dot separator in an OID
@@ -133,7 +138,6 @@ class TrapQueueProcessor
 	 */
 	private boolean		m_newSuspect;
  
-
 	/**
 	 * Create the standard traps list - used in v2 processing
 	 */
@@ -268,7 +272,11 @@ class TrapQueueProcessor
 			if(log.isDebugEnabled())
 				log.debug("V2 trap first varbind value: " 
 					  + pdu.getVarBindAt(0).getValue().toString());
-			
+
+			// time-stamp
+			SnmpTimeTicks sysUpTime = (SnmpTimeTicks)pdu.getVarBindAt(SNMP_SYSUPTIME_OID_INDEX).getValue();
+			snmpInfo.setTimeStamp(sysUpTime.getValue());
+                        
 			// Get the value for the snmpTrapOID
 			SnmpObjectId snmpTrapOid = (SnmpObjectId)pdu.getVarBindAt(SNMP_TRAP_OID_INDEX).getValue();
 			String snmpTrapOidValue = snmpTrapOid.toString();
@@ -549,6 +557,9 @@ class TrapQueueProcessor
 		// community
 		snmpInfo.setCommunity(new String(info.getCommunity().getString()));
 		
+		// time-stamp
+		snmpInfo.setTimeStamp(pdu.getTimeStamp());
+		      
 		event.setSnmp(snmpInfo);
 		
 		Parms parms = new Parms();

@@ -251,7 +251,6 @@ ${print.headertext}
  <patternset id="lib.jars">
   <include name="*.jar" />
   <exclude name="ant*.jar" />
-  <exclude name="bsf*.jar" />
   <exclude name="fop0170.jar" />
   <exclude name="jakarta-regexp*.jar" />
   <exclude name="pylib*.jar" />
@@ -716,6 +715,12 @@ OpenNMS as part of the post-install.
    <param name="castor.output.path" value="${root.build}/castor"/>
    <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
    <param name="castor.xsd" value="vulnscand-configuration.xsd"/>
+  </antcall>
+  <antcall target="castor">
+   <param name="castor.package" value="org.opennms.netmgt.config.scriptd"/>
+   <param name="castor.output.path" value="${root.build}/castor"/>
+   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
+   <param name="castor.xsd" value="scriptd-configuration.xsd"/>
   </antcall>
   <antcall target="castor">
    <param name="castor.package" value="org.opennms.netmgt.config.collectd"/>

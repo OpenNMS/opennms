@@ -1,5 +1,6 @@
 1.1.1 to 1.1.2
 ----------------------------------------------------------------------
+- Added the ScriptD daemon for running BeanShell scripts. Thx Jim
 - Set caspd not to reset the parentId on a rescan (useful for maps)
 - Fixed a bug that caused certain rules to match all. Bug 752
 - Fixed Plugins and Monitors to explicitly close sockets
