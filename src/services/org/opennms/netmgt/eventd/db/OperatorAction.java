@@ -70,7 +70,7 @@ public class OperatorAction
 	/**
 	 * Format the list of operator action entries of the event
 	 *
-	 * @param aas	the list
+	 * @param opacts	the list
 	 * @param sz	the size to which the formatted string is to be limited to(usually the size of the column in the database)
 	 *
 	 * @return the formatted string

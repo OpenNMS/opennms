@@ -421,9 +421,9 @@ final class BroadcastEventProcessor
          * Detemines the number of users assigned to a list of Target and Escalate lists. 
          * Group names may be specified in these objects and the users will have to be extracted
          * from those groups
-         * @param targets, the list of Target objects
-         * @param escalations, the list of Escalate objects
-         * @return int, the total # of users assigned in each Target and Escalate objecst.
+         * @param targets the list of Target objects
+         * @param escalations the list of Escalate objects
+         * @return the total # of users assigned in each Target and Escalate objecst.
          */
         private int getUserCount(Target[] targets, Escalate[] escalations)
                 throws IOException, MarshalException, ValidationException
@@ -475,7 +475,7 @@ final class BroadcastEventProcessor
         /**
          * Sends and event related to a notification
 	 *
-         * @param the UEI for the event
+         * @param uei the UEI for the event
          */
         private void sendNotifEvent(String uei, String logMessage, String description)
         {
@@ -553,8 +553,8 @@ final class BroadcastEventProcessor
         /**
          * A parameter expansion algorithm, designed to replace strings delimited by percent signs '%' with
          * a value supplied by a Map object.
-         * @param inp, the input string
-         * @param paramMap, a map that will supply the substitution values
+         * @param inp the input string
+         * @param paramMap a map that will supply the substitution values
          */
         public static String expandNotifParms(String inp, Map paramMap)
 	{

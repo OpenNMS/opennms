@@ -621,18 +621,19 @@ class NessusScan
 	}
 
 	/**
+	* Process a scan message.
 	* <p>This function is designed to parse any messages that
 	* come from Nessus during a scan session (eg. after the
 	* NEW_ATTACK directive has been sent)</p>
 	*
-	* <p>The following types of events are handled:</p>
+	* <p>The following types of events are handled:
 	* <ul>
 	*	<li>Abbreviated STATUS messages</li>
 	*	<li>PORT</li>
 	*	<li>INFO</li>
 	*	<li>HOLE</li>
 	*	<li>BYE (as in BYE BYE)</li>
-	* </ul>
+	* </ul></p>
 	*
 	*/
 	private int processScanMessage(String message)

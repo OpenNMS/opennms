@@ -355,7 +355,7 @@ public class SQLTranslation
 	 * This method removes any double quote characters from the
 	 * start and end of a string and replaces them with single quotes.
 	 *
-	 * @param String aString, the string to replace quote characters in
+	 * @param string the string to replace quote characters in
 	 */
 	private String convertString(String string)
 	{
@@ -462,9 +462,9 @@ public class SQLTranslation
 	 * to filter notices. A subselect is built containing joins constrained by node, interface,
 	 * and service if they are not null or blank. This select is then anded with the filter rule
 	 * to get the complete SQL statement.
-	 * @param nodeId, a node id to constrain against
-	 * @param ipaddr, an ipaddress to constrain against
-	 * @param service, a service name to constrain against
+	 * @param nodeId a node id to constrain against
+	 * @param ipaddr an ipaddress to constrain against
+	 * @param service a service name to constrain against
 	 */
         public void setConstraintTranslation(long nodeId, String ipaddr, String service)
         {

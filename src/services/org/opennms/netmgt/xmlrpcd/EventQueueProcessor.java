@@ -428,7 +428,7 @@ class EventQueueProcessor
 	}
 
 	/**
-	 * <p>Pauses the current fiber</P>
+	 * Pauses the current fiber.
 	 */
 	public synchronized void pause()
 	{

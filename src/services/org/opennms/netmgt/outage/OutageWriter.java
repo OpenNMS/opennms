@@ -178,11 +178,11 @@ public final class OutageWriter implements Runnable
 	 *
 	 * @return The integer identifier for the service name.
 	 *
-	 * @exception java.sql.SQLException Thrown if there is an error accessing
-	 * 	the stored data or the SQL text is malformed. This will also
-	 * 	be thrown if the result cannot be obtained.
+	 * @throws java.sql.SQLException if there is an error accessing
+	 * 	the stored data, the SQL text is malformed, or the result 
+	 * 	cannot be obtained.
 	 *
-	 * @see org.opennms.netmgt.outage.OutageConstants.DB_GET_SVC_ID
+	 * @see org.opennms.netmgt.outage.OutageConstants#DB_GET_SVC_ID DB_GET_SVC_ID
 	 */
 	private long getServiceID(String name)
 		throws SQLException
@@ -327,8 +327,9 @@ public final class OutageWriter implements Runnable
 
 
 	/**
-	 * <p>Record the 'nodeLostService' event in the outages table - create
-	 * a new outage entry if the service is not already down</p>
+	 * Handles node lost service events.
+	 * Record the 'nodeLostService' event in the outages table - create
+	 * a new outage entry if the service is not already down.
 	 */
 	private void handleNodeLostService(long eventID, long nodeID, String ipAddr, long serviceID, String eventTime)
 	{
@@ -513,9 +514,10 @@ public final class OutageWriter implements Runnable
 	}
 
 	/**
-	 * <p>Record the 'interfaceDown' event in the outages table - create
+	 * Handles interface down events.
+	 * Record the 'interfaceDown' event in the outages table - create
 	 * a new outage entry for each active service of the nodeid/ip if
-	 * service not already down</p>
+	 * service not already down.
 	 */
 	private void handleInterfaceDown(long eventID, long nodeID, String ipAddr, String eventTime)
 	{
@@ -706,9 +708,10 @@ public final class OutageWriter implements Runnable
 	}
 
 	/**
-	 * <p>Record the 'nodeDown' event in the outages table - create a new
+	 * Handles node down events.
+	 * Record the 'nodeDown' event in the outages table - create a new
 	 * outage entry for each active service of the nodeid if service is
-	 * not already down</p>
+	 * not already down.
 	 */
 	private void handleNodeDown(long eventID, long nodeID, String eventTime)
 	{
@@ -902,8 +905,9 @@ public final class OutageWriter implements Runnable
 	}
 
 	/**
-	 * <p>Record the 'nodeUp' event in the outages table - close all open
-	 * outage entries for the nodeid in the outages table</p>
+	 * Handle node up events.
+	 * Record the 'nodeUp' event in the outages table - close all open
+	 * outage entries for the nodeid in the outages table.
 	 */
 	private void handleNodeUp(long eventID, long nodeID, String eventTime)
 	{
@@ -1005,8 +1009,9 @@ public final class OutageWriter implements Runnable
 	}
 
 	/**
-	 * <p>Record the 'interfaceUp' event in the outages table - close all open
-	 * outage entries for the nodeid/ip in the outages table</p>
+	 * Handles interface up events.
+	 * Record the 'interfaceUp' event in the outages table - close all open
+	 * outage entries for the nodeid/ip in the outages table.
 	 */
 	private void handleInterfaceUp(long eventID, long nodeID, String ipAddr, String eventTime)
 	{
@@ -1104,8 +1109,9 @@ public final class OutageWriter implements Runnable
 	}
 
 	/**
-	 * <p>Record the 'nodeRegainedService' event in the outages table - close
-	 * the outage entry in the table if the service is currently down</p>
+	 * Hanlde node regained service events.
+	 * Record the 'nodeRegainedService' event in the outages table - close
+	 * the outage entry in the table if the service is currently down.
 	 */
 	private void handleNodeRegainedService(long eventID, long nodeID, String ipAddr, long serviceID, String eventTime)
 	{
@@ -1747,7 +1753,7 @@ public final class OutageWriter implements Runnable
 	}
 
 	/**
-	 * <p>This method creates an event for the passed parameters</p>
+	 * This method creates an event for the passed parameters.
 	 *
 	 * @param uei		Event to generate and send
 	 * @param eventDate	Time to be set for the event
@@ -1778,8 +1784,9 @@ public final class OutageWriter implements Runnable
 	}
 
         /**
-	 * <p>Read the event UEI, nodeid, interface and service - depending
-	 * on the UEI, read event parms, if necessary, and process as appropriate</p>
+         * Process an event.
+	 * Read the event UEI, nodeid, interface and service - depending
+	 * on the UEI, read event parms, if necessary, and process as appropriate.
 	 */
 	private void processEvent()
 	{
@@ -1893,10 +1900,9 @@ public final class OutageWriter implements Runnable
 	}
 
  	/**
-	 * The constructor
+	 * The constructor.
 	 *
-	 * @param id	the id for this fiber
-	 * @param q 	the queue to which incoming messages are addded
+	 * @param event	the event for this outage writer.
 	 */
 	public OutageWriter(Event event)
 	{
@@ -1905,7 +1911,7 @@ public final class OutageWriter implements Runnable
 
 
 	/**
-	 * <p>Process the event depending on the UEI</p>
+	 * Process the event depending on the UEI.
 	 */
 	public void run()
 	{

@@ -208,7 +208,7 @@ public class UserFactory
 	/**
 	 * Builds a mapping between user ids and duty schedules. These are used by Notifd when
 	 * determining to send a notice to a given user. This helps speed up the decision process.
-	 * @param users, the map of users parsed from the xml config file
+	 * @param users the map of users parsed from the xml config file
 	 */
 	private static void buildDutySchedules(Map users)
 	{
@@ -238,8 +238,8 @@ public class UserFactory
 	/**
 	 * Determines if a user is on duty at a given time. If a user has no duty schedules
 	 * listed in the config file, that user is assumed to always be on duty.
-	 * @param user, the user id
-	 * @param time, the time to check for a duty schedule
+	 * @param user the user id
+	 * @param time the time to check for a duty schedule
 	 * @return boolean, true if the user is on duty, false otherwise.
 	 */
 	public boolean isUserOnDuty(String user, Calendar time)
@@ -321,8 +321,8 @@ public class UserFactory
 	
 	/**
 	 * Get a user by name
-	 * @param name, the name of the user to return
-	 * @return User, the user specified by name
+	 * @param name the name of the user to return
+	 * @return the user specified by name
 	 */
 	public User getUser(String name)
                 throws IOException, MarshalException, ValidationException
@@ -334,9 +334,9 @@ public class UserFactory
 	
         /**
          * Get the contact info given a command string
-         * @param userID, the name of the user
-         * @param command, the command to look up the contact info for
-         * @return 
+         * @param userID the name of the user
+         * @param command the command to look up the contact info for
+         * @return the contact information
          */
         public String getContactInfo(String userID, String command)
                 throws IOException, MarshalException, ValidationException
@@ -365,7 +365,7 @@ public class UserFactory
         
 	/**
 	 * Get a email by name
-	 * @param name  the name of the user to return
+	 * @param userid  the userid of the user to return
 	 * @return String  the email specified by name
 	 */
 	public String getEmail(String userid)
@@ -395,7 +395,7 @@ public class UserFactory
 	
 	/**
 	 * Get a pager email by name
-	 * @param name  the name of the user to return
+	 * @param userid  the userid of the user to return
 	 * @return String  the pager email
 	 */
 	public String getPagerEmail(String userid)
@@ -425,7 +425,7 @@ public class UserFactory
 	
 	/**
 	 * Get a numeric service provider
-	 * @param name  the name of the user to return
+	 * @param userid the userid of the user to return
 	 * @return String  the service provider
 	 */
 	public String getNumericPage(String userid)
@@ -455,7 +455,7 @@ public class UserFactory
 	
 	/**
 	 * Get a text pin
-	 * @param name  the name of the user to return
+	 * @param userid  the userid of the user to return
 	 * @return String  the text pin
 	 */
 	public String getTextPin(String userid)
@@ -485,7 +485,7 @@ public class UserFactory
 	
 	/**
 	 * Get a Text Page Service Provider
-	 * @param name  the name of the user to return
+	 * @param userid  the userid of the user to return
 	 * @return String  the text page service provider.
 	 */
 	public String getTextPage(String userid)
@@ -515,7 +515,7 @@ public class UserFactory
 	
 	/**
 	 * Get a numeric pin
-	 * @param name  the name of the user to return
+	 * @param userid  the userid of the user to return
 	 * @return String  the numeric pin
 	 */
 	public String getNumericPin(String userid)
@@ -662,8 +662,8 @@ public class UserFactory
 	
 	/**Sets the password for this user, assuming that the value
 	   passed in is already encrypted properly
-	   @param userID, the user ID to change the pasword for
-	   @param aPassword, the encrypted password
+	   @param userID the user ID to change the pasword for
+	   @param aPassword the encrypted password
 	*/
 	public void setEncryptedPassword(String userID, String aPassword)
                 throws Exception
@@ -678,8 +678,8 @@ public class UserFactory
 	}
 	
 	/**Sets the password for this user, first encrypting it
-	   @param userID, the user ID to change the pasword for
-	   @param String aPassword, the password
+	   @param userID the user ID to change the pasword for
+	   @param aPassword the password
 	*/
 	public void setUnencryptedPassword(String userID, String aPassword)
 		throws Exception
@@ -694,7 +694,7 @@ public class UserFactory
 	}
 	
 	/**This method encrypts the password using MD5 hashing.
-	   @param  aPassword, the password to encrypt
+	   @param  aPassword the password to encrypt
 	   @return the MD5 hash of the password, or null if the encryption fails
 	*/
 	public static String encryptPassword(String aPassword)
@@ -720,7 +720,7 @@ public class UserFactory
 	/** Converts a byte array into a hexadecimal String representation.
 	    The byte array must have an even number of elements (otherwise it
 	    would not be convertable to a valid String).
-	  * @param data, containing the bytes to convert
+	  * @param data containing the bytes to convert
 	  * @return the converted string, or null if encoding failed
 	  */
 	private static String hexToString(byte data[])
@@ -747,7 +747,8 @@ public class UserFactory
 	}
 	
 	/**This method compares two encrypted strings for equality
-	   @param aPassword, the password to check for equality
+	   @param userId the user ID to check against.
+	   @param aPassword the password to check for equality
 	   @return true if the two passwords are equal (after encryption), false otherwise
 	*/
 	public boolean comparePasswords(String userID, String aPassword)

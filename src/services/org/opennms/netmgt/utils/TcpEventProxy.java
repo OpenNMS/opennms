@@ -198,7 +198,7 @@ public final class TcpEventProxy
 	/**
 	 * This method is called to send an event log containing multiple events out
 	 *
-	 * @param eventlog	the events to be sent out
+	 * @param eventLog	the events to be sent out
 	 *
 	 * @exception java.lang.RuntimeException thrown if the send fails for any reason
 	 */

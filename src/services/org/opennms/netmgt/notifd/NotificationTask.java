@@ -103,7 +103,7 @@ public class NotificationTask extends Thread
 	private SortedMap m_notifTree;
 	
 	/**Constructor, initializes some information
-	   @param NotificationFactory someParams, the parameters from Notify
+	   @param someParams the parameters from Notify
 	*/
 	public NotificationTask(long sendTime, Map someParams, List siblings)
 		throws SQLException
@@ -157,7 +157,7 @@ public class NotificationTask extends Thread
 	}
 	
 	/**Sets the user that the page needs to be sent to.
-	   @param User aUser, the user info
+	   @param aUser the user info
 	*/
 	public void setUser(User aUser)
 	{
@@ -165,7 +165,7 @@ public class NotificationTask extends Thread
 	}
 	
 	/**Sets the group id that will be inserted into the row in notifications table
-	   @param int anId, the group id to set for the row
+	   @param anId the group id to set for the row
 	*/
 	public void setNoticeId(int anId)
 	{
@@ -173,9 +173,7 @@ public class NotificationTask extends Thread
 	}
 	
 	/**This method will construct the command that will be issued to send the actual page.
-	   @param String aCommand, the command to call at the console.
-	   @param String aParamString, a string indicating what parameters to include after
-	                               the console command
+	   @param commands the commands to call at the console.
 	*/
 	public void setCommands(Command[] commands)
 	{

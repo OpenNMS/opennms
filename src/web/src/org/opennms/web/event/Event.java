@@ -152,9 +152,10 @@ public class Event extends Object
     protected String operatorAction;
 
     /**
+     * Text of the eventOperAction.
      * Menu text displayed to Operator, which if
      * selected, will invoke action described in
-     * eventOperAction
+     * eventOperAction.
      */
     protected String operatorActionMenuText;
 
@@ -175,12 +176,14 @@ public class Event extends Object
     protected String troubleTicket;
 
     /**
+     * State of the trouble ticket.
      * Trouble ticket on/off boolean 1=on, 0=off.
      * Can be null.
      */
     protected Integer troubleTicketState;
 
     /**
+     * The forwarding information.
      * Contains a list of triplets:
      * <code>Destination,State,Mechanism;Destination,State,Mechanism;</code>
      * which reflect the following:
@@ -196,6 +199,7 @@ public class Event extends Object
     protected String forward;
 
     /**
+     * Mouse over text.
      * Text to be displayed on MouseOver event, if
      * the event is displayed in the browser and
      * the operator needs additional info.

@@ -177,7 +177,7 @@ public class NotificationInfo implements Cloneable
 	}
 	
 	/**This method sets a full list of duty schedules for a user
-	   @param someSchedule a list of DutySchedule objects for a user
+	   @param someSchedules a list of DutySchedule objects for a user
 	*/
 	public void setDutySchedule(List someSchedules)
 	{

@@ -156,12 +156,12 @@ public class Filter
 	/**
 	 * This method verifies if an ip address adhers to a given rule.
 	 *
-	 * @param String addr, an octet string ip to be validated against a rule.
-	 * @param String rule, an expression rule to be parsed and executed.
+	 * @param addr an octet string ip to be validated against a rule.
+	 * @param rule an expression rule to be parsed and executed.
 	 *
-	 * @return boolean, indicating that the ip is included in the rule
+	 * @return indicating that the ip is included in the rule
 	 *
-	 * @exception FilterParseException, if a rule is syntactically incorrect or
+	 * @exception FilterParseException if a rule is syntactically incorrect or
          *            failed in executing the SQL statement.
 	 */
 	public boolean isValid(String addr, String rule)
@@ -278,11 +278,11 @@ public class Filter
 	 * This method returns a list of all ip addresses that
 	 * match the rule that is passed in.
 	 * 
-	 * @param String rule, an expression rule to be parsed and executed.
+	 * @param rule an expression rule to be parsed and executed.
 	 *
-	 * @return List, interface containing all ip addresses selected by the rule.
+	 * @return interface containing all ip addresses selected by the rule.
 	 *
-	 * @exception FilterParseException, if a rule is syntactically incorrect or
+	 * @exception FilterParseException if a rule is syntactically incorrect or
          *            failed in executing the SQL statement
 	 */
 	public List getIPList(String rule)
@@ -379,9 +379,9 @@ public class Filter
 	 * This method parses a rule and returns the SQL select statement
 	 * equivalent of the rule.
 	 *
-	 * @param String rule, the rule to be parsed
+	 * @param rule the rule to be parsed
 	 *
-	 * @return String, the sql select statement
+	 * @return the sql select statement
 	 */
 	public String getSQLStatement()
 	{

@@ -83,8 +83,8 @@ public final class SnmpResponseHandler
 	 * on the SNMP session.
 	 *
 	 * @param sess		The snmp session that received the result.
-	 * @param command	The snmp command.
-	 * @param pkt		The snmp packet that was received.
+	 * @param err	The err.
+	 * @param obj	The syntax object.
 	 */
 	public void snmpInternalError(SnmpSession sess, int err, SnmpSyntax obj)
 	{
@@ -99,7 +99,6 @@ public final class SnmpResponseHandler
 	 * a response to a particular packet.
 	 *
 	 * @param sess		The snmp session that received the result.
-	 * @param command	The snmp command.
 	 * @param pkt		The snmp packet that was received.
 	 */
 	public void snmpTimeoutError(SnmpSession sess, SnmpSyntax pkt)

@@ -229,7 +229,7 @@ public class NodeLabel
 	 *           will initially only be called from the WEB UI. 
 	 * 
 	 * @param nodeID		Unique identifier of the node to be updated.
-	 * @param NodeLabel	Object containing label and source values.
+	 * @return Object containing label and source values.
 	 */
 	public static NodeLabel retrieveLabel(int nodeID)
 		throws SQLException
@@ -256,9 +256,9 @@ public class NodeLabel
 	 * initialized with the retrieved values.
 	 * 
 	 * @param nodeID		Unique ID of node whose label info is to be retrieved
-	 * @param Connection	SQL database connection
+	 * @param dbConnection	SQL database connection
 	 * 
-	 * @return NodeLabel object initialized with node label & source flag	
+	 * @return object initialized with node label & source flag	
 	 */
 	public static NodeLabel retrieveLabel(int nodeID, Connection dbConnection)
 		throws SQLException
@@ -315,7 +315,7 @@ public class NodeLabel
 	 *           will initially only be called from the WEB UI. 
 	 * 
 	 * @param nodeID		Unique identifier of the node to be updated.
-	 * @param NodeLabel	Object containing label and source values.
+	 * @param nodeLabel	Object containing label and source values.
 	 */
 	public static void assignLabel(int nodeID, NodeLabel nodeLabel)
 		throws SQLException
@@ -340,8 +340,8 @@ public class NodeLabel
 	 * and use the resulting NodeLabel object to update the database.
 	 * 
 	 * @param nodeID		Unique identifier of the node to be updated.
-	 * @param NodeLabel	Object containing label and source values.
-	 * @param Connection	SQL database connection
+	 * @param nodeLabel	Object containing label and source values.
+	 * @param dbConnection	SQL database connection
 	 */
 	public static void assignLabel(int nodeID, NodeLabel nodeLabel, Connection dbConnection)
 		throws SQLException
@@ -665,7 +665,7 @@ public class NodeLabel
 	 * Utility method for loading the address and host name lists from a result set
 	 * retrieved from the 'ipInterface' table of the database.
 	 *
-	 * @param ResultSet	Database result set
+	 * @param rs	Database result set
 	 * @param ipv4AddrList	List of IPv4Address objects representing the node's interfaces
 	 * @param ipHostNameList  List of IP host names associated with the node's interfaces.
 	 * 

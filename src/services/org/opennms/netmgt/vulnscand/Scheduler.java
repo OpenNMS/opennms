@@ -271,7 +271,8 @@ final class Scheduler
 	* Creates a NessusScanConfiguration object representing the specified node and
 	* adds it to the known node list for scheduling.
 	*
-	* @param nodeid 	Id of node to be scheduled
+	* @param address 	the internet address.
+	* @param scanLevel 	the scan level.
 	*
 	* @throws SQLException if there is any problem accessing the database
 	*/

@@ -128,14 +128,14 @@ public class Constants
 
 	
 	/**
-	 * <P>This method is used to escape required values from strings
+	 * This method is used to escape required values from strings
 	 * that may contain those values. If the passed string contains
 	 * the passed value then the character is reformatted into its
-	 * <EM>%dd</EM> format.</P>
+	 * <EM>%dd</EM> format.
 	 *
 	 *
 	 * @param inStr		string that might contain the delimiter
-	 * @param delimChar	delimiter to escape
+	 * @param delimchar	delimiter to escape
 	 *
 	 * @return The string with the delimiter escaped as in URLs
 	 *
@@ -170,11 +170,11 @@ public class Constants
 
 	
 	/**
-	 * <P>This method is passed a list of strings and a 
+	 * This method is passed a list of strings and a 
 	 * maximum string size that must not be exceeded by
-	 * the composite string.</P>
+	 * the composite string.
 	 *
-	 * @param string	The list of String objects.
+	 * @param strings	The list of String objects.
 	 * @param maxlen	The maximum length of the composite string
 	 *
 	 * @return The composite string.
@@ -211,11 +211,11 @@ public class Constants
 	}
 	
 	/**
-	 * <P>This method is passed an array of strings and a 
+	 * This method is passed an array of strings and a 
 	 * maximum string size that must not be exceeded by
-	 * the composite string.</P>
+	 * the composite string.
 	 *
-	 * @param string	The list of String objects.
+	 * @param strings	The list of String objects.
 	 * @param maxlen	The maximum length of the composite string
 	 *
 	 * @return The composite string.
@@ -251,8 +251,8 @@ public class Constants
 	}
 	
 	/**
-	 * <P>This method is passed a string to be truncated to the  
-	 * maximum string size passed </P>
+	 * This method is passed a string to be truncated to the  
+	 * maximum string size passed.
 	 *
 	 * @param string	The string object.
 	 * @param maxlen	The maximum length of the composite string
@@ -283,7 +283,7 @@ public class Constants
 	/**
 	 * Converts the severity to an integer
 	 *
-	 * @returns integer equivalent for the severity
+	 * @return integer equivalent for the severity
 	 */
 	public static int getSeverity(String sev)
 	{

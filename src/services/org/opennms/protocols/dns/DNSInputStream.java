@@ -62,7 +62,7 @@ public class DNSInputStream
 	 * <P>Constructs a DNSInputStream object from the byte array.</P>
 	 *
 	 * @param data		byte array containing the response data
-	 * @param offset 	offset of the data in the byte array
+	 * @param off 	offset of the data in the byte array
 	 * @param len	 	length of the byte array
 	 */
 	public DNSInputStream(byte[] data, int off, int len) 
