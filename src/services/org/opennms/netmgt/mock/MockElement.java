@@ -61,6 +61,11 @@ abstract public class MockElement {
     public void bringUp() {
         setServicePollStatus(ServiceMonitor.SERVICE_AVAILABLE);
     }
+    
+    // test
+    public void bringUnresponsive() {
+        setServicePollStatus(ServiceMonitor.SERVICE_UNRESPONSIVE);
+    }
 
     // impl
     abstract Object getKey();

@@ -199,4 +199,18 @@ public class MockService extends MockElement {
         m_outageEvent = outageOpened;
     }
 
+    /**
+     * @return
+     */
+    public Event createUnresponsiveEvent() {
+        return MockUtil.createServiceUnresponsiveEvent("Test", this);
+    }
+
+    /**
+     * @return
+     */
+    public Event createResponsiveEvent() {
+        return MockUtil.createServiceResponsiveEvent("Test", this);
+    }
+
 }

@@ -156,7 +156,7 @@ abstract public class PollableContainer extends PollableElement {
     protected PollStatus poll(PollableElement elem) {
         PollableElement member = findMemberWithDescendent(elem);
         PollStatus memberStatus = member.poll(elem);
-        if (memberStatus != getStatus() && member.isStatusChanged()) {
+        if (memberStatus.isUp() != getStatus().isUp() && member.isStatusChanged()) {
             updateStatus(pollRemainingMembers(member));
         }
         return getStatus();

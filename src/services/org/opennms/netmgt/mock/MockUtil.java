@@ -86,6 +86,14 @@ public class MockUtil {
         return createServiceEvent(source, EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, svc);
     }
     
+    public static Event createServiceUnresponsiveEvent(String source, MockService svc) {
+        return createServiceEvent(source, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, svc);
+    }
+
+    public static Event createServiceResponsiveEvent(String source, MockService svc) {
+        return createServiceEvent(source, EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, svc);
+    }
+    
     public static Event createNodeGainedServiceEvent(String source, MockService svc) {
         return createServiceEvent(source, EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, svc);
     }
@@ -250,5 +258,6 @@ public class MockUtil {
         if (MockUtil.printEnabled())
             System.err.println(string);
     }
+
 
 }

@@ -48,6 +48,9 @@ public class PollableService extends PollableElement {
     private String m_svcName;
     private PollConfig m_pollConfig;
     private IPv4NetworkInterface m_netInterface;
+    private boolean m_unresponsive;
+    private boolean m_unresponsiveEventPending;
+    private PollStatus m_oldStatus;
 
     /**
      * @param svcName
@@ -113,8 +116,25 @@ public class PollableService extends PollableElement {
      * 
      */
     public PollStatus poll() {
-        updateStatus(m_pollConfig.poll(this));
+        PollStatus newStatus = m_pollConfig.poll(this);
+        updateStatus(newStatus);
         return getStatus();
+    }
+
+    private void setUnresponsive(boolean unresponsive) {
+        m_unresponsive = unresponsive;
+    }
+    
+    private boolean isUnresponsive() {
+        return m_unresponsive;
+    }
+    
+    private void setUnresponsiveEventPending(boolean pending) {
+        m_unresponsiveEventPending = pending;
+    }
+    
+    private boolean isUnresponsiveEventPending() {
+        return m_unresponsiveEventPending;
     }
 
     /**
@@ -150,6 +170,14 @@ public class PollableService extends PollableElement {
     public Event createUpEvent(Date date) {
         return getContext().createEvent(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date);
     }
+    
+    public Event createUnresponsiveEvent(Date date) {
+        return getContext().createEvent(EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date);
+    }
+
+    public Event createResponsiveEvent(Date date) {
+        return getContext().createEvent(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date);
+    }
 
     public void createOutage(PollEvent cause) {
         super.createOutage(cause);
@@ -161,4 +189,34 @@ public class PollableService extends PollableElement {
     }
 
     public String toString() { return getInterface()+":"+getSvcName(); }
+
+    public void processStatusChange(Date date) {
+        System.err.println("oldStatus = "+m_oldStatus+" newsStatus = "+getStatus());
+        if (getContext().isServiceUnresponsiveEnabled()) {
+            if (isStatusChanged() && getStatus() == PollStatus.STATUS_UNRESPONSIVE) {
+                getContext().sendEvent(createUnresponsiveEvent(date));
+                if (m_oldStatus == PollStatus.STATUS_UP)
+                    resetStatusChanged();
+            }
+            else if (isStatusChanged() && m_oldStatus == PollStatus.STATUS_UNRESPONSIVE) {
+                getContext().sendEvent(createResponsiveEvent(date));
+                if (getStatus() == PollStatus.STATUS_UP)
+                    resetStatusChanged();
+            }
+        }
+        super.processStatusChange(date);
+    }
+    
+    public void updateStatus(PollStatus newStatus) {
+        
+        if (!getContext().isServiceUnresponsiveEnabled()) {
+            if (newStatus == PollStatus.STATUS_UNRESPONSIVE)
+                newStatus = PollStatus.STATUS_UP;
+        }
+        
+        if (getStatus() != newStatus)
+            m_oldStatus = getStatus();
+        
+        super.updateStatus(newStatus);
+    }
 }

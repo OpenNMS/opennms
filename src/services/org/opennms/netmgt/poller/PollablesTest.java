@@ -118,6 +118,7 @@ public class PollablesTest extends TestCase {
         private String m_critSvcName;
         private boolean m_nodeProcessingEnabled;
         private boolean m_pollingAllIfCritServiceUndefined;
+        private boolean m_serviceUnresponsiveEnabled;
 
         public String getCriticalServiceName() {
             return m_critSvcName;
@@ -158,6 +159,12 @@ public class PollablesTest extends TestCase {
             MockUtil.println("Resolving Outage for "+mSvc);
             m_db.resolveOutage(mSvc, svcRegainEvent);
         }
+        public boolean isServiceUnresponsiveEnabled() {
+            return m_serviceUnresponsiveEnabled;
+        }
+        public void setServiceUnresponsiveEnabled(boolean serviceUnresponsiveEnabled) {
+            m_serviceUnresponsiveEnabled = serviceUnresponsiveEnabled;
+        }
     }
     
     /*
@@ -170,6 +177,7 @@ public class PollablesTest extends TestCase {
         m_pollContext.setCriticalServiceName("ICMP");
         m_pollContext.setNodeProcessingEnabled(true);
         m_pollContext.setPollingAllIfCritServiceUndefined(true);
+        m_pollContext.setServiceUnresponsiveEnabled(true);
 
         
         m_mockNetwork = new MockNetwork();
@@ -445,7 +453,7 @@ public class PollablesTest extends TestCase {
     }
     
 
-    public void testPollUnresponsive() throws Exception {
+    public void testPropagateUnresponsive() throws Exception {
 
         pDot1Smtp.updateStatus(PollStatus.STATUS_UNRESPONSIVE);
         pDot1Icmp.updateStatus(PollStatus.STATUS_UNRESPONSIVE);
@@ -454,6 +462,99 @@ public class PollablesTest extends TestCase {
         assertUp(pDot1);
         
     }
+    
+    public void testPollUnresponsive() {
+        m_pollContext.setServiceUnresponsiveEnabled(true);
+        
+        anticipateUnresponsive(mDot1);
+        
+        mDot1.bringUnresponsive();
+            
+        pDot1Smtp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        pDot1Icmp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+
+        assertUp(pDot1);
+        verifyAnticipated();
+        
+        anticipateResponsive(mDot1);
+        
+        mDot1.bringUp();
+        
+        pDot1Smtp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        pDot1Icmp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+
+        assertUp(pDot1);
+        verifyAnticipated();
+        
+    }
+    
+    public void testPollUnresponsiveWithOutage() {
+        m_pollContext.setServiceUnresponsiveEnabled(true);
+        
+        anticipateUnresponsive(mDot1);
+        
+        mDot1.bringUnresponsive();
+            
+        pDot1Smtp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        pDot1Icmp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+
+        assertUp(pDot1);
+        verifyAnticipated();
+        
+        anticipateDown(mDot1);
+        
+        mDot1.bringDown();
+        
+        pDot1Smtp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        anticipateUp(mDot1);
+        
+        mDot1.bringUp();
+        
+        pDot1Icmp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        anticipateUnresponsive(mDot1);
+        
+        mDot1.bringUnresponsive();
+            
+        pDot1Smtp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        pDot1Icmp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+
+        assertUp(pDot1);
+        verifyAnticipated();
+        
+        
+    }
+    
+    
     
     public void testPollService() throws Exception {
 
@@ -1042,6 +1143,25 @@ public class PollablesTest extends TestCase {
         m_anticipator.anticipateEvent(event);
         m_outageAnticipator.anticipateOutageOpened(element, event);
     }
+
+    private void anticipateUnresponsive(MockElement element) {
+        MockVisitor visitor = new MockVisitorAdapter() {
+            public void visitService(MockService svc) {
+                m_anticipator.anticipateEvent(svc.createUnresponsiveEvent());
+            }
+        };
+        element.visit(visitor);
+    }
+
+    private void anticipateResponsive(MockElement element) {
+        MockVisitor visitor = new MockVisitorAdapter() {
+            public void visitService(MockService svc) {
+                m_anticipator.anticipateEvent(svc.createResponsiveEvent());
+            }
+        };
+        element.visit(visitor);
+    }
+
 
     private void assertPoll(MockService svc) {
         assertEquals(1, svc.getPollCount());

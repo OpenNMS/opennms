@@ -81,4 +81,9 @@ public interface PollContext {
      */
     public void resolveOutage(PollableService pSvc, Event svcRegainEvent);
 
+    /**
+     * @return
+     */
+    public boolean isServiceUnresponsiveEnabled();
+
 }
