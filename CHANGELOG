@@ -1,5 +1,8 @@
 1.1.1 to 1.1.2
 ----------------------------------------------------------------------
+- Added a fix to catch RRD update errors on nodeLostService events
+  that can cause nodeDown events. Bug 748.
+- Fixed a typo in mail.pl in contrib
 - Added Derek's code to implement mapping in OpenNMS. This is the
   initial attempt, and thus it is disabled by default. Please
   read $OPENNMS_HOME/etc/map.disable in order to enable mapping.
