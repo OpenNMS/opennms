@@ -2,6 +2,7 @@
 <?castor class-name="org.opennms.netmgt.poller.PollerConfiguration"?>
 <poller-configuration threads="30" 
         serviceUnresponsiveEnabled="false"
+        nextOutageId="SELECT nextval('outageNxtId')"
         xmlrpc="false">
 	<node-outage status="on" 
 	             pollAllIfNoCriticalServiceDefined="true">

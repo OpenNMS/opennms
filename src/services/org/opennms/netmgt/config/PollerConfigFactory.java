@@ -758,4 +758,7 @@ public final class PollerConfigFactory implements PollerConfig {
         return (ServiceMonitor) getServiceMonitors().get(svcName);
     }
 
+    public String getNextOutageIdSql() {
+        return m_config.getNextOutageId();
+    }
 }

@@ -62,7 +62,6 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
-import org.opennms.netmgt.config.OutageManagerConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.utils.XmlrpcUtil;
@@ -261,7 +260,7 @@ final class BroadcastEventProcessor implements EventListener {
      * @return true if deletePropagation is enable, false otherwise
      */
     public static boolean isPropagationEnabled() {
-        return OutageManagerConfigFactory.getInstance().deletePropagation();
+        return CapsdConfigFactory.getInstance().getDeletePropagationEnabled();
     }
 
     /**

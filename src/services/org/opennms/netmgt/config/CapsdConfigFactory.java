@@ -1669,6 +1669,16 @@ public final class CapsdConfigFactory {
 
         return abortFlag;
     }
+    
+    public boolean getDeletePropagationEnabled() {
+        boolean propagationEnabled = true;
+        
+       String propagationProperty = m_config.getDeletePropagationEnabled();
+       if (propagationProperty != null && propagationProperty.equals("false"))
+           propagationEnabled = false;
+       
+       return propagationEnabled;
+    }
 
     /**
      * Return the boolean xmlrpc as string to indicate if notification to

@@ -219,6 +219,8 @@ public interface PollerConfig {
      * @return list of RRA strings.
      */
     public abstract List getRRAList(org.opennms.netmgt.config.poller.Package pkg);
+    
+    public abstract String getNextOutageIdSql();
 
     public Enumeration enumeratePackage();
 
