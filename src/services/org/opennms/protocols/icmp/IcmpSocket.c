@@ -35,9 +35,13 @@
 #endif
 #include <netinet/in.h>
 #include <netinet/ip.h>
-#include <netinet/ip_icmp.h>
+#include <netinet/ip_icmp.h> 
 #include <netdb.h>
 #include <errno.h>
+
+#if defined(__SOLARIS__)
+#include "byteswap.h"
+#endif
 
 #if defined(__DARWIN__)
 #include <sys/time.h>
@@ -166,6 +170,8 @@ typedef struct icmphdr icmphdr_t;
 # ifndef ntohll
 #  if defined(__DARWIN__)
 #   define ntohll(_x_) NXSwapBigLongLongToHost(_x_)
+#  elif defined(__SOLARIS__)
+#   define ntohll(_x_) __bswap_64(_x_)
 #  else
 #   define ntohll(_x_) __bswap_64(_x_)
 #  endif
@@ -173,6 +179,8 @@ typedef struct icmphdr icmphdr_t;
 # ifndef htonll
 #  if defined(__DARWIN__)
 #   define htonll(_x_) NXSwapHostLongLongToBig(_x_)
+#  elif defined(__SOLARIS__)
+#   define htonll(_x_) __bswap_64(_x_)
 #  else
 #   define htonll(_x_) __bswap_64(_x_)
 #  endif

@@ -953,6 +953,7 @@ OpenNMS as part of the post-install.
 	outputFile="${root.build}/jicmp/IcmpSocket.h"/>
   <copy todir="${root.build}/jicmp">
    <fileset dir="${root.source}/src/services/org/opennms/protocols/icmp" includes="*.c" />
+   <fileset dir="${root.source}/src/services/org/opennms/protocols/icmp" includes="*.h" />
   </copy>
  </target>
 
@@ -976,7 +977,7 @@ OpenNMS as part of the post-install.
 
   <!-- generate .o files -->
   <apply executable="${compile.cc}" dir="${root.build}/jicmp" failonerror="true" dest="${root.build}/jicmp">
-   <arg line="${compile.cflags} -fPIC -I${java.framework}/include -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jicmp -D${compile.platform.define} -c -o"/>
+   <arg line="${compile.cflags} -fPIC -I. -I${java.framework}/include -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jicmp -D${compile.platform.define} -c -o"/>
    <targetfile/>
    <srcfile/>
    <fileset dir="${root.source}/src/services/org/opennms/protocols/icmp" includes="*.c"/>
