@@ -752,7 +752,9 @@ final class RescanProcessor
 
 		if (log.isDebugEnabled())
 		{
-			log.debug("updateInterface: updating interface " + ifaddr.getHostAddress() + "(targetIf=" + target.getHostAddress() + ")");
+			log.debug("updateInterface: updating interface " + ifaddr.getHostAddress() + "(targetIf=" 
+                                + target.getHostAddress() + ")");
+                        log.debug("updateInterface: the snmp collection passed in is collected via" + snmpc.getTarget());
 		}
 				
 		boolean isAlias = false;
@@ -2658,6 +2660,9 @@ final class RescanProcessor
 			                        if (log.isDebugEnabled())
 				                        log.debug("SNMP data collected via " + ifaddr.getHostAddress()
                                                                 + " is not right.");
+                                                // this interface must included in the subtargets of other interfaces,
+                                                // give up the IfCollector for this one.
+                                                continue;
                                         }
 				}
 			}
