@@ -399,7 +399,7 @@ else
 fi
 
 %changelog
-* Thu Jan 20 2004 DJ Gregor <dj@opennms.org>
+* Thu Jan 20 2005 DJ Gregor <dj@opennms.org>
 - Remove much of the automatic bits that were performed at
   install time.
 
