@@ -389,9 +389,12 @@
     <section>
       <title>SuSE Linux Pro 9</title>
 
-      <para>There are no special requirements for OpenNMS on this distribution
-      of Linux, except for those configuration issues mentioned in the
-      previous section.</para>
+      <para>SuSE 9 ships with Tomcat 5, which will not work with OpenNMS.
+      You will need to install Tomcat 4 from an older release of SuSE.  The
+      Tomcat 4 packages for SuSE 8.1 seem to work just fine.  They are
+      available on <ulink
+      url="ftp://ftp.suse.com/pub/projects/apache/jakarta-tomcat/8.1-i386/">SuSE's
+      FTP site</ulink>.</para>
     </section>
   </section>
 </chapter>
