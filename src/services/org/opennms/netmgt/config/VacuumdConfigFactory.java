@@ -122,7 +122,7 @@ public final class VacuumdConfigFactory
 			return;
 		}
 
-		File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OUTAGE_MANAGER_CONFIG_FILE_NAME);
+		File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.VACUUMD_CONFIG_FILE_NAME);
 
 		m_singleton = new VacuumdConfigFactory(cfgFile.getPath());
 

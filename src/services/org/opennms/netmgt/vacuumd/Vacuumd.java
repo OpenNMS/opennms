@@ -92,6 +92,7 @@ public class Vacuumd implements PausableFiber, Runnable {
         Category log = ThreadCategory.getInstance(getClass());
         
         try {
+            log.info("Loading the configuration file.");
             VacuumdConfigFactory.reload();
         }
         catch(MarshalException ex)
@@ -110,11 +111,17 @@ public class Vacuumd implements PausableFiber, Runnable {
             throw new UndeclaredThrowableException(ex);
         }
         
+        log.info("Vaccumd initialization complete");
+        
     }
     /* (non-Javadoc)
      * @see org.opennms.core.fiber.Fiber#start()
      */
     public void start() {
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        Category log = ThreadCategory.getInstance(getClass());
+        log.info("Starting Vacuumd");
+        
         m_status = STARTING;
         m_startTime = System.currentTimeMillis();
         m_thread = new Thread(this, "Vacuumd-Thread");
@@ -126,6 +133,10 @@ public class Vacuumd implements PausableFiber, Runnable {
      * @see org.opennms.core.fiber.Fiber#stop()
      */
     public void stop() {
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        Category log = ThreadCategory.getInstance(getClass());
+        log.info("Stopping Vacuumd");
+
         m_status = STOP_PENDING;
         m_stopped = true;
         m_status = STOPPED;
@@ -138,6 +149,10 @@ public class Vacuumd implements PausableFiber, Runnable {
         if (m_status != RUNNING)
             return;
 
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        Category log = ThreadCategory.getInstance(getClass());
+        log.info("Pausing Vacuumd");
+
         m_status = PAUSE_PENDING;
         m_stopped = true;
         m_status = PAUSED;
@@ -146,10 +161,14 @@ public class Vacuumd implements PausableFiber, Runnable {
      * @see org.opennms.core.fiber.PausableFiber#resume()
      */
     public void resume() {
-        if (m_status != PAUSED)
+         if (m_status != PAUSED)
             return;
         
-        m_thread = new Thread(this, "Vacuumd-Thread");
+         ThreadCategory.setPrefix(LOG4J_CATEGORY);
+         Category log = ThreadCategory.getInstance(getClass());
+         log.info("Resuming Vacuumd");
+
+         m_thread = new Thread(this, "Vacuumd-Thread");
         m_thread.start();
     }
     /* (non-Javadoc)
@@ -170,8 +189,14 @@ public class Vacuumd implements PausableFiber, Runnable {
      * @see java.lang.Runnable#run()
      */
     public void run() {
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        Category log = ThreadCategory.getInstance(getClass());
+        log.info("Vacuumd scheduling started");
+
         long now = System.currentTimeMillis();
         long period = VacuumdConfigFactory.getInstance().getPeriod();
+        
+        log.info("Vacuumd sleeping until time to execute statements");
         
         long waitTime = Math.max(500L, period/10);
         
@@ -182,6 +207,7 @@ public class Vacuumd implements PausableFiber, Runnable {
                 // FIXME: what do I do here?
             }
         }
+        log.info("Vacuumd beginning to execute statements");
         
         if (!m_stopped) {
             String[] stmts = VacuumdConfigFactory.getInstance().getStatements();
@@ -195,6 +221,7 @@ public class Vacuumd implements PausableFiber, Runnable {
     public void runUpdate(String sql) {
         Category log = ThreadCategory.getInstance(getClass());
 
+        log.info("Vacuumd executing statement: "+sql);
         // update the database
         Connection dbConn = null;
         boolean commit = false;

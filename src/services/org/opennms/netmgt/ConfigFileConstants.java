@@ -166,6 +166,12 @@ public final class ConfigFileConstants
 	 * The opennms scriptd config file
 	 */
 	public static final int SCRIPTD_CONFIG_FILE_NAME;
+    
+    
+	/**
+     * The vacuumd config file
+	 */
+    public static final int VACUUMD_CONFIG_FILE_NAME;
 
 	//
 
@@ -432,10 +438,11 @@ public final class ConfigFileConstants
                 RRD_CONFIG_FILE_NAME = 50;
                 
                 JAVA_MAIL_CONFIG_FILE_NAME = 51;
+                VACUUMD_CONFIG_FILE_NAME = 52;
                 
 		// Allocate and build the mapping of identifiers to names
 		//
-		FILE_ID_TO_NAME = new String[52];
+		FILE_ID_TO_NAME = new String[53];
 
 		FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] 		= "opennms-database.xml";
 		FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME]		= "opennms-jms.xml";
@@ -504,7 +511,8 @@ public final class ConfigFileConstants
 		FILE_ID_TO_NAME[XMLRPCD_CONFIG_FILE_NAME]       = "xmlrpcd-configuration.xml";
          FILE_ID_TO_NAME[DHCPD_CONFIG_FILE_NAME] = "dhcpd-configuration.xml";
          FILE_ID_TO_NAME[RRD_CONFIG_FILE_NAME] = "rrd-configuration.properties";
-         FILE_ID_TO_NAME[JAVA_MAIL_CONFIG_FILE_NAME] = "javamail-configuration.properties";         
+         FILE_ID_TO_NAME[JAVA_MAIL_CONFIG_FILE_NAME] = "javamail-configuration.properties";
+         FILE_ID_TO_NAME[VACUUMD_CONFIG_FILE_NAME] = "vacuumd-configuration.xml";
 	}
 
 	/**
