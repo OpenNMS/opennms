@@ -81,6 +81,7 @@ public class PollerTest extends TestCase {
     //
 
     public void setUp() {
+        MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
         MockUtil.setupLogging();
         MockUtil.resetLogLevel();
 
@@ -138,6 +139,7 @@ public class PollerTest extends TestCase {
         sleep(200);
         assertTrue(MockUtil.noWarningsOrHigherLogged());
         m_db.drop();
+        MockUtil.println("------------ End Test "+getName()+" --------------------------");
     }
 
     //
@@ -297,6 +299,7 @@ public class PollerTest extends TestCase {
 
     // interfaceReparented: EventConstants.INTERFACE_REPARENTED_EVENT_UEI
     public void testInterfaceReparented() {
+
         m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
         MockNode node1 = m_network.getNode(1);
@@ -316,8 +319,8 @@ public class PollerTest extends TestCase {
         startDaemons();
 
         // move the reparted interface and send a reparented event
-        reparentedIface.moveTo(node2);
         m_db.reparentInterface(reparentedIface.getIpAddr(), reparentedIface.getNodeId(), node2.getNodeId());
+        reparentedIface.moveTo(node2);
         m_eventMgr.sendEventToListeners(reparentEvent);
 
         // now bring down the other interface on the new node
@@ -333,12 +336,9 @@ public class PollerTest extends TestCase {
         // m_anticipator.reset();
         // m_anticipator.anticipateEvent(node2.createDownEvent());
 
-        // Critical service on the reparented interface
-        MockService icmpService = m_network.getService(2, "192.168.1.2", "ICMP");
-
         resetAnticipated();
         anticipateDown(node1);
-        anticipateDown(icmpService);
+        anticipateDown(reparentedIface);
         // FIXME: END INCORRECT BEHAVIOR HERE
 
         // System.err.println("Bring Down:"+reparentedIface);
@@ -346,7 +346,7 @@ public class PollerTest extends TestCase {
 
         sleep(5000);
 
-        verifyAnticipated(3000);
+        verifyAnticipated(6000);
 
     }
 
@@ -520,6 +520,7 @@ public class PollerTest extends TestCase {
         // anticipateNodeDown(node1);
         // anticipateNodeUp(node2);
 
+        m_db.reparentInterface(reparentedIface.getIpAddr(), reparentedIface.getNodeId(), node2.getNodeId());
         reparentedIface.moveTo(node2);
         m_eventMgr.sendEventToListeners(reparentEvent);
 
@@ -619,8 +620,11 @@ public class PollerTest extends TestCase {
     private void verifyAnticipated(long millis) {
         // make sure the down events are received
         assertEquals(0, m_anticipator.waitForAnticipated(millis).size());
+        sleep(2000);
         assertEquals(0, m_anticipator.unanticipatedEvents().size());
         sleep(500);
+        assertEquals(m_outageAnticipator.getExpectedOpens(), m_outageAnticipator.getActualOpens());
+        assertEquals(m_outageAnticipator.getExpectedOutages(), m_outageAnticipator.getActualOutages());
         assertTrue(m_outageAnticipator.checkAnticipated());
     }
 

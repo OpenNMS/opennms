@@ -129,6 +129,22 @@ public class OutageAnticipator implements EventListener {
         };
         element.visit(outageCounter);
     }
+    
+    public int getExpectedOpens() {
+        return m_expectedOpenCount;
+    }
+    
+    public int getActualOpens() {
+        return m_db.countOpenOutages();
+    }
+    
+    public int getExpectedOutages() {
+        return m_expectedOutageCount;
+    }
+    
+    public int getActualOutages() {
+        return m_db.countOutages();
+    }
 
     public boolean checkAnticipated() {
         int openCount = m_db.countOpenOutages();
