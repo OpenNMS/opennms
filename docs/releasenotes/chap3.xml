@@ -7,13 +7,26 @@
   <para>Here is the list of known issues in this release of OpenNMS.</para>
 
   <sect1>
-    <title>The Installer is No Longer Automatic as of 1.1.5 </title>
+    <title>The Installer is No Longer Automatic as of 1.1.5</title>
 
     <para>I expect this to be the biggest question on the discussion lists. As
     of 1.1.5, the installer must be run manually after the packages are
     installed. Please see the <ulink
     url="https://sourceforge.net/docman/display_doc.php?docid=23937&amp;group_id=4141">documentation</ulink>
     for more information.</para>
+  </sect1>
+
+  <sect1>
+    <title>Special Note for KSC Report Users</title>
+
+    <para>With 1.1.5 a new format has been created for SNMP graphs in the
+    snmp-graph.properties file. An attempt has been made to organize the
+    different reports, and so default reports like "bits" are now prefixed by
+    "mib2" (i.e. the report is now mib2.bits).</para>
+
+    <para>If you have KSC reports on bits, errors, etc., you will need to edit
+    the <filename>ksc-performance-reports.xml</filename> file and replace the
+    old names with the new ones.</para>
   </sect1>
 
   <sect1>
