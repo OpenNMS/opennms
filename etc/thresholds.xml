@@ -38,32 +38,32 @@
         </group>
 
 	<group name="icmp-latency"
-                rrdRepository = "@root.install.share@/rrd/icmp/">
-                <threshold type="high" ds-name="response-time"  ds-type="if" value="75" rearm="25" trigger="3"/>
+                rrdRepository = "@root.install.share@/rrd/response/">
+                <threshold type="high" ds-name="icmp"  ds-type="if" value="75" rearm="25" trigger="3"/>
         </group>
 
         <group name="http-latency"
-                rrdRepository = "@root.install.share@/rrd/http/">
-                <threshold type="high" ds-name="response-time"  ds-type="if" value="100" rearm="50" trigger="3"/>
+                rrdRepository = "@root.install.share@/rrd/response/">
+                <threshold type="high" ds-name="http"  ds-type="if" value="100" rearm="50" trigger="3"/>
         </group>
 
         <group name="http-8000-latency"
-                rrdRepository = "@root.install.share@/rrd/http-8000/">
-                <threshold type="high" ds-name="response-time"  ds-type="if" value="100" rearm="50" trigger="3"/>
+                rrdRepository = "@root.install.share@/rrd/response/">
+                <threshold type="high" ds-name="http-8000"  ds-type="if" value="100" rearm="50" trigger="3"/>
         </group>
 
         <group name="http-8080-latency"
-                rrdRepository = "@root.install.share@/rrd/http-8080/">
-                <threshold type="high" ds-name="response-time"  ds-type="if" value="100" rearm="50" trigger="3"/>
+                rrdRepository = "@root.install.share@/rrd/response/">
+                <threshold type="high" ds-name="http-8080"  ds-type="if" value="100" rearm="50" trigger="3"/>
         </group>
 
         <group name="dns-latency"
-                rrdRepository = "@root.install.share@/rrd/dns/">
-                <threshold type="high" ds-name="response-time"  ds-type="if" value="100" rearm="50" trigger="3"/>
+                rrdRepository = "@root.install.share@/rrd/response/">
+                <threshold type="high" ds-name="dns"  ds-type="if" value="100" rearm="50" trigger="3"/>
         </group>
 
         <group name="dhcp-latency"
-                rrdRepository = "@root.install.share@/rrd/dhcp/">
-                <threshold type="high" ds-name="response-time"  ds-type="if" value="500" rearm="100" trigger="3"/>
+                rrdRepository = "@root.install.share@/rrd/response/">
+                <threshold type="high" ds-name="dhcp"  ds-type="if" value="500" rearm="100" trigger="3"/>
         </group>
 </thresholding-config>
