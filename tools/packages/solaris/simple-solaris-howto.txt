@@ -5,7 +5,7 @@ to make packages on solaris:
    
    I use the command:
 
-   ./build.sh -Dproduct.release=2 -Dproduct.snapshot=false -Dinstall.prefix=/tmp/opennms/ -Dinstall.dir=/usr/local/opennms -Dbuild.rrdtool.include.dir=/usr/local/rrdtool/include/ -Dbuild.postgresql.include.dir=/usr/local/pgsql/include/server -Dbuild.rrdtool.lib.dir=/usr/local/rrdtool/lib/ -Dbuild.rrdtool.bin=/usr/local/rrdtool/bin/rrdtool install
+   ./build.sh -Dproduct.release=1 -Dproduct.snapshot=false -Dinstall.prefix=/tmp/opennms/ -Dinstall.dir=/usr/local/opennms -Dbuild.rrdtool.include.dir=/usr/local/rrdtool/include/ -Dbuild.postgresql.include.dir=/usr/local/pgsql/include/server -Dbuild.rrdtool.lib.dir=/usr/local/rrdtool/lib/ -Dbuild.rrdtool.bin=/usr/local/rrdtool/bin/rrdtool install
 
 1a: Run:
 

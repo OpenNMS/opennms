@@ -1666,7 +1666,8 @@ final class RescanProcessor implements Runnable {
 
                 // speed
                 SnmpUInt32 uint = (SnmpUInt32) ifte.get(IfTableEntry.IF_SPEED);
-                currSnmpIfEntry.setSpeed((int) uint.getValue());
+		currSnmpIfEntry.setSpeed((uint == null ? 10000000 : (int) uint.getValue())); 
+		//set the default speed to 10MB if not retrievable. 
 
                 // admin status
                 sint = (SnmpInt32) ifte.get(IfTableEntry.IF_ADMIN_STATUS);

@@ -41,7 +41,7 @@
 
 <html>
 <head>
-  <title>Event Id Not Found | Error | OpenNMS Web Console</title>
+  <title>Event ID Not Found | Error | OpenNMS Web Console</title>
   <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
   <link rel="stylesheet" type="text/css" href="includes/styles.css" />
 </head>
@@ -77,10 +77,10 @@
     <td> &nbsp; </td>
 
     <td>
-      <h1>Event Id Not Found</h1>
+      <h1>Event ID Not Found</h1>
 
       <p>
-        The event id <%=einfe.getBadID()%> is invalid. <%=einfe.getMessage()%><br>
+        The event ID <%=einfe.getBadID()%> is invalid. <%=einfe.getMessage()%><br>
         You can re-enter it here or <a href="event/list?acktyp=unack">browse all of the events</a> to find the event you are looking for.
       </p>
 

@@ -4,6 +4,9 @@
  		<complexType>
   			<attribute name="port" type="positiveInteger" use="required"/>
   			<attribute name="macAddress" type="string" use="required"/>
+                        <attribute name="myIpAddress" type="string" use="optional"/>
+                        <attribute name="extendedMode" type="string" use="optional"/>
+                        <attribute name="requestIpAddress" type="string" use="optional"/>
  		</complexType>
 	</element>
 </schema>

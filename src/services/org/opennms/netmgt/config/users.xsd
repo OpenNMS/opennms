@@ -50,7 +50,7 @@
                         <attribute name="type" use="required" type="string">
 			        <simpleType>
 				        <restriction base="string">
-					        <pattern value="(email|pagerEmail|textPage|numericPage)"/>
+					        <pattern value="(xmppAddress|email|pagerEmail|textPage|numericPage)"/>
 					</restriction>
 				</simpleType>
 			</attribute>

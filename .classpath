@@ -51,5 +51,16 @@
 	<classpathentry kind="lib" path="lib/hsqldb.jar"/>
 	<classpathentry kind="lib" path="lib/jradius-client.jar"/>
 	<classpathentry kind="lib" path="lib/jmta.jar"/>
+	<classpathentry kind="lib" path="lib/smack.jar"/>
+	<classpathentry kind="lib" path="lib/smackx.jar"/>
+	<classpathentry kind="lib" path="devlib/xmlParserAPIs.jar"/>
+	<classpathentry kind="lib" path="devlib/Tidy.jar"/>
+	<classpathentry kind="lib" path="devlib/httpunit.jar"/>
+	<classpathentry kind="lib" path="devlib/js.jar"/>
+	<classpathentry kind="lib" path="devlib/jwebunit-1.2.jar"/>
+	<classpathentry kind="lib" path="devlib/nekohtml.jar"/>
+	<classpathentry kind="lib" path="devlib/servlet.jar"/>
+	<classpathentry kind="lib" path="devlib/jasper-compiler.jar"/>
+	<classpathentry kind="lib" path="devlib/jasper-runtime.jar"/>
 	<classpathentry kind="output" path="work/opennms/classes"/>
 </classpath>
