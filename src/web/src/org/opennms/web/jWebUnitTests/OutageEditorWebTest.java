@@ -56,6 +56,7 @@ import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebTable;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
+import com.sun.rsasign.l;
 
 public class OutageEditorWebTest extends WebTestCase {
 
@@ -291,60 +292,74 @@ public class OutageEditorWebTest extends WebTestCase {
     public void testOutageList() throws Exception {
         beginAt("/admin/sched-outages/index.jsp");
         assertTitleEquals("Scheduled Outage administration");
-        
-        
-        
-        // httpunit
-        WebTable table = getDialog().getWebTableBySummaryOrId("outages");
-        //System.err.println(table.toString());
-        
-        // Top header line
-        assertCell(table, 0, 0, "", 4);
-        assertCell(table, 0, 4, "Affects...", 4);
-        
-        // Second header line
-        String[] headerCells = { "Name", "Type", "Nodes/Interfaces", "Times", "Notifications", "Polling", "Thresholds", "Data collection", null, null};
-        assertRow(table, 1, headerCells);
 
-        Outage[] outages = m_outages.getOutage();
-        for (int i = 0; i < outages.length; i++) {
-            Outage outage = outages[i];
-            assertCell(table, i+2, 0, outage.getName());
-            assertCell(table, i+2, 1, outage.getType());
-            assertCell(table, i+2, 2, "");
-            assertCell(table, i+2, 3, getTimeSpanString(outage));
-            
-            // test the X 's
-            // TODO: add alttext and src
-            assertCellImage(table, i+2, 4);
-            assertCellImage(table, i+2, 5);
-            assertCellImage(table, i+2, 6);
-            assertCellImage(table, i+2, 7);
-            
-            // the the links
-            // add url
-            assertCellLink(table, i+2, 8, "Edit");
-            assertCellLink(table, i+2, 9, "Delete");
-            
-        }
+        checkOutagesTable(m_outages);
 
         
         submit();
         assertTitleEquals("Scheduled Outage administration");
         assertTextPresent("Edit Outages");
     }
+
+    private void checkOutagesTable(Outages pollOutages) {
+        
+        WebTable table = getDialog().getWebTableBySummaryOrId("outages");
+        // Top header line
+        assertCell(table, 0, 0, "", 4);
+        assertCell(table, 0, 4, "Affects...", 4);
+        // Second header line
+        String[] headerCells = { "Name", "Type", "Nodes/Interfaces", "Times", "Notifications", "Polling", "Thresholds", "Data collection", null, null};
+        assertRow(table, 1, headerCells);
+        Outage[] outages = pollOutages.getOutage();
+        for (int i = 0; i < outages.length; i++) {
+            Outage outage = outages[i];
+            assertCell(table, i+2, 0, outage.getName());
+            assertCell(table, i+2, 1, outage.getType());
+            
+            // TODO: check for interfaces and nodes
+            assertCell(table, i+2, 2, "");
+            
+            assertCell(table, i+2, 3, getTimeSpanString(outage));
+            
+            // test the X 's
+            assertCellImage(table, i+2, 4, computeImgSrc(outage));
+            assertCellImage(table, i+2, 5, computeImgSrc(outage));
+            assertCellImage(table, i+2, 6, computeImgSrc(outage));
+            assertCellImage(table, i+2, 7, computeImgSrc(outage));
+            
+            // the the links
+            assertCellLink(table, i+2, 8, "Edit", computeEditURL(outage));
+            assertCellLink(table, i+2, 9, "Delete", computeDeleteURL(outage));
+            
+        }
+    }
     
-    public void assertCellImage(WebTable table, int row, int col) {
+    private String computeImgSrc(Outage outage) {
+        // TODO: correctly compute this based on the outage
+        return "images/redcross.gif";
+    }
+
+    private String computeDeleteURL(Outage outage) {
+        return "admin/sched-outages/index.jsp?deleteOutage="+outage.getName().replace(' ', '+');
+    }
+
+    private String computeEditURL(Outage outage) {
+        return "admin/sched-outages/editoutage.jsp?name="+outage.getName().replace(' ','+');
+    }
+    
+    public void assertCellImage(WebTable table, int row, int col, String imgSrc) {
         assertEquals(1, table.getTableCell(row, col).getImages().length);
         WebImage img = table.getTableCell(row, col).getImages()[0];
         assertNotNull(img);
+        assertEquals(imgSrc, img.getSource());
     }
     
-    public void assertCellLink(WebTable table, int row, int col, String text) {
+    public void assertCellLink(WebTable table, int row, int col, String text, String url) {
         assertEquals(1, table.getTableCell(row, col).getLinks().length);
         WebLink link = table.getTableCell(row, col).getLinks()[0];
         assertNotNull(link);
         assertEquals(text, link.getText());
+        assertEquals(url, link.getURLString());
     }
     
     public void assertCell(WebTable table, int row, int col, String contents, int colspan) {
