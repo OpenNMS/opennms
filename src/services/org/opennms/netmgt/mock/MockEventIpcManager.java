@@ -88,6 +88,8 @@ public class MockEventIpcManager implements EventIpcManager {
 
     private List m_listeners = new ArrayList();
 
+    private int m_pendingEvents;
+
     public MockEventIpcManager() {
         m_anticipator = new EventAnticipator();
     }
@@ -140,17 +142,37 @@ public class MockEventIpcManager implements EventIpcManager {
     /**
      * @param event
      */
-    public void sendEventToListeners(Event event) {
+    public void sendEventToListeners(final Event event) {
         m_eventWriter.writeEvent(event);
         broadcastNow(event);
     }
 
-    public void sendNow(Event event) {
+    public synchronized void sendNow(final Event event) {
+        m_pendingEvents++;
+        MockUtil.println("StartEvent processing: m_pendingEvents = "+m_pendingEvents);
         MockUtil.printEvent("Received", event);
-        m_eventWriter.writeEvent(event);
         m_anticipator.eventReceived(event);
-        broadcastNow(event);
-        m_anticipator.eventProcessed(event);
+
+        Runnable r = new Runnable() {
+            public void run() {
+                try {
+                    try { Thread.sleep(2000); } catch (InterruptedException e) {}
+                    m_eventWriter.writeEvent(event);
+                    broadcastNow(event);
+                    m_anticipator.eventProcessed(event);
+                } finally {
+                    synchronized(MockEventIpcManager.this) {
+                        m_pendingEvents--;
+                        MockUtil.println("Finished processing event m_pendingEvents = "+m_pendingEvents);
+                        MockEventIpcManager.this.notifyAll();
+                    }
+                }
+            }
+        };
+        
+        Thread thread = new Thread(r);
+        thread.start();
+//        r.run();
     }
 
     public void sendNow(Log eventLog) {
@@ -158,6 +180,17 @@ public class MockEventIpcManager implements EventIpcManager {
         for (int i = 0; i < events.getEventCount(); i++) {
             Event event = events.getEvent(i);
             sendNow(event);
+        }
+    }
+
+    /**
+     * 
+     */
+    public synchronized void finishProcessingEvents() {
+        
+        while (m_pendingEvents > 0) {
+            MockUtil.println("Waiting for event processing: m_pendingEvents = "+m_pendingEvents);
+            try { wait(); } catch (InterruptedException e) {}
         }
     }
 

@@ -31,64 +31,43 @@
 //
 package org.opennms.netmgt.poller.pollables;
 
-import java.net.InetAddress;
 import java.util.Date;
 
-import org.opennms.netmgt.xml.event.Event;
 
 /**
- * Represents a PollContext 
+ * Represents a DbPollEvent 
  *
  * @author brozow
  */
-public interface PollContext {
+public class DbPollEvent extends PollEvent {
     
-    public String getCriticalServiceName();
-
-    /**
-     * @return
-     */
-    public boolean isNodeProcessingEnabled();
-
-    /**
-     * @return
-     */
-    public boolean isPollingAllIfCritServiceUndefined();
-
-    /**
-     * @param event the event to send
-     * @return the same event
-     */
-    public PollEvent sendEvent(Event event);
-
-    /**
-     * @param uei
-     * @param nodeId
-     * @param address
-     * @param svcName
-     * @param date
-     * @return
-     */
-    public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date);
-
-    /**
-     * @param outage
-     */
-    public void openOutage(PollableService pSvc, PollEvent svcLostEvent);
-
-    /**
-     * @param outage
-     */
-    public void resolveOutage(PollableService pSvc, PollEvent svcRegainEvent);
-    /**
-     * @return
-     */
-    public boolean isServiceUnresponsiveEnabled();
-
-    /**
-     * @param iface
-     * @param newNode
-     */
-    public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId);
+    int m_eventId;
+    Date m_date;
+    
+    public DbPollEvent(int eventId, Date date) {
+        m_eventId = eventId;
+        m_date = date;
+    }
+    
+    public int getEventId() {
+        return m_eventId;
+    }
+    
+    public Date getDate() {
+        return m_date;
+    }
+    
+    public int hashCode() { return m_eventId; }
+    
+    public boolean equals(PollEvent e) {
+        if (e == null) return false;
+        return m_eventId == e.getEventId();
+    }
+    
+    public boolean equals(Object o) {
+        if (o instanceof PollEvent)
+            return equals((PollEvent)o);
+        return false;
+    }
 
 }

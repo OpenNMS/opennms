@@ -68,7 +68,7 @@ public class OutageAnticipator implements EventListener {
     /**
      * 
      */
-    public void reset() {
+    public synchronized void reset() {
         m_expectedOpenCount = m_db.countOpenOutages();
         m_expectedOutageCount = m_db.countOutages();
         m_expectedOutages.clear();
@@ -80,7 +80,7 @@ public class OutageAnticipator implements EventListener {
      * @param element
      * @param lostService
      */
-    public void anticipateOutageOpened(MockElement element, final Event lostService) {
+    public synchronized void anticipateOutageOpened(MockElement element, final Event lostService) {
         MockVisitor outageCounter = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
                 if (!m_db.hasOpenOutage(svc) || anticipatesClose(svc)) {
@@ -99,11 +99,11 @@ public class OutageAnticipator implements EventListener {
      * @param svc
      * @return
      */
-    protected boolean anticipatesClose(MockService svc) {
+    protected synchronized boolean anticipatesClose(MockService svc) {
         return anticipates(m_pendingCloses, svc);
     }
 
-    private boolean anticipates(Map pending, MockService svc) {
+    private synchronized boolean anticipates(Map pending, MockService svc) {
         Collection vals = pending.values();
         for (Iterator it = vals.iterator(); it.hasNext();) {
             List outageList = (List) it.next();
@@ -121,7 +121,7 @@ public class OutageAnticipator implements EventListener {
      * @param outageEvent
      * @param svc
      */
-    protected void addToOutageList(Map outageMap, Event outageEvent, Outage outage) {
+    protected synchronized void addToOutageList(Map outageMap, Event outageEvent, Outage outage) {
         EventWrapper w = new EventWrapper(outageEvent);
         List list = (List)outageMap.get(w);
         if (list == null) {
@@ -131,7 +131,7 @@ public class OutageAnticipator implements EventListener {
         list.add(outage);
     }
     
-    protected void removeFromOutageList(Map outageMap, Event outageEvent, Outage outage) {
+    protected synchronized void removeFromOutageList(Map outageMap, Event outageEvent, Outage outage) {
         EventWrapper w = new EventWrapper(outageEvent);
         List list = (List)outageMap.get(w);
         if (list == null) return;
@@ -141,7 +141,7 @@ public class OutageAnticipator implements EventListener {
 
 
     
-    public void deanticipateOutageClosed(MockElement element, final Event regainService) {
+    public synchronized void deanticipateOutageClosed(MockElement element, final Event regainService) {
         MockVisitor outageCounter = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
                 if (anticipatesClose(svc)) {
@@ -162,7 +162,7 @@ public class OutageAnticipator implements EventListener {
         
     }
 
-    public void anticipateOutageClosed(MockElement element, final Event regainService) {
+    public synchronized void anticipateOutageClosed(MockElement element, final Event regainService) {
         MockVisitor outageCounter = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
                 if ((m_db.hasOpenOutage(svc) || anticipatesOpen(svc)) && !anticipatesClose(svc)) {
@@ -206,7 +206,7 @@ public class OutageAnticipator implements EventListener {
         return m_db.countOutages();
     }
 
-    public boolean checkAnticipated() {
+    public synchronized boolean checkAnticipated() {
         int openCount = m_db.countOpenOutages();
         int outageCount = m_db.countOutages();
         
@@ -246,7 +246,7 @@ public class OutageAnticipator implements EventListener {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.eventd.EventListener#onEvent(org.opennms.netmgt.xml.event.Event)
      */
-    public void onEvent(Event e) {
+    public synchronized void onEvent(Event e) {
         Collection pendingOpens = getOutageList(m_pendingOpens, e);
         for (Iterator it = pendingOpens.iterator(); it.hasNext();) {
             Outage outage = (Outage) it.next();
@@ -263,7 +263,7 @@ public class OutageAnticipator implements EventListener {
         clearOutageList(m_pendingCloses, e);
     }
 
-    private void closeExpectedOutages(Event e, Outage pendingOutage) {
+    private synchronized void closeExpectedOutages(Event e, Outage pendingOutage) {
         for (Iterator it = m_expectedOutages.iterator(); it.hasNext();) {
             Outage outage = (Outage) it.next();
             if (pendingOutage.equals(outage)) {
@@ -276,7 +276,7 @@ public class OutageAnticipator implements EventListener {
      * @param pending
      * @param e
      */
-    private void clearOutageList(Map pending, Event e) {
+    private synchronized void clearOutageList(Map pending, Event e) {
         pending.remove(new EventWrapper(e));
     }
 
@@ -285,7 +285,7 @@ public class OutageAnticipator implements EventListener {
      * @param e
      * @return
      */
-    private Collection getOutageList(Map pending, Event e) {
+    private synchronized Collection getOutageList(Map pending, Event e) {
         EventWrapper w = new EventWrapper(e);
         if (pending.containsKey(w)) {
             return (Collection)pending.get(w);

@@ -39,35 +39,11 @@ import java.util.Date;
  *
  * @author brozow
  */
-public class PollEvent {
+abstract public class PollEvent {
 
-    int m_eventId;
-    Date m_date;
-    
-    public PollEvent(int eventId, Date date) {
-        m_eventId = eventId;
-        m_date = date;
-    }
+    abstract public int getEventId();
 
-    public int getEventId() {
-        return m_eventId;
-    }
-    
-    public Date getDate() {
-        return m_date;
-    }
-    
-    public int hashCode() { return m_eventId; }
-    
-    public boolean equals(PollEvent e) {
-        if (e == null) return false;
-        return m_eventId == e.m_eventId;
-    }
-    
-    public boolean equals(Object o) {
-        if (o instanceof PollEvent)
-            return equals((PollEvent)o);
-        return false;
-    }
+    abstract public Date getDate();
+
 
 }

@@ -33,8 +33,13 @@ package org.opennms.netmgt.poller;
 
 import java.net.InetAddress;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.eventd.EventListener;
+import org.opennms.netmgt.poller.pollables.PendingPollEvent;
 import org.opennms.netmgt.poller.pollables.PollContext;
 import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollableService;
@@ -45,9 +50,11 @@ import org.opennms.netmgt.xml.event.Event;
  *
  * @author brozow
  */
-public class DefaultPollContext implements PollContext {
+public class DefaultPollContext implements PollContext, EventListener {
     
-    Poller m_poller;
+    private Poller m_poller;
+    private boolean m_listenerAdded = false;
+    private List m_pendingPollEvents = new LinkedList();
 
     /**
      * @param poller
@@ -80,9 +87,17 @@ public class DefaultPollContext implements PollContext {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.pollables.PollContext#sendEvent(org.opennms.netmgt.xml.event.Event)
      */
-    public Event sendEvent(Event event) {
+    public PollEvent sendEvent(Event event) {
+        if (!m_listenerAdded) {
+            m_poller.getEventManager().addEventListener(this);
+            m_listenerAdded = true;
+        }
+        PendingPollEvent pollEvent = new PendingPollEvent(event);
+        synchronized (m_pendingPollEvents) {
+            m_pendingPollEvents.add(pollEvent);
+        }
         m_poller.getEventManager().sendNow(event);
-        return event;
+        return pollEvent;
     }
 
     /* (non-Javadoc)
@@ -92,18 +107,38 @@ public class DefaultPollContext implements PollContext {
         return m_poller.createEvent(uei, nodeId, address, svcName, date);
     }
 
-    public void openOutage(PollableService svc, PollEvent svcLostEvent) {
-        int serviceId = m_poller.getServiceIdByName(svc.getSvcName());
-        m_poller.getQueryMgr().openOutage(m_poller.getPollerConfig().getNextOutageIdSql(), svc.getNodeId(), svc.getIpAddr(), serviceId, svcLostEvent.getEventId(), EventConstants.formatToString(svcLostEvent.getDate()));
+    public void openOutage(final PollableService svc, final PollEvent svcLostEvent) {
+        Runnable r = new Runnable() {
+            public void run() {
+                int serviceId = m_poller.getServiceIdByName(svc.getSvcName());
+                m_poller.getQueryMgr().openOutage(m_poller.getPollerConfig().getNextOutageIdSql(), svc.getNodeId(), svc.getIpAddr(), serviceId, svcLostEvent.getEventId(), EventConstants.formatToString(svcLostEvent.getDate()));
+            }
+        };
+        if (svcLostEvent instanceof PendingPollEvent) {
+            ((PendingPollEvent)svcLostEvent).addPending(r);
+        }
+        else {
+            r.run();
+        }
         
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.pollables.PollContext#resolveOutage(org.opennms.netmgt.poller.pollables.PollableService, org.opennms.netmgt.xml.event.Event)
      */
-    public void resolveOutage(PollableService svc, PollEvent svcRegainEvent) {
-        int serviceId = m_poller.getServiceIdByName(svc.getSvcName());
-        m_poller.getQueryMgr().resolveOutage(svc.getNodeId(), svc.getIpAddr(), serviceId, svcRegainEvent.getEventId(), EventConstants.formatToString(svcRegainEvent.getDate()));
+    public void resolveOutage(final PollableService svc, final PollEvent svcRegainEvent) {
+        Runnable r = new Runnable() {
+            public void run() {
+                int serviceId = m_poller.getServiceIdByName(svc.getSvcName());
+                m_poller.getQueryMgr().resolveOutage(svc.getNodeId(), svc.getIpAddr(), serviceId, svcRegainEvent.getEventId(), EventConstants.formatToString(svcRegainEvent.getDate()));
+            }
+        };
+        if (svcRegainEvent instanceof PendingPollEvent) {
+            ((PendingPollEvent)svcRegainEvent).addPending(r);
+        }
+        else {
+            r.run();
+        }
     }
     
     public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
@@ -115,6 +150,37 @@ public class DefaultPollContext implements PollContext {
      */
     public boolean isServiceUnresponsiveEnabled() {
         return m_poller.getPollerConfig().serviceUnresponsiveEnabled();
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.eventd.EventListener#getName()
+     */
+    public String getName() {
+        return m_poller.getName()+".DefaultPollContext";
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.eventd.EventListener#onEvent(org.opennms.netmgt.xml.event.Event)
+     */
+    public void onEvent(Event e) {
+        synchronized (m_pendingPollEvents) {
+            for (Iterator it = m_pendingPollEvents .iterator(); it.hasNext();) {
+                PendingPollEvent pollEvent = (PendingPollEvent) it.next();
+                if (e.equals(pollEvent.getEvent())) {
+                    pollEvent.complete(e);
+                }
+            }
+            
+            for (Iterator it = m_pendingPollEvents.iterator(); it.hasNext(); ) {
+                PendingPollEvent pollEvent = (PendingPollEvent) it.next();
+                if (pollEvent.isPending()) break;
+                
+                pollEvent.processPending();
+                it.remove();
+                
+            }
+        }
+        
     }
 
 }

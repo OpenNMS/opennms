@@ -31,64 +31,69 @@
 //
 package org.opennms.netmgt.poller.pollables;
 
-import java.net.InetAddress;
+import java.text.ParseException;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * Represents a PollContext 
+ * Represents a PendingPollEvent 
  *
  * @author brozow
  */
-public interface PollContext {
+public class PendingPollEvent extends PollEvent {
     
-    public String getCriticalServiceName();
+    private Event m_event;
+    private boolean m_pending = true;
+    private List m_pendingOutages = new LinkedList();
 
-    /**
-     * @return
-     */
-    public boolean isNodeProcessingEnabled();
+    public PendingPollEvent(Event event) {
+        m_event = event;
+    }
 
-    /**
-     * @return
-     */
-    public boolean isPollingAllIfCritServiceUndefined();
+    public Date getDate() {
+        try {
+            return EventConstants.parseToDate(m_event.getTime());
+        } catch (ParseException e) {
+            ThreadCategory.getInstance(getClass()).error("Unable to convert event time to date", e);
+            return new Date();
+        }
+    }
+    
+    public int getEventId() {
+        return m_event.getDbid();
+    }
+    
+    public void addPending(Runnable r) {
+        if (m_pending)
+            m_pendingOutages.add(r);
+        else
+            r.run();
+    }
+    
+    public Event getEvent() {
+        return m_event;
+    }
+    
+    public boolean isPending() {
+        return m_pending;
+    }
 
-    /**
-     * @param event the event to send
-     * @return the same event
-     */
-    public PollEvent sendEvent(Event event);
-
-    /**
-     * @param uei
-     * @param nodeId
-     * @param address
-     * @param svcName
-     * @param date
-     * @return
-     */
-    public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date);
-
-    /**
-     * @param outage
-     */
-    public void openOutage(PollableService pSvc, PollEvent svcLostEvent);
-
-    /**
-     * @param outage
-     */
-    public void resolveOutage(PollableService pSvc, PollEvent svcRegainEvent);
-    /**
-     * @return
-     */
-    public boolean isServiceUnresponsiveEnabled();
-
-    /**
-     * @param iface
-     * @param newNode
-     */
-    public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId);
-
+    public void complete(Event e) {
+        m_pending = false;
+    }
+    
+    public void processPending() {
+        for (Iterator it = m_pendingOutages.iterator(); it.hasNext();) {
+            Runnable r = (Runnable) it.next();
+            r.run();
+        }
+        m_pendingOutages.clear();
+        
+    }
 }

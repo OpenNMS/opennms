@@ -61,6 +61,7 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.poller.monitors.ServiceMonitor;
+import org.opennms.netmgt.poller.pollables.DbPollEvent;
 import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.poller.pollables.PollableElement;
@@ -406,7 +407,7 @@ public final class Poller implements PausableFiber {
             svc.updateStatus(PollStatus.STATUS_DOWN);
             
             InitCause causeSetter = new InitCause();
-            PollEvent cause = new PollEvent(svcLostEventId.intValue(), date);
+            PollEvent cause = new DbPollEvent(svcLostEventId.intValue(), date);
             causeSetter.setCause(cause);
             
             if (EventConstants.NODE_LOST_SERVICE_EVENT_UEI.equals(svcLostUei)) {

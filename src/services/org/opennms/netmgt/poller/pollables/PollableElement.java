@@ -185,8 +185,7 @@ abstract public class PollableElement {
     }
 
     protected void processComingUp(Date date) {
-        Event upEvent = getContext().sendEvent(createUpEvent(date));
-        PollEvent resolution = new PollEvent(upEvent.getDbid(), date);
+        PollEvent resolution = getContext().sendEvent(createUpEvent(date));
         processResolution(getCause(), resolution);
     }
 
@@ -195,8 +194,7 @@ abstract public class PollableElement {
     }
 
     protected void processGoingDown(Date date) {
-        Event downEvent = getContext().sendEvent(createDownEvent(date));
-        PollEvent cause = new PollEvent(downEvent.getDbid(), date);
+        PollEvent cause = getContext().sendEvent(createDownEvent(date));
         processCause(cause);
     }
 

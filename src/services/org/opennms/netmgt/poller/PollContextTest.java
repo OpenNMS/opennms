@@ -184,10 +184,11 @@ public class PollContextTest extends TestCase {
        
         m_anticipator.anticipateEvent(m_mSvc.createDownEvent());
         
-        Event e = m_pollContext.sendEvent(m_mSvc.createDownEvent());
+        PollEvent e = m_pollContext.sendEvent(m_mSvc.createDownEvent());
         
+        m_eventMgr.finishProcessingEvents();
         assertNotNull(e);
-        assertTrue(e.hasDbid());
+        assertTrue("Invalid Event Id", e.getEventId() > 0);
         
         assertEquals(0, m_anticipator.waitForAnticipated(0).size());
         assertEquals(0, m_anticipator.unanticipatedEvents().size());
@@ -223,8 +224,7 @@ public class PollContextTest extends TestCase {
     public void testOpenResolveOutage() throws Exception {
         Event downEvent = m_mSvc.createDownEvent();
         m_outageAnticipator.anticipateOutageOpened(m_mSvc, downEvent);
-        m_eventMgr.sendEventToListeners(downEvent);
-        PollEvent pollDownEvent = new PollEvent(downEvent.getDbid(), EventConstants.parseToDate(downEvent.getTime()));
+        PollEvent pollDownEvent = m_pollContext.sendEvent(downEvent);
         m_pollContext.openOutage(m_pSvc, pollDownEvent);
                                                   
         verifyOutages();
@@ -232,8 +232,7 @@ public class PollContextTest extends TestCase {
         m_outageAnticipator.reset();
         Event upEvent = m_mSvc.createUpEvent();
         m_outageAnticipator.anticipateOutageClosed(m_mSvc, upEvent);
-        m_eventMgr.sendEventToListeners(upEvent);
-        PollEvent pollUpEvent = new PollEvent(upEvent.getDbid(), EventConstants.parseToDate(upEvent.getTime()));
+        PollEvent pollUpEvent = m_pollContext.sendEvent(upEvent);
         m_pollContext.resolveOutage(m_pSvc, pollUpEvent);
                                    
         verifyOutages();
@@ -243,6 +242,7 @@ public class PollContextTest extends TestCase {
      * 
      */
     private void verifyOutages() {
+        m_eventMgr.finishProcessingEvents();
         assertEquals("Wrong number of outages opened", m_outageAnticipator.getExpectedOpens(), m_outageAnticipator.getActualOpens());
         assertEquals("Wrong number of outages in outage table", m_outageAnticipator.getExpectedOutages(), m_outageAnticipator.getActualOutages());
         assertTrue("Created outages don't match the expected outages", m_outageAnticipator.checkAnticipated());

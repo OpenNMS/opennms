@@ -362,6 +362,7 @@ public class MockNetworkTest extends TestCase {
         };
         element.visit(gainedSvcSender);
 
+        m_eventMgr.finishProcessingEvents();
         assertEquals(0, anticipator.waitForAnticipated(0).size());
         assertEquals(0, anticipator.unanticipatedEvents().size());
 
@@ -370,6 +371,7 @@ public class MockNetworkTest extends TestCase {
 
         anticipator.reset();
         m_eventMgr.sendNow(nodeEvent);
+        m_eventMgr.finishProcessingEvents();
         assertEquals(0, anticipator.waitForAnticipated(0).size());
         assertEquals(1, anticipator.unanticipatedEvents().size());
 

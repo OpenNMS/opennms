@@ -783,6 +783,7 @@ public class NotifdTest extends TestCase {
      */
     protected void tearDown() throws Exception {
         super.tearDown();
+        m_eventMgr.finishProcessingEvents();
         m_notifd.stop();
         m_db.drop();
         MockNotificationStrategy.setAnticpator(null);
@@ -809,7 +810,7 @@ public class NotifdTest extends TestCase {
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
         Event e = MockUtil.createInterfaceEvent("test", "uei.opennms.org/threshold/highThresholdExceeded", iface);
         MockUtil.addEventParm(e, "ds", "loadavg5");
-        m_eventMgr.sendNow(e);
+        m_eventMgr.sendEventToListeners(e);
         
         /*
          * This is the notification config that Wicktor sent when reporting this bug.
@@ -856,7 +857,7 @@ public class NotifdTest extends TestCase {
         m_anticipator.anticipateNotification(notification);
 
         //bring node down now
-        m_eventMgr.sendNow(node.createDownEvent());
+        m_eventMgr.sendEventToListeners(node.createDownEvent());
 
         verifyAnticipated(3000);
         
@@ -869,7 +870,7 @@ public class NotifdTest extends TestCase {
         m_anticipator.anticipateNotification(notification);
         
         //bring node back up now
-        m_eventMgr.sendNow(node.createUpEvent());
+        m_eventMgr.sendEventToListeners(node.createUpEvent());
 
         verifyAnticipated(3000);
 
@@ -888,7 +889,7 @@ public class NotifdTest extends TestCase {
         notification = createMockNotification("node 1 down.", "matt@opennms.org");
         m_anticipator.anticipateNotification(notification);
 
-        m_eventMgr.sendNow(node.createDownEvent());
+        m_eventMgr.sendEventToListeners(node.createDownEvent());
 
         assertEquals("Expected notifications not forthcoming.", 2, m_anticipator.waitForAnticipated(3000).size());
         sleep(1000);

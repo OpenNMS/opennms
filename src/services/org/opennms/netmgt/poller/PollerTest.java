@@ -148,6 +148,7 @@ public class PollerTest extends TestCase {
     }
 
     public void tearDown() {
+        m_eventMgr.finishProcessingEvents();
         stopDaemons();
         sleep(200);
         assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
@@ -698,11 +699,13 @@ public class PollerTest extends TestCase {
 
     private void verifyAnticipated(long millis) {
         // make sure the down events are received
-        assertTrue("Expected events not forthcoming", m_anticipator.waitForAnticipated(millis).isEmpty());
+        MockUtil.printEvents("Events we're still waiting for: ", m_anticipator.waitForAnticipated(millis));
+        assertTrue("Expected events not forthcoming", m_anticipator.waitForAnticipated(0).isEmpty());
         sleep(2000);
         MockUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
         assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
         sleep(1000);
+        m_eventMgr.finishProcessingEvents();
         assertEquals("Wrong number of outages opened", m_outageAnticipator.getExpectedOpens(), m_outageAnticipator.getActualOpens());
         assertEquals("Wrong number of outages in outage table", m_outageAnticipator.getExpectedOutages(), m_outageAnticipator.getActualOutages());
         assertTrue("Created outages don't match the expected outages", m_outageAnticipator.checkAnticipated());

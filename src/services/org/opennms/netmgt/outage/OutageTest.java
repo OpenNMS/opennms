@@ -108,6 +108,7 @@ public class OutageTest extends TestCase {
     }
 
     protected void tearDown() throws Exception {
+        m_eventMgr.finishProcessingEvents();
         stopOutageMgr();
         sleep(100);
         assertTrue(MockUtil.noWarningsOrHigherLogged());
@@ -317,6 +318,7 @@ public class OutageTest extends TestCase {
     }
 
     private void verifyAnticipated() {
+        m_eventMgr.finishProcessingEvents();
         assertTrue(m_outageAnticipator.checkAnticipated());
     }
 

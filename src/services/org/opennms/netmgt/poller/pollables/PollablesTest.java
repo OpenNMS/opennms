@@ -142,6 +142,8 @@ public class PollablesTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
+        MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
+        
         MockUtil.setupLogging();
         MockUtil.resetLogLevel();
         
@@ -297,7 +299,7 @@ public class PollablesTest extends TestCase {
                         svc.updateStatus(PollStatus.STATUS_DOWN);
                     
                         Date date = rs.getTimestamp("ifLostService");
-                        PollEvent cause = new PollEvent(svcLostEventId.intValue(), date);
+                        PollEvent cause = new DbPollEvent(svcLostEventId.intValue(), date);
                         String svcLostUei = rs.getString("svcLostEventUei");
                         causeSetter.setCause(cause);
 
@@ -347,6 +349,7 @@ public class PollablesTest extends TestCase {
      */
     protected void tearDown() throws Exception {
         super.tearDown();
+        m_eventMgr.finishProcessingEvents();
         assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
         m_db.drop();
     }
@@ -622,6 +625,8 @@ public class PollablesTest extends TestCase {
         
         final String ifOutageOnNode1 = "select * from outages where nodeId = 1 and ipAddr = '192.168.1.1'";
         final String ifOutageOnNode2 = "select * from outages where nodeId = 2 and ipAddr = '192.168.1.1'";
+        
+        m_eventMgr.finishProcessingEvents();
 
         assertEquals(2, m_db.countRows(ifOutageOnNode1));
         assertEquals(0, m_db.countRows(ifOutageOnNode2));
@@ -968,7 +973,7 @@ public class PollablesTest extends TestCase {
 
         pDot1.updateStatus(PollStatus.STATUS_DOWN);
         pDot1Icmp.updateStatus(PollStatus.STATUS_DOWN);
-        pDot1.setCause(new PollEvent(1, new Date()));
+        pDot1.setCause(new DbPollEvent(1, new Date()));
 
         m_network.recalculateStatus();
         m_network.resetStatusChanged();
@@ -1350,6 +1355,8 @@ public class PollablesTest extends TestCase {
         pDot1Smtp.doPoll();
         
         pDot1.processStatusChange(new Date());
+        
+        verifyAnticipated();
 
         anticipateDown(mDot1);
         
@@ -1914,6 +1921,7 @@ public class PollablesTest extends TestCase {
      * 
      */
     private void verifyAnticipated() {
+        m_eventMgr.finishProcessingEvents();
         MockUtil.printEvents("Missing Anticipated Events: ", m_anticipator.getAnticipatedEvents());
         assertTrue("Expected events not forthcoming", m_anticipator.getAnticipatedEvents().isEmpty());
         MockUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
