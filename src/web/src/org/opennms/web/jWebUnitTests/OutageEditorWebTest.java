@@ -50,6 +50,10 @@ import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockUtil;
 
+import com.meterware.httpunit.TableCell;
+import com.meterware.httpunit.WebImage;
+import com.meterware.httpunit.WebLink;
+import com.meterware.httpunit.WebTable;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 
@@ -288,47 +292,79 @@ public class OutageEditorWebTest extends WebTestCase {
         beginAt("/admin/sched-outages/index.jsp");
         assertTitleEquals("Scheduled Outage administration");
         
-        ExpectedTable expectedTable = new ExpectedTable();
-        List affects = new ArrayList();
-        affects.add(new ExpectedCell("", 4));
-        affects.add(new ExpectedCell("Affects...", 4));
-        affects.add(new ExpectedCell("", 2));
         
-        appendRow(expectedTable, affects);
         
-        List header = new ArrayList();
-        header.add(new ExpectedCell("Name"));
-        header.add(new ExpectedCell("Type"));
-        header.add(new ExpectedCell("Nodes/Interfaces"));
-        header.add(new ExpectedCell("Times"));
-        header.add(new ExpectedCell("Notifications"));
-        header.add(new ExpectedCell("Polling"));
-        header.add(new ExpectedCell("Thresholds"));
-        header.add(new ExpectedCell("Data collection"));
-        header.add(new ExpectedCell("", 2));
-        appendRow(expectedTable, header);
+        // httpunit
+        WebTable table = getDialog().getWebTableBySummaryOrId("outages");
+        //System.err.println(table.toString());
         
+        // Top header line
+        assertCell(table, 0, 0, "", 4);
+        assertCell(table, 0, 4, "Affects...", 4);
+        
+        // Second header line
+        String[] headerCells = { "Name", "Type", "Nodes/Interfaces", "Times", "Notifications", "Polling", "Thresholds", "Data collection", null, null};
+        assertRow(table, 1, headerCells);
+
         Outage[] outages = m_outages.getOutage();
         for (int i = 0; i < outages.length; i++) {
             Outage outage = outages[i];
-            List cells = new ArrayList();
-            cells.add(new ExpectedCell(outage.getName()));
-            cells.add(new ExpectedCell(outage.getType()));
-            cells.add(new ExpectedCell(""));
-            cells.add(new ExpectedCell(getTimeSpanString(outage)));
-            cells.add(new ExpectedCell(""));
-            cells.add(new ExpectedCell(""));
-            cells.add(new ExpectedCell(""));
-            cells.add(new ExpectedCell(""));
-            cells.add(new ExpectedCell("Edit"));
-            cells.add(new ExpectedCell("Delete"));
-            appendRow(expectedTable, cells);
+            assertCell(table, i+2, 0, outage.getName());
+            assertCell(table, i+2, 1, outage.getType());
+            assertCell(table, i+2, 2, "");
+            assertCell(table, i+2, 3, getTimeSpanString(outage));
+            
+            // test the X 's
+            // TODO: add alttext and src
+            assertCellImage(table, i+2, 4);
+            assertCellImage(table, i+2, 5);
+            assertCellImage(table, i+2, 6);
+            assertCellImage(table, i+2, 7);
+            
+            // the the links
+            // add url
+            assertCellLink(table, i+2, 8, "Edit");
+            assertCellLink(table, i+2, 9, "Delete");
             
         }
-        assertTableEquals("outages", expectedTable);
+
+        
         submit();
         assertTitleEquals("Scheduled Outage administration");
         assertTextPresent("Edit Outages");
+    }
+    
+    public void assertCellImage(WebTable table, int row, int col) {
+        assertEquals(1, table.getTableCell(row, col).getImages().length);
+        WebImage img = table.getTableCell(row, col).getImages()[0];
+        assertNotNull(img);
+    }
+    
+    public void assertCellLink(WebTable table, int row, int col, String text) {
+        assertEquals(1, table.getTableCell(row, col).getLinks().length);
+        WebLink link = table.getTableCell(row, col).getLinks()[0];
+        assertNotNull(link);
+        assertEquals(text, link.getText());
+    }
+    
+    public void assertCell(WebTable table, int row, int col, String contents, int colspan) {
+        if (contents == null) {
+            assertNull(table.getTableCell(row, col));
+        } else {
+            assertNotNull(table.getTableCell(row, col));
+            assertEquals(contents, table.getCellAsText(row, col));
+            assertEquals(colspan, table.getTableCell(row, col).getColSpan());
+        }
+    }
+    
+    public void assertCell(WebTable table, int row, int col, String contents) {
+        assertCell(table, row, col, contents, 1);
+    }
+    
+    public void assertRow(WebTable table, int row, String[] contents) {
+        for(int i = 0; i < contents.length; i++) {
+            assertCell(table, row, i, contents[i]);
+        }
     }
     
     // TODO: Add checks for interfaces and nodes
