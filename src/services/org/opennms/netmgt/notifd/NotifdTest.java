@@ -357,5 +357,14 @@ public class NotifdTest extends NotificationsTestCase {
 	    assertEquals(actualResults.size(), 0);
         }
     }
+    
+    public void testGetUsersInRole() throws Exception {
+        
+        Collection userNames = getUsersInRole("oncall");
+        
+        assertFalse(userNames.isEmpty());
+        assertTrue(userNames.size() == 1);
+        
+    }
 
 }

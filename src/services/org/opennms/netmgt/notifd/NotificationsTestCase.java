@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -58,6 +59,7 @@ import org.opennms.netmgt.notifd.mock.MockNotificationManager;
 import org.opennms.netmgt.notifd.mock.MockNotificationStrategy;
 import org.opennms.netmgt.notifd.mock.MockUserManager;
 import org.opennms.netmgt.notifd.mock.NotificationAnticipator;
+import org.opennms.netmgt.config.users.Role;
 
 import junit.framework.TestCase;
 
@@ -242,6 +244,7 @@ public class NotificationsTestCase extends TestCase {
                 "       <user>\n" + 
                 "           <user-id>brozow</user-id>\n" + 
                 "           <full-name>Mathew Brozowski</full-name>\n" + 
+                "           <role role-id=\"onDuty\" schedule=\"MoTuWeThFrSaSu600-700\"/> \n"+
                 "           <user-comments>Test User</user-comments>\n" +
                 "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
                 "           <contact type=\"email\" info=\"brozow@opennms.org\"/>\n" + 
@@ -249,6 +252,7 @@ public class NotificationsTestCase extends TestCase {
                 "       <user>\n" + 
                 "           <user-id>admin</user-id>\n" + 
                 "           <full-name>Administrator</full-name>\n" + 
+//                "           <role role-id=\"oncall\" schedule=\"MoTuWeThFrSaSu600-700\"/> \n"+
                 "           <user-comments>Default administrator, do not delete</user-comments>\n" +
                 "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
                 "           <contact type=\"email\" info=\"admin@opennms.org\"/>\n" + 
@@ -256,13 +260,15 @@ public class NotificationsTestCase extends TestCase {
                 "       <user>\n" + 
                 "           <user-id>upUser</user-id>\n" + 
                 "           <full-name>User that receives up notifications</full-name>\n" + 
+//                "           <role role-id=\"oncall\" schedule=\"MoTuWeThFrSaSu600-700\"/> \n"+
                 "           <user-comments>Default administrator, do not delete</user-comments>\n" +
                 "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
                 "           <contact type=\"email\" info=\"up@opennms.org\"/>\n" + 
                 "       </user>\n" + 
                 "       <user>\n" + 
                 "           <user-id>david</user-id>\n" + 
-                "           <full-name>David Hustace</full-name>\n" + 
+                "           <full-name>David Hustace</full-name>\n" +
+                "           <role role-id=\"oncall\" schedule=\"MoTuWeThFrSaSu600-700\"/> \n"+
                 "           <user-comments>A cool dude!</user-comments>\n" + 
                 "           <password>18126E7BD3F84B3F3E4DF094DEF5B7DE</password>\n" + 
                 "           <contact type=\"email\" info=\"david@opennms.org\"/>\n" + 
@@ -438,6 +444,29 @@ public class NotificationsTestCase extends TestCase {
         Group group = m_groupManager.getGroup(groupName);
         String[] users = group.getUser();
         return Arrays.asList(users);
+        
+    }
+    
+    protected Collection getUsersInRole(String roleId) throws Exception {
+
+        Map users = m_userManager.getUsers();
+        Collection userNames = m_userManager.getUserNames();
+        for (Iterator it = userNames.iterator(); it.hasNext();) {
+            User user = (User) m_userManager.getUser((String) it.next());
+            Collection roles = user.getRoleCollection();
+            boolean hasRole = false;
+            for(Iterator it2 = roles.iterator(); it2.hasNext();) {
+                Role role = (Role) it2.next();
+                if (roleId.equals(role.getRoleId())) {
+                    hasRole = true;
+                }
+            }
+
+            if(!hasRole) {
+                it.remove();
+            }
+        }
+        return userNames;
         
     }
 
