@@ -40,10 +40,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.poller.IfKey;
 import org.opennms.netmgt.poller.QueryManager;
 
 public class MockQueryManager implements QueryManager {
+
+    public void setDbConnectionFactory(DbConnectionFactory dbConnectionFactory) {
+        // Don't do anything because this one doesn't use the database.
+    }
 
     /**
      * Comment for <code>m_network</code>

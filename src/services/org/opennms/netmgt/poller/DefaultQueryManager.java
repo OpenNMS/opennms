@@ -33,7 +33,6 @@
 //
 package org.opennms.netmgt.poller;
 
-import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,10 +47,8 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DbConnectionFactory;
 
 /**
  * @author brozow
@@ -86,6 +83,8 @@ public class DefaultQueryManager implements QueryManager {
      */
     final static String SQL_FETCH_IFSERVICES_TO_POLL = "SELECT if.serviceid FROM ifservices if, service s WHERE if.serviceid = s.serviceid AND if.status = 'A' AND if.ipaddr = ?";
 
+    private DbConnectionFactory m_dbConnectionFactory;
+
     /**
      * @param whichEvent
      * @param nodeId
@@ -98,7 +97,7 @@ public class DefaultQueryManager implements QueryManager {
         java.sql.Connection dbConn = null;
         PreparedStatement stmt = null;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = getConnection();
 
             stmt = dbConn.prepareStatement(DefaultQueryManager.SQL_COUNT_IFSERVICE_STATUS);
 
@@ -135,6 +134,10 @@ public class DefaultQueryManager implements QueryManager {
         return false;
     }
 
+    private Connection getConnection() throws SQLException {
+        return m_dbConnectionFactory.getConnection();
+    }
+
     /**
      * @param nameToId
      * @param idToName
@@ -145,8 +148,7 @@ public class DefaultQueryManager implements QueryManager {
         java.sql.Connection ctest = null;
         ResultSet rs = null;
         try {
-            DatabaseConnectionFactory.init();
-            ctest = DatabaseConnectionFactory.getInstance().getConnection();
+            ctest = getConnection();
 
             PreparedStatement loadStmt = ctest.prepareStatement(DefaultQueryManager.SQL_RETRIEVE_SERVICE_IDS);
 
@@ -160,26 +162,10 @@ public class DefaultQueryManager implements QueryManager {
                 nameToId.put(name, id);
                 idToName.put(id, name);
             }
-        } catch (IOException iE) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: IOException getting database connection", iE);
-            throw new UndeclaredThrowableException(iE);
-        } catch (MarshalException mE) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Marshall Exception getting database connection", mE);
-            throw new UndeclaredThrowableException(mE);
-        } catch (ValidationException vE) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Validation Exception getting database connection", vE);
-            throw new UndeclaredThrowableException(vE);
         } catch (SQLException sqlE) {
             if (log.isEnabledFor(Priority.FATAL))
                 log.fatal("start: Error accessing database.", sqlE);
             throw new UndeclaredThrowableException(sqlE);
-        } catch (ClassNotFoundException cnfE) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Error accessing database.", cnfE);
-            throw new UndeclaredThrowableException(cnfE);
         } finally {
             if (rs != null) {
                 try {
@@ -206,7 +192,7 @@ public class DefaultQueryManager implements QueryManager {
      * @throws SQLException
      */
     public List getActiveServiceIdsForInterface(String ipaddr) throws SQLException {
-        java.sql.Connection dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+        java.sql.Connection dbConn = getConnection();
         try {
             List serviceIds = new ArrayList();
             Category log = ThreadCategory.getInstance(getClass());
@@ -238,7 +224,7 @@ public class DefaultQueryManager implements QueryManager {
         Statement stmt = null;
         try {
             // Get datbase connection from the factory
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = getConnection();
 
             // Issue query and extract nodeLabel from result set
             stmt = dbConn.createStatement();
@@ -287,7 +273,7 @@ public class DefaultQueryManager implements QueryManager {
         Statement stmt = null;
         try {
             // Get datbase connection from the factory
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = getConnection();
 
             // Issue query and extract nodeLabel from result set
             stmt = dbConn.createStatement();
@@ -329,7 +315,7 @@ public class DefaultQueryManager implements QueryManager {
      */
     public int getServiceCountForInterface(String ipaddr) throws SQLException {
         Category log = ThreadCategory.getInstance(getClass());
-        java.sql.Connection dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+        java.sql.Connection dbConn = getConnection();
         try {
             int count = -1;
             // Count active services to poll
@@ -358,7 +344,7 @@ public class DefaultQueryManager implements QueryManager {
     public List getInterfacesWithService(String svcName) throws SQLException {
         List ifkeys;
         Category log = ThreadCategory.getInstance(getClass());
-        java.sql.Connection dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+        java.sql.Connection dbConn = getConnection();
 
         if (log.isDebugEnabled())
             log.debug("scheduleExistingInterfaces: dbConn = " + dbConn + ", svcName = " + svcName);
@@ -405,7 +391,7 @@ public class DefaultQueryManager implements QueryManager {
 
         Connection dbConn = null;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = getConnection();
             // get the outage information for this service on this ip address
             PreparedStatement outagesQuery = dbConn.prepareStatement(DefaultQueryManager.SQL_RETRIEVE_SERVICE_STATUS);
 
@@ -465,4 +451,7 @@ public class DefaultQueryManager implements QueryManager {
         return svcLostDate;
     }
 
+    public void setDbConnectionFactory(DbConnectionFactory dbConnectionFactory) {
+        m_dbConnectionFactory = dbConnectionFactory;
+    }
 }

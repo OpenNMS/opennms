@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.netmgt.config.DbConnectionFactory;
+
 /**
  * @author brozow
  * 
@@ -77,4 +79,9 @@ public interface QueryManager {
      * @return
      */
     public Date getServiceLostDate(int nodeId, String ipAddr, String svcName, int serviceId);
+
+    /**
+     * @param connectionFactory
+     */
+    public void setDbConnectionFactory(DbConnectionFactory connectionFactory);
 }

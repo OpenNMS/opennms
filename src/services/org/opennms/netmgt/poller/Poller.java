@@ -53,6 +53,7 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
@@ -101,6 +102,8 @@ public final class Poller implements PausableFiber {
 
     private boolean m_initialized = false;
 
+    private DbConnectionFactory m_dbConnectionFactory;
+
     public Poller() {
         m_scheduler = null;
         m_status = START_PENDING;
@@ -113,6 +116,9 @@ public final class Poller implements PausableFiber {
 
         // get the category logger
         Category log = ThreadCategory.getInstance();
+        
+        // set the DbConnectionFactory in the QueryManager
+        m_queryMgr.setDbConnectionFactory(m_dbConnectionFactory);
 
         // create service name to id maps
         createServiceMaps();
@@ -479,6 +485,13 @@ public final class Poller implements PausableFiber {
      */
     QueryManager getQueryMgr() {
         return m_queryMgr;
+    }
+
+    /**
+     * @param instance
+     */
+    public void setDbConnectionFactory(DbConnectionFactory dbConnectionFactory) {
+        m_dbConnectionFactory = dbConnectionFactory;
     }
 
 }
