@@ -10,6 +10,10 @@
 //
 // Modifications:
 //
+// 2004 Dec 27: Updated code to determine primary SNMP interface to select
+//              an interface from collectd-configuration.xml first, and if
+//              none found, then from all interfaces on the node. In either
+//              case, a loopback interface is preferred if available.
 // 2004 Apr 01: Fixed case where sysObjectId is null for suspect device
 // 2004 Feb 12: Rebuild collectd package agaist IP List map when determining primary
 //              interface.
@@ -63,6 +67,7 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
@@ -1264,7 +1269,6 @@ final class SuspectEventProcessor implements Runnable {
         // Track changes to primary SNMP interface
         InetAddress oldSnmpPrimaryIf = null;
         InetAddress newSnmpPrimaryIf = null;
-        InetAddress newLBSnmpPrimaryIf = null;
 
         // Update the database
         //
@@ -1304,39 +1308,65 @@ final class SuspectEventProcessor implements Runnable {
                             useExistingNode = true;
                         }
 
-                        // Get old primary SNMP interface (if one exists)
+                        // Get old primary SNMP interface(s) (if one or more exists)
                         //
-                        oldSnmpPrimaryIf = getPrimarySnmpInterfaceFromDb(dbc, entryNode);
+                        List oldPriIfs = getPrimarySnmpInterfaceFromDb(dbc, entryNode);
 
                         // Add interfaces
                         //
                         addInterfaces(dbc, entryNode, useExistingNode, ifaddr, collector);
 
                         // Now that all interfaces have been added to the
-                        // database we
-                        // can update the 'primarySnmpInterface' field of the
-                        // ipInterface
-                        // table. Necessary because the IP address must already
-                        // be in
-                        // the database to evaluate against a filter rule.
+                        // database we can update the 'primarySnmpInterface'
+                        // field of the ipInterface table. Necessary because
+                        // the IP address must already be in the database
+                        // to evaluate against a filter rule.
                         //
-                        // First create a list of eligible loopback addresses,
-                        // and
-                        // choose one if valid.
-
-                        List snmpLBAddresses = buildLBSnmpAddressList(collector);
-                        newLBSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpLBAddresses);
-                        if (newLBSnmpPrimaryIf == null) {
-                            List snmpAddresses = buildSnmpAddressList(collector);
-                            CollectdConfigFactory.getInstance().rebuildPackageIpListMap();
-                            newSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpAddresses);
-                            setPrimarySnmpInterface(dbc, entryNode, newSnmpPrimaryIf, oldSnmpPrimaryIf);
-                        } else {
-                            if (log.isDebugEnabled())
-                                log.debug("SuspectEventProcessor: Loopback Address set as primary: " + newLBSnmpPrimaryIf);
-                            setPrimarySnmpInterface(dbc, entryNode, newLBSnmpPrimaryIf, oldSnmpPrimaryIf);
+                        // Determine primary SNMP interface from the lists of possible addresses
+                        // in this order: loopback interfaces in collectd-configuration.xml,
+                        // other interfaces in collectd-configuration.xml, loopback interfaces,
+                        // other interfaces
+                        //
+                        boolean strict = true;
+                        CollectdConfigFactory.getInstance().rebuildPackageIpListMap();
+                        List lbAddressList = buildLBSnmpAddressList(collector);
+                        List addressList = buildSnmpAddressList(collector);
+                        String psiType = null;
+                        if (lbAddressList != null) {
+                            newSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(lbAddressList, strict);
+                            psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME) + " loopback addresses";
+                        }
+                        if(newSnmpPrimaryIf == null) {
+                            newSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(addressList, strict);
+                            psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME) + " addresses";
+                        }
+                        strict = false;
+                        if((newSnmpPrimaryIf == null) && (lbAddressList != null)){
+                            newSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(lbAddressList, strict);
+                            psiType = "DB loopback addresses";
+                        }
+                        if(newSnmpPrimaryIf == null) {
+                            newSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(addressList, strict);
+                            psiType = "DB addresses";
                         }
 
+                        if (log.isDebugEnabled()) {
+                            if(newSnmpPrimaryIf == null) {
+                                log.debug("SuspectEventProcessor: No primary SNMP interface found");
+                            } else {
+                                log.debug("SuspectEventProcessor: primary SNMP interface is: " + newSnmpPrimaryIf + ", selected from " + psiType);
+                            }
+                        }  
+                        // iterate over list of old primaries. There should only be one,
+                        // but in case there are more, this will clear out the extras.
+                        Iterator opiter = oldPriIfs.iterator();
+                        if (opiter.hasNext()) {
+                            while (opiter.hasNext()) {
+                                setPrimarySnmpInterface(dbc, entryNode, newSnmpPrimaryIf, (InetAddress) opiter.next());
+                            } 
+                        } else {
+                            setPrimarySnmpInterface(dbc, entryNode, newSnmpPrimaryIf, null);
+                        }
                         // Update
                         updateCompleted = true;
                     }
@@ -1377,8 +1407,8 @@ final class SuspectEventProcessor implements Runnable {
     } // end run
 
     /**
-     * Returns the InetAddress object of the primary SNMP interface (if one
-     * exists).
+     * Returns a list of InetAddress object(s) of the primary SNMP interface(s)
+     * (if one or more exists).
      * 
      * @param dbc
      *            Database connection.
@@ -1388,14 +1418,14 @@ final class SuspectEventProcessor implements Runnable {
      * 
      * @throws SQLException
      *             if an error occurs updating the ipInterface table
-     * @return Old SNMP primary interface address.
+     * @return List of Old SNMP primary interface addresses (usually just one).
      */
-    static InetAddress getPrimarySnmpInterfaceFromDb(Connection dbc, DbNodeEntry node) throws SQLException {
+    static List getPrimarySnmpInterfaceFromDb(Connection dbc, DbNodeEntry node) throws SQLException {
         Category log = ThreadCategory.getInstance(SuspectEventProcessor.class);
 
-        // Get old primary SNMP interface if one exists
-        //
-        log.debug("getPrimarySnmpInterfaceFromDb: retrieving old primary snmp interface...");
+        List priSnmpAddrs = new ArrayList();
+
+        log.debug("getPrimarySnmpInterfaceFromDb: retrieving primary snmp interface(s) from DB...");
         InetAddress oldPrimarySnmpIf = null;
 
         // Prepare SQL statement
@@ -1406,7 +1436,7 @@ final class SuspectEventProcessor implements Runnable {
         ResultSet rs = null;
         try {
             rs = stmt.executeQuery();
-            if (rs.next()) {
+            while (rs.next()) {
                 String oldPrimaryAddr = rs.getString("ipAddr");
                 if (oldPrimaryAddr != null) {
                     try {
@@ -1415,6 +1445,7 @@ final class SuspectEventProcessor implements Runnable {
                     } catch (UnknownHostException e) {
                         log.warn("Failed converting IP address " + oldPrimaryAddr);
                     }
+                    priSnmpAddrs.add(oldPrimarySnmpIf);
                 }
             }
         } catch (SQLException sqlE) {
@@ -1427,7 +1458,7 @@ final class SuspectEventProcessor implements Runnable {
             }
         }
 
-        return oldPrimarySnmpIf;
+        return priSnmpAddrs;
     }
 
     /**
@@ -1465,6 +1496,8 @@ final class SuspectEventProcessor implements Runnable {
         //
         if (oldPrimarySnmpIf != null && oldPrimarySnmpIf.equals(newPrimarySnmpIf)) {
             // Old and new primary interfaces are the same, just return
+            if (log.isDebugEnabled())
+                log.debug("setPrimarySnmpInterface: Old and new primary interfaces are the same, just return");
             return;
         }
 

@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2005 Jan 03: minor mod to support lame SNMP hosts
 // 2003 Jan 31: Cleaned up some unused imports.
 // 2002 Oct 22: Added a threshold rearm event.
 // 2002 Jul 08: Modified code to allow for Threshold-based event notifications.
@@ -372,7 +373,10 @@ final class SnmpThresholder implements ServiceThresholder {
                 throw new RuntimeException("Unable to retrieve node id for interface " + ipAddr.getHostAddress());
 
             if (primaryIfIndex == -1)
-                throw new RuntimeException("Unable to retrieve ifIndex for interface " + ipAddr.getHostAddress());
+                // allow this for nodes without ipAddrTables
+                // throw new RuntimeException("Unable to retrieve ifIndex for interface " + ipAddr.getHostAddress());
+                if (log.isDebugEnabled())
+                    log.debug("initialize: db retrieval info: node " + nodeId + " does not have a legitimate primaryIfIndex. Assume node does not supply ipAddrTable and continue...");
 
             if (isSnmpPrimary != DbIpInterfaceEntry.SNMP_PRIMARY)
                 throw new RuntimeException("Interface " + ipAddr.getHostAddress() + " is not the primary SNMP interface for nodeid " + nodeId);

@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2005 Jan 03: minor mod to support lame SNMP hosts
 // 25 Sep 2003: Fixed a bug with SNMP Performance link on webUI.
 // 31 Jan 2003: Cleaned up some unused imports.
 //
@@ -112,8 +113,10 @@ public class IfLabel extends Object {
             // in the snmpinterface table...
 
             // String snmpifdesc = rs.getString("snmpifdescr");
-            if (Pattern.matches(".*-cef.*", rs.getString("snmpifdescr")))
-                continue;
+            if (rs.getString("snmpifdescr") != null) {
+                if (Pattern.matches(".*-cef.*", rs.getString("snmpifdescr")))
+                    continue;
+            }
 
             if ((AlphaNumeric.parseAndReplace(rs.getString("snmpifname"), '_').equals(desc)) || (AlphaNumeric.parseAndReplace(rs.getString("snmpifdescr"), '_').equals(desc))) {
 

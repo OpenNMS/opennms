@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2005 Jan 03: Minor change to support ifindex for lame snmp hosts
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -673,7 +674,7 @@ public final class DbIpInterfaceEntry {
     }
 
     boolean updateIfIndex(int newIfIndex) {
-        if (newIfIndex > 0 && newIfIndex != m_ifIndex) {
+        if (newIfIndex != -1 && newIfIndex != m_ifIndex) {
             setIfIndex(newIfIndex);
             return true;
         }

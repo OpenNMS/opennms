@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2004 Dec 21: Added the snmp conflicts with db UEI
 // 2004 Oct 07: Added code to support RTC rescan on asset update
 // 2004 Jan 06: Added the suspend polling service event UEI, and the
 //		resume polling service event UEI. Cleaned up some typos
@@ -400,7 +401,14 @@ public class EventConstants {
     /**
      * The resume polling service event UEI
      */
+
     public final static String RESUME_POLLING_SERVICE_EVENT_UEI = "uei.opennms.org/internal/poller/resumePollingService";
+
+    /**
+     * The snmp conflicts with db UEI
+     */
+
+    public final static String SNMP_CONFLICTS_WITH_DB_EVENT_UEI = "uei.opennms.org/internal/capsd/snmpConflictsWithDb";
 
     /**
      * The RTC subscribe event

@@ -10,6 +10,10 @@
 //
 // Modifications:
 //
+// 2004 Dec 27: Updated code to determine primary SNMP interface to select
+//              an interface from collectd-configuration.xml first, and if
+//              none found, then from all interfaces on the node. In either
+//              case, a loopback interface is preferred if available.
 // 2004 Jan 06: Added support for STATUS_SUSPEND abd STATUS_RESUME
 // 2003 Nov 11: Merged changes from Rackspace project
 // 2003 Sep 17: Fixed an SQL parameter problem.
@@ -148,7 +152,7 @@ public final class CapsdConfigFactory {
      * SQL statement to retrieve all non-deleted IP addresses from the
      * ipInterface table which support SNMP.
      */
-    private static String SQL_DB_RETRIEVE_SNMP_IP_INTERFACES = "SELECT DISTINCT ipinterface.nodeid,ipinterface.ipaddr,ipinterface.ifindex,ipinterface.issnmpprimary FROM ipinterface,ifservices,service WHERE ipinterface.ismanaged!='D' AND ipinterface.ipaddr=ifservices.ipaddr AND ifservices.serviceid=service.serviceid AND service.servicename='SNMP'";
+    private static String SQL_DB_RETRIEVE_SNMP_IP_INTERFACES = "SELECT DISTINCT ipinterface.nodeid,ipinterface.ipaddr,ipinterface.ifindex,ipinterface.issnmpprimary,snmpinterface.snmpiftype,snmpinterface.snmpifindex FROM ipinterface,ifservices,service,snmpinterface WHERE ipinterface.ismanaged!='D' AND ipinterface.ipaddr=ifservices.ipaddr AND ipinterface.ipaddr=snmpinterface.ipaddr AND ifservices.serviceid=service.serviceid AND service.servicename='SNMP' AND ipinterface.nodeid=snmpinterface.nodeid";
 
     /**
      * SQL statement used to update the 'isSnmpPrimary' field of the ipInterface
@@ -254,6 +258,13 @@ public final class CapsdConfigFactory {
     public static final Integer AUTO_SET = new Integer(2);
 
     /**
+     * This integer value is used to represent the primary snmp interface
+     * ifindex in the ipinterface table for SNMP hosts that don't support
+     * the MIB2 ipAddrTable
+     */
+    public static final int LAME_SNMP_HOST_IFINDEX = -100;
+
+    /**
      * This class is used to encapsulate the basic protocol information read
      * from the config file. The information includes the plugin, the protocol
      * name, the merged parameters to the plugin, and the action to be taken.
@@ -348,9 +359,15 @@ public final class CapsdConfigFactory {
          */
         final static int NULL_IFINDEX = -1;
 
+        final static int NULL_IFTYPE = -1;
+
+        final static int LOOPBACK_IFTYPE = 24;
+
         private int m_nodeId;
 
         private int m_ifIndex;
+
+        private int m_ifType;
 
         private String m_address;
 
@@ -375,13 +392,16 @@ public final class CapsdConfigFactory {
          *            Interface's management state
          * @param snmpPrimaryState
          *            Interface's primary snmp interface state
+         * @param ifType
+         *            Interface's type as determined via SNMP
          */
-        public LightWeightIfEntry(int nodeId, int ifIndex, String address, char managementState, char snmpPrimaryState) {
+        public LightWeightIfEntry(int nodeId, int ifIndex, String address, char managementState, char snmpPrimaryState, int ifType) {
             m_nodeId = nodeId;
             m_ifIndex = ifIndex;
             m_address = address;
             m_managementState = managementState;
             m_snmpPrimaryState = snmpPrimaryState;
+            m_ifType = ifType;
             m_primaryStateChanged = false;
         }
 
@@ -410,6 +430,15 @@ public final class CapsdConfigFactory {
          */
         public int getIfIndex() {
             return m_ifIndex;
+        }
+
+        /**
+         * <P>
+         * Returns the ifType of the interface.
+         * </P>
+         */
+        public int getIfType() {
+            return m_ifType;
         }
 
         /**
@@ -801,7 +830,7 @@ public final class CapsdConfigFactory {
                 if (str != null)
                     managedState = str.charAt(0);
 
-                ifList.add(new LightWeightIfEntry(nodeId, LightWeightIfEntry.NULL_IFINDEX, address, managedState, DbIpInterfaceEntry.SNMP_UNKNOWN));
+                ifList.add(new LightWeightIfEntry(nodeId, LightWeightIfEntry.NULL_IFINDEX, address, managedState, DbIpInterfaceEntry.SNMP_UNKNOWN, LightWeightIfEntry.NULL_IFTYPE));
             }
         } finally {
             result.close();
@@ -984,7 +1013,8 @@ public final class CapsdConfigFactory {
     /**
      * Responsible for syncing up the 'isPrimarySnmp' field of the ipInterface
      * table based on the capsd and collectd configurations. Note that the
-     * 'sync' only takes place for interfaces that are not deleted.
+     * 'sync' only takes place for interfaces that are not deleted. Also, it
+     * will prefer a loopback interface over other interfaces.
      * 
      * @param conn
      *            Connection to the database.
@@ -1030,10 +1060,20 @@ public final class CapsdConfigFactory {
                 }
 
                 // ifIndex
-                int ifIndex = result.getInt(3);
-                if (result.wasNull() || ifIndex < 1) {
-                    log.debug("ipInterface table entry for address " + address + " does not have a valid ifIndex ");
+                int ifIndex = result.getInt(6);
+                if (result.wasNull()) {
+                    if (log.isDebugEnabled())
+                        log.debug("ipInterface table entry for address " + address + " does not have a valid ifIndex ");
                     ifIndex = LightWeightIfEntry.NULL_IFINDEX;
+                } else if (ifIndex < 1) {
+                    if (ifIndex == LAME_SNMP_HOST_IFINDEX) {
+                        if (log.isDebugEnabled())
+                            log.debug("Using ifIndex = " + LAME_SNMP_HOST_IFINDEX + " for address " + address);
+                    } else {
+                        if (log.isDebugEnabled())
+                            log.debug("ipInterface table entry for address " + address + " does not have a valid ifIndex ");
+                        ifIndex = LightWeightIfEntry.NULL_IFINDEX;
+                    } 
                 }
 
                 // Primary SNMP State
@@ -1042,19 +1082,27 @@ public final class CapsdConfigFactory {
                 if (str != null)
                     primarySnmpState = str.charAt(0);
 
+                // ifType
+                int ifType = result.getInt(5);
+                if (result.wasNull()) {
+                    if (log.isDebugEnabled())
+                        log.debug("snmpInterface table entry for address " + address + " does not have a valid ifType");
+                    ifType = LightWeightIfEntry.NULL_IFTYPE;
+                }
+
                 // New node or existing node?
                 ifList = (List) nodes.get(new Integer(nodeId));
                 if (ifList == null) {
                     // Create new interface entry list
                     ifList = new ArrayList();
-                    ifList.add(new LightWeightIfEntry(nodeId, ifIndex, address, DbIpInterfaceEntry.STATE_UNKNOWN, primarySnmpState));
+                    ifList.add(new LightWeightIfEntry(nodeId, ifIndex, address, DbIpInterfaceEntry.STATE_UNKNOWN, primarySnmpState, ifType));
 
                     // Add interface entry list to the map
                     nodes.put(new Integer(nodeId), ifList);
                 } else {
                     // Just add the current interface to the
                     // node's interface list
-                    ifList.add(new LightWeightIfEntry(nodeId, ifIndex, address, DbIpInterfaceEntry.STATE_UNKNOWN, primarySnmpState));
+                    ifList.add(new LightWeightIfEntry(nodeId, ifIndex, address, DbIpInterfaceEntry.STATE_UNKNOWN, primarySnmpState, ifType));
                 }
             }
         } finally {
@@ -1077,15 +1125,19 @@ public final class CapsdConfigFactory {
         while (niter.hasNext()) {
             // Get the nodeid (key)
             Integer nId = (Integer) niter.next();
-            log.debug("building SNMP address list for node " + nId);
+            if (log.isDebugEnabled())
+                log.debug("building SNMP address list for node " + nId);
 
             // Lookup the interface list (value)
             List ifEntries = (List) nodes.get(nId);
 
             // From the interface entries build a list of InetAddress objects
-            // eligible to be the primary SNMP interface for the node.
+            // eligible to be the primary SNMP interface for the node, and a
+            // list of loopback InetAddress objects eligible to be the primary
+            //  SNMP interface for the node.
             //
             List addressList = new ArrayList();
+            List lbAddressList = new ArrayList();
             Iterator iter = ifEntries.iterator();
             while (iter.hasNext()) {
                 LightWeightIfEntry lwIf = (LightWeightIfEntry) iter.next();
@@ -1093,23 +1145,55 @@ public final class CapsdConfigFactory {
                 // Skip interfaces which do not have a valid (non-null) ifIndex
                 // as they are not eligible to be the primary SNMP interface
                 if (lwIf.getIfIndex() == LightWeightIfEntry.NULL_IFINDEX) {
-                    log.debug("skipping address " + lwIf.getAddress() + ": does not have a valid ifIndex.");
+                    if (log.isDebugEnabled())
+                        log.debug("skipping address " + lwIf.getAddress() + ": does not have a valid ifIndex.");
                     continue;
                 }
 
                 try {
                     InetAddress addr = InetAddress.getByName(lwIf.getAddress());
                     addressList.add(addr);
+                    if (lwIf.getIfType() == LightWeightIfEntry.LOOPBACK_IFTYPE) {
+                        lbAddressList.add(addr);
+                    }
                 } catch (UnknownHostException uhe) {
                     log.warn("Unknown host exception for " + lwIf.getAddress(), uhe);
                 }
             }
 
-            // Determine primary SNMP interface from list of possible addresses
+            // Determine primary SNMP interface from the lists of possible addresses
+            // in this order: loopback interfaces in collectd-configuration.xml,
+            // other interfaces in collectd-configuration.xml, loopback interfaces in
+            // the database, other interfaces in the database.
             //
-            InetAddress primarySnmpIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(addressList);
-            if (log.isDebugEnabled())
-                log.debug("syncSnmpPrimaryState: primary SNMP interface for node " + nId + " is: " + primarySnmpIf);
+            boolean strict = true;
+            InetAddress primarySnmpIf = null;
+            String psiType = null;
+            if (lbAddressList != null) {
+                primarySnmpIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(lbAddressList, strict);
+                psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME) + " loopback addresses";
+            }
+            if(primarySnmpIf == null) {
+                primarySnmpIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(addressList, strict);
+                psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME) + " addresses";
+            }
+            strict = false;
+            if((primarySnmpIf == null) && (lbAddressList != null)){
+                primarySnmpIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(lbAddressList, strict);
+                psiType = "DB loopback addresses";
+            }
+            if(primarySnmpIf == null) {
+                primarySnmpIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(addressList, strict);
+                psiType = "DB addresses";
+            }
+
+            if (log.isDebugEnabled()) {
+                if(primarySnmpIf == null) {
+                    log.debug("syncSnmpPrimaryState: No primary SNMP interface found for node " + nId);
+                } else {
+                    log.debug("syncSnmpPrimaryState: primary SNMP interface for node " + nId + " is: " + primarySnmpIf + ", selected from " + psiType);
+                }
+            }
 
             // Iterate back over interface list and update primary SNMP
             // interface state
@@ -1552,7 +1636,8 @@ public final class CapsdConfigFactory {
 
         boolean result = false;
 
-        log.debug("isInterfaceInDB: attempting to lookup interface " + ifAddress.getHostAddress() + " in the database.");
+        if (log.isDebugEnabled())
+            log.debug("isInterfaceInDB: attempting to lookup interface " + ifAddress.getHostAddress() + " in the database.");
 
         // Set connection as read-only
         //
@@ -1579,7 +1664,8 @@ public final class CapsdConfigFactory {
     public int getInterfaceDbNodeId(Connection dbConn, InetAddress ifAddress, int ifIndex) throws SQLException {
         Category log = ThreadCategory.getInstance(CapsdConfigFactory.class);
 
-        log.debug("getInterfaceDbNodeId: attempting to lookup interface " + ifAddress.getHostAddress() + "/ifindex: " + ifIndex + " in the database.");
+        if (log.isDebugEnabled())
+            log.debug("getInterfaceDbNodeId: attempting to lookup interface " + ifAddress.getHostAddress() + "/ifindex: " + ifIndex + " in the database.");
 
         // Set connection as read-only
         //

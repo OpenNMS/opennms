@@ -299,6 +299,8 @@ final class BroadcastEventProcessor implements EventListener {
                 CollectableService cSvc = (CollectableService) iter.next();
 
                 InetAddress addr = (InetAddress) cSvc.getAddress();
+                if (log.isDebugEnabled())
+                    log.debug("Comparing CollectableService ip address = " + addr.getHostAddress() + " and event ip interface = " + event.getInterface());
                 if (addr.getHostAddress().equals(event.getInterface())) {
                     synchronized (cSvc) {
                         // Got a match! Retrieve the CollectorUpdates object

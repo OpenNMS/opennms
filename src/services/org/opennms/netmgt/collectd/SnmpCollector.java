@@ -10,6 +10,7 @@
 //
 // Modifications:
 // 
+// 2005 Jan 03: Added support for lame SNMP hosts
 // 2003 Oct 20: Added minval and maxval code for mibObj RRDs
 // 2003 Jan 31: Cleaned up some unused imports.
 //
@@ -533,7 +534,10 @@ final class SnmpCollector implements ServiceCollector {
                 throw new RuntimeException("Unable to retrieve node id for interface " + ipAddr.getHostAddress());
 
             if (primaryIfIndex == -1)
-                throw new RuntimeException("Unable to retrieve ifIndex for interface " + ipAddr.getHostAddress());
+                // allow this for nodes without ipAddrTables
+                // throw new RuntimeException("Unable to retrieve ifIndex for interface " + ipAddr.getHostAddress());
+                if (log.isDebugEnabled())
+                    log.debug("initialize: db retrieval info: node " + nodeID + " does not have a legitimate primaryIfIndex. Assume node does not supply ipAddrTable and continue...");
 
             if (isSnmpPrimary != DbIpInterfaceEntry.SNMP_PRIMARY)
                 throw new RuntimeException("Interface " + ipAddr.getHostAddress() + " is not the primary SNMP interface for nodeid " + nodeID);
@@ -1359,12 +1363,12 @@ final class SnmpCollector implements ServiceCollector {
                 if (snmpStorage.equals(SNMP_STORAGE_SELECT)) {
                     if (ifInfo.getCollType() == null) {
                         if (log.isDebugEnabled())
-                            log.debug("updateRRDs: selectively storing SNMP data for primary interface (" + primaryIfIndex + "), skipping ifIndex: " + ifIndex);
+                            log.debug("updateRRDs: selectively storing SNMP data for primary interface (" + primaryIfIndex + "), skipping ifIndex: " + ifIndex + " because collType = null");
                         continue;
                     }
                     if (ifInfo.getCollType().equals("N")) {
                         if (log.isDebugEnabled())
-                            log.debug("updateRRDs: selectively storing SNMP data for primary interface (" + primaryIfIndex + "), skipping ifIndex: " + ifIndex);
+                            log.debug("updateRRDs: selectively storing SNMP data for primary interface (" + primaryIfIndex + "), skipping ifIndex: " + ifIndex + " because collType = N");
                         continue;
                     }
                 }

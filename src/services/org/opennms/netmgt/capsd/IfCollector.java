@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2005 Jan 03: added support lame snmp hosts when ifTable not supported
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -488,6 +489,51 @@ final class IfCollector implements Runnable {
                         } // end while(more ip addresses)
                     } // end while(more interfaces)
                 } // end if(ipAddrTable and ifTable entries collected)
+
+                else if (m_snmpCollector.hasIpAddrTable()) {
+                    m_subTargets = new TreeMap(KnownIPMgr.AddrComparator.comparator);
+
+                    List ipAddrs = IpAddrTable.getIpAddresses(m_snmpCollector.getIpAddrTable().getEntries());
+                    // Iterate over this interface's IP address list
+                    //
+                    Iterator s = ipAddrs.iterator();
+                    while (s.hasNext()) {
+                        InetAddress subtarget = (InetAddress) s.next();
+
+                        // if the target failed to convert or if it
+                        // is equal to the current target then skip it
+                        //
+                        if (subtarget == null || subtarget.equals(m_target))
+                            continue;
+
+                        // now check for loopback
+                        // now will allow loopback as long as its IP Address
+                        // doesn't
+                        // start with 127
+                        if (subtarget.getHostAddress().startsWith("127")) {
+                            // Skip if loopback
+                            if (log.isDebugEnabled())
+                                log.debug("ifCollector.run: Loopback interface: " + subtarget.getHostAddress() + ", skipping...");
+                            continue;
+                        }
+
+
+                        // ok it appears to be ok, so probe it!
+                        //
+                        List probelist = new ArrayList();
+                        if (log.isDebugEnabled()) {
+                            log.debug("----------------------------------------------------------------------------------------");
+                            log.debug("ifCollector.run: probing subtarget " + subtarget.getHostAddress());
+                        }
+                        probe(subtarget, probelist);
+
+                        if (log.isDebugEnabled()) {
+                            log.debug("ifCollector.run: adding subtarget " + subtarget.getHostAddress() + " # supported protocols: " + probelist.size());
+                            log.debug("----------------------------------------------------------------------------------------");
+                        }
+                        m_subTargets.put(subtarget, probelist);
+                    } // end while(more ip addresses)
+                } // end if(ipAddrTable entries collected)
             } // end try()
             catch (Throwable t) {
                 m_snmpCollector = null;
