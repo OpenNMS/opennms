@@ -518,7 +518,7 @@ case "$COMMAND" in
 	    rm -f /var/lock/subsys/${NAME}
 	    echo ""
 
-	    doKil
+	    doKill
 	else
 	    doStop
 	    ret=$?
