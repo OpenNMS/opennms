@@ -32,7 +32,6 @@
 #include <sys/socket.h>
 #if defined(__DARWIN__) || defined(__SOLARIS__)
 #include <netinet/in_systm.h>
-#include <architecture/byte_order.h>
 #endif
 #include <netinet/in.h>
 #include <netinet/ip.h>
@@ -42,6 +41,7 @@
 
 #if defined(__DARWIN__)
 #include <sys/time.h>
+#include <architecture/byte_order.h>
 #endif
 
 #include <jni.h>
