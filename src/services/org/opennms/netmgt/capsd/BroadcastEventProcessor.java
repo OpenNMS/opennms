@@ -1043,6 +1043,7 @@ final class BroadcastEventProcessor
         }                
 
 	// This method creates a service deleted event
+        // FIXME: This the wrong name for this method
 
         private void sendServiceDeletedEvent(int node, String iface, String svcname)
         {
