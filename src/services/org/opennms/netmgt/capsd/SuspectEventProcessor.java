@@ -2009,17 +2009,45 @@ final class SuspectEventProcessor
 		Event newEvent = new Event();
 		
 		newEvent.setUei(EventConstants.DUPLICATE_IPINTERFACE_EVENT_UEI);
-		
 		newEvent.setSource("OpenNMS.Capsd");
-		
 		newEvent.setNodeid(nodeId);
-		
 		newEvent.setHost(Capsd.getLocalHostAddress());
-		
 		newEvent.setInterface(ipAddr);
-		
 		newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
 		
+		// Add appropriate parms
+		Parms eventParms = new Parms();
+		Parm eventParm = null;
+		Value parmValue = null;
+		
+		// Add IP host name
+		eventParm = new Parm();
+		eventParm.setParmName(EventConstants.PARM_IP_HOSTNAME);
+		parmValue = new Value();
+                String hostName = null;
+                try
+                {
+                        hostName = InetAddress.getByName(ipAddr).getHostName();
+                }
+                catch ( UnknownHostException ue)
+                {
+                        hostName = "";
+                }
+		parmValue.setContent(hostName);
+		eventParm.setValue(parmValue);
+		eventParms.addParm(eventParm);
+		
+		// Add discovery method 
+		eventParm = new Parm();
+		eventParm.setParmName(EventConstants.PARM_METHOD);
+		parmValue = new Value();
+		parmValue.setContent("icmp");
+		eventParm.setValue(parmValue);
+		eventParms.addParm(eventParm);
+		
+		// Add Parms to the event
+		newEvent.setParms(eventParms);
+                
 		// Send event to Eventd
 		try
 		{

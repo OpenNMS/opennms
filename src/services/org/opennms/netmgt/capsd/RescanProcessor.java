@@ -75,6 +75,7 @@ import org.opennms.netmgt.config.capsd.*;
  * The constructor takes an integer which is the node identifier of the 
  * node to be rescanned.
  *.
+ * @author <a href="mailto:jamesz@opennms.org">James Zuo</a>
  * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
  * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
@@ -809,6 +810,9 @@ final class RescanProcessor
 				isAlias = isInterfaceAlias(target, snmpc); 
 				if (isAlias)
 				{
+
+                                        // the target interface is not exist in the ipAddrTable of this node.
+                                        // Do nothing
 					if (log.isDebugEnabled())
 						log.debug("updateInterface: target interface " + ifaddr.getHostAddress() + " is an alias, reparenting all interfaces from node " + oldNodeId + " to node " + node.getNodeId());
 						
@@ -848,29 +852,53 @@ final class RescanProcessor
 				}
 				else
 				{
-					// 
-					// Its not an alias, issue SQL update to move the sub-interface and 
-					// its services under its new parent node
-					//
-					if (log.isDebugEnabled())
-						log.debug("updateInterface: target interface " + ifaddr.getHostAddress() + " is not an alias, reparenting " + ifaddr.getHostAddress() + " under nodeid " + node.getNodeId());
-						
-					// Get ifindex for this address
-					int ifIndex = -1;
-					if (snmpc != null && !snmpc.failed() && snmpc.hasIpAddrTable())
-					{
-						ifIndex = IpAddrTable.getIfIndex(snmpc.getIpAddrTable().getEntries(), ifaddr.getHostAddress());
-					}
-					if (log.isDebugEnabled())
-						log.debug("updateInterface: interface " + ifaddr.getHostAddress() + " has ifIndex " + ifIndex);
-					
-					reparentInterface(dbc, ifaddr, ifIndex, node.getNodeId(), oldNodeId);
-					
-					// Create interfaceReparented event
-					createInterfaceReparentedEvent(node, oldNodeId, ifaddr);
-					
-					// Set reparent flag
-					reparentFlag = true;
+                                        // 
+                                        // target interface is not an alias. Check if the updating interface
+                                        // exists in the ipAddrTable of the oldNode. If it is not in the old 
+                                        // node, reparent the interface to the new node. Otherwise, it is a
+                                        // duplicate interface, and add it to the new node and create an 
+                                        // interfaceAdded event and duplicateInterface event.
+                                        //
+					duplicateNodeEntry = DbNodeEntry.get(dbc, oldNodeId);
+					if (duplicateNodeEntry != null)
+        				{
+                                                if (isInIpAddrTable(ifaddr, duplicateNodeEntry))
+                                                {
+                                                        addDuplicateInterface(node, ifaddr, protocols, snmpc);
+                                                }
+                                                else
+                                                {
+        					        // 
+        					        // It is not in the ipAddrTable of the oldNodeId, issue SQL update to 
+                                                        // move the sub-interface and its services under its new parent node
+        					        //
+        					        if (log.isDebugEnabled())
+                						log.debug("updateInterface: target interface " 
+                                                                        + ifaddr.getHostAddress() 
+                                                                        + " is not exist on nodeID: " + oldNodeId 
+                                                                        +". Reparenting " + ifaddr.getHostAddress() 
+                                                                        + " under nodeid " + node.getNodeId());
+                						
+                					// Get ifindex for this address
+                					int ifIndex = -1;
+                					if (snmpc != null && !snmpc.failed() && snmpc.hasIpAddrTable())
+                					{
+                						ifIndex = IpAddrTable.getIfIndex(snmpc.getIpAddrTable().getEntries(), 
+                                                                                                 ifaddr.getHostAddress());
+                					}
+                					if (log.isDebugEnabled())
+                						log.debug("updateInterface: interface " + ifaddr.getHostAddress() 
+                                                                        + " has ifIndex " + ifIndex);
+                					
+                					reparentInterface(dbc, ifaddr, ifIndex, node.getNodeId(), oldNodeId);
+                					
+                					// Create interfaceReparented event
+                					createInterfaceReparentedEvent(node, oldNodeId, ifaddr);
+                					
+                					// Set reparent flag
+                					reparentFlag = true;
+                                                }
+                                        }
 				}
 				
 				// Delete the old node id if it has no additional IP interfaces
@@ -1310,7 +1338,8 @@ final class RescanProcessor
 				if (aaddrs[1] != null)
 				{
 					if (log.isDebugEnabled()) 
-						log.debug("updateInterface: interface " + aaddrs[0].getHostAddress() + " has netmask: " + aaddrs[1].getHostAddress());
+						log.debug("updateInterface: interface " + aaddrs[0].getHostAddress() 
+                                                        + " has netmask: " + aaddrs[1].getHostAddress());
 					currSnmpIfEntry.setNetmask(aaddrs[1]);
 				}
 				
@@ -1405,7 +1434,291 @@ final class RescanProcessor
 			dbSnmpIfEntry.store(dbc);
 		} // end if snmp info available
 	}
+
+
+	/**
+	 * This method checks if a given ipaddress is in the ipAddrTable of a given
+         * node. If the ipaddress is in the ipAddrtable of a specific node, return 
+         * true, otherwise return false.
+	 * 
+	 * @param node		DbNodeEntry object 
+	 * @param ifaddr	the interface to check
+	 */
+        private boolean isInIpAddrTable(InetAddress ipAddress, DbNodeEntry oldNode)
+        {
+
+		Category log = ThreadCategory.getInstance(getClass());
+
+		// Retrieve all the interfaces
+		// associated with the old node and perform collections against them.  
+		// 
+		DbIpInterfaceEntry[] dbInterfaces = null;
+		
+		// Retrieve list of interfaces associated with this nodeID
+		// from the database
+		log.debug("RescanProcessor: retrieving all interfaces for node: " + oldNode.getNodeId());
+		try
+		{
+			dbInterfaces = oldNode.getInterfaces();
+		}
+		catch (NullPointerException npE)
+		{
+			log.error("RescanProcessor: Null pointer when retrieving interfaces for node " + oldNode.getNodeId(), npE);
+			return false;
+		}
+		catch (SQLException sqlE)
+		{
+			log.error("RescanProcessor: unable to load interface info for nodeId " + oldNode.getNodeId() 
+                                + " from the database.", sqlE);
+			return false;
+		}
+
+		// Run collector for each retrieved interface 
+		// 
+                IfCollector collector = null;
+		IfSnmpCollector snmpc = null;
+		boolean doSnmpCollection = true;
+		for (int i=0; i<dbInterfaces.length && doSnmpCollection; i++)
+		{
+			InetAddress ifaddr = dbInterfaces[i].getIfAddress();
+				
+			// collect the information from the interface.  
+			// NOTE: skip '127.*.*.*' and '0.0.0.0' addresses.
+			if(ifaddr.getHostAddress().startsWith("127") || 
+				ifaddr.getHostAddress().equals("0.0.0.0"))
+			{
+				continue;
+			}
+
+			if (log.isDebugEnabled())
+				log.debug("RescanProcessor: running collection for " + ifaddr.getHostAddress());
+			
+			collector = new IfCollector(ifaddr, doSnmpCollection);
+			collector.run();
+			
+			// Only need to collect SNMP data from one of the
+			// node's interfaces. 
+			//
+			if (doSnmpCollection)
+			{
+				snmpc = collector.getSnmpCollector();
+				if (snmpc != null && !snmpc.failed())
+				{
+					// Got a successful SNMP collection from the node
+					doSnmpCollection = false;
+					
+					if (log.isDebugEnabled())
+						log.debug("RescanProcessor: SNMP data collected via " + ifaddr.getHostAddress());
+				}
+			}
+
+			if (log.isDebugEnabled())
+				log.debug("RescanProcessor: collection completed for " + ifaddr.getHostAddress());
+		}
+
+                // Check if a given ipAddress is on the ipAddrTable of the oldNode
+                return !isInterfaceAlias(ipAddress, snmpc);
+        }
+
+
+	/**
+	 * This method is responsble for inserting a new entry into the ipInterface
+	 * table and all its supported protocols into ifservices table for a given node.
+	 * 
+	 * @param node		DbNodeEntry object representing the rescaning interface's
+	 *                      parent node table entry
+	 * @param ifaddr	Rescaning interface
+	 * @param protocols	Protocols supported by the interface.
+	 * @param snmpc		SNMP collector or null if SNMP not supported.
+	 * 
+	 * @throws SQLException if there is a problem updating the ipInterface table.
+	 */
+	private void addDuplicateInterface( DbNodeEntry node,
+				   InetAddress ifaddr,
+                                   List protocols,
+				   IfSnmpCollector snmpc)
+		throws SQLException
+	{
+		Category log = ThreadCategory.getInstance(getClass());
+
+		CapsdConfigFactory cFactory = CapsdConfigFactory.getInstance();
+		PollerConfigFactory pollerCfgFactory = PollerConfigFactory.getInstance();
+
+		Date now = new Date();
+
+		// if there is no snmp information then it's a
+		// simple addtion to the database
+		//
+		if(snmpc != null || !snmpc.failed())
+		{
+			if (log.isDebugEnabled())
+				log.debug("RescanProcessor: add interface " + ifaddr.getHostAddress()
+                                        + " for nodeId: " + node.getNodeId());
+                                        
+			DbIpInterfaceEntry ipIfEntry = DbIpInterfaceEntry.create(node.getNodeId(), ifaddr);
+			ipIfEntry.setLastPoll(now);
+			ipIfEntry.setHostname(ifaddr.getHostName());
+
+			// The package filter evaluation requires that the ip be in the
+			// database - at this point the ip is NOT in db, so insert as active
+			// and update afterward
+			//
+			// Try to avoid re-evaluating the ip against filters for
+			// each service, try to get the first package here and use
+			// that for service evaluation
+			//
+			boolean addrUnmanaged = cFactory.isAddressUnmanaged(ifaddr);
+			if(addrUnmanaged)
+				ipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_UNMANAGED);
+			else
+				ipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_MANAGED);
+
+			ipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
+
+			ipIfEntry.store();
+
+			// now update if necessary
+			org.opennms.netmgt.config.poller.Package ipPkg = null;
+			if (!addrUnmanaged)
+			{
+				boolean ipToBePolled = false;
+				ipPkg = pollerCfgFactory.getFirstPackageMatch(ifaddr.getHostAddress());
+				if (ipPkg != null)
+					ipToBePolled = true;
+
+				if (!ipToBePolled)
+				{
+					// update ismanaged to 'N' in ipinterface
+					ipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_NOT_POLLED);
+					ipIfEntry.store();
+				}
+			}
+
+			int ifIndex = -1;
+			if((ifIndex = snmpc.getIfIndex(ifaddr)) != -1)
+			{
+			        // Just set primary state to secondary for now.  The primary SNMP interface
+			        // won't be selected until after all interfaces have been inserted
+			        // into the database. This is because the interface must already be in
+			        // the database for filter rule evaluation to succeed.
+				ipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_SECONDARY);
+			
+				ipIfEntry.setIfIndex(ifIndex);
+				int status = snmpc.getAdminStatus(ifIndex);
+				if(status != -1)
+					ipIfEntry.setStatus(status);
+			}
+			else
+			{
+				// Address does not have a valid ifIndex associated with it
+				// so set primary state to NOT_ELIGIBLE.
+				ipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
+			}
+
+			ipIfEntry.store();
+	                createNodeGainedInterfaceEvent(ipIfEntry);
+                        createDuplicateIpAddressEvent(ipIfEntry);
+
+			// Add supported protocols
+			if (log.isDebugEnabled())
+				log.debug("RescanProcessor: add supported protocols for interface " + ifaddr.getHostAddress()
+                                        + " /nodeId: " + node.getNodeId());
+			addSupportedProtocols(node, 
+						ipIfEntry, 
+					        protocols, 
+						addrUnmanaged, 
+						ifIndex, 
+						ipPkg);
+
+                }			
+	}
+
+
+	/**
+	 * Responsible for iterating inserting an entry into the ifServices
+	 * table for each protocol supported by the interface.
+	 *
+	 * @param node		Node entry
+	 * @param ipIfEntry 	DbIpInterfaceEntry object
+	 * @param protocols	List of supported protocols
+	 * @param addrUnmanaged Boolean flag indicating if interface is managed or
+	 *                      unmanaged according to the Capsd configuration.
+	 * @param ifIndex 	Interface index or -1 if index is not known
+	 * @param ipPkg		Poller package to which the interface belongs
+	 *
+	 * @throws SQLException if an error occurs adding interfaces to the ipInterface 
+	 *                      table.
+	 */
+	private void addSupportedProtocols(DbNodeEntry node, 
+					DbIpInterfaceEntry ipIfEntry, 
+					List protocols, 
+					boolean addrUnmanaged,
+					int ifIndex, 
+					org.opennms.netmgt.config.poller.Package ipPkg)
+		throws SQLException
+	{
+		InetAddress ifaddr = ipIfEntry.getIfAddress();
+                
+                // add the supported protocols
+		//
+		Iterator iproto = protocols.iterator();
+		while(iproto.hasNext())
+		{
+			IfCollector.SupportedProtocol p = (IfCollector.SupportedProtocol)iproto.next();
+			Number sid = (Number)CapsdConfigFactory.getInstance().getServiceIdentifier(p.getProtocolName());
+
+			DbIfServiceEntry ifSvcEntry = DbIfServiceEntry.create(node.getNodeId(), 
+                                                                              ifaddr, sid.intValue());
+
+			// now fill in the entry
+			//
+			if(addrUnmanaged)
+				ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_UNMANAGED);
+			else 
+			{
+				boolean svcToBePolled = false;
+				if (ipPkg != null)
+				{
+					svcToBePolled = PollerConfigFactory.getInstance().isPolled(p.getProtocolName(), ipPkg);
+					if (!svcToBePolled)
+						svcToBePolled = PollerConfigFactory.getInstance().isPolled(ifaddr.getHostAddress(), 
+                                                                                                           p.getProtocolName());
+				}
+
+				if (svcToBePolled)
+					ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_ACTIVE);
+				else
+					ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_NOT_POLLED);
+			}
+
+			// Set qualifier if available.  Currently the qualifier field
+			// is used to store the port at which the protocol was found.
+			//
+			if (p.getQualifiers() != null && p.getQualifiers().get("port") != null)
+			{
+				try
+				{
+					Integer port = (Integer)p.getQualifiers().get("port");
+					ifSvcEntry.setQualifier(port.toString());
+				}
+				catch (ClassCastException ccE)
+				{
+					// Do nothing
+				}
+			}
+				
+			ifSvcEntry.setSource(DbIfServiceEntry.SOURCE_PLUGIN);
+			ifSvcEntry.setNotify(DbIfServiceEntry.NOTIFY_ON);
+			if(ifIndex != -1)
+				ifSvcEntry.setIfIndex(ifIndex);
+			ifSvcEntry.store();
+                        
+			// Generate nodeGainedService event
+			createNodeGainedServiceEvent(node, ipIfEntry, p.getProtocolName());
+		}
+	}
 	
+
 	/**
 	 * This method is responsible for reparenting an interface's database
 	 * table entries under its new node identifier.  The following tables
@@ -3048,6 +3361,72 @@ final class RescanProcessor
 		
 		if (log.isDebugEnabled())
 			log.debug("createNodeGainedInterfaceEvent: successfully created nodeGainedInterface event for nodeid: " + ifEntry.getNodeId());
+	}
+	
+	/**
+	 * This method is responsible for generating a duplicateIpAddress event and
+	 * adding it to the event list. 
+	 *
+	 * @param ifEntry  Entry of new interface.
+	 */
+	private void createDuplicateIpAddressEvent(DbIpInterfaceEntry ifEntry)
+	{
+		Category log = ThreadCategory.getInstance(getClass());
+		
+		if (log.isDebugEnabled())
+			log.debug("createDuplicateIpAddressEvent: nodeId: " + ifEntry.getNodeId()  + 
+				" interface: " + ifEntry.getIfAddress().getHostAddress());
+		
+		Event newEvent = new Event();
+		
+		newEvent.setUei(EventConstants.DUPLICATE_IPINTERFACE_EVENT_UEI);
+		
+		newEvent.setSource("OpenNMS.Capsd");
+		
+		newEvent.setNodeid(ifEntry.getNodeId());
+		
+		newEvent.setHost(Capsd.getLocalHostAddress());
+		
+		newEvent.setInterface(ifEntry.getIfAddress().getHostAddress());
+		
+		newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+
+		// Add appropriate parms
+		Parms eventParms = new Parms();
+		Parm eventParm = null;
+		Value parmValue = null;
+		
+		// Add ip host name
+		String hostname = null;
+		if (ifEntry.getHostname() == null)
+			hostname = "";
+		else
+			hostname = ifEntry.getHostname();
+			
+		eventParm = new Parm();
+		eventParm.setParmName(EventConstants.PARM_IP_HOSTNAME);
+		parmValue = new Value();
+		parmValue.setContent(hostname);
+		eventParm.setValue(parmValue);
+		eventParms.addParm(eventParm);
+		
+		// Add discovery method
+		eventParm = new Parm();
+		eventParm.setParmName(EventConstants.PARM_METHOD);
+		parmValue = new Value();
+		parmValue.setContent("icmp");
+		eventParm.setValue(parmValue);
+		eventParms.addParm(eventParm);
+		
+		// Add Parms to the event
+		newEvent.setParms(eventParms);
+		
+		// Add event to the list of events to be sent out.
+		m_eventList.add(newEvent);
+		
+		if (log.isDebugEnabled())
+			log.debug("createDuplicateIpAddressEvent: successfully created duplicateIpAddress event for nodeid: " 
+                                + ifEntry.getNodeId());
 	}
 	
 	/**
