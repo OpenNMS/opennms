@@ -195,7 +195,7 @@ public class NotifdConfigFactory
         public void turnNotifdOn()
                 throws MarshalException, ValidationException, IOException
         {
-                sendEvent("http://uei.opennms.org/products/bluebird/internal/notificationsTurnedOn");
+                sendEvent("uei.opennms.org/internal/notificationsTurnedOn");
                 configuration.setStatus("on");
 		
                 saveCurrent();
@@ -207,7 +207,7 @@ public class NotifdConfigFactory
         public void turnNotifdOff()
                 throws MarshalException, ValidationException, IOException
         {
-                sendEvent("http://uei.opennms.org/products/bluebird/internal/notificationsTurnedOff");
+                sendEvent("uei.opennms.org/internal/notificationsTurnedOff");
                 configuration.setStatus("off");
 		
                 saveCurrent();

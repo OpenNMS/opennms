@@ -162,8 +162,8 @@
             <tr>
               <td valign="top">Notify the Reporting group via email of the following events:</td>
               <td valign="top">
-                <input type="checkbox" name="notifyNodeGainedInterface" <%--=(eventFactory.eventHasNotice("http://uei.opennms.org/products/bluebird/nodes/nodeGainedInterface", "Email-Reporting") ? "checked" : "")--%>> Node Gained Interface <br>
-                <input type="checkbox" name="notifyNodeGainedService" <%--=(eventFactory.eventHasNotice("http://uei.opennms.org/products/bluebird/nodes/nodeGainedService", "Email-Reporting") ? "checked" : "")--%>> Node Gained Service
+                <input type="checkbox" name="notifyNodeGainedInterface" <%--=(eventFactory.eventHasNotice("uei.opennms.org/nodes/nodeGainedInterface", "Email-Reporting") ? "checked" : "")--%>> Node Gained Interface <br>
+                <input type="checkbox" name="notifyNodeGainedService" <%--=(eventFactory.eventHasNotice("uei.opennms.org/nodes/nodeGainedService", "Email-Reporting") ? "checked" : "")--%>> Node Gained Service
               </td>
             </tr>
           </table>

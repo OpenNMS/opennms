@@ -88,7 +88,7 @@
 		</para>
 		<programlisting>
 		&lt;notification name="nodeAdded"&gt;
-			&lt;uei&gt;&lt;![CDATA[http://uei.opennms.org/products/bluebird/nodes/nodeAdded]]&gt;&lt;/uei&gt;
+			&lt;uei&gt;&lt;![CDATA[http://uei.opennms.org/nodes/nodeAdded]]&gt;&lt;/uei&gt;
 			&lt;rule&gt;&lt;![CDATA[IPADDR IPLIKE *.*.*.*]]&gt;&lt;/rule&gt;
 			&lt;destinationPath&gt;Email-Network/Systems&lt;/destinationPath&gt;
 			&lt;text-message&gt;OpenNMS has discovered a new node named %parm[nodelabel]%.    Please be advised.&lt;/text-message&gt;

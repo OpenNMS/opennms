@@ -1,5 +1,7 @@
 1.0.0 to 1.1.0
 ----------------------------------------------------------------------
+- Since the UEI is just a string, removed the "http://" and all
+  references to "bluebird" in UEIs.
 - Disallowed spaces in Path names. Bug 657
 - Removed borders around Event and Notification lists (per Larry)
 - Added the ability to match an event to more than one notification.

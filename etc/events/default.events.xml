@@ -6,7 +6,7 @@
 				<mevalue>.1.3.6.1.2.1.10.5.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/x25Restart</uei>
+		<uei>uei.opennms.org/traps/x25Restart</uei>
 		<event-label>OpenNMS-defined trap event: x25Restart</event-label>
 		<descr>
 			&lt;p&gt;This trap means the X.25 PLE sent or received a
@@ -27,7 +27,7 @@
 				<mevalue>.1.3.6.1.2.1.10.5.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/x25Reset</uei>
+		<uei>uei.opennms.org/traps/x25Reset</uei>
 		<event-label>OpenNMS-defined trap event: x25Reset</event-label>
 		<descr>
 			&lt;p&gt;If the PLE sends or receives a reset, the agent
@@ -45,7 +45,7 @@
 				<mevalue>.1.3.6.1.2.1.10.21.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/dialCtlPeerCallInfo</uei>
+		<uei>uei.opennms.org/traps/dialCtlPeerCallInfo</uei>
 		<event-label>OpenNMS-defined trap event: dialCtlPeerCallInfo</event-label>
 		<descr>
 			&lt;p&gt;This dialCtlPeerCallInformation trap/inform is sent
@@ -71,7 +71,7 @@
 				<mevalue>.1.3.6.1.2.1.10.21.2.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/dialCtlPeerCallSetup</uei>
+		<uei>uei.opennms.org/traps/dialCtlPeerCallSetup</uei>
 		<event-label>OpenNMS-defined trap event: dialCtlPeerCallSetup</event-label>
 		<descr>
 			&lt;p&gt;This dialCtlPeerCallSetup trap/inform is sent to
@@ -93,7 +93,7 @@
 				<mevalue>.1.3.6.1.2.1.10.32.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/frDLCIStatusChange</uei>
+		<uei>uei.opennms.org/traps/frDLCIStatusChange</uei>
 		<event-label>OpenNMS-defined trap event: frDLCIStatusChange</event-label>
 		<descr>
 			&lt;p&gt;This trap indicates that the indicated Virtual
@@ -114,7 +114,7 @@
 				<mevalue>.1.3.6.1.2.1.14.16.2.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/ospfVirtIfStateChang</uei>
+		<uei>uei.opennms.org/traps/ospfVirtIfStateChang</uei>
 		<event-label>OpenNMS-defined trap event: ospfVirtIfStateChang</event-label>
 		<descr>
 			&lt;p&gt;An ospfIfStateChange trap signifies that there has
@@ -136,7 +136,7 @@
 				<mevalue>.1.3.6.1.2.1.14.16.2.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/ospfNbrStateChange</uei>
+		<uei>uei.opennms.org/traps/ospfNbrStateChange</uei>
 		<event-label>OpenNMS-defined trap event: ospfNbrStateChange</event-label>
 		<descr>
 			&lt;p&gt;An ospfNbrStateChange trap signifies that there has
@@ -162,7 +162,7 @@
 				<mevalue>.1.3.6.1.2.1.14.16.2.3</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/ospfVirtNbrStateChan</uei>
+		<uei>uei.opennms.org/traps/ospfVirtNbrStateChan</uei>
 		<event-label>OpenNMS-defined trap event: ospfVirtNbrStateChan</event-label>
 		<descr>
 			&lt;p&gt;An ospfIfStateChange trap signifies that there has
@@ -183,7 +183,7 @@
 				<mevalue>.1.3.6.1.2.1.14.16.2.4</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/ospfIfConfigError</uei>
+		<uei>uei.opennms.org/traps/ospfIfConfigError</uei>
 		<event-label>OpenNMS-defined trap event: ospfIfConfigError</event-label>
 		<descr>
 			&lt;p&gt;An ospfIfConfigError trap signifies that a packet
@@ -205,7 +205,7 @@
 				<mevalue>.1.3.6.1.2.1.14.16.2.5</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/ospfVirtIfConfigErro</uei>
+		<uei>uei.opennms.org/traps/ospfVirtIfConfigErro</uei>
 		<event-label>OpenNMS-defined trap event: ospfVirtIfConfigErro</event-label>
 		<descr>
 			&lt;p&gt;An ospfConfigError trap signifies that a packet has
@@ -227,7 +227,7 @@
 				<mevalue>.1.3.6.1.2.1.14.16.2.6</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/ospfIfAuthFailure</uei>
+		<uei>uei.opennms.org/traps/ospfIfAuthFailure</uei>
 		<event-label>OpenNMS-defined trap event: ospfIfAuthFailure</event-label>
 		<descr>
 			&lt;p&gt;An ospfIfAuthFailure trap signifies that a packet
@@ -248,7 +248,7 @@
 				<mevalue>.1.3.6.1.2.1.14.16.2.7</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/ospfVirtIfAuthFailur</uei>
+		<uei>uei.opennms.org/traps/ospfVirtIfAuthFailur</uei>
 		<event-label>OpenNMS-defined trap event: ospfVirtIfAuthFailur</event-label>
 		<descr>
 			&lt;p&gt;An ospfVirtIfAuthFailure trap signifies that a
@@ -269,7 +269,7 @@
 				<mevalue>.1.3.6.1.2.1.14.16.2.8</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/ospfIfRxBadPacket</uei>
+		<uei>uei.opennms.org/traps/ospfIfRxBadPacket</uei>
 		<event-label>OpenNMS-defined trap event: ospfIfRxBadPacket</event-label>
 		<descr>
 			&lt;p&gt;An ospfIfRxBadPacket trap signifies that an OSPF
@@ -288,7 +288,7 @@
 				<mevalue>.1.3.6.1.2.1.14.16.2.9</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/ospfVirtIfRxBadPacke</uei>
+		<uei>uei.opennms.org/traps/ospfVirtIfRxBadPacke</uei>
 		<event-label>OpenNMS-defined trap event: ospfVirtIfRxBadPacke</event-label>
 		<descr>
 			&lt;p&gt;An ospfRxBadPacket trap signifies that an OSPF
@@ -307,7 +307,7 @@
 				<mevalue>.1.3.6.1.2.1.14.16.2.10</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/ospfTxRetransmit</uei>
+		<uei>uei.opennms.org/traps/ospfTxRetransmit</uei>
 		<event-label>OpenNMS-defined trap event: ospfTxRetransmit</event-label>
 		<descr>
 			&lt;p&gt;An ospfTxRetransmit trap signifies than an OSPF
@@ -328,7 +328,7 @@
 				<mevalue>.1.3.6.1.2.1.14.16.2.11</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/ospfVirtIfTxRetransm</uei>
+		<uei>uei.opennms.org/traps/ospfVirtIfTxRetransm</uei>
 		<event-label>OpenNMS-defined trap event: ospfVirtIfTxRetransm</event-label>
 		<descr>
 			&lt;p&gt;An ospfTxRetransmit trap signifies than an OSPF
@@ -349,7 +349,7 @@
 				<mevalue>.1.3.6.1.2.1.14.16.2.12</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/ospfOriginateLsa</uei>
+		<uei>uei.opennms.org/traps/ospfOriginateLsa</uei>
 		<event-label>OpenNMS-defined trap event: ospfOriginateLsa</event-label>
 		<descr>
 			&lt;p&gt;An ospfOriginateLsa trap signifies that a new LSA
@@ -372,7 +372,7 @@
 				<mevalue>.1.3.6.1.2.1.14.16.2.13</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/ospfMaxAgeLsa</uei>
+		<uei>uei.opennms.org/traps/ospfMaxAgeLsa</uei>
 		<event-label>OpenNMS-defined trap event: ospfMaxAgeLsa</event-label>
 		<descr>
 			&lt;p&gt;An ospfMaxAgeLsa trap signifies that one of the LSA
@@ -391,7 +391,7 @@
 				<mevalue>.1.3.6.1.2.1.14.16.2.14</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/ospfLsdbOverflow</uei>
+		<uei>uei.opennms.org/traps/ospfLsdbOverflow</uei>
 		<event-label>OpenNMS-defined trap event: ospfLsdbOverflow</event-label>
 		<descr>
 			&lt;p&gt;An ospfLsdbOverflow trap signifies that the number
@@ -410,7 +410,7 @@
 				<mevalue>.1.3.6.1.2.1.14.16.2.15</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/ospfLsdbApproachingO</uei>
+		<uei>uei.opennms.org/traps/ospfLsdbApproachingO</uei>
 		<event-label>OpenNMS-defined trap event: ospfLsdbApproachingO</event-label>
 		<descr>
 			&lt;p&gt;An ospfLsdbApproachingOverflow trap signifies that
@@ -430,7 +430,7 @@
 				<mevalue>.1.3.6.1.2.1.14.16.2.16</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/ospfIfStateChange</uei>
+		<uei>uei.opennms.org/traps/ospfIfStateChange</uei>
 		<event-label>OpenNMS-defined trap event: ospfIfStateChange</event-label>
 		<descr>
 			&lt;p&gt;An ospfIfStateChange trap signifies that there has
@@ -452,7 +452,7 @@
 				<mevalue>.1.3.6.1.2.1.15.7.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/bgpEstablished</uei>
+		<uei>uei.opennms.org/traps/bgpEstablished</uei>
 		<event-label>OpenNMS-defined trap event: bgpEstablished</event-label>
 		<descr>
 			&lt;p&gt;The BGP Established event is generated when the BGP
@@ -472,7 +472,7 @@
 				<mevalue>.1.3.6.1.2.1.15.7.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/bgpBackwardTranstion</uei>
+		<uei>uei.opennms.org/traps/bgpBackwardTranstion</uei>
 		<event-label>OpenNMS-defined trap event: bgpBackwardTranstion</event-label>
 		<descr>
 			&lt;p&gt;The BGPBackwardTransition Event is generated when
@@ -493,7 +493,7 @@
 				<mevalue>.1.3.6.1.2.1.16.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/RMON_Rise_Alarm</uei>
+		<uei>uei.opennms.org/traps/RMON_Rise_Alarm</uei>
 		<event-label>OpenNMS-defined trap event: RMON_Rise_Alarm</event-label>
 		<descr>
 			&lt;p&gt;This event is sent when an RMON device exceeds a
@@ -514,7 +514,7 @@
 				<mevalue>.1.3.6.1.2.1.16.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/RMON_Falling_Alarm</uei>
+		<uei>uei.opennms.org/traps/RMON_Falling_Alarm</uei>
 		<event-label>OpenNMS-defined trap event: RMON_Falling_Alarm</event-label>
 		<descr>
 			&lt;p&gt;This event is sent when an RMON device falls below
@@ -535,7 +535,7 @@
 				<mevalue>.1.3.6.1.2.1.16.0.3</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/RMON_Packet_Match</uei>
+		<uei>uei.opennms.org/traps/RMON_Packet_Match</uei>
 		<event-label>OpenNMS-defined trap event: RMON_Packet_Match</event-label>
 		<descr>
 			&lt;p&gt;This event is sent when an RMON device matches a
@@ -554,7 +554,7 @@
 				<mevalue>.1.3.6.1.2.1.17.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/newRoot</uei>
+		<uei>uei.opennms.org/traps/newRoot</uei>
 		<event-label>OpenNMS-defined trap event: newRoot</event-label>
 		<descr>
 			&lt;p&gt;The newRoot trap indicates that the sending agent
@@ -575,7 +575,7 @@
 				<mevalue>.1.3.6.1.2.1.17.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/topologyChange</uei>
+		<uei>uei.opennms.org/traps/topologyChange</uei>
 		<event-label>OpenNMS-defined trap event: topologyChange</event-label>
 		<descr>
 			&lt;p&gt;A topologyChange trap is sent by a bridge when any
@@ -596,7 +596,7 @@
 				<mevalue>.1.3.6.1.2.1.22.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/rptrHealth</uei>
+		<uei>uei.opennms.org/traps/rptrHealth</uei>
 		<event-label>OpenNMS-defined trap event: rptrHealth</event-label>
 		<descr>
 			&lt;p&gt;The rptrHealth trap conveys information related to
@@ -621,7 +621,7 @@
 				<mevalue>.1.3.6.1.2.1.22.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/rptrGroupChange</uei>
+		<uei>uei.opennms.org/traps/rptrGroupChange</uei>
 		<event-label>OpenNMS-defined trap event: rptrGroupChange</event-label>
 		<descr>
 			&lt;p&gt;This trap is sent when a change occurs in the group
@@ -643,7 +643,7 @@
 				<mevalue>.1.3.6.1.2.1.22.0.3</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/rptrResetEvent</uei>
+		<uei>uei.opennms.org/traps/rptrResetEvent</uei>
 		<event-label>OpenNMS-defined trap event: rptrResetEvent</event-label>
 		<descr>
 			&lt;p&gt;The rptrResetEvent trap conveys information related
@@ -671,7 +671,7 @@
 				<mevalue>.1.3.6.1.2.1.34.1.1.5.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/snaLuSessnBindFail</uei>
+		<uei>uei.opennms.org/traps/snaLuSessnBindFail</uei>
 		<event-label>OpenNMS-defined trap event: snaLuSessnBindFail</event-label>
 		<descr>
 			&lt;p&gt;This trap indicates the failure of a BIND. The
@@ -697,7 +697,7 @@
 				<mevalue>.1.3.6.1.2.1.34.1.1.5.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/snaLuStateChangeTrap</uei>
+		<uei>uei.opennms.org/traps/snaLuStateChangeTrap</uei>
 		<event-label>OpenNMS-defined trap event: snaLuStateChangeTrap</event-label>
 		<descr>
 			&lt;p&gt;This trap indicates that the operational state
@@ -720,7 +720,7 @@
 				<mevalue>.1.3.6.1.2.1.34.1.1.10.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/snaNodeActFailTrap</uei>
+		<uei>uei.opennms.org/traps/snaNodeActFailTrap</uei>
 		<event-label>OpenNMS-defined trap event: snaNodeActFailTrap</event-label>
 		<descr>
 			&lt;p&gt;This trap indicates a Node activation failure. The
@@ -742,7 +742,7 @@
 				<mevalue>.1.3.6.1.2.1.34.1.1.10.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/snaNodeStateChange</uei>
+		<uei>uei.opennms.org/traps/snaNodeStateChange</uei>
 		<event-label>OpenNMS-defined trap event: snaNodeStateChange</event-label>
 		<descr>
 			&lt;p&gt;This trap indicates that the operational state
@@ -765,7 +765,7 @@
 				<mevalue>.1.3.6.1.2.1.41.1.3.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/sdlcPortStatusChange</uei>
+		<uei>uei.opennms.org/traps/sdlcPortStatusChange</uei>
 		<event-label>OpenNMS-defined trap event: sdlcPortStatusChange</event-label>
 		<descr>
 			&lt;p&gt;This trap indicates that the state of an SDLC port
@@ -787,7 +787,7 @@
 				<mevalue>.1.3.6.1.2.1.41.1.3.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/sdlcLSStatusChange</uei>
+		<uei>uei.opennms.org/traps/sdlcLSStatusChange</uei>
 		<event-label>OpenNMS-defined trap event: sdlcLSStatusChange</event-label>
 		<descr>
 			&lt;p&gt;This trap indicates that the state of an SDLC link
@@ -815,7 +815,7 @@
 				<mevalue>.1.3.6.1.2.1.46.1.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/dlswTrapCntlTConnPartnerReject</uei>
+		<uei>uei.opennms.org/traps/dlswTrapCntlTConnPartnerReject</uei>
 		<event-label>OpenNMS-defined trap event: dlswTrapCntlTConnPartnerReject</event-label>
 		<descr>
 			&lt;p&gt;The dlswTrapCntlTConnPartnerReject trap is sent
@@ -839,7 +839,7 @@
 				<mevalue>.1.3.6.1.2.1.46.1.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/dlswTrapTConnProtViolation</uei>
+		<uei>uei.opennms.org/traps/dlswTrapTConnProtViolation</uei>
 		<event-label>OpenNMS-defined trap event: dlswTrapTConnProtViolation</event-label>
 		<descr>
 			&lt;p&gt;The dlswTrapTConnProtViolation trap is sent each
@@ -862,7 +862,7 @@
 				<mevalue>.1.3.6.1.2.1.46.1.0.3</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/dlswTrapTConnUp</uei>
+		<uei>uei.opennms.org/traps/dlswTrapTConnUp</uei>
 		<event-label>OpenNMS-defined trap event: dlswTrapTConnUp</event-label>
 		<descr>
 			&lt;p&gt;The dlswTrapTConnUp trap is sent each time a
@@ -884,7 +884,7 @@
 				<mevalue>.1.3.6.1.2.1.46.1.0.4</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/dlswTrapTConnDown</uei>
+		<uei>uei.opennms.org/traps/dlswTrapTConnDown</uei>
 		<event-label>OpenNMS-defined trap event: dlswTrapTConnDown</event-label>
 		<descr>
 			&lt;p&gt;The dlswTrapTConnDown trap is sent each time a
@@ -906,7 +906,7 @@
 				<mevalue>.1.3.6.1.2.1.46.1.0.5</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/dlswTrapCircuitUp</uei>
+		<uei>uei.opennms.org/traps/dlswTrapCircuitUp</uei>
 		<event-label>OpenNMS-defined trap event: dlswTrapCircuitUp</event-label>
 		<descr>
 			&lt;p&gt;The dlswTrapCircuitUp trap is sent each time a
@@ -928,7 +928,7 @@
 				<mevalue>.1.3.6.1.2.1.46.1.0.6</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/dlswTrapCircuitDown</uei>
+		<uei>uei.opennms.org/traps/dlswTrapCircuitDown</uei>
 		<event-label>OpenNMS-defined trap event: dlswTrapCircuitDown</event-label>
 		<descr>
 			&lt;p&gt;The dlswTrapCircuitDown trap is sent each time a
@@ -950,7 +950,7 @@
 				<mevalue>.1.3.6.1.3.71.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/newFlow</uei>
+		<uei>uei.opennms.org/traps/newFlow</uei>
 		<event-label>OpenNMS-defined trap event: newFlow</event-label>
 		<descr>
 			&lt;p&gt;The newFlow trap indicates that the originating
@@ -975,7 +975,7 @@
 				<mevalue>.1.3.6.1.3.71.2.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/lostFlow</uei>
+		<uei>uei.opennms.org/traps/lostFlow</uei>
 		<event-label>OpenNMS-defined trap event: lostFlow</event-label>
 		<descr>
 			&lt;p&gt;The lostFlow trap indicates that the originating
@@ -1002,7 +1002,7 @@
 				<mevalue>1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/poorQualityOfVoice</uei>
+		<uei>uei.opennms.org/traps/cisco/poorQualityOfVoice</uei>
 		<event-label>Cisco Trap: Poor Quality of Voice (QoV)</event-label>
 		<descr>&lt;p&gt;A cvdcPoorQoVNotification is sent at the call disconnection time if the value of Calculated Planning Impairment Factor (ICPIF) exceeds the value of the ICPIF in the call associated peer.&lt;/p&gt;&lt;p&gt;&lt;ul&gt;&lt;li&gt;Connection ID: %parm[.1.3.6.1.4.1.9.9.63.1.4.2.1.1]%&lt;/li&gt;&lt;li&gt;ICPIF Value: %parm[.1.3.6.1.4.1.9.9.63.1.4.2.1.18]%&lt;/li&gt;&lt;li&gt;Remote IP Address: %parm[.1.3.6.1.4.1.9.9.63.1.4.2.1.2]%&lt;/li&gt;&lt;/ul&gt;&lt;/p&gt;</descr>
 		<logmsg dest="logndisplay">Poor Quality of Voice (QoV) on VoIP call to %parm[.1.3.6.1.4.1.9.9.63.1.4.2.1.2]%.</logmsg>
@@ -1023,7 +1023,7 @@
 				<mevalue>0</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/extremenetworks/extremeOverheat</uei>
+		<uei>uei.opennms.org/traps/extremenetworks/extremeOverheat</uei>
 		<event-label>OpenNMS-defined trap event:extremeOverheat</event-label>
 		<descr>
 		Indicates that the on-board temperature sensor has reported 
@@ -1051,7 +1051,7 @@
 				<mevalue>0</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/extremenetworks/extremeFanfailed</uei>
+		<uei>uei.opennms.org/traps/extremenetworks/extremeFanfailed</uei>
 		<event-label>OpenNMS-defined trap event:extremeFanfailed</event-label>
 		<descr>
 		Indicates one or more of the cooling fans inside the device has 
@@ -1077,7 +1077,7 @@
 				<mevalue>0</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/extremenetworks/extremeFanOK</uei>
+		<uei>uei.opennms.org/traps/extremenetworks/extremeFanOK</uei>
 		<event-label>OpenNMS-defined trap event:extremeFanOK</event-label>
 		<descr>
 		A fan has transitioned out of a failure state and is now operating 
@@ -1103,7 +1103,7 @@
 				<mevalue>0</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/extremenetworks/extremeInvalidLoginAttempt</uei>
+		<uei>uei.opennms.org/traps/extremenetworks/extremeInvalidLoginAttempt</uei>
 		<event-label>OpenNMS-defined trap event:extremeInvalidLoginAttempt</event-label>
 		<descr>
 		A user attempted to login to console or by telnet but was refused 
@@ -1129,7 +1129,7 @@
 				<mevalue>0</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/extremenetworks/extremePowerSupplyFail</uei>
+		<uei>uei.opennms.org/traps/extremenetworks/extremePowerSupplyFail</uei>
 		<event-label>OpenNMS-defined trap event:extremePowerSupplyFail</event-label>
 		<descr>
 		One or more sources of power to this agent has failed. Presumably a 
@@ -1154,7 +1154,7 @@
 				<mevalue>0</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/extremenetworks/extremePowerSupplyGood</uei>
+		<uei>uei.opennms.org/traps/extremenetworks/extremePowerSupplyGood</uei>
 		<event-label>OpenNMS-defined trap event:extremePowerSupplyGood</event-label>
 		<descr>
 		One or more previously bad sources of power to this agent has come 
@@ -1180,7 +1180,7 @@
 				<mevalue>0</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/extremenetworks/extremeRpsAlarm</uei>
+		<uei>uei.opennms.org/traps/extremenetworks/extremeRpsAlarm</uei>
 		<event-label>OpenNMS-defined trap event:extremeRpsAlarm</event-label>
 		<descr>
 		Attached Redundant Power Supply device is indicating an alarm 
@@ -1206,7 +1206,7 @@
 				<mevalue>0</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/extremenetworks/extremeSmartTrap</uei>
+		<uei>uei.opennms.org/traps/extremenetworks/extremeSmartTrap</uei>
 		<event-label>OpenNMS-defined trap event:extremeSmartTrap</event-label>
 		<descr>
 		Signifies that the value of one of the object identifiers defined in 
@@ -1235,7 +1235,7 @@
 				<mevalue>0</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/extremenetworks/extremeModuleStateChanged</uei>
+		<uei>uei.opennms.org/traps/extremenetworks/extremeModuleStateChanged</uei>
 		<event-label>OpenNMS-defined trap event:extremeModuleStateChanged</event-label>
 		<descr>
 		Signifies that the value of the extremeSlotModuleState and it is 
@@ -1268,7 +1268,7 @@
 				<mevalue>0</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/extremenetworks/extremeEsrpStateChange</uei>
+		<uei>uei.opennms.org/traps/extremenetworks/extremeEsrpStateChange</uei>
 		<event-label>OpenNMS-defined trap event:extremeEsrpStateChange</event-label>
 		<descr>
 		An ESRP state change has occured on ESRP group %parm[#5]% for 
@@ -1301,7 +1301,7 @@
 				<mevalue>0</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/extremenetworks/extremeSlbUnitAdded</uei>
+		<uei>uei.opennms.org/traps/extremenetworks/extremeSlbUnitAdded</uei>
 		<event-label>OpenNMS-defined trap event:extremeSlbUnitAdded</event-label>
 		<descr>
 		The server load balancer has activated a group of virtual servers that 
@@ -1328,7 +1328,7 @@
 				<mevalue>0</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/extremenetworks/extremeSlbUnitRemoved</uei>
+		<uei>uei.opennms.org/traps/extremenetworks/extremeSlbUnitRemoved</uei>
 		<event-label>OpenNMS-defined trap event:extremeSlbUnitRemoved</event-label>
 		<descr>
 		The server load balancer has deactivated a group of virtual servers 
@@ -1355,7 +1355,7 @@
 				<mevalue>0</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/extremenetworks/extremeEdpNeighborAdded</uei>
+		<uei>uei.opennms.org/traps/extremenetworks/extremeEdpNeighborAdded</uei>
 		<event-label>OpenNMS-defined trap event:extremeEdpNeighborAdded</event-label>
 		<descr>
 		This node discovers a new neighbor through Extreme Discovery.
@@ -1384,7 +1384,7 @@
 				<mevalue>0</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/extremenetworks/extremeEdpNeighborRemoved</uei>
+		<uei>uei.opennms.org/traps/extremenetworks/extremeEdpNeighborRemoved</uei>
 		<event-label>OpenNMS-defined trap event:extremeEdpNeighborRemoved</event-label>
 		<descr>
 		No EDP updates are received from this neighbor within the configured
@@ -1413,7 +1413,7 @@
 				<mevalue>0</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/extremenetworks/extremeCpuHealthCheckFailed</uei>
+		<uei>uei.opennms.org/traps/extremenetworks/extremeCpuHealthCheckFailed</uei>
 		<event-label>OpenNMS-defined trap event:extremeCpuHealthCheckFailed</event-label>
 		<descr>
 		CPU Health check has failed. 
@@ -1433,7 +1433,7 @@
 				<mevalue>.1.3.6.1.4.1.2.6.66.1.2.1.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/8272TsTempThreshold</uei>
+		<uei>uei.opennms.org/traps/8272TsTempThreshold</uei>
 		<event-label>OpenNMS-defined trap event: 8272TsTempThreshold</event-label>
 		<descr>
 			&lt;p&gt;This trap is generated when the system temperature
@@ -1456,7 +1456,7 @@
 				<mevalue>.1.3.6.1.4.1.2.6.66.1.2.1.2.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/8272TsPwrSupChange</uei>
+		<uei>uei.opennms.org/traps/8272TsPwrSupChange</uei>
 		<event-label>OpenNMS-defined trap event: 8272TsPwrSupChange</event-label>
 		<descr>
 			&lt;p&gt;This trap is generated when the power supply status
@@ -1479,7 +1479,7 @@
 				<mevalue>.1.3.6.1.4.1.2.6.66.1.2.1.2.0.3</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/8272TsFanChange</uei>
+		<uei>uei.opennms.org/traps/8272TsFanChange</uei>
 		<event-label>OpenNMS-defined trap event: 8272TsFanChange</event-label>
 		<descr>
 			&lt;p&gt;This trap is generated when the fan status of the
@@ -1499,7 +1499,7 @@
 				<mevalue>.1.3.6.1.4.1.2.6.66.1.2.1.2.0.4</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/8272TsVoltageChange</uei>
+		<uei>uei.opennms.org/traps/8272TsVoltageChange</uei>
 		<event-label>OpenNMS-defined trap event: 8272TsVoltageChange</event-label>
 		<descr>
 			&lt;p&gt;This trap is generated when the voltage status of
@@ -1519,7 +1519,7 @@
 				<mevalue>.1.3.6.1.4.1.2.6.66.1.2.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/827TsPortCfgLossTrap</uei>
+		<uei>uei.opennms.org/traps/827TsPortCfgLossTrap</uei>
 		<event-label>OpenNMS-defined trap event: 827TsPortCfgLossTrap</event-label>
 		<descr>
 			&lt;p&gt;This trap occurs when a port is disabled because it
@@ -1541,7 +1541,7 @@
 				<mevalue>.1.3.6.1.4.1.2.6.66.1.2.2.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/8272TsBeaconStart</uei>
+		<uei>uei.opennms.org/traps/8272TsBeaconStart</uei>
 		<event-label>OpenNMS-defined trap event: 8272TsBeaconStart</event-label>
 		<descr>
 			&lt;p&gt;This trap is generated when a port or a station
@@ -1562,7 +1562,7 @@
 				<mevalue>.1.3.6.1.4.1.2.6.66.1.2.2.0.3</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/8272TsBeaconEnd</uei>
+		<uei>uei.opennms.org/traps/8272TsBeaconEnd</uei>
 		<event-label>OpenNMS-defined trap event: 8272TsBeaconEnd</event-label>
 		<descr>
 			&lt;p&gt;This trap is generated when the ring status change
@@ -1582,7 +1582,7 @@
 				<mevalue>.1.3.6.1.4.1.2.6.66.1.2.2.0.4</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/8272TsMaxFrmSzExceed</uei>
+		<uei>uei.opennms.org/traps/8272TsMaxFrmSzExceed</uei>
 		<event-label>OpenNMS-defined trap event: 8272TsMaxFrmSzExceed</event-label>
 		<descr>
 			&lt;p&gt;This trap is generated when there has been a change
@@ -1603,7 +1603,7 @@
 				<mevalue>.1.3.6.1.4.1.2.6.66.1.2.2.0.5</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/8272TsPtSwtMdChgTrap</uei>
+		<uei>uei.opennms.org/traps/8272TsPtSwtMdChgTrap</uei>
 		<event-label>OpenNMS-defined trap event: 8272TsPtSwtMdChgTrap</event-label>
 		<descr>
 			&lt;p&gt;This trap is generated only when the port changes
@@ -1624,7 +1624,7 @@
 				<mevalue>.1.3.6.1.4.1.2.6.66.1.2.3.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/8272TsDmnNewRoot</uei>
+		<uei>uei.opennms.org/traps/8272TsDmnNewRoot</uei>
 		<event-label>OpenNMS-defined trap event: 8272TsDmnNewRoot</event-label>
 		<descr>
 			&lt;p&gt;This trap is a domain specific version of the
@@ -1648,7 +1648,7 @@
 				<mevalue>.1.3.6.1.4.1.2.6.66.1.2.3.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/8272TsDmnTopoChg</uei>
+		<uei>uei.opennms.org/traps/8272TsDmnTopoChg</uei>
 		<event-label>OpenNMS-defined trap event: 8272TsDmnTopoChg</event-label>
 		<descr>
 			&lt;p&gt;This trap is a domain specific version of the
@@ -1673,7 +1673,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.1.1.3.6.1.4.1.9</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/Cisco_Cold_Start</uei>
+		<uei>uei.opennms.org/traps/Cisco_Cold_Start</uei>
 		<event-label>OpenNMS-defined trap event: Cisco_Cold_Start</event-label>
 		<descr>
 			&lt;p&gt;This event occurs when an Cisco is powered up. A
@@ -1694,7 +1694,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.2.1.3.6.1.4.1.9</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/Cisco_Warm_Start</uei>
+		<uei>uei.opennms.org/traps/Cisco_Warm_Start</uei>
 		<event-label>OpenNMS-defined trap event: Cisco_Warm_Start</event-label>
 		<descr>
 			&lt;p&gt;This event occurs when an Cisco agent is
@@ -1715,7 +1715,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.3.1.3.6.1.4.1.9</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/Cisco_Link_Down</uei>
+		<uei>uei.opennms.org/traps/Cisco_Link_Down</uei>
 		<event-label>OpenNMS-defined trap event: Cisco_Link_Down</event-label>
 		<descr>
 			&lt;p&gt;This event occurs when the Cisco agent detects an
@@ -1737,7 +1737,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.4.1.3.6.1.4.1.9</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/Cisco_Link_Up</uei>
+		<uei>uei.opennms.org/traps/Cisco_Link_Up</uei>
 		<event-label>OpenNMS-defined trap event: Cisco_Link_Up</event-label>
 		<descr>
 			&lt;p&gt;This event occurs when the Cisco agent detects an
@@ -1759,7 +1759,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.5.1.3.6.1.4.1.9</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/Cisco_Auth_Failure</uei>
+		<uei>uei.opennms.org/traps/Cisco_Auth_Failure</uei>
 		<event-label>OpenNMS-defined trap event: Cisco_Auth_Failure</event-label>
 		<descr>
 			&lt;p&gt;This event occurs when the Cisco agent detects an
@@ -1784,7 +1784,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.6.1.3.6.1.4.1.9</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/Cisco_EGP_Down</uei>
+		<uei>uei.opennms.org/traps/Cisco_EGP_Down</uei>
 		<event-label>OpenNMS-defined trap event: Cisco_EGP_Down</event-label>
 		<descr>
 			&lt;p&gt;An egpNeighborLoss trap signifies that an EGP
@@ -1805,7 +1805,7 @@
 				<mevalue>.1.3.6.1.4.1.9.0.0</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/Cisco_reload</uei>
+		<uei>uei.opennms.org/traps/cisco/Cisco_reload</uei>
 		<event-label>Cisco-defined trap event: Cisco_reload</event-label>
 		<descr>
 			&lt;p&gt;This event occurs when an Cisco entity is
@@ -1827,7 +1827,7 @@
 				<mevalue>.1.3.6.1.4.1.9.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/Cisco_tcpConnectClos</uei>
+		<uei>uei.opennms.org/traps/cisco/Cisco_tcpConnectClos</uei>
 		<event-label>Cisco-defined trap event: Cisco_tcpConnectClos</event-label>
 		<descr>
 			&lt;p&gt;This event occurs when a tty connection is closed.
@@ -1848,7 +1848,7 @@
 				<mevalue>.1.3.6.1.4.1.9.1.111.1.2.1.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/TsTempThreshold</uei>
+		<uei>uei.opennms.org/traps/cisco/TsTempThreshold</uei>
 		<event-label>Cisco-defined trap event: TsTempThreshold</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -1864,7 +1864,7 @@
 				<mevalue>.1.3.6.1.4.1.9.1.111.1.2.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/TsPortCfgLossTrap</uei>
+		<uei>uei.opennms.org/traps/cisco/TsPortCfgLossTrap</uei>
 		<event-label>Cisco-defined trap event: TsPortCfgLossTrap</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -1880,7 +1880,7 @@
 				<mevalue>.1.3.6.1.4.1.9.1.111.1.2.2.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/TsBeaconStart</uei>
+		<uei>uei.opennms.org/traps/cisco/TsBeaconStart</uei>
 		<event-label>Cisco-defined trap event: TsBeaconStart</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -1896,7 +1896,7 @@
 				<mevalue>.1.3.6.1.4.1.9.1.111.1.2.2.0.3</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/TsBeaconEnd</uei>
+		<uei>uei.opennms.org/traps/cisco/TsBeaconEnd</uei>
 		<event-label>Cisco-defined trap event: TsBeaconEnd</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -1912,7 +1912,7 @@
 				<mevalue>.1.3.6.1.4.1.9.1.111.1.2.2.0.4</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/TSMaxFrameSizeExceed</uei>
+		<uei>uei.opennms.org/traps/cisco/TSMaxFrameSizeExceed</uei>
 		<event-label>Cisco-defined trap event: TSMaxFrameSizeExceed</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -1928,7 +1928,7 @@
 				<mevalue>.1.3.6.1.4.1.9.1.111.1.2.2.0.5</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/TsPortSwitchModeChge</uei>
+		<uei>uei.opennms.org/traps/cisco/TsPortSwitchModeChge</uei>
 		<event-label>Cisco-defined trap event: TsPortSwitchModeChge</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -1944,7 +1944,7 @@
 				<mevalue>.1.3.6.1.4.1.9.1.111.1.2.3.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/2600TsDmnNewRoot</uei>
+		<uei>uei.opennms.org/traps/cisco/2600TsDmnNewRoot</uei>
 		<event-label>Cisco-defined trap event: 2600TsDmnNewRoot</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -1960,7 +1960,7 @@
 				<mevalue>.1.3.6.1.4.1.9.1.111.1.2.3.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/2600TsDmnTopoChge</uei>
+		<uei>uei.opennms.org/traps/cisco/2600TsDmnTopoChge</uei>
 		<event-label>Cisco-defined trap event: 2600TsDmnTopoChge</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -1976,7 +1976,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.1.1.3.6.1.4.1.9.1.147</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/CiscoPro316T_Cold_St</uei>
+		<uei>uei.opennms.org/traps/cisco/CiscoPro316T_Cold_St</uei>
 		<event-label>Cisco-defined trap event: CiscoPro316T_Cold_St</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -1991,7 +1991,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.2.1.3.6.1.4.1.9.1.147</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/CiscoPro316T_Warm_St</uei>
+		<uei>uei.opennms.org/traps/cisco/CiscoPro316T_Warm_St</uei>
 		<event-label>Cisco-defined trap event: CiscoPro316T_Warm_St</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2006,7 +2006,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.5.1.3.6.1.4.1.9.1.147</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/CiscoPro316T_Auth_Fa</uei>
+		<uei>uei.opennms.org/traps/cisco/CiscoPro316T_Auth_Fa</uei>
 		<event-label>Cisco-defined trap event: CiscoPro316T_Auth_Fa</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2022,7 +2022,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.1.1.3.6.1.4.1.9.1.148</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/CiscoPro316C_Cold_St</uei>
+		<uei>uei.opennms.org/traps/cisco/CiscoPro316C_Cold_St</uei>
 		<event-label>Cisco-defined trap event: CiscoPro316C_Cold_St</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2037,7 +2037,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.2.1.3.6.1.4.1.9.1.148</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/CiscoPro316C_Warm_St</uei>
+		<uei>uei.opennms.org/traps/cisco/CiscoPro316C_Warm_St</uei>
 		<event-label>Cisco-defined trap event: CiscoPro316C_Warm_St</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2052,7 +2052,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.5.1.3.6.1.4.1.9.1.148</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/CiscoPro316C_Auth_Fa</uei>
+		<uei>uei.opennms.org/traps/cisco/CiscoPro316C_Auth_Fa</uei>
 		<event-label>Cisco-defined trap event: CiscoPro316C_Auth_Fa</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2068,7 +2068,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.1.1.3.6.1.4.1.9.1.149</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/CiscoPro3116_Cold_St</uei>
+		<uei>uei.opennms.org/traps/cisco/CiscoPro3116_Cold_St</uei>
 		<event-label>Cisco-defined trap event: CiscoPro3116_Cold_St</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2083,7 +2083,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.2.1.3.6.1.4.1.9.1.149</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/CiscoPro3116_Warm_St</uei>
+		<uei>uei.opennms.org/traps/cisco/CiscoPro3116_Warm_St</uei>
 		<event-label>Cisco-defined trap event: CiscoPro3116_Warm_St</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2098,7 +2098,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.5.1.3.6.1.4.1.9.1.149</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/CiscoPro3116_Auth_Fa</uei>
+		<uei>uei.opennms.org/traps/cisco/CiscoPro3116_Auth_Fa</uei>
 		<event-label>Cisco-defined trap event: CiscoPro3116_Auth_Fa</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2114,7 +2114,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.1.1.3.6.1.4.1.9.1.150</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/Catalyst116T_Cold_St</uei>
+		<uei>uei.opennms.org/traps/cisco/Catalyst116T_Cold_St</uei>
 		<event-label>Cisco-defined trap event: Catalyst116T_Cold_St</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2129,7 +2129,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.2.1.3.6.1.4.1.9.1.150</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/Catalyst116T_Warm_St</uei>
+		<uei>uei.opennms.org/traps/cisco/Catalyst116T_Warm_St</uei>
 		<event-label>Cisco-defined trap event: Catalyst116T_Warm_St</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2144,7 +2144,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.5.1.3.6.1.4.1.9.1.150</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/Catalyst116T_Auth_Fa</uei>
+		<uei>uei.opennms.org/traps/cisco/Catalyst116T_Auth_Fa</uei>
 		<event-label>Cisco-defined trap event: Catalyst116T_Auth_Fa</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2160,7 +2160,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.1.1.3.6.1.4.1.9.1.151</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/Catalyst116C_Cold_St</uei>
+		<uei>uei.opennms.org/traps/cisco/Catalyst116C_Cold_St</uei>
 		<event-label>Cisco-defined trap event: Catalyst116C_Cold_St</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2175,7 +2175,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.2.1.3.6.1.4.1.9.1.151</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/Catalyst116C_Warm_St</uei>
+		<uei>uei.opennms.org/traps/cisco/Catalyst116C_Warm_St</uei>
 		<event-label>Cisco-defined trap event: Catalyst116C_Warm_St</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2190,7 +2190,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.5.1.3.6.1.4.1.9.1.151</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/Catalyst116C_Auth_Fa</uei>
+		<uei>uei.opennms.org/traps/cisco/Catalyst116C_Auth_Fa</uei>
 		<event-label>Cisco-defined trap event: Catalyst116C_Auth_Fa</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2206,7 +2206,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.1.1.3.6.1.4.1.9.1.152</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/Catalyst1116_Cold_St</uei>
+		<uei>uei.opennms.org/traps/cisco/Catalyst1116_Cold_St</uei>
 		<event-label>Cisco-defined trap event: Catalyst1116_Cold_St</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2221,7 +2221,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.2.1.3.6.1.4.1.9.1.152</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/Catalyst1116_Warm_St</uei>
+		<uei>uei.opennms.org/traps/cisco/Catalyst1116_Warm_St</uei>
 		<event-label>Cisco-defined trap event: Catalyst1116_Warm_St</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2236,7 +2236,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.5.1.3.6.1.4.1.9.1.152</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/Catalyst1116_Auth_Fa</uei>
+		<uei>uei.opennms.org/traps/cisco/Catalyst1116_Auth_Fa</uei>
 		<event-label>Cisco-defined trap event: Catalyst1116_Auth_Fa</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2252,7 +2252,7 @@
 				<mevalue>.1.3.6.1.4.1.9.2.11.1.0.0</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/mrLogon_Intruder</uei>
+		<uei>uei.opennms.org/traps/cisco/mrLogon_Intruder</uei>
 		<event-label>Cisco-defined trap event: mrLogon_Intruder</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2267,7 +2267,7 @@
 				<mevalue>.1.3.6.1.4.1.9.2.11.1.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/mrDiagnostic_Failure</uei>
+		<uei>uei.opennms.org/traps/cisco/mrDiagnostic_Failure</uei>
 		<event-label>Cisco-defined trap event: mrDiagnostic_Failure</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2282,7 +2282,7 @@
 				<mevalue>.1.3.6.1.4.1.9.2.11.1.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/mrRPS_Failure</uei>
+		<uei>uei.opennms.org/traps/cisco/mrRPS_Failure</uei>
 		<event-label>Cisco-defined trap event: mrRPS_Failure</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2297,7 +2297,7 @@
 				<mevalue>.1.3.6.1.4.1.9.2.11.1.0.3</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/mrIp_Address_Change</uei>
+		<uei>uei.opennms.org/traps/cisco/mrIp_Address_Change</uei>
 		<event-label>Cisco-defined trap event: mrIp_Address_Change</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2312,7 +2312,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.1.1.3.6.1.4.1.9.5</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/Stack_Cold_Start</uei>
+		<uei>uei.opennms.org/traps/cisco/Stack_Cold_Start</uei>
 		<event-label>Cisco-defined trap event: Stack_Cold_Start</event-label>
 		<descr>
 			&lt;p&gt;This event occurs when a Cisco device is powered
@@ -2334,7 +2334,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.2.1.3.6.1.4.1.9.5</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/Stack_Warm_Start</uei>
+		<uei>uei.opennms.org/traps/cisco/Stack_Warm_Start</uei>
 		<event-label>Cisco-defined trap event: Stack_Warm_Start</event-label>
 		<descr>
 			&lt;p&gt;This event occurs when a Cisco agent is
@@ -2355,7 +2355,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.3.1.3.6.1.4.1.9.5</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/Stack_Link_Down</uei>
+		<uei>uei.opennms.org/traps/cisco/Stack_Link_Down</uei>
 		<event-label>Cisco-defined trap event: Stack_Link_Down</event-label>
 		<descr>
 			&lt;p&gt;This event occurs when the Cisco agent detects an
@@ -2377,7 +2377,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.4.1.3.6.1.4.1.9.5</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/Stack_Link_Up</uei>
+		<uei>uei.opennms.org/traps/cisco/Stack_Link_Up</uei>
 		<event-label>Cisco-defined trap event: Stack_Link_Up</event-label>
 		<descr>
 			&lt;p&gt;This event occurs when the Cisco agent detects an
@@ -2399,7 +2399,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.5.1.3.6.1.4.1.9.5</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/Stack_Auth_Failu</uei>
+		<uei>uei.opennms.org/traps/cisco/Stack_Auth_Failu</uei>
 		<event-label>Cisco-defined trap event: Stack_Auth_Failu</event-label>
 		<descr>
 			&lt;p&gt;This event occurs when the Cisco agent detects an
@@ -2424,7 +2424,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/lerAlarmOn</uei>
+		<uei>uei.opennms.org/traps/cisco/lerAlarmOn</uei>
 		<event-label>Cisco-defined trap event: lerAlarmOn</event-label>
 		<descr>
 			&lt;p&gt;A lerAlarmOn trap signifies that the agent entity
@@ -2447,7 +2447,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/lerAlarmOff</uei>
+		<uei>uei.opennms.org/traps/cisco/lerAlarmOff</uei>
 		<event-label>Cisco-defined trap event: lerAlarmOff</event-label>
 		<descr>
 			&lt;p&gt;A lerAlarmOff trap signifies that the agent entity
@@ -2470,7 +2470,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.0.3</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/moduleUp</uei>
+		<uei>uei.opennms.org/traps/cisco/moduleUp</uei>
 		<event-label>Cisco-defined trap event: moduleUp</event-label>
 		<descr>
 			&lt;p&gt;A moduleUp trap signifies that the agent entity has
@@ -2492,7 +2492,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.0.4</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/moduleDown</uei>
+		<uei>uei.opennms.org/traps/cisco/moduleDown</uei>
 		<event-label>Cisco-defined trap event: moduleDown</event-label>
 		<descr>
 			&lt;p&gt;A moduleDown trap signifies that the agent entity
@@ -2514,7 +2514,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.0.5</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/chassisAlarmOn</uei>
+		<uei>uei.opennms.org/traps/cisco/chassisAlarmOn</uei>
 		<event-label>Cisco-defined trap event: chassisAlarmOn</event-label>
 		<descr>
 			&lt;p&gt;A chassisAlarmOn trap signifies that the agent
@@ -2536,7 +2536,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.0.6</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/chassisAlarmOff</uei>
+		<uei>uei.opennms.org/traps/cisco/chassisAlarmOff</uei>
 		<event-label>Cisco-defined trap event: chassisAlarmOff</event-label>
 		<descr>
 			&lt;p&gt;A chassisAlarmOff trap signifies that the agent
@@ -2558,7 +2558,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.0.7</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/ipPermitDeniedTrap</uei>
+		<uei>uei.opennms.org/traps/cisco/ipPermitDeniedTrap</uei>
 		<event-label>Cisco-defined trap event: ipPermitDeniedTrap</event-label>
 		<descr>
 			&lt;p&gt;ipPermitDeniedTrap indicates that IP permit denied
@@ -2579,7 +2579,7 @@
 				<mevalue>.1.3.6.1.6.3.1.1.5.5.1.3.6.1.4.1.9.5.7</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/Auth_Failure</uei>
+		<uei>uei.opennms.org/traps/cisco/Auth_Failure</uei>
 		<event-label>Cisco-defined trap event: Auth_Failure</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -2595,7 +2595,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.11.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/LS1010ChassisFail</uei>
+		<uei>uei.opennms.org/traps/cisco/LS1010ChassisFail</uei>
 		<event-label>Cisco-defined trap event: LS1010ChassisFail</event-label>
 		<descr>
 			&lt;p&gt;Agent detects any chassis failure of ps0, ps1, fan,
@@ -2615,7 +2615,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.11.2.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/LS1010ChassisChg</uei>
+		<uei>uei.opennms.org/traps/cisco/LS1010ChassisChg</uei>
 		<event-label>Cisco-defined trap event: LS1010ChassisChg</event-label>
 		<descr>
 			&lt;p&gt;Agent detects any hot-swappable component change or
@@ -2634,7 +2634,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.14.1.1.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/ciscoEsStackCfgChang</uei>
+		<uei>uei.opennms.org/traps/cisco/ciscoEsStackCfgChang</uei>
 		<event-label>Cisco-defined trap event: ciscoEsStackCfgChang</event-label>
 		<descr>
 			&lt;p&gt;This trap is generated when there is a change in
@@ -2658,7 +2658,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.14.1.1.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/ciscoEsStackProStack</uei>
+		<uei>uei.opennms.org/traps/cisco/ciscoEsStackProStack</uei>
 		<event-label>Cisco-defined trap event: ciscoEsStackProStack</event-label>
 		<descr>
 			&lt;p&gt;This trap is generated when the stack switches over
@@ -2678,7 +2678,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.14.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/ciscoEsStackTempChan</uei>
+		<uei>uei.opennms.org/traps/cisco/ciscoEsStackTempChan</uei>
 		<event-label>Cisco-defined trap event: ciscoEsStackTempChan</event-label>
 		<descr>
 			&lt;p&gt;This trap is generated when the temperature in a
@@ -2697,7 +2697,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.14.2.0.3</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/c3kTempurature_Chang</uei>
+		<uei>uei.opennms.org/traps/cisco/c3kTempurature_Chang</uei>
 		<event-label>Cisco-defined trap event: c3kTempurature_Chang</event-label>
 		<descr>
 			&lt;p&gt;This trap is generated when the temperature in a
@@ -2715,7 +2715,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.14.4.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/ciscoEsPortStrNFwdEn</uei>
+		<uei>uei.opennms.org/traps/cisco/ciscoEsPortStrNFwdEn</uei>
 		<event-label>Cisco-defined trap event: ciscoEsPortStrNFwdEn</event-label>
 		<descr>
 			&lt;p&gt;This trap is generated when a port automatically
@@ -2735,7 +2735,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.14.4.0.4</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/c3kSwitchingMode_Cha</uei>
+		<uei>uei.opennms.org/traps/cisco/c3kSwitchingMode_Cha</uei>
 		<event-label>Cisco-defined trap event: c3kSwitchingMode_Cha</event-label>
 		<descr>
 			&lt;p&gt;Switching mode changed.&lt;/p&gt;
@@ -2752,7 +2752,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.14.6.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/ciscoEsEtherChannelF</uei>
+		<uei>uei.opennms.org/traps/cisco/ciscoEsEtherChannelF</uei>
 		<event-label>Cisco-defined trap event: ciscoEsEtherChannelF</event-label>
 		<descr>
 			&lt;p&gt;This trap is sent when one of the links in an
@@ -2772,7 +2772,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.14.6.0.7</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/c3kEtherChannelFailu</uei>
+		<uei>uei.opennms.org/traps/cisco/c3kEtherChannelFailu</uei>
 		<event-label>Cisco-defined trap event: c3kEtherChannelFailu</event-label>
 		<descr>
 			&lt;p&gt;EtherChannel failure.&lt;/p&gt;
@@ -2789,7 +2789,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.14.8.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/ciscoEsVLANNewRoot</uei>
+		<uei>uei.opennms.org/traps/cisco/ciscoEsVLANNewRoot</uei>
 		<event-label>Cisco-defined trap event: ciscoEsVLANNewRoot</event-label>
 		<descr>
 			&lt;p&gt;This trap is a vlan specific version of the newRoot
@@ -2813,7 +2813,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.14.8.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/ciscoEsVLANTopologyC</uei>
+		<uei>uei.opennms.org/traps/cisco/ciscoEsVLANTopologyC</uei>
 		<event-label>Cisco-defined trap event: ciscoEsVLANTopologyC</event-label>
 		<descr>
 			&lt;p&gt;This trap is a vlan specific version of the
@@ -2838,7 +2838,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.14.8.0.5</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/c3kVlanNewRoot</uei>
+		<uei>uei.opennms.org/traps/cisco/c3kVlanNewRoot</uei>
 		<event-label>Cisco-defined trap event: c3kVlanNewRoot</event-label>
 		<descr>
 			&lt;p&gt;Spanning Tree new root.&lt;/p&gt;
@@ -2855,7 +2855,7 @@
 				<mevalue>.1.3.6.1.4.1.9.5.14.8.0.6</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/c3kTopology_Change</uei>
+		<uei>uei.opennms.org/traps/cisco/c3kTopology_Change</uei>
 		<event-label>Cisco-defined trap event: c3kTopology_Change</event-label>
 		<descr>
 			&lt;p&gt;Spanning Tree topology change.&lt;/p&gt;
@@ -2872,7 +2872,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.10.1.3.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/CopyCompletionTrap</uei>
+		<uei>uei.opennms.org/traps/cisco/CopyCompletionTrap</uei>
 		<event-label>Cisco-defined trap event: CopyCompletionTrap</event-label>
 		<descr>
 			&lt;p&gt;A ciscoFlashCopyCompletionTrap is sent at the
@@ -2892,7 +2892,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.10.1.3.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/PartitioningComplete</uei>
+		<uei>uei.opennms.org/traps/cisco/PartitioningComplete</uei>
 		<event-label>Cisco-defined trap event: PartitioningComplete</event-label>
 		<descr>
 			&lt;p&gt;A ciscoFlashPartitioningCompletionTrap is sent at
@@ -2912,7 +2912,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.10.1.3.0.3</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/MiscOpCompletionTrap</uei>
+		<uei>uei.opennms.org/traps/cisco/MiscOpCompletionTrap</uei>
 		<event-label>Cisco-defined trap event: MiscOpCompletionTrap</event-label>
 		<descr>
 			&lt;p&gt;A ciscoFlashMiscOpCompletionTrap is sent at the
@@ -2933,7 +2933,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.10.1.3.0.4</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/DeviceChangeTrap</uei>
+		<uei>uei.opennms.org/traps/cisco/DeviceChangeTrap</uei>
 		<event-label>Cisco-defined trap event: DeviceChangeTrap</event-label>
 		<descr>
 			&lt;p&gt;A ciscoFlashDeviceChangeTrap is sent whenever a
@@ -2952,7 +2952,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.13.3.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/ShutdownNotification</uei>
+		<uei>uei.opennms.org/traps/cisco/ShutdownNotification</uei>
 		<event-label>Cisco-defined trap event: ShutdownNotification</event-label>
 		<descr>
 			&lt;p&gt;A ciscoEnvMonShutdownNotification is sent if the
@@ -2977,7 +2977,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.13.3.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/VoltageNotification</uei>
+		<uei>uei.opennms.org/traps/cisco/VoltageNotification</uei>
 		<event-label>Cisco-defined trap event: VoltageNotification</event-label>
 		<descr>
 			&lt;p&gt;A ciscoEnvMonVoltageNotification is sent if the
@@ -3001,7 +3001,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.13.3.0.3</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/TemperatureNotificat</uei>
+		<uei>uei.opennms.org/traps/cisco/TemperatureNotificat</uei>
 		<event-label>Cisco-defined trap event: TemperatureNotificat</event-label>
 		<descr>
 			&lt;p&gt;A ciscoEnvMonTemperatureNotification is sent if the
@@ -3025,7 +3025,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.13.3.0.4</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/FanNotification</uei>
+		<uei>uei.opennms.org/traps/cisco/FanNotification</uei>
 		<event-label>Cisco-defined trap event: FanNotification</event-label>
 		<descr>
 			&lt;p&gt;A ciscoEnvMonFanNotification is sent if any one of
@@ -3048,7 +3048,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.13.3.0.5</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/RedundantSupplyNotif</uei>
+		<uei>uei.opennms.org/traps/cisco/RedundantSupplyNotif</uei>
 		<event-label>Cisco-defined trap event: RedundantSupplyNotif</event-label>
 		<descr>
 			&lt;p&gt;A ciscoEnvMonRedundantSupplyNotification is sent if
@@ -3071,7 +3071,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.16.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/ciscoPingCompletion</uei>
+		<uei>uei.opennms.org/traps/cisco/ciscoPingCompletion</uei>
 		<event-label>Cisco-defined trap event: ciscoPingCompletion</event-label>
 		<descr>
 			&lt;p&gt;A ciscoPingCompleted trap is sent at the completion
@@ -3095,7 +3095,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.18.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/ciuIfLoopStatusNot</uei>
+		<uei>uei.opennms.org/traps/cisco/ciuIfLoopStatusNot</uei>
 		<event-label>Cisco-defined trap event: ciuIfLoopStatusNot</event-label>
 		<descr>
 			&lt;p&gt;A ciuIfLoopStatusNotification is sent when there is
@@ -3116,7 +3116,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.20.1.5.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/cipCardLinkFailure</uei>
+		<uei>uei.opennms.org/traps/cisco/cipCardLinkFailure</uei>
 		<event-label>Cisco-defined trap event: cipCardLinkFailure</event-label>
 		<descr>
 			&lt;p&gt;This trap indicates that a significant link event
@@ -3136,7 +3136,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.20.1.5.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/cipCardDtrBrdLink</uei>
+		<uei>uei.opennms.org/traps/cisco/cipCardDtrBrdLink</uei>
 		<event-label>Cisco-defined trap event: cipCardDtrBrdLink</event-label>
 		<descr>
 			&lt;p&gt;The cipCardDtrBrdLinkFailure trap indicates that a
@@ -3156,7 +3156,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.22.3.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/IllegalSrcAddrTrap</uei>
+		<uei>uei.opennms.org/traps/cisco/IllegalSrcAddrTrap</uei>
 		<event-label>Cisco-defined trap event: IllegalSrcAddrTrap</event-label>
 		<descr>
 			&lt;p&gt;When the illegal MAC source address violation is
@@ -3178,7 +3178,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.24.1.4.4.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/newdspuPuStateChange</uei>
+		<uei>uei.opennms.org/traps/cisco/newdspuPuStateChange</uei>
 		<event-label>Cisco-defined trap event: newdspuPuStateChange</event-label>
 		<descr>
 			&lt;p&gt;Generated when the operational state of the PU
@@ -3200,7 +3200,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.24.1.4.4.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/newdspuPuActivatFail</uei>
+		<uei>uei.opennms.org/traps/cisco/newdspuPuActivatFail</uei>
 		<event-label>Cisco-defined trap event: newdspuPuActivatFail</event-label>
 		<descr>
 			&lt;p&gt;Generated whenever a PU activation failure is
@@ -3223,7 +3223,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.24.1.5.3.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/newdspuLuStateChange</uei>
+		<uei>uei.opennms.org/traps/cisco/newdspuLuStateChange</uei>
 		<event-label>Cisco-defined trap event: newdspuLuStateChange</event-label>
 		<descr>
 			&lt;p&gt;Generated when the operational state of the LU
@@ -3244,7 +3244,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.24.1.5.3.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/dspuLuActivationFail</uei>
+		<uei>uei.opennms.org/traps/cisco/dspuLuActivationFail</uei>
 		<event-label>Cisco-defined trap event: dspuLuActivationFail</event-label>
 		<descr>
 			&lt;p&gt;Generated whenever an LU activation failure is
@@ -3267,7 +3267,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.24.1.6.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/dspuSapStateChange</uei>
+		<uei>uei.opennms.org/traps/cisco/dspuSapStateChange</uei>
 		<event-label>Cisco-defined trap event: dspuSapStateChange</event-label>
 		<descr>
 			&lt;p&gt;Generated when the operational state of the SAP
@@ -3293,7 +3293,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.26.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/demandNbrCallInfo</uei>
+		<uei>uei.opennms.org/traps/cisco/demandNbrCallInfo</uei>
 		<event-label>Cisco-defined trap event: demandNbrCallInfo</event-label>
 		<descr>
 			&lt;p&gt;This trap/inform is sent to the manager whenever a
@@ -3317,7 +3317,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.26.2.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/demandNbrCallDetails</uei>
+		<uei>uei.opennms.org/traps/cisco/demandNbrCallDetails</uei>
 		<event-label>Cisco-defined trap event: demandNbrCallDetails</event-label>
 		<descr>
 			&lt;p&gt;This trap/inform is sent to the manager whenever a
@@ -3341,7 +3341,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.28.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/SdllcPeerStateChange</uei>
+		<uei>uei.opennms.org/traps/cisco/SdllcPeerStateChange</uei>
 		<event-label>Cisco-defined trap event: SdllcPeerStateChange</event-label>
 		<descr>
 			&lt;p&gt;This Notification indicates that the state of an
@@ -3361,7 +3361,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.29.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/PeerStateChangeNotif</uei>
+		<uei>uei.opennms.org/traps/cisco/PeerStateChangeNotif</uei>
 		<event-label>Cisco-defined trap event: PeerStateChangeNotif</event-label>
 		<descr>
 			&lt;p&gt;This trap indicates that the state of an RSRB
@@ -3381,7 +3381,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.30.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/stunPeerStateChange</uei>
+		<uei>uei.opennms.org/traps/cisco/stunPeerStateChange</uei>
 		<event-label>Cisco-defined trap event: stunPeerStateChange</event-label>
 		<descr>
 			&lt;p&gt;This notification indicates that the state of a
@@ -3401,7 +3401,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.33.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/snaOpenDuplctSapFail</uei>
+		<uei>uei.opennms.org/traps/cisco/snaOpenDuplctSapFail</uei>
 		<event-label>Cisco-defined trap event: snaOpenDuplctSapFail</event-label>
 		<descr>
 			&lt;p&gt;This trap indicates that VTAM attempted to open a
@@ -3421,7 +3421,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.33.2.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/Llc2ConnctLimitXceed</uei>
+		<uei>uei.opennms.org/traps/cisco/Llc2ConnctLimitXceed</uei>
 		<event-label>Cisco-defined trap event: Llc2ConnctLimitXceed</event-label>
 		<descr>
 			&lt;p&gt;This trap indicates that a connection attempt was
@@ -3440,7 +3440,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.35.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/bstunPeerStateChg</uei>
+		<uei>uei.opennms.org/traps/cisco/bstunPeerStateChg</uei>
 		<event-label>Cisco-defined trap event: bstunPeerStateChg</event-label>
 		<descr>
 			&lt;p&gt;This notification indicates that the state of a
@@ -3460,7 +3460,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.41.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/clogMessageGenerated</uei>
+		<uei>uei.opennms.org/traps/cisco/clogMessageGenerated</uei>
 		<event-label>Cisco-defined trap event: clogMessageGenerated</event-label>
 		<descr>
 			&lt;p&gt;When a syslog message is generated by the device a
@@ -3481,7 +3481,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.42.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/rttMonConnectionChan</uei>
+		<uei>uei.opennms.org/traps/cisco/rttMonConnectionChan</uei>
 		<event-label>Cisco-defined trap event: rttMonConnectionChan</event-label>
 		<descr>
 			&lt;p&gt;This notification is only valid when the
@@ -3510,7 +3510,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.42.2.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/rttMonTimeoutNotific</uei>
+		<uei>uei.opennms.org/traps/cisco/rttMonTimeoutNotific</uei>
 		<event-label>Cisco-defined trap event: rttMonTimeoutNotific</event-label>
 		<descr>
 			&lt;p&gt;A rttMonTimeoutNotification indicates the
@@ -3541,7 +3541,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.42.2.0.3</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/rttMonThresholdNotif</uei>
+		<uei>uei.opennms.org/traps/cisco/rttMonThresholdNotif</uei>
 		<event-label>Cisco-defined trap event: rttMonThresholdNotif</event-label>
 		<descr>
 			&lt;p&gt;A rttMonThresholdNotification indicates the
@@ -3572,7 +3572,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.43.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/ciscoConfigManEvent</uei>
+		<uei>uei.opennms.org/traps/cisco/ciscoConfigManEvent</uei>
 		<event-label>Cisco-defined trap event: ciscoConfigManEvent</event-label>
 		<descr>
 			&lt;p&gt;Notification of a configuration management event as
@@ -3591,7 +3591,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.44.3.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/T1LoopStatusNotifica</uei>
+		<uei>uei.opennms.org/traps/cisco/T1LoopStatusNotifica</uei>
 		<event-label>Cisco-defined trap event: T1LoopStatusNotifica</event-label>
 		<descr>
 			&lt;p&gt;Indicates a change in T1 Loop Status.&lt;/p&gt;
@@ -3609,7 +3609,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.44.3.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/Sw56kLoopStatusNotif</uei>
+		<uei>uei.opennms.org/traps/cisco/Sw56kLoopStatusNotif</uei>
 		<event-label>Cisco-defined trap event: Sw56kLoopStatusNotif</event-label>
 		<descr>
 			&lt;p&gt;Indicates a change in Sw56k Loop Status.&lt;/p&gt;
@@ -3627,7 +3627,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.46.2.0.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/vtpConfigRevNumberEr</uei>
+		<uei>uei.opennms.org/traps/cisco/vtpConfigRevNumberEr</uei>
 		<event-label>Cisco-defined trap event: vtpConfigRevNumberEr</event-label>
 		<descr>
 			&lt;p&gt;A configuration revision number error notification
@@ -3655,7 +3655,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.46.2.0.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/vtpConfigDigestError</uei>
+		<uei>uei.opennms.org/traps/cisco/vtpConfigDigestError</uei>
 		<event-label>Cisco-defined trap event: vtpConfigDigestError</event-label>
 		<descr>
 			&lt;p&gt;A configuration digest error notification signifies
@@ -3683,7 +3683,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.46.2.0.0.3</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/vtpServerDisabled</uei>
+		<uei>uei.opennms.org/traps/cisco/vtpServerDisabled</uei>
 		<event-label>Cisco-defined trap event: vtpServerDisabled</event-label>
 		<descr>
 			&lt;p&gt;A VTP Server disabled notification is generated
@@ -3706,7 +3706,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.46.2.0.0.4</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/vtpMtuTooBig</uei>
+		<uei>uei.opennms.org/traps/cisco/vtpMtuTooBig</uei>
 		<event-label>Cisco-defined trap event: vtpMtuTooBig</event-label>
 		<descr>
 			&lt;p&gt;A VTP MTU tooBig notification is generated when a
@@ -3733,7 +3733,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.46.2.0.0.5</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/vtpVlanRingNumberConfigConflict</uei>
+		<uei>uei.opennms.org/traps/cisco/vtpVlanRingNumberConfigConflict</uei>
 		<event-label>Cisco-defined trap event: vtpVlanRingNumberConfigConflict</event-label>
 		<descr>
 			&lt;p&gt;A VTP ring number configuration conflict
@@ -3761,7 +3761,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.46.2.0.0.6</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/vtpVersionOneDeviceDetected</uei>
+		<uei>uei.opennms.org/traps/cisco/vtpVersionOneDeviceDetected</uei>
 		<event-label>Cisco-defined trap event: vtpVersionOneDeviceDetected</event-label>
 		<descr>
 			&lt;p&gt;A VTP version one device detected notification is
@@ -3785,7 +3785,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.52.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/cieTestComplet</uei>
+		<uei>uei.opennms.org/traps/cisco/cieTestComplet</uei>
 		<event-label>Cisco-defined trap event: cieTestComplet</event-label>
 		<descr>
 			&lt;p&gt;A cieTestCompletion trap is sent at the completion
@@ -3805,7 +3805,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.61.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/caemTermperatureNot</uei>
+		<uei>uei.opennms.org/traps/cisco/caemTermperatureNot</uei>
 		<event-label>Cisco-defined trap event: caemTermperatureNot</event-label>
 		<descr>
 			&lt;p&gt;A caemTemperatureNotification is sent if the over
@@ -3828,7 +3828,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.63.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/cvdcPoorQoVNotification</uei>
+		<uei>uei.opennms.org/traps/cisco/cvdcPoorQoVNotification</uei>
 		<event-label>Cisco-defined trap event: cvdcPoorQoVNotification</event-label>
 		<descr>
 			&lt;p&gt;Poor quality of voice notification. A
@@ -3850,7 +3850,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.68.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/vmVmpsChange</uei>
+		<uei>uei.opennms.org/traps/cisco/vmVmpsChange</uei>
 		<event-label>Cisco-defined trap event: vmVmpsChange</event-label>
 		<descr>
 			&lt;p&gt;A VMPS change notification is generated whenever
@@ -3870,7 +3870,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.74.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/cdeTrapTConnUpDown</uei>
+		<uei>uei.opennms.org/traps/cisco/cdeTrapTConnUpDown</uei>
 		<event-label>Cisco-defined trap event: cdeTrapTConnUpDown</event-label>
 		<descr>
 			&lt;p&gt;This cdeTrapTConnUpDown trap is sent each time a
@@ -3891,7 +3891,7 @@
 				<mevalue>.1.3.6.1.4.1.9.9.74.2.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/cdeTrapCircuitUpDown</uei>
+		<uei>uei.opennms.org/traps/cisco/cdeTrapCircuitUpDown</uei>
 		<event-label>Cisco-defined trap event: cdeTrapCircuitUpDown</event-label>
 		<descr>
 			&lt;p&gt;This cdeTrapCircuitUpDown trap is sent each time a
@@ -3912,7 +3912,7 @@
 				<mevalue>.1.3.6.1.4.1.9.10.8.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/llcCcStatusChange</uei>
+		<uei>uei.opennms.org/traps/cisco/llcCcStatusChange</uei>
 		<event-label>Cisco-defined trap event: llcCcStatusChange</event-label>
 		<descr>
 			&lt;p&gt;This trap indicates that the state of an LLC
@@ -3932,7 +3932,7 @@
 				<mevalue>.1.3.6.1.4.1.9.10.9.1.7.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/TConnPartnerReject</uei>
+		<uei>uei.opennms.org/traps/cisco/TConnPartnerReject</uei>
 		<event-label>Cisco-defined trap event: TConnPartnerReject</event-label>
 		<descr>
 			&lt;p&gt;This trap is sent each time a transport connection
@@ -3952,7 +3952,7 @@
 				<mevalue>.1.3.6.1.4.1.9.10.9.1.7.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/TConnProtViolation</uei>
+		<uei>uei.opennms.org/traps/cisco/TConnProtViolation</uei>
 		<event-label>Cisco-defined trap event: TConnProtViolation</event-label>
 		<descr>
 			&lt;p&gt;This trap is sent each time a protocol violation is
@@ -3971,7 +3971,7 @@
 				<mevalue>.1.3.6.1.4.1.9.10.9.1.7.0.3</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/TConnUp</uei>
+		<uei>uei.opennms.org/traps/cisco/TConnUp</uei>
 		<event-label>Cisco-defined trap event: TConnUp</event-label>
 		<descr>
 			&lt;p&gt;This trap is sent each time a transport connection
@@ -3990,7 +3990,7 @@
 				<mevalue>.1.3.6.1.4.1.9.10.9.1.7.0.4</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/TconnDown</uei>
+		<uei>uei.opennms.org/traps/cisco/TconnDown</uei>
 		<event-label>Cisco-defined trap event: TconnDown</event-label>
 		<descr>
 			&lt;p&gt;This trap is sent each time a transport connection
@@ -4009,7 +4009,7 @@
 				<mevalue>.1.3.6.1.4.1.9.10.9.1.7.0.5</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/DlswTrapCircuitUp</uei>
+		<uei>uei.opennms.org/traps/cisco/DlswTrapCircuitUp</uei>
 		<event-label>Cisco-defined trap event: DlswTrapCircuitUp</event-label>
 		<descr>
 			&lt;p&gt;This trap is sent each time a circuit enters
@@ -4028,7 +4028,7 @@
 				<mevalue>.1.3.6.1.4.1.9.10.9.1.7.0.6</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/DlswtrapCircuitDown</uei>
+		<uei>uei.opennms.org/traps/cisco/DlswtrapCircuitDown</uei>
 		<event-label>Cisco-defined trap event: DlswtrapCircuitDown</event-label>
 		<descr>
 			&lt;p&gt;This trap is sent each time a circuit enters
@@ -4047,7 +4047,7 @@
 				<mevalue>.1.3.6.1.4.1.9.10.15.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/oamPingCompTrap</uei>
+		<uei>uei.opennms.org/traps/cisco/oamPingCompTrap</uei>
 		<event-label>Cisco-defined trap event: oamPingCompTrap</event-label>
 		<descr>
 			&lt;p&gt;An oamLoopbackPingCompleted trap is sent at the
@@ -4068,7 +4068,7 @@
 				<mevalue>.1.3.6.1.4.1.9.10.17.3.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/acctngFileNearlyFull</uei>
+		<uei>uei.opennms.org/traps/cisco/acctngFileNearlyFull</uei>
 		<event-label>Cisco-defined trap event: acctngFileNearlyFull</event-label>
 		<descr>
 			&lt;p&gt;An acctngFileNearlyFull trap is an indication that
@@ -4091,7 +4091,7 @@
 				<mevalue>.1.3.6.1.4.1.9.10.17.3.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/acctngFileFull</uei>
+		<uei>uei.opennms.org/traps/cisco/acctngFileFull</uei>
 		<event-label>Cisco-defined trap event: acctngFileFull</event-label>
 		<descr>
 			&lt;p&gt;An acctngFileFull trap is an indication that the
@@ -4115,7 +4115,7 @@
 				<mevalue>.1.3.6.1.4.1.9.14.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/CW_App_Log</uei>
+		<uei>uei.opennms.org/traps/cisco/CW_App_Log</uei>
 		<event-label>Cisco-defined trap event: CW_App_Log</event-label>
 		<descr>
 			&lt;p&gt;Events that are generated by CiscoWorks
@@ -4135,7 +4135,7 @@
 				<mevalue>.1.3.6.1.4.1.9.14.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/CW_Device_Log</uei>
+		<uei>uei.opennms.org/traps/cisco/CW_Device_Log</uei>
 		<event-label>Cisco-defined trap event: CW_Device_Log</event-label>
 		<descr>
 			&lt;p&gt;Events that are generated by cisco devices and are
@@ -4157,7 +4157,7 @@
 				<mevalue>6</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/cisco/Cisco_Default_Trap</uei>
+		<uei>uei.opennms.org/traps/cisco/Cisco_Default_Trap</uei>
 		<event-label>Cisco-defined trap event: Cisco_Default_Trap</event-label>
 		<descr>
 			&lt;p&gt;This is the trap used when no other Cisco trap is
@@ -4177,7 +4177,7 @@
 				<mevalue>.1.3.6.1.4.1.23.2.5.5.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/ipxTrapCircuitDown</uei>
+		<uei>uei.opennms.org/traps/ipxTrapCircuitDown</uei>
 		<event-label>OpenNMS-defined trap event: ipxTrapCircuitDown</event-label>
 		<descr>
 			&lt;p&gt;This trap signifies that the specified circuit has
@@ -4196,7 +4196,7 @@
 				<mevalue>.1.3.6.1.4.1.23.2.5.5.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/ipxTrapCircuitUp</uei>
+		<uei>uei.opennms.org/traps/ipxTrapCircuitUp</uei>
 		<event-label>OpenNMS-defined trap event: ipxTrapCircuitUp</event-label>
 		<descr>
 			&lt;p&gt;This trap signifies that the specified circuit has
@@ -4215,7 +4215,7 @@
 				<mevalue>.1.3.6.1.4.1.141.1.1.3.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/RMON_Hi_Thresh</uei>
+		<uei>uei.opennms.org/traps/RMON_Hi_Thresh</uei>
 		<event-label>OpenNMS-defined trap event: RMON_Hi_Thresh</event-label>
 		<descr>
 			&lt;p&gt;RMON has detected a rising (high) threshold
@@ -4233,7 +4233,7 @@
 				<mevalue>.1.3.6.1.4.1.141.1.1.3.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/RMON_Low_Thresh</uei>
+		<uei>uei.opennms.org/traps/RMON_Low_Thresh</uei>
 		<event-label>OpenNMS-defined trap event: RMON_Low_Thresh</event-label>
 		<descr>
 			&lt;p&gt;RMON has detected a falling (low) threshold
@@ -4251,7 +4251,7 @@
 				<mevalue>.1.3.6.1.4.1.197.3.1.1.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/kalEps3StackProStackMatrixChange</uei>
+		<uei>uei.opennms.org/traps/kalEps3StackProStackMatrixChange</uei>
 		<event-label>OpenNMS-defined trap event: kalEps3StackProStackMatrixChange</event-label>
 		<descr>
 			&lt;p&gt;This trap is generated when the stack switches over
@@ -4271,7 +4271,7 @@
 				<mevalue>.1.3.6.1.4.1.197.3.2.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/kalEps3StackTempChange</uei>
+		<uei>uei.opennms.org/traps/kalEps3StackTempChange</uei>
 		<event-label>OpenNMS-defined trap event: kalEps3StackTempChange</event-label>
 		<descr>
 			&lt;p&gt;This trap is generated when the temperature in a
@@ -4290,7 +4290,7 @@
 				<mevalue>.1.3.6.1.4.1.197.3.4.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/kalEps3PortStrNFwdEntry</uei>
+		<uei>uei.opennms.org/traps/kalEps3PortStrNFwdEntry</uei>
 		<event-label>OpenNMS-defined trap event: kalEps3PortStrNFwdEntry</event-label>
 		<descr>
 			&lt;p&gt;This trap is generated when a port automatically
@@ -4310,7 +4310,7 @@
 				<mevalue>.1.3.6.1.4.1.197.3.5.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/kalEps3DmnNewRoot</uei>
+		<uei>uei.opennms.org/traps/kalEps3DmnNewRoot</uei>
 		<event-label>OpenNMS-defined trap event: kalEps3DmnNewRoot</event-label>
 		<descr>
 			&lt;p&gt;This trap is a domain specific version of the
@@ -4334,7 +4334,7 @@
 				<mevalue>.1.3.6.1.4.1.197.3.5.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/kalEps3DmnTopologyChange</uei>
+		<uei>uei.opennms.org/traps/kalEps3DmnTopologyChange</uei>
 		<event-label>OpenNMS-defined trap event: kalEps3DmnTopologyChange</event-label>
 		<descr>
 			&lt;p&gt;This trap is a domain specific version of the
@@ -4359,7 +4359,7 @@
 				<mevalue>.1.3.6.1.4.1.197.3.6.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/kalEps3EtherChannelFailed</uei>
+		<uei>uei.opennms.org/traps/kalEps3EtherChannelFailed</uei>
 		<event-label>OpenNMS-defined trap event: kalEps3EtherChannelFailed</event-label>
 		<descr>
 			&lt;p&gt;This trap is sent when one of the links in an
@@ -4379,7 +4379,7 @@
 				<mevalue>.1.3.6.1.4.1.353.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/atmfVpcChange</uei>
+		<uei>uei.opennms.org/traps/atmfVpcChange</uei>
 		<event-label>OpenNMS-defined trap event: atmfVpcChange</event-label>
 		<descr>
 			&lt;p&gt;An atmfVpcChange trap indicates that a VPC is added
@@ -4400,7 +4400,7 @@
 				<mevalue>.1.3.6.1.4.1.353.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/atmfVccChange</uei>
+		<uei>uei.opennms.org/traps/atmfVccChange</uei>
 		<event-label>OpenNMS-defined trap event: atmfVccChange</event-label>
 		<descr>
 			&lt;p&gt;An atmfVccChange trap indicates that a VCC is added
@@ -4421,7 +4421,7 @@
 				<mevalue>.1.3.6.1.4.1.437.1.1.1.1.0.0</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/Logon_Intruder_2</uei>
+		<uei>uei.opennms.org/traps/Logon_Intruder_2</uei>
 		<event-label>OpenNMS-defined trap event: Logon_Intruder_2</event-label>
 		<descr></descr>
 		<logmsg dest='logndisplay'>
@@ -4436,7 +4436,7 @@
 				<mevalue>.1.3.6.1.4.1.437.1.1.1.1.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/Diagnostic_Failure_2</uei>
+		<uei>uei.opennms.org/traps/Diagnostic_Failure_2</uei>
 		<event-label>OpenNMS-defined trap event: Diagnostic_Failure_2</event-label>
 		<descr>
 			&lt;p&gt;Diagnostic failure.&lt;/p&gt;
@@ -4453,7 +4453,7 @@
 				<mevalue>.1.3.6.1.4.1.437.1.1.3.0.0</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/Logon_Intruder_1</uei>
+		<uei>uei.opennms.org/traps/Logon_Intruder_1</uei>
 		<event-label>OpenNMS-defined trap event: Logon_Intruder_1</event-label>
 		<descr>
 			&lt;p&gt;A user is repeatedly trying to logon using an
@@ -4476,7 +4476,7 @@
 				<mevalue>.1.3.6.1.4.1.437.1.1.3.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/Diagnostic_Failure_1</uei>
+		<uei>uei.opennms.org/traps/Diagnostic_Failure_1</uei>
 		<event-label>OpenNMS-defined trap event: Diagnostic_Failure_1</event-label>
 		<descr>
 			&lt;p&gt;The switch issues this trap when its Power On Self
@@ -4497,7 +4497,7 @@
 				<mevalue>.1.3.6.1.4.1.437.1.1.3.0.3</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/Address_Violation</uei>
+		<uei>uei.opennms.org/traps/Address_Violation</uei>
 		<event-label>OpenNMS-defined trap event: Address_Violation</event-label>
 		<descr>
 			&lt;p&gt;The addressViolation trap is issued when an address
@@ -4518,7 +4518,7 @@
 				<mevalue>.1.3.6.1.4.1.437.1.1.3.0.4</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/Broadcast_Storm</uei>
+		<uei>uei.opennms.org/traps/Broadcast_Storm</uei>
 		<event-label>OpenNMS-defined trap event: Broadcast_Storm</event-label>
 		<descr>
 			&lt;p&gt;The broadcastStorm trap is issued when broadcast
@@ -4541,7 +4541,7 @@
 				<mevalue>.1.3.6.1.4.1.437.1.1.3.0.5</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/RPS_Failure</uei>
+		<uei>uei.opennms.org/traps/RPS_Failure</uei>
 		<event-label>OpenNMS-defined trap event: RPS_Failure</event-label>
 		<descr>
 			&lt;p&gt;A redundant power source is connected to the switch
@@ -4560,7 +4560,7 @@
 				<mevalue>.1.3.6.1.4.1.494.4.0.1</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/fanPSSpeedFailed</uei>
+		<uei>uei.opennms.org/traps/fanPSSpeedFailed</uei>
 		<event-label>OpenNMS-defined trap event: fanPSSpeedFailed</event-label>
 		<descr>
 			&lt;p&gt;This trap is sent when the Power Supply fan has
@@ -4579,7 +4579,7 @@
 				<mevalue>.1.3.6.1.4.1.494.4.0.2</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/fanExtSpeedFailed</uei>
+		<uei>uei.opennms.org/traps/fanExtSpeedFailed</uei>
 		<event-label>OpenNMS-defined trap event: fanExtSpeedFailed</event-label>
 		<descr>
 			&lt;p&gt;This trap is sent when the external fan has
@@ -4598,7 +4598,7 @@
 				<mevalue>.1.3.6.1.4.1.494.4.0.3</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/portFailed</uei>
+		<uei>uei.opennms.org/traps/portFailed</uei>
 		<event-label>OpenNMS-defined trap event: portFailed</event-label>
 		<descr>
 			&lt;p&gt;This trap is sent when a port has auto-closed or
@@ -4617,7 +4617,7 @@
 				<mevalue>.1.3.6.1.4.1.494.4.0.4</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/brTestFailed</uei>
+		<uei>uei.opennms.org/traps/brTestFailed</uei>
 		<event-label>OpenNMS-defined trap event: brTestFailed</event-label>
 		<descr>
 			&lt;p&gt;This trap is sent when the bridge test on a port
@@ -4636,7 +4636,7 @@
                                 <mevalue>0</mevalue>
                         </maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/generic/traps/SNMP_Cold_Start</uei>
+		<uei>uei.opennms.org/generic/traps/SNMP_Cold_Start</uei>
 		<event-label>OpenNMS-defined trap event: SNMP_Cold_Start</event-label>
 		<descr>
 			&lt;p&gt;A coldStart trap signifies that the sending
@@ -4657,7 +4657,7 @@
                                 <mevalue>1</mevalue>
                         </maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/generic/traps/SNMP_Warm_Start</uei>
+		<uei>uei.opennms.org/generic/traps/SNMP_Warm_Start</uei>
 		<event-label>OpenNMS-defined trap event: SNMP_Warm_Start</event-label>
 		<descr>
 			&lt;p&gt;A warmStart trap signifies that the sending
@@ -4678,7 +4678,7 @@
                                 <mevalue>2</mevalue>
                         </maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/generic/traps/SNMP_Link_Down</uei>
+		<uei>uei.opennms.org/generic/traps/SNMP_Link_Down</uei>
 		<event-label>OpenNMS-defined trap event: SNMP_Link_Down</event-label>
 		<descr>
 			&lt;p&gt;A linkDown trap signifies that the sending protocol
@@ -4703,7 +4703,7 @@
                                 <mevalue>3</mevalue>
                         </maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/generic/traps/SNMP_Link_Up</uei>
+		<uei>uei.opennms.org/generic/traps/SNMP_Link_Up</uei>
 		<event-label>OpenNMS-defined trap event: SNMP_Link_Up</event-label>
 		<descr>
 			&lt;p&gt;A linkUp trap signifies that the sending protocol
@@ -4728,7 +4728,7 @@
                                 <mevalue>4</mevalue>
                         </maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/generic/traps/SNMP_Authen_Failure</uei>
+		<uei>uei.opennms.org/generic/traps/SNMP_Authen_Failure</uei>
 		<event-label>OpenNMS-defined trap event: SNMP_Authen_Failure</event-label>
 		<descr>
 			&lt;p&gt;An authentication failure trap signifies that the
@@ -4748,7 +4748,7 @@
 				<mevalue>5</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/generic/traps/SNMP_EGP_Down</uei>
+		<uei>uei.opennms.org/generic/traps/SNMP_EGP_Down</uei>
 		<event-label>OpenNMS-defined trap event: SNMP_EGP_Down</event-label>
 		<descr>
 			&lt;p&gt;An egpNeighborLoss trap signifies that an EGP
@@ -4771,7 +4771,7 @@
 				<mevalue>6</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/generic/traps/EnterpriseDefault</uei>
+		<uei>uei.opennms.org/generic/traps/EnterpriseDefault</uei>
 		<event-label>OpenNMS-defined trap event: EnterpriseDefault</event-label>
 		<descr>
 			&lt;p&gt;This is the default event format used when an
@@ -4787,7 +4787,7 @@
 		<severity>Normal</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/default/trap</uei>
+		<uei>uei.opennms.org/default/trap</uei>
 		<event-label>OpenNMS-defined default event: trap</event-label>
 		<descr>
 			&lt;p&gt;An SNMP Trap (%snmp%) with no matching
@@ -4803,7 +4803,7 @@
 		<severity>Indeterminate</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/default/event</uei>
+		<uei>uei.opennms.org/default/event</uei>
 		<event-label>OpenNMS-defined default event: event</event-label>
 		<descr>
 			&lt;p&gt;An event with no matching configuration was

@@ -78,13 +78,13 @@ public final class EventExpander
 	 * The default event UEI - if the event lookup into the 'event.conf'
 	 * fails, the event is loaded with information from this default UEI 
 	 */
-	private final static String DEFAULT_EVENT_UEI	= "http://uei.opennms.org/default/event";
+	private final static String DEFAULT_EVENT_UEI	= "uei.opennms.org/default/event";
 	
 	/**
 	 * The default trap UEI - if the trap lookup into the 'event.conf'
 	 * fails, the trap event is loaded with information from this default UEI 
 	 */
-	private final static String DEFAULT_TRAP_UEI	= "http://uei.opennms.org/default/trap";
+	private final static String DEFAULT_TRAP_UEI	= "uei.opennms.org/default/trap";
 
 	/**
 	 * This is the list of Universal Event Identifiers (UEIs) that map to the 
@@ -93,12 +93,12 @@ public final class EventExpander
 	 */
 	private final static String GENERIC_SNMP_UEIS[] = 
 	{ 
-		"http://uei.opennms.org/mib2/generic/coldStart",		// generic = 0, Cold Start
-		"http://uei.opennms.org/mib2/generic/warmStart",		// generic = 1, Warm Start
-		"http://uei.opennms.org/mib2/generic/linkDown",			// generic = 2, Link Down
-		"http://uei.opennms.org/mib2/generic/linkUp",			// generic = 3, Link Up
-		"http://uei.opennms.org/mib2/generic/authenticationFailure",	// generic = 4, Authentication Failure
-		"http://uei.opennms.org/mib2/generic/egpNeighborLoss",		// generic = 5, EGP Neighbor Loss
+		"uei.opennms.org/mib2/generic/coldStart",		// generic = 0, Cold Start
+		"uei.opennms.org/mib2/generic/warmStart",		// generic = 1, Warm Start
+		"uei.opennms.org/mib2/generic/linkDown",			// generic = 2, Link Down
+		"uei.opennms.org/mib2/generic/linkUp",			// generic = 3, Link Up
+		"uei.opennms.org/mib2/generic/authenticationFailure",	// generic = 4, Authentication Failure
+		"uei.opennms.org/mib2/generic/egpNeighborLoss",		// generic = 5, EGP Neighbor Loss
 		DEFAULT_TRAP_UEI						// generic = 6, Enterprise Specific Trap
 	};
 

@@ -69,283 +69,283 @@ public class EventConstants
 	/**
 	 * The status query control event
 	 */
-	public final static String STATUS_QUERY_CONTROL_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/control/status";
+	public final static String STATUS_QUERY_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/status";
 
 	/**
 	 * The start event
 	 */
-	public final static String START_CONTROL_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/control/start";
+	public final static String START_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/start";
 	
 	/**
 	 * The pause event
 	 */
-	public final static String PAUSE_CONTROL_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/control/pause";
+	public final static String PAUSE_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/pause";
 	
 	/**
 	 * The resume event
 	 */
-	public final static String RESUME_CONTROL_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/control/resume";
+	public final static String RESUME_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/resume";
 	
 	/**
 	 * The stop event
 	 */
-	public final static String STOP_CONTROL_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/control/stop";
+	public final static String STOP_CONTROL_EVENT_UEI = "uei.opennms.org/internal/control/stop";
 	
 	/**
 	 * The 'start pending' response event
 	 */
-	public final static String CONTROL_START_PENDING_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/control/startPending";
+	public final static String CONTROL_START_PENDING_EVENT_UEI = "uei.opennms.org/internal/control/startPending";
 
 	/**
 	 * The 'starting' response event
 	 */
-	public final static String CONTROL_STARTING_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/control/starting";
+	public final static String CONTROL_STARTING_EVENT_UEI = "uei.opennms.org/internal/control/starting";
 
 	/**
 	 * The 'pause pending' response event
 	 */
-	public final static String CONTROL_PAUSE_PENDING_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/control/pausePending";
+	public final static String CONTROL_PAUSE_PENDING_EVENT_UEI = "uei.opennms.org/internal/control/pausePending";
 	
 	/**
 	 * The 'paused' response event
 	 */
-	public final static String CONTROL_PAUSED_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/control/paused";
+	public final static String CONTROL_PAUSED_EVENT_UEI = "uei.opennms.org/internal/control/paused";
 	
 	/**
 	 * The 'resume pending' response event
 	 */
-	public final static String CONTROL_RESUME_PENDING_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/control/resumePending";
+	public final static String CONTROL_RESUME_PENDING_EVENT_UEI = "uei.opennms.org/internal/control/resumePending";
 
 	/**
 	 * The 'running' response event
 	 */
-	public final static String CONTROL_RUNNING_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/control/running";
+	public final static String CONTROL_RUNNING_EVENT_UEI = "uei.opennms.org/internal/control/running";
 
 	/**
 	 * The 'stop pending' response event
 	 */
-	public final static String CONTROL_STOP_PENDING_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/control/stopPending";
+	public final static String CONTROL_STOP_PENDING_EVENT_UEI = "uei.opennms.org/internal/control/stopPending";
 	
 	/**
 	 * The 'stopped' response event
 	 */
-	public final static String CONTROL_STOPPED_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/control/stopped";
+	public final static String CONTROL_STOPPED_EVENT_UEI = "uei.opennms.org/internal/control/stopped";
 	
 	/**
 	 * The control error reponse event
 	 */
-	public final static String CONTROL_ERROR_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/control/error";
+	public final static String CONTROL_ERROR_EVENT_UEI = "uei.opennms.org/internal/control/error";
 	
 	/**
 	 * The new suspect event UEI
 	 */
-	public final static String	NEW_SUSPECT_INTERFACE_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/discovery/newSuspect";
+	public final static String	NEW_SUSPECT_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/discovery/newSuspect";
 	
 	/**
 	 * The discovery pause event UEI
 	 */
-	public final static String DISC_PAUSE_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/capsd/discPause";
+	public final static String DISC_PAUSE_EVENT_UEI = "uei.opennms.org/internal/capsd/discPause";
 
 	/**
 	 * The discovery resume event UEI
 	 */
-	public final static String DISC_RESUME_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/capsd/discResume";
+	public final static String DISC_RESUME_EVENT_UEI = "uei.opennms.org/internal/capsd/discResume";
 
 	/**
 	 * The node added event UEI
 	 */
-	public final static String	NODE_ADDED_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/nodeAdded";
+	public final static String	NODE_ADDED_EVENT_UEI = "uei.opennms.org/nodes/nodeAdded";
 	
 	/**
 	 * The node gained interface event UEI
 	 */
-	public final static String	NODE_GAINED_INTERFACE_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/nodeGainedInterface";
+	public final static String	NODE_GAINED_INTERFACE_EVENT_UEI = "uei.opennms.org/nodes/nodeGainedInterface";
 	
 	/**
 	 * The node gained service event UEI
 	 */
-	public final static String	NODE_GAINED_SERVICE_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/nodeGainedService";
+	public final static String	NODE_GAINED_SERVICE_EVENT_UEI = "uei.opennms.org/nodes/nodeGainedService";
 
 	/**
 	 * The node lost service event UEI
 	 */
-	public final static String	NODE_LOST_SERVICE_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/nodeLostService";
+	public final static String	NODE_LOST_SERVICE_EVENT_UEI = "uei.opennms.org/nodes/nodeLostService";
 	
 	/**
 	 * The service responsive event UEI
 	 */
-	public final static String	SERVICE_RESPONSIVE_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/serviceResponsive";
+	public final static String	SERVICE_RESPONSIVE_EVENT_UEI = "uei.opennms.org/nodes/serviceResponsive";
 	
 	/**
 	 * The service unresponsive event UEI
 	 */
-	public final static String	SERVICE_UNRESPONSIVE_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/serviceUnresponsive";
+	public final static String	SERVICE_UNRESPONSIVE_EVENT_UEI = "uei.opennms.org/nodes/serviceUnresponsive";
 
 	/**
 	 * The interface down event UEI
 	 */
-	public final static String	INTERFACE_DOWN_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/interfaceDown";
+	public final static String	INTERFACE_DOWN_EVENT_UEI = "uei.opennms.org/nodes/interfaceDown";
 
 	/**
 	 * The node down event UEI
 	 */
-	public final static String	NODE_DOWN_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/nodeDown";
+	public final static String	NODE_DOWN_EVENT_UEI = "uei.opennms.org/nodes/nodeDown";
 
 	/**
 	 * The node up event UEI
 	 */
-	public final static String	NODE_UP_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/nodeUp";
+	public final static String	NODE_UP_EVENT_UEI = "uei.opennms.org/nodes/nodeUp";
 
 	/**
 	 * The interface up event UEI
 	 */
-	public final static String	INTERFACE_UP_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/interfaceUp";
+	public final static String	INTERFACE_UP_EVENT_UEI = "uei.opennms.org/nodes/interfaceUp";
 
 	/**
 	 * The node regained service event UEI
 	 */
-	public final static String	NODE_REGAINED_SERVICE_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/nodeRegainedService";
+	public final static String	NODE_REGAINED_SERVICE_EVENT_UEI = "uei.opennms.org/nodes/nodeRegainedService";
 
 	/**
 	 * The delete service event UEI
 	 */
-	public final static String DELETE_SERVICE_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/deleteService";
+	public final static String DELETE_SERVICE_EVENT_UEI = "uei.opennms.org/nodes/deleteService";
 	
 	/**
 	 * The service deleted event UEI
 	 */
-	public final static String SERVICE_DELETED_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/serviceDeleted";
+	public final static String SERVICE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/serviceDeleted";
 	
 	/**
 	 * The interface deleted event UEI
 	 */
-	public final static String INTERFACE_DELETED_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/interfaceDeleted";
+	public final static String INTERFACE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/interfaceDeleted";
 
 	/**
 	 * The node deleted event UEI
 	 */
-	public final static String NODE_DELETED_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/nodeDeleted";
+	public final static String NODE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/nodeDeleted";
 
 	/**
 	 * The low threshold exceeded event UEI
 	 */
-	public final static String LOW_THRESHOLD_EVENT_UEI = "http://uei.opennms.org/products/bluebird/threshold/lowThresholdExceeded";
+	public final static String LOW_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/lowThresholdExceeded";
  
 	/**
 	 * The high threshold exceeded event UEI
 	 */
-	public final static String HIGH_THRESHOLD_EVENT_UEI = "http://uei.opennms.org/products/bluebird/threshold/highThresholdExceeded";   
+	public final static String HIGH_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/highThresholdExceeded";   
 
 	/**
 	 * The high threshold exceeded event UEI
 	 */
-	public final static String HIGH_THRESHOLD_REARM_EVENT_UEI = "http://uei.opennms.org/products/bluebird/threshold/highThresholdRearmed";   
+	public final static String HIGH_THRESHOLD_REARM_EVENT_UEI = "uei.opennms.org/threshold/highThresholdRearmed";   
 
 	/**
 	 * The high threshold exceeded event UEI
 	 */
-	public final static String LOW_THRESHOLD_REARM_EVENT_UEI = "http://uei.opennms.org/products/bluebird/threshold/lowThresholdRearmed";   
+	public final static String LOW_THRESHOLD_REARM_EVENT_UEI = "uei.opennms.org/threshold/lowThresholdRearmed";   
 
 	/**
 	 * The interface index changed event
 	 */
-	public final static String INTERFACE_INDEX_CHANGED_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/interfaceIndexChanged";
+	public final static String INTERFACE_INDEX_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/interfaceIndexChanged";
 	
 	/**	
 	 * The interface supports SNMP event...generated during capability rescan when an already managed
 	 * interface gains SNMP support for the first time
 	*/
-	public final static String INTERFACE_SUPPORTS_SNMP_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/capsd/interfaceSupportsSNMP";
+	public final static String INTERFACE_SUPPORTS_SNMP_EVENT_UEI = "uei.opennms.org/internal/capsd/interfaceSupportsSNMP";
 	
 	/**
 	 * The interface reparented event
 	 */
-	public final static String INTERFACE_REPARENTED_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/interfaceReparented";
+	public final static String INTERFACE_REPARENTED_EVENT_UEI = "uei.opennms.org/nodes/interfaceReparented";
 	
 	/**
 	 * The node info changed event
 	 */
-	public final static String NODE_INFO_CHANGED_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/nodeInfoChanged";
+	public final static String NODE_INFO_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeInfoChanged";
 	
 	/**
 	 * The interface IP host name changed event
 	 */
-	public final static String INTERFACE_IP_HOSTNAME_CHANGED_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/interfaceIPHostNameChanged";
+	public final static String INTERFACE_IP_HOSTNAME_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/interfaceIPHostNameChanged";
 
 	/**
 	 * The node label changed event
 	 */
-	public final static String NODE_LABEL_CHANGED_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/nodeLabelChanged";
+	public final static String NODE_LABEL_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeLabelChanged";
 
 	/**
 	 * The node label source changed event
 	*/
-	public final static String NODE_LABEL_SOURCE_CHANGED_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/nodeLabelSourceChanged";
+	public final static String NODE_LABEL_SOURCE_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/nodeLabelSourceChanged";
 
 	/**
 	 * The node deleted event UEI
 	 */
-	public final static String DUP_NODE_DELETED_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/duplicateNodeDeleted";
+	public final static String DUP_NODE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/duplicateNodeDeleted";
 	
 	/**
 	* The primary SNMP interface changed event.
 	*/
-	public final static String PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/primarySnmpInterfaceChanged";
+	public final static String PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/primarySnmpInterfaceChanged";
 	
 	/**
 	 * The reinitialize primary SNMP interface event.
 	 */
-	public final static String REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/reinitializePrimarySnmpInterface";
+	public final static String REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI = "uei.opennms.org/nodes/reinitializePrimarySnmpInterface";
 	
 	/** 
 	 * Collection failed
 	 */
-	public final static String DATA_COLLECTION_FAILED_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/dataCollectionFailed";
+	public final static String DATA_COLLECTION_FAILED_EVENT_UEI = "uei.opennms.org/nodes/dataCollectionFailed";
 	
 	/** 
 	 * Collection succeeded
 	 */
-	public final static String DATA_COLLECTION_SUCCEEDED_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/dataCollectionSucceeded";
+	public final static String DATA_COLLECTION_SUCCEEDED_EVENT_UEI = "uei.opennms.org/nodes/dataCollectionSucceeded";
 
 	/** 
 	 * Thresholding failed
 	 */
-	public final static String THRESHOLDING_FAILED_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/thresholdingFailed";
+	public final static String THRESHOLDING_FAILED_EVENT_UEI = "uei.opennms.org/nodes/thresholdingFailed";
 	
 	/** 
 	 * Thresholding succeeded
 	 */
-	public final static String THRESHOLDING_SUCCEEDED_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/thresholdingSucceeded";
+	public final static String THRESHOLDING_SUCCEEDED_EVENT_UEI = "uei.opennms.org/nodes/thresholdingSucceeded";
 
 	/** 
 	 * The force interface rescan event UEI
 	 */
-	public final static String FORCE_RESCAN_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/capsd/forceRescan";
+	public final static String FORCE_RESCAN_EVENT_UEI = "uei.opennms.org/internal/capsd/forceRescan";
 	
 	/**
 	 * The RTC subscribe event
 	 */
-	public final static String RTC_SUBSCRIBE_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/rtc/subscribe";
+	public final static String RTC_SUBSCRIBE_EVENT_UEI = "uei.opennms.org/internal/rtc/subscribe";
 
 	/**
 	 * The RTC unsubscribe event
 	 */
-	public final static String RTC_UNSUBSCRIBE_EVENT_UEI = "http://uei.opennms.org/products/bluebird/internal/rtc/unsubscribe";
+	public final static String RTC_UNSUBSCRIBE_EVENT_UEI = "uei.opennms.org/internal/rtc/unsubscribe";
 	
 	/**
 	 * A service poll returned an unknown status (due to a problem getting poll information)
 	 */
-	public final static String SERVICE_STATUS_UNKNOWN = "http://uei.opennms.org/products/bluebird/internal/unknownServiceStatus";
+	public final static String SERVICE_STATUS_UNKNOWN = "uei.opennms.org/internal/unknownServiceStatus";
 
 	/**
 	 *
 	 */
-	public final static String NOTIFICATION_WITHOUT_USERS = "http://uei.opennms.org/products/bluebird/internal/notificationWithoutUsers";
+	public final static String NOTIFICATION_WITHOUT_USERS = "uei.opennms.org/internal/notificationWithoutUsers";
 
 	/**
 	 * A vulnerability scan on a specific interface was initiated by the user via the web UI
 	 */
-	public final static String SPECIFIC_VULN_SCAN_EVENT_UEI = "http://uei.opennms.org/products/bluebird/vulnscand/specificVulnerabilityScan";
+	public final static String SPECIFIC_VULN_SCAN_EVENT_UEI = "uei.opennms.org/vulnscand/specificVulnerabilityScan";
 
 	//
 	// end eventUEIs

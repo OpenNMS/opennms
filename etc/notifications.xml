@@ -6,7 +6,7 @@
         <mstation>localhost</mstation>
     </header>
     <notification name="serviceUnresponsive" status="on">
-        <uei>http://uei.opennms.org/products/bluebird/nodes/serviceUnresponsive</uei>
+        <uei>uei.opennms.org/nodes/serviceUnresponsive</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Network/Systems</destinationPath>
         <text-message>The %service% poll to interface %interface% successfully completed a connection to the service listener on the remote machine. However, the synthetic transaction failed to complete within %parm[timeout]% milliseconds, over %parm[attempts]% attempts.  This event will NOT impact service level agreements, but may be an indicator of other problems on that node.  You have 15 minutes to acknowledge this message before this notification will escalate to the next recipient.</text-message>
@@ -14,7 +14,7 @@
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="serviceResponsive" status="on">
-        <uei>http://uei.opennms.org/products/bluebird/nodes/serviceResponsive</uei>
+        <uei>uei.opennms.org/nodes/serviceResponsive</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Network/Systems</destinationPath>
         <text-message>The %service% service on %interface% has recovered from a previously UNRESPONSIVE state.  Synthetic transactions to this service are completing within the alotted timeout and retry period.</text-message>
@@ -22,7 +22,7 @@
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="interfaceDown" status="on">
-        <uei>http://uei.opennms.org/products/bluebird/nodes/interfaceDown</uei>
+        <uei>uei.opennms.org/nodes/interfaceDown</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Page-Network/Systems/Management</destinationPath>
         <text-message>All services are down on interface %interface%.  New Outage records have been
@@ -34,7 +34,7 @@
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="nodeDown" status="on">
-        <uei>http://uei.opennms.org/products/bluebird/nodes/nodeDown</uei>
+        <uei>uei.opennms.org/nodes/nodeDown</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Page-Network/Systems/Management</destinationPath>
         <text-message>All services are down on node %parm[nodelabel]%.  New Outage records have been
@@ -46,7 +46,7 @@
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="interfaceUp" status="on">
-        <uei>http://uei.opennms.org/products/bluebird/nodes/interfaceUp</uei>
+        <uei>uei.opennms.org/nodes/interfaceUp</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Page-Network/Systems</destinationPath>
         <text-message>The interface %interface% which was previously down 
@@ -55,7 +55,7 @@
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="nodeUp" status="on">
-        <uei>http://uei.opennms.org/products/bluebird/nodes/nodeUp</uei>
+        <uei>uei.opennms.org/nodes/nodeUp</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Page-Network/Systems</destinationPath>
         <text-message>The node %parm[nodelabel]% which was previously down 
@@ -64,7 +64,7 @@
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="nodeLostService" status="on">
-        <uei>http://uei.opennms.org/products/bluebird/nodes/nodeLostService</uei>
+        <uei>uei.opennms.org/nodes/nodeLostService</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Page-Network/Systems/Management</destinationPath>
         <text-message>The %service% service poll on interface
@@ -75,7 +75,7 @@
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="nodeRegainedService" status="on">
-        <uei>http://uei.opennms.org/products/bluebird/nodes/nodeRegainedService</uei>
+        <uei>uei.opennms.org/nodes/nodeRegainedService</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Page-Network/Systems</destinationPath>
         <text-message>%service% service restored on interface %interface%.</text-message>
@@ -83,7 +83,7 @@
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="coldStart" status="on">
-        <uei>http://uei.opennms.org/generic/traps/SNMP_Cold_Start</uei>
+        <uei>uei.opennms.org/generic/traps/SNMP_Cold_Start</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Network/Systems</destinationPath>
         <text-message>An SNMP coldStart trap has been received from
@@ -93,7 +93,7 @@
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="warmStart" status="on">
-        <uei>http://uei.opennms.org/generic/traps/SNMP_Warm_Start</uei>
+        <uei>uei.opennms.org/generic/traps/SNMP_Warm_Start</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Network/Systems</destinationPath>
         <text-message>An SNMP warmStart trap has been received from
@@ -102,7 +102,7 @@
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="authenticationFailure" status="on">
-        <uei>http://uei.opennms.org/generic/traps/SNMP_Authen_Failure</uei>
+        <uei>uei.opennms.org/generic/traps/SNMP_Authen_Failure</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Security</destinationPath>
         <text-message>An Authentication Failure has been identified on
@@ -113,7 +113,7 @@
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="serviceDeleted" status="on">
-        <uei>http://uei.opennms.org/products/bluebird/nodes/serviceDeleted</uei>
+        <uei>uei.opennms.org/nodes/serviceDeleted</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Network/Systems</destinationPath>
         <text-message>Due to extended downtime, the %service% service on
@@ -123,7 +123,7 @@
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="nodeAdded" status="on">
-        <uei>http://uei.opennms.org/products/bluebird/nodes/nodeAdded</uei>
+        <uei>uei.opennms.org/nodes/nodeAdded</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Network/Systems</destinationPath>
         <text-message>OpenNMS has discovered a new node named
@@ -132,7 +132,7 @@
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="nodeInfoChanged" status="on">
-        <uei>http://uei.opennms.org/products/bluebird/nodes/nodeInfoChanged</uei>
+        <uei>uei.opennms.org/nodes/nodeInfoChanged</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Network/Systems</destinationPath>
         <text-message>Node information has changed for a device in your
@@ -146,7 +146,7 @@
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="interfaceDeleted" status="on">
-        <uei>http://uei.opennms.org/products/bluebird/nodes/interfaceDeleted</uei>
+        <uei>uei.opennms.org/nodes/interfaceDeleted</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Network/Systems</destinationPath>
         <text-message>Due to extended downtime, the interface

@@ -146,7 +146,7 @@ public class SnmpManageNodesServlet extends HttpServlet
 		throws ServletException
 	{
 		Event snmpRestart = new Event();
-		snmpRestart.setUei("http://uei.opennms.org/products/bluebird/nodes/reinitializePrimarySnmpInterface");
+		snmpRestart.setUei("uei.opennms.org/nodes/reinitializePrimarySnmpInterface");
 		snmpRestart.setNodeid(nodeid);
 		snmpRestart.setInterface(primeInt);
 		snmpRestart.setSource("web ui");

@@ -3,7 +3,7 @@
 <log>
 	<events>
 		<event>
-			<uei>http://uei.opennms.org/products/bluebird/nodes/nodeGainedService</uei>
+			<uei>http://uei.opennms.org/nodes/nodeGainedService</uei>
 			<service>SSH</service>
 			<interface>192.168.0.42</interface>
 			<nodeid>7</nodeid>

@@ -34,8 +34,8 @@ public class ManageNodesServlet extends HttpServlet
 	
 	private static final String INCLUDE_FILE_NAME = "include";
 	
-	public static final String GAINED_SERVICE_UEI   = "http://uei.opennms.org/products/bluebird/nodes/nodeGainedService";
-	public static final String GAINED_INTERFACE_UEI = "http://uei.opennms.org/products/bluebird/nodes/nodeGainedInterface";
+	public static final String GAINED_SERVICE_UEI   = "uei.opennms.org/nodes/nodeGainedService";
+	public static final String GAINED_INTERFACE_UEI = "uei.opennms.org/nodes/nodeGainedInterface";
 	public static final String NOTICE_NAME          = "Email-Reporting";
 	private static final String NOTICE_COMMAND = "/opt/OpenNMS/bin/notify.sh ";
 	
@@ -110,7 +110,7 @@ public class ManageNodesServlet extends HttpServlet
 					if (interfaceList.contains(intKey) && curInterface.getStatus().equals("unmanaged"))
 				{
 						//Event newEvent = new Event();
-						//newEvent.setUei("http://uei.opennms.org/products/bluebird/internal/interfaceManaged");
+						//newEvent.setUei("uei.opennms.org/internal/interfaceManaged");
 						//newEvent.setSource("web ui");
 						//newEvent.setNodeid(curNode.getNodeID());
 						//newEvent.setInterface(curInterface.getAddress());
@@ -122,7 +122,7 @@ public class ManageNodesServlet extends HttpServlet
 					else if (!interfaceList.contains(intKey) && curInterface.getStatus().equals("managed"))
 					{
 						//Event newEvent = new Event();
-						//newEvent.setUei("http://uei.opennms.org/products/bluebird/internal/interfaceUnmanaged");
+						//newEvent.setUei("uei.opennms.org/internal/interfaceUnmanaged");
 						//newEvent.setSource("web ui");
 						//newEvent.setNodeid(curNode.getNodeID());
 						//newEvent.setInterface(curInterface.getAddress());
@@ -142,7 +142,7 @@ public class ManageNodesServlet extends HttpServlet
 						if (serviceList.contains(serviceKey) && curService.getStatus().equals("unmanaged"))
                                         {
 							//Event newEvent = new Event();
-							//newEvent.setUei("http://uei.opennms.org/products/bluebird/internal/serviceManaged");
+							//newEvent.setUei("uei.opennms.org/internal/serviceManaged");
 							//newEvent.setSource("web ui");
 							//newEvent.setNodeid(curNode.getNodeID());
 							//newEvent.setInterface(curInterface.getAddress());
@@ -159,7 +159,7 @@ public class ManageNodesServlet extends HttpServlet
 						else if (!serviceList.contains(serviceKey) && curService.getStatus().equals("managed"))
 						{
 							//Event newEvent = new Event();
-							//newEvent.setUei("http://uei.opennms.org/products/bluebird/internal/serviceUnmanaged");
+							//newEvent.setUei("uei.opennms.org/internal/serviceUnmanaged");
 							//newEvent.setSource("web ui");
 							//newEvent.setNodeid(curNode.getNodeID());
 							//newEvent.setInterface(curInterface.getAddress());
@@ -253,7 +253,7 @@ public class ManageNodesServlet extends HttpServlet
 		throws ServletException
 	{
 		Event scmRestart = new Event();
-		scmRestart.setUei("http://uei.opennms.org/products/bluebird/internal/restartSCM");
+		scmRestart.setUei("uei.opennms.org/internal/restartSCM");
 		scmRestart.setSource("web ui");
 		scmRestart.setTime(EventConstants.formatToString(new java.util.Date()));
 	

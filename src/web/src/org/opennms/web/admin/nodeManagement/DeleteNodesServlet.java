@@ -157,7 +157,7 @@ public class DeleteNodesServlet extends HttpServlet
                 throws ServletException
         {
                 Event nodeDeleted = new Event();
-                nodeDeleted.setUei("http://uei.opennms.org/products/bluebird/nodes/nodeDeleted");
+                nodeDeleted.setUei("uei.opennms.org/nodes/nodeDeleted");
                 nodeDeleted.setSource("web ui");
                 nodeDeleted.setNodeid(node);
                 nodeDeleted.setTime(EventConstants.formatToString(new java.util.Date()));
@@ -169,7 +169,7 @@ public class DeleteNodesServlet extends HttpServlet
                 throws ServletException
         {
                 Event serviceDeleted = new Event();
-                serviceDeleted.setUei("http://uei.opennms.org/products/bluebird/nodes/deleteService");
+                serviceDeleted.setUei("uei.opennms.org/nodes/deleteService");
                 serviceDeleted.setSource("web ui");
                 serviceDeleted.setNodeid(node);
                 serviceDeleted.setInterface(iface);

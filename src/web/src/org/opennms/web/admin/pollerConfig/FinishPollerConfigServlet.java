@@ -37,7 +37,7 @@ public class FinishPollerConfigServlet extends HttpServlet
 	public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException 
 	{
 	        Event newEvent = new Event();
-                newEvent.setUei("http://uei.opennms.org/products/bluebird/internal/reloadPollerConfig");
+                newEvent.setUei("uei.opennms.org/internal/reloadPollerConfig");
                 newEvent.setSource("web ui");
 		newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
                 

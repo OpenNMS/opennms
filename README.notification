@@ -58,7 +58,7 @@ QUICK START GUIDE
 
 5)  Enter a UEI/Destination Path mapping in notifications.xml if there are
     none listed.  Typically the event
-    "http://uei.opennms.org/products/bluebird/nodes/nodeLostService" is
+    "http://uei.opennms.org/nodes/nodeLostService" is
     notified on.  If you want to not notify based on devices enter the
     relevant rule (see the README.filters for how to write a rule).  Enter the
     destination path to use.  Enter a text message to send. This is applicable

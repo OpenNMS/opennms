@@ -9,7 +9,7 @@
 		</security>
 	</global>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/internal/capsd/discPause</uei>
+		<uei>uei.opennms.org/internal/capsd/discPause</uei>
 		<event-label>OpenNMS-defined internal event: capsd discPause</event-label>
 		<descr>
 			&lt;p&gt;The services scanning engine has asked discovery to
@@ -22,7 +22,7 @@
 		<severity>Indeterminate</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/internal/capsd/discResume</uei>
+		<uei>uei.opennms.org/internal/capsd/discResume</uei>
 		<event-label>OpenNMS-defined internal event: capsd discResume</event-label>
 		<descr>
 			&lt;p&gt;Capsd is approving discovery to resume adding nodes
@@ -34,7 +34,7 @@
 		<severity>Indeterminate</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/internal/capsd/forceRescan</uei>
+		<uei>uei.opennms.org/internal/capsd/forceRescan</uei>
 		<event-label>OpenNMS-defined internal event: capsd forceRescan</event-label>
 		<descr>
 			&lt;p&gt;A services scan has been forced.&lt;/p&gt;
@@ -49,7 +49,7 @@
 		<severity>Major</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/internal/capsd/interfaceSupportsSNMP</uei>
+		<uei>uei.opennms.org/internal/capsd/interfaceSupportsSNMP</uei>
 		<event-label>OpenNMS-defined internal event: capsd interfaceSupportsSNMP</event-label>
 		<descr>
 			&lt;p&gt;A services scan has verified that this interface
@@ -62,7 +62,7 @@
 		<severity>Normal</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/internal/discovery/newSuspect</uei>
+		<uei>uei.opennms.org/internal/discovery/newSuspect</uei>
 		<event-label>OpenNMS-defined internal event: discovery newSuspect</event-label>
 		<descr>
 			&lt;p&gt;Interface %interface% has been discovered and is
@@ -75,7 +75,7 @@
 		<severity>Warning</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/internal/interfaceManaged</uei>
+		<uei>uei.opennms.org/internal/interfaceManaged</uei>
 		<event-label>OpenNMS-defined internal event: interfaceManaged</event-label>
 		<descr>
 			&lt;p&gt;The interface %interface% is being
@@ -88,7 +88,7 @@
 		<severity>Warning</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/internal/interfaceUnmanaged</uei>
+		<uei>uei.opennms.org/internal/interfaceUnmanaged</uei>
 		<event-label>OpenNMS-defined internal event: interfaceUnmanaged</event-label>
 		<descr>
 			&lt;p&gt;The interface %interface% is being forcibly
@@ -102,7 +102,7 @@
 		<severity>Major</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/internal/notificationWithoutUsers</uei>
+		<uei>uei.opennms.org/internal/notificationWithoutUsers</uei>
 		<event-label>OpenNMS-defined internal event: notificationWithoutUsers</event-label>
 		<descr>
 			&lt;p&gt;A destination path in a notification has not been
@@ -115,7 +115,7 @@
 		<severity>Normal</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/internal/notificationsTurnedOff</uei>
+		<uei>uei.opennms.org/internal/notificationsTurnedOff</uei>
 		<event-label>OpenNMS-defined internal event: notificationsTurnedOff</event-label>
 		<descr>
 			&lt;p&gt;Notifications have been disabled.&lt;/p&gt;
@@ -129,7 +129,7 @@
 		<severity>Major</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/internal/notificationsTurnedOn</uei>
+		<uei>uei.opennms.org/internal/notificationsTurnedOn</uei>
 		<event-label>OpenNMS-defined internal event: notificationsTurnedOn</event-label>
 		<descr>
 			&lt;p&gt;Notifications have been enabled.&lt;/p&gt;
@@ -143,7 +143,7 @@
 		<severity>Major</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/internal/reloadEventConfig</uei>
+		<uei>uei.opennms.org/internal/reloadEventConfig</uei>
 		<event-label>OpenNMS-defined internal event: reloadEventConfig</event-label>
 		<descr>
 			&lt;p&gt;The event configuration files have changed. The
@@ -157,7 +157,7 @@
 		<severity>Major</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/internal/reloadPollerConfig</uei>
+		<uei>uei.opennms.org/internal/reloadPollerConfig</uei>
 		<event-label>OpenNMS-defined internal event: reloadPollerConfig</event-label>
 		<descr>
 			&lt;p&gt;The administrator has changed the poller
@@ -171,7 +171,7 @@
 		<severity>Major</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/internal/restartSCM</uei>
+		<uei>uei.opennms.org/internal/restartSCM</uei>
 		<event-label>OpenNMS-defined internal event: restartSCM</event-label>
 		<descr>
 			&lt;p&gt;SCM has been asked to restart.&lt;/p&gt;
@@ -182,7 +182,7 @@
 		<severity>Normal</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/internal/rtc/subscribe</uei>
+		<uei>uei.opennms.org/internal/rtc/subscribe</uei>
 		<event-label>OpenNMS-defined internal event: rtc subscribe</event-label>
 		<descr>
 			&lt;p&gt;This event is generated to RTC by any process that
@@ -195,7 +195,7 @@
 		<severity>Indeterminate</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/internal/rtc/unsubscribe</uei>
+		<uei>uei.opennms.org/internal/rtc/unsubscribe</uei>
 		<event-label>OpenNMS-defined internal event: rtc unsubscribe</event-label>
 		<descr>
 			&lt;p&gt;This event is generated to RTC by any subscribed
@@ -208,7 +208,7 @@
 		<severity>Indeterminate</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/internal/serviceManaged</uei>
+		<uei>uei.opennms.org/internal/serviceManaged</uei>
 		<event-label>OpenNMS-defined internal event: serviceManaged</event-label>
 		<descr>
 			&lt;p&gt;The service %service% on interface %interface% is
@@ -221,7 +221,7 @@
 		<severity>Warning</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/internal/serviceUnmanaged</uei>
+		<uei>uei.opennms.org/internal/serviceUnmanaged</uei>
 		<event-label>OpenNMS-defined internal event: serviceUnmanaged</event-label>
 		<descr>
 			&lt;p&gt;The service %service% on interface %interface% is
@@ -234,7 +234,7 @@
 		<severity>Major</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/internal/unknownServiceStatus</uei>
+		<uei>uei.opennms.org/internal/unknownServiceStatus</uei>
 		<event-label>OpenNMS-defined internal event: unknownServiceStatus</event-label>
 		<descr>
 			&lt;p&gt;The Scheduler has received an unrecognized service
@@ -247,7 +247,7 @@
 		<severity>Indeterminate</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/dataCollectionFailed</uei>
+		<uei>uei.opennms.org/nodes/dataCollectionFailed</uei>
 		<event-label>OpenNMS-defined node event: dataCollectionFailed</event-label>
 		<descr>
 			&lt;p&gt;%service% data collection on interface %interface%
@@ -259,7 +259,7 @@
 		<severity>Warning</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/dataCollectionSucceeded</uei>
+		<uei>uei.opennms.org/nodes/dataCollectionSucceeded</uei>
 		<event-label>OpenNMS-defined node event: dataCollectionSucceeded</event-label>
 		<descr>
 			&lt;p&gt;%service% data collection on interface %interface%
@@ -272,7 +272,7 @@
 		<severity>Cleared</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/deleteService</uei>
+		<uei>uei.opennms.org/nodes/deleteService</uei>
 		<event-label>OpenNMS-defined node event: deleteService</event-label>
 		<descr>
 			&lt;p&gt;Due to excessive downtime, the %service% service on
@@ -293,7 +293,7 @@
 		<severity>Minor</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/duplicateNodeDeleted</uei>
+		<uei>uei.opennms.org/nodes/duplicateNodeDeleted</uei>
 		<event-label>OpenNMS-defined node event: duplicateNodeDeleted</event-label>
 		<descr>
 			&lt;p&gt;Node #&lt;a
@@ -310,7 +310,7 @@
 		<severity>Minor</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/interfaceDeleted</uei>
+		<uei>uei.opennms.org/nodes/interfaceDeleted</uei>
 		<event-label>OpenNMS-defined node event: interfaceDeleted</event-label>
 		<descr>
 			&lt;p&gt;Interface %interface% deleted from node #&lt;a
@@ -329,7 +329,7 @@
 		<severity>Major</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/interfaceDown</uei>
+		<uei>uei.opennms.org/nodes/interfaceDown</uei>
 		<event-label>OpenNMS-defined node event: interfaceDown</event-label>
 		<descr>
 			&lt;p&gt;All services are down on interface %interface%
@@ -346,7 +346,7 @@
 		<severity>Critical</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/interfaceIPHostNameChanged</uei>
+		<uei>uei.opennms.org/nodes/interfaceIPHostNameChanged</uei>
 		<event-label>OpenNMS-defined node event: interfaceIPHostNameChanged</event-label>
 		<descr>
 			&lt;p&gt;The hostname for this node changed.&lt;/p&gt;
@@ -357,7 +357,7 @@
 		<severity>Minor</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/interfaceIndexChanged</uei>
+		<uei>uei.opennms.org/nodes/interfaceIndexChanged</uei>
 		<event-label>OpenNMS-defined node event: interfaceIndexChanged</event-label>
 		<descr>
 			&lt;p&gt;SNMP Interface Index %parm[oldIfIndex]% has changed
@@ -378,7 +378,7 @@
 		<severity>Minor</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/interfaceReparented</uei>
+		<uei>uei.opennms.org/nodes/interfaceReparented</uei>
 		<event-label>OpenNMS-defined node event: interfaceReparented</event-label>
 		<descr>
 			&lt;p&gt;Interface %interface% has been reparented under
@@ -398,7 +398,7 @@
 		<severity>Warning</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/interfaceUp</uei>
+		<uei>uei.opennms.org/nodes/interfaceUp</uei>
 		<event-label>OpenNMS-defined node event: interfaceUp</event-label>
 		<descr>
 			&lt;p&gt;The interface %interface% which was previously down
@@ -414,7 +414,7 @@
 		<severity>Cleared</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/nodeAdded</uei>
+		<uei>uei.opennms.org/nodes/nodeAdded</uei>
 		<event-label>OpenNMS-defined node event: nodeAdded</event-label>
 		<descr>
 			&lt;p&gt;A new node (%parm[nodelabel]%) was discovered by
@@ -426,7 +426,7 @@
 		<severity>Warning</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/nodeDeleted</uei>
+		<uei>uei.opennms.org/nodes/nodeDeleted</uei>
 		<event-label>OpenNMS-defined node event: nodeDeleted</event-label>
 		<descr>
 			&lt;p&gt;Node %nodeid% was deleted due to excessive
@@ -449,7 +449,7 @@
 		<severity>Minor</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/nodeDown</uei>
+		<uei>uei.opennms.org/nodes/nodeDown</uei>
 		<event-label>OpenNMS-defined node event: nodeDown</event-label>
 		<descr>
 			&lt;p&gt;All interfaces on node %parm[nodelabel]% are
@@ -465,7 +465,7 @@
 		<severity>Critical</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/nodeGainedInterface</uei>
+		<uei>uei.opennms.org/nodes/nodeGainedInterface</uei>
 		<event-label>OpenNMS-defined node event: nodeGainedInterface</event-label>
 		<descr>
 			&lt;p&gt;Interface %interface% has been associated with Node
@@ -479,7 +479,7 @@
 		<severity>Warning</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/nodeGainedService</uei>
+		<uei>uei.opennms.org/nodes/nodeGainedService</uei>
 		<event-label>OpenNMS-defined node event: nodeGainedService</event-label>
 		<descr>
 			&lt;p&gt;A service scan has identified the %service% service
@@ -495,7 +495,7 @@
 		<severity>Warning</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/nodeInfoChanged</uei>
+		<uei>uei.opennms.org/nodes/nodeInfoChanged</uei>
 		<event-label>OpenNMS-defined node event: nodeInfoChanged</event-label>
 		<descr>
 			&lt;p&gt;Node information has changed for node
@@ -508,7 +508,7 @@
 		<severity>Warning</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/nodeLabelChanged</uei>
+		<uei>uei.opennms.org/nodes/nodeLabelChanged</uei>
 		<event-label>OpenNMS-defined node event: nodeLabelChanged</event-label>
 		<descr>
 			&lt;p&gt;Node #&lt;a
@@ -525,7 +525,7 @@
 		<severity>Normal</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/nodeLostService</uei>
+		<uei>uei.opennms.org/nodes/nodeLostService</uei>
 		<event-label>OpenNMS-defined node event: nodeLostService</event-label>
 		<descr>
 			&lt;p&gt;A %service% outage was identified on interface
@@ -539,7 +539,7 @@
 		<severity>Critical</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/nodeRegainedService</uei>
+		<uei>uei.opennms.org/nodes/nodeRegainedService</uei>
 		<event-label>OpenNMS-defined node event: nodeRegainedService</event-label>
 		<descr>
 			&lt;p&gt;The %service% service on interface %interface% was
@@ -557,7 +557,7 @@
 		<severity>Cleared</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/nodeUp</uei>
+		<uei>uei.opennms.org/nodes/nodeUp</uei>
 		<event-label>OpenNMS-defined node event: nodeUp</event-label>
 		<descr>
 			&lt;p&gt;Node %parm[nodelabel]% which was previously down is
@@ -572,7 +572,7 @@
 		<severity>Cleared</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/primarySnmpInterfaceChanged</uei>
+		<uei>uei.opennms.org/nodes/primarySnmpInterfaceChanged</uei>
 		<event-label>OpenNMS-defined node event: primarySnmpInterfaceChanged</event-label>
 		<descr>
 			&lt;p&gt;This event indicates that the interface selected
@@ -589,7 +589,7 @@
 		<severity>Warning</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/reinitializePrimarySnmpInterface</uei>
+		<uei>uei.opennms.org/nodes/reinitializePrimarySnmpInterface</uei>
 		<event-label>OpenNMS-defined node event: reinitializePrimarySnmpInterface</event-label>
 		<descr>
 			&lt;p&gt;A change in configuration on this node has been
@@ -604,7 +604,7 @@
 		<severity>Warning</severity>
 	</event>
 	<event>
-                <uei>http://uei.opennms.org/products/bluebird/nodes/serviceResponsive</uei>
+                <uei>uei.opennms.org/nodes/serviceResponsive</uei>
 		<event-label>OpenNMS-defined node event: serviceResponsive</event-label>
 		<descr>
 			&lt;p&gt;The %service% service which was previously unresponsive
@@ -616,7 +616,7 @@
 		<severity>Cleared</severity>
         </event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/serviceDeleted</uei>
+		<uei>uei.opennms.org/nodes/serviceDeleted</uei>
 		<event-label>OpenNMS-defined node event: serviceDeleted</event-label>
 		<descr>
 			&lt;p&gt;Service %service% was deleted from interface
@@ -635,7 +635,7 @@
 		<severity>Major</severity>
 	</event>
 	<event>
-                <uei>http://uei.opennms.org/products/bluebird/nodes/serviceUnresponsive</uei>
+                <uei>uei.opennms.org/nodes/serviceUnresponsive</uei>
 		<event-label>OpenNMS-defined node event: serviceUnresponsive</event-label>
 		<descr>
 			&lt;p&gt;The %service% service is up but was unresponsive 
@@ -647,7 +647,7 @@
 		<severity>Major</severity>
         </event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/threshold/highThresholdExceeded</uei>
+		<uei>uei.opennms.org/threshold/highThresholdExceeded</uei>
 		<event-label>OpenNMS-defined threshold event: highThresholdExceeded</event-label>
 		<descr>
 			&lt;p&gt;High threshold exceeded for %service% datasource
@@ -670,7 +670,7 @@
 		<severity>Warning</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/threshold/lowThresholdExceeded</uei>
+		<uei>uei.opennms.org/threshold/lowThresholdExceeded</uei>
 		<event-label>OpenNMS-defined threshold event: lowThresholdExceeded</event-label>
 		<descr>
 			&lt;p&gt;Low threshold exceeded for %service% datasource
@@ -693,7 +693,7 @@
 		<severity>Warning</severity>
 	</event>
         <event>
-                <uei>http://uei.opennms.org/products/bluebird/threshold/highThresholdRearmed</uei>
+                <uei>uei.opennms.org/threshold/highThresholdRearmed</uei>
                 <event-label>OpenNMS-defined threshold event: highThresholdRearmed</event-label>
                 <descr>
                         &lt;p&gt;High threshold has been rearmed for %service% datasource
@@ -717,7 +717,7 @@
                 <severity>Normal</severity>
         </event>
         <event>
-                <uei>http://uei.opennms.org/products/bluebird/threshold/lowThresholdRearmed</uei>
+                <uei>uei.opennms.org/threshold/lowThresholdRearmed</uei>
                 <event-label>OpenNMS-defined threshold event: lowThresholdRearmed</event-label>
                 <descr>
                         &lt;p&gt;Low threshold has been rearmed for %service% datasource
@@ -740,7 +740,7 @@
                 <severity>Normal</severity>
         </event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/thresholdingFailed</uei>
+		<uei>uei.opennms.org/nodes/thresholdingFailed</uei>
 		<event-label>OpenNMS-defined threshold event: thresholdingFailed</event-label>
 		<descr>
 			&lt;p&gt;%service% thresholding on interface %interface%
@@ -752,7 +752,7 @@
 		<severity>Warning</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/nodes/thresholdingSucceeded</uei>
+		<uei>uei.opennms.org/nodes/thresholdingSucceeded</uei>
 		<event-label>OpenNMS-defined threshold event: thresholdingSucceeded</event-label>
 		<descr>
 			&lt;p&gt;%service% thresholding on interface %interface%
@@ -765,7 +765,7 @@
 		<severity>Cleared</severity>
 	</event>
 	<event>
-		<uei>http://uei.opennms.org/products/bluebird/vulnscand/specificVulnerabilityScan</uei>
+		<uei>uei.opennms.org/vulnscand/specificVulnerabilityScan</uei>
 		<event-label>OpenNMS-defined vulnscand event: specificVulnerabilityScan</event-label>
 		<descr>
 			&lt;p&gt;A vulnerabilities scan has been forced.&lt;/p&gt;

@@ -195,7 +195,7 @@
       <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
       <input type="hidden" name="action" value="<%=action%>" />
       
-      <table width="100%" cellspacing="0" cellpadding="2" border="0" bordercolor="black">
+      <table width="100%" cellspacing="1" cellpadding="2" border="0" bordercolor="black">
         <tr bgcolor="#999999">
           <td width="1%"><b>Ack</b></td>
           <td width="1%"> <%=this.makeSortLink( parms, EventFactory.SortStyle.ID,        EventFactory.SortStyle.REVERSE_ID,        "id",        "ID" )%></td>

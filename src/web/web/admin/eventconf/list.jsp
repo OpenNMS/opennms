@@ -37,7 +37,7 @@
     
     function addNewEvent()
     {
-        var newEventUEI = prompt("Enter the UEI of the new event. It can be renamed after it is saved.", "http://uei.opennms.org/products/bluebird/");
+        var newEventUEI = prompt("Enter the UEI of the new event. It can be renamed after it is saved.", "uei.opennms.org/");
         if (newEventUEI != null && newEventUEI != "")
         {
             document.allEvents.newEventUEI.value = newEventUEI;
