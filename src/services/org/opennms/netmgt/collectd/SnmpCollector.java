@@ -743,6 +743,10 @@ final class SnmpCollector
 				stmt.setInt(1, nodeID);
 				ResultSet rs = stmt.executeQuery();
 
+				// The following code does a database lookup on the ipinterface table
+				// and builds a Map of ifIndex and issnmpprimary values. The issnmpprimary
+				// value can then be checked to see if SNMP collection needs to be done on it.
+
                                 stmt1 = dbConn.prepareStatement(SQL_GET_ISSNMPPRIMARY);
                                 stmt1.setInt(1, nodeID);   // interface address
                                 ResultSet rs1 = stmt1.executeQuery();
