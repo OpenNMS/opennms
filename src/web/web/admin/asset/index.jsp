@@ -39,7 +39,7 @@
 
 -->
 
-<%@page language="java" contentType="text/html" session="true" import="java.text.*" %>
+<%@page language="java" contentType="text/html" session="true" import="java.lang.*" %>
 
 <html>
 <head>
