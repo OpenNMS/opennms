@@ -76,6 +76,7 @@ public class Installer {
     static final float POSTGRES_MIN_VERSION = 7.2f;
 
     static final String s_version = "$Id$";
+    static final int s_fetch_size = 1024;
 
     boolean m_rpm = false; // XXX only prints out a diagnostic message
 
@@ -1983,6 +1984,8 @@ public class Installer {
 	Iterator j;
 	int i;
 
+	st.setFetchSize(s_fetch_size);
+
 	String[] columns = (String[])
 	    columnChanges.keySet().toArray(new String[0]);
 	String[] questionMarks = new String[columns.length];
@@ -2118,7 +2121,19 @@ public class Installer {
 		}
 	    }
 
-	    insert.execute();
+	    try {
+		insert.execute();
+	    } catch (SQLException e) {
+		SQLException ex =
+		    new SQLException("Statement.execute() threw an " +
+				     "SQLException while inserting a row: " +
+				     "\"" + insert.toString() + "\".  " +
+				     "Original exception: " + e.toString(),
+				     e.getSQLState(),
+				     e.getErrorCode());
+		ex.setNextException(e);
+		throw ex;
+	    }
 
 	    current_row++;
 
