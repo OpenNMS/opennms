@@ -179,7 +179,7 @@ public class MockNetworkTest extends TestCase {
     private void anticipateServiceEvents(final EventAnticipator anticipator, MockElement element, final String uei) {
         MockVisitor eventSetter = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
-                Event event = MockUtil.createEvent(uei, svc.getNodeId(), svc.getIpAddr(), svc.getName());
+                Event event = MockUtil.createEvent("Test", uei, svc.getNodeId(), svc.getIpAddr(), svc.getName());
                 anticipator.anticipateEvent(event);
             }
         };
@@ -268,8 +268,8 @@ public class MockNetworkTest extends TestCase {
     }
 
     public void testEventListeners() {
-        Event sentEvent = MockUtil.createEvent(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, 1, "192.168.1.1", "NEW");
-        Event sentEvent2 = MockUtil.createEvent(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, 1, "192.168.1.1", "NEW");
+        Event sentEvent = MockUtil.createEvent("Test", EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, 1, "192.168.1.1", "NEW");
+        Event sentEvent2 = MockUtil.createEvent("Test", EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, 1, "192.168.1.1", "NEW");
 
         class MockListener implements EventListener {
             private Event receivedEvent;
@@ -342,7 +342,7 @@ public class MockNetworkTest extends TestCase {
 
         MockVisitor lostSvcSender = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
-                Event event = MockUtil.createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName());
+                Event event = MockUtil.createEvent("Test", EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName());
                 m_eventMgr.sendNow(event);
             }
         };
@@ -356,7 +356,7 @@ public class MockNetworkTest extends TestCase {
 
         MockVisitor gainedSvcSender = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
-                Event event = MockUtil.createEvent(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName());
+                Event event = MockUtil.createEvent("Test", EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName());
                 m_eventMgr.sendNow(event);
             }
         };
@@ -366,7 +366,7 @@ public class MockNetworkTest extends TestCase {
         assertEquals(0, anticipator.unanticipatedEvents().size());
 
         MockNode node = m_network.getNode(1);
-        Event nodeEvent = MockUtil.createEvent(EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null);
+        Event nodeEvent = MockUtil.createEvent("Test", EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null);
 
         anticipator.reset();
         m_eventMgr.sendNow(nodeEvent);
@@ -599,9 +599,9 @@ public class MockNetworkTest extends TestCase {
     }
 
     public void testWaitForEvent() throws Throwable {
-        final Event event1 = MockUtil.createEvent(EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null);
-        final Event event2 = MockUtil.createEvent(EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null);
-        final Event event3 = MockUtil.createEvent(EventConstants.NODE_DOWN_EVENT_UEI, 2, null, null);
+        final Event event1 = MockUtil.createEvent("Test", EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null);
+        final Event event2 = MockUtil.createEvent("Test", EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null);
+        final Event event3 = MockUtil.createEvent("Test", EventConstants.NODE_DOWN_EVENT_UEI, 2, null, null);
 
         EventAnticipator anticipator = m_eventMgr.getEventAnticipator();
 

@@ -109,18 +109,20 @@ public class MockDatabaseTest extends TestCase {
     }
     
     public void testServiceQuery() {
-        Querier querier = new Querier(m_db, "select nodeId, ipAddr, ifServices.serviceId as serviceId , service.serviceName as serviceName from ifServices, service where ifServices.serviceId = service.serviceId;") {
+        Querier querier = new Querier(m_db, "select nodeId, ipAddr, ifServices.status as status, ifServices.serviceId as serviceId, service.serviceName as serviceName from ifServices, service where ifServices.serviceId = service.serviceId;") {
             public void processRow(ResultSet rs) throws SQLException {
                 int nodeId = rs.getInt("nodeId");
                 String ipAddr = rs.getString("ipAddr");
                 int serviceId = rs.getInt("serviceId");
                 String serviceName = rs.getString("serviceName");
+                String status = rs.getString("status");
                 MockService svc = m_network.getService(nodeId, ipAddr, serviceName);
                 assertNotNull(svc);
-                assertEquals(nodeId, svc.getNodeId());
-                assertEquals(ipAddr, svc.getIpAddr());
-                assertEquals(serviceName, svc.getName());
-                assertEquals(serviceId, svc.getId());
+                assertEquals(svc.getNodeId(), nodeId);
+                assertEquals(svc.getIpAddr(), ipAddr);
+                assertEquals(svc.getName(), serviceName);
+                assertEquals(svc.getId(), serviceId);
+                assertEquals("A", status);
             }
         };
         querier.execute();

@@ -66,7 +66,7 @@ public class PollerTest extends TestCase {
         MockVisitor eventCreator = new MockVisitorAdapter() {
             public void visitInterface(MockInterface iface) {
                 if (iface.getPollStatus() != newStatus) {
-                    Event event = MockUtil.createEvent(uei, iface.getNodeId(), iface.getIpAddr(), null);
+                    Event event = MockUtil.createEvent("Test", uei, iface.getNodeId(), iface.getIpAddr(), null);
                     anticipator.anticipateEvent(event);
                 }
             }
@@ -79,7 +79,7 @@ public class PollerTest extends TestCase {
         MockVisitor eventCreator = new MockVisitorAdapter() {
             public void visitNode(MockNode node) {
                 if (node.getPollStatus() != newStatus) {
-                    Event event = MockUtil.createEvent(uei, node.getNodeId(), null, null);
+                    Event event = MockUtil.createEvent("Test", uei, node.getNodeId(), null, null);
                     anticipator.anticipateEvent(event);
                 }
             }
@@ -93,7 +93,7 @@ public class PollerTest extends TestCase {
         MockVisitor eventCreator = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
                 if (svc.getPollStatus() != newStatus) {
-                    Event event = MockUtil.createEvent(uei, svc.getNodeId(), svc.getIpAddr(), svc.getName());
+                    Event event = MockUtil.createEvent("Test", uei, svc.getNodeId(), svc.getIpAddr(), svc.getName());
                     anticipator.anticipateEvent(event);
                 }
             }
@@ -297,7 +297,7 @@ public class PollerTest extends TestCase {
     // interfaceDeleted: EventConstants.INTERFACE_DELETED_EVENT_UEI
     public void testInterfaceDeleted() {
         MockElement element = m_network.getInterface(1, "192.168.1.1");
-        Event deleteEvent = MockUtil.createEvent(EventConstants.INTERFACE_DELETED_EVENT_UEI, 1, "192.168.1.1", null);
+        Event deleteEvent = MockUtil.createEvent("Test", EventConstants.INTERFACE_DELETED_EVENT_UEI, 1, "192.168.1.1", null);
         testElementDeleted(element, deleteEvent);
     }
 
@@ -312,7 +312,7 @@ public class PollerTest extends TestCase {
         MockInterface reparentedIface = m_network.getInterface(1, "192.168.1.2");
         MockInterface node2Iface = m_network.getInterface(2, "192.168.1.3");
 
-        Event reparentEvent = MockUtil.createReparentEvent("192.168.1.2", 1, 2);
+        Event reparentEvent = MockUtil.createReparentEvent("Test", "192.168.1.2", 1, 2);
 
         // we are going to repart to node 2 so when we bring down its only
         // current interface
@@ -346,8 +346,8 @@ public class PollerTest extends TestCase {
 
         // FIXME: BEGIN INCORRECT BEHAVIOR HERE
         anticipator.reset();
-        anticipator.anticipateEvent(MockUtil.createEvent(EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null));
-        anticipator.anticipateEvent(MockUtil.createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, 2, "192.168.1.2", "ICMP"));
+        anticipator.anticipateEvent(MockUtil.createEvent("Test", EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null));
+        anticipator.anticipateEvent(MockUtil.createEvent("Test", EventConstants.NODE_LOST_SERVICE_EVENT_UEI, 2, "192.168.1.2", "ICMP"));
         // FIXME: END INCORRECT BEHAVIOR HERE
 
         // System.err.println("Bring Down:"+reparentedIface);
@@ -365,7 +365,7 @@ public class PollerTest extends TestCase {
     // nodeDeleted: EventConstants.NODE_DELETED_EVENT_UEI
     public void testNodeDeleted() {
         MockElement element = m_network.getNode(1);
-        Event deleteEvent = MockUtil.createEvent(EventConstants.NODE_DELETED_EVENT_UEI, 1, null, null);
+        Event deleteEvent = MockUtil.createEvent("Test", EventConstants.NODE_DELETED_EVENT_UEI, 1, null, null);
 
         testElementDeleted(element, deleteEvent);
     }
@@ -499,7 +499,7 @@ public class PollerTest extends TestCase {
         node2.bringDown();
         reparentedIface.bringUp();
 
-        Event reparentEvent = MockUtil.createReparentEvent("192.168.1.2", 1, 2);
+        Event reparentEvent = MockUtil.createReparentEvent("Test", "192.168.1.2", 1, 2);
 
         m_poller.init();
         m_poller.start();
@@ -545,7 +545,7 @@ public class PollerTest extends TestCase {
 
         MockVisitor gainSvcSender = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
-                Event event = MockUtil.createEvent(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName());
+                Event event = MockUtil.createEvent("Test", EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName());
                 m_eventMgr.sendEventToListeners(event);
             }
         };
@@ -571,7 +571,7 @@ public class PollerTest extends TestCase {
     // serviceDeleted: EventConstants.SERVICE_DELETED_EVENT_UEI
     public void testServiceDeleted() {
         MockElement element = m_network.getService(1, "192.168.1.1", "SMTP");
-        Event deleteEvent = MockUtil.createEvent(EventConstants.SERVICE_DELETED_EVENT_UEI, 1, "192.168.1.1", "SMTP");
+        Event deleteEvent = MockUtil.createEvent("Test", EventConstants.SERVICE_DELETED_EVENT_UEI, 1, "192.168.1.1", "SMTP");
 
         testElementDeleted(element, deleteEvent);
     }
@@ -587,13 +587,13 @@ public class PollerTest extends TestCase {
         sleep(2000);
         assertTrue(0 < svc.getPollCount());
 
-        m_eventMgr.sendEventToListeners(MockUtil.createEvent(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, 1, "192.168.1.2", "SMTP"));
+        m_eventMgr.sendEventToListeners(MockUtil.createEvent("Test", EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, 1, "192.168.1.2", "SMTP"));
         svc.resetPollCount();
 
         sleep(5000);
         assertEquals(0, svc.getPollCount());
 
-        m_eventMgr.sendEventToListeners(MockUtil.createEvent(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, 1, "192.168.1.2", "SMTP"));
+        m_eventMgr.sendEventToListeners(MockUtil.createEvent("Test", EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, 1, "192.168.1.2", "SMTP"));
 
         sleep(2000);
         assertTrue(0 < svc.getPollCount());

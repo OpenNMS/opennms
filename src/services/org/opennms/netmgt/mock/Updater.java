@@ -34,6 +34,8 @@ package org.opennms.netmgt.mock;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.opennms.netmgt.config.DbConnectionFactory;
+
 /**
  * @author brozow
  *
@@ -42,7 +44,7 @@ import java.sql.SQLException;
  */
 public class Updater extends JDBCTemplate {
     
-    public Updater(MockDatabase db, String sql) {
+    public Updater(DbConnectionFactory db, String sql) {
         super(db, sql);
     }
 

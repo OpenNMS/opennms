@@ -33,6 +33,7 @@
 package org.opennms.netmgt.mock;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -71,36 +72,28 @@ public class MockUtil {
         parms.addParm(parm);
     }
 
-    public static Event createEvent(String uei, int nodeId, String ipAddr, String svcName) {
+    public static Event createEvent(String source, String uei, int nodeId, String ipAddr, String svcName) {
+        
         Event event = new Event();
+        event.setSource(source);
         event.setUei(uei);
         event.setNodeid(nodeId);
         event.setInterface(ipAddr);
         event.setService(svcName);
+        String eventTime = EventConstants.formatToString(new Date());
+        event.setCreationTime(eventTime);
+        event.setTime(eventTime);
         return event;
     }
 
-    /**
-     * @param string
-     * @param i
-     * @param j
-     * @return
-     */
-    public static Event createReparentEvent(String ipAddr, int oldNode, int newNode) {
-        Event event = new Event();
-        event.setUei(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
-        event.setNodeid(oldNode);
-        event.setInterface(ipAddr);
+    public static Event createReparentEvent(String source, String ipAddr, int oldNode, int newNode) {
+        Event event = createEvent(source, EventConstants.INTERFACE_REPARENTED_EVENT_UEI, oldNode, ipAddr, null);
+        
         addEventParm(event, EventConstants.PARM_OLD_NODEID, oldNode);
         addEventParm(event, EventConstants.PARM_NEW_NODEID, newNode);
         return event;
     }
 
-    /**
-     * @param expectedEvent
-     * @param receivedEvent
-     * @return
-     */
     public static boolean eventsMatch(Event e1, Event e2) {
         if (e1 == e2)
             return true;
@@ -110,9 +103,6 @@ public class MockUtil {
         return (e1.getUei() == e2.getUei() || e1.getUei().equals(e2.getUei())) && (e1.getNodeid() == e2.getNodeid()) && (e1.getInterface() == e2.getInterface() || e1.getInterface().equals(e2.getInterface())) && (e1.getService() == e2.getService() || e1.getService().equals(e2.getService()));
     }
 
-    /**
-     * 
-     */
     public static void logToConsole() {
         if (!s_loggingSetup) {
             Properties logConfig = new Properties();

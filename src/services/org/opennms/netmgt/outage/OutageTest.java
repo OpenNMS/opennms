@@ -31,17 +31,29 @@
 //
 package org.opennms.netmgt.outage;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 
 import junit.framework.TestCase;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.OutageManagerConfig;
+import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.mock.MockDatabase;
+import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockVisitor;
+import org.opennms.netmgt.mock.MockVisitorAdapter;
+import org.opennms.netmgt.mock.Querier;
 import org.opennms.netmgt.xml.event.Event;
 
 public class OutageTest extends TestCase {
@@ -93,6 +105,15 @@ public class OutageTest extends TestCase {
         m_db.populate(m_network);
         
         m_eventMgr = new MockEventIpcManager();
+
+        EventListener eventWriter = new EventListener() {
+            public String getName() { return "EventWriter"; }
+            
+            public void onEvent(Event e) {
+                m_db.writeEvent(e);
+            }
+        };
+        m_eventMgr.addEventListener(eventWriter);
         
         MockOutageConfig config = new MockOutageConfig();
         config.setGetNextOutageID(m_db.getNextOutageIdStatement());
@@ -108,30 +129,160 @@ public class OutageTest extends TestCase {
 
     protected void tearDown() throws Exception {
         m_outageMgr.stop();
+        m_db.drop();
     }
     
-    public void testNodeLostService() {
+    class OutageChecker extends Querier { 
+        private Event m_lostSvcEvent;
+        private Timestamp m_lostSvcTime;
+        private MockService m_svc;
+        private Event m_regainedSvcEvent;
+        private Timestamp m_regainedSvcTime;
+        OutageChecker(MockService svc, Event lostSvcEvent) throws Exception {
+            this(svc, lostSvcEvent, null);
+        }
+        OutageChecker(MockService svc, Event lostSvcEvent, Event regainedSvcEvent) {
+            super(m_db, "select * from outages where nodeid = ? and ipAddr = ? and serviceId = ?");
+            
+            m_svc = svc;
+            m_lostSvcEvent = lostSvcEvent;
+            m_lostSvcTime = m_db.convertEventTimeToTimeStamp(m_lostSvcEvent.getTime());
+            m_regainedSvcEvent = regainedSvcEvent;
+            if (m_regainedSvcEvent != null)
+                m_regainedSvcTime = m_db.convertEventTimeToTimeStamp(m_regainedSvcEvent.getTime());
+        }
+       public void processRow(ResultSet rs) throws SQLException {
+            assertEquals(m_svc.getNodeId(), rs.getInt("nodeId"));
+            assertEquals(m_svc.getIpAddr(), rs.getString("ipAddr"));
+            assertEquals(m_svc.getId(), rs.getInt("serviceId"));
+            assertEquals(m_lostSvcEvent.getDbid(), rs.getInt("svcLostEventId"));
+            assertEquals(m_lostSvcTime, rs.getTimestamp("ifLostService"));
+            assertEquals(getRegainedEventId(), rs.getObject("svcRegainedEventId"));
+            assertEquals(m_regainedSvcTime, rs.getTimestamp("ifRegainedService"));
+        }
+       private Integer getRegainedEventId() {
+           if (m_regainedSvcEvent == null)
+               return null;
+           return new Integer(m_regainedSvcEvent.getDbid());
+       }
+    };
+    
+
+    public void testNodeLostRegainedService() throws Exception {
         MockService svc = m_network.getService(1, "192.168.1.1", "SMTP");
-        Event e = MockUtil.createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName());
-        e.setDbid(1);
-        e.setTime((new Date()).toString());
-        m_eventMgr.sendEventToListeners(e);
+        String svcLostTime = EventConstants.formatToString(november(20, 2004, 12, 34, 56));
+        String svcRegainedTime = EventConstants.formatToString(november(21, 2004, 12, 34, 56));
+
+        Event lostService = MockUtil.createEvent("Test", EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName());
+        lostService.setTime(svcLostTime);
+
+        Event regainService = MockUtil.createEvent("Test", EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName());
+        regainService.setTime(svcRegainedTime);
         
-        assertEquals(1, m_db.countRows("select * from outages"));
-        
+        testServices(svc, lostService, regainService);
+
     }
     
-    // interfaceDown: EventConstants.INTERFACE_DOWN_EVENT_UEI
+    public void testInterfaceDownUp() {
+        MockInterface iface = m_network.getInterface(1, "192.168.1.1");
+        testInterface(iface);
+    }
 
-    // nodeDown: EventConstants.NODE_DOWN_EVENT_UEI
+    private void testInterface(MockInterface iface) {
+        String svcLostTime = EventConstants.formatToString(november(20, 2004, 12, 34, 56));
+        String svcRegainedTime = EventConstants.formatToString(november(21, 2004, 12, 34, 56));
 
-    // nodeUp: EventConstants.NODE_UP_EVENT_UEI
+        Event lostService = MockUtil.createEvent("Test", EventConstants.INTERFACE_DOWN_EVENT_UEI, iface.getNodeId(), iface.getIpAddr(), null);
+        lostService.setTime(svcLostTime);
 
-    // interfaceUp: EventConstants.INTERFACE_UP_EVENT_UEI
+        Event regainService = MockUtil.createEvent("Test", EventConstants.INTERFACE_UP_EVENT_UEI, iface.getNodeId(), iface.getIpAddr(), null);
+        regainService.setTime(svcRegainedTime);
+        
+        testServices(iface, lostService, regainService);
+    }
 
-    // nodeRegainedService: EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI
+    public void testNodeDownUp() {
+        MockNode node = m_network.getNode(1);
+        String svcLostTime = EventConstants.formatToString(november(20, 2004, 12, 34, 56));
+        String svcRegainedTime = EventConstants.formatToString(november(21, 2004, 12, 34, 56));
+
+        Event lostService = MockUtil.createEvent("Test", EventConstants.NODE_DOWN_EVENT_UEI, node.getNodeId(), null, null);
+        lostService.setTime(svcLostTime);
+
+        Event regainService = MockUtil.createEvent("Test", EventConstants.NODE_UP_EVENT_UEI, node.getNodeId(), null, null);
+        regainService.setTime(svcRegainedTime);
+        
+        testServices(node, lostService, regainService);
+    }
 
     // interfaceReparented: EventConstants.INTERFACE_REPARENTED_EVENT_UEI
+    public void testInterfaceReparented() {
+        
+        // this creates an outage record for the interface
+        testInterface(m_network.getInterface(1, "192.168.1.2"));
+
+        final String ifOutageOnNode1 = "select * from outages where nodeId = 1 and ipAddr = '192.168.1.2'";
+        final String ifOutageOnNode2 = "select * from outages where nodeId = 2 and ipAddr = '192.168.1.2'";
+
+        assertEquals(2, m_db.countRows(ifOutageOnNode1));
+        assertEquals(0, m_db.countRows(ifOutageOnNode2));
+        
+        Event e = MockUtil.createReparentEvent("Test", "192.168.1.2", 1, 2);
+        m_eventMgr.sendEventToListeners(e);
+        
+        sleep(500);
+
+        assertEquals(0, m_db.countRows(ifOutageOnNode1));
+        assertEquals(2, m_db.countRows(ifOutageOnNode2));
+        
+        
+    }
+    
+    private void testServices(MockElement element, Event lostService, Event regainService) {
+        m_eventMgr.sendEventToListeners(lostService);
+        
+        assertTrue(lostService.hasDbid());
+        checkAllServices(element, lostService, null);
+
+        m_eventMgr.sendEventToListeners(regainService);
+        
+        assertTrue(regainService.hasDbid());
+        checkAllServices(element, lostService, regainService);
+    }
+
+    private void sleep(long millis) {
+        try { Thread.sleep(millis); } catch (InterruptedException e) {}
+    }
+
+    private void checkAllServices(MockElement element, final Event lostService, final Event regainService) {
+        class SvcOutageChecker extends MockVisitorAdapter {
+            private int svcCount = 0;
+            private int outageCount = 0;
+            public void visitService(MockService svc) {
+                Querier checker = new OutageChecker(svc, lostService, regainService);
+                checker.execute(new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()));
+                assertEquals("Expected outage for svc "+svc, 1, checker.getCount());
+                outageCount += checker.getCount();
+                svcCount++;
+            }
+            public int getServiceCount() { return svcCount; }
+            public int getOutageCount() { return outageCount; }
+        };
+        SvcOutageChecker svcChecker = new SvcOutageChecker();
+        element.visit(svcChecker);
+        assertTrue(svcChecker.getServiceCount() > 0);
+        assertEquals(svcChecker.getServiceCount(), svcChecker.getOutageCount());
+    }
+
+    private Date november(int day, int year, int hour, int minute, int second) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(year, Calendar.NOVEMBER, day, hour, minute, second);
+        return cal.getTime();
+    }
+    
+    
+    // TODO: deletion of services because they are old... delete propagation
+    
 
 
 }

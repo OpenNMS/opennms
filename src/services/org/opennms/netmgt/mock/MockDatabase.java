@@ -36,9 +36,13 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.util.Date;
 
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DbConnectionFactory;
+import org.opennms.netmgt.eventd.db.Constants;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * In memory database comparable to the postgres database that can be used for unit
@@ -166,14 +170,16 @@ public class MockDatabase implements DbConnectionFactory {
         ")");
         
         update("create sequence outageNxtId start with 1");
-        update("create table outageId (outageId integer)");
-        update("insert into outageId (outageId) values (0)");
+        update("create sequence eventNxtId start with 1");
+        update("create table seqQueryTable (row integer)");
+        update("insert into seqQueryTable (row) values (0)");
         
     }
     
     public void drop() {
         // order matters here because of referential integrity constraints
-        update("drop table outageId");
+        update("drop table seqQueryTable");
+        update("drop sequence eventNxtId");
         update("drop sequence outageNxtId");
         update("drop table outages if exists");
         update("drop table events if exists");
@@ -234,8 +240,8 @@ public class MockDatabase implements DbConnectionFactory {
             update("insert into service (serviceID, serviceName) values (?, ?)", svcValues);
         }
         
-        Object[] values = { new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()) };
-        update("insert into ifServices (nodeID, ipAddr, serviceID) values (?, ?, ?)", values);
+        Object[] values = { new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()), "A" };
+        update("insert into ifServices (nodeID, ipAddr, serviceID, status) values (?, ?, ?, ?)", values);
     }
     
     public int countRows(String sql) {
@@ -251,28 +257,54 @@ public class MockDatabase implements DbConnectionFactory {
     }
     
     public String getNextOutageIdStatement() {
-        return "select next value for outageNxtId from outageId;";
+        return "select next value for outageNxtId from seqQueryTable;";
     }
     
+    class SingleResultQuerier extends Querier {
+        SingleResultQuerier(MockDatabase db, String sql) {
+            super(db, sql);
+        }
+        
+        Object m_result;
+        
+        Object getResult() { return m_result; }
+        
+        public void processRow(ResultSet rs) throws SQLException {
+            m_result = rs.getObject(1);
+        }
+        
+    };
+
     public Integer getNextOutageId() {
-        class SingleResultQuerier extends Querier {
-            SingleResultQuerier(MockDatabase db, String sql) {
-                super(db, sql);
-            }
-            
-            Object m_result;
-            
-            Object getResult() { return m_result; }
-            
-            public void processRow(ResultSet rs) throws SQLException {
-                m_result = rs.getObject(1);
-            }
-            
-        };
-        SingleResultQuerier querier = new SingleResultQuerier(this, getNextOutageIdStatement());
+        return getNextId(getNextOutageIdStatement());
+        
+    }
+    
+    private Integer getNextId(String nxtIdStmt) {
+        SingleResultQuerier querier = new SingleResultQuerier(this, nxtIdStmt);
         querier.execute();
         return (Integer)querier.getResult();
-        
+    }
+
+    public String getNextEventIdStatement() {
+        return "select next value for eventNxtId from seqQueryTable;";
+    }
+    
+    public Integer getNextEventId() {
+        return getNextId(getNextEventIdStatement());
+    }
+    
+    public Integer getServiceID(String serviceName) {
+        if (serviceName == null) return new Integer(-1);
+        SingleResultQuerier querier = new SingleResultQuerier(this, "select serviceId from service where serviceName = ?");
+        querier.execute(serviceName);
+        return (Integer)querier.getResult();
+    }
+    
+    public String getServiceName(int serviceId) {
+        SingleResultQuerier querier = new SingleResultQuerier(this, "select serviceName from service where serviceId = ?");
+        querier.execute(new Integer(serviceId));
+        return (String)querier.getResult();
     }
 
     public void createOutage(MockService svc, Date lost, Date regained) {
@@ -291,6 +323,40 @@ public class MockDatabase implements DbConnectionFactory {
         
         update("insert into outages (outageId, svcLostEventId, svcRegainedEventId, nodeId, ipAddr, serviceId, ifLostService, ifRegainedService) values (?, ?, ?, ?, ?, ?, ?, ?)", values);
         
+    }
+    
+    public Timestamp convertEventTimeToTimeStamp(String time) {
+        try {
+            Date date = EventConstants.parseToDate(time);
+            Timestamp eventTime = new Timestamp(date.getTime());
+            return eventTime;
+        } catch (ParseException e) {
+            throw new RuntimeException("Invalid date format "+time, e);
+        }
+    }
+
+    /**
+     * @param e
+     */
+    public void writeEvent(Event e) {
+        Integer eventId = getNextEventId();
+
+        Object[] values = {
+                eventId,
+                e.getSource(),
+                e.getUei(),
+                convertEventTimeToTimeStamp(e.getCreationTime()),
+                convertEventTimeToTimeStamp(e.getTime()),
+                new Integer(Constants.getSeverity(e.getSeverity())),
+                (e.hasNodeid() ? new Long(e.getNodeid()) : null),
+                e.getInterface(),
+                getServiceID(e.getService()),
+                "localhost",
+                "Y",
+                "Y",
+        };
+        e.setDbid(eventId.intValue());
+        update("insert into events (eventId, eventSource, eventUei, eventCreateTime, eventTime, eventSeverity, nodeId, ipAddr, serviceId, eventDpName, eventLog, eventDisplay) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", values);
     }
     
     

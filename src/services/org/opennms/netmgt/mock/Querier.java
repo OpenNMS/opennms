@@ -35,10 +35,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.opennms.netmgt.config.DbConnectionFactory;
+
 
 public class Querier extends JDBCTemplate {
      private int m_count;
-     public Querier(MockDatabase db, String sql) {
+     public Querier(DbConnectionFactory db, String sql) {
          super(db, sql);
          m_count = 0;
      }
@@ -58,5 +60,5 @@ public class Querier extends JDBCTemplate {
 
     protected void processRow(ResultSet rs) throws SQLException {
     }
-     
+
  }

@@ -35,6 +35,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.opennms.netmgt.config.DbConnectionFactory;
+
 /**
  * @author brozow
  *
@@ -43,10 +45,10 @@ import java.sql.SQLException;
  */
 abstract public class JDBCTemplate {
 
-    private MockDatabase m_db;
+    private DbConnectionFactory m_db;
     private String m_sql;
     
-    protected JDBCTemplate(MockDatabase db, String sql) {
+    protected JDBCTemplate(DbConnectionFactory db, String sql) {
         m_db = db;
         m_sql = sql;
     }
@@ -62,6 +64,10 @@ abstract public class JDBCTemplate {
     public void execute(Object o1, Object o2) {
          execute(new Object[] { o1, o2 } );
      }
+    
+    public void execute(Object o1, Object o2, Object o3) {
+        execute (new Object[] { o1, o2, o3 } );
+    }
 
     public void execute(Object values[]) {
          try {

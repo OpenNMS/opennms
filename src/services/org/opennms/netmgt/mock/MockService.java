@@ -159,5 +159,9 @@ public class MockService extends MockElement {
         super.visit(v);
         v.visitService(this);
     }
+    
+    public String toString() {
+        return "Svc["+getNodeLabel()+"/"+getIpAddr()+"/"+getName()+"]";
+    }
 
 }
