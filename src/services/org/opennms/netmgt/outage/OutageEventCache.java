@@ -182,7 +182,7 @@ public final class OutageEventCache extends java.util.LinkedList
 					
 					case OutageEventEntry.EVENT_TYPE_INTERFACE_DOWN :
 					// Test to see if there is a cached INTERFACE_UP event that matches this
-					// INTERFACE_DOWN event in nodeId, IP Address and serviceID. If so, compare times.
+					// INTERFACE_DOWN event in nodeId and IP Address. If so, compare times.
 					// If the INTERFACE_UP event occurred after the INTERFACE_DOWN event, a match will be made.
 					// Otherwise, if this INTERFACE_DOWN event matches a cached INTERFACE_DOWN event, the cached event
 					// will be deleted.
@@ -190,8 +190,7 @@ public final class OutageEventCache extends java.util.LinkedList
 						if (cacheEntry.getType() == OutageEventEntry.EVENT_TYPE_INTERFACE_UP)
 						{
 							if (cacheEntry.getNodeId() == currentEvent.getNodeId() &&
-								cacheEntry.getIpAddr().equals(currentEvent.getIpAddr()) &&
-								cacheEntry.getSvcId() == currentEvent.getSvcId())
+								cacheEntry.getIpAddr().equals(currentEvent.getIpAddr()))
 							{
 								java.util.Date serviceRegainedTime = null;
 								try
@@ -231,16 +230,14 @@ public final class OutageEventCache extends java.util.LinkedList
 					
 					case OutageEventEntry.EVENT_TYPE_NODE_DOWN :
 					// Test to see if there is a cached NODE_UP event that matches this
-					// NODE_DOWN event in nodeId, IP Address and serviceID. If so, compare times.
+					// NODE_DOWN event in nodeId. If so, compare times.
 					// If the NODE_UP event occurred after the NODE_DOWN event, a match will be made.
 					// Otherwise, if this NODE_DOWN event matches a cached NODE_DOWN event, the cached event
 					// will be deleted.
 						
 						if (cacheEntry.getType() == OutageEventEntry.EVENT_TYPE_NODE_UP)
 						{
-							if (cacheEntry.getNodeId() == currentEvent.getNodeId() &&
-								cacheEntry.getIpAddr().equals(currentEvent.getIpAddr()) &&
-								cacheEntry.getSvcId() == currentEvent.getSvcId())
+							if (cacheEntry.getNodeId() == currentEvent.getNodeId())
 							{
 								java.util.Date serviceRegainedTime = null;
 								try
