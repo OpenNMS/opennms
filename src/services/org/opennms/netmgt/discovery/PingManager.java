@@ -459,7 +459,9 @@ final class PingManager
 		 */
 		public synchronized boolean isPinging(InetAddress addr)
 		{
-			return m_target.equals(addr);
+            if (addr == null)
+                return false;
+            return addr.equals(m_target);
 		}
 
 		/**
