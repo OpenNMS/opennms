@@ -213,10 +213,16 @@ public class NotificationTask extends Thread {
                     // send the notice
 
                     ExecutorStrategy command = null;
+                    String cntct = "";
 
                     for (int i = 0; i < m_commands.length; i++) {
+                        if (m_user.getUserId().equals("email-address")) {
+                            cntct = m_user.getContact()[0].getInfo();
+                        } else {
+                            cntct = m_notifd.getUserManager().getContactInfo(m_user.getUserId(), m_commands[i].getName());
+                        }
                         try {
-                            m_notifd.getNotificationManager().updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), m_notifd.getUserManager().getContactInfo(m_user.getUserId(), m_commands[i].getName()));
+                            m_notifd.getNotificationManager().updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), cntct);
                         } catch (SQLException e) {
                             log.error("Could not insert notice info into database, aborting send notice...", e);
                             continue;
