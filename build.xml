@@ -380,6 +380,10 @@ your distribution.
 
   <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
 
+  <!-- In the properties file referenced above, the For task is commented
+       out in the 1.02b jar file, so I need to have this taskdef -->
+  <taskdef name="for" classname="net.sf.antcontrib.logic.For"/>
+
   <!-- PREP target -->
   <target name="prep" depends="platform.check, java.check" unless="prep.done">
     <tstamp/>
@@ -1244,24 +1248,24 @@ OpenNMS as part of the post-install.
  </target>
 
  <target name="jsp.compile.javac" depends="jsp.compile.jspc">
-   <foreach list="${jsp.compile.javac.sourcelist}" delimiter=":"
-	    target="jsp.compile.javac.each" param="jsp.compile.javac.file"
-	    inheritall="true" parallel="false"/>
+   <for list="${jsp.compile.javac.sourcelist}" delimiter=":"
+	param="jsp.compile.javac.file">
+     <sequential>
+       <javac destdir="${build.dir}/jsp-classes"
+	      debug="${compiler.debug}"
+	      optimize="${compiler.optimize}"
+	      verbose="${compiler.verbose}"
+	      deprecation="${compiler.deprecation}">
+	 <src path="${build.dir}/jsp-source"/>
+	 <include name="@{jsp.compile.javac.file}"/>
+	 <classpath>
+	   <path refid="jsp.compile.path"/>
+	 </classpath>
+       </javac>
+     </sequential>
+   </for>
  </target>
 
- <target name="jsp.compile.javac.each">
-   <javac destdir="${build.dir}/jsp-classes"
-	  debug="${compiler.debug}"
-	  optimize="${compiler.optimize}"
-	  verbose="${compiler.verbose}"
-	  deprecation="${compiler.deprecation}">
-     <src path="${build.dir}/jsp-source"/>
-     <include name="${jsp.compile.javac.file}"/>
-     <classpath>
-       <path refid="jsp.compile.path"/>
-     </classpath>
-   </javac>
- </target>
 
  <!-- java build -->
 
