@@ -258,7 +258,9 @@ your distribution.
     <include name="${postgresql.jar}" />
     <include name="regexp*.jar" />
     <include name="w3c*.jar" />
+  	<!--- Remove this for 1.4 since it is included in the JVM
     <include name="xalan231.jar" />
+    -->
     <include name="avalon-framework-4.0.jar" />
     <include name="logkit-1.0.jar" />
     <include name="batik.jar" />
