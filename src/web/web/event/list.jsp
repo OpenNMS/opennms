@@ -173,7 +173,7 @@
             <jsp:include page="/event/querypanel.jsp" flush="false" />
           
             <% if( eventCount > 0 ) { %>
-              <% String baseUrl = java.net.URLEncoder.encode(this.makeLink(parms)); %>
+              <% String baseUrl = this.makeLink(parms); %>
               <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
                 <jsp:param name="count"    value="<%=eventCount%>" />
                 <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
