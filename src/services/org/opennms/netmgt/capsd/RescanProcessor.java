@@ -1677,6 +1677,45 @@ final class RescanProcessor
 		Category log = ThreadCategory.getInstance(getClass());
 		
 		boolean labelSet = false;
+
+		// We are going to change the order in which labels are assigned.
+		// First, we check DNS - the hostname of the primary interface.
+		// Then we check SMB - next SNMP sysName - and finally IP address
+		// This is different then in 1.0 - when SMB came first.
+
+		InetAddress primaryIf = null;
+	
+		if (!labelSet)
+		{
+			// If no label is set, attempt to get the hostname for the primary SNMP interface.
+			// Note: this was wrong prior to 1.0.1 - the method determinePrimaryIpInterface
+			// would return the lowest numbered interface, not necessarily the primary
+			// SNMP interface.
+			if (currPrimarySnmpIf != null)
+			{
+				primaryIf = currPrimarySnmpIf;
+			}
+			else
+			{
+			primaryIf = determinePrimaryIpInterface(collectorMap);
+			}
+			if (primaryIf == null)
+			{
+				log.error("setNodeLabelAndSmbInfo: failed to find primary interface...");
+			}
+			else
+			{
+				String hostName = primaryIf.getHostName();
+				if (!hostName.equals(primaryIf.getHostAddress()))
+				{
+					labelSet = true;
+							
+					currNodeEntry.setLabel(hostName);
+					currNodeEntry.setLabelSource(DbNodeEntry.LABEL_SOURCE_HOSTNAME);
+				}
+			}
+		}
+
 		IfSmbCollector savedSmbcRef = null;
 		
 		// Does the node entry in database have a NetBIOS name?
@@ -1738,7 +1777,7 @@ final class RescanProcessor
 				}
 			}
 		}
-	
+
 		// If node label has not yet been set and SMB info is available 
 		// use that info to set the node label and NetBIOS name
 		//
@@ -1757,32 +1796,8 @@ final class RescanProcessor
 				currNodeEntry.setOS(savedSmbcRef.getOS());
 		}
 		
-		InetAddress primaryIf = null;
-		if (!labelSet)
-		{
-			// If we get this far no SMB info was available.  Next we want to 
-			// use the IP hostname of the primary managed interface if available.
-			// If the node has no managed interfaces an unmanaged interface will
-			// be selected as primary.
-			primaryIf = determinePrimaryIpInterface(collectorMap);
-			if (primaryIf == null)
-			{
-				log.error("setNodeLabelAndSmbInfo: failed to find primary interface...");
-			}
-			else
-			{
-				String hostName = primaryIf.getHostName();
-				if (!hostName.equals(primaryIf.getHostAddress()))
-				{
-					labelSet = true;
-							
-					currNodeEntry.setLabel(hostName);
-					currNodeEntry.setLabelSource(DbNodeEntry.LABEL_SOURCE_HOSTNAME);
-				}
-			}
-		}
 		
-		// If we get this far no IP hostname info was available.  Next we want
+		// If we get this far no IP hostname or SMB info was available.  Next we want
 		// to use MIB-II sysName for the node label.  The primary SNMP interface
 		// has already been determined so use it if available.
 		if (!labelSet && currPrimarySnmpIf != null)
