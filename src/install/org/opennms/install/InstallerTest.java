@@ -55,6 +55,9 @@ public class InstallerTest extends TestCase {
 	m_installer.databaseConnect("template1");
 	destroyDatabase();
 	m_installer.databaseDisconnect();
+
+	// Sleep again.  Man, I had this.
+	Thread.sleep(1000);
     }
 
     public void destroyDatabase() throws SQLException {
