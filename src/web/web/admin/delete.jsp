@@ -73,10 +73,30 @@
 
   function applyChanges()
   {
-      if (confirm("Are you sure you want to proceed? This action will permanently delete the checked nodes and cannot be undone."))
-      {
-          document.deleteAll.submit();
-      }
+        var hasCheckedItems = false;
+        for (var i = 0; i < document.deleteAll.elements.length; i++)
+        {
+                if (document.deleteAll.elements[i].type == "checkbox")
+                {
+                        if (document.deleteAll.elements[i].checked)
+                        {
+                                hasCheckedItems = true;
+                                break;
+                        }
+                }
+        }
+                
+        if (hasCheckedItems)
+        {
+                if (confirm("Are you sure you want to proceed? This action will permanently delete the checked nodes and cannot be undone."))
+                {
+                        document.deleteAll.submit();
+                }
+        }
+        else
+        {
+                alert("No nodes and data items are selected!");
+        }
   }
   
   function cancel()
