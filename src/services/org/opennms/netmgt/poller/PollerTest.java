@@ -306,13 +306,18 @@ public class PollerTest extends TestCase {
         assertEquals(0, m_network.getInvalidPollCount());
 
     }
-
+    
     // serviceDeleted: EventConstants.SERVICE_DELETED_EVENT_UEI
     public void testServiceDeleted() {
-        MockService svc = m_network.getService(1, "192.168.1.1", "SMTP");
-        Event deleteEvent = MockUtil.createServiceDeletedEvent("Test", svc);
 
+        
+        MockService svc = m_network.getService(1, "192.168.1.1", "SMTP");
+        
+        Event deleteEvent = MockUtil.createServiceDeletedEvent("Test", svc);
+        
         testElementDeleted(svc, deleteEvent);
+        
+        
     }
 
     // interfaceDeleted: EventConstants.INTERFACE_DELETED_EVENT_UEI
@@ -330,6 +335,44 @@ public class PollerTest extends TestCase {
         testElementDeleted(node, deleteEvent);
         
         
+    }
+    
+    public void testOutagesClosedOnDelete(MockElement element) {
+        
+        startDaemons();
+        
+        Event deleteEvent = element.createDeleteEvent();
+
+        // bring down so we create an outage in the outages table
+        anticipateDown(element);
+        element.bringDown();
+        verifyAnticipated(5000);
+        
+        m_outageAnticipator.anticipateOutageClosed(element, deleteEvent);
+
+        // now delete the service 
+        m_network.removeElement(element);
+        m_eventMgr.sendEventToListeners(deleteEvent);
+        
+        verifyAnticipated(5000);
+
+        
+    }
+    
+    public void testServiceOutagesClosedOnDelete() {
+        MockService element = m_network.getService(1, "192.168.1.1", "SMTP");
+        testOutagesClosedOnDelete(element);
+
+    }
+    
+    public void testInterfaceOutagesClosedOnDelete() {
+        MockInterface element = m_network.getInterface(1, "192.168.1.1");
+        testOutagesClosedOnDelete(element);
+    }
+    
+    public void testNodeOutagesClosedOnDelete() {
+        MockNode element = m_network.getNode(1);
+        testOutagesClosedOnDelete(element);
     }
 
     // interfaceReparented: EventConstants.INTERFACE_REPARENTED_EVENT_UEI

@@ -66,6 +66,16 @@ abstract public class JDBCTemplate {
     public void execute(Object o1, Object o2, Object o3) {
         execute (new Object[] { o1, o2, o3 } );
     }
+    
+    public void execute(Object o1, Object o2, Object o3, Object o4) {
+        execute (new Object[] { o1, o2, o3, o4 } );
+    }
+
+    public void execute(Object o1, Object o2, Object o3, Object o4, Object o5) {
+        execute (new Object[] { o1, o2, o3, o4, o5 } );
+    }
+
+
 
     public void execute(Object values[]) {
          try {

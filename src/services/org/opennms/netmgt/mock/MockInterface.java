@@ -152,5 +152,9 @@ public class MockInterface extends MockContainer {
     public Event createUpEvent() {
         return MockUtil.createInterfaceUpEvent("Test", this);
     }
+    
+    public Event createDeleteEvent() {
+        return MockUtil.createInterfaceDeletedEvent("Test", this);
+    }
 
 }

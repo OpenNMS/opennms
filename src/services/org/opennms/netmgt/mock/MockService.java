@@ -212,5 +212,9 @@ public class MockService extends MockElement {
     public Event createResponsiveEvent() {
         return MockUtil.createServiceResponsiveEvent("Test", this);
     }
+    
+    public Event createDeleteEvent() {
+        return MockUtil.createServiceDeletedEvent("Test", this);
+    }
 
 }

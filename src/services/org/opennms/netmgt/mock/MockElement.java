@@ -149,5 +149,7 @@ abstract public class MockElement {
         MockUtil.setEventTime(e, date);
         return e;
     }
+    
+    abstract public Event createDeleteEvent();
 
 }

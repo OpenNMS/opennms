@@ -43,7 +43,9 @@ package org.opennms.netmgt.poller;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -53,10 +55,12 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
+import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.poller.pollables.PollableInterface;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableNode;
 import org.opennms.netmgt.poller.pollables.PollableService;
+import org.opennms.netmgt.poller.pollables.PollableVisitor;
 import org.opennms.netmgt.utils.XmlrpcUtil;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -361,6 +365,16 @@ final class PollerEventProcessor implements EventListener {
             }
         }
         
+        Date closeDate;
+        try {
+            closeDate = EventConstants.parseToDate(event.getTime());
+        } catch (ParseException e) {
+            closeDate = new Date();
+        }
+        
+        getPoller().closeOutagesForNode(closeDate, event.getDbid(), nodeId);
+
+        
         PollableNode node = getNetwork().getNode(nodeId);
         if (node == null) {
           log.error("Nodeid " + nodeId + " does not exist in pollable node map, unable to delete node.");
@@ -382,6 +396,7 @@ final class PollerEventProcessor implements EventListener {
 
         int nodeId = (int) event.getNodeid();
         String sourceUei = event.getUei();
+        String ipAddr = event.getInterface();
         
         // Extract node label and transaction No. from the event parms
         long txNo = -1L;
@@ -417,12 +432,22 @@ final class PollerEventProcessor implements EventListener {
         
         InetAddress addr;
         try {
-            addr = InetAddress.getByName(event.getInterface());
+            addr = InetAddress.getByName(ipAddr);
         } catch (UnknownHostException e) {
             log.error("interfaceDeletedHandler: Could not convert interface "+event.getInterface()+" to InetAddress", e);
             return;
             
         }
+        
+        Date closeDate;
+        try {
+            closeDate = EventConstants.parseToDate(event.getTime());
+        } catch (ParseException e) {
+            closeDate = new Date();
+        }
+        
+        getPoller().closeOutagesForInterface(closeDate, event.getDbid(), nodeId, ipAddr);
+
         
         PollableInterface iface = getNetwork().getInterface(nodeId, addr);
         if (iface == null) {
@@ -458,6 +483,14 @@ final class PollerEventProcessor implements EventListener {
             return;
         }
         
+        Date closeDate;
+        try {
+            closeDate = EventConstants.parseToDate(event.getTime());
+        } catch (ParseException e) {
+            closeDate = new Date();
+        }
+        
+        getPoller().closeOutagesForService(closeDate, event.getDbid(), nodeId, ipAddr, service);
         
         PollableService svc = getNetwork().getService(nodeId, addr, service);
         if (svc == null) {
@@ -468,7 +501,7 @@ final class PollerEventProcessor implements EventListener {
         svc.delete();
 
     }
-
+    
     /**
      * Constructor
      * 
