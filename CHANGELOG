@@ -32,6 +32,7 @@
   off.
 - Associated traps with nodes. Bug 582
 - Fixed small bug in Trap handler. Bug 676
+- Fixed interface/node sorting bug (Derek Glidden) Bug 443
 
 1.0.0 to 1.1.0
 ----------------------------------------------------------------------
