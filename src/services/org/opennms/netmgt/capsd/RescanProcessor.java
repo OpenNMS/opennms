@@ -2497,15 +2497,14 @@ final class RescanProcessor
                                                         + ipaddr.getHostAddress()); 
                                         break;
                                 }
-                                else
-                                {
-			                if (log.isDebugEnabled())
-				                log.debug("areDbInterfacesInSnmpCollection: ipaddress : " + ipaddr.getHostAddress() 
-                                                        + " not in the snmp collection. Snmp collection is not usable.");
-                                }
                         }
                         if (!found)
+                        {
+			        if (log.isDebugEnabled())
+			                log.debug("areDbInterfacesInSnmpCollection: ipaddress : " + ipaddr.getHostAddress() 
+                                                + " not in the snmp collection. Snmp collection is not usable.");
                                 return false;
+                        }
                 }
 
                 return true;
