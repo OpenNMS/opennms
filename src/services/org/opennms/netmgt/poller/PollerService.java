@@ -92,7 +92,7 @@ final class PollerService extends PollerElement {
      */
     private final List m_pollableServices;
 
-    private Schedule m_schedule;
+    private PollSchedule m_schedule;
     
     private IPv4NetworkInterface m_netInterface;
 
@@ -117,7 +117,7 @@ final class PollerService extends PollerElement {
 
         m_pollableServices = getPoller().getPollableServiceList();
 
-        m_schedule = new Schedule(this, svcConfig);
+        m_schedule = new PollSchedule(this, svcConfig);
         m_schedule.setLastPoll(0L);
 
         if (getStatus() == PollStatus.STATUS_DOWN) {
@@ -396,7 +396,7 @@ final class PollerService extends PollerElement {
     /**
      * @return
      */
-    public Schedule getSchedule() {
+    public PollSchedule getSchedule() {
         return m_schedule;
     }
 

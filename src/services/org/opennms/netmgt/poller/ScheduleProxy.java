@@ -73,7 +73,7 @@ final class ScheduleProxy implements ReadyRunnable {
     /**
      * interface that this service belongs to
      */
-    private Schedule m_schedule;
+    private PollSchedule m_schedule;
 
     /**
      * the time (in milliseconds) after which this proxy is supposed to run
@@ -89,7 +89,7 @@ final class ScheduleProxy implements ReadyRunnable {
      * @param runAt
      *            The timestamp after which this proxy should run.
      */
-    ScheduleProxy(Schedule schedule, long runAt) {
+    ScheduleProxy(PollSchedule schedule, long runAt) {
         this.m_schedule = schedule;
         this.m_scheduledRuntime = runAt;
     }
