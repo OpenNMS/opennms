@@ -517,11 +517,14 @@ your distribution.
 
   <target name="java.check">
     <condition property="java.versionokay">
+    	  <or>
       <contains string="${java.vm.version}" substring="1.4."/>
+    	  <contains string="${java.vm.version}" substring="1.5."/>
+    	  </or>
     </condition>
 
     <fail unless="java.versionokay">
-      java version is not 1.4
+      java version is not 1.4 or 1.5
     </fail>
   </target>
 
