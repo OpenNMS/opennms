@@ -51,7 +51,7 @@ import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
-import org.opennms.netmgt.mock.Querier;
+import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
 
 public class OutageTest extends TestCase {

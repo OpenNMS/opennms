@@ -31,12 +31,9 @@
 //
 package org.opennms.netmgt.poller.schedule;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+
+import org.opennms.netmgt.poller.mock.MockInterval;
+import org.opennms.netmgt.poller.mock.MockScheduler;
 
 import junit.framework.TestCase;
 
@@ -49,7 +46,7 @@ public class ScheduleTest extends TestCase {
 
     private MockSchedulable m_schedulable;
     private MockInterval m_interval;
-    private MockTimer m_timer;
+    private MockScheduler m_timer;
     private Schedule m_sched;
 
     public static void main(String[] args) {
@@ -80,117 +77,6 @@ public class ScheduleTest extends TestCase {
         
     }
     
-    class MockInterval implements ScheduleInterval {
-        
-        private long m_interval;
-        private List m_suspensions = new LinkedList();
-        
-        /**
-         * @param l
-         */
-        public MockInterval(long interval) {
-            m_interval = interval;
-        }
-        
-        public long getInterval() {
-            return m_interval;
-        }
-
-        public void setInterval(long interval) {
-            m_interval = interval;
-        }
-        
-        class Suspension {
-            private long m_start;
-            private long m_end;
-
-            Suspension(long start, long end) {
-                m_start = start;
-                m_end = end;
-            }
-            
-            public boolean contains(long time) {
-                return m_start <= time && time <= m_end;
-            }
-        }
-
-        public void addSuspension(long start, long end) {
-            m_suspensions.add(new Suspension(start, end));
-        }
-        
-        public long scheduledSuspension(long currentTime) {
-            for (Iterator it = m_suspensions.iterator(); it.hasNext();) {
-                Suspension suspension = (Suspension) it.next();
-                if (suspension.contains(currentTime))
-                    return suspension.m_end - currentTime;
-            }
-            return 0;
-        }
-    }
-    
-    class MockTimer implements ScheduleTimer {
-        
-        private long m_currentTime = 0;
-        private SortedMap m_scheduleEntries = new TreeMap();
-        
-        public void schedule(Runnable schedule, long interval) {
-            Long nextTime = new Long(m_currentTime+interval);
-            List entries = (List)m_scheduleEntries.get(nextTime);
-            if (entries == null) {
-                entries = new LinkedList();
-                m_scheduleEntries.put(nextTime, entries);
-            }
-                
-            entries.add(schedule);
-        }
-        
-        public int getEntryCount() {
-            return m_scheduleEntries.size();
-        }
-        
-        public Map getEntries() {
-            return m_scheduleEntries;
-        }
-        
-        public long getCurrentTime() {
-            return m_currentTime;
-        }
-        
-        public long getNextTime() {
-            assertFalse("Nothing scheduled", m_scheduleEntries.isEmpty());
-
-            Long nextTime = (Long)m_scheduleEntries.firstKey();
-            return nextTime.longValue();
-        }
-        
-        public long next() {
-            assertFalse("Nothing scheduled", m_scheduleEntries.isEmpty());
-            
-            Long nextTime = (Long)m_scheduleEntries.firstKey();
-            List entries = (List)m_scheduleEntries.get(nextTime);
-            Runnable runnable = (Runnable)entries.get(0);
-            m_currentTime = nextTime.longValue();
-            entries.remove(0);
-            if (entries.isEmpty())
-                m_scheduleEntries.remove(nextTime);
-            runnable.run();
-            return m_currentTime;
-        }
-        
-        public long tick(int step) {
-            assertFalse("Nothing scheduled", m_scheduleEntries.isEmpty());
-            
-            long endTime = m_currentTime+step;
-            while (getNextTime() <= endTime) {
-                next();
-            }
-            
-            m_currentTime = endTime;
-            return m_currentTime;
-        }
-        
-    }
-
     /*
      * @see TestCase#setUp()
      */
@@ -198,7 +84,7 @@ public class ScheduleTest extends TestCase {
         super.setUp();
         m_schedulable = new MockSchedulable();
         m_interval = new MockInterval(1000L);
-        m_timer = new MockTimer();
+        m_timer = new MockScheduler();
         m_sched = new Schedule(m_schedulable, m_interval, m_timer);        
     }
 

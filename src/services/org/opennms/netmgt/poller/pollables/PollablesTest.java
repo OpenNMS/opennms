@@ -52,6 +52,7 @@ import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
+import org.opennms.netmgt.poller.mock.MockPollContext;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -114,59 +115,6 @@ public class PollablesTest extends TestCase {
             return PollStatus.getPollStatus(m_monitor.poll(svc.getNetInterface(), m_properties, m_package));
         }
     }
-    private class MockPollContext implements PollContext {
-        private String m_critSvcName;
-        private boolean m_nodeProcessingEnabled;
-        private boolean m_pollingAllIfCritServiceUndefined;
-        private boolean m_serviceUnresponsiveEnabled;
-
-        public String getCriticalServiceName() {
-            return m_critSvcName;
-        }
-        
-        public void setCriticalServiceName(String svcName) {
-            m_critSvcName = svcName;
-        }
-        
-        public boolean isNodeProcessingEnabled() {
-            return m_nodeProcessingEnabled;
-        }
-        public void setNodeProcessingEnabled(boolean nodeProcessingEnabled) {
-            m_nodeProcessingEnabled = nodeProcessingEnabled;
-        }
-        public boolean isPollingAllIfCritServiceUndefined() {
-            return m_pollingAllIfCritServiceUndefined;
-        }
-        public void setPollingAllIfCritServiceUndefined(boolean pollingAllIfCritServiceUndefined) {
-            m_pollingAllIfCritServiceUndefined = pollingAllIfCritServiceUndefined;
-        }
-        public Event sendEvent(Event event) {
-            m_eventMgr.sendNow(event);
-            return event;
-        }
-
-        public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date) {
-            return MockUtil.createEvent("Test", uei, nodeId, (address == null ? null : address.getHostAddress()), svcName);
-        }
-        public void openOutage(PollableService pSvc, Event svcLostEvent) {
-            MockService mSvc = m_mockNetwork.getService(pSvc.getNodeId(), pSvc.getIpAddr(), pSvc.getSvcName());
-            MockUtil.println("Opening Outage for "+mSvc);
-            m_db.createOutage(mSvc, svcLostEvent);
-
-        }
-        public void resolveOutage(PollableService pSvc, Event svcRegainEvent) {
-            MockService mSvc = m_mockNetwork.getService(pSvc.getNodeId(), pSvc.getIpAddr(), pSvc.getSvcName());
-            MockUtil.println("Resolving Outage for "+mSvc);
-            m_db.resolveOutage(mSvc, svcRegainEvent);
-        }
-        public boolean isServiceUnresponsiveEnabled() {
-            return m_serviceUnresponsiveEnabled;
-        }
-        public void setServiceUnresponsiveEnabled(boolean serviceUnresponsiveEnabled) {
-            m_serviceUnresponsiveEnabled = serviceUnresponsiveEnabled;
-        }
-    }
-    
     /*
      * @see TestCase#setUp()
      */
@@ -203,6 +151,8 @@ public class PollablesTest extends TestCase {
         m_db = new MockDatabase();
         m_db.populate(m_mockNetwork);
         
+        m_pollContext.setDatabase(m_db);
+        
         m_anticipator = new EventAnticipator();
         m_outageAnticipator = new OutageAnticipator(m_db);
 
@@ -211,6 +161,9 @@ public class PollablesTest extends TestCase {
         m_eventMgr.setEventWriter(m_db);
         m_eventMgr.setEventAnticipator(m_anticipator);
         m_eventMgr.addEventListener(m_outageAnticipator);
+        
+        m_pollContext.setEventMgr(m_eventMgr);
+        m_pollContext.setMockNetwork(m_mockNetwork);
 
         m_network = new PollableNetwork(m_pollContext);
         m_network.createService(1, InetAddress.getByName("192.168.1.1"), "ICMP");

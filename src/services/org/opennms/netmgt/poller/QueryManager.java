@@ -84,4 +84,22 @@ public interface QueryManager {
      * @param connectionFactory
      */
     public void setDbConnectionFactory(DbConnectionFactory connectionFactory);
+
+    /**
+     * @param nodeId
+     * @param ipAddr
+     * @param serviceId
+     * @param dbid
+     * @param time
+     */
+    public void openOutage(String outageIdSQL, int nodeId, String ipAddr, int serviceId, int dbid, String time);
+
+    /**
+     * @param nodeId
+     * @param ipAddr
+     * @param serviceId
+     * @param dbid
+     * @param time
+     */
+    public void resolveOutage(int nodeId, String ipAddr, int serviceId, int dbid, String time);
 }

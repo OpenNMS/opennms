@@ -40,6 +40,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -48,7 +49,9 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DbConnectionFactory;
+import org.opennms.netmgt.utils.Updater;
 
 /**
  * @author brozow
@@ -450,8 +453,60 @@ public class DefaultQueryManager implements QueryManager {
 
         return svcLostDate;
     }
+    
+    
 
     public void setDbConnectionFactory(DbConnectionFactory dbConnectionFactory) {
         m_dbConnectionFactory = dbConnectionFactory;
+    }
+    
+    public Timestamp convertEventTimeToTimeStamp(String time) {
+        try {
+            Date date = EventConstants.parseToDate(time);
+            Timestamp eventTime = new Timestamp(date.getTime());
+            return eventTime;
+        } catch (ParseException e) {
+            throw new RuntimeException("Invalid date format "+time, e);
+        }
+    }
+
+
+    
+    public void openOutage(String outageIdSQL, int nodeId, String ipAddr, int serviceId, int dbId, String time) {
+        try {
+            String sql = "insert into outages (outageId, svcLostEventId, nodeId, ipAddr, serviceId, ifLostService) values (" +
+            "("+outageIdSQL+"), " +
+            "?, ?, ?, ?, ?)";
+            
+            Object values[] = {
+                    new Integer(dbId),
+                    new Integer(nodeId),
+                    ipAddr,
+                    new Integer(serviceId),
+                    convertEventTimeToTimeStamp(time),
+            };
+            Updater updater = new Updater(m_dbConnectionFactory, sql);
+            updater.execute(values);
+        } catch (Exception e) {
+            ThreadCategory.getInstance(getClass()).fatal(" Error opening outage for "+nodeId+":"+ipAddr+":"+serviceId, e);
+        }
+    }
+    
+    public void resolveOutage(int nodeId, String ipAddr, int serviceId, int dbId, String time) {
+        try {
+            String sql = "update outages set svcRegainedEventId=?, ifRegainedService=? where nodeId = ? and ipAddr = ? and serviceId = ?";
+            
+            Object values[] = {
+                    new Integer(dbId),
+                    convertEventTimeToTimeStamp(time),
+                    new Integer(nodeId),
+                    ipAddr,
+                    new Integer(serviceId),
+            };
+            Updater updater = new Updater(m_dbConnectionFactory, sql);
+            updater.execute(values);
+        } catch (Exception e) {
+            ThreadCategory.getInstance(getClass()).fatal(" Error resolving outage for "+nodeId+":"+ipAddr+":"+serviceId, e);
+        }
     }
 }
