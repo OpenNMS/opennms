@@ -402,7 +402,8 @@ public class OutageEditorWebTest extends WebTestCase {
         assertTablePresent("footer");
         WebTable table = getDialog().getWebTableBySummaryOrId("footer");
         TableCell cell = table.getTableCell(0, 0);
-        System.err.println(cell.getText());
+
+        // TODO: Fix Admin right now coerce it to Null since we don't have auth right
         assertMenu(("Admin".equals(location) ?  null : location), m_menu, cell);
         assertCell(table, 1, 0, "OpenNMS Copyright \u00a9 2002-2005 The OpenNMS Group, Inc. OpenNMS\u00ae is a registered trademark of The OpenNMS Group, Inc.");
     }
