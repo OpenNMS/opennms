@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 VERSION_BUILD_PID_PROCESS='1.4'
 PACKAGES="$PACKAGES PID_PROCESS"

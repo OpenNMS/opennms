@@ -54,14 +54,14 @@ public class EventConfData extends Object
 	/**
 	 * The map keyed with 'EventKey's
 	 */
-	private	TreeMap		m_eventMap;
+	private	LinkedHashMap		m_eventMap;
 
 	/**
 	 * The map of UEI to 'EventKey's list - used mainly to find matches for the
 	 * OpenNMS internal events faster(in cases where there are multiple masks
 	 * for the same UEI)
 	 */
-	private Hashtable		m_ueiToKeyListMap;
+	private LinkedHashMap		m_ueiToKeyListMap;
 
 	/** 
 	 * Purely used for debugging
@@ -168,20 +168,21 @@ public class EventConfData extends Object
 			if (keyvalue != null && eventvalue != null)
 			{
 				int len = keyvalue.length();
-				if (keyvalue.charAt(len-1) == '%')
+				if (keyvalue.equals(eventvalue))
+				{
+					maskMatch = true;
+				}
+				else if (keyvalue.charAt(len-1) == '%')
 				{
 					if (eventvalue.startsWith(keyvalue.substring(0, len-1)))
 						maskMatch = true;
-				}
-				else if (keyvalue.equals(eventvalue))
-				{
-					maskMatch = true;
 				}
 			}
 		}
 		
 		return maskMatch;
 	}
+
 
 	/**
 	 * Update the uei to keylist map
@@ -209,9 +210,9 @@ public class EventConfData extends Object
 	 */
 	public EventConfData()
 	{
-		m_eventMap = new TreeMap();
+		m_eventMap = new LinkedHashMap();
 		
-		m_ueiToKeyListMap = new Hashtable();
+		m_ueiToKeyListMap = new LinkedHashMap();
 	}
 
 	/**

@@ -1,0 +1,38 @@
+2001-08-23  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Synchronized puncation generation in ToC with rest of stylesheets.
+
+2001-08-21  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Fixed presentation of secondary indexterms in index pane
+
+2001-08-13  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Fixed problems with new lines in titles for TOC
+
+2001-08-08  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Added new parameters for controling filenames of project and output files.
+	New parameter htmlhelp.hhp.tail for specifying user content for project file.
+
+2001-07-23  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Fixed bug #442162 - bibliography element is included in ToC in the left pane, index is not generated because it has own dialog also in the left pane of HTML Help viewer
+
+2001-06-25  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Added htmlhelp.autolabel parameter to control inclusion of component and section labels into tree-like ToC.
+
+2001-05-05  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Colophon is now included in toc.hhc
+
+2001-04-21  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* README: Removed obsolete file
+
+2001-04-04  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* README, htmlhelp-common.xsl, htmlhelp.xsl, langcodes.xml, xthtmlhelp.xsl: 
+	New file.
+

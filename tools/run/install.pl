@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!@root.install.perl@ -w
 
 $|++;
 
@@ -286,7 +286,7 @@ filename expansion and RPM's handling of upgrades or
 installs on multiple files.  Please see the FAQ entry on
 the opennms site at:
 
-  http://www.opennms.org/cgi-bin/fom?file=39
+  http://faq.opennms.org/faq/fom-serve/cache/39.html
 
 END
   }

@@ -60,7 +60,7 @@
 				<element name="rra" type="string" minOccurs="1" maxOccurs="unbounded">
 					<simpleType>
 						<restriction base="string">
-							<pattern value="^RRA:(AVERAGE|MIN|MAX):.*$"/>
+							<pattern value="^RRA:(AVERAGE|MIN|MAX|LAST):.*$"/>
 						</restriction>
 					</simpleType>
 				</element>

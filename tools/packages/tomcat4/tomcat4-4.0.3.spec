@@ -4,7 +4,7 @@
 %{!?httpssl:%define httpssl 8443}
 %{!?ajp:%define ajp 8009}
 %define	serialnum	2
-%define	releasenum	0.onms.9
+%define	releasenum	0.onms.10
 
 %define	manualtc 	tomcat-4.0.3
 %define	manualapi 	servletapi-2.3

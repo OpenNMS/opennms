@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 VERSION_BUILD_CHECK_TOOLS='1.1.1.1'
 PACKAGES="$PACKAGES CHECK_TOOLS"
