@@ -46,6 +46,7 @@
     protected int telnetServiceId;
     protected int httpServiceId;
     protected int dellServiceId;
+    protected int snmpServiceId;
     protected PerformanceModel perfModel;
     protected ResponseTimeModel rtModel;
     
@@ -78,6 +79,13 @@
 
         try {
             this.dellServiceId = NetworkElementFactory.getServiceIdFromName("Dell-OpenManage");
+        }
+        catch( Exception e ) {
+            throw new ServletException( "Could not determine the Dell-OpenManage service ID", e );
+        }
+
+        try {
+            this.snmpServiceId = NetworkElementFactory.getServiceIdFromName("SNMP");
         }
         catch( Exception e ) {
             throw new ServletException( "Could not determine the Dell-OpenManage service ID", e );
@@ -173,6 +181,12 @@
         }
     }
 
+    //find if SNMP is on this node 
+    boolean isSnmp = false;
+    Service[] snmpServices = NetworkElementFactory.getServicesOnNode(nodeId, this.snmpServiceId);
+
+    if( snmpServices != null && snmpServices.length > 0 ) 
+	isSnmp = true;
 %>
 
 <html>
@@ -230,6 +244,16 @@
         <% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
           &nbsp;&nbsp;&nbsp;<a href="admin/nodemanagement/index.jsp?node=<%=nodeId%>">Admin</a>
         <% } %>
+
+           <% if ( isSnmp && request.isUserInRole("OpenNMS Administrator"))  { %>
+              <% for( int i=0; i < intfs.length; i++ ) { %>
+                <% if( "P".equals( intfs[i].getIsSnmpPrimary() )) { %>
+                      &nbsp;&nbsp;&nbsp;<a href="admin/updateSnmp.jsp?node=<%=nodeId%>&ipaddr=<%=intfs[i].getIpAddress()%>">Update SNMP</a>
+                <% } %>
+              <% } %>
+           <% } %>
+
+
       </p>
 
       <table width="100%" border="0" cellspacing="0" cellpadding="0">
