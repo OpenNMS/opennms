@@ -148,7 +148,7 @@ public class Constraint {
 	    b.append(")");
 	}
 	
-	if (m_fdeltype.equals("c")) {
+	if ("c".equals(m_fdeltype)) {
 		b.append(" on delete cascade");
 	}
 
