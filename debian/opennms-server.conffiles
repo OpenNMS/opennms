@@ -3,7 +3,6 @@
 /etc/opennms/categories.xml
 /etc/opennms/castor.properties
 /etc/opennms/collectd-configuration.xml
-/etc/opennms/create.sql
 /etc/opennms/database-schema.xml
 /etc/opennms/datacollection-config.xml
 /etc/opennms/destinationPaths.xml
