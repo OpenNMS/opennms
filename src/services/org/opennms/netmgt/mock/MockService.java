@@ -1,0 +1,180 @@
+package org.opennms.netmgt.mock;
+
+//
+// This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is Copyright (C) 2004 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included code and modified
+// code that was published under the GNU General Public License. Copyrights for modified 
+// and included code are below.
+//
+// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+//
+// For more information contact:
+// OpenNMS Licensing       <license@opennms.org>
+//     http://www.opennms.org/
+//     http://www.opennms.com/
+//
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.opennms.netmgt.poller.ServiceMonitor;
+
+/**
+ * @author brozow
+ * 
+ * TODO To change the template for this generated type comment go to Window -
+ * Preferences - Java - Code Style - Code Templates
+ */
+public class MockService extends MockElement {
+
+    private int m_pollCount;
+
+    private int m_pollStatus;
+
+    private int m_serviceId;
+
+    private String m_svcName;
+
+    private List m_triggers = new ArrayList();
+
+    /**
+     * @param iface
+     * @param svcName
+     */
+    public MockService(MockInterface iface, String svcName, int serviceId) {
+        super(iface);
+        m_svcName = svcName;
+        m_serviceId = serviceId;
+        m_pollStatus = ServiceMonitor.SERVICE_AVAILABLE;
+        m_pollCount = 0;
+
+    }
+
+    public void addAnticipator(PollAnticipator trigger) {
+        m_triggers.add(trigger);
+    }
+
+    /**
+     * @return
+     */
+    public int getId() {
+        return m_serviceId;
+    }
+
+    /**
+     * @return
+     */
+    public MockInterface getInterface() {
+        return (MockInterface) getParent();
+    }
+
+    public String getIpAddr() {
+        return getInterface().getIpAddr();
+    }
+
+    Object getKey() {
+        return m_svcName;
+    }
+
+    /**
+     * @return
+     */
+    public String getName() {
+        return m_svcName;
+    }
+
+    public MockNetwork getNetwork() {
+        return getInterface().getNetwork();
+    }
+
+    public MockNode getNode() {
+        return getInterface().getNode();
+    }
+
+    /**
+     * @return
+     */
+    public int getNodeId() {
+        return getNode().getNodeId();
+    }
+
+    public String getNodeLabel() {
+        return getNode().getLabel();
+    }
+
+    /**
+     * @return
+     */
+    public int getPollCount() {
+        return m_pollCount;
+    }
+
+    /**
+     * @return
+     */
+    public int getPollStatus() {
+        return m_pollStatus;
+    }
+
+    /**
+     * @return
+     */
+    public int poll() {
+        m_pollCount++;
+
+        Iterator it = m_triggers.iterator();
+        while (it.hasNext()) {
+            PollAnticipator trigger = (PollAnticipator) it.next();
+            trigger.poll(this);
+        }
+
+        return getPollStatus();
+
+    }
+
+    public void removeAnticipator(PollAnticipator trigger) {
+        m_triggers.remove(trigger);
+    }
+
+    /**
+     * 
+     */
+    public void resetPollCount() {
+        m_pollCount = 0;
+    }
+
+    /**
+     * 
+     */
+    public void setPollStatus(int status) {
+        m_pollStatus = status;
+    }
+
+    /**
+     * @param v
+     */
+    public void visit(MockVisitor v) {
+        super.visit(v);
+        v.visitService(this);
+    }
+
+}

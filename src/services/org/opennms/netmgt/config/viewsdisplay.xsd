@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/groups">
+
+	<element name="viewinfo">
+		<complexType>
+			<sequence>
+				<element ref="view" minOccurs="0" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="view">
+		<complexType>
+			<sequence>
+				<element name="view-name" type="string" minOccurs="1" maxOccurs="1"/>
+				<element ref="section" minOccurs="1" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="section">
+		<complexType>
+			<sequence>
+				<element name="section-name" type="string" minOccurs="1" maxOccurs="1"/>
+				<element name="category" type="string" minOccurs="1" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element>
+</schema>

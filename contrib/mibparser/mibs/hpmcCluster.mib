@@ -1,0 +1,421 @@
+HP-MCCLUSTER DEFINITIONS ::= BEGIN
+
+       IMPORTS
+           OBJECT-TYPE, MODULE-IDENTITY, OBJECT-IDENTITY,
+           DateAndTime, -- Remove for SNMPResearch compiles
+           NOTIFICATION-TYPE, enterprises, Integer32
+               FROM SNMPv2-SMI
+           DisplayString
+               FROM SNMPv2-TC;
+
+
+       --
+       -- Object hierarchy under HP's enterprise object ID
+       --
+       hp                 OBJECT IDENTIFIER ::= { enterprises 11 }
+       nm                 OBJECT IDENTIFIER ::= { hp 2 }
+       system             OBJECT IDENTIFIER ::= { nm 3 }
+       general            OBJECT IDENTIFIER ::= { system 1 }
+
+       
+       hpmcCluster MODULE-IDENTITY
+            LAST-UPDATED "9710030000Z"
+            ORGANIZATION "Hewlett Packard Company,
+			  Enterprise Systems Division"
+            CONTACT-INFO
+                    "       Miha Wang
+                            Kevin Watkins
+                            Carol Ann Krug
+       
+                    Postal: Hewlett Packard Company
+                            19411 Pruneridge Ave, MS44UA
+                            Cupertino, CA 95014
+
+                    Tel:    +1 408 447 2339 (MW)
+                            +1 408 447 5795 (KW)
+                            +1 408 447 3477 (CK)
+                    Fax:    +1 408 447 1345
+
+                    E-mail: miha@cup.hp.com
+                            kevin@cup.hp.com
+                            carolann@cup.hp.com"
+
+            DESCRIPTION
+                    "This MIB module describes an HP private MIB for
+                    the management of Multi Computer Clusters.  The
+                    MIB is intended to support general cluster
+                    attributes.  Extensions for instrumentation of
+                    specific products should be done in separate
+                    product-specific MIBs."
+            ::= { general 6 }
+       
+
+       --
+       -- DateAndTime - defined here for benefit of SNMP Research code which
+       --  does not have this built in for 12.2.0.2 release.  When it is
+       --  available this line should be removed from the MIB definition and
+       --  "DateAndTime" should be added back into the IMPORTS list.
+       --
+       -- Uncomment next line for SNMPResearch compiles
+       -- DateAndTime ::= OCTET STRING (SIZE (8 | 11))
+
+       --
+       -- The groups which make up the general hpmcCluster MIB.
+       --
+       hpmcClusterObjects   OBJECT IDENTIFIER ::= { hpmcCluster 1 }
+       hpmcClusterTypes     OBJECT IDENTIFIER ::= { hpmcCluster 2 }
+       hpmcTypeSpecific     OBJECT IDENTIFIER ::= { hpmcCluster 3 }
+
+       hpmcGenInfo          OBJECT IDENTIFIER ::= { hpmcClusterObjects 1 }
+       hpmcMemberInfo       OBJECT IDENTIFIER ::= { hpmcClusterObjects 2 }
+
+       
+       -- 
+       -- Cluster Types
+       -- 
+       --  These object IDs are used to uniquely identify HP 
+       --  Multicomputer Clustering products.
+       -- 
+
+       hpmcServiceGuard OBJECT-IDENTITY
+            STATUS     current
+            DESCRIPTION
+                    "The authoritative identity of the ServiceGuard
+                     cluster type."
+            ::= { hpmcClusterTypes 1 }
+
+       hpmcNFSDiskless OBJECT-IDENTITY
+            STATUS     current
+            DESCRIPTION
+                    "The authoritative identity of the NFS Diskless
+                     cluster type."
+            ::= { hpmcClusterTypes 2 }
+
+       hpmcMCSE        OBJECT-IDENTITY
+            STATUS     current
+            DESCRIPTION
+                    "The authoritative identity of the MCSE cluster type."
+            ::= { hpmcClusterTypes 3 }
+
+       hpmcLockManager OBJECT-IDENTITY
+            STATUS     current
+            DESCRIPTION
+                    "The authoritative identity of the Lock Manager
+                     cluster type."
+            ::= { hpmcClusterTypes 4 }
+
+       hpmcMSCS        OBJECT-IDENTITY
+            STATUS     current
+            DESCRIPTION
+                    "The authoritative identity of the Microsoft Cluster Server
+                     cluster type."
+            ::= { hpmcClusterTypes 5 }
+
+       -- others ...
+
+       -- 
+       -- The General Cluster Information Group
+       -- 
+       --   This group contains general information (i.e. information
+       --  pertinent to most types of clusters) about the clusters to
+       --  which this node belongs.
+       -- 
+
+       hpmcNumClusters OBJECT-TYPE
+           SYNTAX      Integer32
+           MAX-ACCESS  read-only
+           STATUS      obsolete
+           DESCRIPTION
+                   "This variable is obsolete."
+           ::= { hpmcGenInfo 1 }
+       
+
+       --
+       -- The Cluster Information Table
+       --
+       --   The remaining general cluster information is contained
+       --  in a table, with each row representing a cluster to which
+       --  this node is a member.
+       --
+       --   The index used in this table will be used in other MC
+       --  product specific tables.
+       --
+       hpmcClusterTable OBJECT-TYPE
+           SYNTAX      SEQUENCE OF HpmcClusterEntry
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "A table containing general information about
+                    the various clusters to which this node belongs."
+           ::= { hpmcGenInfo 2 }
+       
+       hpmcClusterEntry OBJECT-TYPE
+           SYNTAX      HpmcClusterEntry
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "An entry providing information about a cluster
+                    to which this node belongs."
+           INDEX      { hpmcClusterIndex }
+           ::= { hpmcClusterTable 1 }
+       
+       HpmcClusterEntry ::=
+           SEQUENCE {
+               hpmcClusterIndex            Integer32,
+               hpmcClusterName             DisplayString,
+               hpmcClusterType             OBJECT IDENTIFIER,
+               hpmcClusterDescr            DisplayString,
+               hpmcClusterSWVersion        DisplayString,
+               hpmcClusterState            INTEGER,
+               hpmcClusterLastStateChange  DateAndTime,
+               hpmcClusterLastReconfig     DateAndTime,
+               hpmcClusterPrimaryNode      DisplayString,
+               hpmcNodeStatus              INTEGER,
+               hpmcNodeLastEvent           Integer32,
+               hpmcNodeLastEventTime       DateAndTime,
+               hpmcClusterUpTime           TimeTicks
+           }
+       
+       hpmcClusterIndex OBJECT-TYPE
+           SYNTAX      Integer32
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "A unique value for each cluster to which this node
+                    belongs.  This value is calculated by taking the
+                    last element of the corresponding hpmcClusterType
+                    object ID, multiplying it by 2^16 (shifting this
+                    value left 16 bits) and adding a 16 bit value
+                    (ranging from 0 to 2^16-1) for the cluster instance."
+           ::= { hpmcClusterEntry 1 }
+       
+       hpmcClusterName OBJECT-TYPE
+           SYNTAX      DisplayString
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The name given to this cluster, which will
+                    distinguish it from other clusters of the same
+                    type.  No two clusters of the same type on a
+                    single node may have the same name."
+           ::= { hpmcClusterEntry 2 }
+       
+       hpmcClusterType OBJECT-TYPE
+           SYNTAX      OBJECT IDENTIFIER
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "An unambiguous identifier of the cluster type.  These
+                    values should be taken from the Object ID tree rooted 
+                    below hpmcClusterTypes."
+           ::= { hpmcClusterEntry 3 }
+       
+       hpmcClusterDescr OBJECT-TYPE
+           SYNTAX      DisplayString
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "A description of the cluster.  By default this might
+                    simply be a textual description of the cluster type,
+                    such as `MC Service Guard'.  However it may be 
+                    desirable to allow the enduser to override this
+                    description through configuration to describe the 
+                    actual purpose being served by the cluster.  For
+                    example `HA Customer Database Cluster'."
+           ::= { hpmcClusterEntry 4 }
+       
+       hpmcClusterSWVersion OBJECT-TYPE
+           SYNTAX      DisplayString
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "Versioning information describing the SW component(s),
+                    residing on this node, which comprise this cluster type."
+           ::= { hpmcClusterEntry 5 }
+       
+       hpmcClusterState OBJECT-TYPE
+           SYNTAX      INTEGER{
+                         unknown(-1),
+                         down(0),
+                         up(1)
+                       }
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "Describes this node's view of the cluster state.
+                    Note that insufficient information, such as
+                    separation from other active cluster elements,
+                    could result in this state information being out
+                    of date.  In this case the unknown state should be
+                    used."
+           ::= { hpmcClusterEntry 6 }
+       
+       hpmcClusterLastStateChange OBJECT-TYPE
+           SYNTAX      DateAndTime
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "Indicates at what time the node entered the state
+                    described by hpmcClusterState."
+           ::= { hpmcClusterEntry 7 }
+       
+       hpmcClusterLastReconfig OBJECT-TYPE
+           SYNTAX      DateAndTime
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "Indicates when the configuration for this cluster
+                    was last changed."
+           ::= { hpmcClusterEntry 8 }
+       
+       hpmcClusterPrimaryNode OBJECT-TYPE
+           SYNTAX      DisplayString
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "Indicates a node in the cluster which plays a
+                    `special' role, and may contain additional MIB
+                    information not distributed to other nodes in the
+                    cluster.  A value of ' ' (single blank character)
+                    indicates an unknown or nonexistent primary node."
+           ::= { hpmcClusterEntry 9 }
+       
+       hpmcNodeStatus OBJECT-TYPE
+           SYNTAX      INTEGER{
+                         invalid(0),
+                         initializing(1),
+                         failed(2),
+                         halted(3),
+                         reconfiguring(4),
+                         running(5),
+                         unknown(6),
+                         paused(7)
+                       }
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The current state of the node relative to the cluster
+                    in this row."
+           ::= { hpmcClusterEntry 10 }
+       
+       hpmcNodeLastEvent OBJECT-TYPE
+           SYNTAX      INTEGER{
+                         none(0),
+                         down(1),
+                         up(2),
+                         reconfiguring(3),
+                         joining(4),
+                         leaving(5),
+                         changedClusterConfiguration(6),
+                         notApplicable(7),
+                         paused(8)
+                       }
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The last event on this node to alter
+                    hpmcNodeStatus.  For cluster types that do not use
+                    events, the value is none (0)."
+           ::= { hpmcClusterEntry 11 }
+       
+       hpmcNodeLastEventTime OBJECT-TYPE
+           SYNTAX      DateAndTime
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "Indicates at what time the node entered the status
+                    described by hpmcNodeStatus.  A value of 0
+                    indicates that the time is unknown or inapplicable
+                    (such as when the hpmcNodeLastEvent is none (0))."
+           ::= { hpmcClusterEntry 12 }
+       
+       hpmcClusterUpTime OBJECT-TYPE
+           SYNTAX      TimeTicks
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The time (in hundredths of a second) since this
+                   instance of the cluster was last started.  Dynamic
+                   reconfiguration or partial availability of the
+                   cluster does not reset the cluster uptime.  A value
+                   of 0 indicates that the time is unknown by this node."
+           ::= { hpmcClusterEntry 13 }
+       
+
+       -- 
+       -- The Cluster Membership Group
+       -- 
+       --   This group contains information related to cluster membership.
+       -- 
+       -- 
+       -- The Cluster Node Table
+       -- 
+       --   This table describes the members of the clusters to which
+       --  the node belongs.
+       -- 
+
+       hpmcCNodeTable OBJECT-TYPE
+           SYNTAX      SEQUENCE OF HpmcCNodeEntry
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "A table containing an entry for each node which
+                    is a member of the cluster."
+           ::= { hpmcMemberInfo 1}
+       
+       hpmcCNodeEntry OBJECT-TYPE
+           SYNTAX      HpmcCNodeEntry
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "An entry providing information about the members
+                    of a given cluster.  It is indexed by both the
+                    Cluster Index and nodeID of the member node."
+           INDEX      { hpmcClusterIndex, hpmcNodeID }
+           ::= { hpmcCNodeTable 1 }
+       
+       HpmcCNodeEntry ::=
+           SEQUENCE {
+               hpmcNodeID                  Integer32,
+               hpmcNodeName                DisplayString,
+               hpmcNodeRole                INTEGER
+           }
+       
+       hpmcNodeID OBJECT-TYPE
+           SYNTAX      Integer32
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "A unique ID given to this node from the context of
+                    a particular cluster.  A node may have different
+                    values for each of the different clusters it
+                    belongs to."
+           ::= { hpmcCNodeEntry 1 }
+       
+       hpmcNodeName OBJECT-TYPE
+           SYNTAX      DisplayString
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "A name given to this node, typically its hostname,
+                    but may be a cluster specific name for identifying
+                    each member."
+           ::= { hpmcCNodeEntry 2 }
+       
+       hpmcNodeRole OBJECT-TYPE
+           SYNTAX      INTEGER{
+                         undefined   (0),
+                         client      (1),
+                         server      (2),
+                         peer        (3),
+                         coordinator (4)
+                       }
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "Indicates this node's role in the cluster.  A cluster
+                    does not need to have a member fulfilling each role."
+           ::= { hpmcCNodeEntry 3 }
+       
+
+END
