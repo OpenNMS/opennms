@@ -1,11 +1,10 @@
 #! /bin/sh
+
+# $Id$
+
 # postrm script for opennms-server
-#
-# see: dh_installdeb(1)
 
 set -e
-
-pgrunning=1
 
 case "$1" in
     purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)

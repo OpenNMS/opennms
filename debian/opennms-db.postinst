@@ -1,13 +1,13 @@
 #! /bin/sh
+
+# $Id$
+
 # postinst script for opennms-db
-#
-# see: dh_installdeb(1)
 
 set -e
 
 VERSION=1.1.3
 PG_DIR=/usr/lib/postgresql/lib/opennms
-PG_USER=postgres
 PG_CTL=/usr/lib/postgresql/bin/pg_ctl
 DATA_DIR=/var/lib/postgres/data
 PGHBA_CONF=/etc/postgresql/pg_hba.conf
@@ -35,7 +35,7 @@ case "$1" in
 	    cp $TMPFILE $PGHBA_CONF
 	fi
 
-	# Add a local entry for all databases, (trust), needed by the
+	# Add a host entry for all databases, (trust), needed by the
 	# install script.
 	if ! grep -E -q "^host[[:space:]]+all[[:space:]]+127.0.0.1.+trust" \
 	        $PGHBA_CONF; then
@@ -44,14 +44,6 @@ case "$1" in
 	    cp $TMPFILE $PGHBA_CONF
 	fi
 
-	# Add the host entry if needed
-	if ! grep -q "^host opennms" $PGHBA_CONF; then
-	    sed \
-	        -e "/^host.*127.0.0.1.*ident sameuser/i\\" \
-	        -e "host opennms 127.0.0.1 255.0.0.0 password" \
-		$PGHBA_CONF > $TMPFILE
-	    cp $TMPFILE $PGHBA_CONF
-	fi
 	rm -f $TMPFILE
 
 	if $PG_CTL -D $DATA_DIR status &> /dev/null ; then
@@ -72,8 +64,8 @@ case "$1" in
 
 	echo ""
 	echo "I have modified access controls for the opennms database in"
-	echo "$PGHBA_CONF.  Please check this to be sure it"
-	echo "complies with your local security policies."
+	echo "$PGHBA_CONF in order to complete the install. Please check"
+	echo "this to be sure iti complies with your local security policies."
 	echo ""
 	;;
 

@@ -1,4 +1,4 @@
 etc/opennms
-usr/bin
+usr/sbin
 usr/share/lintian/overrides
 usr/share/opennms/lib

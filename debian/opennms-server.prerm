@@ -1,7 +1,8 @@
 #! /bin/sh
+
+# $Id$
+
 # prerm script for opennms-server
-#
-# see: dh_installdeb(1)
 
 set -e
 

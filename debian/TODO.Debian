@@ -1,15 +1,11 @@
-- Move away from the ugly hacking of users pg_hba.conf file. Possibly use
-  debconf to prompt for more reasonable settings. Better yet, make 
-  upstream changes to negate some or all of the need to change the 
-  defaults.
-
-- Move away from ugly hacking of users server.xml file. Possibly use 
-  debconf to prompt the user and give them a choice.
+- Get rid of pg_hba.conf and server.xml mods during postinst, replace with
+  debconf note pointing at a document breaking down "what's next".
 
 - Institute a permissions scheme that will allow Tomcat to run as user
   tomcat4
 
-- Figure out why Tomcat refuses to use web.xml as a symlink.
+- Figure out why Tomcat refuses to use web.xml as a symlink, (hint: check
+  tomcat policy).
 
 - Either the packages should readily support running the webapp, database,
   and app on seperate machines, or some of these packages should be merged
@@ -17,7 +13,7 @@
 
 - Write a man page.
 
-- Look into lintian overrides
+- Look into all of the lintian overrides
 
 - Tomcat policy is basically carpet bombing. Come up with something that
   reduces privelages to only what is required.

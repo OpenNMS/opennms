@@ -40,5 +40,8 @@ Known Issues
   than it is on the other supported distributions so the opennms-db 
   post-install makes some rather liberal changes to your pg_hba.conf.
 
+- The install process no longer sets up tomcat to run as root, (but it is
+  still necessary). You may need to edit /etc/default/tomcat4 and set
+  TOMCAT4_USER to root.
 
 -- Eric Evans <eevans@opennms.org>, Wed, 14 Nov 2004 15:50:00 -0600

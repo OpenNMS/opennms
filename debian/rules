@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
-# Sample debian/rules that uses debhelper.
-# GNU copyright 1997 to 1999 by Joey Hess.
+
+# $Id$
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -42,15 +42,12 @@ configure: configure-stamp
 configure-stamp:
 	dh_testdir
 
-	# Add here commands to configure the package.
-
 	touch configure-stamp
 
 build: configure-stamp build-stamp
 build-stamp:
 	dh_testdir
 
-	# Add here commands to compile the package.
 	sh ./build.sh $(BUILDDEFINES) compile
 	sh ./build.sh $(BUILDDEFINES) jar
 	sh ./build.sh $(BUILDDEFINES) docs
@@ -62,9 +59,6 @@ clean:
 	dh_testroot
 	rm -f build-stamp configure-stamp
 
-	# Add here commands to clean up after the build process.
-	# sh ./build.sh -Droot.installprefix=$(TMP) \
-	# 	-Drelative.installprefix=debian/tmp clean
 	sh ./build.sh -Dinstall.prefix=$(TMP) clean
 
 	rm -rf work
@@ -78,9 +72,6 @@ install: build
 	dh_clean -k
 	dh_installdirs
 
-	# Add here commands to install the package into debian/tmp
-	# sh ./build.sh -Droot.installprefix=$(TMP) \
-	#	-Drelative.installprefix=debian/tmp $(BUILDDEFINES) install
 	sh ./build.sh $(BUILDDEFINES) -Dinstall.prefix=$(TMP) install
 
 	##
@@ -125,12 +116,9 @@ install: build
 		$(ONMSDB)/usr/share/lintian/overrides/opennms-db
 	mv $(TMP)/usr/share/opennms/etc/*.sql \
 		$(ONMSDB)/etc/opennms/
-	#mv $(TMP)/usr/share/opennms/bin/install.pl \
-	#	$(ONMSDB)/usr/share/opennms/bin/
 	chgrp nogroup $(ONMSDB)/etc/opennms
 	chmod 2775 $(ONMSDB)/etc/opennms
 	chmod 644 $(ONMSDB)/etc/opennms/*.sql
-	#chmod 755 $(ONMSDB)/usr/share/opennms/bin/install.pl
 
 	##
 	## Setup the opennms-common package
@@ -155,7 +143,6 @@ install: build
 	chmod 2775 $(ONMSCOM)/etc/opennms $(ONMSCOM)/var/lib/opennms/* \
 		$(ONMSCOM)/var/log/opennms
 	chmod 755 $(ONMSCOM)/usr/share/opennms/bin/opennms.sh
-	#	$(ONMSCOM)/usr/share/opennms/bin/tomcat-install.pl
 	chmod 644 $(ONMSCOM)/usr/share/opennms/lib/updates/README.updates
 
 	##
@@ -177,7 +164,7 @@ install: build
 	##
 
 	install -m 755 $(CURDIR)/debian/opennms.binscript \
-		$(ONMSSVR)/usr/bin/opennms
+		$(ONMSSVR)/usr/sbin/opennms
 	install -m 644 $(CURDIR)/debian/opennms-server.overrides \
 		$(ONMSSVR)/usr/share/lintian/overrides/opennms-server
 	mv $(TMP)/usr/share/opennms/etc/* $(ONMSSVR)/etc/opennms/
@@ -208,7 +195,7 @@ install: build
 		$(ONMSSVR)/etc/opennms/magic-users.properties \
 		$(ONMSSVR)/etc/opennms/vulnscand-configuration.xml
 	chmod 2775 $(ONMSSVR)/etc/opennms $(ONMSSVR)/etc/opennms/events
-	#chmod 755 $(ONMSSVR)/usr/bin/opennms
+	chmod 755 $(ONMSSVR)/usr/sbin/opennms
 	chmod 644 $(ONMSSVR)/usr/share/opennms/lib/*.jar
 
 	##
@@ -256,22 +243,13 @@ binary-arch: build install
 	dh_testroot
 #	dh_installdebconf	
 	dh_installdocs
-#	dh_installexamples
-#	dh_installmenu
-#	dh_installlogrotate
-#	dh_installemacsen
-#	dh_installpam
-#	dh_installmime
 	dh_installinit -n --init-script=opennms
-#	dh_installcron
 	dh_installman
-#	dh_installinfo
-#	dh_undocumented
 	dh_installchangelogs CHANGELOG
 	dh_link
 	dh_strip
 	dh_compress
-#	dh_fixperms	# this is a little scary for my tastes right now
+	dh_fixperms
 	dh_makeshlibs -n
 	dh_installdeb
 	dh_perl debian/opennms-common/usr/share/opennms/bin debian/opennms-contrib/usr/share/opennms/contrib

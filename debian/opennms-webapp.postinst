@@ -1,7 +1,8 @@
 #! /bin/sh
+
+# $Id$
+
 # postinst script for opennms-webapp
-#
-# see: dh_installdeb(1)
 
 set -e
 

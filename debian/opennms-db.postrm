@@ -1,7 +1,8 @@
 #! /bin/sh
+
+# $Id$
+
 # postrm script for opennms-db
-#
-# see: dh_installdeb(1)
 
 set -e
 

@@ -1,4 +1,7 @@
 #! /bin/sh
+
+# $Id$
+
 #
 # opennms	startup script for OpenNMS system
 #
@@ -6,7 +9,7 @@
 #
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/bin/opennms
+DAEMON=/usr/sbin/opennms
 NAME=opennms
 DESC="Open Network Management System"
 
