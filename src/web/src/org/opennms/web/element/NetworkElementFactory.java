@@ -604,7 +604,7 @@ public class NetworkElementFactory extends Object {
 
             element = rs.getTimestamp("nodeCreateTime");
             if (element != null)
-                node.m_nodeCreateTime = EventConstants.formatToString(new Date(((Timestamp) element).getTime()));
+                node.m_nodeCreateTime = EventConstants.formatToUIString(new Date(((Timestamp) element).getTime()));
 
             element = new Integer(rs.getInt("nodeParentID"));
             if (element != null) {
@@ -682,7 +682,7 @@ public class NetworkElementFactory extends Object {
 
             element = rs.getTimestamp("ipLastCapsdPoll");
             if (element != null)
-                intf.m_ipLastCapsdPoll = EventConstants.formatToString(new Date(((Timestamp) element).getTime()));
+                intf.m_ipLastCapsdPoll = EventConstants.formatToUIString(new Date(((Timestamp) element).getTime()));
 
             vector.addElement(intf);
         }
@@ -765,7 +765,7 @@ public class NetworkElementFactory extends Object {
 
             element = rs.getTimestamp("lastgood");
             if (element != null)
-                service.m_lastGood = EventConstants.formatToString(new Date(((Timestamp) element).getTime()));
+                service.m_lastGood = EventConstants.formatToUIString(new Date(((Timestamp) element).getTime()));
 
             element = new Integer(rs.getInt("serviceid"));
             service.m_serviceId = ((Integer) element).intValue();
@@ -775,7 +775,7 @@ public class NetworkElementFactory extends Object {
 
             element = rs.getTimestamp("lastfail");
             if (element != null)
-                service.m_lastFail = EventConstants.formatToString(new Date(((Timestamp) element).getTime()));
+                service.m_lastFail = EventConstants.formatToUIString(new Date(((Timestamp) element).getTime()));
 
             element = rs.getString("notify");
             service.m_notify = (String) element;
