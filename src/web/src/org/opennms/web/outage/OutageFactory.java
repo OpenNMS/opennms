@@ -660,7 +660,7 @@ public class OutageFactory extends Object
      * Convenience method for getting the SQL <em>ORDER BY</em> clause
      * related to a given sort style.
      *
-     * @param ackType the outage type to map to a clause
+     * @param outType the outage type to map to a clause
      */
     protected static String getOutageTypeClause( OutageType outType ) {
         if( outType == null ) {

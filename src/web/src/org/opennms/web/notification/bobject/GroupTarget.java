@@ -66,7 +66,7 @@ public class GroupTarget extends NotificationTarget
 	}
 	
 	/**Sets the userId for this target
-	   @param String
+	   @param name the group name.
 	*/
 	public void setGroupName(String name)
 	{
@@ -74,7 +74,7 @@ public class GroupTarget extends NotificationTarget
 	}
 	
 	/**Returns the userId for this target
-	   @return String
+	   @return the group name.
 	*/
 	public String getGroupName()
 	{
@@ -82,7 +82,7 @@ public class GroupTarget extends NotificationTarget
 	}
 	
 	/**Sets the command name for this target
-	   @param String
+	   @param commandName the command name.
 	*/
 	public void setCommandName(String commandName)
 	{
@@ -90,7 +90,7 @@ public class GroupTarget extends NotificationTarget
 	}
 	
 	/**Returns the command name for this target
-	   @return String
+	   @return the command name.
 	*/
 	public String getCommandName()
 	{
@@ -98,7 +98,7 @@ public class GroupTarget extends NotificationTarget
 	}
 	
 	/**Adds a user target to this group target
-	   @param target
+	   @param target a user target to be added.
 	*/
 	public void addUserTarget(UserTarget target)
 	{
@@ -106,7 +106,7 @@ public class GroupTarget extends NotificationTarget
 	}
 	
 	/**Returns the list of UserTargets in this group target
-	   @param List, a list of UserTarget objects
+	   @return the list of user targets.
 	*/
 	public List getUserTargets()
 	{
@@ -114,7 +114,7 @@ public class GroupTarget extends NotificationTarget
 	}
 	
 	/**Returns the type of the target
-	   @return int, NotificationTask.TARGET_TYPE_USER
+	   @return the target type, compare to NotificationTask.TARGET_TYPE_USER.
 	*/
 	public int getType()
 	{

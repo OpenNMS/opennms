@@ -63,7 +63,7 @@ public class NotifTarget extends NotificationTarget
 	}
 	
 	/**Sets the name of the notification target
-	   @param String
+	   @param name the name of the notification target to be set.
 	*/
 	public void setNotifName(String name)
 	{
@@ -71,7 +71,7 @@ public class NotifTarget extends NotificationTarget
 	}
 	
 	/**Returns the name of the notification
-	   @return String
+	   @return the name of the notification target.
 	*/
 	public String getNotifName()
 	{
@@ -79,7 +79,7 @@ public class NotifTarget extends NotificationTarget
 	}
 	
 	/**Sets the Notification object for this target
-	   @param Notification
+	   @param notification the notification object to be set.
 	*/
 	public void setNotification(Notification notification)
 	{
@@ -87,7 +87,7 @@ public class NotifTarget extends NotificationTarget
 	}
 	
 	/**Returns the notification for this target
-	  @return Notification
+	  @return the notification object.
 	*/
 	public Notification getNotification()
 	{
@@ -95,7 +95,7 @@ public class NotifTarget extends NotificationTarget
 	}
 	
 	/**Sets the overriding interval for this target
-	   @param String
+	   @param interval the overriding interval to be set.
 	*/
 	public void setInterval(String interval)
 	{
@@ -105,7 +105,7 @@ public class NotifTarget extends NotificationTarget
 	/**Returns the interval to use for this target. If an overriding interval
 	   was set that will be returned, otherwise the interval from the Notification
 	   will be returned.
-	   @return String
+	   @return the interval for this object.
 	*/
 	public String getInterval()
 	{
@@ -124,7 +124,7 @@ public class NotifTarget extends NotificationTarget
 	}
 	
 	/**Returns the type of the target
-	   @return int, NotificationTask.TARGET_TYPE_NOTIF
+	   @return the target type, compare to NotificationTask.TARGET_TYPE_NOTIF.
 	*/
 	public int getType()
 	{

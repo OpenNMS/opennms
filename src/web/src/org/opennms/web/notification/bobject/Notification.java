@@ -69,7 +69,7 @@ public class Notification
 	}
 	
 	/**Sets the name of the notification
-	   @param String
+	   @param name the name to be set for this notification.
 	*/
 	public void setName(String name)
 	{
@@ -77,7 +77,7 @@ public class Notification
 	}
 	
 	/**Returns the name of the notification
-	   @return String
+	   @return the name of the notification.
 	*/
 	public String getName()
 	{
@@ -85,7 +85,7 @@ public class Notification
 	}
 	
 	/**Sets the comments for the notification
-	   @param String
+	   @param comments comments to be set for this notification.
 	*/
 	public void setComments(String comments)
 	{
@@ -93,7 +93,7 @@ public class Notification
 	}
 	
 	/**Returns the comments for the notification
-	   @return String
+	   @return comments for this notification.
 	*/
 	public String getComments()
 	{
@@ -101,7 +101,7 @@ public class Notification
 	}
 	
 	/**Sets the interval for the notification
-	   @param String
+	   @param interval the interval to be set for this notification.
 	*/
 	public void setInterval(String interval)
 	{
@@ -109,7 +109,7 @@ public class Notification
 	}
 	
 	/**Returns the string version of the interval
-	   @return String
+	   @return the interval for this notification.
 	*/
 	public String getInterval()
 	{
@@ -117,7 +117,7 @@ public class Notification
 	}
 	
 	/**Returns the interval converted to milliseconds
-	   @return long, interval in milliseconds
+	   @return the interval in milliseconds
 	*/
 	public long getIntervalMilliseconds()
 	{
@@ -133,7 +133,7 @@ public class Notification
 	}
 	
 	/**Returns the interval in seconds
-	   @return long, interval in seconds
+	   @return the interval in seconds
 	*/
 	public long getIntervalSeconds()
 	{
@@ -141,7 +141,7 @@ public class Notification
 	}
 	
 	/**Adds a target to the notification
-	   @param NotificationTarget
+	   @param target a target to be added for this notification.
 	*/
 	public void addTarget(NotificationTarget target)
 	{
@@ -149,7 +149,7 @@ public class Notification
 	}
 	
 	/**Returns the list of targets
-	   @return List
+	   @return the list of targets.
 	*/
 	public List getTargets()
 	{

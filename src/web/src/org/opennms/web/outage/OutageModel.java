@@ -68,7 +68,7 @@ public class OutageModel extends Object
     /**
      * Query the database to retrieve the current outages. 
      * 
-     * @returns An array of {@link Outage Outage} objects,
+     * @return An array of {@link Outage Outage} objects,
      * or if there are none, an empty array.
      * @throws SQLException If there is a problem getting a database connection
      * or making a query.

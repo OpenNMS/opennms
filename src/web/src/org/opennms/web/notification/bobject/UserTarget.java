@@ -36,7 +36,7 @@ import org.opennms.web.admin.users.parsers.User;
 
 
 /**A NotificationTarget representing a user target
- * parsed from the notifications.xml.
+ * parsed from the notifications xml file.
  * 
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
@@ -68,7 +68,7 @@ public class UserTarget extends NotificationTarget
 	}
 	
 	/**Sets the userId for this target
-	   @param String
+	   @param name the username to be set.
 	*/
 	public void setUserName(String name)
 	{
@@ -76,7 +76,7 @@ public class UserTarget extends NotificationTarget
 	}
 	
 	/**Returns the userId for this target
-	   @return String
+	   @return the username.
 	*/
 	public String getUserName()
 	{
@@ -84,7 +84,7 @@ public class UserTarget extends NotificationTarget
 	}
 	
 	/**Sets the User object for this target
-	   @param User
+	   @param user the user object to be set.
 	*/
 	public void setUser(User user)
 	{
@@ -92,7 +92,7 @@ public class UserTarget extends NotificationTarget
 	}
 	
 	/**Returns the User object for this target
-	   @return User
+	   @return the user object.
 	*/
 	public User getUser()
 	{
@@ -100,7 +100,7 @@ public class UserTarget extends NotificationTarget
 	}
 	
 	/**Sets the command name for this target
-	   @param String
+	   @param commandName the command name to be set.
 	*/
 	public void setCommandName(String commandName)
 	{
@@ -108,7 +108,7 @@ public class UserTarget extends NotificationTarget
 	}
 	
 	/**Returns the command name for this target
-	   @return String
+	   @return the command name.
 	*/
 	public String getCommandName()
 	{
@@ -116,7 +116,7 @@ public class UserTarget extends NotificationTarget
 	}
 	
 	/**Sets the Command object for this target
-	   @param Command
+	   @param command the command to be set.
 	*/
 	public void setCommand(Command command)
 	{
@@ -124,7 +124,7 @@ public class UserTarget extends NotificationTarget
 	}
 	
 	/**Returns the Command object for this target
-	   @return Command
+	   @return the command.
 	*/
 	public Command getCommand()
 	{
@@ -132,7 +132,7 @@ public class UserTarget extends NotificationTarget
 	}
 	
 	/**Returns the type of the target
-	   @return int, NotificationTask.TARGET_TYPE_USER
+	   @return the type, compare to NotificationTask.TARGET_TYPE_USER.
 	*/
 	public int getType()
 	{
