@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2004 Oct 07: Added code to support RTC rescan on asset update
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -115,6 +116,9 @@ final class BroadcastEventProcessor
 
 		// add the rtc unsubscribe event
 		ueisOfInterest.add(EventConstants.RTC_UNSUBSCRIBE_EVENT_UEI);
+
+		// add the asset info changed event
+		ueisOfInterest.add(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI);
 		
 		EventIpcManagerFactory.init();
 		EventIpcManagerFactory.getInstance().getManager().addEventListener(this, ueisOfInterest);

@@ -10,6 +10,7 @@
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
+// 2004 Oct 07: Added code to support RTC rescan on asset update
 // 2004 Jan 06: Added support for Display, Notify, Poller and Threshold Categories
 //
 // This program is free software; you can redistribute it and/or modify
@@ -45,6 +46,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.MissingParameterException;
 
+import org.opennms.netmgt.capsd.EventUtils;
+import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.utils.TcpEventProxy;
+import org.opennms.netmgt.xml.event.Event;
+
 
 public class ModifyAssetServlet extends HttpServlet
 {
@@ -72,6 +78,9 @@ public class ModifyAssetServlet extends HttpServlet
         boolean isNew = Boolean.valueOf( isNewString ).booleanValue();
 
         Asset asset = this.parms2Asset( request, nodeId );
+
+        Event evnt = EventUtils.createAssetInfoChangedEvent("OpenNMS.WebUI", nodeId, -1L);
+        sendEvent(evnt);
 
         try {        
             if( isNew ) {
@@ -148,5 +157,19 @@ public class ModifyAssetServlet extends HttpServlet
 
 	return( s );
     }        
+
+    private void sendEvent(Event event) throws ServletException
+    {
+        try
+        {
+            EventProxy eventProxy = new TcpEventProxy();
+            eventProxy.send(event);
+        }
+        catch(Exception e)
+        {
+            throw new ServletException("Could not send event " + event.getUei(), e);
+        }
+    }
+
 }            
 

@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2004 Oct 07: Added code to support RTC rescan on asset update
 // 2003 Jul 02: Added an ORDER BY statement to correct show outages.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -101,4 +102,10 @@ public final class RTCConstants
 								+"where ( (outages.nodeid = ?) AND (outages.ipaddr = ?) AND (outages.serviceid = ?) AND "
 								+"((ifLostService >= ?) OR (ifRegainedService >= ?) OR (ifRegainedService IS NULL)) ) ORDER BY outageid";
 	
+
+	/**
+	 * The SQL statement necessary to get the IP addresses associated
+	 * with a node.
+	 */
+	public final static String 	SQL_DB_NODE_IPADDRS	= "SELECT ipaddr FROM ipinterface WHERE ipaddr != '0.0.0.0' and nodeid = ?";
 }

@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2004 Oct 07: Added code to support RTC rescan on asset update
 // 2004 Sep 08: Cleaned up the rescan node method.
 // 2004 Mar 17: Fixed a number of bugs with added and deleting services within RTC.
 //              Added a method to rescan a node within RTC.
@@ -1084,6 +1085,66 @@ public class DataManager extends Object
 
 	}
 
+        /**
+         * Update the categories for a node.
+         * This method will update the categories for all interfaces on a node.
+         *
+         * @param  nodeid       the nodeid on which SNMP service was added
+         *
+         * @throws SQLException if the database read fails due to an SQL error
+         * @throws FilterParseException if filtering the data against the category rule fails due to the rule being incorrect
+         * @throws RTCException if the database read or filtering the data against the category rule fails for some reason
+         */
+        public synchronized void rtcNodeRescan(long nodeid)
+                        throws SQLException, FilterParseException, RTCException
+        {
+            Category log = ThreadCategory.getInstance(DataManager.class);
+           
+            // Get a new database connection
+            java.sql.Connection dbConn = null;
+            ResultSet ipRS = null;
+            try 
+	    {
+                try
+                {
+                    dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+                }     
+                catch(SQLException ex)
+                {
+                    log.warn("Failed to get database connection", ex);
+                    throw new UndeclaredThrowableException(ex);
+                }
+               
+                // Prepare the statement to get the IP addresses assigned to a node.
+                PreparedStatement nodeIPsGetStmt = dbConn.prepareStatement(RTCConstants.SQL_DB_NODE_IPADDRS);
+               
+                // get IP addresses for this node
+
+                nodeIPsGetStmt.setString(1, String.valueOf(nodeid));
+
+                ipRS = nodeIPsGetStmt.executeQuery();
+                while(ipRS.next())
+                {
+			// Call the method to rescan the node and IP address
+			rtcNodeIpRescan(nodeid,ipRS.getString(1));
+		}
+	    }
+
+            finally
+            {
+                try
+                {
+                    if(ipRS != null)
+                        ipRS.close();
+                }
+                catch(Exception e)
+                {
+                    if(log.isDebugEnabled())
+                        log.debug("Exception while closing the get node IPs result set - node: " + nodeid, e);
+                }
+            }
+	}
+
 	/**
 	 * Update the categories for a node.
 	 * When SNMP is discovered on a node, we need to recalculate the categories for that node
@@ -1143,7 +1204,7 @@ public class DataManager extends Object
 	            
 	            String catip = null;
 	            String catnodeip = null;
-	            ResultSet ipRS=null;
+	            ResultSet ipRS = null;
 	            try
 	            {
 	                List nodeIPs = filter.getIPList(filterRule);

@@ -989,13 +989,25 @@
 		<event-label>OpenNMS-defined vulnscand event: specificVulnerabilityScan</event-label>
 		<descr>
 			&lt;p&gt;A vulnerabilities scan has been forced.&lt;/p&gt;
-			&lt;p&gt;
 		</descr>
 		<logmsg dest='logndisplay'>
 			&lt;p&gt;A vulnerabilities scan has been forced on this
 			interface.&lt;/p&gt;
 		</logmsg>
 		<severity>Major</severity>
+	</event>
+	<event>
+		<uei>uei.opennms.org/nodes/assetInfoChanged</uei>
+		<event-label>OpenNMS-defined node event: assetInfoChanged</event-label>
+		<descr>
+			&lt;p&gt;The Asset info for node %nodeid% (%nodelabel%)
+			has been changed via the webUI.&lt;/p&gt;
+		</descr>
+		<logmsg dest='logndisplay'>
+			&lt;p&gt;The Asset info for node %nodeid% (%nodelabel%)
+			has been changed via the webUI.&lt;/p&gt;
+		</logmsg>
+		<severity>Normal</severity>
 	</event>
 	<event>
                 <mask>  

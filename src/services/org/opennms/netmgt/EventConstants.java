@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2004 Oct 07: Added code to support RTC rescan on asset update
 // 2004 Jan 06: Added the suspend polling service event UEI, and the
 //		resume polling service event UEI. Cleaned up some typos
 //		in comments.
@@ -424,6 +425,11 @@ public class EventConstants
 	 * A vulnerability scan on a specific interface was initiated by the user via the web UI
 	 */
 	public final static String SPECIFIC_VULN_SCAN_EVENT_UEI = "uei.opennms.org/vulnscand/specificVulnerabilityScan";
+
+	/**
+	 * An event to signal that a user has changed asset information via the web UI
+	 */
+	public final static String ASSET_INFO_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/assetInfoChanged";
 
 	//
 	// end eventUEIs

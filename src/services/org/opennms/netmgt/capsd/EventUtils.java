@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2004 Oct 07: Added code to support RTC rescan on asset update
 // Aug 24, 2004: Created this file.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -201,6 +202,42 @@ public class EventUtils {
     public static Event createDeleteNodeEvent(String source, long nodeId, long txNo) {
         Event newEvent = new Event();
         newEvent.setUei(EventConstants.DELETE_NODE_EVENT_UEI);
+        newEvent.setSource(source);
+        newEvent.setNodeid(nodeId);
+        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+
+        // Add appropriate parms
+        Parms eventParms = new Parms();
+        Parm eventParm = null;
+        Value parmValue = null;
+
+        eventParm = new Parm();
+        eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
+        parmValue = new Value();
+        parmValue.setContent(String.valueOf(txNo));
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+
+        // Add Parms to the event
+        newEvent.setParms(eventParms);
+
+        return newEvent;
+    }
+
+    /**
+     * Construct a deleteNode event for the given nodeId.
+     * 
+     * @param source
+     *            the source for the vent
+     * @param nodeId
+     *            the node to be deleted.
+     * @param txNo
+     *            the transaction number associated with deleting the node
+     * @return an Event object representing a delete node event.
+     */
+    public static Event createAssetInfoChangedEvent(String source, long nodeId, long txNo) {
+        Event newEvent = new Event();
+        newEvent.setUei(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI);
         newEvent.setSource(source);
         newEvent.setNodeid(nodeId);
         newEvent.setTime(EventConstants.formatToString(new java.util.Date()));

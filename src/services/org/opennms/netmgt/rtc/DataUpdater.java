@@ -8,7 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Modifications:
+//
+// 2004 Oct 07: Added code to support RTC rescan on asset update
+//
+// Orginal code baseCopyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -36,9 +40,13 @@ package org.opennms.netmgt.rtc;
 
 import java.text.ParseException;
 import java.util.Enumeration;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.sql.SQLException;
+
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -422,11 +430,29 @@ final class DataUpdater implements Runnable
 	}
 
 	/**
+	 * If it is a assetInfoChanged method, update RTC
+	 */
+	private void handleAssetInfoChangedEvent(long nodeid)
+		throws SQLException, FilterParseException, RTCException
+	{
+		Category log = ThreadCategory.getInstance(DataUpdater.class);
+
+		DataManager dataMgr = RTCManager.getDataManager();
+
+		dataMgr.rtcNodeRescan(nodeid);
+
+		if(log.isDebugEnabled())
+			log.debug(m_event.getUei() + " rescanned: " + nodeid );
+
+	}
+
+	/**
 	 * Read the event UEI, nodeid, interface and service - depending
 	 * on the UEI, read event parms, if necessary, and call appropriate
 	 * methods on the data manager to update data
 	 */
 	private void processEvent()
+		throws SQLException, FilterParseException, RTCException
 	{
 		Category log = ThreadCategory.getInstance(DataUpdater.class);
 
@@ -537,6 +563,10 @@ final class DataUpdater implements Runnable
 		else if (eventUEI.equals(EventConstants.RTC_UNSUBSCRIBE_EVENT_UEI))
 		{
 			handleRtcUnsubscribe(m_event.getParms());
+		}
+		else if (eventUEI.equals(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI))
+		{
+			handleAssetInfoChangedEvent(nodeid);
 		}
 		else
 		{
