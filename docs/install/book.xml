@@ -10,7 +10,7 @@
   <title>OpenNMS<superscript>®</superscript> Installation Guide</title>
 
   <bookinfo>
-    <date>7 July 2004</date>
+    <date>23 July 2004</date>
 
     <subtitle>Instructions on Installing the OpenNMS Network Management
     Application</subtitle>
@@ -85,7 +85,7 @@
           url="http://www.tavve.com">Tavve Software Company</ulink>.</para>
         </listitem>
       </itemizedlist>Please send any omissions or corrections to this document
-    to <ulink url="???">Tarus Balog</ulink></para>
+    to <ulink url="mailto:tarus@opennms.org">Tarus Balog</ulink></para>
   </preface>
 
   &__chapter1__dwwdzyh8;
