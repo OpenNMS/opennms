@@ -625,7 +625,12 @@
     <servlet-class>org.opennms.web.admin.nodeManagement.DeleteNodesServlet</servlet-class>
   </servlet>
   <servlet>
-    <!-- servlet for grabbing node information -->
+    <!-- servlet for grabbing interfaces and services on a node -->
+    <servlet-name>getInterfaces</servlet-name>
+    <servlet-class>org.opennms.web.admin.nodeManagement.GetInterfacesServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for adding a new interface -->
     <servlet-name>addNewInterface</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.AddNewInterfaceServlet</servlet-class>
   </servlet>
@@ -1124,6 +1129,10 @@
     <url-pattern>/admin/asset/assets.csv</url-pattern>
   </servlet-mapping>
   
+  <servlet-mapping>
+    <servlet-name>getInterfaces</servlet-name>
+    <url-pattern>/admin/nodemanagement/getInterfaces</url-pattern>
+  </servlet-mapping>
   <servlet-mapping>
     <servlet-name>addNewInterface</servlet-name>
     <url-pattern>/admin/addNewInterface</url-pattern>

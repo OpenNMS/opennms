@@ -36,9 +36,7 @@
 //      http://www.opennms.org/
 //      http://www.blast.com/
 //
-
 -->
-
 <%@page language="java" contentType="text/html" session="true" import="org.opennms.netmgt.utils.NodeLabel,org.opennms.core.resource.Vault,java.util.*,java.sql.*" %>
 
 <%!

@@ -15,7 +15,7 @@
 		<user>
 			<user-id>tempuser</user-id>
 			<full-name>Temporary User</full-name>
-            <user-comments></user-comments>
+                        <user-comments></user-comments>
 			<password>18126E7BD3F84B3F3E4DF094DEF5B7DE</password>
 			<contact type="email" info="temp.user@opennms.org"/>
 			<contact type="numericPage" info="6789" serviceProvider="ATT"/>

@@ -789,10 +789,6 @@ create table assets (
         supportPhone    varchar(64),
         maintContract   varchar(64),
         maintContractExpires varchar(64),
-	displayCategory   varchar(64),
-	notifyCategory   varchar(64),
-	pollerCategory   varchar(64),
-	thresholdCategory   varchar(64),
         comment         varchar(1024)              
        );
 

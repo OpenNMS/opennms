@@ -126,7 +126,13 @@ final class SnmpCollector
 	 * SQL statement to fetch the ifIndex, ifName, and ifDescr values
 	 * for all interfaces associated with a node              
 	 */
-	 private static final String SQL_GET_SNMP_INFO 	= "SELECT DISTINCT snmpifindex, snmpiftype, snmpifname, snmpifdescr,snmpphysaddr from snmpinterface, ipinterface where (ipinterface.ismanaged!='D') AND ipinterface.nodeid=snmpinterface.nodeid AND ifindex = snmpifindex AND ipinterface.nodeid=?";
+	 private static final String SQL_GET_SNMP_INFO 	= 
+                "SELECT DISTINCT snmpifindex, snmpiftype, snmpifname, snmpifdescr,snmpphysaddr "
+              + "FROM snmpinterface, ipinterface "
+              + "WHERE ipinterface.nodeid=snmpinterface.nodeid " 
+              + "AND ifindex = snmpifindex "
+              + "AND ipinterface.nodeid=? "
+              + "AND (ipinterface.ismanaged!='D')";
 	 
 	/**
 	 * Default object to collect if "oid" property not available.

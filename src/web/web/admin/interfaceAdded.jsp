@@ -66,7 +66,7 @@
     
     <td>
         <h3>Finished Adding Interface.</h3>
-        <p>OpenNMS should not need to be restarted, but it may take a moment for the Categories to be updated.</p>
+        <p>OpenNMS should not need to be restarted, but it may take a moment for the categories to be updated.</p>
     </td>
     
     <td>&nbsp;</td>

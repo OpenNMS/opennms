@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2004 Jan 16: Order interface list by nodeid and ipaddress.
 // 2004 Jan 06: Added support for STATUS_SUSPEND and STATUS_RESUME
 // 2003 Feb 05: Added ORDER BY to SQL statement.
 //
@@ -59,7 +60,7 @@ public class GetNodesServlet extends HttpServlet
 	//	"SELECT nodeid, nodelabel FROM node ORDER BY nodelabel, nodeid";
 	
         private static final String INTERFACE_QUERY = 
-                "SELECT nodeid, ipaddr, isManaged FROM ipinterface WHERE ismanaged in ('M','A','U','F') AND ipaddr <> '0.0.0.0' ORDER BY inet(ipaddr)";
+                "SELECT nodeid, ipaddr, isManaged FROM ipinterface WHERE ismanaged in ('M','A','U','F') AND ipaddr <> '0.0.0.0' ORDER BY nodeid, inet(ipaddr)";
         
         private static final String SERVICE_QUERY =
                 "SELECT ifservices.serviceid, servicename, status FROM ifservices, service WHERE nodeid=? AND ipaddr=? AND status in ('A','U','F', 'S', 'R') AND ifservices.serviceid = service.serviceid ORDER BY servicename";

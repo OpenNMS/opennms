@@ -410,6 +410,9 @@ public final class PollerConfigFactory
 				
                                 if (ipList.size() > 0)
 				{
+                                        if (log.isDebugEnabled())
+			                        log.debug("createPackageIpMap: package " + pkg.getName() 
+                                                + ". IpList size is "  + ipList.size());
 					m_pkgIpMap.put(pkg, ipList);
 				}
 		        }

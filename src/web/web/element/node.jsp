@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2004 Jan 15: Added node admin function.
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2003 Feb 01: Added response time link (Bug #684) and HTTP link (Bug #469).
 // 2002 Nov 26: Fixed breadcrumbs issue.
@@ -197,8 +198,8 @@
         <% } %>
         
         &nbsp;&nbsp;&nbsp;<a href="element/rescan.jsp?node=<%=nodeId%>">Rescan</a>      
-        <% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
-          &nbsp;&nbsp;&nbsp;<a href="admin/nodelabel.jsp?node=<%=nodeId%>">Change Node Label</a>
+        <% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
+          &nbsp;&nbsp;&nbsp;<a href="admin/nodemanagement/index.jsp?node=<%=nodeId%>">Admin</a>
         <% } %>
       </p>
 

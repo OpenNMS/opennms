@@ -120,12 +120,12 @@ public class SnmpPortal
 	 * Identifies the system property that may be used to specify whether or not a timeout value is set
 	 * on the SNMP trap socket.  Valid values are 'yes' and 'no'.
 	 */
-	private static final String PROP_SOCKET_TIMEOUT_REQUIRED	= "org.opennms.joeSNMP.vmhacks.socketSoTimeoutRequired";
+	private static final String PROP_SOCKET_TIMEOUT_REQUIRED = "org.opennms.joeSNMP.vmhacks.socketSoTimeoutRequired";
 	/**
 	 * Identifies the system property that may be used to specify the number of milliseconds to use for the
 	 * socket timeout.
 	 */
-	private static final String PROP_SOCKET_TIMEOUT_PERIOD		= "org.opennms.joeSNMP.vmhacks.socketSoTimeoutPeriod";
+	private static final String PROP_SOCKET_TIMEOUT_PERIOD	= "org.opennms.joeSNMP.vmhacks.socketSoTimeoutPeriod";
 
 	/**
 	 * Private constructor used to disallow the
