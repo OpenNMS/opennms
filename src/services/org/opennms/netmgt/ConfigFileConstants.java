@@ -246,6 +246,11 @@ public final class ConfigFileConstants
 	 * This is the name of the path of the webui colors dtd
 	 */
 	public static final int WEBUI_COLORS_FILE_NAME;
+	
+	/**
+	 * This is the name of the path of the webui colors dtd
+	 */
+	public static final int KSC_REPORT_FILE_NAME;
 
 	//
 	// End other config files
@@ -368,10 +373,12 @@ public final class ConfigFileConstants
 		REPORT_HTML_XSL                         = 44;
 
 		WEBUI_COLORS_FILE_NAME                  = 45;
+
+		KSC_REPORT_FILE_NAME			= 46;
 		
 		// Allocate and build the mapping of identifiers to names
 		//
-		FILE_ID_TO_NAME = new String[46];
+		FILE_ID_TO_NAME = new String[47];
 
 		FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] 		= "opennms-database.xml";
 		FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME]		= "opennms-jms.xml";
@@ -431,6 +438,8 @@ public final class ConfigFileConstants
 		FILE_ID_TO_NAME[VIEWS_DISPLAY_CONF_FILE_NAME]	= "viewsdisplay.xml";
 
 		FILE_ID_TO_NAME[WEBUI_COLORS_FILE_NAME]         = "webui-colors.xml";
+
+		FILE_ID_TO_NAME[KSC_REPORT_FILE_NAME]         	= "ksc-performance-reports.xml";
 	}
 
 	/**

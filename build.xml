@@ -837,6 +837,12 @@ OpenNMS as part of the post-install.
    <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
    <param name="castor.xsd" value="webui-colors.xsd"/>
   </antcall>
+  <antcall target="castor">
+   <param name="castor.package" value="org.opennms.netmgt.config.kscReports"/>
+   <param name="castor.output.path" value="${root.build}/castor"/>
+   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
+   <param name="castor.xsd" value="ksc-performance-reports.xsd"/>
+  </antcall>
  </target>
 
  <!-- tests -->
