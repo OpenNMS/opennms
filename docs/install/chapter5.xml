@@ -125,78 +125,20 @@
 
     <para><programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/runjava -s</command></programlisting></para>
 
-    <para>Then, execute the installer.</para>
+    <para>Then, execute the installer to install the database-related
+    bits:</para>
 
     <para><programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/install -disU</command></programlisting></para>
-  </section>
 
-  <section>
-    <title>Setup the webapp in Tomcat</title>
-
-    <para>The variable <code>$CATALINA_HOME</code> is used below in addition
-    to <code>$OPENNMS_HOME</code> which was used above. This should either be
-    set as an environment variable to point at the location where you have
+    <para>And execute the installer again, this time to setup the Tomcat bits.
+    The variable <code>$CATALINA_HOME</code> is used below in addition to
+    <code>$OPENNMS_HOME</code> which was used above. This should either be set
+    as an environment variable to point at the location where you have
     installed Tomcat 4, or you should replace all instances of
     <filename>$CATALINA_HOME</filename> with the location of your Tomcat 4
     installation.</para>
 
-    <section>
-      <title>Install <filename>opennms.xml</filename></title>
-
-      <para>Copy the <filename>opennms.xml</filename> Tomcat context file from
-      <filename>$OPENNMS_HOME/webapps/opennms.xml</filename> to
-      <filename>$CATALINA_HOME/webapps/opennms.xml</filename>.</para>
-
-      <programlisting><computeroutput># </computeroutput><command>cp $OPENNMS_HOME/webapps/opennms.xml $CATALINA_HOME/webapps/opennms.xml</command></programlisting>
-    </section>
-
-    <section>
-      <title>Create symlinks in <filename>$CATALINA_HOME/server/lib</filename>
-      for OpenNMS libraries</title>
-
-      <para>In <filename>$CATALINA_HOME/server/lib</filename> there should be
-      a number of symblic links pointing at <code>JAR</code> files in
-      <filename>$OPENNMS_HOME/lib</filename>:</para>
-
-      <para><itemizedlist>
-          <listitem>
-            <para><filename><filename>$CATALINA_HOME/server/lib</filename>/castor-0.9.3.9.jar
-            -&gt; $OPENNMS_HOME/lib/castor-0.9.3.9.jar</filename></para>
-          </listitem>
-
-          <listitem>
-            <para><filename><filename>$CATALINA_HOME/server/lib</filename>/log4j.jar
-            -&gt; $OPENNMS_HOME/lib/log4j.jar</filename></para>
-          </listitem>
-
-          <listitem>
-            <para><filename><filename>$CATALINA_HOME/server/lib/</filename>opennms_common.jar
-            -&gt; $OPENNMS_HOME/lib/opennms_common.jar</filename></para>
-          </listitem>
-
-          <listitem>
-            <para><filename><filename>$CATALINA_HOME/server/lib/</filename>opennms_core.jar
-            -&gt; $OPENNMS_HOME/lib/opennms_core.jar</filename></para>
-          </listitem>
-
-          <listitem>
-            <para><filename><filename><filename>$CATALINA_HOME/server/lib</filename>/opennms_services.jar
-            -&gt;
-            $OPENNMS_HOME/lib/opennms_services.jar</filename></filename></para>
-          </listitem>
-
-          <listitem>
-            <para><filename><filename>$CATALINA_HOME/server/lib</filename>/opennms_web.jar
-            -&gt; $OPENNMS_HOME/lib/opennms_web.jar</filename></para>
-          </listitem>
-        </itemizedlist>Here is a short Bourne shell script that will create
-      the symbolic links (your current directory needs to be
-      <filename>$CATALINA_HOME</filename> when you execute this):</para>
-
-      <programlisting><computeroutput># </computeroutput><command>for JAR in castor-0.9.3.9.jar log4j.jar opennms_common.jar opennms_core.jar opennms_services.jar opennms_web.jar; do</command>
-<computeroutput>&gt; </computeroutput><command>    ln -s $OPENNMS_HOME/lib/$JAR $JAR
-</command><computeroutput>&gt; </computeroutput><command>done</command></programlisting>
-    </section>
+    <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/install -y -w $CATALINA_HOME/webapps -W $CATALINA_HOME/server/lib</command></programlisting>
   </section>
 
   <section>

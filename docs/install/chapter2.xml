@@ -40,26 +40,26 @@
     <title>Java</title>
 
     <para>OpenNMS is written mainly in Java (there are a few JNI calls to some
-    C code in order to implement things such as ICMP, as well as some small
-    Perl scripts to assist with the install), and so it follows that Java
-    would need to be installed.</para>
+    C code in order to implement things such as ICMP), and so it follows that
+    Java would need to be installed.</para>
 
     <para>As the current code has a small dependency on a Sun-only library
     ("com.sun.net.ssl.internal.www.protocol" in the HTTPS Monitor), it is
     recommended that Sun's SDK is used. It should be possible to use IBM's
     SDK, but you'll get an error in the logs when the poller starts.</para>
 
-    <para><emphasis role="bold">Note</emphasis> that I said "SDK". It is
-    important to install the SDK instead of the JRE, as Tomcat will need to
-    compile Java code (which requires "javac" in the SDK).</para>
+    <note>
+      <para>It is important to install the SDK instead of the JRE, as Tomcat
+      will need to compile Java code (which requires "javac" in the
+      SDK).</para>
+    </note>
 
-    <para>Note: It looks like the installer for 1.1.3 only looks for
-    <filename>java</filename> in <filename>/bin/java</filename>. Be sure to
-    symbolically link it for now:</para>
-
-    <para><programlisting><computeroutput># </computeroutput><command>ln -s /usr/java/j2sdk1.4.2_04/bin/java /bin/java</command></programlisting></para>
-
-    <para>replacing the first path with your path, if different.</para>
+    <note>
+      <para>The installer for 1.1.3 only looks for <filename>java</filename>
+      in <filename>/bin/java</filename>. Be sure to symbolically link it for
+      now, replacing the first path with your path, if it is
+      different:<programlisting><computeroutput># </computeroutput><command>ln -s /usr/java/j2sdk1.4.2_04/bin/java /bin/java</command></programlisting></para>
+    </note>
 
     <para>If you are attempting to install version 1.1.3 or later, you will
     need to use Sun's Java 2 Platform, Standard Edition, version 1.4.2 or
@@ -69,14 +69,15 @@
     through the licensing process and then download the proper version of Java
     for your operating system.</para>
 
-    <para><emphasis role="bold">Note:</emphasis> If you are using Linux,
-    unless it is Debian you'll want to download the RPM (see my comments about
-    package management earlier). For Debian you'll need the ".bin" file, and
-    you'll need to follow the instructions for Debian in the next
-    chapter.</para>
+    <note>
+      <para>If you are using Linux, unless it is Debian you'll want to
+      download the RPM (see my comments about package management earlier). For
+      Debian you'll need the "<filename>.bin</filename>" file, and you'll need
+      to follow the instructions for Debian in the next chapter.</para>
+    </note>
 
     <para>If you are attempting to install version 1.1.2 or earlier, you
-    <emphasis>cannot</emphasis> use 1.4.2 (it will cause memory leaks). You
+    <emphasis>cannot</emphasis> use 1.4.2 as it will cause memory leaks. You
     will need to use something earlier, and from experience the proper version
     is <ulink
     url="http://java.sun.com/products/archive/j2se/1.4.0_02/index.html">1.4.0,
@@ -91,22 +92,40 @@
     of the Jakarta project in Apache, and it is a Java servlet engine. What
     that means is that Tomcat is a web server that serves up HTML that is
     built from small Java programs called "servlets". Note that this is much
-    different than Java "applets" - servlets are run on the server, not
+    different than Java "applets"--servlets are run on the server, not
     downloaded to the browser. Once a servlet is compiled, Tomcat will cache
     it, which means that the first visit to a particular page may be slow, but
     subsequent visits should be rather fast.</para>
 
     <para>The latest version of Tomcat is Tomcat5, however OpenNMS does not
-    work with Tomcat5 due to using Tomcat4-specific authentication
-    features.</para>
+    work with Tomcat5 due to using Tomcat4-specific authentication features.
+    This will be changed in a future version, but for now, you need to use
+    Tomcat4.</para>
 
     <para>We need to make a few changes to Tomcat. Most of these should be
-    done via the installer, but you will need to make two changes
-    manually.</para>
+    done via the installer, but you will need to make </para>
 
-    <para>You'll need to find the <filename>tomcat4.conf</filename> file (it's
-    in <filename>/etc/tomcat4/</filename> on the Red Hat/Fedora series of
-    Linux distributions). It looks like this:</para>
+    <para>Two changes will need to be made manually to Tomcat:</para>
+
+    <orderedlist>
+      <listitem>
+        <para>Tomcat must be configured to use the same installation of Java
+        that OpenNMS uses.</para>
+      </listitem>
+
+      <listitem>
+        <para>Tomcat needs to be able to read and write the configuration
+        files of OpenNMS. This can be done one of two ways. The first option
+        is making Tomcat run as root and the second is making the OpenNMS
+        configuration files readable and writable by the user Tomcat runs
+        as.</para>
+      </listitem>
+    </orderedlist>
+
+    <para>Many Linux distributions have a <filename>tomcat4.conf</filename>
+    configuration file where you can set configuration parameters. It is in
+    <filename>/etc/tomcat4/</filename> on the Red Hat and Fedora series of
+    Linux distributions. It looks like this:</para>
 
     <para><programlisting># tomcat /etc/rc.d script example configuration file
 # Use with version 1.07 of the scripts or later
@@ -150,81 +169,77 @@ TOMCAT_USER="tomcat"
 # (i.e. LD_LIBRARY_PATH for some jdbc drivers)
 # Just do not forget to export them </programlisting></para>
 
-    <para>The two changes we need to make involve <varname>JAVA_HOME</varname>
-    and <varname>TOMCAT_USER</varname>.</para>
-
-    <para>Add a line for <varname>JAVA_HOME</varname> that points to your
-    installation of JAVA. For example:</para>
+    <para>In this file, you can change the location of the Java environment
+    and the user that Tomcat runs as by changing <varname>JAVA_HOME</varname>
+    and <varname>TOMCAT_USER</varname> variables, respectively. You can add a
+    line for <varname>JAVA_HOME</varname> that points to your installation of
+    Java, for example:</para>
 
     <para><programlisting>JAVA_HOME="/usr/java/j2sdk1.4.2_04/"</programlisting></para>
 
-    <para>Now the second thing you need to do involves the Tomcat user. You
-    have two choices:</para>
+    <para>To change the Tomcat user, you would set:</para>
+
+    <para><programlisting>TOMCAT_USER="root"</programlisting></para>
+
+    <para>If you are using a Linux distribution or another operating system
+    (e.g.: Solaris, Mac OS X) that does not have a
+    <filename>tomcat4.conf</filename> file, you will need to figure out how
+    effect the same changes. Please feel free to post your details as an
+    enhancement bug to the OpenNMS bug database or send an email to the
+    opennms-install mailing list and we will add it to this
+    documentation.</para>
+
+    <para>If you choose not to set the user that runs Tomcat to
+    <code>root</code>, you will need to make the following changes so that the
+    Tomcat user can read and write the OpenNMS configuration files. This
+    process adds the "<code>tomcat</code>" and "<code>root</code>" users to
+    the "<code>tomcat4</code>" group, and then changes permissions so that the
+    "<code>tomcat4</code>" group can write to the OpenNMS
+    "<filename>etc</filename>" and "<filename>logs</filename>" directory. You
+    have to do this <emphasis role="bold">after</emphasis> the OpenNMS
+    software is installed.</para>
 
     <orderedlist>
       <listitem>
-        <para>The Easier Way: Just set the Tomcat user to
-        "<code>root</code>":</para>
-
-        <para><programlisting>TOMCAT_USER="root"</programlisting></para>
-
-        <para>Note that this does open a potential security risk, although a
-        minor one.</para>
+        <para>The "<code>tomcat</code>" user should have been created on
+        installation of Tomcat--verify this by looking in
+        <filename>/etc/passwd</filename>.</para>
       </listitem>
 
       <listitem>
-        <para>The Harder Way: You add the "<code>tomcat</code>" and
-        "<code>root</code>" users to the "<code>tomcat4</code>" group, and
-        then change permissions so that the "<code>tomcat4</code>" group can
-        write to the OpenNMS "<filename>etc</filename>" and
-        "<filename>logs</filename>" directory. You have to do this <emphasis
-        role="bold">after</emphasis> the OpenNMS software is installed.</para>
+        <para>Edit <filename>/etc/group</filename> and add
+        "<code>tomcat</code>" and "<code>root</code>" as members of the
+        "<code>tomcat4</code>" group. It should look something like:</para>
 
-        <itemizedlist>
-          <listitem>
-            <para>The "<code>tomcat</code>" user should have been created on
-            installation - verify this by looking in
-            <filename>/etc/passwd</filename></para>
-          </listitem>
+        <para><programlisting><code>tomcat4:x:91:tomcat,root</code></programlisting></para>
+      </listitem>
 
-          <listitem>
-            <para>Edit <filename>/etc/group</filename> and add
-            "<code>tomcat</code>" and "<code>root</code>" as members of the
-            "<code>tomcat4</code>" group. It should look something
-            like:</para>
+      <listitem>
+        <para>Locate the OpenNMS "<filename>etc</filename>" directory. It is
+        usually in <filename>/opt/OpenNMS/etc</filename> or
+        <filename>/etc/opennms</filename>. It will have a number of files with
+        an "<filename>.xml</filename>" extension, such as
+        <filename>capsd-configuration.xml</filename>. Run the commands:</para>
 
-            <para><programlisting><code>tomcat4:x:91:tomcat,root</code></programlisting></para>
-          </listitem>
-
-          <listitem>
-            <para>Locate the OpenNMS "<filename>etc</filename>" directory. It
-            is usually in <filename>/opt/OpenNMS/etc</filename> or
-            <filename>/etc/opennms</filename>. It will have a number of files
-            with an "<filename>.xml</filename>" extension, such as
-            <filename>capsd-configuration.xml</filename>. Run the
-            commands:</para>
-
-            <para><programlisting><computeroutput># </computeroutput><command>chgrp -R $OPENNMS_HOME/etc
+        <para><programlisting><computeroutput># </computeroutput><command>chgrp -R $OPENNMS_HOME/etc
 </command><computeroutput># </computeroutput><command>chmod -R g+w $OPENNMS_HOME/etc</command></programlisting></para>
 
-            <para>where <varname>$OPENNMS_HOME/etc</varname> is the OpenNMS
-            "<filename>etc</filename>" directory.</para>
-          </listitem>
+        <para>where <varname>$OPENNMS_HOME/etc</varname> is the OpenNMS
+        "<filename>etc</filename>" directory.</para>
+      </listitem>
 
-          <listitem>
-            <para>Locate the OpenNMS "<filename>logs</filename>" directory.
-            This is usually <filename>/var/log/opennms</filename>, and can be
-            found by looking in the <filename>log4j.properties</filename> file
-            in the OpenNMS "<filename>etc</filename>" directory (find an
-            instance of "File"). Run the commands:</para>
+      <listitem>
+        <para>Locate the OpenNMS "<filename>logs</filename>" directory. This
+        is usually <filename>/var/log/opennms</filename>, and can be found by
+        looking in the <filename>log4j.properties</filename> file in the
+        OpenNMS "<filename>etc</filename>" directory (find an instance of
+        "File"). Run the commands:</para>
 
-            <para><programlisting><computeroutput># </computeroutput><command>chgrp -R $OPENNMS_HOME/logs
+        <para><programlisting><computeroutput># </computeroutput><command>chgrp -R $OPENNMS_HOME/logs
 </command><computeroutput># </computeroutput><command>chmod -R g+w $OPENNMS_HOME/logs</command></programlisting></para>
 
-            <para>where <varname>$OPENNMS_HOME/logs</varname> is the OpenNMS
-            "<filename>logs</filename>" directory.</para>
-          </listitem>
-        </itemizedlist>
+        <para>where <varname>$OPENNMS_HOME/logs</varname> is the OpenNMS
+        "<filename>logs</filename>" directory.</para>
       </listitem>
     </orderedlist>
 
@@ -344,15 +359,14 @@ TOMCAT_USER="tomcat"
     <section>
       <title>The <filename>pg_hba.conf</filename> file</title>
 
-      <para>Starting with Postgres 7.2 the "host-based authentication" file
-      was added. This controls which machines and users can access the
-      database on a given machine via TCP/IP.</para>
+      <para>The <filename>pg_hba.conf</filename> file controls which machines
+      and users can access the database on a given machine via TCP/IP.</para>
 
-      <para>Since that is how OpenNMS accesses the database (via localhost) it
-      is necessary to modify this file to allow OpenNMS to work. The easiest
-      thing to do is to just allow anyone from the localhost to access the
-      database (do not add the last line if your system does not support
-      IPv6):</para>
+      <para>Since that is how OpenNMS accesses the database (via
+      <code>localhost</code>) it is necessary to modify this file to allow
+      OpenNMS to work. The easiest thing to do is to just allow anyone from
+      the localhost to access the database (do not add the last line if your
+      system does not support IPv6):</para>
 
       <para><programlisting># TYPE DATABASE USER IP-ADDRESS IP-MASK METHOD
 local all all
@@ -379,8 +393,10 @@ trust host all all ::1 ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff trust</programlis
     includes and SRPM) if metamail is not directly available for your
     distribution.</para>
 
-    <para>Note: This is no longer needed starting with OpenNMS 1.1.4, as the
-    Perl mailer has been replaced with a Java mailer.</para>
+    <note>
+      <para>This is no longer needed starting with OpenNMS 1.1.4, as the Perl
+      mailing has been replaced with a Java mailer.</para>
+    </note>
   </section>
 
   <section>
