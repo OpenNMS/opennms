@@ -20,12 +20,7 @@
 
       <listitem>
         <para>PostgreSQL (our back end database for storing events and device
-        information)</para>
-      </listitem>
-
-      <listitem>
-        <para>Perl-DBD-Pg and Perl-DBI (for the initial setup of the
-        database)</para>
+        information</para>
       </listitem>
 
       <listitem>
@@ -98,14 +93,9 @@
     it, which means that the first visit to a particular page may be slow, but
     subsequent visits should be rather fast.</para>
 
-    <para>The latest version of Tomcat is Tomcat5, but we have not been tested
-    against that yet. For version 1.1.0 of OpenNMS and later, we require at
-    least Tomcat 4.1.18. For version 1.0, you must use Tomcat 4.0 in order to
-    get the navigation links to work properly. This is due to a change that
-    the Tomcat team made between 4.0 and 4.1.</para>
-
-    <para>If you have 4.0 installed and want to install 4.1, you may need to
-    remove 4.0 first.</para>
+    <para>The latest version of Tomcat is Tomcat5, however OpenNMS does not
+    work with Tomcat5 due to using Tomcat4-specific authentication
+    features.</para>
 
     <para>We need to make a few changes to Tomcat. Most of these should be
     done via the installer, but you will need to make two changes
@@ -203,7 +193,7 @@ TOMCAT_USER="tomcat"
             /opt/OpenNMS/etc or /etc/opennms. It will have a number of files
             with an <varname>.xml</varname> extension, such as
             <varname>capsd-configuration.xml</varname>. Run the
-            command:</para>
+            commands:</para>
 
             <para><command>chgrp -R [opennms_etc_dir]</command></para>
 
@@ -217,7 +207,7 @@ TOMCAT_USER="tomcat"
             <para>Locate the OpenNMS "logs" directory. This is usually
             <filename>/var/log/opennms</filename>, and can be found by looking
             in the log4j.properties file in the OpenNMS "etc" directory (find
-            an instance of "File"). Run the command:</para>
+            an instance of "File"). Run the commands:</para>
 
             <para><command>chgrp -R [opennms_logs_dir]</command></para>
 
@@ -234,56 +224,6 @@ TOMCAT_USER="tomcat"
     change you'll start seeing errors in the OpenNMS logs, and administration
     commands run in the web UI will fail because Tomcat cannot change the
     configuration files.</para>
-
-    <para>Once OpenNMS is installed, it will need to make some changes. These
-    should happen automatically, but I'll list them here for
-    completeness.</para>
-
-    <para>First, in the <varname>CATALINA_HOME</varname> directory (usually
-    <filename>/var/tomcat4</filename>), you should see a subdirectory called
-    "webapps". The OpenNMS webapp directory will need to either be a
-    sub-directory in webapps or linked from there. The OpenNMS installer
-    should do this.</para>
-
-    <para>Second, also in the <varname>CATALINA_HOME</varname> directory
-    should be a sub-directory called <filename>conf</filename>. In that
-    directory is a file called <filename>server.xml</filename>. We need to add
-    a "context" to that file in order for Tomcat to know where OpenNMS lives.
-    The installer should also do this update, but for reference it looks
-    like:</para>
-
-    <para><programlisting>&lt;!-- Example Server Configuration File --&gt;
-&lt;Server ...
-...
-  ...
-    &lt;Host ... &gt;
-      ....
-      &lt;Context path="/opennms" docBase="opennms" debug="0" reloadable="true"&gt;
-        &lt;Logger className="org.opennms.web.log.Log4JLogger" homeDir="/opt/OpenNMS"/&gt;
-        &lt;Realm className="org.opennms.web.authenticate.OpenNMSTomcatRealm" homeDir="/opt/OpenNMS"/&gt;
-      &lt;/Context &gt;
-    &lt;/Host &gt;
-  ...
-&lt;/Service &gt;</programlisting></para>
-
-    <para>Finally, Tomcat will also need to be aware of various opennms JARs
-    and libraries which provide the java classes which make these directives
-    work. To give tomcat access to these resources, links are created in
-    <filename>$CATALINA_HOME/server/lib</filename> pointing to the locations
-    of the following OpenNMS JARs:</para>
-
-    <para><filename>castor-0.9.3.9.jar -&gt;
-    /opt/OpenNMS/lib/castor-0.9.3.9.jar</filename> <filename>log4j.jar -&gt;
-    /opt/OpenNMS/lib/log4j.jar</filename> <filename>opennms_common.jar -&gt;
-    /opt/OpenNMS/lib/opennms_common.jar</filename> <filename>opennms_core.jar
-    -&gt; /opt/OpenNMS/lib/opennms_core.jar</filename>
-    <filename>opennms_services.jar -&gt;
-    /opt/OpenNMS/lib/opennms_services.jar</filename> <filename>opennms_web.jar
-    -&gt; /opt/OpenNMS/lib/opennms_web.jar</filename></para>
-
-    <para>Note that the OpenNMS installer should make all of these changes,
-    but if you are having problems accessing the web UI or logging on, these
-    are things to check.</para>
   </section>
 
   <section>
@@ -330,10 +270,6 @@ TOMCAT_USER="tomcat"
 
       <listitem>
         <para><filename>postgresql-server</filename></para>
-      </listitem>
-
-      <listitem>
-        <para><filename>postgresql-libs</filename></para>
       </listitem>
     </itemizedlist>
 
@@ -392,42 +328,20 @@ TOMCAT_USER="tomcat"
       <para>Since that is how OpenNMS accesses the database (via localhost) it
       is necessary to modify this file to allow OpenNMS to work. The easiest
       thing to do is to just allow anyone from the localhost to access the
-      database:</para>
+      database (do not add the last line if your system does not support
+      IPv6):</para>
 
       <para><programlisting># TYPE  DATABASE    USER        IP-ADDRESS        IP-MASK           METHOD
 
 local   all         all                                             trust
-host    all         all         127.0.0.1         255.255.255.255   trust</programlisting></para>
+host    all         all         127.0.0.1         255.255.255.255   trust
+host    all         all         ::1               ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff    trust</programlisting></para>
 
       <para>Make sure that no other lines are uncommented in this file.</para>
 
       <para>You will need to stop and restart Postgres after making these
       changes.</para>
     </section>
-  </section>
-
-  <section>
-    <title>The Perl modules <filename>perl-DBI</filename> and
-    <filename>perl-DBD-Pg</filename></title>
-
-    <para>While OpenNMS is moving toward being as completely Java as possible,
-    we still use a bit of Perl in the installation as well as in mailing
-    availability reports.</para>
-
-    <para>Prior to 1.1.3, the install.pl script was used to create the initial
-    OpenNMS database. If you are using a version of OpenNMS prior to 1.1.3,
-    you'll need to have these two Perl modules installed.</para>
-
-    <para>As I have mentioned earlier, the easiest way for OpenNMS to know
-    that these modules are installed is if they are installed via packages.
-    The OpenNMS FTP site, <ulink
-    url="ftp://ftp.opennms.org">ftp.opennms.org</ulink> has compiled these
-    packages on a number of platforms (in the
-    <filename>/pub/dependencies</filename> directory). Also, the application
-    <filename>cpan2rpm</filename> can create these packages for you.</para>
-
-    <para>If you are installing a version prior to 1.1.3, please insure that
-    these packages are installed.</para>
   </section>
 
   <section>
@@ -442,5 +356,13 @@ host    all         all         127.0.0.1         255.255.255.255   trust</progr
     <filename>metamail</filename> can be found on the OpenNMS FTP site (which
     includes and SRPM) if metamail is not directly available for your
     distribution.</para>
+  </section>
+
+  <section>
+    <title>The <filename>curl</filename> Application</title>
+
+    <para>The startup script uses <filename>curl</filename> to connect to the
+    OpenNMS daemon to check that the various components are up and running
+    ("<filename>opennms status</filename>").</para>
   </section>
 </chapter>

@@ -328,7 +328,7 @@
 
       <para>As root, initialize the OpenNMS database:</para>
 
-      <para><computeroutput>java -jar
+      <para><computeroutput>$JAVA_HOME/bin/java -jar
       /usr/local/opennms/lib/opennms_install.jar -disU</computeroutput></para>
     </section>
 
