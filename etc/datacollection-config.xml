@@ -31,7 +31,7 @@
 			<group 	name = "mib2-host-resources-storage" ifType = "ignore">
 				<!-- Note that hrStorage is really a table -->
 				<!-- and I'm ignoring the hrStorageIndex altogether -->
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="2" alias="hrStorageAllocationUnits"  type="counter"/>
+				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="2" alias="hrStorageAllocUnits"  type="counter"/>
 				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="2" alias="hrStorageSize"  type="counter"/>
 				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="2" alias="hrStorageUsed"  type="counter"/>
 			</group>
