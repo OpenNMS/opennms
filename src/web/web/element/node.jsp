@@ -103,7 +103,7 @@
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = java.net.URLEncoder.encode("<a href='element/index.jsp'>Search</a>"); %>
+<% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("element/index.jsp") + "'>Search</a>"; %>
 <% String breadcrumb2 = java.net.URLEncoder.encode("Node"); %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Node" />
@@ -227,8 +227,9 @@
 
           <td valign="top" width="48%">
             <!-- events list  box -->
-            <% String eventHeader = URLEncoder.encode("<a href=\"event/list?filter=node%3D" + nodeId + "\">Recent Events</a>"); %>
-            <% String moreEventsUrl = URLEncoder.encode("event/list?filter=node%3D" + nodeId); %>
+            <% String eventHeader = "<a href='" + URLEncoder.encode("event/list.jsp?filter=node%3D" + nodeId  ) + "'>Recent Events</a>"; %>
+            <% String moreEventsUrl = URLEncoder.encode("event/list.jsp?filter=node=" + nodeId); %>
+
             <jsp:include page="/includes/eventlist.jsp" flush="false" >
               <jsp:param name="node" value="<%=nodeId%>" />
               <jsp:param name="throttle" value="5" />

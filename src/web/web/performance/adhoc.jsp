@@ -65,8 +65,8 @@
 </head>
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = java.net.URLEncoder.encode("<a href='report/index.jsp'>Reports</a>"); %>
-<% String breadcrumb2 = java.net.URLEncoder.encode("<a href='performance/index.jsp'>Performance</a>"); %>
+<% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("report/index.jsp") + "'>Reports</a>"; %>
+<% String breadcrumb2 = "<a href='" + java.net.URLEncoder.encode("performance/index.jsp") + "'>Performance</a>"; %>
 <% String breadcrumb3 = java.net.URLEncoder.encode("Custom"); %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Custom Performance Reporting" />

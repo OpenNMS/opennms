@@ -44,7 +44,7 @@
     EventQueryParms parms = (EventQueryParms)request.getAttribute( "parms" );
 
     if( events == null || parms == null ) {
-        throw new ServletException( "Missing either the events or parms request attribute." );
+	throw new ServletException( "Missing either the events or parms request attribute." );
     }
 
     String action = null;
@@ -131,7 +131,7 @@
 
 <body marginwidth="0" marginheight="0" leftmargin="0" rightmargin="0" topmargin="0">
 
-<% String breadcrumb1 = java.net.URLEncoder.encode("<a href='event/index.jsp' title='Events System Page'>Events</a>"); %>
+<% String breadcrumb1 = "<a href= '" + java.net.URLEncoder.encode("event/index.jsp") + "' title='" + java.net.URLEncoder.encode("Events System Page") + "'>Events</a>"; %>
 <% String breadcrumb2 = java.net.URLEncoder.encode("List"); %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Event List" />

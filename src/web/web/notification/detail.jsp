@@ -68,7 +68,7 @@
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = java.net.URLEncoder.encode("<a href='notification/index.jsp'>Notification</a>"); %>
+<% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("notification/index.jsp") + "'>Notification</a>"; %>
 <% String breadcrumb2 = java.net.URLEncoder.encode("Detail"); %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Notification Detail" />

@@ -60,7 +60,7 @@
 </head>
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = java.net.URLEncoder.encode("<a href='element/index.jsp'>Search</a>"); %>
+<% String breadcrumb1 = "<a href ='" + java.net.URLEncoder.encode("element/index.jsp") + "'>Search</a>"; %>
 <% String breadcrumb2 = java.net.URLEncoder.encode("Node List"); %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Node List" />
