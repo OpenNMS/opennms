@@ -537,6 +537,13 @@ if [ x"$VERBOSE_GC" != x"" ]; then
     MANAGER_OPTIONS="$MANAGER_OPTIONS -verbose:gc"
 fi
 
+if [ ! -f $OPENNMS_HOME/etc/configured ]; then
+    echo "$0: OpenNMS not configured." >&2
+    echo "$OPENNMS_HOME/etc/configured does not exist." >&2
+    echo "You need to run the installer -- see the install guide for details." >&2
+    exit 6    # From LSB: 6 - program is not configured
+fi
+
 case "$COMMAND" in
     start|spawn)
 	echo "Starting OpenNMS: \c"

@@ -280,9 +280,19 @@ public class Installer {
 			databaseDisconnect();
 		}
 
+		if (m_update_database) {
+		    createConfiguredFile();
+		}
+
 		System.out.println();
 		System.out.println("Installer completed successfully!");
 	}
+
+    public void createConfiguredFile() throws IOException {
+	File f = new File(m_opennms_home + File.separator + "etc" +
+			  File.separator + "configured");
+	f.createNewFile();
+    }
 
 	public void printHeader() {
 		m_out.println("==============================================="
