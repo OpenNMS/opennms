@@ -179,7 +179,6 @@ your distribution.
     <pathelement path="${dev.lib.dir}/servlet.jar"/>
     <pathelement path="${packaged.lib.dir}/ldap.jar"/>
     <pathelement path="${packaged.lib.dir}/catalina.jar"/>
-<!--    <pathelement path="${packaged.lib.dir}/castor-0.9.3.9.jar"/> -->
   	<pathelement path="${packaged.lib.dir}/castor-0.9.6.jar"/>
     <pathelement path="${packaged.lib.dir}/fop0203.jar"/>
     <pathelement path="${packaged.lib.dir}/batik.jar"/>
@@ -220,10 +219,8 @@ your distribution.
        how things are copied into WEB-INF/lib. -->
   <path id="tomcatlib.jars.path">
     <pathelement path="${packaged.lib.dir}/log4j.jar"/>
-<!--  	<pathelement path="${packaged.lib.dir}/castor-0.9.3.9.jar"/>
-    <pathelement path="${packaged.lib.dir}/castor-0.9.3.9-xml.jar"/>
-  	<pathelement path="${packaged.lib.dir}/castor-0.9.3.9.jar"/> -->
     <pathelement path="${packaged.lib.dir}/castor-0.9.6.jar"/>
+  	<pathelement path="${packaged.lib.dir}/oro204.jar"/>
     <pathelement path="${build.jar.dir}/opennms_core.jar"/>
     <pathelement path="${build.jar.dir}/opennms_services.jar"/>
     <pathelement path="${build.jar.dir}/opennms_web.jar"/>

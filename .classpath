@@ -48,6 +48,7 @@
 	<classpathentry kind="lib" path="lib/hsqldb.jar"/>
 	<classpathentry kind="lib" path="lib/jradius-client.jar"/>
 	<classpathentry kind="lib" path="lib/jmta.jar"/>
+	<classpathentry kind="lib" path="devlib/servlet.jar"/>
 	<classpathentry kind="lib" path="lib/smack.jar"/>
 	<classpathentry kind="lib" path="lib/smackx.jar"/>
 	<classpathentry kind="lib" path="lib/castor-0.9.6.jar"/>
