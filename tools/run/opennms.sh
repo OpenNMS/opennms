@@ -68,7 +68,7 @@ for script in pid_process arg_process build_classpath check_tools \
 done
 
 # load platform-independent settings
-for file in $OPENNMS_HOME/lib/scripts/platform_*.sh; do
+for file in "$OPENNMS_HOME/lib/scripts/platform_*.sh"; do
 	source $file
 done
 
