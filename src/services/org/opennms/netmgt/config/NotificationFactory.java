@@ -343,7 +343,7 @@ public class NotificationFactory
 		try
 		{
 			connection = DatabaseConnectionFactory.getInstance().getConnection();
-			StringBuffer sql = new StringBuffer("SELECT notifyid FROM notifications WHERE eventuei=? ");
+			StringBuffer sql = new StringBuffer("SELECT notifyid FROM notifications WHERE eventuei=? AND respondTime is null ");
                         
                         for (int i = 0; i < matchList.length; i++)
                         {

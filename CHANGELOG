@@ -1,3 +1,16 @@
+1.0.0 to 1.0.1
+----------------------------------------------------------------------
+
+- fixed bug with Admin/Oper status types causing exception
+- removed duplicate listings for LDAP and Citrix in capsd config
+- fixed bug with rescans on certain devices (net-snmp on MACOSX)
+- fixed bug to allow threshold events to cause notifications
+- included workaround to handle eventconf.xml issues
+- added numerous updates to datacollection-config.xml and
+  snmp-graph.properties.xml
+- added a contrib directory and Tomas Carlsson mib2opennms program
+
+
 0.9.9 to 1.0.0
 ----------------------------------------------------------------------
 - reporting bugfixes
