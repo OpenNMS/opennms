@@ -116,9 +116,12 @@ install: build
 		$(ONMSDB)/usr/share/lintian/overrides/opennms-db
 	mv $(TMP)/usr/share/opennms/etc/*.sql \
 		$(ONMSDB)/etc/opennms/
+	mv $(TMP)/usr/share/opennms/bin/install.pl \
+		$(ONMSDB)/usr/share/opennms/bin/
 	chgrp nogroup $(ONMSDB)/etc/opennms
 	chmod 2775 $(ONMSDB)/etc/opennms
 	chmod 644 $(ONMSDB)/etc/opennms/*.sql
+	chmod 755 $(ONMSDB)/usr/share/opennms/bin/install.pl
 
 	##
 	## Setup the opennms-common package
@@ -144,8 +147,7 @@ install: build
 	chmod 2775 $(ONMSCOM)/etc/opennms \
 		$(ONMSCOM)/var/lib/opennms/* \
 		$(ONMSCOM)/var/log/opennms
-	chmod 755 $(ONMSCOM)/usr/share/opennms/bin/install.pl \
-		$(ONMSCOM)/usr/share/opennms/bin/opennms.sh \
+	chmod 755 $(ONMSCOM)/usr/share/opennms/bin/opennms.sh \
 		$(ONMSCOM)/usr/share/opennms/bin/tomcat-install.pl
 	chmod 644 $(ONMSCOM)/usr/share/opennms/lib/updates/README.updates
 
@@ -190,13 +192,6 @@ install: build
 		$(ONMSSVR)/etc/opennms/service-configuration.xml.tmp
 	mv $(ONMSSVR)/etc/opennms/service-configuration.xml.tmp \
 		$(ONMSSVR)/etc/opennms/service-configuration.xml
-
-	# Change log4j rollovers to something sane and reduce loglevel
-	sed -e 's/DEBUG/INFO/g' -e 's/100MB/10MB/g' -e 's/50MB/10MB/g' \
-		$(ONMSSVR)/etc/opennms/log4j.properties >\
-		$(ONMSSVR)/etc/opennms/log4j.properties.tmp
-	mv $(ONMSSVR)/etc/opennms/log4j.properties.tmp \
-		$(ONMSSVR)/etc/opennms/log4j.properties
 
 	# Fix permissions and ownership
 	chgrp -R nogroup $(ONMSSVR)/etc/opennms
