@@ -114,7 +114,8 @@ public class PollerTest extends TestCase {
     }
 
     public void setUp() {
-        MockUtil.logToConsole();
+        MockUtil.setupLogging();
+        MockUtil.resetLogLevel();
 
         m_network = new MockNetwork();
         m_network.setCriticalService("ICMP");
@@ -150,6 +151,7 @@ public class PollerTest extends TestCase {
     }
 
     public void tearDown() {
+        assertTrue(MockUtil.noWarningsOrHigherLogged());
     }
 
     public void testBug709() {

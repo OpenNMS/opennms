@@ -84,7 +84,8 @@ public class OutageTest extends TestCase {
     }
     
     protected void setUp() throws Exception {
-        MockUtil.logToConsole();
+        MockUtil.setupLogging();
+        MockUtil.resetLogLevel();
         
         m_network = new MockNetwork();
         m_network.setCriticalService("ICMP");
@@ -135,6 +136,8 @@ public class OutageTest extends TestCase {
         if (m_started) {
             m_outageMgr.stop();
         }
+        sleep(100);
+        assertTrue(MockUtil.noWarningsOrHigherLogged());
         m_db.drop();
     }
     
@@ -190,6 +193,7 @@ public class OutageTest extends TestCase {
         testServices(svc, lostService, regainService);
 
     }
+    
     
     public void testInterfaceDownUp() {
         startOutageMgr();
@@ -249,6 +253,31 @@ public class OutageTest extends TestCase {
         assertEquals(2, m_db.countRows(ifOutageOnNode2));
         
         
+    }
+    
+    public void testOutageAlreadyExists() {
+        // create an outage for the service
+        MockService svc = m_network.getService(1, "192.168.1.1", "SMTP");
+        MockInterface iface = m_network.getInterface(1, "192.168.1.2");
+        
+        Event svcLostEvent = MockUtil.createNodeLostServiceEvent("Test", svc);
+        m_db.writeEvent(svcLostEvent);
+        createOutages(svc, svcLostEvent);
+
+        assertEquals(1, m_db.countOutagesForService(svc, " ifRegainedService is null"));
+
+        startOutageMgr();
+        
+        m_eventMgr.sendEventToListeners(svcLostEvent);
+        
+        sleep(200);
+        
+        // expect a warning to be logged
+        assertFalse(MockUtil.noWarningsOrHigherLogged());
+        
+        // reset it so we don't break in tearDown
+        MockUtil.resetLogLevel();
+
     }
     
     // test open outages for unmanaged services

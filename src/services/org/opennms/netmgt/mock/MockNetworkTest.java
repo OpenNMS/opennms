@@ -732,5 +732,6 @@ public class MockNetworkTest extends TestCase {
         assertEquals(m_upChecker.getServiceCount(), m_downChecker.getServiceCount());
 
     }
+    
 
 }
