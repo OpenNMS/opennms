@@ -105,6 +105,22 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
                    "constraint fk_nodeID1 foreign key (nodeID) references node ON DELETE CASCADE" +
         ");");
         
+        update("create table snmpInterface (" +
+                "nodeID integer, " +
+                "ipAddr varchar(16) not null, " +
+		        "snmpIpAdEntNetMask varchar(16), " +
+		        "snmpPhysAddr char(12)," +
+                "ifIndex integer," +
+                "snmpIfDesc varchar(256)," +
+                "snmpIfType integer," +
+                "snmpIfName varchar(32)," +
+                "snmpIfSpeed integer," +
+                "snmpIfAdminStatus integer," +
+                "snmpIfOperStatus integer," +
+                "snmpIfAlias varchar(32)," +
+                "constraint fk_nodeID2 foreign key (nodeID) references node ON DELETE CASCADE" +
+        ");");
+        
         update("create table service (" +
                    "serviceID integer, " +
                    "serviceName varchar(32) not null, " +
@@ -281,6 +297,12 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     public void writeInterface(MockInterface iface) {
         Object[] values = { new Integer(iface.getNodeId()), iface.getIpAddr() };
         update("insert into ipInterface (nodeID, ipAddr) values (?, ?)", values);
+        writeSnmpInterface(iface);
+    }
+
+    public void writeSnmpInterface(MockInterface iface) {
+        Object[] values = { new Integer(iface.getNodeId()), iface.getIpAddr(), iface.getIfAlias() };
+        update("insert into snmpInterface (nodeID, ipAddr, snmpifAlias) values (?, ?, ?)", values);
     }
 
     public void writeService(MockService svc) {

@@ -204,4 +204,10 @@
                 <command>javaEmail</command>
         </target>
     </path>
+    <path name="XMPP-Admin">
+        <target>
+                <name>Admin</name>
+                <command>xmppMessage</command>
+        </target>
+    </path>
 </destinationPaths>

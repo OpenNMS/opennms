@@ -156,12 +156,45 @@ public final class DhcpdConfigFactory {
     }
 
     /**
-     * Return the MAC address to be used in all DHCP DISCOVER packets generated
+     * Return the MAC address to be used in outgoing DHCP packets generated
      * by the DHCP client daemon.
      * 
-     * @return string indicating if timeout is to be set on the socket
+     * @return string mac address
      */
     public synchronized String getMacAddress() {
         return m_config.getMacAddress();
+    }
+
+    /**
+     * Return the IP address to be used as the relay
+     * address in outgoing DHCP packets generated
+     * by the DHCP client daemon.
+     * 
+     * @return string ip address
+     */
+    public synchronized String getMyIpAddress() {
+        return m_config.getMyIpAddress();
+    }
+
+
+    /**
+     * Return the IP address to be used
+     * in outgoing DHCP REQUEST packets generated
+     * by the DHCP client daemon.
+     * 
+     * @return string ip address
+     */
+    public synchronized String getRequestIpAddress() {
+        return m_config.getRequestIpAddress();
+    }
+
+    /**
+     * Return the string value of the extended mode option 
+     * for the DHCP client daemon.
+     * 
+     * @return string extended mode
+     */
+    public synchronized String getExtendedMode() {
+        return m_config.getExtendedMode();
     }
 }

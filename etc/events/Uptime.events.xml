@@ -1,0 +1,574 @@
+<events>
+<!-- Start of auto generated data from MIB: UPTIME-ROOT-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.13045.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>101</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/UptimeDevices/traps/sh2Sensor1HighCritical</uei>
+	<event-label>UPTIME-ROOT-MIB defined trap event: sh2Sensor1HighCritical</event-label>
+	<descr>
+&lt;p&gt;Sensor 1 is in the high critical state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		highCritical(1)
+		highWarning(2)
+		lowWarning(3)
+		lowCritical(4)
+		normal(5)
+		notPresent(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Uptime Devices: sh2Sensor1HighCritical trap received 
+			sysDescr=%parm[#1]% 
+			sh2SensorName=%parm[#2]% 
+			sh2SensorType=%parm[#3]% 
+			sh2SensorCurrentValue=%parm[#4]% 
+			sh2SensorState=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.13045.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>102</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/UptimeDevices/traps/sh2Sensor1HighWarning</uei>
+	<event-label>UPTIME-ROOT-MIB defined trap event: sh2Sensor1HighWarning</event-label>
+	<descr>
+&lt;p&gt;Sensor 1 is in the high warning state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		highCritical(1)
+		highWarning(2)
+		lowWarning(3)
+		lowCritical(4)
+		normal(5)
+		notPresent(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Uptime Devices: sh2Sensor1HighWarning trap received 
+			sysDescr=%parm[#1]% 
+			sh2SensorName=%parm[#2]% 
+			sh2SensorType=%parm[#3]% 
+			sh2SensorCurrentValue=%parm[#4]% 
+			sh2SensorState=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.13045.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>103</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/UptimeDevices/traps/sh2Sensor1LowWarning</uei>
+	<event-label>UPTIME-ROOT-MIB defined trap event: sh2Sensor1LowWarning</event-label>
+	<descr>
+&lt;p&gt;Sensor 1 is in the low warning state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		highCritical(1)
+		highWarning(2)
+		lowWarning(3)
+		lowCritical(4)
+		normal(5)
+		notPresent(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Uptime Devices: sh2Sensor1LowWarning trap received 
+			sysDescr=%parm[#1]% 
+			sh2SensorName=%parm[#2]% 
+			sh2SensorType=%parm[#3]% 
+			sh2SensorCurrentValue=%parm[#4]% 
+			sh2SensorState=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.13045.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>104</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/UptimeDevices/traps/sh2Sensor1LowCritical</uei>
+	<event-label>UPTIME-ROOT-MIB defined trap event: sh2Sensor1LowCritical</event-label>
+	<descr>
+&lt;p&gt;Sensor 1 is in the low critical state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		highCritical(1)
+		highWarning(2)
+		lowWarning(3)
+		lowCritical(4)
+		normal(5)
+		notPresent(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Uptime Devices: sh2Sensor1LowCritical trap received 
+			sysDescr=%parm[#1]% 
+			sh2SensorName=%parm[#2]% 
+			sh2SensorType=%parm[#3]% 
+			sh2SensorCurrentValue=%parm[#4]% 
+			sh2SensorState=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.13045.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>105</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/UptimeDevices/traps/sh2Sensor1Normal</uei>
+	<event-label>UPTIME-ROOT-MIB defined trap event: sh2Sensor1Normal</event-label>
+	<descr>
+&lt;p&gt;Sensor 1 is in the normal state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		highCritical(1)
+		highWarning(2)
+		lowWarning(3)
+		lowCritical(4)
+		normal(5)
+		notPresent(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Uptime Devices: sh2Sensor1Normal trap received 
+			sysDescr=%parm[#1]% 
+			sh2SensorName=%parm[#2]% 
+			sh2SensorType=%parm[#3]% 
+			sh2SensorCurrentValue=%parm[#4]% 
+			sh2SensorState=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.13045.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>106</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/UptimeDevices/traps/sh2Sensor2HighCritical</uei>
+	<event-label>UPTIME-ROOT-MIB defined trap event: sh2Sensor2HighCritical</event-label>
+	<descr>
+&lt;p&gt;Sensor 2 is in the high critical state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		highCritical(1)
+		highWarning(2)
+		lowWarning(3)
+		lowCritical(4)
+		normal(5)
+		notPresent(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Uptime Devices: sh2Sensor2HighCritical trap received 
+			sysDescr=%parm[#1]% 
+			sh2SensorName=%parm[#2]% 
+			sh2SensorType=%parm[#3]% 
+			sh2SensorCurrentValue=%parm[#4]% 
+			sh2SensorState=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.13045.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>107</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/UptimeDevices/traps/sh2Sensor2HighWarning</uei>
+	<event-label>UPTIME-ROOT-MIB defined trap event: sh2Sensor2HighWarning</event-label>
+	<descr>
+&lt;p&gt;Sensor 2 is in the high warning state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		highCritical(1)
+		highWarning(2)
+		lowWarning(3)
+		lowCritical(4)
+		normal(5)
+		notPresent(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Uptime Devices: sh2Sensor2HighWarning trap received 
+			sysDescr=%parm[#1]% 
+			sh2SensorName=%parm[#2]% 
+			sh2SensorType=%parm[#3]% 
+			sh2SensorCurrentValue=%parm[#4]% 
+			sh2SensorState=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.13045.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>108</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/UptimeDevices/traps/sh2Sensor2LowWarning</uei>
+	<event-label>UPTIME-ROOT-MIB defined trap event: sh2Sensor2LowWarning</event-label>
+	<descr>
+&lt;p&gt;Sensor 2 is in the low warning state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		highCritical(1)
+		highWarning(2)
+		lowWarning(3)
+		lowCritical(4)
+		normal(5)
+		notPresent(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Uptime Devices: sh2Sensor2LowWarning trap received 
+			sysDescr=%parm[#1]% 
+			sh2SensorName=%parm[#2]% 
+			sh2SensorType=%parm[#3]% 
+			sh2SensorCurrentValue=%parm[#4]% 
+			sh2SensorState=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.13045.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>109</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/UptimeDevices/traps/sh2Sensor2LowCritical</uei>
+	<event-label>UPTIME-ROOT-MIB defined trap event: sh2Sensor2LowCritical</event-label>
+	<descr>
+&lt;p&gt;Sensor 2 is in the low critical state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		highCritical(1)
+		highWarning(2)
+		lowWarning(3)
+		lowCritical(4)
+		normal(5)
+		notPresent(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Uptime Devices: sh2Sensor2LowCritical trap received 
+			sysDescr=%parm[#1]% 
+			sh2SensorName=%parm[#2]% 
+			sh2SensorType=%parm[#3]% 
+			sh2SensorCurrentValue=%parm[#4]% 
+			sh2SensorState=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.13045.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>110</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/UptimeDevices/traps/sh2Sensor2Normal</uei>
+	<event-label>UPTIME-ROOT-MIB defined trap event: sh2Sensor2Normal</event-label>
+	<descr>
+&lt;p&gt;Sensor 2 is in the normal state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysDescr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sh2SensorState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		highCritical(1)
+		highWarning(2)
+		lowWarning(3)
+		lowCritical(4)
+		normal(5)
+		notPresent(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Uptime Devices: sh2Sensor2Normal trap received 
+			sysDescr=%parm[#1]% 
+			sh2SensorName=%parm[#2]% 
+			sh2SensorType=%parm[#3]% 
+			sh2SensorCurrentValue=%parm[#4]% 
+			sh2SensorState=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<!-- End of auto generated data from MIB: UPTIME-ROOT-MIB -->
+</events>
