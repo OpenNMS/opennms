@@ -294,7 +294,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root)	%{_bindir}/*
 %attr(755,root,root)	%{instprefix}/bin
 %attr(775,%{tomcatuser},root) %dir  %{instprefix}/etc
-%dir                   	%{instprefix}/contrib
+                   	%{instprefix}/contrib
 %if "%builddocs" == "1"
 %attr(755,root,root)	%{instprefix}/docs
 %endif
