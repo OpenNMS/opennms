@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
@@ -55,6 +56,11 @@ import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Groupinfo;
 import org.opennms.netmgt.config.groups.Groups;
 import org.opennms.netmgt.config.groups.Header;
+import org.opennms.netmgt.config.users.DutySchedule;
+
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+
 
 /**
  * @author david
@@ -63,6 +69,11 @@ import org.opennms.netmgt.config.groups.Header;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public abstract class GroupManager {
+
+    /**
+     * The duty schedules for each group
+     */
+    protected static HashMap m_dutySchedules;
 
     /**
      * A mapping of Group object by name
@@ -86,6 +97,7 @@ public abstract class GroupManager {
             Group curGroup = (Group) i.next();
             m_groups.put(curGroup.getName(), curGroup);
         }
+        buildDutySchedules(m_groups);
     }
 
     /**
@@ -100,7 +112,7 @@ public abstract class GroupManager {
      */
     public Map getGroups() throws IOException, MarshalException, ValidationException {
     
-        updateFromFile();
+        update();
     
         Map newMap = new HashMap();
     
@@ -121,7 +133,7 @@ public abstract class GroupManager {
      * @throws IOException
      * 
      */
-    protected abstract void updateFromFile() throws IOException, MarshalException, ValidationException;
+    protected abstract void update() throws IOException, MarshalException, ValidationException;
 
     /**
      * Returns a boolean indicating if the group name appears in the xml file
@@ -129,7 +141,7 @@ public abstract class GroupManager {
      * @return true if the group exists in the xml file, false otherwise
      */
     public boolean hasGroup(String groupName) throws IOException, MarshalException, ValidationException {
-        updateFromFile();
+        update();
     
         return m_groups.containsKey(groupName);
     }
@@ -137,7 +149,7 @@ public abstract class GroupManager {
     /**
      */
     public List getGroupNames() throws IOException, MarshalException, ValidationException {
-        updateFromFile();
+        update();
     
         List groupNames = new ArrayList();
     
@@ -158,7 +170,7 @@ public abstract class GroupManager {
      * @return Group, the group specified by name
      */
     public Group getGroup(String name) throws IOException, MarshalException, ValidationException {
-        updateFromFile();
+        update();
     
         return (Group) m_groups.get(name);
     }
@@ -192,6 +204,83 @@ public abstract class GroupManager {
         String data = stringWriter.toString();
         saveXml(data);
     }
+
+    /**
+     * Builds a mapping between groups and duty schedules. These are used when
+     * determining to send a notice to a given group. This helps speed up the decision process.
+     * @param groups the map of groups parsed from the xml config file
+     */
+    private static void buildDutySchedules(Map groups) {
+        m_dutySchedules = new HashMap();
+        Iterator i = groups.keySet().iterator();
+        while(i.hasNext()) {
+            String key = (String)i.next();
+            Group curGroup = (Group)groups.get(key);
+            if (curGroup.getDutyScheduleCount() > 0) {
+                List dutyList = new ArrayList();
+                Enumeration duties = curGroup.enumerateDutySchedule();
+                while(duties.hasMoreElements()) {
+                    dutyList.add(new DutySchedule( (String)duties.nextElement() ));
+                }
+                m_dutySchedules.put(key, dutyList);
+            }
+        }
+    }
+
+    /**
+     * Determines if a group is on duty at a given time. If a group has no duty schedules
+     * listed in the config file, that group is assumed to always be on duty.
+     * @param group the group whose duty schedule we want
+     * @param time the time to check for a duty schedule
+     * @return boolean, true if the group is on duty, false otherwise.
+     */
+    public boolean isGroupOnDuty(String group, Calendar time) throws IOException, MarshalException, ValidationException {
+        update();
+        //if the group has no duty schedules then it is on duty
+        if (!m_dutySchedules.containsKey(group)) {
+            return true;
+        }
+        boolean result = false;
+        List dutySchedules = (List)m_dutySchedules.get(group);
+        for (int i = 0; i < dutySchedules.size(); i++) {
+            DutySchedule curSchedule = (DutySchedule)dutySchedules.get(i);
+            result = curSchedule.isInSchedule(time);
+            //don't continue if the time is in this schedule
+            if (result) {
+                break;
+            }
+        }
+        return result;
+    }
+  
+    /**
+     * Determines when a group is next on duty. If a group has no duty schedules
+     * listed in the config file, that group is assumed to always be on duty.
+     * @param group the group whose duty schedule we want
+     * @param time the time to check for a duty schedule
+     * @return long, the time in millisec until the group is next on duty
+     */
+    public long groupNextOnDuty(String group, Calendar time) throws IOException, MarshalException, ValidationException {
+        Category log = ThreadCategory.getInstance(this.getClass());
+        long next = -1;
+        update();
+        //if the group has no duty schedules then it is on duty
+        if (!m_dutySchedules.containsKey(group)) {
+            return 0;
+        }
+        List dutySchedules = (List)m_dutySchedules.get(group);
+        for (int i = 0; i < dutySchedules.size(); i++) {
+            DutySchedule curSchedule = (DutySchedule)dutySchedules.get(i);
+            long tempnext =  curSchedule.nextInSchedule(time);
+            if( tempnext < next || next == -1 ) {
+                if (log.isDebugEnabled()) {
+                    log.debug("isGroupOnDuty: On duty in " + tempnext + " millisec from schedule " + i);
+                }
+                next = tempnext;
+            }
+        }
+        return next;
+    } 
 
     /**
      * @param data

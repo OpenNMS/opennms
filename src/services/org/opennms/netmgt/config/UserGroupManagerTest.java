@@ -36,13 +36,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.users.User;
+import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.notifd.mock.MockGroupManager;
 import org.opennms.netmgt.notifd.mock.MockUserManager;
 
 import junit.framework.TestCase;
 
-public class UserManagerTest extends TestCase {
+public class UserGroupManagerTest extends TestCase {
     
     public static final String GROUP_MANAGER = "<?xml version=\"1.0\"?>\n" + 
     "<groupinfo>\n" + 
@@ -119,17 +121,19 @@ private MockUserManager m_userManager;
 
 
     public static void main(String[] args) {
-        junit.textui.TestRunner.run(UserManagerTest.class);
+        junit.textui.TestRunner.run(UserGroupManagerTest.class);
     }
 
     protected void setUp() throws Exception {
-        super.setUp();
+        MockUtil.setupLogging();
+        MockUtil.resetLogLevel();
         m_groupManager = new MockGroupManager(GROUP_MANAGER);
         m_userManager = new MockUserManager(m_groupManager, USER_MANAGER);
 
     }
 
     protected void tearDown() throws Exception {
+        assertTrue("Unexpected Warnings in Log", MockUtil.noWarningsOrHigherLogged());
         super.tearDown();
     }
     
@@ -143,7 +147,8 @@ private MockUserManager m_userManager;
     }
     
     public void testSaveUser() throws Exception {
-        User brozow = m_userManager.getUser("brozow");
+        final String userName = "brozow";
+        User brozow = m_userManager.getUser(userName);
         
         Date night = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("21-FEB-2005 23:59:56");
         Calendar nightCal = Calendar.getInstance();
@@ -154,18 +159,58 @@ private MockUserManager m_userManager;
         dayCal.setTime(day);
         
         // initial has no duty schedule so always on duty
-        assertTrue(m_userManager.isUserOnDuty("brozow", dayCal));
-        assertTrue(m_userManager.isUserOnDuty("brozow", nightCal));
+        assertTrue(m_userManager.isUserOnDuty(userName, dayCal));
+        assertTrue(m_userManager.isUserOnDuty(userName, nightCal));
 
         brozow.addDutySchedule("MoTuWeThFr0900-1700");
-        m_userManager.saveUser("brozow", brozow);
+        m_userManager.saveUser(userName, brozow);
         
         // now user is on duty only from 9-5
-        assertTrue(m_userManager.isUserOnDuty("brozow", dayCal));
-        assertFalse(m_userManager.isUserOnDuty("brozow", nightCal));
+        assertTrue(m_userManager.isUserOnDuty(userName, dayCal));
+        assertFalse(m_userManager.isUserOnDuty(userName, nightCal));
         
     }
     
+    public void testGetGroupNames() throws Exception {
+        List userNameList = m_groupManager.getGroupNames();
+        assertEquals(3, userNameList.size());
+        assertTrue(userNameList.contains("InitialGroup"));
+        assertTrue(userNameList.contains("EscalationGroup"));
+        assertTrue(userNameList.contains("UpGroup"));
+
+    }
+
+    public void testSaveGroups() throws Exception {
+        final String groupName = "UpGroup";
+        Group group = m_groupManager.getGroup(groupName);
+        
+        Date night = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("21-FEB-2005 23:00:00");
+        Calendar nightCal = Calendar.getInstance();
+        nightCal.setTime(night);
+
+        Date day = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("21-FEB-2005 11:59:56");
+        Calendar dayCal = Calendar.getInstance();
+        dayCal.setTime(day);
+        
+        // initial has no duty schedule so always on duty
+        assertTrue(m_groupManager.isGroupOnDuty(groupName, dayCal));
+        assertEquals(0, m_groupManager.groupNextOnDuty(groupName, dayCal));
+        assertTrue(m_groupManager.isGroupOnDuty(groupName, nightCal));
+        assertEquals(0, m_groupManager.groupNextOnDuty(groupName, nightCal));
+
+        group.addDutySchedule("MoTuWeThFr0900-1700");
+        
+        
+        m_groupManager.saveGroups();
+        
+        // now user is on duty only from 9-5
+        assertTrue(m_groupManager.isGroupOnDuty(groupName, dayCal));
+        assertEquals(0, m_groupManager.groupNextOnDuty(groupName, dayCal));
+        assertFalse(m_groupManager.isGroupOnDuty(groupName, nightCal));
+        assertEquals(36000000, m_groupManager.groupNextOnDuty(groupName, nightCal));
+        
+
+    }
     
 
 }

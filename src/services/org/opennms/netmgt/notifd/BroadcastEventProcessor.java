@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -578,11 +579,12 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     private void processTargets(Target[] targets, List targetSiblings, NoticeQueue noticeQueue, long startTime, Map params, int noticeId) throws IOException, MarshalException, ValidationException {
+        Category log = ThreadCategory.getInstance(getClass());
         for (int i = 0; i < targets.length; i++) {
             String interval = (targets[i].getInterval() == null ? "0s" : targets[i].getInterval());
 
             String targetName = targets[i].getName();
-            ThreadCategory.getInstance(getClass()).debug("Processing target " + targetName + ":" + interval);
+            log.debug("Processing target " + targetName + ":" + interval);
             
             NotificationTask[] tasks = null;
 
@@ -612,7 +614,6 @@ final class BroadcastEventProcessor implements EventListener {
                 }
                 
             } else {
-                Category log = ThreadCategory.getInstance(getClass());
                 log.warn("Unrecognized target '" + targetName + "' contained in destinationPaths.xml. Please check the configuration.");
             }
             
@@ -620,25 +621,42 @@ final class BroadcastEventProcessor implements EventListener {
     }
 
     NotificationTask[] makeGroupTasks(long startTime, Map params, int noticeId, String targetName, String[] command, List targetSiblings, long interval) throws IOException, MarshalException, ValidationException {
-        long curSendTime = 0;
+        Category log = ThreadCategory.getInstance(getClass());
         Group group = m_notifd.getGroupManager().getGroup(targetName);
-        String[] users = group.getUser();
-        List taskList = new ArrayList(users.length);
-        if (users != null && users.length > 0) {
-            for (int j = 0; j < users.length; j++) {
-                NotificationTask newTask = makeUserTask(startTime + curSendTime, params, noticeId, users[j], command, targetSiblings);
 
-                if (newTask != null) {
-                    taskList.add(newTask);
-                    curSendTime += interval; 
-                }
-            }
-            return (NotificationTask[])taskList.toArray(new NotificationTask[taskList.size()]);
-        } else {
-            ThreadCategory.getInstance(getClass()).debug("Not sending notice, no users specified for group " + group.getName());
+        Calendar startCal = Calendar.getInstance();
+        startCal.setTimeInMillis(startTime);
+        long next = m_notifd.getGroupManager().groupNextOnDuty(group.getName(), startCal);
+        
+        // it the group is not on duty
+        if (next < 0) {
+            log.debug("The group " + group.getName() + " is not scheduled to come back on duty. No notification will be sent to this group.");
             return null;
         }
+
+        log.debug("The group " + group.getName() + " is on duty in " + next + " millisec.");
+        String[] users = group.getUser();
+        
+        // There are no users in the group
+        if (users == null || users.length == 0) {
+            log.debug("Not sending notice, no users specified for group " + group.getName());
+            return null;
+        }
+
+        List taskList = new ArrayList(users.length);
+        long curSendTime = 0;
+        
+        for (int j = 0; j < users.length; j++) {
+            NotificationTask newTask = makeUserTask(next + startTime + curSendTime, params, noticeId, users[j], command, targetSiblings);
+
+            if (newTask != null) {
+                taskList.add(newTask);
+                curSendTime += interval; 
+            }
+        }
+        return (NotificationTask[])taskList.toArray(new NotificationTask[taskList.size()]);
     }
+    
     
     NotificationTask[] makeRoleTasks(long startTime, Map params, int i, String string, String[] commands, LinkedList list, int j) {
         return new NotificationTask[0];

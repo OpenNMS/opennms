@@ -417,6 +417,16 @@
     <servlet-name>removeDutySchedules</servlet-name>
     <servlet-class>org.opennms.web.admin.users.RemoveDutySchedulesServlet</servlet-class>
   </servlet>
+  <servlet>
+    <!-- servlet for adding duty schedules to a group's notification info-->
+    <servlet-name>addGroupDutySchedules</servlet-name>
+    <servlet-class>org.opennms.web.admin.groups.AddGroupDutySchedulesServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for removing duty schedules from a group's notification info-->
+    <servlet-name>removeGroupDutySchedules</servlet-name>
+    <servlet-class>org.opennms.web.admin.groups.RemoveGroupDutySchedulesServlet</servlet-class>
+  </servlet>
   
   <servlet>
     <!-- servlet for passing parameters to the group modify jsp -->
@@ -960,6 +970,14 @@
   <servlet-mapping>
     <servlet-name>removeDutySchedules</servlet-name>
     <url-pattern>/admin/userGroupView/users/removeDutySchedules</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>addGroupDutySchedules</servlet-name>
+    <url-pattern>/admin/userGroupView/groups/addGroupDutySchedules</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>removeGroupDutySchedules</servlet-name>
+    <url-pattern>/admin/userGroupView/groups/removeDutySchedules</url-pattern>
   </servlet-mapping>
   <!-- end of user configuration servlets -->
   

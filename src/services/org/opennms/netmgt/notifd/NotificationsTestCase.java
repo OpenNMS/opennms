@@ -222,6 +222,12 @@ public class NotificationsTestCase extends TestCase {
                 "            <comments>The group things escalate to</comments>\n" +
                 "            <user>upUser</user>" + 
                 "        </group>\n" + 
+                "        <group>\n" + 
+                "            <name>DutyGroup</name>\n" + 
+                "            <comments>The group things escalate to</comments>\n" +
+                "            <user>brozow</user>" +
+                "           <duty-schedule>MoTuWeThFrSaSu800-2300</duty-schedule>\n" + 
+                "        </group>\n" + 
                 "    </groups>\n" + 
                 "</groupinfo>\n" + 
                 "";

@@ -29,9 +29,12 @@
 //
 package org.opennms.netmgt.notifd;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.xml.event.Event;
@@ -100,6 +103,35 @@ public class TaskCreationTest extends NotificationsTestCase {
         assertEquals("david@opennms.org", tasks[1].getEmail());
         assertEquals(startTime+1000, tasks[1].getSendTime());
         
+    }
+    
+    public void testMakeGroupTasksWithDutySchedule() throws Exception {
+        final String groupName = "EscalationGroup";
+
+        // set up a duty schedule for the group
+        Group group = m_groupManager.getGroup(groupName);
+        group.addDutySchedule("MoTuWeThFr0900-1700");
+        m_groupManager.saveGroups();
+        
+        Date day = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("21-FEB-2005 11:59:56");
+        long dayTime = day.getTime();
+        NotificationTask[] dayTasks = m_eventProcessor.makeGroupTasks(dayTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList(), 1000);
+        assertNotNull(dayTasks);
+        assertEquals(2, dayTasks.length);
+        assertEquals("brozow@opennms.org", dayTasks[0].getEmail());
+        assertEquals(dayTime, dayTasks[0].getSendTime());
+        assertEquals("david@opennms.org", dayTasks[1].getEmail());
+        assertEquals(dayTime+1000, dayTasks[1].getSendTime());
+        
+        Date night = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("21-FEB-2005 23:00:00");
+        long nightTime = night.getTime();
+        NotificationTask[] nightTasks = m_eventProcessor.makeGroupTasks(nightTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList(), 1000);
+        assertNotNull(nightTasks);
+        assertEquals(2, nightTasks.length);
+        assertEquals("brozow@opennms.org", nightTasks[0].getEmail());
+        assertEquals(nightTime+36000000, nightTasks[0].getSendTime());
+        assertEquals("david@opennms.org", nightTasks[1].getEmail());
+        assertEquals(nightTime+1000+36000000, nightTasks[1].getSendTime());
     }
     
     public void testMakeRoleTasks() throws Exception {

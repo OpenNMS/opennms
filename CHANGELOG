@@ -2,6 +2,7 @@
 ----------------------------------------------------------------------
 - Moved servlet.jar from lib to devlib.  We shouldn't be distributing
   this with binary builds.  Bug 1146. 
+- Include group dutySchedules from Bill Ayres. Buf 1147.
 
 1.1.6 to 1.2.0
 ----------------------------------------------------------------------

@@ -98,6 +98,16 @@ public class GroupsWriter extends XMLWriter {
                         addDataElement(membersElement, "userID", (String) users.get(j));
                     }
                 }
+
+                GroupInfo info = curGroup.getGroupInfo();
+                if (info.getDutyScheduleCount() > 0) {
+                     Element dutyElement = addEmptyElement(curGroupElement, "dutySchedules");
+
+                     List dutySchedules = info.getDutySchedules();
+                     for (int j = 0; j < dutySchedules.size(); j++) {
+                         addDataElement(dutyElement, "schedule", dutySchedules.get(j).toString());
+                     }
+                }
             }
         }
 

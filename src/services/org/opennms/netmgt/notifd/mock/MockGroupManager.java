@@ -47,25 +47,35 @@ import org.opennms.netmgt.config.GroupManager;
  */
 public class MockGroupManager extends GroupManager {
     
+    String m_xmlString;
+    boolean updateNeeded = false;
+    
     public MockGroupManager(String xmlString) throws MarshalException, ValidationException {
-        Reader reader = new StringReader(xmlString);
+        m_xmlString = xmlString;
+        parseXML();
+    }
+
+    private void parseXML() throws MarshalException, ValidationException {
+        Reader reader = new StringReader(m_xmlString);
         parseXml(reader);
+        updateNeeded = false;
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.GroupManager#updateFromFile()
      */
-    protected void updateFromFile() throws IOException, MarshalException, ValidationException {
-        // TODO Auto-generated method stub
-
+    protected void update() throws IOException, MarshalException, ValidationException {
+        if (updateNeeded) {
+            parseXML();
+        }
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.GroupManager#saveXml(java.lang.String)
      */
     protected void saveXml(String data) throws IOException {
-        // TODO Auto-generated method stub
-
+        m_xmlString = data;
+        updateNeeded = true;
     }
 
 }
