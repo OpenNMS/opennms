@@ -36,6 +36,8 @@
 // Tab Size = 8
 //
 
+// TODO Refactor to remove code duplication in send* methods
+
 package org.opennms.netmgt.xmlrpcd;
 
 import java.io.IOException;
