@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2004 Nov 18: Fixed problem with category display when nodeLabel can't be found. Bill Ayres.
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
@@ -81,7 +82,16 @@
     while( nodeEnum.hasMoreElements() ) {
         Node node = (Node)nodeEnum.nextElement();
         String nodeLabel = NetworkElementFactory.getNodeLabel((int)node.getNodeid());
-        nodeMap.put( nodeLabel, node );
+        // nodeMap.put( nodeLabel, node );
+
+        if(nodeLabel!=null)
+        {
+            nodeMap.put( nodeLabel, node );
+        }
+        else
+        {
+           nodeMap.put( "nodeId=" + node.getNodeid(), node );
+        }
     }
     
     Set keySet = nodeMap.keySet();
