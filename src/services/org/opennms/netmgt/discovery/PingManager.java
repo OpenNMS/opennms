@@ -681,61 +681,66 @@ final class PingManager
 	 */
 	public void run()
 	{
-        Category log = ThreadCategory.getInstance(getClass());
-
-		synchronized(this)
-		{
-			m_status = RUNNING;
-		}
-
-		try
-		{
-			for(;;)
-			{
-				// Check our status
-				//
-				synchronized(this)
-				{
-					if(m_status == PAUSED)
-					{
-						wait();
-						continue;
-					}
-					else if(m_status == STOP_PENDING)
-					{
-						break;
-					}
-				}
-
-				// Read the next reply
-				//
-				Reply r = (Reply)m_replyQ.remove();
-				if(r != null && r.isEchoReply() 	&&
-				   r.getIdentity() == m_filterId 	&&
-				   (r.getPacket().getTID() & TID_CONST_KEY) == TID_CONST_KEY)
-				{
-					// Check to make sure it's being polled
-					// Add if to the discovered queue if necessary
-					//
-					boolean doAdd = false;
-					int ndx = (int)(r.getPacket().getTID() & (~TID_CONST_KEY));
-					if(0 <= ndx && ndx < m_pingers.length)
-					{
-						synchronized(m_pingers[ndx])
-						{
-							if(m_pingers[ndx].isPinging(r.getAddress()))
-							{
-								m_pingers[ndx].signal();
-								doAdd = true;
-							}
-						}
-					}
-
-					if(doAdd)
-						m_discoveredQ.add(r);
-				}
-
-			} // end infinate for loop
+	    Category log = ThreadCategory.getInstance(getClass());
+        log.info("Starting the PingManager");
+	    
+	    synchronized(this)
+	    {
+	        m_status = RUNNING;
+	    }
+	    
+	    try
+	    {
+	        for(;;)
+	        {
+	            try {
+	                // Check our status
+	                //
+	                synchronized(this)
+	                {
+	                    if(m_status == PAUSED)
+	                    {
+	                        wait();
+	                        continue;
+	                    }
+	                    else if(m_status == STOP_PENDING)
+	                    {
+	                        break;
+	                    }
+	                }
+	                
+	                // Read the next reply
+	                //
+	                Reply r = (Reply)m_replyQ.remove();
+	                if(r != null && r.isEchoReply() 	&&
+	                        r.getIdentity() == m_filterId 	&&
+	                        (r.getPacket().getTID() & TID_CONST_KEY) == TID_CONST_KEY)
+	                {
+	                    // Check to make sure it's being polled
+	                    // Add if to the discovered queue if necessary
+	                    //
+	                    boolean doAdd = false;
+	                    int ndx = (int)(r.getPacket().getTID() & (~TID_CONST_KEY));
+	                    if(0 <= ndx && ndx < m_pingers.length)
+	                    {
+	                        synchronized(m_pingers[ndx])
+	                        {
+	                            if(m_pingers[ndx].isPinging(r.getAddress()))
+	                            {
+	                                m_pingers[ndx].signal();
+	                                doAdd = true;
+	                            }
+	                        }
+	                    }
+	                    
+	                    if(doAdd)
+	                        m_discoveredQ.add(r);
+	                }
+	            } catch (Exception e) {
+	                log.error("Unexpected Exception occurred in the PingManager.", e);
+	            }
+	            
+	        } // end infinate for loop
 		}
 		catch(Exception e)
 		{
