@@ -39,7 +39,7 @@ import java.io.IOException;
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  *
  */
-public class IcmpSocket
+public final class IcmpSocket
 {
 	/**
 	 * This instance is used by the native code
@@ -101,7 +101,7 @@ public class IcmpSocket
 	 * 	reading the next ICMP message.
 	 *
 	 */
-	public native DatagramPacket receive()
+	public final native DatagramPacket receive()
 		throws IOException;
 	
 	/**
@@ -116,7 +116,7 @@ public class IcmpSocket
 	 * @exception java.net.NoRouteToHostException Thrown if the
 	 * 	destination address is a broadcast address.
 	 */
-	public native void send(DatagramPacket packet)
+	public final native void send(DatagramPacket packet)
 		throws IOException;
 	
 	/**
@@ -127,7 +127,7 @@ public class IcmpSocket
 	 * this instance should result in exceptions
 	 * being generated.
 	 */
-	public native void close();
+	public final native void close();
 }
 
 

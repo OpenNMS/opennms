@@ -76,7 +76,7 @@ public final class AddressMaskRequest extends ICMPHeader
 	 * the ICMP message.
 	 *
 	 */
-	public void computeChecksum( )
+	public final void computeChecksum( )
 	{
 		OC16ChecksumProducer summer = new OC16ChecksumProducer();
 		super.computeChecksum(summer);
@@ -101,7 +101,7 @@ public final class AddressMaskRequest extends ICMPHeader
 	 *	does not have enough storage space.
 	 *
 	 */
-	public int storeToBuffer(byte[] buf, int offset)
+	public final int storeToBuffer(byte[] buf, int offset)
 	{
 		if(buf.length < (offset + 12))
 			throw new IndexOutOfBoundsException("Array index overflow in buffer build");
@@ -137,7 +137,7 @@ public final class AddressMaskRequest extends ICMPHeader
 	 * @exception java.lang.IllegalArgumentException Thrown if the ICMP type
 	 *	is not an Address Mask Request.
 	 */
-	public int loadFromBuffer(byte[] buf, int offset)
+	public final int loadFromBuffer(byte[] buf, int offset)
 	{
 		if(buf.length < (offset + 12))
 			throw new IndexOutOfBoundsException("Insufficient data to load ICMP header");
@@ -155,7 +155,7 @@ public final class AddressMaskRequest extends ICMPHeader
 	 * Converts the object to an array of bytes
 	 *
 	 */
-	public byte[] toBytes()	
+	public final byte[] toBytes()	
 	{
 		byte[] b = new byte[12];
 		storeToBuffer(b,0);

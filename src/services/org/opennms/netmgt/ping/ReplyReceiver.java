@@ -220,7 +220,7 @@ public final class ReplyReceiver
 	 *	already been started.
 	 *
 	 */
-	public synchronized void start()
+	public final synchronized void start()
 	{
 		if(m_worker != null)
 			throw new IllegalStateException("The Fiber is already running or has run");
@@ -239,7 +239,7 @@ public final class ReplyReceiver
 	 * 	was never started.
 	 *
 	 */
-	public synchronized void stop()
+	public final synchronized void stop()
 	{
 		if(m_worker == null)
 			throw new IllegalStateException("The Fiber has not been started");
@@ -262,7 +262,7 @@ public final class ReplyReceiver
 	 * operating system will continue to deliver them.
 	 *
 	 */
-	public synchronized void pause()
+	public final synchronized void pause()
 	{
 		if(m_worker == null || !m_worker.isAlive())
 			throw new IllegalStateException("The fiber is not running");
@@ -273,7 +273,7 @@ public final class ReplyReceiver
 	 * Resumes the recipt and processing of ICMP messages.
 	 *
 	 */
-	public synchronized void resume()
+	public final synchronized void resume()
 	{
 		if(m_worker == null || !m_worker.isAlive())
 			throw new IllegalStateException("The fiber is not running");
@@ -285,7 +285,7 @@ public final class ReplyReceiver
 	 *
 	 * @return The fiber's name.
 	 */
-	public String getName()
+	public final String getName()
 	{
 		return m_name;
 	}
@@ -295,7 +295,7 @@ public final class ReplyReceiver
 	 *
 	 * @return The fiber's status.
 	 */
-	public synchronized int getStatus()
+	public final synchronized int getStatus()
 	{
 		if(m_status == RUNNING && m_paused)
 			return PAUSED;
@@ -309,7 +309,7 @@ public final class ReplyReceiver
 	 * in the appropoiate queue for use by other threads.
 	 *
 	 */
-	public void run()
+	public final void run()
 	{
 		synchronized(this)
 		{

@@ -84,7 +84,7 @@ public final class TimestampReply
 	 * the ICMP message.
 	 *
 	 */
-	public void computeChecksum( )
+	public final void computeChecksum( )
 	{
 		OC16ChecksumProducer summer = new OC16ChecksumProducer();
 		super.computeChecksum(summer);
@@ -111,7 +111,7 @@ public final class TimestampReply
 	 *	does not have enough storage space.
 	 *
 	 */
-	public int storeToBuffer(byte[] buf, int offset)
+	public final int storeToBuffer(byte[] buf, int offset)
 	{
 		if(buf.length < (offset + 20))
 			throw new IndexOutOfBoundsException("Array index overflow in buffer build");
@@ -160,7 +160,7 @@ public final class TimestampReply
 	 * @exception java.lang.IllegalArgumentException Thrown if the ICMP type
 	 *	is not an Timestamp Reply.
 	 */
-	public int loadFromBuffer(byte[] buf, int offset)
+	public final int loadFromBuffer(byte[] buf, int offset)
 	{
 		if(buf.length < (offset + 20))
 			throw new IndexOutOfBoundsException("Insufficient data to load ICMP header");
@@ -195,7 +195,7 @@ public final class TimestampReply
 	 * @see java.util.Date#getTime
 	 *
 	 */
-	public void setOriginateTS( )
+	public final void setOriginateTS( )
 	{
 		m_origStamp = (int)((new Date()).getTime() & 0xffffffff);
 	}
@@ -207,7 +207,7 @@ public final class TimestampReply
 	 * @param ts The timestamp in milliseconds
 	 *
 	 */
-	public void setOriginateTS(int ts)
+	public final void setOriginateTS(int ts)
 	{
 		m_origStamp = ts;
 	}
@@ -219,7 +219,7 @@ public final class TimestampReply
 	 * @return The 32-bit timestamp in milliseconds.
 	 *
 	 */
-	public int getOriginateTS( )
+	public final int getOriginateTS( )
 	{
 		return m_origStamp;
 	}
@@ -232,7 +232,7 @@ public final class TimestampReply
 	 * @see java.util.Date#getTime
 	 *
 	 */
-	public void setReceiveTS( )
+	public final void setReceiveTS( )
 	{
 		m_recvStamp = (int)((new Date()).getTime() & 0xffffffff);
 	}
@@ -244,7 +244,7 @@ public final class TimestampReply
 	 * @param ts The timestamp in milliseconds
 	 *
 	 */
-	public void setReceiveTS(int ts)
+	public final void setReceiveTS(int ts)
 	{
 		m_recvStamp = ts;
 	}
@@ -256,7 +256,7 @@ public final class TimestampReply
 	 * @return The 32-bit timestamp in milliseconds.
 	 *
 	 */
-	public int getReceiveTS( )
+	public final int getReceiveTS( )
 	{
 		return m_recvStamp;
 	}
@@ -269,7 +269,7 @@ public final class TimestampReply
 	 * @see java.util.Date#getTime
 	 *
 	 */
-	public void setTransmitTS( )
+	public final void setTransmitTS( )
 	{
 		m_xmitStamp = (int)((new Date()).getTime() & 0xffffffff);
 	}
@@ -281,7 +281,7 @@ public final class TimestampReply
 	 * @param ts The timestamp in milliseconds
 	 *
 	 */
-	public void setTransmitTS(int ts)
+	public final void setTransmitTS(int ts)
 	{
 		m_xmitStamp = ts;
 	}
@@ -293,7 +293,7 @@ public final class TimestampReply
 	 * @return The 32-bit timestamp in milliseconds.
 	 *
 	 */
-	public int getTransmitTS( )
+	public final int getTransmitTS( )
 	{
 		return m_xmitStamp;
 	}
@@ -302,7 +302,7 @@ public final class TimestampReply
 	 * Converts the object to an array of bytes.
 	 *
 	 */
-	public byte[] toBytes()
+	public final byte[] toBytes()
 	{
 		byte[] b = new byte[20];
 		storeToBuffer(b, 0);

@@ -86,7 +86,7 @@ public final class Reply
 	/**
 	 * Returns the identity of the packet.
 	 */
-	public short getIdentity()
+	public final short getIdentity()
 	{
 		return m_packet.getIdentity();
 	}
@@ -96,7 +96,7 @@ public final class Reply
 	 * that sent the reply.
 	 *
 	 */
-	public InetAddress getAddress()
+	public final InetAddress getAddress()
 	{
 		return m_address;
 	}
@@ -104,7 +104,7 @@ public final class Reply
 	/**
 	 * Returns the ICMP packet for the reply.
 	 */
-	public Packet getPacket()
+	public final Packet getPacket()
 	{
 		return m_packet;
 	}

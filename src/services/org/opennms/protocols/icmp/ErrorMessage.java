@@ -99,7 +99,7 @@ public class ErrorMessage
 	 * @exception java.lang.IndexOutOfBoundsException Thrown if there
 	 *	is not sufficent data in the buffer.
 	 */
-	public int loadFromBuffer(byte[] buf, int offset)
+	public final int loadFromBuffer(byte[] buf, int offset)
 	{
 		//
 		// minimum length
@@ -141,7 +141,7 @@ public class ErrorMessage
 	 * @return The IP Header in error.
 	 *
 	 */
-	public IPHeader getIPHeader( )
+	public final IPHeader getIPHeader( )
 	{
 		return m_iphdr;
 	}
@@ -163,7 +163,7 @@ public class ErrorMessage
 	 * @return The first 8 bytes of the packet in error.
 	 *
 	 */
-	public byte[] getProtocolData()
+	public final byte[] getProtocolData()
 	{
 		return m_protoData;
 	}

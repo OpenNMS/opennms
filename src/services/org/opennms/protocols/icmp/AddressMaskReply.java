@@ -81,7 +81,7 @@ public final class AddressMaskReply
 	 * the ICMP message.
 	 *
 	 */
-	public void computeChecksum( )
+	public final void computeChecksum( )
 	{
 		OC16ChecksumProducer summer = new OC16ChecksumProducer();
 		super.computeChecksum(summer);
@@ -106,7 +106,7 @@ public final class AddressMaskReply
 	 *	does not have enough storage space.
 	 *
 	 */
-	public int storeToBuffer(byte[] buf, int offset)
+	public final int storeToBuffer(byte[] buf, int offset)
 	{
 		if(buf.length < (offset + 12))
 			throw new IndexOutOfBoundsException("Array index overflow in buffer build");
@@ -144,7 +144,7 @@ public final class AddressMaskReply
 	 * @exception java.lang.IllegalArgumentException Thrown if the ICMP type
 	 *	is not an Address Mask reply.
 	 */
-	public int loadFromBuffer(byte[] buf, int offset)
+	public final int loadFromBuffer(byte[] buf, int offset)
 	{
 		if(buf.length < (offset + 12))
 			throw new IndexOutOfBoundsException("Insufficient data to load ICMP header");
@@ -157,9 +157,9 @@ public final class AddressMaskReply
 		//
 		// get the mask
 		//
-		m_mask = byteToInt(buf[offset++]) << 24  |
-			 byteToInt(buf[offset++]) << 16  |
-			 byteToInt(buf[offset++]) <<  8  |
+		m_mask = (byteToInt(buf[offset++]) << 24)  |
+			 (byteToInt(buf[offset++]) << 16)  |
+			 (byteToInt(buf[offset++]) <<  8)  |
 			 byteToInt(buf[offset++]);
 
 		return offset;
@@ -168,7 +168,7 @@ public final class AddressMaskReply
 	/**
 	 * Used to get the IPv4 32-bit address mask.
 	 */
-	public int getAddressMask( )
+	public final int getAddressMask( )
 	{
 		return m_mask;
 	}
@@ -176,7 +176,7 @@ public final class AddressMaskReply
 	/**
 	 * Used to set the IPv4 32-bit address mask.
 	 */
-	public void setAddressMask(int mask)
+	public final void setAddressMask(int mask)
 	{
 		m_mask = mask;
 	}
@@ -184,7 +184,7 @@ public final class AddressMaskReply
 	/**
 	 * Converts the object to a stream of bytes.
 	 */
-	public byte[] toBytes()
+	public final byte[] toBytes()
 	{
 		byte[] buf = new byte[12];
 		storeToBuffer(buf, 0);

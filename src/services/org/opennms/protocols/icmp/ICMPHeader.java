@@ -125,7 +125,7 @@ public class ICMPHeader extends Object
 	 *
 	 * @return The next 16-bit sequence number, may be negative.
 	 */
-	public static synchronized short nextSequenceId()
+	public final static synchronized short nextSequenceId()
 	{
 		if(sm_seq == 0)
 		{
@@ -280,7 +280,7 @@ public class ICMPHeader extends Object
 	 *
 	 * @return The ICMP type.
 	 */
-	public byte getType( )
+	public final byte getType( )
 	{
 		return m_type;
 	}
@@ -302,7 +302,7 @@ public class ICMPHeader extends Object
 	 * @return The ICMP code.
 	 *
 	 */
-	public byte getCode( )
+	public final byte getCode( )
 	{
 		return m_code;
 	}
@@ -313,7 +313,7 @@ public class ICMPHeader extends Object
 	 * @param code The new ICMP code.
 	 *
 	 */
-	public void setCode(byte code)
+	public final void setCode(byte code)
 	{
 		m_code = code;
 	}
@@ -325,7 +325,7 @@ public class ICMPHeader extends Object
 	 * @return The 16-bit sequence identifier.
 	 *
 	 */
-	public short getSequenceId( )
+	public final short getSequenceId( )
 	{
 		return m_sequence;
 	}
@@ -339,7 +339,7 @@ public class ICMPHeader extends Object
 	 * @return The new 16-bit sequence identifier.
 	 *
 	 */
-	public short setNextSequenceId( )
+	public final short setNextSequenceId( )
 	{
 		m_sequence = nextSequenceId();
 		return m_sequence;
@@ -351,7 +351,7 @@ public class ICMPHeader extends Object
 	 * @param id The new 16-bit sequence id.
 	 *
 	 */
-	public void setSequenceId(short id)
+	public final void setSequenceId(short id)
 	{
 		m_sequence = id;
 	}
@@ -362,7 +362,7 @@ public class ICMPHeader extends Object
 	 * @return The 16-bit identity.
 	 *
 	 */
-	public short getIdentity( )
+	public final short getIdentity( )
 	{
 		return m_ident;
 	}
@@ -374,7 +374,7 @@ public class ICMPHeader extends Object
 	 * @param identity The header's new identity.
 	 *
 	 */
-	public void setIdentity(short identity)
+	public final void setIdentity(short identity)
 	{
 		m_ident = identity;
 	}
@@ -389,7 +389,7 @@ public class ICMPHeader extends Object
 	 * @return The 16-bit one's compliment checksum.
 	 *
 	 */
-	public short getChecksum( )
+	public final short getChecksum( )
 	{
 		return m_checksum;
 	}
@@ -527,7 +527,7 @@ public class ICMPHeader extends Object
 	 * @return True if the header marks an echo reply.
 	 *
 	 */
-	public boolean isEchoReply( )
+	public final boolean isEchoReply( )
 	{
 		return (m_type == TYPE_ECHO_REPLY);
 	}
@@ -540,7 +540,7 @@ public class ICMPHeader extends Object
 	 * @return True if the header marks an echo request.
 	 *
 	 */
-	public boolean isEchoRequest( )
+	public final boolean isEchoRequest( )
 	{
 		return (m_type == TYPE_ECHO_REQUEST);
 	}

@@ -161,7 +161,7 @@ public final class Packet
 	/**
 	 * Returns the time the packet was sent.
 	 */
-	public long getSentTime()
+	public final long getSentTime()
 	{
 		return m_sent;
 	}
@@ -171,7 +171,7 @@ public final class Packet
 	 *
 	 * @see java.lang.System#currentTimeMillis
 	 */
-	public long setSentTime()
+	public final long setSentTime()
 	{
 		m_sent = System.currentTimeMillis();
 		return m_sent;
@@ -182,7 +182,7 @@ public final class Packet
 	 *
 	 * @param time	The new sent time.
 	 */
-	public void setSentTime(long time)
+	public final void setSentTime(long time)
 	{
 		m_sent = time;
 	}
@@ -190,7 +190,7 @@ public final class Packet
 	/**
 	 * Gets the currently set received time.
 	 */
-	public long getReceivedTime()
+	public final long getReceivedTime()
 	{
 		return m_recv;
 	}
@@ -200,7 +200,7 @@ public final class Packet
 	 *
 	 * @see java.lang.System#currentTimeMillis
 	 */
-	public long setReceivedTime()
+	public final long setReceivedTime()
 	{
 		m_recv = System.currentTimeMillis();
 		return m_recv;
@@ -213,7 +213,7 @@ public final class Packet
 	 * @param time	The new received time.
 	 *
 	 */
-	public void setReceivedTime(long time)
+	public final void setReceivedTime(long time)
 	{
 		m_recv = time;
 	}
@@ -221,7 +221,7 @@ public final class Packet
         /**
          * Sets the ping Round Trip Time
          */
-        public void setPingRTT(long time)
+        public final void setPingRTT(long time)
         {
                 m_rtt = time;
         }
@@ -229,7 +229,7 @@ public final class Packet
         /**
          * Gets the ping Round Trip Time
          */
-        public long getPingRTT()
+        public final long getPingRTT()
         {
                 return m_rtt;
         }
@@ -240,7 +240,7 @@ public final class Packet
 	 * This is a combination of the headers size, 
 	 * plus the padding, and the IPHeader size.
 	 */
-	public static int getNetworkSize( )
+	public final static int getNetworkSize( )
 	{
 		return (ICMPHeader.getNetworkSize() + 32 + PAD_SIZE);
 	}
@@ -249,7 +249,7 @@ public final class Packet
 	 * Computes and stores the current checksum based upon
 	 * the data currently contained in the object.
 	 */
-	public void computeChecksum( )
+	public final void computeChecksum( )
 	{
 		OC16ChecksumProducer summer = new OC16ChecksumProducer();
 		
@@ -282,7 +282,7 @@ public final class Packet
 	/**
 	 * Returns the currently set Thread ID
 	 */
-	public long getTID()
+	public final long getTID()
 	{
 		return m_tid;
 	}
@@ -290,7 +290,7 @@ public final class Packet
 	/**
 	 * Sets the current Thread Id
 	 */
-	public void setTID(long tid)
+	public final void setTID(long tid)
 	{
 		m_tid = tid;
 	}
@@ -311,7 +311,7 @@ public final class Packet
 	 * 	sufficent set the state of the object
 	 *
 	 */
-	public int loadFromBuffer(byte[] buf, int offset)
+	public final int loadFromBuffer(byte[] buf, int offset)
 	{
 		if((buf.length - offset) < getNetworkSize())
 			throw new IndexOutOfBoundsException("Insufficient Data");
@@ -372,7 +372,7 @@ public final class Packet
 	 *	does not have enough storage space.
 	 *
 	 */
-	public int storeToBuffer(byte[] buf, int offset)
+	public final int storeToBuffer(byte[] buf, int offset)
 	{
 		if((buf.length - offset) < getNetworkSize())
 			throw new IndexOutOfBoundsException("Insufficient Buffer Size");
@@ -420,7 +420,7 @@ public final class Packet
 	 *
 	 * @return The object as an array of bytes.
 	 */
-	public byte[] toBytes()
+	public final byte[] toBytes()
 	{
 		byte[]	buf = new byte[getNetworkSize()];
 		storeToBuffer(buf, 0);

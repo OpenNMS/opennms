@@ -80,7 +80,7 @@ public final class TimestampRequest
 	 * the ICMP message.
 	 *
 	 */
-	public void computeChecksum( )
+	public final void computeChecksum( )
 	{
 		OC16ChecksumProducer summer = new OC16ChecksumProducer();
 		super.computeChecksum(summer);
@@ -107,7 +107,7 @@ public final class TimestampRequest
 	 *	does not have enough storage space.
 	 *
 	 */
-	public int storeToBuffer(byte[] buf, int offset)
+	public final int storeToBuffer(byte[] buf, int offset)
 	{
 		if(buf.length < (offset + 20))
 			throw new IndexOutOfBoundsException("Array index overflow in buffer build");
@@ -151,7 +151,7 @@ public final class TimestampRequest
 	 * @exception java.lang.IllegalArgumentException Thrown if the ICMP type
 	 *	is not an Timestamp Request.
 	 */
-	public int loadFromBuffer(byte[] buf, int offset)
+	public final int loadFromBuffer(byte[] buf, int offset)
 	{
 		if(buf.length < (offset + 20))
 			throw new IndexOutOfBoundsException("Insufficient data to load ICMP header");
@@ -178,7 +178,7 @@ public final class TimestampRequest
 	 * @see java.util.Date#getTime
 	 *
 	 */
-	public void setOriginateTS( )
+	public final void setOriginateTS( )
 	{
 		m_origStamp = (int)((new Date()).getTime() & 0xffffffff);
 	}
@@ -190,7 +190,7 @@ public final class TimestampRequest
 	 * @param ts The timestamp in milliseconds
 	 *
 	 */
-	public void setOriginateTS(int ts)
+	public final void setOriginateTS(int ts)
 	{
 		m_origStamp = ts;
 	}
@@ -202,7 +202,7 @@ public final class TimestampRequest
 	 * @return The 32-bit timestamp in milliseconds.
 	 *
 	 */
-	public int getOriginateTS( )
+	public final int getOriginateTS( )
 	{
 		return m_origStamp;
 	}
@@ -211,7 +211,7 @@ public final class TimestampRequest
 	 * Converts the object to an array of bytes.
 	 *
 	 */
-	public byte[] toBytes()
+	public final byte[] toBytes()
 	{
 		byte[] b = new byte[20];
 		storeToBuffer(b, 0);
