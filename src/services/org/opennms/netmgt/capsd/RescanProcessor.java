@@ -94,7 +94,7 @@ final class RescanProcessor
          * SQL statement used to retrieve other nodeIds that have the same ipinterface
          * as the updating node.
          */
-        final static String     SQL_DB_RETRIEVE_OTHER_NODES = "SELECT nodeid FROM ipinterface" 
+        final static String     SQL_DB_RETRIEVE_OTHER_NODES = "SELECT nodeid FROM ipinterface " 
                                                            + "WHERE ipaddr = ? AND ifindex = ? AND nodeid !=? ";
 	/**
          * SQL statement for retrieving the nodeids that have the same ipaddr as the updating node
