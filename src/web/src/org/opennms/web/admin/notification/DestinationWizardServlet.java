@@ -166,6 +166,9 @@ public class DestinationWizardServlet extends HttpServlet
                                         
                                         throw new ServletException("Couldn't save/reload destination path configuration file.", e);
                                 }
+                                //Must clear out this attribute for later edits
+                                user.setAttribute("oldName",null);
+
                                 
                                 redirectString.append(SOURCE_PAGE_PATHS);
                         }
