@@ -1660,7 +1660,7 @@ final class SnmpCollector
 				//	dsValue = ((SnmpUInt32)snmpVar).getValue();
 				//	break;
 				case SnmpSMI.SMI_TIMETICKS:
-					return snmpVar.toString();
+					return ""+(((SnmpTimeTicks)snmpVar).getValue());
 				case SnmpSMI.SMI_STRING:
 					String dsValue = ((SnmpOctetString)snmpVar).toString();
 					
