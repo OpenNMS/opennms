@@ -58,7 +58,7 @@
         </protocol-plugin>
         <protocol-plugin protocol="HTTPS" class-name="org.opennms.netmgt.capsd.HttpsPlugin" scan="on" user-defined="false">
 		<property key="ports" value="443"/>
-		<property key="timeout" value="30000"/>
+		<property key="timeout" value="5000"/>
 		<property key="retry" value="2"/>
 	</protocol-plugin>
 	<protocol-plugin protocol="FTP"  class-name="org.opennms.netmgt.capsd.FtpPlugin" scan="on" user-defined="false">
