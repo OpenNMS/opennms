@@ -108,7 +108,8 @@
     function submitForm(anAction)
     {
         var isChecked = false
-        
+        var numChecked = 0;
+ 
         if (document.acknowledge_form.event.length)
         {
             for( i = 0; i < document.acknowledge_form.event.length; i++ ) 
@@ -117,12 +118,29 @@
               if (document.acknowledge_form.event[i].checked)
               {
                 isChecked=true;
+                numChecked+=1;
               }
             }
             
-            if (isChecked)
+            if (isChecked && document.acknowledge_form.multiple)
             {
+              if (numChecked == parseInt(document.acknowledge_form.event.length)) 
+              { 
+                var newPageNum = parseInt(document.acknowledge_form.multiple.value) - 1;
+                var findVal = "multiple=" + document.acknowledge_form.multiple.value;
+                var replaceWith = "multiple=" + newPageNum;
+                var tmpRedirect = document.acknowledge_form.redirectParms.value;
+                document.acknowledge_form.redirectParms.value = tmpRedirect.replace(findVal, replaceWith);
                 document.acknowledge_form.submit();
+              } 
+              else 
+              {
+                document.acknowledge_form.submit();
+              }
+            }
+            else if (isChecked)
+            {
+              document.acknowledge_form.submit();
             }
             else
             {
@@ -238,7 +256,8 @@
     <form action="event/acknowledge" method="POST" name="acknowledge_form">
       <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
       <input type="hidden" name="action" value="<%=action%>" />
-      
+      <%=org.opennms.web.Util.makeHiddenTags(request)%>
+
       <table width="100%" cellspacing="1" cellpadding="2" border="0" bordercolor="black">
         <tr bgcolor="#999999">
           <td width="1%"><b>Ack</b></td>

@@ -105,6 +105,7 @@
     function submitAcknowledge()
     {
         var isChecked = false;
+        var numChecked = 0;
         
         if (document.acknowledge_form.notices.length)
         {
@@ -114,12 +115,29 @@
               if (document.acknowledge_form.notices[i].checked)
               {
                   isChecked=true;
+                  numChecked+=1;
               }
             }
             
-            if (isChecked)
+            if (isChecked && document.acknowledge_form.multiple)
             {
+              if (numChecked == parseInt(document.acknowledge_form.notices.length)) 
+              { 
+                var newPageNum = parseInt(document.acknowledge_form.multiple.value) - 1;
+                var findVal = "multiple=" + document.acknowledge_form.multiple.value;
+                var replaceWith = "multiple=" + newPageNum;
+                var tmpRedirect = document.acknowledge_form.redirectParms.value;
+                document.acknowledge_form.redirectParms.value = tmpRedirect.replace(findVal, replaceWith);
                 document.acknowledge_form.submit();
+              } 
+              else 
+              {
+                document.acknowledge_form.submit();
+              }
+            }
+            else if (isChecked)
+            {
+               document.acknowledge_form.submit();
             }
             else
             {
@@ -130,6 +148,7 @@
         {
             if (document.acknowledge_form.notices.checked)
             {
+
                 document.acknowledge_form.submit();
             }
             else
@@ -202,6 +221,7 @@
       <table width="100%" cellspacing="1" cellpadding="2" border="0" bordercolor="black">
         <form action="notification/acknowledge" method="POST" name="acknowledge_form">
           <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
+          <%=org.opennms.web.Util.makeHiddenTags(request)%>
           
       <% for( int i=0; i < notices.length; i++ ) { %>
         <% if( i%5 == 0 ) { %>
