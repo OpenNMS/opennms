@@ -6,6 +6,47 @@
 
   <para>Here is the list of known issues in this release of OpenNMS.</para>
 
+  <sect1>
+    <title>Necessary Changes to Tomcat for 1.1.4 for Upgrades</title>
+
+    <para>In 1.1.4 the way OpenNMS configures Tomcat4 has changed. All of the
+    necessary configuration information is now in opennms.xml in the Tomcat4
+    webapps directory.</para>
+
+    <para>Unfortunately, if you are upgrading, there are two things you will
+    have to manually do in order to get OpenNMS to work correctly.</para>
+
+    <orderedlist>
+      <listitem>
+        <para>Remove the <filename>opennms</filename> directory (or symbolic
+        link) from the <filename>$TOMCAT4_HOME/webapps</filename>
+        directory.</para>
+
+        <para>Depending on your operating system, you will need to find the
+        <filename>webapps</filename> directory (usually
+        <filename>/var/tomcat4/webapps)</filename>. In that directory should
+        be an <filename>opennms.xml</filename> file and an
+        <filename>opennms</filename> directory (or symlink). Remove it and
+        leave just the <filename>opennms.xml</filename> file.</para>
+      </listitem>
+
+      <listitem>
+        <para>Locate the server.xml file, usually in $TOMCAT4_HOME/conf
+        directory (/var/tomcat4/conf for many distros).. Remove the four
+        &lt;context&gt; lines that refer to OpenNMS:</para>
+
+        <para><programlisting>      &lt;Context path="/opennms" docBase="opennms" debug="0" reloadable="true"&gt;
+        &lt;Logger className="org.opennms.web.log.Log4JLogger" homeDir="/opt/OpenNMS"/&gt;
+        &lt;Realm className="org.opennms.web.authenticate.OpenNMSTomcatRealm" homeDir="/opt/OpenNMS"/&gt;
+      &lt;/Context &gt;</programlisting></para>
+      </listitem>
+    </orderedlist>
+
+    <para>You should then be able to restart Tomcat and everything should work
+    just fine. Note that this does not apply to new installs, just
+    upgrades.</para>
+  </sect1>
+
   <sect1 id="chap3sect2" label="3.2.">
     <title>New Requirements for Tomcat and PostgreSQL</title>
 

@@ -12,7 +12,321 @@
   release.</para>
 
   <sect1>
-    <title>Changes in OpenNMS 1.1.3</title>
+    <title>Changes in OpenNMS 1.1.4</title>
+
+    <para>Longtime users of OpenNMS will be pleasantly surprised at the speed
+    enhancements of this release. Most of the new code changes focused on
+    performance or our goal of making OpenNMS more purely Java (eliminating
+    the need for JNI calls to C++ code and perl).</para>
+
+    <bridgehead>Data Collection Queuing System</bridgehead>
+
+    <para>A new queuing system for writing the data collection RRD files has
+    been added. Experimental tests have shown that the I/O subsystem is the
+    bottle neck for Data Collector performance.</para>
+
+    <para>In order to increase the capacity or our data collector we have
+    added an intelligent queuing system for all of our RRD Output. This
+    improves performance for us in two ways. One is that it frees up the data
+    collection threads to get back to the work of data collection right away.
+    As a side benefit it also frees up the polling threads that output RRD
+    data related to latency. This makes the data much more accurate. </para>
+
+    <para>The second way that the queuing system provides performance
+    improvements is by queuing collected data up on a per file basis. Since
+    writing a few extra bytes to an RRD file while its open anyway adds very
+    little to the update time, this causes the average update cost per data
+    point to go down the further the collector gets behind. What this means is
+    that you won’t lose any data points if you collector is configured to
+    collect more than you I/O system can keep up with immediately. It just
+    means that the data that’s in the files is behind the actual
+    collection.</para>
+
+    <para>A last way the queuing system improves data collector performance is
+    by giving priority to non-zero data. On many networks, as much as 60% of
+    the collected data is zero valued. In most situations, data that has
+    remained zero for a long period of time is unimportant data. For this
+    reason we give files with non-zero data points priority over files that
+    have only zero data points. This way your systems that have only zero
+    ifErrors or ifDiscards, for example, will not hold up writing of the data
+    for systems that have positive ifErrors and ifDiscards. Please see
+    rrd-configuration.properties in the OpenNMS etc directory for
+    configurations details.</para>
+
+    <para>Thanks to Rackspace and Eric Evans for providing equipment to help
+    us implement this and to General Electric’s John Lee and Neeraj Malve for
+    helping to test this.</para>
+
+    <bridgehead>JRobin Support</bridgehead>
+
+    <para>Though the Collection Queuing above provides a great deal of
+    performance benefit, for very high capacity data collection environments
+    it wasn’t sufficient. We’ve found the JRobin 1.4.0 provides performs
+    better than RRDTool in our environment. The primary reason for this is
+    that JRobin reads a much smaller amount of data on an RRD Open than
+    RRDTool does. This increases throughput on systems like ours that max out
+    the I/O subsystem doing an open, update, and close on a huge number of
+    RRDs. An additional benefit of JRobin is that it is multi-thread enabled
+    (unlike our libjrrd.so shared library that interacts with RRDTool) however
+    this doesn’t impact performance very much because the contention is not
+    the bottle neck. In fact on system that have 100 data collection threads
+    we found that have as few as 2-10 RRD write threads was sufficient to keep
+    up.</para>
+
+    <para>The only unfortunate part of using JRobin is that the file format
+    for JRobin is not the same as for RRDTool. This means other tools that you
+    have that are using the RRD files will not work with JRobin RRD files and
+    will have to converted or replaced. JRobin does have some tools available
+    and you should check out their website at www.jrobin.org to see what is
+    available. Additionally, JRobin supports programmatically all of the
+    features of RRDTool, so it should be easy to write a compatible tool. If
+    you do so, please consider contributing it either to us or to the JRobin
+    team..</para>
+
+    <para>The last benefit of JRobin is that is helps us to reach our goal of
+    a 100% Pure Java version of OpenNMS that can work write ‘out of the box’
+    for new users.</para>
+
+    <para>Thanks go to the JRobin team for providing this excellent RRD
+    implementation. Thanks also to Rackspace for providing the equipment to
+    let us implement this.</para>
+
+    <bridgehead>Filter Parser Performance Enhancements</bridgehead>
+
+    <para>Thanks to Chris Fedde of OnCommand, we have found that the SQL
+    queries produced by our filtering code were at times extremely
+    inefficient. On a moderately sized network of only 15K interfaces the
+    queries used to define categories could take as long as three minutes on a
+    4 CPU system. As a result of this we have reworked the filter parser and
+    now produce much better queries. The equivalent query would now only take
+    about a second on the same system. Thanks a lot to Ted Kaczmarek and
+    Alexander Hoogerhuis for helping us test it.</para>
+
+    <bridgehead>Delete Node, Interface and Service Improvements</bridgehead>
+
+    <para>There have been a large number of bugs reported with respect to
+    deleting nodes from the OpenNMS GUI. This code has been completely
+    overhauled in OpenNMS 1.1.4. The new strategy has been to mark a
+    node/interface/service deleted when a node gets deleted rather than
+    actually deleting it. (The node completely removed from the database by
+    Vacuumd discussed below.) This allows any web pages that are currently
+    viewing the node to react properly. In addition to this the code was
+    changed so that any deletion that occurs as a result of a single operation
+    (for example, deleting an node, deleted its interfaces, which deletes its
+    services) happens within a single transaction. This means that if a
+    failure occurs for any of these, then the entire transaction is aborted,
+    and you aren’t left with a half deleted node.</para>
+
+    <para>In addition to overhauling node deletion, we have also added the
+    ability to delete interfaces and services. If you visit the page for an
+    interface or a service as administrator, you will see a Delete link at the
+    top of the page. This enables you to delete the interface or service you
+    are viewing.</para>
+
+    <para>I think all the users of OpenNMS helped by writing defects and
+    complaining about this bug. Special thanks to Ted Kaczmarek, Jonathan
+    Sartin, and Mike Huot for their help testing and characterizing these
+    problems and their solution.</para>
+
+    <bridgehead>Vacuumd</bridgehead>
+
+    <para>Since nodes, interfaces and services are only marked deleted and not
+    actually removed from the database when a delete occurs, some way was
+    needed to ensure that the data actually got removed eventually. To do this
+    Vacuumd was introduced to provide a mechanism to periodically run database
+    maintenance operations. Vacuumd’s configuration consists of a set of
+    database statements to be run daily (or which every period is preferable).
+    There are four maintenance operations provided by OpenNMS by default.
+    These are as follows: delete nodes have been marked as deleted, delete
+    interfaces that have been marked as deleted, delete services that have
+    been marked as deleted, and delete any event that is not related to a
+    current outage and is older than 6 weeks.</para>
+
+    <para>In order to make sure that Vacuumd properly deletes all the data
+    associated with the nodes, interfaces, services or other entries that it
+    deletes we have added cascading delete constraints to the database. With
+    these if you do a ‘DELETE FROM nodes WHERE nodeid=’11’’ for example. You
+    delete all the related information, its interfaces, the services on those
+    interfaces, the outages related to the node, the events, etc., etc.</para>
+
+    <bridgehead>Database Connection ‘Leak’ Found</bridgehead>
+
+    <para>Though not an actual leak because the connections are garbage
+    collected, we found a problem in the code where database connections were
+    being dropped and left for the garbage collector to clean up. This
+    problem, which occurred primarily during discovery, would result in an
+    abnormally large number of outstanding connections to the database to be
+    created. During discovery, on large networks, this can easily exceed the
+    configured limit on connections to PostgreSQL. Thanks to Chris Fedde and
+    OnCommand for helping us track down this problem.</para>
+
+    <bridgehead>JavaMail</bridgehead>
+
+    <para>An OpenNMS objective to become a 100% Java application, requires
+    elimination the following dependencies.</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>/bin/mail</para>
+      </listitem>
+
+      <listitem>
+        <para>Perl</para>
+      </listitem>
+
+      <listitem>
+        <para>Metamail package</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>These dependencies are used for two functions of the OpenNMS
+    application: Notification and Availability reporting.</para>
+
+    <para>Installing a fresh copy of OpenNMS will now use the Java Mail API by
+    default. Upgrade installs will create two new files that the user will
+    have to merge into their existing configurations:
+    d<filename>estinationPaths.xml.rpmnew</filename> and
+    <filename>notficationCommands.xml.rpmnew</filename>.</para>
+
+    <para>The <filename>javamail-configuration.properties</filename> file
+    should be modified to specify the sender's address and the SMTP server
+    address. This file also provides support SMTP servers requiring user and
+    password authentication.</para>
+
+    <para>There are also major changes to the
+    <filename>notificationCommands.xml</filename> file. The schema definition
+    for this file has changed requiring that the &lt;command&gt; tag now has
+    an attribute called 'binary' and a value of either "true" or "false". This
+    flag indicates to the OpenNMS notification processes that the command
+    definition is either a system command (as it always has been prior to this
+    release) or an OpenNMS Java class (see deveolper notes below). The 1.1.4
+    version of this file now has added the following new command
+    definitions:</para>
+
+    <para><programlisting>&lt;command binary="false"&gt;
+&lt;name&gt;javaPagerEmail&lt;/name&gt;
+&lt;execute&gt;org.opennms.netmgt.notifd.JavaMailNotificationStrategy&lt;/execute&gt;
+&lt;comment&gt;class for sending pager email notifications&lt;/comment&gt;
+&lt;argument streamed="false"&gt;
+&lt;switch&gt;-subject&lt;/switch&gt;
+&lt;/argument&gt;
+&lt;argument streamed="false"&gt;
+&lt;switch&gt;-pemail&lt;/switch&gt;
+&lt;/argument&gt;
+&lt;argument streamed="false"&gt;
+&lt;switch&gt;-tm&lt;/switch&gt;
+&lt;/argument&gt;
+&lt;/command&gt;
+
+&lt;command binary="false"&gt;
+&lt;name&gt;javaEmail&lt;/name&gt;
+&lt;execute&gt;org.opennms.netmgt.notifd.JavaMailNotificationStrategy&lt;/execute&gt;
+&lt;comment&gt;class for sending email notifications&lt;/comment&gt;
+&lt;argument streamed="false"&gt;
+&lt;switch&gt;-subject&lt;/switch&gt;
+&lt;/argument&gt;
+&lt;argument streamed="false"&gt;
+&lt;switch&gt;-email&lt;/switch&gt;
+&lt;/argument&gt;
+&lt;argument streamed="false"&gt;
+&lt;switch&gt;-tm&lt;/switch&gt;
+&lt;/argument&gt;
+&lt;/command&gt;</programlisting></para>
+
+    <para>Notice a few changes:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>The <computeroutput>&lt;command&gt; </computeroutput>tag now has
+        an attribute called 'binary' that when set to "true" will cause the
+        notification process to attempt to execute a system command specified
+        in the &lt;execute&gt; tag. When not set or set to anything other than
+        "true", the notification process assumes it is an OpenNMS notification
+        class and will instantiate it and execute its 'send()' method. By
+        convention, the "binary" attribute will be set to "false" when new
+        notification classes are implemented.</para>
+      </listitem>
+
+      <listitem>
+        <para>The <computeroutput>&lt;substitution&gt;
+        </computeroutput>arguments are not used for notification classes but
+        are still supported for notification commands. These "substitution"
+        arguments (allthough not gramatially intuitive) are passed to system
+        commands as a command line argument when the 'binary' attribute is set
+        to "true" and is otherwise ignored.</para>
+      </listitem>
+
+      <listitem>
+        <para>The <computeroutput>&lt;execute&gt;</computeroutput> tag now
+        allows the specification of an OpenNMS Java class name. This class
+        name must implement the NotificationStrategy interface (see developer
+        notes below). The new JavaMailNotificationStrategy class excepts the
+        following <computeroutput>&lt;switch&gt;</computeroutput> tags:
+        -subject, -email, -pemail, -tm.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>The <filename>destinationPaths.xml</filename> file has changed
+    making the default email and pager email notifications use the new Java
+    Mail API. All 'email' and 'pagerEmail' <computeroutput>&lt;command&gt;
+    </computeroutput>tags have been changed to the new 'javaEmail' and
+    'javaPagerEmail' commands in
+    <filename>$OPENNMS_HOME/etc/notificationCommands.xml</filename>.</para>
+
+    <bridgehead>Installer / Build System Improvements</bridgehead>
+
+    <para>Thanks so much to new OpenNMS committer DJ Gregor for all his hard
+    work on improving the OpenNMS build and install code. Thanks to DJ’s
+    efforts the installer has improved greatly and is now written completely
+    in Java removing (along with the JavaMail feature and Dave Hustace)
+    OpenNMS’s dependency on Perl. </para>
+
+    <para>That said, we do expect some issues with this , as the installer
+    does do a lot of database checks and conversions, and some users have
+    large databases.</para>
+
+    <para>Other Improvements/Changes/Bug Fixes</para>
+
+    <para>Here is a small list of other improvements in 1.1.4:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>The OpenNMS Group is partnering with the creators of the SNMP
+        Informant Windows SNMP agent (formally SNMP4PC), and so a number of
+        SNMP Informant data collections and reports have been added.</para>
+      </listitem>
+
+      <listitem>
+        <para>A bug was fixed with respect to the RTC Categories section which
+        could cause the services of new nodes to be counted more than
+        once.</para>
+      </listitem>
+
+      <listitem>
+        <para>To make better use of Bill Ayres' displayCategory field in the
+        Assets table, a new event was created that will update RTC when the
+        Assets table is changed (which will cause such changes to be reflected
+        without a restart).</para>
+      </listitem>
+
+      <listitem>
+        <para>Also to make this work better, new nodes are created with an
+        empty asset record. Thus queries like <computeroutput>displayCategory
+        != "test"</computeroutput> will work.</para>
+      </listitem>
+
+      <listitem>
+        <para>Michael Huot added some code that causes the webUI to turn to
+        "light blue", similar to "Calculating ..." when the webUI loses
+        connectivity with OpenNMS.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para></para>
+  </sect1>
+
+  <sect1>
+    <title>Changes in OpenNMS 1.1.3 and above</title>
 
     <para>A tremendous amount of work has been done "under the covers" to
     OpenNMS, and the following features were added in 1.1.3:</para>
