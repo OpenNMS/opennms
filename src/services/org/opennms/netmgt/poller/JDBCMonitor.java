@@ -98,6 +98,7 @@ final public class JDBCMonitor extends IPv4LatencyMonitor {
      *             If there is any error that prevents the plugin from running
      */
     public void initialize(PollerConfig pollerConfig, Map parameters) {
+        super.initialize(pollerConfig, parameters);
         Category log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled()) {
             log.debug(getClass().getName() + ": Calling init");
