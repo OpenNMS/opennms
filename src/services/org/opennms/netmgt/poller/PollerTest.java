@@ -652,8 +652,16 @@ public class PollerTest extends TestCase {
     // send a nodeGainedService event:
     // EventConstants.NODE_GAINED_SERVICE_EVENT_UEI
     public void testSendNodeGainedService() {
+        testSendNodeGainedService(false);
+    }
+    
+    public void testSendNodeGainedServiceNodeOutages() {
+        testSendNodeGainedService(true);
+    }
+    
+    public void testSendNodeGainedService(boolean nodeOutageProcessing) {
 
-        m_pollerConfig.setNodeOutageProcessingEnabled(false);
+        m_pollerConfig.setNodeOutageProcessingEnabled(nodeOutageProcessing);
 
         startDaemons();
 
@@ -664,6 +672,9 @@ public class PollerTest extends TestCase {
         MockService element = m_network.addService(99, "10.1.1.1", "HTTP");
         m_db.writeService(element);
         m_pollerConfig.addService(element);
+        MockService smtp = m_network.addService(99, "10.1.1.1", "SMTP");
+        m_db.writeService(smtp);
+        m_pollerConfig.addService(smtp);
 
         MockVisitor gainSvcSender = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
@@ -671,7 +682,7 @@ public class PollerTest extends TestCase {
                 m_eventMgr.sendEventToListeners(event);
             }
         };
-        element.visit(gainSvcSender);
+        node.visit(gainSvcSender);
 
         PollAnticipator anticipator = new PollAnticipator();
         element.addAnticipator(anticipator);
@@ -710,6 +721,7 @@ public class PollerTest extends TestCase {
         assertTrue(0 < svc.getPollCount());
 
     }
+    
     
     
     
