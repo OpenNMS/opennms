@@ -72,7 +72,7 @@
                         <parameter key="url" value="/"/>
                 </service>
                 <service name="HTTPS" interval="300000" user-defined="false" status="on">
-			<parameter key="timeout" value="30000"/>
+			<parameter key="timeout" value="5000"/>
 			<parameter key="ports" value="443"/>
 			<parameter key="url" value="/"/>
 		</service>
