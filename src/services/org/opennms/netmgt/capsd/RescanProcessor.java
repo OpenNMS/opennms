@@ -1554,7 +1554,7 @@ final class RescanProcessor
 				int index = tmpIfArray[i].getIfIndex();
   				
                                 // Skip non-IP or loopback interfaces
-       				if (addr.getHostAddress().equals("0.0.0.0") && 
+       				if (addr.getHostAddress().equals("0.0.0.0") || 
        					addr.getHostAddress().startsWith("127.")) 
        				{
        					continue;
