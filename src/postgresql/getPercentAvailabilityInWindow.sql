@@ -42,9 +42,9 @@
 --
 DROP FUNCTION getPercentAvailabilityInWindow(integer,varchar(16),integer,float8,float8);
 DROP FUNCTION getPercentAvailabilityInWindow(integer,varchar(16),integer,text,text);
-DROP FUNCTION getPercentAvailabilityInWindow(integer,varchar(16),integer,timestamp,timestamp);
+DROP FUNCTION getPercentAvailabilityInWindow(integer,varchar(16),integer,timestamp without time zone,timestamp without time zone);
 
-CREATE FUNCTION getPercentAvailabilityInWindow(integer,varchar(16),integer,timestamp,timestamp)
+CREATE FUNCTION getPercentAvailabilityInWindow(integer,varchar(16),integer,timestamp without time zone,timestamp without time zone)
 	RETURNS float8 AS '
    DECLARE
 	nid ALIAS FOR $1;

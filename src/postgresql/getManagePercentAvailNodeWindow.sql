@@ -38,9 +38,9 @@
 --
 DROP FUNCTION getManagePercentAvailNodeWindow(integer,float8,float8);
 DROP FUNCTION getManagePercentAvailNodeWindow(integer,text,text);
-DROP FUNCTION getManagePercentAvailNodeWindow(integer,timestamp,timestamp);
+DROP FUNCTION getManagePercentAvailNodeWindow(integer,timestamp without time zone,timestamp without time zone);
 
-CREATE FUNCTION getManagePercentAvailNodeWindow(integer,timestamp,timestamp)
+CREATE FUNCTION getManagePercentAvailNodeWindow(integer,timestamp without time zone,timestamp without time zone)
 	RETURNS float8 AS '
    DECLARE
 	nid ALIAS FOR $1;

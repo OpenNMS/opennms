@@ -240,6 +240,8 @@ public class Column {
 	    return Types.LONGVARCHAR;
 	} else if (m_type.equals("timestamp")) {
 	    return Types.TIMESTAMP;
+	} else if (m_type.equals("timestamptz")) {
+	    return Types.TIMESTAMP;
 	} else {
 	    throw new Exception("Do not have a Java SQL type for \"" +
 				m_type + "\"");
@@ -279,6 +281,9 @@ public class Column {
 	} else if (column.equals("timestamp") ||
 		   column.equals("timestamp without time zone")) {
 	    return "timestamp";
+	} else if (column.equals("timestamptz") ||
+		   column.equals("timestamp with time zone")) {
+	    return "timestamptz";
 	} else {
 	    throw new Exception("cannot parse column type: " + column);
 	}
@@ -293,7 +298,8 @@ public class Column {
 	} else if (type.equals("integer")) {
 	    return 4;
 	} else if (type.equals("bigint") ||
-		   type.equals("timestamp")) {
+		   type.equals("timestamp") ||
+		   type.equals("timestamptz")) {
 	    return 8;
 	} else if (type.equals("double precision") ||
 		   type.equals("real") ||

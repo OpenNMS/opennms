@@ -39,9 +39,9 @@
 --
 DROP FUNCTION getManagePercentAvailIntfWindow(integer,varchar(16),float8,float8);
 DROP FUNCTION getManagePercentAvailIntfWindow(integer,varchar(16),text,text);
-DROP FUNCTION getManagePercentAvailIntfWindow(integer,varchar(16),timestamp,timestamp);
+DROP FUNCTION getManagePercentAvailIntfWindow(integer,varchar(16),timestamp without time zone,timestamp without time zone);
 
-CREATE FUNCTION getManagePercentAvailIntfWindow(integer,varchar(16),timestamp,timestamp)
+CREATE FUNCTION getManagePercentAvailIntfWindow(integer,varchar(16),timestamp without time zone,timestamp without time zone)
 	RETURNS float8 AS '
    DECLARE
 	nid ALIAS FOR $1;

@@ -40,9 +40,9 @@
 --
 DROP FUNCTION getOutageTimeInWindow(integer,varchar(16),integer,float8,float8);
 DROP FUNCTION getOutageTimeInWindow(integer,varchar(16),integer,text,text);
-DROP FUNCTION getOutageTimeInWindow(integer,varchar(16),integer,timestamp,timestamp);
+DROP FUNCTION getOutageTimeInWindow(integer,varchar(16),integer,timestamp without time zone,timestamp without time zone);
 
-CREATE FUNCTION getOutageTimeInWindow(integer,varchar(16),integer,timestamp,timestamp)
+CREATE FUNCTION getOutageTimeInWindow(integer,varchar(16),integer,timestamp without time zone,timestamp without time zone)
 	RETURNS float8 AS '
    DECLARE
 	nid ALIAS FOR $1;
@@ -51,11 +51,11 @@ CREATE FUNCTION getOutageTimeInWindow(integer,varchar(16),integer,timestamp,time
 	xtime ALIAS FOR $4;
 	ytime ALIAS FOR $5;
 	orec RECORD;
-	lostTime timestamp;
-	gainTime timestamp;
+	lostTime timestamp without time zone;
+	gainTime timestamp without time zone;
 	downtime float8;
 	zero CONSTANT float8 := 0.0;
-	epochTime CONSTANT timestamp := to_timestamp(''01 Jan 1970 00:00:00'', ''DD Mon YYYY HH24:MI:SS'');
+	epochTime CONSTANT timestamp without time zone := to_timestamp(''01 Jan 1970 00:00:00'', ''DD Mon YYYY HH24:MI:SS'');
    BEGIN
    	downtime = zero;
    	FOR orec IN SELECT ifLostService,ifRegainedService

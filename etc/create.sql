@@ -108,9 +108,9 @@ create table distPoller (
 	dpIP			varchar(16) not null,
 	dpComment		varchar(256),
 	dpDiscLimit		numeric(5,2),
-	dpLastNodePull		timestamp,
-	dpLastEventPull		timestamp,
-	dpLastPackagePush	timestamp,
+	dpLastNodePull		timestamp without time zone,
+	dpLastEventPull		timestamp without time zone,
+	dpLastPackagePush	timestamp without time zone,
 	dpAdminState 		integer,
 	dpRunState		integer );
 
@@ -157,7 +157,7 @@ create table node (
 	dpName		varchar(12) not null,
 			constraint fk_dpName foreign key (dpName)
 			references distPoller,
-	nodeCreateTime	timestamp not null,
+	nodeCreateTime	timestamp without time zone not null,
 	nodeParentID	integer,
 	nodeType	char(1),
 	nodeSysOID	varchar(256),
@@ -170,7 +170,7 @@ create table node (
         nodeNetBIOSName varchar(16),
 	nodeDomainName  varchar(16),
 	operatingSystem varchar(64),
-	lastCapsdPoll   timestamp );
+	lastCapsdPoll   timestamp without time zone );
 
 create unique index node_id_idx on node(nodeID);
 create index node_id_type_idx on node(nodeID, nodeType);
@@ -221,7 +221,7 @@ create table ipInterface (
 	ipHostname		varchar(256),
 	isManaged		char(1),
 	ipStatus		integer,
-	ipLastCapsdPoll		timestamp,
+	ipLastCapsdPoll		timestamp without time zone,
 	isSnmpPrimary           char(1) );
 
 create index ipinterface_nodeid_ipaddr_ismanaged_idx on ipInterface(nodeID, ipAddr, isManaged);        
@@ -339,8 +339,8 @@ create table ifServices (
 	ifIndex			integer,
 	serviceID		integer not null,
 			constraint fk_serviceID1 foreign key (serviceID) references service,
-	lastGood		timestamp,
-	lastFail		timestamp,
+	lastGood		timestamp without time zone,
+	lastFail		timestamp without time zone,
 	qualifier		char(16),
 	status         		char(1),
 	source			char(1),
@@ -448,7 +448,7 @@ create table events (
 			constraint pk_eventID primary key (eventID),
 	eventUei		varchar(256) not null,
 	nodeID			integer,
-	eventTime		timestamp not null,
+	eventTime		timestamp without time zone not null,
 	eventHost		varchar(256),
 	eventSource		varchar(128) not null,
 	ipAddr			varchar(16),
@@ -457,7 +457,7 @@ create table events (
 	serviceID		integer,
 	eventSnmp		varchar(256),
 	eventParms		text,
-	eventCreateTime		timestamp not null,
+	eventCreateTime		timestamp without time zone not null,
 	eventDescr		varchar(4000),
 	eventLoggroup		varchar(32),
 	eventLogmsg		varchar(256),
@@ -477,7 +477,7 @@ create table events (
 	eventLog		char(1) not null,
 	eventDisplay		char(1) not null,
 	eventAckUser		varchar(256),
-	eventAckTime		timestamp
+	eventAckTime		timestamp without time zone
         );
 
 create unique index events_id_idx on events(eventID);
@@ -529,8 +529,8 @@ create table outages (
 	serviceID		integer not null,
 				constraint fk_serviceID2 foreign key (serviceID)
 				references service,
-	ifLostService		timestamp not null,
-	ifRegainedService	timestamp );
+	ifLostService		timestamp without time zone not null,
+	ifRegainedService	timestamp without time zone );
 
 create unique index outages_id_idx on outages(outageID);
 create index outages_svclostid_idx on outages(svcLostEventID);
@@ -577,10 +577,10 @@ create table vulnerabilities (
 	nodeID			integer,
 	ipAddr			varchar(16),
 	serviceID		integer,
-	creationTime		timestamp not null,
-	lastAttemptTime		timestamp not null,
-	lastScanTime		timestamp not null,
-	resolvedTime		timestamp,
+	creationTime		timestamp without time zone not null,
+	lastAttemptTime		timestamp without time zone not null,
+	lastScanTime		timestamp without time zone not null,
+	resolvedTime		timestamp without time zone,
 	severity		integer not null,
 	pluginID		integer not null,
 	pluginSubID             integer not null,
@@ -667,8 +667,8 @@ create table notifications (
        numericMsg   varchar(256),
        notifyID	    integer not null,
 		    constraint pk_notifyID primary key (notifyID),
-       pageTime     timestamp,
-       respondTime  timestamp,
+       pageTime     timestamp without time zone,
+       respondTime  timestamp without time zone,
        answeredBy   varchar(256),
        nodeID	    integer,
        interfaceID  varchar(16),
@@ -703,7 +703,7 @@ create index notifications_answeredby_idx on notifications(answeredBy);
 create table usersNotified (
         userID          varchar(256) not null,
         notifyID        integer not null,
-        notifyTime      timestamp,
+        notifyTime      timestamp without time zone,
         media           varchar(32),
         contactinfo     varchar(64)
         );
@@ -782,7 +782,7 @@ create table assets (
         vendorFax       varchar(64),
         vendorAssetNumber varchar(64),
         userLastModified char(20) not null,
-        lastModifiedDate timestamp not null,
+        lastModifiedDate timestamp without time zone not null,
         dateInstalled   varchar(64),
         lease           varchar(64),
         leaseExpires    varchar(64),

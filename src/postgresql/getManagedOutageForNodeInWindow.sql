@@ -38,9 +38,9 @@
 --
 DROP FUNCTION getManagedOutageForNodeInWindow(integer,float8,float8);
 DROP FUNCTION getManagedOutageForNodeInWindow(integer,text,text);
-DROP FUNCTION getManagedOutageForNodeInWindow(integer,timestamp,timestamp);
+DROP FUNCTION getManagedOutageForNodeInWindow(integer,timestamp without time zone,timestamp without time zone);
 
-CREATE FUNCTION getManagedOutageForNodeInWindow(integer,timestamp,timestamp)
+CREATE FUNCTION getManagedOutageForNodeInWindow(integer,timestamp without time zone,timestamp without time zone)
 	RETURNS float8 AS '
    DECLARE
 	nid ALIAS FOR $1;
