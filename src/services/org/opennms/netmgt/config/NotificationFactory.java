@@ -240,7 +240,7 @@ public class NotificationFactory
 			
 			String sql = filter.getInterfaceWithServiceStatement();
 
-                        // ThreadCategory.getInstance(getClass()).debug("getSQL Returned SQL for Notification: " + notif.getName() + ": " + sql);
+                        ThreadCategory.getInstance(getClass()).debug("getSQL Returned SQL for Notification: " + notif.getName() + ": " + sql);
 			
 			connection = DatabaseConnectionFactory.getInstance().getConnection();
 			Statement stmt = connection.createStatement();

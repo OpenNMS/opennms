@@ -400,6 +400,7 @@ public class Filter
 		SQLTranslation translation = new SQLTranslation(m_parseTree);
 		translation.addServiceToSelect();
 		translation.addNodeIDToSelect();
+		translation.addJoin();
 		return translation.getStatement();
 	}
 	

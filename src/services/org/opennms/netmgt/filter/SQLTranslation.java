@@ -508,6 +508,15 @@ public class SQLTranslation
 		m_where.append(")" + constructJoin());
 	}
 	
+    	public void addJoin()
+	{
+		//finish the where clause by putting in the join clauses to 
+		//the ipinterface table, separating them from the rest of the
+		//where clause
+		//
+		m_where.append(constructJoin());
+	}
+	
 	public void caseAAndRule(AAndRule node)
 	{
 		node.getRule().apply(this);
