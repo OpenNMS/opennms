@@ -63,6 +63,12 @@ public class Outage {
         m_lostEventTime = eventTime;
     }
     
+    public boolean isForService(MockService svc) {
+        return m_nodeId == svc.getNodeId() &&
+            m_ipAddr.equals(svc.getIpAddr()) &&
+            m_serviceId == svc.getId();
+    }
+    
     public int hashCode() {
         return 0;
     }

@@ -303,16 +303,18 @@ final class BroadcastEventProcessor implements EventListener {
             PollableInterface pIf = oldPNode.findInterface(event.getInterface());
             log.debug("interfaceReparentedHandler: old node lock obtained, removing interface...");
             oldPNode.removeInterface(pIf);
-            log.debug("interfaceReparentedHandler: recalculating old node status...");
-            oldPNode.recalculateStatus();
 
             // Obtain lock on new nodeId...wait indefinitely
             log.debug("interfaceReparentedHandler: requesting node lock for new nodeId " + newPNode.getNodeId());
             ownNewLock = newPNode.getNodeLock(WAIT_FOREVER);
             log.debug("interfaceReparentedHandler: new node lock obtained, adding interface...");
             newPNode.addInterface(pIf);
-            log.debug("interfaceReparentedHandler: recalculating new node status...");
-            newPNode.recalculateStatus();
+
+            pIf.setNode(newPNode);
+            
+            oldPNode.generateEvents();
+            newPNode.generateEvents();
+            
         } catch (InterruptedException iE) {
             log.error("interfaceReparentedHandler: thread interrupted...failed to obtain required node locks");
             return;

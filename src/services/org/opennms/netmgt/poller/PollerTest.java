@@ -305,46 +305,39 @@ public class PollerTest extends TestCase {
         MockNode node1 = m_network.getNode(1);
         MockNode node2 = m_network.getNode(2);
 
-        MockInterface node1Iface = m_network.getInterface(1, "192.168.1.1");
-        MockInterface reparentedIface = m_network.getInterface(1, "192.168.1.2");
-        MockInterface node2Iface = m_network.getInterface(2, "192.168.1.3");
+        MockInterface dotOne = m_network.getInterface(1, "192.168.1.1");
+        MockInterface dotTwo = m_network.getInterface(1, "192.168.1.2");
+        MockInterface dotThree = m_network.getInterface(2, "192.168.1.3");
         
 
         Event reparentEvent = MockUtil.createReparentEvent("Test", "192.168.1.2", 1, 2);
 
         // we are going to reparent to node 2 so when we bring down its only
         // current interface we expect an interface down not the whole node.
-        anticipateDown(node2Iface);
+        anticipateDown(dotThree);
 
         startDaemons();
 
         // move the reparted interface and send a reparented event
-        m_db.reparentInterface(reparentedIface.getIpAddr(), reparentedIface.getNodeId(), node2.getNodeId());
-        reparentedIface.moveTo(node2);
+        dotTwo.moveTo(node2);
+        m_db.reparentInterface(dotTwo.getIpAddr(), node1.getNodeId(), node2.getNodeId());
+
+        // send the reparent event to the daemons
         m_eventMgr.sendEventToListeners(reparentEvent);
 
         // now bring down the other interface on the new node
         // System.err.println("Bring Down:"+node2Iface);
-        node2Iface.bringDown();
+        dotThree.bringDown();
 
         verifyAnticipated(2000);
 
-        // FIXME: the event below is the CORRECT answer but the Poller isn't
-        // doing that. I'm going to test for the INCORRECT answer so I can tell if I
-        // change the behavior during refactoring. We now bring down the reparented 
-        // interface and we should get node2 down
-        // m_anticipator.reset();
-        // m_anticipator.anticipateEvent(node2.createDownEvent());
-
         resetAnticipated();
-        anticipateDown(node1);
-        anticipateDown(reparentedIface);
-        // FIXME: END INCORRECT BEHAVIOR HERE
+        anticipateDown(node2);
 
         // System.err.println("Bring Down:"+reparentedIface);
-        reparentedIface.bringDown();
+        dotTwo.bringDown();
 
-        sleep(5000);
+        //sleep(5000);
 
         verifyAnticipated(6000);
 
@@ -487,9 +480,9 @@ public class PollerTest extends TestCase {
         MockNode node1 = m_network.getNode(1);
         MockNode node2 = m_network.getNode(2);
 
-        MockInterface node1Iface = m_network.getInterface(1, "192.168.1.1");
-        MockInterface reparentedIface = m_network.getInterface(1, "192.168.1.2");
-        MockInterface node2Iface = m_network.getInterface(2, "192.168.1.3");
+        MockInterface dotOne = m_network.getInterface(1, "192.168.1.1");
+        MockInterface dotTwo = m_network.getInterface(1, "192.168.1.2");
+        MockInterface dotThree = m_network.getInterface(2, "192.168.1.3");
 
         //
         // Plan to bring down both nodes except the reparented interface
@@ -498,12 +491,12 @@ public class PollerTest extends TestCase {
         // comes up.
         //
         anticipateDown(node2);
-        anticipateDown(node1Iface);
+        anticipateDown(dotOne);
 
         // bring down both nodes but bring iface back up
         node1.bringDown();
         node2.bringDown();
-        reparentedIface.bringUp();
+        dotTwo.bringUp();
 
         Event reparentEvent = MockUtil.createReparentEvent("Test", "192.168.1.2", 1, 2);
 
@@ -511,20 +504,19 @@ public class PollerTest extends TestCase {
 
         verifyAnticipated(2000);
 
+
+
+        m_db.reparentInterface(dotTwo.getIpAddr(), dotTwo.getNodeId(), node2.getNodeId());
+        dotTwo.moveTo(node2);
+
         resetAnticipated();
+        anticipateDown(node1, true);
+        anticipateUp(node2, true);
+        anticipateDown(dotThree, true);
 
-        // FIXME: should I expect this to send new events saying that the old
-        // node is now down and the new node is now up? YES I SHOULD
-        // after moving the interface we expect node down on node1 and node up
-        // on node2;
-        // anticipateNodeDown(node1);
-        // anticipateNodeUp(node2);
-
-        m_db.reparentInterface(reparentedIface.getIpAddr(), reparentedIface.getNodeId(), node2.getNodeId());
-        reparentedIface.moveTo(node2);
         m_eventMgr.sendEventToListeners(reparentEvent);
 
-        verifyAnticipated(2000);
+        verifyAnticipated(20000);
 
     }
 
@@ -595,10 +587,10 @@ public class PollerTest extends TestCase {
     //
 
     private void startDaemons() {
-        m_poller.init();
         m_outageMgr.init();
-        m_poller.start();
+        m_poller.init();
         m_outageMgr.start();
+        m_poller.start();
         m_daemonsStarted = true;
     }
 
@@ -621,6 +613,7 @@ public class PollerTest extends TestCase {
         // make sure the down events are received
         assertEquals("Expected events not forthcoming", 0, m_anticipator.waitForAnticipated(millis).size());
         sleep(2000);
+        MockUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
         assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
         sleep(500);
         assertEquals("Wrong number of outages opened", m_outageAnticipator.getExpectedOpens(), m_outageAnticipator.getActualOpens());
@@ -628,8 +621,13 @@ public class PollerTest extends TestCase {
         assertTrue("Created outages don't match the expected outages", m_outageAnticipator.checkAnticipated());
     }
 
+    
     private void anticipateUp(MockElement element) {
-        if (element.getPollStatus() != ServiceMonitor.SERVICE_AVAILABLE) {
+        anticipateUp(element, false);
+    }
+    
+    private void anticipateUp(MockElement element, boolean force) {
+        if (force || element.getPollStatus() != ServiceMonitor.SERVICE_AVAILABLE) {
             Event event = element.createUpEvent();
             m_anticipator.anticipateEvent(event);
             m_outageAnticipator.anticipateOutageClosed(element, event);
@@ -637,12 +635,24 @@ public class PollerTest extends TestCase {
     }
 
     private void anticipateDown(MockElement element) {
-        if (element.getPollStatus() != ServiceMonitor.SERVICE_UNAVAILABLE) {
+        anticipateDown(element, false);
+    }
+    
+    private void anticipateDown(MockElement element, boolean force) {
+        if (force || element.getPollStatus() != ServiceMonitor.SERVICE_UNAVAILABLE) {
             Event event = element.createDownEvent();
             m_anticipator.anticipateEvent(event);
             m_outageAnticipator.anticipateOutageOpened(element, event);
         }
     }
+    
+    private void anticipateDownEvent(MockElement element) {
+        m_anticipator.anticipateEvent(element.createDownEvent());
+    }
+    
+    
+    
+    
 
     private void anticipateServicesUp(MockElement node) {
         MockVisitor eventCreator = new MockVisitorAdapter() {

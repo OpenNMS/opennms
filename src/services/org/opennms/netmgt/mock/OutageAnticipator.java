@@ -83,7 +83,7 @@ public class OutageAnticipator implements EventListener {
     public void anticipateOutageOpened(MockElement element, final Event lostService) {
         MockVisitor outageCounter = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
-                if (!m_db.hasOpenOutage(svc)) {
+                if (!m_db.hasOpenOutage(svc) || anticipatesClose(svc)) {
                     m_expectedOpenCount++;
                     m_expectedOutageCount++;
                     Outage outage = new Outage(svc);
@@ -93,6 +93,27 @@ public class OutageAnticipator implements EventListener {
             }
         };
         element.visit(outageCounter);
+    }
+
+    /**
+     * @param svc
+     * @return
+     */
+    protected boolean anticipatesClose(MockService svc) {
+        return anticipates(m_pendingCloses, svc);
+    }
+
+    private boolean anticipates(Map pending, MockService svc) {
+        Collection vals = pending.values();
+        for (Iterator it = vals.iterator(); it.hasNext();) {
+            List outageList = (List) it.next();
+            for (Iterator iter = outageList.iterator(); iter.hasNext();) {
+                Outage outage = (Outage) iter.next();
+                if (outage.isForService(svc))
+                    return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -113,7 +134,7 @@ public class OutageAnticipator implements EventListener {
     public void anticipateOutageClosed(MockElement element, final Event regainService) {
         MockVisitor outageCounter = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
-                if (m_db.hasOpenOutage(svc)) {
+                if (m_db.hasOpenOutage(svc) || anticipatesOpen(svc)) {
                     // descrease the open ones.. leave the total the same
                     m_expectedOpenCount--;
                     
@@ -130,6 +151,14 @@ public class OutageAnticipator implements EventListener {
         element.visit(outageCounter);
     }
     
+    /**
+     * @param svc
+     * @return
+     */
+    protected boolean anticipatesOpen(MockService svc) {
+        return anticipates(m_pendingOpens, svc);
+    }
+
     public int getExpectedOpens() {
         return m_expectedOpenCount;
     }

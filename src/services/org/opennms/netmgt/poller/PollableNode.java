@@ -127,7 +127,12 @@ public class PollableNode {
 
     public synchronized void addInterface(PollableInterface pInterface) {
         m_interfaces.put(pInterface.getAddress().getHostAddress(), pInterface);
+
+        int oldStatus = m_status;
         this.recalculateStatus();
+        int newStatus = m_status;
+        if (oldStatus != newStatus)
+            m_statusChangedFlag = true;
     }
 
     public synchronized void deleteAllInterfaces() {
@@ -140,7 +145,12 @@ public class PollableNode {
 
     public synchronized void removeInterface(PollableInterface pInterface) {
         m_interfaces.remove(pInterface.getAddress().getHostAddress());
+        int oldStatus = m_status;
         this.recalculateStatus();
+        int newStatus = m_status;
+        if (oldStatus != newStatus)
+            m_statusChangedFlag = true;
+        
     }
 
     public int getStatus() {

@@ -137,6 +137,7 @@ public class PollableInterface implements Pollable {
     /**
      * Add a PollableService object to the services map keyed by service name.
      * 
+     * TODO: What's this warning all about
      * WARNING: For node outage processing we are only interested in testing a
      * particular service once regardless of how many times the service is
      * actually scheduled for polling (due to inclusion by multiple packages),
@@ -508,5 +509,12 @@ public class PollableInterface implements Pollable {
      */
     Poller getPoller() {
         return m_node.getPoller();
+    }
+
+    /**
+     * @param newPNode
+     */
+    public void setNode(PollableNode newPNode) {
+        m_node = newPNode;
     }
 }
