@@ -1250,7 +1250,7 @@ OpenNMS as part of the post-install.
      <batchtest todir="${test.xml.dir}">
          <fileset dir="${source.dir}/services">
             <include name="**/*Test.java" />
-            <exclude name="**/AllTest.java" /> 
+            <exclude name="**/AllTests.java" /> 
          </fileset>
          <fileset dir="${source.dir}/install">
             <include name="**/*Test.java" />
