@@ -1335,6 +1335,7 @@ OpenNMS as part of the post-install.
   <junit errorProperty="test.failed" failureProperty="test.failed">
      <classpath>
        <path refid="libraries.java.path"/>
+       <pathelement location="${packaged.lib.dir}/oro204.jar" />
        <pathelement location="${dev.lib.dir}/junit.jar"/>
        <pathelement location="${packaged.lib.dir}/hsqldb.jar"/>
        <pathelement location="${packaged.lib.dir}/SNMP4J.jar"/>

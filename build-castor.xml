@@ -17,7 +17,7 @@
 	
 	<target name="castor.setup">
 		<mkdir dir="${build.dir}/castor-config/org/exolab/castor/builder" />
-		<copyfile dest="${build.dir}/castor-config/org/exolab/castor/builder/castorbuilder.properties" src="${dev.lib.dir}/castorbuilder.properties"/>
+		<copy tofile="${build.dir}/castor-config/org/exolab/castor/builder/castorbuilder.properties" file="${dev.lib.dir}/castorbuilder.properties"/>
 		
 	
 	<taskdef name="castor" classname="org.exolab.castor.tools.ant.taskdefs.CastorSourceGenTask">
@@ -93,7 +93,6 @@
 						<!-- run castor -->
 						<sequential>
 							<castor  file="@{xsd}" package="@{srcpackage}"
-								verbose="true"
 								properties="${dev.lib.dir}/castorbuilder.properties"
 								todir="${build.castor.source.dir}" types="${castor.typefactory}" />
 							<!--
