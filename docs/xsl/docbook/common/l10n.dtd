@@ -1,0 +1,32 @@
+<!ELEMENT i18n (l10n+)>
+<!ATTLIST i18n
+	xmlns		CDATA	#IMPLIED
+>
+
+<!ELEMENT l10n (gentext|dingbat|context)*>
+<!ATTLIST l10n
+	language	CDATA	#REQUIRED
+>
+
+<!ELEMENT gentext EMPTY>
+<!ATTLIST gentext
+	key		CDATA	#REQUIRED
+	text		CDATA	#REQUIRED
+>
+
+<!ELEMENT dingbat EMPTY>
+<!ATTLIST dingbat
+	key		CDATA	#REQUIRED
+	text		CDATA	#REQUIRED
+>
+
+<!ELEMENT context (template+)>
+<!ATTLIST context
+	name		CDATA	#REQUIRED
+>
+
+<!ELEMENT template EMPTY>
+<!ATTLIST template
+	name		CDATA	#REQUIRED
+	text		CDATA	#REQUIRED
+>
