@@ -10,7 +10,8 @@
 //
 // Modifications:
 //
-// 11/28/ 2003 Created.
+// 11/07/2003 Changed the new suspect event source.
+// 11/28/2003 Created.
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -61,6 +62,10 @@ public class AddNewInterfaceServlet extends HttpServlet
 {
         private static final String SQL_INTERFACE_EXIST = "SELECT nodeid FROM ipinterface WHERE ipaddr = ? "
                                                         + "AND ismanaged in ('M', 'A', 'U', 'F')"; 
+        /**
+         * The value used as the source of the event
+         */
+        final static String EVENT_SOURCE_VALUE = "OpenNMS.Discovery";
 
         public void init() throws ServletException
         {
@@ -115,7 +120,7 @@ public class AddNewInterfaceServlet extends HttpServlet
                 throws UndeclaredEventException
         {
                 Event event = new Event();
-                event.setSource("opennms.web");
+                event.setSource(EVENT_SOURCE_VALUE);
                 event.setUei(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
                 event.setInterface(ipaddr);
 
