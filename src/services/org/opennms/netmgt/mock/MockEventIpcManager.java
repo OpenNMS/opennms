@@ -149,7 +149,6 @@ public class MockEventIpcManager implements EventIpcManager {
         MockUtil.printEvent("Received", event);
         m_eventWriter.writeEvent(event);
         m_anticipator.eventReceived(event);
-        // we should broadcast this as well
         broadcastNow(event);
         m_anticipator.eventProcessed(event);
     }

@@ -514,6 +514,17 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     }
 
     /**
+     * @param ipAddr
+     * @param nodeId
+     * @param nodeId2
+     */
+    public void reparentInterface(String ipAddr, int oldNode, int newNode) {
+        Object[] values = { new Integer(newNode), new Integer(oldNode), ipAddr };
+        update("update ipInterface set nodeId = ? where nodeId = ? and ipAddr = ?", values);
+        update("update ifServices set nodeId = ? where nodeId = ? and ipAddr = ?", values);
+    }
+
+    /**
      * @return
      */
     public String getNextNotifIdSql() {

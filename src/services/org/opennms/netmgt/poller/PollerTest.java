@@ -309,14 +309,15 @@ public class PollerTest extends TestCase {
 
         Event reparentEvent = MockUtil.createReparentEvent("Test", "192.168.1.2", 1, 2);
 
-        // we are going to repart to node 2 so when we bring down its only
+        // we are going to reparent to node 2 so when we bring down its only
         // current interface we expect an interface down not the whole node.
         anticipateDown(node2Iface);
 
         startDaemons();
 
-        // move the reparted interface and send a reparted event
+        // move the reparted interface and send a reparented event
         reparentedIface.moveTo(node2);
+        m_db.reparentInterface(reparentedIface.getIpAddr(), reparentedIface.getNodeId(), node2.getNodeId());
         m_eventMgr.sendEventToListeners(reparentEvent);
 
         // now bring down the other interface on the new node
@@ -336,8 +337,8 @@ public class PollerTest extends TestCase {
         MockService icmpService = m_network.getService(2, "192.168.1.2", "ICMP");
 
         resetAnticipated();
-        m_anticipator.anticipateEvent(node1.createDownEvent());
-        m_anticipator.anticipateEvent(icmpService.createDownEvent());
+        anticipateDown(node1);
+        anticipateDown(icmpService);
         // FIXME: END INCORRECT BEHAVIOR HERE
 
         // System.err.println("Bring Down:"+reparentedIface);
@@ -406,6 +407,48 @@ public class PollerTest extends TestCase {
 
 
     }
+    
+    public void testNodeLostRegainedService() throws Exception {
+
+        testElementDownUp(m_network.getService(1, "192.168.1.1", "SMTP"));
+
+    }
+    
+    
+    public void testInterfaceDownUp() {
+
+        testElementDownUp(m_network.getInterface(1, "192.168.1.1"));
+    }
+
+    public void testNodeDownUp() {
+        testElementDownUp(m_network.getNode(1));
+    }
+
+
+    private void testElementDownUp(MockElement element) {
+        startDaemons();
+
+        resetAnticipated();
+        anticipateDown(element);
+
+        MockUtil.println("Bringing down element: "+element);
+        element.bringDown();
+        MockUtil.println("Finished bringing down element: "+element);
+        
+        verifyAnticipated(2000);
+        
+        sleep(5000);
+        
+        resetAnticipated();
+        anticipateUp(element);
+        
+        MockUtil.println("Bringing up element: "+element);
+        element.bringUp();
+        MockUtil.println("Finished bringing up element: "+element);
+        
+        verifyAnticipated(2000);
+    }
+
 
     public void testPolling() throws Exception {
 
@@ -577,7 +620,8 @@ public class PollerTest extends TestCase {
         // make sure the down events are received
         assertEquals(0, m_anticipator.waitForAnticipated(millis).size());
         assertEquals(0, m_anticipator.unanticipatedEvents().size());
-        //assertTrue(m_outageAnticipator.checkAnticipated());
+        sleep(500);
+        assertTrue(m_outageAnticipator.checkAnticipated());
     }
 
     private void anticipateUp(MockElement element) {

@@ -931,6 +931,8 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
         Map propertiesMap = (Map) SVC_PROP_MAP.get(m_svcPropKey);
         try {
             status = m_monitor.poll(this, propertiesMap, m_package);
+            if (log.isDebugEnabled())
+                log.debug("poll: polled for " + addr.getHostAddress() + "/" + m_service.getName() + "/" + m_package.getName()+" with result: " + Pollable.statusType[status]);
         } catch (NetworkInterfaceNotSupportedException ex) {
             log.error("poll: Interface " + addr.getHostAddress() + " Not Supported!", ex);
             return status;

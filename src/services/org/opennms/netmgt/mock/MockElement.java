@@ -69,6 +69,15 @@ abstract public class MockElement {
     public MockContainer getParent() {
         return m_parent;
     }
+    
+    public MockNetwork getNetwork() {
+        MockElement network = this;
+        
+        while(network.getParent() != null)
+            network = network.getParent();
+        
+        return (MockNetwork)network;
+    }
 
     // stats
     abstract public int getPollCount();
@@ -100,7 +109,9 @@ abstract public class MockElement {
                 svc.setPollStatus(newStatus);
             }
         };
-        visit(statusSetter);
+        synchronized(getNetwork()) {
+            visit(statusSetter);
+        }
     }
 
     // impl

@@ -86,7 +86,9 @@ public class OutageAnticipator implements EventListener {
                 if (!m_db.hasOpenOutage(svc)) {
                     m_expectedOpenCount++;
                     m_expectedOutageCount++;
-                    addToOutageList(m_pendingOpens, lostService, new Outage(svc));
+                    Outage outage = new Outage(svc);
+                    MockUtil.println("Anticipating outage open: "+outage);
+                    addToOutageList(m_pendingOpens, lostService, outage);
                 }
             }
         };
@@ -118,6 +120,8 @@ public class OutageAnticipator implements EventListener {
                     Collection openOutages = m_db.getOpenOutages(svc);
                     for (Iterator it = openOutages.iterator(); it.hasNext();) {
                         Outage outage = (Outage) it.next();
+                        MockUtil.println("Anticipating outage closed: "+outage);
+
                         addToOutageList(m_pendingCloses, regainService, outage);
                     }
                 }
@@ -197,6 +201,15 @@ public class OutageAnticipator implements EventListener {
         }
         
         return Collections.EMPTY_LIST;
+    }
+
+    /**
+     * @param ipAddr
+     * @param nodeId
+     * @param nodeId2
+     */
+    public void anticipateReparent(String ipAddr, int nodeId, int nodeId2) {
+        
     }
     
     

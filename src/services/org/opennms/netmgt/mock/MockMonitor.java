@@ -62,16 +62,18 @@ public class MockMonitor implements ServiceMonitor {
     }
 
     public int poll(NetworkInterface iface, Map parameters, Package pkg) {
-        String ipAddr = ((InetAddress) iface.getAddress()).getHostAddress();
-        int nodeId = m_network.getNodeIdForInterface(ipAddr);
-        MockService svc = m_network.getService(nodeId, ipAddr, m_svcName);
-        if (svc == null) {
-            MockUtil.println("Invalid Poll: " + ipAddr + "/" + m_svcName);
-            m_network.receivedInvalidPoll(ipAddr, m_svcName);
-            throw new RuntimeException("Invalid poll ipAddr is not part of the package");
-        } else {
-            MockUtil.println("Poll: [" + svc.getInterface().getNode().getLabel() + "/" + ipAddr + "/" + m_svcName + "]");
-            return svc.poll();
+        synchronized(m_network) {
+            String ipAddr = ((InetAddress) iface.getAddress()).getHostAddress();
+            int nodeId = m_network.getNodeIdForInterface(ipAddr);
+            MockService svc = m_network.getService(nodeId, ipAddr, m_svcName);
+            if (svc == null) {
+                MockUtil.println("Invalid Poll: " + ipAddr + "/" + m_svcName);
+                m_network.receivedInvalidPoll(ipAddr, m_svcName);
+                throw new RuntimeException("Invalid poll ipAddr is not part of the package");
+            } else {
+                MockUtil.println("Poll: [" + svc.getInterface().getNode().getLabel() + "/" + ipAddr + "/" + m_svcName + "]");
+                return svc.poll();
+            }
         }
     }
 

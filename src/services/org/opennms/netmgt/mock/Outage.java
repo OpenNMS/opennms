@@ -67,6 +67,10 @@ public class Outage {
         return 0;
     }
     
+    public String toString() {
+        return "Outage["+m_nodeId+"/"+m_ipAddr+"/"+m_serviceId+"]";
+    }
+    
     public boolean equals(Object o) {
         if (! (o instanceof Outage)) return false;
         Outage outage = (Outage)o;
