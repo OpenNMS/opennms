@@ -85,6 +85,7 @@
      				     displayed in the event browser
 				-->
 				<element name="mouseovertext" type="string" minOccurs="0" maxOccurs="1"/>
+
 			</sequence>
 		</complexType>
 	</element>
@@ -98,6 +99,8 @@
 		<complexType>
 			<sequence>
 				<element ref="maskelement" minOccurs="1" maxOccurs="unbounded"/>
+
+				<element ref="varbind" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -327,6 +330,19 @@
 					</attribute>
 				</extension>
 			</simpleContent>
+		</complexType>
+	</element>
+	
+	<!-- The varbind element -->
+	<element name="varbind">
+		<complexType>
+			<sequence>
+				<!-- The varbind element number -->
+				<element name="vbnumber" type="int" minOccurs="1" maxOccurs="1"/>
+
+				<!-- The varbind element value -->
+				<element name="vbvalue" type="string" minOccurs="1" maxOccurs="unbounded"/>
+			</sequence>
 		</complexType>
 	</element>
 

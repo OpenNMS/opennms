@@ -27,6 +27,8 @@ package org.opennms.netmgt.eventd.datablock;
 import java.util.*;
 import java.io.Serializable;
 
+import org.opennms.netmgt.xml.event.*;
+
 /**
  * <pre>The key for an event - it extends the Hashtable and basically is a
  * map of name/value pairs of the 'maskelements' block in the event.
@@ -190,7 +192,27 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable
 
 				put(name, value);
 			}
+                	if (mask != null && mask.getVarbindCount() != 0)
+                	{
+                        	Enumeration varenum = mask.enumerateVarbind();
+                        	while(varenum.hasMoreElements())
+                        	{
+                                	org.opennms.netmgt.xml.eventconf.Varbind varbind = (org.opennms.netmgt.xml.eventconf.Varbind)varenum.nextElement();
+
+					EventMaskValueList vbvalues = new EventMaskValueList();
+                                	int vbint = varbind.getVbnumber();
+                                	String vbnumber = Integer.toString(vbint);
+					String[] vbvaluelist = varbind.getVbvalue();
+                                	for(int index=0; index<vbvaluelist.length; index++)
+                                	{
+                                        	vbvalues.add(vbvaluelist[index]);
+                                	}
+
+                                	put(vbnumber, vbvalues);
+                        	}
+                	}
 		}
+
 	}
 
 	/**
@@ -451,6 +473,23 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable
 				retParmVal = eventSnmpInfo.getCommunity();
 			}
 		}
+		else if (event.getParms() != null && event.getParms().getParmCount() > 0)
+                {
+			ArrayList eventparms = new ArrayList();
+                        org.opennms.netmgt.xml.event.Parms parms = event.getParms();
+                        Enumeration parmenum = parms.enumerateParm();
+                        while(parmenum.hasMoreElements())
+                        {
+                                org.opennms.netmgt.xml.event.Parm evParm = (org.opennms.netmgt.xml.event.Parm)parmenum.nextElement();
+				eventparms.add(org.opennms.netmgt.eventd.EventUtil.getValueAsString(evParm.getValue()));
+			}
+			int vbnumber = Integer.parseInt(mename);
+			if ( vbnumber > 0 && vbnumber <= eventparms.size() )
+			{
+				retParmVal = (String)eventparms.get(vbnumber-1);
+			}
+		}
+
 
 		return retParmVal;
 	}

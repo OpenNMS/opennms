@@ -1,12 +1,14 @@
 1.0.0 to 1.1.0
 ----------------------------------------------------------------------
+- Added the ability to associate events in eventconf.xml with 
+  specific parameters (varbinds). Bug 626
 - Modified eventconf.xml to allow for event definition files to be
   included using the <event-file> tag.
 - Added a Threshold Rearm event for both Low and High Thresholds.
-- Added an Admin GUI page for deleting nodes
+- Added an Admin GUI page for deleting nodes. Bug 602
 - Added the ability to select which non-IP interfaces would be 
   scheduled for data collection, and built an Admin WebUI page
-  to configure it.
+  to configure it. Bug 616
 - Loopback interfaces will now be discovered, and are preferred
   as the Primary SNMP interface. Applies to non-127.*.*.*
   interfaces only.
