@@ -40,6 +40,9 @@ import org.opennms.netmgt.xml.event.Event;
 public class TaskCreationTest extends NotificationsTestCase {
     
     BroadcastEventProcessor m_eventProcessor;
+    private Notification m_notif;
+    private Map m_params;
+    private String[] m_commands;
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(TaskCreationTest.class);
@@ -50,6 +53,14 @@ public class TaskCreationTest extends NotificationsTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         m_eventProcessor = m_notifd.getBroadcastEventProcessor();
+        
+        m_notif = m_notificationManager.getNotification("nodeDown");
+        MockNode node = m_network.getNode(1);
+        Event nodeDownEvent = node.createDownEvent();
+        
+        m_params = m_eventProcessor.buildParameterMap(m_notif, nodeDownEvent, 1);
+        m_commands = new String[]{ "email" };
+
     }
 
 
@@ -61,16 +72,7 @@ public class TaskCreationTest extends NotificationsTestCase {
 
     public void testMakeEmailTask() throws Exception {
         long startTime = System.currentTimeMillis();
-        
-        Notification notif = m_notificationManager.getNotification("nodeDown");
-        
-        MockNode node = m_network.getNode(1);
-        Event nodeDownEvent = node.createDownEvent();
-        
-        Map params = m_eventProcessor.buildParameterMap(notif, nodeDownEvent, 1);
-        
-        String[] commands = new String[]{ "email" };
-        NotificationTask task = m_eventProcessor.makeEmailTask(startTime, params, 1, "brozow@opennms.org", commands, new LinkedList());
+        NotificationTask task = m_eventProcessor.makeEmailTask(startTime, m_params, 1, "brozow@opennms.org", m_commands, new LinkedList());
         assertNotNull(task);
         assertEquals("brozow@opennms.org", task.getEmail());
         assertEquals(startTime, task.getSendTime());
@@ -80,16 +82,7 @@ public class TaskCreationTest extends NotificationsTestCase {
 
     public void testMakeUserTask() throws Exception {
         long startTime = System.currentTimeMillis();
-        
-        Notification notif = m_notificationManager.getNotification("nodeDown");
-        
-        MockNode node = m_network.getNode(1);
-        Event nodeDownEvent = node.createDownEvent();
-        
-        Map params = m_eventProcessor.buildParameterMap(notif, nodeDownEvent, 1);
-        
-        String[] commands = new String[]{ "email" };
-        NotificationTask task = m_eventProcessor.makeUserTask(startTime, params, 1, "brozow", commands, new LinkedList());
+        NotificationTask task = m_eventProcessor.makeUserTask(startTime, m_params, 1, "brozow", m_commands, new LinkedList());
         assertNotNull(task);
         assertEquals("brozow@opennms.org", task.getEmail());
         assertEquals(startTime, task.getSendTime());
@@ -99,24 +92,23 @@ public class TaskCreationTest extends NotificationsTestCase {
 
     public void testMakeGroupTasks() throws Exception {
         long startTime = System.currentTimeMillis();
-        
-        Notification notif = m_notificationManager.getNotification("nodeDown");
-        
-        MockNode node = m_network.getNode(1);
-        Event nodeDownEvent = node.createDownEvent();
-        
-        Map params = m_eventProcessor.buildParameterMap(notif, nodeDownEvent, 1);
-        
-        String[] commands = new String[]{ "email" };
-        NotificationTask[] tasks = m_eventProcessor.makeGroupTasks(startTime, params, 1, "EscalationGroup", commands, new LinkedList(), 1000);
+        NotificationTask[] tasks = m_eventProcessor.makeGroupTasks(startTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList(), 1000);
         assertNotNull(tasks);
         assertEquals(2, tasks.length);
         assertEquals("brozow@opennms.org", tasks[0].getEmail());
         assertEquals(startTime, tasks[0].getSendTime());
         assertEquals("david@opennms.org", tasks[1].getEmail());
         assertEquals(startTime+1000, tasks[1].getSendTime());
-    
         
     }
+    
+    public void testMakeRoleTasks() throws Exception {
+        long startTime = System.currentTimeMillis();
+        NotificationTask[] tasks = m_eventProcessor.makeRoleTasks(startTime, m_params, 1, "onCall", m_commands, new LinkedList(), 1000);
+        assertNotNull(tasks);
+        
+    }
+    
+    
 
 }

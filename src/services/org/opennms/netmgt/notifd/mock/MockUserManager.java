@@ -49,6 +49,9 @@ import org.opennms.netmgt.config.UserManager;
  */
 public class MockUserManager extends UserManager {
 
+    String m_xmlString;
+    boolean updateNeeded = true;
+    
     /**
      * @param groupManager
      * @throws ValidationException
@@ -56,24 +59,31 @@ public class MockUserManager extends UserManager {
      */
     public MockUserManager(GroupManager groupManager, String xmlString) throws MarshalException, ValidationException {
         super(groupManager);
-        Reader reader = new StringReader(xmlString);
+        m_xmlString = xmlString;
+        parseXML();
+    }
+
+    private void parseXML() throws MarshalException, ValidationException {
+        Reader reader = new StringReader(m_xmlString);
         parseXML(reader);
+        updateNeeded = false;
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.UserManager#saveXML(java.lang.String)
      */
     protected void saveXML(String writerString) throws IOException {
-        // TODO Auto-generated method stub
-
+        m_xmlString = writerString;
+        updateNeeded = true;
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.config.UserManager#update()
      */
     protected void update() throws IOException, FileNotFoundException, MarshalException, ValidationException {
-        // TODO Auto-generated method stub
-
+        if (updateNeeded) {
+            parseXML();
+        }
     }
 
 }

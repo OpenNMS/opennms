@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -638,6 +639,11 @@ final class BroadcastEventProcessor implements EventListener {
             return null;
         }
     }
+    
+    NotificationTask[] makeRoleTasks(long startTime, Map params, int i, String string, String[] commands, LinkedList list, int j) {
+        return new NotificationTask[0];
+    }
+
 
     /**
      * 
@@ -731,5 +737,6 @@ final class BroadcastEventProcessor implements EventListener {
         return getNotificationManager().rebuildParamterMap(notifId, resolutionPrefix);
 
     }
+
 
 } // end class
