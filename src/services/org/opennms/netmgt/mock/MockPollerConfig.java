@@ -108,10 +108,13 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
     }
 
     public void addService(String name, long interval, ServiceMonitor monitor) {
-        Service service = new Service();
-        service.setName(name);
-        service.setInterval(interval);
-        m_currentPkg.addService(service);
+        Service service = findService(m_currentPkg, name);
+        if (service == null) {
+            service = new Service();
+            service.setName(name);
+            service.setInterval(interval);
+            m_currentPkg.addService(service);
+        }
         addServiceMonitor(name, monitor);
     }
     
@@ -122,8 +125,7 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
 
     public void addService(MockService svc) {
         addService(svc.getName(), m_defaultPollInterval, new MockMonitor(svc.getNetwork(), svc.getName()));
-       m_currentPkg.addSpecific(svc.getIpAddr());
-        
+        m_currentPkg.addSpecific(svc.getIpAddr());
     }
 
     public void clearDowntime() {
