@@ -173,7 +173,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
         StringBuffer currToken = new StringBuffer();
         boolean quoting = false;
         boolean escaping = false;
-        boolean debugTokens = false;
+        boolean debugTokens = Boolean.getBoolean("org.opennms.netmgt.rrd.debugTokens");
 
         if (debugTokens)
             log.debug("tokenize: line=" + line + " delims=" + delims);
