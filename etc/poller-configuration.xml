@@ -8,7 +8,7 @@
 	<package name="example1">
 		<filter>IPADDR IPLIKE *.*.*.*</filter>
 		<specific>0.0.0.0</specific>
-		<include-range begin="192.168.0.1" end="192.168.0.254"/>
+		<include-range begin="1.1.1.1" end="254.254.254.254"/>
 		<include-url>file:@root.install@/etc/include</include-url>
 		<service name="DominoIIOP" interval="300000" user-defined="false" status="on">
                         <parameter key="retry" value="3"/>
