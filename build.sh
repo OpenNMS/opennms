@@ -108,18 +108,6 @@ for ARG; do
 	fi
 done
 
-check_tools
-RETVAL=$?
-if [ "$RETVAL" -gt "0" ]; then
-	if [ "$VERBOSE" = "1" ]; then
-		echo "*** $RETVAL new tool files -- rebuilding ***"
-		echo $JAVA_HOME/bin/java -Droot.source="$PREFIX" -Dant.home=devlib -Djava.home="$JAVA_HOME" -cp "devlib/ant-launcher.jar:$CLASSPATH" \
-			-mx256m org.apache.tools.ant.launch.Launcher $DEFINES -buildfile tools/build.xml $TOOL_ARGS compile.tools
-	fi
-	$JAVA_HOME/bin/java $DEFINES -Droot.source="$PREFIX" -Dant.home=devlib -Djava.home="$JAVA_HOME" -cp "devlib/ant-launcher.jar:$CLASSPATH" \
-		-mx256m org.apache.tools.ant.launch.Launcher -buildfile tools/build.xml $TOOL_ARGS compile.tools
-fi
-
 if [ "$VERBOSE" = "1" ]; then
 	DEFINES="$DEFINES -verbose"
 	echo $JAVA_HOME/bin/java $DEFINES -Dant.home=devlib -Droot.source="$PREFIX" -Djava.home="$JAVA_HOME" -cp "devlib/ant-launcher.jar:$CLASSPATH" \

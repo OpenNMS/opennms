@@ -1637,9 +1637,6 @@ OpenNMS as part of the post-install.
     <include name="**/chap*.xml"/>
    </srcfiles>
   </uptodate>
-<!--  <if value="${fot.is.uptodate}" match="true">
-   <then target="echo"><param name="message" value="FOT templates are up to date"/></then>
-  </if> -->
  </target>
 
  <target name="docs.fot" depends="init,docs.filter,docs.fot.uptodate" unless="fot.is.uptodate">
