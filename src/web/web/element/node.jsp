@@ -248,32 +248,6 @@
             </table>
             <br>
             
-            <!-- Interface box -->
-            <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-              <tr bgcolor="#999999">
-                <td><b>Interfaces</b></td> 
-              </tr>
-              <% for( int i=0; i < intfs.length; i++ ) { %>
-                <% if( "0.0.0.0".equals( intfs[i].getIpAddress() )) { %>
-                  <tr>
-                    <td>
-                      <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>">Non-IP</a>
-                      <%=" (ifIndex: "+intfs[i].getIfIndex()+"-"+intfs[i].getSnmpIfDescription()+")"%>
-                    </td>
-                  </tr>
-                <% } else { %>  
-                  <tr>
-                    <td>
-                      <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>"><%=intfs[i].getIpAddress()%></a>
-                      <%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%>
-                    </td>
-                  </tr>
-                <% } %>
-              <% } %>
-            </table>
-
-            <br>
-
             <!-- Availability box -->
             <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
             <br>
@@ -310,6 +284,32 @@
               <br>
             <% } %>
             
+            <!-- Interface box -->
+            <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
+              <tr bgcolor="#999999">
+                <td><b>Interfaces</b></td> 
+              </tr>
+              <% for( int i=0; i < intfs.length; i++ ) { %>
+                <% if( "0.0.0.0".equals( intfs[i].getIpAddress() )) { %>
+                  <tr>
+                    <td>
+                      <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>">Non-IP</a>
+                      <%=" (ifIndex: "+intfs[i].getIfIndex()+"-"+intfs[i].getSnmpIfDescription()+")"%>
+                    </td>
+                  </tr>
+                <% } else { %>  
+                  <tr>
+                    <td>
+                      <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>"><%=intfs[i].getIpAddress()%></a>
+                      <%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%>
+                    </td>
+                  </tr>
+                <% } %>
+              <% } %>
+            </table>
+
+            <br>
+
             <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
               
             </table>

@@ -1,5 +1,6 @@
 1.2.0 to 1.2.1
 ----------------------------------------------------------------------
+- Made some improvements to the node page. Bug 1018. Thx Bill
 - Added notification selection to top of page. Bug 1017. Thx Bill
 - Added nodeid to modify asset page. Bug 785
 - Added a new an improved DHCP poller. Bug 663. Thx Bill
