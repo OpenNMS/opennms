@@ -1,5 +1,0 @@
-etc/opennms
-etc/tomcat4/policy.d
-var/lib/tomcat4/webapps
-usr/share/lintian/overrides
-usr/share/opennms/webapp

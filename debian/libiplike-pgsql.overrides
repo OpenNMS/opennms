@@ -1,2 +1,0 @@
-libiplike-pgsql: binary-or-shlib-defines-rpath
-libiplike-pgsql: shared-lib-without-dependency-information
