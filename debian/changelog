@@ -2,6 +2,7 @@ opennms (1.1.3-1woody) stable; urgency=low
 
   * Not yet released
   * New upstream release
+  * Updated to new java-based build system.
   * Added libgetopt-mixed-perl as a dependency for common, removed it
     as a dependency for contrib, (it was backward before, this is how
     it should have been).

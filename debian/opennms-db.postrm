@@ -23,7 +23,7 @@ remove_acls() {
     TMPFILE=`mktemp /etc/postgresql/pg_hba.conf.XXXXXX`
     grep -v "^host.*opennms" $PGHBA_CONF > $TMPFILE
     mv $TMPFILE $PGHBA_CONF
-    grep -v "^local all trust" $PGHBA_CONF > $TMPFILE
+    grep -v "^host all 127.0.0.1 255.0.0.0 trust" $PGHBA_CONF > $TMPFILE
     mv $TMPFILE $PGHBA_CONF
     chmod 644 $PGHBA_CONF
     chown postgres:postgres $PGHBA_CONF

@@ -12,6 +12,19 @@ PG_CTL=/usr/lib/postgresql/bin/pg_ctl
 DATA_DIR=/var/lib/postgres/data
 PGHBA_CONF=/etc/postgresql/pg_hba.conf
 
+getjava()
+{
+    for dir in /usr/java/jdk1.4* /usr/java/j2sdk1.4* /usr/lib/j2sdk1.4* /usr/lib/j2sdk-1.4* /opt/IBMJava2-13 /usr/java/jdk1.3* /usr/java/j2sdk1.3* /usr/lib/j2sdk1.3*
+	do
+	    if [ -d "$dir" -a -f "$dir/lib/tools.jar" ]; then
+                JAVA_HOME="$dir"
+                break
+	    fi
+	done
+
+    export JAVA_HOME
+}
+
 case "$1" in
     configure)
 	## Add / adjust the postgresql access controls.
@@ -21,14 +34,16 @@ case "$1" in
 	    sed -e "/^local.*opennms.*password/d" $PGHBA_CONF > $TMPFILE
 	    cp $TMPFILE $PGHBA_CONF
 	fi
+
 	# Add a local entry for all databases, (trust), needed by the
 	# install script.
-	if ! grep -E -q "^local[[:space:]]+all[[:space:]]+trust" \
+	if ! grep -E -q "^host[[:space:]]+all[[:space:]]+127.0.0.1.+trust" \
 	        $PGHBA_CONF; then
-	    sed -e "/^local[[:space:]]*all/i\\" -e "local all trust" \
-	        $PGHBA_CONF > $TMPFILE
+	    sed -e "/^local[[:space:]]*all/i\\" \
+	    -e "host all 127.0.0.1 255.0.0.0 trust" $PGHBA_CONF > $TMPFILE
 	    cp $TMPFILE $PGHBA_CONF
 	fi
+
 	# Add the host entry if needed
 	if ! grep -q "^host opennms" $PGHBA_CONF; then
 	    sed \
@@ -45,13 +60,14 @@ case "$1" in
             invoke-rc.d postgresql start
 	fi
 
+	[ -z "$JAVA_HOME" ] && getjava
+
 	# Official OpenNMS install script -- only run if upgrading from an
 	# older major/minor version (not an older minor release) or a fresh
 	# install.
 	if dpkg --compare-versions ${2:-0} lt $VERSION; then
-		/usr/share/opennms/bin/install.pl -r -q \
-			-l $PG_DIR -U $PG_USER -u opennms -p opennms \
-			-d opennms /etc/opennms/create.sql
+	    [ -x $JAVA_HOME/bin/java ] && $JAVA_HOME/bin/java -jar \
+	        /usr/share/opennms/lib/opennms_install.jar -dis
 	fi
 
 	echo ""

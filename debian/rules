@@ -10,10 +10,19 @@ export DH_COMPAT=3
 
 # Added to move the JAVA_HOME check up top
 FIXIT=$(shell chmod o+x debian/getjava)
-JAVA_HOME=$(shell debian/getjava)
+JAVA_HOME=$(sh debian/getjava)
 export JAVA_HOME
 
-export BUILDDEFINES=-Droot.install=/usr/share/opennms -Droot.install.initdir=/etc/init.d -Droot.install.sbindir=/usr/sbin -Droot.install.contrib=/usr/share/opennms/contrib -Droot.install.rrdtool=/usr/lib -Droot.install.share=/var/lib/opennms -Droot.install.servlets=/usr/share/java/webapps/opennms -Droot.install.logs=/var/log/opennms -Droot.install.pid=/var/run/opennms.pid -Droot.install.postgresql=/usr/lib/postgresql/lib/opennms
+export BUILDDEFINES=\
+	-Dinstall.dir=/usr/share/opennms \
+	-Dinstall.init.dir=/etc/init.d \
+	-Dinstall.rrdtool.bin=/usr/bin/rrdtool \
+	-Dinstall.share.dir=/var/lib/opennms \
+	-Dinstall.servlet.dir=/usr/share/java/webapps/opennms \
+	-Dinstall.logs.dir=/var/log/opennms \
+	-Dinstall.pid.file=/var/run/opennms.pid \
+	-Dinstall.postgresql.dir=/usr/lib/postgresql/lib/opennms \
+	-Dbuild.postgresql.include.dir=/usr/include/postgresql/server
 
 VER=1.1.3
 TMP=$(CURDIR)/debian/tmp
@@ -54,8 +63,10 @@ clean:
 	rm -f build-stamp configure-stamp
 
 	# Add here commands to clean up after the build process.
-	sh ./build.sh -Droot.installprefix=$(TMP) \
-		-Drelative.installprefix=debian/tmp clean
+	# sh ./build.sh -Droot.installprefix=$(TMP) \
+	# 	-Drelative.installprefix=debian/tmp clean
+	sh ./build.sh -Dinstall.prefix=$(TMP) clean
+
 	rm -rf work
 	rm -f debian/conffiles
 
@@ -68,23 +79,22 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/tmp
-	sh ./build.sh -Droot.installprefix=$(TMP) \
-		-Drelative.installprefix=debian/tmp $(BUILDDEFINES) install
+	# sh ./build.sh -Droot.installprefix=$(TMP) \
+	#	-Drelative.installprefix=debian/tmp $(BUILDDEFINES) install
+	sh ./build.sh $(BUILDDEFINES) -Dinstall.prefix=$(TMP) install
 
 	##
 	## Setup the libiplike-pgsql package
 	##
-
-	cp $(CURDIR)/debian/libiplike-pgsql.overrides \
+	install -m 644  $(CURDIR)/debian/libiplike-pgsql.overrides \
 		$(LIBIPLK)/usr/share/lintian/overrides/libiplike-pgsql
-	mv $(TMP)/usr/share/opennms/lib/iplike.so* \
+	mv $(TMP)/usr/lib/postgresql/lib/opennms/iplike.so* \
 		$(LIBIPLK)/usr/lib/postgresql/lib/opennms/
 
 	##
 	## Setup the libicmp-jni package
 	##
-
-	cp $(CURDIR)/debian/libicmp-jni.overrides \
+	install -m 644  $(CURDIR)/debian/libicmp-jni.overrides \
 		$(LIBICMP)/usr/share/lintian/overrides/libicmp-jni
 	mv $(TMP)/usr/share/opennms/lib/libjicmp.so \
 		$(LIBICMP)/usr/lib/libjicmp.so.$(VER)
@@ -93,8 +103,7 @@ install: build
 	##
 	## Setup the librrd0-jni package
 	##
-
-	cp $(CURDIR)/debian/librrd0-jni.overrides \
+	install -m 644 $(CURDIR)/debian/librrd0-jni.overrides \
 		$(LIBRRD0)/usr/share/lintian/overrides/librrd0-jni
 	mv $(TMP)/usr/share/opennms/lib/libjrrd.so \
 		$(LIBRRD0)/usr/lib/libjrrd.so.$(VER)
@@ -103,25 +112,25 @@ install: build
 	##
 	## Setup the libopennms-java package
 	##
-
 	mv $(TMP)/usr/share/opennms/lib/opennms*.jar \
+		$(LIBONMS)/usr/share/java/
+	mv $(TMP)/usr/share/opennms/lib/postgresql.jar \
 		$(LIBONMS)/usr/share/java/
 	chmod 644 $(LIBONMS)/usr/share/java/*.jar
 
 	##
 	## Setup the opennms-db package
 	##
-
-	cp $(CURDIR)/debian/opennms-db.overrides \
+	install -m 644 $(CURDIR)/debian/opennms-db.overrides \
 		$(ONMSDB)/usr/share/lintian/overrides/opennms-db
 	mv $(TMP)/usr/share/opennms/etc/*.sql \
 		$(ONMSDB)/etc/opennms/
-	mv $(TMP)/usr/share/opennms/bin/install.pl \
-		$(ONMSDB)/usr/share/opennms/bin/
+	#mv $(TMP)/usr/share/opennms/bin/install.pl \
+	#	$(ONMSDB)/usr/share/opennms/bin/
 	chgrp nogroup $(ONMSDB)/etc/opennms
 	chmod 2775 $(ONMSDB)/etc/opennms
 	chmod 644 $(ONMSDB)/etc/opennms/*.sql
-	chmod 755 $(ONMSDB)/usr/share/opennms/bin/install.pl
+	#chmod 755 $(ONMSDB)/usr/share/opennms/bin/install.pl
 
 	##
 	## Setup the opennms-common package
@@ -141,21 +150,18 @@ install: build
 		$(ONMSCOM)/usr/share/opennms/lib/updates/
 	mv $(TMP)/var/lib/opennms/* \
 		$(ONMSCOM)/var/lib/opennms/
-	chgrp -R nogroup $(ONMSCOM)/etc/opennms \
-		$(ONMSCOM)/var/lib/opennms/* \
+	chgrp -R nogroup $(ONMSCOM)/etc/opennms $(ONMSCOM)/var/lib/opennms/* \
 		$(ONMSCOM)/var/log/opennms
-	chmod 2775 $(ONMSCOM)/etc/opennms \
-		$(ONMSCOM)/var/lib/opennms/* \
+	chmod 2775 $(ONMSCOM)/etc/opennms $(ONMSCOM)/var/lib/opennms/* \
 		$(ONMSCOM)/var/log/opennms
-	chmod 755 $(ONMSCOM)/usr/share/opennms/bin/opennms.sh \
-		$(ONMSCOM)/usr/share/opennms/bin/tomcat-install.pl
+	chmod 755 $(ONMSCOM)/usr/share/opennms/bin/opennms.sh
+	#	$(ONMSCOM)/usr/share/opennms/bin/tomcat-install.pl
 	chmod 644 $(ONMSCOM)/usr/share/opennms/lib/updates/README.updates
 
 	##
 	## Setup the opennms-contrib package
 	##
-
-	cp $(CURDIR)/debian/opennms-contrib.overrides \
+	install -m 644 $(CURDIR)/debian/opennms-contrib.overrides \
 		$(ONMSCTR)/usr/share/lintian/overrides/opennms-contrib
 	mv $(TMP)/usr/share/opennms/contrib/* \
 		$(ONMSCTR)/usr/share/opennms/contrib/
@@ -170,12 +176,11 @@ install: build
 	## Setup the opennms-server package
 	##
 
-	cp $(CURDIR)/debian/opennms.binscript \
+	install -m 755 $(CURDIR)/debian/opennms.binscript \
 		$(ONMSSVR)/usr/bin/opennms
-	cp $(CURDIR)/debian/opennms-server.overrides \
+	install -m 644 $(CURDIR)/debian/opennms-server.overrides \
 		$(ONMSSVR)/usr/share/lintian/overrides/opennms-server
-	mv $(TMP)/usr/share/opennms/etc/* \
-		$(ONMSSVR)/etc/opennms/
+	mv $(TMP)/usr/share/opennms/etc/* $(ONMSSVR)/etc/opennms/
 	mv $(TMP)/usr/share/opennms/lib/*.jar \
 		$(ONMSSVR)/usr/share/opennms/lib/
 
@@ -203,20 +208,19 @@ install: build
 		$(ONMSSVR)/etc/opennms/magic-users.properties \
 		$(ONMSSVR)/etc/opennms/vulnscand-configuration.xml
 	chmod 2775 $(ONMSSVR)/etc/opennms $(ONMSSVR)/etc/opennms/events
-	chmod 755 $(ONMSSVR)/usr/bin/opennms
+	#chmod 755 $(ONMSSVR)/usr/bin/opennms
 	chmod 644 $(ONMSSVR)/usr/share/opennms/lib/*.jar
 
 	##
 	## Setup the opennms-webapp package
 	##
-
 	mv $(TMP)/usr/share/java/webapps/opennms \
 		$(ONMSWEB)/usr/share/java/webapps/
 #	mv $(ONMSWEB)/usr/share/java/webapps/opennms/WEB-INF/web.xml \
 #		$(ONMSWEB)/etc/opennms/
-	cp $(CURDIR)/debian/opennms-webapp.overrides \
+	install -m 644 $(CURDIR)/debian/opennms-webapp.overrides \
 		$(ONMSWEB)/usr/share/lintian/overrides/opennms-webapp
-	cp $(CURDIR)/debian/tomcat.policy \
+	install -m 644 $(CURDIR)/debian/tomcat.policy \
 		$(ONMSWEB)/etc/tomcat4/policy.d/opennms.policy
 
 	# Fix tomcat port number for Debian standard tomcat4 8180
@@ -230,7 +234,6 @@ install: build
 	mv $(ONMSWEB)/usr/share/java/webapps/opennms/WEB-INF/web.xml.tmp \
 		$(ONMSWEB)/usr/share/java/webapps/opennms/WEB-INF/web.xml
 
-
 	# Fix permissions and ownership
 	chgrp -R nogroup $(ONMSWEB)/etc/opennms
 	chmod 2775 $(ONMSWEB)/etc/opennms
@@ -240,9 +243,7 @@ install: build
 	##
 	## Setup the opennms-doc package
 	##
-
-	cp -a $(CURDIR)/work/docs/* \
-		$(ONMSDOC)/usr/share/doc/opennms-doc/
+	cp -a $(CURDIR)/work/docs/* $(ONMSDOC)/usr/share/doc/opennms-doc/
 
 
 # Build architecture-independent files here.
