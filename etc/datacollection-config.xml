@@ -323,14 +323,13 @@
 			<systemDef name = "Enterprise">
 				<sysoidMask>.1.3.6.1.4.1.</sysoidMask>
 				<collect>
-					<includeGroup>mib2-interfaces-net-snmp</includeGroup>
+					<includeGroup>mib2-interfaces-snmp</includeGroup>
 				</collect>
 			</systemDef>		
 
 			<systemDef name = "APC UPS">
 				<sysoidMask>.1.3.6.1.4.1.318.</sysoidMask>
                                 <collect>
-					<includeGroup>mib2-interfaces</includeGroup>
                                         <includeGroup>APC</includeGroup>
 				</collect>
                         </systemDef>
@@ -338,7 +337,6 @@
 			<systemDef name = "Bay Routers">
 				<sysoidMask>.1.3.6.1.4.1.18.</sysoidMask>
 				<collect>
-					<includeGroup>mib2-interfaces</includeGroup>
 					<includeGroup>bay-router</includeGroup>
 				</collect>
 			</systemDef>
@@ -346,7 +344,6 @@
 			<systemDef name = "CheckPoint">
 				<sysoid>.1.3.6.1.4.1.2620.1</sysoid>
 				<collect>
-					<includeGroup>mib2-interfaces</includeGroup>
 					<includeGroup>checkpoint-host</includeGroup>
 				</collect>
 			</systemDef>
@@ -354,7 +351,6 @@
 			<systemDef name = "Cisco Routers">
 				<sysoidMask>.1.3.6.1.4.1.9.1.</sysoidMask>
 				<collect>
-					<includeGroup>mib2-interfaces</includeGroup>
 					<includeGroup>cisco-router</includeGroup>
 					<includeGroup>cisco-router-if-stats</includeGroup>
 					<includeGroup>cisco-router-env</includeGroup>
@@ -364,7 +360,6 @@
 			<systemDef name = "Citrix">
 				<sysoid>.1.3.6.1.4.1.311.1.1.3.1.2</sysoid>
 				<collect>
-					<includeGroup>mib2-interfaces</includeGroup>
 					<includeGroup>windows-host</includeGroup>
 				</collect>
 			</systemDef>
@@ -379,7 +374,6 @@
 			<systemDef name = "Extreme Networks">
 				<sysoidMask>.1.3.6.1.4.1.1916.2.</sysoidMask>
 				<collect>
-					<includeGroup>mib2-interfaces</includeGroup>
 					<includeGroup>extreme-sys</includeGroup>
 				</collect>
 			</systemDef>
@@ -387,7 +381,6 @@
                         <systemDef name = "HpPrinters">
                         	<sysoidMask>.1.3.6.1.4.1.11.2.3.9.1</sysoidMask>
                                 <collect>
-                                        <includeGroup>mib2-interfaces</includeGroup>
                                         <includeGroup>printer-usage</includeGroup>
                                 </collect>
                         </systemDef>
@@ -402,7 +395,6 @@
 			<systemDef name = "HP-UX">
 				<sysoidMask>.1.3.6.1.4.1.11.2.3.2.</sysoidMask>
 				<collect>
-					<includeGroup>mib2-interfaces</includeGroup>
 					<includeGroup>hpux</includeGroup>
 				</collect>
 			</systemDef>
@@ -410,7 +402,6 @@
                         <systemDef name = "Juniper Routers">
                                 <sysoidMask>.1.3.6.1.4.1.2636.1.</sysoidMask>
                                 <collect>
-                                        <includeGroup>mib2-interfaces</includeGroup>
                                         <includeGroup>juniper-router</includeGroup>
                                 </collect>
                         </systemDef>
@@ -418,7 +409,6 @@
 			<systemDef name = "Net-SNMP">
 				<sysoidMask>.1.3.6.1.4.1.2021.250.</sysoidMask>
 				<collect>
-					<includeGroup>mib2-interfaces-net-snmp</includeGroup>
 					<includeGroup>mib2-host-resources-storage</includeGroup> 
 					<includeGroup>mib2-host-resources-system</includeGroup> 
 					<includeGroup>mib2-host-resources-memory</includeGroup> 
@@ -431,7 +421,6 @@
 			<systemDef name = "New Net-SNMP">
 				<sysoidMask>.1.3.6.1.4.1.8072.3.</sysoidMask>
 				<collect>
-					<includeGroup>mib2-interfaces-net-snmp</includeGroup>
 					<includeGroup>mib2-host-resources-storage</includeGroup> 
 					<includeGroup>mib2-host-resources-system</includeGroup> 
 					<includeGroup>mib2-host-resources-memory</includeGroup> 
@@ -444,7 +433,6 @@
 			<systemDef name = "Net Health">
 			        <sysoidMask>.1.3.6.1.4.1.546</sysoidMask>
 			        <collect>
-			                <includeGroup>mib2-interfaces-net-snmp</includeGroup>
 			                <includeGroup>mib2-host-resources-storage</includeGroup>
 			                <includeGroup>mib2-host-resources-system</includeGroup>
 			                <includeGroup>mib2-host-resources-memory</includeGroup>
@@ -457,7 +445,6 @@
 			<systemDef name = "Netware">
 				<sysoidMask>.1.3.6.1.4.1.23.</sysoidMask>
 				<collect>
-					<includeGroup>mib2-interfaces</includeGroup>
 					<includeGroup>netware-host</includeGroup>
 				</collect>
 			</systemDef>
@@ -474,7 +461,6 @@
 			<systemDef name = "3Com Routers">
 				<sysoidMask>.1.3.6.1.4.1.43.</sysoidMask>
 				<collect>
-					<includeGroup>mib2-interfaces</includeGroup>
 					<includeGroup>3com-router-sys</includeGroup>
 					<includeGroup>3com-router-perf</includeGroup>
 				</collect>
@@ -483,7 +469,6 @@
 			<systemDef name = "Windows NT/2000">
 				<sysoidMask>.1.3.6.1.4.1.311.1.1.3.1.</sysoidMask>
 				<collect>
-					<includeGroup>mib2-interfaces</includeGroup>
 					<includeGroup>windows-host</includeGroup>
 					<includeGroup>checkpoint-host</includeGroup>
 					<includeGroup>domino-stats</includeGroup>
