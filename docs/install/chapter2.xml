@@ -58,6 +58,14 @@
     important to install the SDK instead of the JRE, as Tomcat will need to
     compile Java code (which requires "javac" in the SDK).</para>
 
+    <para>Note: It looks like the installer for 1.1.3 only looks for
+    <filename>java</filename> in <filename>/bin/java</filename>. Be sure to
+    symbolically link it for now:</para>
+
+    <para><programlisting>ln -s /usr/java/j2sdk1.4.2_04/bin/java /bin/java</programlisting></para>
+
+    <para>replacing the first path with your path, if different.</para>
+
     <para>If you are attempting to install version 1.1.3 or later, you will
     need to use Java version 1.4.2 or later. You can get it from <ulink
     url="???">Sun's</ulink> website. Step through the licensing process and
