@@ -44,9 +44,6 @@ for property in `list_properties`; do
 	fi
 done
 
-# other misc properties used for the build
-DEFINES="$DEFINES -Dopennms.version.major="`get_property opennms.version | sed -e 's#\\..*##'`
-
 if [ "$VERBOSE" = "1" ]; then
 	echo "------------------------------------------------------------------------------"
 	echo "Environment Variables"
@@ -62,9 +59,9 @@ fi
 
 if [ "$VERBOSE" = "1" ]; then
 	DEFINES="$DEFINES -verbose"
-	echo $JAVA_HOME/bin/java $DEFINES -Dant.home=devlib -Droot.source="$PREFIX" -Djava.home="$JAVA_HOME" -cp "devlib/ant-launcher.jar" \
+	echo $JAVA_HOME/bin/java $DEFINES -Dant.home=devlib -Droot.source="$PREFIX" -cp "devlib/ant-launcher.jar" \
 		-mx256m org.apache.tools.ant.launch.Launcher "$@"
 fi
 
-$JAVA_HOME/bin/java $DEFINES -Dant.home=devlib -Droot.source="$PREFIX" -Djava.home="$JAVA_HOME" -cp "devlib/ant-launcher.jar" \
+$JAVA_HOME/bin/java $DEFINES -Dant.home=devlib -Droot.source="$PREFIX" -cp "devlib/ant-launcher.jar" \
 	-mx256m org.apache.tools.ant.launch.Launcher "$@"
