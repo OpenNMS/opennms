@@ -1,3 +1,8 @@
+1.1.4 to 1.1.5
+----------------------------------------------------------------------
+- Added a patch to prevent issues with Cisco Routers and CEF enabled.
+  Thx Siddhartha. Bug 803.
+
 1.1.3 to 1.1.4
 ----------------------------------------------------------------------
 - Updated the release notes and install guide.

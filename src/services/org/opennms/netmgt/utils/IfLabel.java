@@ -45,6 +45,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.*;
 
 import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
@@ -110,6 +111,12 @@ public class IfLabel extends Object
 		{
 			// If the description portion of ifLabel matches an entry 
 			// in the snmpinterface table...
+			
+		//	String snmpifdesc = rs.getString("snmpifdescr");
+			if(Pattern.matches(".*-cef.*",rs.getString("snmpifdescr"))) continue; 
+
+
+
 			if (
 				(AlphaNumeric.parseAndReplace(rs.getString("snmpifname"), '_').equals(desc)) ||
 				(AlphaNumeric.parseAndReplace(rs.getString("snmpifdescr"), '_').equals(desc))
