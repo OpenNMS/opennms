@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # postgresql	This is the init script for starting up the PostgreSQL
 #		server
 #
@@ -124,7 +124,7 @@ start(){
 		# Is expanded this early to be used in the command su runs
 		echo "export LANG LC_ALL LC_CTYPE LC_COLLATE LC_NUMERIC LC_CTYPE LC_TIME" >> $PGDATA/../initdb.i18n
 		# Initialize the database
-		su -l postgres -s /bin/sh -c "/usr/bin/initdb --pgdata=/var/lib/pgsql/data > /dev/null 2>&1" < /dev/null
+		su -l postgres -s /bin/bash -c "/usr/bin/initdb --pgdata=/var/lib/pgsql/data > /dev/null 2>&1" < /dev/null
 		[ -f $PGDATA/PG_VERSION ] && echo_success
 		[ ! -f $PGDATA/PG_VERSION ] && echo_failure
 		echo
@@ -140,7 +140,7 @@ start(){
 		rm -f /tmp/.s.PGSQL.* > /dev/null
 		rm -f $PGDATA/postmaster.pid >/dev/null
 		echo -n "$PSQL_START"
-		su -l postgres -s /bin/sh -c "/usr/bin/pg_ctl  -D $PGDATA -p /usr/bin/postmaster start  > /dev/null 2>&1" < /dev/null
+		su -l postgres -s /bin/bash -c "/usr/bin/pg_ctl  -D $PGDATA -p /usr/bin/postmaster start  > /dev/null 2>&1" < /dev/null
  		sleep 1
  		pid=`pidof -s postmaster`
  		if [ $pid ]
@@ -182,7 +182,7 @@ stop(){
 	else
 		export PGDATA=/var/lib/pgsql/data
 	fi
-	su -l postgres -s /bin/sh -c "/usr/bin/pg_ctl stop -D $PGDATA -s -m fast" > /dev/null 2>&1
+	su -l postgres -s /bin/bash -c "/usr/bin/pg_ctl stop -D $PGDATA -s -m fast" > /dev/null 2>&1
         ret=$? # This will always be 0, as the return code doesn't propagate... Fix that some day.
         if [ $ret -eq 0 ]; then
 	    echo_success

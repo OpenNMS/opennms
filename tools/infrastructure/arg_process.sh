@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 VERSION_BUILD_ARG_PROCESS='1.1.1.1'
 PACKAGES="$PACKAGES ARG_PROCESS"

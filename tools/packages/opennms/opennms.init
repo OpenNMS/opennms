@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # chkconfig: 345 99 00
 # description: Starts and stops the OpenNMS network management
 #              poller and backend processes

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Wrapper script for Tomcat 4.0, to be sure it will allways
 # be run with correct user profile (tomcat4 by default)

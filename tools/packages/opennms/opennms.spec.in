@@ -68,6 +68,8 @@ Source:			%{name}-source-%{version}-%{release}.tar.gz
 URL:			ftp://opennms.org/pub/releases/OpenNMS/
 BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
+AutoReqProv:		no
+
 # grr, we depend on XFree86-libs because j2sdk package deps are broken!
 Requires:		rrdtool, perl-DBD-Pg, j2sdk >= 1.4, metamail, XFree86-libs
 
