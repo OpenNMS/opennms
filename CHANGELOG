@@ -1,5 +1,6 @@
 1.1.3 to 1.1.4
 ----------------------------------------------------------------------
+- Added data collection and graphs for SNMP Informant.
 - When the asset information for a node is modified, OpenNMS
   will now update RTC to include any changes.
 - When a new node is discovered, created a null record in
