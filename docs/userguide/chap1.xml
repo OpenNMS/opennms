@@ -2,6 +2,15 @@
 <chapter id="chap1" label="1">
 	<title>Chapter 1</title>
 	<subtitle>OpenNMS Basics</subtitle>
+                <para>
+                        Warning: This document is deprecated and refers to old code. 
+                        A new document is being developed, but for now the best source 
+                        of information can be found on 
+                        <ulink url="https://sourceforge.net/docman/?group_id=4141">Sourceforge</ulink>.
+                        This document may be wrong on a number of important issues, and it
+                        will definitely waste your time.
+                </para>
+
 	<para>
 		<emphasis>OpenNMS is a service and network management platform
 		for automatic node discovery, network services monitoring, operator

@@ -4,6 +4,14 @@
 <subtitle>Minimum Requirements</subtitle>
 	<sect1 id="chap1sect1" label="1.1">
 	<title>Minimum Requirements</title>
+                <para>
+                        Warning: This document is deprecated and refers to old code. 
+                        A new document is being developed, but for now the best source 
+                        of information can be found on 
+                        <ulink url="https://sourceforge.net/docman/?group_id=4141">Sourceforge</ulink>.
+                        This document may be wrong on a number of important issues, and it
+                        will definitely waste your time.
+                </para>
 		<para>
 			For purposes of this guide, requirements are very specific.  While 
 			actual requirements may vary, this document's purpose is to guide 
