@@ -1953,6 +1953,13 @@ public class Installer {
 	    m_out.println("DONE");
 	} catch (Exception e) {
 	    try {
+		m_dbconnection.commit();
+		m_dbconnection.setAutoCommit(true);
+	    } catch (Exception e_ignore) {
+		// ignore
+	    }
+
+	    try {
 		if (tableExists(table)) {
 		    st.execute("DROP TABLE " + table + m_cascade);
 		}
