@@ -166,7 +166,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
         return new Color(colorVal);
     }
 
-    private String[] tokenize(String line, String delims) {
+    private String[] tokenize(String line, String delims, boolean processQuoted) {
         Category log = ThreadCategory.getInstance(getClass());
         List tokenList = new LinkedList();
 
@@ -197,8 +197,12 @@ public class JRobinRrdStrategy implements RrdStrategy {
             } else if (ch == '\\') {
                 if (debugTokens)
                     log.debug("tokenize: found a backslash... escaping currToken = " + currToken);
-                escaping = true;
+                if (quoting && !processQuoted)
+                		currToken.append(ch);
+                else
+                		escaping = true;
             } else if (ch == '\"') {
+            	   if (!processQuoted) currToken.append(ch);
                 if (quoting) {
                     if (debugTokens)
                         log.debug("tokenize: found a quote ending quotation currToken = " + currToken);
@@ -246,7 +250,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
         Category log = ThreadCategory.getInstance(getClass());
         try {
             InputStream tempIn = null;
-            String[] commandArray = tokenize(command, " \t");
+            String[] commandArray = tokenize(command, " \t", false);
 
             RrdGraphDef graphDef = new RrdGraphDef();
             long start = 0;
@@ -274,7 +278,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
                         throw new IllegalArgumentException("--end must be followed by an end time");
                     }
                 } else if (arg.startsWith("--title=")) {
-                    String[] title = tokenize(arg, "=");
+                    String[] title = tokenize(arg, "=", true);
                     graphDef.setTitle(title[1]);
                 } else if (arg.equals("--title")) {
                     if (i + 1 < commandArray.length) {
@@ -284,34 +288,34 @@ public class JRobinRrdStrategy implements RrdStrategy {
                     }
                 } else if (arg.startsWith("DEF:")) {
                     String definition = arg.substring("DEF:".length());
-                    String[] def = tokenize(definition, ":");
-                    String[] ds = tokenize(def[0], "=");
+                    String[] def = tokenize(definition, ":", true);
+                    String[] ds = tokenize(def[0], "=", true);
                     File dsFile = new File(workDir, ds[1]);
                     graphDef.datasource(ds[0], dsFile.getAbsolutePath(), def[1], def[2]);
                 } else if (arg.startsWith("CDEF:")) {
                     String definition = arg.substring("CDEF:".length());
-                    String[] cdef = tokenize(definition, "=");
+                    String[] cdef = tokenize(definition, "=", true);
                     graphDef.datasource(cdef[0], cdef[1]);
                 } else if (arg.startsWith("LINE1:")) {
                     String definition = arg.substring("LINE1:".length());
-                    String[] line1 = tokenize(definition, ":");
-                    String[] color = tokenize(line1[0], "#");
+                    String[] line1 = tokenize(definition, ":", true);
+                    String[] color = tokenize(line1[0], "#", true);
                     graphDef.line(color[0], getColor(color[1]), line1[1]);
                 } else if (arg.startsWith("LINE2:")) {
                     String definition = arg.substring("LINE2:".length());
-                    String[] line2 = tokenize(definition, ":");
-                    String[] color = tokenize(line2[0], "#");
+                    String[] line2 = tokenize(definition, ":", true);
+                    String[] color = tokenize(line2[0], "#", true);
                     graphDef.line(color[0], getColor(color[1]), line2[1], 2);
 
                 } else if (arg.startsWith("LINE3:")) {
                     String definition = arg.substring("LINE3:".length());
-                    String[] line3 = tokenize(definition, ":");
-                    String[] color = tokenize(line3[0], "#");
+                    String[] line3 = tokenize(definition, ":", true);
+                    String[] color = tokenize(line3[0], "#", true);
                     graphDef.line(color[0], getColor(color[1]), line3[1], 3);
 
                 } else if (arg.startsWith("GPRINT:")) {
                     String definition = arg.substring("GPRINT:".length());
-                    String gprint[] = tokenize(definition, ":");
+                    String gprint[] = tokenize(definition, ":", true);
                     String format = gprint[2];
                     format = format.replaceAll("%(\\d*\\.\\d*)lf", "@$1");
                     format = format.replaceAll("%s", "@s");
@@ -320,14 +324,14 @@ public class JRobinRrdStrategy implements RrdStrategy {
 
                 } else if (arg.startsWith("AREA:")) {
                     String definition = arg.substring("AREA:".length());
-                    String area[] = tokenize(definition, ":");
-                    String[] color = tokenize(area[0], "#");
+                    String area[] = tokenize(definition, ":", true);
+                    String[] color = tokenize(area[0], "#", true);
                     graphDef.area(color[0], getColor(color[1]), area[1]);
 
                 } else if (arg.startsWith("STACK:")) {
                     String definition = arg.substring("STACK:".length());
-                    String stack[] = tokenize(definition, ":");
-                    String[] color = tokenize(stack[0], "#");
+                    String stack[] = tokenize(definition, ":", true);
+                    String[] color = tokenize(stack[0], "#", true);
                     graphDef.stack(color[0], getColor(color[1]), stack[1]);
                 } else {
                     log.warn("JRobin: Unrecognized graph argument: " + arg);
