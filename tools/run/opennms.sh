@@ -6,7 +6,7 @@ show_help () {
 
 Usage: $0 <command> [<service>]
  
-  command options: start|stop|status
+  command options: start|stop|status|check
 
   service options: all|<a service id from the etc/service-configuration.xml>
                    defaults to all
@@ -39,9 +39,9 @@ else
         fi
 fi
 
-OPENNMS_HOME="@root.install@"
-OPENNMS_PIDFILE="@root.install.pid@"
-OPENNMS_INITDIR="@root.install.initdir@"
+OPENNMS_HOME="/opt/OpenNMS"
+OPENNMS_PIDFILE="/var/run/opennms.pid"
+OPENNMS_INITDIR="/etc/init.d"
 START_TIMEOUT="180" # number of seconds before timing out on startupp
  
 pushd "$OPENNMS_HOME" >/dev/null 2>&1
@@ -103,7 +103,7 @@ SERVICE=$2
 [ "$SERVICE" = "all" ] && SERVICE=""
 
 # where to redirect "start" output
-REDIRECT=@root.install.logs@/output.log
+REDIRECT=/var/log/opennms/output.log
 
 ###############################################################################
 # Run opennms.sh with the "-t" option to enable the Java Platform Debugging
@@ -116,8 +116,8 @@ if [ "$TEST" = "1" ]; then
 	JPDA="-Xdebug -Xnoagent -Djava.compiler=none -Xrunjdwp:transport=dt_socket,server=y,address=8001,suspend=n"
 fi
 
-if [ -d /var/tomcat4/webapps/@ant.project.name@/WEB-INF ]; then
-	TOMCATDIR=/var/tomcat4/webapps/@ant.project.name@/WEB-INF
+if [ -d /var/tomcat4/webapps/opennms/WEB-INF ]; then
+	TOMCATDIR=/var/tomcat4/webapps/opennms/WEB-INF
 fi
 
 if [ `find $OPENNMS_HOME $TOMCATDIR -name \*.rpmnew | wc -l` -gt 0 ]; then
@@ -185,7 +185,7 @@ case "$COMMAND" in
 				echo "OpenNMS is partially running."
 				echo "If you have just attempted starting OpenNMS, please try again in a few"
 				echo "moments, otherwise, at least one service probably had issues starting."
-				echo "Check your logs in @root.install.logs@ for errors."
+				echo "Check your logs in /var/log/opennms for errors."
 				exit 1
 			fi
 		else
@@ -242,6 +242,19 @@ case "$COMMAND" in
 			fi
 		else
 			echo "OpenNMS is not running."
+		fi
+		;;
+	check)
+		if [ `list_opennms_pids | wc -l` -ge 1 ]; then
+			#do nothing.. its running
+			exit 0
+		else 
+			echo `date`": OpenNMS is not running... Restarting"
+			`/opt/OpenNMS/bin/opennms.sh start`
+			if [ -d "$OPENNMS_INITDIR" ] && [ -x "$OPENNMS_INITDIR/tomcat4" ]; then
+				$OPENNMS_INITDIR/tomcat4 restart
+			fi
+			exit 1
 		fi
 		;;
 	stop)
