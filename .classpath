@@ -22,7 +22,6 @@
 	<classpathentry kind="lib" path="lib/fop0170.jar"/>
 	<classpathentry kind="lib" path="lib/getopt.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-regexp-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/jasper-compiler.jar"/>
 	<classpathentry kind="lib" path="lib/jcifs.jar"/>
 	<classpathentry kind="lib" path="lib/jdhcp.jar"/>
 	<classpathentry kind="lib" path="lib/jimi100.jar"/>
