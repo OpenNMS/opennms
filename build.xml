@@ -1255,10 +1255,12 @@ OpenNMS as part of the post-install.
      <map from="${build.dir}/jsp-source/" to=""/>
    </pathconvert>
 
+   <mkdir dir="${build.dir}/jsp-classes-tmp"/>
+
    <for list="${jsp.compile.javac.sourcelist}" delimiter=":"
 	param="jsp.compile.javac.file">
      <sequential>
-       <javac destdir="${build.dir}/jsp-classes"
+       <javac destdir="${build.dir}/jsp-classes-tmp"
 	      debug="${compiler.debug}"
 	      optimize="${compiler.optimize}"
 	      verbose="${compiler.verbose}"
@@ -1269,6 +1271,18 @@ OpenNMS as part of the post-install.
 	   <path refid="jsp.compile.path"/>
 	 </classpath>
        </javac>
+
+       <propertyregex property="jsp.compile.destination.dir"
+		      input="@{jsp.compile.javac.file}"
+		      regexp="(.*)/"
+	  	      select="\1"
+		      override="true"/>
+
+       <mkdir dir="${build.dir}/jsp-classes/${jsp.compile.destination.dir}"/>
+
+       <move todir="${build.dir}/jsp-classes/${jsp.compile.destination.dir}">
+         <fileset dir="${build.dir}/jsp-classes-tmp/org/apache/jsp"/>
+       </move>
      </sequential>
    </for>
  </target>
