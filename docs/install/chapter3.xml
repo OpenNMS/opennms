@@ -57,12 +57,22 @@
             </listitem>
 
             <listitem>
-              <para>Then run the following command:</para>
+              <para>Then run the following command to build the package:</para>
 
               <para><programlisting>[root@host /root]# build-sun-jdk14 ./j2sdk-1_4_2_05-linux-i586.bin</programlisting></para>
 
               <para>where <filename>j2sdk-1_4_2_05-linux-i586.bin</filename>
               is the binary file you downloaded from Sun.</para>
+            </listitem>
+
+            <listitem>
+              <para>And finally install the package:</para>
+
+              <para><programlisting>[root@host /root]# dpkg -i j2sdk-1_4_2_05-linux-i586.deb</programlisting></para>
+
+              <para>where <filename>j2sdk-1_4_2_05-linux-i586.deb</filename>
+              is the Debian package that was just created by
+	      <filename>build-sun-jdk14</filename>.</para>
             </listitem>
           </itemizedlist>
         </listitem>
@@ -137,12 +147,22 @@
             </listitem>
 
             <listitem>
-              <para>Then run the following command:</para>
+              <para>Then run the following command to build the package:</para>
 
               <para><programlisting>[root@host /root]# build-sun-jdk14 ./j2sdk-1_4_2_05-linux-i586.bin</programlisting></para>
 
               <para>where <filename>j2sdk-1_4_2_05-linux-i586.bin</filename>
               is the binary file you downloaded from Sun.</para>
+            </listitem>
+
+            <listitem>
+              <para>And finally install the package:</para>
+
+              <para><programlisting>[root@host /root]# dpkg -i j2sdk-1_4_2_05-linux-i586.deb</programlisting></para>
+
+              <para>where <filename>j2sdk-1_4_2_05-linux-i586.deb</filename>
+              is the Debian package that was just created by
+	      <filename>build-sun-jdk14</filename>.</para>
             </listitem>
           </itemizedlist>
         </listitem>
