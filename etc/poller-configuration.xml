@@ -2,8 +2,7 @@
 <?castor class-name="org.opennms.netmgt.poller.PollerConfiguration"?>
 <poller-configuration threads="30" 
         serviceUnresponsiveEnabled="false"
-        xmlrpc="true"
-        xmlrpcServerUrl="@install.xmlrpc.server@">
+        xmlrpc="false">
 	<node-outage status="on" 
 	             pollAllIfNoCriticalServiceDefined="true">
 		<critical-service name="ICMP"/>
@@ -180,7 +179,7 @@
 	<monitor service="Sybase" 	class-name="org.opennms.netmgt.poller.TcpMonitor"/>
 	<monitor service="Informix" 	class-name="org.opennms.netmgt.poller.TcpMonitor"/>
 	<monitor service="SQLServer" 	class-name="org.opennms.netmgt.poller.TcpMonitor"/>
-	<monitor service="SSH"		class-name="org.opennms.netmgt.poller.SshMonitor"/>
+	<monitor service="SSH"		class-name="org.opennms.netmgt.poller.TcpMonitor"/>
 	<monitor service="IMAP" 	class-name="org.opennms.netmgt.poller.ImapMonitor"/>
 	<monitor service="POP3" 	class-name="org.opennms.netmgt.poller.Pop3Monitor"/>
                	

@@ -210,6 +210,11 @@ public class EventConstants
 	public final static String	RESTART_POLLING_INTERFACE_EVENT_UEI = "uei.opennms.org/nodes/restartPollingInterface";
 	
         /**
+	 * The change service event UEI
+	 */
+	public final static String	XMLRPC_NOTIFICATION_EVENT_UEI = "uei.opennms.org/internal/capsd/xmlrpcNotification";
+        
+        /**
 	 * The node added event UEI
 	 */
 	public final static String	NODE_ADDED_EVENT_UEI = "uei.opennms.org/nodes/nodeAdded";
@@ -598,9 +603,32 @@ public class EventConstants
          */
         public final static String PARM_TRANSACTION_NO = "txno";
 
-	//
+        /**
+         * The uei of a source event to report to external xmlrpc server.
+         */
+        public final static String PARM_SOURCE_EVENT_UEI = "sourceUei";
+	
+        /**
+         * The message to explain a source event.
+         */
+        public final static String PARM_SOURCE_EVENT_MESSAGE = "eventMessage";
+        
+        /**
+         * The status to indicate which kind of external xmlrpc command to invoke.
+         */
+        public final static String PARM_SOURCE_EVENT_STATUS = "eventStatus";
+        
+        //
 	// End event parms
 	//
+
+        /**
+         * Status code used to indicate which external xmlrpc command to
+         * invoke to report the occurrence of selected events.
+         */
+        public final static int XMLRPC_NOTIFY_RECEIVED = 0;
+        public final static int XMLRPC_NOTIFY_SUCCESS  = 1;
+        public final static int XMLRPC_NOTIFY_FAILURE  = 2;
 
 	/**
 	 * <P>An utility method to parse a string into a 'Date' instance.

@@ -9,21 +9,6 @@
 			      - to make the access database independant
 			-->
   			<attribute name="getNextOutageID" type="string" use="required"/>
-                        
-                        <!--- a flag to indicate if the outages have to be broadcast to an external server
-                              - through xmlrpc
-			-->
-  			<attribute name="xmlrpc" type="string" use="optional" default="false">
-                                <simpleType>
-                                        <restriction base="string">
-                                                <pattern value="(true|false)"/>
-                                        </restriction>
-                                </simpleType>
-                        </attribute>
-                        
-                        <!--- the external xmlrpc server which listen any outage occurs in the NMS server
-			-->
-  			<attribute name="xmlrpcServerUrl" type="string" use="optional"/>
 		</complexType>
 	</element>
 </schema>

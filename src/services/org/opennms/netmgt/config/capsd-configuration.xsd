@@ -61,11 +61,6 @@
 					</restriction>
 				</simpleType>
 			</attribute>
-			
-			<!-- The URL of the external xmlrpc server which listens any error notification
-                             from the NMS during processing an event.
-			-->
-			<attribute name="xmlrpcServerUrl" type="string" use="optional"/>
 		</complexType>
 	</element>
 

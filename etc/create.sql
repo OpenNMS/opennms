@@ -60,6 +60,8 @@ create table serverMap (
 	ipAddr			varchar(16) not null,
 	serverName		varchar(64) not null );
 
+create index server_name_idx on serverMap(serverName);
+
 --########################################################################
 --# serviceMap table - Contains a list of IP Addresses mapped to 
 --#                    OpenNMS services
@@ -74,6 +76,8 @@ create table serverMap (
 create table serviceMap (
 	ipAddr			varchar(16) not null,
 	serviceMapName		varchar(32) not null );
+create index servicemap_name_idx on serviceMap(serviceMapName);
+create index serviceMap_ipaddr_idx on serviceMap(ipAddr);
 
 --########################################################################
 --# distPoller table - Contains information on Distributed Pollers
@@ -169,6 +173,7 @@ create table node (
 	lastCapsdPoll   timestamp );
 
 create unique index node_id_idx on node(nodeID);
+create index node_id_type_idx on node(nodeID, nodeType);
 create index node_label_idx on node(nodeLabel);
 
 --########################################################################
@@ -219,11 +224,11 @@ create table ipInterface (
 	ipLastCapsdPoll		timestamp,
 	isSnmpPrimary           char(1) );
 
+create index ipinterface_nodeid_ipaddr_ismanaged_idx on ipInterface(nodeID, ipAddr, isManaged);        
+create index ipinterface_ipaddr_ismanaged_idx on ipInterface(ipAddr, isManaged);
+create index ipinterface_ipaddr_idx on ipInterface(ipAddr);
+create index ipinterface_nodeid_ismanaged_idx on ipInterface(ipAddr);
 create index ipinterface_nodeid_idx on ipInterface(nodeID);
-create index ipinterface_ifindex_idx on ipInterface(ifIndex);
-create index ipinterface_iphostname_idx on ipInterface(ipHostname);
-create index ipinterface_ismanaged_idx on ipInterface(isManaged);
-create index ipinterface_ipstatus_idx on ipInterface(ipStatus);
 
 --#########################################################################
 --# snmpInterface Table - Augments the ipInterface table with information
@@ -276,6 +281,7 @@ create table snmpInterface (
 	snmpIfAdminStatus	integer,
 	snmpIfOperStatus	integer );
 
+create index snmpinterface_nodeid_ifindex_idx on snmpinterface(nodeID, snmpIfIndex);
 create index snmpinterface_nodeid_idx on snmpinterface(nodeID);
 create index snmpinterface_ipaddr_idx on snmpinterface(ipaddr);
 
@@ -340,12 +346,10 @@ create table ifServices (
 	source			char(1),
 	notify                  char(1) );
 
+create index ifservices_nodeid_ipaddr_status on ifservices(nodeID, ipAddr, status);
+create index ifservices_nodeid_status on ifservices(nodeid, status);
 create index ifservices_nodeid_idx on ifservices(nodeID);
-create index ifservices_ipaddr_idx on ifservices(ipAddr);
-create index ifservices_ifindex_idx on ifservices(ifIndex);
 create index ifservices_serviceid_idx on ifservices(serviceID);
-create index ifservices_status_idx on ifservices(status);
-create index ifservices_notify_idx on ifservices(notify);
 
 --##################################################################
 --# events Table -- This table provides information on the events

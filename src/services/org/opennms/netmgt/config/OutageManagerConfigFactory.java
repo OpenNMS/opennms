@@ -183,25 +183,4 @@ public final class OutageManagerConfigFactory
 	{
 		return m_config.getGetNextOutageID();
 	}
-	
-        /**
-	 * <p>Return the boolean xmlrpc as string to indicate if 
-         * notification to external xmlrpc server is needed.</p>
-	 *
-	 * @return boolean flag as a string value
-	 */
-	public synchronized String getXmlrpc()
-	{
-		return m_config.getXmlrpc();
-	}
-
-	/**
-	 * <p>Return the xmlrpc server URL as a string</p>
-	 *
-	 * @return the xmlrpc server URL
-	 */
-	public synchronized String getXmlrpcServerUrl()
-	{
-		return m_config.getXmlrpcServerUrl();
-        }
 }

@@ -70,6 +70,7 @@ import org.opennms.netmgt.config.server.*;
  * <em>init()</em> is called before calling any other method to ensure
  * the config is loaded before accessing other convenience methods</p>
  *
+ * @author <a href="mailto:jamesz@blast.com">James Zuo</a>
  * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
@@ -90,7 +91,7 @@ public final class PollerConfigFactory
 	/**
 	 * The config class loaded from the config file
 	 */
-	private PollerConfiguration		m_config;
+	private PollerConfiguration	        m_config;
 
 	/**
 	 * A mapping of the configured URLs to a list of the specific IPs
@@ -98,8 +99,14 @@ public final class PollerConfigFactory
 	 */
 	private Map				m_urlIPMap;
 
+	/**
+	 * A mapping of the configured package to a list of IPs selected 
+	 * via filter rules, so as to avoid repetetive database access.
+	 */
+	private Map     			m_pkgIpMap;
+        
         /** 
-         * A boolean flag to indicate If a filter rule agiant the local 
+         * A boolean flag to indicate If a filter rule agaist the local 
          * OpenNMS server has to be used.
          */
         private static boolean                  m_verifyServer;
@@ -158,6 +165,12 @@ public final class PollerConfigFactory
 		cfgIn.close();
 
 		createUrlIpMap();
+                
+                OpennmsServerConfigFactory.init();
+                m_verifyServer = OpennmsServerConfigFactory.getInstance().verifyServer();
+                m_localServer = OpennmsServerConfigFactory.getInstance().getServerName();
+                
+                createPackageIpListMap();
 	}
 
 	/**
@@ -188,10 +201,6 @@ public final class PollerConfigFactory
 		ThreadCategory.getInstance(PollerConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
 		
 		m_singleton = new PollerConfigFactory(cfgFile.getPath());
-
-                OpennmsServerConfigFactory.init();
-                m_verifyServer = OpennmsServerConfigFactory.getInstance().verifyServer();
-                m_localServer = OpennmsServerConfigFactory.getInstance().getServerName();
 
 		m_loaded = true;
 	}
@@ -292,17 +301,6 @@ public final class PollerConfigFactory
                         return false;
         }
         
-        /**
-         * <p> this method returns the external xmlrpc server URL as a 
-         * string.</p>
-         *
-         * @return      the xmlrpc server URL.
-         */
-        public synchronized String getXmlrpcServerUrl()
-        {
-                return m_config.getXmlrpcServerUrl();
-        }
-         
 	/**
 	 * <p>This method returns the configured critical service name</p>
 	 *
@@ -368,6 +366,62 @@ public final class PollerConfigFactory
         }
 
 	/**
+	 * <p>This method is used to establish package agaist iplist  
+         * mapping, with which, the iplist is selected per package
+         * via the configured filter rules from the database. </p>
+	 */
+	private void createPackageIpListMap()
+	{
+		Category log = ThreadCategory.getInstance(this.getClass());
+
+		m_pkgIpMap = new HashMap();
+		
+		Enumeration pkgEnum = m_config.enumeratePackage();
+		while (pkgEnum.hasMoreElements())
+		{
+			org.opennms.netmgt.config.poller.Package pkg = (org.opennms.netmgt.config.poller.Package)pkgEnum.nextElement();
+                        
+		        //
+		        // Get a list of ipaddress per package agaist the filter rules from
+                        // database and populate the package, IP list map.
+		        //
+		        Filter filter = new Filter();
+                        StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
+		        
+                        try
+		        {
+                                if (m_verifyServer)
+                                {
+                                        filterRules.append(" & (serverName == ");
+                                        filterRules.append('\"');
+                                        filterRules.append(m_localServer);
+                                        filterRules.append('\"');
+                                        filterRules.append(")");
+                                }
+		                
+                                if (log.isDebugEnabled())
+			                log.debug("createPackageIpMap: package is " + pkg.getName() 
+                                        + ". filer rules are  "  + filterRules.toString());
+                                        
+			        List ipList = filter.getIPList(filterRules.toString());
+				if (ipList.size() > 0)
+				{
+					m_pkgIpMap.put(pkg, ipList);
+				}
+		        }
+		        catch (Throwable t)
+		        {
+			        if(log.isEnabledFor(Priority.ERROR))
+			        {
+				        log.error("createPackageIpMap: failed to map package: "
+				        	  + pkg.getName() + " to an IP List", t);
+			        }
+                        }
+		}
+        }
+
+        
+	/**
 	 * <p>This method is used to determine if the named interface is
 	 * included in the passed package definition. If the interface
 	 * belongs to the package then a value of true is returned. If
@@ -387,39 +441,18 @@ public final class PollerConfigFactory
 	public synchronized boolean interfaceInPackage(String iface, org.opennms.netmgt.config.poller.Package pkg)
 	{
 		Category log = ThreadCategory.getInstance(this.getClass());
-
-		//
-		// check if interface passes the package filter
-		//
-		Filter filter = new Filter();
-                StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
+              
 		boolean filterPassed = false;
-		try
-		{
-                        if (m_verifyServer)
-                        {
-                                filterRules.append(" & (serverName == ");
-                                filterRules.append('\"');
-                                filterRules.append(m_localServer);
-                                filterRules.append('\"');
-                                filterRules.append(")");
-                        }
-			filterPassed = filter.isValid(iface, filterRules.toString());
-		}
-		catch (Throwable t)
-		{
-			if(log.isEnabledFor(Priority.ERROR))
-			{
-				log.error("interfaceInPackage: Unable to validate interface: "
-					  + iface + " against filter for package: "
-					  + pkg.getName() + " - interface WILL NOT BE SCHEDULED", t);
-			}
-			filterPassed = false;
-		}
 
+		// get list of IPs in this package 
+		java.util.List ipList = (java.util.List)m_pkgIpMap.get(pkg);
+		if (ipList != null && ipList.size() > 0)
+		{
+			filterPassed = ipList.contains(iface);
+		}
+                
 		if (log.isDebugEnabled())
-			log.debug("interfaceInPackage: Interface " + iface + " passed filter "
-				  + filterRules.toString() + " for package "
+			log.debug("interfaceInPackage: Interface " + iface + " passed filter for package "
 				  + pkg.getName() + "?: " + filterPassed);
 
 		if (!filterPassed)
@@ -674,6 +707,7 @@ public final class PollerConfigFactory
 		
 		return false;
 	}
+
         /**
          * Retrieves configured RRD step size.
          *

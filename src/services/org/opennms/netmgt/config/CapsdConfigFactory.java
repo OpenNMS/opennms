@@ -1895,14 +1895,4 @@ public final class CapsdConfigFactory
          {
                 return m_config.getXmlrpc();
          }
-
-         /**
-          * Return the xmlrpc server URL as a string
-          *
-          * @return the xmlrpc server URL
-          */
-          public String getXmlrpcServerUrl()
-          {
-                return m_config.getXmlrpcServerUrl();
-          }
 }
