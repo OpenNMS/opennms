@@ -340,6 +340,7 @@ public final class DbIpInterfaceEntry {
         } else {
             sqlText.append(" WHERE nodeID = ? AND ipAddr = ?");
         }
+        sqlText.append(" AND isManaged <> 'D'");
 
         log.debug("DbIpInterfaceEntry.update: SQL update statment = " + sqlText.toString());
 
