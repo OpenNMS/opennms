@@ -291,9 +291,13 @@ public class PollablesTest extends TestCase {
                     
                     PollableService svc = pNetwork.createService(nodeId, InetAddress.getByName(ipAddr), serviceName);
                     PollableServiceConfig pollConfig = new PollableServiceConfig(svc, pollerConfig, pollOutageConfig, pkg, scheduler);
-                    Schedule schedule = new Schedule(svc, pollConfig, scheduler);
                     svc.setPollConfig(pollConfig);
-                    svc.setSchedule(schedule);
+                    synchronized (svc) {
+                        if (svc.getSchedule() == null) {
+                            Schedule schedule = new Schedule(svc, pollConfig, scheduler);
+                            svc.setSchedule(schedule);
+                        }
+                    }
 
                     Number svcLostEventId = (Number)rs.getObject("svcLostEventId");
                     //MockUtil.println("svcLostEventId for "+svc+" is "+svcLostEventId);

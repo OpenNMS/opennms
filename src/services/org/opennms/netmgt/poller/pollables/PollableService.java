@@ -240,11 +240,11 @@ public class PollableService extends PollableElement implements Runnable {
     /**
      * @param schedule
      */
-    public void setSchedule(Schedule schedule) {
+    public synchronized void setSchedule(Schedule schedule) {
         m_schedule = schedule;
     }
     
-    public Schedule getSchedule() {
+    public synchronized Schedule getSchedule() {
         return m_schedule;
     }
     
@@ -292,5 +292,15 @@ public class PollableService extends PollableElement implements Runnable {
             }
         };
         withTreeLock(r);
+    }
+
+    /**
+     * 
+     */
+    public void schedule() {
+        if (m_schedule == null)
+            throw new IllegalStateException("Cannot schedule a service whose schedule is set to null");
+        
+        m_schedule.schedule();
     }
 }

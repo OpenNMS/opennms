@@ -396,9 +396,13 @@ public final class Poller implements PausableFiber {
         
         PollableService svc = m_network.createService(nodeId, addr, serviceName);
         PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollOutagesConfig, pkg, m_scheduler);
-        Schedule schedule = new Schedule(svc, pollConfig, m_scheduler);
         svc.setPollConfig(pollConfig);
-        svc.setSchedule(schedule);
+        synchronized(svc) {
+            if (svc.getSchedule() == null) {
+                Schedule schedule = new Schedule(svc, pollConfig, m_scheduler);
+                svc.setSchedule(schedule);
+            }
+        }
         
         
         if (svcLostEventId == null) 
@@ -419,7 +423,7 @@ public final class Poller implements PausableFiber {
             }
         }
         
-        schedule.schedule();
+        svc.schedule();
 
     }
 
