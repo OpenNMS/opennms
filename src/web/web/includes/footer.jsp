@@ -91,7 +91,7 @@
   </tr>
   <tr> 
     <td align="center" >
-      <font  SIZE="-1">Copyright &copy; 1999-2002 Oculan Corp. <a HREF="http://www.opennms.org/">OpenNMS.org</a> is a project supported by Oculan Corp. </font>
+      <font  SIZE="-1">Copyright &copy; 2002 <a href="http://www.sortova.com">Sortova Consulting Group, Inc.</a>. Parts Copyright &copy; 1999-2002 <a href="http://www.oculan.com">Oculan Corp.</a> </font>
     </td>
   </tr>
 </table>

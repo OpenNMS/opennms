@@ -8,6 +8,11 @@
 
 <script language="Javascript" type="text/javascript" >
 
+  function deletePost()
+  {
+      document.deleteNodes.submit();
+  }
+
   function submitPost()
   {
       document.getNodes.submit();
@@ -82,6 +87,10 @@
   <input type="hidden"/>
 </FORM>
 
+<FORM METHOD="POST" NAME="deleteNodes" ACTION="admin/deleteNodes">
+  <input type="hidden"/>
+</FORM>
+
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
   <tr>
     <td> &nbsp; </td>
@@ -97,6 +106,8 @@
         <a HREF="admin/notification/index.jsp">Configure Notifications</a>
       <p>
         <a HREF="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a>
+      <p>
+        <a HREF="javascript:deletePost()">Delete Nodes</a>
       <p>
         <a HREF="admin/pollerConfig/index.jsp">Configure Pollers</a>
       <p>
@@ -169,6 +180,9 @@
             ranges you want to manage, as well as the interfaces and services within those ranges,
             may change. <b>Manage and Unmanage Interfaces and Services</b> allows you to change 
             your OpenNMS configuration along with your network.
+        </p>
+
+        <p><b>Delete Nodes</b> is an interface to permanently delete nodes from the database.
         </p>
 
         <p><b>Configure Pollers</b> provides an easy way to modify the polling status of 

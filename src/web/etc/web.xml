@@ -551,6 +551,16 @@
   </servlet>
 
   <servlet>
+    <!-- servlet for grabbing node information -->
+    <servlet-name>deleteSelNodes</servlet-name>
+    <servlet-class>org.opennms.web.admin.nodeManagement.DeleteNodesServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for grabbing node information -->
+    <servlet-name>deleteNodes</servlet-name>
+    <servlet-class>org.opennms.web.admin.nodeManagement.DeleteGetNodesServlet</servlet-class>
+  </servlet>
+  <servlet>
     <!-- servlet for grabbing node, interface and service information -->
     <servlet-name>getNodes</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.GetNodesServlet</servlet-class>
@@ -972,6 +982,14 @@
     <url-pattern>/admin/asset/assets.csv</url-pattern>
   </servlet-mapping>
   
+  <servlet-mapping>
+    <servlet-name>deleteSelNodes</servlet-name>
+    <url-pattern>/admin/deleteSelNodes</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>deleteNodes</servlet-name>
+    <url-pattern>/admin/deleteNodes</url-pattern>
+  </servlet-mapping>
   <servlet-mapping>
     <servlet-name>getNodes</servlet-name>
     <url-pattern>/admin/getNodes</url-pattern>
