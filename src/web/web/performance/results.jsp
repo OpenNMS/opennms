@@ -69,10 +69,30 @@
         //only support last 24 hours in this version, need to clean up
         //this code by making a comman date param API, LJK 04/30/2002
         if(relativeTime != null ) {
-            java.util.Calendar cal = new java.util.GregorianCalendar();
-            end = Long.toString(cal.getTime().getTime());
-            cal.add( java.util.Calendar.DATE, -1 );
-            start = Long.toString(cal.getTime().getTime());        
+	    if(relativeTime.equals("lastweek")) {
+               java.util.Calendar cal = new java.util.GregorianCalendar();
+               end = Long.toString(cal.getTime().getTime());
+               cal.add( java.util.Calendar.DATE, -7 );
+               start = Long.toString(cal.getTime().getTime());        
+            }
+	    else if(relativeTime.equals("lastmonth")) {
+               java.util.Calendar cal = new java.util.GregorianCalendar();
+               end = Long.toString(cal.getTime().getTime());
+               cal.add( java.util.Calendar.DATE, -31 );
+               start = Long.toString(cal.getTime().getTime());        
+            }
+	    else if(relativeTime.equals("lastyear")) {
+               java.util.Calendar cal = new java.util.GregorianCalendar();
+               end = Long.toString(cal.getTime().getTime());
+               cal.add( java.util.Calendar.DATE, -366 );
+               start = Long.toString(cal.getTime().getTime());        
+            }
+            else {
+               java.util.Calendar cal = new java.util.GregorianCalendar();
+               end = Long.toString(cal.getTime().getTime());
+               cal.add( java.util.Calendar.DATE, -1 );
+               start = Long.toString(cal.getTime().getTime());
+            }
         }
     }
     
@@ -182,7 +202,57 @@
   <tr>
     <td height="20">&nbsp;</td>
   </tr>
+  
+  <tr><td align="center">
+      <FORM NAME="reltimeform">
+	<% String relativetime = request.getParameter("relativetime"); %>
 
+        <%  
+        if(relativetime == null ) {
+           relativetime = "unknown";
+        } %>
+
+        <%
+            String reportList = "";
+	    for( int i=0; i < reports.length; i++ ) {
+		reportList = reportList + "&reports=" + reports[i];
+	    }
+	%>
+
+        <table>
+	<tr>
+           <td align="center" width="80">Last Day</td>
+           <td align="center" width="80">Last Week</td>
+           <td align="center" width="80">Last Month</td>
+           <td align="center" width="80">Last Year</td>
+        </tr>   
+          <tr>
+            <td align="center">
+              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastday") ? "checked" : "")%> 
+               onclick="top.location = 'performance/results.jsp?relativetime=lastday&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
+            </td>
+            <td align="center">
+              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastweek") ? "checked" : "")%>
+               onclick="top.location = 'performance/results.jsp?relativetime=lastweek&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
+            </td>
+            <td align="center">
+              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastmonth") ? "checked" : "")%>
+               onclick="top.location = 'performance/results.jsp?relativetime=lastmonth&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
+            </td>
+            <td align="center">
+              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastyear") ? "checked" : "")%>
+               onclick="top.location = 'performance/results.jsp?relativetime=lastyear&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
+            </td>
+          </tr>
+        </table>
+        </FORM>
+  </td>
+  </tr>
+
+  <tr>
+    <td height="20">&nbsp;</td>
+  </tr>
+  
   <tr>
     <td align="center"><h3>Interface Performance Data</h3></td>
   </tr>
@@ -221,6 +291,58 @@
       </table>
     </td>
   </tr>
+
+  <tr>
+    <td height="20">&nbsp;</td>
+  </tr>
+
+  <tr><td align="center">
+      <FORM NAME="reltimeform">
+
+        <%
+        if(relativetime == null ) {
+           relativetime = "unknown";
+        } %>
+
+        <%
+            reportList = "";
+            for( int i=0; i < reports.length; i++ ) {
+                reportList = reportList + "&reports=" + reports[i];
+            }
+        %>
+
+        <table>
+        <tr>
+           <td align="center" width="80">Last Day</td>
+           <td align="center" width="80">Last Week</td>
+           <td align="center" width="80">Last Month</td>
+           <td align="center" width="80">Last Year</td>
+        </tr>
+          <tr>
+            <td align="center">
+              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastday") ? "checked" : "")%>
+               onclick="top.location = 'performance/results.jsp?relativetime=lastday&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
+            </td>
+            <td align="center">
+              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastweek") ? "checked" : "")%>
+               onclick="top.location = 'performance/results.jsp?relativetime=lastweek&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
+            </td>
+            <td align="center">
+              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastmonth") ? "checked" : "")%>
+               onclick="top.location = 'performance/results.jsp?relativetime=lastmonth&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
+            </td>
+            <td align="center">
+              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastyear") ? "checked" : "")%>
+               onclick="top.location = 'performance/results.jsp?relativetime=lastyear&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
+            </td>
+          </tr>
+        </table>
+        </FORM>
+  </td>
+  </tr>
+
+
+
 
   <tr>
     <td height="20">&nbsp;</td>
