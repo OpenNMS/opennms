@@ -11,7 +11,8 @@
 // OpenNMS(R) is a registered trademark of Blast Internet Services, Inc.
 //
 // Modifications:
-//
+// 
+// 2003 Oct 23: Show an alert message if no nodes or data items are selected.
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 2002 Nov 12: Added the ability to delete data directories when deleting nodes.
