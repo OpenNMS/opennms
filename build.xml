@@ -260,24 +260,6 @@ your distribution.
     <pathelement location="${packaged.lib.dir}/servlet.jar"/>
   </path>  
   
-  <path id="jsp.compile.javac.sourcepath">
-    <fileset dir="${build.dir}/jsp-source">
-      <include name="**/*.java"/>
-      <exclude name="KSC/include_init1_jsp.java"/>
-      <exclude name="KSC/include_init2_jsp.java"/>
-      <exclude name="KSC/include_nodereport_jsp.java"/>
-      <exclude name="KSC/include_rrd_jsp.java"/>
-      <exclude name="admin/eventconf/**"/>
-      <exclude name="admin/notification/assignNotices_jsp.java"/>
-      <exclude name="errors/errorpage_jsp.java"/>
-    </fileset>
-  </path>
-  <pathconvert targetos="unix" refid="jsp.compile.javac.sourcepath"
-	       property="jsp.compile.javac.sourcelist">
-    <map from="${build.dir}/jsp-source/" to=""/>
-  </pathconvert>
-
-  
   <!-- Files in ${packaged.lib.dir} that are copied into ${install.dir}/lib.
        Note: everything in ${build.jar.dir} is also copied.  -->
   <patternset id="lib.jars">
@@ -1248,6 +1230,23 @@ OpenNMS as part of the post-install.
  </target>
 
  <target name="jsp.compile.javac" depends="jsp.compile.jspc">
+   <path id="jsp.compile.javac.sourcepath">
+     <fileset dir="${build.dir}/jsp-source">
+       <include name="**/*.java"/>
+       <exclude name="KSC/include_init1_jsp.java"/>
+       <exclude name="KSC/include_init2_jsp.java"/>
+       <exclude name="KSC/include_nodereport_jsp.java"/>
+       <exclude name="KSC/include_rrd_jsp.java"/>
+       <exclude name="admin/eventconf/**"/>
+       <exclude name="admin/notification/assignNotices_jsp.java"/>
+       <exclude name="errors/errorpage_jsp.java"/>
+     </fileset>
+   </path>
+   <pathconvert targetos="unix" refid="jsp.compile.javac.sourcepath"
+ 	       property="jsp.compile.javac.sourcelist">
+     <map from="${build.dir}/jsp-source/" to=""/>
+   </pathconvert>
+
    <for list="${jsp.compile.javac.sourcelist}" delimiter=":"
 	param="jsp.compile.javac.file">
      <sequential>
