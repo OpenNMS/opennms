@@ -10,6 +10,8 @@
   Care must be taken so that the most specific mask matches are
   listed  before more generic ones. But this fix insures that the
   correct wildcards and exact matches work as ordered.
+- Fixed a NullPointer exception when deleting a node due to a
+  poller downtime model.
 
 1.0.0 to 1.0.1
 ----------------------------------------------------------------------
