@@ -35,6 +35,7 @@
 
 opennms_home="@install.dir@"
 searchdirs="/usr /opt /Library"
+dryrun=0
 
 java_conf="$opennms_home/etc/java.conf"
 basename="`basename $0`"
@@ -345,93 +346,96 @@ saveJava() {
     return 0
 }
 
-exclusive=0
+parseArgsAndDoStuff() {
+    exclusive=0
+    
+    check=0
+    force=""
+    quiet=0
+    run=0
+    search=0
+    
+    while getopts cf:hnqrs c
+    do
+      case $c in
+          c)
+    	  check=1
+    	  exclusive=`expr $exclusive + 1`
+    	  ;;
+    
+          f)
+    	  force="$OPTARG"
+    	  exclusive=`expr $exclusive + 1`
+    	  ;;
+    
+          h)
+    	  printHelp
+    	  exit 0
+    	  ;;
+    
+          n)
+    	  dryrun=1
+    	  ;;
+    
+          q)
+    	  quiet=1
+    	  ;;
+    
+          r)
+    	  run=1
+    	  exclusive=`expr $exclusive + 1`
+    	  ;;
+    
+          s)
+    	  search=1
+    	  exclusive=`expr $exclusive + 1`
+    	  ;;
+    
+          \?)
+              die "Invalid option.  Use \"-h\" for help."
+    	  ;;
+      esac
+    done
+    shift `expr $OPTIND - 1`
+    
+    if [ $exclusive -eq 0 ]; then
+        warn "You must choose one of the command-line options."
+        die "Use \"-h\" for help."
+    fi
+    
+    if [ $exclusive -gt 1 ]; then
+        warn "You must choose only one of the command-line options."
+        die "Use \"-h\" for help."
+    fi
+    
+    if [ $quiet -gt 0 ]; then
+        exec 3>/dev/null
+    else
+        exec 3>&1
+    fi
+    
+    if [ $check -gt 0 ]; then
+        checkConfiguredJava
+        exit $?
+    fi
+    
+    if [ x"$force" != x"" ]; then
+        JP="$force"
+        forceJava
+        exit $?
+    fi
+    
+    if [ $run -gt 0 ]; then
+        runJava "$@"
+        exit $?
+    fi
+    
+    if [ $search -gt 0 ]; then
+        setupJava
+        exit $?
+    fi
+    
+    die "internal error... got to end of script and shouldn't have"
+}
 
-check=0
-force=""
-dryrun=0
-quiet=0
-run=0
-search=0
-
-while getopts cf:hnqrs c
-do
-  case $c in
-      c)
-	  check=1
-	  exclusive=`expr $exclusive + 1`
-	  ;;
-
-      f)
-	  force="$OPTARG"
-	  exclusive=`expr $exclusive + 1`
-	  ;;
-
-      h)
-	  printHelp
-	  exit 0
-	  ;;
-
-      n)
-	  dryrun=1
-	  ;;
-
-      q)
-	  quiet=1
-	  ;;
-
-      r)
-	  run=1
-	  exclusive=`expr $exclusive + 1`
-	  ;;
-
-      s)
-	  search=1
-	  exclusive=`expr $exclusive + 1`
-	  ;;
-
-      \?)
-          die "Invalid option.  Use \"-h\" for help."
-	  ;;
-  esac
-done
-shift `expr $OPTIND - 1`
-
-if [ $exclusive -eq 0 ]; then
-    warn "You must choose one of the command-line options."
-    die "Use \"-h\" for help."
-fi
-
-if [ $exclusive -gt 1 ]; then
-    warn "You must choose only one of the command-line options."
-    die "Use \"-h\" for help."
-fi
-
-if [ $quiet -gt 0 ]; then
-    exec 3>/dev/null
-else
-    exec 3>&1
-fi
-
-if [ $check -gt 0 ]; then
-    checkConfiguredJava
-    exit $?
-fi
-
-if [ x"$force" != x"" ]; then
-    JP="$force"
-    forceJava
-    exit $?
-fi
-
-if [ $run -gt 0 ]; then
-    runJava "$@"
-    exit $?
-fi
-
-if [ $search -gt 0 ]; then
-    setupJava
-    exit $?
-fi
-
-die "internal error... got to end of script and shouldn't have"
+parseArgsAndDoStuff "$@"	### CHOMP ME

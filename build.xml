@@ -366,6 +366,14 @@ your distribution.
       <isset property="skip.dist"/>
     </condition>
 
+    <loadfile srcfile="tools/run/runjava" property="runjava.contents">
+      <filterchain>
+	<tokenfilter>
+	  <replaceregex pattern="^.*### CHOMP.*" replace=""/>
+	</tokenfilter>
+      </filterchain>
+    </loadfile>
+
     <!-- set properties which are dependent on conditional properties above -->
     <property name="product.fullversion.stamp"
 	      value="${product.version}-${product.release.stamp}"/>
@@ -444,6 +452,7 @@ your distribution.
     <filter token="rpm.database.user" value="${rpm.database.user}"/>
     <filter token="rpm.install.dir" value="${rpm.install.dir}"/>
     <filter token="rpm.platform" value="${rpm.platform}"/>
+    <filter token="runjava.contents" value="${runjava.contents}"/>
 
     <!-- prep wrapup -->
     <property name="prep.done" value="true"/>
@@ -667,7 +676,7 @@ your distribution.
   </exec>
  </target>
 
- <target name="rpm.prepare">
+ <target name="rpm.prepare" depends="prep">
   <mkdir dir="${build.rpm.dir}/BUILD"/>
   <mkdir dir="${build.rpm.dir}/RPMS/i386"/>
   <mkdir dir="${build.rpm.dir}/RPMS/i486"/>

@@ -372,6 +372,25 @@ rm -rf $RPM_BUILD_ROOT
 
 %pre
 
+@runjava.contents@
+
+# Do the equivalent to: %{instprefix}/bin/runjava -q -s -n
+
+# quiet mode, "-q"
+exec 3>/dev/null
+
+# dryrun mode, "-n"
+dryrun=1
+
+# search mode, "-s"
+setupJava
+if [ $? -ne 0 ]; then
+    echo "A suitable Java Runtime Environment could not be found." >&2
+    echo "Please set and export the JAVA_HOME environment variable to" >&2
+    echo "point where your JDK is installed." >&2
+    exit 1
+fi
+
 %post
 
 echo -e "- executing runjava to choose a Java Runtime Environment... \c"
