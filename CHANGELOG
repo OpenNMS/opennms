@@ -1,6 +1,8 @@
 1.0.0 to 1.1.0
 ----------------------------------------------------------------------
-- Add a new XML file called webui-colors. Currently this only
+- Added the ability to display reports on the response time for
+  HTTP, DNS and DHCP polls. Bug 612
+- Added a new XML file called webui-colors. Currently this only
   allows one to set the colors for the categories display,
   but this will grow to include all the colors in the Web UI.
 - Since the UEI is just a string, removed the "http://" and all
