@@ -63,6 +63,8 @@ public class PollerTest extends TestCase {
 
     private MockEventIpcManager m_eventMgr;
 
+    private boolean m_pollerStarted = false;
+
     private void anticipateInterfaceStatusChanged(MockElement element, final EventAnticipator anticipator, final int newStatus) {
         final String uei = (newStatus == ServiceMonitor.SERVICE_AVAILABLE ? EventConstants.INTERFACE_UP_EVENT_UEI : EventConstants.INTERFACE_DOWN_EVENT_UEI);
         MockVisitor eventCreator = new MockVisitorAdapter() {
@@ -156,6 +158,8 @@ public class PollerTest extends TestCase {
     }
 
     public void tearDown() {
+        stopPoller();
+        sleep(200);
         assertTrue(MockUtil.noWarningsOrHigherLogged());
         m_db.drop();
     }
@@ -170,8 +174,7 @@ public class PollerTest extends TestCase {
         MockService httpService = m_network.getService(2, "192.168.1.3", "HTTP");
 
         // start the poller
-        m_poller.init();
-        m_poller.start();
+        startPoller();
 
         //
         // Bring Down the HTTP service and expect nodeLostService Event
@@ -240,16 +243,25 @@ public class PollerTest extends TestCase {
         final EventAnticipator anticipator = m_eventMgr.getEventAnticipator();
         anticipateNodeStatusChanged(node, anticipator, ServiceMonitor.SERVICE_UNAVAILABLE);
 
-        m_poller.init();
-        m_poller.start();
+        startPoller();
 
         bringDownCritSvcs(node);
 
         assertEquals(0, anticipator.waitForAnticipated(2000L).size());
         assertEquals(0, anticipator.unanticipatedEvents().size());
 
-        m_poller.stop();
 
+    }
+
+    private void stopPoller() {
+        if (m_pollerStarted )
+            m_poller.stop();
+    }
+
+    private void startPoller() {
+        m_poller.init();
+        m_poller.start();
+        m_pollerStarted = true;
     }
 
     // what about scheduled outages?
@@ -259,8 +271,7 @@ public class PollerTest extends TestCase {
         MockInterface iface = m_network.getInterface(1, "192.168.1.2");
         m_pollerConfig.addOutage("TestOutage", start, start + 5000, iface.getIpAddr());
 
-        m_poller.init();
-        m_poller.start();
+        startPoller();
 
         long now = System.currentTimeMillis();
         sleep(3000 - (now - start));
@@ -271,7 +282,6 @@ public class PollerTest extends TestCase {
 
         assertTrue(0 < iface.getPollCount());
 
-        m_poller.stop();
 
     }
 
@@ -283,8 +293,7 @@ public class PollerTest extends TestCase {
 
         poll.anticipateAllServices(element);
 
-        m_poller.init();
-        m_poller.start();
+        startPoller();
 
         // wait til after the first poll of the services
         poll.waitForAnticipated(1000L);
@@ -299,7 +308,6 @@ public class PollerTest extends TestCase {
 
         assertEquals(0, m_network.getInvalidPollCount());
 
-        m_poller.stop();
     }
 
     // interfaceDeleted: EventConstants.INTERFACE_DELETED_EVENT_UEI
@@ -328,8 +336,7 @@ public class PollerTest extends TestCase {
         EventAnticipator anticipator = m_eventMgr.getEventAnticipator();
         anticipateInterfaceStatusChanged(node2Iface, anticipator, ServiceMonitor.SERVICE_UNAVAILABLE);
 
-        m_poller.init();
-        m_poller.start();
+        startPoller();
 
         // move the reparted interface and send a reparted event
         reparentedIface.moveTo(node2);
@@ -386,8 +393,7 @@ public class PollerTest extends TestCase {
         EventAnticipator anticipator = m_eventMgr.getEventAnticipator();
         MockNode node = m_network.getNode(1);
 
-        m_poller.init();
-        m_poller.start();
+        startPoller();
 
         anticipator.reset();
         anticipateSvcStatusChanged(node, anticipator, ServiceMonitor.SERVICE_UNAVAILABLE);
@@ -405,7 +411,6 @@ public class PollerTest extends TestCase {
         assertEquals(0, anticipator.waitForAnticipated(10000).size());
         assertEquals(0, anticipator.unanticipatedEvents().size());
 
-        m_poller.stop();
 
     }
 
@@ -418,8 +423,7 @@ public class PollerTest extends TestCase {
         MockNode node = m_network.getNode(1);
 
         // start the poller
-        m_poller.init();
-        m_poller.start();
+        startPoller();
 
         // setup expected events
         anticipator.reset();
@@ -443,8 +447,6 @@ public class PollerTest extends TestCase {
         assertEquals(0, anticipator.waitForAnticipated(10000).size());
         assertEquals(0, anticipator.unanticipatedEvents().size());
 
-        // now stop the poller
-        m_poller.stop();
 
     }
 
@@ -469,15 +471,12 @@ public class PollerTest extends TestCase {
         anticipator.anticipateAllServices(iface);
 
         // start the poller
-        m_poller.init();
-        m_poller.start();
+        startPoller();
 
         // wait for the polls to occur while its up... 1 poll per second plus
         // overhead
         assertEquals(0, anticipator.waitForAnticipated(4000L).size());
 
-        // stop to poller
-        m_poller.stop();
 
     }
 
@@ -509,8 +508,7 @@ public class PollerTest extends TestCase {
 
         Event reparentEvent = MockUtil.createReparentEvent("Test", "192.168.1.2", 1, 2);
 
-        m_poller.init();
-        m_poller.start();
+        startPoller();
 
         assertEquals(0, anticipator.waitForAnticipated(2000).size());
         assertEquals(0, anticipator.unanticipatedEvents().size());
@@ -533,7 +531,6 @@ public class PollerTest extends TestCase {
         assertEquals(0, anticipator.waitForAnticipated(2000).size());
         assertEquals(0, anticipator.unanticipatedEvents().size());
 
-        m_poller.stop();
 
     }
 
@@ -543,8 +540,7 @@ public class PollerTest extends TestCase {
 
         m_pollerConfig.setNodeOutageProcessingEnabled(false);
 
-        m_poller.init();
-        m_poller.start();
+        startPoller();
 
         MockNode node = m_network.addNode(3, "TestNode");
         m_db.writeNode(node);
@@ -592,8 +588,7 @@ public class PollerTest extends TestCase {
 
         MockService svc = m_network.getService(1, "192.168.1.2", "SMTP");
 
-        m_poller.init();
-        m_poller.start();
+        startPoller();
 
         sleep(2000);
         assertTrue(0 < svc.getPollCount());
@@ -609,7 +604,6 @@ public class PollerTest extends TestCase {
         sleep(2000);
         assertTrue(0 < svc.getPollCount());
 
-        m_poller.stop();
     }
 
     private void sleep(long millis) {
