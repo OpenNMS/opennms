@@ -844,7 +844,7 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
         long currentItemDequeueRate = (long) (currentDequeuedItems * 1000.0 / currentElapsedMillis);
         long overallItemDequeueRate = (long) (dequeuedItems * 1000.0 / totalElapsedMillis);
 
-        String stats = "QS:\t" + "totalOperationsPending=" + totalOperationsPending + ", significantOpsPending=" + (significantOpsEnqueued - significantOpsCompleted) + ", filesWithSignificantWork=" + filesWithSignificantWork.size() + ", filesWithInsignificantWork=" + filesWithInsignificantWork.size()
+        String stats = "\nQS:\t" + "totalOperationsPending=" + totalOperationsPending + ", significantOpsPending=" + (significantOpsEnqueued - significantOpsCompleted) + ", filesWithSignificantWork=" + filesWithSignificantWork.size() + ", filesWithInsignificantWork=" + filesWithInsignificantWork.size()
 
         + "\nQS:\t" + ", createsCompleted=" + createsCompleted + ", udpatesCompleted=" + updatesCompleted + ", errors=" + errors + ", promotionRate=" + ((double) (promotionCount * 1000.0 / totalElapsedMillis)) + ", promotionCount=" + promotionCount
 
