@@ -418,6 +418,8 @@ public class NotificationFactory
                         {
                                 sql.append("AND ").append(matchList[i]).append("=? ");
                         }
+
+			sql.append("ORDER BY pagetime");
                         
                         PreparedStatement statement = connection.prepareStatement(sql.toString());
                         statement.setString(1, uei);
