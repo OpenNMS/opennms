@@ -35,6 +35,37 @@ shortDayNames.put("wednesday","Wed");
 shortDayNames.put("thursday","Thu");
 shortDayNames.put("friday","Fri");
 shortDayNames.put("saturday","Sat");
+shortDayNames.put("1","1st");
+shortDayNames.put("2","2nd");
+shortDayNames.put("3","3rd");
+shortDayNames.put("4","4th");
+shortDayNames.put("5","5th");
+shortDayNames.put("6","6th");
+shortDayNames.put("7","7th");
+shortDayNames.put("8","8th");
+shortDayNames.put("9","9th");
+shortDayNames.put("10","10th");
+shortDayNames.put("11","11th");
+shortDayNames.put("12","12th");
+shortDayNames.put("13","13th");
+shortDayNames.put("14","14th");
+shortDayNames.put("15","15th");
+shortDayNames.put("16","16th");
+shortDayNames.put("17","17th");
+shortDayNames.put("18","18th");
+shortDayNames.put("19","19th");
+shortDayNames.put("20","20th");
+shortDayNames.put("21","21st");
+shortDayNames.put("22","22nd");
+shortDayNames.put("23","23rd");
+shortDayNames.put("24","24th");
+shortDayNames.put("25","25th");
+shortDayNames.put("26","26th");
+shortDayNames.put("27","27th");
+shortDayNames.put("28","28th");
+shortDayNames.put("29","29th");
+shortDayNames.put("30","30th");
+shortDayNames.put("31","31st");
 
    PollOutagesConfigFactory.init(); //Only init - do *not* reload
    PollOutagesConfigFactory pollFactory=PollOutagesConfigFactory.getInstance();
@@ -311,7 +342,13 @@ shortDayNames.put("saturday","Sat");
 		theOutage.addTime(newTime);
 	} else if (request.getParameter("addDayTime")!=null) {
 		Time newTime=new Time();
-		newTime.setDay(request.getParameter("startNewDay"));
+		String dayValue="1"; //Default to something vaguely acceptable 
+		if("monthly".compareToIgnoreCase(theOutage.getType())==0) {
+			dayValue=request.getParameter("startNewDayNum");	
+		} else if ("weekly".compareToIgnoreCase(theOutage.getType())==0) {
+			dayValue=request.getParameter("startNewDayTxt");
+		}
+		newTime.setDay(dayValue);
 		StringBuffer beginsTime=new StringBuffer(8);
 		beginsTime.append(request.getParameter("startNewHour"));
                 beginsTime.append(":");
@@ -382,11 +419,19 @@ theOutage.getInterfaceCollection().contains("match-any");
 <title>Scheduled Outage administration</title>
 <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
 <link rel="stylesheet" type="text/css" href="includes/styles.css" />
+<style>
+TD {
+        font-size: 0.8em;
+}
+</style>
 <script>
 function outageTypeChanged(selectElement) {
 	var isSpecific=selectElement.options(selectElement.selectedIndex).value=="specific";
+	var isMonthly=selectElement.options(selectElement.selectedIndex).value=="monthly";
 	document.getElementById("newSpecificTimeTR").style.display=((isSpecific)?'':'none');
 	document.getElementById("newDayTimeTR").style.display=((isSpecific)?'none':'');
+	document.getElementById("startNewDayTxt").style.display=((isMonthly)?'none':'');
+	document.getElementById("startNewDayNum").style.display=((isMonthly)?'':'none');
 }
 </script>
 </head>
@@ -440,14 +485,15 @@ org.opennms.netmgt.config.poller.Node[] nodeList=theOutage.getNode();
 for(int i=0; i<nodeList.length; i++) {
 	int nodeId=nodeList[i].getId();
 	org.opennms.web.element.Node thisNode=NetworkElementFactory.getNode(nodeId);
+	%><tr><%
 	if(thisNode!=null) { %>
 		<td><%=thisNode.getLabel()%></td>
-		<td><input type="image" src="images/redcross.gif" name="deleteNode<%=i%>"/></td>
-		</tr>
 	<% } else { %>
-		<tr><td colspan="3">Can't find node with id:<%=nodeId%></td></tr>
-	<% }
- } %>
+		<td>Can't find node with id:<%=nodeId%></td>
+	<% } %>
+	<td><input type="image" src="images/redcross.gif" name="deleteNode<%=i%>"/></td>
+	</tr>
+<% } %>
 </tr>
 </table>
 </td><td valign="top">
@@ -518,7 +564,7 @@ for(int i=0; i<interfaceList.length; i++) {
 <tr id="newDayTimeTR" style="display:<%=("specific".compareToIgnoreCase(theOutage.getType())==0)?"none":"''"%>">
 <td valign="top">Add time</td>
 <td>
-<select name="startNewDay">
+<select style="display:<%=("weekly".compareToIgnoreCase(theOutage.getType())==0)?"''":"none"%>" id="startNewDayTxt" name="startNewDayTxt">
 	<option value="sunday">Sun</option>
 	<option value="monday">Mon</option>
 	<option value="tuesday">Tue</option>
@@ -527,6 +573,11 @@ for(int i=0; i<interfaceList.length; i++) {
 	<option value="friday">Fri</option>
 	<option value="saturday">Sat</option>
     </select>
+<select name="startNewDayNum" id="startNewDayNum"  style="display:<%=("monthly".compareToIgnoreCase(theOutage.getType())==0)?"''":"none"%>">
+	<% for(int i=1; i<32; i++) { %>
+                <option value="<%=i%>"><%=i%></option>
+	<% } %>
+     </select>
 <BR>
 <select name="startNewHour">
 	<% for(int i=0; i<24; i++) { %>

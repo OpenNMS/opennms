@@ -1,3 +1,11 @@
+1.2.2 to 1.2.3
+----------------------------------------------------------------------
+- Applied final version of poll outage editor. Bug 1116. Thx Craig
+
+1.2.1 to 1.2.2
+----------------------------------------------------------------------
+- Fixed an issue with the webUI and null issnmpprimary values.
+
 1.2.0 to 1.2.1
 ----------------------------------------------------------------------
 - Fix source RPM builds ("srpm" build target).  Bug 1112.  Thanks, Tarus.
