@@ -489,69 +489,47 @@ public class ResponseTimeModel extends Object
         
 
 
-    public boolean isQueryableNode(int nodeId) {
+    public boolean isQueryableNode(int nodeId) 
+        throws SQLException
+	{
         return this.isQueryableNode(String.valueOf(nodeId));
     }
 
     
-    public boolean isQueryableNode(String nodeId) {
-        if(nodeId == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-        
-        boolean isQueryable = false;        
-        File nodeDir = new File(this.rrdDirectory, nodeId);        
-        
-        if(nodeDir.exists() && nodeDir.isDirectory()) {
-            File[] nodeFiles = nodeDir.listFiles(GraphUtil.RRD_FILENAME_FILTER);
-            
-            if(nodeFiles != null && nodeFiles.length > 0) {
-                isQueryable = true;
-            }
-            else {                         
-                File[] intfDirs = nodeDir.listFiles(INTERFACE_DIRECTORY_FILTER);
-                
-                if(intfDirs != null && intfDirs.length > 0) {
-                    isQueryable = true;                
-                }
-            }            
-        }
-        
-        return isQueryable;
-    }
+    public boolean isQueryableNode(String nodeId) 
+        throws SQLException
+	{
+        	if(nodeId == null) {
+    	        	throw new IllegalArgumentException("Cannot take null parameters.");
+       		}
+        	boolean isQueryable = false;        
+		ArrayList intfList = getQueryableInterfacesForNode(nodeId);
+		if (intfList != null)
+		{
+			isQueryable = true;
+		}
+       		 return isQueryable;
+    	}
 
     
-    public boolean isQueryableInterface(int nodeId, String ifLabel) {
-        if(ifLabel == null) {
+    public boolean isQueryableInterface(String ipAddr) {
+        if(ipAddr == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
         
         boolean isQueryable = false;        
-        File nodeDir = new File(this.rrdDirectory, String.valueOf(nodeId));        
+        File intfDir = new File(this.rrdDirectory, ipAddr);        
         
-        if(nodeDir.exists() && nodeDir.isDirectory()) {            
-            File intfDir = new File(nodeDir, ifLabel);
-            
-            if(intfDir.exists() && intfDir.isDirectory()) {
-                File[] intfFiles = intfDir.listFiles(GraphUtil.RRD_FILENAME_FILTER);
+        if(intfDir.exists() && intfDir.isDirectory()) {
+            File[] intfFiles = intfDir.listFiles(GraphUtil.RRD_FILENAME_FILTER);
                 
-                if(intfFiles != null && intfFiles.length > 0) {
+            if(intfFiles != null && intfFiles.length > 0) {
                     isQueryable = true;
-                }
             }
         }
         
         return isQueryable;        
     }
     
-    
-    public boolean isQueryableInterface(String nodeId, String ifLabel) {
-        if(nodeId == null || ifLabel == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        return this.isQueryableInterface(Integer.parseInt(nodeId), ifLabel);
-    }
-        
 }
 

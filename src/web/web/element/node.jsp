@@ -26,11 +26,13 @@
 
 -->
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*,org.opennms.web.authenticate.Authentication,org.opennms.web.event.*,java.net.*,org.opennms.netmgt.utils.IPSorter,org.opennms.web.performance.*" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*,org.opennms.web.authenticate.Authentication,org.opennms.web.event.*,java.net.*,org.opennms.netmgt.utils.IPSorter,org.opennms.web.performance.*,org.opennms.web.response.*" %>
 
 <%!
     protected int telnetServiceId;
+    protected int httpServiceId;
     protected PerformanceModel perfModel;
+    protected ResponseTimeModel rtModel;
     
     public void init() throws ServletException {
         this.statusMap = new HashMap();
@@ -51,6 +53,28 @@
         catch( Exception e ) {
             throw new ServletException( "Could not initialize the PerformanceModel", e );
         }        
+
+        try {
+            this.httpServiceId = NetworkElementFactory.getServiceIdFromName("HTTP");
+        }
+        catch( Exception e ) {
+            throw new ServletException( "Could not determine the HTTP service ID", e );
+        }
+
+        try {
+            this.perfModel = new PerformanceModel( org.opennms.core.resource.Vault.getHomeDir() );
+        }
+        catch( Exception e ) {
+            throw new ServletException( "Could not initialize the PerformanceModel", e );
+        }
+
+        try {
+            this.rtModel = new ResponseTimeModel( org.opennms.core.resource.Vault.getHomeDir() );
+        }
+        catch( Exception e ) {
+            throw new ServletException( "Could not initialize the ResponseTimeModel", e );
+        }
+
     }
 %>
 
@@ -92,6 +116,24 @@
             telnetIp = lowest.getHostAddress();
         }
     }    
+
+    //find the HTTP interfaces, if any
+    String httpIp = null;
+    Service[] httpServices = NetworkElementFactory.getServicesOnNode(nodeId, this.httpServiceId);
+
+    if( httpServices != null && httpServices.length > 0 ) {
+        ArrayList ips = new ArrayList();
+        for( int i=0; i < httpServices.length; i++ ) {
+            ips.add(InetAddress.getByName(httpServices[i].getIpAddress()));
+        }
+
+        InetAddress lowest = IPSorter.getLowestInetAddress(ips);
+
+        if( lowest != null ) {
+            httpIp = lowest.getHostAddress();
+        }
+    }
+
 %>
 
 <html>
@@ -129,6 +171,14 @@
           &nbsp;&nbsp;&nbsp;<a href="telnet://<%=telnetIp%>">Telnet</a>
         <% } %>
 
+        <% if( httpIp != null ) { %>
+          &nbsp;&nbsp;&nbsp;<a href="http://<%=httpIp%>">HTTP</a>
+        <% } %>
+
+        <% if(this.rtModel.isQueryableNode(nodeId)) { %>
+          &nbsp;&nbsp;&nbsp;<a href="response/addIntfFromNode?endUrl=response%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">Response Time</a>
+        <% } %>
+        
         <% if(this.perfModel.isQueryableNode(nodeId)) { %>
           &nbsp;&nbsp;&nbsp;<a href="performance/addIntfFromNode?endUrl=performance%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">SNMP Performance</a>
         <% } %>

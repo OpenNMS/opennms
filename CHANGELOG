@@ -1,5 +1,11 @@
 1.1.0 to 1.1.1
 ----------------------------------------------------------------------
+- Added an HTTP button for nodes and interfaces with the HTTP
+  service. Bug 469
+- Added Response Time links to node and interface pages. Bug 684
+- Added an "order by" to a notifications SQL statement. Bug 648
+- Added the option to define "match-any" as the IP address in 
+  the poll-outages calendar.
 - Added the ability to define RRAs for response time data per
   poller package. Bug 680
 - Fixed a style sheet issue in the WebUI. Bug 568

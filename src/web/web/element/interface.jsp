@@ -26,11 +26,13 @@
 
 -->
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*,org.opennms.web.event.*,org.opennms.web.performance.*,org.opennms.netmgt.utils.IfLabel" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*,org.opennms.web.event.*,org.opennms.web.performance.*,org.opennms.netmgt.utils.IfLabel,org.opennms.web.response.*" %>
 
 <%!
     protected int telnetServiceId;
+    protected int httpServiceId;
     protected PerformanceModel perfModel;
+    protected ResponseTimeModel rtModel;
     
     public void init() throws ServletException {
         try {
@@ -46,6 +48,28 @@
         catch( Exception e ) {
             throw new ServletException( "Could not initialize the PerformanceModel", e );
         }        
+
+        try {
+            this.httpServiceId = NetworkElementFactory.getServiceIdFromName("HTTP");
+        }
+        catch( Exception e ) {
+            throw new ServletException( "Could not determine the HTTP service ID", e );
+        }
+
+        try {
+            this.perfModel = new PerformanceModel( org.opennms.core.resource.Vault.getHomeDir() );
+        }
+        catch( Exception e ) {
+            throw new ServletException( "Could not initialize the PerformanceModel", e );
+        }
+
+        try {
+            this.rtModel = new ResponseTimeModel( org.opennms.core.resource.Vault.getHomeDir() );
+        }
+        catch( Exception e ) {
+            throw new ServletException( "Could not initialize the ResponseTimeModel", e );
+        }
+
     }
 %>
 
@@ -104,6 +128,13 @@
         telnetIp = ipAddr;
     }    
 
+    String httpIp = null;
+    Service httpService = NetworkElementFactory.getService(nodeId, ipAddr, this.httpServiceId);
+
+    if( httpService != null  ) {
+        httpIp = ipAddr;
+    }
+
 %>
 
 <html>
@@ -140,6 +171,14 @@
 
         <% if( telnetIp != null ) { %>
           &nbsp;&nbsp;&nbsp;<a href="telnet://<%=telnetIp%>">Telnet</a>
+        <% } %>
+        
+        <% if( httpIp != null ) { %>
+          &nbsp;&nbsp;&nbsp;<a href="http://<%=httpIp%>">HTTP</a>
+        <% } %>
+        
+        <% if(this.rtModel.isQueryableInterface(ipAddr)) { %>
+          &nbsp;&nbsp;&nbsp;<a href="response/addReportsToUrl?node=<%=nodeId%>&intf=<%=ipAddr%>&relativetime=lastday">Response Time</a>
         <% } %>
 
         <% if(hasSNMPData(intf_db)) { %>
