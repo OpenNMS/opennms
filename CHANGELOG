@@ -1,5 +1,6 @@
 1.1.0 to 1.1.1
 ----------------------------------------------------------------------
+- Disallowed Null Search Text. Bug 536
 - Added last day/week/month/year buttons to Performance and
   Response Time report pages. Bugs 546 and 618
 - Corrected some SQL syntax in the Outage WebUI. Bug 681
