@@ -55,6 +55,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.IntSet;
 import org.opennms.netmgt.utils.IfLabel;
 import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.Util;
@@ -410,17 +411,19 @@ public class ResponseTimeModel extends Object
                 stmt = conn.createStatement();
                 rs = stmt.executeQuery(select.toString());
 
-
+                IntSet nodesAdded = new IntSet();
                 while( rs.next() ) {
                     String ipAddr = rs.getString("ipAddr");
+                    int nodeId = rs.getInt("nodeid");
                     
-                    if (queryableIpAddrs.contains(ipAddr)) {
+                    if (queryableIpAddrs.contains(ipAddr) && !nodesAdded.contains(nodeId)) {
                         QueryableNode node = new QueryableNode();
                         
-                        node.nodeId = rs.getInt("nodeid");
+                        node.nodeId = nodeId;
                         node.nodeLabel = rs.getString("nodeLabel");
                         
                         nodeList.add(node);
+                        nodesAdded.add(nodeId);
                     }
                 }
 

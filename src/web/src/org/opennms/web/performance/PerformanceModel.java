@@ -41,7 +41,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -50,6 +49,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.IntSet;
 import org.opennms.netmgt.utils.IfLabel;
 import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.Util;
@@ -387,11 +387,11 @@ public class PerformanceModel extends Object
             List nodeList = new LinkedList();
 
             // Construct a set containing the nodeIds that are queryable
-            BitSet queryableIds = new BitSet(nodeDirs.length);
+            IntSet queryableIds = new IntSet();
             for (int i = 0; i < nodeDirs.length; i++) {
                 String fileName = nodeDirs[i].getName();
                 int nodeId = Integer.parseInt(fileName);
-                queryableIds.set(nodeId);
+                queryableIds.add(nodeId);
             }
 
             //create the main stem of the select statement
@@ -410,7 +410,7 @@ public class PerformanceModel extends Object
                     
                     int nodeId = rs.getInt("nodeid");
                     
-                    if (queryableIds.get(nodeId)) {
+                    if (queryableIds.contains(nodeId)) {
                         QueryableNode node = new QueryableNode();
                         
                         node.nodeId = nodeId;
