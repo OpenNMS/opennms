@@ -340,7 +340,7 @@ final class HttpMonitor
 			}
 			
 			// Add to parameter map
-			parameters.put("qualifier", testedPorts);
+			parameters.put("qualifier", testedPorts.toString());
 		}
 		else if (serviceStatus == ServiceMonitor.SERVICE_AVAILABLE)
 		{

@@ -389,7 +389,7 @@ final class HttpsMonitor
 			}
 			
 			// Add to parameter map
-			parameters.put("qualifier", testedPorts);
+			parameters.put("qualifier", testedPorts.toString());
 		}
 		else
 		{
