@@ -78,7 +78,7 @@ import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Parameter;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.xml.event.Event;
@@ -105,6 +105,8 @@ final class BroadcastEventProcessor implements EventListener {
 
     private static RE notifdExpandRE;
 
+    private Notifd m_notifd;
+
     /**
      * Initializes the expansion regular expression. The exception is going to
      * be thrown away if the RE can't be compiled, thus the complilation should
@@ -127,9 +129,10 @@ final class BroadcastEventProcessor implements EventListener {
      * and the appropriate action is taken.
      * 
      */
-    BroadcastEventProcessor(Map noticeQueues) {
+    BroadcastEventProcessor(Notifd notifd, Map noticeQueues) {
         // set up the exectuable queue first
         //
+        m_notifd = notifd;
         m_noticeQueues = noticeQueues;
 
         // initialize the factory instances
@@ -146,15 +149,21 @@ final class BroadcastEventProcessor implements EventListener {
         }
 
         // start to listen for events
-        EventIpcManagerFactory.init();
-        EventIpcManagerFactory.getInstance().getManager().addEventListener(this);
+        getEventManager().addEventListener(this);
     }
 
     /**
      * Unsubscribe from eventd
      */
     public void close() {
-        EventIpcManagerFactory.getInstance().getManager().removeEventListener(this);
+        getEventManager().removeEventListener(this);
+    }
+
+    /**
+     * @return
+     */
+    private EventIpcManager getEventManager() {
+        return m_notifd.getEventManager();
     }
 
     /**
@@ -443,7 +452,7 @@ final class BroadcastEventProcessor implements EventListener {
             event.setDescr(description);
             event.setTime(EventConstants.formatToString(new java.util.Date()));
 
-            EventIpcManagerFactory.getInstance().getManager().sendNow(event);
+            getEventManager().sendNow(event);
         } catch (Throwable t) {
             ThreadCategory.getInstance(getClass()).error("Could not send event " + uei, t);
         }

@@ -34,8 +34,12 @@
 
 package org.opennms.netmgt.notifd.jmx;
 
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+
 public class Notifd implements NotifdMBean {
     public void init() {
+        EventIpcManagerFactory.init();
+        org.opennms.netmgt.notifd.Notifd.getInstance().setEventManager(EventIpcManagerFactory.getInstance().getManager());
         org.opennms.netmgt.notifd.Notifd.getInstance().init();
     }
 

@@ -47,6 +47,7 @@ import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.notifd.Queue;
+import org.opennms.netmgt.eventd.EventIpcManager;
 
 /**
  * This class is used to represent the notification execution service. When an
@@ -90,10 +91,12 @@ public final class Notifd implements PausableFiber {
      */
     private int m_status;
 
+    private EventIpcManager m_eventManager;
+
     /**
      * Constructs a new Notifd service daemon.
      */
-    private Notifd() {
+    Notifd() {
         try {
             NotifdConfigFactory.init();
         } catch (Throwable t) {
@@ -134,7 +137,7 @@ public final class Notifd implements PausableFiber {
         //
         try {
             NotifdConfigFactory.init();
-            m_eventReader = new BroadcastEventProcessor(m_noticeQueues);
+            m_eventReader = new BroadcastEventProcessor(this, m_noticeQueues);
         } catch (Exception ex) {
             ThreadCategory.getInstance(getClass()).error("Failed to setup event receiver", ex);
             throw new UndeclaredThrowableException(ex);
@@ -244,5 +247,18 @@ public final class Notifd implements PausableFiber {
      */
     public static Notifd getInstance() {
         return m_singleton;
+    }
+
+    /**
+     * @return
+     */
+    public EventIpcManager getEventManager() {
+        return m_eventManager;
+    }
+    /**
+     * @param eventManager The eventManager to set.
+     */
+    public void setEventManager(EventIpcManager eventManager) {
+        m_eventManager = eventManager;
     }
 }
