@@ -144,10 +144,11 @@ public class JRobinRrdStrategy implements RrdStrategy {
      * Fetch the last value from the JRobin RrdDb file.
      */
     public Double fetchLastValue(String fileName, int interval) throws NumberFormatException, org.opennms.netmgt.rrd.RrdException {
+        RrdDb rrd = null;
         try {
             long now = System.currentTimeMillis();
             long collectTime = (now - (now % interval)) / 1000L;
-            RrdDb rrd = new RrdDb(fileName);
+            rrd = new RrdDb(fileName);
             FetchData data = rrd.createFetchRequest("AVERAGE", collectTime, collectTime).fetchData();
             double[] vals = data.getValues(0);
             if (vals.length > 0) {
@@ -158,6 +159,14 @@ public class JRobinRrdStrategy implements RrdStrategy {
             throw new org.opennms.netmgt.rrd.RrdException("Exception occurred fetching data from " + fileName, e);
         } catch (RrdException e) {
             throw new org.opennms.netmgt.rrd.RrdException("Exception occurred fetching data from " + fileName, e);
+        }
+        finally {
+            if (rrd != null) try {
+                rrd.close();
+            } catch (IOException e) {
+                Category log = ThreadCategory.getInstance(getClass());
+                log.error("Failed to close rrd file: "+fileName, e);
+            }
         }
     }
 
