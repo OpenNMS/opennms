@@ -143,7 +143,7 @@ your distribution.
   <property name="rpm.build.executable" value="rpmbuild"/>
   <property name="rpm.build.docs" value="1"/>
   <property name="rpm.sign" value="false"/>
-  <property name="rpm.buildtests" value="true"/>
+  <property name="rpm.buildtests" value="false"/>
   <property name="rpm.database.name" value="opennms"/>
   <property name="rpm.database.password" value="opennms"/>
   <property name="rpm.database.user" value="opennms"/>
