@@ -83,7 +83,8 @@
     if (report.getGraphCount() > 0) {
         graph = report.getGraph(0); // get the first graph in the list
         boolean includeNodeQueries = true;
-        graph_options = this.model.getQueries (Integer.parseInt(graph.getNodeId()), graph.getInterfaceId(), includeNodeQueries); 
+        graph_options = this.model.getQueries (Integer.parseInt(graph.getNodeId()), graph.getInterfaceId(), includeNodeQueries);
+        Arrays.sort(graph_options);
     }
 %>
 

@@ -1,5 +1,6 @@
 1.1.2 to 1.1.3
 ----------------------------------------------------------------------
+- Added a sort to KSC reports - Thx Craig - Bug 751
 - Fixed typos - Thx Volker - Bug 750
 - Merge some more changes from the Rackspace branch.
 - Made some serious performance enhancements to startup times.
