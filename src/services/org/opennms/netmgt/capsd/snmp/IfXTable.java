@@ -301,7 +301,12 @@ public final class IfXTable implements SnmpHandler
 			    	{
 					// Check for v2 error in varbind
 					SnmpVarBind vb = pdu.getVarBindAt(0);
-					if (vb.getValue() instanceof org.opennms.protocols.snmp.SnmpV2Error)
+                    SnmpObjectId ifNumberOid = new SnmpObjectId(".1.3.6.1.2.1.2.1");
+                    if (!ifNumberOid.isRootOf(vb.getName())) {
+                        m_error = true;
+                        log.warn("snmpReceivedPDI: agent does not support interfaces mib!");
+                    }
+					else if (vb.getValue() instanceof org.opennms.protocols.snmp.SnmpV2Error)
 					{
 						m_error = true;
 						if (log.isDebugEnabled())

@@ -314,7 +314,12 @@ public final class IfTable
 				if (pdu.getRequestId() ==  m_ifNumberRequestId) 
 				{
 					SnmpVarBind vb = pdu.getVarBindAt(0);
-					if (m_version == SnmpSMI.SNMPV2)
+                    SnmpObjectId ifNumberOid  = new SnmpObjectId(".1.3.6.1.2.1.2.1");
+                    if (!ifNumberOid.isRootOf(vb.getName())) {
+                        m_error = true;
+                        log.warn("snmpReceivedPdu: agent does not support interfaces mib");
+                    }
+					else if (m_version == SnmpSMI.SNMPV2)
 					{
 						// Check for v2 error in varbind
 						if (log.isDebugEnabled())
