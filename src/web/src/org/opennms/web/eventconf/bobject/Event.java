@@ -1,5 +1,6 @@
 //
-// Copyright (C) 2000 N*Manage Company, Inc.
+// Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
+// Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,8 +17,9 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 // For more information contact:
-//	Brian Weaver	<weave@opennms.org>
-//	http://www.opennms.org/
+//      OpenNMS Licensing       <license@opennms.org>
+//      http://www.opennms.org/
+//      http://www.sortova.com/
 //
 
 package org.opennms.web.eventconf.bobject;

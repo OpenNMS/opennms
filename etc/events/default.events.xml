@@ -2273,7 +2273,7 @@
 		<logmsg dest='logndisplay'>
 			Diagnostic failure
 		</logmsg>
-		<severity>Critical</severity>
+		<severity>Major</severity>
 	</event>
 	<event>
 		<mask>
@@ -2288,7 +2288,7 @@
 		<logmsg dest='logndisplay'>
 			Redundant power supply failed
 		</logmsg>
-		<severity>Critical</severity>
+		<severity>Minor</severity>
 	</event>
 	<event>
 		<mask>
@@ -2706,7 +2706,7 @@
 		<logmsg dest='logndisplay'>
 			Temperature state changed
 		</logmsg>
-		<severity>Critical</severity>
+		<severity>Major</severity>
 	</event>
 	<event>
 		<mask>
@@ -2992,7 +2992,7 @@
 			ciscoEnvMonVoltageNotification trap received from enterprise
 			%id% with %parm[##]% arguments: %parm[all]%
 		</logmsg>
-		<severity>Critical</severity>
+		<severity>Major</severity>
 	</event>
 	<event>
 		<mask>
@@ -3127,7 +3127,7 @@
 			cipCardLinkFailure trap received from enterprise %id% with
 			%parm[##]% arguments: %parm[all]%
 		</logmsg>
-		<severity>Critical</severity>
+		<severity>Minor</severity>
 	</event>
 	<event>
 		<mask>
@@ -4106,7 +4106,7 @@
 			acctngFileFull trap received from enterprise %id% with
 			%parm[##]% arguments: %parm[all]%
 		</logmsg>
-		<severity>Critical</severity>
+		<severity>Major</severity>
 	</event>
 	<event>
 		<mask>
@@ -4551,7 +4551,7 @@
 			Redundant power supply failed. Trap received from enterprise
 			%id% with %parm[##]% arguments: %parm[all]%
 		</logmsg>
-		<severity>Critical</severity>
+		<severity>Minor</severity>
 	</event>
 	<event>
 		<mask>
@@ -4570,7 +4570,7 @@
 			fanPSSpeedFailed trap received from enterprise %id% with
 			%parm[##]% arguments: %parm[all]%
 		</logmsg>
-		<severity>Critical</severity>
+		<severity>Major</severity>
 	</event>
 	<event>
 		<mask>
@@ -4589,7 +4589,7 @@
 			fanExtSpeedFailed trap received from enterprise %id% with
 			%parm[##]% arguments: %parm[all]%
 		</logmsg>
-		<severity>Critical</severity>
+		<severity>Major</severity>
 	</event>
 	<event>
 		<mask>

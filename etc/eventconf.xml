@@ -343,7 +343,7 @@
 		<logmsg dest='logndisplay'>
 			Interface %interface% is down.
 		</logmsg>
-		<severity>Critical</severity>
+		<severity>Major</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/interfaceIPHostNameChanged</uei>
@@ -536,7 +536,7 @@
 		<logmsg dest='logndisplay'>
 			%service% outage identified on interface %interface%.
 		</logmsg>
-		<severity>Critical</severity>
+		<severity>Major</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/nodeRegainedService</uei>
