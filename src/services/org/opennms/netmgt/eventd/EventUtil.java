@@ -71,6 +71,12 @@ import org.opennms.protocols.snmp.SnmpUInt32;
 public final class EventUtil
 {
 	/**
+	 * The Event ID xml
+	 */
+	
+	static final String	TAG_EVENT_DB_ID	="eventid";
+	
+	/**
 	 * The UEI xml tag
 	 */
 	static final String	TAG_UEI		="uei";
@@ -402,6 +408,13 @@ public final class EventUtil
 		if (parm.equals(TAG_UEI))
 		{
 			retParmVal = event.getUei();
+		}
+		if (parm.equals(TAG_EVENT_DB_ID)) {
+			if (event.hasDbid()) {
+				retParmVal = (String) event.getDbid();
+			} else {
+				retParmVal = "eventid-unknown";
+			}
 		}
 		else if (parm.equals(TAG_SOURCE))
 		{
