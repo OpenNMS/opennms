@@ -1564,7 +1564,8 @@ final class RescanProcessor
                                 if (updateIfs == null)
                                 {
 				        if (log.isDebugEnabled())
-					        log.debug("isDuplicateNode: Interface: " + addr.getHostAddress()
+					        log.debug("isDuplicateNode: Interface/ifindex: " + addr.getHostAddress() 
+                                                        + "/" + index
                                                         + " is not in the ipAddrTable of the updating node.");
                                         return false;
 			        }
