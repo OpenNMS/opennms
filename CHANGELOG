@@ -1,5 +1,6 @@
 1.0.2 to 1.0.3
 ----------------------------------------------------------------------
+- Added workaround to actiond to help with 1.4.1 JDK issues (Thx Nick)
 - Fixed bug in Trap handler. Bug 676 (Thx Ross)
 
 1.0.1 to 1.0.2
