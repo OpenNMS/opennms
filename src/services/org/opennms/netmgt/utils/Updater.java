@@ -29,37 +29,27 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.mock;
+package org.opennms.netmgt.utils;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.opennms.netmgt.config.DbConnectionFactory;
 
-
-public class Querier extends JDBCTemplate {
-     private int m_count;
-     public Querier(DbConnectionFactory db, String sql) {
-         super(db, sql);
-         m_count = 0;
-     }
-     
-     public int getCount() {
-         return m_count;
-     }
-     
-     protected void executeStmt(PreparedStatement stmt) throws SQLException {
-         //System.err.println("Executing "+stmt);
-        ResultSet rs = stmt.executeQuery();
-         m_count = 0;
-         while (rs.next()) {
-             processRow(rs);
-             m_count++;
-         }
+/**
+ * @author brozow
+ *
+ * TODO To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Style - Code Templates
+ */
+public class Updater extends JDBCTemplate {
+    
+    public Updater(DbConnectionFactory db, String sql) {
+        super(db, sql);
     }
 
-    protected void processRow(ResultSet rs) throws SQLException {
+    void executeStmt(PreparedStatement stmt) throws SQLException {
+        stmt.executeUpdate();
     }
 
- }
+}

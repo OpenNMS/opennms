@@ -46,6 +46,8 @@ import org.hsqldb.Server;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.eventd.db.Constants;
+import org.opennms.netmgt.utils.Querier;
+import org.opennms.netmgt.utils.Updater;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -298,7 +300,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     }
     
     public String getNextOutageIdStatement() {
-        return "select next value for outageNxtId from seqQueryTable;";
+        return "select next value for outageNxtId from seqQueryTable";
     }
     
     class SingleResultQuerier extends Querier {

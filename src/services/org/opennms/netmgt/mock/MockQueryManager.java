@@ -125,4 +125,14 @@ public class MockQueryManager implements QueryManager {
     public Date getServiceLostDate(int nodeId, String ipAddr, String svcName, int serviceId) {
         return null;
     }
+    public void openOutage(String outageIdSQL, int nodeId, String ipAddr, int serviceId, int dbid, String time) {
+        // TODO Auto-generated method stub
+
+    }
+    
+    
+    public void resolveOutage(int nodeId, String ipAddr, int serviceId, int dbid, String time) {
+        // TODO Auto-generated method stub
+
+    }
 }

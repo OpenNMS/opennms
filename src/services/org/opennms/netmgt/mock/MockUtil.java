@@ -58,7 +58,7 @@ import org.opennms.netmgt.xml.event.Value;
 public class MockUtil {
 
     private static boolean s_loggingSetup = false;
-    private static Level m_logLevel;
+    private static Level m_logLevel = Level.ALL;
 
     public static void addEventParm(Event event, String parmName, int parmValue) {
         addEventParm(event, parmName, String.valueOf(parmValue));

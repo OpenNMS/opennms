@@ -70,6 +70,10 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
 
     private boolean m_pollAll = true;
 
+    private boolean m_serviceUnresponsiveEnabled = false;
+
+    private String m_nextOutageIdSql;
+
     public void addDowntime(long interval, long begin, long end, boolean delete) {
         Downtime downtime = new Downtime();
         downtime.setDelete(delete ? "true" : "false");
@@ -174,6 +178,10 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
         return null;
     }
 
+    public String getNextOutageIdSql() {
+        return m_nextOutageIdSql;
+    }
+    
     public Package getPackage(String name) {
         for (int i = 0; i < m_pkgs.size(); i++) {
             Package pkg = (Package) m_pkgs.get(i);
@@ -310,8 +318,15 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
     }
 
     public boolean serviceUnresponsiveEnabled() {
-        // TODO Auto-generated method stub
-        return false;
+        return m_serviceUnresponsiveEnabled;
+    }
+    
+    public void setNextOutageIdSql(String nextOutageIdSql) {
+        m_nextOutageIdSql = nextOutageIdSql;
+    }
+    
+    public void setServiceUnresponsiveEnabled(boolean serviceUnresponsiveEnabled) {
+        m_serviceUnresponsiveEnabled = serviceUnresponsiveEnabled;
     }
 
     public void setCriticalService(String criticalSvcName) {
@@ -321,6 +336,7 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
     public void setInterfaceMatch(String matchRegexp) {
         m_currentPkg.addIncludeUrl(matchRegexp);
     }
+    
 
     public void setNodeOutageProcessingEnabled(boolean outageProcessingEnabled) {
         m_outageProcessingEnabled = outageProcessingEnabled;

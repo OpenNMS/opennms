@@ -29,7 +29,7 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.mock;
+package org.opennms.netmgt.utils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -40,8 +40,6 @@ import org.opennms.netmgt.config.DbConnectionFactory;
 /**
  * @author brozow
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 abstract public class JDBCTemplate {
 

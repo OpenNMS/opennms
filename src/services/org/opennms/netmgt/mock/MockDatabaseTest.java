@@ -36,6 +36,7 @@ import java.sql.SQLException;
 
 import junit.framework.TestCase;
 
+import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
