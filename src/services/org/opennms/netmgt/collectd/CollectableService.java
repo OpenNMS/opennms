@@ -267,6 +267,9 @@ final class CollectableService
 	public boolean isReady()
 	{
 		boolean ready = false;
+		
+		if (!Collectd.getInstance().isSchedulingCompleted())
+		    return false;
 
 		if(m_service.getInterval() < 1)
 		{

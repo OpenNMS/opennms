@@ -66,6 +66,7 @@ import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
+import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 
 public final class Collectd
@@ -125,6 +126,12 @@ public final class Collectd
 	private static Map 	m_svcCollectors;
 	
 	/**
+	 * Indicates if scheduling of existing interfaces has been completed
+	 *
+	 */
+	private boolean m_schedulingCompleted = false;
+	
+	/**
 	 * Constructor.
 	 */
 	private Collectd()
@@ -144,7 +151,7 @@ public final class Collectd
 		ThreadCategory.setPrefix(LOG4J_CATEGORY);
 		
 		// get the category logger 
-		Category log = ThreadCategory.getInstance();
+		final Category log = ThreadCategory.getInstance();
 
 		if (log.isDebugEnabled())
 			log.debug("init: Initializing collection daemon");
@@ -346,16 +353,30 @@ public final class Collectd
 		}
 
 		// Schedule existing interfaces for data collection
-		//
-		try
-		{
-			scheduleExistingInterfaces();
-		}
-		catch(SQLException sqlE)
-		{
-			if(log.isEnabledFor(Priority.ERROR))
-				log.error("start: Failed to schedule existing interfaces", sqlE);
-		}
+		
+		ReadyRunnable interfaceScheduler = new ReadyRunnable() {
+			
+			public boolean isReady() { return true; }
+			
+			public void run() {
+				//
+				try
+				{
+					scheduleExistingInterfaces();
+				}
+				catch(SQLException sqlE)
+				{
+					if(log.isEnabledFor(Priority.ERROR))
+						log.error("start: Failed to schedule existing interfaces", sqlE);
+				}
+				finally {
+				    setSchedulingCompleted(true);
+				}
+		
+			}
+		};
+		
+		m_scheduler.schedule(interfaceScheduler, 0);
 		
 		// Create an event receiver. The receiver will
 		// receive events, process them, creates network
@@ -760,4 +781,16 @@ public final class Collectd
 		
 		return false;
 	}
+    /**
+     * @return Returns the schedulingCompleted.
+     */
+    public boolean isSchedulingCompleted() {
+        return m_schedulingCompleted;
+    }
+    /**
+     * @param schedulingCompleted The schedulingCompleted to set.
+     */
+    public void setSchedulingCompleted(boolean schedulingCompleted) {
+        m_schedulingCompleted = schedulingCompleted;
+    }
 }
