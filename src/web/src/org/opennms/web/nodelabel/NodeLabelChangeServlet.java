@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.netmgt.utils.NodeLabel;
 import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
@@ -107,7 +108,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
         }
     }
 
-    protected void sendLabelChangeEvent(int nodeId, NodeLabel oldNodeLabel, NodeLabel newNodeLabel) {
+    protected void sendLabelChangeEvent(int nodeId, NodeLabel oldNodeLabel, NodeLabel newNodeLabel) throws EventProxyException {
         Event outEvent = new Event();
         outEvent.setSource("NodeLabelChangeServlet");
         outEvent.setUei(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI);

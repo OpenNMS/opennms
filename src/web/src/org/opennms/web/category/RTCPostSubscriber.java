@@ -45,6 +45,7 @@ import org.opennms.netmgt.config.ViewsDisplayFactory;
 import org.opennms.netmgt.config.viewsdisplay.Section;
 import org.opennms.netmgt.config.viewsdisplay.View;
 import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -71,7 +72,7 @@ public class RTCPostSubscriber extends Object {
         m_proxy = new TcpEventProxy();
     }
 
-    public static void sendSubscribeEvent(EventProxy proxy, String url, String username, String password, String categoryName) throws IllegalArgumentException, UndeclaredThrowableException {
+    public static void sendSubscribeEvent(EventProxy proxy, String url, String username, String password, String categoryName) throws IllegalArgumentException, EventProxyException {
         if (proxy == null || url == null || username == null || password == null || categoryName == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -123,7 +124,7 @@ public class RTCPostSubscriber extends Object {
         log.info("Subscription requested for " + username + " to " + url);
     }
 
-    public static void sendUnsubscribeEvent(EventProxy proxy, String url) throws IllegalArgumentException, UndeclaredThrowableException {
+    public static void sendUnsubscribeEvent(EventProxy proxy, String url) throws IllegalArgumentException, EventProxyException {
         if (proxy == null || url == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -150,7 +151,7 @@ public class RTCPostSubscriber extends Object {
         log.info("Unsubscription sent for " + url);
     }
 
-    public String subscribe(String categoryName) throws IllegalArgumentException, UndeclaredThrowableException {
+    public String subscribe(String categoryName) throws IllegalArgumentException, EventProxyException {
         if (categoryName == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -161,7 +162,7 @@ public class RTCPostSubscriber extends Object {
         return (m_url);
     }
 
-    public void unsubscribe() throws IllegalArgumentException, UndeclaredThrowableException {
+    public void unsubscribe() throws IllegalArgumentException, EventProxyException {
         sendUnsubscribeEvent(m_proxy, m_url);
     }
 
@@ -187,7 +188,7 @@ public class RTCPostSubscriber extends Object {
         log.debug("RTCPostSubscriber initialized: url=" + m_url + ", user=" + m_username);
     }
 
-    public static void subscribeAll(String viewName) throws IOException, MarshalException, ValidationException, UndeclaredThrowableException {
+    public static void subscribeAll(String viewName) throws IOException, MarshalException, ValidationException, EventProxyException {
         if (viewName == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }

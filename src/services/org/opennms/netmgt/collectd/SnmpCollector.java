@@ -71,6 +71,7 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.AlphaNumeric;
 import org.opennms.netmgt.utils.BarrierSignaler;
 import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.utils.SnmpResponseHandler;
 import org.opennms.netmgt.xml.event.Event;
@@ -985,7 +986,8 @@ final class SnmpCollector implements ServiceCollector {
                 SnmpPduPacket out = new SnmpPduRequest(SnmpPduPacket.GETNEXT, new SnmpVarBind[] { new SnmpVarBind(new SnmpObjectId(".1.3.6.1.2.1.2.1")) });
 
                 synchronized (handler) {
-                    session.send(out, handler);
+		    session.send(out, handler);
+
                     try {
                         handler.wait((long) ((peer.getRetries() + 1) * peer.getTimeout()));
                     } catch (InterruptedException e) {
@@ -1630,7 +1632,7 @@ final class SnmpCollector implements ServiceCollector {
         // Send event via EventProxy
         try {
             eventProxy.send(newEvent);
-        } catch (RuntimeException e) {
+        } catch (EventProxyException e) {
             if (log.isEnabledFor(Priority.ERROR))
                 log.error("generateForceRescanEvent: Unable to send forceRescan event.", e);
         }

@@ -110,13 +110,13 @@ public final class TcpEventProxy implements EventProxy {
      * @exception UndeclaredThrowableException
      *                thrown if the send fails for any reason
      */
-    public void send(Event event) throws UndeclaredThrowableException {
-        Log elog = new Log();
-        Events events = new Events();
-        events.addEvent(event);
-        elog.setEvents(events);
+    public void send(Event event) throws EventProxyException {
+	Log elog = new Log();
+	Events events = new Events();
+	events.addEvent(event);
+	elog.setEvents(events);
 
-        send(elog);
+	send(elog);
     }
 
     /**
@@ -129,15 +129,16 @@ public final class TcpEventProxy implements EventProxy {
      * @exception UndeclaredThrowableException
      *                thrown if the send fails for any reason
      */
-    public void send(Log eventLog) throws UndeclaredThrowableException {
+    public void send(Log eventLog) throws EventProxyException {
         try {
             Connection connection = new Connection(m_target, m_port);
             Writer writer = connection.getWriter();
             Marshaller.marshal(eventLog, writer);
             writer.flush();
             connection.close();
-        } catch (Throwable t) {
-            throw new UndeclaredThrowableException(t);
+        } catch (Exception e) {
+	    throw new EventProxyException("Exception while sending event: " +
+					  e.getMessage(), e);
         }
     }
 

@@ -63,6 +63,7 @@ import org.opennms.netmgt.poller.monitors.NetworkInterface;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.netmgt.utils.IfLabel;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.utils.RrdFileConstants;
@@ -527,7 +528,7 @@ final class SnmpThresholder implements ServiceThresholder {
                 Log eventLog = new Log();
                 eventLog.setEvents(events);
                 eproxy.send(eventLog);
-            } catch (RuntimeException e) {
+            } catch (EventProxyException e) {
                 log.error("check: Failed sending threshold events via event proxy...", e);
                 return THRESHOLDING_FAILED;
             }

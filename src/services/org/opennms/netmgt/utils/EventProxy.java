@@ -56,10 +56,10 @@ public interface EventProxy {
      * @param event
      *            the event to be sent out
      * 
-     * @exception UndeclaredThrowableException
+     * @exception EventProxyException
      *                thrown if the send fails for any reason
      */
-    public void send(Event event) throws UndeclaredThrowableException;
+    public void send(Event event) throws EventProxyException;
 
     /**
      * This method is called to send an event log containing multiple events out
@@ -67,8 +67,8 @@ public interface EventProxy {
      * @param eventLog
      *            the events to be sent out
      * 
-     * @exception UndeclaredThrowableException
+     * @exception EventProxyException
      *                thrown if the send fails for any reason
      */
-    public void send(Log eventLog) throws UndeclaredThrowableException;
+    public void send(Log eventLog) throws EventProxyException;
 }
