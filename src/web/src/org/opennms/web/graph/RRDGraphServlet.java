@@ -149,6 +149,7 @@ public class RRDGraphServlet extends HttpServlet {
         try {
             String report = request.getParameter("report");
             String[] rrds = request.getParameterValues("rrd");
+	    String propertiesFile = request.getParameter("props");
             String start = request.getParameter("start");
             String end = request.getParameter("end");
 
@@ -165,7 +166,7 @@ public class RRDGraphServlet extends HttpServlet {
                 }
             }
 
-            String command = this.createPrefabCommand(request, report, rrds, start, end);
+            String command = this.createPrefabCommand(request, report, rrds, propertiesFile, start, end);
 
             InputStream tempIn = null;
             ServletOutputStream out = response.getOutputStream();
@@ -196,7 +197,7 @@ public class RRDGraphServlet extends HttpServlet {
         }
     }
 
-    protected String createPrefabCommand(HttpServletRequest request, String reportName, String[] rrds, String start, String end) throws ServletException {
+    protected String createPrefabCommand(HttpServletRequest request, String reportName, String[] rrds, String propertiesFile, String start, String end) throws ServletException {
         PrefabGraph graph = (PrefabGraph) this.reportMap.get(reportName);
 
         if (graph == null) {
@@ -223,6 +224,16 @@ public class RRDGraphServlet extends HttpServlet {
 
         translationMap.put(RE.simplePatternToFullRegularExpression("{startTime}"), starttime);
         translationMap.put(RE.simplePatternToFullRegularExpression("{endTime}"), endtime);
+	Properties externalProperties = new Properties();
+	if (propertiesFile != null) {
+		try {
+			externalProperties.load(new FileInputStream(
+						this.workDir + File.separator + propertiesFile));
+		} catch (Exception e1) {
+			//Do nothing - just have no properties.
+		}
+	}
+
 
         // names of values specified outside of the RRD data (external values)
         String[] externalValues = graph.getExternalValues();
@@ -238,6 +249,23 @@ public class RRDGraphServlet extends HttpServlet {
                 }
             }
         }
+
+	//names of values specified that come from properties files
+	String[] propertiesValues = graph.getPropertiesValues();
+	if (propertiesValues != null || propertiesValues.length > 0) {
+		for (int i = 0; i < propertiesValues.length; i++) {
+			String value = externalProperties.getProperty(propertiesValues[i]);
+			if (value == null) {
+				throw new MissingParameterException(propertiesValues[i]);
+			} else {
+				translationMap.put(
+					RE.simplePatternToFullRegularExpression(
+						"{" + propertiesValues[i] + "}"),
+					value);
+			}
+		}
+	}
+
 
         try {
             Iterator iter = translationMap.keySet().iterator();

@@ -1,5 +1,7 @@
 1.2.0 to 1.2.1
 ----------------------------------------------------------------------
+- Added the ability to gather and display SNMP text properties in 
+  reports. Bug 1115. Thx Craig.
 - Changed snmpIfAlias column size to 256. Bug 1127
 - Modified MockPollConfig to share code with PollOutageConfigFactory. Bug 1122
 - Write test for and fixed midnight outages in PollOutageConfigManager, Bug 1122
