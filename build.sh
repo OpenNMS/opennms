@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 VERSION_BUILD='1.18'
 

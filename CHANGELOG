@@ -100,6 +100,23 @@
   snmp-graph.properties.xml
 - added a contrib directory and Tomas Carlsson mib2opennms program
 
+1.0.2 to 1.0.3
+----------------------------------------------------------------------
+- Added workaround to actiond to help with 1.4.1 JDK issues (Thx Nick)
+- Fixed bug in Trap handler. Bug 676 (Thx Ross)
+
+1.0.1 to 1.0.2
+----------------------------------------------------------------------
+- Added Event definitions for traps from 3Com, APC, Brocade, CIM, 
+  Cisco, Fore, HP, Intel, Microsoft, Novell, Oracle, SonicWall,
+  and Xerox devices.
+- Disallowed spaces in Path name. Bug 657
+- fixed small bug with wildcards in eventconf.xml
+- fixed AM/PM ordering on Performance Report drop down. Bug 515
+- fixed typo - Bug 662 - thanks Volker
+- fixed issue with capsd pulling all of the ifTable for interface.
+  Could cause issues with some HP switches.
+- Bug 664: Notifications not filtering on services.
 
 0.9.9 to 1.0.0
 ----------------------------------------------------------------------

@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 # Guess values for system-dependent variables and create Makefiles.
 # Generated automatically using autoconf version 2.13 
@@ -1438,7 +1438,7 @@ DEFS=-DHAVE_CONFIG_H
 echo creating $CONFIG_STATUS
 rm -f $CONFIG_STATUS
 cat > $CONFIG_STATUS <<EOF
-#! /bin/sh
+#! /bin/bash
 # Generated automatically by configure.
 # Run this file to recreate the current configuration.
 # This directory was configured as follows,

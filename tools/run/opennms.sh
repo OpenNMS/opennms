@@ -178,7 +178,7 @@ get_url () {
 case "$COMMAND" in
 	start|spawn)
 		if [ `list_opennms_pids | wc -l` -ge 1 ]; then
-			if `$0 status 2>&1 | grep -q 'running'`; then
+			if `$0 status 2>&1 | grep 'running'` >/dev/null 2>&1; then
 				echo `date`": Trying to start OpenNMS but it's already running."
 				exit 0
 			else
