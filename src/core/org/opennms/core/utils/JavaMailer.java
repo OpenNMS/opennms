@@ -25,6 +25,8 @@ import javax.mail.internet.MimeMultipart;
 
 import org.apache.log4j.Category;
 
+import alt.dev.jmta.JMTA;
+
 import com.sun.mail.smtp.SMTPTransport;
 
 /**
@@ -52,8 +54,12 @@ public class JavaMailer {
     private final String DEFAULT_TRANSPORT = JavaMailerConfig.getProperty("org.opennms.core.utils.transport", "smtp");
 
     private final boolean DEFAULT_MAILER_DEBUG = JavaMailerConfig.getProperty("org.opennms.core.utils.debug", true);
+    
+    private final boolean DEFAULT_USE_JMTA = JavaMailerConfig.getProperty("org.opennms.core.utils.useJMTA", true);
 
     private String _mailHost = DEFAULT_MAIL_HOST;
+    
+    private boolean _useJMTA = DEFAULT_USE_JMTA;
 
     private String _mailer = DEFAULT_MAILER;
 
@@ -206,60 +212,58 @@ public class JavaMailer {
      * 
      */
     public void mailSend() throws JavaMailerException {
-
+        
         Category log = ThreadCategory.getInstance(getClass());
-
+        
         Properties props = System.getProperties();
-
+        
         if (_mailHost != null)
             props.put("mail.smtp.host", _mailHost);
-
+        
         if (_authenticate)
             props.put("mail.smtp.auth", "true");
-
+        
         // Get a Session object
         Session session = Session.getInstance(props, null);
-
-        if (DEFAULT_MAILER_DEBUG)
-            session.setDebug(true);
-
+        session.setDebug(DEFAULT_MAILER_DEBUG);
+        
         // construct the message
         Message _msg = new MimeMessage(session);
         MimeBodyPart mbp1 = new MimeBodyPart(); // for message text
         MimeBodyPart mbp2 = null; // for file attachment if necessary
-
+        
         try {
             if (_from != null)
                 _msg.setFrom(new InternetAddress(_from));
             else
                 _msg.setFrom();
-
+            
             if (_to == null) {
                 log.debug("_to is null");
                 _to = "root@127.0.0.1";
             }
             log.debug("To is: " + _to);
             _msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(_to, false));
-
+            
             if (_subject == null) {
                 log.debug("_subject is null");
                 _subject = "Subject was null";
             }
             log.debug("Subject is: " + _subject);
             _msg.setSubject(_subject);
-
+            
             if (_messageText == null) {
                 log.debug("_messageText is null");
                 _messageText = "Message Text was null";
             }
             log.debug("Subject is: " + _subject);
-
+            
             // _msg.setText(_messageText);
             mbp1.setText(_messageText);
-
+            
             MimeMultipart mp = new MimeMultipart();
             mp.addBodyPart(mbp1);
-
+            
             if (_fileName != null) {
                 log.debug("_file is not null");
                 mbp2 = new MimeBodyPart();
@@ -268,41 +272,41 @@ public class JavaMailer {
                 mbp2.setFileName(fds.getName());
                 mp.addBodyPart(mbp2);
             }
-
+            
             _msg.setHeader("X-Mailer", _mailer);
             _msg.setSentDate(new Date());
             _msg.setContent(mp);
-
-            SMTPTransport t = null;
-            try {
-                t = (SMTPTransport) session.getTransport(_transport);
-                if (_authenticate)
-                    t.connect(_mailHost, _user, _password);
-                else
-                    t.connect();
-
-                t.sendMessage(_msg, _msg.getAllRecipients());
-            } catch (NoSuchProviderException e) {
-                throw new JavaMailerException("Couldn't get a transport: ", e);
-            } catch (MessagingException e) {
-                throw new JavaMailerException("Java Mailer messaging exception: ", e);
-            } finally {
-                System.out.println("Response: " + t.getLastServerResponse());
+            
+            if (isUseJMTA()) {
+                JMTA.send(_msg);
+            } else {
+                SMTPTransport t = null;
                 try {
-                    t.close();
-                } catch (MessagingException e1) {
-                    throw new JavaMailerException("Java Mailer messaging exception on transport close: ", e1);
+                    t = (SMTPTransport) session.getTransport(_transport);
+                    if (_authenticate)
+                        t.connect(_mailHost, _user, _password);
+                    else
+                        t.connect();
+                    
+                    t.sendMessage(_msg, _msg.getAllRecipients());
+                } catch (NoSuchProviderException e) {
+                    throw new JavaMailerException("Couldn't get a transport: ", e);
+                } catch (MessagingException e) {
+                    throw new JavaMailerException("Java Mailer messaging exception: ", e);
+                } finally {
+                    System.out.println("Response: " + t.getLastServerResponse());
+                    try {
+                        t.close();
+                    } catch (MessagingException e1) {
+                        throw new JavaMailerException("Java Mailer messaging exception on transport close: ", e1);
+                    }
                 }
             }
-
-            System.out.println("\nMail was sent successfully.");
-
+            
         } catch (AddressException e) {
             throw new JavaMailerException("Java Mailer Addressing exception: ", e);
         } catch (MessagingException e) {
             throw new JavaMailerException("Java Mailer messaging exception: ", e);
-        } finally {
-
         }
     }
 
@@ -335,4 +339,16 @@ public class JavaMailer {
     public void setUser(String user) {
         _user = user;
     }
+	/**
+	 * @return Returns the _useMailHost.
+	 */
+	public boolean isUseJMTA() {
+		return _useJMTA;
+	}
+	/**
+	 * @param mailHost The _useMailHost to set.
+	 */
+	public void setUseJMTA(boolean useMTA) {
+		_useJMTA = useMTA;
+	}
 }
