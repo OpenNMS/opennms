@@ -513,8 +513,8 @@ public class PollableNode {
                         // critical service (regardless of package) then poll
                         // the
                         // interface passing it the critical service
-                        if (criticalSvc != null && pInterface.supportsService(criticalSvc)) {
-                            PollableService criticalNif = pInterface.getService(criticalSvc);
+                        if (criticalSvc != null && pIf.supportsService(criticalSvc)) {
+                            PollableService criticalNif = pIf.getService(criticalSvc);
                             pIf.poll(criticalNif);
                         } else {
                             // No critical service defined or interface doesn't
@@ -524,7 +524,7 @@ public class PollableNode {
                             // by the interface and poll the interface passing
                             // it
                             // that service
-                            Iterator s = pInterface.getServices().iterator();
+                            Iterator s = pIf.getServices().iterator();
                             PollableService firstSvc = (PollableService) s.next();
                             pIf.poll(firstSvc);
                         }
@@ -568,7 +568,7 @@ public class PollableNode {
                         // the
                         // interface passing it the critical service
                         int tmpStatus = Pollable.STATUS_UNKNOWN;
-                        if (criticalSvc != null && pInterface.supportsService(criticalSvc)) {
+                        if (criticalSvc != null && pIf.supportsService(criticalSvc)) {
                             PollableService criticalNif = pIf.getService(criticalSvc);
                             tmpStatus = pIf.poll(criticalNif);
                         } else {
