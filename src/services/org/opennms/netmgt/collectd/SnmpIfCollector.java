@@ -260,7 +260,7 @@ public class SnmpIfCollector implements SnmpHandler {
         m_ifMap = ifMap;
         m_maxVarsPerPdu = maxVarsPerPdu;
         if (log.isDebugEnabled())
-            log.debug("SnmpIfCollector: maxVarsPerPdu=" + maxVarsPerPdu);
+            log.debug("SnmpIfCollector: ("+m_primaryIf+") maxVarsPerPdu=" + maxVarsPerPdu);
 
         // Build (String) array of interface indices using ifMap parm
         //
@@ -268,14 +268,14 @@ public class SnmpIfCollector implements SnmpHandler {
         Iterator iter = interfaces.iterator();
         m_indexArray = new String[ifMap.size()];
         if (log.isDebugEnabled())
-            log.debug("SnmpIfCollector: ifMap size: " + ifMap.size());
+            log.debug("SnmpIfCollector: ("+m_primaryIf+") ifMap size: " + ifMap.size());
 
         int i = 0;
         while (iter.hasNext()) {
             IfInfo ifInfo = (IfInfo) iter.next();
             m_indexArray[i++] = String.valueOf(ifInfo.getIndex());
             if (log.isDebugEnabled())
-                log.debug("SnmpIfCollector: arrayIndex: " + i + " ifIndex: " + String.valueOf(ifInfo.getIndex()));
+                log.debug("SnmpIfCollector: ("+m_primaryIf+") arrayIndex: " + i + " ifIndex: " + String.valueOf(ifInfo.getIndex()));
         }
 
         // Build object lists for SNMPv2 processing
@@ -315,7 +315,7 @@ public class SnmpIfCollector implements SnmpHandler {
             pdu = getNextSnmpV1Pdu(m_primaryIf);
         }
         if (log.isDebugEnabled())
-            log.debug("SnmpIfCollector: sending initial interface SNMP get(Next/Bulk) request PDU for " + m_primaryIf + " with ifIndex: " + m_primaryIfIndex);
+            log.debug("SnmpIfCollector: ("+m_primaryIf+") sending initial interface SNMP get(Next/Bulk) request PDU for " + m_primaryIf + " with ifIndex: " + m_primaryIfIndex);
 
         session.send(pdu, this);
     }
@@ -381,7 +381,7 @@ public class SnmpIfCollector implements SnmpHandler {
         index = new Integer(m_indexArray[m_responses]);
         m_objList = ((IfInfo) m_ifMap.get(index)).getOidList();
         if (log.isDebugEnabled())
-            log.debug("getNextSnmpV1Pdu: ifindex: " + index + " oidListIndex=" + m_oidListIndex + " objCount=" + m_objList.size());
+            log.debug("getNextSnmpV1Pdu: ("+m_primaryIf+") ifindex: " + index + " oidListIndex=" + m_oidListIndex + " objCount=" + m_objList.size());
 
         pdu.setRequestId(SnmpPduPacket.nextSequence());
 
@@ -413,8 +413,8 @@ public class SnmpIfCollector implements SnmpHandler {
                 // Verify that we have a valid ifIndex value
                 if (index.intValue() == -1) {
                     if (log.isEnabledFor(Priority.WARN)) {
-                        log.warn("getNextSnmpV1Pdu: valid 'ifIndex' value unavailable for interface " + ifAddress + " and MIB object: " + mibObject.getOid());
-                        log.warn("getNextSnmpV1Pdu: substituting instance value 0.");
+                        log.warn("getNextSnmpV1Pdu: ("+m_primaryIf+") valid 'ifIndex' value unavailable for interface " + ifAddress + " and MIB object: " + mibObject.getOid());
+                        log.warn("getNextSnmpV1Pdu: ("+m_primaryIf+") substituting instance value 0.");
                     }
                     oid = new SnmpObjectId(mibObject.getOid() + ".0");
                 } else {
@@ -439,13 +439,13 @@ public class SnmpIfCollector implements SnmpHandler {
 
             // Add the variable binding to the pdu
             if (log.isDebugEnabled())
-                log.debug("getNextSnmpV1Pdu: adding oid to pdu: " + oid.toString());
+                log.debug("getNextSnmpV1Pdu: ("+m_primaryIf+") adding oid to pdu: " + oid.toString());
 
             pdu.addVarBind(new SnmpVarBind(oid));
         }
 
         if (log.isDebugEnabled())
-            log.debug("getNextSnmpV1Pdu: finished building next pdu, num vars in pdu=" + pdu.getLength());
+            log.debug("getNextSnmpV1Pdu: ("+m_primaryIf+") finished building next pdu, num vars in pdu=" + pdu.getLength());
         return pdu;
     }
 
@@ -485,7 +485,7 @@ public class SnmpIfCollector implements SnmpHandler {
         //
         ((SnmpPduBulk) pdu).setMaxRepititions(m_numInterfaces - m_responses);
         if (log.isDebugEnabled())
-            log.debug("getNextSnmpV2Pdu: responseCount: " + m_responses + " maxReps: " + (m_numInterfaces - m_responses));
+            log.debug("getNextSnmpV2Pdu: ("+m_primaryIf+") responseCount: " + m_responses + " maxReps: " + (m_numInterfaces - m_responses));
 
         if (m_responses == 0)
             index = new Integer(0);
@@ -493,7 +493,7 @@ public class SnmpIfCollector implements SnmpHandler {
             index = new Integer(m_indexArray[m_responses - 1]);
 
         if (log.isDebugEnabled())
-            log.debug("getNextSnmpV2Pdu: starting_ifindex: " + index);
+            log.debug("getNextSnmpV2Pdu: ("+m_primaryIf+") starting_ifindex: " + index);
 
         pdu.setRequestId(SnmpPduPacket.nextSequence());
 
@@ -521,8 +521,8 @@ public class SnmpIfCollector implements SnmpHandler {
             // Verify that we have a valid ifIndex value
             if (index.intValue() == -1) {
                 if (log.isEnabledFor(Priority.WARN)) {
-                    log.warn("getNextSnmpV2Pdu: valid 'ifIndex' value unavailable for interface " + ifAddress + " and MIB object: " + mibObject.getOid());
-                    log.warn("getNextSnmpV2Pdu: substituting instance value 0.");
+                    log.warn("getNextSnmpV2Pdu: ("+m_primaryIf+") valid 'ifIndex' value unavailable for interface " + ifAddress + " and MIB object: " + mibObject.getOid());
+                    log.warn("getNextSnmpV2Pdu: ("+m_primaryIf+") substituting instance value 0.");
                 }
                 oid = new SnmpObjectId(mibObject.getOid() + ".0");
             } else {
@@ -562,7 +562,7 @@ public class SnmpIfCollector implements SnmpHandler {
 
         // Add the variable binding to the pdu
         if (log.isDebugEnabled())
-            log.debug("getNextSnmpV2Pdu: adding oid to pdu: " + oid.toString());
+            log.debug("getNextSnmpV2Pdu: ("+m_primaryIf+") adding oid to pdu: " + oid.toString());
 
         pdu.addVarBind(new SnmpVarBind(oid));
 
@@ -604,7 +604,7 @@ public class SnmpIfCollector implements SnmpHandler {
         Category log = ThreadCategory.getInstance(getClass());
 
         if (log.isDebugEnabled())
-            log.debug("snmpReceivedPdu: got an SNMP pdu, num vars=" + pdu.getLength());
+            log.debug("snmpReceivedPdu: ("+m_primaryIf+") got an SNMP pdu, num vars=" + pdu.getLength());
 
         if (command == SnmpPduPacket.RESPONSE) {
             try {
@@ -617,7 +617,7 @@ public class SnmpIfCollector implements SnmpHandler {
 
                     m_errorIndex = ((SnmpPduRequest) pdu).getErrorIndex();
                     if (log.isEnabledFor(Priority.WARN))
-                        log.warn("snmpReceivedPDU: Error during interface SNMP collection for interface " + session.getPeer().getPeer().toString() + ", SNMP error text: " + m_errorText[m_errorStatus]);
+                        log.warn("snmpReceivedPDU: ("+m_primaryIf+") Error during interface SNMP collection for interface " + session.getPeer().getPeer().toString() + ", SNMP error text: " + m_errorText[m_errorStatus]);
 
                     // If valid m_errorIndex variable is set:
                     // - print warning indicating the failing object
@@ -630,7 +630,7 @@ public class SnmpIfCollector implements SnmpHandler {
                     if (m_errorIndex > 0 && (m_errorIndex + m_oidListIndex) <= m_objList.size()) {
                         MibObject tempObj = (MibObject) m_objList.get((m_errorIndex - 1) + m_oidListIndex);
                         if (log.isEnabledFor(Priority.WARN))
-                            log.warn("snmpReceivedPDU: Failing varbind - name: " + tempObj.getAlias() + " oid: " + tempObj.getOid());
+                            log.warn("snmpReceivedPDU: ("+m_primaryIf+") Failing varbind - name: " + tempObj.getAlias() + " oid: " + tempObj.getOid());
 
                         if (m_version == SnmpSMI.SNMPV1) {
                             m_error = false; // attempt to recover
@@ -641,7 +641,7 @@ public class SnmpIfCollector implements SnmpHandler {
                             m_objList.remove((m_errorIndex - 1) + m_oidListIndex);
 
                             if (log.isDebugEnabled())
-                                log.debug("snmpReceivedPDU: Removing failing varbind and resending request...");
+                                log.debug("snmpReceivedPDU: ("+m_primaryIf+") Removing failing varbind and resending request...");
 
                             // Rebuild the request PDU and resend
                             //
@@ -655,7 +655,7 @@ public class SnmpIfCollector implements SnmpHandler {
                     // SNMPv2 Responses
                     //
                     if (log.isDebugEnabled())
-                        log.debug("snmpReceivedPdu: interface SNMP response arrived.  Handling GETBULK response.");
+                        log.debug("snmpReceivedPdu: ("+m_primaryIf+") interface SNMP response arrived.  Handling GETBULK response.");
 
                     // Get next MibObject from object list & define the stopping
                     // point
@@ -685,10 +685,10 @@ public class SnmpIfCollector implements SnmpHandler {
                             if (vb.getValue() instanceof org.opennms.protocols.snmp.SnmpV2Error) {
                                 done = true;
                                 if (log.isDebugEnabled())
-                                    log.debug("SnmpIfCollector.snmpReceivedPdu: SNMPv2 error for oid: " + vb.getName() + " error: " + vb.getValue());
+                                    log.debug("SnmpIfCollector.snmpReceivedPdu: ("+m_primaryIf+") SNMPv2 error for oid: " + vb.getName() + " error: " + vb.getValue());
                             } else {
                                 if (log.isDebugEnabled())
-                                    log.debug("snmpReceivedPDU: addint vb to response list, oid name:value pair: " + vb.getName() + " : " + vb.getValue());
+                                    log.debug("snmpReceivedPDU: ("+m_primaryIf+") addint vb to response list, oid name:value pair: " + vb.getName() + " : " + vb.getValue());
 
                                 m_responseVbList.add(vb);
                                 m_responses++;
@@ -728,12 +728,16 @@ public class SnmpIfCollector implements SnmpHandler {
                     // a map of retrieved values indexed by object identifier.
                     if (m_objList_v2.isEmpty()) {
                         if (log.isDebugEnabled())
-                            log.debug("snmpReceivedPdu(): All data acquired.  Begin formatting maps.");
+                            log.debug("snmpReceivedPdu(): ("+m_primaryIf+") All data acquired.  Begin formatting maps." +
+                                    " m_objList.size="+m_objList.size()+
+                                    " responseVbList.size = "+m_responseVbList.size());
 
                         for (int a = 0; a < m_indexArray.length; a++) {
                             int varIndex = 0;
 
+                            log.debug("snmpReceivedPdu(): ("+m_primaryIf+") Processing responses for ifIndex "+m_indexArray[a]);
                             SnmpVarBind[] vars = new SnmpVarBind[m_objList.size()];
+                            
 
                             // Add varbinds from the responseVbList which
                             // correspond
@@ -755,6 +759,8 @@ public class SnmpIfCollector implements SnmpHandler {
                                 // in array, add to
                                 // variable array for storage.
                                 if (instance.equals(m_indexArray[a])) {
+                                    log.debug("snmpReceivedPdu(): ("+m_primaryIf+") Found response for ifIndex "+m_indexArray[a]+":" +
+                                            " varbind=["+vb+"]: storing at vars["+varIndex+"]");
                                     vars[varIndex++] = vb;
                                 }
                             }
@@ -768,7 +774,7 @@ public class SnmpIfCollector implements SnmpHandler {
                         doNotify = false;
 
                         if (log.isDebugEnabled())
-                            log.debug("SnmpCollector.snmpReceivedPdu(): Sending next GETBULK packet.");
+                            log.debug("SnmpCollector.snmpReceivedPdu(): ("+m_primaryIf+") Sending next GETBULK packet.");
 
                         session.send(nxtpdu, this);
                     }
@@ -786,7 +792,7 @@ public class SnmpIfCollector implements SnmpHandler {
                     // everything.
                     //
                     if (log.isDebugEnabled())
-                        log.debug("snmpReceivedPDU: interface SNMP response arrived. Handling GET response.");
+                        log.debug("snmpReceivedPDU: ("+m_primaryIf+") interface SNMP response arrived. Handling GET response.");
 
                     // Store retrieved responses in an SNMPCollectorEntry object
                     //
@@ -816,7 +822,7 @@ public class SnmpIfCollector implements SnmpHandler {
                         // and send it to the agent
                         //
                         if (log.isDebugEnabled())
-                            log.debug("snmpReceivedPDU: more to collect...sending next request, m_oidListIndex=" + m_oidListIndex + " totalObjects=" + m_objList.size());
+                            log.debug("snmpReceivedPDU: ("+m_primaryIf+") more to collect...sending next request, m_oidListIndex=" + m_oidListIndex + " totalObjects=" + m_objList.size());
                         SnmpPduPacket nxtpdu = getNextSnmpV1Pdu(m_primaryIf);
                         doNotify = false;
                         session.send(nxtpdu, this);
@@ -827,7 +833,7 @@ public class SnmpIfCollector implements SnmpHandler {
                         // count and see if all interfaces have been collected.
                         //
                         if (log.isDebugEnabled())
-                            log.debug("snmpReceivedPDU: completed collection for interface with ifIndex=" + m_indexArray[m_responses]);
+                            log.debug("snmpReceivedPDU: ("+m_primaryIf+") completed collection for interface with ifIndex=" + m_indexArray[m_responses]);
                         m_entries.add(m_collectorEntry);
                         m_responses++; // increment response count
                         m_collectorEntry = null; // reset collector entry
@@ -836,7 +842,7 @@ public class SnmpIfCollector implements SnmpHandler {
                         // Do we have additional interfaces to collect for?
                         if (m_responses != m_indexArray.length) {
                             if (log.isDebugEnabled())
-                                log.debug("snmpReceivedPDU: ResponseCount: " + m_responses + ", InterfaceCount: " + m_numInterfaces + " Generating next GET PDU");
+                                log.debug("snmpReceivedPDU: ("+m_primaryIf+") ResponseCount: " + m_responses + ", InterfaceCount: " + m_numInterfaces + " Generating next GET PDU");
 
                             SnmpPduPacket nxtpdu = getNextSnmpV1Pdu(m_primaryIf);
                             doNotify = false;
@@ -847,12 +853,12 @@ public class SnmpIfCollector implements SnmpHandler {
 
             } catch (Throwable t) {
                 if (log.isEnabledFor(Priority.WARN))
-                    log.warn("snmpReceivedPdu: Unexpected exception while processing SNMP response packet.", t);
+                    log.warn("snmpReceivedPdu: ("+m_primaryIf+") Unexpected exception while processing SNMP response packet.", t);
             }
         } else // It was an invalid PDU
         {
             if (log.isDebugEnabled())
-                log.debug("snmpReceivedPdu: Invalid PDU!");
+                log.debug("snmpReceivedPdu: ("+m_primaryIf+") Invalid PDU!");
 
             m_error = true;
         }
@@ -899,22 +905,22 @@ public class SnmpIfCollector implements SnmpHandler {
         Category log = ThreadCategory.getInstance(getClass());
 
         if (log.isDebugEnabled())
-            log.debug("snmpInternalError: interface SNMP collection failed for interface " + session.getPeer().getPeer().toString() + ", SnmpSession errCode: " + error);
+            log.debug("snmpInternalError: ("+m_primaryIf+") interface SNMP collection failed for interface " + session.getPeer().getPeer().toString() + ", SnmpSession errCode: " + error);
 
         m_error = true;
 
         if (m_signal != null) {
             if (log.isDebugEnabled())
-                log.debug("snmpInternalError: synchronizing on signal...");
+                log.debug("snmpInternalError: ("+m_primaryIf+") synchronizing on signal...");
 
             synchronized (m_signal) {
                 if (log.isDebugEnabled())
-                    log.debug("snmpInternalError: calling signalAll....");
+                    log.debug("snmpInternalError: ("+m_primaryIf+") calling signalAll....");
 
                 m_signal.signalAll();
 
                 if (log.isDebugEnabled())
-                    log.debug("snmpInternalError: back from calling signalAll....");
+                    log.debug("snmpInternalError: ("+m_primaryIf+") back from calling signalAll....");
             }
         }
 
@@ -942,7 +948,7 @@ public class SnmpIfCollector implements SnmpHandler {
         Category log = ThreadCategory.getInstance(getClass());
 
         if (log.isDebugEnabled())
-            log.debug("snmpTimeoutError: interface SNMP collection failed for interface " + session.getPeer().getPeer().toString());
+            log.debug("snmpTimeoutError: ("+m_primaryIf+") interface SNMP collection failed for interface " + session.getPeer().getPeer().toString());
 
         m_error = true;
         m_timeout = true;
