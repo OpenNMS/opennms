@@ -89,10 +89,16 @@
 
         <br>
       
-      <!-- Performance box -->    
+      <!-- Response Time box -->    
       <jsp:include page="/includes/response-box.jsp" flush="false" />
 
         <br>
+      
+      <!-- KSC Reports box -->    
+      <jsp:include page="/includes/ksc-box.jsp" flush="false" />
+
+        <br>
+
         <!-- security box -->    
       <%--
         Commenting out the security box include until it is functional

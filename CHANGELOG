@@ -1,5 +1,6 @@
 1.1.4 to 1.1.5
 ----------------------------------------------------------------------
+- Added a quick link to KSC reports from the main page.
 - Added a test to avoid a nullPointerException during data collection.
   Thx David. Bug 841
 - Corrected an issue with notification/event matching. Bug 740.
