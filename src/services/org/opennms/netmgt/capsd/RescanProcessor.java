@@ -1558,7 +1558,7 @@ final class RescanProcessor
 		if(snmpc != null || !snmpc.failed())
 		{
 			if (log.isDebugEnabled())
-				log.debug("RescanProcessor: add interface " + ifaddr.getHostAddress()
+				log.debug("AddDuplicateInterface: add interface " + ifaddr.getHostAddress()
                                         + " for nodeId: " + node.getNodeId());
                                         
 			DbIpInterfaceEntry ipIfEntry = DbIpInterfaceEntry.create(node.getNodeId(), ifaddr);
@@ -1626,7 +1626,7 @@ final class RescanProcessor
 
 			// Add supported protocols
 			if (log.isDebugEnabled())
-				log.debug("RescanProcessor: add supported protocols for interface " + ifaddr.getHostAddress()
+				log.debug("AddDuplicateInterface: add supported protocols for interface " + ifaddr.getHostAddress()
                                         + " /nodeId: " + node.getNodeId());
 			addSupportedProtocols(node, 
 						ipIfEntry, 
