@@ -60,7 +60,7 @@ import org.apache.log4j.Category;
  * This class implement the server features necessary to receive events
  * from incomming connections.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http;//www.opennms.org">OpenNMS</a>
  *
  */

@@ -77,7 +77,7 @@ import org.opennms.protocols.snmp.asn1.*;
  * <P>Once the session is created the creator must call <EM>close()</EM> to 
  * ensure an orderly release of threads and resources.</P>
  *
- * @author <A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  * @version 1.1.1.1 2001/11/11 17:27:22

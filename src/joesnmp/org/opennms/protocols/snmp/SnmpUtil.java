@@ -59,7 +59,7 @@ import org.opennms.protocols.snmp.SnmpSyntax;
  * @see SnmpIPAddress
  * @see SnmpObjectId
  * 
- * @author	<a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author	<a href="mailto:weave@oculan.com">Brian Weaver</a>
  */
 class SnmpUtil
 	extends Object

@@ -47,7 +47,7 @@ package org.opennms.netmgt.poller;
  * so a monitor must be careful to choose unique keys to prevent namespace
  * collisions.</P>
  * 
- * @author <A HREF="mailto:weave@opennms.org">Weave</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */

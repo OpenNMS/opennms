@@ -55,7 +55,7 @@ import org.opennms.netmgt.utils.Signaler;
  * replies.</P>
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
- * @author <A HREF="mailto:weave@opennms.org">Weave</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>

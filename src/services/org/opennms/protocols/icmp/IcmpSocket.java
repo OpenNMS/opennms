@@ -46,7 +46,7 @@ import java.io.IOException;
  * This class provides a bridge between the host operating
  * system so that ICMP messages may be sent and received.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  *
  */

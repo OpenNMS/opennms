@@ -42,7 +42,7 @@ import java.lang.*;
  * producer handles objects from 8-bits to
  * 64-bit values.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  *
  */
 public final class OC16ChecksumProducer 

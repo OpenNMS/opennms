@@ -39,7 +39,7 @@ package org.opennms.netmgt.poller;
  * this type will prevent it from being passed to the monitor
  * again.</P>
  *
- * @author <A HREF="mailto:weave@opennms.org">Weave</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */

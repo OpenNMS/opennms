@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // 
 // For more information contact: 
-//	Brian Weaver	<weave@opennms.org>
+//	Brian Weaver	<weave@oculan.com>
 //	http://www.opennms.org/
 //
 //
@@ -81,7 +81,7 @@ import org.opennms.protocols.snmp.*;
  * </P>
  *
  * @version	1.1.1.1
- * @author	<A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+ * @author	<A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author	<A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 public class snmpwalk extends Object implements SnmpHandler

@@ -51,7 +51,7 @@ import org.opennms.netmgt.config.DatabaseConnectionFactory;
  * This class represents a singular instance that is used
  * to map trap IP addresses to known nodes.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  *

@@ -57,7 +57,7 @@ import java.util.Map;
  * a critical resource. Synchronization issues should be seriously evaluated to ensure
  * that the plug-in scales well to large deployments.</P>
  *
- * @author <A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */

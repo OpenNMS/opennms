@@ -235,7 +235,7 @@ doesn't work as advertised?
 	developement, and maintance of JoeSNMP and its FAQ.
 	
 	Constructive criticism, patches, new code, bugs and the like
-	can be sent to <weave@opennms.org>. If you wish	to contribute,
+	can be sent to <weave@oculan.com>. If you wish	to contribute,
 	visit the OpenNMS web site (http://www.opennms.org) or
 	drop a line to Tarus Balog <tarus@opennms.org>.
 	
@@ -256,7 +256,7 @@ People and Organizations that have contributed to the JoeSNMP code base:
 	Name	              Organization         Comments
 	--------------------  -----------------    --------------------------
 	Brian Weaver	      Oculan Corp.  Core developer/maintainer.
-	 <weave@opennms.org>
+	 <weave@oculan.com>
 	
 	Sowmya Kumaraswamy    Oculan Corp.  Developer
 	

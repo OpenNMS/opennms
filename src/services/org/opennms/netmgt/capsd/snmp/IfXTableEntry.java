@@ -67,7 +67,7 @@ import org.opennms.core.utils.ThreadCategory;
  * RFC1573 from the IETF.</P>
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike</A>
- * @author <A HREF="mailto:weave@opennms.org">Weave</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  * @version 1.1.1.1

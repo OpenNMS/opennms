@@ -107,7 +107,7 @@ import org.opennms.protocols.snmp.SnmpPduPacket;
  * but can be defined to any of the accepted types.
  * For more information see [Stallings99] page 368.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @version 1.1.1.1
  */
 public class SnmpPduRequest extends SnmpPduPacket

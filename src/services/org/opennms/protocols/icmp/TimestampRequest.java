@@ -50,7 +50,7 @@ import org.opennms.protocols.ip.OC16ChecksumProducer;
  * since it is not intended to be extended.
  *
  * @version	0.1
- * @author	Brian Weaver <weave@opennms.org>
+ * @author	Brian Weaver <weave@oculan.com>
  *
  */
 public final class TimestampRequest

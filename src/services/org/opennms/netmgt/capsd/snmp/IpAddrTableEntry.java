@@ -55,7 +55,7 @@ import org.opennms.protocols.snmp.*;
  * form more information.</P>
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
- * @author <A HREF="mailto:weave@opennms.org">Weave</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A>Jon Whetzel</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *

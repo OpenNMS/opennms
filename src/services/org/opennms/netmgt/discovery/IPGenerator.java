@@ -115,7 +115,7 @@ final class IPGenerator
 	 * so that when on iterator is exhausted the next one is polled.
 	 * This allows a set of iterators to be treated as a single iterator.
 	 *
-	 * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+	 * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
 	 * @author <a href="http://www.opennms.org/">OpenNMS</a>
 	 *
 	 */

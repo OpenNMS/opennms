@@ -44,7 +44,7 @@ import java.lang.*;
  * exception is the general purpose exception that is thrown
  * when a queue error occurs.</p>
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org</a>
  *
  */

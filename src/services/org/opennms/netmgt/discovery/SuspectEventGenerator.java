@@ -64,7 +64,7 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
  * instances of ping replies and converts them to events. The
  * events are then sent to the event daemon.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  *
  */

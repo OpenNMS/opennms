@@ -46,7 +46,7 @@ import java.lang.*;
  * to add elements to the queue. It should always be possible to
  * read elements from the queue, so long as it is not empty.</p>
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  *
  */

@@ -60,7 +60,7 @@ import java.lang.*;
  * multiplexed over a one or more threads, where the <em>Runnables</em> far
  * exceed the core Java threads.</p>
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 public interface Fiber

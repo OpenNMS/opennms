@@ -47,7 +47,7 @@ import java.util.*;
  *
  * @see SnmpSession
  *
- * @author	<a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author	<a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @version	1.1.1.1
  */
 class SnmpTimer extends Object

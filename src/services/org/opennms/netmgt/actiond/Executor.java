@@ -65,7 +65,7 @@ import org.opennms.core.utils.ThreadCategory;
  * it is terminated during collection.
  *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/>OpenNMS</a>
  *
  */
@@ -125,7 +125,7 @@ final class Executor
 	 * and the started time.
 	 *
 	 * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
-	 * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+	 * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
 	 * @author <a href="http://www.opennms.org/>OpenNMS</a>
 	 *
 	 */
@@ -194,7 +194,7 @@ final class Executor
 	 * removed from the process queue.
 	 *
 	 * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
-	 * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+	 * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
 	 * @author <a href="http://www.opennms.org/>OpenNMS</a>
 	 *
 	 */

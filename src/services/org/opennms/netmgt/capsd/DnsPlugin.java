@@ -58,7 +58,7 @@ import org.opennms.protocols.dns.DNSAddressRequest;
  * a DNS server.
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
- * @author <a href="mailto:weave@opennms.org">Weave</a>
+ * @author <a href="mailto:weave@oculan.com">Weave</a>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */

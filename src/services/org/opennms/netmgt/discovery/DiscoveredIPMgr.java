@@ -66,7 +66,7 @@ import org.opennms.netmgt.config.discovery.ExcludeRange;
  * address has already been discovered or is part of the
  * exclude list then the manager can be used to check.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  *
  */
@@ -99,7 +99,7 @@ final class DiscoveredIPMgr
 	 * and provides the infomation required for a Tree to be sorted. This implementation
 	 * only works with objects of type {@link java.net.InetAddress InetAddress}.
 	 *
-	 * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+	 * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
 	 * @author <a href="http://www.opennms.org/">OpenNMS</a>
 	 *
 	 */

@@ -62,7 +62,7 @@ import org.opennms.protocols.snmp.asn1.AsnDecodingException;
  * by William Stallings. (ISBN 0-201-48534-6)
  *
  * @version	1.1.1.1
- * @author	<a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author	<a href="mailto:weave@oculan.com">Brian Weaver</a>
  *
  */
 public abstract class SnmpV2Error extends Object

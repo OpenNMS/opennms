@@ -56,7 +56,7 @@ import jcifs.netbios.NbtAddress;
  * it to be used along with other plugins by the daemon.</P>
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike</A>
- * @author <A HREF="mailto:weave@opennms.org">Weave</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS</A>
  *
  */

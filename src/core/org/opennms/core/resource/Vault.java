@@ -68,7 +68,7 @@ import org.opennms.core.resource.db.DbConnectionFactory;
  * temporary files. </p>
  * 
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
- * @author <A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 public class Vault extends Object 

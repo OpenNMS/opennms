@@ -50,7 +50,7 @@ import java.util.Map;
  * <code>poll<code> interface.
  *
  * @author <A HREF="mike@opennms.org">Mike</A>
- * @author <A HREF="weave@opennms.org">Weave</A>
+ * @author <A HREF="weave@oculan.com">Weave</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */

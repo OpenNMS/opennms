@@ -63,7 +63,7 @@ import org.opennms.netmgt.config.ActiondConfigFactory;
  * then a process is launched to execute the appropriate commands.
  *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org</a>
  *
  */

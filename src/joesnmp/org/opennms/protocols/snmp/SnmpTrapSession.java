@@ -63,7 +63,7 @@ import org.opennms.protocols.snmp.asn1.*;
  * in order to send or receive messages.</P>
  *
  * @author <a href="http://www.opennms.org">OpenNMS</a>
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author Sowmya
  * @version 1.1.1.1 2001/11/11 17:27:22
  *

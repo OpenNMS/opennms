@@ -45,7 +45,7 @@ import java.lang.*;
  * Published by Addision Wesley for more information.
  *
  * @author	<a href="http://www.opennms.org">OpenNMS</a>
- * @author	<a href="mailto:weave@opennms.org>Brian Weaver</a>
+ * @author	<a href="mailto:weave@oculan.com>Brian Weaver</a>
  * @version	1.1.1.1
  */
 public class ASN1

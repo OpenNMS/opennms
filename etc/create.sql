@@ -36,12 +36,44 @@ drop table usersNotified;
 drop table notifications;
 drop table vulnerabilities;
 drop table vulnPlugins;
+drop table serverMap;
+drop table serviceMap;
 drop sequence nodeNxtId;
 drop sequence serviceNxtId;
 drop sequence eventsNxtId;
 drop sequence outageNxtId;
 drop sequence notifyNxtId;
 drop sequence vulnNxtId;
+
+--########################################################################
+--# serverMap table - Contains a list of IP Addresses mapped to 
+--#                   OpenNMS servers
+--#
+--# This table contains the following fields:
+--#
+--#  ipAddr      : IP address of the device to be monitored
+--#  serverName  : Text field to store the server name
+--#
+--########################################################################
+
+create table serverMap (
+	ipAddr			varchar(16) not null,
+	serverName		varchar(64) not null );
+
+--########################################################################
+--# serviceMap table - Contains a list of IP Addresses mapped to 
+--#                    OpenNMS services
+--#
+--# This table contains the following fields:
+--#
+--#  ipAddr          : IP address of the device to be monitored
+--#  serviceName     : Text field to store the service name
+--#
+--########################################################################
+
+create table serviceMap (
+	ipAddr			varchar(16) not null,
+	serviceMapName		varchar(32) not null );
 
 --########################################################################
 --# distPoller table - Contains information on Distributed Pollers

@@ -73,7 +73,7 @@ import org.opennms.netmgt.config.service.*;
  * be referenced. Old references will not reflect any changes in the file if the
  * factory is reloaded.</p>
  *
- * @author <a href="mailto:weave@opennms.org">Weave</a>
+ * @author <a href="mailto:weave@oculan.com">Weave</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  *
  */

@@ -78,7 +78,7 @@ import org.opennms.netmgt.config.discovery.*;
  * is only one instance in any given virtual machine.  The service delays
  * the reading of configuration information until the service is started.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org</a>
  *
  */

@@ -59,7 +59,7 @@ import org.opennms.core.utils.ThreadCategory;
  * This interface provides the contract that implementor must 
  * implement in order to receive events from adaptors.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http;//www.opennms.org">OpenNMS</a>
  */
 public class EventHandlerMBeanProxy

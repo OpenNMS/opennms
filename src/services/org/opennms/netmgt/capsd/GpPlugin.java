@@ -71,7 +71,7 @@ import org.opennms.netmgt.utils.ExecRunner;
  * can be specified in the capsd configuration.</P>
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike</A>
- * @author <A HREF="mailto:weave@opennms.org">Weaver</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weaver</A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS</A>
  * @author <A HREF="mailto:ayres@net.orst.edu">Bill Ayres</A>
  *

@@ -46,7 +46,7 @@ import java.lang.*;
  * while not breaking the normal status information defined by the
  * <code>Fiber</code> interface.</p>
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 public interface ExtendedStatusFiber

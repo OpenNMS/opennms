@@ -73,7 +73,7 @@ import org.opennms.netmgt.xml.rtc.EuiLevel;
  * so as to not block the RTCManager
  *
  * @author 	<A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
- * @author 	<A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+ * @author 	<A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
  */
 final class DataSender implements Fiber

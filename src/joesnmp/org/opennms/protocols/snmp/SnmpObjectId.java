@@ -52,7 +52,7 @@ import org.opennms.protocols.snmp.asn1.AsnDecodingException;
  * is free to define their own branch of the tree. The SnmpObjectId
  * class provides an interface for naming those tree instances.
  *
- * @author	<a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author	<a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @version	1.1.1.1
  *
  */

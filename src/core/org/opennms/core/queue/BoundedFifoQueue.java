@@ -50,7 +50,7 @@ import java.lang.*;
  * to determine if it should block the adding thread, or generate
  * an exception.</p>
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  *
  */

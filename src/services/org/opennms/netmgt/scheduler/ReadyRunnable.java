@@ -38,7 +38,7 @@ import java.lang.*;
  * This interface extends the {@link java.lang.Runnable runnable} interface
  * and provides a method to determine if the runnable is ready to start.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org">OpenNMS.org</a>
  *
  */

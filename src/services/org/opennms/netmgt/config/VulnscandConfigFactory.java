@@ -76,7 +76,7 @@ import org.opennms.netmgt.config.vulnscand.*;
 *
 * @author <a href="mailto:seth@opennms.org">Seth Leger</a>
 * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
-* @author <a href="mailto:weave@opennms.org">Weave</a>
+* @author <a href="mailto:weave@oculan.com">Weave</a>
 * @author <a href="http://www.opennms.org/">OpenNMS</a>
 */
 public final class VulnscandConfigFactory

@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2003 Nov 11: Merged changes from Rackspace project
 // 2003 Jan 08: Changed "= null" to "is null" to work with Posgres 7.2
 // 
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -193,4 +194,8 @@ public final class OutageConstants
          */
         public static final String DB_INS_CACHE_HIT = "INSERT INTO outages (outageID, svcLostEventID, nodeID, ipAddr, serviceID, ifLostService, svcRegainedEventID, ifRegainedService) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
+        /**
+         * The sql statement used to retrieve the nodeLabel for a nodeid
+         */
+        public static final String DB_GET_NODE_LABEL = "SELECT nodelabel FROM NODE WHERE nodeid = ?";
 }

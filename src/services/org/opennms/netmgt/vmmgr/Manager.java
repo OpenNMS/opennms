@@ -82,7 +82,7 @@ import org.opennms.netmgt.config.service.Argument;
  * control event, it will exit - does not check to see if the services its started
  * are all stopped<p>
  *
- * @author 	<A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+ * @author 	<A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author 	<A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
  * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
  */

@@ -105,7 +105,7 @@ import org.opennms.protocols.snmp.SnmpPduPacket;
  * to the PDU format for other V1 types, and thus the SnmpPduTrap
  * object does not extend the SnmpPduPacket class.
  *
- * @author	<a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author	<a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author	<a href="http://www.opennms.org">OpenNMS</a>
  * @version	1.1.1.1
  *

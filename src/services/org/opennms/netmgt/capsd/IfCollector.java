@@ -74,7 +74,7 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
  * addition probes of those interfaces are performed. The SNMP/SMB collections
  * are preformed only once though.
  *
- * @author <a href="mailto:weave@opennms.org">Weave</a>
+ * @author <a href="mailto:weave@oculan.com">Weave</a>
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  *
  */
@@ -127,7 +127,7 @@ final class IfCollector
 	 * combination of the protocol name and the in/out 
 	 * qualifiers for the plugin.
 	 *
-	 * @author <a href="mailto:weave@opennms.org">Weave</a>
+	 * @author <a href="mailto:weave@oculan.com">Weave</a>
 	 *
 	 */
 	static final class SupportedProtocol

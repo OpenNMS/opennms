@@ -43,7 +43,7 @@ import java.lang.*;
  * attempt is made to add an element to a closed
  * {@link ClosableFifoQueue queue}.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  *
  */

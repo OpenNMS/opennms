@@ -46,7 +46,7 @@ import org.apache.log4j.Category;
  * should be associated with a higher level <EM>service</EM> or
  * <EM>application</EM>.
  *
- * @author <A HREF="mailto:weave@opennnms.org">Brian Weaver</A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  * @verion CVS 1.1.1.1

@@ -53,7 +53,7 @@ import org.opennms.protocols.snmp.asn1.AsnDecodingException;
  * buffers. It also defines the methods for duplicating objects
  * and getting the ASN.1 type.
  *
- * @author	<a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author	<a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @version	1.1.1.1
  *
  */

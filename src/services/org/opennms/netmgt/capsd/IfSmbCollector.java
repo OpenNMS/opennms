@@ -59,7 +59,7 @@ import org.opennms.netmgt.config.capsd.*;
  * the target address and store the collected information. When the class
  * is initially constructed no information is collected. 
  *
- * @author <a href="mailto:weave@opennms.org">Weave</a>
+ * @author <a href="mailto:weave@oculan.com">Weave</a>
  * @author <a href="mailto:mike@opennms.org">Mike</a>
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  *

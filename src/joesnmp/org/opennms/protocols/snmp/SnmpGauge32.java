@@ -54,7 +54,7 @@ import org.opennms.protocols.snmp.asn1.AsnDecodingException;
  * specific data, but is instead used to override the ASN.1 type
  * of the base class.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  */
 public class SnmpGauge32
 	extends SnmpUInt32

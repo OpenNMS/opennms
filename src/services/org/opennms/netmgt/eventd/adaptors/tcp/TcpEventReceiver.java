@@ -70,7 +70,7 @@ import org.opennms.netmgt.eventd.adaptors.EventReceiver;
  * of the handlers an event recipt is generated and sent to the
  * remote client.</p>
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http;//www.opennms.org">OpenNMS</a>
  *
  */

@@ -80,7 +80,7 @@ import org.opennms.netmgt.config.TrapdConfigFactory;
  * control events. However, a 'pause' on Trapd has no impact on the
  * receiving and processing of traps</p>
  *
- * @author	<A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+ * @author	<A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author 	<A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
  * @author 	<A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
  * @author 	<A HREF="mailto:mike@opennms.org">Mike Davidson</A>

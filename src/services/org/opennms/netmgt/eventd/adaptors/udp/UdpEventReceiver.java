@@ -66,7 +66,7 @@ import org.opennms.netmgt.eventd.adaptors.EventHandlerMBeanProxy;
  * If the event is successfully processed then an event-receipt is 
  * returned to the caller.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.oculan.com">Oculan Corporation</a>
  *
  */

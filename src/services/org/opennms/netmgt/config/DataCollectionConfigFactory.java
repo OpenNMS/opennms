@@ -71,7 +71,7 @@ import org.opennms.netmgt.config.collectd.*;
  * <em>init()</em> is called before calling any other method to ensure
  * the config is loaded before accessing other convenience methods</p>
  *
- * @author <a href="mailto:weave@opennms.org">Weave</a>
+ * @author <a href="mailto:weave@oculan.com">Weave</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  *
  */

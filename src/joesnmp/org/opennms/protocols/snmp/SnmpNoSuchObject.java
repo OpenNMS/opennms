@@ -62,7 +62,7 @@ import org.opennms.protocols.snmp.SnmpUtil;
  *
  * @see SnmpVarBind
  *
- * @author	Brian Weaver <weave@opennms.org>
+ * @author	Brian Weaver <weave@oculan.com>
  * @version	1.1.1.1
  *
  */

@@ -96,7 +96,7 @@ import org.opennms.netmgt.config.capsd.*;
  *.
  * @author <a href="mailto:jamesz@opennms.org">James Zuo</a>
  * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 final class RescanProcessor

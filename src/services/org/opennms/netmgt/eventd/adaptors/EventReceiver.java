@@ -45,7 +45,7 @@ import org.opennms.core.fiber.InitializableFiber;
  * by an instance of this interface it will pass the new
  * event to the <code>EventHandler.event()</code> method.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http;//www.opennms.org">OpenNMS</a>
  *
  */

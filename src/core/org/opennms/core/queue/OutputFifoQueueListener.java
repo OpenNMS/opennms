@@ -49,7 +49,7 @@ import java.lang.*;
  * to perform other potentially useful work while waiting on new queue
  * elements.</p>
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  *
  */

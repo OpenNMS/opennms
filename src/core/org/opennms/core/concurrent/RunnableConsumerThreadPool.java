@@ -128,7 +128,7 @@ public class RunnableConsumerThreadPool
 	 * lo and hi water marks should have a large cushion between 
 	 * them.</p>
 	 *
-	 * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+	 * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
 	 * @author <a href="http://www.opennms.org/">OpenNMS</a>
 	 *
 	 */
@@ -384,7 +384,7 @@ public class RunnableConsumerThreadPool
 	 * input queue and calls the run method on the associated instance. When finished
 	 * the fiber invoked the appropriate callback and then repeats the process.
 	 *
-	 * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+	 * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
 	 * @author <a href="http://www.opennms.org">OpenNMS</a>
 	 *
 	 */
@@ -548,7 +548,7 @@ public class RunnableConsumerThreadPool
 	 * that is notified when an enqueued runnable completes. The actually
 	 * completed runnable is passed to the listener.
 	 *
-	 * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+	 * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
 	 * @author <a href="http://www.opennms.org">OpenNMS</a>
 	 *
 	 */
@@ -570,7 +570,7 @@ public class RunnableConsumerThreadPool
 	 * does not implement the {@link java.lang.Runnable Runnable} 
 	 * interface.
 	 *
-	 * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+	 * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
 	 * @author <a href="http://www.opennms.org">OpenNMS</a>
 	 *
 	 */

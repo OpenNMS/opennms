@@ -59,7 +59,7 @@ import org.opennms.netmgt.xml.event.*;
  * to expanded and have the 'expanded' value sent back
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy</A>
- * @author <A HREF="mailto:weave@opennms.org">Brain Weaver</A>
+ * @author <A HREF="mailto:weave@oculan.com">Brain Weaver</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 public final class EventUtil

@@ -53,7 +53,7 @@ import org.opennms.protocols.ip.OC16ChecksumProducer;
  * of protocol data. This is enough to hold a UDP header or
  * the first 8 bytes of a TCP header.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  *
  */
 public class ErrorMessage

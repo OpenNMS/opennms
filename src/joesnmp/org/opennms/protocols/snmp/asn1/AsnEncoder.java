@@ -51,7 +51,7 @@ import org.opennms.protocols.snmp.asn1.AsnDecodingException;
  * interface only supports SNMPv1 types.
  *
  * @author	<a href="http://www.opennms.org">OpenNMS</a>
- * @author	<a href="mailto:weave@opennms.org>Brian Weaver</a>
+ * @author	<a href="mailto:weave@oculan.com>Brian Weaver</a>
  * @version	1.1.1.1
  */
 public interface AsnEncoder

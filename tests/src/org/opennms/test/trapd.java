@@ -20,7 +20,7 @@
 // trapd.java,v 1.1.1.1 2001/11/11 17:35:57 ben Exp
 //
 // Log:
-//	06/08/00 - Brian Weaver <weave@opennms.org>
+//	06/08/00 - Brian Weaver <weave@oculan.com>
 //		Commented and added file to CVS
 //
 package org.opennms.test;
@@ -36,7 +36,7 @@ import org.opennms.protocols.snmp.*;
  * traps received from remote agents on port 162.</P>
  *
  * @author <A HREF="mailto:shivakumar.patil@stdc.com">Shivakumar C. Patil</A>
- * @author <A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @version 1.1.1.1
  */

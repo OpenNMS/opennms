@@ -44,7 +44,7 @@ import java.lang.*;
  * the queue. This is useful for listeners that may block or preform
  * other work while a queue is not empty, instead of using polling.</p>
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  *
  */

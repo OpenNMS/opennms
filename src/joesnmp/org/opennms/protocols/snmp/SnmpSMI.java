@@ -46,7 +46,7 @@ import org.opennms.protocols.snmp.asn1.ASN1;
  * @see org.opennms.protocols.snmp.asn1.ASN1
  * 
  * @version	1.1.1.1
- * @author	<a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author	<a href="mailto:weave@oculan.com">Brian Weaver</a>
  *
  */
 public class SnmpSMI

@@ -109,7 +109,7 @@ import org.opennms.protocols.snmp.SnmpPduPacket;
  * For more information on the use of a GetBulk request see
  * [Stallings99] page 378-383.
  *
- * @author	<a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author	<a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @version	1.1.1.1
  */
 public class SnmpPduBulk extends SnmpPduPacket

@@ -41,7 +41,7 @@ package org.opennms.core.utils;
 /**
  * Performs base 64 encoding and decoding on byte arrays.
  *
- * @author <A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  * @version CVS 1.1.1.1

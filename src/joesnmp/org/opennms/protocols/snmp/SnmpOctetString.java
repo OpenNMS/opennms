@@ -51,7 +51,7 @@ import org.opennms.protocols.snmp.asn1.AsnDecodingException;
  * the 8-bit characters are defined by the application.
  *
  * @version	1.1.1.1
- * @author	<a href="mailto:weave@opennms.org>Brian Weaver</a>
+ * @author	<a href="mailto:weave@oculan.com>Brian Weaver</a>
  */
 public class SnmpOctetString extends Object
 	implements SnmpSyntax, Cloneable, Serializable

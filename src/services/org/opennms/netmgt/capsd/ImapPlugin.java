@@ -71,7 +71,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * plugins by the daemon.</P>
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
- * @author <a href="mailto:weave@opennms.org">Weave</a>
+ * @author <a href="mailto:weave@oculan.com">Weave</a>
  * @author <A HREF="http://www.opennsm.org">OpenNMS</A>
  *
  */

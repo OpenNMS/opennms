@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2003 Nov 11: Merged changes from Rackspace project
 // 2003 Oct 08: Implemented the poller release function.
 // 2003 Jan 31: Cleaned up some unused imports.
 //
@@ -197,28 +198,6 @@ public final class Poller
 			throw new UndeclaredThrowableException(ex);
 		}
 		
-		// Initialize the Capsd configuration factory 
-		// Necessary for testing if an interface is managed/unmanaged
-		//
-		try
-		{
-			CapsdConfigFactory.reload();
-		}
-		catch(MarshalException ex)
-		{
-			log.error("Failed to load Capsd configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(ValidationException ex)
-		{
-			log.error("Failed to load Capsd configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(IOException ex)
-		{
-			log.error("Failed to load Capsd configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
 		
 		// Initialize the Capsd configuration factory 
 		// Necessary for testing if an interface is managed/unmanaged

@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2003 Nov 11: Merged changes from Rackspace project
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.

@@ -47,7 +47,7 @@ import java.lang.*;
  * result in the removal of the next element, or the oldest
  * element in the queue.</p>
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  *
  */

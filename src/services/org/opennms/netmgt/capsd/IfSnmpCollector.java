@@ -55,7 +55,7 @@ import org.opennms.netmgt.utils.BarrierSignaler;
  * creating and colletion occurs in the main run method of the instance.
  * This allows the collection to occur in a thread if necessary.
  *
- * @author <a href="mailto:weave@opennms.org">Weave</a>
+ * @author <a href="mailto:weave@oculan.com">Weave</a>
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  *
  */

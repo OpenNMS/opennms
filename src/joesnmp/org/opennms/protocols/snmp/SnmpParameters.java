@@ -49,7 +49,7 @@ import org.opennms.protocols.snmp.SnmpSMI;
  * strings. The protocol version and the ASN.1 encoder used to 
  * encode/decode transmissions.
  *
- * @author	<a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author	<a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @version	1.1.1.1
  *
  */

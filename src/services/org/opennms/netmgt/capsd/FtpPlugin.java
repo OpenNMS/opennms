@@ -73,7 +73,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus</A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
- * @author <A HREF="mailto:weave@opennms.org">Weave</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A HREF="http://www.opennms.org">OpenNMS</A>
  *
  *

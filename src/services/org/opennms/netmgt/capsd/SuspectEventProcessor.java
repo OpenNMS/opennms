@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2003 Nov 11: Merged changes from Rackspace project
 // 2003 Sep 09: Modifications to allow OpenNMS to handle duplicate IP addresses.
 // 2003 Mar 18: Fixed null pointer exceptions from some poorly written SNMP agents.
 // 2003 Jan 31: Cleaned up some unused imports.
@@ -95,7 +96,7 @@ import org.opennms.netmgt.config.capsd.*;
  *
  * @author <a href="mailto:jamesz@blast.com">James Zuo</a>
  * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 final class SuspectEventProcessor

@@ -40,7 +40,7 @@ import java.lang.*;
  * <P>This class is a repository for constant, static information
  * concerning Eventd.</P>
  *
- * @author	<A HREF="mailto:weave@opennms.org">Sowmya Nataraj</A>
+ * @author	<A HREF="mailto:weave@oculan.com">Sowmya Nataraj</A>
  * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
  */
 public final class EventdConstants

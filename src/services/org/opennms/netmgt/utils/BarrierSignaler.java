@@ -46,7 +46,7 @@ package org.opennms.netmgt.utils;
  * notifyAll, the methods signal and signalAll should be used 
  * in their place.</P>
  *
- * @author <A HREF="mailto:weave@opennms.org">Weave</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *

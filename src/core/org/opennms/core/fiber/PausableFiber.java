@@ -45,7 +45,7 @@ import java.lang.*;
  * this interface extends the core interface to provide
  * methods for suspending and resuming the <code>Fiber</code>.</p>
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 public interface PausableFiber

@@ -50,7 +50,7 @@ import org.opennms.protocols.snmp.asn1.AsnDecodingException;
  * base class for any additional SNMP SMI types that 
  * exits now or may be defined in the future.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  */
 public class SnmpInt32 extends Object
 	implements SnmpSyntax, Cloneable, Serializable

@@ -73,7 +73,7 @@ import org.opennms.core.utils.ThreadCategory;
  * for processing.</p>
  *
  * @author <A HREF="sowmya@opennms.org">Sowmya</A>
- * @author <A HREF="weave@opennms.org">Brian Weaver</A>
+ * @author <A HREF="weave@oculan.com">Brian Weaver</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */

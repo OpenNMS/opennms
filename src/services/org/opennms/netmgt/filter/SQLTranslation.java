@@ -70,7 +70,7 @@ import org.opennms.netmgt.config.filter.*;
  * by the parser when the expression has been fully parsed.
  *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
- * @author <A HREF="mailto:weave@opennms.org">Weave</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */

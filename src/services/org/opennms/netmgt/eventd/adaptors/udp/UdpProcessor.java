@@ -59,7 +59,7 @@ import org.opennms.netmgt.eventd.adaptors.EventHandler;
  * the event receiver to do minimum work to avoid dropping packets from the
  * agents.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.oculan.com">Oculan Corporation</a>
  *
  */

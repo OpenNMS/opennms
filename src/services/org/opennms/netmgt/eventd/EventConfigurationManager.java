@@ -71,7 +71,7 @@ import org.opennms.core.utils.ThreadCategory;
  * merge additional events into the configuration by using the 
  * methods provided by the class.</p>
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */

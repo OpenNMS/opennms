@@ -76,7 +76,7 @@ import org.opennms.netmgt.xml.event.*;
  * - %parm[##]% is replaced by the number of parameters 
  * </pre>
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */

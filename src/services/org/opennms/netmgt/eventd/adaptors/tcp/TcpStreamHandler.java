@@ -85,7 +85,7 @@ import org.opennms.netmgt.eventd.adaptors.EventHandler;
  * All successfully processed events are acknowledged to the client by the 
  * generation of an XML event receipt. 
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http;//www.opennms.org">OpenNMS</a>
  *
  */

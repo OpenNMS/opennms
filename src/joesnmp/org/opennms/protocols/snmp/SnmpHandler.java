@@ -55,7 +55,7 @@ import org.opennms.protocols.snmp.SnmpSession;
  * handler class can use <EM>instanceof</EM> to determine the 
  * type of PDU involved in the error.</P>
  *
- * @author	<A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+ * @author	<A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author	<A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  * @version	1.1.1.1

@@ -54,7 +54,7 @@ import org.opennms.netmgt.utils.IPSorter;
  *
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
- * @author <A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */

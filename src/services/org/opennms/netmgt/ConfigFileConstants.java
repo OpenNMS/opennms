@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2003 Nov 11: Merged changes from Rackspace project
 // 2003 Sep 03: Minor opennms-server changes
 // 2003 Aug 29: Added a server-config file
 // 2003 Aug 21: Added ScriptD related files
@@ -274,7 +275,12 @@ public final class ConfigFileConstants
 	 */
 	public static final int KSC_REPORT_FILE_NAME;
 
-	//
+	/**
+	 * The opennms server config file
+	 */
+	public static final int OPENNMS_SERVER_CONFIG_FILE_NAME;
+	
+        //
 	// End other config files
 	//
 
@@ -397,12 +403,13 @@ public final class ConfigFileConstants
 		WEBUI_COLORS_FILE_NAME                  = 45;
 
 		KSC_REPORT_FILE_NAME			= 46;
-		
-        SCRIPTD_CONFIG_FILE_NAME		= 47;
-		
+        	SCRIPTD_CONFIG_FILE_NAME		= 47;
+
+                OPENNMS_SERVER_CONFIG_FILE_NAME         = 48;
+                
 		// Allocate and build the mapping of identifiers to names
 		//
-		FILE_ID_TO_NAME = new String[48];
+		FILE_ID_TO_NAME = new String[49];
 
 		FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] 		= "opennms-database.xml";
 		FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME]		= "opennms-jms.xml";
@@ -465,7 +472,9 @@ public final class ConfigFileConstants
 
 		FILE_ID_TO_NAME[KSC_REPORT_FILE_NAME]         	= "ksc-performance-reports.xml";
         
-		FILE_ID_TO_NAME[SCRIPTD_CONFIG_FILE_NAME]		= "scriptd-configuration.xml";
+		FILE_ID_TO_NAME[SCRIPTD_CONFIG_FILE_NAME]	= "scriptd-configuration.xml";
+
+		FILE_ID_TO_NAME[OPENNMS_SERVER_CONFIG_FILE_NAME]= "opennms-server.xml";
 	}
 
 	/**

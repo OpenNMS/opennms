@@ -60,7 +60,7 @@ import org.opennms.core.utils.ThreadCategory;
  * a maximum thread count is reached.
  *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  *
  */

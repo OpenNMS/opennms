@@ -41,7 +41,7 @@ import org.opennms.netmgt.xml.event.Event;
  * The interface to be implemented by all services that wish to receive events
  * from Eventd.
  *
- * @author 	<A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+ * @author 	<A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
  */
 public interface EventListener

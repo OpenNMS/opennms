@@ -60,7 +60,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * daemon thread to handle all responses and a single socket for sending
  * echo request to various hosts.
  * 
- * @author <A HREF="mailto:weave@opennms.org">Weave</a>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</a>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */

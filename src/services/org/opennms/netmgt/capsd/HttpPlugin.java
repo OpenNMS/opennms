@@ -117,7 +117,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  *            5xx: Server error</P>
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
- * @author <A HREF="mailto:weave@opennms.org">Weaver</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weaver</A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS</A>
  *
  * @version 1.1.1.1

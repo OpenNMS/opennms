@@ -64,7 +64,7 @@ import org.opennms.protocols.snmp.asn1.AsnDecodingException;
  *
  * @deprecated	Obsoleted in RFC 1902.
  *
- * @author	Brian Weaver <weave@opennms.org>
+ * @author	Brian Weaver <weave@oculan.com>
  * @version	1.1.1.1
  */
 public class SnmpV2PartyClock extends SnmpUInt32

@@ -48,7 +48,7 @@ import org.opennms.protocols.snmp.asn1.AsnEncoder;
  * to encode and decode SNMP values using BER. 
  *
  * @author	<a href="http://www.opennms.org">OpenNMS</a>
- * @author	<a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author	<a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @version	1.1.1.1
  */
 public class BerEncoder implements AsnEncoder

@@ -23,7 +23,7 @@
 -- be older than the X date. The downtime between the two dates are
 -- calculated based on all matching tuples.
 --
--- @author Brian Weave <weave@opennms.org>
+-- @author Brian Weave <weave@oculan.com>
 -- @author Sowmya Nataraj <sowmya@opennms.org>
 --
 -- Dependencies: outages table from etc/create.sql

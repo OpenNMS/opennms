@@ -38,7 +38,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 
 /**
  *
- * @author 	<A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+ * @author 	<A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
  */
 public final class UndeclaredEventException extends UndeclaredThrowableException

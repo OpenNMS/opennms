@@ -48,7 +48,7 @@ import org.opennms.protocols.ip.UnknownIPVersionException;
  * "TCP/IP Illustrated, Volume 1: The Protocols" by
  * W. Richard Stevens.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  *
  */
 public class IPHeader
@@ -279,7 +279,7 @@ public class IPHeader
 	 * The Option class is used as the base class for any
 	 * options that are at the end of the IP header.
 	 *
-	 * @author <A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+	 * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
 	 * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
 	 *
 	 */
@@ -378,7 +378,7 @@ public class IPHeader
 	 * list in the IP header. After this option, the option list
 	 * is not processed any further.
 	 *
-	 * @author <A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+	 * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
 	 * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
 	 *
 	 */
@@ -430,7 +430,7 @@ public class IPHeader
 	 * a set of IP addresses that a packet may have or
 	 * should pass though. 
 	 *
-	 * @author <A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+	 * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
 	 * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
 	 *
 	 */
@@ -580,7 +580,7 @@ public class IPHeader
 	 * the packet reaches each address the packet is forwarded to
 	 * the next element in the route.
 	 *
-	 * @author <A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+	 * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
 	 * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
 	 *
 	 */
@@ -632,7 +632,7 @@ public class IPHeader
 	 * the packet reaches each address the packet is forwarded to
 	 * the next element in the route.
 	 *
-	 * @author <A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+	 * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
 	 * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
 	 *
 	 */
@@ -684,7 +684,7 @@ public class IPHeader
 	 * the packet reaches each address the address is added to the
 	 * the next element in the route.
 	 *
-	 * @author <A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+	 * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
 	 * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
 	 *
 	 */

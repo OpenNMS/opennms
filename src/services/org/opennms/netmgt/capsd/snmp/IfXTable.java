@@ -57,7 +57,7 @@ import org.opennms.netmgt.utils.Signaler;
  * interface + 1, assuming no lost packets or error conditions occur.</P>
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike</A>
- * @author <A HREF="mailto:weave@opennms.org">Weave</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  * @version 1.1.1.1

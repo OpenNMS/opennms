@@ -85,7 +85,7 @@ import org.opennms.core.utils.ThreadCategory;
  * <em>init()</em> is called before calling any other method to ensure
  * the config is loaded before accessing other convenience methods</p>
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 public final class DatabaseConnectionFactory
@@ -139,7 +139,7 @@ public final class DatabaseConnectionFactory
 	 * connection still exists and is not in use and does not have 
 	 * any errors then it may be reissued to another thread requestor.
 	 *
-	 * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+	 * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
 	 * @author <a href="http://www.opennms.org/">OpenNMS</a>
 	 *
 	 */

@@ -63,7 +63,7 @@ import org.opennms.core.utils.ThreadCategory;
  * gets too far ahead of the parse. It means more threads for
  * less memory useage. As always there is a tradeoff
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http;//www.opennms.org">OpenNMS</a>
  *
  */

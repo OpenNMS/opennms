@@ -56,7 +56,7 @@ import org.opennms.protocols.snmp.asn1.AsnDecodingException;
  * are passed then data corruption will occur.
  *
  * @author	<a href="http://www.opennms.org">OpenNMS</a>
- * @author	<a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author	<a href="mailto:weave@oculan.com">Brian Weaver</a>
  */
 public class SnmpUInt32 extends Object
 	implements SnmpSyntax, Cloneable, Serializable

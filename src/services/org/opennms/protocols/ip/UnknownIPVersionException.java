@@ -40,7 +40,7 @@ import java.lang.*;
  * This exception is thrown when the IP version is not supported
  * by the IPHeader class.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  */
 public class UnknownIPVersionException
 	extends RuntimeException

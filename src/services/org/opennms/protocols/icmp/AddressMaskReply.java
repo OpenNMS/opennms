@@ -48,7 +48,7 @@ import org.opennms.protocols.ip.OC16ChecksumProducer;
  * loaded from a received buffer. The class is marked final
  * since it is not intended to be extended.
  *
- * @author	Brian Weaver <weave@opennms.org>
+ * @author	Brian Weaver <weave@oculan.com>
  *
  */
 public final class AddressMaskReply 

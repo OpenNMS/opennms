@@ -56,7 +56,7 @@ import java.net.InetAddress;
  * and the received packet as final, non-mutable values
  * for the instance.</p>
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya</a>
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */

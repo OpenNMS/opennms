@@ -53,7 +53,7 @@ import org.opennms.core.utils.ThreadCategory;
 
 /**
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.oculan.com">Oculan Corporation</a>
  *
  */

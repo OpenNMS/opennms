@@ -57,7 +57,7 @@ import org.opennms.netmgt.xml.event.Event;
 
 /**
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 final class BroadcastEventProcessor

@@ -50,7 +50,7 @@ import org.opennms.protocols.ip.OC16ChecksumProducer;
  * are fixed by the RFC. The minimum message size for
  * any ICMP message is 8 bytes.
  *
- * @author	Brian Weaver <weave@opennms.org>
+ * @author	Brian Weaver <weave@oculan.com>
  * @version	0.1
  *
  */

@@ -52,7 +52,7 @@ import org.opennms.protocols.snmp.asn1.*;
  * Abstracts the communication related details from the SnmpSession and
  * SnmpTrapSession.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  *

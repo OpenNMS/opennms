@@ -43,7 +43,7 @@ import java.io.PrintWriter;
  * also encapsulated by the exception.
  *
  * @author <a href="jason@opennms.org">Jason</a>
- * @author <a href="weave@opennms.org">Weave</a>
+ * @author <a href="weave@oculan.com">Weave</a>
  *
  */
 public class FilterParseException

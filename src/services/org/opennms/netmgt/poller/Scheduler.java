@@ -66,7 +66,7 @@ import org.opennms.netmgt.scheduler.ReadyRunnable;
  * employees a dynamic thread pool that adjust to the load until
  * a maximum thread count is reached.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  *
  */

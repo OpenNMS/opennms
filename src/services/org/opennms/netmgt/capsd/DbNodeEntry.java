@@ -77,7 +77,7 @@ import org.opennms.netmgt.config.DatabaseConnectionFactory;
  * mode, then the caller must call <code>commit</code> to inform
  * the database that the transaction is complete.
  *
- * @author <a href="mailto:weave@opennms.org">Weave</a>
+ * @author <a href="mailto:weave@oculan.com">Weave</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  *
  */

@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // 
 // For more information contact: 
-//	Brian Weaver	<weave@opennms.org>
+//	Brian Weaver	<weave@oculan.com>
 //	http://www.opennms.org/
 //
 //
@@ -39,7 +39,7 @@ import java.util.*;
  * <P>Should the instance also be part of a table, then the
  * column number of the instance is also stored in the object.</P>
  *
- * @author <A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author <A HREF="mailto:mike@opennms.org">Mike Davidson</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * 

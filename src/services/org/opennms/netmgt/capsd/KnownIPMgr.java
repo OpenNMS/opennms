@@ -67,7 +67,7 @@ import org.opennms.netmgt.config.DatabaseConnectionFactory;
  * address has already been discovered or is part of the 
  * exclude list then the manager can be used to check.
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  *
  */
@@ -96,7 +96,7 @@ final class KnownIPMgr
 	 * elements are the interface address, the node identifier, and
 	 * the last time the interface was checked.
 	 *
-	 * @author <a href="mailto:weave@opennms.org">Weave</a>
+	 * @author <a href="mailto:weave@oculan.com">Weave</a>
 	 * @author <a href="http://www.opennms.org">OpenNMS</a>
 	 *
 	 */
@@ -237,7 +237,7 @@ final class KnownIPMgr
 	 * and provides the infomation required for a Tree to be sorted. This implementation
 	 * only works with objects of type {@link java.net.InetAddress InetAddress}.
 	 *
-	 * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+	 * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
 	 * @author <a href="http://www.opennms.org/">OpenNMS</a>
 	 *
 	 */

@@ -61,7 +61,7 @@ import org.opennms.netmgt.config.poller.*;
  * collisions.</P>
  * 
  * @author <A HREF="mailto:mike@opennms.org">Mike Davidson</A>
- * @author <A HREF="mailto:weave@opennms.org">Weave</A>
+ * @author <A HREF="mailto:weave@oculan.com">Weave</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */

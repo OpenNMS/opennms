@@ -55,7 +55,7 @@ import java.net.InetAddress;
  * in the java.net.InetAddress class.
  *
  *
- * @author	Brian Weaver &lt;weave@opennms.org&gt;
+ * @author	Brian Weaver &lt;weave@oculan.com&gt;
  * @revision	1.1.1.1
  *
  */

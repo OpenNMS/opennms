@@ -42,7 +42,7 @@ import org.opennms.netmgt.xml.event.*;
  * This class is used to format the Snmp block into
  * an appropiate string for storage in the event data storage.
  *
- * @author <A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 public final class SnmpInfo

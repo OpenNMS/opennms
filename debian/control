@@ -53,6 +53,8 @@ Section: contrib/net
 Architecture: all
 Conflicts: opennms (<< 1.1.2-1)
 Depends: j2sdk1.4 | java-virtual-machine | java2-runtime, libopennms-java (=${Source-Version}), mailx, metamail, opennms-common (=${Source-Version}), rrdtool
+Conflicts: opennms (<< 1.1.1-7)
+Depends: j2sdk1.4 | java-virtual-machine , j2sdk1.4 | java2-runtime, libopennms-java (=${Source-Version}), mailx, metamail, opennms-common (=${Source-Version}), rrdtool
 Recommends: opennms-db, opennms-webapp, qpage
 Suggests: opennms-doc
 Description: The Open Network Management System

@@ -55,7 +55,7 @@ import org.opennms.protocols.snmp.asn1.AsnDecodingException;
  * <p>Most of the management of the data is handled by the
  * base class.</p>
  *
- * @author	<a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author	<a href="mailto:weave@oculan.com">Brian Weaver</a>
  *
  */
 public class SnmpIPAddress

@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2003 Nov 11: Merged changes from Rackspace project
 // 2003 Sep 17: Fixed an SQL parameter problem.
 // 2003 Sep 16: Changed rescan information to let OpenNMS handle duplicate IPs.
 // 2003 Jan 31: Cleaned up some unused imports.
@@ -134,6 +135,19 @@ public final class CapsdConfigFactory
 	 * from the 'ipInterface' table.
 	 */
 	final static String	SQL_DB_RETRIEVE_IP_INTERFACE = "SELECT nodeid,ipaddr,ismanaged FROM ipinterface WHERE ipaddr!='0.0.0.0' AND isManaged!='D' AND isManaged!='F'";
+        
+        /**
+	 * The SQL statement used to retrieve all non-deleted/non-forced unamanaged IP interfaces
+	 * from the 'ipInterface' table with the local OpenNMS server restriction.
+	 */
+	final static String	SQL_DB_RETRIEVE_IP_INTERFACE_IN_LOCAL_SERVER = 
+                "SELECT ip.nodeid, ip.ipaddr, ip.ismanaged " +
+                "FROM ipinterface ip, servermap s " +
+                "WHERE ip.ipaddr = s.ipaddr " + 
+                "AND ip.ipaddr!='0.0.0.0' " + 
+                "AND ip.isManaged!='D' " +
+                "AND ip.isManaged!='F' " +
+                "AND s.servername = ?";
 	
 	/** 
 	 * SQL statement to retrieve all non-deleted IP addresses from the ipInterface table 
@@ -253,7 +267,7 @@ public final class CapsdConfigFactory
 	 * includes the plugin, the protocol name, the merged parameters
 	 * to the plugin, and the action to be taken.
 	 *
-	 * @author <a href="mailto:weave@opennms.org">Weave</a>
+	 * @author <a href="mailto:weave@oculan.com">Weave</a>
 	 * @author <a href="http://www.opennms.org/">OpenNMS</a>
 	 *
 	 */
@@ -763,6 +777,12 @@ public final class CapsdConfigFactory
 	{
 		Category log = ThreadCategory.getInstance();
 
+                boolean verifyServer = OpennmsServerConfigFactory.getInstance().verifyServer();
+                String localServer = OpennmsServerConfigFactory.getInstance().getServerName();
+
+		if (log.isDebugEnabled())
+			log.debug("syncManagementState: local server: " + localServer + " verify server: " + verifyServer);
+
 		if (conn == null)
 		{
 			log.error("CapsdConfigFactory.syncManagementState: Sync failed...must have valid database connection.");
@@ -786,7 +806,15 @@ public final class CapsdConfigFactory
 		//
 		
 		//prepare the SQL statement to query the database
-		PreparedStatement ipRetStmt = conn.prepareStatement(SQL_DB_RETRIEVE_IP_INTERFACE);
+		PreparedStatement ipRetStmt = null;
+
+                if (verifyServer)
+                {
+                        ipRetStmt = conn.prepareStatement(SQL_DB_RETRIEVE_IP_INTERFACE_IN_LOCAL_SERVER);
+                        ipRetStmt.setString(1, localServer);
+                }
+                else
+                        ipRetStmt = conn.prepareStatement(SQL_DB_RETRIEVE_IP_INTERFACE);
 		
 		ArrayList ifList = new ArrayList();
 		ResultSet result = null;
@@ -1842,4 +1870,25 @@ public final class CapsdConfigFactory
 			
 		return abortFlag;
 	}
+
+        /**
+         * Return the boolean xmlrpc as string to indicate if
+         * notification to external xmlrpc server is needed.
+         *
+         * @return boolean flag as a string value
+         */
+         public String getXmlrpc()
+         {
+                return m_config.getXmlrpc();
+         }
+
+         /**
+          * Return the xmlrpc server URL as a string
+          *
+          * @return the xmlrpc server URL
+          */
+          public String getXmlrpcServerUrl()
+          {
+                return m_config.getXmlrpcServerUrl();
+          }
 }

@@ -73,7 +73,7 @@ import org.opennms.netmgt.config.DatabaseConnectionFactory;
  * the database that the transaction is complete.
  *
  * @author <a href="mailto:jamesz@blast.com">James Zuo</a>
- * @author <a href="mailto:weave@opennms.org">Weave</a>
+ * @author <a href="mailto:weave@oculan.com">Weave</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  *
  */

@@ -42,7 +42,7 @@ import org.opennms.netmgt.xml.event.*;
  * This is an utility class used to format the event log message
  * info - to be inserted into the 'events' table
  *
- * @author <A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 public final class LogMessage

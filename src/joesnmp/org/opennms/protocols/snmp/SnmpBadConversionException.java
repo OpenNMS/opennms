@@ -46,7 +46,7 @@ import java.io.PrintWriter;
  *
  * @see SnmpIPAddress#convertToIpAddress()
  *
- * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  *
  */
 public class SnmpBadConversionException extends Exception

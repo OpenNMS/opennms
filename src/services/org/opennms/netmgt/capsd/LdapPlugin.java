@@ -72,7 +72,7 @@ import com.novell.ldap.*;
  * plugins by the daemon.</P>
  *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
- * @author <A HREF="mailto:weave@opennms.org">Brian Weaver</A>
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS</A>
  *
  * @version 1.1.1.1

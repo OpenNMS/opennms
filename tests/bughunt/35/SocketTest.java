@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 // 
 // For more information contact: 
-//	Brian Weaver	<weave@opennms.org>
+//	Brian Weaver	<weave@oculan.com>
 //	http://www.opennms.org/
 //
 // Tab Stop = 8
