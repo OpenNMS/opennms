@@ -1,5 +1,6 @@
 1.0.0 to 1.1.0
 ----------------------------------------------------------------------
+- Fixed a small bug with wildcards in eventconf.xml
 - Added a "clear" attribute to the acknowledge tag for notifications,
   so now the "up" can be ack'd along with the "down". Bug 544
 - Added a "title" to categories to reflect the last update. Bug 517
