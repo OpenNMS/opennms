@@ -65,9 +65,9 @@ import org.opennms.netmgt.config.DatabaseConnectionFactory;
 public class SnmpGetNodesServlet extends HttpServlet {
     private static final String SNMP_SERVICE_QUERY = "SELECT serviceid FROM service WHERE servicename = 'SNMP'";
 
-    private static final String NODE_QUERY = "SELECT nodeid, nodelabel FROM node WHERE nodeid IN (SELECT nodeid FROM ifservices WHERE serviceid = ? ) ORDER BY nodelabel, nodeid";
+    private static final String NODE_QUERY = "SELECT nodeid, nodelabel FROM node WHERE nodeid IN (SELECT nodeid FROM ifservices WHERE serviceid = ? ) AND nodeid IN (SELECT nodeid FROM ipinterface Where ismanaged != 'D') ORDER BY nodelabel, nodeid";
 
-    private static final String INTERFACE_QUERY = "SELECT ipinterface.nodeid, ipinterface.ipaddr, ipinterface.ifindex, ipinterface.iphostname, ipinterface.issnmpprimary, snmpinterface.snmpifdescr, snmpinterface.snmpiftype, snmpinterface.snmpifname FROM ipinterface, snmpinterface WHERE ipinterface.nodeid IN (SELECT ifservices.nodeid FROM ifservices WHERE ifservices.serviceid = ? ) AND snmpinterface.nodeid = ipinterface.nodeid AND snmpinterface.snmpifindex = ipinterface.ifindex";
+    private static final String INTERFACE_QUERY = "SELECT ipinterface.nodeid, ipinterface.ipaddr, ipinterface.ifindex, ipinterface.iphostname, ipinterface.issnmpprimary, snmpinterface.snmpifdescr, snmpinterface.snmpiftype, snmpinterface.snmpifname FROM ipinterface, snmpinterface WHERE ipinterface.nodeid IN (SELECT ifservices.nodeid FROM ifservices WHERE ifservices.serviceid = ? ) AND snmpinterface.nodeid = ipinterface.nodeid AND snmpinterface.snmpifindex = ipinterface.ifindex AND ipinterface.ismanaged != 'D'";
 
     public void init() throws ServletException {
         try {
