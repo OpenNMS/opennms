@@ -177,7 +177,7 @@ final public class IcmpMonitor extends IPv4LatencyMonitor {
     /**
      * Construts a new monitor.
      */
-    IcmpMonitor() throws IOException {
+    public IcmpMonitor() throws IOException {
         synchronized (IcmpMonitor.class) {
             if (m_worker == null) {
                 // Create a receiver queue
