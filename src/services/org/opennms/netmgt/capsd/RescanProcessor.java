@@ -420,6 +420,13 @@ final class RescanProcessor
 		throws SQLException
 	{
 		Iterator iter = collectorMap.values().iterator();
+
+		// If this is a forced rescan, make sure we have a current PackageIpListMap
+		if(m_forceRescan)
+		{
+			PollerConfigFactory pollerCfgFactory = PollerConfigFactory.getInstance();
+			pollerCfgFactory.rebuildPackageIpListMap();
+		}
 		
 		// List of update interfaces
 		// This list is maintained so that for nodes with multiple
@@ -513,6 +520,14 @@ final class RescanProcessor
 		
 		// Iterate over interfaces from collection map
 		iter = collectorMap.values().iterator();
+
+		// If this is a forced rescan, make sure we have a current PackageIpListMap
+		//if(m_forceRescan)
+		//{
+		//	PollerConfigFactory pollerCfgFactory = PollerConfigFactory.getInstance();
+		//	pollerCfgFactory.rebuildPackageIpListMap();
+		//}
+
 		while (iter.hasNext())
 		{
 			IfCollector ifc = (IfCollector)iter.next();
@@ -1347,6 +1362,7 @@ final class RescanProcessor
 		org.opennms.netmgt.config.poller.Package ipPkg = null;
                 
                 InetAddress ifaddr = dbIpIfEntry.getIfAddress();
+
                 
 		// Retrieve from the database the interface's service list
 		DbIfServiceEntry[] dbSupportedServices = dbIpIfEntry.getServices(dbc);
@@ -1405,6 +1421,7 @@ final class RescanProcessor
 					{
 			                        ipPkg = pollerCfgFactory.getFirstPackageMatch(ifaddr.getHostAddress());
 						svcToBePolled = pollerCfgFactory.isPolled(p.getProtocolName(), ipPkg);
+
 						if (!svcToBePolled)
 							svcToBePolled = pollerCfgFactory.isPolled(ifaddr.getHostAddress(), 
                                                                                                   p.getProtocolName());
@@ -1458,6 +1475,8 @@ final class RescanProcessor
 					createInterfaceSupportsSNMPEvent(dbIpIfEntry);
 				}
 			}
+			// Update the supported services list
+			dbSupportedServices = dbIpIfEntry.getServices(dbc);
 		} // end while(more protocols)
 		if(m_forceRescan)
 			updateServicesOnForcedRescan(node, dbIpIfEntry, dbSupportedServices);

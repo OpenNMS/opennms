@@ -1,5 +1,7 @@
 1.1.2 to 1.1.3
 ----------------------------------------------------------------------
+- When new services are discovered via a rescan, they were not being
+  polled until OpenNMS was restarted. This is now fixed.
 - Fixed a Delete Nodes issues with RTC - Bug 797
 - Added support to build OpenNMS on FreeBSD. Thx Andrei
 - HttpMonitor and HttpsMonitor now use "port" instead of "ports".
