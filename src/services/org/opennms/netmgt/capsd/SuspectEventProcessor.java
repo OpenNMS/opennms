@@ -72,7 +72,6 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
 import org.opennms.netmgt.capsd.snmp.IpAddrTable;
-import org.opennms.netmgt.capsd.snmp.IpAddrTableEntry;
 import org.opennms.netmgt.capsd.snmp.SystemGroup;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CollectdConfigFactory;

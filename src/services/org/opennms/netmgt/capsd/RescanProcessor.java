@@ -77,7 +77,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -2781,16 +2780,18 @@ final class RescanProcessor implements Runnable {
                                 log.debug("Current and previous address lists DO NOT match");
                             snmpcAgree = false;
                         }
+                        collector.deleteSnmpCollector();
                     }
                     if (snmpcAgree == false) {
                         if (log.isDebugEnabled())
                             log.debug("SNMP data collected via " + ifaddr.getHostAddress() + " does not agree with database or with other interface(s) on this node.");
                     }
-                }
-                // Build a non-SNMP collectorMap, skipping 127.*.*.* and 0.0.0.0
-                nonSnmpCollectorMap.put(ifaddr.getHostAddress(), collector);
-                if (log.isDebugEnabled()) {
-                    log.debug("Adding " + ifaddr.getHostAddress() + " to nonSnmpCollectorMap for node: " + m_scheduledNode.getNodeId());
+                } else {
+                    // Build a non-SNMP collectorMap, skipping 127.*.*.* and 0.0.0.0
+                    nonSnmpCollectorMap.put(ifaddr.getHostAddress(), collector);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Adding " + ifaddr.getHostAddress() + " to nonSnmpCollectorMap for node: " + m_scheduledNode.getNodeId());
+                    }
                 }
             }
         }

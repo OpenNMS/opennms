@@ -248,8 +248,6 @@ public class SnmpSession extends Object {
                 } else {
                     if (m_defHandler != null)
                         m_defHandler.snmpReceivedPdu(null, cmd, pdu);
-                    else
-                        
                 }
             }
         }

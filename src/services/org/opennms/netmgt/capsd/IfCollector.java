@@ -334,6 +334,10 @@ final class IfCollector implements Runnable {
     IfSnmpCollector getSnmpCollector() {
         return m_snmpCollector;
     }
+    
+    void deleteSnmpCollector() {
+        m_snmpCollector = null;
+    }
 
     /**
      * The main collection routine of the class. This method is used to poll the
