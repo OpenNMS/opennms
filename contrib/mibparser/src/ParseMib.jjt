@@ -1,0 +1,720 @@
+// This file is part of the OpenNMS(R) MIB Parser.
+//
+// Copyright (C) 2002-2003 John Rodriguez
+//
+// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+// 
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// See: http://www.fsf.org/copyleft/lesser.html
+//
+
+/**
+ *
+ * John Rodriguez
+ * JavaCC grammar for parsing SNMP MIBS and generating
+ * xml for OpenNms Object Identifiers (OIDS)
+ *
+ */
+
+options{
+ LOOKAHEAD = 3;
+ FORCE_LA_CHECK = true;
+}
+
+PARSER_BEGIN(ParseMib)
+
+import java.util.Vector;
+
+class ParseMib {
+
+  protected static Token lastObjectIdentifierToken = null;
+
+  public static void main(String args[]) {
+
+    try {
+      if (args.length == 0) {
+          System.out.println("usage: ParseMib [-debug] files");
+          System.out.println("version: " + Version.versionString);
+          System.exit(0);
+      }
+
+      boolean setDebug = false;
+      Vector argsList = new Vector();
+      String arg = null;
+
+      for (int i = 0; i < args.length; i++) {
+           arg = args[i];
+           // System.out.println("arg=#" + args[i] + "#");
+           if (arg.equalsIgnoreCase("-debug"))
+               setDebug = true;
+           else if (arg.equalsIgnoreCase("")) {
+               // artifact from shell, ant or error, ignore
+           }
+           else
+               argsList.addElement(arg);
+      }
+
+      SimpleNode.setDebug(setDebug);
+
+      SimpleNode n = null;
+
+      boolean firstFile = true;
+      ParseMib parser = null;
+      for (int i = 0; i < argsList.size(); i++) {
+           arg = (String)argsList.elementAt(i);
+           if (setDebug) System.out.println("JavaCC Parser:  Reading from file " + arg + " . . .");
+
+           try {
+            if (firstFile)
+                parser = new ParseMib(new java.io.FileInputStream(arg));
+            else
+                parser.ReInit(new java.io.FileInputStream(arg));
+           } catch (java.io.FileNotFoundException fnf) {
+                System.err.println("ERROR: the file '" + arg +
+                   "' was not found or is mis-spelled");
+                System.exit(Errors.FILE_NOT_FOUND);
+           }
+
+           n = parser.Start();
+           if (setDebug)
+               n.dump("");
+           firstFile = false;
+
+           // must be called in this order because the ast is
+           // decorated on each walk
+           // 1) collectTableInfo
+           // 2) collectTableIndexInfo
+           // 3) collectSequenceInfo
+           // 4) collectOids
+           // 5) collectTextualConventionsInfo
+           if (setDebug) System.out.println("collect table information");
+           n.markNotVisited(); // mark the abstract syntax tree as not visited
+           n.collectTableInfo();
+
+           if (setDebug) System.out.println("collect table index information");
+           n.markNotVisited(); // mark the abstract syntax tree as not visited
+           n.collectTableIndexInfo();
+
+           if (setDebug) System.out.println("collect sequence info information");
+           n.markNotVisited(); // mark the abstract syntax tree as not visited
+           n.collectSequenceInfo();
+
+           if (setDebug) System.out.println("collect oids");
+           n.markNotVisited(); // mark the abstract syntax tree as not visited
+           n.collectOids();
+
+           if (setDebug) System.out.println("collect type information");
+           n.markNotVisited(); // mark the abstract syntax tree as not visited
+           n.collectTextualConventionsInfo();
+
+           // System.out.println("Dumping SymbolTables");
+           // n.dumpSymbolTables();
+
+           n.writeOids();
+      }
+
+      if (setDebug) System.out.println("Thank you.");
+    } catch (Throwable e) {
+      System.err.println("Oops.");
+      System.err.println(e.getMessage());
+      e.printStackTrace();
+      System.exit(Errors.UNKNOWN_FATAL);
+    }
+  }
+}
+
+PARSER_END(ParseMib)
+
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| <"--" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+}
+
+/* MIB RESERVED WORDS AND LITERALS */
+
+TOKEN :
+{
+  < IMPORTS: "IMPORTS" >
+| < BEGIN: "BEGIN" >
+| < FROM: "FROM" >
+| < STATUS: "STATUS" >
+| < DESCRIPTION: "DESCRIPTION" >
+| < REFERENCE_TOKEN: "REFERENCE" >
+| < DEFVAL_TOKEN: "DEFVAL" >
+| < AUGMENTS_TOKEN: "AUGMENTS" >
+| < END: "END" >
+| < SYNTAX_TOKEN: "SYNTAX" >
+| < UNITS_TOKEN: "UNITS" >
+| < ACCESS_TOKEN: "ACCESS" >
+| < MAX_ACCESS_TOKEN: "MAX-ACCESS" >
+| < MIN_ACCESS_TOKEN: "MIN-ACCESS" >
+| < NOTIFICATION_TYPE_TOKEN: "NOTIFICATION-TYPE" >
+| < TRAP_TYPE_TOKEN: "TRAP-TYPE" >
+| < LAST_UPDATED_TOKEN: "LAST-UPDATED" >
+| < MODULE_IDENTITY_TOKEN: "MODULE-IDENTITY" >
+| < ORGANIZATION_TOKEN: "ORGANIZATION" >
+| < CONTACT_INFO_TOKEN: "CONTACT-INFO" >
+| < REVISION_TOKEN: "REVISION" >
+| < SIZE_TOKEN: "SIZE" >
+| < SEQUENCE_TOKEN: "SEQUENCE" >
+| < OF_TOKEN: "OF" >
+| < INDEX_TOKEN: "INDEX" >
+| < MODULE_COMPLIANCE_TOKEN: "MODULE-COMPLIANCE" >
+| < MODULE_TOKEN: "MODULE" >
+| < MANDATORY_GROUPS_TOKEN: "MANDATORY-GROUPS" >
+| < GROUP_TOKEN: "GROUP" >
+| < OBJECT_GROUP_TOKEN: "OBJECT-GROUP" >
+| < NOTIFICATION_GROUP_TOKEN: "NOTIFICATION-GROUP" >
+| < NOTIFICATIONS_TOKEN: "NOTIFICATIONS" >
+| < TEXTUAL_CONVENTION_TOKEN: "TEXTUAL-CONVENTION" >
+| < DISPLAY_HINT_TOKEN: "DISPLAY-HINT" >
+| < OCTET_TOKEN: "OCTET" >
+| < STRING_TOKEN: "STRING" >
+| < ENTERPRISE_TOKEN: "ENTERPRISE" >
+| < VARIABLES_TOKEN: "VARIABLES" >
+}
+
+
+/* OBJECT TYPES */
+TOKEN :
+{
+  < OBJECT_TYPE: "OBJECT-TYPE" >
+| < OBJECT_IDENTITY: "OBJECT-IDENTITY" >
+| < OBJECT_TOKEN: "OBJECT" >
+| < OBJECTS_TOKEN: "OBJECTS" >
+| < IDENTIFIER_TOKEN: "IDENTIFIER" >
+}
+
+/* SEPARATORS */
+
+TOKEN :
+{
+  < LPAREN: "(" >
+| < RPAREN: ")" >
+| < LBRACE: "{" >
+| < RBRACE: "}" >
+| < LBRACKET: "[" >
+| < RBRACKET: "]" >
+| < SEMICOLON: ";" >
+| < COMMA: "," >
+| < QUOTE: "\"" >
+}
+
+
+TOKEN : /* LITERALS */
+{
+  < INTEGER_LITERAL:
+        (["-"])? <DECIMAL_LITERAL> (["l","L"])?
+      | <HEX_LITERAL> (["l","L"])?
+      | <OCTAL_LITERAL> (["l","L"])?
+  >
+|
+  < #DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])* >
+|
+  < #HEX_LITERAL: "'" (["0"-"9","a"-"f","A"-"F"])* "'h" >
+|
+  < #OCTAL_LITERAL: "0" (["0"-"7"])* >
+|
+  < DESCRIPTOR_LITERAL:
+      "\"" ( ~["\""] )* "\""
+  >
+|
+  < REVISION_LITERAL: "\"" (["0"-"9"])+ ["z", "Z"] "\"" >}
+
+TOKEN : /* IDENTIFIERS */
+{
+  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
+|
+  < #LETTER: ["_","a"-"z","A"-"Z","-"] >
+|
+  < #DIGIT: ["0"-"9"] >
+}
+
+/* OPERATORS */
+
+TOKEN :
+{
+  < ASSIGN: "::=" >
+}
+
+
+SimpleNode Start() : {}
+{
+  // LIGHTSURF-COMPONENT-REG DEFINITIONS ::= BEGIN
+  MibBegin()
+  (Imports())*
+  (Declaration() | SequenceOfVarsOrTextConvention() | Events() |
+     TrapType() | Assignment() | ModuleIdentity() )*
+  End()
+  { return jjtThis; }
+}
+
+void MibBegin() : {}
+{
+  //System.out.println("MibBegin");
+  Expression() (<IDENTIFIER> <ASSIGN> <BEGIN>)
+}
+
+void Imports() : {}
+{
+  //     IMPORTS
+  //	enterprises, OBJECT-TYPE
+  //			FROM SNMPv2-SMI;
+  <IMPORTS> ((
+    ( <IDENTIFIER> | <OBJECT_TYPE> | <NOTIFICATION_TYPE_TOKEN> | <MODULE_IDENTITY_TOKEN> |
+      <MODULE_COMPLIANCE_TOKEN> | <OBJECT_GROUP_TOKEN> | <NOTIFICATION_GROUP_TOKEN> |
+      <TRAP_TYPE_TOKEN> | <TEXTUAL_CONVENTION_TOKEN> | <OBJECT_IDENTITY> )
+    (<COMMA>)*)+ <FROM> <IDENTIFIER>)+ <SEMICOLON>
+}
+
+void ModuleIdentity() : {}
+{
+    // similar to Declaration(), parse something like:
+    // snmpMIB MODULE-IDENTITY
+    // LAST-UPDATED "9511090000Z"
+    // ORGANIZATION "IETF SNMPv2 Working Group"
+    // CONTACT-INFO
+    //         "        Marshall T. Rose
+    //
+    //          Postal: Dover Beach Consulting, Inc.
+    //                  420 Whisman Court
+    //                  Mountain View, CA  94043-2186
+    //                  US
+    //
+    //             Tel: +1 415 968 1052
+    //
+    //          E-mail: mrose@dbc.mtview.ca.us"
+    // DESCRIPTION
+    //         "The MIB module for SNMPv2 entities."
+    // REVISION      "9304010000Z"
+    // DESCRIPTION
+    //         "The initial revision of this MIB module was published as
+    //         RFC 1450."
+    // ::= { snmpModules 1 }
+
+  ObjectIdentifier() <MODULE_IDENTITY_TOKEN>
+      ((<LAST_UPDATED_TOKEN> <DESCRIPTOR_LITERAL>) |
+      (<ORGANIZATION_TOKEN> <DESCRIPTOR_LITERAL>) |
+      (<DESCRIPTION> <DESCRIPTOR_LITERAL>) |
+      (<CONTACT_INFO_TOKEN> <DESCRIPTOR_LITERAL>) |
+      (<REVISION_TOKEN> <DESCRIPTOR_LITERAL> ) )+
+      <ASSIGN> <LBRACE> ParentObjectIdentifier() IntegerOID() <RBRACE>
+
+
+}
+
+void Declaration() #DeclOID : {}
+{
+  // lightsurf OBJECT-IDENTITY
+  //   STATUS current
+  //  	    DESCRIPTION
+  //  		"This describes the OID infrastructure for the mandated Lightsurf hierarchy"
+  //          ::=  {  enterprises  15420  }
+  //
+  //
+  // or there could be a different type of SYNTAX
+  //   SYNTAX Integer32(1..100)
+  // or the SYNTAX could be like:
+  //   SYNTAX      DisplayString (SIZE (0..255))
+  // or the SYNTAX could be a table decl like:
+  //   SYNTAX SEQUENCE OF varTpe
+  // or the SYNTAX could be like:
+  //   SYNTAX INTEGER { enabled(1), disabled(2) }
+  // or it could be declared like:
+  //   module OBJECT IDENTIFIER ::= { sprint 1 }
+  // or there could be:
+  //   MODULE  -- this module
+  //         MANDATORY-GROUPS { ifGeneralInformationGroup, ifStackGroup2 }
+  //
+  // this form makes building oids harder (multipleOids)
+  // mgmt OBJECT IDENTIFIER ::= { iso org(3) dod(6) internet(1) mgmt(2) }
+  // this is equivalent
+  // mgmt OBJECT IDENTIFIER ::= { internet 2 }
+  //
+  // DEFVAL can have some weird syntax (RFC1382-MIB as an example)
+  // DEFVAL { pvc }
+  // DEFVAL { {0 0} }
+  // DEFVAL { ''h }
+  // DEFVAL { 128 }
+
+  ObjectIdentifier()
+    (( (<OBJECT_IDENTITY> | <OBJECT_TYPE> | <MODULE_COMPLIANCE_TOKEN> | <OBJECT_GROUP_TOKEN> )
+    ( <STATUS> <IDENTIFIER> | (<DESCRIPTION> | <REFERENCE_TOKEN> | <UNITS_TOKEN>) <DESCRIPTOR_LITERAL> |
+      <DEFVAL_TOKEN> ( <DESCRIPTOR_LITERAL> | <LBRACE> [<LBRACE>] (<IDENTIFIER>|<INTEGER_LITERAL>)+ <RBRACE> [<RBRACE>] | <INTEGER_LITERAL> ) |
+      <MODULE_TOKEN> <MANDATORY_GROUPS_TOKEN> <LBRACE> (<IDENTIFIER> [<COMMA>])+ <RBRACE> |
+      <GROUP_TOKEN> <IDENTIFIER> | <AUGMENTS_TOKEN> <LBRACE> <IDENTIFIER> <RBRACE> |
+      <OBJECT_TOKEN> <IDENTIFIER> |
+      <OBJECTS_TOKEN> <LBRACE> (<IDENTIFIER> [<COMMA>])+ <RBRACE> |
+        <SYNTAX_TOKEN> (<OBJECT_TOKEN> <IDENTIFIER_TOKEN> | <OCTET_TOKEN> <STRING_TOKEN> [SizeDeclaration()] |
+        TableSequenceOf() |
+        GetTypeIdentifier() (SizeDeclaration() |
+        <LBRACE> (<IDENTIFIER> <LPAREN> <INTEGER_LITERAL> <RPAREN> [<COMMA>])+ <RBRACE> )* ) |
+      (<ACCESS_TOKEN> | <MAX_ACCESS_TOKEN> | <MIN_ACCESS_TOKEN>) GetAccessIdentifier() |
+      IndexOfTable() |
+     <ASSIGN> <LBRACE> ParentObjectIdentifier() IntegerOID() <RBRACE> )*)
+    | IndexOfTable() |
+    ( <OBJECT_TOKEN> <IDENTIFIER_TOKEN>
+    <ASSIGN> <LBRACE> ParentObjectIdentifier() (MultipleOids())* [IntegerOID()] <RBRACE>))
+}
+
+// handle NOTIFICATION-TPYE
+// at this time it just mostly skips the info here
+// it would be easy to walk the trees later and output xml
+// for the traps
+void Events() : {}
+{
+  //    overSmsQueueThreshold NOTIFICATION-TYPE
+  //      STATUS current
+  //      OBJECTS { smsInQueue }
+  //      DESCRIPTION "The SMS queue has more messages than the configurable threshold.
+  //      This event will be sent on every poll until the messages fall below the threshold.
+  //      The number of sms currently in the queue is sent with the trap."
+  //      ::= { events 1 }
+  //
+  // or there could be something like this:
+  //   NOTIFICATIONS { coldStart, authenticationFailure }
+
+  <IDENTIFIER> (<NOTIFICATION_TYPE_TOKEN> | <NOTIFICATION_GROUP_TOKEN>)
+  (<STATUS> <IDENTIFIER> | <DESCRIPTION> <DESCRIPTOR_LITERAL> |
+    <OBJECTS_TOKEN> <LBRACE> (<IDENTIFIER> [<COMMA>])+ <RBRACE> |
+    <NOTIFICATIONS_TOKEN> <LBRACE> (<IDENTIFIER> [<COMMA>])+ <RBRACE> |
+    <ASSIGN> <LBRACE> <IDENTIFIER> <INTEGER_LITERAL> <RBRACE>)*
+}
+
+// handle the TRAP-TYPE, this is just different enough from
+// NOTIFICATION-TYPE that I wanted to keep them separate
+void TrapType() : {}
+{
+//    egpNeighborLoss TRAP-TYPE
+//           ENTERPRISE  snmp
+//           VARIABLES   { egpNeighAddr }
+//           DESCRIPTION
+//                          "An egpNeighborLoss trap signifies that an EGP
+//                          neighbor for whom the sending protocol entity
+//                          was an EGP peer has been marked down and the
+//                          peer relationship no longer obtains."
+//           ::= 5
+
+  <IDENTIFIER> <TRAP_TYPE_TOKEN>
+  (<STATUS> <IDENTIFIER> | <DESCRIPTION> <DESCRIPTOR_LITERAL> |
+    <ENTERPRISE_TOKEN> <IDENTIFIER> |
+    <VARIABLES_TOKEN> <LBRACE> (<IDENTIFIER> [<COMMA>])+ <RBRACE> |
+    <ASSIGN> [<LBRACE> <IDENTIFIER>] <INTEGER_LITERAL> [<RBRACE>])*
+}
+
+void TableSequenceOf() :
+{
+    Token t;
+}
+{
+    // The AST has to be marked with a table because the index
+    // could be anything from 1 to N, rather than just "0" as with
+    // other OIDS. So the index is saved symbolically.
+    // This means that we have to recognize the following
+    // in the MIB ASN.1 on 3 different declarations
+    // 1) "SEQUENCE OF varTpe" - from table OID
+    // 2) "INDEX      { sysORIndex }" from the index OID
+    // 3) "SEQUENCE {...} - has the OID with the index name first
+    // and then mark each one in the AST to retrieve later.
+    //
+    // sysORTable OBJECT-TYPE
+    // SYNTAX     SEQUENCE OF SysOREntry
+    // MAX-ACCESS not-accessible
+    // STATUS     current
+    // DESCRIPTION
+    //         "The (conceptual) table listing the capabilities of the
+    //         local SNMPv2 entity acting in an agent role with respect to
+    //         various MIB modules.  SNMPv2 entities having dynamically-
+    //         configurable support of MIB modules will have a
+    //         dynamically-varying number of conceptual rows."
+    // ::= { system 9 }
+    //
+    // sysOREntry OBJECT-TYPE
+    //     SYNTAX     SysOREntry
+    //     MAX-ACCESS not-accessible
+    //     STATUS     current
+    //    DESCRIPTION
+    //             "An entry (conceptual row) in the sysORTable."
+    //     INDEX      { sysORIndex }
+    //     ::= { sysORTable 1 }
+    //
+    // SysOREntry ::= SEQUENCE {
+    //     sysORIndex     INTEGER,
+    //     sysORID        OBJECT IDENTIFIER,
+    //     sysORDescr     DisplayString,
+    //     sysORUpTime    TimeStamp
+
+  <SEQUENCE_TOKEN> <OF_TOKEN> t=<IDENTIFIER>
+  {
+    jjtThis.setName(t.image);
+  }
+}
+
+void IndexOfTable() :
+{
+    Token t;
+}
+{
+    // Related to the table decl TableSequenceOf.
+    // This will be the index of a tabel.
+    //    INDEX      { sysORIndex }
+    //    INDEX   { atIfIndex, atNetAddress } 2nd index TBD not handled correctly?
+    <INDEX_TOKEN> <LBRACE> t=<IDENTIFIER> (<COMMA> <IDENTIFIER>)* <RBRACE>
+}
+
+// handle identifier :== identifier
+void Assignment() :
+{
+    Token t;
+}
+{
+    // quite a few different kinds of identifiers
+    //    RouterID ::= IpAddress
+    //    AutonomousType    ::= OBJECT IDENTIFIER
+    //    Metric    ::= INTEGER (1..'FFFF'h)
+    //    TruthValue ::= INTEGER { true (1), false (2) }
+    //    Status ::= INTEGER { enabled (1), disabled (2) }
+  t=<IDENTIFIER> <ASSIGN> (GetTypeIdentifier() | <OBJECT_TOKEN> <IDENTIFIER_TOKEN>)
+    [(<LPAREN> <INTEGER_LITERAL> "." "." <INTEGER_LITERAL> <RPAREN> |
+     <LBRACE> (<IDENTIFIER> <LPAREN> <INTEGER_LITERAL> <RPAREN> [<COMMA>])+ <RBRACE>)]
+
+    // save the subtype name from the first identifier just like
+    // TextConvention() did
+    // this makes a tree with the subtype in the parent and
+    // the base type in the child. These are put in symbol tables
+    // later so we can get to the right types and output base types
+    // to XML.
+    {
+        jjtThis.setName(t.image);
+    }
+}
+
+void SequenceOfVarsOrTextConvention() : {}
+
+{
+    // both start with identifier :==
+    ObjectIdentifier() <ASSIGN> (SequenceOfVars() | TextConvention())
+}
+
+void SequenceOfVars() #TableOidVars : {}
+{
+    // SysOREntry ::= SEQUENCE {
+    // sysORIndex     INTEGER,
+    // sysORID        OBJECT IDENTIFIER,
+    // sysORDescr     DisplayString,
+    // sysORUpTime    TimeStamp,
+    // ifDescr        OCTET STRING,
+    // tcpConnLocalPort INTEGER (0..65535),
+    // ds1CircuitIdentifier DisplayString (SIZE (0..255))
+    //
+    (<SEQUENCE_TOKEN> <LBRACE>
+      (IdentifierInSequenceOfVars()
+      ( <IDENTIFIER> ( SizeDeclaration() | <LPAREN> <INTEGER_LITERAL> "." "." <INTEGER_LITERAL> <RPAREN>)* |
+      <OBJECT_IDENTITY> | <OBJECT_TYPE> |
+      <OBJECT_TOKEN> <IDENTIFIER_TOKEN> | <OCTET_TOKEN> <STRING_TOKEN> [SizeDeclaration()])
+      (<COMMA>)* )+ <RBRACE>)
+    {
+        jjtThis.setName(lastObjectIdentifierToken.image);
+    }
+}
+
+void TextConvention() : {}
+{
+  // The TEXTUAL-CONVENTION is different enough from the other declarations
+  // that it merits it's own scanning, even though it does reuse tokens
+  // that other declarations catch. Also, the base type of the declaration
+  // must be saved in the AST and later in the symbol table. The base type
+  // in the example below would be Integer32 and it will be associated with
+  // QueueStates in the symbol table during AST walks.
+  //
+  // QueueStates ::= TEXTUAL-CONVENTION
+  // DISPLAY-HINT "d"
+  // SYNTAX Integer32 { pause(1), start(2) }
+  // STATUS current
+  // DESCRIPTION "The current state a queue is in."
+  //
+  // another way to declare a text convention is
+  // DisplayString ::= OCTET STRING (SIZE (0..255))
+
+
+  <TEXTUAL_CONVENTION_TOKEN>
+  ( <STATUS> <IDENTIFIER> |
+    (<DESCRIPTION> | <REFERENCE_TOKEN>) <DESCRIPTOR_LITERAL> |
+    <DISPLAY_HINT_TOKEN> <DESCRIPTOR_LITERAL> |
+    <OBJECTS_TOKEN> <LBRACE> (<IDENTIFIER> [<COMMA>])+ <RBRACE> |
+    <SYNTAX_TOKEN> (<OBJECT_TOKEN> <IDENTIFIER_TOKEN> | <OCTET_TOKEN> <STRING_TOKEN>  [SizeDeclaration()] |
+       GetTypeIdentifier() [( SizeDeclaration() |
+    <LBRACE> (<IDENTIFIER> <LPAREN> <INTEGER_LITERAL> <RPAREN> [<COMMA>])+ <RBRACE> )] )
+  )+ |
+   <OCTET_TOKEN> <STRING_TOKEN>  [SizeDeclaration() | <LBRACE> (<IDENTIFIER> <LPAREN> <INTEGER_LITERAL> <RPAREN> [<COMMA>])+ <RBRACE>]
+  {
+     jjtThis.setName(lastObjectIdentifierToken.image);
+  }
+}
+
+void IdentifierInSequenceOfVars() :
+{
+    Token t;
+}
+{
+    // called from SequenceOfVars()
+    // mark each ast node in the sequence
+    t=<IDENTIFIER>
+    {
+        jjtThis.setName(t.image);
+        jjtThis.setIsOidInTable(true);
+    }
+
+}
+
+void End() : {}
+{
+   <END>
+}
+
+void Expression() : {}
+{
+  Identifier()
+}
+
+void Identifier() :
+{
+  Token t;
+}
+{
+  t=<IDENTIFIER>
+  {
+    jjtThis.setName(t.image);
+  }
+}
+
+void ObjectIdentifier() :
+{
+  Token t;
+}
+{
+  t=<IDENTIFIER>
+  {
+    jjtThis.setName(t.image);
+    lastObjectIdentifierToken = t;
+  }
+}
+
+void ParentObjectIdentifier() #Parent :
+{
+  Token t;
+}
+{
+  t=<IDENTIFIER>
+  {
+    jjtThis.setParentName(t.image);
+    jjtThis.setName(lastObjectIdentifierToken.image);
+  }
+}
+
+void ChildTextIdentifier() :
+{
+  Token t;
+}
+{
+  t=<IDENTIFIER>
+  {
+    jjtThis.setName(t.image);
+  }
+}
+
+void ChildNumericIdentifier() :
+{
+  Token t;
+}
+{
+  t=<INTEGER_LITERAL>
+  {
+    jjtThis.setName(t.image);
+  }
+}
+
+// handle the oids after "iso"
+// mgmt OBJECT IDENTIFIER ::= { iso org(3) dod(6) internet(1) mgmt(2) }
+void MultipleOids() : {}
+{
+  ChildTextIdentifier() <LPAREN> ChildNumericIdentifier() <RPAREN>
+}
+
+// handle
+// (SIZE (0..255))
+// (SIZE (0 | 8 | 11))
+// (SIZE (6))
+// (SIZE (1 | 4..85))
+// (1)
+void SizeDeclaration() : {}
+{
+  <LPAREN>
+    (
+      <SIZE_TOKEN> <LPAREN>
+         (<INTEGER_LITERAL> [ "." "." <INTEGER_LITERAL> ] [ "|" ])+ <RPAREN> |
+      (<INTEGER_LITERAL> ["." "." <INTEGER_LITERAL>] [ "|" ])+
+    )
+  <RPAREN>
+
+}
+
+void Integer() : {}
+{
+  <INTEGER_LITERAL>
+}
+
+void IntegerOID() #PartialOID :
+{
+  Token t;
+}
+{
+  t = <INTEGER_LITERAL>
+  {
+    jjtThis.setName(t.image);
+  }
+}
+
+// usually called after SYNTAX, e.g. SYNTAX Counter32
+// also for TextConvention and Assignment to get the child
+// node in the right place.
+void GetTypeIdentifier() :
+{
+  Token t;
+}
+{
+  t=<IDENTIFIER>
+  {
+    jjtThis.setName(t.image);
+  }
+}
+
+// usually called after ACCESS, e.g. ACCESS read-write
+void GetAccessIdentifier() :
+{
+  Token t;
+}
+{
+  t=<IDENTIFIER>
+  {
+    jjtThis.setName(t.image);
+  }
+}

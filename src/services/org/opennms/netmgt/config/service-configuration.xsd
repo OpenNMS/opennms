@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://xmlns.opennms.org/xsd/config/vmmgr">
+
+  <element name="service-configuration">
+    <complexType>
+      <sequence>
+        <element ref="service" minOccurs="1" maxOccurs="unbounded"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <!--
+     - service to be launched by the manager
+   -->
+  <element name="service">
+    <complexType>
+      <sequence>
+        <element name="name" type="string" minOccurs="1" maxOccurs="1"/>
+        <element name="class-name" type="string" minOccurs="1" maxOccurs="1"/>
+        <element ref="attribute" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="invoke" minOccurs="0" maxOccurs="unbounded"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="attribute">
+    <complexType>
+      <sequence>
+        <element name="name" type="string" minOccurs="1" maxOccurs="1"/>
+        <element ref="value" minOccurs="1" maxOccurs="1"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="value">
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="type" type="string" use="required"/>
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+
+  <element name="invoke">
+    <complexType>
+      <sequence>
+        <element ref="argument" minOccurs="0" maxOccurs="unbounded"/>
+      </sequence>
+      <attribute name="method" type="string" use="required"/>
+      <attribute name="pass" type="int" use="optional" default="0"/>
+      <attribute name="at" type="string" use="optional" default="start">
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(start|stop|status)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="argument">
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="type" type="string" use="required"/>
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+
+</schema>
+<!--
+  - vim:expandtab:ts=2:shiftwidth=2
+ -->
+

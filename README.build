@@ -1,0 +1,10 @@
+==============================================================================
+Using The New New Build System For Fun And Profit
+==============================================================================
+
+Run ./build.sh with no arguments to get a list of the major build targets.
+
+All of the things that affect where your build is installed or how it is built
+are in the build.xml file.  Do not edit build.xml to change properties.
+Instead, override any properties on the command line ("-Dproprety.name=value")
+or create a build.properties file and put override propreties there.

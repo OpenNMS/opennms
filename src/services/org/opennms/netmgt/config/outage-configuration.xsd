@@ -1,0 +1,25 @@
+<schema	xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/outage">
+	<element name="OutageConfiguration">
+		<complexType>
+			<!--- the max number of threads reading the events and updating the database -->
+			<attribute name="writers" type="positiveInteger" use="required"/>
+	
+                        <!--- the query to get next value of the 'outageNxtId' database sequence
+			      - to make the access database independant
+			-->
+  			<attribute name="getNextOutageID" type="string" use="required"/>
+                        
+                        <!--- Flag which indicates if a delete service event should propagate to
+			      - a delete interface or delete node event if approciate
+			-->
+  			<attribute name="deletePropagation" type="string" use="optional" default="true">
+                                <simpleType>
+                                        <restriction base="string">
+                                                <pattern value="(true|false)"/>
+                                        </restriction>
+                                </simpleType>
+                        </attribute>
+		</complexType>
+	</element>
+</schema>

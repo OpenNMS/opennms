@@ -1,0 +1,166 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/collectd">
+
+	<element name="collectd-configuration">
+		<complexType>
+			<sequence>
+				<!--- package encapsulating addresses eligible to have
+					  SNMP data collected from them
+				-->
+				<element ref="package" minOccurs="1" maxOccurs="unbounded"/>
+				
+				<!--- service collectors -->
+				<element ref="collector" minOccurs="1" maxOccurs="unbounded"/>
+			</sequence>
+
+			<!--- the max number of threads used for data collection -->
+			<attribute name="threads" type="int" use="required"/>
+		</complexType>
+	</element>
+	
+	<!--- collector for a service -->
+	<element name="collector">
+		<complexType>
+			<!--- the parameters for performing data collection via this service -->
+			<sequence>
+				<element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+			</sequence>
+			
+			<!--- the service name -->
+			<attribute name="service" type="string" use="required"/>
+
+			<!--- the class used to perform data collection via the service -->
+			<attribute name="class-name" type="string" use="required"/>
+		</complexType>
+	</element>
+	
+	<!--- package encapsulating addresses eligible to have SNMP data collected
+		  from them. -->
+	<element name="package">
+		<complexType>
+			<sequence>
+				<!--- a rule which adresses belonging to this package must pass - 
+				      this package is applied only to addresses that pass this filter
+				-->
+				<element ref="filter" minOccurs="1" maxOccurs="1"/>
+				
+				<!--- adresseses in this package -->
+				<element name="specific" type="string" minOccurs="0" maxOccurs="unbounded"/>
+
+				<!--- range of adresses in this package -->
+				<element ref="include-range" minOccurs="0" maxOccurs="unbounded"/>
+
+				<!--- range of adresses to be excluded from this package -->
+				<element ref="exclude-range" minOccurs="0" maxOccurs="unbounded"/>
+
+				<!--- a file URL holding specific addresses to be polled. Each line in
+				      the URL file can be one of-
+             				<IP><space>#<comments>
+             				or
+             				<IP>
+             				or
+             				#<comments>
+             			       Lines starting with a '#' are ignored and so are characters after
+				       a '<space>#' in a line.
+				-->
+				<element name="include-url" type="string" minOccurs="0" maxOccurs="unbounded"/>
+
+				<!--- services for which data is to be collected in this package -->
+				<element ref="service" minOccurs="0" maxOccurs="unbounded"/>
+				
+				<!--- scheduled outages - data collection is not performed during scheduled outages -->
+				<element name="outage-calendar" type="string" minOccurs="0" maxOccurs="unbounded"/>
+			</sequence>
+
+			<!--- the name or identifier for this package -->
+			<attribute name="name" type="string" use="required"/>
+			
+		</complexType>
+	</element>
+
+	<!--- a rule which adresses belonging to this package must pass - 
+	      this package is applied only to addresses that pass this filter
+	-->
+	<element name="filter">
+		<complexType>
+			<simpleContent>
+				<extension base="string"/>
+			</simpleContent>
+		</complexType>
+	</element>
+	
+	<!--- range of adresses to be included in this package -->
+	<element name="include-range">
+		<complexType>
+			<!--- starting address of the range -->
+			<attribute name="begin" type="string" use="required"/>
+
+			<!--- ending address of the range -->
+			<attribute name="end" type="string" use="required"/>
+		</complexType>
+	</element>
+
+	<!--- range of adresses to be excluded from this package -->
+	<element name="exclude-range">
+		<complexType>
+			<!--- starting address of the range -->
+			<attribute name="begin" type="string" use="required"/>
+
+			<!--- ending address of the range -->
+			<attribute name="end" type="string" use="required"/>
+		</complexType>
+	</element>
+	
+	<!--- service to be collected for addresses in this package -->
+	<element name="service">
+		<complexType>
+			<!--- parameters to be used for collecting data via this service 
+				"collection" : name of data collection ("SNMP" specific)
+				"oid" 	     : object identifier
+				"timeout"    : timeout (in milliseconds)
+				"retries"    : retries 
+				"port" 	     : protocol/service port
+			-->	
+			<sequence>
+				<element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+			</sequence>
+
+			<!--- the service name -->
+			<attribute name="name" type="string" use="required"/>
+
+			<!--- the interval at which the service is to be collected -->
+			<attribute name="interval" type="long" use="required"/>
+
+			<!--- marker to say if service is user defined, used specifically for UI purposes -->
+			<attribute name="user-defined" type="string" use="optional">
+				<simpleType>
+					<restriction base="string">
+						<pattern value="(true|false)"/>
+					</restriction>
+				</simpleType>
+			</attribute>
+
+			<!--- status of the service, service is collected only if on -->
+			<attribute name="status" type="string" use="optional">
+				<simpleType>
+					<restriction base="string">
+						<pattern value="(on|off)"/>
+					</restriction>
+				</simpleType>
+			</attribute>
+		</complexType>
+	</element>
+	
+	<!--- parameters to be used for collecting this service -  Parameters are specfic to
+	      the service monitor
+	-->
+	<element name="parameter">
+		<complexType>
+			<attribute name="key" type="string" use="required"/>
+			<attribute name="value" type="string" use="required"/>
+		</complexType>
+	</element>
+	
+</schema>
+

@@ -1,0 +1,4 @@
+Java Compiler Compiler Version 3.2 (Tree Builder)
+(type "jjtree" with no arguments for help)
+Reading from file /home/jrodriguez/snmp/12_15_03/src/ParseMib.jjt . . .
+Annotated grammar generated successfully in ParseMib.jj

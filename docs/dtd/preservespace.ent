@@ -1,0 +1,10 @@
+<!ENTITY % PreserveSpace
+  "xml:space (default|preserve) #FIXED 'preserve'"
+>
+<!ENTITY % local.address.attrib "%PreserveSpace;">
+<!ENTITY % local.funcsynopsisinfo.attrib "%PreserveSpace;">
+<!ENTITY % local.classsynopsisinfo.attrib "%PreserveSpace;">
+<!ENTITY % local.literallayout.attrib "%PreserveSpace;">
+<!ENTITY % local.programlisting.attrib "%PreserveSpace;">
+<!ENTITY % local.screen.attrib "%PreserveSpace;">
+<!ENTITY % local.synopsis.attrib "%PreserveSpace;">

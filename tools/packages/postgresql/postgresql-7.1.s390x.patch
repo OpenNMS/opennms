@@ -1,0 +1,22 @@
+--- postgresql-7.1.2/src/include/port/linux.h.s390x	Mon Jun 18 11:47:44 2001
++++ postgresql-7.1.2/src/include/port/linux.h	Mon Jun 18 11:52:16 2001
+@@ -33,7 +33,7 @@
+ 
+ #define HAS_TEST_AND_SET
+ 
+-#elif defined(__s390__)
++#elif defined(__s390__) || defined(__s390x__)
+ typedef unsigned int slock_t;
+ 
+ #define HAS_TEST_AND_SET
+--- postgresql-7.1.2/src/include/storage/s_lock.h.s390x	Mon Jun 18 11:52:41 2001
++++ postgresql-7.1.2/src/include/storage/s_lock.h	Mon Jun 18 11:54:13 2001
+@@ -162,7 +162,7 @@
+ 
+ #endif	 /* __arm__ */
+ 
+-#if defined(__s390__)
++#if defined(__s390__) || defined(__s390x__)
+ /*
+  * S/390 Linux
+  */
