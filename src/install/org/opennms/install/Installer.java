@@ -90,6 +90,7 @@ public class Installer {
 
     boolean m_debug = false;
     boolean m_ignore_notnull = false;
+    boolean m_no_revert = false;
 
     String m_pg_driver = null;
     String m_pg_url = null;
@@ -375,6 +376,10 @@ public class Installer {
 
 		    case 'N':
 			m_ignore_notnull = true;
+			break;
+
+		    case 'R':
+			m_no_revert = true;
 			break;
 
 		    default:
@@ -1702,6 +1707,7 @@ public class Installer {
 		"SELECT " +
 		"       c.conname, " +
 		"	c.contype, " +
+		"	c.confdeltype, " +
 		"	a.attname, " +
 		"	d.relname, " +
 		"	b.attname " +
@@ -1724,10 +1730,14 @@ public class Installer {
 	    while (rs.next()) {
 		Constraint constraint;
 		if (rs.getString(2).equals("p")) {
-		    constraint = new Constraint(rs.getString(1), rs.getString(3));
+		    constraint = new Constraint(rs.getString(1),
+						rs.getString(4));
 		} else if (rs.getString(2).equals("f")) {
-		    constraint = new Constraint(rs.getString(1), rs.getString(3),
-						rs.getString(4), rs.getString(5));
+		    constraint = new Constraint(rs.getString(1),
+						rs.getString(4),
+						rs.getString(5),
+						rs.getString(6),
+						rs.getString(3));
 		} else {
 		    throw new Exception("Do not support constraint type \"" +
 					rs.getString(2) + "\" in constraint \"" +
@@ -1779,18 +1789,38 @@ public class Installer {
 		c.addConstraint(constraint);
 	    }
 
+	    int fkey, fdel;
+
+	    query = "SELECT oid FROM pg_proc WHERE proname = " +
+		"          'RI_FKey_check_ins'";
+	    rs = st.executeQuery(query);
+	    if (!rs.next()) {
+		throw new Exception("Could not get OID for RI_FKey_check_ins");
+	    }
+	    fkey = rs.getInt(1);
+
+	    query = "SELECT oid FROM pg_proc WHERE proname = " +
+		"          'RI_FKey_cascade_del'";
+	    rs = st.executeQuery(query);
+	    if (!rs.next()) {
+		throw new Exception("Could not get OID for RI_FKey_cascade_del");
+	    }
+	    fdel = rs.getInt(1);
 
 	    query =
 		"SELECT " +
 		"        tgconstrname, " +
 		"        tgargs " + 
+		"        tgfoid " + 
 		"FROM " +
-		"        pg_trigger t " +
+		"        pg_trigger " +
 		"WHERE " +
-		"        t.tgrelid = (SELECT oid FROM pg_class WHERE relname = '" +
+		"        tgrelid = (SELECT oid FROM pg_class WHERE relname = '" +
 		           table.toLowerCase() + "') AND " +
-		"        t.tgfoid = (SELECT oid FROM pg_proc WHERE proname = " +
-		"          'RI_FKey_check_ins')";
+		"        ( " +
+		"            tgfoid = " + fkey + " OR " +
+		"            tgfoid = " + fdel + " " +
+		"        ) ";
 	    rs = st.executeQuery(query);
 
 	    while (rs.next()) {
@@ -1799,7 +1829,8 @@ public class Installer {
 
 		Constraint constraint = 
 		    new Constraint(rs.getString(1), args[4],
-				   args[2], args[5]);
+				   args[2], args[5],
+				   (rs.getInt(3) == fkey) ? "a" : "c");
 
 		Column c = findColumn(r, constraint.getColumn());
 		if (c == null) {
@@ -1862,6 +1893,12 @@ public class Installer {
 	    if (oldColumn == null || !newColumn.equals(oldColumn)) {
 		m_out.println("      - column \"" + newColumn.getName() +
 				   "\" is different");
+		if (m_debug) {
+		    m_out.println("        - old column: " +
+				  ((oldColumn == null) ?
+				   "null" : oldColumn.toString()));
+		    m_out.println("        - new column: " + newColumn);
+		}
 	    }
 
 	    if (!columnChanges.containsKey(newColumn.getName())) {
@@ -1974,6 +2011,12 @@ public class Installer {
 		// ignore
 	    }
 
+	    if (m_no_revert) {
+		m_out.println("FAILED!  Not reverting due to '-R' being " +
+			      "passed.  Old data in " + tmpTable);
+		throw e;
+	    }
+
 	    try {
 		if (tableExists(table)) {
 		    st.execute("DROP TABLE " + table + m_cascade);
@@ -2030,14 +2073,6 @@ public class Installer {
 	   the data to any new formats. */
 
 	m_out.print("    - transforming data into the new table...\r");
-
-	if (table.equals("events")) {
-	    st.execute("INSERT INTO events (eventid, eventuei, eventtime, " +
-		       "eventsource, eventdpname, eventcreatetime, " +
-		       "eventseverity, eventlog, eventdisplay) values " +
-		       "(0, 'http://uei.opennms.org/dummyevent', now(), " +
-		       "'OpenNMS.Eventd', 'localhost', now(), 1, 'Y', 'Y')");
-	}
 
 	ResultSet rs = st.executeQuery("SELECT count(*) FROM " + oldTable);
 	rs.next();
@@ -2153,13 +2188,29 @@ public class Installer {
 	    try {
 		insert.execute();
 	    } catch (SQLException e) {
+		// XXX should we add something for this:
+		//    2004-09-26 22:24:29 ERROR:  duplicate key violates
+		//    unique constraint "pk_eventid"
 		if (e.toString().indexOf("key referenced from " + table +
-					 " not found in") == -1 &&
-		    e.toString().indexOf("Cannot insert a duplicate key " +
-					 "into unique index") == -1) {
-		    throw e;
+					 " not found in") == -1) {
+		    //e.toString().indexOf("Cannot insert a duplicate key " +
+		    //		 "into unique index") == -1 &&
+		    //		    e.toString().indexOf("duplicate key violates unique " +
+		    //					 "constraint") == -1) {
+		    SQLException ex = new SQLException("Failed inserting " +
+						       "due to " +
+						       e.getMessage() + ".  " +
+						       "Executed command: \"" +
+						       insert.toString() +
+						       "\"",
+						       e.getSQLState(),
+						       e.getErrorCode());
+		    ex.setNextException(e);
+		    throw ex;
 		    // error =	      "can't insert into " + table;
 		}
+
+		m_dbconnection.commit();
 	    }
 
 	    current_row++;
@@ -2175,6 +2226,16 @@ public class Installer {
 	m_dbconnection.commit();
 	m_dbconnection.setAutoCommit(true);
 
+
+	if (table.equals("events") && num_rows == 0) {
+	    st.execute("INSERT INTO events (eventid, eventuei, eventtime, " +
+		       "eventsource, eventdpname, eventcreatetime, " +
+		       "eventseverity, eventlog, eventdisplay) values " +
+		       "(0, 'http://uei.opennms.org/dummyevent', now(), " +
+		       "'OpenNMS.Eventd', 'localhost', now(), 1, 'Y', 'Y')");
+	}
+
+
 	m_out.println("    - transforming data into the new table... " +
 			   "DONE           ");
     }
@@ -2183,7 +2244,7 @@ public class Installer {
 	m_out.println("usage:");
 	m_out.println("  java -jar opennms_install.jar -h");
 	m_out.println("  java -jar opennms_install.jar " +
-		      "[-r] [-x] [-N] [-c] [-d] [-i] [-s] [-U] [-y]");
+		      "[-r] [-x] [-N] [-R] [-c] [-d] [-i] [-s] [-U] [-y]");
 	m_out.println("                                " +
 		      "[-u <PostgreSQL admin user>]");
 	m_out.println("                                " +
@@ -2227,6 +2288,9 @@ public class Installer {
 		      "transforming data");
 	m_out.println("         useful after a table is reverted by a " +
 		      "previous run of the installer");
+	m_out.println("   -R    do not revert a table to the original if " +
+		      "an error occurs when");
+	m_out.println("         transforming data -- only used for debugging");
 
 	System.exit(0);
     }
