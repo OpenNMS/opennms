@@ -66,8 +66,8 @@
       <p><a href="help/about.jsp">About the OpenNMS Web Console</a></p>
 
       <h3>Internet Resources</h3>
-      <p><a href="http://www.opennms.org/users/faq/">Frequently Asked Questions</a></p>
-      <p><a href="http://www.opennms.org/users/docs/">Online Documentation</a></p>
+      <p><a href="http://faq.opennms.org">Frequently Asked Questions</a></p>
+      <p><a href="http://docs.opennms.org">Online Documentation</a></p>
     </td>
     
     <td>&nbsp;</td>
