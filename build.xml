@@ -1261,6 +1261,9 @@ OpenNMS as part of the post-install.
          <fileset dir="${source.dir}/install">
             <include name="**/*Test.java" />
          </fileset>
+        <fileset dir="${source.dir}/core">
+           <include name="**/*Test.java" />
+        </fileset>
      </batchtest>
      <sysproperty key="mock.logLevel" value="${mock.logLevel}" />
      <sysproperty key="mock.debug" value="${mock.debug}" />
