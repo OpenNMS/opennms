@@ -50,29 +50,25 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.config.poller.Time;
 import org.opennms.netmgt.poller.ServiceMonitor;
 
-class MockPollerConfig implements PollerConfig, PollOutagesConfig {
+public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
 
-    String m_criticalSvcName;
+    private String m_criticalSvcName;
 
-    Package m_currentPkg = new Package();
+    private Package m_currentPkg = new Package();
 
     private boolean m_outageProcessingEnabled = false;
 
     private List m_outages = new ArrayList();
 
-    Vector m_pkgs = new Vector();
+    private Vector m_pkgs = new Vector();
 
-    Map m_svcMonitors = new TreeMap();
+    private Map m_svcMonitors = new TreeMap();
 
-    int m_threads = 1;
+    private int m_threads = 1;
 
-    /**
-     * @param interval
-     * @param begin
-     * @param end
-     * @param delete
-     */
-    void addDowntime(long interval, long begin, long end, boolean delete) {
+    private long m_defaultPollInterval = 7654L;
+
+    public void addDowntime(long interval, long begin, long end, boolean delete) {
         Downtime downtime = new Downtime();
         downtime.setDelete(delete ? "true" : "false");
         downtime.setBegin(begin);
@@ -82,12 +78,6 @@ class MockPollerConfig implements PollerConfig, PollOutagesConfig {
         m_currentPkg.addDowntime(downtime);
     }
 
-    /**
-     * @param outageName
-     * @param begin
-     * @param end
-     * @param ipAddr
-     */
     public void addOutage(String outageName, long begin, long end, String ipAddr) {
         Outage outage = new Outage();
         outage.setName(outageName);
@@ -108,6 +98,10 @@ class MockPollerConfig implements PollerConfig, PollOutagesConfig {
         m_currentPkg.addOutageCalendar(outageName);
 
     }
+    
+    public void addService(String name, ServiceMonitor monitor) {
+        addService(name, m_defaultPollInterval, monitor);
+    }
 
     public void addService(String name, long interval, ServiceMonitor monitor) {
         Service service = new Service();
@@ -116,12 +110,16 @@ class MockPollerConfig implements PollerConfig, PollOutagesConfig {
         m_currentPkg.addService(service);
         m_svcMonitors.put(name, monitor);
     }
+    
+    public void addService(MockService svc) {
+        addService(svc.getName(), m_defaultPollInterval, new MockMonitor(svc.getNetwork(), svc.getName()));
+    }
 
-    void clearDowntime() {
+    public void clearDowntime() {
         m_currentPkg.clearDowntime();
     }
 
-    public void createPackage(String name) {
+    public void addPackage(String name) {
         m_currentPkg = new Package();
         m_currentPkg.setName(name);
 
@@ -161,9 +159,6 @@ class MockPollerConfig implements PollerConfig, PollOutagesConfig {
         return null;
     }
 
-    /**
-     * @param name
-     */
     public Package getPackage(String name) {
         for (int i = 0; i < m_pkgs.size(); i++) {
             Package pkg = (Package) m_pkgs.get(i);
@@ -187,7 +182,6 @@ class MockPollerConfig implements PollerConfig, PollOutagesConfig {
     }
 
     public int getStep(Package pkg) {
-        // TODO Auto-generated method stub
         return 0;
     }
 
@@ -196,7 +190,6 @@ class MockPollerConfig implements PollerConfig, PollOutagesConfig {
     }
 
     public boolean getXmlrpc() {
-        // TODO Auto-generated method stub
         return false;
     }
 
@@ -263,7 +256,6 @@ class MockPollerConfig implements PollerConfig, PollOutagesConfig {
     }
 
     public boolean nodeOutageProcessingEnabled() {
-        // TODO Auto-generated method stub
         return m_outageProcessingEnabled;
     }
 
@@ -300,19 +292,34 @@ class MockPollerConfig implements PollerConfig, PollOutagesConfig {
         m_currentPkg.addIncludeUrl(matchRegexp);
     }
 
-    public void setOutageProcessingEnabled(boolean outageProcessingEnabled) {
+    public void setNodeOutageProcessingEnabled(boolean outageProcessingEnabled) {
         m_outageProcessingEnabled = outageProcessingEnabled;
     }
 
     public void setPollInterval(String svcName, long interval) {
         Service svc = findService(m_currentPkg, svcName);
         if (svc == null)
-            return;
+            throw new IllegalArgumentException("No service named: "+svcName);
+            
         svc.setInterval(interval);
     }
 
-    public void setThreads(int threads) {
+    public void setPollerThreads(int threads) {
         m_threads = threads;
+    }
+
+    public void setDefaultPollInterval(long defaultPollInterval) {
+        m_defaultPollInterval = defaultPollInterval;
+    }
+
+    public void populatePackage(final MockNetwork network) {
+        MockVisitor populator = new MockVisitorAdapter() {
+            public void visitService(MockService svc) {
+                if (!hasService(svc.getName()))
+                    addService(svc.getName(), new MockMonitor(network, svc.getName()));
+            }
+        };
+        network.visit(populator);
     }
 
 }

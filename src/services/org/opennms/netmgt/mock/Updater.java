@@ -29,73 +29,25 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-
 package org.opennms.netmgt.mock;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  * @author brozow
- * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
+ *
+ * TODO To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Style - Code Templates
  */
-public class MockNode extends MockContainer {
-
-    String m_label;
-
-    int m_nodeid;
-
-    public MockNode(MockNetwork network, int nodeid, String label) {
-        super(network);
-        m_nodeid = nodeid;
-        m_label = label;
+public class Updater extends JDBCTemplate {
+    
+    public Updater(MockDatabase db, String sql) {
+        super(db, sql);
     }
 
-    // model
-    public MockInterface addInterface(String ipAddr) {
-        return (MockInterface) addMember(new MockInterface(this, ipAddr));
-    }
-
-    // model
-    public MockInterface getInterface(String ipAddr) {
-        return (MockInterface) getMember(ipAddr);
-    }
-
-    // impl
-    Object getKey() {
-        return new Integer(m_nodeid);
-    }
-
-    // model
-    public String getLabel() {
-        return m_label;
-    }
-
-    // model
-    public MockNetwork getNetwork() {
-        return (MockNetwork) getParent();
-    }
-
-    // model
-    public int getNodeId() {
-        return m_nodeid;
-    }
-
-    // model
-    public void removeInterface(MockInterface iface) {
-        removeMember(iface);
-    }
-
-    // impl
-    public String toString() {
-        return "Node[" + m_nodeid + "," + m_label + "]";
-
-    }
-
-    // impl
-    public void visit(MockVisitor v) {
-        super.visit(v);
-        v.visitNode(this);
-        visitMembers(v);
+    void executeStmt(PreparedStatement stmt) throws SQLException {
+        stmt.executeUpdate();
     }
 
 }

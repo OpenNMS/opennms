@@ -110,6 +110,8 @@ public final class OutageWriter implements Runnable {
     // database modifications to notify other OpenNMS processes
     private boolean m_generateNodeDeletedEvent;
 
+    private OutageManager m_outageMgr;
+
     /**
      * A class to hold SNMP/SNMPv2 entries for a node from the ifservices table.
      * A list of this class is maintained on SNMP delete so as to be able to
@@ -327,7 +329,7 @@ public final class OutageWriter implements Runnable {
             } else {
                 // Prepare SQL statement to get the next outage id from the db
                 // sequence
-                PreparedStatement getNextOutageIdStmt = dbConn.prepareStatement(OutageManagerConfigFactory.getInstance().getGetNextOutageID());
+                PreparedStatement getNextOutageIdStmt = dbConn.prepareStatement(m_outageMgr.getGetNextOutageID());
 
                 long outageID = -1;
 
@@ -517,7 +519,7 @@ public final class OutageWriter implements Runnable {
 
             // Prepare SQL statement to get the next outage id from the db
             // sequence
-            PreparedStatement getNextOutageIdStmt = dbConn.prepareStatement(OutageManagerConfigFactory.getInstance().getGetNextOutageID());
+            PreparedStatement getNextOutageIdStmt = dbConn.prepareStatement(m_outageMgr.getGetNextOutageID());
 
             // // Check the OutageCache to see if an event exists.
             //
@@ -691,7 +693,7 @@ public final class OutageWriter implements Runnable {
 
             // Prepare SQL statement to get the next outage id from the db
             // sequence
-            PreparedStatement getNextOutageIdStmt = dbConn.prepareStatement(OutageManagerConfigFactory.getInstance().getGetNextOutageID());
+            PreparedStatement getNextOutageIdStmt = dbConn.prepareStatement(m_outageMgr.getGetNextOutageID());
 
             // // Check the OutageCache to see if an event exists.
             //
@@ -1326,11 +1328,13 @@ public final class OutageWriter implements Runnable {
 
     /**
      * The constructor.
+     * @param mgr
      * 
      * @param event
      *            the event for this outage writer.
      */
-    public OutageWriter(Event event) {
+    public OutageWriter(OutageManager mgr, Event event) {
+        m_outageMgr = mgr;
         m_event = event;
     }
 

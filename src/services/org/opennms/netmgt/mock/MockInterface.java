@@ -46,51 +46,47 @@ public class MockInterface extends MockContainer {
 
     String m_ipAddr;
 
-    /**
-     * @param ipAddr
-     */
     public MockInterface(MockNode node, String ipAddr) {
         super(node);
         m_ipAddr = ipAddr;
     }
 
-    /**
-     * @param svcName
-     */
+    // model
     public MockService addService(String svcName, int serviceId) {
         return (MockService) addMember(new MockService(this, svcName, serviceId));
     }
 
-    /**
-     * @return
-     */
+    // model
     public String getIpAddr() {
         return m_ipAddr;
     }
 
+    // impl
     Object getKey() {
         return m_ipAddr;
     }
 
+    // model
     public MockNetwork getNetwork() {
         return getNode().getNetwork();
     }
 
-    /**
-     * @return
-     */
+    // model
     public MockNode getNode() {
         return (MockNode) getParent();
     }
 
+    // model
     public int getNodeId() {
         return getNode().getNodeId();
     }
 
+    // model
     public String getNodeLabel() {
         return getNode().getLabel();
     }
 
+    // FIXME: model?
     public int getPollStatus() {
         final String critSvc = getNetwork().getCriticalService();
         class IFStatusCalculator extends MockVisitorAdapter {
@@ -114,34 +110,27 @@ public class MockInterface extends MockContainer {
         return calc.getStatus();
     }
 
-    /**
-     * @param svcName
-     */
+    // model
     public MockService getService(String svcName) {
         return (MockService) getMember(svcName);
     }
 
-    /**
-     * @return
-     */
+    // model
     public List getServices() {
         return getMembers();
     }
 
-    /**
-     * @param svc
-     */
+    // model
     public void removeService(MockService svc) {
         removeMember(svc);
     }
 
+    // impl
     public String toString() {
         return "If[" + m_ipAddr + "]";
     }
 
-    /**
-     * @param v
-     */
+    // impl
     public void visit(MockVisitor v) {
         super.visit(v);
         v.visitInterface(this);

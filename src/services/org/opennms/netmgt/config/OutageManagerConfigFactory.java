@@ -58,7 +58,7 @@ import org.opennms.netmgt.config.outage.OutageConfiguration;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class OutageManagerConfigFactory {
+public final class OutageManagerConfigFactory implements OutageManagerConfig {
     /**
      * The singleton instance of this factory
      */
@@ -142,7 +142,7 @@ public final class OutageManagerConfigFactory {
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
-    public static synchronized OutageManagerConfigFactory getInstance() {
+    public static synchronized OutageManagerConfig getInstance() {
         if (!m_loaded)
             throw new IllegalStateException("The factory has not been initialized");
 

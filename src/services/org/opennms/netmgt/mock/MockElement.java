@@ -48,58 +48,51 @@ abstract public class MockElement {
         m_parent = parent;
     }
 
-    /**
-     * @param trigger
-     */
+    // FIXME: generic listener
     abstract public void addAnticipator(PollAnticipator trigger);
 
-    /**
-     * 
-     */
+    // test
     public void bringDown() {
         setServicePollStatus(ServiceMonitor.SERVICE_UNAVAILABLE);
     }
 
-    /**
-     * 
-     */
+    // test
     public void bringUp() {
         setServicePollStatus(ServiceMonitor.SERVICE_AVAILABLE);
     }
 
+    // impl
     abstract Object getKey();
 
+    // model
     public MockContainer getParent() {
         return m_parent;
     }
 
-    /**
-     * @return
-     */
+    // stats
     abstract public int getPollCount();
 
+    // test
     abstract public int getPollStatus();
 
+    // model
     public void moveTo(MockContainer newParent) {
         m_parent.removeMember(this);
         newParent.addMember(this);
     }
 
+    // FIXME: generic listener
     abstract public void removeAnticipator(PollAnticipator trigger);
 
-    /**
-     * 
-     */
+    // stats
     abstract public void resetPollCount();
 
+    // model
     void setParent(MockContainer parent) {
         m_parent = parent;
     }
 
-    /**
-     * @param expectedUei
-     * @param newStatus
-     */
+    // test
     private void setServicePollStatus(final int newStatus) {
         MockVisitor statusSetter = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
@@ -109,6 +102,7 @@ abstract public class MockElement {
         visit(statusSetter);
     }
 
+    // impl
     public void visit(MockVisitor v) {
         v.visitElement(this);
     }

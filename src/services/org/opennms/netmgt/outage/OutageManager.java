@@ -55,7 +55,8 @@ import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import org.opennms.netmgt.config.OutageManagerConfigFactory;
+import org.opennms.netmgt.config.OutageManagerConfig;
+import org.opennms.netmgt.eventd.EventIpcManager;
 
 /**
  * The OutageManager receives events selectively and maintains a historical
@@ -95,11 +96,18 @@ public final class OutageManager implements PausableFiber {
      * The RunnableConsumerThreadPool that runs writers that update the database
      */
     private RunnableConsumerThreadPool m_writerPool;
+    
+    /**
+     * The EventIpcManager to use for sending and receiving events
+     */
+    private EventIpcManager m_eventMgr;
 
     /**
      * Current status of this fiber
      */
     private int m_status;
+
+    private OutageManagerConfig m_outageMgrConfig;
 
     /**
      * Build the servicename to serviceid map - this map is used so as to avoid
@@ -184,31 +192,29 @@ public final class OutageManager implements PausableFiber {
     public int getStatus() {
         return m_status;
     }
+    
+    public EventIpcManager getEventMgr() {
+        return m_eventMgr;
+    }
+    
+    public void setEventMgr(EventIpcManager eventMgr) {
+        m_eventMgr = eventMgr;
+    }
 
     public void init() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
         Category log = ThreadCategory.getInstance(getClass());
+        
+        if (m_eventMgr == null)
+            throw new IllegalStateException("OutageManager.m_eventMgr is not set");
+        
+        if (m_outageMgrConfig == null)  
+            throw new IllegalStateException("OutageManager.m_outageMgrConfig is not set");
+        
 
         // load the outage configuration and get the required attributes
-        int numWriters = 1;
-        try {
-            OutageManagerConfigFactory.reload();
-            OutageManagerConfigFactory oFactory = OutageManagerConfigFactory.getInstance();
-
-            // get number of threads
-            numWriters = oFactory.getWriters();
-
-        } catch (MarshalException ex) {
-            log.error("Failed to load outage configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            log.error("Failed to load outage configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            log.error("Failed to load outage configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
+        int numWriters = getNumWriters();
 
         //
         // Make sure we can connect to the database
@@ -255,11 +261,32 @@ public final class OutageManager implements PausableFiber {
         if (log.isDebugEnabled())
             log.debug("Created writer pool");
 
-        m_eventReceiver = new BroadcastEventProcessor(m_writerPool.getRunQueue());
+        m_eventReceiver = new BroadcastEventProcessor(this, m_writerPool.getRunQueue());
         if (log.isDebugEnabled())
             log.debug("Created event receiver");
 
         log.info("OutageManager ready to accept events");
+    }
+
+    public void setOutageMgrConfig(OutageManagerConfig config) {
+        m_outageMgrConfig = config;
+    }
+    
+    public OutageManagerConfig getOutageMgrConfig() {
+        return m_outageMgrConfig;
+    }
+
+    /**
+     * @param numWriters
+     * @param log
+     * @return
+     */
+    private int getNumWriters() {
+        Category log = ThreadCategory.getInstance(getClass());
+
+        int numWriters = 1;
+        numWriters = m_outageMgrConfig.getWriters();
+        return numWriters;
     }
 
     /**
@@ -400,5 +427,12 @@ public final class OutageManager implements PausableFiber {
      */
     public static OutageManager getInstance() {
         return m_singleton;
+    }
+
+    /**
+     * @return
+     */
+    public String getGetNextOutageID() {
+        return m_outageMgrConfig.getGetNextOutageID();
     }
 }

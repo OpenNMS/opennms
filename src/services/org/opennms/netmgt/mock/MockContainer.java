@@ -54,6 +54,7 @@ abstract public class MockContainer extends MockElement {
         super(parent);
     }
 
+    // FIXME: generic poll listener?
     public void addAnticipator(final PollAnticipator trigger) {
         MockVisitor triggerAdder = new MockVisitorAdapter() {
             public void visitService(MockService service) {
@@ -63,31 +64,24 @@ abstract public class MockContainer extends MockElement {
         visit(triggerAdder);
     }
 
-    /**
-     * @param element
-     * @return
-     */
+    // model
     protected MockElement addMember(MockElement element) {
         m_members.put(element.getKey(), element);
         element.setParent(this);
         return element;
     }
 
-    /**
-     * @param key
-     * @return
-     */
+    // model
     protected MockElement getMember(Object key) {
         return (MockElement) m_members.get(key);
     }
 
-    /**
-     * @return
-     */
+    // model
     protected List getMembers() {
         return new ArrayList(m_members.values());
     }
 
+    // stats
     public int getPollCount() {
         class PollCounter extends MockVisitorAdapter {
             int pollCount = 0;
@@ -106,6 +100,7 @@ abstract public class MockContainer extends MockElement {
         return pollCounter.getPollCount();
     }
 
+    // FIXME: where should this live?
     public int getPollStatus() {
         Iterator it = m_members.values().iterator();
         while (it.hasNext()) {
@@ -116,6 +111,7 @@ abstract public class MockContainer extends MockElement {
         return ServiceMonitor.SERVICE_UNAVAILABLE;
     }
 
+    // FIXME: make a generic poll listener
     public void removeAnticipator(final PollAnticipator trigger) {
         MockVisitor triggerRemover = new MockVisitorAdapter() {
             public void visitService(MockService service) {
@@ -125,11 +121,13 @@ abstract public class MockContainer extends MockElement {
         visit(triggerRemover);
     }
 
+    // model
     protected void removeMember(MockElement element) {
         m_members.remove(element.getKey());
         element.setParent(null);
     }
 
+    // stats
     public void resetPollCount() {
         class PollCountReset extends MockVisitorAdapter {
             public void visitService(MockService service) {
@@ -141,14 +139,13 @@ abstract public class MockContainer extends MockElement {
         visit(pollCounter);
     }
 
+    // impl
     public void visit(MockVisitor v) {
         super.visit(v);
         v.visitContainer(this);
     }
 
-    /**
-     * @param v
-     */
+    // impl
     protected void visitMembers(MockVisitor v) {
         Iterator it = m_members.values().iterator();
         while (it.hasNext()) {

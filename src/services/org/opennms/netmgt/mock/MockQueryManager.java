@@ -43,7 +43,7 @@ import java.util.Set;
 import org.opennms.netmgt.poller.IfKey;
 import org.opennms.netmgt.poller.QueryManager;
 
-class MockQueryManager implements QueryManager {
+public class MockQueryManager implements QueryManager {
 
     /**
      * Comment for <code>m_network</code>
@@ -53,7 +53,7 @@ class MockQueryManager implements QueryManager {
     /**
      * @param network
      */
-    MockQueryManager(MockNetwork network) {
+    public MockQueryManager(MockNetwork network) {
         this.m_network = network;
     }
 

@@ -46,7 +46,7 @@ import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -62,6 +62,11 @@ final class BroadcastEventProcessor implements EventListener {
      * The location where incoming events of interest are enqueued
      */
     private FifoQueue m_writerQ;
+    
+    /**
+     * The outage manager that created this event processor
+     */
+    private OutageManager m_outageMgr;
 
     /**
      * Constructor
@@ -69,8 +74,9 @@ final class BroadcastEventProcessor implements EventListener {
      * @param writerQ
      *            The queue where events of interest are added.
      */
-    BroadcastEventProcessor(FifoQueue writerQ) {
+    BroadcastEventProcessor(OutageManager outageMgr, FifoQueue writerQ) {
         m_writerQ = writerQ;
+        m_outageMgr = outageMgr;
     }
 
     /**
@@ -103,15 +109,21 @@ final class BroadcastEventProcessor implements EventListener {
         // interfaceReparented
         ueiList.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
 
-        EventIpcManagerFactory.init();
-        EventIpcManagerFactory.getInstance().getManager().addEventListener(this, ueiList);
+        getEventMgr().addEventListener(this, ueiList);
+    }
+
+    /**
+     * @return
+     */
+    private EventIpcManager getEventMgr() {
+        return m_outageMgr.getEventMgr();
     }
 
     /**
      * Unsubscribe from eventd
      */
     public void close() {
-        EventIpcManagerFactory.getInstance().getManager().removeEventListener(this);
+        getEventMgr().removeEventListener(this);
     }
 
     /**
@@ -135,7 +147,7 @@ final class BroadcastEventProcessor implements EventListener {
             if (uei == null)
                 return;
 
-            m_writerQ.add(new OutageWriter(event));
+            m_writerQ.add(new OutageWriter(m_outageMgr, event));
 
             if (log.isDebugEnabled())
                 log.debug("Event " + uei + " added to writer queue");

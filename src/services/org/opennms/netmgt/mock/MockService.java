@@ -56,11 +56,7 @@ public class MockService extends MockElement {
 
     private List m_triggers = new ArrayList();
 
-    /**
-     * @param iface
-     * @param svcName
-     */
-    public MockService(MockInterface iface, String svcName, int serviceId) {
+   public MockService(MockInterface iface, String svcName, int serviceId) {
         super(iface);
         m_svcName = svcName;
         m_serviceId = serviceId;
@@ -69,75 +65,67 @@ public class MockService extends MockElement {
 
     }
 
+   // FIXME: model? make generic poll listener
     public void addAnticipator(PollAnticipator trigger) {
         m_triggers.add(trigger);
     }
 
-    /**
-     * @return
-     */
+    // model
     public int getId() {
         return m_serviceId;
     }
 
-    /**
-     * @return
-     */
+    // model
     public MockInterface getInterface() {
         return (MockInterface) getParent();
     }
 
+    // model
     public String getIpAddr() {
         return getInterface().getIpAddr();
     }
 
+    // impl
     Object getKey() {
         return m_svcName;
     }
 
-    /**
-     * @return
-     */
+    // model
     public String getName() {
         return m_svcName;
     }
 
+    // model
     public MockNetwork getNetwork() {
         return getInterface().getNetwork();
     }
 
+    // model
     public MockNode getNode() {
         return getInterface().getNode();
     }
 
-    /**
-     * @return
-     */
+    // model
     public int getNodeId() {
         return getNode().getNodeId();
     }
 
+    // model
     public String getNodeLabel() {
         return getNode().getLabel();
     }
 
-    /**
-     * @return
-     */
+    // stats
     public int getPollCount() {
         return m_pollCount;
     }
 
-    /**
-     * @return
-     */
+    // test
     public int getPollStatus() {
         return m_pollStatus;
     }
 
-    /**
-     * @return
-     */
+    // test
     public int poll() {
         m_pollCount++;
 
@@ -151,27 +139,22 @@ public class MockService extends MockElement {
 
     }
 
+    // FIXME: model? make generic poll listener
     public void removeAnticipator(PollAnticipator trigger) {
         m_triggers.remove(trigger);
     }
 
-    /**
-     * 
-     */
+    // stats
     public void resetPollCount() {
         m_pollCount = 0;
     }
 
-    /**
-     * 
-     */
+    //  test
     public void setPollStatus(int status) {
         m_pollStatus = status;
     }
 
-    /**
-     * @param v
-     */
+    // impl
     public void visit(MockVisitor v) {
         super.visit(v);
         v.visitService(this);

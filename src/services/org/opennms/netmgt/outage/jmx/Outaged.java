@@ -33,21 +33,56 @@
 //
 package org.opennms.netmgt.outage.jmx;
 
+import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
+
+import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.OutageManagerConfigFactory;
+import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.outage.OutageManager;
+
 public class Outaged implements OutagedMBean {
+    
     public void init() {
-        org.opennms.netmgt.outage.OutageManager.getInstance().init();
+        
+        Category log = ThreadCategory.getInstance(getClass());
+        
+        EventIpcManagerFactory.init();
+        EventIpcManager eventMgr = EventIpcManagerFactory.getInstance().getManager();
+        getOutageManager().setEventMgr(eventMgr);
+        
+        try {
+            OutageManagerConfigFactory.reload();
+            getOutageManager().setOutageMgrConfig(OutageManagerConfigFactory.getInstance());
+        } catch (MarshalException ex) {
+            log.error("Failed to load outage configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (ValidationException ex) {
+            log.error("Failed to load outage configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (IOException ex) {
+            log.error("Failed to load outage configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
+        
+
+        getOutageManager().init();
     }
 
     public void start() {
-        org.opennms.netmgt.outage.OutageManager.getInstance().start();
+        getOutageManager().start();
     }
 
     public void stop() {
-        org.opennms.netmgt.outage.OutageManager.getInstance().stop();
+        getOutageManager().stop();
     }
 
     public int getStatus() {
-        return org.opennms.netmgt.outage.OutageManager.getInstance().getStatus();
+        return getOutageManager().getStatus();
     }
 
     public String status() {
@@ -57,4 +92,10 @@ public class Outaged implements OutagedMBean {
     public String getStatusText() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
+    
+    private OutageManager getOutageManager() {
+        return OutageManager.getInstance();
+    }
+
+
 }

@@ -36,9 +36,12 @@ import junit.framework.TestCase;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockElement;
+import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
+import org.opennms.netmgt.mock.MockPollerConfig;
+import org.opennms.netmgt.mock.MockQueryManager;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.MockVisitor;
@@ -53,6 +56,10 @@ public class PollerTest extends TestCase {
     MockNetwork m_network;
 
     Poller m_poller;
+
+    private MockPollerConfig m_pollerConfig;
+
+    private MockEventIpcManager m_eventMgr;
 
     private void anticipateInterfaceStatusChanged(MockElement element, final EventAnticipator anticipator, final int newStatus) {
         final String uei = (newStatus == ServiceMonitor.SERVICE_AVAILABLE ? EventConstants.INTERFACE_UP_EVENT_UEI : EventConstants.INTERFACE_DOWN_EVENT_UEI);
@@ -110,11 +117,7 @@ public class PollerTest extends TestCase {
         MockUtil.logToConsole();
 
         m_network = new MockNetwork();
-        m_network.setNodeOutageProcessingEnabled(true);
         m_network.setCriticalService("ICMP");
-        m_network.addPackage("TestPackage");
-        m_network.addDowntime(1000L, 0L, -1L, false);
-        m_network.setDefaultPollInterval(1000L);
         m_network.addNode(1, "Router");
         m_network.addInterface("192.168.1.1");
         m_network.addService("ICMP");
@@ -126,12 +129,23 @@ public class PollerTest extends TestCase {
         m_network.addInterface("192.168.1.3");
         m_network.addService("ICMP");
         m_network.addService("HTTP");
+        
+        m_pollerConfig = new MockPollerConfig();
+        m_pollerConfig.setNodeOutageProcessingEnabled(true);
+        m_pollerConfig.setCriticalService("ICMP");
+        m_pollerConfig.addPackage("TestPackage");
+        m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
+        m_pollerConfig.setDefaultPollInterval(1000L);
+        m_pollerConfig.populatePackage(m_network);
+        
+        m_eventMgr = new MockEventIpcManager();
+        
 
         m_poller = new Poller();
-        m_poller.setEventManager(m_network.getEventMgr());
-        m_poller.setQueryMgr(m_network.getQueryManager());
-        m_poller.setPollerConfig(m_network.getPollerConfig());
-        m_poller.setPollOutagesConfig(m_network.getPollOutagesConfig());
+        m_poller.setEventManager(m_eventMgr);
+        m_poller.setQueryMgr(new MockQueryManager(m_network));
+        m_poller.setPollerConfig(m_pollerConfig);
+        m_poller.setPollOutagesConfig(m_pollerConfig);
 
     }
 
@@ -140,9 +154,9 @@ public class PollerTest extends TestCase {
 
     public void testBug709() {
 
-        m_network.setNodeOutageProcessingEnabled(true);
+        m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
-        EventAnticipator anticipator = m_network.getEventAnticipator();
+        EventAnticipator anticipator = m_eventMgr.getEventAnticipator();
         MockNode node = m_network.getNode(2);
         MockService icmpService = m_network.getService(2, "192.168.1.3", "ICMP");
         MockService httpService = m_network.getService(2, "192.168.1.3", "HTTP");
@@ -206,7 +220,7 @@ public class PollerTest extends TestCase {
     }
 
     public void testCritSvcStatusPropagation() {
-        m_network.setNodeOutageProcessingEnabled(true);
+        m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
         MockNode node = m_network.getNode(1);
 
@@ -215,7 +229,7 @@ public class PollerTest extends TestCase {
         // down event
         //
 
-        final EventAnticipator anticipator = m_network.getEventAnticipator();
+        final EventAnticipator anticipator = m_eventMgr.getEventAnticipator();
         anticipateNodeStatusChanged(node, anticipator, ServiceMonitor.SERVICE_UNAVAILABLE);
 
         m_poller.init();
@@ -235,7 +249,7 @@ public class PollerTest extends TestCase {
         long start = System.currentTimeMillis();
 
         MockInterface iface = m_network.getInterface(1, "192.168.1.2");
-        m_network.addOutage("TestOutage", start, start + 5000, iface.getIpAddr());
+        m_pollerConfig.addOutage("TestOutage", start, start + 5000, iface.getIpAddr());
 
         m_poller.init();
         m_poller.start();
@@ -254,7 +268,7 @@ public class PollerTest extends TestCase {
     }
 
     private void testElementDeleted(MockElement element, Event deleteEvent) {
-        m_network.setNodeOutageProcessingEnabled(false);
+        m_pollerConfig.setNodeOutageProcessingEnabled(false);
 
         PollAnticipator poll = new PollAnticipator();
         element.addAnticipator(poll);
@@ -270,7 +284,7 @@ public class PollerTest extends TestCase {
         // now delete the node and send a nodeDeleted event
         m_network.resetInvalidPollCount();
         m_network.removeElement(element);
-        m_network.sendEventToListeners(deleteEvent);
+        m_eventMgr.sendEventToListeners(deleteEvent);
 
         // now ensure that no invalid polls have occurred
         sleep(3000);
@@ -289,7 +303,7 @@ public class PollerTest extends TestCase {
 
     // interfaceReparented: EventConstants.INTERFACE_REPARENTED_EVENT_UEI
     public void testInterfaceReparented() {
-        m_network.setNodeOutageProcessingEnabled(true);
+        m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
         MockNode node1 = m_network.getNode(1);
         MockNode node2 = m_network.getNode(2);
@@ -303,7 +317,7 @@ public class PollerTest extends TestCase {
         // we are going to repart to node 2 so when we bring down its only
         // current interface
         // we expect an interface down not the whole node.
-        EventAnticipator anticipator = m_network.getEventAnticipator();
+        EventAnticipator anticipator = m_eventMgr.getEventAnticipator();
         anticipateInterfaceStatusChanged(node2Iface, anticipator, ServiceMonitor.SERVICE_UNAVAILABLE);
 
         m_poller.init();
@@ -311,7 +325,7 @@ public class PollerTest extends TestCase {
 
         // move the reparted interface and send a reparted event
         reparentedIface.moveTo(node2);
-        m_network.sendEventToListeners(reparentEvent);
+        m_eventMgr.sendEventToListeners(reparentEvent);
 
         // now bring down the other interface on the new node
         // System.err.println("Bring Down:"+node2Iface);
@@ -359,9 +373,9 @@ public class PollerTest extends TestCase {
     // test to see that node lost/regained service events come in
     public void testNodeOutageProcessingDisabled() throws Exception {
 
-        m_network.setNodeOutageProcessingEnabled(false);
+        m_pollerConfig.setNodeOutageProcessingEnabled(false);
 
-        EventAnticipator anticipator = m_network.getEventAnticipator();
+        EventAnticipator anticipator = m_eventMgr.getEventAnticipator();
         MockNode node = m_network.getNode(1);
 
         m_poller.init();
@@ -390,9 +404,9 @@ public class PollerTest extends TestCase {
     // test whole node down
     public void testNodeOutageProcessingEnabled() throws Exception {
 
-        m_network.setNodeOutageProcessingEnabled(true);
+        m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
-        EventAnticipator anticipator = m_network.getEventAnticipator();
+        EventAnticipator anticipator = m_eventMgr.getEventAnticipator();
         MockNode node = m_network.getNode(1);
 
         // start the poller
@@ -428,7 +442,7 @@ public class PollerTest extends TestCase {
 
     public void testPolling() throws Exception {
 
-        m_network.setNodeOutageProcessingEnabled(false);
+        m_pollerConfig.setNodeOutageProcessingEnabled(false);
 
         // create a poll anticipator
         PollAnticipator anticipator = new PollAnticipator();
@@ -461,7 +475,7 @@ public class PollerTest extends TestCase {
 
     public void testReparentCausesStatusChange() {
 
-        m_network.setNodeOutageProcessingEnabled(true);
+        m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
         MockNode node1 = m_network.getNode(1);
         MockNode node2 = m_network.getNode(2);
@@ -476,7 +490,7 @@ public class PollerTest extends TestCase {
         // after reparenting we should got the old owner go down while the other
         // comes up.
         //
-        EventAnticipator anticipator = m_network.getEventAnticipator();
+        EventAnticipator anticipator = m_eventMgr.getEventAnticipator();
         anticipateNodeStatusChanged(node2, anticipator, ServiceMonitor.SERVICE_UNAVAILABLE);
         anticipateInterfaceStatusChanged(node1Iface, anticipator, ServiceMonitor.SERVICE_UNAVAILABLE);
 
@@ -506,7 +520,7 @@ public class PollerTest extends TestCase {
         // ServiceMonitor.SERVICE_AVAILABLE);
 
         reparentedIface.moveTo(node2);
-        m_network.sendEventToListeners(reparentEvent);
+        m_eventMgr.sendEventToListeners(reparentEvent);
 
         assertEquals(0, anticipator.waitForAnticipated(2000).size());
         assertEquals(0, anticipator.unanticipatedEvents().size());
@@ -519,7 +533,7 @@ public class PollerTest extends TestCase {
     // EventConstants.NODE_GAINED_SERVICE_EVENT_UEI
     public void testSendNodeGainedService() {
 
-        m_network.setNodeOutageProcessingEnabled(false);
+        m_pollerConfig.setNodeOutageProcessingEnabled(false);
 
         m_poller.init();
         m_poller.start();
@@ -527,11 +541,12 @@ public class PollerTest extends TestCase {
         MockNode node = m_network.addNode(3, "TestNode");
         MockInterface iface = m_network.addInterface(3, "10.1.1.1");
         MockService element = m_network.addService(3, "10.1.1.1", "NEW");
+        m_pollerConfig.addService(element);
 
         MockVisitor gainSvcSender = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
                 Event event = MockUtil.createEvent(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName());
-                m_network.sendEventToListeners(event);
+                m_eventMgr.sendEventToListeners(event);
             }
         };
         element.visit(gainSvcSender);
@@ -543,7 +558,7 @@ public class PollerTest extends TestCase {
 
         assertEquals(0, anticipator.waitForAnticipated(10000).size());
 
-        EventAnticipator eventAnticipator = m_network.getEventAnticipator();
+        EventAnticipator eventAnticipator = m_eventMgr.getEventAnticipator();
         anticipateSvcStatusChanged(element, eventAnticipator, ServiceMonitor.SERVICE_UNAVAILABLE);
 
         element.bringDown();
@@ -572,13 +587,13 @@ public class PollerTest extends TestCase {
         sleep(2000);
         assertTrue(0 < svc.getPollCount());
 
-        m_network.sendEventToListeners(MockUtil.createEvent(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, 1, "192.168.1.2", "SMTP"));
+        m_eventMgr.sendEventToListeners(MockUtil.createEvent(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, 1, "192.168.1.2", "SMTP"));
         svc.resetPollCount();
 
         sleep(5000);
         assertEquals(0, svc.getPollCount());
 
-        m_network.sendEventToListeners(MockUtil.createEvent(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, 1, "192.168.1.2", "SMTP"));
+        m_eventMgr.sendEventToListeners(MockUtil.createEvent(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, 1, "192.168.1.2", "SMTP"));
 
         sleep(2000);
         assertTrue(0 < svc.getPollCount());

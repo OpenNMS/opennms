@@ -29,73 +29,34 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-
 package org.opennms.netmgt.mock;
 
-/**
- * @author brozow
- * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
- */
-public class MockNode extends MockContainer {
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-    String m_label;
 
-    int m_nodeid;
-
-    public MockNode(MockNetwork network, int nodeid, String label) {
-        super(network);
-        m_nodeid = nodeid;
-        m_label = label;
+public class Querier extends JDBCTemplate {
+     private int m_count;
+     public Querier(MockDatabase db, String sql) {
+         super(db, sql);
+         m_count = 0;
+     }
+     
+     public int getCount() {
+         return m_count;
+     }
+     
+     protected void executeStmt(PreparedStatement stmt) throws SQLException {
+        ResultSet rs = stmt.executeQuery();
+         m_count = 0;
+         while (rs.next()) {
+             processRow(rs);
+             m_count++;
+         }
     }
 
-    // model
-    public MockInterface addInterface(String ipAddr) {
-        return (MockInterface) addMember(new MockInterface(this, ipAddr));
+    protected void processRow(ResultSet rs) throws SQLException {
     }
-
-    // model
-    public MockInterface getInterface(String ipAddr) {
-        return (MockInterface) getMember(ipAddr);
-    }
-
-    // impl
-    Object getKey() {
-        return new Integer(m_nodeid);
-    }
-
-    // model
-    public String getLabel() {
-        return m_label;
-    }
-
-    // model
-    public MockNetwork getNetwork() {
-        return (MockNetwork) getParent();
-    }
-
-    // model
-    public int getNodeId() {
-        return m_nodeid;
-    }
-
-    // model
-    public void removeInterface(MockInterface iface) {
-        removeMember(iface);
-    }
-
-    // impl
-    public String toString() {
-        return "Node[" + m_nodeid + "," + m_label + "]";
-
-    }
-
-    // impl
-    public void visit(MockVisitor v) {
-        super.visit(v);
-        v.visitNode(this);
-        visitMembers(v);
-    }
-
-}
+     
+ }

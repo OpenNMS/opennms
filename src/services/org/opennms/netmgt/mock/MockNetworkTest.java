@@ -56,10 +56,9 @@ import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * @author brozow
+ * Test the MockNetwork and related classes
  * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
+ * @author brozow
  */
 public class MockNetworkTest extends TestCase {
 
@@ -158,8 +157,8 @@ public class MockNetworkTest extends TestCase {
             try {
                 m_serviceCount++;
                 IPv4NetworkInterface addr = new MockNetworkInterface(service.getInterface().getIpAddr());
-                ServiceMonitor monitor = m_network.getPollerConfig().getServiceMonitor(service.getName());
-                int pollResult = monitor.poll(addr, new HashMap(), m_network.getPackage("TestPackage"));
+                ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(service.getName());
+                int pollResult = monitor.poll(addr, new HashMap(), m_pollerConfig.getPackage("TestPackage"));
                 assertEquals(m_expectedStatus, pollResult);
             } catch (UnknownHostException e) {
                 throw new RuntimeException("Unknownhost ", e);
@@ -173,12 +172,10 @@ public class MockNetworkTest extends TestCase {
 
     private StatusChecker m_upChecker;
 
-    /**
-     * @param anticipator
-     *            TODO
-     * @param element
-     * @param uei
-     */
+    private MockPollerConfig m_pollerConfig;
+
+    private MockEventIpcManager m_eventMgr;
+
     private void anticipateServiceEvents(final EventAnticipator anticipator, MockElement element, final String uei) {
         MockVisitor eventSetter = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
@@ -191,10 +188,7 @@ public class MockNetworkTest extends TestCase {
 
     protected void setUp() throws Exception {
         m_network = new MockNetwork();
-        m_network.addPackage("TestPackage");
-        m_network.addDowntime(1000L, 0L, -1L, false);
-        m_network.setDefaultPollInterval(1000L);
-        m_network.setPollInterval("ICMP", 500L);
+        m_network.setCriticalService("ICMP");
         m_network.addNode(1, "Router");
         m_network.addInterface("192.168.1.1");
         m_network.addService("ICMP");
@@ -207,7 +201,16 @@ public class MockNetworkTest extends TestCase {
         m_network.addService("ICMP");
         m_network.addService("HTTP");
         m_network.addInterface("192.168.1.2");
+        
+        m_eventMgr = new MockEventIpcManager();
 
+        m_pollerConfig = new MockPollerConfig();
+        m_pollerConfig.addPackage("TestPackage");
+        m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
+        m_pollerConfig.setDefaultPollInterval(1000L);
+        m_pollerConfig.populatePackage(m_network);
+        m_pollerConfig.setPollInterval("ICMP", 500L);
+        
         m_upChecker = new StatusChecker(ServiceMonitor.SERVICE_AVAILABLE);
         m_downChecker = new StatusChecker(ServiceMonitor.SERVICE_UNAVAILABLE);
 
@@ -291,18 +294,18 @@ public class MockNetworkTest extends TestCase {
         ;
         MockListener listener = new MockListener();
 
-        m_network.getEventMgr().addEventListener(listener, EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
-        m_network.sendEventToListeners(sentEvent);
+        m_eventMgr.addEventListener(listener, EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
+        m_eventMgr.sendEventToListeners(sentEvent);
         assertTrue(MockUtil.eventsMatch(sentEvent, listener.getReceivedEvent()));
 
         listener.reset();
-        m_network.sendEventToListeners(sentEvent2);
+        m_eventMgr.sendEventToListeners(sentEvent2);
         assertFalse(MockUtil.eventsMatch(sentEvent2, listener.getReceivedEvent()));
 
     }
 
     public void testEventMgr() {
-        assertNotNull(m_network.getEventMgr());
+        assertNotNull(m_eventMgr);
     }
 
     public void testEventProcessing() {
@@ -316,9 +319,9 @@ public class MockNetworkTest extends TestCase {
      * @param element
      */
     private void testEventProcessing(MockElement element) {
-        m_network.setNodeOutageProcessingEnabled(false);
+        m_pollerConfig.setNodeOutageProcessingEnabled(false);
 
-        EventAnticipator anticipator = m_network.getEventAnticipator();
+        EventAnticipator anticipator = m_eventMgr.getEventAnticipator();
 
         String nlsUei = EventConstants.NODE_LOST_SERVICE_EVENT_UEI;
         String nrsUei = EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI;
@@ -340,7 +343,7 @@ public class MockNetworkTest extends TestCase {
         MockVisitor lostSvcSender = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
                 Event event = MockUtil.createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName());
-                m_network.getEventMgr().sendNow(event);
+                m_eventMgr.sendNow(event);
             }
         };
         element.visit(lostSvcSender);
@@ -354,7 +357,7 @@ public class MockNetworkTest extends TestCase {
         MockVisitor gainedSvcSender = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
                 Event event = MockUtil.createEvent(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName());
-                m_network.getEventMgr().sendNow(event);
+                m_eventMgr.sendNow(event);
             }
         };
         element.visit(gainedSvcSender);
@@ -366,7 +369,7 @@ public class MockNetworkTest extends TestCase {
         Event nodeEvent = MockUtil.createEvent(EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null);
 
         anticipator.reset();
-        m_network.getEventMgr().sendNow(nodeEvent);
+        m_eventMgr.sendNow(nodeEvent);
         assertEquals(0, anticipator.waitForAnticipated(0).size());
         assertEquals(1, anticipator.unanticipatedEvents().size());
 
@@ -375,9 +378,9 @@ public class MockNetworkTest extends TestCase {
     public void testInvalidPoll() throws UnknownHostException {
         m_network.resetInvalidPollCount();
         IPv4NetworkInterface addr = new MockNetworkInterface("1.1.1.1");
-        ServiceMonitor monitor = m_network.getPollerConfig().getServiceMonitor("ICMP");
+        ServiceMonitor monitor = m_pollerConfig.getServiceMonitor("ICMP");
         try {
-            monitor.poll(addr, new HashMap(), m_network.getPackage("TestPackage"));
+            monitor.poll(addr, new HashMap(), m_pollerConfig.getPackage("TestPackage"));
             fail("expected exception");
         } catch (Exception e) {
             // expected this
@@ -394,11 +397,11 @@ public class MockNetworkTest extends TestCase {
     }
 
     public void testPollerConfig() {
-        m_network.setNodeOutageProcessingEnabled(true);
-        m_network.setPollInterval("HTTP", 750L);
-        m_network.setPollerThreads(5);
-        m_network.setCriticalService("YAHOO");
-        PollerConfig pollerConfig = m_network.getPollerConfig();
+        m_pollerConfig.setNodeOutageProcessingEnabled(true);
+        m_pollerConfig.setPollInterval("HTTP", 750L);
+        m_pollerConfig.setPollerThreads(5);
+        m_pollerConfig.setCriticalService("YAHOO");
+        PollerConfig pollerConfig = m_pollerConfig;
 
         // test the nodeOutageProcessing setting works
         assertTrue(pollerConfig.nodeOutageProcessingEnabled());
@@ -442,7 +445,7 @@ public class MockNetworkTest extends TestCase {
     }
 
     public void testPollOutageConfig() {
-        PollOutagesConfig pollOutagesConfig = m_network.getPollOutagesConfig();
+        PollOutagesConfig pollOutagesConfig = m_pollerConfig;
         assertNotNull(pollOutagesConfig);
     }
 
@@ -463,7 +466,7 @@ public class MockNetworkTest extends TestCase {
     }
 
     public void testQueryManager() throws Exception {
-        QueryManager queryManager = m_network.getQueryManager();
+        QueryManager queryManager = new MockQueryManager(m_network);
         assertNotNull(queryManager);
 
         assertTrue(queryManager.activeServiceExists("Test", 1, "192.168.1.1", "ICMP"));
@@ -530,10 +533,10 @@ public class MockNetworkTest extends TestCase {
         long now = System.currentTimeMillis();
         long tenMinutes = 600000L;
 
-        m_network.addOutage("outage1", now - tenMinutes, now + tenMinutes, "192.168.1.1");
-        m_network.addOutage("outage2", now - tenMinutes, now, "192.168.1.2");
+        m_pollerConfig.addOutage("outage1", now - tenMinutes, now + tenMinutes, "192.168.1.1");
+        m_pollerConfig.addOutage("outage2", now - tenMinutes, now, "192.168.1.2");
 
-        Package pkg = m_network.getPackage("TestPackage");
+        Package pkg = m_pollerConfig.getPackage("TestPackage");
         assertNotNull(pkg);
 
         Collection outages = pkg.getOutageCalendarCollection();
@@ -541,25 +544,17 @@ public class MockNetworkTest extends TestCase {
         assertTrue(outages.contains("outage2"));
 
         // test isInterfaceInOutage
-        assertTrue(m_network.getPollOutagesConfig().isInterfaceInOutage("192.168.1.1", "outage1"));
-        assertFalse(m_network.getPollOutagesConfig().isInterfaceInOutage("192.168.1.2", "outage1"));
-        assertTrue(m_network.getPollOutagesConfig().isInterfaceInOutage("192.168.1.2", "outage2"));
-        assertFalse(m_network.getPollOutagesConfig().isInterfaceInOutage("192.168.1.1", "outage2"));
+        assertTrue(m_pollerConfig.isInterfaceInOutage("192.168.1.1", "outage1"));
+        assertFalse(m_pollerConfig.isInterfaceInOutage("192.168.1.2", "outage1"));
+        assertTrue(m_pollerConfig.isInterfaceInOutage("192.168.1.2", "outage2"));
+        assertFalse(m_pollerConfig.isInterfaceInOutage("192.168.1.1", "outage2"));
 
         // test isCurTimeInOutage
-        assertTrue(m_network.getPollOutagesConfig().isCurTimeInOutage("outage1"));
-        assertFalse(m_network.getPollOutagesConfig().isCurTimeInOutage("outage2"));
+        assertTrue(m_pollerConfig.isCurTimeInOutage("outage1"));
+        assertFalse(m_pollerConfig.isCurTimeInOutage("outage2"));
 
     }
 
-    /**
-     * @param nodeId
-     * @param ipAddr
-     * @param svcName
-     * @param element
-     *            TODO
-     * @throws UnknownHostException
-     */
     private void testServicePoll(MockElement element) throws UnknownHostException {
 
         element.resetPollCount();
@@ -608,7 +603,7 @@ public class MockNetworkTest extends TestCase {
         final Event event2 = MockUtil.createEvent(EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null);
         final Event event3 = MockUtil.createEvent(EventConstants.NODE_DOWN_EVENT_UEI, 2, null, null);
 
-        EventAnticipator anticipator = m_network.getEventAnticipator();
+        EventAnticipator anticipator = m_eventMgr.getEventAnticipator();
 
         anticipator.anticipateEvent(event1);
         anticipator.anticipateEvent(event3);
@@ -627,13 +622,13 @@ public class MockNetworkTest extends TestCase {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                     }
-                    m_network.getEventMgr().sendNow(event2);
-                    m_network.getEventMgr().sendNow(event2);
+                    m_eventMgr.sendNow(event2);
+                    m_eventMgr.sendNow(event2);
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                     }
-                    m_network.getEventMgr().sendNow(event3);
+                    m_eventMgr.sendNow(event3);
                 } catch (Throwable t) {
                     m_t = t;
                 }
