@@ -234,12 +234,12 @@ public class SmbUtils
 	/**
 	 * This method is responsible for taking an array of jCIFS
 	 * NbtAddress objects associated with a particular node and
-	 * determining if that node is an NT server vs. an NT
+	 * determining if that node is an NT server versus an NT
 	 * workstation based on the services it has registered.
 	 *
 	 * If the remote host is registered as a DOMAIN_CONTROLLERS
-	 * or a MS_EXCHANGE_MTA we return 'true'.
-	 * Otherwise, 'false' is returned.
+	 * or a MS_EXCHANGE_MTA we return 'true';
+	 * otherwise, 'false' is returned.
 	 *
 	 * @param addresses	Array of NbtAddress objects associated with
 	 *	the remote host being tested.

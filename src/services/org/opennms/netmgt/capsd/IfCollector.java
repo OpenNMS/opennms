@@ -171,8 +171,8 @@ final class IfCollector
 	/**
 	 * This method is used to <em>probe</em> the target addresses using
 	 * the configured list of protocol specifications from the Configuration
-	 * Manager. The list of supported protocols are added to the {@link #supports
-	 * supports} list. Any failures in the plugins are logged and discarded.
+	 * Manager. The list of supported protocols are added to the
+	 * supports list. Any failures in the plugins are logged and discarded.
 	 *
 	 * @param target	The target to probe
 	 * @param supports	The supported protocols (SupportedProtocol)

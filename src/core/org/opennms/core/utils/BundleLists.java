@@ -50,7 +50,6 @@ public class BundleLists extends Object
      * Parses a string into an array of substrings, 
      * using a comma as a delimiter and trimming whitespace. 
      * @param list The list formatted as a <code>delimeter</code>-delimited string.
-     * @param delimeter 
      * @return The list formatted as an array of strings.
      */
     public static String[] parseBundleList( String list ) {
@@ -62,7 +61,7 @@ public class BundleLists extends Object
      * Parses a string into an array of substrings, 
      * using the specified delimeter and trimming whitespace. 
      * @param list The list formatted as a <code>delimeter</code>-delimited string.
-     * @param delimeter 
+     * @param delimiter The delimeter.
      * @return The list formatted as an array of strings.
      */
     public static String[] parseBundleList( String list, String delimiter ) {

@@ -246,7 +246,7 @@ public class GroupFactory
 	
 	/**
 	 * Get a group using its name
-	 * @param name, the name of the group to return
+	 * @param name the name of the group to return
 	 * @return Group, the group specified by name
 	 */
 	public Group getGroup(String name)

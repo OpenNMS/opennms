@@ -51,12 +51,12 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 
 /**
- * <p>This is the singleton class used to load the configuration for
- * the OpenNMS Trapd from the trapd-configuration.xml.</p>
+ * This is the singleton class used to load the configuration for
+ * the OpenNMS Trapd from the trapd-configuration.xml.
  *
- * <p><strong>Note:</strong>Users of this class should make sure the 
+ * <strong>Note:</strong>Users of this class should make sure the 
  * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods</p>
+ * the config is loaded before accessing other convenience methods.
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
@@ -153,7 +153,7 @@ public final class TrapdConfigFactory
 	}
 
 	/**
-	 * <p>Return the singleton instance of this factory<p>
+	 * Return the singleton instance of this factory.
 	 *
 	 * @return The current factory instance.
 	 *
@@ -169,7 +169,7 @@ public final class TrapdConfigFactory
 	}
 
 	/**
-	 * <p>Return the port on which SNMP traps should be received</p>
+	 * Return the port on which SNMP traps should be received.
 	 *
 	 * @return the port on which SNMP traps should be received
 	 */
@@ -179,8 +179,8 @@ public final class TrapdConfigFactory
 	}
 
 	/**
-	 * <p>Return whether or not a newSuspect event should be sent
-	 * when a trap is received from an unknown IP address.</p>
+	 * Return whether or not a newSuspect event should be sent
+	 * when a trap is received from an unknown IP address.
 	 *
 	 * @return whether to generate newSuspect events on traps.
 	 */

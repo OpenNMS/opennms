@@ -45,12 +45,12 @@ import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Parm;
 
 /**
- * <P>The EventHandler is the Runnable that essentially does all the work
- * on an incoming event.</P>
+ * The EventHandler is the Runnable that essentially does all the work
+ * on an incoming event.
  *
- * <P>Operations done on an incoming event are -looking up an eventconf entry,
+ * Operations done on an incoming event are -looking up an eventconf entry,
  * expanding event parms, adding the event to the database and sending
- * the event to interested listeners</P>
+ * the event to interested listeners.
  *
  * @author 	<A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
  * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
@@ -71,8 +71,8 @@ final class EventHandler
 	/**
 	 * Constructor for the eventhandler
 	 *
-	 * @paam  eventLog		events to be processed
-	 * @param getNextEventID	the sql statement to get next event id from sequence
+	 * @param eventLog		events to be processed
+	 * @param getNextEventId	the sql statement to get next event id from sequence
 	 */
 	public EventHandler(Log eventLog, String getNextEventId)
 	{
@@ -82,10 +82,10 @@ final class EventHandler
 	}
 
 	/**
-	 * <P>Process the received events - i.e. for each event, use the
+	 * Process the received events.  For each event, use the
 	 * EventExpander to look up matching eventconf entry and load
 	 * info from that match, expand event parms, add event to
-	 * database and send event to appropriate listeners.</P>
+	 * database and send event to appropriate listeners.
 	 */
 	public void run()
 	{

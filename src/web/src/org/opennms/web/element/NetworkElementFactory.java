@@ -56,13 +56,11 @@ import org.opennms.netmgt.EventConstants;
  * functionality for the network element business
  * objects in one place.  
  *
- * <p>To use this factory to lookup network elements, you
- * must first initialize the {@link Vault Vault} with the database 
- * connection manager
- * and JDBC URL it will use.  Call the {@link #init init} method
- * to initialize the factory.  After that, you can call any lookup
- * methods.
- * </p>
+ * To use this factory to lookup network elements, you
+ * must first initialize the Vault with the database 
+ * connection manager * and JDBC URL it will use.  
+ * Call the init method to initialize the factory.  
+ * After that, you can call any lookup methods.
  *
  * @author <A HREF="larry@opennms.org">Larry Karnowski</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>

@@ -372,7 +372,7 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable
 	/**
 	 * Overrides the 'hashCode()' method in the superclass
 	 *
-	 * @returns a hash code for this object
+	 * @return a hash code for this object
 	 */
 	public int hashCode()
 	{
@@ -411,8 +411,6 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable
 	 * <em>Note:</em> The only event elements that can occur to
 	 * uniquely identify an event are -
 	 * uei, source, host, snmphost, nodeid, interface, service, id(SNMP EID), specific, generic, community
-	 *
-	 * @param element	the element for which value is needed from the event
 	 *
 	 * @return value of the event element
 	 */

@@ -47,12 +47,12 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.archiver.events.EventsArchiverConfiguration;
 
 /**
- * <p>This is the singleton class used to load the configuration for
- * the OpenNMS Events Archiver from the events-archiver-configuration.xml.</p>
+ * This is the singleton class used to load the configuration for
+ * the OpenNMS Events Archiver from the events-archiver-configuration xml file.
  *
- * <p><strong>Note:</strong>Users of this class should make sure the 
+ * <strong>Note:</strong>Users of this class should make sure the 
  * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods</p>
+ * the config is loaded before accessing other convenience methods.
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
@@ -149,7 +149,7 @@ public final class EventsArchiverConfigFactory
 	}
 
 	/**
-	 * <p>Return the singleton instance of this factory<p>
+	 * Return the singleton instance of this factory.
 	 *
 	 * @return The current factory instance.
 	 *
@@ -165,7 +165,7 @@ public final class EventsArchiverConfigFactory
 	}
 
 	/**
-	 * <p>Return the archive age(events created before this time are to be removed)<p>
+	 * Return the archive age. Note: events created before this time are to be removed.
 	 *
 	 * @return the archive age of events
 	 */
@@ -175,7 +175,7 @@ public final class EventsArchiverConfigFactory
 	}
 
 	/**
-	 * <p>Return the seperator to be used between column values in the archive file</p>
+	 * Return the seperator to be used between column values in the archive file.
 	 *
 	 * @return the seperator to be used between column values in the archive file
 	 */

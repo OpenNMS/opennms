@@ -173,7 +173,7 @@ final class RescanProcessor
 	
 	/**
 	 * Event list...during the rescan significant database changes
-	 * cause events (interfaceReparented, nodeGainedService, etc...)
+	 * cause events (interfaceReparented, nodeGainedService, and others)
 	 * to be created and added to the event list.  The last thing
 	 * the rescan process does is send the events out.
 	 */
@@ -2812,11 +2812,11 @@ final class RescanProcessor
          * This method is used to verify if each interface on a node stored in the database is in the specified
          * SNMP data collection.
 	 *
-         * @param ipInterfaces	the ipInterfaces on a node stored in the database
+         * @param dbInterfaces	the ipInterfaces on a node stored in the database
 	 * @param snmpc		IfSnmpCollector object containing SNMP collected
 	 * 			ipAddrTable information.
 	 * 
-	 * @return TRUE if each ipInterface is contained in the ipAddrTable of the specified SNMP collection.
+	 * @return True if each ipInterface is contained in the ipAddrTable of the specified SNMP collection.
          *
          */
         private boolean areDbInterfacesInSnmpCollection(DbIpInterfaceEntry[] dbInterfaces, IfSnmpCollector snmpc)
@@ -4258,7 +4258,7 @@ final class RescanProcessor
 	 * event and adding it to the event list. 
 	 *
 	 * @param nodeId  	Nodeid of node being rescanned.
-	 * @param InetAddress 	Primary SNMP interface address.
+	 * @param primarySnmpIf	Primary SNMP interface address.
 	 */
 	private void createReinitializePrimarySnmpInterfaceEvent(int nodeId, InetAddress primarySnmpIf)
 	{

@@ -36,8 +36,8 @@ package org.opennms.netmgt.eventd;
 
 
 /**
- * <P>This class is a repository for constant, static information
- * concerning Eventd.</P>
+ * This class is a repository for constant, static information
+ * concerning Eventd.
  *
  * @author	<A HREF="mailto:weave@oculan.com">Sowmya Nataraj</A>
  * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
@@ -45,34 +45,33 @@ package org.opennms.netmgt.eventd;
 public final class EventdConstants
 {
 	/**
-	 * <P>The SQL statement necessary to read service id
-	 * and service name into map </P>
+	 * The SQL statement necessary to read service id
+	 * and service name into map.
 	 */
 	public final static String 	SQL_DB_SVC_TABLE_READ		= "SELECT serviceID, serviceName FROM service";
 
 	/**
-	 * <P>The SQL insertion string used
-	 * by eventd to store the event information into the
-	 * database.</P>
+	 * The SQL insertion string used by eventd to store the 
+	 * event information into the database.
 	 */
 	public final static String	SQL_DB_INS_EVENT			= "INSERT into events (eventID, eventUei, nodeID, eventTime, eventHost, ipAddr, eventDpName, eventSnmpHost, serviceID, eventSnmp, eventParms, eventCreateTime, eventDescr, eventLoggroup, eventLogmsg, eventLog, eventDisplay, eventSeverity, eventPathOutage, eventCorrelation, eventSuppressedCount, eventOperInstruct, eventAutoAction, eventOperAction, eventOperActionMenuText, eventNotification, eventTticket, eventTticketState, eventForward, eventMouseOverText, eventAckUser, eventAckTime, eventSource) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	/**
-	 * <P>The SQL string used by eventd to update number of duplicate
-	 * events in case of duplicate event suppression.</P>
+	 * The SQL string used by eventd to update number of duplicate
+	 * events in case of duplicate event suppression.
 	 */
 	public final static String	SQL_DB_UPDATE_EVENT_COUNT		= "UPDATE events set eventSuppressedCount=? where (eventID=?)";
 	
 	/**
-	 * <P>The SQL statement necessary to convert
+	 * The SQL statement necessary to convert
 	 * the service name into a service id using the distributed
-	 * poller database.</P>
+	 * poller database.
 	 */
 	public final static String 	SQL_DB_SVCNAME_TO_SVCID			= "SELECT serviceID FROM service WHERE serviceName = ?";
 
 	/**
-	 * <P>The SQL statement necessary to convert
-	 * the event host into a hostname using the 'ipinterface' table</p>
+	 * The SQL statement necessary to convert
+	 * the event host into a hostname using the 'ipinterface' table.
 	 */
 	public final static String 	SQL_DB_HOSTIP_TO_HOSTNAME		= "SELECT ipHostname FROM ipinterface WHERE ipAddr = ?";
 

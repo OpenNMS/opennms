@@ -279,7 +279,7 @@ class SnmpTimer extends Object
 	 * manner, but will not be run BEFORE ms milliseconds have expired.
 	 *
 	 * @param runner	The runnable object
-	 * @param ms		The number of milliseconds to wait
+	 * @param milliseconds	The number of milliseconds to wait
 	 *
 	 */
 	void schedule(Runnable runner, long milliseconds)

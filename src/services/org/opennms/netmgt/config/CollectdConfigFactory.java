@@ -347,7 +347,7 @@ public final class CollectdConfigFactory
 	 * a '<space>#' in a line.</pre>
 	 *
 	 * @param addr		The interface to test against the package's URL
-	 * @param URL		The url file to read
+	 * @param url		The url file to read
 	 *
 	 * @return	True if the interface is included in the url, false otherwise.
 	 */
@@ -538,7 +538,7 @@ public final class CollectdConfigFactory
 	 * This method is responsbile for determining the node's primary SNMP interface
 	 * from the specified list of InetAddress objects.
 	 * 
-	 * @param interfaceList  List of InetAddress objects representing all the
+	 * @param addressList  List of InetAddress objects representing all the
 	 * 			interfaces belonging to a particular node which
 	 *			support the "SNMP" service and have a valid ifIndex.
 	 * 

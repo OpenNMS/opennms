@@ -67,11 +67,11 @@ import org.opennms.netmgt.utils.RelaxedX509TrustManager;
 import org.opennms.netmgt.utils.SocketChannelUtil;
 
 /**
- * <P>This class is designed to be used by the service poller
+ * This class is designed to be used by the service poller
  * framework to test the availability of the HTTPS service on 
  * remote interfaces. The class implements the ServiceMonitor
  * interface that allows it to be used along with other
- * plug-ins by the service poller framework.</P>
+ * plug-ins by the service poller framework.
  *
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
@@ -103,14 +103,14 @@ final class HttpsMonitor
 	private static final int DEFAULT_TIMEOUT 	= 30000; // 30 second timeout on read()
 
 	/**
-	 * <P>Poll the specified address for HTTPS service availability</P>
+	 * Poll the specified address for HTTPS service availability.
 	 *
-	 * <P>During the poll an attempt is made to connect on the specified
+	 * During the poll an attempt is made to connect on the specified
 	 * port(s) (by default TCP port 443).  If the connection
 	 * request is successful, an HTTP 'GET' command is sent to the interface.
 	 * The response is parsed and a return code extracted and verified.  
 	 * Provided that the interface's response is valid we set the service 
-	 * status to SERVICE_AVAILABLE and return.</P>
+	 * status to SERVICE_AVAILABLE and return.
 	 *
 	 * @param iface		The network interface to test the service on.
 	 * @param parameters	The package parameters (timeout, retry, etc...) to be 

@@ -47,8 +47,6 @@ import org.apache.log4j.Category;
  *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
- * @verion CVS 1.1.1.1
  */
 public class ThreadCategory
 	extends Category

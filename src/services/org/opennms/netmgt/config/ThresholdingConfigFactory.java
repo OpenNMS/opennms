@@ -62,9 +62,9 @@ import org.opennms.netmgt.config.threshd.ThresholdingConfig;
  * When this class is loaded it reads the thresholding 
  * configuration into memory.
  *
- * <p><strong>Note:</strong>Users of this class should make sure the 
+ * <strong>Note:</strong>Users of this class should make sure the 
  * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods</p>
+ * the config is loaded before accessing other convenience methods.
  *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
@@ -184,7 +184,7 @@ public final class ThresholdingConfigFactory
 	}
 
 	/**
-	 * <p>Return the singleton instance of this factory</p>
+	 * Return the singleton instance of this factory.
 	 *
 	 * @return The current factory instance.
 	 *

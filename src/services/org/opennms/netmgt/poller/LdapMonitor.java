@@ -62,11 +62,11 @@ import com.novell.ldap.LDAPSearchResults;
 import com.novell.ldap.LDAPSocketFactory;
 
 /**
- * <P>This class is designed to be used by the service poller
+ * This class is designed to be used by the service poller
  * framework to test the availability of a generic LDAP service on 
  * remote interfaces. The class implements the ServiceMonitor
  * interface that allows it to be used along with other
- * plug-ins by the service poller framework.</P>
+ * plug-ins by the service poller framework.
  *
  * @author <A HREF="jason@opennms.org">Jason</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
@@ -119,12 +119,12 @@ final class LdapMonitor
 	}
 	
 	/**
-	 * <P>Poll the specified address for service availability</P>
+	 * Poll the specified address for service availability.
 	 *
-	 * <P>During the poll an attempt is made to connect the service
+	 * During the poll an attempt is made to connect the service.
 	 *
 	 * Provided that the interface's response is valid we set the
-	 * service status to SERVICE_AVAILABLE and return.</P>
+	 * service status to SERVICE_AVAILABLE and return.
 	 *
 	 * @param iface		The network interface to test the service on.
 	 * @param parameters	The package parameters (timeout, retry, etc...) to be 

@@ -77,8 +77,6 @@ import java.util.StringTokenizer;
  *
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski</a>
  * @author <a href="http://www.opennms.org">OpenNMS</a>
- *
- * @see PerformanceModel#getRRDInfo
  */
 public class RRDInfo extends Object
 {

@@ -88,7 +88,7 @@ public class EventMaskValueList extends ArrayList
 	/**
 	 * the constructor for this class
 	 *
-	 * @param	String	the  string to be added to this list
+	 * @param value the string to be added to this list.
 	 */
 	public EventMaskValueList(String value)
 	{
@@ -299,9 +299,9 @@ public class EventMaskValueList extends ArrayList
 	}
 
 	/**
-	 * Overrides the 'hashCode()' method in the superclass
+	 * Overrides the 'hashCode()' method in the superclass.
 	 *
-	 * @returns a hash code for this object
+	 * @return a hash code for this object
 	 */
 	public int hashCode()
 	{

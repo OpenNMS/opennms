@@ -141,13 +141,13 @@ public class EventIpcManagerDefaultImpl
 		}
 
 		/**
-		 * <p>The run method preforms the actual work for 
+		 * The run method preforms the actual work for 
 		 * the runnable. It loops infinitely until the shutdown
 		 * flag is set, during which time it processes queue
 		 * elements. Each element in the queue should be a 
 		 * instance of {@link org.opennms.netmgt.xml.event.Event}. 
 		 * After each event is read, the 'onEvent' method of the listener
-		 * is invoked.</p>
+		 * is invoked.
 		 *
 		 */
 		public void run()
@@ -522,12 +522,12 @@ public class EventIpcManagerDefaultImpl
 	}
 
 	/**
-	 * <p>Removes a registered event listener - the UEI list indicates the list
-	 * of events the listener is no more interested in. </p>
+	 * Removes a registered event listener.  The UEI list indicates the list
+	 * of events the listener is no more interested in.
 	 *
-	 * <p><strong>Note:</strong>The listener thread for this listener is not
+	 * <strong>Note:</strong>The listener thread for this listener is not
 	 * stopped until the 'removeListener(EventListener listener)' method is
-	 * called </p>
+	 * called.
 	 */
 	public synchronized void removeEventListener(EventListener listener, List ueilist)
 	{
@@ -553,12 +553,12 @@ public class EventIpcManagerDefaultImpl
 	}
 
 	/**
-	 * Removes a registered event listener - the UEI indicates one the listener
-	 * is no more interested in
+	 * Removes a registered event listener.  The UEI indicates one the listener
+	 * is no more interested in.
 	 *
-	 * <p><strong>Note:</strong>The listener thread for this listener is not
+	 * <strong>Note:</strong>The listener thread for this listener is not
 	 * stopped until the 'removeListener(EventListener listener)' method is
-	 * called </p>
+	 * called.
 	 */
 	public synchronized void removeEventListener(EventListener listener, String uei)
 	{
@@ -576,10 +576,10 @@ public class EventIpcManagerDefaultImpl
 	}
 
 	/**
-	 * Removes a registered event listener
+	 * Removes a registered event listener.
 	 *
-	 * <p><strong>Note:</strong>Only this method stops the listener thread
-	 * for the listener passed</p>
+	 * <strong>Note:</strong>Only this method stops the listener thread
+	 * for the listener passed.
 	 */
 	public synchronized void removeEventListener(EventListener listener)
 	{

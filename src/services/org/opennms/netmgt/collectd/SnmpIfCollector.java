@@ -61,16 +61,16 @@ import org.opennms.protocols.snmp.SnmpSyntax;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
- * <P>The SnmpIfCollector class is responsible for performing the actual
+ * The SnmpIfCollector class is responsible for performing the actual
  * SNMP data collection for a node over a specified network interface.
  * The SnmpIfCollector implements the SnmpHandler class in order to 
  * receive notifications when an SNMP reply is received or error 
- * occurs.</P>
+ * occurs.
  * 
- * <P>The SnmpIfCollector is provided a list of MIB objects to collect
+ * The SnmpIfCollector is provided a list of MIB objects to collect
  * and an interface over which to collect the data. Data collection
  * can be via SNMPv1 GetNext requests or SNMPv2 GetBulk requests
- * depending upon the parms used to construct the collector.</P>
+ * depending upon the parms used to construct the collector.
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike</A>
  * @author <A>Jon Whetzel</A>
@@ -82,27 +82,27 @@ import org.opennms.protocols.snmp.SnmpVarBind;
 public class SnmpIfCollector implements SnmpHandler
 {
 	/**
-	 * <P>Flag indicating the success or failure of the
+	 * Flag indicating the success or failure of the
 	 * informational query. If the flag is set to false
 	 * then either part of all of the information was
 	 * unable to be retreived. If it is set to true then
-	 * all of the data was received from the remote host.</P>
+	 * all of the data was received from the remote host.
 	 */
 	private boolean		m_error;
 	
 	/**
-	 * <P>Reason that the SNMP request failed.  Please
+	 * Reason that the SNMP request failed.  Please
 	 * see org.opennms.protocols.snmp.SnmpPduPacket class
 	 * for a list of possible SNMP error codes.  This
-	 * variable only has meaning of m_error flag is true.</P>
+	 * variable only has meaning of m_error flag is true.
 	 */
 	private int		m_errorStatus;
 
 	/**
-	 * <P>Array of SNMPv1 error strings.  
+	 * Array of SNMPv1 error strings.  
 	 * Please see org.opennms.protocols.snmp.SnmpPduPacket
 	 * class for list of SNMP error codes which serve as 
-	 * indices into this string array.</P>
+	 * indices into this string array.
 	 */
 	private static String[] m_errorText = {	"ErrNoError",
 						"ErrTooBig",
@@ -112,29 +112,29 @@ public class SnmpIfCollector implements SnmpHandler
 						"ErrGenError" };
 		
 	/**
-	 * <P>If the SNMP collection failed due to a problem
+	 * If the SNMP collection failed due to a problem
 	 * with one or more varbinds (for example if a 
 	 * particular object oid is requested which is not implemented
 	 * in the target's SNMP agent) then this value will be
 	 * set equal to the *first* failing varbind in the request.
 	 * This variable only has meaning if m_error flag is true.
 	 * Will be set to -1 if the SNMP collection failed for 
-	 * an unrelated reason.</P>
+	 * an unrelated reason.
 	 */
 	private int		m_errorIndex;
 	
 	/**
-	 * <P>Flag indicating if the SNMP collection failed due
+	 * Flag indicating if the SNMP collection failed due
 	 * to the SNMP request timing out.  Its value only has
-	 * meaning if m_error flag is true.</P>
+	 * meaning if m_error flag is true.
 	 */
 	private boolean		m_timeout;
 	
 	/**
-	 * <P>Used to synchronize the class to ensure that the
+	 * Used to synchronize the class to ensure that the
 	 * session has finished collecting data before the
 	 * value of success or failure is set, and control
-	 * is returned to the caller.</P>
+	 * is returned to the caller.
 	 */
 	private Signaler 	m_signal;
 
@@ -144,50 +144,50 @@ public class SnmpIfCollector implements SnmpHandler
 	private java.util.List 	m_objList;
 	
 	/**
-	*<P>Copy of m_objList list that will used solely by version 2.
-	* As each object is collected from the remote node via
-	* subsequent SNMPv2 GetBulk commands the MibObject is removed
-	* and the collection for the next object started.</P>
-	*/
+	 * Copy of m_objList list that will used solely by version 2.
+	 * As each object is collected from the remote node via
+	 * subsequent SNMPv2 GetBulk commands the MibObject is removed
+	 * and the collection for the next object started.
+	 */
 	private java.util.List            m_objList_v2;
        
 	 /**
-	 * <P> Used to store all the generated maps of the MIB
-	 * data for each interface.</P>
+	 * Used to store all the generated maps of the MIB
+	 * data for each interface.
 	 */
 	private java.util.List             m_entries;
 
 	/**
-	 * <P> Used for classifying the SNMP version of the session</P>
+	 * Used for classifying the SNMP version of the session.
 	 *
 	 */
 	private int              m_version;
 
 	/**
-	 * <P> Used for keeping track of all the possible indexes.  Needed
-	 * for generating packets for SNMP v1.</P>
+	 * Used for keeping track of all the possible indexes.  Needed
+	 * for generating packets for SNMP v1.
 	 *
 	 */
 	 private String[]        m_indexArray;
 
 	/**
-	 *<P> Used as temporary storage for variables coming from
+	 * Used as temporary storage for variables coming from
 	 * Snmp v2 PDU reponses.  Once all the data is gathered, we
-	 * can generate maps of the data, one map per interface.</P>
+	 * can generate maps of the data, one map per interface.
 	 */
 	 private List            m_responseVbList;
  
 	/**
-	 * <P>For SNMPv1, used for keeping track of the SNMP response PDUs received.</P>
+	 * For SNMPv1, used for keeping track of the SNMP response PDUs received.
 	 * 
-	 * <P>For SNMPv2, this used for keeping track of the total number of variable bindings
+	 * For SNMPv2, this used for keeping track of the total number of variable bindings
 	 * returned during each subsequent MIB object collection.  This variable 
-	 * is reset back to 0 after the MIB object has been collected for all interfaces.</P>
+	 * is reset back to 0 after the MIB object has been collected for all interfaces.
 	 */
 	 private int             m_responses;
 	 
 	/**
-	 * <P> For SNMPv1, used to store the collected MIB data.</P>
+	 * For SNMPv1, used to store the collected MIB data.
 	 */
 	private SNMPCollectorEntry  m_collectorEntry;
 	
@@ -197,17 +197,17 @@ public class SnmpIfCollector implements SnmpHandler
 	 private int 		m_oidListIndex;
 	 
 	/**
-	 * <P>Holds the ifIndex of the primary SNMP interface.</P>
+	 * Holds the ifIndex of the primary SNMP interface.
 	 */
 	 private String          m_primaryIfIndex;
 
        /**
-	*<P>Holds the IP Address of the primary SNMP iterface.</P>
+	* Holds the IP Address of the primary SNMP iterface.
 	*/
 	private String          m_primaryIf;
 
 	/**
-	 * <P>The number of interfaces associated with the remote host.</P>
+	 * The number of interfaces associated with the remote host.
 	 */
 	private int		m_numInterfaces;
 	
@@ -224,15 +224,13 @@ public class SnmpIfCollector implements SnmpHandler
 	private Map 		m_ifMap;
 	
 	/**
-	 * <P>The default constructor is marked private and will
+	 * The default constructor is marked private and will
 	 * always throw an exception. This is done to disallow
 	 * the default constructor. The reason is that this
 	 * object requires several arguments to perform it's duties.
 	 *
 	 * @exception java.lang.UnsupportedOperationException Always thrown from
 	 *	this method since it is not supported.
-	 *
-	 * @see #SnmpIfCollector(SnmpSession, String, int, Signaler, List)
 	 */
 	private SnmpIfCollector( )
 		throws UnsupportedOperationException
@@ -241,15 +239,15 @@ public class SnmpIfCollector implements SnmpHandler
 	}
 	
 	/**
-	 * <P>The class constructor is used to initialize the collector
+	 * The class constructor is used to initialize the collector
 	 * and send out the initial SNMP packet requesting data. The
 	 * data is then received and store by the object. When all the
 	 * data has been collected the passed signaler object is <EM>
-	 * notified</EM> using the notifyAll() method.</P>
+	 * notified</EM> using the notifyAll() method.
 	 *
 	 * @param session	The SNMP session with the remote agent.
 	 * @param signaler	The object signaled when data collection is done.
-	 * @param m_primaryIfIndex       The ifIndex value linked to the primary IP.
+	 * @param primaryIfIndex       The ifIndex value linked to the primary IP.
 	 * @param ifMap		Map of org.opennms.netmgt.poller.collectd.IfInfo objects.
 	 * @param ifCount	Number of interfaces found in node's MIB-II ifTable
 	 * @param maxVarsPerPdu Max number of variables permitted in a single PDU.
@@ -350,10 +348,10 @@ public class SnmpIfCollector implements SnmpHandler
 	}
 	
 	/**
-	*<P>This method will take an OID, and generate the succeeding OID.  
+	* This method will take an OID, and generate the succeeding OID.  
 	* This will be used for examining responses from SNMPv2 GETBULK packets
 	* when doing SNMPv2 collection, so that we can keep all the 
-	* data for a particular object, and throw out the rest.</P>
+	* data for a particular object, and throw out the rest.
 	*
 	* @param oid	Object identifier from which to generate the stop oid
 	* 
@@ -376,10 +374,10 @@ public class SnmpIfCollector implements SnmpHandler
 	}
 	
 	/**
-	 * <P>This method constructs the next SnmpPduPacket (pdu) for sending
-	 * to the remote node.</P>
+	 * This method constructs the next SnmpPduPacket (pdu) for sending
+	 * to the remote node.
 	 * 
-	 * <P>For SNMPv1, GET commands are built. Each constructed PDU contains 
+	 * For SNMPv1, GET commands are built. Each constructed PDU contains 
 	 * varbinds for all the objects to be collected for a single interface.  
 	 * For objects whose instance id 
 	 * is determined by ifIndex (such as ifOctetsIn or ifOctetsOut in the ifTable) 
@@ -388,7 +386,7 @@ public class SnmpIfCollector implements SnmpHandler
 	 * will be equal to the number interfaces in the remote node's ifTable.  As 
 	 * each GET response is received the response count is incremented and 
 	 * each subsequent call to getNextSnmpV1Pdu() will generate a PDU for collecting
-	 * data pertaining to the next interface in the ifTable.</P>
+	 * data pertaining to the next interface in the ifTable.
 	 *
 	 * @param ifAddress 	Interface address of the remote agent
 	 * 
@@ -494,10 +492,10 @@ public class SnmpIfCollector implements SnmpHandler
 	}
 	
 	/**
-	 * <P>This method constructs the next SnmpPduPacket (pdu) for sending
-	 * to the remote node.</P>
+	 * This method constructs the next SnmpPduPacket (pdu) for sending
+	 * to the remote node.
 	 * 
-	 * <P>For SNMPv2, GETBULK commands are built. Each constructed PDU contains
+	 * For SNMPv2, GETBULK commands are built. Each constructed PDU contains
 	 * a single varbind representing the next object to be retrieved.  If
 	 * that object pertains to all the remote node's interfaces (such as 
 	 * ifOctetsIn or ifOctetsOut) then maxRepetitions will be set to the
@@ -508,7 +506,7 @@ public class SnmpIfCollector implements SnmpHandler
 	 * set to 0 and only that individual value is collected.  Therefore,
 	 * for SNMPv2 based collection the number of PDUs generated will
 	 * be equal to (numInterfaces * numInterfaceBasedObjects) + 
-	 * (numSingularObjects).</P>
+	 * (numSingularObjects).
 	 *
 	 * @param ifAddress 	Interface address of the remote agent
 	 * 
@@ -628,25 +626,25 @@ public class SnmpIfCollector implements SnmpHandler
 	}
 	
 	/**
-	 * <P>This method is used to process received SNMP PDU packets from
+	 * This method is used to process received SNMP PDU packets from
 	 * the remote agent. The method is part of the SnmpHandler interface
 	 * and will be invoked when a PDU is successfully decoded. The method
 	 * is passed the receiving session, the PDU command, and the actual
-	 * PDU packet.</P>
+	 * PDU packet.
 	 *
-	 * <P>For SNMPv2, all the data will be stored within a temporary 
+	 * For SNMPv2, all the data will be stored within a temporary 
 	 * array.  Once all data has been acquired, it will be organized 
 	 * by interface.  For any MIB OID whose index is zero, their data
-	 * will be associated with the primary interface's index.</P>
+	 * will be associated with the primary interface's index.
 	 *
-	 * <P>For SNMPv1, a map will be created after each response.  Once again,
+	 * For SNMPv1, a map will be created after each response.  Once again,
 	 * if the MIB OID has a zero at the end, it will be linked with the
-	 * primary interface.</P>
+	 * primary interface.
 	 *
-	 * <P>When all the data has been received from the session the signaler
+	 * When all the data has been received from the session the signaler
 	 * object, initialized in the constructor, is signaled. In addition,
 	 * the receiving instance will call notifyAll() on itself at the same
-	 * time.</P>
+	 * time.
 	 *
 	 * @param session	The SNMP Session that received the PDU
 	 * @param command	The command contained in the received pdu
@@ -955,10 +953,10 @@ public class SnmpIfCollector implements SnmpHandler
 	}
 	
 	/**
-	 * <P>This method is part of the SnmpHandler interface and called when
+	 * This method is part of the SnmpHandler interface and called when
 	 * an internal error happens in a session. This is usually the result
 	 * of an I/O error. This method will not be called if the session times
-	 * out sending a packet, see snmpTimeoutError for timeout handling.</P>
+	 * out sending a packet, see snmpTimeoutError for timeout handling.
 	 *
 	 * @param session	The session that had an unexpected error
 	 * @param error		The error condition
@@ -1002,9 +1000,9 @@ public class SnmpIfCollector implements SnmpHandler
 	}
 	
 	/**
-	 * <P>This method is part of the SnmpHandler interface and is invoked
+	 * This method is part of the SnmpHandler interface and is invoked
 	 * when the SnmpSession does not receive a reply after exhausting 
-	 * the retransmission attempts.</P>
+	 * the retransmission attempts.
 	 *
 	 * @param session	The session invoking the error handler
 	 * @param pdu		The PDU that the remote failed to respond to.
@@ -1039,8 +1037,8 @@ public class SnmpIfCollector implements SnmpHandler
 	}		
 
 	/**
-	 * <P>Returns the success or failure code for collection
-	 * of the data.</P>
+	 * Returns the success or failure code for collection
+	 * of the data.
 	 */
 	public boolean failed()
 	{
@@ -1048,8 +1046,8 @@ public class SnmpIfCollector implements SnmpHandler
 	}
 	
 	/**
-	 * <P>Returns true if SNMP collection failed due to timeout.
-	 * Otherwise, returns false.</P>
+	 * Returns true if SNMP collection failed due to timeout.
+	 * Otherwise, returns false.
 	 */
 	public boolean timedout()
 	{
@@ -1060,7 +1058,7 @@ public class SnmpIfCollector implements SnmpHandler
 	}
 
        /**
-	* <P>Returns the list of all entry maps that can be used
+	* Returns the list of all entry maps that can be used
 	* to access all the information from the service polling.
 	*/
 	

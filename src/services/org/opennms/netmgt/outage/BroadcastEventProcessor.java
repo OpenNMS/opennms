@@ -51,8 +51,8 @@ import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * <P>BroadcastEventProcessor is responsible for receiving events from eventd
- * and queing them to the outage writer pool</P>
+ * BroadcastEventProcessor is responsible for receiving events from eventd
+ * and queing them to the outage writer pool.
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>

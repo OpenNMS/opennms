@@ -55,12 +55,12 @@ import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
 
 /**
- * <p>This is the singleton class used to load the configuration for
- * the OpenNMS xmlrpcd service from the xmlrpcd-configuration.xml.</p>
+ * This is the singleton class used to load the configuration for
+ * the OpenNMS xmlrpcd service from the xmlrpcd-configuration xml file.
  *
- * <p><strong>Note:</strong>Users of this class should make sure the 
+ * <strong>Note:</strong>Users of this class should make sure the 
  * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods</p>
+ * the config is loaded before accessing other convenience methods.
  *
  * @author <a href="mailto:jamesz@blast.com">James Zuo</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
@@ -160,7 +160,7 @@ public final class XmlrpcdConfigFactory
 	}
 
 	/**
-	 * <p>Return the singleton instance of this factory<p>
+	 * Return the singleton instance of this factory.
 	 *
 	 * @return The current factory instance.
 	 *
@@ -176,7 +176,7 @@ public final class XmlrpcdConfigFactory
 	}
 
 	/** 
-	 * <p>Return the xmlrpcd configuration object</p>
+	 * Return the xmlrpcd configuration object.
 	 */
 	public synchronized XmlrpcdConfiguration getConfiguration()
 	{
@@ -184,8 +184,8 @@ public final class XmlrpcdConfigFactory
 	}
 
 	/**
-	 * <p>This method is used to determine if an event of the named 
-         * represented is subscribed by the external XMLRPC server.</p>
+	 * This method is used to determine if an event of the named 
+         * represented is subscribed by the external XMLRPC server.
 	 *
 	 * @param uei	The uei to test against the subscribed events in 
          *              the configuration file.

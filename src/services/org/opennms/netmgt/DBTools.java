@@ -130,11 +130,10 @@ public class DBTools {
    /**
     * Constructs a JDBC url given a set of fragments. The resulting Url will have the form:
     * <br><code>jdbc:<protocol:<b>hostname</b>:<b>4100</b></code>
-    * @param String hostname_ The hostname where the database server is
-    * @param String JDBC url (for example jdbc:sybase:Tds:@{link #JDBC_HOST JDBC_HOST}:4100/tempdb). The JDBC_HOST is replaced by the real hostname
+    * @param hostname_ The hostname where the database server is
+    * @param url_ (for example jdbc:sybase:Tds:@{link #JDBC_HOST JDBC_HOST}:4100/tempdb). The JDBC_HOST is replaced by the real hostname
     * @throws NullPointerException If one of the arguments is null
     * @throws IllegalArgumentException If the JDBC_HOST is not part of the JDBC url
-    * @see JDBC_HOST
     */
     public static String constructUrl(String url_, String hostname_) throws IllegalArgumentException, NullPointerException {
       String url = null;

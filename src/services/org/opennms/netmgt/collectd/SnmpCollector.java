@@ -152,7 +152,7 @@ final class SnmpCollector
 	
 	/**
 	 * Valid values for the 'snmpStorageFlag' attribute in
-	 * datacollection-config.xml file.
+	 * datacollection-config xml file.
 	 *
 	 * "primary" = only primary SNMP interface should be collected and stored
 	 * "all" = all primary SNMP interfaces should be collected and stored
@@ -1945,7 +1945,7 @@ final class SnmpCollector
 	 * This method is responsible for building a Capsd forceRescan event object
 	 * and sending it out over the EventProxy.
 	 * 
-	 * @param ifaddress  	interface address to which this event pertains
+	 * @param ifAddress  	interface address to which this event pertains
 	 * @param eventProxy 	proxy over which an event may be sent to eventd
 	 */
 	private void generateForceRescanEvent(String 	ifAddress, 

@@ -60,41 +60,38 @@ import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
 /**
- * <p>When a 'nodeLostService' is received, it is made sure that there is no
+ * When a 'nodeLostService' is received, it is made sure that there is no
  * 'open' outage record in the 'outages' table for this nodeid/ipaddr/serviceid
  * - i.e that there is not already a record for this n/i/s where the 'lostService'
  * time is known and the 'regainedService' time is NULL - if there is, the
- * current 'lostService' event is ignored else a new outage is created</p>
+ * current 'lostService' event is ignored else a new outage is created.
  *
- * <p>The 'interfaceDown' is similar to the 'nodeLostService' except that it acts
- * relevant to a nodeid/ipaddr combination and a 'nodeDown' acts on a nodeid</p>
+ * The 'interfaceDown' is similar to the 'nodeLostService' except that it acts
+ * relevant to a nodeid/ipaddr combination and a 'nodeDown' acts on a nodeid.
  *
- * <p>When a 'nodeRegainedService' is received and there is an 'open' outage for
+ * When a 'nodeRegainedService' is received and there is an 'open' outage for
  * the nodeid/ipaddr/serviceid, the outage is cleared. If not, the event is placed
  * in the event cache in case a race condition has occurred that puts the "up"
- * event in before the "down" event. (currently inactive)</p>
+ * event in before the "down" event. (currently inactive).
  *
- * <p>The 'interfaceUp' is similar to the 'nodeRegainedService' except that it acts
- * relevant to a nodeid/ipaddr combination and a 'nodeUp' acts on a nodeid</p>
+ * The 'interfaceUp' is similar to the 'nodeRegainedService' except that it acts
+ * relevant to a nodeid/ipaddr combination and a 'nodeUp' acts on a nodeid.
  *
- * <p>When a 'deleteService' is received, the appropriate entry is marked for
+ * When a 'deleteService' is received, the appropriate entry is marked for
  * deletion is the 'ifservices' table - if this entry is the only entry for
  * a node/ip combination, the corresponding entry in the 'ipinterface' table
  * is marked for deletion and this is then cascaded to the node table
  * All deletions are followed by an appropriate event(serviceDeleted or
- * interfaceDeleted or..) being generated and sent to eventd</p>
+ * interfaceDeleted or..) being generated and sent to eventd.
  *
- * <p> When an 'interfaceReparented' event is received, 'outages' table entries
+ * When an 'interfaceReparented' event is received, 'outages' table entries
  * associated with the old nodeid/interface pairing are changed so that those outage
- * entries will be associated with the new nodeid/interface pairing.</p>
+ * entries will be associated with the new nodeid/interface pairing.
  *
- * <p>The nodeLostService, interfaceDown, nodeDown, nodeUp, interfaceUp,
+ * The nodeLostService, interfaceDown, nodeDown, nodeUp, interfaceUp,
  * nodeRegainedService, deleteService events update the svcLostEventID and the 
  * svcRegainedEventID fields as approppriate. The interfaceReparented event has
- * no impact on these eventid reference fields</p>
- *
- * @author 	<A HREF="mailto:jamesz@blast.com">James Zuo</A>
- * @author 	<A HREF="mailto:tarus@opennms.org">Tarus</A>
+ * no impact on these eventid reference fields.
  * @author 	<A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
  * @author 	<A HREF="mailto:mike@opennms.org">Mike Davidson</A>
  * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
@@ -105,7 +102,7 @@ public final class OutageWriter implements Runnable
 	private static final String	SNMPV2_SVC	= "SNMPv2";
 
 	/**
-	 * The event from which data is to be read
+	 * The event from which data is to be read.
 	 */
 	private Event			m_event;
 
@@ -114,7 +111,7 @@ public final class OutageWriter implements Runnable
 	private boolean			m_generateNodeDeletedEvent;
 
 	/**
-	 * A class to hold SNMP/SNMPv2 entries for a node from the ifservices table
+	 * A class to hold SNMP/SNMPv2 entries for a node from the ifservices table.
 	 * A list of this class is maintained on SNMP delete so as to be able to
 	 * generate a series of serviceDeleted for all entries marked as 'D'
 	 */

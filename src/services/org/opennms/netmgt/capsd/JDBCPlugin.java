@@ -88,13 +88,13 @@ public final class JDBCPlugin
 
   	/**
    	* Checks if a given server is listening o a given interface
-   	* @param String user Database user
-   	* @param String password Database password
-   	* @param String hostname name of the RDBMS server
-   	* @param String url Database connection url
-   	* @param Integer timeout Default login timeout
-   	* @param Integer retries Number of retrys before giving up a connection attempts
-   	* @param String rdb_driver JDBC driver to use
+   	* @param user Database user
+   	* @param password Database password
+   	* @param hostname name of the RDBMS server
+   	* @param db_url Database connection url
+   	* @param timeout Default login timeout
+   	* @param retries Number of retrys before giving up a connection attempts
+   	* @param db_driver JDBC driver to use
    	* @see DBTools#constructUrl
    	*/
 
@@ -194,7 +194,7 @@ public final class JDBCPlugin
    	* This method is likely to skip some machines because the default password is empty.
    	* is recomended to use the parametric method instead (unless your DBA is dummy enugh to leave
    	* a JDBC server with no password!!!).
-   	* @param InetAddress address Address of the JDBC server to poll
+   	* @param address Address of the JDBC server to poll
    	* @return True if a JDBC server is running on this server, false otherwise
    	*/
   	public boolean isProtocolSupported(InetAddress address) 
@@ -221,10 +221,8 @@ public final class JDBCPlugin
   	}
 
   	/**
-   	* Checking method, receives all the parameters as a Map
-   	* @param InetAddress address Address of the JDBC server to poll
-   	* @param Map qualifiers Set of properties to be passed to the JDBC driver.
-	* <p>Currently supported:
+   	* Checking method, receives all the parameters as a Map.
+	* Currently supported:
    	* <ul>
    	* <li> <b>port</b>     - Port where the JDBC server is listening (defaults to DEFAULT_PORT). Type: Integer
    	* <li> <b>user</b>     - Database user (defaults to DEFAULT_DATABASE_USER if not provided). Type String
@@ -232,6 +230,8 @@ public final class JDBCPlugin
    	* <li> <b>timeout</b> - Timeout
    	* <li> <b>retry</b> - How many times will try to check for the service
    	* </ul>
+   	* @param address Address of the JDBC server to poll
+   	* @param qualifiers Set of properties to be passed to the JDBC driver.
    	* @throws NullPointerException if the properties or the address are not defined
    	* @return True if a JDBC server is running on this server, false otherwise
    	*/

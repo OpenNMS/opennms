@@ -42,7 +42,7 @@ import java.util.List;
 import org.opennms.netmgt.config.categories.Category;
 
 /**
- * <p>This class is used to encapsulate a category in the 'categories.xml'</p>
+ * This class is used to encapsulate a category in the categories xml file.
  *
  * @author 	<A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
  * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>

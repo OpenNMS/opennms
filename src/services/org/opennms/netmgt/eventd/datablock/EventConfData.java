@@ -361,7 +361,7 @@ public class EventConfData extends Object
 	/**
 	 * Get the event with the specified snmp key
 	 *
-	 * @param key	the snmp eid
+	 * @param eid	the snmp eid
 	 */
 	public synchronized org.opennms.netmgt.xml.eventconf.Event getEventBySnmp(String eid)
 	{
@@ -374,7 +374,7 @@ public class EventConfData extends Object
 	/**
 	 * Get the event with the specified uei
 	 *
-	 * @param key	the uei
+	 * @param uei	the uei
 	 */
 	public synchronized org.opennms.netmgt.xml.eventconf.Event getEventByUEI(String uei)
 	{

@@ -234,8 +234,7 @@ public class AvailabilityData extends Object
 	 * Populates the data structure for this category. This method only computes for monitored services in this 
 	 * category.
 	 *
-	 * @param categoryGroup Category Group
-	 * @param categoryName Category Name
+	 * @param cat Category
 	 * @param report Report Castor class
 	 * @param format SVG-specific/all reports
 	 */

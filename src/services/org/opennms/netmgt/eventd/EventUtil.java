@@ -355,7 +355,7 @@ public final class EventUtil
 	 *
 	 *
 	 * @param inStr		string that might contain the delimiter
-	 * @param delimChar	delimiter to escape
+	 * @param delimchar	delimiter to escape
 	 *
 	 * @return The string with the delimiter escaped as in URLs
 	 *

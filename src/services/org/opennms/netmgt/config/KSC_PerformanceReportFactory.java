@@ -88,12 +88,12 @@ public class KSC_PerformanceReportFactory
 	private int graph_index = -1;
  
 	/**
-	 * Empty Private Constructor -- cannot be instantiated outside itself 
+	 * Empty Private Constructor.  Cannot be instantiated outside itself.
 	 */
 	private KSC_PerformanceReportFactory() {}
 	
 
-        /** Init routine... must be called before calling getInstance() to instantiate **/	
+        /** Init routine.  Must be called before calling getInstance() to instantiate **/	
 	public static synchronized void init()
 		throws IOException, FileNotFoundException, MarshalException, ValidationException
 	{
@@ -140,7 +140,7 @@ public class KSC_PerformanceReportFactory
 				("KSC_PerformanceReportFactory.init() must be called before KSC_PerformanceReportFactory.saveCurrent().");
 		}
                 sortByTitle();
-                // Marshall to a string first, then to file... this way the original config isn't lost if teh xml from the marshall is hosed
+                // Marshall to a string first, then to file.  This way the original config isn't lost if teh xml from the marshall is hosed.
                 StringWriter stringWriter = new StringWriter();
                 Marshaller.marshal(m_config, stringWriter);
                 if (stringWriter.toString() != null) {
@@ -152,7 +152,7 @@ public class KSC_PerformanceReportFactory
                 reload();
         }
 	
-	/** Sorts the Reports List by their title ... simple bubble sort */
+	/** Sorts the Reports List by their title.  Simple bubble sort. */
 	public void sortByTitle() 
 	{
             Report[] report_array = m_config.getReport();
@@ -180,7 +180,7 @@ public class KSC_PerformanceReportFactory
         { 
             int total_reports = m_config.getReportCount(); 
             if ((index < 0) || (index >= total_reports)) { 
-                // out of range... throw range error 
+                // Out of range.  Throw range error.
 	        throw new ArrayIndexOutOfBoundsException 
 	            ("Reports List index to be deleted is out of bounds.");
             }
@@ -214,7 +214,7 @@ public class KSC_PerformanceReportFactory
             int total_reports = m_config.getReportCount(); 
             working_index=index; 
             if ((working_index < 0) || (working_index >= total_reports)) { 
-                // out of range... assume new report needs to be created 
+                // Out of range.  Assume new report needs to be created.
                 working_report = KSC_PerformanceReportFactory.getNewReport(); 
                 working_index=-1;
             }
@@ -337,7 +337,7 @@ public class KSC_PerformanceReportFactory
 
     public static synchronized void getBeginEndTime(String interval, Calendar begin_time, Calendar end_time) 
         throws IllegalArgumentException
-    /** This method requires begin time and end time to be set to the current time prior to call... the  start and
+    /** This method requires begin time and end time to be set to the current time prior to call.  The  start and
         stop times are relative to this time.  Init values as follows:
         begin_time = Calendar.getInstance();
         end_time = Calendar.getInstance();

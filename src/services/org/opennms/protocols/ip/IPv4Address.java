@@ -55,8 +55,6 @@ import java.util.StringTokenizer;
  *
  *
  * @author	Brian Weaver &lt;weave@oculan.com&gt;
- * @revision	1.1.1.1
- *
  */
 public class IPv4Address extends Object 
 	implements Serializable

@@ -69,12 +69,12 @@ import org.opennms.netmgt.config.vulnscand.ScanLevel;
 import org.opennms.netmgt.config.vulnscand.VulnscandConfiguration;
 
 /**
-* <p>This is the singleton class used to load the configuration for
-* the OpenNMS Vulnscand service from the vulnscand-configuration.xml.</p>
+* This is the singleton class used to load the configuration for
+* the OpenNMS Vulnscand service from the vulnscand-configuration xml file.
 *
-* <p><strong>Note:</strong>Users of this class should make sure the
+* <strong>Note:</strong>Users of this class should make sure the
 * <em>init()</em> is called before calling any other method to ensure
-* the config is loaded before accessing other convenience methods</p>
+* the config is loaded before accessing other convenience methods.
 *
 * @author <a href="mailto:seth@opennms.org">Seth Leger</a>
 * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
@@ -254,7 +254,7 @@ public final class VulnscandConfigFactory
 	}
 
 	/**
-	* <p>Return the singleton instance of this factory</p>
+	* Return the singleton instance of this factory.
 	*
 	* @return The current factory instance.
 	*
@@ -270,7 +270,7 @@ public final class VulnscandConfigFactory
 	}
 
 	/**
-	* <p>Return the Vulnscand configuration object</p>
+	* Return the Vulnscand configuration object.
 	*/
 	public static VulnscandConfiguration getConfiguration()
 	{

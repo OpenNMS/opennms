@@ -54,8 +54,8 @@ import java.util.Date;
 public class EventConstants
 {
 	/**
-	 * <P>The date format string to parse a Date.toString() type string
-	 * to a database timestamp using the postgres to_timestamp() built-in function</P>
+	 * The date format string to parse a Date.toString() type string
+	 * to a database timestamp using the postgres to_timestamp() built-in function.
 	 */
 	public static final String POSTGRES_DATE_FORMAT = "\'Dy Mon DD HH24:MI:SS Tz YYYY\'";
 
@@ -631,9 +631,9 @@ public class EventConstants
         public final static int XMLRPC_NOTIFY_FAILURE  = 2;
 
 	/**
-	 * <P>An utility method to parse a string into a 'Date' instance.
+	 * An utility method to parse a string into a 'Date' instance.
 	 * Note that the string should be in the locale specific DateFormat.FULL
-	 * style for both the date and time</P>
+	 * style for both the date and time.
 	 *
 	 * @see java.text.DateFormat
 	 */
@@ -644,8 +644,8 @@ public class EventConstants
 	}
 
 	/**
-	 * <P>An utility method to format a 'Date' into a string in the
-	 * local specific DateFormat.FULL style for both the date and time</P>
+	 * An utility method to format a 'Date' into a string in the
+	 * local specific FULL DateFormat style for both the date and time.
 	 *
 	 * @see java.text.DateFormat
 	 */
@@ -655,10 +655,10 @@ public class EventConstants
 	}
 
 	/**
-	 * <P>An utility method to format a 'Date' into a string in the
-	 * local specific DateFormat.DEFAULT style for both the date and time.
+	 * An utility method to format a 'Date' into a string in the
+	 * local specific DEFALUT DateFormat style for both the date and time.
 	 * This is used by the webui and a change here should get all time display
-	 * in the webui changed</P>
+	 * in the webui changed.
 	 *
 	 * @see java.text.DateFormat
 	 * @deprecated This is no longer used by the UI.  All WebUI-specific code should

@@ -51,8 +51,8 @@ import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * <P>BroadcastEventProcessor is responsible for receiving events from eventd
- * and queuing them to the data updaters</P>
+ * BroadcastEventProcessor is responsible for receiving events from eventd
+ * and queuing them to the data updaters.
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>

@@ -307,7 +307,7 @@ public class SnmpPeer extends Object
 	 * Used to set the current parameters for the 
 	 * SnmpPeer object.
 	 *
-	 * @params params The SnmpParameters for the peer.
+	 * @param params The SnmpParameters for the peer.
 	 *
 	 */
 	public void setParameters(SnmpParameters params)

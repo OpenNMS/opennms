@@ -212,7 +212,7 @@ final class UdpReceivedEvent
 	 * the remote agent's address &amp; port. If the passed instance
 	 * is from the same agent then it is considered equal.
 	 *
-	 * @param An instance of the class to compare.
+	 * @param o instance of the class to compare.
 	 *
 	 * @return Returns true if the objects are logically equal, false otherwise.
 	 */

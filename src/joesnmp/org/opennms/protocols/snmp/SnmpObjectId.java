@@ -48,6 +48,7 @@ import org.opennms.protocols.snmp.asn1.AsnEncodingException;
  * class provides an interface for naming those tree instances.
  *
  * @author	<a href="mailto:weave@oculan.com">Brian Weaver</a>
+ * @author <A HREF="mailto:naz@personalgenie.com">Nazario Irizarry, Jr.</A>
  * @version	1.1.1.1
  *
  */
@@ -680,7 +681,6 @@ public class SnmpObjectId extends Object
 	 *
 	 * @return The hash code for the object.
 	 *
-	 * @author <A HREF="mailto:naz@personalgenie.com">Nazario Irizarry, Jr.</A>
 	 *
 	 * @since 1.8
 	 */

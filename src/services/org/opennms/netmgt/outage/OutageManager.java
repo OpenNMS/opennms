@@ -293,7 +293,7 @@ public final class OutageManager implements PausableFiber
 	}
 
 	/** 
-	 * <P>Read the configuration xml, create and start all the subthreads</P>
+	 * Read the configuration xml, create and start all the subthreads.
 	 */
 	public void start()
 	{

@@ -211,7 +211,7 @@ class SnmpUtil
 	 * are moved to the position marked by begin. The bytes between
 	 * [begin..pivot) are shifted such that begin is at [begin+(end-pivot)].
 	 *
-	 * @param buf	The buffer containing the data to rotate
+	 * @param arrayBuf The buffer containing the data to rotate
 	 * @param begin	The start of the rotation
 	 * @param pivot	The pivot point for the rotation
 	 * @param end	The end of the rotational buffer

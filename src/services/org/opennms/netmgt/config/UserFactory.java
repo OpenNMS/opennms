@@ -746,8 +746,8 @@ public class UserFactory
 		return new String(buffer);
 	}
 	
-	/**This method compares two encrypted strings for equality
-	   @param userId the user ID to check against.
+	/**This method compares two encrypted strings for equality.
+	   @param userID the user ID to check against.
 	   @param aPassword the password to check for equality
 	   @return true if the two passwords are equal (after encryption), false otherwise
 	*/

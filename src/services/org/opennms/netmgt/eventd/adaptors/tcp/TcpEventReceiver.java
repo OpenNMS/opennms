@@ -54,16 +54,16 @@ import org.opennms.netmgt.eventd.adaptors.EventHandlerMBeanProxy;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
 
 /**
- * <p>This class is the access point for the agents to hook
- * into the [?product name?]. This fiber sets up an server socket
+ * This class is the access point for the agents to hook
+ * into the event queue. This fiber sets up an server socket
  * that accepts incomming connections on the configured port (port
- * 5814 by default). </p>
+ * 5814 by default).
  * 
- * <p>When a connection is established a new thread is started to
+ * When a connection is established a new thread is started to
  * process the socket connection. The event document is decoded and
  * each of the events are passed to the handlers. Based upon the action
  * of the handlers an event recipt is generated and sent to the
- * remote client.</p>
+ * remote client.
  *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http;//www.opennms.org">OpenNMS</a>

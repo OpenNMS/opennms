@@ -135,7 +135,7 @@ public class BerEncoder implements AsnEncoder
 	 * @param srcOff	The offset of the first byte in the source buffer
 	 * @param dest		The destination buffer
 	 * @param destOff	The offset of the first byte in the destination buffer
-	 * @param intsToCopy	The number of integer elements to copy
+	 * @param bytesToCopy	The number of bytes to copy
 	 *
 	 * @exception ArrayIndexOutOfBoundsException Thrown if there is insufficent
 	 *		space in either array to copy the data.

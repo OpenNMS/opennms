@@ -47,12 +47,12 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 
 /**
- * <p>This is the singleton class used to load the configuration for
- * the OpenNMS Actiond from the actiond-configuration.xml.</p>
+ * This is the singleton class used to load the configuration for
+ * the OpenNMS Actiond from the actiond-configuration xml file.
  *
- * <p><strong>Note:</strong>Users of this class should make sure the 
+ * <strong>Note:</strong>Users of this class should make sure the 
  * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods</p>
+ * the config is loaded before accessing other convenience methods.
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
@@ -148,7 +148,7 @@ public final class ActiondConfigFactory
 	}
 
 	/**
-	 * <p>Return the singleton instance of this factory<p>
+	 * Return the singleton instance of this factory.
 	 *
 	 * @return The current factory instance.
 	 *
@@ -164,7 +164,7 @@ public final class ActiondConfigFactory
 	}
 
 	/**
-	 * <p>Return the maximum time that can be taken by a process</p>
+	 * Return the maximum time that can be taken by a process.
 	 *
 	 * @return the maximum time that can be taken by a process
 	 */
@@ -174,7 +174,7 @@ public final class ActiondConfigFactory
 	}
 
 	/**
-	 * <p>Return the maximum number of processes that run simultaneously</p>
+	 * Return the maximum number of processes that run simultaneously.
 	 *
 	 * @return the maximum number of processes that run simultaneously
 	 */

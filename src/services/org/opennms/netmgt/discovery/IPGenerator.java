@@ -360,7 +360,7 @@ final class IPGenerator
 	 * Constructs a new instance of the class that can be used
 	 * to iterate over the list of encapsulated objects.
 	 *
-	 * @param specific	The list of specific nodes.
+	 * @param specifics	The list of specific nodes.
 	 * @param ranges	The range list for address generation
 	 * @param initialWait	The initial wait time in milliseconds.
 	 * @param restartWait	The cycle wait time in milliseconds.
@@ -438,7 +438,7 @@ final class IPGenerator
 	 * @param element	The element to add.
 	 * @param timeout	The maximum time spent trying to add.
 	 *
-	 * @returns True if the object is successfully added.
+	 * @return True if the object is successfully added.
 	 *
 	 * @throws java.lang.UnsupportedOperationException Always thrown.
 	 *
@@ -455,8 +455,6 @@ final class IPGenerator
 	 * If the iterator has reached it's end, then the 
 	 * iterator is regenerated and thus this call will
 	 * always return a valid element.
-	 *
-	 * @param timeout	The maximum time to wait (ignored).
 	 *
 	 * @return The next element in the range(s).
 	 */

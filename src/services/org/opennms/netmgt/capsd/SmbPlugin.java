@@ -65,9 +65,9 @@ public final class SmbPlugin
 	private final static String 	PROTOCOL_NAME = "SMB";
 
 	/**
-	 * <P>Test to see if the passed host talks SMB &amp; has a NetBIOS name</P>
+	 * Test to see if the passed host talks SMB &amp; has a NetBIOS name.
 	 *
-	 * @param host	The remote host to check
+	 * @param host	The remote host to check.
 	 *
 	 * @return True if the remote interface responds talks SMB and has a
 	 *        NETBIOS name.  False otherwise.
@@ -147,7 +147,7 @@ public final class SmbPlugin
 	 * service events if needed.
 	 *
 	 * @param address	The address to check for support.
-	 * @param qualiier	The map where qualification are set
+	 * @param qualifiers	The map where qualification are set
 	 *			by the plugin.
 	 *
 	 * @return True if the protocol is supported by the address.

@@ -330,7 +330,7 @@ final class Scheduler
 	 * Creates a NodeInfo object representing the specified node and
 	 * adds it to the known node list for scheduling.
 	 * 
-	 * @param nodeid 	Id of node to be scheduled
+	 * @param nodeId 	Id of node to be scheduled
 	 *
 	 * @throws SQLException if there is any problem accessing the database
 	 */
@@ -374,7 +374,7 @@ final class Scheduler
 	/** 
 	 * Removes the specified node from the known node list.
 	 * 
-	 * @param nodeid 	Id of node to be removed.
+	 * @param nodeId 	Id of node to be removed.
 	 */
 	void unscheduleNode(int nodeId)
 	{		
@@ -398,7 +398,7 @@ final class Scheduler
 	 * Creates a NodeInfo object representing the specified node and
 	 * adds it to the rescan queue for immediate rescanning. 
 	 * 
-	 * @param nodeid 	Id of node to be rescanned
+	 * @param nodeId 	Id of node to be rescanned
 	 */
 	void forceRescan(int nodeId)
 	{

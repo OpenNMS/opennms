@@ -188,8 +188,7 @@ final class PollableService
 	 * polled using the passed monitor. The service is scheduled based
 	 * upon the values in the packages.
 	 *
-	 * @param dbNodeId	The database identifier key for the interfaces' node.
-	 * @param iface		The interface to poll
+	 * @param pInterface		The interface to poll
 	 * @param svcName	The name of the service being polled.
 	 * @param pkg		The package with the polling information
 	 *

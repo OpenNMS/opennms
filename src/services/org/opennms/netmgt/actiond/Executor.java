@@ -147,7 +147,7 @@ final class Executor
 		/**
 		 * Constructs a new dated process.
 		 *
-		 * @prarm cmd	The command used to start the process.
+		 * @param cmd	The command used to start the process.
 		 * @param p	The running process.
 		 */
 		DatedProc(String cmd, Process p)

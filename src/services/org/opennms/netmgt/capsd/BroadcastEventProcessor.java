@@ -733,15 +733,15 @@ final class BroadcastEventProcessor
         }                
 	
         /** 
-	 * This method is responsible for:
-         * 1. removing the node specified in the deleteNode event from the database.
+	 * This method handles the deletion of a node.
+         * <pre>1. removing the node specified in the deleteNode event from the database.
          * 2. delete all IP addresses associated with this node from the database.
          * 3. delete all services being polled from this node from the database
          * 4. issue an nodeDeleted event so that this node will be removed from the 
          *    Poller's pollable node map, and all the servies polling from this node 
          *    shall be stopped.
          * 5. delete all info associated with this node from the database, such as
-         *    notifications, events, outages etc.
+         *    notifications, events, outages etc.</pre>
          */
 	private void deleteNodeHandler(Event event)
 	{
@@ -1271,12 +1271,12 @@ final class BroadcastEventProcessor
 
 
 	/** 
-	 * This method is responsible for:
-         * 1. stop all services associated with the specified interface.
+	 * This method handles the deletion of an interface.
+         * <pre>1. stop all services associated with the specified interface.
          * 2. removing all services associated with the interface.
          * 3. remove the interface from the database.
          * 4. issue an interfaceDeleted event to stop polling all the services on 
-         *    this interface
+         *    this interface</pre>
          */
 	private void deleteInterfaceHandler(Event event)
 	{

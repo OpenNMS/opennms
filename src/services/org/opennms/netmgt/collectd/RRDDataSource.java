@@ -237,7 +237,7 @@ public class RRDDataSource
 	/**
 	 * This method is used to assign the data source name.
 	 *
-	 * @param alias - object alias (e.g., "sysDescription")
+	 * @param name object alias: "sysDescription".
 	 */
 	public void setName(String name)
 	{

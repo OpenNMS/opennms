@@ -184,7 +184,7 @@ final class BroadcastEventProcessor
 	 * Each message is examined for its Universal Event Identifier
 	 * and the appropriate action is taking based on each UEI.
 	 *
-	 * @param emsg	The event message.
+	 * @param event	The event message.
 	 *
 	 */
 	public void onEvent(Event event)

@@ -146,7 +146,6 @@ public class AvailCalculations extends Object
 	 * Constructor 
 	 *
 	 * @param nodes List of nodes
-	 * @param services List of services
 	 * @param endTime End time ( end of yesterday in milliseconds)
 	 * @param lastMonthEndTime Last months end time (end of the last day of last month in milliseconds)
 	 * @param monitoredServices Monitored services belonging to the category.
@@ -472,8 +471,6 @@ public class AvailCalculations extends Object
 	/**
 	 * Last Months Top N Service Outages.
 	 *
-         * @param days Number of days for which the availability computations are made.
-         * @param endTime End time
          * @param catSections Castors sections
          * @param label Section name in the xml
          * @param descr Section descr.	 

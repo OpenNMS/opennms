@@ -221,8 +221,8 @@ public final class DominoIIOPPlugin
 	
 	/**
 	 * Method used to retrieve the IOR string from the Domino server.
-	 * @param host, the host name which has the IOR
-	 * @param port, the port to find the IOR via HTTP
+	 * @param host the host name which has the IOR
+	 * @param port the port to find the IOR via HTTP
 	 */
 	private String retrieveIORText(String host, int port)
 		throws IOException
@@ -297,7 +297,7 @@ public final class DominoIIOPPlugin
 	 * service events if needed.
 	 *
 	 * @param address	The address to check for support.
-	 * @param qualiier	The map where qualification are set
+	 * @param qualifiers	The map where qualification are set
 	 *			by the plugin.
 	 *
 	 * @return True if the protocol is supported by the address.

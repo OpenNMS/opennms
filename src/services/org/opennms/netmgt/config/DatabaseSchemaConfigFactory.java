@@ -47,12 +47,12 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.filter.DatabaseSchema;
 
 /**
- * <p>This is the singleton class used to load the configuration for
- * the OpenNMS database schemafor the filters from the database-schema.xml.</p>
+ * This is the singleton class used to load the configuration for
+ * the OpenNMS database schemafor the filters from the database-schema xml file.
  *
- * <p><strong>Note:</strong>Users of this class should make sure the 
+ * <strong>Note:</strong>Users of this class should make sure the 
  * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods</p>
+ * the config is loaded before accessing other convenience methods.
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
@@ -149,7 +149,7 @@ public final class DatabaseSchemaConfigFactory
 	}
 
 	/**
-	 * <p>Return the singleton instance of this factory</p>
+	 * Return the singleton instance of this factory.
 	 *
 	 * @return The current factory instance.
 	 *
@@ -165,7 +165,7 @@ public final class DatabaseSchemaConfigFactory
 	}
 
 	/**
-	 * <p>Return the database schema</p>
+	 * Return the database schema.
 	 *
 	 * @return the database schema
 	 */

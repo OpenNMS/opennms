@@ -154,7 +154,7 @@ public class MibObject
 	/**
 	 * This method is used to assign the object's maximum value.
 	 *
-	 * @param type - object's maximum value
+	 * @param maxval object's maximum value
 	 */
 	public void setMaxval(String maxval)
 	{
@@ -164,7 +164,7 @@ public class MibObject
 	/**
 	 * This method is used to assign the object's minimum value.
 	 *
-	 * @param type - object's maximum value
+	 * @param minval object's minimum value
 	 */
 	public void setMinval(String minval)
 	{

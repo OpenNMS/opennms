@@ -40,7 +40,7 @@
 package org.opennms.netmgt.outage;
 
 /**
- * <P>This class is a repository for constant, static information concerning the Outage Manager. 
+ * This class is a repository for constant, static information concerning the Outage Manager. 
  *
  * @author <A HREF="mailto:jamesz@blast.com">James Zuo</A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
@@ -49,8 +49,8 @@ package org.opennms.netmgt.outage;
 public final class OutageConstants
 {
 	/**
-	 * <P>The SQL statement necessary to read service id
-	 * and service name into map </P>
+	 * The SQL statement necessary to read service id
+	 * and service name into map.
 	 */
 	public final static String 	SQL_DB_SVC_TABLE_READ		= "SELECT serviceID, serviceName FROM service";
 

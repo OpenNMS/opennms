@@ -90,7 +90,7 @@ final class JDBCMonitor
 
   	/**
    	* This method is called after the framework loads the plugin.
-   	* @param Map parameters Configuration parameters passed to the plugin
+   	* @param parameters Configuration parameters passed to the plugin
    	* @throws RuntimeException If there is any error that prevents the plugin from running
    	*/
   	public void initialize(Map parameters) 
@@ -120,7 +120,7 @@ final class JDBCMonitor
   	/**
    	* This method is called when an interface that support the service is added to the
    	* scheduling service.
-   	* @param NetworkInterface iface_ The network interface to poll
+   	* @param iface The network interface to poll
    	* @throws java.lang.RuntimeException Thrown if an unrecoverable error
    	*	   occurs that prevents the interface from being monitored.
    	* @throws org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException Thrown
@@ -143,7 +143,7 @@ final class JDBCMonitor
    	* <P>This method is the called whenever an interface is being removed from 
    	* the scheduler.
    	* For now this method is just an 'adaptor', does nothing
-   	* @param iface_ The network interface that was being monitored.
+   	* @param iface The network interface that was being monitored.
    	*
    	* @throws java.lang.RuntimeException Thrown if an unrecoverable error
    	*	 occurs that prevents the interface from being monitored.
@@ -161,8 +161,8 @@ final class JDBCMonitor
    	* Network interface to poll for a given service.
    	* Make sure you're using the latest (at least 5.5) <a href="http://www.sybase.com/detail_list/1,6902,2912,00.html">JConnect version</a>
    	* or the plugin will not be able to tell exactly if the service is up or not.
-   	* @param NetworkInterface iface_ The interface to poll
-   	* @param Map parameters Parameters to pass when polling the interface
+   	* @param iface The interface to poll
+   	* @param parameters Parameters to pass when polling the interface
    	* Currently recognized Map keys:
    	* <ul>
    	* <li> user - Database user

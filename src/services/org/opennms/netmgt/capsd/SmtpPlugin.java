@@ -364,7 +364,7 @@ public final class SmtpPlugin
 	 * service events if needed.
 	 *
 	 * @param address	The address to check for support.
-	 * @param qualiier	The map where qualification are set
+	 * @param qualifiers	The map where qualification are set
 	 *			by the plugin.
 	 *
 	 * @return True if the protocol is supported by the address.

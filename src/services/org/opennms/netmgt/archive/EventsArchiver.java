@@ -155,7 +155,7 @@ public class EventsArchiver
 	private Category		m_archCat;
 
 	/**
-	 * The archive age in milliseconds - i.e. events created before this are archived/deleted
+	 * The archive age in milliseconds.  Events created before this are archived/deleted.
 	 */
 	private long			m_archAge;
 
@@ -289,7 +289,7 @@ public class EventsArchiver
 	}
 
 	/**
-	 * <pre>Remove event with eventID from events table
+	 * Remove event with eventID from events table.
 	 * NOTE: Postgres does not have the  ResultSet.deleteRow()
 	 * implemented! - so use the eventID to delete!
 	 */
@@ -322,7 +322,7 @@ public class EventsArchiver
 
 	/**
 	 * Select the events created before 'age', log them to the archive file
-	 * if required and delete these events
+	 * if required and delete these events.
 	 *
 	 * NOTE: Postgres does not have the  ResultSet.deleteRow()
 	 * implemented! - so use the eventID to delete!

@@ -142,12 +142,12 @@ public class RrdFileConstants extends Object
 	 * Checks an RRD filename to make sure it is of the proper length
 	 * and does not contain any unexpected charaters.  
 	 * 
-	 * <p>The maximum length is specified by the 
+	 * The maximum length is specified by the 
 	 * {@link #MAX_RRD_FILENAME_LENGTH MAX_RRD_FILENAME_LENGTH} constant.  
 	 * The only valid characters are letters (A-Z and a-z), numbers (0-9), 
 	 * dashes (-), dots (.), and underscores (_).  These precautions are 
 	 * necessary since the RRD filename is used on the commandline and 
-	 * specified in the graph URL.</p>
+	 * specified in the graph URL.
 	 */
 	public static boolean isValidRrdName(String rrd) {
 		if( rrd == null ) {
@@ -188,15 +188,15 @@ public class RrdFileConstants extends Object
 	 * Checks an RRD filename to make sure it is of the proper length
 	 * and does not contain any unexpected charaters.  
 	 * 
-	 * <p>The maximum length is specified by the 
+	 * The maximum length is specified by the 
 	 * {@link #MAX_RRD_FILENAME_LENGTH MAX_RRD_FILENAME_LENGTH} constant.  
 	 * The only valid characters are letters (A-Z and a-z), numbers (0-9), 
 	 * dashes (-), dots (.), and underscores (_).  These precautions are 
 	 * necessary since the RRD filename is used on the commandline and 
-	 * specified in the graph URL.</p>
+	 * specified in the graph URL.
 	 *
 	 * @deprecated This method name does not use the correct Java naming 
-	 * convention.  Please use {@link #isValidRrdName() isValidRrdName} instead.
+	 * convention.  Please use isValidRrdName instead.
 	 */
 	public static boolean isValidRRDName(String rrd) {
 		if( rrd == null ) {

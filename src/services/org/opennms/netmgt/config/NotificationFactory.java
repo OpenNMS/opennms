@@ -696,8 +696,8 @@ public class NotificationFactory
 	}
 	
 	/**This method queries the database in search of a service id for a given serivice name
-	   @param String service, the name of the service
-	   @return int, the serviceID of the service
+	   @param service the name of the service
+	   @return the serviceID of the service
 	*/
 	private static int getServiceId(String service)
 		throws SQLException
@@ -823,8 +823,8 @@ public class NotificationFactory
         }
         
         /**
-         * Handles adding a new Notification 
-         * @param notice, the Notification to add
+         * Handles adding a new Notification.
+         * @param notice The Notification to add.
          */
         public synchronized void addNotification(Notification notice)
                 throws MarshalException, ValidationException, IOException, ClassNotFoundException
@@ -850,9 +850,9 @@ public class NotificationFactory
         }
         
         /**
-         * Sets the status on an individual notification configuration and saves to xml
-         * @param name, the name of the notification
-         * @param status, the status (either "on" or "off")
+         * Sets the status on an individual notification configuration and saves to xml.
+         * @param name The name of the notification.
+         * @param status The status (either "on" or "off").
          */
         public synchronized void updateStatus(String name, String status)
                 throws MarshalException, ValidationException, IOException, ClassNotFoundException

@@ -49,13 +49,13 @@ import org.opennms.netmgt.utils.ExecRunner;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
- * <P>This class is designed to be used by the service poller
+ * This class is designed to be used by the service poller
  * framework to test the availability of a generic service
  * by calling an external script or program. The external
  * script or program will be passed two options: --hostname,
  * the IP address of the host to be polled, and --timeout,
  * the timeout in seconds. Additional options or arguments
- * can be specified in the poller configuration.</P>
+ * can be specified in the poller configuration.
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
  * @author <A HREF="mike@opennms.org">Mike</A>
@@ -79,9 +79,9 @@ final class GpMonitor
 	private static final int DEFAULT_TIMEOUT = 3000; // 3 second timeout on read()
 
 	/**
-	 * <P>Poll the specified address for service availability</P>
+	 * Poll the specified address for service availability.
 	 *
-	 * <P>During the poll an attempt is made to call the specified
+	 * During the poll an attempt is made to call the specified
 	 * external script or program.  If the connection request is
 	 * successful, the banner line returned as standard output by
 	 * the script or program is parsed for a partial match with
@@ -90,7 +90,7 @@ final class GpMonitor
 	 * service status to SERVICE_AVAILABLE and return.
 	 *
 	 * The timeout is handled by ExecRunner and is also passed
-	 * as a parameter to the script or program being called.</P>
+	 * as a parameter to the script or program being called.
 	 *
 	 * @param iface		The network interface to test the service on.
 	 * @param parameters	The package parameters (timeout, retry, etc...)

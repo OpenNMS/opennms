@@ -50,8 +50,8 @@ public class CommandExecutor
 {
 	/**This method executes the command using a Process. The method will decide if 
 	   an input stream needs to be used.
-	   @param commandLine, the command to execute as a command line call
-	   @param arguments, a list of Argument objects that need to be passed to the command line call
+	   @param commandLine the command to execute as a command line call
+	   @param arguments a list of Argument objects that need to be passed to the command line call
 	   @return int, the return code of the command
 	*/
 	public int execute(String commandLine, List arguments)

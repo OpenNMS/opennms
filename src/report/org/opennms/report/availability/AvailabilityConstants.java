@@ -35,7 +35,7 @@
 package org.opennms.report.availability;
 
 /**
- * <P>This class is a repository for constant, static information
+ * This class is a repository for constant, static information
  * concerning the Availability Reporter Module. 
  *
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios</A>
@@ -45,7 +45,7 @@ package org.opennms.report.availability;
 public class AvailabilityConstants
 {
 	/**
-	 * <P>The sql statement that is used to get node info. for an IP address
+	 * The sql statement that is used to get node information for an IP address.
 	 */
 	public final static String	DB_GET_INFO_FOR_IP	= "SELECT  node.nodeid, node.nodelabel FROM "
 			+"node, ipInterface WHERE ((ipInterface.ipaddr = ?) AND "
@@ -53,7 +53,7 @@ public class AvailabilityConstants
 
 
 	/**
-	 * <P>The sql statement that is used to get services info. for a nodeid/IP address
+	 * The sql statement that is used to get services information for a nodeid/IP address.
 	 */
 	public final static String	DB_GET_SVC_ENTRIES	= "SELECT ifServices.serviceid, service.servicename FROM ifServices, " 
 + "service WHERE ((ifServices.nodeid = ? ) AND (ifServices.ipaddr = ?) AND ipinterface.ipaddr = ? AND ipinterface.isManaged ='M' AND "

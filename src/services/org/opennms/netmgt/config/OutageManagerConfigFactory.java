@@ -47,12 +47,12 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.outage.OutageConfiguration;
 
 /**
- * <p>This is the singleton class used to load the configuration for
- * the OpenNMS OutageManager from the outage-configuration.xml.</p>
+ * This is the singleton class used to load the configuration for
+ * the OpenNMS OutageManager from the outage-configuration xml file.
  *
- * <p><strong>Note:</strong>Users of this class should make sure the 
+ * <strong>Note:</strong>Users of this class should make sure the 
  * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods</p>
+ * the config is loaded before accessing other convenience methods.
  *
  * @author <a href="mailto:jamesz@blast.com">James Zuo</a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
@@ -150,7 +150,7 @@ public final class OutageManagerConfigFactory
 	}
 
 	/**
-	 * <p>Return the singleton instance of this factory</p>
+	 * Return the singleton instance of this factory.
 	 *
 	 * @return The current factory instance.
 	 *
@@ -166,7 +166,7 @@ public final class OutageManagerConfigFactory
 	}
 
 	/**
-	 * <p>Return the number of writer threads to be started</p>
+	 * Return the number of writer threads to be started.
 	 *
 	 * @return the number of writer threads to be started
 	 */
@@ -176,7 +176,7 @@ public final class OutageManagerConfigFactory
 	}
 
 	/**
-	 * <p>Return the SQL statemet to get the next outage ID</p>
+	 * Return the SQL statemet to get the next outage ID.
 	 *
 	 * @return the SQL statemet to get the next outage ID
 	 */
@@ -186,8 +186,8 @@ public final class OutageManagerConfigFactory
 	}
 
 	/**
-	 * <p>Return a boolean flag to indicate if a deleteService should be propagated to
-         * the interface or node level deletion when approciate.</p>
+	 * Return a boolean flag to indicate if a deleteService should be propagated to
+         * the interface or node level deletion when approciate.
 	 *
 	 * @return true for delete propagation otherwise false.
 	 */

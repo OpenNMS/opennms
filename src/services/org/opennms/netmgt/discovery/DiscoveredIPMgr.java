@@ -340,7 +340,7 @@ final class DiscoveredIPMgr
 	 * Returns true if the passed address is included in the
 	 * range of addresses to be skipped.
 	 *
-	 * @param addr	The address to check for exclusion
+	 * @param ipAddr The address to check for exclusion
 	 *
 	 * @return True if the address is excluded.
 	 *

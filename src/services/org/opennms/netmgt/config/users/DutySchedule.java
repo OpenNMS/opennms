@@ -108,7 +108,7 @@ public class DutySchedule
 	   and integer start and stop time. Very useful for the ModifyUser
 	   screen when it is converting from a table display to save the 
 	   information to a string format for the users.xml.
-	   @param Vector, filled with 7 Boolean objects and two String objects
+	   @param aSchedule filled with 7 Boolean objects and two String objects
 	*/
 	public DutySchedule(Vector aSchedule)
 	{
@@ -132,7 +132,7 @@ public class DutySchedule
 	/**This constructor is designed to build a new DutySchedule from a String
 	   representation formatted as such. <day_of_week_abbr><start>-<stop>
 	   eg. MoWeFr800-1700, TuTh900-1500.
-	   @param String aSchedule, the string to convert to a new DutySchedule
+	   @param aSchedule the string to convert to a new DutySchedule
 	*/
 	public DutySchedule(String aSchedule)
 	{
@@ -165,8 +165,8 @@ public class DutySchedule
 	}
 	
 	/**This method returns the index value of a day abbreviation
-	   @param String aDay, the day abbreviation
-	   @return int, the index associated with this abbreviation
+	   @param aDay the day abbreviation
+	   @return The index associated with this abbreviation.
 	*/
 	private int getDayInt(String aDay)
 	{
@@ -186,7 +186,7 @@ public class DutySchedule
 	
 	/**This method sets the BitSet that tracks what days this DutySchedule
 	   applies to.
-	   @param int aDay, the day index to set in the BitSet
+	   @param aDay the day index to set in the BitSet
 	*/
 	public void setDay(int aDay)
 	{
@@ -194,7 +194,7 @@ public class DutySchedule
 	}
 	
 	/**This method return the start time as an integer
-	   @return int, the start time of this DutySchedule
+	   @return The start time of this DutySchedule.
 	*/
 	public int getStartTime()
 	{
@@ -202,7 +202,7 @@ public class DutySchedule
 	}
 	
 	/**This method return the stop time as an integer
-	   @return int, the stop time of this DutySchedule
+	   @return The stop time of this DutySchedule.
 	*/
 	public int getStopTime()
 	{
@@ -214,7 +214,7 @@ public class DutySchedule
 	   stored, and the last two objects as Strings that reflect the start time
 	   and stop time respectively. This method gives a Vector that can be passed
 	   to the DutySchedule(Vector) constructor to create a new DutySchedule
-	   @return Vector, a Vector properly formatted to reflect this DutySchedule
+	   @return A Vector properly formatted to reflect this DutySchedule.
 	*/
 	public Vector getAsVector()
 	{
@@ -238,8 +238,8 @@ public class DutySchedule
 	   the day of week according to the BitSet. It makes a comparision to see
 	   if the argument Calendar is between the start and stop times and
 	   returns true immediately if it is.
-	   @param Calendar aTime, the time to check
-	   @return boolean, true if the Calendar is contained in the duty schedule,
+	   @param aTime The time to check.
+	   @return True if the Calendar is contained in the duty schedule.
 	                    false if it isn't.
 	*/
 	public boolean isInSchedule(Calendar aTime)
@@ -296,7 +296,7 @@ public class DutySchedule
 	}
 	
 	/**This method sets the start time of this DutySchedule
-	   @param int anHour, the hour in military time to set the start time for the DutySchedule
+	   @param anHour The hour in military time to set the start time for the DutySchedule.
 	*/
 	public void setStartHour(int anHour)
 	{
@@ -304,7 +304,7 @@ public class DutySchedule
 	}
 	
 	/**This method sets the stop time of this DutySchedule
-	   @param int anHour, the hour in military time to set the end time for the DutySchedule
+	   @param anHour The hour in military time to set the end time for the DutySchedule.
 	*/
 	public void setEndHour(int anHour)
 	{
@@ -315,7 +315,7 @@ public class DutySchedule
 	   DutySchedule(String) constructor could parse. The string will be
 	   formatted as such: <day_of_week_abbr><start>-<stop>
 	   eg. MoWeFr800-1700, TuTh900-1500.
-	   @return String, a string representation of this DutySchedule
+	   @return A string representation of this DutySchedule.
 	*/
 	public String toString()
 	{

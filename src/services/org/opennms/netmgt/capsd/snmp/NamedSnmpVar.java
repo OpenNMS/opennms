@@ -36,14 +36,14 @@ package org.opennms.netmgt.capsd.snmp;
 
 
 /**
- * <P>The NamedSnmpVar class is used to associate a 
+ * The NamedSnmpVar class is used to associate a 
  * name for a particular snmp instance with its object
  * identifier. Common names often include ifIndex, sysObjectId,
  * etc al. These names are the names of particular variables
- * as defined by the SMI.</P>
+ * as defined by the SMI.
  *
- * <P>Should the instance also be part of a table, then the
- * column number of the instance is also stored in the object.</P>
+ * Should the instance also be part of a table, then the
+ * column number of the instance is also stored in the object.
  *
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author <A HREF="mailto:mike@opennms.org">Mike Davidson</A>
@@ -54,38 +54,38 @@ package org.opennms.netmgt.capsd.snmp;
 final class NamedSnmpVar
 {
 	/** 
-	 * <P>String which contains the Class name of
-	 * the expected SNMP data type for the object.</P.
+	 * String which contains the Class name of
+	 * the expected SNMP data type for the object.
 	 */
 	private String		m_type;
 
 	/** 
-	 * <P>The class object for the class name stored
-	 * in the m_type string.</P.
+	 * The class object for the class name stored
+	 * in the m_type string.
 	 */
 	private Class		m_typeClass;
 
 	/**
-	 * <P>The alias name for the object identifier.</P.
+	 * The alias name for the object identifier.
 	 */
 	private String		m_name;
 	
 	/**
-	 * <P>The actual object identifer string for the
-	 * object.</P>
+	 * The actual object identifer string for the
+	 * object.
 	 */
 	private String		m_oid;
 	
 	/**
-	 * <P>If set then the object identifier is an
-	 * entry some SNMP table.</P>
+	 * If set then the object identifier is an
+	 * entry some SNMP table.
 	 */
 	private boolean		m_isTabular;
 	
 	/**
-	 * <P>If the instance is part of a table
+	 * If the instance is part of a table
 	 * then this is the column number for the
-	 * element.</P>
+	 * element.
 	 */
 	private int		m_column;
 
@@ -109,9 +109,9 @@ final class NamedSnmpVar
 	public static final String	SNMPNULL 		= "org.opennms.protocols.snmp.SnmpNull";
 
 	/**
-	 * <P>The class default constructor. The default constructor
+	 * The class default constructor. The default constructor
 	 * is disallowed in this class and thus the unsupported 
-	 * operation exception is always thrown by this constructor.</P>
+	 * operation exception is always thrown by this constructor.
 	 *
 	 * @exception java.lang.UnsupportedOperationException Always thrown
 	 * 	by this constructor.
@@ -123,9 +123,9 @@ final class NamedSnmpVar
 	}	
 	
 	/**
-	 * <P>This constructor creates a new instance of the class 
+	 * This constructor creates a new instance of the class 
 	 * with the type, alias and object identifier. The instance is not 
-	 * considered to be part of a table.</P>
+	 * considered to be part of a table.
 	 *
 	 * @param type	The expected SNMP data type of this object.
 	 * @param alias	The alias for the object identifier.
@@ -142,10 +142,10 @@ final class NamedSnmpVar
 	}
 	
 	/**
-	 * <P>This constructor creates a new instance of the class 
+	 * This constructor creates a new instance of the class 
 	 * with the type, alias, object identifier, and table column set.
 	 * The instance is considered to be part of a table and
-	 * the column is the "instance" number for the table.</P>
+	 * the column is the "instance" number for the table.
 	 *
 	 * @param type		The expected SNMP data type of this object.
 	 * @param alias		The alias for the object identifier.
@@ -164,8 +164,8 @@ final class NamedSnmpVar
 	}
 
 	/**
-	 * <P>Returns the class name stored in m_type which represents
-	 * the expected SNMP data type of the object.</P>
+	 * Returns the class name stored in m_type which represents
+	 * the expected SNMP data type of the object.
 	 */
 	String getType( )
 	{
@@ -173,7 +173,7 @@ final class NamedSnmpVar
 	}
 
 	/**
-	 * <P>Returns the class object associated with the
+	 * Returns the class object associated with the
 	 * class name stored in m_type.
 	 *
 	 * @exception java.lang.ClassNotFoundException Thrown from
@@ -190,8 +190,8 @@ final class NamedSnmpVar
 	}
 	
 	/**
-	 * <P>Returns the alias for the object
-	 * identifier.</P>
+	 * Returns the alias for the object
+	 * identifier.
 	 */
 	String getAlias( )
 	{
@@ -199,8 +199,8 @@ final class NamedSnmpVar
 	}
 	
 	/**
-	 * <P>Returns the object identifer for
-	 * this instance.</P>
+	 * Returns the object identifer for
+	 * this instance.
 	 */
 	String getOid( )
 	{
@@ -208,8 +208,8 @@ final class NamedSnmpVar
 	}
 	
 	/**
-	 * <P>Returns true if this instance 
-	 * is part of a table.</P>
+	 * Returns true if this instance 
+	 * is part of a table.
 	 */
 	boolean isTableEntry()
 	{
@@ -217,10 +217,10 @@ final class NamedSnmpVar
 	}
 	
 	/**
-	 * <P>Returns the column of the table
+	 * Returns the column of the table
 	 * this instance is in. If the instance
 	 * is not part of a table then the return
-	 * code is not defined.</P>
+	 * code is not defined.
 	 */
 	int getColumn()
 	{

@@ -51,18 +51,17 @@ import org.opennms.netmgt.dhcpd.Dhcpd;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
- * <P>This class is designed to be used by the service poller
+ * This class is designed to be used by the service poller
  * framework to test the availability of the DHCP service on 
- * remote interfaces as defined by RFC 2131.</P>
+ * remote interfaces as defined by RFC 2131.
  * 
- * <P>This class relies on the DHCP API provided by JDHCP v1.1.1
+ * This class relies on the DHCP API provided by JDHCP v1.1.1
  * (please refer to
  * <A HREF="http://www.dhcp.org/javadhcp">http://www.dhcp.org/javadhcp</A>).
- * </P>
  *
- * <P>The class implements the ServiceMonitor interface that allows 
+ * The class implements the ServiceMonitor interface that allows 
  * it to be used along with other plug-ins by the service poller 
- * framework.</P>
+ * framework.
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
@@ -83,7 +82,7 @@ final class DhcpMonitor
 	private static final int DEFAULT_TIMEOUT 	= 3000; // 3 second timeout on read()
 
 	/**
-	 * <P>Poll the specified address for DHCP service availability</P>
+	 * Poll the specified address for DHCP service availability.
 	 *
 	 * @param iface		The network interface to test the service on.
 	 * @param parameters	The package parameters (timeout, retry, etc...) to be 

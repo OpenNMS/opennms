@@ -379,8 +379,6 @@ public class Filter
 	 * This method parses a rule and returns the SQL select statement
 	 * equivalent of the rule.
 	 *
-	 * @param rule the rule to be parsed
-	 *
 	 * @return the sql select statement
 	 */
 	public String getSQLStatement()

@@ -71,12 +71,14 @@ your distribution.
   <pathelement path="${build.lib.dir}/servlet.jar"/>
   <pathelement path="${build.lib.dir}/ldap.jar"/>
   <pathelement path="${build.lib.dir}/catalina.jar"/>
+  <pathelement path="${build.lib.dir}/castor-0.9.3.9.jar"/>
   <pathelement path="${build.lib.dir}/fop0203.jar"/>
   <pathelement path="${build.lib.dir}/batik.jar"/>
   <pathelement path="${build.lib.dir}/mx4j.jar"/>
   <pathelement path="${build.lib.dir}/jdhcp.jar"/>
   <pathelement path="${build.lib.dir}/jcifs.jar"/>
   <pathelement path="${build.lib.dir}/bsf220.jar"/>
+  <pathelement path="${build.lib.dir}/xerces201.jar"/>
   <pathelement path="${build.lib.dir}/xmlrpc-1.2-b1.jar"/>
  </path>
 
@@ -1445,7 +1447,6 @@ OpenNMS as part of the post-install.
    packagenames="HelpFrame.*,ToolTipTree.*,org.opennms.*"
    author="true"
    version="true"
-   use="true"
    private="true"
    windowtitle="OpenNMS API"
    doctitle="OpenNMS API ${product.version}"

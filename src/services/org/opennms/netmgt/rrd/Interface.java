@@ -41,11 +41,11 @@ package org.opennms.netmgt.rrd;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
- * <P>This is a singleton class which provides an interface through which
- * RRD (Round Robin Database) functions (rrd_create(), rrd_update(), etc...) 
- * can be accessed from Java code.</P>
+ * This is a singleton class which provides an interface through which
+ * RRD (Round Robin Database) functions (rrd_create(), rrd_update(), and others) 
+ * can be accessed from Java code.
  *
- * <P>The native method 'launch()' takes a single argument which is a 
+ * <pre>The native method 'launch()' takes a single argument which is a 
  * RRD command string of similar format to what RRDtool takes.  Please
  * note the following examples:
  * 
@@ -55,9 +55,9 @@ import org.opennms.core.utils.ThreadCategory;
  * 	"update test.rrd --template:ifOctetsIn N:123456789"
  * 
  * Refer to www.rrdtool.org for additional examples and information on 
- * the format of rrdtool command strings.</P>
+ * the format of rrdtool command strings.
  * 
- * <P>Currently only 'create', 'update', and 'fetch' commands are supported.</P>
+ * Currently only 'create', 'update', and 'fetch' commands are supported.</pre>
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
@@ -160,7 +160,7 @@ public final class Interface
 	}
 	
 	/**
-	 * <p>Return the singleton instance of this class.</p>
+	 * Return the singleton instance of this class.
 	 *
 	 * @return The current instance.
 	 *

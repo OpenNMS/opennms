@@ -1841,7 +1841,7 @@ final class SuspectEventProcessor
 	 * event and sending it to eventd. 
 	 *
 	 * @param nodeId  	Nodeid of node being rescanned.
-	 * @param InetAddress 	Primary SNMP interface address.
+	 * @param primarySnmpIf	Primary SNMP interface address.
 	 */
 	private void createAndSendReinitializePrimarySnmpInterfaceEvent(int nodeId, InetAddress primarySnmpIf)
 	{

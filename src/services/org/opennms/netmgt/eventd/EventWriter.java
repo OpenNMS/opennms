@@ -62,19 +62,19 @@ import org.opennms.netmgt.xml.event.Header;
 import org.opennms.netmgt.xml.event.Operaction;
 
 /**
- * <P>EventWriter loads the information in each 'Event' into the database</P>
+ * EventWriter loads the information in each 'Event' into the database.
  *
- * <P>While loading mutiple values of the same element into a single DB column,
- * the mutiple values are delimited by MULTIPLE_VAL_DELIM</P>
+ * While loading mutiple values of the same element into a single DB column,
+ * the mutiple values are delimited by MULTIPLE_VAL_DELIM.
  *
- * <P>When an element and its attribute are loaded into a single DB column,
- * the value and the attribute are separated by a DB_ATTRIB_DELIM</P>
+ * When an element and its attribute are loaded into a single DB column,
+ * the value and the attribute are separated by a DB_ATTRIB_DELIM.
  *
- * <P>When using delimiters to append values, if the values already have the
- * delimiter, the delimiter in the value is escaped as in URLs</P>
+ * When using delimiters to append values, if the values already have the
+ * delimiter, the delimiter in the value is escaped as in URLs.
  *
- * <P>Values for the '<parms>' block are loaded with each parm name and
- * parm value delimited with the NAME_VAL_DELIM</P>
+ * Values for the '<parms>' block are loaded with each parm name and
+ * parm value delimited with the NAME_VAL_DELIM.
  *
  * @see org.opennms.netmgt.eventd.db.Constants#MULTIPLE_VAL_DELIM
  * @see org.opennms.netmgt.eventd.db.Constants#DB_ATTRIB_DELIM
@@ -235,11 +235,11 @@ final class EventWriter
 	}
 
 	/**
-	 * <P>This method is used to convert the service name into
+	 * This method is used to convert the service name into
 	 * a service id. It first looks up the information from a
 	 * service map of Eventd and if no match is found, by performing
 	 * a lookup in the database. If the conversion is successful then the
-	 * corresponding integer identifier will be returned to the caller.</P>
+	 * corresponding integer identifier will be returned to the caller.
 	 *
 	 * @param name		The name of the service
 	 *
@@ -292,12 +292,12 @@ final class EventWriter
 	}
 
 	/**
-	 * <P>This method is used to convert the event host into
+	 * This method is used to convert the event host into
 	 * a hostname id by performing a lookup in the database. If
 	 * the conversion is successful then the corresponding hosname
-	 * will be returned to the caller.</P>
+	 * will be returned to the caller.
 	 *
-	 * @param name		The event host
+	 * @param hostip		The event host
 	 *
 	 * @return The hostname
 	 *

@@ -35,7 +35,7 @@
 package org.opennms.netmgt.rtc;
 
 /**
- * <P>The RTCException class is thrown by the RTC </P>
+ * The RTCException class is thrown by the RTC.
  *
  * @author 	<A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy</A>
  * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>

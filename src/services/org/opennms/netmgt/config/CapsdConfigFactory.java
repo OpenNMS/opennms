@@ -87,12 +87,12 @@ import org.opennms.netmgt.config.capsd.SmbConfig;
 import org.opennms.netmgt.utils.IPSorter;
 
 /**
- * <p>This is the singleton class used to load the configuration for
- * the OpenNMS Capsd service from the capsd-configuration.xml.</p>
+ * This is the singleton class used to load the configuration for
+ * the OpenNMS Capsd service from the capsd-configuration xml file.
  *
- * <p><strong>Note:</strong>Users of this class should make sure the 
+ * <strong>Note:</strong>Users of this class should make sure the 
  * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods</p>
+ * the config is loaded before accessing other convenience methods.
  *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
@@ -582,7 +582,7 @@ public final class CapsdConfigFactory
 	}
 
 	/**
-	 * <p>Return the singleton instance of this factory</p>
+	 * Return the singleton instance of this factory.
 	 *
 	 * @return The current factory instance.
 	 *
@@ -598,7 +598,7 @@ public final class CapsdConfigFactory
 	}
 
 	/** 
-	 * <p>Return the Capsd configuration object</p>
+	 * Return the Capsd configuration object.
 	 */
 	public CapsdConfiguration getConfiguration()
 	{
@@ -752,10 +752,10 @@ public final class CapsdConfigFactory
 	}
 	
 	/**
-	 * <p>Responsible for syncing up the 'isManaged' field of the ipInterface table
+	 * Responsible for syncing up the 'isManaged' field of the ipInterface table
 	 * and the 'status' field of the ifServices table based on the capsd and
 	 * poller configurations. Note that the 'sync' only takes place for interfaces
-	 * and services that are not deleted or force unmanaged</p>
+	 * and services that are not deleted or force unmanaged.
 	 *
 	 * <pre>Here is how the statuses are set:
 	 * If an interface is 'unmanaged' based on the capsd configuration,
@@ -1068,9 +1068,9 @@ public final class CapsdConfigFactory
 	}
 	
 	/**
-	 * <p>Responsible for syncing up the 'isPrimarySnmp' field of the ipInterface table
+	 * Responsible for syncing up the 'isPrimarySnmp' field of the ipInterface table
 	 * based on the capsd and collectd configurations. Note that the 'sync' only takes 
-	 * place for interfaces that are not deleted</p>
+	 * place for interfaces that are not deleted.
 	 *
 	 * @param 	conn	Connection to the database.
 	 *
