@@ -1107,7 +1107,6 @@ final class RescanProcessor
 			{
 				int status = snmpc.getAdminStatus(ifIndex);
 				currIpIfEntry.setStatus(status);
-                                currIpIfEntry.setIfIndex(ifIndex);
 				ifType = snmpc.getIfType(ifIndex);
 				
 				// For new interfaces simply set 'isSnmpPrimary' field to secondary for now.  
@@ -1156,51 +1155,24 @@ final class RescanProcessor
 		{
 			createNodeGainedInterfaceEvent(dbIpIfEntry);
 		}
-		// If an interface has been reparented send associated events
-		else if (isReparented)
-		{
 			
-			// InterfaceIndexChanged event
-			//
-			if (log.isDebugEnabled())
-				log.debug("updateInterfaceInfo: ifIndex changed: " + ifIndexChangedFlag);
-			if (ifIndexChangedFlag)
-			{
-				createInterfaceIndexChangedEvent(dbIpIfEntry, originalIpIfEntry);
-				m_ifIndexOnNodeChangedFlag = true;
-			}
-		
-			// IPHostNameChanged event
-			//
-			if (log.isDebugEnabled())
-				log.debug("updateInterfaceInfo: hostname changed: " + ipHostnameChangedFlag);
-			if (ipHostnameChangedFlag)
-			{
-				createIpHostNameChangedEvent(dbIpIfEntry, originalIpIfEntry);
-			}
-		}
-		// If the interface is not new check to see if the interface's
-		// ifIndex or ipHostname have changed.
-		else
+		// InterfaceIndexChanged event
+		//
+		if (log.isDebugEnabled())
+			log.debug("updateInterfaceInfo: ifIndex changed: " + ifIndexChangedFlag);
+		if (ifIndexChangedFlag)
 		{
-			// InterfaceIndexChanged event
-			//
-			if (log.isDebugEnabled())
-				log.debug("updateInterfaceInfo: ifIndex changed: " + ifIndexChangedFlag);
-			if (ifIndexChangedFlag)
-			{
-				createInterfaceIndexChangedEvent(dbIpIfEntry, originalIpIfEntry);
-				m_ifIndexOnNodeChangedFlag = true;
-			}
+			createInterfaceIndexChangedEvent(dbIpIfEntry, originalIpIfEntry);
+			m_ifIndexOnNodeChangedFlag = true;
+		}
 		
-			// IPHostNameChanged event
-			//
-			if (log.isDebugEnabled())
-				log.debug("updateInterfaceInfo: hostname changed: " + ipHostnameChangedFlag);
-			if (ipHostnameChangedFlag)
-			{
-				createIpHostNameChangedEvent(dbIpIfEntry, originalIpIfEntry);
-			}
+		// IPHostNameChanged event
+		//
+		if (log.isDebugEnabled())
+			log.debug("updateInterfaceInfo: hostname changed: " + ipHostnameChangedFlag);
+		if (ipHostnameChangedFlag)
+		{
+			createIpHostNameChangedEvent(dbIpIfEntry, originalIpIfEntry);
 		}
         }
 		
@@ -1326,9 +1298,10 @@ final class RescanProcessor
 					createInterfaceSupportsSNMPEvent(dbIpIfEntry);
 				}
 			}
+                        /*
                         else
                         {
-				DbIfServiceEntry ifSvcEntry = DbIfServiceEntry.get(node.getNodeId(), ifaddr, sid.intValue());
+				DbIfServiceEntry ifSvcEntry = DbIfServiceEntry.get(dbc, node.getNodeId(), ifaddr, sid.intValue());
 				if (m_ifIndexOnNodeChangedFlag)
                                 {
                                         int index = dbIpIfEntry.getIfIndex();
@@ -1343,7 +1316,7 @@ final class RescanProcessor
                                                         + " /" + node.getNodeId());
 				        }
                                 }
-                        }
+                        } */
 		} // end while(more protocols)
         }
 
@@ -2441,6 +2414,14 @@ final class RescanProcessor
                         while (iter.hasNext())
                         {
                                 InetAddress addr = (InetAddress)iter.next();
+
+  				// Skip non-IP or loopback interfaces
+       				if (addr.getHostAddress().equals("0.0.0.0") && 
+       					addr.getHostAddress().startsWith("127.")) 
+       				{
+       					continue;
+       				}
+                                
 			        if (log.isDebugEnabled())
 				        log.debug("areDbInterfacesInSnmpCollection: ipaddress in db: " + ipaddr.getHostAddress()
                                                 + " ipaddress in ipAddrTable: " + addr.getHostAddress()); 
