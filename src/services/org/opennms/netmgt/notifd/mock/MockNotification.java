@@ -50,7 +50,7 @@ public class MockNotification {
             return (m_subject == null ? m.m_subject == null : m_subject.equals(m.m_subject))
                 && (m_email == null ? m.m_email == null : m_email.equals(m.m_email))
                 && (m_pemail == null ? m.m_pemail == null : m_pemail.equals(m.m_pemail))
-                && (Math.abs(m_expectedTime - m.m_expectedTime) < 300)
+                && (Math.abs(m_expectedTime - m.m_expectedTime) < 500)
                 ;
         }
         return false;

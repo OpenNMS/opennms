@@ -26,7 +26,7 @@
                         </sequence>
                         <attribute name="uei" type="string" use="required"/>
                         <attribute name="acknowledge" type="string" use="required"/>
-                        <attribute name="clear" type="boolean" use="optional"/>
+                        <attribute name="notify" type="boolean" default = "true" use="optional"/>
                 </complexType>
         </element>
         

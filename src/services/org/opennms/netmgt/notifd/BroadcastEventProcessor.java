@@ -189,19 +189,12 @@ final class BroadcastEventProcessor implements EventListener {
                 if (curAck.getUei().equals(event.getUei())) {
                     try {
                         ThreadCategory.getInstance(getClass()).debug("Acknowledging event " + curAck.getAcknowledge() + " " + event.getNodeid() + ":" + event.getInterface() + ":" + event.getService());
-                        getNotificationManager().acknowledgeNotice(event, curAck.getAcknowledge(), curAck.getMatch());
+                        Collection notifIDs = getNotificationManager().acknowledgeNotice(event, curAck.getAcknowledge(), curAck.getMatch());
+                        if (curAck.getNotify()) {
+                            sendResolvedNotifications(notifIDs, curAck);
+                        }
                     } catch (SQLException e) {
                         ThreadCategory.getInstance(getClass()).error("Failed to auto acknowledge notice.", e);
-                    }
-                }
-                // if the clear flag is set, swap the event uei as the ack uei
-                // and ack the second notice
-                if (curAck.getUei().equals(event.getUei()) && curAck.getClear()) {
-                    try {
-                        ThreadCategory.getInstance(getClass()).debug("Acknowledging source event " + event.getUei() + " " + event.getNodeid() + ":" + event.getInterface() + ":" + event.getService());
-                        getNotificationManager().acknowledgeNotice(event, event.getUei(), curAck.getMatch());
-                    } catch (SQLException e) {
-                        ThreadCategory.getInstance(getClass()).error("Failed to auto acknowledge source notice.", e);
                     }
                 }
 
@@ -209,6 +202,15 @@ final class BroadcastEventProcessor implements EventListener {
         } catch (Exception e) {
             ThreadCategory.getInstance(getClass()).error("Unable to auto acknowledge notice due to exception.", e);
         }
+    }
+
+    /**
+     * @param notifIDs
+     * @param curAck
+     */
+    private void sendResolvedNotifications(Collection notifIDs, AutoAcknowledge curAck) {
+        // TODO Auto-generated method stub
+        
     }
 
     /**

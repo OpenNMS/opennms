@@ -44,9 +44,11 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -354,9 +356,11 @@ public abstract class NotificationManager {
     /**
      * 
      */
-    public void acknowledgeNotice(Event event, String uei, String[] matchList) throws SQLException, IOException, MarshalException, ValidationException {
+    public Collection acknowledgeNotice(Event event, String uei, String[] matchList) throws SQLException, IOException, MarshalException, ValidationException {
         // get the notification id and see if only one is returned
         Connection connection = null;
+        Collection notifIDs = new LinkedList();
+
         try {
             connection = getConnection();
             StringBuffer sql = new StringBuffer("SELECT notifyid FROM notifications WHERE eventuei=? AND respondTime is null ");
@@ -393,6 +397,7 @@ public abstract class NotificationManager {
             if (results != null) {
                 while (results.next()) {
                     int notifID = results.getInt(1);
+                    notifIDs.add(new Integer(notifID));
                     PreparedStatement update = connection.prepareStatement(getConfigManager().getConfiguration().getAcknowledgeUpdateSql());
     
                     update.setString(1, "auto-acknowledged");
@@ -414,6 +419,7 @@ public abstract class NotificationManager {
                 }
             }
         }
+        return notifIDs;
     }
     /**
      */

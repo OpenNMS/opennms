@@ -95,7 +95,7 @@ public class NotifdTest extends TestCase {
             "        acknowledge-update-sql=\"UPDATE notifications SET answeredby=?, respondtime=? WHERE notifyId=?\"\n" + 
             "   match-all=\"false\">\n" + 
             "        \n" + 
-            "   <auto-acknowledge uei=\"uei.opennms.org/nodes/serviceResponsive\" \n" + 
+            "   <auto-acknowledge notify = \"true\" uei=\"uei.opennms.org/nodes/serviceResponsive\" \n" + 
             "                          acknowledge=\"uei.opennms.org/nodes/serviceUnresponsive\">\n" + 
             "                          <match>nodeid</match>\n" + 
             "                          <match>interfaceid</match>\n" + 
@@ -425,13 +425,6 @@ public class NotifdTest extends TestCase {
         assertTrue("Unexpected Warnings in Log", MockUtil.noWarningsOrHigherLogged());
     }
     
-    /**
-     * see http://bugzilla.opennms.org/cgi-bin/bugzilla/show_bug.cgi?id=731
-     * @throws Exception
-     */
-    public void testBug731() throws Exception {
-        assertEquals(0L,0L);
-    }
     
     /**
      * see http://bugzilla.opennms.org/cgi-bin/bugzilla/show_bug.cgi?id=1022
@@ -494,6 +487,7 @@ public class NotifdTest extends TestCase {
         m_anticipator.reset();
         
         Date upDate = new Date();
+        anticipateNotificationsForGroup("RESOLVED: node 1 down.", "InitialGroup", upDate, 0);
         long finishedUps = anticipateNotificationsForGroup("node 1 up.", "UpGroup", upDate, 0);
 
         //bring node back up now
@@ -548,7 +542,7 @@ public class NotifdTest extends TestCase {
         verifyAnticipated(endTime, 500);
     }
     
-    public void testAcknowledge() throws Exception {
+    public void testManualAcknowledge1() throws Exception {
 
         m_destinationPathManager.getPath("NoEscalate").setInitialDelay("2000ms");
         
@@ -566,6 +560,96 @@ public class NotifdTest extends TestCase {
         assertTrue("Unexpected notifications received", m_anticipator.getUnanticipated().isEmpty());
         
     }
+
+    public void testManualAcknowledge2() throws Exception {
+
+        MockInterface iface = m_network.getInterface(1, "192.168.1.1");
+
+        Date downDate = new Date();
+        long finishedDowns = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "InitialGroup", downDate, 0);
+
+        //bring node down now
+        Event event = iface.createDownEvent(downDate);
+        m_eventMgr.sendEventToListeners(event);
+
+        sleep(1000);
+        m_db.acknowledgeNoticesForEvent(event);
+        sleep(5000);
+
+        verifyAnticipated(finishedDowns, 500);
+                
+    }
+
+    public void testAutoAcknowledge1() throws Exception {
+
+        m_destinationPathManager.getPath("NoEscalate").setInitialDelay("2000ms");
+        
+        MockNode node = m_network.getNode(1);
+        
+        Event downEvent = node.createDownEvent();
+
+        m_eventMgr.sendEventToListeners(downEvent);
+        
+        sleep(1000);
+        Date date = new Date();
+        Event upEvent = node.createUpEvent(date);
+        long endTime = anticipateNotificationsForGroup("node 1 up.", "UpGroup", date, 0);
+        
+        m_eventMgr.sendEventToListeners(upEvent);
+                
+        verifyAnticipated(endTime, 500, 5000);
+    }
+
+    public void testAutoAcknowledge2() throws Exception {
+
+        MockInterface iface = m_network.getInterface(1, "192.168.1.1");
+
+        Date downDate = new Date();
+        long finishedDowns = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "InitialGroup", downDate, 0);
+
+        //bring node down now
+        Event event = iface.createDownEvent(downDate);
+        m_eventMgr.sendEventToListeners(event);
+
+        sleep(1000);
+        Date date = new Date();
+        Event upEvent = iface.createUpEvent(date);
+        anticipateNotificationsForGroup("RESOLVED: interface 192.168.1.1 down.", "InitialGroup", date, 0);
+        long endTime = anticipateNotificationsForGroup("interface 192.168.1.1 up.", "UpGroup", date, 0);
+        
+        m_eventMgr.sendEventToListeners(upEvent);
+                
+        verifyAnticipated(endTime, 500, 5000);
+                
+    }
+    
+    /**
+     * see http://bugzilla.opennms.org/cgi-bin/bugzilla/show_bug.cgi?id=731
+     * @throws Exception
+     */
+    public void testBug731() throws Exception {
+        MockInterface iface = m_network.getInterface(1, "192.168.1.1");
+
+        Date downDate = new Date();
+        long finishedDowns = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "InitialGroup", downDate, 0);
+
+        //bring node down now
+        Event event = iface.createDownEvent(downDate);
+        m_eventMgr.sendEventToListeners(event);
+
+        sleep(1000);
+        Date date = new Date();
+        Event upEvent = iface.createUpEvent(date);
+        anticipateNotificationsForGroup("RESOLVED: interface 192.168.1.1 down.", "InitialGroup", date, 0);
+        long endTime = anticipateNotificationsForGroup("interface 192.168.1.1 up.", "UpGroup", date, 0);
+        m_eventMgr.sendEventToListeners(upEvent);
+        verifyAnticipated(endTime, 500, 5000);
+        
+        
+    }
+
+
+
     
     private long anticipateNotificationsForGroup(String subject, String groupName, Date startTime, long interval) throws Exception {
         return anticipateNotificationsForGroup(subject, groupName, startTime.getTime(), interval);
@@ -592,8 +676,12 @@ public class NotifdTest extends TestCase {
     private void verifyAnticipated(int waitTime) {
         verifyAnticipated(0, waitTime);
     }
-    
+
     private void verifyAnticipated(long lastNotifyTime, long waitTime) {
+        verifyAnticipated(lastNotifyTime, waitTime, 1000);
+    }
+
+    private void verifyAnticipated(long lastNotifyTime, long waitTime, long sleepTime) {
         long totalWaitTime = Math.max(0, lastNotifyTime + waitTime - System.currentTimeMillis());
         
         Collection missingNotifications = m_anticipator.waitForAnticipated(totalWaitTime);
@@ -603,7 +691,7 @@ public class NotifdTest extends TestCase {
         long now = System.currentTimeMillis();
         MockUtil.println("Expected notifications no sooner than "+lastNotifyTime+", currentTime is "+now);
         assertTrue("Anticipated notifications received before expected start time", now > lastNotifyTime);
-        sleep(1000);
+        sleep(sleepTime);
         printNotifications("Unexpected notifications", m_anticipator.getUnanticipated());
         assertEquals("Unexpected notifications forthcoming.", 0, m_anticipator.getUnanticipated().size());
     }
