@@ -709,7 +709,7 @@ create table usersNotified (
         contactinfo     varchar(64)
 );
 
-create unique index userid_notifyid_idx on usersNotified(userID, notifyID);
+create index userid_notifyid_idx on usersNotified(userID, notifyID);
 
 --# This constraint not understood by installer
 --#        CONSTRAINT pk_usersNotified PRIMARY KEY (userID,notifyID) );

@@ -35,4 +35,5 @@ ALTER TABLE notifications DROP CONSTRAINT fk_eventID3;
 ALTER TABLE notifications ADD CONSTRAINT fk_eventID3 FOREIGN KEY (eventID) REFERENCES events (eventID) ON DELETE CASCADE;
 
 ALTER TABLE usersnotified ADD CONSTRAINT fk_notifID2 FOREIGN KEY (notifyID) REFERENCES notifications (notifyID);
-ALTER TABLE usersnotified ADD CONSTRAINT pk_usersNotified PRIMARY KEY (userID, notifyID);
+--ALTER TABLE usersnotified ADD CONSTRAINT pk_usersNotified PRIMARY KEY (userID, notifyID);
+CREATE INDEX userid_notifyid_idx ON usersNotified(userID, notifyID);
