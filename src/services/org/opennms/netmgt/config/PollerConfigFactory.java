@@ -49,6 +49,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -618,6 +619,35 @@ public final class PollerConfigFactory implements PollerConfig {
 
         return null;
     }
+
+    /**
+     * Returns a list of package names that the ip belongs to, null if none.
+     *                
+     * <strong>Note: </strong>Evaluation of the interface against a package
+     * filter will only work if the IP is alrady in the database.
+     *
+     * @param ipaddr
+     *            the interface to check
+     *
+     * @return a list of package names that the ip belongs to, null if none
+     */
+    public synchronized List getAllPackageMatches(String ipaddr) {
+        Category log = ThreadCategory.getInstance(getClass());
+
+        Enumeration pkgEnum = m_config.enumeratePackage();
+        List matchingPkgs = new ArrayList();
+        while (pkgEnum.hasMoreElements()) {
+            org.opennms.netmgt.config.poller.Package pkg = (org.opennms.netmgt.config.poller.Package) pkgEnum.nextElement();
+            String pkgName = pkg.getName();
+            boolean inPkg = interfaceInPackage(ipaddr, pkg);
+            if (inPkg) {
+                matchingPkgs.add(pkgName);
+            }
+        }
+
+        return matchingPkgs;
+    }
+
 
     /**
      * Returns true if the ip is part of atleast one package.
