@@ -57,7 +57,7 @@
     <td>
       <h3>OpenNMS Web Console</h3>
       <p>
-        <a href="http://www.opennms.org/">OpenNMS</a>, Copyright &copy; 2003 <a href="http://www.sortova.com">Sortova Consulting Group, Inc.</a>
+        The <a href="http://www.opennms.org/">OpenNMS</a> software, as distributed here, is copyright &copy; 2002-2003 <a href="http://www.sortova.com">Sortova Consulting Group, Inc.</a>, the current maintainers of the project. Being a community effort, portions of the code have been contributed by others, most notably from the <a href="http://www.oculan.com">Oculan Corporation</a>, the original maintainers of the project and creators of the bulk of the code. Please see the source for detailed copyright notices. 
       </p>
         
       <p>
