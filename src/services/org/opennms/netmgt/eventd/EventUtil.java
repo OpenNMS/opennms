@@ -26,10 +26,14 @@ package org.opennms.netmgt.eventd;
 
 import java.util.*;
 import java.text.*;
+import java.sql.*;
 import java.math.BigInteger;
 
 import org.opennms.protocols.snmp.*;
 import org.opennms.core.utils.Base64;
+
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
+
 
 // castor generated classes
 import org.opennms.netmgt.xml.event.*;
@@ -66,6 +70,11 @@ public final class EventUtil
 	static final String	TAG_NODEID	="nodeid";
 
 	/**
+	 * The event nodeid xml tag
+	 */
+	static final String	TAG_NODELABEL	="nodelabel";
+
+	/**
 	 * The event host xml tag
 	 */
 	static final String	TAG_HOST	="host";
@@ -75,6 +84,11 @@ public final class EventUtil
 	 */
 	static final String	TAG_INTERFACE	="interface";
 
+        /**
+         * The reverse DNS lookup of the interface
+         */
+	static final String TAG_INTERFACE_RESOLVE ="interfaceresolve";
+        
 	/**
 	 * The event snmp id xml tag
 	 */
@@ -376,6 +390,24 @@ public final class EventUtil
 		{
 			retParmVal = Long.toString(event.getNodeid());
 		}
+		else if (parm.equals(TAG_NODELABEL))
+		{
+			retParmVal = Long.toString(event.getNodeid());
+                       	String nodeLabel = null;
+			if (event.getNodeid() > 0)
+			{
+                        	try
+                        	{
+                                	nodeLabel = getNodeLabel(event.getNodeid());
+                        	}
+                        	catch (SQLException sqlE)
+                        	{
+                                 	// do nothing
+                        	}
+                       	}
+			if (nodeLabel != null)
+				retParmVal = nodeLabel;
+		}
 		else if (parm.equals(TAG_TIME))
 		{
 			retParmVal = event.getTime();
@@ -387,6 +419,15 @@ public final class EventUtil
 		else if (parm.equals(TAG_INTERFACE))
 		{
 			retParmVal = event.getInterface();
+		}
+		else if (parm.equals(TAG_INTERFACE_RESOLVE))
+		{
+			retParmVal = event.getInterface();
+			try
+			{
+				java.net.InetAddress inet = java.net.InetAddress.getByName(retParmVal);
+				retParmVal = inet.getHostName();
+			} catch (java.net.UnknownHostException e) {}
 		}
 		else if (parm.equals(TAG_SNMPHOST))
 		{
@@ -757,5 +798,67 @@ public final class EventUtil
 
 		return null;
 	}
+
+        /**
+         * Retrieve nodeLabel from the node table of the database
+         * given a particular nodeId.
+         *
+         * @param nodeId        Node identifier
+         *
+         * @return nodeLabel    Retreived nodeLabel
+         *
+         * @throws SQLException if database error encountered
+         */
+        private static String getNodeLabel(long nodeId)
+                throws SQLException
+        {
+
+                String nodeLabel = null;
+                java.sql.Connection dbConn = null;
+                Statement stmt = null;
+                try
+                {
+                        // Get datbase connection from the factory
+                        dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+
+                        // Issue query and extract nodeLabel from result set
+                        stmt = dbConn.createStatement();
+                        ResultSet rs = stmt.executeQuery("SELECT nodelabel FROM node WHERE nodeid=" + String.valueOf(nodeId));
+                        if (rs.next())
+                        {
+                                nodeLabel = (String)rs.getString("nodelabel");
+                        }
+                }
+                finally
+                {
+                        // Close the statement
+                        if (stmt != null)
+                        {
+                                try
+                                {
+                                        stmt.close();
+                                }
+                                catch (Exception e)
+                                {
+					// do nothing
+                                }
+                        }
+
+                        // Close the database connection
+                        if(dbConn != null)
+                        {
+                                try
+                                {
+                                        dbConn.close();
+                                }
+                                catch(Throwable t)
+                                {
+					// do nothing
+                                }
+                        }
+                }
+
+                return nodeLabel;
+        }
 
 }

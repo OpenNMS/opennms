@@ -9,58 +9,58 @@
         <uei>uei.opennms.org/nodes/serviceUnresponsive</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Network/Systems</destinationPath>
-        <text-message>The %service% poll to interface %interface% successfully completed a connection to the service listener on the remote machine. However, the synthetic transaction failed to complete within %parm[timeout]% milliseconds, over %parm[attempts]% attempts.  This event will NOT impact service level agreements, but may be an indicator of other problems on that node.  You have 15 minutes to acknowledge this message before this notification will escalate to the next recipient.</text-message>
-        <subject>Notice #%noticeid%: %service% service on %interface% is unresponsive.</subject>
+        <text-message>The %service% poll to interface %interfaceresolve% (%interfaceresolve% (%interface%) on node %nodelabel%) on node %nodelabel% successfully completed a connection to the service listener on the remote machine. However, the synthetic transaction failed to complete within %parm[timeout]% milliseconds, over %parm[attempts]% attempts.  This event will NOT impact service level agreements, but may be an indicator of other problems on that node.  You have 15 minutes to acknowledge this message before this notification will escalate to the next recipient.</text-message>
+        <subject>Notice #%noticeid%: %service% service on %interfaceresolve% (%interfaceresolve% (%interface%) on node %nodelabel%) on node %nodelabel% is unresponsive.</subject>
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="serviceResponsive" status="on">
         <uei>uei.opennms.org/nodes/serviceResponsive</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Network/Systems</destinationPath>
-        <text-message>The %service% service on %interface% has recovered from a previously UNRESPONSIVE state.  Synthetic transactions to this service are completing within the alotted timeout and retry period.</text-message>
-        <subject>Notice #%noticeid%: %service% service on %interface% has recovered.</subject>
+        <text-message>The %service% service on %interfaceresolve% (%interface%) on node %nodelabel% has recovered from a previously UNRESPONSIVE state.  Synthetic transactions to this service are completing within the alotted timeout and retry period.</text-message>
+        <subject>Notice #%noticeid%: %service% service on %interfaceresolve% (%interfaceresolve% (%interface%) on node %nodelabel%) on node %nodelabel% has recovered.</subject>
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="interfaceDown" status="on">
         <uei>uei.opennms.org/nodes/interfaceDown</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Page-Network/Systems/Management</destinationPath>
-        <text-message>All services are down on interface %interface%.  New Outage records have been
+        <text-message>All services are down on interface %interfaceresolve% (%interface%) on node %nodelabel%.  New Outage records have been
             created and service level availability calculations will be
             impacted until this outage is resolved.  You have been notified by
             OpenNMS and you must acknowledge this notification
             within 15 minutes to prevent escalation.</text-message>
-        <subject>Notice #%noticeid%: %interface% down.</subject>
+        <subject>Notice #%noticeid%: %interfaceresolve% (%interface%) on node %nodelabel% down.</subject>
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="nodeDown" status="on">
         <uei>uei.opennms.org/nodes/nodeDown</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Page-Network/Systems/Management</destinationPath>
-        <text-message>All services are down on node %parm[nodelabel]%.  New Outage records have been
+        <text-message>All services are down on node %nodelabel%.  New Outage records have been
             created and service level availability calculations will be
             impacted until this outage is resolved.  You have been notified by
             OpenNMS and you must acknowledge this notification
             within 15 minutes to prevent escalation.</text-message>
-        <subject>Notice #%noticeid%: node %parm[nodelabel]% down.</subject>
+        <subject>Notice #%noticeid%: node %nodelabel% down.</subject>
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="interfaceUp" status="on">
         <uei>uei.opennms.org/nodes/interfaceUp</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Page-Network/Systems</destinationPath>
-        <text-message>The interface %interface% which was previously down 
+        <text-message>The interface %interfaceresolve% (%interface%) on node %nodelabel% which was previously down 
             is now up.</text-message>
-        <subject>Notice #%noticeid%: Interface %interface% has been cleared</subject>
+        <subject>Notice #%noticeid%: Interface %interfaceresolve% (%interface%) on node %nodelabel% has been cleared</subject>
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="nodeUp" status="on">
         <uei>uei.opennms.org/nodes/nodeUp</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Page-Network/Systems</destinationPath>
-        <text-message>The node %parm[nodelabel]% which was previously down 
+        <text-message>The node %nodelabel% which was previously down 
             is now up.</text-message>
-        <subject>Notice #%noticeid%: Node %parm[nodelabel]% has been cleared.</subject>
+        <subject>Notice #%noticeid%: Node %nodelabel% has been cleared.</subject>
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="nodeLostService" status="on">
@@ -68,18 +68,18 @@
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Page-Network/Systems/Management</destinationPath>
         <text-message>The %service% service poll on interface
-            %interface% failed at %time%.    You have been notified by
+            %interfaceresolve% (%interface%) on node %nodelabel% failed at %time%.    You have been notified by
             OpenNMS and you must acknowledge this notification
             within 15 minutes to prevent escalation.</text-message>
-        <subject>Notice #%noticeid%: %service% down on %interface%.</subject>
+        <subject>Notice #%noticeid%: %service% down on %interfaceresolve% (%interface%) on node %nodelabel%.</subject>
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="nodeRegainedService" status="on">
         <uei>uei.opennms.org/nodes/nodeRegainedService</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Page-Network/Systems</destinationPath>
-        <text-message>%service% service restored on interface %interface%.</text-message>
-        <subject>Notice #%noticeid%: %interface%&apos;s %service% service restored.</subject>
+        <text-message>%service% service restored on interface %interfaceresolve% (%interface%) on node %nodelabel%.</text-message>
+        <subject>Notice #%noticeid%: %interfaceresolve% (%interface%) on node %nodelabel%&apos;s %service% service restored.</subject>
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="coldStart" status="on">
@@ -117,9 +117,9 @@
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Network/Systems</destinationPath>
         <text-message>Due to extended downtime, the %service% service on
-            interface %interface% has been deleted from
+            interface %interfaceresolve% (%interface%) on node %nodelabel% has been deleted from
             OpenNMS&apos;s polling database.</text-message>
-        <subject>Notice #%noticeid%: %interface%&apos;s %service% service deleted.</subject>
+        <subject>Notice #%noticeid%: %interfaceresolve% (%interface%) on node %nodelabel%&apos;s %service% service deleted.</subject>
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="nodeAdded" status="on">
@@ -150,9 +150,9 @@
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Network/Systems</destinationPath>
         <text-message>Due to extended downtime, the interface
-            %interface% has been deleted from OpenNMS&apos;s
+            %interfaceresolve% (%interface%) on node %nodelabel% has been deleted from OpenNMS&apos;s
             polling database.</text-message>
-        <subject>Notice #%noticeid%: [OpenNMS] %interface% deleted.</subject>
+        <subject>Notice #%noticeid%: [OpenNMS] %interfaceresolve% (%interface%) on node %nodelabel% deleted.</subject>
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
 </notifications>

@@ -48,7 +48,8 @@ import org.opennms.netmgt.xml.event.Parm;
 /**
  * <P>The PollableNode class...</P>
  * 
- * @author <A HREF="mailto:mike@opennms.org">Mike</A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
+ * @author <A HREF="mailto:mike@opennms.org">Mike Davidson</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */
@@ -488,6 +489,47 @@ public class PollableNode
 			// Add Parms to the event
 			newEvent.setParms(eventParms);
 		}
+
+		// The following code can be uncommented to add the nodelabel parm
+		// to Interface Up/Down events. This is deprecated with the addition of 
+		// special tags in EventUtil.
+                // else if (uei.equals(EventConstants.INTERFACE_UP_EVENT_UEI) ||
+                //         uei.equals(EventConstants.INTERFACE_DOWN_EVENT_UEI))
+                // {
+                //         String nodeLabel = null;
+                //         try
+                //         {
+                //                 nodeLabel = getIntNodeLabel(address);
+                //         }
+                //         catch (SQLException sqlE)
+                //         {
+                //                  // Log a warning
+                //                  log.warn("Failed to retrieve node label for nodeid " + address, sqlE);
+                //         }
+
+                //         if (nodeLabel == null)
+                //         {
+                //                 // This should never happen but if it does just
+                //                 // use nodeId for the nodeLabel so that the
+                //                 // event description has something to display.
+                //                 nodeLabel = (String)address.getHostAddress();
+                //         }
+
+                //         // Add appropriate parms
+                //         Parms eventParms = new Parms();
+
+                //         // Add nodelabel parm
+                //         Parm eventParm = new Parm();
+                //         eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
+                //         Value parmValue = new Value();
+                //         parmValue.setContent(nodeLabel);
+                //         eventParm.setValue(parmValue);
+                //         eventParms.addParm(eventParm);
+
+                //         // Add Parms to the event
+                //         newEvent.setParms(eventParms);
+                // }
+
 		
 		return newEvent;
 	}
@@ -558,6 +600,75 @@ public class PollableNode
 		
 		return nodeLabel;
 	}
+
+        /**
+         * Retrieve nodeLabel from the node table of the database
+         * given a particular IP Address.
+         *
+         * @param ipaddr        Interface IP Address
+         *
+         * @return nodeLabel    Retreived nodeLabel
+         *
+         * @throws SQLException if database error encountered
+         */
+        private String getIntNodeLabel(InetAddress ipaddr)
+                throws SQLException
+        {
+                Category log = ThreadCategory.getInstance(getClass());
+
+                String nodeLabel = null;
+                java.sql.Connection dbConn = null;
+                Statement stmt = null;
+                try
+                {
+                        // Get datbase connection from the factory
+                        dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+
+                        // Issue query and extract nodeLabel from result set
+                        stmt = dbConn.createStatement();
+			String sql = "SELECT node.nodelabel FROM node, ipinterface WHERE ipinterface.ipaddr='" + ipaddr.getHostAddress() + "' AND ipinterface.nodeid=node.nodeid";
+                        ResultSet rs = stmt.executeQuery(sql);
+                        if (rs.next())
+                        {
+                                nodeLabel = rs.getString(1);
+                                if (log.isDebugEnabled())
+                                        log.debug("getNodeLabel: ipaddr=" + ipaddr.getHostAddress() + " nodelabel=" + nodeLabel);
+                        }
+                }
+                finally
+                {
+                        // Close the statement
+                        if (stmt != null)
+                        {
+                                try
+                                {
+                                        stmt.close();
+                                }
+                                catch (Exception e)
+                                {
+                                        if(log.isDebugEnabled())
+                                                log.debug("getNodeLabel: an exception occured closing the SQL statement", e);
+                                }
+                        }
+
+                        // Close the database connection
+                        if(dbConn != null)
+                        {
+                                try
+                                {
+                                        dbConn.close();
+                                }
+                                catch(Throwable t)
+                                {
+                                        if(log.isDebugEnabled())
+                                                log.debug("getNodeLabel: an exception occured closing the SQL connection", t);
+                                }
+                        }
+                }
+
+                return nodeLabel;
+        }
+
 	/**  
 	 * Invokes a poll of the remote interface. 
 	 * 

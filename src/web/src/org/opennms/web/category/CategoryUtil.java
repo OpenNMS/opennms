@@ -43,7 +43,7 @@ public class CategoryUtil extends Object
 
     
     /** Format an RTC value the way we want it. */
-    public String formatValue(double value) {
+    public static String formatValue(double value) {
         return valueFormat.format(value);
     }
     

@@ -259,10 +259,13 @@ public class NotificationFactory
 					}
 				}
 				// If there is no Srv with the event, check and see if the If matches
-				else if (eventSrv == null && eventIf.equals(notifIf))
+				else if (eventSrv == null)
 				{
-					result = true;
-					break;
+					if (eventIf.equals(notifIf))
+					{
+						result = true;
+						break;
+					}
 				}
 				// Otherwise, insure that both the Srv and If match
 				else if (eventSrv.equals(notifSrv) && eventIf.equals(notifIf))
