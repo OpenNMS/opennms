@@ -2621,11 +2621,19 @@ final class RescanProcessor
 				}
 			}
 
-			if (log.isDebugEnabled())
-				log.debug("collection completed for " + ifaddr.getHostAddress());
 			collectorMap.put(ifaddr.getHostAddress(), collector);
 		}
 
+                if (snmpc == null || snmpc.failed() || doSnmpCollection )
+                {
+        		if (log.isDebugEnabled())
+                        {
+				log.debug("RescanProcessor: Could not collect SNMP data for node: " + m_scheduledNode.getNodeId());
+				log.debug("RescanProcessor: Rescan completed without doing anything.");
+                        }
+                        return;
+                }
+                
 		// Update the database
 		//
 		Date now = null;
