@@ -50,9 +50,26 @@ public class NotificationAnticipator {
     
     List m_unanticipated = new ArrayList();
     
+    long m_expectedDiff = 500;
+    
     /**
      */
     public NotificationAnticipator() {
+    }
+    
+    /**
+     * @param expectedDiff
+     */
+    public void setExpectedDifference(long expectedDiff) {
+    		m_expectedDiff = expectedDiff;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public long getExpectedDifference() {
+    		return m_expectedDiff;
     }
     
     /**
@@ -69,7 +86,9 @@ public class NotificationAnticipator {
      */
     public synchronized void notificationReceived(MockNotification mn) {
         MockUtil.println("Received notification: "+mn);
-        if (m_anticipated.contains(mn)) {
+        int i = m_anticipated.indexOf(mn);
+        if (i != -1
+                && (Math.abs(mn.getExpectedTime() - ((MockNotification)m_anticipated.get(i)).getExpectedTime()) < m_expectedDiff)) {
             m_anticipated.remove(mn);
             notifyAll();
         } else {

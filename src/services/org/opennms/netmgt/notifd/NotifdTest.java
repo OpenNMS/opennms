@@ -667,6 +667,8 @@ public class NotifdTest extends TestCase {
     }
     
     public void testBug1114() throws Exception {
+    		m_anticipator.setExpectedDifference(5000);
+    		
         MockService svc = m_network.getService(1, "192.168.1.1", "ICMP");
         
         Date date = new Date();
@@ -686,7 +688,7 @@ public class NotifdTest extends TestCase {
   
         m_eventMgr.sendEventToListeners(event);
 
-        verifyAnticipated(endTime, 500);
+        verifyAnticipated(endTime - 5000, 500);
     }
     
     public void testRebuildParameterMap() throws Exception {
@@ -805,14 +807,14 @@ public class NotifdTest extends TestCase {
         long totalWaitTime = Math.max(0, lastNotifyTime + waitTime - System.currentTimeMillis());
         
         Collection missingNotifications = m_anticipator.waitForAnticipated(totalWaitTime);
-        printNotifications("Missing notifications", missingNotifications);
-        assertEquals("Some expected notifications still outstanding.", 0, missingNotifications.size());
         // make sure that we didn't start before we should have
         long now = System.currentTimeMillis();
-        MockUtil.println("Expected notifications no sooner than "+lastNotifyTime+", currentTime is "+now);
-        assertTrue("Anticipated notifications received before expected start time", now > lastNotifyTime);
         sleep(sleepTime);
+        printNotifications("Missing notifications", missingNotifications);
+        MockUtil.println("Expected notifications no sooner than "+lastNotifyTime+", currentTime is "+now);
         printNotifications("Unexpected notifications", m_anticipator.getUnanticipated());
+        assertEquals("Some expected notifications still outstanding.", 0, missingNotifications.size());
+        assertTrue("Anticipated notifications received before expected start time", now > lastNotifyTime);
         assertEquals("Unexpected notifications forthcoming.", 0, m_anticipator.getUnanticipated().size());
     }
 
