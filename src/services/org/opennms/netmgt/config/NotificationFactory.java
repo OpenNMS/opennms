@@ -238,7 +238,12 @@ public class NotificationFactory
 
                        		// ThreadCategory.getInstance(getClass()).debug("Notification Notif Interface: " + notifIf + " Service: " + notifSrv);
 						
-				if (eventSrv == null && eventIf.equals(notifIf))
+				if (eventIf == null)
+				{
+					result = true;
+					break;
+				}
+				else if (eventSrv == null && eventIf.equals(notifIf))
 				{
 					result = true;
 					break;
