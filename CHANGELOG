@@ -1,5 +1,6 @@
 1.0.0 to 1.1.0
 ----------------------------------------------------------------------
+- Added a Threshold Rearm event for both Low and High Thresholds.
 - Added an Admin GUI page for deleting nodes
 - Added the ability to select which non-IP interfaces would be 
   scheduled for data collection, and built an Admin WebUI page
