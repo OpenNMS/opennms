@@ -39,7 +39,7 @@
   <para>Please see the latest <ulink
   url="https://sourceforge.net/docman/?group_id=4141">release notes</ulink> to
   see if your operating system is supported. Currently OpenNMS runs on Linux
-  (many distributions), Solaris and Mac OSX.</para>
+  (many distributions), Solaris and Mac OS X.</para>
 
   <para>This guide assumes that if you use packages, you do so consistently.
   This is because OpenNMS will attempt to determine if the software it
