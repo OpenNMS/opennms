@@ -1494,7 +1494,7 @@ public class Installer {
 	}
 	
 	public void checkServerXmlOldOpennmsContext() throws Exception {
-		String search_regexp = "(?m).*<Context\\s+path=\"/opennms\".*";
+		String search_regexp = "(?ms).*<Context\\s+path=\"/opennms\".*";
 		StringBuffer b = new StringBuffer();
 		
 		File f = new File(m_webappdir + File.separator + ".." + File.separator + "conf" +
