@@ -59,6 +59,12 @@
 		<column name="lastGood"/>
 		<column name="lastFail"/>
 	</table>
+	<table name="customCat">
+     		<join column="ipAddr" table="ipInterface" table-column="ipAddr"/>
+     		<column name="ipAddr" visable="false"/>
+     		<column name="custCategory"/>
+	</table>
+
 
 </database-schema>
 
