@@ -2,6 +2,8 @@ opennms (1.1.4-1woody) stable; urgency=low
 
   * New upstream release, (not yet released).
 
+ -- Eric Evans <eevans@sym-link.com>  Mon, 23 Aug 2004 10:13:59 -0500
+
 opennms (1.1.3-2woody) stable; urgency=low
 
   * Removed postgresql.jar from libopennms-java, and included dependency
