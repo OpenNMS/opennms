@@ -1,5 +1,6 @@
 1.0.1 to 1.0.2
 ----------------------------------------------------------------------
+- Disallowed spaces in Path name. Bug 657
 - fixed small bug with wildcards in eventconf.xml
 - fixed AM/PM ordering on Performance Report drop down. Bug 515
 - fixed typo - Bug 662 - thanks Volker
