@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// ///07/2003 Use EventProxy to send event.
 // 11/07/2003 Changed the new suspect event source.
 // 11/28/2003 Created.
 //
@@ -49,8 +50,8 @@ import org.opennms.netmgt.xml.event.Event;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.eventd.UndeclaredEventException;
+import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.utils.TcpEventProxy;
 
 /**
  * A servlet that handles adding a new interface
@@ -65,14 +66,13 @@ public class AddNewInterfaceServlet extends HttpServlet
         /**
          * The value used as the source of the event
          */
-        final static String EVENT_SOURCE_VALUE = "OpenNMS.Discovery";
+        final static String EVENT_SOURCE_VALUE = "Web UI";
 
         public void init() throws ServletException
         {
 	        try
 	        {
 		        DatabaseConnectionFactory.init();
-                        EventIpcManagerFactory.init();
 	        }
 	        catch(Exception e)
 	        {
@@ -101,14 +101,7 @@ public class AddNewInterfaceServlet extends HttpServlet
                 }
                 else
                 {
-                        try{
-                                createAndSendNewSuspectInterfaceEvent(ipAddress);
-                        }
-                        catch (UndeclaredEventException e)
-                        {
-                                throw new ServletException("AddInterfaceServlet: faild to create and send newSuspectInterface event", e);
-
-                        }
+                        createAndSendNewSuspectInterfaceEvent(ipAddress);
 	
 	                //forward the request for proper display
                         RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/interfaceAdded.jsp");
@@ -117,7 +110,7 @@ public class AddNewInterfaceServlet extends HttpServlet
         }
 
         private void createAndSendNewSuspectInterfaceEvent(String ipaddr)
-                throws UndeclaredEventException
+                throws ServletException
         {
                 Event event = new Event();
                 event.setSource(EVENT_SOURCE_VALUE);
@@ -134,8 +127,16 @@ public class AddNewInterfaceServlet extends HttpServlet
                 }
 
                 event.setTime(EventConstants.formatToString(new java.util.Date()));
-                EventIpcManagerFactory.getInstance().getManager().sendNow(event);
                 
+                try
+                {
+                        EventProxy eventProxy = new TcpEventProxy();
+                        eventProxy.send(event);
+                }
+                catch (Exception e)
+                {
+                        throw new ServletException("Could not send event " + event.getUei(), e);
+                }
         }
 
         private int getNodeId(String ipaddr) throws SQLException
