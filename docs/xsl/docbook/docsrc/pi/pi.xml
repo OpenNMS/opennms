@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='iso-8859-1'?>
+<!DOCTYPE book PUBLIC '-//OASIS//DTD DocBook XML V4.2//EN'
+'http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd' [
+<!ENTITY html-param.xml SYSTEM "../html/param.xml" NDATA SGML>
+]>
+<book>
+<bookinfo>
+<title>Processing Instruction Reference</title>
+<releaseinfo role="meta">
+$Id: pi.xml,v 1.1 2003/05/01 22:04:44 kosek Exp $
+</releaseinfo>
+<author>
+  <surname>Kosek</surname>
+  <firstname>Ji&rcaron;&iacute;</firstname>
+</author>
+<copyright>
+  <year>2003</year>
+  <holder>Ji&rcaron;&iacute; Kosek</holder>
+</copyright>
+</bookinfo>
+
+<preface>
+<title>Introduction</title>
+
+<para>This is technical reference documentation for the DocBook XSL
+Stylesheets. It documents processing instructions (PIs) recognized by
+the stylesheets.</para>
+
+<para>These PIs can be usually used to change behaviour of stylesheets
+in a particular place. If you want to change some setting globally it
+is better to do it via setting appropriate stylesheet
+parameter if there is such one.</para>
+
+</preface>
+
+<reference>
+<title>HTML PIs</title>
+
+<partintro>
+<para>Following PIs are processed only if you are generating HTML
+output. This means that you are using HTML, XHTML, HTML Help or
+JavaHelp output format.</para>
+
+<para>Name of this PI is <literal>dbhtml</literal> and its behaviour
+is controlled with following <quote>attributes</quote>.</para>
+</partintro>
+
+<refentry id="dbhtml.filename">
+<refmeta>
+<refentrytitle>&lt;?dbhtml filename="..."?&gt;</refentrytitle>
+<refmiscinfo role="type">string</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>filename</refname>
+<refpurpose>Filename for chunk</refpurpose>
+</refnamediv>
+
+<refsect1>
+<title>Description</title>
+
+<para>Sets the name for chunked file. PI must be child of element
+which goes into chunk (e.g. chapter, section). You can also set <link
+linkend="dbhtml.dir">directory</link> for chunk.</para>
+
+<para>Another way to control filename of chunk is enabling <parameter
+role="html">use.id.as.filename</parameter> parameter.</para>
+
+</refsect1>
+
+<refsect1>
+<title>Example</title>
+
+<programlisting><![CDATA[<section>
+<title>Configuring pencil</title>
+<?dbhtml filename="configuration.html"?>
+
+...
+
+</section>]]></programlisting>
+
+</refsect1>
+
+</refentry>
+
+<refentry id="dbhtml.dir">
+<refmeta>
+<refentrytitle>&lt;?dbhtml dir="..."?&gt;</refentrytitle>
+<refmiscinfo role="type">string</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>dir</refname>
+<refpurpose>Directory for chunk</refpurpose>
+</refnamediv>
+
+<refsect1>
+<title>Description</title>
+
+<para>Sets the directory for chunked file. PI must be child of element
+which goes into chunk (e.g. chapter, section). Resulting directory is
+inherited from ancestor elements if they also contain this PI. You can
+also set <link linkend="dbhtml.filename">filename</link> for
+chunk.</para>
+
+<para>PI can specify both filename and directory at the same time.</para>
+
+</refsect1>
+
+<refsect1>
+<title>Example</title>
+
+<programlisting><![CDATA[<section>
+<title>Configuring pencil</title>
+<?dbhtml dir="config" filename="pencil.html"?>
+
+...
+
+</section>]]></programlisting>
+
+</refsect1>
+
+</refentry>
+
+</reference>
+
+<reference>
+<title>Common PIs</title>
+
+<partintro>
+<para>Following PIs are recognized in all output formats.</para>
+</partintro>
+
+<refentry>
+<refnamediv>
+<refname></refname>
+<refpurpose></refpurpose>
+</refnamediv>
+</refentry>
+</reference>
+
+</book>

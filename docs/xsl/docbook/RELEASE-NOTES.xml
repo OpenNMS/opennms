@@ -1,0 +1,1272 @@
+<?xml version='1.0'?>
+<!DOCTYPE article
+  PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<article>
+<articleinfo>
+<title>DocBook XSL Stylesheet Release Notes</title>
+<pubdate>08 May 2003</pubdate>
+<releaseinfo role="cvs">$Id: RELEASE-NOTES.xml,v 1.21 2004/02/27 18:17:27 nwalsh Exp $
+</releaseinfo>
+
+<corpauthor>DocBook Open Repository Team</corpauthor>
+
+</articleinfo>
+
+<para>These are the release notes for the DocBook XSL Stylesheets.
+This file documents (mostly) changes to the public APIs. What,
+exactly, counts as a public API is still somewhat in question, but it
+includes at least the global parameters.</para>
+
+<para>You may also be interested in the more detailed <ulink url="WhatsNew"/>.
+</para>
+
+<itemizedlist><title>Release 1.65.0</title>
+
+<listitem>
+<para>A number of important bug fixes, documented in <ulink url="WhatsNew"/>.
+</para>
+</listitem>
+
+<listitem>
+<para>Added a workaround to allow these stylesheets to process DocBook NG
+documents. (It’s a hack that pre-processes the document to strip off the
+namespace and then uses <function>exsl:node-set</function> to process
+the result.)
+</para>
+</listitem>
+
+<listitem>
+<para>Added alternative indexing mechanism which has better
+internationalization support. New indexing method allows grouping of
+accented letters like e, é, ë into the same group under letter "e". It
+can also treat special letters (e.g. "ch") as one character and place
+them in the correct position (e.g. between "h" and "i" in Czech
+language).</para>
+
+<para>In order to use this mechanism you must create customization
+layer which imports some base stylesheet (like
+<filename>fo/docbook.xsl</filename>,
+<filename>html/chunk.xsl</filename>) and then includes appropriate
+stylesheet with new indexing code
+(<filename>fo/autoidx-ng.xsl</filename> or
+<filename>html/autoidx-ng.xsl</filename>). For example:</para>
+
+<programlisting><![CDATA[<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                version="1.0">
+
+<xsl:import href="http://docbook.sourceforge.net/release/xsl/current/fo/docbook.xsl"/>
+<xsl:include href="http://docbook.sourceforge.net/release/xsl/current/fo/autoidx-ng.xsl"/>
+
+</xsl:stylesheet>]]></programlisting>
+
+<para>New method is known to work with Saxon and it should also work
+with xsltproc 1.1.1 and later. Currently supported languages are
+English, Czech, German, French, Spanish and Danish.</para>
+</listitem>
+
+</itemizedlist>
+
+<itemizedlist><title>Release 1.64.1</title>
+
+<para>General bug fixes and improvements. Sorry about the failure to produce
+an updated release notes file for 1.62.0—1.63.2</para>
+
+<listitem>
+<para>In the course of fixing bug #849787, wrapping Unicode callouts
+with an appropriate font change in the Xalan extensions, I discovered
+that the Xalan APIs have changed a bit. So <filename>xalan2.jar</filename>
+will work with older Xalan 2 implementations, <filename>xalan25.jar</filename>
+works with Xalan 2.5.</para>
+</listitem>
+</itemizedlist>
+
+<itemizedlist><title>Release 1.61.0</title>
+
+<para>Lots of bug fixes and improvements.</para>
+
+<listitem>
+<para>Initial support for timestamp PI. From now you
+  can use &lt;?dbtimestamp format="Y-m-d H:M:S"?&gt; to get current
+  datetime in your document. Added localization support for datetime PI
+</para>
+</listitem>
+
+<listitem>
+<para>Added level 6 to test for <sgmltag>section</sgmltag> depth in
+section.level template so that
+section.title.level6.properties will be used for sections
+that are 6 deep or deeper. This should also cause a h6 to be
+created in html output.
+</para>
+</listitem>
+
+<listitem>
+<para>Don't use SVG graphics if <parameter>use.svg</parameter>=0
+</para>
+</listitem>
+
+<listitem>
+<para>Now uses number-and-title-template for sections
+  only if <parameter>section.autolabel</parameter> is not zero.
+</para>
+</listitem>
+
+<listitem>
+<para>Added missing 'english-language-name' attribute to
+the l10n element, and the missing 'style' attribute to the
+template element so the current gentext documents will
+validate.
+</para>
+</listitem>
+
+<listitem>
+<para>Corrected several references to parameter
+  <parameter>qanda.defaultlabel</parameter> that were missing the "$".
+</para>
+</listitem>
+
+<listitem>
+<para>Now accepts <parameter>admon.textlabel</parameter> parameter to turn off
+  Note, Warning, etc. label.
+</para>
+</listitem>
+
+<listitem>
+<para>FeatReq #684561: support more XEP metadata
+</para>
+</listitem>
+
+<listitem>
+<para>Added hyphenation support. Added support for <sgmltag>coref</sgmltag>.
+Added <sgmltag>beginpage</sgmltag> support. (does nothing; see TDG).
+</para>
+</listitem>
+
+<listitem>
+<para>Added support for
+hyphenation-character, hyphenation-push-character-count, and
+hyphenation-remain-character-count
+</para>
+</listitem>
+
+<listitem>
+<para>Added <parameter>root.properties</parameter>,
+<parameter>ebnf.assignment</parameter>,
+and <parameter>ebnf.statement.terminator</parameter>
+</para>
+</listitem>
+
+<listitem>
+<para>Support bgcolor PI in table cells; make sure
+rowsep and colsep don't have any effect on the last row or
+column
+</para>
+</listitem>
+
+<listitem>
+<para>Handle <sgmltag>othercredit</sgmltag> on titlepage a little
+better
+</para>
+</listitem>
+
+<listitem>
+<para>Applied fix from Jeff Beal that fixed the bug
+that put secondary page numbers on primary entries. Same
+with tertiary page numbers on secondary entries.
+</para>
+</listitem>
+
+<listitem>
+<para>Added definition of missing variable
+<parameter>collection</parameter>.
+</para>
+</listitem>
+
+<listitem>
+<para>Make <sgmltag>footnote</sgmltag> formatting 'normal' even when it
+occurs in a context that has special formatting
+</para>
+</listitem>
+
+<listitem>
+<para>Added warning when <parameter>glossary.collection</parameter> is not
+blank, but it cannot open the specified file.
+</para>
+</listitem>
+
+<listitem>
+<para>Pick up the frame attribute on <sgmltag>table</sgmltag> and
+<sgmltag>informaltable</sgmltag>.
+</para>
+</listitem>
+
+<listitem>
+<para><sgmltag>indexdiv</sgmltag>/<sgmltag>title</sgmltag>
+in non-autogenerated indexes are
+now picked up.
+</para>
+</listitem>
+
+<listitem>
+<para>Removed (unused)
+component.title.properties
+</para>
+</listitem>
+
+<listitem>
+<para>Move IDs from
+page-sequences down to titlepage blocks
+</para>
+</listitem>
+
+<listitem>
+<para>Use
+proportional-column-width(1) on more <sgmltag>table</sgmltag>s.
+</para>
+<para>Use proportional-column-width() for
+header/footer tables; suppress relative-align when when
+using FOP
+</para>
+</listitem>
+
+<listitem>
+<para>Check for <parameter>glossterm.auto.link</parameter> when linking
+firstterms; don't output gl. prefix on glossterm links
+</para>
+</listitem>
+
+<listitem>
+<para>Generate Part ToCs
+</para>
+</listitem>
+
+<listitem>
+<para>Support <sgmltag>glossary</sgmltag>, <sgmltag>bibliography</sgmltag>,
+and <sgmltag>index</sgmltag> in component ToCs.
+</para>
+</listitem>
+
+<listitem>
+<para>Refactored chunking code so that
+customization of chunk algorithm and chunk elements is more
+practical
+</para>
+</listitem>
+
+<listitem>
+<para>Support <sgmltag>textobject</sgmltag>/<sgmltag>phrase</sgmltag>
+on <sgmltag>inlinemediaobject</sgmltag>.
+</para>
+</listitem>
+
+<listitem>
+<para>Support 'start' PI on ordered lists
+</para>
+</listitem>
+
+<listitem>
+<para>Fixed test of $toc PI to turn on qandaset TOC.
+</para>
+</listitem>
+
+<listitem>
+<para>Added process.chunk.footnotes to sect2 through
+5 to fix bug of missing footnotes when chunk level greater
+than 1.
+</para>
+</listitem>
+
+<listitem>
+<para>Added
+paramater <parameter>toc.max.depth</parameter> which controls maximal depth of ToC
+as requested by PHP-DOC group.
+</para>
+</listitem>
+
+<listitem>
+<para>Exempted <sgmltag>titleabbrev</sgmltag> from preamble processing in
+lists, and fixed variablelist preamble code to use the same
+syntax as the other lists.
+</para>
+</listitem>
+
+<listitem>
+<para>Added support for elements between variablelist
+and first varlistentry since DocBook 4.2 supports that now.
+</para>
+</listitem>
+</itemizedlist>
+
+<itemizedlist><title>Release 1.60.1</title>
+
+<para>Lots of bug fixes.</para>
+
+<listitem>
+<para>The format of the <filename>titlepage.templates.xml</filename> files and
+the stylesheet that transforms them have been significantly changed. All of the
+attributes used to control the templates are now namespace qualified. So what
+used to be:</para>
+
+<programlisting><![CDATA[<t:titlepage element="article" wrapper="fo:block">]]></programlisting>
+
+<para>is now:</para>
+
+<programlisting><![CDATA[<t:titlepage t:element="article" t:wrapper="fo:block">]]></programlisting>
+
+<para>Attributes from other namespaces (including those that are unqualified) are
+now copied directly through. In practice, this means that the names that used
+to be <quote>fo:</quote> qualified:</para>
+
+<programlisting><![CDATA[<title named-template="component.title"
+       param:node="ancestor-or-self::article[1]"
+       fo:text-align="center"
+       fo:keep-with-next="always"
+       fo:font-size="&hsize5;"
+       fo:font-weight="bold"
+       fo:font-family="{$title.font.family}"/>]]></programlisting>
+
+<para>are now unqualified:</para>
+
+<programlisting><![CDATA[<title t:named-template="component.title"
+       param:node="ancestor-or-self::article[1]"
+       text-align="center"
+       keep-with-next="always"
+       font-size="&hsize5;"
+       font-weight="bold"
+       font-family="{$title.font.family}"/>]]></programlisting>
+
+<para>The <sgmltag>t:titlepage</sgmltag> and <sgmltag>t:titlepage-content</sgmltag>
+elements both generate wrappers now. And unqualified attributes on those elements
+are passed through. This means that you can now make the title font apply to
+ane entire titlepage and make the entire <quote>recto</quote>
+titlepage centered by specifying the font and alignment on the those elements:</para>
+
+<programlisting>&lt;t:titlepage t:element="article" t:wrapper="fo:block"
+             font-family="{$title.font.family}">
+
+  &lt;t:titlepage-content t:side="recto"
+             text-align="center"></programlisting>
+
+</listitem>
+
+<listitem><para>Support use of <sgmltag>titleabbrev</sgmltag> in running
+headers and footers.
+</para></listitem>
+
+<listitem><para>Added (experimental) <parameter>xref.with.number.and.title</parameter>
+parameter to enable number/title cross references even when the default would
+be just the number.
+</para></listitem>
+
+<listitem><para>Generate <sgmltag>part</sgmltag> ToCs if they're requested.
+</para></listitem>
+
+<listitem><para>Use proportional-column-width() in header/footer tables.
+</para></listitem>
+
+<listitem><para>Handle alignment correctly when <sgmltag>screenshot</sgmltag>
+wraps a graphic in a <sgmltag>figure</sgmltag>.
+</para></listitem>
+
+<listitem><para>Format <sgmltag>chapter</sgmltag> and <sgmltag>appendix</sgmltag>
+cross references consistently.
+</para></listitem>
+
+<listitem><para>Attempt to support tables with multiple <sgmltag>tgroup</sgmltag>s
+in FO.
+</para></listitem>
+
+<listitem><para>Output <sgmltag>fo:table-columns</sgmltag> in
+<sgmltag>simplelist</sgmltag> tables.
+</para></listitem>
+
+<listitem><para>Use <filename>titlepage.templates.xml</filename> for
+<sgmltag>indexdiv</sgmltag> and <sgmltag>glossdiv</sgmltag> formatting.
+</para></listitem>
+
+<listitem><para>Improve support for new bibliography elements.
+</para></listitem>
+
+<listitem><para>Added
+<parameter>footnote.number.format</parameter>,
+<parameter>table.footnote.number.format</parameter>,
+<parameter>footnote.number.symbols</parameter>, and
+<parameter>table.footnote.number.symbols</parameter> for better control of
+footnote markers.
+</para></listitem>
+
+<listitem><para>Added <sgmltag>glossentry.show.acronyms</sgmltag>.
+</para></listitem>
+
+<listitem><para>Suppress the draft-mode page masters when
+<parameter>draft-mode</parameter> is <quote>no</quote>.
+</para></listitem>
+
+<listitem><para>Make blank pages verso not recto. D'Oh!
+</para></listitem>
+
+<listitem><para>Improved formatting of <sgmltag>ulink</sgmltag> footnotes.
+</para></listitem>
+
+<listitem><para>Fixed bugs in graphic width/height calculations.
+</para></listitem>
+
+<listitem><para>Added class attributes to inline elements.
+</para></listitem>
+
+<listitem><para>Don't add <quote>.html</quote> to the filenames identified
+with the <quote>dbhtml</quote> PI.
+</para></listitem>
+
+<listitem><para>Don't force a ToC when sections contain <sgmltag>refentry</sgmltag>s.
+</para></listitem>
+
+<listitem><para>Make section title sizes a function of the
+<parameter>body.master.size</parameter>.
+</para></listitem>
+
+</itemizedlist>
+
+<itemizedlist><title>Release 1.59.2</title>
+
+<para>The 1.59.2 fixes an FO bug in the page masters that causes FOP to fail.
+</para>
+
+<listitem>
+<para>Removed the region-name from the region-body of blank pages. There's
+no reason to give the body of blank pages a unique name and doing so causes
+a mismatch that FOP detects.
+</para>
+</listitem>
+
+<listitem>
+<para>Output IDs for the first paragraphs in listitems.
+</para>
+</listitem>
+
+<listitem>
+<para>Fixed some small bugs in the handling of page numbers in double-sided mode.
+</para>
+</listitem>
+
+<listitem>
+<para>Attempt to prevent duplicated IDs from being produced when
+<sgmltag class="attribute">endterm</sgmltag> on <sgmltag>xref</sgmltag> points
+to something with nested structure.
+</para>
+</listitem>
+
+<listitem>
+<para>Fix aligment problems in <sgmltag>equation</sgmltag>s.
+</para>
+</listitem>
+
+<listitem>
+<para>Output the type attribute on unordered lists (UL) in HTML only if
+the css.decoration parameter is true.
+</para>
+</listitem>
+
+<listitem>
+<para>Calculate the font size in formal.title.properties so that it's 1.2 times
+the base font size, not a fixed "12pt".
+</para>
+</listitem>
+</itemizedlist>
+
+<itemizedlist><title>Release 1.59.1</title>
+
+<para>The 1.59.1 fixes a few bugs.
+</para>
+
+<listitem>
+<para>Added Bulgarian localization.
+</para>
+</listitem>
+
+<listitem>
+<para>Indexing improvements; localize book indexes to books but allow setindex
+to index an entire set.
+</para>
+</listitem>
+
+<listitem>
+<para>The default value for rowsep and colsep is now "1" as per CALS.
+</para>
+</listitem>
+
+<listitem>
+<para>Added support for <sgmltag>titleabbrev</sgmltag> (use them for cross
+references).
+</para>
+</listitem>
+
+<listitem>
+<para>Improvements to <sgmltag>mediaobject</sgmltag> for selecting print vs. online
+images.
+</para>
+</listitem>
+
+<listitem>
+<para>Added seperate property sets for <sgmltag>figure</sgmltag>s,
+<sgmltag>example</sgmltag>s, <sgmltag>equation</sgmltag>s, <sgmltag>tables</sgmltag>s,
+and <sgmltag>procedure</sgmltag>s.
+</para>
+</listitem>
+
+<listitem>
+<para>Make <sgmltag>lineannotation</sgmltag>s italic.
+</para>
+</listitem>
+
+<listitem>
+<para>Support <sgmltag class="attribute">xrefstyle</sgmltag> attribute.
+</para>
+</listitem>
+
+<listitem>
+<para>Make <sgmltag class="attribute">endterm</sgmltag> on
+<sgmltag>xref</sgmltag> higher priority than
+<sgmltag class="attribute">xreflabel</sgmltag> target.
+</para>
+</listitem>
+
+<listitem>
+<para>Glossary formatting improvements.
+</para>
+</listitem>
+</itemizedlist>
+
+<itemizedlist><title>Release 1.58.0</title>
+
+<para>The 1.58.0 adds some initial support for extensions in xsltproc, adds
+a few features, and fixes bugs.
+</para>
+
+<listitem>
+<para>This release contains the first attempt at extension support for xsltproc.
+The only extension available to date is the one that adjusts table column widths.
+Run <filename>extensions/xsltproc/python/xslt.py</filename>.
+</para>
+</listitem>
+
+<listitem>
+<para>Fixed bugs in calculation of adjusted column widths to correct for rounding
+errors.
+</para>
+</listitem>
+
+<listitem>
+<para>Support nested <sgmltag>refsection</sgmltag> elements correctly.
+</para>
+</listitem>
+
+<listitem>
+<para>Reworked <literal>gentext.template</literal> to take context into consideration.
+The name of elements in localization files is now an xpath-like context list, not
+just a simple name.
+</para>
+</listitem>
+
+<listitem>
+<para>Made some improvements to bibliography formatting.
+</para>
+</listitem>
+
+<listitem>
+<para>Improved graphical formatting of admonitions.
+</para>
+</listitem>
+
+<listitem>
+<para>Added support for <sgmltag>entrytbl</sgmltag>.
+</para>
+</listitem>
+
+<listitem>
+<para>Support spanning index terms.
+</para>
+</listitem>
+
+<listitem>
+<para>Support <sgmltag>bibliosource</sgmltag>.
+</para>
+</listitem>
+</itemizedlist>
+
+<itemizedlist><title>Release 1.57.0</title>
+<listitem>
+<para>The 1.57.0 release wasn't documented here. Oops.
+</para>
+</listitem>
+</itemizedlist>
+
+<itemizedlist><title>Release 1.56.0</title>
+
+<para>The 1.56.0 release fixes bugs.
+</para>
+
+<listitem>
+<para>Reworked chunking. <emphasis>This will break all existing customizations
+layers that change the chunking algorithm.</emphasis> If you're customizing chunking,
+look at the new <quote>content</quote> parameter that's passed to
+<literal>process-chunk-element</literal> and friends.
+</para>
+</listitem>
+
+<listitem>
+<para>Support continued and inherited numeration in <sgmltag>orderedlist</sgmltag>
+formatting for FOs.
+</para>
+</listitem>
+
+<listitem>
+<para>Added Thai localization.
+</para>
+</listitem>
+
+<listitem>
+<para>Tweaked stylesheet documentation stylesheets to link to TDG and
+the parameter references.
+</para>
+</listitem>
+
+<listitem>
+<para>Allow title on tables of contents ("Table of Contents") to be optional.
+Added new keyword to <parameter>generate.toc</parameter>.
+Support tables of contents on sections.
+</para>
+</listitem>
+
+<listitem>
+<para>Made separate parameters for table borders and table cell borders:
+<parameter>table.frame.border.color</parameter>,
+<parameter>table.frame.border.style</parameter>,
+<parameter>table.frame.border.thickness</parameter>,
+<parameter>table.cell.border.color</parameter>,
+<parameter>table.cell.border.style</parameter>, and
+<parameter>table.cell.border.thickness</parameter>.
+</para>
+</listitem>
+
+<listitem>
+<para>Suppress formatting of <quote>endofrange</quote> <sgmltag>indexterm</sgmltag>s.
+This is only half-right. They should generate a range, but I haven't figured out how
+to do that yet.
+</para>
+</listitem>
+
+<listitem>
+<para>Support <sgmltag>revdescription</sgmltag>. (Bug #582192)
+</para>
+</listitem>
+
+<listitem>
+<para>Added <parameter>default.float.class</parameter> and fixed figure
+floats. (Bug #497603)
+</para>
+</listitem>
+
+<listitem>
+<para>Fixed formatting of <sgmltag>sbr</sgmltag> in FOs.
+</para>
+</listitem>
+
+<listitem>
+<para>Added context to the <quote>missing template</quote> error message.
+</para>
+</listitem>
+
+<listitem>
+<para>Process <sgmltag>arg</sgmltag> correctly in a <sgmltag>group</sgmltag>.
+(Bug #605150)
+</para>
+</listitem>
+
+<listitem>
+<para>Removed 'keep-with-next' from <parameter>formal.title.properties</parameter>
+attribute set now that the stylesheets support the option of putting
+such titles below the object. Now the $placement value determines if
+'keep-with-next' or 'keep-with-previous' is used in the title block.
+</para>
+</listitem>
+
+<listitem>
+<para>Wrap <quote>url()</quote> around external-destinations when appropriate.
+</para>
+</listitem>
+
+<listitem>
+<para>Fixed typo in compact list spacing. (Bug #615464)
+</para>
+</listitem>
+
+<listitem>
+<para>Removed spurious hash in anchor name. (Bug #617717)
+</para>
+</listitem>
+
+<listitem>
+<para>Address is now displayed verbatim on title pages. (Bug #618600)
+</para>
+</listitem>
+
+<listitem>
+<para>The <parameter>bridgehead.in.toc</parameter> parameter is now properly
+supported.
+</para>
+</listitem>
+
+<listitem>
+<para>Improved effectiveness of HTML cleanup by increasing the number
+of places where it is used. Improve use of HTML cleanup in XHTML stylesheets.
+</para>
+</listitem>
+
+<listitem>
+<para>Support table of contents for <sgmltag>appendix</sgmltag> in
+<sgmltag>article</sgmltag>. (Bug #596599)
+</para>
+</listitem>
+
+<listitem>
+<para>Don't duplicate footnotes in <sgmltag>bibliography</sgmltag>s and
+<sgmltag>glossary</sgmltag>s. (Bug #583282)
+</para>
+</listitem>
+
+<listitem>
+<para>Added <parameter>default.image.width</parameter>. (Bug #516859)
+</para>
+</listitem>
+
+<listitem>
+<para>Totally reworked <sgmltag>funcsynopsis</sgmltag> code; it now
+supports a 'tabular' presentation style for 'wide' prototypes; see
+<parameter>funcsynopsis.tabular.threshold</parameter>. (HTML only
+right now, I think, FO support, uh, real soon now.)
+</para>
+</listitem>
+
+<listitem>
+<para>Reworked support for difference marking; toned down the colors a bit
+and added a <quote>system.head.content</quote> template so that the diff CSS
+wasn't overriding <quote>user.head.content</quote>. (Bug #610660)
+</para>
+</listitem>
+
+<listitem>
+<para>Added call to the <quote>*.head.content</quote> elements when writing
+out long description chunks.
+</para>
+</listitem>
+
+<listitem>
+<para>Make sure <sgmltag>legalnotice</sgmltag> link is correct even when
+chunking to a different <parameter>base.dir</parameter>.
+</para>
+</listitem>
+
+<listitem>
+<para>Use CSS to set viewport characteristics if
+<parameter>css.decoration</parameter> is non-zero, use div instead of p for making
+graphic a block element; make figure <sgmltag>title</sgmltag>s the default alt
+text for images in a <sgmltag>figure</sgmltag>.</para>
+</listitem>
+
+<listitem>
+<para>Added space-after to <parameter>list.block.spacing</parameter>.
+</para>
+</listitem>
+
+<listitem>
+<para>Reworked section.level template to give <quote>correct</quote> answer
+instead of being off by one.
+</para>
+</listitem>
+
+<listitem>
+<para>When processing tables, use the <sgmltag class="attribute">tabstyle</sgmltag>
+attribute as the division class.
+</para>
+</listitem>
+
+<listitem>
+<para>Fixed bug in <filename>html2xhtml.xsl</filename> that was causing the
+XHTML chunker to output HTML instead of XHTML.
+</para>
+</listitem>
+</itemizedlist>
+
+<itemizedlist><title>Release 1.55.0</title>
+
+<para>The 1.55.0 fixes a few bugs and reorganizes some parameters.
+</para>
+
+<listitem>
+<para>Added Lithuanian and Vietnamese localizations.
+</para>
+</listitem>
+
+<listitem>
+<para>Support <literal>orientation</literal>, <literal>rotated-width</literal>, and
+<literal>rotated-height</literal> on a <sgmltag class="pi">dbfo</sgmltag> processing
+instruction to rotate table cells in FO output.
+</para>
+</listitem>
+
+<listitem>
+<para>Restart all <sgmltag>book</sgmltag>s on page 1.
+</para>
+</listitem>
+
+<listitem>
+<para>Added experimental <quote>chunkfast</quote> support.
+</para>
+</listitem>
+
+<listitem>
+<para>Support automatic indexes in <sgmltag>webpage</sgmltag> elements.
+This isn't as useful as it first sounds, because as the code stands only a single
+page (not an entire site) will be indexed. Also, moving this directly into the
+<filename>autoidx.xsl</filename> file may not be the best strategy. It would be
+better if it was somehow contained in the Website stylesheets.
+</para>
+</listitem>
+
+<listitem>
+<para>Fixed bug where <sgmltag class="pi">dbhtml</sgmltag> processing instructions
+to specify filenames and directories were used even if they occurred in components
+that weren't being chunked.
+</para>
+</listitem>
+
+<listitem>
+<para>Allow <parameter>generate.toc</parameter> parameter to control ToCs in
+<sgmltag>article</sgmltag> <sgmltag>appendix</sgmltag>es. Suppressed by default.
+</para>
+</listitem>
+
+<listitem>
+<para>Fixed bug where the code that searches for pseudo-attributes in
+processing instructions would match suffixes instead of only whole attributes.
+(In other words, <quote><literal>xxxfoo</literal></quote> would match
+<quote><literal>foo</literal></quote>.)
+</para>
+</listitem>
+
+<listitem>
+<para>Left-align monospaced verbatim environments in FO.
+</para>
+</listitem>
+</itemizedlist>
+
+<itemizedlist><title>Release 1.54.1</title>
+
+<para>The 1.54.1 release fixes a couple of bugs in 1.54.0.
+</para>
+
+<listitem>
+<para>Remove spurious character from <filename>common.xsl</filename>. This bug
+was a fatal error in Xalan2.</para>
+</listitem>
+
+<listitem>
+<para>Make sure empty cells inherit from their row.</para>
+</listitem>
+
+<listitem>
+<para>Actually support <sgmltag>refsection</sgmltag> in HTML.</para>
+</listitem>
+
+</itemizedlist>
+
+<itemizedlist><title>Release 1.54.0</title>
+
+<para>The 1.54.0 release fixes some bugs and adds a couple of new features.
+</para>
+
+<listitem>
+<para>New option to generate back-of-book FO indexes with page-number
+ranges in place of sequences (e.g., 1-4 instead of 1,2,3,4)
+(<parameter>make.index.markup</parameter>).
+</para>
+</listitem>
+
+<listitem>
+<para>Experimental support for generating ToCs/LoTs as separate HTML
+chunks (<parameter>chunk.tocs.and.lots</parameter>).</para>
+</listitem>
+
+<listitem>
+<para>New option to generate HTML Help indexes using HHK files, allowing
+see-also processing &amp; referencing of exact locations of index terms
+(<parameter>htmlhelp.use.hhk</parameter>).</para>
+</listitem>
+
+<listitem>
+<para>Olink processing tweaks.</para>
+</listitem>
+
+<listitem>
+<para>Improvements in graphic and table processing.</para>
+</listitem>
+
+<listitem>
+<para>Additions and workarounds for better compatibility with FO
+engines (FOP, PassiveTeX, XEP).</para>
+</listitem>
+
+<listitem>
+<para>Bug fixes for FO profiling, indexing of Refentrys.</para>
+</listitem>
+</itemizedlist>
+
+<itemizedlist><title>Release 1.53.0</title>
+
+<para>The 1.53.0 release fixes some bugs, refactors page masters, and
+adds some new parameters.</para>
+
+<listitem>
+<para>Reworked page headers and footers.
+</para>
+</listitem>
+<listitem>
+<para>Support numbered bibliography styles.
+</para>
+</listitem>
+<listitem>
+<para>Added new property set for inline monospaced elements.
+</para>
+</listitem>
+<listitem>
+<para>Added menuchoice separator parameter.
+</para>
+</listitem>
+<listitem>
+<para>Added property sets for each section level heading to remove hard coded
+font sizes.
+</para>
+</listitem>
+<listitem>
+<para>Make table headers bold by default in FO.
+</para>
+</listitem>
+<listitem>
+<para>Use basic
+initial-page-number property instead of extended
+force-page-count property to get components to start on odd
+pages in double.sided mode.
+</para>
+</listitem>
+<listitem>
+<para>Added format.page.number template to set
+the page number format for all page sequences
+</para>
+</listitem>
+<listitem>
+<para>Don't include equations without titles in the LoT for equations.
+</para>
+</listitem>
+<listitem>
+<para>Added support for <parameter>para.propagates.style</parameter>.
+</para>
+</listitem>
+<listitem>
+<para>Added cell padding and spacing parameters for HTML.
+</para>
+</listitem>
+<listitem>
+<para>Added tr.attributes named template (for odd-row coloring and such).
+</para>
+</listitem>
+</itemizedlist>
+
+<itemizedlist><title>Release 1.52.0</title>
+
+<para>The 1.52.0 release contains a lot of significant changes. Make sure you
+read the ChangeLog as well.</para>
+
+<listitem>
+<para>Created a complete and consistent set of chunking parameters:
+<parameter>chunker.output.cdata-section-elements</parameter>
+<parameter>chunker.output.doctype-public</parameter>
+<parameter>chunker.output.doctype-system</parameter>
+<parameter>chunker.output.encoding</parameter>
+<parameter>chunker.output.indent</parameter>
+<parameter>chunker.output.media-type</parameter>
+<parameter>chunker.output.method</parameter>
+<parameter>chunker.output.omit-xml-declaration</parameter>
+<parameter>chunker.output.standalone</parameter>. Removed
+<parameter>default.encoding</parameter> (use
+<parameter>chunker.output.encoding</parameter> instead); removed
+<parameter>output.method</parameter> (use
+<parameter>chunker.output.method</parameter> instead).
+</para>
+</listitem>
+
+<listitem>
+<para>Added a large number of HTML Help parameters:
+<parameter>htmlhelp.button.back</parameter>,
+<parameter>htmlhelp.button.forward</parameter>,
+<parameter>htmlhelp.button.hideshow</parameter>,
+<parameter>htmlhelp.button.home.url</parameter>,
+<parameter>htmlhelp.button.home</parameter>,
+<parameter>htmlhelp.button.jump1.title</parameter>,
+<parameter>htmlhelp.button.jump1.url</parameter>,
+<parameter>htmlhelp.button.jump1</parameter>,
+<parameter>htmlhelp.button.jump2.title</parameter>,
+<parameter>htmlhelp.button.jump2.url</parameter>,
+<parameter>htmlhelp.button.jump2</parameter>,
+<parameter>htmlhelp.button.locate</parameter>,
+<parameter>htmlhelp.button.next</parameter>,
+<parameter>htmlhelp.button.options</parameter>,
+<parameter>htmlhelp.button.prev</parameter>,
+<parameter>htmlhelp.button.print</parameter>,
+<parameter>htmlhelp.button.refresh</parameter>,
+<parameter>htmlhelp.button.stop</parameter>,
+<parameter>htmlhelp.button.zoom</parameter>,
+<parameter>htmlhelp.hhc.binary</parameter>,
+<parameter>htmlhelp.hhk</parameter>,
+<parameter>htmlhelp.hhp.window</parameter>,
+<parameter>htmlhelp.show.advanced.search</parameter>,
+<parameter>htmlhelp.show.favorities</parameter>,
+<parameter>htmlhelp.show.menu.xml</parameter>, and
+<parameter>htmlhelp.only</parameter>.</para>
+</listitem>
+
+<listitem>
+<para>Support for new style OLinks. Added
+<parameter>target.database.document</parameter>,
+<parameter>use.local.olink.style</parameter>,
+<parameter>current.docid</parameter>, and
+<parameter>olink.doctitle</parameter>.
+</para>
+</listitem>
+
+<listitem>
+<para>Added experimental support for xref styles. Added
+<parameter>use.role.as.xrefstyle</parameter>.
+</para>
+</listitem>
+
+<listitem>
+<para>Completely reworked page master/page sequence configuration.</para>
+</listitem>
+
+<listitem>
+<para>Support cross-references to paragraphs by using the nearest containing
+section title as the cross-reference text. Is this a good idea?</para>
+</listitem>
+
+<listitem>
+<para>Removed unused <parameter>chunk.datafile</parameter>.</para>
+</listitem>
+
+<listitem>
+<para>Added header/footer parameters:
+<parameter>footer.rule</parameter>,
+<parameter>footers.on.blank.pages</parameter>,
+<parameter>header.rule</parameter>, and
+<parameter>headers.on.blank.pages</parameter>.</para>
+</listitem>
+
+<listitem>
+<para>Added column parameters:
+<parameter>column.count.back</parameter>,
+<parameter>column.count.body</parameter>,
+<parameter>column.count.front</parameter>,
+<parameter>column.count.index</parameter>,
+<parameter>column.count.lot</parameter>,
+<parameter>column.count.of.index</parameter>,
+<parameter>column.count.titlepage</parameter>, and
+<parameter>column.count</parameter>.</para>
+</listitem>
+
+<listitem>
+<para>Added <parameter>draft.mode</parameter>.
+</para>
+</listitem>
+
+<listitem>
+<para>Added
+<parameter>glossary.as.blocks</parameter>,
+<parameter>glosslist.as.blocks</parameter>,
+<parameter>glossterm.separation</parameter>,
+<parameter>glossterm.width</parameter>.</para>
+</listitem>
+
+<listitem>
+<para>Added <parameter>suppress.footer.navigation</parameter> and
+<parameter>suppress.header.navigation</parameter>.</para>
+</listitem>
+
+<listitem>
+<para>Added 
+<parameter>make.graphic.viewport</parameter>,
+<parameter>nominal.image.depth</parameter>,
+<parameter>nominal.image.width</parameter>, and
+<parameter>use.embed.for.svg</parameter></para>
+</listitem>
+
+<listitem>
+<para>Added
+<parameter>refentry.title.properties</parameter> and
+<parameter>section.title.properties</parameter>
+</para>
+</listitem>
+
+<listitem>
+<para>Added
+<parameter>use.embed.for.svg</parameter>
+</para>
+</listitem>
+
+<listitem>
+<para>Added
+generate.meta.abstract.xml</para>
+</listitem>
+</itemizedlist>
+
+<itemizedlist><title>Release 1.51.0</title>
+
+<listitem>
+<para>Added an extension function to determine the intrinsic size of
+an image. Works for the image formats supported by the Java Image
+class and or PostScript-derived formats.</para>
+</listitem>
+
+<listitem>
+<para>Added callout bullets 11-15.
+</para>
+</listitem>
+
+<listitem>
+<para>Removed obsolete <parameter>using.chunker</parameter> parameter.
+</para>
+</listitem>
+
+<listitem>
+<para>Added <parameter>points.per.em</parameter> parameter.
+</para>
+</listitem>
+
+<listitem>
+<para>Added <parameter>generate.manifest</parameter> parameter.
+</para>
+</listitem>
+
+<listitem>
+<para>Added <parameter>manifest</parameter> parameter.
+</para>
+</listitem>
+
+<listitem>
+<para>Added <parameter>compact.list.item.spacing</parameter> parameter.
+</para>
+</listitem>
+
+<listitem>
+<para>Added <parameter>html.extra.head.links</parameter> parameter.
+</para>
+</listitem>
+
+<listitem>
+<para>Added <parameter>use.svg</parameter> parameter; support SVG in HTML.
+</para>
+</listitem>
+
+<listitem>
+<para>Convert the library code to a literate programming style with xweb.
+</para>
+</listitem>
+
+<listitem>
+<para>Support <sgmltag>xref</sgmltag> to any element that has a title (at least
+when it has a title).
+</para>
+</listitem>
+
+<listitem>
+<para>Pass MathML through unchanged.
+</para>
+</listitem>
+
+<listitem>
+<para>Completely reworked support for graphic attributes in HTML.
+</para>
+</listitem>
+
+<listitem>
+<para>Add additional <sgmltag>LINK</sgmltag> elements to the HTML
+<sgmltag>HEAD</sgmltag> (for site navigation as in Mozilla---note,
+however, that Mozilla has disabled this recently for the 1.0 release).
+</para>
+</listitem>
+
+<listitem>
+<para>Support <parameter>shade.verbatim</parameter> parameter in FO.
+</para>
+</listitem>
+
+<listitem>
+<para>Support compact list spacing in FO.
+</para>
+</listitem>
+</itemizedlist>
+
+<itemizedlist><title>Release 1.50.0</title>
+
+<listitem>
+<para>This release introduces a new version numbering scheme. Version
+numbers are now three part: major.middle.minor. Changes to the middle
+version number indicate a change in the public API. Changes in only the
+minor number indicate simply a new release.</para>
+</listitem>
+
+<listitem>
+<para>The <parameter>generate.<replaceable>*</replaceable>.toc</parameter>
+and <parameter>generate.<replaceable>*</replaceable>.lot</parameter>
+parameters have been replaced by a single structured parameter,
+<parameter>generate.toc</parameter>.</para>
+
+<para>It's likely that the HTML and FO stylesheets do not handle ToC generation
+in exactly the same way, but they should.</para>
+</listitem>
+<listitem>
+<para>Added <filename>strip-attributes.xsl</filename> to the profiling
+stylesheets. This allows one to strip off, for example, profiling attributes
+after a document has been profiled.</para>
+</listitem>
+<listitem>
+<para>Improved numeration of footnotes and table footnotes. Made table footnotes
+render <quote>properly</quote> in FOs.</para>
+</listitem>
+<listitem>
+<para>Added a <parameter>formal.title.placement</parameter> parameter, allowing
+users to select placement of formal object titles either above or below the
+object.</para>
+</listitem>
+<listitem>
+<para>Improved control over delimiters for TeX equations.</para>
+</listitem>
+<listitem>
+<para>Support <sgmltag>classsynopsis</sgmltag> and friends in FOs.</para>
+</listitem>
+<listitem>
+<para>Changed HTML stylesheets to use <sgmltag>em</sgmltag> instead of
+<sgmltag>i</sgmltag> for <sgmltag>emphasis</sgmltag>.</para>
+</listitem>
+<listitem>
+<para>Added <sgmltag>chunk.quietly</sgmltag> parameter.</para>
+</listitem>
+<listitem>
+<para>Improved profiling code to support the full range of profiling attributes
+and to support one-pass profiling (if your XSLT processor understands the
+<ulink url="http://www.exslt.org/">EXSLT</ulink> <function>node-set</function>
+function.</para>
+</listitem>
+</itemizedlist>
+
+</article>

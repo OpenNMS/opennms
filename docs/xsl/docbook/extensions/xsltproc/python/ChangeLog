@@ -1,0 +1,22 @@
+2002-11-15  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* .cvsignore: Ignore .pyc files
+
+	* docbook.py: New file.
+
+	* docbook.py: Handle FO result trees
+
+	* xslt.py: Updated driver to use docbook.py
+
+2002-11-14  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* xslt.py: Still experimenting
+
+2002-07-07  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* .cvsignore, README, xslt.py: Snapshot
+
+2002-06-26  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* xslt.py: New file.
+
