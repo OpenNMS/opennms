@@ -98,22 +98,24 @@
         </tr>
         <tr>
           <td valign="top" align="left">
-              <br>&nbsp;
-              <p>Select each service you would like to filter on in conjunction with the TCP/IP address in the previous column.
-                 For example highlighting both HTTP and FTP will match TCP/IP addresses that support HTTP <b>OR</b> FTP.
-             </p>
-             Services:<br><select size="10" multiple name="services"><%=buildServiceOptions(newRule)%></select>
-          </td>
-        </tr>
-        <tr>
-          <td valign="top" align="left">
-              <br>&nbsp;
-              <p>Select each service you would like to do a NOT filter on in conjunction with the TCP/IP address. Highlighting
-                 multiple items ANDs them--for example, highlighting HTTP and FTP will match events NOT on HTTP AND NOT on FTP.
-              </p>
-              "NOT" Services:<br><select size="10" multiple name="notServices"><%=buildNotServiceOptions(newRule)%></select>
-          </td>
-        </tr>
+			<table>
+				<tr>
+					<td>
+              			<p>Select each service you would like to filter on in conjunction with the TCP/IP address in the previous column.
+               			   For example highlighting both HTTP and FTP will match TCP/IP addresses that support HTTP <b>OR</b> FTP.
+             			</p>
+             			Services:<br><select size="10" multiple name="services"><%=buildServiceOptions(newRule)%></select>
+          			</td>
+          			<td valign="top" align="left">
+              			<p>Select each service you would like to do a NOT filter on in conjunction with the TCP/IP address. Highlighting
+              			   multiple items ANDs them--for example, highlighting HTTP and FTP will match events (NOT on HTTP) AND (NOT on FTP).
+              			</p>
+              			"NOT" Services:<br><select size="10" multiple name="notServices"><%=buildNotServiceOptions(newRule)%></select>
+          			</td>
+        		</tr>
+			</table>
+			</td>
+		</tr>
         <tr>
           <td colspan="2">
             <input type="reset" value="Reset Address and Services"/>
