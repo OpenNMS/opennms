@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter id="chap2" label="2.">
+	<title>What's New?</title>
+	<subtitle>Changes in This OpenNMS</subtitle>
+	<para>
+		Besides bugfixes, there are a large number of UI, as well as behind-the-scene, changes in
+		OpenNMS 1.0.0 and above.
+	</para>
+	<sect1 id="chap2sect1" label="2.1.">
+		<title>Changes in OpenNMS 1.0.0 and Above</title>
+		<para>
+			The following major changes occurred between 0.9.9 and 1.0.0:
+			<itemizedlist>
+				<listitem>
+					<formalpara>
+						<title>OpenSSH service is now "SSH"</title>
+						<para>
+							The OpenSSH service has been renamed to "SSH" and changed
+							to detect common versions of SSH servers other than OpenSSH.
+							Upgrades will retain the "OpenSSH" service as well for
+							the sake of reports.
+						</para>
+					</formalpara>
+				</listitem>
+				<listitem>
+					<formalpara>
+						<title>"Service Unresponsive" support</title>
+						<para>
+							There is now the possibility of having a state between
+							"up" and "down" that flags a service as being unresponsive.
+							This state can be reached when the service's port can be
+							connected to, but it doesn't respond in a reasonable amount
+							of time.
+						</para>
+					</formalpara>
+				</listitem>
+				<listitem>
+					<formalpara>
+						<title>Bugfixes</title>
+						<para>
+							Many small bugfixes, including the "Calculating..." problem
+							if RTC hasn't come up yet when tomcat starts.
+						</para>
+					</formalpara>
+				</listitem>
+			</itemizedlist>
+		</para>
+	</sect1>
+</chapter>

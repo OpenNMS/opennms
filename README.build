@@ -1,0 +1,40 @@
+==============================================================================
+Using The New New Build System For Fun And Profit
+==============================================================================
+
+The following environment variables are used in the build process:
+
+$CLASSPATH
+	If CLASSPATH is set, it will be appended to the END of the classpath
+	used for building.
+
+$CLASSPATH_OVERRIDE
+	If CLASSPATH_OVERRIDE is set, it will be prepended to the beginning
+	of the classpath used for building (and will override anything in
+	lib/*)
+
+$PROPERTY_OVERRIDE
+	If PROPERTY_OVERRIDE is set, it will be used instead of
+	~/.bb-global.properties for overriding build settings.
+
+==============================================================================
+
+All of the things that affect where your build is installed or how it is built
+are in the build.properties file in source tree.  DO NOT EDIT build.properties
+yourself, however.  Instead, create a file called ~/.opennms-global.properties
+and override any of the lines from build.properties that you want changed.
+
+==============================================================================
+Important Build Targets
+==============================================================================
+
+all           build everything (except documentation)
+compile       compile all code
+docs          build documentation (by default, they will end up in work/docs/)
+info          print detailed information about your build parameters
+install       build "all", and install it in ${install}
+jar           create jar files
+rpm           build an RPM package
+srpm          build an RPM and source RPM package
+
+==============================================================================

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter id="chap3" label="3.">
+	<title>Known Issues and Caveats</title>
+	<subtitle>Known Problems And Workarounds In This Release</subtitle>
+	<para>
+		Here is the list of known issues in this release of OpenNMS.
+	</para>
+	<sect1 id="chap3sect1" label="3.1.">
+		<title>HTTP services may show false outages on upgrade</title>
+		<para>
+			Prior to 0.9.9, the HTTP service would be discovered if there was an httpd
+			process listening on ports 80, 8000, or 8080. However, if the was a device
+			with two or more httpd processes running, say on both 80 and 8080, and one
+			died, as long as the other one was up no event would be generated. To
+			address this, there are now three separate default services defined: HTTP
+			(on port 80), HTTP-8000 (on port 8000) and HTTP-8080 (on port 8080 - natch).
+		</para>
+		<para>
+			During an upgrade from previous versions to 0.9.9 or higher, note that
+			devices which had no HTTP server on port 80 but one on another port will
+			now show that their HTTP service is lost.  It can either be unmanaged or
+			it will be automatically deleted after five days by default.
+		</para>
+	</sect1>
+	<sect1 id="chap3sect2" label="3.2.">
+		<title>Reporting now sends an e-mail</title>
+		<para>
+			Rather than tying up the Web UI for a long period of time, Availability
+			reports are now e-mailed to the address of the logged in user (generally
+			"admin").  This means that we now require the 'metamail' package for
+			encoding the report as an e-mail attachment.  Be warned that if you do
+			not have it, you will not receive reports (although they will still
+			exist in $OPENNMS_HOME/share).
+		</para>
+	</sect1>
+</chapter>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter id="chap4" label="4.">
+	<title>Supported Systems</title>
+	<subtitle>Supported UNIX-like OSes</subtitle>
+	<para>
+		The following are the systems that OpenNMS is supported or known to run on.
+	</para>
+	<sect1 id="chap4sect1" label="4.1.">
+		<title>Fully Supported</title>
+		<para>
+			The following Linux distributions are supported out-of-the-box with
+			native installation packages.
+		</para>
+		<itemizedlist>
+			<listitem>
+				<formalpara>
+					<title>RedHat 7.x</title>
+					<para>
+						On RedHat 7.2 and up, it is suggested that you use the
+						official RedHat PostgreSQL RPMs that come with
+						your distribution.  However, for OpenNMS to work
+						correctly, you will need to make sure that tcp
+						sockets are enabled.  It is also suggested that
+						you increase the maximum number of connections
+						and buffers.
+					</para>
+				</formalpara>
+				<para>
+					To do so, start postgresql with the command
+					'<emphasis>service postgresql start</emphasis>'
+					(to make sure that PostgreSQL's init has created
+					your data directory), and then edit the file
+					'<emphasis>/var/lib/pgsql/data/postgresql.conf</emphasis>'
+					and make sure it has the following lines:
+<programlisting>
+		tcpip_socket = true
+		max_connections = 256
+		shared_buffers = 1024
+</programlisting>
+
+					Then run '<emphasis>service postgresql restart</emphasis>'
+					to restart with the new configuration.
+				</para>
+				<para>
+					If you do use the PostgreSQL RPMs provided with OpenNMS,
+					you will need the <emphasis>readline41</emphasis>
+					compatibility RPM installed, because our RPMs were built
+					against RedHat 7.0.  You can get it off your RedHat 7.2 CD,
+					or at <ulink url="ftp://ftp.redhat.com/pub/redhat/linux/7.2/en/os/i386/RedHat/RPMS/readline41-4.1-10.i386.rpm">RedHat's
+					FTP site</ulink>.
+				</para>
+				<para>
+					Note that if you use the "lynx installer", these options
+					will automatically be added for you, and postgresql will
+					be restarted.
+				</para>
+			</listitem>
+			<listitem>
+				<formalpara>
+					<title>Mandrake 8.x</title>
+					<para>
+						Please note that while we build packages for Mandrake
+						8.x, we do not do any formal testing on it.  Packages
+						are provided as a convenience.
+					</para>
+				</formalpara>
+			</listitem>
+		</itemizedlist>
+	</sect1>
+	<sect1 id="chap4sect2" label="4.2.">
+		<title>Unsupported</title>
+		<para>
+			The following UNIX systems are unsupported, but have been known to
+			work.
+		</para>
+		<itemizedlist>
+			<listitem>
+				<formalpara>
+					<title>RedHat 6.2</title>
+					<para>
+						No special cases known.
+					</para>
+				</formalpara>
+			</listitem>
+			<listitem>
+				<formalpara>
+					<title>Solaris 7 and 8</title>
+					<para>
+						There have been reports of OpenNMS building and
+						running on Solaris on the discuss list.
+					</para>
+				</formalpara>
+			</listitem>
+			<listitem>
+				<formalpara>
+					<title>Debian Woody</title>
+					<para>
+						Debian packages for OpenNMS are in-progress, and are
+						expected to work before a 1.0 release of OpenNMS.
+					</para>
+				</formalpara>
+			</listitem>
+			<listitem>
+				<formalpara>
+					<title>MacOS X</title>
+					<para>
+						OpenNMS is known to build and run on OSX.
+					</para>
+				</formalpara>
+			</listitem>
+		</itemizedlist>
+	</sect1>
+</chapter>

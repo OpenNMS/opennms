@@ -1,0 +1,6 @@
+/var/log/tomcat4.log {
+    missingok
+    postrotate
+	/usr/bin/killall -HUP httpd
+    endscript
+}

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter id="chap4" label="4">
+	<title>Chapter 4</title>
+	<subtitle>Configuring OpenNMS</subtitle>
+	<para>
+		This section describes some of the configuration files, and how they relate to capabilities, 
+		performance, and appearance of OpenNMS.  Certain tasks may require the modification of several files 
+		in order to achieve the desired affect.  It is recommended that you read this section carefully if 
+		you plan to do anything more than specify addresses to monitor.  Configuration files referenced in 
+		this chapter should be located in $OPENNMS_HOME/etc unless specifically annotated.  Some 
+		examples are provided in this text, but there are many more in the default configuration files.
+	</para>
+	<sect1 id="chap4sect1" label="4.1">
+		<title>Configuring OpenNMS</title>
+		<para>
+			In this section we define address(es) to be polled and service(s) to be monitored.  
+		</para>
+		<sect2 id="chap4sect1sub1" label="4.1.1">
+			<title>Adding addresses</title>
+			<para>
+				The first task is assigning address to be discovered and polled.  This can be done by adding 
+				ranges to the discovery-configuration.xml and poller-configuration.xml.  The following is a 
+				snippet from These files.  In this example we include the network 192.168.0.0/24.
+				<programlisting>
+	from discovery-configuration.xml:
+	&lt;include-range retries="2" timeout="3000"&gt;
+	&lt;begin&gt;192.168.0.1&lt;/begin&gt;
+	&lt;end&gt;192.168.0.254&lt;/end&gt;
+	&lt;/include-range&gt;
+	---
+	from poller-configuration.xml:
+	&lt;include-range begin="192.168.0.1" end="192.168.0.254"/&gt;
+				</programlisting>
+				in addition to ranges, addresses can be added as part of a flat
+				text file or "URL" file that contains one address per line with no comments or blank
+				lines, or specifically excluded.  The following are examples of the xml configuration
+				used to specify each.
+				<programlisting>
+	from discovery-configuration.xml:
+	&lt;include-url&gt;file:/opt/OpenNMS/etc/include&lt;/include-url&gt;
+	---
+	from poller-configuration.xml:
+	&lt;specific&gt;0.0.0.0&lt;/specific&gt;
+	&lt;include-url&gt;file:/opt/OpenNMS/etc/include&lt;/include-url&gt;
+				</programlisting>
+				The URL in the example (/opt/OpenNMS/etc/include) is written 
+				by OpenNMS when devices are managed or unmanaged.
+			</para>
+			<para>
+				Note: you may also control which devices are marked as managed by default when 
+				they are inserted into the database.  If you do this you will want to ensure that 
+				your managed nodes have a management-policy of "managed" in capsd-configuration.xml.  
+				Default configuration is managed for all non-local, valid ip addresses.
+			</para>
+		</sect2>
+		<sect2 id="chap4sect1sub2" label="4.1.2">
+			<title>Specifying services</title>
+			<para>
+				Once you've decided on the addresses you wish to monitor, you may be concerned with 
+				the types of services you wish to be monitored.  Services must exist in
+				poller-configuration.xml and capsd-configuration.xml as well.  There are serveral services
+				set up already by default.
+			</para>
+			<para>
+				You may override some of the default settings when specifying them in packages.  In the 
+				following example we have included the UFO Detection Protocol on TCP port 4 with our own 
+				timeout, retry, and polling interval.
+				<programlisting>
+	capsd-configuration.xml:
+	&lt;protocol-plugin protocol="UFODP"
+		class-name="org.opennms.netmgt.capsd.TcpPlugin" scan="on" user-defined="false"&gt;
+		&lt;property key="banner" value="*"/&gt;
+		&lt;property key="port" value="4"/&gt;
+		&lt;property key="timeout" value="3000"/&gt;
+		&lt;property key="retry" value="3"/&gt;
+	&lt;/protocol-plugin&gt;
+	---
+	poller-configuration.xml:
+	&lt;service name="UFODP" interval="300000" user-defined="false" status="on"&gt;
+		&lt;parameter key="banner" value="*"/&gt;
+		&lt;parameter key="port" value="4"/&gt;
+		&lt;parameter key="timeout" value="3000"/&gt;
+	&lt;/service&gt;
+				</programlisting>
+			</para>
+		</sect2>
+	</sect1>
+	<sect1 id="chap4sect2" label="4.2">
+		<title>Configuring the view</title>
+		<para>
+			Views can be configured by modifying views.xml and viewsdisplay.xml.  Within views.xml you can 
+			define the categories of specific services, as well as define thresholds for the outage information 
+			that is displayed on the web page.  In this example we have created a category for UFO Detectors 
+			and specified the remote end of our internet connection.
+			<programlisting>
+		&lt;category&gt;
+			&lt;label&gt;&lt;![CDATA[SETI Servers]]&gt;&lt;/label&gt;
+			&lt;normal&gt;99&lt;/normal&gt;
+			&lt;warning&gt;97&lt;/warning&gt;
+			&lt;service&gt;UFO Detectors&lt;/service&gt;
+			&lt;rule&gt;&lt;![CDATA[isUFODP]]&gt;&lt;/rule&gt;
+		&lt;/category&gt;
+		&lt;category&gt;
+			&lt;label&gt;&lt;![CDATA[Internet Connectivity]]&gt;&lt;/label&gt;
+			&lt;normal&gt;99&lt;/normal&gt;
+			&lt;warning&gt;97&lt;/warning&gt;
+			&lt;service&gt;ICMP&lt;/service&gt;
+			&lt;rule&gt;&lt;![CDATA[ipaddr IPLIKE 12.0.0.1]]&gt;&lt;/rule&gt;
+		&lt;/category&gt;
+			</programlisting>
+			While in viewsdisplay.xml you can organize the layout of the main console web view.  In many
+			instances the default views will need not need to be changed.
+			<programlisting>
+	&lt;view&gt;
+		&lt;view-name&gt;WebConsoleView&lt;/view-name&gt;
+		&lt;section&gt;
+			&lt;section-name&gt;&lt;![CDATA[Category]]&gt;&lt;/section-name&gt;
+			&lt;category&gt;&lt;![CDATA[SETI Servers]]&gt;&lt;/category&gt;
+			&lt;category&gt;&lt;![CDATA[Internet Connectivity]]&gt;&lt;/category&gt;
+		&lt;/section&gt;
+	&lt;/view&gt;
+			</programlisting>
+		</para>
+	</sect1>
+</chapter>

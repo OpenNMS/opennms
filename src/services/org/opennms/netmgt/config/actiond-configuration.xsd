@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/actiond">
+
+	<element name="actiond-configuration">
+		<complexType>
+			<!--- the max number of simultaneous processes launched by actiond
+			      if the number of launched processes currently runnning reaches
+			      this number, actiond waits for a process to complete/get terminated
+			      before it launches the next process -->
+			<attribute name="max-outstanding-actions" type="positiveInteger" use="required"/>
+
+			<!--- the maximum time that a launched process can take to complete,
+			      if execution time exceeds this time, it is terminated -->
+			<attribute name="max-process-time" type="long" use="required"/>
+		</complexType>
+	</element>
+
+</schema>

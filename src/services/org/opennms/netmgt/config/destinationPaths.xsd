@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/destinationPaths">
+
+	<element name="destinationPaths">
+		<complexType>
+			<sequence>
+				<element ref="header" minOccurs="1" maxOccurs="1"/>
+				<element ref="path" minOccurs="1" maxOccurs="unbounded"/>
+			</sequence>
+                </complexType>
+	</element>
+
+	<element name="header">
+		<complexType>
+			<sequence>
+				<element name="rev" type="string" minOccurs="1" maxOccurs="1"/>
+
+				<!-- creation time in the 'dow mon dd hh:mm:ss zzz yyyy' format -->
+				<element name="created" type="string" minOccurs="1" maxOccurs="1"/>
+
+				<element name="mstation" type="string" minOccurs="1" maxOccurs="1"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="path">
+		<complexType>
+			<sequence>
+				<element ref="target" minOccurs="1" maxOccurs="unbounded"/>
+                                <element ref="escalate" minOccurs="0" maxOccurs="unbounded"/>
+			</sequence>
+			<attribute name="name" type="string" use="required"/>
+		</complexType>
+	</element>
+
+	<element name="target">
+		<complexType>
+			<sequence>
+			        <element name="name" type="string" minOccurs="1" maxOccurs="1"/>
+                                <element name="command" type="string" minOccurs="1" maxOccurs="unbounded"/>	
+			</sequence>
+                        <attribute name="interval" type="string" use="optional" value="0s"/>
+		</complexType>
+	</element>
+        
+        <element name="escalate">
+		<complexType>
+                        <sequence>
+                                <element ref="target" minOccurs="1" maxOccurs="unbounded"/>
+                        </sequence>
+                        <attribute name="delay" type="string" use="required" value="0s"/>
+                </complexType>
+        </element>
+
+</schema>
+

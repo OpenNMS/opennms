@@ -1,0 +1,1071 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/j2ee/dtds/web-app_2_3.dtd">
+
+
+<web-app>
+  <context-param>
+    <param-name>opennms.home</param-name>
+    <param-value>@root.install@/</param-value>
+  </context-param>
+
+  <!-- Database parameters -->  
+  <context-param>
+    <param-name>opennms.db.poolman</param-name>
+    <param-value>org.opennms.core.resource.db.SimpleDbConnectionFactory</param-value>
+  </context-param>
+  <context-param>
+    <param-name>opennms.db.driver</param-name>
+    <param-value>@install.database.driver@</param-value>
+  </context-param>
+  <context-param>
+    <param-name>opennms.db.url</param-name>
+    <param-value>@install.database.url@</param-value>
+  </context-param>
+  <context-param>
+    <param-name>opennms.db.user</param-name>
+    <param-value>@install.database.user@</param-value>
+  </context-param>
+  <context-param>
+    <param-name>opennms.db.password</param-name>
+    <param-value>@install.database.password@</param-value>
+  </context-param>
+
+  
+  <!-- RTC Subscription parameters -->  
+  <context-param>
+    <param-name>opennms.rtc-client.http-post.username</param-name>
+    <param-value>rtc</param-value>
+    <description>The username the RTC uses when authenticating itself in an HTTP POST.</description>
+  </context-param>
+  <context-param>
+    <param-name>opennms.rtc-client.http-post.password</param-name>
+    <param-value>rtc</param-value>
+    <description>The password the RTC uses when authenticating itself in an HTTP POST.</description>
+  </context-param>
+  <context-param>
+    <param-name>opennms.rtc-client.http-post.base-url</param-name>
+    <param-value>http://localhost:8080/opennms/rtc/post</param-value>
+    <description>
+      The base of a URL that RTC clients use when creating a RTC subscription URL. 
+      IMPORTANT: This URL must NOT contain a slash at the end.       
+    </description>
+  </context-param>
+  
+  <filter>
+    <filter-name>AddRefreshHeader-300</filter-name>
+    <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
+    <filter-class>org.opennms.web.AddRefreshHeaderFilter</filter-class>
+    <init-param>
+      <param-name>seconds</param-name>
+      <param-value>300</param-value>
+      <description>This parameter specifies how often to refresh the page.</description>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-300</filter-name>
+    <url-pattern>/index.jsp</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-300</filter-name>
+    <url-pattern>/rtc/category.jsp</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-300</filter-name>
+    <url-pattern>/element/node.jsp</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-300</filter-name>
+    <url-pattern>/element/interface.jsp</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-300</filter-name>
+    <url-pattern>/element/service.jsp</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-300</filter-name>
+    <url-pattern>/outage/current.jsp</url-pattern>
+  </filter-mapping>
+
+  <listener>
+    <!-- This listener handles our custom startup/shutdown behavior. -->
+    <listener-class>org.opennms.web.InitializerServletContextListener</listener-class>
+  </listener>
+
+  <!-- desktop survey report servlet -->  
+  
+  <servlet>
+    <!-- This servlet creates the graph images using RRDTool. -->
+    <servlet-name>snmpGraph</servlet-name>
+    <servlet-class>org.opennms.web.graph.RRDGraphServlet</servlet-class>
+    <init-param>
+      <param-name>rrd-properties</param-name>
+      <param-value>etc/snmp-graph.properties</param-value>
+    </init-param>
+  </servlet>
+  
+  <servlet>
+    <!-- This servlet creates ad hoc graph images using RRDTool. -->
+    <servlet-name>snmpAdHocGraph</servlet-name>
+    <servlet-class>org.opennms.web.graph.RRDAdHocGraphServlet</servlet-class>
+    <init-param>
+      <param-name>rrd-properties</param-name>
+      <param-value>etc/snmp-adhoc-graph.properties</param-value>
+    </init-param>
+  </servlet>  
+  
+  <servlet>
+    <!-- This servlet dumps out XML using RRDTool. -->
+    <servlet-name>rrddump</servlet-name>
+    <servlet-class>org.opennms.web.performance.RRDDumpServlet</servlet-class>
+    <init-param>
+      <param-name>rrd-directory</param-name>
+      <param-value>@root.install.share@/rrd/snmp/</param-value>
+    </init-param>
+    <init-param>
+      <param-name>rrd-dump-command</param-name>
+      <param-value>@install.rrdtool.bin@ dump</param-value>
+    </init-param>    
+  </servlet>
+  <servlet>
+    <!-- This servlet creates a text file with one line for each RRD filename. -->
+    <servlet-name>rrdlist</servlet-name>
+    <servlet-class>org.opennms.web.performance.RRDListServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>addPerfReportsToUrl</servlet-name>
+    <servlet-class>org.opennms.web.performance.AddReportsToUrlServlet</servlet-class>
+  </servlet>  
+  <servlet>
+    <servlet-name>addIntfToPerfUrl</servlet-name>
+    <servlet-class>org.opennms.web.performance.AddInterfaceToURLServlet</servlet-class>
+    <init-param>
+      <param-name>chooseInterfaceUrl</param-name>
+      <param-value>chooseinterface.jsp</param-value>
+      <description>Redirect to this sibling URL when more than one RRD matches a node.</description>      
+    </init-param>
+  </servlet>  
+    
+  <servlet>
+    <!-- This servlet creates availability reports. -->
+    <servlet-name>availabilityXml</servlet-name>
+    <servlet-class>org.opennms.web.availability.raw.RawAvailabilityServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- This servlet creates availability reports. -->
+    <servlet-name>availability</servlet-name>
+    <servlet-class>org.opennms.web.availability.AvailabilityServlet</servlet-class>
+    <init-param>
+      <param-name>xslt.filename</param-name>
+      <param-value>etc/AvailabilityReports.xsl</param-value>
+    </init-param>
+    <init-param>
+      <param-name>pdf.xslt.filename</param-name>
+      <param-value>etc/PDFAvailReport.xsl</param-value>
+    </init-param>
+    <init-param>
+      <param-name>svg.xslt.filename</param-name>
+      <param-value>etc/SVGAvailReport.xsl</param-value>
+    </init-param>
+    <init-param>
+      <param-name>redirect.success</param-name>
+      <param-value>reportgenerating.jsp</param-value>
+      <description>Redirect to this sibling URL on success.</description>
+    </init-param>
+    <init-param>
+      <param-name>redirect.failure</param-name>
+      <param-value>reportfailed.jsp</param-value>
+      <description>Redirect to this sibling URL on failure.</description>
+    </init-param>
+    <init-param>
+      <param-name>redirect.noEmail</param-name>
+      <param-value>noemail.jsp</param-value>
+      <description>Redirect to this sibling URL if the user doesn't have an email address setup.</description>
+    </init-param>
+    <init-param>
+      <param-name>script.generateReport</param-name>
+      <param-value>@root.install@/bin/report.sh</param-value>
+      <description>Use this script to generate an Availability report on the command line.</description>
+    </init-param>
+    <init-param>
+      <param-name>script.mailReport</param-name>
+      <param-value>@root.install@/bin/webreport.pl</param-value>
+      <description>Use this script to mail a file to a user from the command line.</description>
+    </init-param>
+  </servlet>
+  <servlet>
+    <servlet-name>acknowledgeEvent</servlet-name>
+    <servlet-class>org.opennms.web.event.AcknowledgeEventServlet</servlet-class>
+    <init-param>
+      <param-name>redirect.success</param-name>
+      <param-value>list</param-value>
+      <description>Redirect to this sibling URL on success.</description>
+    </init-param>
+  </servlet>
+  <servlet>
+    <servlet-name>acknowledgeEventByFilter</servlet-name>
+    <servlet-class>org.opennms.web.event.AcknowledgeEventByFilterServlet</servlet-class>
+    <init-param>
+      <param-name>redirect.success</param-name>
+      <param-value>list</param-value>
+      <description>Redirect to this sibling URL on success.</description>
+    </init-param>
+  </servlet>
+  <servlet>
+    <servlet-name>acknowledgeNotice</servlet-name>
+    <servlet-class>org.opennms.web.notification.AcknowledgeNoticeServlet</servlet-class>
+    <init-param>
+      <param-name>redirect.success</param-name>
+      <param-value>browse</param-value>
+      <description>Redirect to this sibling URL on success.</description>
+    </init-param>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>importAssets</servlet-name>
+    <servlet-class>org.opennms.web.asset.ImportAssetsServlet</servlet-class>
+    <init-param>
+      <param-name>redirect.success</param-name>
+      <param-value><![CDATA[../../asset/nodelist.jsp?column=address1&searchvalue=]]></param-value>
+      <description>Redirect to this sibling URL on success.</description>
+    </init-param>
+  </servlet>
+  <servlet>
+    <servlet-name>exportAssets</servlet-name>
+    <servlet-class>org.opennms.web.asset.ExportAssetsServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>modifyAsset</servlet-name>
+    <servlet-class>org.opennms.web.asset.ModifyAssetServlet</servlet-class>
+    <init-param>
+      <param-name>redirect.success</param-name>
+      <param-value>list</param-value>
+      <description>Redirect to this sibling URL on success.</description>
+    </init-param>
+  </servlet>
+  <servlet>
+    <servlet-name>filterEvent</servlet-name>
+    <servlet-class>org.opennms.web.event.EventFilterServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>queryEvent</servlet-name>
+    <servlet-class>org.opennms.web.event.EventQueryServlet</servlet-class>
+    <init-param>
+      <param-name>redirect.url</param-name>
+      <param-value>list</param-value>
+      <description>Redirect to this sibling URL after changing the parameter set.</description>
+    </init-param>    
+  </servlet>
+  
+   <servlet>
+    <servlet-name>queryNotice</servlet-name>
+    <servlet-class>org.opennms.web.notification.NoticeQueryServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>queryOutage</servlet-name>
+    <servlet-class>org.opennms.web.outage.OutageQueryServlet</servlet-class>
+  </servlet>
+  
+  <!-- Servlet for updating the notification status -->
+  <servlet>
+    <servlet-name>updateNotificationStatus</servlet-name>
+    <servlet-class>org.opennms.web.admin.notification.UpdateNotifdStatusServlet</servlet-class>
+  </servlet>
+  
+  <!-- Servlet for building destination paths from a wizard -->
+  <servlet>
+    <servlet-name>destinationWizard</servlet-name>
+    <servlet-class>org.opennms.web.admin.notification.DestinationWizardServlet</servlet-class>
+  </servlet>
+  
+  <!-- Servlet for building notifications from a wizard -->
+  <servlet>
+    <servlet-name>notificationWizard</servlet-name>
+    <servlet-class>org.opennms.web.admin.notification.noticeWizard.NotificationWizardServlet</servlet-class>
+  </servlet>
+  
+  <!-- Servlets for configuration of users groups and views -->
+  <servlet>
+    <!-- servlet for passing parameters to the user modify jsp -->
+    <servlet-name>modifyUser</servlet-name>
+    <servlet-class>org.opennms.web.admin.users.ModifyUserServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for updating the local user info during modification-->
+    <servlet-name>updateUser</servlet-name>
+    <servlet-class>org.opennms.web.admin.users.UpdateUserServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for saving the local user info during modification-->
+    <servlet-name>saveUser</servlet-name>
+    <servlet-class>org.opennms.web.admin.users.SaveUserServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for renaming the local user info during modification-->
+    <servlet-name>renameUser</servlet-name>
+    <servlet-class>org.opennms.web.admin.users.RenameUserServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for adding a new user-->
+    <servlet-name>addNewUser</servlet-name>
+    <servlet-class>org.opennms.web.admin.users.AddNewUserServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for deleting a user-->
+    <servlet-name>deleteUser</servlet-name>
+    <servlet-class>org.opennms.web.admin.users.DeleteUserServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for adding duty schedules to a user's notification info-->
+    <servlet-name>addDutySchedules</servlet-name>
+    <servlet-class>org.opennms.web.admin.users.AddDutySchedulesServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for removing duty schedules from a user's notification info-->
+    <servlet-name>removeDutySchedules</servlet-name>
+    <servlet-class>org.opennms.web.admin.users.RemoveDutySchedulesServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <!-- servlet for passing parameters to the group modify jsp -->
+    <servlet-name>modifyGroup</servlet-name>
+    <servlet-class>org.opennms.web.admin.groups.ModifyGroupServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for updating the local group info during modification-->
+    <servlet-name>updateGroup</servlet-name>
+    <servlet-class>org.opennms.web.admin.groups.UpdateGroupServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for saving the local group info during modification-->
+    <servlet-name>saveGroup</servlet-name>
+    <servlet-class>org.opennms.web.admin.groups.SaveGroupServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for renaming the local group info during modification-->
+    <servlet-name>renameGroup</servlet-name>
+    <servlet-class>org.opennms.web.admin.groups.RenameGroupServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for adding a new group-->
+    <servlet-name>addNewGroup</servlet-name>
+    <servlet-class>org.opennms.web.admin.groups.AddNewGroupServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for deleting a group-->
+    <servlet-name>deleteGroup</servlet-name>
+    <servlet-class>org.opennms.web.admin.groups.DeleteGroupServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <!-- servlet for passing parameters to the view modify jsp -->
+    <servlet-name>modifyView</servlet-name>
+    <servlet-class>org.opennms.web.admin.views.ModifyViewServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for updating the local view info during modification-->
+    <servlet-name>updateView</servlet-name>
+    <servlet-class>org.opennms.web.admin.views.UpdateViewServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for saving the local view info during modification-->
+    <servlet-name>saveView</servlet-name>
+    <servlet-class>org.opennms.web.admin.views.SaveViewServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for renaming the local view info during modification-->
+    <servlet-name>renameView</servlet-name>
+    <servlet-class>org.opennms.web.admin.views.RenameViewServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for adding a new view-->
+    <servlet-name>addNewView</servlet-name>
+    <servlet-class>org.opennms.web.admin.views.AddNewViewServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for deleting a view-->
+    <servlet-name>deleteView</servlet-name>
+    <servlet-class>org.opennms.web.admin.views.DeleteViewServlet</servlet-class>
+  </servlet>
+  
+  <!-- Servlets for the editing of the eventconf.xml file -->
+  <servlet>
+    <servlet-name>deleteEvent</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.DeleteEventServlet</servlet-class>
+    <init-param>
+      <param-name>redirect.success</param-name>
+      <param-value>index.jsp</param-value>
+      <description>Redirect to this sibling URL on success.</description>
+    </init-param>
+  </servlet>
+  
+  <servlet>
+    <!-- servlet for passing parameters to the event conf modify jsp -->
+    <servlet-name>modifyParam</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.ModifyParamServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for saving an event -->
+    <servlet-name>saveEvent</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.SaveEventServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for updating changes to the mask elements of an event conf -->
+    <servlet-name>updateEvent</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.UpdateEventServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for renaming an event -->
+    <servlet-name>renameEvent</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.RenameEventServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for creating a new event -->
+    <servlet-name>newEvent</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.NewEventServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for copying event -->
+    <servlet-name>copyEvent</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.CopyEventServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <!-- servlet for rearranging event configurations -->
+    <servlet-name>rearrangeEvents</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.RearrangeEventsServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for adding a new mask element when editing event conf masks -->
+    <servlet-name>newMaskElement</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.masks.NewMaskElementServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for updating changes to the mask elements of an event conf -->
+    <servlet-name>updateMaskElements</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.masks.UpdateMaskElementsServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for saving changes to the mask elements of an event conf -->
+    <servlet-name>saveMaskElements</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.masks.SaveMaskElementsServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for deleting mask elements of an event conf -->
+    <servlet-name>deleteElement</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.masks.DeleteElementServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for intializing parameters for editing an event mask-->
+    <servlet-name>maskEditing</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.masks.MaskEditingServlet</servlet-class>
+  </servlet> 
+  <servlet>
+    <!-- servlet for intializing parameters for editing the event auto actions-->
+    <servlet-name>autoActionEditing</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.autoActions.AutoActionEditingServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for adding a new auto action to an event -->
+    <servlet-name>newAutoAction</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.autoActions.NewAutoActionServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for updating changes to the mask elements of an event conf -->
+    <servlet-name>updateAutoActions</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.autoActions.UpdateAutoActionsServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for saving changes to the mask elements of an event conf -->
+    <servlet-name>saveAutoActions</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.autoActions.SaveAutoActionsServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for deleting mask elements of an event conf -->
+    <servlet-name>deleteAutoAction</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.autoActions.DeleteAutoActionServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <!-- servlet for intializing parameters for editing the event operator actions-->
+    <servlet-name>operActionEditing</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.operActions.OperActionEditingServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for adding a new operator action to an event -->
+    <servlet-name>newOperAction</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.operActions.NewOperActionServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for updating changes to operator actions -->
+    <servlet-name>updateOperActions</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.operActions.UpdateOperActionsServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for saving changes to operator actions -->
+    <servlet-name>saveOperActions</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.operActions.SaveOperActionsServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for deleting operator actions -->
+    <servlet-name>deleteOperAction</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.operActions.DeleteOperActionServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <!-- servlet for intializing parameters for editing the event forwards-->
+    <servlet-name>forwardsEditing</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.forwards.ForwardsEditingServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for adding a new operator action to an event -->
+    <servlet-name>newForward</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.forwards.NewForwardServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for updating changes to operator actions -->
+    <servlet-name>updateForwards</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.forwards.UpdateForwardsServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for saving changes to operator actions -->
+    <servlet-name>saveForwards</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.forwards.SaveForwardsServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for deleting operator actions -->
+    <servlet-name>deleteForward</servlet-name>
+    <servlet-class>org.opennms.web.eventconf.forwards.DeleteForwardServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>nodeLabelChange</servlet-name>
+    <servlet-class>org.opennms.web.nodelabel.NodeLabelChangeServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+    <!-- servlet for grabbing node, interface and service information -->
+    <servlet-name>getNodes</servlet-name>
+    <servlet-class>org.opennms.web.admin.nodeManagement.GetNodesServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for managing and unmanaging interfaces and services -->
+    <servlet-name>manageNodes</servlet-name>
+    <servlet-class>org.opennms.web.admin.nodeManagement.ManageNodesServlet</servlet-class>
+  </servlet>
+  
+  <!-- servlets for editing the poller configuration files -->
+  <servlet>
+    <servlet-name>pollerConfig</servlet-name>
+    <servlet-class>org.opennms.web.admin.pollerConfig.PollerConfigServlet</servlet-class>
+    <init-param>
+      <param-name>redirect.success</param-name>
+      <param-value>finishPollerConfig.jsp</param-value>
+      <description>Redirect to this sibling URL on success.</description>
+    </init-param>
+  </servlet>
+  <servlet>
+    <servlet-name>finishPollerConfig</servlet-name>
+    <servlet-class>org.opennms.web.admin.pollerConfig.FinishPollerConfigServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <!-- servlet for managing and unmanaging interfaces and services -->
+    <servlet-name>addPollerConfig</servlet-name>
+    <servlet-class>org.opennms.web.admin.pollerConfig.AddPollerConfigServlet</servlet-class>
+    <init-param>
+      <param-name>redirect.success</param-name>
+      <param-value>index.jsp</param-value>
+      <description>Redirect to this sibling URL on success.</description>
+    </init-param>
+  </servlet>
+
+  <!--servlet for updating the notify flag in the ifservices table -->
+  <servlet>
+        <servlet-name>updateServiceNotify</servlet-name>
+        <servlet-class>org.opennms.web.admin.notification.ServiceNoticeUpdateServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>rtcPost</servlet-name>
+    <servlet-class>org.opennms.web.category.RTCPostServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>rtcRaw</servlet-name>
+    <servlet-class>org.opennms.web.category.RTCDebugServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>sendMail</servlet-name>
+    <servlet-class>org.opennms.web.mail.MailerServlet</servlet-class>
+    <init-param>
+      <param-name>redirect.success</param-name>
+      <param-value>../help/index.jsp</param-value>
+      <description>Redirect to this sibling URL on success.</description>
+    </init-param>
+    <init-param>
+      <param-name>mail.program</param-name>
+      <param-value>/bin/mail</param-value>
+      <description>Redirect to this sibling URL on success.</description>
+    </init-param>    
+  </servlet>
+
+  <servlet>
+    <servlet-name>nodeRescan</servlet-name>
+    <servlet-class>org.opennms.web.element.NodeRescanServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>filterOutage</servlet-name>
+    <servlet-class>org.opennms.web.outage.OutageFilterServlet</servlet-class>
+  </servlet>
+  
+  <!-- python servlet for testing purposes - ->
+  <servlet>
+      <servlet-name>PyServlet</servlet-name>
+      <servlet-class>org.python.util.PyServlet</servlet-class>
+      <init-param>
+          <param-name>python.home</param-name>
+          <param-value>/home/larry/jython-2.1a1</param-value>
+      </init-param>
+  </servlet>
+  <servlet-mapping>
+      <servlet-name>PyServlet</servlet-name>
+      <url-pattern>*.py</url-pattern>
+  </servlet-mapping>
+  <!- - python servlet for testing purposes -->
+
+  <!-- desktop graph servlet mapping -->
+  <!-- desktop survey report servlet mapping -->  
+  
+  <servlet-mapping>
+    <servlet-name>snmpGraph</servlet-name>
+    <url-pattern>/snmp/performance/graph.png</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>snmpGraph</servlet-name>
+    <url-pattern>/snmp/performance/graph</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>snmpAdHocGraph</servlet-name>
+    <url-pattern>/snmp/performance/adhocGraph.png</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>snmpAdHocGraph</servlet-name>
+    <url-pattern>/snmp/performance/adhocGraph</url-pattern>
+  </servlet-mapping>  
+
+  <servlet-mapping>
+    <servlet-name>rrddump</servlet-name>
+    <url-pattern>/performance/dump</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>rrddump</servlet-name>
+    <url-pattern>/performance/raw</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>rrdlist</servlet-name>
+    <url-pattern>/performance/list</url-pattern>
+  </servlet-mapping>  
+  <servlet-mapping>
+    <servlet-name>addPerfReportsToUrl</servlet-name>
+    <url-pattern>/performance/addReportsToUrl</url-pattern>
+  </servlet-mapping>  
+  <servlet-mapping>
+    <servlet-name>addIntfToPerfUrl</servlet-name>
+    <url-pattern>/performance/addIntfFromNode</url-pattern>
+  </servlet-mapping>  
+  <servlet-mapping>
+    <servlet-name>availabilityXml</servlet-name>
+    <url-pattern>/availability/availabilityRaw</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>availability</servlet-name>
+    <url-pattern>/availability/availability</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>acknowledgeEvent</servlet-name>
+    <url-pattern>/event/acknowledge</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>acknowledgeEventByFilter</servlet-name>
+    <url-pattern>/event/acknowledgeByFilter</url-pattern>
+  </servlet-mapping>  
+  <servlet-mapping>
+    <servlet-name>filterEvent</servlet-name>
+    <url-pattern>/event/list</url-pattern>
+  </servlet-mapping>  
+  <servlet-mapping>
+    <servlet-name>queryEvent</servlet-name>
+    <url-pattern>/event/query</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>acknowledgeNotice</servlet-name>
+    <url-pattern>/notification/acknowledge</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>queryNotice</servlet-name>
+    <url-pattern>/notification/browse</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>queryOutage</servlet-name>
+    <url-pattern>/outage/browse</url-pattern>
+  </servlet-mapping>
+  
+  <!--servlet mapping for update notification status servlet -->
+  <servlet-mapping>
+    <servlet-name>updateNotificationStatus</servlet-name>
+    <url-pattern>/admin/updateNotificationStatus</url-pattern>
+  </servlet-mapping>
+  
+  <!-- servlet mapping for the destination wizard servlet -->
+  <servlet-mapping>
+    <servlet-name>destinationWizard</servlet-name>
+    <url-pattern>/admin/notification/destinationWizard</url-pattern>
+  </servlet-mapping>
+  
+  <!-- servlet mapping for the notification wizard servlet -->
+  <servlet-mapping>
+    <servlet-name>notificationWizard</servlet-name>
+    <url-pattern>/admin/notification/noticeWizard/notificationWizard</url-pattern>
+  </servlet-mapping>
+    
+  <!-- servlet mapping for configuring users groups and views -->
+  <!-- user configuration servlets -->
+  <servlet-mapping>
+    <servlet-name>modifyUser</servlet-name>
+    <url-pattern>/admin/userGroupView/users/modifyUser</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>updateUser</servlet-name>
+    <url-pattern>/admin/userGroupView/users/updateUser</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>saveUser</servlet-name>
+    <url-pattern>/admin/userGroupView/users/saveUser</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>renameUser</servlet-name>
+    <url-pattern>/admin/userGroupView/users/renameUser</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>addNewUser</servlet-name>
+    <url-pattern>/admin/userGroupView/users/addNewUser</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>deleteUser</servlet-name>
+    <url-pattern>/admin/userGroupView/users/deleteUser</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>addDutySchedules</servlet-name>
+    <url-pattern>/admin/userGroupView/users/addDutySchedules</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>removeDutySchedules</servlet-name>
+    <url-pattern>/admin/userGroupView/users/removeDutySchedules</url-pattern>
+  </servlet-mapping>
+  <!-- end of user configuration servlets -->
+  
+  <!-- group configuration servlets -->
+  <servlet-mapping>
+    <servlet-name>modifyGroup</servlet-name>
+    <url-pattern>/admin/userGroupView/groups/modifyGroup</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>updateGroup</servlet-name>
+    <url-pattern>/admin/userGroupView/groups/updateGroup</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>saveGroup</servlet-name>
+    <url-pattern>/admin/userGroupView/groups/saveGroup</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>renameGroup</servlet-name>
+    <url-pattern>/admin/userGroupView/groups/renameGroup</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>addNewGroup</servlet-name>
+    <url-pattern>/admin/userGroupView/groups/addNewGroup</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>deleteGroup</servlet-name>
+    <url-pattern>/admin/userGroupView/groups/deleteGroup</url-pattern>
+  </servlet-mapping>
+  <!-- end of group configuration servlets -->
+  
+  <!-- view configuration servlets -->
+  <servlet-mapping>
+    <servlet-name>modifyView</servlet-name>
+    <url-pattern>/admin/userGroupView/views/modifyView</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>updateView</servlet-name>
+    <url-pattern>/admin/userGroupView/views/updateView</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>saveView</servlet-name>
+    <url-pattern>/admin/userGroupView/views/saveView</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>renameView</servlet-name>
+    <url-pattern>/admin/userGroupView/views/renameView</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>addNewView</servlet-name>
+    <url-pattern>/admin/userGroupView/views/addNewView</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>deleteView</servlet-name>
+    <url-pattern>/admin/userGroupView/views/deleteView</url-pattern>
+  </servlet-mapping>
+  <!-- end of group configuration servlets -->
+  
+  <!-- end of user groups and views configuration servlets -->
+  
+  <!-- servlet mapping for event conf editing -->
+  <servlet-mapping>
+    <servlet-name>deleteEvent</servlet-name>
+    <url-pattern>/admin/eventconf/deleteEvent</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>modifyParam</servlet-name>
+    <url-pattern>/admin/eventconf/modifyParam</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>updateEvent</servlet-name>
+    <url-pattern>/admin/eventconf/updateEvent</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>saveEvent</servlet-name>
+    <url-pattern>/admin/eventconf/saveEvent</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>renameEvent</servlet-name>
+    <url-pattern>/admin/eventconf/renameEvent</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>newEvent</servlet-name>
+    <url-pattern>/admin/eventconf/newEvent</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>copyEvent</servlet-name>
+    <url-pattern>/admin/eventconf/copyEvent</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>rearrangeEvents</servlet-name>
+    <url-pattern>/admin/eventconf/rearrangeEvents</url-pattern>
+  </servlet-mapping>
+  
+  
+  <!-- event mask servlet mappings -->
+  <servlet-mapping>
+    <servlet-name>newMaskElement</servlet-name>
+    <url-pattern>/admin/eventconf/masks/newMaskElement</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>updateMaskElements</servlet-name>
+    <url-pattern>/admin/eventconf/masks/updateMaskElements</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>saveMaskElements</servlet-name>
+    <url-pattern>/admin/eventconf/masks/saveMaskElements</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>deleteElement</servlet-name>
+    <url-pattern>/admin/eventconf/masks/deleteElement</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>maskEditing</servlet-name>
+    <url-pattern>/admin/eventconf/masks/maskEditing</url-pattern>
+  </servlet-mapping>
+  <!-- auto action servlet mappings -->
+  <servlet-mapping>
+    <servlet-name>autoActionEditing</servlet-name>
+    <url-pattern>/admin/eventconf/autoActions/autoActionEditing</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>newAutoAction</servlet-name>
+    <url-pattern>/admin/eventconf/autoActions/newAutoAction</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>updateAutoActions</servlet-name>
+    <url-pattern>/admin/eventconf/autoActions/updateAutoActions</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>saveAutoActions</servlet-name>
+    <url-pattern>/admin/eventconf/autoActions/saveAutoActions</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>deleteAutoAction</servlet-name>
+    <url-pattern>/admin/eventconf/autoActions/deleteAutoAction</url-pattern>
+  </servlet-mapping>
+  
+  <!-- operator action servlet mappings -->
+  <servlet-mapping>
+    <servlet-name>operActionEditing</servlet-name>
+    <url-pattern>/admin/eventconf/operActions/operActionEditing</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>newOperAction</servlet-name>
+    <url-pattern>/admin/eventconf/operActions/newOperAction</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>updateOperActions</servlet-name>
+    <url-pattern>/admin/eventconf/operActions/updateOperActions</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>saveOperActions</servlet-name>
+    <url-pattern>/admin/eventconf/operActions/saveOperActions</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>deleteOperAction</servlet-name>
+    <url-pattern>/admin/eventconf/operActions/deleteOperAction</url-pattern>
+  </servlet-mapping>
+  
+  <!-- forwards servlet mappings -->
+  <servlet-mapping>
+    <servlet-name>forwardsEditing</servlet-name>
+    <url-pattern>/admin/eventconf/forwards/forwardsEditing</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>newForward</servlet-name>
+    <url-pattern>/admin/eventconf/forwards/newForward</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>updateForwards</servlet-name>
+    <url-pattern>/admin/eventconf/forwards/updateForwards</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>saveForwards</servlet-name>
+    <url-pattern>/admin/eventconf/forwards/saveForwards</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>deleteForward</servlet-name>
+    <url-pattern>/admin/eventconf/forwards/deleteForward</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>nodeLabelChange</servlet-name>
+    <url-pattern>/admin/nodeLabelChange</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>modifyAsset</servlet-name>
+    <url-pattern>/asset/modifyAsset</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>importAssets</servlet-name>
+    <url-pattern>/admin/asset/import/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>exportAssets</servlet-name>
+    <url-pattern>/admin/asset/assets.csv</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>getNodes</servlet-name>
+    <url-pattern>/admin/getNodes</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>manageNodes</servlet-name>
+    <url-pattern>/admin/manageNodes</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>pollerConfig</servlet-name>
+    <url-pattern>/admin/pollerConfig/pollerConfig</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>finishPollerConfig</servlet-name>
+    <url-pattern>/admin/pollerConfig/finishPollerConfig</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>addPollerConfig</servlet-name>
+    <url-pattern>/admin/pollerConfig/addPollerConfig</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+        <servlet-name>updateServiceNotify</servlet-name>
+        <url-pattern>/admin/updateServiceNotify</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>rtcPost</servlet-name>
+    <url-pattern>/rtc/post/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>rtcRaw</servlet-name>
+    <url-pattern>/rtc/raw</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>sendMail</servlet-name>
+    <url-pattern>/mail/send</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>nodeRescan</servlet-name>
+    <url-pattern>/element/rescan</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>filterOutage</servlet-name>
+    <url-pattern>/outage/list</url-pattern>
+  </servlet-mapping>
+
+
+  <error-page>
+    <exception-type>org.opennms.web.category.CategoryNotFoundException</exception-type>
+    <location>/errors/categorynotfound.jsp</location>
+  </error-page>
+  <error-page>
+    <exception-type>org.opennms.web.MissingParameterException</exception-type>
+    <location>/errors/missingparam.jsp</location>
+  </error-page>
+  <error-page>
+    <exception-type>org.opennms.web.event.EventIdNotFoundException</exception-type>
+    <location>/errors/eventidnotfound.jsp</location>
+  </error-page>
+  <error-page>
+    <exception-type>org.opennms.web.notification.NoticeIdNotFoundException</exception-type>
+    <location>/errors/noticeidnotfound.jsp</location>
+  </error-page>
+  <error-page>
+    <exception-type>java.lang.SecurityException</exception-type>
+    <location>/errors/sealingviolation.jsp</location>
+  </error-page>
+  
+
+  <!-- Note: The order of these security-constraints is significant! -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Administrative Controls</web-resource-name>
+      <url-pattern>/admin/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>OpenNMS Administrator</role-name>
+    </auth-constraint>
+  </security-constraint>
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Real-Time Console Data Update Servlets</web-resource-name>
+      <url-pattern>/rtc/post/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>OpenNMS RTC Daemon</role-name>
+    </auth-constraint>
+  </security-constraint>
+  <security-constraint>  
+    <web-resource-collection>    
+      <web-resource-name>Entire Application</web-resource-name>
+      <url-pattern>/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>OpenNMS User</role-name>
+    </auth-constraint>
+  </security-constraint>
+
+  <login-config>
+    <auth-method>BASIC</auth-method>
+    <realm-name>OpenNMS Web Console</realm-name>
+  </login-config>
+</web-app>

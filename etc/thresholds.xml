@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<thresholding-config>
+        <group name="default-snmp"
+                rrdRepository = "@root.install.share@/rrd/snmp/">
+                <threshold type="high" ds-name="avgBusy5"  ds-type="node" value="90" rearm="50" trigger="3"/>
+                <threshold type="low" ds-name="freeMem"  ds-type="node" value="1024" rearm="1000000" trigger="3"/>
+
+                <!--  We don't have good data to base the next one on, so we're commenting it out
+                <threshold type="high" ds-name="bufferFail"  ds-type="node" value="1" rearm="0" trigger="3"/>
+                                                                                                        -->
+
+                <!--  We don't have good data to base the next one on, so we're commenting it out
+                <threshold type="high" ds-name="bufferNoMem"  ds-type="node" value="1" rearm="0" trigger="3"/>
+                                                                                                        -->
+
+                <threshold type="low" ds-name="wfkernelBuffersFree"  ds-type="node" value="0" rearm="1" trigger="3"/>
+                <threshold type="low" ds-name="wfkernelMemoryFree"  ds-type="node" value="0" rearm="1" trigger="3"/>
+                <threshold type="high" ds-name="wfkernelTasksInQue"  ds-type="node" value="100" rearm="0" trigger="3"/>
+                <threshold type="high" ds-name="wfkernelTasksTotal"  ds-type="node" value="500" rearm="0" trigger="3"/>
+
+                <threshold type="high" ds-name="a3sysCpuUtil"  ds-type="node" value="90" rearm="50" trigger="3"/>
+
+                <threshold type="high" ds-name="cpuPercentBusy"  ds-type="node" value="90" rearm="50" trigger="3"/>
+                <threshold type="low" ds-name="freeSpaceOnSys"  ds-type="node" value="5000" rearm="100000" trigger="3"/>
+                <threshold type="low" ds-name="freeSpaceOnVol2"  ds-type="node" value="5000" rearm="100000" trigger="3"/>
+
+                <!-- The following entry is for the Checkpoint MIB -->
+                <threshold type="high" ds-name="cpuUtilization"  ds-type="node" value="90" rearm="50" trigger="3"/>
+
+
+                <threshold type="low" ds-name="freeMemory"  ds-type="node" value="1" rearm="1000" trigger="3"/>
+                <threshold type="low" ds-name="1stHDDFreeSpace"  ds-type="node" value="5000" rearm="100000" trigger="3"/>
+                <threshold type="low" ds-name="2ndHDDFreeSpace"  ds-type="node" value="5000" rearm="100000" trigger="3"/>
+
+                <threshold type="high" ds-name="cimPctHddUsed1"  ds-type="node" value="99" rearm="80" trigger="1"/>
+                <threshold type="high" ds-name="cimPctHddUsed2"  ds-type="node" value="99" rearm="80" trigger="1"/>
+                <threshold type="high" ds-name="cim5MinCpuUtilPct"  ds-type="node" value="90" rearm="50" trigger="3"/>
+
+        </group>
+</thresholding-config>

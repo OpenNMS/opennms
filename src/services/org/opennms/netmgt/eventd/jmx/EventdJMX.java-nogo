@@ -1,0 +1,169 @@
+//
+// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Copyright (C) 2001 Oculan Corp.  All rights reserved.
+//  
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software 
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+// 
+// For more information contact: 
+//	Brian Weaver	<weave@opennms.org>
+//	http://www.opennms.org/
+//
+// Tab Size = 8
+//
+package org.opennms.netmgt.eventd.jmx;
+
+import java.lang.*;
+import java.lang.reflect.Method;
+
+import javax.management.DynamicMBean;
+import javax.management.MBeanInfo;
+import javax.management.AttributeList;
+import javax.management.Attribute;
+import javax.management.MBeanOperationInfo;
+
+import javax.management.AttributeNotFoundException;
+import javax.management.MBeanException;
+import javax.management.ReflectionException;
+import javax.management.InvalidAttributeValueException;
+
+import org.opennms.netmgt.eventd.Eventd;
+
+public class EventdJMX
+	implements DynamicMBean
+{
+	public static final MethodOpertionInfo[] methods;
+
+	private static class MethodOperationInfo
+	{
+		MBeanOperationInfo	mbeanInfo;
+		Method			method;
+	
+		static MethodOperationInfo make(Method m, String descr)
+		{
+			MethodOperationInfo info = new MethodOperationInfo();
+			info.method = m;
+			info.mbeanInfo = new MBeanOperation(descr, m);
+			return info;
+		}
+	}
+
+	static
+	{
+		Class edclass = Eventd.class;
+		methods = new MBeanOperationInfo[] 
+		{
+			MethodOperationInfo.make(edclass.getMethod("start", null), "Starts the Event Service"),
+			MethodOperationInfo.make(edclass.getMethod("stop", null), "Stops the Event Service"),
+			MethodOperationInfo.make(edclass.getMethod("getStatus", null), "Returns the status")
+		};
+	}
+
+	public EventdJMX()
+	{
+		// do nothing
+	}
+
+	public Object getAttribute(String attribute)
+		throws AttributeNotFoundException,
+			MBeanException,
+			ReflectionException
+	{
+		if("status".equals(attribute))
+		{
+			return invoke("getStatus", new Object[0], new String[0]);
+		}
+		throw new AttributeNotFoundException("The readable attribute \"" + attribute + "\" was not found");
+	}
+
+	public void setAttribute(Attribute attribute)
+		throws AttributeNotFoundException,
+			InvalidAttributeValueException,
+			MBeanException,
+			ReflectionException
+	{
+		throw new AttributeNotFoundException("The writeable attribute \"" + attribute + "\" was not found");
+	}
+
+	public AttributeList getAttributes(String[] attributes)
+	{
+		AttributeList list = new AttributeList(1);
+		try
+		{
+			Object o = getAttribute("status");
+			list.add(new Attribute("status", o));
+		}
+		catch(Exception e)
+		{
+			// discard, no ability to throw here
+		}
+		return list;
+	}
+
+	public AttributeList setAttributes(AttributeList attributes)
+	{
+		return new AttributeList();
+	}
+
+	public Object invoke(String method,
+			     Object[] arguments,
+			     String[] parameters)
+		throws MBeanException,
+			ReflectionException
+	{
+		for(int i = 0; i < methods.length; i++)
+		{
+			if(methods[i].mbeanInfo.getName().equals(method))
+			{
+				boolean match = false;
+				MBeanParameterInfo[] info = methods[i].mbeanInfo.getSignature();
+				if((info == null || info.length == 0) &&
+				   (parameters == null || parameters.length == 0)
+				{
+					match = true;
+				}
+				else if((info != null && parameters != null) && info.length == parameters.length)
+				{
+					// possible match, check argument types
+					//
+					match = true;
+					for(int x = 0;match && x < info.length; x++)
+					{
+						if(!info[x].getType().equals(parameters[x]))
+							match = false;
+					}
+				}
+
+				if(match == true)
+				{
+					try
+					{
+						Eventd ed = Eventd.getInstance();
+						return methods[i].method.invoke(ed, arguments);
+					}
+					catch(Exception e)
+					{
+						throw new ReflectionException(e);
+					}
+					break;
+				}
+			}
+		}
+		throw new IntrospectionException("Method \"" + method + "\" not found");
+	}
+
+	public MBeanInfo getMBeanInfo()
+	{
+	}
+}

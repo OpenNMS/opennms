@@ -1,0 +1,11 @@
+--- Net-Telnet-3.02/t/select.t.orig	Thu Jun 10 10:25:52 1999
++++ Net-Telnet-3.02/t/select.t	Thu Jan 24 04:37:39 2002
+@@ -22,7 +22,7 @@
+     test ($@ eq "");
+ 
+     ## Did select() return a correct value?
+-    test (defined($nfound) and $nfound == 0);
++    test (defined($nfound) and $nfound == 1);
+ 
+     exit;
+ } # end main program

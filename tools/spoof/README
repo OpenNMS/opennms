@@ -1,0 +1,27 @@
+We have seen some issues with certain version of GNU libc where a DNS lookup
+will block indefinitely when it shouldn't.  It should only manifest itself
+in cases where large portions of the polled network are not resolvable.
+
+From the bugzilla report:
+
+------- Additional Comments From Brian Weaver 2001-11-08 15:37 -------
+ 
+For the moment there is a workaround until a more through fix can be found.
+I've written a small C program that can "spoof" a zero length packet. The
+zero length packet can be directed at a hung "DNS Query" to wake it up from
+being blocked in recvfrom(). This will cause the lookup to fail, but it will
+at least wake up the thread that is blocked. Once awake the resolution may
+fail, but the thread will no longer be blocked.
+
+One of the test boxes had Capsd blocked from 5:50pm until 2:50pm the next
+day. When ran the spoofer with the correct address:port combinations, the 
+blocked capsd thread was "released" and the OpenNMS services have continued
+un-interrupted.
+
+Health check did not detect any fault during the blocked period. In order to
+detect this a check using 'netstat -nu' to look for a foreign connection to
+"... XX.XX.XX.XX:53 ESTABLISHED" that exists for an extended period of time.
+In theory the lookup should take less that 5 minutes so that my be a good 
+starting time. A timeout of 2 minutes may also be reasonable.
+
+I'll continue to look into the glibc issue.

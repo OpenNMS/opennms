@@ -1,0 +1,9 @@
+opennms (0.9.0-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Ben Reed <ben@opennms.org>  Wed, 12 Sep 2001 23:42:39 +0000
+
+Local variables:
+mode: debian-changelog
+End:

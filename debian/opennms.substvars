@@ -1,0 +1,1 @@
+shlibs:Depends=librrd0 (>= 1.0.10-1)

@@ -1,0 +1,18 @@
+This package was debianized by Ben Reed <ben@opennms.org> on
+Wed, 12 Sep 2001 23:42:39 +0000.
+
+It was downloaded from CVS.
+
+Copyright:
+
+This software is copyright (c) 1998-2001 by Oculan Corp.
+
+You are free to distribute this software under the terms of
+the GNU General Public License.  Portions of this software are
+available under the terms of the GNU Lesser General Public
+License.
+
+On Debian systems, the complete text of the GNU General Public
+License can be found in the /usr/share/common-licenses/GPL
+file.  The GNU Lesser General Public License can be found in
+the /usr/share/common-licenses/LGPL file.

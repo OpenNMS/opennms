@@ -1,0 +1,12 @@
+<discovery-configuration threads="1" packets-per-second="1"
+	initial-sleep-time="300000" restart-sleep-time="86400000"
+	retries="3" timeout="800">
+
+	<include-range retries="2" timeout="3000">
+		<begin>192.168.0.1</begin>
+		<end>192.168.0.254</end>
+	</include-range>
+
+	<include-url>file:@root.install@/etc/include</include-url>
+
+</discovery-configuration>

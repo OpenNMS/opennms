@@ -1,0 +1,100 @@
+#! /bin/sh
+# chkconfig: 345 99 00
+# description: Starts and stops the OpenNMS network management
+#              poller and backend processes
+# processname: opennms.sh
+# pidfile: @root.install.pid@
+
+CONTACT=ben@opennms.org
+RETVAL=0
+LOGFILE=/var/log/opennms/output.log
+
+FUNCTIONS_LOADED=0
+# Source function library.
+for dir in @root.install.initdir@ /etc /etc/rc.d; do
+	if [ -f "$dir/init.d/functions" ] && [ "$FUNCTIONS_LOADED" = "0" ]; then
+		source "$dir/init.d/functions"
+		FUNCTIONS_LOADED=1
+	fi
+done
+
+if [ "$FUNCTIONS_LOADED" = "0" ]; then
+	echo "$0: unable to find init.d functions!"
+	exit 1
+fi
+
+# Check for OPENNMS_HOME
+
+if test -z "$OPENNMS_HOME"; then
+	export OPENNMS_HOME=@root.install@
+fi
+
+# Check for JAVA_HOME
+
+if test -z "$JAVA_HOME"; then
+
+	for dir in /usr/java/jdk1.4* /usr/java/j2sdk1.4* /opt/IBMJava2-13 /usr/java/jdk1.3.1_* /usr/java/jdk1.3.1* /usr/java/j2sdk1.3.1* /usr/lib/j2sdk1.3*; do
+		if test -d "$dir" && test -f "$dir/lib/tools.jar"; then
+			export JAVA_HOME="$dir"
+			break
+		fi
+	done
+
+	[ -z "$JAVA_HOME" ] && exit 1
+
+fi
+
+start(){
+	export REDIRECT=$LOGFILE
+	echo -n $"Starting OpenNMS: "
+	daemon /opt/OpenNMS/bin/opennms.sh start
+	RETVAL=$?
+	echo
+	touch /var/lock/subsys/opennms
+	return $RETVAL
+}
+
+stop(){
+	echo -n $"Stopping OpenNMS: "
+	daemon /opt/OpenNMS/bin/opennms.sh stop
+	RETVAL=$?
+	echo
+	sleep 10
+	/opt/OpenNMS/bin/opennms.sh kill >/dev/null 2>&1
+	rm -f /var/lock/subsys/opennms
+	return $RETVAL
+}
+
+restart(){
+	stop
+	start
+}
+
+status(){
+	/opt/OpenNMS/bin/opennms.sh status
+	RETVAL=$?
+	echo
+	return $RETVAL
+}
+
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	restart)
+		restart
+		;;
+	status)
+		status
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart|status}"
+		RETVAL=1
+		;;
+esac
+
+exit $RETVAL
+

@@ -1,0 +1,146 @@
+<%@page language="java" contentType = "text/html" session = "true"  import="org.opennms.netmgt.config.*,java.util.*,org.opennms.netmgt.config.views.*"%>
+<%
+	ViewFactory viewFactory = null;
+	Map views = null;
+	
+  	try
+  	{
+		ViewFactory.init();
+		viewFactory = ViewFactory.getInstance();
+		views = viewFactory.getViews();
+	}
+	catch(Exception e)
+	{
+	  	throw new ServletException("View:change " + e.getMessage());
+	}
+%>
+
+<html>
+<head>
+<title>List | View Admin | OpenNMS Web Console</title>
+<base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
+<link rel="stylesheet" type="text/css" href="includes/styles.css" />
+</head>
+
+<script language="Javascript" type="text/javascript" >
+
+    function addNewView()
+    {
+        newUserWin = window.open("admin/userGroupView/views/newView.jsp", "", "fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no,width=500,height=300");
+    }
+    
+    function detailView(viewName)
+    {
+        document.allViews.action="admin/userGroupView/views/viewDetail.jsp?viewName=" + viewName;
+        document.allViews.submit();
+    }
+    
+    function deleteView(viewName)
+    {
+        document.allViews.action="admin/userGroupView/views/deleteView";
+        document.allViews.viewName.value=viewName;
+        document.allViews.submit();
+    }
+    
+    function modifyView(viewName)
+    {
+        document.allViews.action="admin/userGroupView/views/modifyView";
+        document.allViews.viewName.value=viewName;
+        document.allViews.submit();
+    }
+    
+    function renameView(viewName)
+    {
+        document.allViews.viewName.value=viewName;
+        var newName = prompt("Enter new name for view.", viewName);
+        
+        if (newName != null && newName != "")
+        {
+          document.allViews.newName.value = newName;
+          document.allViews.action="admin/userGroupView/views/renameView";
+          document.allViews.submit();
+        }
+    }
+    
+</script>
+
+<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+
+<% String breadcrumb1 = java.net.URLEncoder.encode("<a href='admin/index.jsp'>Admin</a>"); %>
+<% String breadcrumb2 = java.net.URLEncoder.encode("<a href='admin/userGroupView/index.jsp'>Users, Groups, and Views</a>"); %>
+<% String breadcrumb3 = java.net.URLEncoder.encode("View List"); %>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="View Configuration" />
+  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
+  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
+</jsp:include>
+
+<FORM METHOD="POST" NAME="allViews">
+<input type="hidden" name="redirect"/>
+<input type="hidden" name="viewName"/>
+<input type="hidden" name="newName"/>
+
+<br>	
+<table width="100%" border="0" cellspacing="0" cellpadding="2" >
+  <tr>
+    <td>&nbsp;</td>
+
+    <td>
+    <h3>View Configuration</h3>
+    <!--<a href="javascript:addNewView()"> <img src="images/add1.gif" alt="Add new view"> Add new view</a>-->
+     <p>Click on the <i>View Name</i> link to see detailed information about a view.</p>
+     <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
+
+         <tr bgcolor="#999999">
+          <td width="5%"><b>Delete</b></td>
+          <td width="5%"><b>Modify</b></td>
+          <td width="5%"><b>Rename</b></td>
+          <td width="5%"><b>View Name</b></td>
+          <td width="5%"><b>View Title</b></td>
+        </tr>
+        <% Iterator i = views.keySet().iterator();
+           int row = 0;
+           while(i.hasNext())
+           {
+              View curView = (View)views.get(i.next());
+         %>
+         <tr bgcolor=<%=row%2==0 ? "#ffffff" : "#cccccc"%>>
+          <td width="5%" rowspan="2" align="center">
+            <img src="images/trash.gif" alt="Cannot delete <%=curView.getName()%> view">
+          </td>
+
+          <td width="5%" rowspan="2" align="center">
+            <a href="javascript:modifyView('<%=curView.getName()%>')"><img src="images/modify.gif"></a>
+          </td>
+          <td width="5%" rowspan="2" align="center">
+            <input type="button" name="rename" value="Rename" onclick="alert('Sorry, the <%=curView.getName()%> view cannot be renamed.')">
+          </td>
+          <td width="10%">
+            <a href="javascript:detailView('<%=curView.getName()%>')"><%=curView.getName()%></a>
+          </td>
+          <td width="100%">
+            <%=curView.getTitle()%>
+          </td></tr>
+          <tr bgcolor=<%=row%2==0 ? "#ffffff" : "#cccccc"%>>
+            <td width="100%" colspan="2">
+              <%= (curView.getComment()!=null && !curView.getComment().equals("") ? curView.getComment() : "No Comments") %>
+            </td>
+          </tr>
+         </tr>
+         <% row++;
+            } %>
+     </table>
+    </td>
+
+    <td>&nbsp;</td>
+  </tr>
+</table>
+
+</FORM>
+
+<br>
+<jsp:include page="/includes/footer.jsp" flush="false" >
+</jsp:include>
+</body>
+</html>

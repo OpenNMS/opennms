@@ -1,0 +1,59 @@
+//
+// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Copyright (C) 2001 Oculan Corp.  All rights reserved.
+//  
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software 
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+// 
+// For more information contact: 
+//	Brian Weaver	<weave@opennms.org>
+//	http://www.opennms.org/
+//
+// Tab Size = 8
+//
+package org.opennms.netmgt.threshd;
+
+import java.lang.*;
+
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+
+
+/**
+ * This class is used to launch/start the thresholding daemon service
+ * in a Java Virtual Machine. It contains the method 
+ * <code>main</code> which is a well defined entry point
+ * for the virtual machine.
+ *
+ */
+public final class StartService
+{
+	/**
+	 * The main method used as a starting point for the Threshd
+	 * service. This method has the required signature necessary
+	 * for the virtual machine to invoke on startup.
+	 *
+	 * @param args	The arguments to the main method (not used).
+	 *
+	 */
+	public static void main(String[] args)
+	{
+		Threshd svc = Threshd.getInstance();
+		int status = svc.getStatus();
+		if (status == svc.START_PENDING || status == svc.STOPPED)
+		{
+			svc.start();
+		}
+	}
+}

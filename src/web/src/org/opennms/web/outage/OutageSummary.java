@@ -1,0 +1,89 @@
+//
+// Copyright (C) 2001 Oculan Corp.
+//  
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software 
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+// 
+// For more information contact: 
+//	Brian Weaver   <weave@opennms.org>
+//	http://www.opennms.org/
+//
+//
+
+
+package org.opennms.web.outage;
+
+import java.util.Date;
+
+
+/**
+ * A data structure holding information on all outages on a single
+ * IP address. 
+ *
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS</A> 
+ */
+public class OutageSummary extends Object
+{
+    protected int nodeId;
+    protected String nodeLabel;
+    protected Date timeDown;
+
+
+    public OutageSummary( int nodeId, String nodeLabel, Date timeDown ) {
+        if( nodeLabel == null || timeDown == null ) {
+            throw new IllegalArgumentException( "Cannot take null parameters." );
+        }
+
+        this.nodeId = nodeId;
+        this.nodeLabel = nodeLabel;
+        this.timeDown = timeDown;
+    }
+
+
+    public int getNodeId() {
+        return( this.nodeId );
+    }
+
+
+    /** @deprecated Please use {@link #getNodeLabel getNodeLabel} instead. */
+    public String getHostname() {
+        return( this.nodeLabel );
+    }
+
+
+    public String getNodeLabel() {
+        return( this.nodeLabel );
+    }
+
+
+    public Date getTimeDown() {
+        return( this.timeDown );
+    }
+
+
+    public String toString() {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append( "<OutageSummary: " );
+        buffer.append( this.nodeId );
+        buffer.append( ":" );
+        buffer.append( this.nodeLabel );
+        buffer.append( ", down since " );
+        buffer.append( this.timeDown );
+
+        return( buffer.toString() );
+    }
+ 
+};
+
