@@ -8,8 +8,248 @@
   in 1.0.0. The 1.1 tree is a development, or "unstable" tree, implementing a
   number of new features but without the testing that went into 1.0. When 1.1
   is mature enough, it will become 1.2, the next production or "stable"
-  release. This release, 1.1.4, is a major step toward that next stable
-  release.</para>
+  release. Release 1.1.4 was a major step toward that next stable release, and
+  version 1.1.5 continues that progress.</para>
+
+  <sect1>
+    <title>Changes in OpenNMS 1.1.5</title>
+
+    <para>The current development goal of the OpenNMS team is to get a new,
+    stable release out as soon as time will allow. This will allow for a new
+    development cycle that can be very daring in its scope while still
+    providing a stable, production application. This release is our second
+    release candidate for 1.2.0, and if testing goes well it will be released
+    shortly.</para>
+
+    <para>The reason 1.1.4 did not become 1.2.0 was due to a lot of code
+    changes to the poller. In fact, the poller has been pretty much rewritten
+    and the code reorganized. Those who look at the new poller code should be
+    impressed with the work Matt (OGP) did.</para>
+
+    <para>1.1.5 also represents a new development philosophy for the team.
+    OpenNMS is now written using "test driven development". In a nutshell:
+    when a new feature is desired, or a bug needs fixing, the first piece of
+    code that is written is a test to insure that the feature works or that
+    the bug does not occur. Since no change is made to the code at this point,
+    the test obviously will fail. Then the feature is written or the bug fixed
+    until the test passes, and the final step is to clean up the code to
+    remove duplication, etc.</para>
+
+    <para>Over the next year, this main change in the development philosophy
+    of OpenNMS will reap huge benefits in terms of speed of development and
+    code quality.</para>
+
+    <bridgehead>Notifications on Auto-Acknowledged Events</bridgehead>
+
+    <para>The reason the poller code was rewritten was mainly in support of
+    this one new feature. OpenNMS has three main functions: service polling,
+    data collection and event management. This last feature was hampered by an
+    issue with auto-acknowledgement.</para>
+
+    <para>Here's the scenario: A service is down and an event is generated.
+    This event triggers a notification, which walks a destination path. The
+    first step in the path is to wait for 2 minutes before doing anything, and
+    then it is to page the on call person, and if the notification is not
+    acknowledged in 15 minutes, the manager is to get paged.</para>
+
+    <para>Well, let's assume the outage occurs at 2 in the morning and lasts
+    for four minutes. After the first two minutes, a page is sent to the
+    on-call person and it wakes him up.</para>
+
+    <para>Now, prior to this release, when the service is restored two minutes
+    later, the auto-acknowledge code would acknowledge the "down" notice, so
+    the manager would not get paged. However, unless notices were configured
+    for "up" events, the on call person would not know that the service has
+    been restored, so they would have to wake up, get logged in and then
+    notice that the problem had gone away.</para>
+
+    <para>If notices were configured for "up" events, the on call person would
+    know that the service was up and could go back to bed. Unfortunately, if
+    the "up" notice walked the same path as the "down" notice, it would have
+    to be manually acknowledged or the manager would get a page saying that
+    the service was now "up" without ever receiving the "down" page.</para>
+
+    <para>This obviously isn't very useful.</para>
+
+    <para>So now there is an option to send a "resolution" notice when a
+    "down" event gets auto-acknowledged by an "up" event. The same notice that
+    gets sent with the "down" will be sent with the "up" with the word
+    "RESOLVED:" prefixed to the message. It will only be sent to those people
+    who got the "down" notice and in the same manner, i.e. e-mail, page,
+    etc.</para>
+
+    <para>There are a few things to consider:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Notices concerning "up" events will still get treated as
+        separate notifications. This only concerns auto-acknowledged events.
+        To avoid the scenario above, "up" notices should be turned off, and
+        they have been in the default configuration.</para>
+      </listitem>
+
+      <listitem>
+        <para>OpenNMS "down" events, such as nodeLostService and nodeDown will
+        now always be matched with the corresponding "up" event. For example:
+        HTTP stops on a server, so a nodeLostService event is sent. A short
+        while later the node itself goes down, causing a nodeDown event. When
+        the server is restored, everything is running, so a nodeUp event gets
+        generated and a nodeRegainedService event for HTTP. In the past this
+        would not happen. Once the node came back up, if HTTP was running no
+        event would be sent. If the service was still down, a second
+        nodeLostService event would be generated.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>For those of you who keep up with the code, notice that there is no
+    longer a separate outage daemon. All of that functionality has been
+    integrated into the poller.</para>
+
+    <para>To configure this functionality, look at the
+    notifd-configuration.xml file. Here is an example:</para>
+
+    <programlisting>        &lt;auto-acknowledge resolution-prefix="RESOLVED: " notify="true" uei="uei.opennms.org/nodes/nodeRegainedService" 
+                          acknowledge="uei.opennms.org/nodes/nodeLostService"&gt;
+                          &lt;match&gt;nodeid&lt;/match&gt;
+                          &lt;match&gt;interfaceid&lt;/match&gt;
+                          &lt;match&gt;serviceid&lt;/match&gt;
+        &lt;/auto-acknowledge&gt;</programlisting>
+
+    <para>This says "when a nodeRegainedService event is generated,
+    auto-acknowledge all notices based on a nodeLostService event where the
+    nodeid, interfaceid and serviceid match. In addition, send an notification
+    to all parties who received the "down" notice prefixed with the word
+    RESOLVED:".</para>
+
+    <para>To disable this feature, set notify="false". "true" is the default.
+    The resolution-prefix can be changed to suit non-English languages or user
+    preference.</para>
+
+    <para>A New RADIUS Poller</para>
+
+    <para>Jonathan Sartin (OGP) has written a new poller to poll RADIUS
+    servers. The relavent configuration in capsd is:</para>
+
+    <programlisting>        &lt;protocol-plugin protocol="RadiusAuth" class-name="org.opennms.netmgt.capsd.RadiusAuthPlugin" scan="on" user-defined="false"&gt;
+                 &lt;property key="timeout" value="3000"/&gt;
+                 &lt;property key="user" value="TEST"/&gt;
+                 &lt;property key="password" value="test"/&gt;
+                 &lt;property key="secret" value="opennms"/&gt;
+                 &lt;property key="retry" value="2"/&gt;
+        &lt;/protocol-plugin&gt;</programlisting>
+
+    <para>Note that this requires that a username of "TEST" with a password of
+    "test" and secret of "opennms" is configured on the server in order for
+    this service to be discovered.</para>
+
+    <para>The poller configuration looks similar:</para>
+
+    <programlisting>                &lt;service name="RadiusAuth" interval="300000" user-defined="false" status="on"&gt;
+                        &lt;parameter key="retry" value="3"/&gt;
+                        &lt;parameter key="timeout" value="3000"/&gt;
+                        &lt;parameter key="user" value="TEST"/&gt;
+                        &lt;parameter key="password" value="test"/&gt;
+                        &lt;parameter key="secret" value="opennms"/&gt;
+                        &lt;parameter key="rrd-repository" value="/var/opennms/rrd/response"/&gt;
+                        &lt;parameter key="ds-name" value="radiusauth"/&gt;
+                &lt;/service&gt;</programlisting>
+
+    <para>This will also store and graph the response time.</para>
+
+    <bridgehead>SNMP Primary Interface Changes</bridgehead>
+
+    <para>Thanks to Bill Ayres (OGP) we have some new behavior in capsd with
+    respect to the primary SNMP interface.</para>
+
+    <para>Previously, there had to be a way to map an IP Address from the
+    ipAddrTable to an ifIndex in the ifTable. This was so interface-level
+    statistics could be matched up with IP addresses. There were cases,
+    however, especially with devices like firewalls where no valid primary
+    interface could be determined and thus no data could be collected from the
+    device.</para>
+
+    <para>This code will address this, and OpenNMS will still be able to poll
+    some SNMP data without having the ifIndex mapping.</para>
+
+    <bridgehead>The MATCH-ANY-UEI Event</bridgehead>
+
+    <para>This new event will never be generated internally, but it does serve
+    a useful purpose. Suppose there is a need to get all events from a
+    particular server sent as notifications. By choosing this UEI when
+    building the notification, it will match the UEI of any event generated by
+    the system.</para>
+
+    <para>Note that this can be dangerous, especially on systems that receive
+    a lot of SNMP traps. To use this properly, set up a limiting rule, such
+    as:</para>
+
+    <programlisting>    &lt;notification name="Test-Match-any" status="off"&gt;
+        &lt;uei&gt;MATCH-ANY-UEI&lt;/uei&gt;
+        &lt;description&gt;Test&lt;/description&gt;
+        &lt;rule&gt;(IPADDR == '10.1.4.10')&lt;/rule&gt;
+        &lt;destinationPath&gt;Email-Admin&lt;/destinationPath&gt;
+        &lt;text-message&gt;&amp;lt;p&gt;This is a generic notice to match any event UEI 
+        that matches the filter rule.&amp;lt;/p&amp;gt;
+        &amp;lt;ul&amp;gt;&amp;lt;li&amp;gt;uei: %uei% 
+        &lt;/text-message&gt;
+        &lt;subject&gt;Notice #%noticeid%: Match Any event: %uei%&lt;/subject&gt;
+    &lt;/notification&gt;</programlisting>
+
+    <para>This will send a notice on any event where the IP address is
+    10.1.4.10.</para>
+
+    <bridgehead>Added Support for the ifAlias Field</bridgehead>
+
+    <para>A number of people use the ifAlias field to add a useful description
+    to a particular interface. Bill Ayres (OGP), Mike Huot (OGP) and Wrolf
+    Courtney are responsible for adding the field to the database and printing
+    it out on various pages in the webUI.</para>
+
+    <bridgehead>Many Documentation Changes and Installer No Longer
+    Automatic</bridgehead>
+
+    <para>DJ Gregor (OGP) has made a lot of changes to our documentation as
+    well as the installer. Please, please read the installation guide and note
+    that the install program that sets up the database, etc., is no longer run
+    when the OpenNMS packages are installed. It will need to be run manually
+    after every install. The command:</para>
+
+    <programlisting>$OPENNMS_HOME/bin/install -disU</programlisting>
+
+    <para>should get things working most of the time.</para>
+
+    <bridgehead>Other Minor Enhancements</bridgehead>
+
+    <para>There are a number of other enhancements worth noting:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Custom KSC reports can now be accessed directly from the main
+        page.</para>
+      </listitem>
+
+      <listitem>
+        <para>A number of new event definitions have been added, including
+        those for BMC PATROL, MGE UPSs, Network Appliance, Snort, NetBotz, and
+        Compaq Insight Manager.</para>
+      </listitem>
+
+      <listitem>
+        <para>Both the datacollection-config.xml and snmp-graph.properties
+        files (responsible for data collection and display) have been enhanced
+        and reorganized. The default loadavg report for Net-SNMP agents has
+        been replaced with a really nifty CPU report by Ray Van Dolson.</para>
+      </listitem>
+
+      <listitem>
+        <para>OpenNMS will recognize if a web page is listening on the Dell
+        OpenManage port, and there will be a link from the webUI if so.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>There are other small fixes and improvements too numerous to list.
+    Please feel free to check out CVS and the CHANGELOG for more.</para>
+  </sect1>
 
   <sect1>
     <title>Changes in OpenNMS 1.1.4</title>
@@ -69,24 +309,22 @@
     RRDs. An additional benefit of JRobin is that it is multi-thread enabled
     (unlike our libjrrd.so shared library that interacts with RRDTool) however
     this does not impact performance very much because the contention is not
-    the bottle neck. In fact, on some systems that have 
-    as many as 100 data collection threads,
-    we found that have as few as 2-10 RRD write threads were sufficient to 
-    populate the RRD files.</para>
+    the bottle neck. In fact, on some systems that have as many as 100 data
+    collection threads, we found that have as few as 2-10 RRD write threads
+    were sufficient to populate the RRD files.</para>
 
     <para>The only unfortunate part of using JRobin is that the file format
-    for JRobin is not the same as for RRDTool. This means other tools you
-    may be using will not work with JRobin RRD files and
-    will have to converted or replaced. JRobin does have some tools available
-    and you should check out their website at www.jrobin.org to see what is
-    available. Additionally, JRobin supports programmatically all of the
-    features of RRDTool, so it should be easy to write a compatible tool. If
-    you do so, please consider contributing it either to us or to the JRobin
-    team.</para>
+    for JRobin is not the same as for RRDTool. This means other tools you may
+    be using will not work with JRobin RRD files and will have to converted or
+    replaced. JRobin does have some tools available and you should check out
+    their website at www.jrobin.org to see what is available. Additionally,
+    JRobin supports programmatically all of the features of RRDTool, so it
+    should be easy to write a compatible tool. If you do so, please consider
+    contributing it either to us or to the JRobin team.</para>
 
     <para>The last benefit of JRobin is that is helps us to reach our goal of
-    a 100% Pure Java version of OpenNMS that can work 'out of the box' on
-    any system.</para>
+    a 100% Pure Java version of OpenNMS that can work 'out of the box' on any
+    system.</para>
 
     <para>Thanks go to the JRobin team for providing this excellent RRD
     implementation. Thanks also to Rackspace for providing the equipment to
@@ -108,22 +346,21 @@
     <para>There have been a large number of bugs reported with respect to
     deleting nodes from the OpenNMS GUI. This code has been completely
     overhauled in OpenNMS 1.1.4. The new strategy has been to mark a
-    node/interface/service deleted rather than
-    actually deleting it. (The node completely removed from the database by
-    Vacuumd discussed below.) This allows any web pages that are currently
-    viewing the node to react properly. Additionally, deletes now happen as 
-    database transactions providing for performance and data integrity 
-    (i.e. no orphaned interface records)
-    and you are not left with a half-deleted node.</para>
+    node/interface/service deleted rather than actually deleting it. (The node
+    completely removed from the database by Vacuumd discussed below.) This
+    allows any web pages that are currently viewing the node to react
+    properly. Additionally, deletes now happen as database transactions
+    providing for performance and data integrity (i.e. no orphaned interface
+    records) and you are not left with a half-deleted node.</para>
 
     <para>In addition to overhauling node deletion, we have also added the
-    ability to delete interfaces and services. Administrators have a delete 
+    ability to delete interfaces and services. Administrators have a delete
     link at the top of service and interface detail pages.</para>
 
-    <para>All the users of OpenNMS helped by writing defects and
-    complaining about this bug. Special thanks to Ted Kaczmarek, Jonathan
-    Sartin, and Mike Huot for their help testing and characterizing these
-    problems and their solution.</para>
+    <para>All the users of OpenNMS helped by writing defects and complaining
+    about this bug. Special thanks to Ted Kaczmarek, Jonathan Sartin, and Mike
+    Huot for their help testing and characterizing these problems and their
+    solution.</para>
 
     <bridgehead>Vacuumd</bridgehead>
 
@@ -154,10 +391,10 @@
     being dropped and left for the garbage collector to clean up. This
     problem, which occurred primarily during discovery, would result in an
     abnormally large number of outstanding connections to the database to be
-    cleaned up by the garbage collector. Discovery of large networks 
-    caused the number of connections to the database to easily grow beyond
-    the number allowed. Thanks to Chris Fedde and
-    OnCommand for helping us track down this problem.</para>
+    cleaned up by the garbage collector. Discovery of large networks caused
+    the number of connections to the database to easily grow beyond the number
+    allowed. Thanks to Chris Fedde and OnCommand for helping us track down
+    this problem.</para>
 
     <bridgehead>JavaMail</bridgehead>
 
@@ -189,8 +426,8 @@
 
     <para>The <filename>javamail-configuration.properties</filename> file
     should be modified to specify the sender's address and the SMTP server
-    address. This file also provides support for SMTP servers requiring user and
-    password authentication.</para>
+    address. This file also provides support for SMTP servers requiring user
+    and password authentication.</para>
 
     <para>There are also major changes to the
     <filename>notificationCommands.xml</filename> file. The schema definition
