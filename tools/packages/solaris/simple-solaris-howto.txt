@@ -43,7 +43,7 @@ Some notes:
 - in the opennms package, don't forget to make jar symlinks for tomcat
   *before* you run the prototype generator
 
-   # cd /tmp/opennms/usr/local/opennms
+   # cd /tmp/opennms/usr/local/
    # mkdir -p tomcat/server/lib
    # cd tomcat/server/lib
    # ln -s ../../../opennms/lib/castor*.jar .
