@@ -170,7 +170,7 @@ public abstract class NotifdConfigManager {
         event.setTime(EventConstants.formatToString(new java.util.Date()));
     
         try {
-            EventIpcManagerFactory.getInstance().getIpcManager().sendNow(event);
+            EventIpcManagerFactory.getIpcManager().sendNow(event);
         } catch (Throwable t) {
         }
     }

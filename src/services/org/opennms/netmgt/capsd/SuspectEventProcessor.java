@@ -1674,7 +1674,7 @@ final class SuspectEventProcessor implements Runnable {
 
         // Send event to Eventd
         try {
-            EventIpcManagerFactory.getInstance().getIpcManager().sendNow(newEvent);
+            EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
             if (log.isDebugEnabled())
                 log.debug("createAndSendPrimarySnmpInterfaceChangedEvent: successfully sent primarySnmpInterfaceChanged event for nodeID: " + nodeId);
@@ -1714,7 +1714,7 @@ final class SuspectEventProcessor implements Runnable {
 
         // Send event to Eventd
         try {
-            EventIpcManagerFactory.getInstance().getIpcManager().sendNow(newEvent);
+            EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
             if (log.isDebugEnabled())
                 log.debug("createAndSendReinitializePrimarySnmpInterfaceEvent: successfully sent reinitializePrimarySnmpInterface event for nodeID: " + nodeId);
@@ -1851,7 +1851,7 @@ final class SuspectEventProcessor implements Runnable {
 
         // Send event to Eventd
         try {
-            EventIpcManagerFactory.getInstance().getIpcManager().sendNow(newEvent);
+            EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
             if (log.isDebugEnabled())
                 log.debug("createAndSendNodeAddedEvent: successfully sent NodeAdded event for nodeID: " + nodeEntry.getNodeId());
@@ -1915,7 +1915,7 @@ final class SuspectEventProcessor implements Runnable {
 
         // Send event to Eventd
         try {
-            EventIpcManagerFactory.getInstance().getIpcManager().sendNow(newEvent);
+            EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
             if (log.isDebugEnabled())
                 log.debug("createAndSendDuplicateIpaddressEvent: successfully sent duplicateIPAddress event for interface: " + ipAddr);
@@ -1977,7 +1977,7 @@ final class SuspectEventProcessor implements Runnable {
 
         // Send event to Eventd
         try {
-            EventIpcManagerFactory.getInstance().getIpcManager().sendNow(newEvent);
+            EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
             if (log.isDebugEnabled())
                 log.debug("createAndSendNodeGainedInterfaceEvent: successfully sent NodeGainedInterface event for interface: " + ipAddr.getHostAddress());
@@ -2085,7 +2085,7 @@ final class SuspectEventProcessor implements Runnable {
 
         // Send event to Eventd
         try {
-            EventIpcManagerFactory.getInstance().getIpcManager().sendNow(newEvent);
+            EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
             if (log.isDebugEnabled())
                 log.debug("createAndSendNodeGainedServiceEvent: successfully sent NodeGainedService event for interface: " + ipAddr.getHostAddress() + " and service: " + svcName);

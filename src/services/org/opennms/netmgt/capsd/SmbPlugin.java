@@ -34,7 +34,6 @@
 
 package org.opennms.netmgt.capsd;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
@@ -90,8 +89,6 @@ public final class SmbPlugin extends AbstractPlugin {
         } catch (UnknownHostException e) {
             if (log.isDebugEnabled())
                 log.debug("SmbPlugin: UnknownHostException: " + e.getMessage());
-        } catch (IOException e) {
-            log.info("SmbPlugin: An unexpected I/O exception occured checking host " + host.getHostAddress(), e);
         } catch (Throwable t) {
             log.error("SmbPlugin: An undeclared throwable exception was caught checking host " + host.getHostAddress(), t);
         }

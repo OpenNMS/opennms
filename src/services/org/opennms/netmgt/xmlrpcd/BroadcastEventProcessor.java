@@ -84,14 +84,14 @@ final class BroadcastEventProcessor implements EventListener {
         m_eventQ = eventQ;
         m_maxQSize = maxQSize;
         EventIpcManagerFactory.init();
-        EventIpcManagerFactory.getInstance().getIpcManager().addEventListener(this, ueiList);
+        EventIpcManagerFactory.getIpcManager().addEventListener(this, ueiList);
     }
 
     /**
      * Unsubscribe from eventd
      */
     public void close() {
-        EventIpcManagerFactory.getInstance().getIpcManager().removeEventListener(this);
+        EventIpcManagerFactory.getIpcManager().removeEventListener(this);
     }
 
     /**

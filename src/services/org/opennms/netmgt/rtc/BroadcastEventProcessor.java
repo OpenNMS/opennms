@@ -117,14 +117,14 @@ final class BroadcastEventProcessor implements EventListener {
         ueisOfInterest.add(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI);
 
         EventIpcManagerFactory.init();
-        EventIpcManagerFactory.getInstance().getIpcManager().addEventListener(this, ueisOfInterest);
+        EventIpcManagerFactory.getIpcManager().addEventListener(this, ueisOfInterest);
     }
 
     /**
      * Unsubscribe from eventd
      */
     public void close() {
-        EventIpcManagerFactory.getInstance().getIpcManager().removeEventListener(this);
+        EventIpcManagerFactory.getIpcManager().removeEventListener(this);
     }
 
     /**

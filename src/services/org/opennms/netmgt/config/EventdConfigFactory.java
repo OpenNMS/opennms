@@ -61,7 +61,7 @@ public final class EventdConfigFactory extends EventdConfigManager {
     /**
      * The singleton instance of this factory
      */
-    private static EventdConfigFactory m_singleton = null;
+    private static EventdConfigManager m_singleton = null;
 
     /**
      * This member is set to true if the configuration file has been loaded.
@@ -134,7 +134,7 @@ public final class EventdConfigFactory extends EventdConfigManager {
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
-    public static synchronized EventdConfigFactory getInstance() {
+    public static synchronized EventdConfigManager getInstance() {
         if (!m_loaded)
             throw new IllegalStateException("The factory has not been initialized");
 

@@ -91,7 +91,7 @@ public class Notifd implements NotifdMBean {
         }
 
         getNotifd().setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
-        getNotifd().setEventManager(EventIpcManagerFactory.getInstance().getIpcManager());
+        getNotifd().setEventManager(EventIpcManagerFactory.getIpcManager());
         
         getNotifd().setConfigManager(NotifdConfigFactory.getInstance());
         getNotifd().setNotificationManager(NotificationFactory.getInstance());

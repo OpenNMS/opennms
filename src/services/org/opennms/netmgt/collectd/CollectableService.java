@@ -201,11 +201,11 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
 
         m_proxy = new EventProxy() {
             public void send(Event e) {
-                EventIpcManagerFactory.getInstance().getIpcManager().sendNow(e);
+                EventIpcManagerFactory.getIpcManager().sendNow(e);
             }
 
             public void send(Log log) {
-                EventIpcManagerFactory.getInstance().getIpcManager().sendNow(log);
+                EventIpcManagerFactory.getIpcManager().sendNow(log);
             }
         };
 
@@ -291,7 +291,7 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
         // Send the event
         //
         try {
-            EventIpcManagerFactory.getInstance().getIpcManager().sendNow(event);
+            EventIpcManagerFactory.getIpcManager().sendNow(event);
         } catch (Exception ex) {
             log.error("Failed to send the event " + uei + " for interface " + m_address.getHostAddress(), ex);
         }

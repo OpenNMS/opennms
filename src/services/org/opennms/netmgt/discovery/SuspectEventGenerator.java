@@ -254,7 +254,7 @@ final class SuspectEventGenerator implements Runnable, Fiber {
                 event.setParms(parms);
 
                 try {
-                    EventIpcManagerFactory.getInstance().getIpcManager().sendNow(event);
+                    EventIpcManagerFactory.getIpcManager().sendNow(event);
 
                     if (log.isDebugEnabled()) {
                         log.debug("Sent event: " + EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);

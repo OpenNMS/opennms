@@ -120,7 +120,7 @@ public final class XmlrpcUtil {
 
         // Send event to Eventd
         try {
-            EventIpcManagerFactory.getInstance().getIpcManager().sendNow(newEvent);
+            EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
             if (log.isDebugEnabled())
                 log.debug("createdAndSendXmlrpcNotificationEvent: successfully sent " + "XMLRPC notification event for txno: " + txNo + " / " + sourceUei + " " + status);
@@ -141,7 +141,7 @@ public final class XmlrpcUtil {
             // Add Parms to the event
             newEvent.setParms(eventParms);
             try {
-                EventIpcManagerFactory.getInstance().getIpcManager().sendNow(newEvent);
+                EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
                 if (log.isDebugEnabled())
                     log.debug("createdAndSendXmlrpcNotificationEvent: successfully sent " + "XMLRPC notification event for txno: " + txNo + " / " + sourceUei + " " + failureFlag);

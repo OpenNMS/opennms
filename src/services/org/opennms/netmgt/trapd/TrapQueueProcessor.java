@@ -494,7 +494,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
         }
 
         // send the event to eventd
-        EventIpcManagerFactory.getInstance().getIpcManager().sendNow(event);
+        EventIpcManagerFactory.getIpcManager().sendNow(event);
 
         if (log.isDebugEnabled())
             log.debug("V2 Trap successfully converted and sent to eventd");
@@ -658,7 +658,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
         event.setParms(parms);
 
         // send the event to eventd
-        EventIpcManagerFactory.getInstance().getIpcManager().sendNow(event);
+        EventIpcManagerFactory.getIpcManager().sendNow(event);
 
         if (log.isDebugEnabled())
             log.debug("V1 Trap successfully converted and sent to eventd");
@@ -688,7 +688,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
         event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
 
         // send the event to eventd
-        EventIpcManagerFactory.getInstance().getIpcManager().sendNow(event);
+        EventIpcManagerFactory.getIpcManager().sendNow(event);
     }
 
     /**

@@ -74,7 +74,7 @@ public class Pollerd implements PollerdMBean {
         poller.setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
 
         EventIpcManagerFactory.init();
-        EventIpcManager mgr = EventIpcManagerFactory.getInstance().getIpcManager();
+        EventIpcManager mgr = EventIpcManagerFactory.getIpcManager();
         poller.setEventManager(mgr);
         poller.init();
     }

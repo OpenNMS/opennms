@@ -78,7 +78,7 @@ final class BroadcastEventProcessor implements EventListener {
         // specificVulnerabilityScan
         ueiList.add(EventConstants.SPECIFIC_VULN_SCAN_EVENT_UEI);
 
-        EventIpcManagerFactory.getInstance().getIpcManager().addEventListener(this, ueiList);
+        EventIpcManagerFactory.getIpcManager().addEventListener(this, ueiList);
     }
 
     /**
@@ -117,7 +117,7 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     synchronized void close() {
-        EventIpcManagerFactory.getInstance().getIpcManager().removeEventListener(this);
+        EventIpcManagerFactory.getIpcManager().removeEventListener(this);
     }
 
     /**

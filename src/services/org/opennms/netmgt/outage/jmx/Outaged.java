@@ -53,7 +53,7 @@ public class Outaged implements OutagedMBean {
         Category log = ThreadCategory.getInstance(getClass());
         
         EventIpcManagerFactory.init();
-        EventIpcManager eventMgr = EventIpcManagerFactory.getInstance().getIpcManager();
+        EventIpcManager eventMgr = EventIpcManagerFactory.getIpcManager();
         getOutageManager().setEventMgr(eventMgr);
         
         

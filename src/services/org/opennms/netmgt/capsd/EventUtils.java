@@ -74,7 +74,7 @@ public class EventUtils {
      */
     public static void addEventListener(EventListener listener, List ueiList) {
         EventIpcManagerFactory.init();
-        EventIpcManagerFactory.getInstance().getIpcManager().addEventListener(listener, ueiList);
+        EventIpcManagerFactory.getIpcManager().addEventListener(listener, ueiList);
     }
 
     /**
@@ -539,7 +539,7 @@ public class EventUtils {
         // Send event to Eventd
         Category log = ThreadCategory.getInstance(EventUtils.class);
         try {
-            EventIpcManagerFactory.getInstance().getIpcManager().sendNow(newEvent);
+            EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
             if (log.isDebugEnabled())
                 log.debug("sendEvent: successfully sent event " + newEvent);

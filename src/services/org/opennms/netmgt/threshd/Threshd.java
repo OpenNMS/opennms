@@ -148,11 +148,11 @@ public final class Threshd implements PausableFiber {
 
         m_proxy = new EventProxy() {
             public void send(Event e) {
-                EventIpcManagerFactory.getInstance().getIpcManager().sendNow(e);
+                EventIpcManagerFactory.getIpcManager().sendNow(e);
             }
 
             public void send(Log l) {
-                EventIpcManagerFactory.getInstance().getIpcManager().sendNow(l);
+                EventIpcManagerFactory.getIpcManager().sendNow(l);
             }
         };
     }
