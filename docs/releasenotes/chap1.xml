@@ -3,15 +3,15 @@
 	<title>Introduction</title>
 	<subtitle>About This Release</subtitle>
 	<para>
-		OpenNMS 1.0.0 and greater represent a huge leap in the maintainability,
-		stability, and reduction of resource usage of the OpenNMS platform.  It
-		was largely a rewrite of the code that has been in development for
-		about 2 years, resulting in a considerably cleaner code base that will
-		be easier to manage in the long term.
+		OpenNMS 1.1 extends the work that was begun with 1.0 to make OpenNMS
+		more powerful and easier to use. Almost all of the new functionality
+		was suggested by current OpenNMS users. It is hoped that these improvements
+		will prove useful, and will lead to even more suggestions on how to improve
+		the product.
 	</para>
 	<para>
 		Please, let us know if you have any problems at all at the
-		<ulink url="http://www.opennms.org/developers/bugzilla/">OpenNMS
+		<ulink url="http://bugzilla.opennms.org/">OpenNMS
 		Bugzilla</ulink> page.
 	</para>
 </chapter>

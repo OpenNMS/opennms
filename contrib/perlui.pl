@@ -132,7 +132,7 @@ print "done\n";
 
 for my $key (@CATEGORIES) {
 	print "subscribing to '$key'\n";
-	system("perl $send_event --parm 'url http://$host:$port/submit' --parm 'user $ENV{USER}' --parm 'passwd $ENV{USER}' --parm 'catlabel $key' http://uei.opennms.org/internal/rtc/subscribe $server");
+	system("perl $send_event --parm 'url http://$host:$port/submit' --parm 'user $ENV{USER}' --parm 'passwd $ENV{USER}' --parm 'catlabel $key' uei.opennms.org/internal/rtc/subscribe $server");
 }
 
 $window->Gtk::Gdk::input_add(fileno($daemon), 1, [ \&handle_connection, $daemon]);
@@ -140,7 +140,7 @@ $window->Gtk::Gdk::input_add(fileno($daemon), 1, [ \&handle_connection, $daemon]
 sub do_exit {
 	for my $key (@CATEGORIES) {
 		print "unsubscribing from '$key'\n";
-		system(" perl  $send_event --parm 'url http://$host:$port/submit' --parm 'user $ENV{USER}' --parm 'passwd $ENV{USER}' --parm 'catlabel $key' http://uei.opennms.org/internal/rtc/unsubscribe $server");
+		system(" perl  $send_event --parm 'url http://$host:$port/submit' --parm 'user $ENV{USER}' --parm 'passwd $ENV{USER}' --parm 'catlabel $key' uei.opennms.org/internal/rtc/unsubscribe $server");
 	}
 	Gtk->exit(0);
 }
