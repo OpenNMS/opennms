@@ -153,8 +153,6 @@ final class BroadcastEventProcessor
 	{
 		if (event == null)
 			return;
-
-		automaticAcknowledge(event);
 		
 		String status = "off";
 		try
@@ -176,6 +174,8 @@ final class BroadcastEventProcessor
 			if (log.isDebugEnabled())
 				log.debug("discarding event " + event.getUei() + ", notifd status = " + status);
 		}
+
+		automaticAcknowledge(event);
 
 	} // end onEvent()
 
@@ -205,6 +205,20 @@ final class BroadcastEventProcessor
 					ThreadCategory.getInstance(getClass()).error("Failed to auto acknowledge notice.", e);
 				}
 			}
+			// if the clear flag is set, swap the event uei as the ack uei and ack the second notice
+			if (curAck.getClear())
+			{
+                                try
+                                {
+                                        ThreadCategory.getInstance(getClass()).debug("Acknowledging source event " + event.getUei() + " " + event.getNodeid()+":"+event.getInterface()+":"+event.getService());
+                                        NotificationFactory.getInstance().acknowledgeNotice(event, event.getUei(), curAck.getMatch());
+                                }
+                                catch (SQLException e)
+                                {
+                                        ThreadCategory.getInstance(getClass()).error("Failed to auto acknowledge source notice.", e);
+                                }
+                        }
+
 		}
 	}
                 catch (Exception e)
