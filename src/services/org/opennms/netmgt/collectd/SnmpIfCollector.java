@@ -10,7 +10,6 @@
 //
 // Modifications:
 //
-// 2003 Nov 21: Set initial capacity for some ArrayList.
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -212,17 +211,7 @@ public class SnmpIfCollector implements SnmpHandler
 	 * interfaces.
 	 */
 	private Map 		m_ifMap;
-
-        /**
-         * The initial capacity for the oidList. 
-         */
-        private static final int       INIT_MIBOBJECT_CAPACITY = 10;
-       
-        /**
-         * The initial capacity for the collect entry list.
-         */
-        private final int       INIT_SNMP_COLLECT_ENTRIES = 255;
-        
+	
 	/**
 	 * <P>The default constructor is marked private and will
 	 * always throw an exception. This is done to disallow
@@ -324,13 +313,13 @@ public class SnmpIfCollector implements SnmpHandler
 			
 		// Allocate temporary storage to hold response varbinds.
 		//
-		m_responseVbList = new ArrayList(INIT_MIBOBJECT_CAPACITY);
+		m_responseVbList = new ArrayList();
 		m_responses = 0;
 
-		// Instantiate ArrayList to hold generated SnmpCollectorEntry objects
+		// Instantiate ArrayList to hold generated SnmpCollectoryEntry objects
 		// created during the collection.
 		//
-		m_entries = new ArrayList(INIT_SNMP_COLLECT_ENTRIES);
+		m_entries = new ArrayList(2);
 		
 		// Create initial PDU request and send it to the remote host.
 		//
@@ -1080,7 +1069,7 @@ public class SnmpIfCollector implements SnmpHandler
 	 */
 	private static List buildV2CombinedOidList(Map ifMap)
 	{
-		List allOids = new ArrayList(INIT_MIBOBJECT_CAPACITY);
+		List allOids = new ArrayList();
 		
 		// Iterate over all the interface's in the interface map
 		//

@@ -10,7 +10,6 @@
 //
 // Modifications:
 // 
-// 2003 Nov 20: Change dsList from LinkedList to ArrayList for performance gain.
 // 2003 Oct 20: Added minval and maxval code for mibObj RRDs
 // 2003 Jan 31: Cleaned up some unused imports.
 //
@@ -49,7 +48,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Iterator;
 
 import java.sql.PreparedStatement;
@@ -1851,7 +1850,7 @@ final class SnmpCollector
 		// the expansion data source's.  Use this list as a basis
 		// for building a data source list for the current interface.
 		//
-		List dsList = new ArrayList(oidList.size());
+		List dsList = new LinkedList();
 		
 		// Loop through the MIB object list to be collected for this interface
 		// and add a corresponding RRD data source object.  In this manner 
