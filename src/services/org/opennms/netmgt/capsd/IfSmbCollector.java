@@ -10,6 +10,9 @@
 //
 // Modifications:
 //
+// 2004 Feb 5: When SMB not configurated in capsd, IfSmbCollection causes 
+//             capsd to hang on scheduling. In this case, if no authentication
+//             data, just return.
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -400,6 +403,11 @@ final class IfSmbCollector
 
 			if (log.isDebugEnabled())
 				log.debug("IfSmbCollector: SMB authenticator: " + authentication);
+
+                        // If SMB is not set in capsd-configuration, authentication could be null. Then stop
+                        // SMB collectio.
+                        if (authentication == null)
+                                return;
 
 			/* ---------------------------------------------------------------------
 			/* Commenting the share enumeration code out for now...saw a scenario
