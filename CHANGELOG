@@ -1,5 +1,7 @@
 1.2.0 to 1.2.1
 ----------------------------------------------------------------------
+- Addressed issue with DHCP poller not closing connections. Bug 1101
+  Thx Bill.
 - Added XMPP Notifications (Jabber) to OpenNMS. Bug 1168. Thanks Chris
 - Added the ability to gather and display SNMP text properties in 
   reports. Bug 1115. Thx Craig.

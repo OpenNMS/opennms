@@ -208,6 +208,8 @@ final class Poller {
             log.error("IO Exception during socket connection establishment with DHCP client daemon.", ex);
             if (m_connection != null) {
                 try {
+                    m_ins.close();
+                    m_outs.close();
                     m_connection.close();
                 } catch (Throwable t) {
                 }
@@ -217,6 +219,8 @@ final class Poller {
             log.error("Unexpected exception during socket connection establishment with DHCP client daemon.", t);
             if (m_connection != null) {
                 try {
+                    m_ins.close();
+                    m_outs.close();
                     m_connection.close();
                 } catch (Throwable tx) {
                 }
@@ -233,6 +237,8 @@ final class Poller {
      */
     public void close() {
         try {
+            m_ins.close();
+            m_outs.close();
             m_connection.close();
         } catch (Throwable ex) {
         }
@@ -292,7 +298,11 @@ final class Poller {
             setHwAddress(hwAddressStr);
         }
 
-        Poller p = new Poller(timeout < 500L ? timeout : 500L);
+        if(timeout < 500) {
+            timeout = 500;
+        }
+
+        Poller p = new Poller(timeout);
         long responseTime = -1;
         try {
             // allocate an array to hold the retry count
@@ -352,7 +362,10 @@ final class Poller {
             }
 
             p.m_outs.writeObject(getDisconnectRequest());
-            // FIXME: Do I need a p.close() here?
+            if (log.isDebugEnabled())
+                log.debug("wait half a sec before closing connection");
+            Thread.sleep(500);
+            p.close();
         } catch (IOException ex) {
             log.error("IO Exception caught.", ex);
             p.close();

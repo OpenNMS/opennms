@@ -225,6 +225,7 @@ final class Client extends Observable implements Runnable, Fiber {
     public synchronized void stop() {
         m_status = STOP_PENDING;
         try {
+            m_objsOut.close();
             m_client.close();
         } catch (IOException ex) {
         }
@@ -318,6 +319,7 @@ final class Client extends Observable implements Runnable, Fiber {
         // close the client's socket
         //
         try {
+            input.close();
             m_client.close();
         } catch (IOException e) {
         }
