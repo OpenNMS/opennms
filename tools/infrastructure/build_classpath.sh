@@ -52,7 +52,7 @@ build_classpath () {
 	done
 
 	CP=`echo "$CP" | sed -e 's#^:*##'`
-	CP=`echo "$CP" | sed -e "s,${PREFIX}/,./,g"`
+	#CP=`echo "$CP" | sed -e "s,${PREFIX}/,./,g"`
 	echo "$CP"
 	return
 
