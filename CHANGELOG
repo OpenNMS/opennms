@@ -1,5 +1,7 @@
 1.2.0 to 1.2.1
 ----------------------------------------------------------------------
+- Initialize begin and end times in isTimeInOutage so days of week is
+  properly handled when passing a date that's not 'now.' Bug 1170.
 - Reset TreeMap in last month top 20 outage calculations
   before accumulating outages for each service. Bug 945.
 - Move the column constraints in create.sql to be at the end of table

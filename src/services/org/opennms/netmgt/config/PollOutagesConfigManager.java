@@ -350,6 +350,9 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
         while (e.hasMoreElements() && !inOutage) {
             Calendar outCalBegin = new GregorianCalendar();
             Calendar outCalEnd = new GregorianCalendar();
+            
+            outCalBegin.setTimeInMillis(curCalTime);
+            outCalEnd.setTimeInMillis(curCalTime);
 
             Time oTime = (Time) e.nextElement();
 
