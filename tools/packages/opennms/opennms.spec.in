@@ -10,7 +10,8 @@
 %{!?rrdlibdir:%define rrdlibdir %instprefix/lib}
 %{!?logdir:%define logdir /var/log/opennms}
 %{!?pidfile:%define pidfile /var/run/opennms.pid}
-%{!?tomcatdir:%define tomcatdir /var/tomcat4}
+%{!?tomcatdir:%define tomcatdir @rpm.tomcatdir@}
+%{!?tomcatuser:%define tomcatuser @rpm.tomcatuser@}
 %{!?pglibdir:%define pglibdir %instprefix/lib}
 
 # build type modifiers
@@ -79,13 +80,23 @@ Requires:		rrdtool, perl-DBD-Pg, j2sdk >= 1.4, XFree86-libs
 %define	initdir		/etc/rc.d
 %define	psql		/usr/bin/psql
 %define psql_service	postgres
+%define tomcat_name    	jakarta-tomcat
 Requires:		postgres >= 7.2
+%endif
+
+%if "%{platform}" == "linux-i386-suse-8"
+%define	initdir		/etc/rc.d
+%define	psql		/usr/bin/psql
+%define psql_service	postgresql
+%define tomcat_name    	jakarta-tomcat
+Requires:		postgresql >= 7.2, postgresql-server >= 7.2
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-7"
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
+%define tomcat_name    	tomcat4
 Requires:		postgresql-server >= 7.2
 %endif
 
@@ -93,6 +104,7 @@ Requires:		postgresql-server >= 7.2
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
+%define tomcat_name    	tomcat4
 Requires:		postgresql-server >= 7.2, libstdc++2.10
 %endif
 
@@ -100,6 +112,7 @@ Requires:		postgresql-server >= 7.2, libstdc++2.10
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
+%define tomcat_name    	tomcat4
 Requires:		postgresql-server >= 7.2, libstdc++2.10
 %endif
 
@@ -107,6 +120,7 @@ Requires:		postgresql-server >= 7.2, libstdc++2.10
 %define	initdir		/etc/rc.d
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
+%define tomcat_name    	tomcat4
 Requires:		postgresql-server >= 7.2
 %endif
 
@@ -114,6 +128,7 @@ Requires:		postgresql-server >= 7.2
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
+%define tomcat_name    	tomcat4
 Requires:		postgresql-server >= 7.2, compat-libstdc++
 %endif
 
@@ -121,6 +136,7 @@ Requires:		postgresql-server >= 7.2, compat-libstdc++
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
+%define tomcat_name    	tomcat4
 Requires:		postgresql-server >= 7.2, compat-libstdc++
 %endif
 
@@ -128,6 +144,7 @@ Requires:		postgresql-server >= 7.2, compat-libstdc++
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
+%define tomcat_name    	tomcat4
 Requires:		postgresql-server >= 7.2, compat-libstdc++
 %endif
 
@@ -135,6 +152,7 @@ Requires:		postgresql-server >= 7.2, compat-libstdc++
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
+%define tomcat_name    	tomcat4
 Requires:		postgresql-server >= 7.2, compat-libstdc++
 %endif
 
@@ -157,7 +175,7 @@ for OpenNMS.
 %package webapp
 Summary:	Web interface servlet for the OpenNMS network management platform
 Group:		Applications/System
-Prereq:	tomcat4 >= 4.1.18, rrdtool, %{name} = 1:%{version}-%{release}
+Prereq:	%{tomcat_name} >= 4.1.18, rrdtool, %{name} = 1:%{version}-%{release}
 
 %description webapp
 The web UI for OpenNMS.
@@ -221,12 +239,18 @@ export OPENNMS_HOME PATH
 END
 
 %if "%builddocs" == "1"
-### /usr/share/doc/%{name}-%{version}
+### /usr/share/doc/%{name}-%{version}  (no -%{version} on SuSE)
 
-mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-cp -a work/docs/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
+%if "%{platform}" == "linux-i386-suse-8"
+%define opennmsdocdir %{name}
+%else
+%define opennmsdocdir %{name}-%{version}
+%endif
+
+mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{opennmsdocdir}
+cp -a work/docs/* $RPM_BUILD_ROOT%{_docdir}/%{opennmsdocdir}/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/docs
-ln -sf %{_docdir}/%{name}-%{version} $RPM_BUILD_ROOT%{instprefix}/docs
+ln -sf %{_docdir}/%{opennmsdocdir} $RPM_BUILD_ROOT%{instprefix}/docs
 cp CHANGELOG README* $RPM_BUILD_ROOT%{instprefix}/etc/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README
 rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README.build
@@ -237,7 +261,7 @@ rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README.build
 ln -sf %{logdir} $RPM_BUILD_ROOT%{instprefix}/logs
 ln -sf %{sharedir} $RPM_BUILD_ROOT%{instprefix}/share
 
-### /var/tomcat4
+### ${tomcatdir}
 
 mkdir -p $RPM_BUILD_ROOT%{tomcatdir}/server/lib
 for jar in \
@@ -252,7 +276,7 @@ for jar in \
 done
 
 pushd $RPM_BUILD_ROOT;
-find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | sort > %{_tmppath}/files.etc;
+find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | sed -e "s!^$RPM_BUILD_ROOT!%config(noreplace) %attr(775,%{tomcatuser},root) !" | sort > %{_tmppath}/files.etc;
 find $RPM_BUILD_ROOT%{tomcatdir}/webapps/%{name} ! -type d | sed -e "s,^$RPM_BUILD_ROOT,," | grep -v '/WEB-INF/web.xml' | sort > %{_tmppath}/files.webapp;
 popd
 
@@ -269,21 +293,23 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root)	%{profiledir}/%{name}.sh
 %attr(755,root,root)	%{_bindir}/*
 %attr(755,root,root)	%{instprefix}/bin
-%dir			%{instprefix}/etc
-			%{instprefix}/contrib
+%attr(775,%{tomcatuser},root) %dir  %{instprefix}/etc
+%dir                   	%{instprefix}/contrib
 %if "%builddocs" == "1"
 %attr(755,root,root)	%{instprefix}/docs
 %endif
 %attr(755,root,root)	%{instprefix}/lib
 			%{instprefix}/logs
 			%{instprefix}/share
-			%{sharedir}
-			%{logdir}
+%if "%{instprefix}/share" != "%{sharedir}"
+                        %{sharedir}
+%endif
+%attr(775,%{tomcatuser},root) %{logdir}
 
 %if "%builddocs" == "1"
 %files docs
 %defattr(644 root root 755)
-%{_docdir}/%{name}-%{version}
+%{_docdir}/%{opennmsdocdir}
 %endif
 
 %files webapp -f %{_tmppath}/files.webapp
@@ -296,7 +322,25 @@ rm -rf $RPM_BUILD_ROOT
 . %{profiledir}/%{name}.sh
 
 "%{initdir}/init.d/%{psql_service}" stop
+attempts=30
+while [ $attempts -gt 0 ]; do
+       %{initdir}/init.d/%{psql_service} status | grep running || break
+       sleep 1
+       attempts=`expr $attempts - 1`
+done
+
 "%{initdir}/init.d/%{psql_service}" start
+
+# Make sure that the postgresql server is up
+attempts=10
+while [ $attempts -gt 0 ]; do
+       # should we add "-h localhost" below to test TCP/IP connectivity?
+       if echo '\q' | %{psql} -d template1 -U postgres > /dev/null 2>&1; then
+               break
+       fi
+       sleep 1
+       attempts=`expr $attempts - 1`
+done
 
 # run the post-install script
 
