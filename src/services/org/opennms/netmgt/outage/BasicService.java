@@ -35,42 +35,53 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+
 /**
  * Represents a Service in the ifServices table
  * @author brozow
  */
 public class BasicService extends BasicElement {
 
-    private long m_nodeId;
-    private String m_ipAddr;
+    private BasicInterface m_iface;
     private long m_serviceId;
 
-    public BasicService(long nodeId, String ipAddr, long serviceId) {
-        m_nodeId = nodeId;
-        m_ipAddr = ipAddr;
+    public BasicService(BasicInterface iface, long serviceId) {
+        m_iface = iface;
         m_serviceId = serviceId;
     }
     
-    public BasicService(BasicInterface iface, long serviceId) {
-        this(iface.getNodeId(), iface.getIpAddr(), serviceId);
+    public BasicInterface getInterface() {
+        return m_iface;
+    }
+    
+    public BasicNode getNode() {
+        return m_iface.getNode();
+    }
+    
+    public BasicNetwork getNetwork() {
+        return m_iface.getNetwork();
     }
 
-    public String getIpAddr() {
-        return m_ipAddr;
-    }
     public long getNodeId() {
-        return m_nodeId;
+       return m_iface.getNodeId();
     }
+    
+    public String getIpAddr() {
+        return m_iface.getIpAddr();
+    }
+    
     public long getServiceId() {
         return m_serviceId;
     }
     
     public boolean isValid() {
-        return !(m_nodeId == -1 || m_ipAddr == null || m_serviceId == -1);
+        return m_iface.isValid() && m_serviceId != -1;
     }
     
     public String toString() {
-        return m_nodeId+"/"+m_ipAddr+"/"+m_serviceId;
+        return getNodeId()+"/"+getIpAddr()+"/"+m_serviceId;
     }
 
     public boolean openOutageExists(Connection dbConn) throws SQLException {
@@ -81,4 +92,37 @@ public class BasicService extends BasicElement {
         openStmt.setLong(3, getServiceId());
         return DbUtil.countQueryIsPositive(openStmt);
     }
+
+    /**
+     * @param dbConn
+     * @param eventID
+     * @param eventTime
+     * @param writer
+     * @throws SQLException
+     */
+    public void openOutage(Connection dbConn, long eventID, String eventTime) throws SQLException {
+        Category log = ThreadCategory.getInstance(OutageWriter.class);
+        // Set the database commit mode
+        dbConn.setAutoCommit(false);
+    
+        PreparedStatement newOutageWriter = null;
+        if (log.isDebugEnabled())
+            log.debug("openOutage: creating new outage entry for "+this+" ...");
+        newOutageWriter = dbConn.prepareStatement(OutageConstants.DB_INS_NEW_OUTAGE);
+        newOutageWriter.setLong(1, getNextOutageId(dbConn));
+        newOutageWriter.setLong(2, eventID);
+        newOutageWriter.setLong(3, getNodeId());
+        newOutageWriter.setString(4, getIpAddr());
+        newOutageWriter.setLong(5, getServiceId());
+        newOutageWriter.setTimestamp(6, BasicNetwork.convertEventTimeIntoTimestamp(eventTime));
+    
+    
+        // execute
+        newOutageWriter.executeUpdate();
+    
+        // close statement
+        newOutageWriter.close();
+    
+    }
+
 }

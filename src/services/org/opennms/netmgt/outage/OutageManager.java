@@ -74,6 +74,8 @@ public final class OutageManager implements PausableFiber {
      * The singleton instance of this class
      */
     private static final OutageManager m_singleton = new OutageManager();
+    
+    
 
     /**
      * The number of threads that must be started.
@@ -84,6 +86,11 @@ public final class OutageManager implements PausableFiber {
      * The service table map
      */
     private Map m_serviceTableMap;
+
+    /**
+     * The Network where nodes, interfaces and services live
+     */
+    private BasicNetwork m_network;
 
     /**
      * The events receiver
@@ -212,6 +219,7 @@ public final class OutageManager implements PausableFiber {
         if (m_outageMgrConfig == null)  
             throw new IllegalStateException("OutageManager.m_outageMgrConfig is not set");
         
+        m_network = new BasicNetwork(getGetNextOutageID());
 
         // load the outage configuration and get the required attributes
         int numWriters = getNumWriters();
@@ -424,10 +432,11 @@ public final class OutageManager implements PausableFiber {
         return m_singleton;
     }
 
-    /**
-     * @return
-     */
     public String getGetNextOutageID() {
         return m_outageMgrConfig.getGetNextOutageID();
+    }
+    
+    public BasicNetwork getNetwork() {
+        return m_network;
     }
 }

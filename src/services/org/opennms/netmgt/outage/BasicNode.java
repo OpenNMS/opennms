@@ -43,14 +43,20 @@ import java.sql.SQLException;
  */
 public class BasicNode extends BasicElement {
 
+    private BasicNetwork m_network;
     private long m_nodeId;
     
-    public BasicNode(long nodeId) {
+    public BasicNode(BasicNetwork network, long nodeId) {
+        m_network = network;
         m_nodeId = nodeId;
     }
     
     public long getNodeId() {
         return m_nodeId;
+    }
+    
+    public BasicNetwork getNetwork() {
+        return m_network;
     }
 
     public String toString() {
@@ -64,11 +70,6 @@ public class BasicNode extends BasicElement {
         return !(m_nodeId == -1);
     }
 
-    /**
-     * @param dbConn
-     * @return
-     * @throws SQLException
-     */
     public boolean openOutageExists(Connection dbConn) throws SQLException {
         PreparedStatement openStmt = null;
         openStmt = dbConn.prepareStatement(OutageConstants.DB_OPEN_RECORD_3);

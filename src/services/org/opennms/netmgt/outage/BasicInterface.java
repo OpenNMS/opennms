@@ -41,37 +41,38 @@ import java.sql.SQLException;
  */
 public class BasicInterface extends BasicElement {
 
-    private long m_nodeId;
+    private BasicNode m_node;
     private String m_ipAddr;
     
-    public BasicInterface(long nodeId, String ipAddr) {
-        m_nodeId = nodeId;
+    public BasicInterface(BasicNode node, String ipAddr) {
+        m_node = node;
         m_ipAddr = ipAddr;
     }
 
+    public BasicNode getNode() {
+        return m_node;
+    }
+    
+    public BasicNetwork getNetwork() {
+        return m_node.getNetwork();
+    }
+    
     public String getIpAddr() {
         return m_ipAddr;
     }
+    
     public long getNodeId() {
-        return m_nodeId;
+        return m_node.getNodeId();
     }
     
     public String toString() {
-        return m_nodeId + "/" + m_ipAddr;
+        return m_node + "/" + m_ipAddr;
     }
 
-    /**
-     * @return
-     */
     public boolean isValid() {
-        return !(m_nodeId == -1 || m_ipAddr == null);
+        return m_node.isValid() && m_ipAddr != null;
     }
 
-    /**
-     * @param dbConn
-     * @return
-     * @throws SQLException
-     */
     public boolean openOutageExists(Connection dbConn) throws SQLException {
         PreparedStatement openStmt = null;
         openStmt = dbConn.prepareStatement(OutageConstants.DB_OPEN_RECORD_2);

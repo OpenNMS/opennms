@@ -31,6 +31,9 @@
 //
 package org.opennms.netmgt.outage;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 
 /**
  * Represents a network element
@@ -38,8 +41,13 @@ package org.opennms.netmgt.outage;
  * @author brozow
  *
  */
-public class BasicElement {
+abstract public class BasicElement {
 
+    abstract public BasicNetwork getNetwork();
 
+    protected long getNextOutageId(Connection dbConn) throws SQLException {
+        return getNetwork().getNextOutageId(dbConn);
+    }
 
+    
 }

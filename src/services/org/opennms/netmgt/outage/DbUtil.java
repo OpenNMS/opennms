@@ -37,6 +37,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 
 /**
  * @author brozow
@@ -68,7 +69,9 @@ public class DbUtil {
         return numOpenOutages;
     }
 
-    public static void close(Category log, Connection dbConn) {
+    public static void close(Connection dbConn) {
+        Category log = ThreadCategory.getInstance(DbUtil.class);
+
         // close database connection
         try {
             if (dbConn != null)
@@ -78,7 +81,8 @@ public class DbUtil {
         }
     }
 
-    public static void rollback(Category log, Connection dbConn, String msg, SQLException se) {
+    public static void rollback(Connection dbConn, String msg, SQLException se) {
+        Category log = ThreadCategory.getInstance(DbUtil.class);
         log.warn(msg, se);
     
         try {
@@ -88,7 +92,8 @@ public class DbUtil {
         }
     }
 
-    public static void commit(Category log, Connection dbConn, String successMsg, String failMsg) {
+    public static void commit(Connection dbConn, String successMsg, String failMsg) {
+        Category log = ThreadCategory.getInstance(DbUtil.class);
         try {
             dbConn.commit();
     
@@ -96,7 +101,7 @@ public class DbUtil {
                 log.debug(successMsg);
         } catch (SQLException se) {
             String msg = "Rolling back transaction, "+failMsg;
-            rollback(log, dbConn, msg, se);
+            rollback(dbConn, msg, se);
     
         }
     }
