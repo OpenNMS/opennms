@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2004 Feb 12: Fix page format issues.
 // 2004 Jan 15: page created.
 // 
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.

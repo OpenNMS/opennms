@@ -149,32 +149,42 @@
 <br>
 
 <%
-  int halfway = 0;
-  int midCount = 0;
-  int midInterfaceIndex = 0;
-  String nodeLabel = null;
+        int halfway = 0;
+        int midCount = 0;
+        int midInterfaceIndex = 0;
+        String nodeLabel = null;
   
-  if (lineItems.intValue() > 0)
-  {
-    ManagedInterface firstInterface = (ManagedInterface)interfaces.get(0);
-    nodeLabel = NetworkElementFactory.getNodeLabel(firstInterface.getNodeid());
+        if (lineItems.intValue() > 0)
+        {
+                ManagedInterface firstInterface = (ManagedInterface)interfaces.get(0);
+                nodeLabel = NetworkElementFactory.getNodeLabel(firstInterface.getNodeid());
     
-    halfway = lineItems.intValue()/2;
-    for (int interfaceCount = 0; interfaceCount < interfaces.size(); interfaceCount++)
-    {
-        if (midCount < halfway)
-        {
-            midCount++; //one row for each interface
-            ManagedInterface curInterface = (ManagedInterface)interfaces.get(interfaceCount);
-            midCount += curInterface.getServiceCount();
+                if ( interfaces.size() == 1)
+                { 
+                        midInterfaceIndex = 1;
+                }
+                else
+                {
+                        halfway = lineItems.intValue()/2;
+                        for (int interfaceCount = 0; (interfaceCount < interfaces.size()) && (midCount < halfway); interfaceCount++)
+                        {
+                                if (midCount < halfway)
+                                {
+                                        midCount++; //one row for each interface
+                                        ManagedInterface curInterface = (ManagedInterface)interfaces.get(interfaceCount);
+                                        midCount += curInterface.getServiceCount();
+                                }
+                                else 
+                                {
+                                        midInterfaceIndex = interfaceCount;
+                                        break;
+                                }
+                        }
+                }
+
+                if (midInterfaceIndex < 1)
+                        midInterfaceIndex = interfaces.size();
         }
-        else 
-        {
-            midInterfaceIndex = interfaceCount;
-            break;
-        }
-    }
-  }
 %>
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
@@ -206,7 +216,7 @@
           and no service column, and each service on that interface is listed below on light grey rows.</p>
           <p>Managing or Unmanaging an interface will automatically mark each service on that interface as managed 
           or unmanaged accordingly. A service cannot be managed if its interface is not managed.</p>
-        </td>
+        </td><br>
       </tr>
       
       <tr>
@@ -257,12 +267,14 @@
       </tr>
       
       <tr>
+      <% if (midInterfaceIndex < interfaces.size()) { %>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
+      <% } /*end if*/ %>
         <td align="left" valign="center" colspan="3">
           &nbsp;<br>
           <input type="button" value="Apply Changes" onClick="applyChanges()">
-          <input type="button" value="Cancel" onClick="cancel()"> |
+          <input type="button" value="Cancel" onClick="cancel()"> 
           <input type="button" value="Select All" onClick="checkAll()">
           <input type="button" value="Unselect All" onClick="uncheckAll()">
           <input type="reset">
