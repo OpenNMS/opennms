@@ -1,0 +1,57 @@
+//
+// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Copyright (C) 2001 Oculan Corp.  All rights reserved.
+//  
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software 
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+// 
+// For more information contact: 
+//	Brian Weaver	<weave@opennms.org>
+//	http://www.opennms.org/
+//
+// Tab Size = 8
+//
+//
+package org.opennms.core.fiber;
+
+import java.lang.*;
+
+/**
+ * <p>This class is used to extend the <code>Fiber</code> interface so
+ * that is has a concept of a life cycle. Prior to starting the fiber
+ * the <code>init</code> method will be invoked. Likewise, prior to
+ * garbage collection the <code>destroy</code> method should be invoked.</p>
+ *
+ * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ */
+public interface InitializableFiber
+	extends Fiber
+{
+	/**
+	 * This method is used to start the initilization process of
+	 * the <code>Fiber</code>, which should eventually transition
+	 * to a <code>RUNNING</code> status.
+	 */
+	public void init();
+
+	/**
+	 * This method is used to stop a currently running <code>Fiber</code>.
+	 * Once invoked the <code>Fiber</code> should begin it's shutdown
+	 * process. Depending on the implementation, this method may block
+	 * until the <code>Fiber</code> terminates.
+	 */
+	public void destroy();
+}
+
