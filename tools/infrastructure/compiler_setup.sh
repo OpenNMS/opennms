@@ -23,8 +23,7 @@ for dir in /usr/ccs/bin /usr/local/bin /usr/bin /bin; do
 	fi
 done
 case `uname` in
-	Darwin)
-	SunOS)
+	Darwin|SunOS)
 		LD="$CC"
 		;;
 esac
