@@ -225,7 +225,7 @@ public class HttpPlugin extends AbstractTcpPlugin {
      *      java.net.InetAddress)
      */
     protected List getConnectionConfigList(Map qualifiers, InetAddress address) {
-        int[] ports = getKeyedIntegerArray(qualifiers, "ports", m_defaultPorts);
+        int[] ports = getKeyedIntegerArray(qualifiers, "port", m_defaultPorts);
 
         List list = new LinkedList();
         for (int i = 0; i < ports.length; i++) {
