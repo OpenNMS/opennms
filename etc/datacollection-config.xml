@@ -250,6 +250,28 @@
                                 <mibObj oid=".1.3.6.1.2.1.2.2.1.19" instance="ifIndex" alias="ifOutDiscards"     type="counter"/>
                                 <mibObj oid=".1.3.6.1.2.1.2.2.1.20" instance="ifIndex" alias="ifOutErrors"       type="counter"/>
                         </group>
+                        <group  name="snmpinformant-memory" ifType="ignore">
+                                <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.3" instance="0" alias="sinfMemAvailMB" type="Gauge" />
+                                <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.4" instance="0" alias="sinfMemComBytes" type="Gauge" />
+                                <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.5" instance="0" alias="sinfMemCacheBytes" type="Gauge" />
+                                <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.6" instance="0" alias="sinfMemCacheBytesPk" type="Gauge" />
+                                <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.7" instance="0" alias="sinfMemPageFaultsPS" type="Gauge" />
+                                <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.8" instance="0" alias="sinfMemPagesInputPS" type="Gauge" />
+                                <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.9" instance="0" alias="sinfMemPagesOutPS" type="Gauge" />
+                                <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.10" instance="0" alias="sinfMemPagesPerSec" type="Gauge" />
+                                <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.11" instance="0" alias="sinfMemPNonpagedByt" type="Gauge" />
+                                <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.12" instance="0" alias="sinfMemPPagedBytes" type="Gauge" />
+                                <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.13" instance="0" alias="sinfMemPPagedResByt" type="Gauge" />
+                                <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.14" instance="0" alias="sinfMemSysCacheResB" type="Gauge" />
+                                <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.15" instance="0" alias="sinfMemSysCodeResB" type="Gauge" />
+                                <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.16" instance="0" alias="sinfMemSysCodeTotB" type="Gauge" />
+                                <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.17" instance="0" alias="sinfMemSysDrvResB" type="Gauge" />
+                                <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.18" instance="0" alias="sinfMemSysDrvTotB" type="Gauge" />
+                        </group>
+                        <group  name="snmpinformant-processes" ifType="ignore">
+                                <mibObj oid=".1.3.6.1.4.1.9600.1.1.4.1" instance="0" alias="sinfProcesses" type="Gauge" />
+                                <mibObj oid=".1.3.6.1.4.1.9600.1.1.4.2" instance="0" alias="sinfThreads" type="Gauge" />
+                        </group>
 			<group 	name = "3Com-router-perf" ifType = "ignore">
 				<mibObj oid=".1.3.6.1.4.1.43.2.33.1.1.2.1.4" instance="0" alias="a3perfBufMemAvail"      type="integer"/>
 				<mibObj oid=".1.3.6.1.4.1.43.2.33.1.1.2.1.5" instance="0" alias="a3perfBufMemFailed"     type="integer"/>
@@ -465,6 +487,8 @@
 					<includeGroup>checkpoint-host</includeGroup>
 					<includeGroup>domino-stats</includeGroup>
 					<includeGroup>compaq-insight-manager-stats</includeGroup>
+                                        <includeGroup>snmpinformant-memory</includeGroup>
+                                        <includeGroup>snmpinformant-processes</includeGroup>
 				</collect>
 			</systemDef>
 		</systems>
