@@ -37,11 +37,11 @@
 
 -->
 
-<%@page language="java" contentType="text/html" session="true" isErrorPage="true" import="org.opennms.web.event.*"%>
+<%@page language="java" contentType="text/html" session="true" isErrorPage="true" import="org.opennms.web.outage.*"%>
 
 <html>
 <head>
-  <title>Event ID Not Found | Error | OpenNMS Web Console</title>
+  <title>Outage Id Not Found | Error | OpenNMS Web Console</title>
   <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
   <link rel="stylesheet" type="text/css" href="includes/styles.css" />
 </head>
@@ -56,13 +56,13 @@
 <br>
 
 <%
-     EventIdNotFoundException einfe = null;
+     OutageIdNotFoundException einfe = null;
     
-    if( exception instanceof EventIdNotFoundException ) {
-        einfe = (EventIdNotFoundException)exception;
+    if( exception instanceof OutageIdNotFoundException ) {
+        einfe = (OutageIdNotFoundException)exception;
     }
     else if( exception instanceof ServletException ) {
-        einfe = (EventIdNotFoundException)((ServletException)exception).getRootCause();
+        einfe = (OutageIdNotFoundException)((ServletException)exception).getRootCause();
     }
     else {
         throw new ServletException( "This error page does not handle this exception type.", exception );
@@ -77,16 +77,16 @@
     <td> &nbsp; </td>
 
     <td>
-      <h1>Event ID Not Found</h1>
+      <h1>Outage ID Not Found</h1>
 
       <p>
-        The event ID <%=einfe.getBadID()%> is invalid. <%=einfe.getMessage()%><br>
-        You can re-enter it here or <a href="event/list?acktyp=unack">browse all of the events</a> to find the event you are looking for.
+        The outage ID <%=einfe.getBadID()%> is invalid. <%=einfe.getMessage()%><br>
+        You can re-enter it here or <a href="outage/list">browse all of the outages</a> to find the outage you are looking for.
       </p>
 
       <p>
-        <form METHOD="GET" ACTION="event/detail.jsp" >
-          Get&nbsp;details&nbsp;for&nbsp;Event&nbsp;ID:<br>
+        <form METHOD="GET" ACTION="outage/detail.jsp" >
+          Get&nbsp;details&nbsp;for&nbsp;Outage&nbsp;ID:<br>
         <input type="TEXT" NAME="id" />
         <input type="submit" value="Search" />
       </form>

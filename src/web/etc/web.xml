@@ -1281,6 +1281,10 @@
     <location>/errors/noticeidnotfound.jsp</location>
   </error-page>
   <error-page>
+    <exception-type>org.opennms.web.outage.OutageIdNotFoundException</exception-type>
+    <location>/errors/outageidnotfound.jsp</location>
+  </error-page>
+  <error-page>
     <exception-type>java.lang.SecurityException</exception-type>
     <location>/errors/sealingviolation.jsp</location>
   </error-page>
