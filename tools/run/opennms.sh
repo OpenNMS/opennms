@@ -61,14 +61,14 @@ if [ "$1" = "status" ] || [ "$2" = "status" ]; then
 fi
 
 # load libraries
-for script in pid_process arg_process build_classpath \
+for script in pid_process arg_process build_classpath check_tools \
 	compiler_setup find_jarfile handle_properties java_lint \
 	ld_path version_compare; do
 	source $OPENNMS_HOME/lib/scripts/${script}.sh
 done
 
 # load platform-independent settings
-for file in "$OPENNMS_HOME/lib/scripts/platform_*.sh"; do
+for file in $OPENNMS_HOME/lib/scripts/platform_*.sh; do
 	source $file
 done
 

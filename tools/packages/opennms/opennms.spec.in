@@ -1,5 +1,7 @@
+%{!?version:%define version @opennms.version@}
 %{!?release:%define release @opennms.release@}
 %{!?instprefix:%define instprefix @rpm.install@}
+%{!?packagedir:%define packagedir @ant.project.name@-@opennms.version@-@opennms.release@}
 %{!?dbuser:%define dbuser @rpm.database.user@}
 %{!?dbpass:%define dbpass @rpm.database.password@}
 %{!?dbname:%define dbname @rpm.database.name@}
@@ -59,12 +61,12 @@
 Name:			@ant.project.name@
 Summary:		Enterprise-level network management platform
 Serial:			1
-Release:		@product.release@
-Version:		@product.version@
+Release:		%release
+Version:		%version
 Copyright:		LGPL/GPL
 Group:			Applications/System
 
-Source:			@ant.project.name@-@product.version@-src.tgz
+Source:			%{name}-source-%{version}-%{release}.tar.gz
 URL:			ftp://opennms.org/pub/releases/OpenNMS/
 BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
@@ -161,14 +163,24 @@ Prereq:	tomcat4 >= 4.1.18, rrdtool, %{name} = 1:%{version}-%{release}
 The web UI for OpenNMS.
 
 %prep
-%setup -n @ant.project.name@
+
+%if %{standalone}
+tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{release}.tar.gz -C $RPM_BUILD_DIR
+%define setupdir %{packagedir}/source
+%else
+%define setupdir @root.source@
+%endif
+
+%setup -D -T -n %setupdir
 
 ##############################################################################
 # building
 ##############################################################################
 
 %build
-sh ./build.sh all 2>&1 | tee -a %{_tmppath}/build.output
+rm -rf $RPM_BUILD_ROOT
+
+# nothing necessary
 
 ##############################################################################
 # installation
@@ -176,7 +188,17 @@ sh ./build.sh all 2>&1 | tee -a %{_tmppath}/build.output
 
 %install
 
-rm -rf $RPM_BUILD_ROOT
+if [ %{buildtests} = "1" ]; then
+	EXTRA_TARGETS="$EXTRA_TARGETS test"
+fi
+
+echo "=== RUNNING INSTALL ==="
+echo > %{_tmppath}/build.output
+%if "%builddocs" == "1"
+sh ./build.sh $COMPILER_FLAG %{builddefines} -Droot.installprefix=$RPM_BUILD_ROOT docs 2>&1 | tee -a %{_tmppath}/build.output
+%endif
+sh ./build.sh $COMPILER_FLAG %{builddefines} -Droot.installprefix=$RPM_BUILD_ROOT $EXTRA_TARGETS install 2>&1 | tee -a %{_tmppath}/build.output
+
 grep "BUILD FAILED" %{_tmppath}/build.output >/dev/null 2>&1 && exit 1
 
 mkdir -p $RPM_BUILD_ROOT%{instprefix}
@@ -241,27 +263,14 @@ rm -rf $RPM_BUILD_ROOT
 # file setup
 ##############################################################################
 
-%files
-%defattr(0664 root root 0775)
-%attr(755,root,root)	%{initdir}/init.d/%{name}
+%files -f %{_tmppath}/files.etc
+%defattr(664 root root 775)
+%attr(755,root,root)	%{initdir}/init.d/*
 %attr(755,root,root)	%{profiledir}/%{name}.sh
+%attr(755,root,root)	%{_bindir}/*
 %attr(755,root,root)	%{instprefix}/bin
-%attr(755,root,root)	%{instprefix}/bin/UEIList.sh
-%attr(755,root,root)	%{instprefix}/bin/archive_events.sh
-%attr(755,root,root)	%{instprefix}/bin/convert_db_to_unicode.sh
-%attr(755,root,root)	%{instprefix}/bin/fillVulnPluginsTable.pl
-%attr(755,root,root)	%{instprefix}/bin/install.pl
-%attr(755,root,root)	%{instprefix}/bin/jython
-%attr(755,root,root)	%{instprefix}/bin/node_outage_test.sh
-%attr(755,root,root)	%{instprefix}/bin/%{name}.sh
-%attr(755,root,root)	%{instprefix}/bin/parse-status.pl
-%attr(755,root,root)	%{instprefix}/bin/report.sh
-%attr(755,root,root)	%{instprefix}/bin/send-event.pl
-%attr(755,root,root)	%{instprefix}/bin/send-trap.pl
-%attr(755,root,root)	%{instprefix}/bin/webreport.pl
-%attr(755,root,root)	%{instprefix}/bin/xml.reader.pl
-%dir 			%{instprefix}/contrib
 %dir			%{instprefix}/etc
+			%{instprefix}/contrib
 %if "%builddocs" == "1"
 %attr(755,root,root)	%{instprefix}/docs
 %endif

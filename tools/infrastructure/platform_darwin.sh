@@ -1,5 +1,8 @@
 #!/bin/bash
 
+VERSION_BUILD_PLATFORM_SUN='$Revision$'
+PACKAGES="$PACKAGES PLATFORM_DARWIN"
+
 if [ `uname` = 'Darwin' ]; then
 	PATH="/usr/local/bin:/sw/bin:$PATH" export PATH
 	DYLD_LIBRARY_PATH="/sw/lib:/usr/local/rrdtool-1.0.33/lib:$DYLD_LIBRARY_PATH" export DYLD_LIBRARY_PATH

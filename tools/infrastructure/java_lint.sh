@@ -1,5 +1,7 @@
 #!/bin/bash
 
+VERSION_BUILD_JAVA_LINT='1.3'
+PACKAGES="$PACKAGES JAVA_LINT"
 MINIMUM_JAVA=1.4.0
 
 ################################# NOTE #################################
