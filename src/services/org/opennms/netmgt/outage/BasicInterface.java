@@ -33,7 +33,11 @@ package org.opennms.netmgt.outage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 
 /**
  * Represents an interface from the ipInterface table
@@ -75,9 +79,71 @@ public class BasicInterface extends BasicElement {
 
     public boolean openOutageExists(Connection dbConn) throws SQLException {
         PreparedStatement openStmt = null;
-        openStmt = dbConn.prepareStatement(OutageConstants.DB_OPEN_RECORD_2);
+        openStmt = dbConn.prepareStatement(OutageConstants.DB_COUNT_OPEN_OUTAGES_FOR_INTERFACE);
         openStmt.setLong(1, getNodeId());
         openStmt.setString(2, getIpAddr());
         return DbUtil.countQueryIsPositive(openStmt);
+    }
+
+    /**
+     * @param dbConn
+     * @param eventID
+     * @param eventTime
+     * @return
+     * @throws SQLException
+     */
+    public int closeOutages(Connection dbConn, long eventID, String eventTime) throws SQLException {
+        // Set the database commit mode
+        dbConn.setAutoCommit(false);
+        
+        // Prepare SQL statement used to update the 'regained time' for
+        // all open outage entries for the nodeid/ipaddr
+        PreparedStatement outageUpdater = dbConn.prepareStatement(OutageConstants.DB_UPDATE_OUTAGES_FOR_INTERFACE);
+        outageUpdater.setLong(1, eventID);
+        outageUpdater.setTimestamp(2, BasicNetwork.convertEventTimeIntoTimestamp(eventTime));
+        outageUpdater.setLong(3, getNodeId());
+        outageUpdater.setString(4, getIpAddr());
+        int count = outageUpdater.executeUpdate();
+    
+        // close statement
+        outageUpdater.close();
+        return count;
+    }
+
+    /**
+     * @param dbConn
+     * @param eventID
+     * @param eventTime
+     * @param writer
+     * @throws SQLException
+     */
+    public void openOutages(Connection dbConn, long eventID, String eventTime) throws SQLException {
+        // Set the database commit mode
+        dbConn.setAutoCommit(false);
+    
+        // Prepare SQL statement used to get active services for the
+        // nodeid/ip
+        PreparedStatement activeSvcsStmt = dbConn.prepareStatement(OutageConstants.DB_GET_ACTIVE_SERVICES_FOR_INTERFACE);
+    
+        Category log = ThreadCategory.getInstance(getClass());
+        if (log.isDebugEnabled())
+            log.debug("handleInterfaceDown: creating new outage entries...");
+    
+        activeSvcsStmt.setLong(1, getNodeId());
+        activeSvcsStmt.setString(2, getIpAddr());
+        ResultSet activeSvcsRS = activeSvcsStmt.executeQuery();
+    
+        while (activeSvcsRS.next()) {
+            BasicService svc = getNetwork().getService(this, activeSvcsRS.getLong(1));
+            if (!svc.openOutage(dbConn, eventID, eventTime)) {
+                if (log.isDebugEnabled()) log.debug("handleInterfaceDown: " + svc + " already down");
+            }
+        }
+        
+        // close result set
+        activeSvcsRS.close();
+    
+        // close statements
+        activeSvcsStmt.close();
     }
 }

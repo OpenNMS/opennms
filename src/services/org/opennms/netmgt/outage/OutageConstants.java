@@ -74,19 +74,19 @@ public final class OutageConstants {
      * The sql statement that is used to see if there is an 'open' record for a
      * nodeid/ip/service
      */
-    public static final String DB_OPEN_RECORD = "SELECT count(*) from outages where (nodeid = ? AND ipAddr = ? AND serviceID = ? AND (ifRegainedService IS NULL))";
+    public static final String DB_COUNT_OPEN_OUTAGES_FOR_SVC = "SELECT count(*) from outages where (nodeid = ? AND ipAddr = ? AND serviceID = ? AND (ifRegainedService IS NULL))";
 
     /**
      * The sql statement that is used to see if there is an 'open' record for a
      * nodeid/ip
      */
-    public static final String DB_OPEN_RECORD_2 = "SELECT count(*) from outages where (nodeid = ? AND ipAddr = ? AND (ifRegainedService IS NULL))";
+    public static final String DB_COUNT_OPEN_OUTAGES_FOR_INTERFACE = "SELECT count(*) from outages where (nodeid = ? AND ipAddr = ? AND (ifRegainedService IS NULL))";
 
     /**
      * The sql statement that is used to see if there is an 'open' record for a
      * nodeid
      */
-    public static final String DB_OPEN_RECORD_3 = "SELECT count(*) from outages where (nodeid = ? AND (ifRegainedService IS NULL))";
+    public static final String DB_COUNT_OPEN_OUTAGES_FOR_NODE = "SELECT count(*) from outages where (nodeid = ? AND (ifRegainedService IS NULL))";
 
     /**
      * The sql statement that is used to insert an new outage entry

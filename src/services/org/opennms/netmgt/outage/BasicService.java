@@ -86,7 +86,7 @@ public class BasicService extends BasicElement {
 
     public boolean openOutageExists(Connection dbConn) throws SQLException {
         PreparedStatement openStmt = null;
-        openStmt = dbConn.prepareStatement(OutageConstants.DB_OPEN_RECORD);
+        openStmt = dbConn.prepareStatement(OutageConstants.DB_COUNT_OPEN_OUTAGES_FOR_SVC);
         openStmt.setLong(1, getNodeId());
         openStmt.setString(2, getIpAddr());
         openStmt.setLong(3, getServiceId());
@@ -97,14 +97,42 @@ public class BasicService extends BasicElement {
      * @param dbConn
      * @param eventID
      * @param eventTime
-     * @param writer
      * @throws SQLException
      */
-    public void openOutage(Connection dbConn, long eventID, String eventTime) throws SQLException {
-        Category log = ThreadCategory.getInstance(OutageWriter.class);
+    public void closeOutage(Connection dbConn, long eventID, String eventTime) throws SQLException {
         // Set the database commit mode
         dbConn.setAutoCommit(false);
     
+        // Prepare SQL statement used to update the 'regained time' in
+        // an open entry
+        PreparedStatement outageUpdater = dbConn.prepareStatement(OutageConstants.DB_UPDATE_OUTAGE_FOR_SERVICE);
+        outageUpdater.setLong(1, eventID);
+        outageUpdater.setTimestamp(2, BasicNetwork.convertEventTimeIntoTimestamp(eventTime));
+        outageUpdater.setLong(3, getNodeId());
+        outageUpdater.setString(4, getIpAddr());
+        outageUpdater.setLong(5, getServiceId());
+        outageUpdater.executeUpdate();
+    
+        // close statement
+        outageUpdater.close();
+    }
+
+    /**
+     * @param dbConn
+     * @param eventID
+     * @param eventTime
+     * @return
+     * @throws SQLException
+     */
+    public boolean openOutage(Connection dbConn, long eventID, String eventTime) throws SQLException {
+        // check that there is no 'open' entry already
+        if (openOutageExists(dbConn)) 
+            return false;
+        
+        Category log = ThreadCategory.getInstance(OutageWriter.class);
+        // Set the database commit mode
+        dbConn.setAutoCommit(false);
+        
         PreparedStatement newOutageWriter = null;
         if (log.isDebugEnabled())
             log.debug("openOutage: creating new outage entry for "+this+" ...");
@@ -115,14 +143,15 @@ public class BasicService extends BasicElement {
         newOutageWriter.setString(4, getIpAddr());
         newOutageWriter.setLong(5, getServiceId());
         newOutageWriter.setTimestamp(6, BasicNetwork.convertEventTimeIntoTimestamp(eventTime));
-    
-    
+        
+        
         // execute
         newOutageWriter.executeUpdate();
-    
+        
         // close statement
         newOutageWriter.close();
-    
+        return true;
+        
     }
 
 }
