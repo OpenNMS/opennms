@@ -46,7 +46,6 @@ import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
-import java.security.KeyManagementException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
