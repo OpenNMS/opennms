@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:this="http://xmlns.opennms.org/xsd/views"
 	targetNamespace="http://xmlns.opennms.org/xsd/views">
 
 	<element name="viewinfo">
 		<complexType>
 			<sequence>
-				<element ref="header" minOccurs="1" maxOccurs="1"/>
-				<element ref="views" minOccurs="0" maxOccurs="1"/>
+				<element ref="this:header" minOccurs="1" maxOccurs="1"/>
+				<element ref="this:views" minOccurs="0" maxOccurs="1"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -27,7 +28,7 @@
 	<element name="views">
 		<complexType>
 			<sequence>
-				<element ref="view" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="this:view" minOccurs="1" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -38,9 +39,9 @@
 				<element name="name" type="string" minOccurs="1" maxOccurs="1"/>
 				<element name="title" type="string" minOccurs="0" maxOccurs="1"/>
 				<element name="comment" type="string" minOccurs="0" maxOccurs="1"/>
-				<element ref="common" minOccurs="1" maxOccurs="1"/>
-				<element ref="categories" minOccurs="0" maxOccurs="1"/>
-				<element ref="membership" minOccurs="0" maxOccurs="1"/>
+				<element ref="this:common" minOccurs="1" maxOccurs="1"/>
+				<element ref="this:categories" minOccurs="0" maxOccurs="1"/>
+				<element ref="this:membership" minOccurs="0" maxOccurs="1"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -56,7 +57,7 @@
 	<element name="categories">
 		<complexType>
 			<sequence>
-				<element ref="category" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="this:category" minOccurs="1" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -77,7 +78,7 @@
 	<element name="membership">
 		<complexType>
 			<sequence>
-				<element ref="member" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="this:member" minOccurs="1" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -86,7 +87,7 @@
 		<complexType>
 			<simpleContent>
 				<extension base="string">
-					<attribute name="type" use="required" value="user">
+					<attribute name="type" use="required">
 						<simpleType>
 							<restriction base="string">
 								<pattern value="(user|group)"/>

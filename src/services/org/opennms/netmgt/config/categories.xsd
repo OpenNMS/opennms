@@ -1,15 +1,16 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:cat="http://xmlns.opennms.org/xsd/categories"
 	targetNamespace="http://xmlns.opennms.org/xsd/categories">
 
 	<element name="catinfo">
 		<complexType>
 			<sequence>
 				<!--- the header -->
-				<element ref="header" minOccurs="1" maxOccurs="1"/>
+				<element ref="cat:header" minOccurs="1" maxOccurs="1"/>
 
 				<!--- the category groups -->
-				<element ref="categorygroup" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="cat:categorygroup" minOccurs="1" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -38,10 +39,10 @@
 				<element name="comment" type="string" minOccurs="1" maxOccurs="1"/>
 
 				<!--- the common attributes that apply to all categories in the group --> 
-				<element ref="common" minOccurs="1" maxOccurs="1"/>
+				<element ref="cat:common" minOccurs="1" maxOccurs="1"/>
 
 				<!--- the categories belonging to this category group -->
-				<element ref="categories" minOccurs="0" maxOccurs="1"/>
+				<element ref="cat:categories" minOccurs="0" maxOccurs="1"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -62,7 +63,7 @@
 		<complexType>
 			<sequence>
 				<!--- a category -->
-				<element ref="category" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="cat:category" minOccurs="1" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>

@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://xmlns.opennms.org/xsd/config/collectd">
+	xmlns:this="http://xmlns.opennms.org/xsd/config/collectd"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/collectd"
+	>
 
 	<element name="collectd-configuration">
 		<complexType>
@@ -8,10 +10,10 @@
 				<!--- package encapsulating addresses eligible to have
 					  SNMP data collected from them
 				-->
-				<element ref="package" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="this:package" minOccurs="1" maxOccurs="unbounded"/>
 				
 				<!--- service collectors -->
-				<element ref="collector" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="this:collector" minOccurs="1" maxOccurs="unbounded"/>
 			</sequence>
 
 			<!--- the max number of threads used for data collection -->
@@ -24,7 +26,7 @@
 		<complexType>
 			<!--- the parameters for performing data collection via this service -->
 			<sequence>
-				<element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:parameter" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 			
 			<!--- the service name -->
@@ -43,16 +45,16 @@
 				<!--- a rule which adresses belonging to this package must pass - 
 				      this package is applied only to addresses that pass this filter
 				-->
-				<element ref="filter" minOccurs="1" maxOccurs="1"/>
+				<element ref="this:filter" minOccurs="1" maxOccurs="1"/>
 				
 				<!--- adresseses in this package -->
 				<element name="specific" type="string" minOccurs="0" maxOccurs="unbounded"/>
 
 				<!--- range of adresses in this package -->
-				<element ref="include-range" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:include-range" minOccurs="0" maxOccurs="unbounded"/>
 
 				<!--- range of adresses to be excluded from this package -->
-				<element ref="exclude-range" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:exclude-range" minOccurs="0" maxOccurs="unbounded"/>
 
 				<!--- a file URL holding specific addresses to be polled. Each line in
 				      the URL file can be one of-
@@ -67,7 +69,7 @@
 				<element name="include-url" type="string" minOccurs="0" maxOccurs="unbounded"/>
 
 				<!--- services for which data is to be collected in this package -->
-				<element ref="service" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:service" minOccurs="0" maxOccurs="unbounded"/>
 				
 				<!--- scheduled outages - data collection is not performed during scheduled outages -->
 				<element name="outage-calendar" type="string" minOccurs="0" maxOccurs="unbounded"/>
@@ -123,7 +125,7 @@
 				"port" 	     : protocol/service port
 			-->	
 			<sequence>
-				<element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:parameter" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 
 			<!--- the service name -->
@@ -133,7 +135,7 @@
 			<attribute name="interval" type="long" use="required"/>
 
 			<!--- marker to say if service is user defined, used specifically for UI purposes -->
-			<attribute name="user-defined" type="string" use="optional">
+			<attribute name="user-defined" use="optional">
 				<simpleType>
 					<restriction base="string">
 						<pattern value="(true|false)"/>
@@ -142,7 +144,7 @@
 			</attribute>
 
 			<!--- status of the service, service is collected only if on -->
-			<attribute name="status" type="string" use="optional">
+			<attribute name="status" use="optional">
 				<simpleType>
 					<restriction base="string">
 						<pattern value="(on|off)"/>

@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://xmlns.opennms.org/xsd/groups">
+	xmlns:this="http://xmlns.opennms.org/xsd/viewsdisplay"
+	targetNamespace="http://xmlns.opennms.org/xsd/viewsdisplay">
 
 	<element name="viewinfo">
 		<complexType>
 			<sequence>
-				<element ref="view" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:view" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -14,7 +15,7 @@
 		<complexType>
 			<sequence>
 				<element name="view-name" type="string" minOccurs="1" maxOccurs="1"/>
-				<element ref="section" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="this:section" minOccurs="1" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>

@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:this="http://xmlns.opennms.org/xsd/groups"
 	targetNamespace="http://xmlns.opennms.org/xsd/groups">
 
 	<element name="groupinfo">
 		<complexType>
 			<sequence>
-				<element ref="header" minOccurs="1" maxOccurs="1"/>
-				<element ref="groups" minOccurs="0" maxOccurs="1"/>
+				<element ref="this:header" minOccurs="1" maxOccurs="1"/>
+				<element ref="this:groups" minOccurs="0" maxOccurs="1"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -27,7 +28,7 @@
 	<element name="groups">
 		<complexType>
 			<sequence>
-				<element ref="group" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="this:group" minOccurs="1" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -38,7 +39,7 @@
 				<element name="name" type="string" minOccurs="1" maxOccurs="1"/>
 				<element name="comments" type="string" minOccurs="0" maxOccurs="1"/>
 				<element name="user" type="string" minOccurs="0" maxOccurs="unbounded"/>
-                                <element name="duty-schedule" type="string" minOccurs="0" maxOccurs="unbounded"/>
+                 <element name="duty-schedule" type="string" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>

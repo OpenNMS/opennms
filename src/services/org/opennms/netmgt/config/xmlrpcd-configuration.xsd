@@ -1,13 +1,14 @@
 <schema	xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/xmlrpcd"
 	targetNamespace="http://xmlns.opennms.org/xsd/config/xmlrpcd">
 	<element name="xmlrpcd-configuration">
 		<complexType>
                         <sequence>
                                 <!-- Configuration of external XMLRPC servers -->
-                                <element ref="external-servers" minOccurs="1" maxOccurs="1"/>
+                                <element ref="this:external-servers" minOccurs="1" maxOccurs="1"/>
 
                                 <!-- Events subscribed by the external XMLRPC servers -->
-                                <element ref="subscription" minOccurs="1" maxOccurs="1"/>
+                                <element ref="this:subscription" minOccurs="1" maxOccurs="1"/>
                         </sequence>
                         
 			<!--- the max size of the event queue -->
@@ -20,7 +21,7 @@
 		<complexType>
                         <sequence>
                                 <!-- Configuration of xmlrpc server -->
-                                <element ref="xmlrpc-server" minOccurs="1" maxOccurs="unbounded"/>
+                                <element ref="this:xmlrpc-server" minOccurs="1" maxOccurs="unbounded"/>
                         </sequence>
                         
 			<!--- retries to set up communication with an XMLRPC server -->
@@ -37,7 +38,7 @@
 		<complexType>
                         <sequence>
                                 <!-- Events subscribed by the external XMLRPC servers -->
-                                <element ref="subscribed-event" minOccurs="1" maxOccurs="unbounded"/>
+                                <element ref="this:subscribed-event" minOccurs="1" maxOccurs="unbounded"/>
                         </sequence>
 		</complexType>
 	</element>

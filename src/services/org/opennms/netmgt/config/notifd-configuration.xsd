@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/notifd"
 	targetNamespace="http://xmlns.opennms.org/xsd/config/notifd">
 
 	<element name="notifd-configuration">
 		<complexType>
 			<sequence>
-				<element ref="auto-acknowledge" minOccurs="0" maxOccurs="unbounded"/>
-                                <element ref="queue" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="this:auto-acknowledge" minOccurs="0" maxOccurs="unbounded"/>
+                 <element ref="this:queue" minOccurs="1" maxOccurs="unbounded"/>
 			</sequence>
                         <attribute name="status" type="string" use="required"/>
 			<attribute name="pages-sent" type="string" use="required"/>
@@ -22,7 +23,7 @@
         <element name="auto-acknowledge">
                 <complexType>
                         <sequence>
-                                <element name="match" type="string" minOccurs="1" maxOccurs="unbounded"/>
+                            <element name="match" type="string" minOccurs="1" maxOccurs="unbounded"/>
                         </sequence>
                         <attribute name="resolution-prefix" type="string" default="RESOLVED: " />
                         <attribute name="uei" type="string" use="required"/>
@@ -36,7 +37,7 @@
                         <sequence>
                                 <element name="queue-id" type="string" minOccurs="1" maxOccurs="1"/>
                                 <element name="interval" type="string" minOccurs="1" maxOccurs="1"/>
-                                <element ref="handler-class" minOccurs="1" maxOccurs="1"/>
+                                <element ref="this:handler-class" minOccurs="1" maxOccurs="1"/>
                         </sequence>
                 </complexType>
         </element>
@@ -45,7 +46,7 @@
                 <complexType>
                         <sequence>
                                 <element name="name" type="string" minOccurs="1" maxOccurs="1"/>
-                                <element ref="init-params" minOccurs="0" maxOccurs="unbounded"/>
+                                <element ref="this:init-params" minOccurs="0" maxOccurs="unbounded"/>
                         </sequence>
                 </complexType>
         </element>

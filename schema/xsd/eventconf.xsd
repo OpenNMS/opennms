@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
 <!-- target package ::= org.opennms.netmgmt.xml.eventconf -->
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:this="http://xmlns.opennms.org/xsd/eventconf"
 	targetNamespace="http://xmlns.opennms.org/xsd/eventconf">
 
 	<element name="events">
 		<complexType>
 			<sequence>
-				<element ref="global" minOccurs="0" maxOccurs="1"/>
-				<element ref="event" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="this:global" minOccurs="0" maxOccurs="1"/>
+				<element ref="this:event" minOccurs="1" maxOccurs="unbounded"/>
 				<element name="event-file" type="string" minOccurs="1" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
@@ -17,7 +18,7 @@
 	<element name="global">
 		<complexType>
 			<sequence>
-				<element ref="security" minOccurs="1" maxOccurs="1"/>
+				<element ref="this:security" minOccurs="1" maxOccurs="1"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -37,7 +38,7 @@
 			<sequence>
 
 				<!-- The event mask which helps to uniquely identify an event  -->
-				<element ref="mask" minOccurs="0" maxOccurs="1"/>
+				<element ref="this:mask" minOccurs="0" maxOccurs="1"/>
 
 				<!-- The Universal Event Identifier -->
 				<element name="uei" type="string" minOccurs="1" maxOccurs="1"/>
@@ -46,43 +47,43 @@
                                 <element name="event-label" type="string" minOccurs="1" maxOccurs="1"/>                                
                                 
 				<!-- The snmp information from the trap -->
-				<element ref="snmp" minOccurs="0" maxOccurs="1"/>
+				<element ref="this:snmp" minOccurs="0" maxOccurs="1"/>
 
 				<!-- The event description -->
 				<element name="descr" type="string" minOccurs="1" maxOccurs="1"/>
 
 				<!-- The event logmsg -->
-				<element ref="logmsg" minOccurs="1" maxOccurs="1"/>
+				<element ref="this:logmsg" minOccurs="1" maxOccurs="1"/>
 
 				<!-- The event severity -->
 				<element name="severity" type="string" minOccurs="1" maxOccurs="1"/>
 
 				<!-- The event correlation information -->
-				<element ref="correlation" minOccurs="0" maxOccurs="1"/>
+				<element ref="this:correlation" minOccurs="0" maxOccurs="1"/>
 
 				<!-- The operator instruction for this event -->
 				<element name="operinstruct" type="string" minOccurs="0" maxOccurs="1"/>
 
 				<!-- The automatic action to occur when this event occurs -->
-				<element ref="autoaction" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:autoaction" minOccurs="0" maxOccurs="unbounded"/>
 
 				<!-- The operator action to be taken  when this event occurs -->
-				<element ref="operaction" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:operaction" minOccurs="0" maxOccurs="unbounded"/>
 
 				<!-- The autoacknowledge information for the user -->
-				<element ref="autoacknowledge" minOccurs="0" maxOccurs="1"/>
+				<element ref="this:autoacknowledge" minOccurs="0" maxOccurs="1"/>
 
 				<!-- A logical group with which to associate this event -->
 				<element name="loggroup" type="string" minOccurs="0" maxOccurs="unbounded"/>
 
 				<!-- The trouble ticket info -->
-				<element ref="tticket" minOccurs="0" maxOccurs="1"/>
+				<element ref="this:tticket" minOccurs="0" maxOccurs="1"/>
 
 				<!-- The forwarding information for this event -->
-				<element ref="forward" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:forward" minOccurs="0" maxOccurs="unbounded"/>
 				
 				<!-- The script information for this event -->
-				<element ref="script" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:script" minOccurs="0" maxOccurs="unbounded"/>
 
 				<!-- The text to be displayed on a 'mouseOver' event when this event is
      				     displayed in the event browser
@@ -104,9 +105,9 @@
 	<element name="mask">
 		<complexType>
 			<sequence>
-				<element ref="maskelement" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="this:maskelement" minOccurs="1" maxOccurs="unbounded"/>
 
-				<element ref="varbind" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:varbind" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -165,7 +166,6 @@
 				<extension base="string">
 					<attribute name="dest"
 						use="optional"
-						type="string"
 						default="logndisplay">
 						<simpleType>
 							<restriction base="string">
@@ -201,7 +201,6 @@
 			<!-- The state determines if event is correlated -->
 			<attribute name="state"
 				use="optional"
-				type="string"
 				default="off">
 				<simpleType>
 					<restriction base="string">
@@ -212,7 +211,6 @@
 			<!-- The correlation path -->
 			<attribute name="path"
 				use="optional"
-				type="string"
 				default="suppressDuplicates">
 				<simpleType>
 					<restriction base="string">
@@ -229,8 +227,7 @@
 			<simpleContent>
 				<extension base="string">
 					<attribute name="state"
-						value="optional"
-						type="string"
+						use="optional"
 						default="on">
 						<simpleType>
 							<restriction base="string">
@@ -250,8 +247,7 @@
 			<simpleContent>
 				<extension base="string">
 					<attribute name="state"
-						value="optional"
-						type="string"
+						use="optional"
 						default="on">
 						<simpleType>
 							<restriction base="string">
@@ -275,7 +271,6 @@
 				<extension base="string">
 					<attribute name="state"
 						use="optional"
-						type="string"
 						default="on">
 						<simpleType>
 							<restriction base="string">
@@ -295,7 +290,6 @@
 				<extension base="string">
 					<attribute name="state"
 						use="optional"
-						type="string"
 						default="on">
 						<simpleType>
 							<restriction base="string">
@@ -316,7 +310,6 @@
 				<extension base="string">
 					<attribute name="state"
 						use="optional"
-						type="string"
 						default="off">
 						<simpleType>
 							<restriction base="string">
@@ -326,7 +319,6 @@
 					</attribute>
 					<attribute name="mechanism"
 						use="optional"
-						type="string"
 						default="snmpudp">
 						<simpleType>
 							<restriction base="string">

@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/thresholding-config"
 	targetNamespace="http://xmlns.opennms.org/xsd/config/thresholding-config">
 
 	<element name="thresholding-config">
 		<complexType>
 			<sequence>
 				<!-- Thresholding group element -->
-				<element ref="group" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:group" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -16,7 +17,7 @@
 		<complexType>
 			<sequence>
 				<!-- Threshold definition -->
-				<element ref="threshold" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:threshold" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 			
 			<!-- group name -->
@@ -34,7 +35,7 @@
 			<!-- Type.  If "high", a 'highThresholdExceeded' event will
 			     be generated. If "low", a 'lowThresholdExceeded' event.
 			-->
-			<attribute name="type" type="string" use="required">
+			<attribute name="type" use="required">
 				<simpleType>
 					<restriction base="string">
 						<pattern value="high|low"/>

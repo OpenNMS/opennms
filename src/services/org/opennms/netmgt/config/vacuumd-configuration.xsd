@@ -1,10 +1,11 @@
 <schema	xmlns="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://xmlns.opennms.org/xsd/config/outage">
+	xmlns:this="http://xmlns.opennms.org/xsd/config/vacuumd"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/vacuumd">
 	<element name="VacuumdConfiguration">
 		<complexType>
 			<sequence>
 			    <!-- this represents the SQL that is performed every <period> seconds -->
-				<element ref="statement" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:statement" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 		
 			<!--- how often to vacuum the database in seconds -->

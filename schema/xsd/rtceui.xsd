@@ -1,15 +1,16 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:this="http://xmlns.opennms.org/xsd/rtceui"
 	targetNamespace="http://xmlns.opennms.org/xsd/rtceui">
 
 	<element name="euiLevel">
 		<complexType>
 			<sequence>
 				<!-- The header -->
-				<element ref="header" minOccurs="1" maxOccurs="1"/>
+				<element ref="this:header" minOccurs="1" maxOccurs="1"/>
 
 				<!-- category value and nodes belonging to it -->
-				<element ref="category" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="this:category" minOccurs="1" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -38,7 +39,7 @@
 				<element name="catvalue" type="double" minOccurs="1" maxOccurs="1"/>
 
 				<!-- A node that belongs to this category -->
-				<element ref="node" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:node" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>

@@ -1,4 +1,5 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/discovery"
 	targetNamespace="http://xmlns.opennms.org/xsd/config/discovery">
 
 	<element name="discovery-configuration">
@@ -14,16 +15,16 @@
 				     the web UI will need to be changed.  -->
 	     
 	 			<!--- the specific addresses to be polled -->
-				<element ref="specific" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:specific" minOccurs="0" maxOccurs="unbounded"/>
 
 				<!--- the range of addresses to be polled -->
-				<element ref="include-range" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:include-range" minOccurs="0" maxOccurs="unbounded"/>
 
 				<!--- the range of addresses to be excluded from the polling -->
-				<element ref="exclude-range" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:exclude-range" minOccurs="0" maxOccurs="unbounded"/>
 
 				<!--- a file URL holding specific addresses to be polled -->
-				<element ref="include-url" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:include-url" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 
 			<!--- the number of threads to be used for discovery -->

@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/kscReports"
 	targetNamespace="http://xmlns.opennms.org/xsd/config/kscReports">
 
 	<element name="ReportsList">
 		<complexType>
                       <sequence>
-		           <element ref="Report" minOccurs="0" maxOccurs="unbounded"/>
+		           <element ref="this:Report" minOccurs="0" maxOccurs="unbounded"/>
                       </sequence>
 		</complexType>
 	</element>
@@ -13,7 +14,7 @@
 	<element name="Report">
 		<complexType>
                     <sequence>
-			<element ref="Graph" minOccurs="0" maxOccurs="unbounded"/>
+			<element ref="this:Graph" minOccurs="0" maxOccurs="unbounded"/>
 		    </sequence>
                     <attribute name="title" type="string" use="required"/>
                     <attribute name="show_timespan_button" type="boolean" use="optional"/>

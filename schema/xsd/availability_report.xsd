@@ -1,13 +1,16 @@
 <?xml version="1.0"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema">
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:this="http://xmlns.opennms.org/xsd/report/availabilty"
+	targetNamespace="http://xmlns.opennms.org/xsd/report/availabilty"
+	>
 	<element name="report">
 		<complexType>
 			<sequence>
 				<element name="logo" type="string" minOccurs="0" maxOccurs="1"/>
-				<element ref="created" minOccurs="0" maxOccurs="1"/>
+				<element ref="this:created" minOccurs="0" maxOccurs="1"/>
 				<element name="author" type="string" minOccurs="0" maxOccurs="1"/>
-				<element ref="viewInfo" minOccurs="0"/>
-				<element ref="categories" type="integer" minOccurs="0" />
+				<element ref="this:viewInfo" minOccurs="0"/>
+				<element ref="this:categories" minOccurs="0" />
 				<element name="catCount" type="integer" minOccurs="0" />
 				<element name="sectionCount" type="integer" minOccurs="0" />
 			</sequence>
@@ -27,7 +30,7 @@
         <element name="categories">
                 <complexType>
                         <sequence>
-				<element ref="category" type="string" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:category" minOccurs="0" maxOccurs="unbounded"/>
                         </sequence>
                 </complexType>
         </element>
@@ -52,7 +55,7 @@
                 <complexType>
                         <sequence>
                                 <element name="catName" type="string" minOccurs="0" maxOccurs="1"/>
-                                <element ref="catSections" type="string" minOccurs="0" maxOccurs="unbounded"/>
+                                <element ref="this:catSections" minOccurs="0" maxOccurs="unbounded"/>
                                 <element name="catComments" type="string" minOccurs="0" maxOccurs="1"/>
                                 <element name="warning" type="double" minOccurs="0" maxOccurs="1"/>
                                 <element name="normal" type="double" minOccurs="0" maxOccurs="1"/>
@@ -67,7 +70,7 @@
         <element name="catSections">
                 <complexType>
                         <sequence>
-                                <element ref="section" type="string" minOccurs="0" maxOccurs="unbounded"/>
+                                <element ref="this:section" minOccurs="0" maxOccurs="unbounded"/>
                         </sequence>
                 </complexType>
         </element>
@@ -79,8 +82,8 @@
                                 <element name="sectionTitle" type="string" minOccurs="0" maxOccurs="1"/>
                                 <element name="sectionDescr" type="string" minOccurs="0" maxOccurs="1"/>
                                 <element name="period" type="string" minOccurs="0" maxOccurs="1"/>
-                                <element ref="col" type="string" minOccurs="0" maxOccurs="1"/>
-                                <element ref="rows" type="string" minOccurs="0" maxOccurs="1"/>
+                                <element ref="this:col" minOccurs="0" maxOccurs="1"/>
+                                <element ref="this:rows" minOccurs="0" maxOccurs="1"/>
                                 <element name="sectionIndex" type="integer" minOccurs="0" maxOccurs="1"/>
                         </sequence>
                 </complexType>
@@ -97,7 +100,7 @@
         <element name="rows">
                 <complexType>
                         <sequence>
-                                <element ref="row" type="string" minOccurs="0" maxOccurs="unbounded"/>
+                                <element ref="this:row" minOccurs="0" maxOccurs="unbounded"/>
                         </sequence>
                 </complexType>
         </element>
@@ -105,7 +108,7 @@
 	<element name="row">
                 <complexType>
                         <sequence>
-                                <element ref="value" type="string" minOccurs="0" maxOccurs="unbounded"/>
+                                <element ref="this:value" minOccurs="0" maxOccurs="unbounded"/>
                         </sequence>
                 </complexType>
         </element>

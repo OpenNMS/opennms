@@ -8,7 +8,7 @@
                         <!--- a flag to indicate if poller has to identify the nms server to restrict 
                               - services to poll.
 			-->
-  			<attribute name="verify-server" type="string" use="optional" default="false">
+  			<attribute name="verify-server" use="optional" default="false">
                                 <simpleType>
                                         <restriction base="string">
                                                 <pattern value="(true|false)"/>

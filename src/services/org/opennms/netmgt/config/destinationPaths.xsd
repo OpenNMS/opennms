@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:this="http://xmlns.opennms.org/xsd/destinationPaths"
 	targetNamespace="http://xmlns.opennms.org/xsd/destinationPaths">
 
 	<element name="destinationPaths">
 		<complexType>
 			<sequence>
-				<element ref="header" minOccurs="1" maxOccurs="1"/>
-				<element ref="path" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="this:header" minOccurs="1" maxOccurs="1"/>
+				<element ref="this:path" minOccurs="1" maxOccurs="unbounded"/>
 			</sequence>
                 </complexType>
 	</element>
@@ -27,11 +28,11 @@
 	<element name="path">
 		<complexType>
 			<sequence>
-				<element ref="target" minOccurs="1" maxOccurs="unbounded"/>
-                                <element ref="escalate" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:target" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="this:escalate" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 			<attribute name="name" type="string" use="required"/>
-            <attribute name="initial-delay" type="string" use="optional" value="0s"/>
+            <attribute name="initial-delay" type="string" use="optional" default="0s"/>
 		</complexType>
 	</element>
 
@@ -41,16 +42,16 @@
 			        <element name="name" type="string" minOccurs="1" maxOccurs="1"/>
                                 <element name="command" type="string" minOccurs="1" maxOccurs="unbounded"/>	
 			</sequence>
-                        <attribute name="interval" type="string" use="optional" value="0s"/>
+                        <attribute name="interval" type="string" use="optional" default="0s"/>
 		</complexType>
 	</element>
         
         <element name="escalate">
 		<complexType>
                         <sequence>
-                                <element ref="target" minOccurs="1" maxOccurs="unbounded"/>
+                                <element ref="this:target" minOccurs="1" maxOccurs="unbounded"/>
                         </sequence>
-                        <attribute name="delay" type="string" use="required" value="0s"/>
+                        <attribute name="delay" type="string" use="required" />
                 </complexType>
         </element>
 

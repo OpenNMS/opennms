@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/vulnscand"
 	targetNamespace="http://xmlns.opennms.org/xsd/config/vulnscand">
 
 	<element name="vulnscand-configuration">
 		<complexType>
 			<sequence>
-				<element ref="managed-interfaces" minOccurs="1" maxOccurs="1"/>
-				<element ref="scan-level" minOccurs="4" maxOccurs="4"/>
-				<element ref="excludes" minOccurs="0" maxOccurs="1"/>
+				<element ref="this:managed-interfaces" minOccurs="1" maxOccurs="1"/>
+				<element ref="this:scan-level" minOccurs="4" maxOccurs="4"/>
+				<element ref="this:excludes" minOccurs="0" maxOccurs="1"/>
 			</sequence>
 			<attribute name="rescan-frequency" type="long" use="optional"/>
 			<attribute name="initial-sleep-time" type="long" use="optional"/>
@@ -33,7 +34,7 @@
 		<complexType>
 			<sequence>
 				<element name="specific" type="string" minOccurs="0" maxOccurs="unbounded"/>
-				<element ref="range" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:range" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 			<attribute name="level" type="positiveInteger" use="required" />
 			<attribute name="safe-checks" type="boolean" use="required" />
@@ -46,7 +47,7 @@
 		<complexType>
 			<sequence>
 				<element name="specific" type="string" minOccurs="0" maxOccurs="unbounded"/>
-				<element ref="range" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:range" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>

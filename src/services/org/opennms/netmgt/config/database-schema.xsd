@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/filter"
 	targetNamespace="http://xmlns.opennms.org/xsd/config/filter">
 
 	<element name="database-schema">
 		<complexType>
 			<sequence>
-				<element ref="table" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:table" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -13,10 +14,10 @@
 	<element name="table">
 		<complexType>
 			<sequence>
-				<element ref="column" minOccurs="1" maxOccurs="unbounded"/>
-				<element ref="join" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:column" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="this:join" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
-			<attribute name="visable" use="optional" type="string" default="true">
+			<attribute name="visable" use="optional" default="true">
 				<simpleType>
 					<restriction base="string">
 						<pattern value="(true|false)"/>
@@ -24,7 +25,7 @@
 				</simpleType>
 			</attribute>
 			<attribute name="name" use="required" type="string"/>
-			<attribute name="key" use="optional" type="string" default="secondary">
+			<attribute name="key" use="optional" default="secondary">
 				<simpleType>
 					<restriction base="string">
 						<pattern value="(primary|secondary)"/>
@@ -37,13 +38,13 @@
 	<element name="column">
 		<complexType>
 			<sequence>
-				<element ref="alias" minOcccurs="0" maxOccurs="unbounded"/>
-				<element ref="constraint" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:alias" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:constraint" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 			<attribute name="name" type="string" use="required"/>
 			<attribute name="sql-type" type="string" use="optional"/>
 			<attribute name="java-type" type="string" use="optional"/>
-			<attribute name="visable" use="optional" type="string" default="true">
+			<attribute name="visable" use="optional" default="true">
 				<simpleType>
 					<restriction base="string">
 						<pattern value="(true|false)"/>

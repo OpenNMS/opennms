@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/vmmgr"
   targetNamespace="http://xmlns.opennms.org/xsd/config/vmmgr">
 
   <element name="service-configuration">
     <complexType>
       <sequence>
-        <element ref="service" minOccurs="1" maxOccurs="unbounded"/>
+        <element ref="this:service" minOccurs="1" maxOccurs="unbounded"/>
       </sequence>
     </complexType>
   </element>
@@ -18,8 +19,8 @@
       <sequence>
         <element name="name" type="string" minOccurs="1" maxOccurs="1"/>
         <element name="class-name" type="string" minOccurs="1" maxOccurs="1"/>
-        <element ref="attribute" minOccurs="0" maxOccurs="unbounded"/>
-        <element ref="invoke" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="this:attribute" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="this:invoke" minOccurs="0" maxOccurs="unbounded"/>
       </sequence>
     </complexType>
   </element>
@@ -28,7 +29,7 @@
     <complexType>
       <sequence>
         <element name="name" type="string" minOccurs="1" maxOccurs="1"/>
-        <element ref="value" minOccurs="1" maxOccurs="1"/>
+        <element ref="this:value" minOccurs="1" maxOccurs="1"/>
       </sequence>
     </complexType>
   </element>
@@ -46,11 +47,11 @@
   <element name="invoke">
     <complexType>
       <sequence>
-        <element ref="argument" minOccurs="0" maxOccurs="unbounded"/>
+        <element ref="this:argument" minOccurs="0" maxOccurs="unbounded"/>
       </sequence>
       <attribute name="method" type="string" use="required"/>
       <attribute name="pass" type="int" use="optional" default="0"/>
-      <attribute name="at" type="string" use="optional" default="start">
+      <attribute name="at" use="optional" default="start">
         <simpleType>
           <restriction base="string">
             <pattern value="(start|stop|status)"/>

@@ -1,15 +1,16 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/scriptd"
 	targetNamespace="http://xmlns.opennms.org/xsd/config/scriptd">
 
 	<element name="scriptd-configuration">
 		<complexType>
 			<sequence>
-				<element ref="engine" minOccurs="0" maxOccurs="unbounded"/>
-				<element ref="start-script" minOccurs="0" maxOccurs="unbounded"/>
-				<element ref="stop-script" minOccurs="0" maxOccurs="unbounded"/>
-				<element ref="reload-script" minOccurs="0" maxOccurs="unbounded"/>
-				<element ref="event-script" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:engine" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:start-script" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:stop-script" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:reload-script" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:event-script" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>
