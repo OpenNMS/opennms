@@ -260,6 +260,8 @@ public class PollableService extends PollableElement implements Runnable {
      * @see java.lang.Runnable#run()
      */
     public void run() {
+        Category log = ThreadCategory.getInstance(PollableService.class);
+        log.debug("Start Scheudled Poll of service "+this);
         if (getContext().isNodeProcessingEnabled()) {
             Runnable r = new Runnable() {
                 public void run() {
@@ -270,7 +272,7 @@ public class PollableService extends PollableElement implements Runnable {
             try {
                 withTreeLock(r, 500);
             } catch (LockUnavailable e) {
-                ThreadCategory.getInstance(getClass()).info("Postponing poll for "+this+" because "+e);
+                log.info("Postponing poll for "+this+" because "+e);
                 throw new PostponeNecessary("LockUnavailable postpone poll");
             }
         }
@@ -278,6 +280,7 @@ public class PollableService extends PollableElement implements Runnable {
             doPoll();
             processStatusChange(new Date());
         }
+        log.debug("Finish Scheduled Poll of service "+this);
         
     }
 
