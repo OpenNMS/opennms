@@ -1552,6 +1552,13 @@ final class RescanProcessor
 			{
 			        InetAddress addr = tmpIfArray[i].getIfAddress();
 				int index = tmpIfArray[i].getIfIndex();
+  				
+                                // Skip non-IP or loopback interfaces
+       				if (addr.getHostAddress().equals("0.0.0.0") && 
+       					addr.getHostAddress().startsWith("127.")) 
+       				{
+       					continue;
+       				}
 							
                                 InetAddress[] updateIfs = snmpc.getIfAddressAndMask(index);
                                 if (updateIfs == null)
