@@ -46,8 +46,6 @@ package org.opennms.netmgt.poller;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Category;
@@ -90,11 +88,6 @@ final class PollerService extends PollerElement {
      */
     private boolean m_deletionFlag;
 
-    /**
-     * List of all scheduled PollableService objects
-     */
-    private final List m_pollableServices;
-
     private PollSchedule m_schedule;
     
     private IPv4NetworkInterface m_netInterface;
@@ -118,7 +111,7 @@ final class PollerService extends PollerElement {
         m_netInterface = new IPv4NetworkInterface(pInterface.getAddress());
         m_deletionFlag = false;
 
-        m_pollableServices = getPoller().getPollableServiceList();
+        //m_pollableServices = getPoller().getPollableServiceList();
 
         m_schedule = new PollSchedule(this, svcConfig);
         m_schedule.setLastPoll(0L);
@@ -329,7 +322,6 @@ final class PollerService extends PollerElement {
         Category log = ThreadCategory.getInstance(getClass());
 
         // Go ahead and remove 'this' service from the list.
-        m_pollableServices.remove(this);
         if (log.isDebugEnabled())
             log.debug("cleanupScheduledServices: deleted " + this + ":" + getPackageName());
 
@@ -337,30 +329,30 @@ final class PollerService extends PollerElement {
         // service
         // objects which refer to the same node/interface/service pairing
         // for deletion.
-        synchronized (m_pollableServices) {
-            Iterator iter = m_pollableServices.iterator();
-            if (log.isDebugEnabled())
-                log.debug("cleanupScheduledServices: iterating over serviceUpdatesMap(numEntries=" + m_pollableServices.size() + ") looking for " + this);
-
-            while (iter.hasNext()) {
-                PollerService temp = (PollerService) iter.next();
-
-                if (log.isDebugEnabled())
-                    log.debug("cleanupScheduledServices: comparing " + this);
-
-                // If the two objects are equal but not identical (in other
-                // words they refer to two different objects with the same
-                // nodeid, ipAddress, and service name) then need to set the
-                // deletion flag so that the next time the interface
-                // is pulled from the queue for execution it will be deleted.
-                if (this.equals(temp)) {
-                    // Now set the deleted flag
-                    temp.markAsDeleted();
-                    if (log.isDebugEnabled())
-                        log.debug("cleanupScheduledServices: marking " + this + ":" + temp.getPackageName() + " as deleted.");
-                }
-            }
-        }
+//        synchronized (m_pollableServices) {
+//            Iterator iter = m_pollableServices.iterator();
+//            if (log.isDebugEnabled())
+//                log.debug("cleanupScheduledServices: iterating over serviceUpdatesMap(numEntries=" + m_pollableServices.size() + ") looking for " + this);
+//
+//            while (iter.hasNext()) {
+//                PollerService temp = (PollerService) iter.next();
+//
+//                if (log.isDebugEnabled())
+//                    log.debug("cleanupScheduledServices: comparing " + this);
+//
+//                // If the two objects are equal but not identical (in other
+//                // words they refer to two different objects with the same
+//                // nodeid, ipAddress, and service name) then need to set the
+//                // deletion flag so that the next time the interface
+//                // is pulled from the queue for execution it will be deleted.
+//                if (this.equals(temp)) {
+//                    // Now set the deleted flag
+//                    temp.markAsDeleted();
+//                    if (log.isDebugEnabled())
+//                        log.debug("cleanupScheduledServices: marking " + this + ":" + temp.getPackageName() + " as deleted.");
+//                }
+//            }
+//        }
     }
 
     public int getNodeId() {

@@ -164,6 +164,7 @@ public class PollableService extends PollableElement implements Runnable {
             getParent().doPoll(this);
         }
         else {
+            resetStatusChanged();
             poll();
         }
     }

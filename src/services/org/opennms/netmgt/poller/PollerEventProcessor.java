@@ -41,10 +41,11 @@
 
 package org.opennms.netmgt.poller;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Category;
@@ -53,7 +54,10 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
-import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.poller.pollables.PollableInterface;
+import org.opennms.netmgt.poller.pollables.PollableNetwork;
+import org.opennms.netmgt.poller.pollables.PollableNode;
+import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.utils.XmlrpcUtil;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -178,23 +182,18 @@ final class PollerEventProcessor implements EventListener {
         } else if (event.getUei().equals(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI)) {
             whichEvent = "resumePollingService: ";
         }
+        
 
         // First make sure the service gained is in active state before trying
         // to
         // schedule
 
         String ipAddr = event.getInterface();
-        int nodeid = (int) event.getNodeid();
+        int nodeId = (int) event.getNodeid();
         String svcName = event.getService();
 
-        if (!getPoller().getQueryMgr().activeServiceExists(whichEvent, nodeid, ipAddr, svcName)) {
-            if (log.isDebugEnabled()) {
-                log.debug(whichEvent + nodeid + "/" + ipAddr + "/" + svcName + " not active - hence not scheduled");
-            }
-            return;
-        }
-
-        getPoller().scheduleService(nodeid, ipAddr, svcName);
+        getPoller().scheduleService(nodeId, ipAddr, svcName);
+        
     }
 
     /**
@@ -215,6 +214,8 @@ final class PollerEventProcessor implements EventListener {
         // Verify that the event has an interface associated with it
         if (event.getInterface() == null)
             return;
+        
+        String ipAddr = event.getInterface();
 
         // Extract the old and new nodeId's from the event parms
         String oldNodeIdStr = null;
@@ -253,83 +254,42 @@ final class PollerEventProcessor implements EventListener {
             log.error("interfaceReparentedHandler: old and new nodeId parms are required, unable to process.");
             return;
         }
-
-        // Update node outage processing hierarchy based on this reparenting
-        // event. Must "move" the interface from the "old" PollableNode object
-        // to the "new" PollableNode object as identified by the old and new
-        // nodeid parms.
-        // 	
-        // In order to perform this "move" a node lock must be obtained on both
-        // PollableNode objects.
-        //
-
-        // Retrieve old and new PollableNode objects from the Poller's pollable
-        // node map.
-        PollerNode oldPNode = null;
-        PollerNode newPNode = null;
+        
+        PollableNode oldNode;
+        PollableNode newNode;
         try {
-            oldPNode = getPoller().findNode(Integer.parseInt(oldNodeIdStr));
-            newPNode = getPoller().findNode(Integer.parseInt(newNodeIdStr));
+            oldNode = getNetwork().getNode(Integer.parseInt(oldNodeIdStr));
+            if (oldNode == null) {
+                log.error("interfaceReparentedHandler: Cannot locate old node "+oldNodeIdStr+" belonging to interface "+ipAddr);
+                return;
+            }
+            newNode = getNetwork().getNode(Integer.parseInt(newNodeIdStr));
+            if (newNode == null) {
+                log.error("interfaceReparentedHandler: Cannot locate new node "+newNodeIdStr+" to move interface to.");
+                return;
+            }
+            
+            PollableInterface iface = oldNode.getInterface(InetAddress.getByName(ipAddr));
+            if (iface == null) {
+                log.error("interfaceReparentedHandler: Cannot locate interface with ipAddr "+ipAddr+" to reparent.");
+                return;
+            }
+
+            iface.reparentTo(newNode);
+            
+            // process the status changes related to the 
+            Date date = new Date();
+            oldNode.processStatusChange(date);
+            newNode.processStatusChange(date);
+            
         } catch (NumberFormatException nfe) {
             log.error("interfaceReparentedHandler: failed converting old/new nodeid parm to integer, unable to process.");
             return;
-        }
-
-        // Sanity check, make certain we've were able to obtain both
-        // PollableNode objects.
-        //
-        if (oldPNode == null || newPNode == null) {
-            log.error("interfaceReparentedHandler: old or new nodeId doesn't exist, unable to process.");
+        } catch (UnknownHostException e) {
+            log.error("interfaceReparentedHandler: failed converting ipAddr "+ipAddr+" to an inet address");
             return;
-        }
-
-        // Obtain node lock on both pollable node objects and then move the
-        // interface from the old node to the new node.
-        //
-        boolean ownOldLock = false;
-        boolean ownNewLock = false;
-
-        try {
-            // FIXME: Deadlock potential below.... two locks in arbitrary order
-            // Obtain lock on old nodeId...wait indefinitely
-            log.debug("interfaceReparentedHandler: requesting node lock for old nodeId " + oldPNode.getNodeId());
-            ownOldLock = oldPNode.getNodeLock(NodeLocker.WAIT_FOREVER);
-            PollerInterface pIf = oldPNode.findInterface(event.getInterface());
-            log.debug("interfaceReparentedHandler: old node lock obtained, removing interface...");
-            oldPNode.removeInterface(pIf);
-
-            // Obtain lock on new nodeId...wait indefinitely
-            log.debug("interfaceReparentedHandler: requesting node lock for new nodeId " + newPNode.getNodeId());
-            ownNewLock = newPNode.getNodeLock(NodeLocker.WAIT_FOREVER);
-            log.debug("interfaceReparentedHandler: new node lock obtained, adding interface...");
-            newPNode.addInterface(pIf);
-
-            pIf.setNode(newPNode);
-            
-            Date date = new Date();
-            oldPNode.generateEvents(date);
-            newPNode.generateEvents(date);
-            
-        } catch (InterruptedException iE) {
-            log.error("interfaceReparentedHandler: thread interrupted...failed to obtain required node locks");
-            return;
-        } finally {
-            if (ownOldLock) {
-                try {
-                    oldPNode.releaseNodeLock();
-                } catch (InterruptedException iE) {
-                    log.error("interfaceReparentedHandler: thread interrupted...failed to release old node lock on nodeid " + oldPNode.getNodeId());
-                }
-            }
-
-            if (ownNewLock) {
-                try {
-                    newPNode.releaseNodeLock();
-                } catch (InterruptedException iE) {
-                    log.error("interfaceReparentedHandler: thread interrupted...failed to release new node lock on nodeid " + newPNode.getNodeId());
-                }
-            }
-        }
+        } 
+        
     }
 
     /**
@@ -340,39 +300,27 @@ final class PollerEventProcessor implements EventListener {
         Category log = ThreadCategory.getInstance(getClass());
 
         int nodeId = (int) event.getNodeid();
-        String intfc = event.getInterface();
-        String svc = event.getService();
-
-        final PollerNode pNode = getPoller().findNode(nodeId);
-        if (pNode == null) // Sanity check
-        {
-            log.error("Nodeid " + nodeId + " does not exist in pollable node map, unable to remove service from pollable services list.");
+        String ipAddr = event.getInterface();
+        String svcName = event.getService();
+        
+        InetAddress address;
+        try {
+            address = InetAddress.getByName(ipAddr);
+        } catch (UnknownHostException e) {
+            log.error("Unable to convert "+ipAddr+" to an inet address", e);
             return;
         }
+        
 
-        PollerInterface pInterface = pNode.findInterface(event.getInterface());
-        if (pInterface == null) // Sanity check
-        {
-            log.error("Interface " + intfc + "on node " + nodeId + " does not exist in pollable node map, unable to remove service from pollable services list.");
+        if (svcName == null) {
+            log.error("nodeRemovePollableServiceHandler: service name is null, ignoring event");
             return;
         }
+        
+        
+        PollableService svc = getNetwork().getService(nodeId, address, svcName);
+        svc.delete();
 
-        final PollerService pService = pInterface.findService(event.getService());
-        if (pService == null) // Sanity check
-        {
-            log.error("Service " + svc + "on Interface " + intfc + "on node " + nodeId + " does not exist in pollable node map, unable to remove service from pollable services list.");
-            return;
-        }
-
-        NodeLocker locker = new NodeLocker(pNode, "nodeRemovePollableServiceHandler") {
-            protected void process() {
-                Category log = ThreadCategory.getInstance(getClass());
-                pService.markAsDeleted();
-                if (log.isDebugEnabled())
-                    log.debug("nodeRemovePollableServiceHandler: Marking service " + pService.getServiceName() + " for deletion from active polling on node " + pNode.getNodeId());
-            }
-        };
-        locker.lockAndProcess();
     }
 
     /**
@@ -417,79 +365,18 @@ final class PollerEventProcessor implements EventListener {
                 }
             }
         }
-
-        final PollerNode pNode = getPoller().findNode(nodeId);
-        if (pNode == null) // Sanity check
-        {
-            log.error("Nodeid " + nodeId + " does not exist in pollable node map, unable to delete node.");
-            if (isXmlRPCEnabled()) {
-                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, "Node does not exist in pollable node map.", status, "OpenNMS.Poller");
-            }
-            return;
-        }
-
         
-        final long transNum = txNo;
-        NodeLocker locker = new NodeLocker(pNode, "nodeDeletedHandler") {
-            protected void process() {
-                deleteNode(pNode);
-            }
-            protected void handleLockFailed() {
-                if (isXmlRPCEnabled()) {
-                    int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                    XmlrpcUtil.createAndSendXmlrpcNotificationEvent(transNum, sourceUei, "Internal error.", status, "OpenNMS.Poller");
-                }
-            }
-            protected void handleException(Throwable t) {
-                if (isXmlRPCEnabled()) {
-                    int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                    XmlrpcUtil.createAndSendXmlrpcNotificationEvent(transNum, sourceUei, t.getMessage(), status, "OpenNMS.Poller");
-                }
-                
-            }
-        };
-        locker.lockAndProcess();
-    }
-
-    private void deleteNode(PollerNode pNode) {
-        Category log = ThreadCategory.getInstance(getClass());
-        int nodeId = pNode.getNodeId();
-        // Remove the node from the Poller's node map
-        getPoller().removeNode(nodeId);
-
-        // Iterate over the node's interfaces and delete
-        // all services on each interface.
-        Iterator iter = pNode.getInterfaces().iterator();
-        while (iter.hasNext()) {
-            PollerInterface pIf = (PollerInterface) iter.next();
-
-            // Iterate over the interface's services and mark
-            // them for deletion.
-            Iterator svc_iter = pIf.getServices().iterator();
-            while (svc_iter.hasNext()) {
-                PollerService pSvc = (PollerService) svc_iter.next();
-                pSvc.markAsDeleted();
-
-                // Now remove the service from the pollable services
-                // list
-                getPollableServices().remove(pSvc);
-            }
-
-            // Delete all entries from the interface's internal service
-            // map
-            pIf.deleteAllServices();
+        PollableNode node = getNetwork().getNode(nodeId);
+        if (node == null) {
+          log.error("Nodeid " + nodeId + " does not exist in pollable node map, unable to delete node.");
+          if (isXmlRPCEnabled()) {
+              int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
+              XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, "Node does not exist in pollable node map.", status, "OpenNMS.Poller");
+          }
+          return;
         }
+        node.delete();
 
-        // Delete all entries from the node's internal interface map
-        pNode.deleteAllInterfaces();
-
-        // Mark the node as deleted to prevent any further node
-        // outage processing on this node
-        pNode.markAsDeleted();
-
-        if (log.isDebugEnabled())
-            log.debug("nodeDeletedHandler: deletion of nodeid " + pNode.getNodeId() + " completed.");
     }
 
     /**
@@ -500,7 +387,7 @@ final class PollerEventProcessor implements EventListener {
 
         int nodeId = (int) event.getNodeid();
         String sourceUei = event.getUei();
-
+        
         // Extract node label and transaction No. from the event parms
         long txNo = -1L;
         Parms parms = event.getParms();
@@ -532,127 +419,27 @@ final class PollerEventProcessor implements EventListener {
                 }
             }
         }
-
-        PollerNode pNode = getPoller().findNode(nodeId);
-        if (pNode == null) // Sanity check
-        {
-            log.error("Nodeid " + nodeId + " does not exist in pollable node map, unable to delete interface " + event.getInterface());
-
-            if (isXmlRPCEnabled()) {
-                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, "Node does not exist.", status, "OpenNMS.Poller");
-            }
-            return;
-        }
-
-        // acquire lock to 'PollableNode'
-        //
-        boolean ownLock = false;
+        
+        InetAddress addr;
         try {
-            // Attempt to obtain node lock...wait as long as it takes.
-            // 
-            if (log.isDebugEnabled())
-                log.debug("interfaceDeletedHandler: deleting nodeid/interface: " + nodeId + "/" + event.getInterface());
-
-            ownLock = pNode.getNodeLock(NodeLocker.WAIT_FOREVER);
-            if (ownLock) {
-                if (log.isDebugEnabled())
-                    log.debug("interfaceDeletedHandler: obtained node lock for nodeid: " + nodeId);
-
-                // Retrieve the PollableInterface object corresponding to
-                // the interface address specified in the event
-                PollerInterface pIf = pNode.findInterface(event.getInterface());
-                if (pIf == null) {
-                    if (log.isDebugEnabled())
-                        log.debug("interfaceDeletedHandler: interface " + event.getInterface() + " not in interface map for " + nodeId);
-                    if (isXmlRPCEnabled()) {
-                        int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                        String message = "Interface " + event.getInterface() + " not in interface map for " + nodeId;
-                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, message, status, "OpenNMS.Poller");
-                    }
-                    return;
-                }
-
-                // Iterate over the interface's services and mark
-                // them for deletion.
-                //
-                // NOTE: This is probably overkill because by the time
-                // the Outage Mgr generates the interfaceDeleted
-                // event all of the interface's underlying
-                // services have already been deleted...but just
-                // to be safe...
-                Iterator svc_iter = pIf.getServices().iterator();
-                while (svc_iter.hasNext()) {
-                    PollerService pSvc = (PollerService) svc_iter.next();
-                    pSvc.markAsDeleted();
-
-                    // Now remove the service from the pollable services list
-                    getPollableServices().remove(pSvc);
-                }
-
-                // Delete all entries from the interface's internal service map
-                pIf.deleteAllServices();
-
-                // Delete the interface from the node
-                pNode.removeInterface(pIf);
-
-                // Recalculate node status
-                pNode.recalculateStatus();
-
-                // Debug dump pollable node content
-                //
-                if (log.isDebugEnabled()) {
-                    log.debug("Interface deletion completed, dumping node info for nodeid " + pNode.getNodeId() + ", status=" + pNode.getStatus());
-                    Iterator k = pNode.getInterfaces().iterator();
-                    while (k.hasNext()) {
-                        PollerInterface tmpIf = (PollerInterface) k.next();
-                        log.debug("		interface=" + tmpIf.getAddress().getHostAddress() + " status=" + tmpIf.getStatus());
-
-                        Iterator s = tmpIf.getServices().iterator();
-                        while (s.hasNext()) {
-                            PollerService tmpSvc = (PollerService) s.next();
-                            log.debug("			service=" + tmpSvc.getServiceName() + " status=" + tmpSvc.getStatus());
-                        }
-                    }
-                }
-            } else {
-                // failed to acquire lock
-                log.error("interfaceDeletedHandler: failed to obtain lock on nodeId " + nodeId);
-                if (isXmlRPCEnabled()) {
-                    int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                    String message = new String("Internal error.");
-                    XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, message, status, "OpenNMS.Poller");
-                }
-            }
-        } catch (InterruptedException iE) {
-            // failed to acquire lock,
-            log.error("interfaceDeletedHandler: thread interrupted...failed to obtain lock on nodeId " + nodeId);
-            if (isXmlRPCEnabled()) {
-                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, iE.getMessage(), status, "OpenNMS.Poller");
-            }
-        } catch (Throwable t) {
-            log.error("exception caught processing interfaceDeleted event for " + nodeId + "/" + event.getInterface(), t);
-            if (isXmlRPCEnabled()) {
-                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, "Caught unknown exception.", status, "OpenNMS.Poller");
-            }
-        } finally {
-            if (ownLock) {
-                if (log.isDebugEnabled())
-                    log.debug("interfaceDeletedHandler: releasing node lock for nodeid: " + nodeId);
-
-                try {
-                    pNode.releaseNodeLock();
-                } catch (InterruptedException iE) {
-                    log.error("interfaceDeletedHandler: thread interrupted...failed to release lock on nodeId " + nodeId);
-                    if (isXmlRPCEnabled()) {
-                        int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, iE.getMessage(), status, "OpenNMS.Poller");
-                    }
-                }
-            }
+            addr = InetAddress.getByName(event.getInterface());
+        } catch (UnknownHostException e) {
+            log.error("interfaceDeletedHandler: Could not convert interface "+event.getInterface()+" to InetAddress", e);
+            return;
+            
         }
+        
+        PollableInterface iface = getNetwork().getInterface(nodeId, addr);
+        if (iface == null) {
+          log.error("Interface " + nodeId + "/" + event.getInterface() + " does not exist in pollable node map, unable to delete node.");
+          if (isXmlRPCEnabled()) {
+              int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
+              XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, "Interface does not exist in pollable node map.", status, "OpenNMS.Poller");
+          }
+          return;
+        }
+        iface.delete();
+
     }
 
     /**
@@ -667,88 +454,23 @@ final class PollerEventProcessor implements EventListener {
         int nodeId = (int) event.getNodeid();
         String ipAddr = event.getInterface();
         String service = event.getService();
-
-        PollerNode pNode = getPoller().findNode(nodeId);
-        if (pNode == null) // Sanity check
-        {
-            log.error("Nodeid " + nodeId + " does not exist in pollable node map, " + "unable to delete service " + event.getService());
-
+        
+        InetAddress addr;
+        try {
+            addr = InetAddress.getByName(ipAddr);
+        } catch (UnknownHostException e) {
+            log.error("serviceDeletedHandler: Could not convert "+ipAddr+" to an InetAddress", e);
             return;
         }
-
-        // acquire lock to 'PollableNode'
-        //
-        boolean ownLock = false;
-        try {
-            // Attempt to obtain node lock...wait as long as it takes.
-            // 
-            if (log.isDebugEnabled())
-                log.debug("serviceDeletedHandler: deleting nodeid/interface/service: " + nodeId + "/" + ipAddr + "/" + service);
-
-            ownLock = pNode.getNodeLock(NodeLocker.WAIT_FOREVER);
-            if (ownLock) {
-                if (log.isDebugEnabled())
-                    log.debug("serviceDeletedHandler: obtained node lock for nodeid: " + nodeId);
-
-                // Retrieve the PollableInterface object corresponding to
-                // the interface address specified in the event
-                PollerInterface pIf = pNode.findInterface(ipAddr);
-                if (pIf == null) {
-                    if (log.isDebugEnabled())
-                        log.debug("serviceDeletedHandler: interface " + ipAddr + " not in interface map for " + nodeId);
-                    return;
-                }
-
-                // Iterate over the interface's services and find the service
-                // to delete and mark it for deletion.
-                //
-                Iterator svc_iter = pIf.getServices().iterator();
-                while (svc_iter.hasNext()) {
-                    PollerService pSvc = (PollerService) svc_iter.next();
-                    if (pSvc.getServiceName().equals(service)) {
-                        pSvc.markAsDeleted();
-
-                        // Now remove the service from the pollable services
-                        // list
-                        getPollableServices().remove(pSvc);
-
-                        // remove the service from the interface's internal
-                        // service map
-                        pIf.removeService(pSvc);
-                        break;
-                    }
-                }
-
-                // Recalculate interface status
-                pIf.recalculateStatus();
-
-                // Debug dump pollable node content
-                //
-                if (log.isDebugEnabled()) {
-                    log.debug("Service deletion completed");
-                    getPoller().getNetwork().dumpNode(pNode);
-                }
-            } else {
-                // failed to acquire lock
-                log.error("serviceDeletedHandler: failed to obtain lock on nodeId " + nodeId);
-            }
-        } catch (InterruptedException iE) {
-            // failed to acquire lock,
-            log.error("serviceDeletedHandler: thread interrupted...failed to obtain lock on nodeId " + nodeId);
-        } catch (Throwable t) {
-            log.error("exception caught processing interfaceDeleted event for " + nodeId + "/" + ipAddr, t);
-        } finally {
-            if (ownLock) {
-                if (log.isDebugEnabled())
-                    log.debug("serviceDeletedHandler: releasing node lock for nodeid: " + nodeId);
-
-                try {
-                    pNode.releaseNodeLock();
-                } catch (InterruptedException iE) {
-                    log.error("serviceDeletedHandler: thread interrupted...failed to release lock on nodeId " + nodeId);
-                }
-            }
+        
+        
+        PollableService svc = getNetwork().getService(nodeId, addr, service);
+        if (svc == null) {
+          log.error("Interface " + nodeId + "/" + event.getInterface() + " does not exist in pollable node map, unable to delete node.");
+          return;
         }
+        svc.delete();
+
     }
 
     /**
@@ -886,11 +608,8 @@ final class PollerEventProcessor implements EventListener {
         return getPoller().getPollerConfig();
     }
 
-    /**
-     * @return Returns the scheduler.
-     */
-    private Scheduler getScheduler() {
-        return getPoller().getScheduler();
+    private PollableNetwork getNetwork() {
+        return getPoller().getNetwork();
     }
 
     /**
@@ -900,10 +619,4 @@ final class PollerEventProcessor implements EventListener {
         return getPollerConfig().getXmlrpc();
     }
 
-    /**
-     * @return Returns the pollableServices.
-     */
-    private List getPollableServices() {
-        return getPoller().getPollableServiceList();
-    }
 } // end class

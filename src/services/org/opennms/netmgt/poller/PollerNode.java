@@ -46,6 +46,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.poller.pollables.PollStatus;
+import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -78,9 +79,10 @@ public class PollerNode extends PollerContainer {
 
     /**
      * Constructor.
+     * @param network TODO
      */
-    public PollerNode(int nodeId, Poller poller) {
-        super(PollStatus.STATUS_UNKNOWN);
+    public PollerNode(PollableNetwork network, int nodeId, Poller poller) {
+        super(PollStatus.STATUS_UP);
         m_poller = poller;
 
         m_nodeId = nodeId;
@@ -100,6 +102,7 @@ public class PollerNode extends PollerContainer {
     }
 
     public synchronized void addInterface(PollerInterface pInterface) {
+        
         addMember(pInterface.getAddress().getHostAddress(), pInterface);
 
         PollStatus oldStatus = getStatus();

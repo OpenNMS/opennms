@@ -46,8 +46,13 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.poller.Poller;
 
 public class Pollerd implements PollerdMBean {
+    public final static String LOG4J_CATEGORY = "OpenNMS.Poller";
 
     public void init() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
+
         Category log = ThreadCategory.getInstance();
         try {
             PollerConfigFactory.init();
@@ -75,26 +80,44 @@ public class Pollerd implements PollerdMBean {
     }
 
     public void start() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
         getPoller().start();
     }
 
     public void stop() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
         getPoller().stop();
     }
 
     public int getStatus() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
         return getPoller().getStatus();
     }
 
     public String status() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
 
     public String getStatusText() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
 
     private Poller getPoller() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
         return org.opennms.netmgt.poller.Poller.getInstance();
     }
 

@@ -44,12 +44,13 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.poller.pollables.PollStatus;
+import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
  * Represents a collection of nodes each with interfaces and services
  */
-public class PollerNetwork extends PollerContainer {
+public class PollerNetwork extends PollableNetwork {
 
     private Poller m_poller;
 
@@ -61,7 +62,7 @@ public class PollerNetwork extends PollerContainer {
     private List m_pollableServices;
 
     public PollerNetwork(Poller poller) {
-        super(PollStatus.STATUS_UP);
+        super(new DefaultPollContext(poller));
         m_poller = poller;
         m_pollableNodes = Collections.synchronizedMap(new HashMap());
         m_pollableServices = Collections.synchronizedList(new ArrayList());
@@ -149,6 +150,8 @@ public class PollerNetwork extends PollerContainer {
     }
 
     public PollerService createPollableService(int nodeId, String ipAddr, ServiceConfig svcConfig, PollStatus lastKnownStatus, Date svcLostDate) throws InterruptedException, UnknownHostException {
+        
+        
         Category log = ThreadCategory.getInstance();
         PollerService pSvc;
         PollerNode pNode = null;
@@ -164,13 +167,13 @@ public class PollerNetwork extends PollerContainer {
             pNode = findNode(nodeId);
             if (pNode == null) {
                 // Nope...so we need to create it
-                pNode = new PollerNode(nodeId, m_poller);
+                pNode = new PollerNode(this, nodeId, m_poller);
                 nodeCreated = true;
             } 
             
             // Obtain node lock
             //
-            ownLock = pNode.getNodeLock(NodeLocker.WAIT_FOREVER);
+            ownLock = pNode.getNodeLock(0);
             
 
             // Does the interface exist in the pollable

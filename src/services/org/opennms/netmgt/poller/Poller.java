@@ -41,14 +41,14 @@ package org.opennms.netmgt.poller;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
@@ -61,37 +61,39 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.poller.monitors.ServiceMonitor;
+import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollStatus;
+import org.opennms.netmgt.poller.pollables.PollableElement;
+import org.opennms.netmgt.poller.pollables.PollableNetwork;
+import org.opennms.netmgt.poller.pollables.PollableService;
+import org.opennms.netmgt.poller.pollables.PollableServiceConfig;
+import org.opennms.netmgt.poller.pollables.PollableVisitorAdaptor;
+import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.utils.Querier;
+import org.opennms.netmgt.utils.Updater;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
 public final class Poller implements PausableFiber {
-    final static String LOG4J_CATEGORY = "OpenNMS.Poller";
 
     private final static Poller m_singleton = new Poller();
 
-    /**
-     * Holds map of service names to service identifiers
-     */
+    private int m_status = START_PENDING;
+
+    private boolean m_initialized = false;
+
     private Map m_svcNameToId = new HashMap();
 
     private Map m_svcIdToName = new HashMap();
 
-    private Scheduler m_scheduler;
-
-    private int m_status;
+    private Scheduler m_scheduler = null;;
 
     private PollerEventProcessor m_receiver;
 
-    private PollerNetwork m_network = new PollerNetwork(this);
-
-    /**
-     * Map of all available 'ServiceMonitor' objects indexed by service name
-     */
-    private static Map m_svcMonitors;
+    private PollableNetwork m_network = new PollableNetwork(new DefaultPollContext(this));
 
     private QueryManager m_queryMgr = new DefaultQueryManager();
 
@@ -101,21 +103,11 @@ public final class Poller implements PausableFiber {
 
     private EventIpcManager m_eventMgr;
 
-    private boolean m_initialized = false;
-
     private DbConnectionFactory m_dbConnectionFactory;
 
     public static final String EVENT_SOURCE = "OpenNMS.Poller";
 
-    public Poller() {
-        m_scheduler = null;
-        m_status = START_PENDING;
-    }
-
     public synchronized void init() {
-
-        // Set the category prefix
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
         // get the category logger
         Category log = ThreadCategory.getInstance();
@@ -127,17 +119,26 @@ public final class Poller implements PausableFiber {
         createServiceMaps();
 
         // serviceUnresponsive behavior enabled/disabled?
-        log.debug("start: serviceUnresponsive behavior: " + (getPollerConfig().serviceUnresponsiveEnabled() ? "enabled" : "disabled"));
+        log.debug("init: serviceUnresponsive behavior: " + (getPollerConfig().serviceUnresponsiveEnabled() ? "enabled" : "disabled"));
 
         createScheduler();
+        
+        try {
+            log.debug("init: Closing outages for unmanaged services");
+            
+            closeOutagesForUnmanagedServices();
+        } catch (Exception e) {
+            log.error("init: Failed to close ouates for unmanage services", e);
+        }
+        
 
         // Schedule the interfaces currently in the database
         //
         try {
             log.debug("start: Scheduling existing interfaces");
 
-            scheduleExistingInterfaces();
-        } catch (SQLException sqlE) {
+            scheduleExistingServices();
+        } catch (Exception sqlE) {
             log.error("start: Failed to schedule existing interfaces", sqlE);
         }
 
@@ -156,6 +157,24 @@ public final class Poller implements PausableFiber {
         }
 
         m_initialized = true;
+
+    }
+
+    /**
+     * 
+     */
+    private void closeOutagesForUnmanagedServices() {
+        Timestamp closeTime = new Timestamp((new java.util.Date()).getTime());
+
+        final String DB_CLOSE_OUTAGES_FOR_UNMANAGED_SERVICES = "UPDATE outages set ifregainedservice = ? where outageid in (select outages.outageid from outages, ifservices where ((outages.nodeid = ifservices.nodeid) AND (outages.ipaddr = ifservices.ipaddr) AND (outages.serviceid = ifservices.serviceid) AND ((ifservices.status = 'F') OR (ifservices.status = 'U')) AND (outages.ifregainedservice IS NULL)))";
+        Updater svcUpdater = new Updater(m_dbConnectionFactory, DB_CLOSE_OUTAGES_FOR_UNMANAGED_SERVICES);
+        svcUpdater.execute(closeTime);
+        
+        final String DB_CLOSE_OUTAGES_FOR_UNMANAGED_INTERFACES = "UPDATE outages set ifregainedservice = ? where outageid in (select outages.outageid from outages, ipinterface where ((outages.nodeid = ipinterface.nodeid) AND (outages.ipaddr = ipinterface.ipaddr) AND ((ipinterface.ismanaged = 'F') OR (ipinterface.ismanaged = 'U')) AND (outages.ifregainedservice IS NULL)))";
+        Updater ifUpdater = new Updater(m_dbConnectionFactory, DB_CLOSE_OUTAGES_FOR_UNMANAGED_INTERFACES);
+        ifUpdater.execute(closeTime);
+        
+
 
     }
 
@@ -184,9 +203,6 @@ public final class Poller implements PausableFiber {
 
     public synchronized void start() {
         m_status = STARTING;
-
-        // Set the category prefix
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
         // get the category logger
         Category log = ThreadCategory.getInstance();
@@ -275,128 +291,162 @@ public final class Poller implements PausableFiber {
         return getPollerConfig().getServiceMonitor(svcName);
     }
 
-    public List getPollableServiceList() {
-        return m_network.getPollableServices();
-    }
-
-    public PollerNode findNode(int nodeId) {
-        return m_network.findNode(nodeId);
-    }
-
-    public void removeNode(int nodeId) {
-        m_network.removeNode(nodeId);
-    }
-    
-    public PollerNetwork getNetwork() {
+    public PollableNetwork getNetwork() {
         return m_network;
     }
 
-    private void scheduleExistingInterfaces() throws SQLException {
-        // get the category logger
-        //
-        Category log = ThreadCategory.getInstance();
+    static private class InitCause extends PollableVisitorAdaptor {
+        private PollEvent m_cause;
 
-        // Loop through loaded monitors and schedule for each one present
-        //
-        Set svcNames = getServiceMonitors().keySet();
-        Iterator i = svcNames.iterator();
-        while (i.hasNext()) {
-            String svcName = (String) i.next();
-            scheduleInterfacesWithService(svcName);
+        public void setCause(PollEvent cause) {
+            m_cause = cause;
         }
+        
+        public void visitElement(PollableElement element) {
+            if (!element.hasOpenOutage())
+                element.setCause(m_cause);
+        }
+    }
 
+    private void scheduleExistingServices() throws Exception {
+        Category log = ThreadCategory.getInstance(getClass());
+        
+        int count = scheduleMatchingServices(null);
+        
         // Debug dump pollable network
         //
         if (log.isDebugEnabled()) {
-            log.debug("scheduleExistingInterfaces: dumping content of pollable network: ");
-            m_network.dumpNetwork();
+            log.debug("scheduleExistingServices: dumping content of pollable network: ");
+            m_network.dump();
         }
+        
+
     }
-
-    /**
-     * @param svcName
-     * @param log
-     * @throws SQLException
-     */
-    private void scheduleInterfacesWithService(String svcName) throws SQLException {
-        Category log = ThreadCategory.getInstance();
-
-        if (log.isDebugEnabled())
-            log.debug("scheduleInterfacesWithService: Scheduling existing interfaces for monitor: " + svcName);
-
-        // Retrieve list of interfaces from the database which
-        // support the service polled by this monitor
-        //
-        try {
-            Iterator it = getQueryMgr().getInterfacesWithService(svcName).iterator();
-            while (it.hasNext()) {
-                IfKey key = (IfKey) it.next();
-                scheduleService(key.getNodeId(), key.getIpAddr(), svcName);
-            }
-        } catch (SQLException sqle) {
-            log.warn("scheduleInterfacesWithService: SQL exception while querying ipInterface table", sqle);
-            throw sqle;
-        }
-    }
-
+    
     public void scheduleService(int nodeId, String ipAddr, String svcName) {
-        Category log = ThreadCategory.getInstance();
-
-        /*
-         * Find the last package configured for this service and schedule it
-         */
-        Package pkg = null;
-        Enumeration epkgs = getPollerConfig().enumeratePackage();
-        while (epkgs.hasMoreElements()) {
-            Package spkg = (org.opennms.netmgt.config.poller.Package) epkgs.nextElement();
-
-            // Make certain the the current service and ipaddress are in the
-            // package and enabled!
-            //
-            if (packageIncludesIfAndSvc(spkg, ipAddr, svcName))
-                pkg = spkg;
-        }
-
-        if (pkg == null) return;
-
-        //
-        // getServiceLostDate() method will return the date
-        // a service was lost if the service was last known to be
-        // unavailable or will return null if the service was last known to
-        // be available...based on outage information on the 'outages'
-        // table.
-        Date svcLostDate = getQueryMgr().getServiceLostDate(nodeId, ipAddr, svcName, getServiceIdByName(svcName));
-        PollStatus lastKnownStatus = (svcLostDate == null ? PollStatus.STATUS_UP : PollStatus.STATUS_DOWN);
-        
-        // Criteria checks have all been padded...update
-        // Node Outage
-        // Hierarchy and create new service for polling
-        //
+        Category log = ThreadCategory.getInstance(getClass());
         try {
-            ServiceConfig svcConfig = new ServiceConfig(this, pkg, svcName);
-            PollerService pSvc = m_network.createPollableService(nodeId, ipAddr, svcConfig, lastKnownStatus, svcLostDate);
-            
-            // Initialize the service monitor with the pollable service
-            //
-            ServiceMonitor monitor = getServiceMonitor(svcName);
-            pSvc.initializeMonitor(monitor);
-            
-            // Schedule the service
-            //
-            pSvc.schedule();
-            
-        } catch (UnknownHostException ex) {
-            log.error("scheduleService: Failed to schedule interface " + ipAddr + " for service monitor " + svcName + ", illegal address", ex);
-        } catch (InterruptedException ie) {
-            log.error("scheduleService: Failed to schedule interface " + ipAddr + " for service monitor " + svcName + ", thread interrupted", ie);
-        } catch (RuntimeException rE) {
-            log.warn("scheduleService: Unable to schedule " + ipAddr + " for service monitor " + svcName + ", reason: " + rE.getMessage());
-        } catch (Throwable t) {
-            log.error("scheduleService: Uncaught exception, failed to schedule interface " + ipAddr + " for service monitor " + svcName, t);
+            int matchCount = scheduleMatchingServices("nodeId = "+nodeId+" AND ipAddr = '"+ipAddr+"' AND serviceName = '"+svcName+"'");
+            if (matchCount <= 0)
+                log.error("Attempt to schedule service "+nodeId+"/"+ipAddr+"/"+svcName+" found no active service");
+        } catch (Exception e) {
+            log.error("Unable to schedule service "+nodeId+"/"+ipAddr+"/"+svcName, e);
         }
+    }
+    
+    private int scheduleMatchingServices(String criteria) throws Exception {
+        final Category log = ThreadCategory.getInstance();
+        String sql = "SELECT ifServices.nodeId AS nodeId, ifServices.ipAddr AS ipAddr, " +
+                "ifServices.serviceId AS serviceId, service.serviceName AS serviceName, " +
+                "outages.svcLostEventId AS svcLostEventId, events.eventUei AS svcLostEventUei, " +
+                "outages.ifLostService AS ifLostService, outages.ifRegainedService AS ifRegainedService " +
+        "FROM ifServices " +
+        "JOIN service ON ifServices.serviceId = service.serviceId " +
+        "LEFT OUTER JOIN outages ON " +
+        "ifServices.nodeId = outages.nodeId AND " +
+        "ifServices.ipAddr = outages.ipAddr AND " +
+        "ifServices.serviceId = outages.serviceId AND " +
+        "ifRegainedService IS NULL " +
+        "LEFT OUTER JOIN events ON outages.svcLostEventId = events.eventid " +
+        "WHERE ifServices.status = 'A'" +
+        (criteria == null ? "" : " AND "+criteria);
+       
         
+        
+        Querier querier = new Querier(m_dbConnectionFactory, sql) {
+            protected void processRow(ResultSet rs) throws SQLException {
+                scheduleService(rs.getInt("nodeId"), rs.getString("ipAddr"), rs.getString("serviceName"), 
+                                (Number)rs.getObject("svcLostEventId"), rs.getTimestamp("ifLostService"), 
+                                rs.getString("svcLostEventUei"));
+            }
+        };
+        querier.execute();
+        
+        m_network.recalculateStatus();
+        m_network.resetStatusChanged();
+        
+        
+        return querier.getCount();
+
     }
 
+    private void scheduleService(int nodeId, String ipAddr, String serviceName, Number svcLostEventId, Date date, String svcLostUei) {
+        Category log = ThreadCategory.getInstance();
+
+        Package pkg = findPackageForService(ipAddr, serviceName);
+        if (pkg == null) {
+            log.warn("Active service "+serviceName+" on "+ipAddr+" not configured for any package");
+            return;
+        }
+        
+        ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(serviceName);
+        if (monitor == null) {
+            log.info("Could not find service monitor associated with service "+serviceName);
+            return;
+        }
+        
+        InetAddress addr;
+        try {
+            addr = InetAddress.getByName(ipAddr);
+        } catch (UnknownHostException e) {
+            log.error("Could not convert "+ipAddr+" as an InetAddress "+ipAddr);
+            return;
+        }
+        
+        PollableService svc = m_network.createService(nodeId, addr, serviceName);
+        PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollOutagesConfig, pkg, m_scheduler);
+        Schedule schedule = new Schedule(svc, pollConfig, m_scheduler);
+        svc.setPollConfig(pollConfig);
+        svc.setSchedule(schedule);
+        
+        
+        if (svcLostEventId == null) 
+            svc.updateStatus(PollStatus.STATUS_UP);
+        else {
+            svc.updateStatus(PollStatus.STATUS_DOWN);
+            
+            InitCause causeSetter = new InitCause();
+            PollEvent cause = new PollEvent(svcLostEventId.intValue(), date);
+            causeSetter.setCause(cause);
+            
+            if (EventConstants.NODE_LOST_SERVICE_EVENT_UEI.equals(svcLostUei)) {
+                svc.visit(causeSetter);
+            } else if (EventConstants.INTERFACE_DOWN_EVENT_UEI.equals(svcLostUei)) {
+                svc.getInterface().visit(causeSetter);
+            } else if (EventConstants.NODE_DOWN_EVENT_UEI.equals(svcLostUei)) {
+                svc.getNode().visit(causeSetter);
+            }
+        }
+        
+        schedule.schedule();
+
+    }
+
+    private Package findPackageForService(String ipAddr, String serviceName) {
+        Enumeration en = m_pollerConfig.enumeratePackage();
+        Package lastPkg = null;
+        while (en.hasMoreElements()) {
+            Package pkg = (Package)en.nextElement();
+            if (pollableServiceInPackage(ipAddr, serviceName, pkg))
+                lastPkg = pkg;
+        }
+        return lastPkg;
+        
+    }
+    private boolean pollableServiceInPackage(String ipAddr, String serviceName, Package pkg) {
+        if (!m_pollerConfig.serviceInPackageAndEnabled(serviceName, pkg)) return false;
+        
+        boolean inPkg = m_pollerConfig.interfaceInPackage(ipAddr, pkg);
+        if (inPkg) return true;
+        
+        if (m_initialized) {
+            m_pollerConfig.rebuildPackageIpListMap();
+            return m_pollerConfig.interfaceInPackage(ipAddr, pkg);
+        }
+        
+        return false;
+    }
+    
     public boolean packageIncludesIfAndSvc(Package pkg, String ipAddr, String svcName) {
         Category log = ThreadCategory.getInstance();
 
@@ -495,7 +545,7 @@ public final class Poller implements PausableFiber {
     }
 
     public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, java.util.Date date) {
-        Category log = ThreadCategory.getInstance(PollerNode.class);
+        Category log = ThreadCategory.getInstance(getClass());
     
         if (log.isDebugEnabled())
             log.debug("createEvent: uei = " + uei + " nodeid = " + nodeId);

@@ -111,6 +111,7 @@ public class PollerTest extends TestCase {
         m_db.populate(m_network);
         
         m_pollerConfig = new MockPollerConfig();
+        m_pollerConfig.setNextOutageIdSql(m_db.getNextOutageIdStatement());
         m_pollerConfig.setNodeOutageProcessingEnabled(true);
         m_pollerConfig.setCriticalService("ICMP");
         m_pollerConfig.addPackage("TestPackage");
@@ -139,10 +140,10 @@ public class PollerTest extends TestCase {
         MockOutageConfig config = new MockOutageConfig();
         config.setGetNextOutageID(m_db.getNextOutageIdStatement());
         
-        m_outageMgr = new OutageManager();
-        m_outageMgr.setEventMgr(m_eventMgr);
-        m_outageMgr.setOutageMgrConfig(config);
-        m_outageMgr.setDbConnectionFactory(m_db);
+//        m_outageMgr = new OutageManager();
+//        m_outageMgr.setEventMgr(m_eventMgr);
+//        m_outageMgr.setOutageMgrConfig(config);
+//        m_outageMgr.setDbConnectionFactory(m_db);
 
     }
 
@@ -158,7 +159,7 @@ public class PollerTest extends TestCase {
     // Tests
     //
     
-    public void xxtestBug709() {
+    public void testBug709() {
 
         m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
@@ -201,8 +202,9 @@ public class PollerTest extends TestCase {
         //
 
         resetAnticipated();
-        anticipateUp(node);
+        // the order matters here
         anticipateUp(httpService);
+        anticipateUp(node);
 
         // bring up all the services on the node
         node.bringUp();
@@ -556,7 +558,7 @@ public class PollerTest extends TestCase {
     }
 
 
-    public void xxtestReparentCausesStatusChange() {
+    public void testReparentCausesStatusChange() {
 
         m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
@@ -672,9 +674,9 @@ public class PollerTest extends TestCase {
     //
 
     private void startDaemons() {
-        m_outageMgr.init();
+//        m_outageMgr.init();
         m_poller.init();
-        m_outageMgr.start();
+//        m_outageMgr.start();
         m_poller.start();
         m_daemonsStarted = true;
     }
@@ -683,7 +685,7 @@ public class PollerTest extends TestCase {
     private void stopDaemons() {
         if (m_daemonsStarted) {
             m_poller.stop();
-            m_outageMgr.stop();
+//            m_outageMgr.stop();
         }
     }
 

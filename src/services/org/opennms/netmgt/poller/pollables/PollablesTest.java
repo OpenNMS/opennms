@@ -866,7 +866,6 @@ public class PollablesTest extends TestCase {
     }
     
     
-    
     public void testPollService() throws Exception {
 
         PollableService pSvc = pDot1Smtp;
@@ -1115,6 +1114,39 @@ public class PollablesTest extends TestCase {
         
     }
     
+    public void testNodeProcessingDisabled() {
+        m_pollContext.setNodeProcessingEnabled(false);
+        
+        // anticipate nothing
+        
+        pDot1Smtp.run();
+        
+        verifyAnticipated();
+        
+        anticipateDown(mDot1Smtp);
+        
+        mDot1Smtp.bringDown();
+        
+        pDot1Smtp.run();
+        
+        verifyAnticipated();
+        
+        // anticipate nothing since its still down
+        
+        pDot1Smtp.run();
+        
+        verifyAnticipated();
+        
+        anticipateUp(mDot1Smtp);
+        
+        mDot1Smtp.bringUp();
+        
+        pDot1Smtp.run();
+        
+        verifyAnticipated();
+        
+    }
+    
     public void testServiceEvent() throws Exception {
         MockService mSvc = mDot1Smtp;
         PollableService pSvc = pDot1Smtp;
@@ -1122,6 +1154,14 @@ public class PollablesTest extends TestCase {
         anticipateDown(mSvc);
 
         mSvc.bringDown();
+        
+        pSvc.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        // anticipate nothin since service is still down
         
         pSvc.doPoll();
         

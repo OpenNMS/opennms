@@ -160,7 +160,7 @@ abstract public class PollableElement {
         setCause(null);
     }
     
-    protected boolean hasOpenOutage() {
+    public boolean hasOpenOutage() {
         return m_cause != null;
     }
     
