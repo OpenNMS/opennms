@@ -1,4 +1,4 @@
-//
+ //
 // This file is part of the OpenNMS(R) Application.
 //
 // OpenNMS(R) is Copyright (C) 2002-2004 Blast Internet Services, Inc.  All rights reserved.
@@ -55,6 +55,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -133,7 +134,7 @@ public class Installer {
     Connection m_dbconnection;
     Map m_dbtypes = null;
 
-    String m_required_options = "At least one of -d, -i, -s, -U, -y, -S, " +
+    String m_required_options = "At least one of -d, -i, -s, -U, -y, " +
 	"or -T is required.";
 
     public void install(String[] argv) throws Exception {
@@ -1586,24 +1587,24 @@ public class Installer {
 
 	String query = 
 	    "SELECT " +
-	    "        a.attname, " +
-	    "        format_type(a.atttypid, a.atttypmod), " +
-	    "        a.attnotnull " +
+	    "        attname, " +
+	    "        format_type(atttypid, atttypmod), " +
+	    "        attnotnull " +
 	    "FROM " +
-	    "        pg_attribute a " +
+	    "        pg_attribute " +
 	    "WHERE " +
-	    "        a.attrelid = " +
+	    "        attrelid = " +
 	    "                (SELECT oid FROM pg_class WHERE relname = '" +
-	                       table + "') AND " +
-	    "        a.attnum > 0 ";
+	                          table.toLowerCase() + "') AND " +
+	    "        attnum > 0 ";
 
 	if (m_pg_version >= 7.3) {
-	    query = query + "AND a.attisdropped = false ";
+	    query = query + "AND attisdropped = false ";
 	}
 
 	query = query +
 	    "ORDER BY " +
-	    "        a.attnum";
+	    "        attnum";
 
 	rs = st.executeQuery(query);
 
@@ -1673,7 +1674,6 @@ public class Installer {
 		c.addConstraint(constraint);
 	    }
 	} else {
-
 	    query =
 		"SELECT " +
 		"        c.relname, " +
@@ -1728,15 +1728,20 @@ public class Installer {
 	    query =
 		"SELECT " +
 		"        tgconstrname, " +
-		"        tgargs " + 
+		"        tgargs, " + 
 		"        tgfoid " + 
 		"FROM " +
 		"        pg_trigger " +
 		"WHERE " +
-		"        tgrelid = (SELECT oid FROM pg_class WHERE relname = '" +
-		           table.toLowerCase() + "') AND " +
 		"        ( " +
-		"            tgfoid = " + fkey + " OR " +
+		"          tgrelid = " +
+		"            (SELECT oid FROM pg_class WHERE relname = '" +
+		               table.toLowerCase() + "') AND " +
+		"            tgfoid = " + fkey + " " +
+		"        ) OR ( " +
+		"          tgconstrrelid = " +
+		"            (SELECT oid FROM pg_class WHERE relname = '" +
+		               table.toLowerCase() + "') AND " +
 		"            tgfoid = " + fdel + " " +
 		"        ) ";
 	    rs = st.executeQuery(query);
@@ -1758,7 +1763,21 @@ public class Installer {
 					"Constraint: " + constraint);
 		}
 
-		c.addConstraint(constraint);
+		boolean found = false;
+		ListIterator i = c.getConstraints().listIterator();
+		while (i.hasNext()) {
+		    Constraint constraint_o = (Constraint) i.next();
+		    if (constraint.equals(constraint_o, true)) {
+			found = true;
+			if (constraint.getForeignDelType().equals("c")) {
+			    i.set(constraint);
+			}
+		    }
+		}
+
+		if (!found) {
+		    c.addConstraint(constraint);
+		}
 	    }
 	}
 
@@ -2138,8 +2157,6 @@ public class Installer {
 	m_out.println("                                " +
 		      "[-p <PostgreSQL admin password>]");
 	m_out.println("                                " +
-		      "[-S <tomcat server.xml file>]");
-	m_out.println("                                " +
 		      "[-T <tomcat4.conf>]");
 	m_out.println("                                " +
 		      "[-w <tomcat webapps directory>");
@@ -2163,7 +2180,6 @@ public class Installer {
 	m_out.println("   -c    drop and recreate tables that already " +
 		      "exist");
 	m_out.println("");
-	m_out.println("   -S    location of tomcat's server.xml");
 	m_out.println("   -T    location of tomcat.conf");
 	m_out.println("   -w    location of tomcat's webapps directory");
 	m_out.println("   -W    location of tomcat's server/lib " +
