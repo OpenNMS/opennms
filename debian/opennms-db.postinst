@@ -42,7 +42,7 @@ case "$1" in
 
 	# Official OpenNMS install script -- only run if upgrading from an
 	# older major/minor version (not an older minor release) or a fresh
-	# install.  Don't use -t since we do tomcat4 install in the webapp pkg.
+	# install.
 	if dpkg --compare-versions ${2:-0} lt $VERSION; then
 		/usr/share/opennms/bin/install.pl -r -q \
 			-l $PG_DIR -U $PG_USER -u opennms -p opennms \

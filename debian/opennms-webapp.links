@@ -5,3 +5,4 @@
 /usr/share/java/opennms_services.jar	/usr/share/tomcat4/server/lib/opennms_services.jar
 /usr/share/java/opennms_web.jar		/usr/share/tomcat4/server/lib/opennms_web.jar
 /usr/share/java/webapps/opennms/WEB-INF/lib/castor-0.9.3.9.jar	/usr/share/tomcat4/server/lib/castor-0.9.3.9.jar
+/usr/share/java/webapps/opennms/WEB-INF/lib/log4j.jar /usr/share/tomcat4/server/lib/log4j.jar

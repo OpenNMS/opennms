@@ -63,7 +63,7 @@ Package: opennms-webapp
 Section: contrib/net
 Architecture: all
 Conflicts: opennms (<< 1.1.2-1)
-Depends: j2sdk1.4 | java-virtual-machine | java2-runtime, liblog4j-java | liblog4j (>= 1.2.7), libopennms-java (=${Source-Version}), opennms-common (=${Source-Version}), tomcat4 (>= 4.1.18)
+Depends: j2sdk1.4 | java-virtual-machine | java2-runtime, libopennms-java (=${Source-Version}), opennms-common (=${Source-Version}), tomcat4 (>= 4.1.18)
 Suggests: opennms-doc
 Description: The Open Network Management System web application frontend
  The web console and frontend management application portion of OpenNMS.
