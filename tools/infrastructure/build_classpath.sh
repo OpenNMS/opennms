@@ -23,7 +23,9 @@ build_classpath () {
 		local TYPE=`echo "$target" | awk -F: '{print $1}'`
 		local VAR=` echo "$target" | sed -e "s#^${TYPE}:##"`
 
-		VAR=`echo $VAR | sed -e "s,$OPENNMS_HOME/,./,g"`
+		if [ -n "$OPENNMS_HOME" ]; then
+			VAR=`echo $VAR | sed -e "s,^${OPENNMS_HOME}/,./,g"`
+		fi
 		if [ -n "$VAR" ]; then
 			case "$TYPE" in
 				dir)
