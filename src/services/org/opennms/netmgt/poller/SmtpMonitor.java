@@ -51,6 +51,7 @@ import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -189,6 +190,10 @@ final class SmtpMonitor extends IPv4LatencyMonitor {
                 // create a connected socket
                 //
                 long sentTime = System.currentTimeMillis();
+
+                socket = new Socket();
+                socket.connect(new InetSocketAddress(ipv4Addr, port), timeout);
+                socket.setSoTimeout(timeout);
 
                 log.debug("SmtpMonitor: connected to host: " + ipv4Addr + " on port: " + port);
 
