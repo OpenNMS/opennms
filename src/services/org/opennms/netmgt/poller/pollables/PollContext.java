@@ -74,13 +74,12 @@ public interface PollContext {
     /**
      * @param outage
      */
-    public void openOutage(PollableService pSvc, Event svcLostEvent);
+    public void openOutage(PollableService pSvc, PollEvent svcLostEvent);
 
     /**
      * @param outage
      */
-    public void resolveOutage(PollableService pSvc, Event svcRegainEvent);
-
+    public void resolveOutage(PollableService pSvc, PollEvent svcRegainEvent);
     /**
      * @return
      */

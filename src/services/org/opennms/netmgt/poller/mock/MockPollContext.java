@@ -32,6 +32,7 @@
 package org.opennms.netmgt.poller.mock;
 
 import java.net.InetAddress;
+import java.sql.Timestamp;
 import java.util.Date;
 
 import org.opennms.netmgt.eventd.EventIpcManager;
@@ -40,6 +41,7 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.poller.pollables.PollContext;
+import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -93,16 +95,18 @@ public class MockPollContext implements PollContext {
     public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date) {
         return MockUtil.createEvent("Test", uei, nodeId, (address == null ? null : address.getHostAddress()), svcName);
     }
-    public void openOutage(PollableService pSvc, Event svcLostEvent) {
+    public void openOutage(PollableService pSvc, PollEvent svcLostEvent) {
         MockService mSvc = m_mockNetwork.getService(pSvc.getNodeId(), pSvc.getIpAddr(), pSvc.getSvcName());
         MockUtil.println("Opening Outage for "+mSvc);
-        m_db.createOutage(mSvc, svcLostEvent);
+        Timestamp eventTime = new Timestamp(svcLostEvent.getDate().getTime()/1000*1000);
+        m_db.createOutage(mSvc, svcLostEvent.getEventId(), eventTime);
 
     }
-    public void resolveOutage(PollableService pSvc, Event svcRegainEvent) {
+    public void resolveOutage(PollableService pSvc, PollEvent svcRegainEvent) {
         MockService mSvc = m_mockNetwork.getService(pSvc.getNodeId(), pSvc.getIpAddr(), pSvc.getSvcName());
         MockUtil.println("Resolving Outage for "+mSvc);
-        m_db.resolveOutage(mSvc, svcRegainEvent);
+        Timestamp eventTime = new Timestamp(svcRegainEvent.getDate().getTime()/1000*1000);
+        m_db.resolveOutage(mSvc, svcRegainEvent.getEventId(), eventTime);
     }
     public boolean isServiceUnresponsiveEnabled() {
         return m_serviceUnresponsiveEnabled;

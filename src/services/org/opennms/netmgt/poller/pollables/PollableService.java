@@ -187,11 +187,11 @@ public class PollableService extends PollableElement implements Runnable {
 
     public void createOutage(PollEvent cause) {
         super.createOutage(cause);
-        getContext().openOutage(this, cause.getEvent());
+        getContext().openOutage(this, cause);
     }
     protected void resolveOutage(PollEvent resolution) {
         super.resolveOutage(resolution);
-        getContext().resolveOutage(this, resolution.getEvent());
+        getContext().resolveOutage(this, resolution);
     }
 
     public String toString() { return getInterface()+":"+getSvcName(); }

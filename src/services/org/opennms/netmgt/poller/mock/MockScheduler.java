@@ -58,7 +58,7 @@ public class MockScheduler implements ScheduleTimer {
     
     public void schedule(Runnable schedule, long interval) {
         Long nextTime = new Long(getCurrentTime()+interval);
-        MockUtil.println("Scheduled "+schedule+" for "+nextTime);
+        //MockUtil.println("Scheduled "+schedule+" for "+nextTime);
         List entries = (List)m_scheduleEntries.get(nextTime);
         if (entries == null) {
             entries = new LinkedList();

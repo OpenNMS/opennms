@@ -33,12 +33,18 @@ package org.opennms.netmgt.poller.pollables;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 
 import junit.framework.TestCase;
 
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.DbConnectionFactory;
+import org.opennms.netmgt.config.PollOutagesConfig;
+import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
@@ -58,6 +64,8 @@ import org.opennms.netmgt.poller.mock.MockPollContext;
 import org.opennms.netmgt.poller.mock.MockScheduler;
 import org.opennms.netmgt.poller.mock.MockTimer;
 import org.opennms.netmgt.poller.schedule.Schedule;
+import org.opennms.netmgt.poller.schedule.ScheduleTimer;
+import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -192,55 +200,9 @@ public class PollablesTest extends TestCase {
         m_pollerConfig.setDefaultPollInterval(2000L);
         m_pollerConfig.addService(m_mockNetwork.getService(2, "192.168.1.3", "HTTP"));
         
-        m_network = new PollableNetwork(m_pollContext);
-        m_network.createService(1, InetAddress.getByName("192.168.1.1"), "ICMP");
-        m_network.createService(1, InetAddress.getByName("192.168.1.1"), "SMTP");
-        m_network.createService(1, InetAddress.getByName("192.168.1.2"), "ICMP");
-        m_network.createService(1, InetAddress.getByName("192.168.1.2"), "SMTP");
-        m_network.createService(2, InetAddress.getByName("192.168.1.3"), "ICMP");
-        m_network.createService(2, InetAddress.getByName("192.168.1.3"), "HTTP");
-        m_network.createService(3, InetAddress.getByName("192.168.1.4"), "SMTP");
-        m_network.createService(3, InetAddress.getByName("192.168.1.4"), "HTTP");
-        m_network.createService(3, InetAddress.getByName("192.168.1.5"), "SMTP");
-        m_network.createService(3, InetAddress.getByName("192.168.1.5"), "HTTP");
-        
         m_timer = new MockTimer();
         m_scheduler = new MockScheduler(m_timer);
-        PollableVisitor setConfigs = new PollableVisitorAdaptor() {
-            public void visitService(PollableService svc) {
-                Package pkg = findPackageForService(svc);
-                PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollerConfig, pkg, m_timer);
-                Schedule schedule = new Schedule(svc, pollConfig, m_scheduler);
-                svc.setPollConfig(pollConfig);
-                svc.setSchedule(schedule);
-                //schedule.schedule();
-            }
-            private Package findPackageForService(PollableService svc) {
-                Enumeration en = m_pollerConfig.enumeratePackage();
-                Package lastPkg = null;
-                while (en.hasMoreElements()) {
-                    Package pkg = (Package)en.nextElement();
-                    if (pollableServiceInPackage(svc, pkg))
-                        lastPkg = pkg;
-                }
-                return lastPkg;
-                
-            }
-            private boolean pollableServiceInPackage(PollableService svc, Package pkg) {
-                return (m_pollerConfig.serviceInPackageAndEnabled(svc.getSvcName(), pkg)
-                        && m_pollerConfig.interfaceInPackage(svc.getIpAddr(), pkg));
-            }
-
-        };
-        m_network.visit(setConfigs);
-        
-        PollableVisitor upper = new PollableVisitorAdaptor() {
-            public void visitElement(PollableElement e) {
-                e.updateStatus(PollStatus.STATUS_UP);  
-            }
-        };
-        m_network.visit(upper);
-        m_network.resetStatusChanged();
+        m_network = createPollableNetwork(m_db, m_scheduler, m_pollerConfig, m_pollerConfig, m_pollContext);
         
         // set members to make the tests easier
         
@@ -257,7 +219,12 @@ public class PollablesTest extends TestCase {
         mDot3Http = mDot3.getService("HTTP");
         mDot3Icmp = mDot3.getService("ICMP");
         
-        pNode1 = m_network.getNode(1);
+        assignPollableMembers(m_network);
+        
+    }
+
+    private void assignPollableMembers(PollableNetwork pNetwork) throws UnknownHostException {
+        pNode1 = pNetwork.getNode(1);
         pDot1 = pNode1.getInterface(InetAddress.getByName("192.168.1.1"));
         pDot1Smtp = pDot1.getService("SMTP");
         pDot1Icmp = pDot1.getService("ICMP");
@@ -265,11 +232,112 @@ public class PollablesTest extends TestCase {
         pDot2Smtp = pDot2.getService("SMTP");
         pDot2Icmp = pDot2.getService("ICMP");
         
-        pNode2 = m_network.getNode(2);
+        pNode2 = pNetwork.getNode(2);
         pDot3 = pNode2.getInterface(InetAddress.getByName("192.168.1.3"));
         pDot3Http = pDot3.getService("HTTP");
         pDot3Icmp = pDot3.getService("ICMP");
+    }
+    
+    static class InitCause extends PollableVisitorAdaptor {
+        private PollEvent m_cause;
+
+        public void setCause(PollEvent cause) {
+            m_cause = cause;
+        }
         
+        public void visitElement(PollableElement element) {
+            if (!element.hasOpenOutage())
+                element.setCause(m_cause);
+        }
+    }
+
+    static private PollableNetwork createPollableNetwork(final DbConnectionFactory db, final ScheduleTimer scheduler, final PollerConfig pollerConfig, final PollOutagesConfig pollOutageConfig, PollContext pollContext) throws UnknownHostException {
+        
+        final PollableNetwork pNetwork = new PollableNetwork(pollContext);
+        
+        String sql = "select ifServices.nodeId as nodeId, ifServices.ipAddr as ipAddr, ifServices.serviceId as serviceId, service.serviceName as serviceName, outages.svcLostEventId as svcLostEventId, events.eventUei as svcLostEventUei, outages.ifLostService as ifLostService, outages.ifRegainedService as ifRegainedService " +
+                "from ifServices " +
+                "join service on ifServices.serviceId = service.serviceId " +
+                "left outer join outages on " +
+                "ifServices.nodeId = outages.nodeId and " +
+                "ifServices.ipAddr = outages.ipAddr and " +
+                "ifServices.serviceId = outages.serviceId and " +
+                "ifRegainedService is null " +
+                "left outer join events on outages.svcLostEventId = events.eventid " +
+                "where ifServices.status = 'A'";
+
+        final InitCause causeSetter = new InitCause();
+        
+        Querier querier = new Querier(db, sql) {
+            protected void processRow(ResultSet rs) throws SQLException {
+                int nodeId = rs.getInt("nodeId");
+                String ipAddr = rs.getString("ipAddr");
+                String serviceName = rs.getString("serviceName");
+                Package pkg = findPackageForService(ipAddr, serviceName);
+                if (pkg == null) {
+                    MockUtil.println("No package for service "+serviceName+" with ipAddr "+ipAddr);
+                    return;
+                }
+                
+                try {
+                    
+                    PollableService svc = pNetwork.createService(nodeId, InetAddress.getByName(ipAddr), serviceName);
+                    PollableServiceConfig pollConfig = new PollableServiceConfig(svc, pollerConfig, pollOutageConfig, pkg, scheduler);
+                    Schedule schedule = new Schedule(svc, pollConfig, scheduler);
+                    svc.setPollConfig(pollConfig);
+                    svc.setSchedule(schedule);
+
+                    Number svcLostEventId = (Number)rs.getObject("svcLostEventId");
+                    //MockUtil.println("svcLostEventId for "+svc+" is "+svcLostEventId);
+                    if (svcLostEventId == null) 
+                        svc.updateStatus(PollStatus.STATUS_UP);
+                    else {
+                        svc.updateStatus(PollStatus.STATUS_DOWN);
+                    
+                        Date date = rs.getTimestamp("ifLostService");
+                        PollEvent cause = new PollEvent(svcLostEventId.intValue(), date);
+                        String svcLostUei = rs.getString("svcLostEventUei");
+                        causeSetter.setCause(cause);
+
+                        if (EventConstants.NODE_LOST_SERVICE_EVENT_UEI.equals(svcLostUei)) {
+                            svc.visit(causeSetter);
+                        } else if (EventConstants.INTERFACE_DOWN_EVENT_UEI.equals(svcLostUei)) {
+                            svc.getInterface().visit(causeSetter);
+                        } else if (EventConstants.NODE_DOWN_EVENT_UEI.equals(svcLostUei)) {
+                            svc.getNode().visit(causeSetter);
+                        }
+                    }
+                    
+                    // schedule.schedule();
+                    //MockUtil.println("Created Pollable Service "+svc+" with package "+pkg.getName());
+                } catch (UnknownHostException e) {
+                    // in 'real life' I would just log this and contine with the others
+                    throw new RuntimeException("Error converting "+ipAddr+" to an InetAddress", e);
+                }
+            }
+            private Package findPackageForService(String ipAddr, String serviceName) {
+                Enumeration en = pollerConfig.enumeratePackage();
+                Package lastPkg = null;
+                while (en.hasMoreElements()) {
+                    Package pkg = (Package)en.nextElement();
+                    if (pollableServiceInPackage(ipAddr, serviceName, pkg))
+                        lastPkg = pkg;
+                }
+                return lastPkg;
+                
+            }
+            private boolean pollableServiceInPackage(String ipAddr, String serviceName, Package pkg) {
+                return (pollerConfig.serviceInPackageAndEnabled(serviceName, pkg)
+                        && pollerConfig.interfaceInPackage(ipAddr, pkg));
+            }
+
+
+        };
+        querier.execute();
+
+        pNetwork.recalculateStatus();
+        pNetwork.resetStatusChanged();
+        return pNetwork;
     }
 
     /*
@@ -1364,7 +1432,202 @@ public class PollablesTest extends TestCase {
         assertUnchanged(pDot1Smtp);
     }
     
+    public void testLoadService() throws Exception {
+        anticipateDown(mDot1Smtp);
+        
+        mDot1Smtp.bringDown();
+        
+        pDot1Smtp.doPoll();
+        
+        pDot1Smtp.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        // recreate the pollable network from the database
+        m_network = createPollableNetwork(m_db, m_scheduler, m_pollerConfig, m_pollerConfig, m_pollContext);
+        assignPollableMembers(m_network);
+        
+        assertDown(pDot1Smtp);
+        
+        anticipateUp(mDot1Smtp);
+
+        mDot1Smtp.bringUp();
+        
+        pDot1Smtp.doPoll();
+
+        pDot1Smtp.processStatusChange(new Date());
+        
+        verifyAnticipated();
+
+        
+    }
     
+    public void testLoadInterface() throws Exception {
+        anticipateDown(mDot1);
+        
+        mDot1.bringDown();
+        
+        pDot1Smtp.doPoll();
+        
+        pDot1.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        // recreate the pollable network from the database
+        m_network = createPollableNetwork(m_db, m_scheduler, m_pollerConfig, m_pollerConfig, m_pollContext);
+        assignPollableMembers(m_network);
+        
+        assertDown(pDot1Smtp);
+        assertDown(pDot1Icmp);
+        
+        anticipateUp(mDot1);
+
+        mDot1.bringUp();
+        
+        pDot1Icmp.doPoll();
+
+        pDot1.processStatusChange(new Date());
+        
+        verifyAnticipated();
+
+        
+    }
+    
+    public void testLoadNode() throws Exception {
+        anticipateDown(mNode1);
+        
+        mNode1.bringDown();
+        
+        pDot1Smtp.doPoll();
+        
+        pNode1.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        // recreate the pollable network from the database
+        m_network = createPollableNetwork(m_db, m_scheduler, m_pollerConfig, m_pollerConfig, m_pollContext);
+        assignPollableMembers(m_network);
+        
+        assertDown(pDot1Smtp);
+        assertDown(pDot1Icmp);
+        assertDown(pDot2Smtp);
+        assertDown(pDot2Icmp);
+        
+        anticipateUp(mNode1);
+
+        mNode1.bringUp();
+        
+        pDot1Icmp.doPoll();
+
+        pNode1.processStatusChange(new Date());
+        
+        verifyAnticipated();
+
+        
+    }
+    
+    public void testLoadIndependentOutageEventsUpTogether() throws Exception {
+        anticipateDown(mDot1Smtp);
+        
+        mDot1Smtp.bringDown();
+        
+        pDot1Smtp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+
+        verifyAnticipated();
+        
+        anticipateDown(mNode1);
+
+        mNode1.bringDown();
+        
+        pDot1Icmp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        // recreate the pollable network from the database
+        m_network = createPollableNetwork(m_db, m_scheduler, m_pollerConfig, m_pollerConfig, m_pollContext);
+        assignPollableMembers(m_network);
+        
+        assertDown(pDot1Smtp);
+        assertDown(pDot1Icmp);
+        assertDown(pDot2Smtp);
+        assertDown(pDot2Icmp);
+        assertDown(pDot1);
+        assertDown(pDot2);
+        assertDown(pNode1);
+        
+        anticipateUp(mDot1Smtp);
+        anticipateUp(mNode1);
+        
+        mNode1.bringUp();
+        
+        pDot1Icmp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+
+
+    }
+
+    public void testLoadIndependentOutageEventsUpSeparately() throws Exception {
+        anticipateDown(mDot1Smtp);
+        
+        mDot1Smtp.bringDown();
+        
+        pDot1Smtp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+
+        verifyAnticipated();
+        
+        anticipateDown(mNode1);
+
+        mNode1.bringDown();
+        
+        pDot1Icmp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        // recreate the pollable network from the database
+        m_network = createPollableNetwork(m_db, m_scheduler, m_pollerConfig, m_pollerConfig, m_pollContext);
+        assignPollableMembers(m_network);
+        
+        assertDown(pDot1Smtp);
+        assertDown(pDot1Icmp);
+        assertDown(pDot2Smtp);
+        assertDown(pDot2Icmp);
+        assertDown(pDot1);
+        assertDown(pDot2);
+        assertDown(pNode1);
+        
+        anticipateUp(mNode1);
+        m_outageAnticipator.deanticipateOutageClosed(mDot1Smtp, mNode1.createUpEvent());
+        
+        mNode1.bringUp();
+        mDot1Smtp.bringDown();
+        
+        pDot1Icmp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        anticipateUp(mDot1Smtp);
+
+        mDot1Smtp.bringUp();
+        
+        pDot1Smtp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+    }
 
     /**
      * @param i

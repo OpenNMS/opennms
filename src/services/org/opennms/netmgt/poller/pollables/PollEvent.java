@@ -33,7 +33,6 @@ package org.opennms.netmgt.poller.pollables;
 
 import java.util.Date;
 
-import org.opennms.netmgt.xml.event.Event;
 
 /**
  * Represents a PollEvent 
@@ -42,30 +41,27 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class PollEvent {
 
-    Event m_event;
+    int m_eventId;
     Date m_date;
     
-    public PollEvent(Event event, Date date) {
-        if (!event.hasDbid())
-            throw new IllegalArgumentException("The event must be sent before it can be used in a PollEvent");
-        
-        m_event = event;
+    public PollEvent(int eventId, Date date) {
+        m_eventId = eventId;
         m_date = date;
     }
 
-    public Event getEvent() {
-        return m_event;
+    public int getEventId() {
+        return m_eventId;
     }
     
     public Date getDate() {
         return m_date;
     }
     
-    public int hashCode() { return m_event.getDbid(); }
+    public int hashCode() { return m_eventId; }
     
     public boolean equals(PollEvent e) {
         if (e == null) return false;
-        return m_event.getDbid() == e.m_event.getDbid();
+        return m_eventId == e.m_eventId;
     }
     
     public boolean equals(Object o) {

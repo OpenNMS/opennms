@@ -47,6 +47,7 @@ import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.OutageAnticipator;
+import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.xml.event.Event;
@@ -223,7 +224,8 @@ public class PollContextTest extends TestCase {
         Event downEvent = m_mSvc.createDownEvent();
         m_outageAnticipator.anticipateOutageOpened(m_mSvc, downEvent);
         m_eventMgr.sendEventToListeners(downEvent);
-        m_pollContext.openOutage(m_pSvc, downEvent);
+        PollEvent pollDownEvent = new PollEvent(downEvent.getDbid(), new Date());
+        m_pollContext.openOutage(m_pSvc, pollDownEvent);
                                                   
         verifyOutages();
         
@@ -231,7 +233,8 @@ public class PollContextTest extends TestCase {
         Event upEvent = m_mSvc.createUpEvent();
         m_outageAnticipator.anticipateOutageClosed(m_mSvc, upEvent);
         m_eventMgr.sendEventToListeners(upEvent);
-        m_pollContext.resolveOutage(m_pSvc, upEvent);
+        PollEvent pollUpEvent = new PollEvent(upEvent.getDbid(), new Date());
+        m_pollContext.resolveOutage(m_pSvc, pollUpEvent);
                                    
         verifyOutages();
     }

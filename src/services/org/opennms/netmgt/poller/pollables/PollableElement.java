@@ -139,7 +139,7 @@ abstract public class PollableElement {
      * @param cause TODO
      */
     protected void createOutage(PollEvent cause) {
-        m_cause = cause;
+        setCause(cause);
     }
 
     /**
@@ -147,11 +147,15 @@ abstract public class PollableElement {
      * @param e
      */
     protected void resolveOutage(PollEvent resolution) {
-        m_cause = null;
+        setCause(null);
     }
     
     protected boolean hasOpenOutage() {
         return m_cause != null;
+    }
+    
+    public void setCause(PollEvent cause) {
+        m_cause = cause;
     }
     
     public PollEvent getCause() {
@@ -172,7 +176,7 @@ abstract public class PollableElement {
 
     protected void processComingUp(Date date) {
         Event upEvent = getContext().sendEvent(createUpEvent(date));
-        PollEvent resolution = new PollEvent(upEvent, date);
+        PollEvent resolution = new PollEvent(upEvent.getDbid(), date);
         processResolution(getCause(), resolution);
     }
 
@@ -182,7 +186,7 @@ abstract public class PollableElement {
 
     protected void processGoingDown(Date date) {
         Event downEvent = getContext().sendEvent(createDownEvent(date));
-        PollEvent cause = new PollEvent(downEvent, date);
+        PollEvent cause = new PollEvent(downEvent.getDbid(), date);
         processCause(cause);
     }
 

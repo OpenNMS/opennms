@@ -34,7 +34,9 @@ package org.opennms.netmgt.poller;
 import java.net.InetAddress;
 import java.util.Date;
 
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.poller.pollables.PollContext;
+import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -90,23 +92,18 @@ public class DefaultPollContext implements PollContext {
         return m_poller.createEvent(uei, nodeId, address, svcName, date);
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.pollables.PollContext#openOutage(org.opennms.netmgt.poller.pollables.PollableService, org.opennms.netmgt.xml.event.Event)
-     */
-    public void openOutage(PollableService svc, Event svcLostEvent) {
-        
+    public void openOutage(PollableService svc, PollEvent svcLostEvent) {
         int serviceId = m_poller.getServiceIdByName(svc.getSvcName());
-        m_poller.getQueryMgr().openOutage(m_poller.getPollerConfig().getNextOutageIdSql(), svc.getNodeId(), svc.getIpAddr(), serviceId, svcLostEvent.getDbid(), svcLostEvent.getTime());
+        m_poller.getQueryMgr().openOutage(m_poller.getPollerConfig().getNextOutageIdSql(), svc.getNodeId(), svc.getIpAddr(), serviceId, svcLostEvent.getEventId(), EventConstants.formatToString(svcLostEvent.getDate()));
         
-
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.pollables.PollContext#resolveOutage(org.opennms.netmgt.poller.pollables.PollableService, org.opennms.netmgt.xml.event.Event)
      */
-    public void resolveOutage(PollableService svc, Event svcRegainEvent) {
+    public void resolveOutage(PollableService svc, PollEvent svcRegainEvent) {
         int serviceId = m_poller.getServiceIdByName(svc.getSvcName());
-        m_poller.getQueryMgr().resolveOutage(svc.getNodeId(), svc.getIpAddr(), serviceId, svcRegainEvent.getDbid(), svcRegainEvent.getTime());
+        m_poller.getQueryMgr().resolveOutage(svc.getNodeId(), svc.getIpAddr(), serviceId, svcRegainEvent.getEventId(), EventConstants.formatToString(svcRegainEvent.getDate()));
     }
 
     /* (non-Javadoc)

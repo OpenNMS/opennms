@@ -263,6 +263,14 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     }
     
     public void update(String stmt, Object[] values) {
+//        StringBuffer buf = new StringBuffer("[");
+//        for(int i = 0; i < values.length; i++) {
+//            if (i != 0)
+//                buf.append(", ");
+//            buf.append(values[i]);
+//        }
+//        buf.append("]");
+//        MockUtil.println("Executing "+stmt+" with values "+buf);
         Updater updater = new Updater(this, stmt);
         updater.execute(values);
     }
@@ -365,15 +373,17 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     }
 
     public void createOutage(MockService svc, Event svcLostEvent) {
-        
-        
+        createOutage(svc, svcLostEvent.getDbid(), convertEventTimeToTimeStamp(svcLostEvent.getTime()));
+    }
+
+    public void createOutage(MockService svc, int eventId, Timestamp time) {
         Object[] values = {
                 getNextOutageId(), // outageID
-                new Integer(svcLostEvent.getDbid()),           // svcLostEventId
+                new Integer(eventId),           // svcLostEventId
                 new Integer(svc.getNodeId()), // nodeId
                 svc.getIpAddr(),                // ipAddr
                 new Integer(svc.getId()),       // serviceID
-                convertEventTimeToTimeStamp(svcLostEvent.getTime()), // ifLostService
+                time, // ifLostService
                };
         
         update("insert into outages (outageId, svcLostEventId, nodeId, ipAddr, serviceId, ifLostService) values (?, ?, ?, ?, ?, ?)", values);
@@ -381,11 +391,14 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     }
     
     public void resolveOutage(MockService svc, Event svcRegainEvent) {
-        
+        resolveOutage(svc, svcRegainEvent.getDbid(), convertEventTimeToTimeStamp(svcRegainEvent.getTime()));
+    }        
+
+    public void resolveOutage(MockService svc, int eventId, Timestamp timestamp) {
         
         Object[] values = {
-                new Integer(svcRegainEvent.getDbid()),           // svcLostEventId
-                convertEventTimeToTimeStamp(svcRegainEvent.getTime()), // ifLostService
+                new Integer(eventId),           // svcLostEventId
+                timestamp, // ifLostService
                 new Integer(svc.getNodeId()), // nodeId
                 svc.getIpAddr(),                // ipAddr
                 new Integer(svc.getId()),       // serviceID
