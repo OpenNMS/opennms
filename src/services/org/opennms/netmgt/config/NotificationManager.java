@@ -115,7 +115,7 @@ public abstract class NotificationManager {
         for (Enumeration e = m_notifications.enumerateNotification(); e.hasMoreElements();) {
             Notification notif = (Notification) e.nextElement();
     
-            if (uei.equals(notif.getUei())) {
+            if (uei.equals(notif.getUei()) | "MATCH-ANY-UEI".equals(notif.getUei())) {
                 return true;
             }
         }
@@ -134,7 +134,7 @@ public abstract class NotificationManager {
         for (Enumeration e = m_notifications.enumerateNotification(); e.hasMoreElements();) {
             Notification curNotif = (Notification) e.nextElement();
     
-            if (curNotif.getStatus().equals("on") && event.getUei().equals(curNotif.getUei()) && nodeInterfaceServiceValid(curNotif, event)) {
+            if (curNotif.getStatus().equals("on") && (event.getUei().equals(curNotif.getUei()) || "MATCH-ANY-UEI".equals(curNotif.getUei())) && nodeInterfaceServiceValid(curNotif, event)) {
 
                 boolean parmsmatched = getConfigManager().matchNotificationParameters(event, curNotif);
 

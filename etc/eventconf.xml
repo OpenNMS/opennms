@@ -33,6 +33,7 @@
         <event-file>@install.etc.dir@/events/IBM.events.xml</event-file>
         <event-file>@install.etc.dir@/events/IEEE802dot11.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Intel.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/MGE-UPS.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Microsoft.events.xml</event-file>
 	<event-file>@install.etc.dir@/events/Mylex.events.xml</event-file>
         <event-file>@install.etc.dir@/events/NetApp.events.xml</event-file>
@@ -49,6 +50,21 @@
         <event-file>@install.etc.dir@/events/Xerox.events.xml</event-file>
 
         <event-file>@install.etc.dir@/events/Standard.events.xml</event-file>
+        <event>
+                <uei>MATCH-ANY-UEI</uei>
+                <event-label>OpenNMS defined event: MATCH-ANY-UEI</event-label>
+                <descr>
+                        &lt;p&gt;This UEI will never be generated, but exists
+                        so that notifications can match any UEI for a
+                        particular filter rule. Useful to see all events for
+                        a particular node via notifications.
+                        &lt;/p&gt;
+                </descr>
+                <logmsg dest='logonly'>
+                        MATCH-ANY-UEI event.
+                </logmsg>
+                <severity>Indeterminate</severity>
+        </event>
 	<event>
 		<uei>uei.opennms.org/internal/capsd/discPause</uei>
 		<event-label>OpenNMS-defined internal event: capsd discPause</event-label>

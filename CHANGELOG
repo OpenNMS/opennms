@@ -1,5 +1,12 @@
 1.1.4 to 1.1.5
 ----------------------------------------------------------------------
+- Deprecated many of the "standard" events that are no longer needed.
+- Added a new UEI named MATCH-ANY-UEI. When used in a notification
+  rule, it will return "true" for any UEI. Useful for getting
+  notifications on all events to a single devices or group of
+  devices.
+- Added definitions for MGE UPS traps.
+- Added definitions for Network Appliance traps.
 - Removed the need for an ifIndex for SNMP data collection. Once the
   service is discovered, a rescan may be necessary. Thx Bill.
 - Added a fix for notifications with an IP address of 0.0.0.0. 
