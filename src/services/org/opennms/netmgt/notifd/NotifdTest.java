@@ -726,8 +726,11 @@ public class NotifdTest extends TestCase {
                 }
             };
             m_notificationManager.forEachUserNotification(notifId.intValue(), rp);
-            
-            assertEquals(expectedResults, actualResults);
+	   
+	    for (Iterator i = expectedResults.iterator(); i.hasNext(); ) {
+		assertTrue(actualResults.remove(i.next()));
+	    }
+	    assertEquals(actualResults.size(), 0);
         }
     }
     
