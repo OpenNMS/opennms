@@ -6,6 +6,104 @@
 		OpenNMS 1.1.0 represents a refinement of the functionality introduced in 1.0.0.
 	</para>
         <sect1 id="chap2sect1" label="2.1.">
+                <title>Changes in OpenNMS 1.1.1 and Above</title>
+                <para>
+                        The following features were added in 1.1.1:
+                        <itemizedlist>
+                                <listitem>
+                                        <formalpara>
+                                                <title>Trap Handling</title>
+						<para>
+							SNMP Traps will now be associated with nodes if the IP address
+							in the trap matches a known IP address in the database.
+						</para>
+						<para>
+							If the IP Address is not known, OpenNMS will generate a 
+							newSuspect event to attempt to discover the device. This
+							behavior can be disabled in the trapd-configuration.xml
+							file. 
+						</para>
+						<para>
+							Added new trap definitions for Dell OpenManage, Foundry
+							Networks and ADIC. Also added an updated mib2opennms
+							program which improves the look of the output.
+						</para>
+                                        </formalpara>
+                                        <formalpara>
+                                                <title>Reports</title>
+						<para>
+							Added a new custom reporting module which allows one to
+							create and save custom performance reports. It is called
+							the Key SNMP Custom (KSC) Reporting Tool.
+						</para>
+						<para>
+							Added buttons on the standard Performance and Response
+							Time pages to allow the range to be changed between
+							the last Day/Week/Month/Year.
+						</para>
+                                        </formalpara>
+                                        <formalpara>
+                                                <title>Response Time</title>
+						<para>
+							Added the ability to collect response time on the following
+							pollers: Citrix, FTP, HTTPS, IMAP, POP3, SMTP and TCP.
+						</para>
+						<para>
+							The RRAs for Response Time data are now part of the 
+							poller configuration file.
+						</para>
+                                        </formalpara>
+                                        <formalpara>
+                                                <title>Web Improvements</title>
+						<para>
+							There is now a Response Time link on the node and
+							interface pages.
+						</para>
+						<para>
+							If a node or interface supports HTTP, there is now a link
+							to that service.
+						</para>
+						<para>
+							Added a two minute refresh to the event listing page.
+						</para>
+                                        </formalpara>
+                                        <formalpara>
+                                                <title>Other Features</title>
+						<para>
+							Added non-blocking I/O to the HTTPS service. Now all monitors
+							and plug-ins should be non-blocking.
+						</para>
+						<para>
+							If you set the IP Address in a poll-outages calendar to 
+							"match-any" it will match all addresses in the poller
+							package that uses that calendar.
+						</para>
+						<para>
+							Increased the size of the contactinfo field in the 
+							usersnotified table, and changed create.sql to make
+							this easier.
+						</para>
+                                        </formalpara>
+                                        <formalpara>
+                                                <title>Fixed Bugs</title>
+						<para>
+							Fixed numerous bugs, including 650 where "down" events
+							could be written to the database after the corresponding
+							"up" event. See the CHANGELOG for a full list.
+						</para>
+                                        </formalpara>
+                                        <formalpara>
+                                                <title>Tomcat4</title>
+						<para>
+							For a variety of reasons, OpenNMS 1.1.1 and beyond will
+							require Tomcat4 version 4.1.10 or higher.
+						</para>
+                                        </formalpara>
+				</listitem>
+			</itemizedlist>
+		</para>
+	</sect1>
+        <sect1 id="chap2sect2" label="2.2.">
                 <title>Changes in OpenNMS 1.1.0 and Above</title>
                 <para>
                         There were many changes to OpenNMS between 1.0 and 1.1. Here are a few listed by functional area.
@@ -328,7 +426,7 @@
                         </itemizedlist>
                 </para>
         </sect1>
-	<sect1 id="chap2sect2" label="2.3.">
+	<sect1 id="chap2sect3" label="2.3.">
 		<title>Changes in OpenNMS 1.0.0 and Above</title>
 		<para>
 			The following major changes occurred between 0.9.9 and 1.0.0:

@@ -12,6 +12,8 @@
 - fixed install.pl to consider type "6" as unicode as well (fixes
   unicode check on postgresql 7.3+)
 - Added a two minute refresh to the Events list page. Thx Chris Y.
+- Added an event cache to fix the problem where "up" events
+  are recorded before "down" events. Bug 650
 - Disallowed Null Search Text. Bug 536
 - Added last day/week/month/year buttons to Performance and
   Response Time report pages. Bugs 546 and 618

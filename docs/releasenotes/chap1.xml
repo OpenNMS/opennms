@@ -3,6 +3,10 @@
 	<title>Introduction</title>
 	<subtitle>About This Release</subtitle>
 	<para>
+		OpenNMS 1.1.1 is the next step towards the production 1.2 release.
+		It contains a number of new features and bug fixes.
+	</para>
+	<para>
 		OpenNMS 1.1 extends the work that was begun with 1.0 to make OpenNMS
 		more powerful and easier to use. Almost all of the new functionality
 		was suggested by current OpenNMS users. It is hoped that these improvements

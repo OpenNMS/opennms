@@ -6,15 +6,16 @@
 		Here is the list of known issues in this release of OpenNMS.
 	</para>
 	<sect1 id="chap3sect1" label="3.1.">
-		<title>Rare Incorrect Entries in the Outage Table</title>
+		<title>Java SDK Issues</title>
 		<para>
-			Rarely, a service will show on the outage table that is actually
-			operational. Investigation will show that the event that resolved
-			the outage was written to the database at the same time as the
-			event that caused the outage. This is due to the database being
-			temporarily busy, and the "up" event getting into the queue just
-			ahead of the "down" event, and occurs especially during a "vacuumdb".
-			A fix is in process. 
+			There seems to be a problem with the 1.4.1 SDK that causes
+			OpenNMS to suddenly stop after some amount of time (depending
+			on the size of the monitored network). Use 1.4.0-02 (which
+			can be found on the archive section of the Sun Java page).
+			For more info, see the FAQ entry:
+			&gt;a href="http://faq.opennms.org/faq/fom-serve/cache/129.html"&lt;
+			http://faq.opennms.org/faq/fom-serve/cache/129.html
+			&gt;/a&lt;			
 		</para>
 	</sect1>
 </chapter>

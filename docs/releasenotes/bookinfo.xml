@@ -12,7 +12,7 @@
 			<firstname>Tarus</firstname>
 		</author>
 	</authorgroup> 
-	<pubdate>2002</pubdate>
+	<pubdate>2003</pubdate>
 	<pubsnumber>Revision: @opennms.version@</pubsnumber>
 	<!-- 
 	<legalnotice>
@@ -24,7 +24,7 @@
 	</legalnotice>
 	-->
 	<copyright>
-		<year>2002</year>
+		<year>2003</year>
 		<holder>Sortova Consulting Group, Inc.</holder>
 	</copyright>
 	<corpname>The OpenNMS Project</corpname>
