@@ -32,6 +32,8 @@
 
 package org.opennms.netmgt.mock;
 
+import java.util.Date;
+
 import org.opennms.netmgt.poller.monitors.ServiceMonitor;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -127,5 +129,25 @@ abstract public class MockElement {
     abstract public Event createDownEvent();
     
     abstract public Event createUpEvent();
+
+    /**
+     * @param upDate
+     * @return
+     */
+    public Event createUpEvent(Date date) {
+        Event e = createUpEvent();
+        MockUtil.setEventTime(e, date);
+        return e;
+    }
+
+    /**
+     * @param date
+     * @return
+     */
+    public Event createDownEvent(Date date) {
+        Event e = createDownEvent();
+        MockUtil.setEventTime(e, date);
+        return e;
+    }
 
 }

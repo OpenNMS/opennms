@@ -36,6 +36,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.opennms.netmgt.mock.MockUtil;
+
 /**
  * @author brozow
  * 
@@ -58,6 +60,7 @@ public class NotificationAnticipator {
      * 
      */
     public void anticipateNotification(MockNotification mn) {
+        MockUtil.println("Anticipating notification: "+mn);
         m_anticipated.add(mn);
     }
     
@@ -65,6 +68,7 @@ public class NotificationAnticipator {
      * @param event
      */
     public synchronized void notificationReceived(MockNotification mn) {
+        MockUtil.println("Received notification: "+mn);
         if (m_anticipated.contains(mn)) {
             m_anticipated.remove(mn);
             notifyAll();

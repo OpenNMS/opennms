@@ -190,15 +190,15 @@ public class NotificationTask extends Thread {
     public void run() {
         Category log = ThreadCategory.getInstance(getClass());
 
-        boolean responded = false;
+        boolean outstanding = false;
         try {
-            responded = m_notifd.getNotificationManager().noticeOutstanding(m_notifyId);
+            outstanding = m_notifd.getNotificationManager().noticeOutstanding(m_notifyId);
         } catch (Exception e) {
             log.error("Unable to get response status on notice #" + m_notifyId, e);
         }
 
         // check to see if someone has responded, if so remove all the brothers
-        if (responded) {
+        if (outstanding) {
             try {
                 if (m_notifd.getUserManager().isUserOnDuty(m_user.getUserId(), Calendar.getInstance())) {
                     // send the notice

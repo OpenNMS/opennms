@@ -32,6 +32,7 @@
 
 package org.opennms.netmgt.mock;
 
+
 import org.opennms.netmgt.xml.event.Event;
 
 /**

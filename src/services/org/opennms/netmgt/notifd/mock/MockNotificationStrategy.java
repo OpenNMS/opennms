@@ -77,6 +77,7 @@ public class MockNotificationStrategy implements NotificationStrategy {
                 notification.setEmail(arg.getValue());
             }
         }
+        notification.setExpectedTime(System.currentTimeMillis());
 
         NotificationAnticipator anticipator = getAnticpator();
         

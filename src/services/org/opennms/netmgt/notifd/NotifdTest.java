@@ -33,15 +33,27 @@
 
 package org.opennms.netmgt.notifd;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+
 import junit.framework.TestCase;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
+import org.opennms.netmgt.config.groups.Group;
+import org.opennms.netmgt.config.users.Contact;
+import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
+import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.notifd.mock.MockDestinationPathManager;
 import org.opennms.netmgt.notifd.mock.MockGroupManager;
@@ -110,7 +122,7 @@ public class NotifdTest extends TestCase {
             "        \n" + 
             "        <queue>\n" + 
             "                <queue-id>default</queue-id>\n" + 
-            "                <interval>2s</interval>\n" + 
+            "                <interval>100ms</interval>\n" + 
             "                <handler-class>\n" + 
             "                        <name>org.opennms.netmgt.notifd.DefaultQueueHandler</name>\n" + 
             "                </handler-class>\n" + 
@@ -124,168 +136,59 @@ public class NotifdTest extends TestCase {
             "        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
             "        <mstation>localhost</mstation>\n" + 
             "    </header>\n" + 
-            "    <notification name=\"serviceUnresponsive\" status=\"on\">\n" + 
-            "        <uei>uei.opennms.org/nodes/serviceUnresponsive</uei>\n" + 
-            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Mock</destinationPath>\n" + 
-            "        <text-message>The %service% poll to interface %interfaceresolve% (%interface%) \n" + 
-            "on node %nodelabel% successfully \n" + 
-            "completed a connection to the service listener on the \n" + 
-            "remote machine. However, the synthetic transaction failed \n" + 
-            "to complete within %parm[timeout]% milliseconds, over \n" + 
-            "%parm[attempts]% attempts.  This event will NOT impact service \n" + 
-            "level agreements, but may be an indicator of other problems on that node.  \n" + 
-            "   </text-message>\n" + 
-            "        <subject>Notice #%noticeid%: %service% service on %interfaceresolve% (%interface%) on node %nodelabel% is unresponsive.</subject>\n" + 
-            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
-            "    </notification>\n" + 
-            "    <notification name=\"serviceResponsive\" status=\"on\">\n" + 
-            "        <uei>uei.opennms.org/nodes/serviceResponsive</uei>\n" + 
-            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Mock</destinationPath>\n" + 
-            "        <text-message>The %service% service on %interfaceresolve% (%interface%) \n" + 
-            "on node %nodelabel% has recovered from a previously \n" + 
-            "UNRESPONSIVE state.  Synthetic transactions to this service \n" + 
-            "are completing within the alotted timeout and retry period.</text-message>\n" + 
-            "        <subject>Notice #%noticeid%: %service% service on %interfaceresolve% (%interface%) on node %nodelabel% has recovered.</subject>\n" + 
-            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
-            "    </notification>\n" + 
-            "    <notification name=\"interfaceDown\" status=\"on\">\n" + 
-            "        <uei>uei.opennms.org/nodes/interfaceDown</uei>\n" + 
-            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Mock</destinationPath>\n" + 
-            "        <text-message>All services are down on interface %interfaceresolve% (%interface%) \n" + 
-            "on node %nodelabel%.  New Outage records have been created \n" + 
-            "and service level availability calculations will be impacted \n" + 
-            "until this outage is resolved.  \n" + 
-            "   </text-message>\n" + 
-            "        <subject>Notice #%noticeid%: %interfaceresolve% (%interface%) on node %nodelabel% down.</subject>\n" + 
-            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
-            "    </notification>\n" + 
             "    <notification name=\"nodeDown\" status=\"on\">\n" + 
             "        <uei>uei.opennms.org/nodes/nodeDown</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Mock</destinationPath>\n" + 
-            "        <text-message>All services are down on node %nodeid%.  New Outage records have \n" + 
-            "been created and service level availability calculations will \n" + 
-            "be impacted until this outage is resolved.  \n" + 
-            "   </text-message>\n" + 
+            "        <destinationPath>NoEscalate</destinationPath>\n" + 
+            "        <text-message>All services are down on node %nodeid%.</text-message>\n" + 
             "        <subject>node %nodeid% down.</subject>\n" + 
-            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
-            "    </notification>\n" + 
-            "    <notification name=\"interfaceUp\" status=\"on\">\n" + 
-            "        <uei>uei.opennms.org/nodes/interfaceUp</uei>\n" + 
-            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Mock</destinationPath>\n" + 
-            "        <text-message>The interface %interfaceresolve% (%interface%) \n" + 
-            "on node %nodelabel% which was previously down is now up.</text-message>\n" + 
-            "        <subject>Notice #%noticeid%: Interface %interfaceresolve% (%interface%) on node %nodelabel% has been cleared</subject>\n" + 
             "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
             "    </notification>\n" + 
             "    <notification name=\"nodeUp\" status=\"on\">\n" + 
             "        <uei>uei.opennms.org/nodes/nodeUp</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Mock</destinationPath>\n" + 
+            "        <destinationPath>UpPath</destinationPath>\n" + 
             "        <text-message>The node which was previously down is now up.</text-message>\n" + 
             "        <subject>node %nodeid% up.</subject>\n" + 
             "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
             "    </notification>\n" + 
+            "    <notification name=\"interfaceDown\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/nodes/interfaceDown</uei>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>Escalate</destinationPath>\n" + 
+            "        <text-message>All services are down on interface %interface%.</text-message>\n" + 
+            "        <subject>interface %interface% down.</subject>\n" + 
+            "        <numeric-message>222-%noticeid%</numeric-message>\n" + 
+            "    </notification>\n" + 
+            "    <notification name=\"interfaceUp\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/nodes/interfaceUp</uei>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>UpPath</destinationPath>\n" + 
+            "        <text-message>The interface which was previously down is now up.</text-message>\n" + 
+            "        <subject>interface %interface% up.</subject>\n" + 
+            "        <numeric-message>222-%noticeid%</numeric-message>\n" + 
+            "    </notification>\n" + 
             "    <notification name=\"nodeLostService\" status=\"on\">\n" + 
             "        <uei>uei.opennms.org/nodes/nodeLostService</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Mock</destinationPath>\n" + 
-            "        <text-message>The %service% service poll on interface %interfaceresolve% (%interface%) \n" + 
-            "on node %nodelabel% failed at %time%. \n" + 
-            "   </text-message>\n" + 
-            "        <subject>Notice #%noticeid%: %service% down on %interfaceresolve% (%interface%) on node %nodelabel%.</subject>\n" + 
-            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
+            "        <destinationPath>Intervals</destinationPath>\n" + 
+            "        <text-message>Service %service% is down on interface %interface%.</text-message>\n" + 
+            "        <subject>service %service% on %interface% down.</subject>\n" + 
+            "        <numeric-message>333-%noticeid%</numeric-message>\n" + 
             "    </notification>\n" + 
             "    <notification name=\"nodeRegainedService\" status=\"on\">\n" + 
             "        <uei>uei.opennms.org/nodes/nodeRegainedService</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Mock</destinationPath>\n" + 
-            "        <text-message>%service% service restored on interface %interfaceresolve% (%interface%) \n" + 
-            "on node %nodelabel%.</text-message>\n" + 
-            "        <subject>Notice #%noticeid%: %interfaceresolve% (%interface%) on node %nodelabel%&apos;s %service% service restored.</subject>\n" + 
-            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
-            "    </notification>\n" + 
-            "    <notification name=\"coldStart\" status=\"on\">\n" + 
-            "        <uei>uei.opennms.org/generic/traps/SNMP_Cold_Start</uei>\n" + 
-            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Mock</destinationPath>\n" + 
-            "        <text-message>An SNMP coldStart trap has been received from\n" + 
-            "interface %snmphost%.  This indicates that the box has been\n" + 
-            "powered up.</text-message>\n" + 
-            "        <subject>Notice #%noticeid%: %snmphost% powered up.</subject>\n" + 
-            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
-            "    </notification>\n" + 
-            "    <notification name=\"warmStart\" status=\"on\">\n" + 
-            "        <uei>uei.opennms.org/generic/traps/SNMP_Warm_Start</uei>\n" + 
-            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Mock</destinationPath>\n" + 
-            "        <text-message>An SNMP warmStart trap has been received from\n" + 
-            "interface %snmphost%.  This indicates that the box has been rebooted.</text-message>\n" + 
-            "        <subject>Notice #%noticeid%: %snmphost% rebooted.</subject>\n" + 
-            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
-            "    </notification>\n" + 
-            "    <notification name=\"authenticationFailure\" status=\"on\">\n" + 
-            "        <uei>uei.opennms.org/generic/traps/SNMP_Authen_Failure</uei>\n" + 
-            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Mock</destinationPath>\n" + 
-            "        <text-message>An Authentication Failure has been identified on\n" + 
-            "network device %snmphost%.  This message is usually\n" + 
-            "generated by an authentication failure during a user login\n" + 
-            "attempt or an SNMP request failed due to incorrect community string.</text-message>\n" + 
-            "        <subject>Notice #%noticeid%: [OpenNMS] Authentication Failure on %snmphost%.</subject>\n" + 
-            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
-            "    </notification>\n" + 
-            "    <notification name=\"serviceDeleted\" status=\"on\">\n" + 
-            "        <uei>uei.opennms.org/nodes/serviceDeleted</uei>\n" + 
-            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Mock</destinationPath>\n" + 
-            "        <text-message>Due to extended downtime, the %service% service on\n" + 
-            "interface %interfaceresolve% (%interface%) on node %nodelabel% \n" + 
-            "has been deleted from OpenNMS&apos;s polling database.</text-message>\n" + 
-            "        <subject>Notice #%noticeid%: %interfaceresolve% (%interface%) on node %nodelabel%&apos;s %service% service deleted.</subject>\n" + 
-            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
-            "    </notification>\n" + 
-            "    <notification name=\"nodeAdded\" status=\"on\">\n" + 
-            "        <uei>uei.opennms.org/nodes/nodeAdded</uei>\n" + 
-            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Mock</destinationPath>\n" + 
-            "        <text-message>OpenNMS has discovered a new node named\n" + 
-            "%parm[nodelabel]%. Please be advised.</text-message>\n" + 
-            "        <subject>Notice #%noticeid%: %parm[nodelabel]% discovered.</subject>\n" + 
-            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
-            "    </notification>\n" + 
-            "    <notification name=\"nodeInfoChanged\" status=\"on\">\n" + 
-            "        <uei>uei.opennms.org/nodes/nodeInfoChanged</uei>\n" + 
-            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Mock</destinationPath>\n" + 
-            "        <text-message>Node information has changed for a device in your\n" + 
-            "network.  The new information is included:    System Name:\n" + 
-            "%parm[nodesysname]%  System Description:\n" + 
-            "%parm[nodesysdescription]%  System Object Identifier:\n" + 
-            "%parm[nodesysobjectid]%  System Location:\n" + 
-            "%parm[nodesyslocation]%  System Contact:\n" + 
-            "%parm[nodesyscontact]%  NetBIOS Name: %parm[nodenetbiosname]%</text-message>\n" + 
-            "        <subject>Notice #%noticeid%: Node information changed.</subject>\n" + 
-            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
-            "    </notification>\n" + 
-            "    <notification name=\"interfaceDeleted\" status=\"on\">\n" + 
-            "        <uei>uei.opennms.org/nodes/interfaceDeleted</uei>\n" + 
-            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Mock</destinationPath>\n" + 
-            "        <text-message>Due to extended downtime, the interface %interfaceresolve% (%interface%) \n" + 
-            "on node %nodelabel% has been deleted from OpenNMS&apos;s polling database.</text-message>\n" + 
-            "        <subject>Notice #%noticeid%: [OpenNMS] %interfaceresolve% (%interface%) on node %nodelabel% deleted.</subject>\n" + 
-            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
+            "        <destinationPath>UpPath</destinationPath>\n" + 
+            "        <text-message>Service %service% on interface %interface% has come back up.</text-message>\n" + 
+            "        <subject>service %service% on %interface% up.</subject>\n" + 
+            "        <numeric-message>333-%noticeid%</numeric-message>\n" + 
             "    </notification>\n" + 
             "     <notification name=\"SNMP High disk Threshold Exceeded\" status=\"on\">\n" + 
             "        <uei>uei.opennms.org/threshold/highThresholdExceeded</uei>\n" + 
             "        <description>high disk threshold exceeded on snmp interface</description>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Mock</destinationPath>\n" + 
+            "        <destinationPath>NoEscalate</destinationPath>\n" + 
             "        <text-message>High disk Threshold exceeded on %interface%, %parm[ds]% with %parm[value]%%%</text-message>\n" + 
             "        <subject>Notice #%noticeid%, High disk Threshold exceeded</subject>\n" + 
             "        <varbind>\n" + 
@@ -297,7 +200,7 @@ public class NotifdTest extends TestCase {
             "        <uei>uei.opennms.org/threshold/highThresholdExceeded</uei>\n" + 
             "        <description>high loadavg5 threshold exceeded on snmp interface</description>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Mock</destinationPath>\n" + 
+            "        <destinationPath>NoEscalate</destinationPath>\n" + 
             "        <text-message>High loadavg5 Threshold exceeded on %interface%, %parm[ds]% with %parm[value]%%%</text-message>\n" + 
             "        <subject>High loadavg5 Threshold exceeded</subject>\n" + 
             "        <varbind>\n" + 
@@ -317,32 +220,21 @@ public class NotifdTest extends TestCase {
             "    </header>\n" + 
             "    <groups>\n" + 
             "        <group>\n" + 
-            "            <name>Network/Systems</name>\n" + 
-            "            <comments>The network and systems group</comments>\n" + 
-            "        </group>\n" + 
-            "        <group>\n" + 
-            "            <name>Desktops</name>\n" + 
-            "            <comments>The desktops group</comments>\n" + 
-            "        </group>\n" + 
-            "        <group>\n" + 
-            "            <name>Security</name>\n" + 
-            "            <comments>The security group</comments>\n" + 
-            "        </group>\n" + 
-            "        <group>\n" + 
-            "            <name>Management</name>\n" + 
-            "            <comments>The management group</comments>\n" +
+            "            <name>InitialGroup</name>\n" + 
+            "            <comments>The group that gets notified first</comments>\n" + 
             "            <user>admin</user>" + 
             "            <user>brozow</user>" + 
             "        </group>\n" + 
             "        <group>\n" + 
-            "            <name>Reporting</name>\n" + 
-            "            <comments>The reporting group</comments>\n" + 
+            "            <name>EscalationGroup</name>\n" + 
+            "            <comments>The group things escalate to</comments>\n" +
+            "            <user>brozow</user>" + 
+            "            <user>david</user>" + 
             "        </group>\n" + 
             "        <group>\n" + 
-            "           <name>Admin</name>\n" + 
-            "           <comments>The administrators</comments>\n" + 
-            "           <user>admin</user>\n" + 
-            "           <user>brozow</user>\n" +
+            "            <name>UpGroup</name>\n" + 
+            "            <comments>The group things escalate to</comments>\n" +
+            "            <user>upUser</user>" + 
             "        </group>\n" + 
             "    </groups>\n" + 
             "</groupinfo>\n" + 
@@ -360,21 +252,28 @@ public class NotifdTest extends TestCase {
             "           <full-name>Mathew Brozowski</full-name>\n" + 
             "           <user-comments>Test User</user-comments>\n" +
             "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
-            "           <contact type=\"email\" info=\"matt@opennms.org\"/>\n" + 
+            "           <contact type=\"email\" info=\"brozow@opennms.org\"/>\n" + 
             "       </user>\n" + 
             "       <user>\n" + 
             "           <user-id>admin</user-id>\n" + 
             "           <full-name>Administrator</full-name>\n" + 
             "           <user-comments>Default administrator, do not delete</user-comments>\n" +
             "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
-            "           <contact type=\"email\" info=\"dhustace@nc.rr.com\"/>\n" + 
+            "           <contact type=\"email\" info=\"admin@opennms.org\"/>\n" + 
             "       </user>\n" + 
             "       <user>\n" + 
-            "           <user-id>tempuser</user-id>\n" + 
-            "           <full-name>Temporary User</full-name>\n" + 
-            "                        <user-comments></user-comments>\n" + 
+            "           <user-id>upUser</user-id>\n" + 
+            "           <full-name>User that receives up notifications</full-name>\n" + 
+            "           <user-comments>Default administrator, do not delete</user-comments>\n" +
+            "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
+            "           <contact type=\"email\" info=\"up@opennms.org\"/>\n" + 
+            "       </user>\n" + 
+            "       <user>\n" + 
+            "           <user-id>david</user-id>\n" + 
+            "           <full-name>David Hustace</full-name>\n" + 
+            "           <user-comments>A cool dude!</user-comments>\n" + 
             "           <password>18126E7BD3F84B3F3E4DF094DEF5B7DE</password>\n" + 
-            "           <contact type=\"email\" info=\"temp.user@opennms.org\"/>\n" + 
+            "           <contact type=\"email\" info=\"david@opennms.org\"/>\n" + 
             "           <contact type=\"numericPage\" info=\"6789\" serviceProvider=\"ATT\"/>\n" + 
             "           <contact type=\"textPage\" info=\"9876\" serviceProvider=\"Sprint\"/>\n" + 
             "           <duty-schedule>MoTuWeThFrSaSu800-2300</duty-schedule>\n" + 
@@ -390,209 +289,34 @@ public class NotifdTest extends TestCase {
             "        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
             "        <mstation>localhost</mstation>\n" + 
             "    </header>\n" + 
-            "    <path name=\"Email-Mock\" initial-delay=\"0s\">\n" + 
+            "    <path name=\"NoEscalate\" initial-delay=\"0s\">\n" + 
             "        <target>\n" + 
-            "            <name>Management</name>\n" + 
+            "            <name>InitialGroup</name>\n" + 
             "            <command>mockNotifier</command>\n" + 
             "        </target>\n" + 
             "    </path>\n" + 
-            "    <path name=\"Email-Reporting\">\n" + 
-            "        <target>\n" + 
-            "                <name>Reporting</name>\n" + 
-            "                <command>javaEmail</command>\n" + 
+            "    <path name=\"Intervals\" initial-delay=\"0s\">\n" + 
+            "        <target interval=\"3s\">\n" + 
+            "            <name>InitialGroup</name>\n" + 
+            "            <command>mockNotifier</command>\n" + 
             "        </target>\n" + 
             "    </path>\n" + 
-            "    <path name=\"Page-Management\">\n" + 
+            "    <path name=\"Escalate\">\n" + 
             "        <target>\n" + 
-            "                <name>Management</name>\n" + 
-            "                <command>textPage</command>\n" + 
-            "                <command>javaPagerEmail</command>\n" + 
-            "                <command>javaEmail</command>\n" + 
+            "            <name>InitialGroup</name>\n" + 
+            "            <command>mockNotifier</command>\n" + 
             "        </target>\n" + 
-            "    </path>\n" + 
-            "    <path name=\"Page-Network/Systems/Management\">\n" + 
-            "   <target interval=\"15m\">\n" + 
-            "                <name>Network/Systems</name>\n" + 
-            "                <command>textPage</command>\n" + 
-            "                <command>javaPagerEmail</command>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "        </target>\n" + 
-            "        <escalate delay=\"15m\">\n" + 
+            "        <escalate delay=\"2500ms\">\n" + 
             "            <target>\n" + 
-            "                <name>Management</name>\n" + 
-            "                <command>textPage</command>\n" + 
-            "                <command>javaPagerEmail</command>\n" + 
-            "                <command>javaEmail</command>\n" + 
+            "            <name>EscalationGroup</name>\n" + 
+            "            <command>mockNotifier</command>\n" + 
             "            </target>\n" + 
             "        </escalate>\n" + 
             "    </path>\n" + 
-            "    <path name=\"Page-Network/Systems\">\n" + 
+            "    <path name=\"UpPath\" initial-delay=\"0s\">\n" + 
             "        <target>\n" + 
-            "                <name>Network/Systems</name>\n" + 
-            "                <command>textPage</command>\n" + 
-            "                <command>javaPagerEmail</command>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "        </target>\n" + 
-            "    </path>\n" + 
-            "    <path name=\"Email-Management\">\n" + 
-            "        <target>\n" + 
-            "                <name>Management</name>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "        </target>\n" + 
-            "    </path>\n" + 
-            "    <path name=\"Page-Desktops/Management\">\n" + 
-            "        <target>\n" + 
-            "                <name>Desktops</name>\n" + 
-            "                <command>textPage</command>\n" + 
-            "                <command>javaPagerEmail</command>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "        </target>\n" + 
-            "        <escalate delay=\"15m\">\n" + 
-            "                <target>\n" + 
-            "                        <name>Management</name>\n" + 
-            "                        <command>textPage</command>\n" + 
-            "                        <command>javaPagerEmail</command>\n" + 
-            "                        <command>javaEmail</command>\n" + 
-            "                </target>\n" + 
-            "        </escalate>\n" + 
-            "    </path>\n" + 
-            "    <path name=\"Email-Network/Systems/Management\">\n" + 
-            "        <target>\n" + 
-            "                <name>Network/Systems</name>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "        </target>\n" + 
-            "        <escalate delay=\"15m\">\n" + 
-            "                <target>\n" + 
-            "                        <name>Management</name>\n" + 
-            "                        <command>javaEmail</command>\n" + 
-            "                </target>\n" + 
-            "        </escalate>\n" + 
-            "    </path>\n" + 
-            "    <path name=\"Email-Security/Management\">\n" + 
-            "        <target>\n" + 
-            "                <name>Security</name>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "        </target>\n" + 
-            "        <escalate delay=\"15m\">\n" + 
-            "                <target>\n" + 
-            "                        <name>Management</name>\n" + 
-            "                        <command>javaEmail</command>\n" + 
-            "                </target>\n" + 
-            "        </escalate>\n" + 
-            "    </path>\n" + 
-            "    <path name=\"Page-Security/Management\">\n" + 
-            "        <target>\n" + 
-            "                <name>Security</name>\n" + 
-            "                <command>textPage</command>\n" + 
-            "                <command>javaPagerEmail</command>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "        </target>\n" + 
-            "        <escalate delay=\"15m\">\n" + 
-            "                <target>\n" + 
-            "                        <name>Management</name>\n" + 
-            "                        <command>textPage</command>\n" + 
-            "                        <command>javaPagerEmail</command>\n" + 
-            "                        <command>javaEmail</command>\n" + 
-            "                </target>\n" + 
-            "        </escalate>\n" + 
-            "    </path>\n" + 
-            "    <path name=\"Email-Desktops/Management\">\n" + 
-            "        <target>\n" + 
-            "                <name>Desktops</name>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "        </target>\n" + 
-            "        <escalate delay=\"15m\">\n" + 
-            "                <target>\n" + 
-            "                        <name>Management</name>\n" + 
-            "                        <command>javaEmail</command>\n" + 
-            "                </target>\n" + 
-            "        </escalate>\n" + 
-            "    </path>\n" + 
-            "    <path name=\"Email-Desktops\">\n" + 
-            "        <target>\n" + 
-            "                <name>Desktops</name>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "        </target>\n" + 
-            "    </path>\n" + 
-            "    <path name=\"Email-Security\">\n" + 
-            "        <target>\n" + 
-            "                <name>Security</name>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "        </target>\n" + 
-            "    </path>\n" + 
-            "    <path name=\"Email-Network/Systems\">\n" + 
-            "        <target>\n" + 
-            "                <name>Network/Systems</name>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "        </target>\n" + 
-            "    </path>\n" + 
-            "    <path name=\"Page-Desktops\">\n" + 
-            "        <target>\n" + 
-            "                <name>Desktops</name>\n" + 
-            "                <command>textPage</command>\n" + 
-            "                <command>javaPagerEmail</command>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "        </target>\n" + 
-            "    </path>\n" + 
-            "    <path name=\"Page-Security\">\n" + 
-            "        <target>\n" + 
-            "                <name>Security</name>\n" + 
-            "                <command>textPage</command>\n" + 
-            "                <command>javaPagerEmail</command>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "        </target>\n" + 
-            "    </path>\n" + 
-            "    <path name=\"Page-All\">\n" + 
-            "        <target>\n" + 
-            "                <name>Network/Systems</name>\n" + 
-            "                <command>textPage</command>\n" + 
-            "                <command>javaPagerEmail</command>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "        </target>\n" + 
-            "        \n" + 
-            "        <target interval=\"15m\">\n" + 
-            "                <name>Security</name>\n" + 
-            "                <command>textPage</command>\n" + 
-            "                <command>javaPagerEmail</command>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "        </target>\n" + 
-            "        \n" + 
-            "        <target interval=\"1h\">\n" + 
-            "                <name>Desktops</name>\n" + 
-            "                <command>textPage</command>\n" + 
-            "                <command>javaPagerEmail</command>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "        </target>\n" + 
-            "        \n" + 
-            "        <target interval=\"1d\">\n" + 
-            "                <name>Management</name>\n" + 
-            "                <command>page</command>\n" + 
-            "                <command>javaPagerEmail</command>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "        </target>\n" + 
-            "    </path>\n" + 
-            "    <path name=\"Email-All\">\n" + 
-            "        <target>\n" + 
-            "                <name>Network/Systems</name>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "         </target>\n" + 
-            "        <target>\n" + 
-            "                <name>Security</name>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "        </target>\n" + 
-            "        <target>\n" + 
-            "                <name>Desktops</name>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "        </target>\n" + 
-            "        <target>\n" + 
-            "                <name>Management</name>\n" + 
-            "                <command>javaEmail</command>\n" + 
-            "        </target>\n" + 
-            "    </path>\n" + 
-            "    <path name=\"Email-Admin\">\n" + 
-            "        <target>\n" + 
-            "                <name>Admin</name>\n" + 
-            "                <command>javaEmail</command>\n" + 
+            "            <name>UpGroup</name>\n" + 
+            "            <command>mockNotifier</command>\n" + 
             "        </target>\n" + 
             "    </path>\n" + 
             "</destinationPaths>\n" + 
@@ -618,107 +342,6 @@ public class NotifdTest extends TestCase {
             "            <switch>-tm</switch>\n" + 
             "        </argument>\n" + 
             "    </command>\n" + 
-            "    <command binary=\"false\">\n" + 
-            "        <name>javaPagerEmail</name>\n" + 
-            "        <execute>org.opennms.netmgt.notifd.JavaMailNotificationStrategy</execute>\n" + 
-            "        <comment>class for sending pager email notifications</comment>\n" + 
-            "        <argument streamed=\"false\">\n" + 
-            "            <switch>-subject</switch>\n" + 
-            "        </argument>\n" + 
-            "        <argument streamed=\"false\">\n" + 
-            "            <switch>-pemail</switch>\n" + 
-            "        </argument>\n" + 
-            "        <argument streamed=\"false\">\n" + 
-            "            <switch>-tm</switch>\n" + 
-            "        </argument>\n" + 
-            "    </command>\n" + 
-            "    <command binary=\"false\">\n" + 
-            "        <name>javaEmail</name>\n" + 
-            "        <execute>org.opennms.netmgt.notifd.JavaMailNotificationStrategy</execute>\n" + 
-            "        <comment>class for sending email notifications</comment>\n" + 
-            "        <argument streamed=\"false\">\n" + 
-            "            <switch>-subject</switch>\n" + 
-            "        </argument>\n" + 
-            "        <argument streamed=\"false\">\n" + 
-            "            <switch>-email</switch>\n" + 
-            "        </argument>\n" + 
-            "        <argument streamed=\"false\">\n" + 
-            "            <switch>-tm</switch>\n" + 
-            "        </argument>\n" + 
-            "    </command>\n" + 
-            "   <command binary=\"true\">\n" + 
-            "       <name>syslog</name>\n" + 
-            "       <execute>/usr/bin/logger</execute>\n" + 
-            "       <comment>syslog to local0.warning</comment>\n" + 
-            "       <argument streamed=\"false\">\n" + 
-            "           <substitution>-p</substitution>\n" + 
-            "       </argument>\n" + 
-            "       <argument streamed=\"false\">\n" + 
-            "           <substitution>local0.warning</substitution>\n" + 
-            "       </argument>\n" + 
-            "       <argument streamed=\"false\">\n" + 
-            "           <substitution>-t</substitution>\n" + 
-            "       </argument>\n" + 
-            "       <argument streamed=\"false\">\n" + 
-            "           <substitution>opennms</substitution>\n" + 
-            "       </argument>\n" + 
-            "       <argument streamed=\"true\">\n" + 
-            "           <switch>-tm</switch>\n" + 
-            "       </argument>\n" + 
-            "   </command>\n" + 
-            "    <command binary=\"true\">\n" + 
-            "        <name>textPage</name>\n" + 
-            "        <execute>/usr/bin/qpage</execute>\n" + 
-            "        <comment>text paging program</comment>\n" + 
-            "        <argument streamed=\"false\">\n" + 
-            "            <switch>-p</switch>\n" + 
-            "        </argument>\n" + 
-            "        <argument streamed=\"false\">\n" + 
-            "            <switch>-t</switch>\n" + 
-            "        </argument>\n" + 
-            "    </command>\n" + 
-            "    <command binary=\"true\">\n" + 
-            "        <name>numericPage</name>\n" + 
-            "        <execute>/usr/bin/qpage</execute>\n" + 
-            "        <comment>numeric paging program</comment>\n" + 
-            "        <argument streamed=\"false\">\n" + 
-            "            <substitution>-p</substitution>\n" + 
-            "            <switch>-d</switch>\n" + 
-            "        </argument>\n" + 
-            "        <argument streamed=\"false\">\n" + 
-            "            <switch>-nm</switch>\n" + 
-            "        </argument>\n" + 
-            "    </command>\n" + 
-            "    <command binary=\"true\">\n" + 
-            "        <name>email</name>\n" + 
-            "        <execute>/bin/mail</execute>\n" + 
-            "        <comment>for sending email notifications</comment>\n" + 
-            "        <argument streamed=\"false\">\n" + 
-            "            <substitution>-s</substitution>\n" + 
-            "            <switch>-subject</switch>\n" + 
-            "        </argument>\n" + 
-            "        <argument streamed=\"false\">\n" + 
-            "            <switch>-email</switch>\n" + 
-            "        </argument>\n" + 
-            "        <argument streamed=\"true\">\n" + 
-            "            <switch>-tm</switch>\n" + 
-            "        </argument>\n" + 
-            "    </command>\n" + 
-            "    <command binary=\"true\">\n" + 
-            "        <name>pagerEmail</name>\n" + 
-            "        <execute>/bin/mail</execute>\n" + 
-            "        <comment>for sending pager email notifications</comment>\n" + 
-            "        <argument streamed=\"false\">\n" + 
-            "            <substitution>-s</substitution>\n" + 
-            "            <switch>-subject</switch>\n" + 
-            "        </argument>\n" + 
-            "        <argument streamed=\"false\">\n" + 
-            "            <switch>-pemail</switch>\n" + 
-            "        </argument>\n" + 
-            "        <argument streamed=\"true\">\n" + 
-            "            <switch>-tm</switch>\n" + 
-            "        </argument>\n" + 
-            "    </command>\n" + 
             "</notification-commands>";
     private MockDatabase m_db;
     private MockNetwork m_network;
@@ -730,6 +353,7 @@ public class NotifdTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
+        MockUtil.println("################# Running Test "+getName()+" ################");
         MockUtil.setupLogging();
         MockUtil.resetLogLevel();
         
@@ -775,6 +399,17 @@ public class NotifdTest extends TestCase {
         m_notifd.init();
         m_notifd.start();
         
+        Date downDate = new Date();
+        anticipateNotificationsForGroup("node 1 down.", "InitialGroup", downDate, 0);
+
+        //bring node down now
+        m_eventMgr.sendEventToListeners(m_network.getNode(1).createDownEvent(downDate));
+
+        m_anticipator.waitForAnticipated(2000);
+        
+        m_anticipator.reset();
+
+        MockUtil.println("################ Finish Setup for "+getName()+" ################");
         
     }
 
@@ -787,7 +422,7 @@ public class NotifdTest extends TestCase {
         m_notifd.stop();
         m_db.drop();
         MockNotificationStrategy.setAnticpator(null);
-        assertTrue(MockUtil.noWarningsOrHigherLogged());
+        assertTrue("Unexpected Warnings in Log", MockUtil.noWarningsOrHigherLogged());
     }
     
     /**
@@ -803,12 +438,14 @@ public class NotifdTest extends TestCase {
      * @throws Exception
      */
     public void testWicktorBug_1022_1031() throws Exception {
-
-        m_anticipator.anticipateNotification(createMockNotification("High loadavg5 Threshold exceeded", "dhustace@nc.rr.com"));
-        m_anticipator.anticipateNotification(createMockNotification("High loadavg5 Threshold exceeded", "matt@opennms.org"));
+        
+        Date date = new Date();
+        
+        long finished = anticipateNotificationsForGroup("High loadavg5 Threshold exceeded", "InitialGroup", date, 0);
 
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
         Event e = MockUtil.createInterfaceEvent("test", "uei.opennms.org/threshold/highThresholdExceeded", iface);
+        MockUtil.setEventTime(e, date);
         MockUtil.addEventParm(e, "ds", "loadavg5");
         m_eventMgr.sendEventToListeners(e);
         
@@ -822,7 +459,7 @@ public class NotifdTest extends TestCase {
          * when going through the notification names.
          */
         
-        verifyAnticipated(3000);
+        verifyAnticipated(finished, 500);
         
         
     }
@@ -846,63 +483,139 @@ public class NotifdTest extends TestCase {
 
         MockNode node = m_network.getNode(1);
 
-        String subject;
-        String email;
-        MockNotification notification;
-
-        notification = createMockNotification("node 1 down.", "dhustace@nc.rr.com");
-        m_anticipator.anticipateNotification(notification);
-
-        notification = createMockNotification("node 1 down.", "matt@opennms.org");
-        m_anticipator.anticipateNotification(notification);
+        Date downDate = new Date();
+        long finishedDowns = anticipateNotificationsForGroup("node 1 down.", "InitialGroup", downDate, 0);
 
         //bring node down now
-        m_eventMgr.sendEventToListeners(node.createDownEvent());
+        m_eventMgr.sendEventToListeners(node.createDownEvent(downDate));
 
-        verifyAnticipated(3000);
+        verifyAnticipated(finishedDowns, 500);
         
         m_anticipator.reset();
         
-        notification = createMockNotification("node 1 up.", "dhustace@nc.rr.com");
-        m_anticipator.anticipateNotification(notification);
+        Date upDate = new Date();
+        long finishedUps = anticipateNotificationsForGroup("node 1 up.", "UpGroup", upDate, 0);
 
-        notification = createMockNotification("node 1 up.", "matt@opennms.org");
-        m_anticipator.anticipateNotification(notification);
-        
         //bring node back up now
-        m_eventMgr.sendEventToListeners(node.createUpEvent());
+        m_eventMgr.sendEventToListeners(node.createUpEvent(upDate));
 
-        verifyAnticipated(3000);
+        verifyAnticipated(finishedUps, 500);
 
     }
     
     public void testMockNotificationInitialDelay() throws Exception {
 
-        m_destinationPathManager.getPath("Email-Mock").setInitialDelay("10s");
+        m_destinationPathManager.getPath("NoEscalate").setInitialDelay("1800ms");
         
         MockNode node = m_network.getNode(1);
-        MockNotification notification = new MockNotification();
+
+        Date downDate = new Date(new Date().getTime()+1800);
+        long finished = anticipateNotificationsForGroup("node 1 down.", "InitialGroup", downDate, 0);
+
+        m_eventMgr.sendEventToListeners(node.createDownEvent(downDate));
+
+        verifyAnticipated(finished, 500);
+
+    }
+    
+    public void testInterval() throws Exception {
         
-        notification = createMockNotification("node 1 down.", "dhustace@nc.rr.com");
-        m_anticipator.anticipateNotification(notification);
+        MockService svc = m_network.getService(1, "192.168.1.1", "ICMP");
+        
+        Date date = new Date();
+        
+        long interval = computeInterval();
 
-        notification = createMockNotification("node 1 down.", "matt@opennms.org");
-        m_anticipator.anticipateNotification(notification);
+        long endTime = anticipateNotificationsForGroup("service ICMP on 192.168.1.1 down.", "InitialGroup", date, interval);
+        
+        m_eventMgr.sendEventToListeners(svc.createDownEvent(date));
+        
+        verifyAnticipated(endTime, 500);
+        
+    }
+    
 
-        m_eventMgr.sendEventToListeners(node.createDownEvent());
+    public void testEscalate() throws Exception {
+        MockInterface iface = m_network.getInterface(1, "192.168.1.1");
 
-        assertEquals("Expected notifications not forthcoming.", 2, m_anticipator.waitForAnticipated(3000).size());
-        sleep(1000);
-        assertEquals("Unexpected notifications forthcoming.", 0, m_anticipator.getUnanticipated().size());
+        Date now = new Date();
 
-        verifyAnticipated(10000);
+        anticipateNotificationsForGroup("interface 192.168.1.1 down.", "InitialGroup", now, 0);
+        long endTime = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "EscalationGroup", now.getTime()+2500, 0);
 
+        m_eventMgr.sendEventToListeners(iface.createDownEvent(now));
+
+        verifyAnticipated(endTime, 500);
+    }
+    
+    public void testAcknowledge() throws Exception {
+
+        m_destinationPathManager.getPath("NoEscalate").setInitialDelay("2000ms");
+        
+        MockNode node = m_network.getNode(1);
+        
+        Event e = node.createDownEvent();
+
+        m_eventMgr.sendEventToListeners(e);
+
+        m_db.acknowledgeNoticesForEvent(e);
+        
+        sleep(5000);
+        
+        printNotifications("Unexpected notifications", m_anticipator.getUnanticipated());
+        assertTrue("Unexpected notifications received", m_anticipator.getUnanticipated().isEmpty());
+        
+    }
+    
+    private long anticipateNotificationsForGroup(String subject, String groupName, Date startTime, long interval) throws Exception {
+        return anticipateNotificationsForGroup(subject, groupName, startTime.getTime(), interval);
+    }        
+    
+    private long anticipateNotificationsForGroup(String subject, String groupName, long startTime, long interval) throws Exception {
+        Group group = m_groupManager.getGroup(groupName);
+        String[] users = group.getUser();
+        long expectedTime = startTime;
+        for (int i = 0; i < users.length; i++) {
+            User user = m_userManager.getUser(users[i]);
+            Contact[] contacts = user.getContact();
+            for (int j = 0; j < contacts.length; j++) {
+                Contact contact = contacts[j];
+                if ("email".equals(contact.getType())) {
+                    m_anticipator.anticipateNotification(createMockNotification(expectedTime, subject, contact.getInfo()));
+                }
+            }
+            expectedTime += interval;
+        }
+        return expectedTime-interval;
     }
 
     private void verifyAnticipated(int waitTime) {
-        assertEquals("Expected notifications not forthcoming.", 0, m_anticipator.waitForAnticipated(waitTime).size());
+        verifyAnticipated(0, waitTime);
+    }
+    
+    private void verifyAnticipated(long lastNotifyTime, long waitTime) {
+        long totalWaitTime = Math.max(0, lastNotifyTime + waitTime - System.currentTimeMillis());
+        
+        Collection missingNotifications = m_anticipator.waitForAnticipated(totalWaitTime);
+        printNotifications("Missing notifications", missingNotifications);
+        assertEquals("Expected notifications not forthcoming.", 0, missingNotifications.size());
+        // make sure that we didn't start before we should have
+        long now = System.currentTimeMillis();
+        MockUtil.println("Expected notifications no sooner than "+lastNotifyTime+", currentTime is "+now);
+        assertTrue("Anticipated notifications received before expected start time", now > lastNotifyTime);
         sleep(1000);
+        printNotifications("Unexpected notifications", m_anticipator.getUnanticipated());
         assertEquals("Unexpected notifications forthcoming.", 0, m_anticipator.getUnanticipated().size());
+    }
+
+    /**
+     * @param missingNotifications
+     */
+    private void printNotifications(String prefix, Collection missingNotifications) {
+        for (Iterator it = missingNotifications.iterator(); it.hasNext();) {
+            MockNotification notification = (MockNotification) it.next();
+            MockUtil.println(prefix+": "+notification);
+        }
     }
 
     private void sleep(long millis) {
@@ -912,12 +625,18 @@ public class NotifdTest extends TestCase {
         }
     }
 
-    private MockNotification createMockNotification(String subject, String email) {
+    private MockNotification createMockNotification(long expectedTime, String subject, String email) {
         MockNotification notification;
         notification = new MockNotification();
+        notification.setExpectedTime(expectedTime);
         notification.setSubject(subject);
         notification.setEmail(email);
         return notification;
+    }
+
+    private long computeInterval() throws IOException, MarshalException, ValidationException {
+        String interval = m_destinationPathManager.getPath("Intervals").getTarget(0).getInterval();
+        return TimeConverter.convertToMillis(interval);
     }
 
 }

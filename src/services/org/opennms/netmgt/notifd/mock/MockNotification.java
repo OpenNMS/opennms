@@ -40,6 +40,7 @@ public class MockNotification {
     private String m_subject;
     private String m_email;
     private String m_pemail;
+    private long m_expectedTime;
     
     
     public boolean equals(Object o) {
@@ -49,6 +50,7 @@ public class MockNotification {
             return (m_subject == null ? m.m_subject == null : m_subject.equals(m.m_subject))
                 && (m_email == null ? m.m_email == null : m_email.equals(m.m_email))
                 && (m_pemail == null ? m.m_pemail == null : m_pemail.equals(m.m_pemail))
+                && (Math.abs(m_expectedTime - m.m_expectedTime) < 300)
                 ;
         }
         return false;
@@ -91,4 +93,22 @@ public class MockNotification {
     public void setSubject(String subject) {
         m_subject = subject;
     }
+    
+    public long getExpectedTime() {
+        return m_expectedTime;
+    }
+
+    public void setExpectedTime(long expectedTime) {
+        m_expectedTime = expectedTime;
+    }
+
+    public String toString() {
+        return 
+        "[" +
+        " expectedTime = '" + m_expectedTime + "'" +
+        " subject = '" + m_subject + "'" +
+        " email = '" + m_email + "'" +
+        "]";
+    }
+
 }

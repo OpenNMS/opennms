@@ -561,6 +561,14 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     public String getNextNotifIdSql() {
         return "select next value for notifNxtId from seqQueryTable;";
     }
+
+    /**
+     * @param e
+     */
+    public void acknowledgeNoticesForEvent(Event e) {
+        Object[] values = { new Timestamp(System.currentTimeMillis()), new Integer(e.getDbid()) };
+        update ("update notifications set respondTime = ? where eventID = ? and respondTime is null", values);
+    }
     
 
 }

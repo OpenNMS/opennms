@@ -146,6 +146,10 @@ public class MockUtil {
         return createEvent(source, uei, node.getNodeId(), null, null);
     }
     
+    public static void setEventTime(Event event, Date date) {
+        event.setTime(EventConstants.formatToString(date));
+    }
+    
     public static Event createEvent(String source, String uei, int nodeId, String ipAddr, String svcName) {
         
         Event event = createEvent(source, uei);
