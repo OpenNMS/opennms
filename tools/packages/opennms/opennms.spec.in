@@ -347,6 +347,27 @@ rm -rf $RPM_BUILD_ROOT
 %{tomcatdir}/server
 %config %{servletdir}/WEB-INF/web.xml
 
+%pre
+
+if [ -x /sbin/chkconfig ]; then
+    chkconfig="/sbin/chkconfig"
+elif [ -x "`which chkconfig 2>&1`" ]; then
+    chkconfig="`which chkconfig 2>&1`"
+else
+    chkconfig=""
+fi
+
+if [ x"$chkconfig" != x"" -a -f %{initdir}/init.d/%{psql_service} ]; then
+    $chkconfig %{psql_service} | grep 'on$' > /dev/null
+    if [ $? -ne 0 ]; then
+	echo "'$chkconfig %{psql_service}' shows that the PostgreSQL" >&2
+	echo "server is not configured to start automatically at boot" >&2
+	echo "time.  You must run '$chkconfig --add %{psql_service}'" >&2
+	echo "before installing OpenNMS." >&2
+	exit 1
+    fi
+fi
+
 %post
 
 echo -e "- executing runjava to choose a Java Runtime Environment... \c"
@@ -358,14 +379,6 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 echo "done"
-
-#. %{profiledir}/%{name}.sh
-
-# XXX why do we do this?
-echo "- restarting postgres..."
-"%{initdir}/init.d/%{psql_service}" stop
-"%{initdir}/init.d/%{psql_service}" start || exit 1
-echo "- restarting postgres... done"
 
 echo -e "- moving *.sql.rpmnew files (if any)... \c"
 if [ `ls %{instprefix}/etc/*.sql.rpmnew 2>/dev/null | wc -l` -gt 0 ]; then
