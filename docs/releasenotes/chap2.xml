@@ -218,6 +218,27 @@
 
     <para>should get things working most of the time.</para>
 
+    <bridgehead>JavaMail Bug Fix for Availability Reports</bridgehead>
+
+    <para>A bug was fixed with Availability Reports using the JavaMailer
+    class. Some installations of Tomcat included the JavaMail API and
+    therefore our JavaMailer would work with those installations. Some users
+    are experiencing problems because their install does not have the API in
+    the Tomcat <filename>common/lib</filename> directory. The build task was
+    modified to include the appropriate jar files in our
+    <filename>WEB-INF/lib</filename> directory in case they were
+    missing.</para>
+
+    <para>An enhancement was also made to the JavaMailer include a Mail
+    Transport Agent (MTA). This MTA is free to use and was provided by John
+    Udell (found here: <ulink url="http://zoe.nu/">http://zoe.nu/</ulink>).
+    It's included in the OpenNMS libs as "jmta.jar". This enables OpenNMS to
+    use a Java mailer without needing a relay SMTP host. </para>
+
+    <para>A new flag has been added to the
+    <filename>javamail-configuration.properties</filename> file:
+    "org.opennms.core.utils.useJMTA". It defaults to "true".</para>
+
     <bridgehead>Other Minor Enhancements</bridgehead>
 
     <para>There are a number of other enhancements worth noting:</para>
