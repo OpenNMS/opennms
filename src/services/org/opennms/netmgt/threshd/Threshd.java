@@ -740,22 +740,26 @@ public final class Threshd
 			// Is the interface in the package?
 			//
 			log.debug("scheduleInterface: checking ipaddress " + ipAddress + " for inclusion in pkg " + pkg.getName());
-			if (!cfgFactory.interfaceInPackage(ipAddress, pkg))
+			boolean foundInPkg = cfgFactory.interfaceInPackage(ipAddress, pkg);
+			if (!foundInPkg && existing == false)
 			{
-                                // The interface might be a newly added one, rebuild the package
-                                // to ipList mapping and again to verify if the interface is in
-                                // the package.
-                                cfgFactory.rebuildPackageIpListMap();
-			        if (!cfgFactory.interfaceInPackage(ipAddress, pkg))
-			        {
-				        if (log.isDebugEnabled())
-					        log.debug("scheduleInterface: address/service: " + 
-							ipAddress + "/" + svcName + 
-							" not scheduled, interface does not belong to package: " + 
-							pkg.getName());
-				        continue;
-                                }
+			    // The interface might be a newly added one, rebuild the package
+			    // to ipList mapping and again to verify if the interface is in
+			    // the package.
+			    cfgFactory.rebuildPackageIpListMap();
+			    foundInPkg = cfgFactory.interfaceInPackage(ipAddress, pkg);
 			}
+			if (!foundInPkg)
+			{
+			    if (log.isDebugEnabled())
+			        log.debug("scheduleInterface: address/service: " + 
+			                ipAddress + "/" + svcName + 
+			                " not scheduled, interface does not belong to package: " + 
+			                pkg.getName());
+			    continue;
+			}
+		
+			
 			log.debug("scheduleInterface: ipaddress " + ipAddress + " IS in pkg " + pkg.getName());
 			
 			if (existing == false)
