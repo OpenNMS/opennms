@@ -115,6 +115,28 @@ public class EventconfFactory
 		{
 			m_events.add( (Event)i.next() );
 		}
+
+                Enumeration e = events.enumerateEventFile();
+                while(e.hasMoreElements())
+                {
+                        String eventfile = (String)e.nextElement();
+                        InputStream fileIn = new FileInputStream(eventfile);
+                        if(fileIn == null)
+                        {
+                                throw new IOException("Eventconf: Failed to load/locate events file: " + eventfile);
+                        }
+
+                        Reader filerdr = new InputStreamReader(fileIn);
+                        Events filelevel = null;
+                        filelevel = (Events)Unmarshaller.unmarshal(Events.class, filerdr);
+                        Enumeration efile = filelevel.enumerateEvent();
+                        while(efile.hasMoreElements())
+                        {
+                                Event event = (Event)efile.nextElement();
+                                m_events.add(event);
+                        }
+                }
+
 		
 		m_global = events.getGlobal();
 		
@@ -335,7 +357,7 @@ public class EventconfFactory
         public synchronized void saveCurrent()
                 throws MarshalException, IOException, ValidationException
         {
-		File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
+			File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
 		
 		Events newEvents = new Events();
 		newEvents.setEventCollection(m_events);

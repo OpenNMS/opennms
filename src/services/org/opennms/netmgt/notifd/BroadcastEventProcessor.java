@@ -206,7 +206,7 @@ final class BroadcastEventProcessor
 				}
 			}
 			// if the clear flag is set, swap the event uei as the ack uei and ack the second notice
-			if (curAck.getClear())
+			if (curAck.getUei().equals(event.getUei()) && curAck.getClear())
 			{
                                 try
                                 {

@@ -83,7 +83,7 @@
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="coldStart" status="on">
-        <uei>http://uei.opennms.org/mib2/generic/coldStart</uei>
+        <uei>http://uei.opennms.org/generic/traps/SNMP_Cold_Start</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Network/Systems</destinationPath>
         <text-message>An SNMP coldStart trap has been received from
@@ -93,7 +93,7 @@
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="warmStart" status="on">
-        <uei>http://uei.opennms.org/mib2/generic/warmStart</uei>
+        <uei>http://uei.opennms.org/generic/traps/SNMP_Warm_Start</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Network/Systems</destinationPath>
         <text-message>An SNMP warmStart trap has been received from
@@ -102,7 +102,7 @@
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
     <notification name="authenticationFailure" status="on">
-        <uei>http://uei.opennms.org/mib2/generic/authenticationFailure</uei>
+        <uei>http://uei.opennms.org/generic/traps/SNMP_Authen_Failure</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Security</destinationPath>
         <text-message>An Authentication Failure has been identified on

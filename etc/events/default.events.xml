@@ -4636,7 +4636,7 @@
                                 <mevalue>0</mevalue>
                         </maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/SNMP_Cold_Start</uei>
+		<uei>http://uei.opennms.org/generic/traps/SNMP_Cold_Start</uei>
 		<event-label>OpenNMS-defined trap event: SNMP_Cold_Start</event-label>
 		<descr>
 			&lt;p&gt;A coldStart trap signifies that the sending
@@ -4657,7 +4657,7 @@
                                 <mevalue>1</mevalue>
                         </maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/SNMP_Warm_Start</uei>
+		<uei>http://uei.opennms.org/generic/traps/SNMP_Warm_Start</uei>
 		<event-label>OpenNMS-defined trap event: SNMP_Warm_Start</event-label>
 		<descr>
 			&lt;p&gt;A warmStart trap signifies that the sending
@@ -4678,7 +4678,7 @@
                                 <mevalue>2</mevalue>
                         </maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/SNMP_Link_Down</uei>
+		<uei>http://uei.opennms.org/generic/traps/SNMP_Link_Down</uei>
 		<event-label>OpenNMS-defined trap event: SNMP_Link_Down</event-label>
 		<descr>
 			&lt;p&gt;A linkDown trap signifies that the sending protocol
@@ -4703,7 +4703,7 @@
                                 <mevalue>3</mevalue>
                         </maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/SNMP_Link_Up</uei>
+		<uei>http://uei.opennms.org/generic/traps/SNMP_Link_Up</uei>
 		<event-label>OpenNMS-defined trap event: SNMP_Link_Up</event-label>
 		<descr>
 			&lt;p&gt;A linkUp trap signifies that the sending protocol
@@ -4728,7 +4728,7 @@
                                 <mevalue>4</mevalue>
                         </maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/SNMP_Authen_Failure</uei>
+		<uei>http://uei.opennms.org/generic/traps/SNMP_Authen_Failure</uei>
 		<event-label>OpenNMS-defined trap event: SNMP_Authen_Failure</event-label>
 		<descr>
 			&lt;p&gt;An authentication failure trap signifies that the
@@ -4748,7 +4748,7 @@
 				<mevalue>5</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/SNMP_EGP_Down</uei>
+		<uei>http://uei.opennms.org/generic/traps/SNMP_EGP_Down</uei>
 		<event-label>OpenNMS-defined trap event: SNMP_EGP_Down</event-label>
 		<descr>
 			&lt;p&gt;An egpNeighborLoss trap signifies that an EGP
@@ -4771,7 +4771,7 @@
 				<mevalue>6</mevalue>
 			</maskelement>
 		</mask>
-		<uei>http://uei.opennms.org/traps/EnterpriseDefault</uei>
+		<uei>http://uei.opennms.org/generic/traps/EnterpriseDefault</uei>
 		<event-label>OpenNMS-defined trap event: EnterpriseDefault</event-label>
 		<descr>
 			&lt;p&gt;This is the default event format used when an
