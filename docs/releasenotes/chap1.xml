@@ -10,8 +10,11 @@
 		be easier to manage in the long term.
 	</para>
 	<para>
+		OpenNMS 1.0.2 is a maintenance release that fixes several code issues.
+	</para>
+	<para>
 		Please, let us know if you have any problems at all at the
-		<ulink url="http://www.opennms.org/developers/bugzilla/">OpenNMS
+		<ulink url="http://bugzilla.opennms.org/">OpenNMS
 		Bugzilla</ulink> page.
 	</para>
 </chapter>

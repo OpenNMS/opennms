@@ -1,3 +1,37 @@
+1.0.1 to 1.0.2
+----------------------------------------------------------------------
+- Added Event definitions for traps from 3Com, APC, Brocade, CIM, 
+  Cisco, Fore, HP, Intel, Microsoft, Novell, Oracle, SonicWall,
+  and Xerox devices.
+- Disallowed spaces in Path name. Bug 657
+- fixed small bug with wildcards in eventconf.xml
+- fixed AM/PM ordering on Performance Report drop down. Bug 515
+- fixed typo - Bug 662 - thanks Volker
+- fixed issue with capsd pulling all of the ifTable for interface.
+  Could cause issues with some HP switches.
+- Bug 664: Notifications not filtering on services.
+- Bug 666: Generic SNMP Traps are hard-coded and cannot be 
+  managed via eventconf.xml. This fix also included a change
+  that fixes and enforces the order of events in eventconf.xml.
+  Care must be taken so that the most specific mask matches are
+  listed  before more generic ones. But this fix insures that the
+  correct wildcards and exact matches work as ordered.
+- Fixed a NullPointer exception when deleting a node due to a
+  poller downtime model.
+
+1.0.0 to 1.0.1
+----------------------------------------------------------------------
+
+- fixed bug with Admin/Oper status types causing exception
+- removed duplicate listings for LDAP and Citrix in capsd config
+- fixed bug with rescans on certain devices (net-snmp on MACOSX)
+- fixed bug to allow threshold events to cause notifications
+- included workaround to handle eventconf.xml issues
+- added numerous updates to datacollection-config.xml and
+  snmp-graph.properties.xml
+- added a contrib directory and Tomas Carlsson mib2opennms program
+
+
 0.9.9 to 1.0.0
 ----------------------------------------------------------------------
 - reporting bugfixes

@@ -1,0 +1,17 @@
+downOpenNMS README
+
+Quick CGI-BIN script to display which OpenNMS nodes, interfaces,
+and services are down.
+
+Place in your CGI-BIN directory, e.g. in /var/www/cgi-bin, and
+make executable.
+
+Wrolf Courtney
+wrolf@wrolf.net
+
+Revision History
+
+8/21/2002 Early version
+10/23/2002 Cleaned up for distribution
+
+

@@ -142,7 +142,7 @@
                  for( int i = 1; i < 25; i++ ) {
               %>
                 <option value="<%=i%>" <% if( yesterdayHour == i ) out.print( "selected " ); %>>
-                  <%=(i<13) ? i : i-12%>&nbsp;<%=(i<13) ? "AM" : "PM"%>
+                  <%=(i<13) ? i : i-12%>&nbsp;<%=(i<12 | i>23) ? "AM" : "PM"%>
                 </option>
               <% } %>
             </select>
@@ -169,7 +169,7 @@
                  for( int i = 1; i < 25; i++ ) {
               %>
                 <option value="<%=i%>" <% if( nowHour == i ) out.print( "selected " ); %>>
-                  <%=(i<13) ? i : i-12%>&nbsp;<%=(i<13) ? "AM" : "PM"%>
+                  <%=(i<13) ? i : i-12%>&nbsp;<%=(i<12 | i>23) ? "AM" : "PM"%>
                 </option>
               <% } %>
             </select>

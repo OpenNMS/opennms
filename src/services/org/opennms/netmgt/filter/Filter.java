@@ -396,6 +396,14 @@ public class Filter
                 translation.setIPServiceMappingTranslation();
                 return translation.getStatement();
         }
+
+	public String getInterfaceWithServiceStatement()
+	{
+		SQLTranslation translation = new SQLTranslation(m_parseTree);
+		translation.addServiceToSelect();
+                translation.addNodeIDToSelect();
+		return translation.getStatement();
+	}
 	
 	/**
 	 * This method is used to validate that a rule is syntactically correct.

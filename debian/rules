@@ -8,7 +8,15 @@
 # This is the debhelper compatability version to use.
 export DH_COMPAT=3
 
-export BUILDDEFINES=-Droot.install=/opt/OpenNMS -Droot.install.initdir=/etc/init.d -Droot.install.servlets=/var/tomcat4/webapps/opennms -Droot.install.share=/var/opennms -Droot.install.rrdtool=/usr/lib -Droot.install.postgresql=/usr/lib/postgresql/opennms -Droot.install.logs=/var/log/opennms
+export BUILDDEFINES=-Droot.install=/usr/share/opennms -Droot.install.initdir=/etc/init.d -Droot.install.sbindir=/usr/sbin -Droot.install.contrib=/usr/share/opennms/contrib -Droot.install.rrdtool=/usr/lib -Droot.install.share=/var/lib/opennms -Droot.install.servlets=/usr/share/java/webapps/opennms -Droot.install.logs=/var/log/opennms -Droot.install.pid=/var/run/opennms.pid -Droot.install.postgresql=/usr/lib/postgresql/lib/opennms
+
+
+# Added to move the JAVA_HOME check up top
+ifndef JAVA_HOME
+	JAVA_HOME = /usr/lib/j2sdk-1.4.0
+endif
+export JAVA_HOME
+
 
 configure: configure-stamp
 configure-stamp:
@@ -23,9 +31,9 @@ build-stamp:
 	dh_testdir
 
 	# Add here commands to compile the package.
-	JAVA_HOME=/usr/lib/j2sdk1.3 ./build.sh $(BUILDDEFINES) compile
+	sh ./build.sh $(BUILDDEFINES) compile
 	rm -f debian/conffiles
-	find etc -type f -maxdepth 1 -exec echo "/opt/OpenNMS/{}" >> debian/conffiles \; 2>/dev/null
+	find etc -type f -maxdepth 1 -printf "/etc/opennms/%f\n" >> debian/conffiles 2>/dev/null
 	#/usr/bin/docbook-to-man debian/opennms.sgml > opennms.1
 
 	touch build-stamp
@@ -36,7 +44,8 @@ clean:
 	rm -f build-stamp configure-stamp
 
 	# Add here commands to clean up after the build process.
-	JAVA_HOME=/usr/lib/j2sdk1.3 ./build.sh clean
+	sh ./build.sh clean
+	> debian/conffiles
 
 	dh_clean
 
@@ -47,8 +56,49 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/opennms.
-	JAVA_HOME=/usr/lib/j2sdk1.3 ./build.sh -Droot.installprefix=$(CURDIR)/debian/opennms -Drelative.installprefix=debian/opennms $(BUILDDEFINES) install
-	dpkg-shlibdeps debian/opennms/opt/OpenNMS/lib/eventtime.so.* debian/opennms/opt/OpenNMS/lib/iplike.so.* debian/opennms/opt/OpenNMS/lib/libjicmp.so.* debian/opennms/opt/OpenNMS/lib/libjrrd.so.*
+	sh ./build.sh -Droot.installprefix=$(CURDIR)/debian/opennms -Drelative.installprefix=debian/opennms $(BUILDDEFINES) install
+
+	# Move the PostgreSQL function into the right spot
+	mv $(CURDIR)/debian/opennms/usr/share/opennms/lib/iplike.so* $(CURDIR)/debian/opennms/usr/lib/postgresql/lib/opennms/
+
+	# Move the JAVA native shared libs into /usr/lib
+	# NOPE -- doesn't work
+	#mv $(CURDIR)/debian/opennms/usr/share/opennms/lib/libjicmp.so* $(CURDIR)/debian/opennms/usr/share/opennms/lib/libjrrd.so* $(CURDIR)/debian/opennms/usr/lib/
+
+	# Move the configs to a standard spot and link up
+	mv $(CURDIR)/debian/opennms/usr/share/opennms/etc/* $(CURDIR)/debian/opennms/etc/opennms/
+	rmdir $(CURDIR)/debian/opennms/usr/share/opennms/etc
+	ln -s /etc/opennms $(CURDIR)/debian/opennms/usr/share/opennms/etc
+
+	# Link in the libs for tomcat4
+	for f in castor-0.9.3.9.jar log4j.jar opennms_common.jar \
+	  opennms_core.jar opennms_services.jar opennms_web.jar; do \
+		ln -s ../../../opennms/lib/$$f \
+		   $(CURDIR)/debian/opennms/usr/share/tomcat4/server/lib/ ; \
+	done
+
+	# Remove the init script cuz we have a good debian-style script
+	rm -f $(CURDIR)/debian/opennms/etc/init.d/opennms
+
+	# Add the /usr/bin/opennms script
+	cp opennms.binscript $(CURDIR)/debian/opennms/usr/bin/opennms
+	chmod 755 $(CURDIR)/debian/opennms/usr/bin/opennms
+
+	# Fix up some of the scripts and configs
+	sed -e 's/var\/tomcat4\/conf/etc\/tomcat4/' -e 's/sw\/lib/usr\/lib\/postgresql\/lib/' $(CURDIR)/debian/opennms/usr/share/opennms/bin/install.pl > $(CURDIR)/debian/opennms/usr/share/opennms/bin/install.pl.tmp
+	mv $(CURDIR)/debian/opennms/usr/share/opennms/bin/install.pl.tmp $(CURDIR)/debian/opennms/usr/share/opennms/bin/install.pl
+	sed -e 's/bin\/mail/usr\/bin\/mail/' $(CURDIR)/debian/opennms/etc/opennms/notificationCommands.xml > $(CURDIR)/debian/opennms/etc/opennms/notificationCommands.xml.tmp
+	mv $(CURDIR)/debian/opennms/etc/opennms/notificationCommands.xml.tmp $(CURDIR)/debian/opennms/etc/opennms/notificationCommands.xml
+
+	# Get the shared libs dependencies -- not needed
+	#dpkg-shlibdeps debian/opennms/usr/lib/iplike.so.* debian/opennms/usr/lib/libjicmp.so.* debian/opennms/usr/lib/libjrrd.so.*
+	# Fix permissions and ownership
+	chgrp -R nogroup $(CURDIR)/debian/opennms/etc/opennms $(CURDIR)/debian/opennms/var/lib/opennms/* $(CURDIR)/debian/opennms/var/log/opennms
+	chmod 2775 $(CURDIR)/debian/opennms/etc/opennms $(CURDIR)/debian/opennms/var/lib/opennms/* $(CURDIR)/debian/opennms/var/log/opennms
+	chmod 644 $(CURDIR)/debian/opennms/usr/share/opennms/lib/*.jar
+	chmod 664 $(CURDIR)/debian/opennms/etc/opennms/*
+	chmod 660 $(CURDIR)/debian/opennms/etc/opennms/users.xml $(CURDIR)/debian/opennms/etc/opennms/groups.xml $(CURDIR)/debian/opennms/etc/opennms/snmp-config.xml $(CURDIR)/debian/opennms/etc/opennms/opennms-database.xml $(CURDIR)/debian/opennms/etc/opennms/magic-users.properties $(CURDIR)/debian/opennms/etc/opennms/vulnscand-configuration.xml
+	chmod 755 $(CURDIR)/debian/opennms/usr/share/opennms/bin/install.pl
 
 
 # Build architecture-independent files here.
@@ -67,7 +117,7 @@ binary-arch: build install
 #	dh_installemacsen
 #	dh_installpam
 #	dh_installmime
-#	dh_installinit
+	dh_installinit -n
 	dh_installcron
 	dh_installman
 	dh_installinfo
@@ -76,11 +126,11 @@ binary-arch: build install
 	dh_link
 	dh_strip
 	dh_compress
-	dh_fixperms
+#	dh_fixperms	# this is a little scary for my tastes right now
 #	dh_makeshlibs
 	dh_installdeb
 #	dh_perl
-	dh_shlibdeps
+#	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb

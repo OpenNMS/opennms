@@ -3,7 +3,13 @@
 	<title>Supported Systems</title>
 	<subtitle>Supported UNIX-like OSes</subtitle>
 	<para>
-		The following are the systems that OpenNMS is supported or known to run on.
+		OpenNMS is written almost entirely in Java, and should be able to run on any
+		system that suuports the Java 1.4 Virtual Machine. There are requirements for
+		other programs such as PostgreSQL, Perl, RRDTool and Tomcat4, but the 1.4 JDK
+		is the key requirement (as most of the other packages can be compiled from source).
+	</para>
+	<para>
+		The following are the systems that support or are known to run OpenNMS.
 	</para>
 	<sect1 id="chap4sect1" label="4.1.">
 		<title>Fully Supported</title>
@@ -14,10 +20,33 @@
 		<itemizedlist>
 			<listitem>
 				<formalpara>
-					<title>RedHat 7.x</title>
+					<title>Red Hat 7.x and Redhat 8.x</title>
 					<para>
-						On RedHat 7.2 and up, it is suggested that you use the
-						official RedHat PostgreSQL RPMs that come with
+						With Postgres 7.2, there are new security measures
+						that prevent the installation from accessing postgres.
+						You can either tune them to allow both <emphasis>root</emphasis>
+						and <emphasis>opennms</emphasis> to access the database,
+						or you can simply disable this security.
+					</para>
+					<para>
+                                        To do so, start postgresql with the command
+                                        '<emphasis>service postgresql start</emphasis>'
+                                        (to make sure that PostgreSQL's init has created
+                                        your data directory), and then edit the file
+                                        '<emphasis>/var/lib/pgsql/data/pg_hba.conf</emphasis>'
+                                        and make sure it has the following lines:
+<programlisting>
+	local   all                                     trust
+	host    all     127.0.0.1       255.255.255.255 trust
+</programlisting>
+
+                                        Then run '<emphasis>service postgresql restart</emphasis>'
+                                        to restart with the new configuration.
+                                </para>
+
+					<para>
+						On Red Hat 7.2 and up, it is suggested that you use the
+						official Red Hat PostgreSQL RPMs that come with
 						your distribution.  However, for OpenNMS to work
 						correctly, you will need to make sure that tcp
 						sockets are enabled.  It is also suggested that
@@ -45,8 +74,8 @@
 					If you do use the PostgreSQL RPMs provided with OpenNMS,
 					you will need the <emphasis>readline41</emphasis>
 					compatibility RPM installed, because our RPMs were built
-					against RedHat 7.0.  You can get it off your RedHat 7.2 CD,
-					or at <ulink url="ftp://ftp.redhat.com/pub/redhat/linux/7.2/en/os/i386/RedHat/RPMS/readline41-4.1-10.i386.rpm">RedHat's
+					against Red Hat 7.0.  You can get it off your Red Hat 7.2 CD,
+					or at <ulink url="ftp://ftp.redhat.com/pub/redhat/linux/7.2/en/os/i386/Red Hat/RPMS/readline41-4.1-10.i386.rpm">Red Hat's
 					FTP site</ulink>.
 				</para>
 				<para>
@@ -57,7 +86,7 @@
 			</listitem>
 			<listitem>
 				<formalpara>
-					<title>Mandrake 8.x</title>
+					<title>Mandrake 8.x and Mandrake 9.x</title>
 					<para>
 						Please note that while we build packages for Mandrake
 						8.x, we do not do any formal testing on it.  Packages
@@ -76,7 +105,7 @@
 		<itemizedlist>
 			<listitem>
 				<formalpara>
-					<title>RedHat 6.2</title>
+					<title>Red Hat 6.2</title>
 					<para>
 						No special cases known.
 					</para>
@@ -84,7 +113,7 @@
 			</listitem>
 			<listitem>
 				<formalpara>
-					<title>Solaris 7 and 8</title>
+					<title>Solaris 7, Solaris 8 and Solaris 9</title>
 					<para>
 						There have been reports of OpenNMS building and
 						running on Solaris on the discuss list.
@@ -95,16 +124,26 @@
 				<formalpara>
 					<title>Debian Woody</title>
 					<para>
-						Debian packages for OpenNMS are in-progress, and are
-						expected to work before a 1.0 release of OpenNMS.
+						Debian packages should be available on ftp.opennms.org and 
+						will soon be supported via the installer. It is hoped that
+						OpenNMS will be included in Debian Sid.
 					</para>
 				</formalpara>
 			</listitem>
+                        <listitem>
+                                <formalpara>
+                                        <title>SuSE 8.1</title>
+                                        <para>
+                                                OpenNMS is known to build and run on SuSE 8.1.
+                                        </para>
+                                </formalpara>
+                        </listitem>
 			<listitem>
 				<formalpara>
 					<title>MacOS X</title>
 					<para>
-						OpenNMS is known to build and run on OSX.
+						OpenNMS is known to build and run on OSX with the developer's 1.4
+						Java JDK.
 					</para>
 				</formalpara>
 			</listitem>

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 VERSION_LD_PATH='$Revision$'
 PACKAGES="$PACKAGES LD_PATH"

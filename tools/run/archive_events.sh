@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 PWD_CMD=`which pwd 2>&1 | grep -v "no pwd in" | grep -v "shell built-in command"`
 [ -z "$PWD_COMMAND" ] && [ -x /bin/pwd ] && PWD_CMD="/bin/pwd"

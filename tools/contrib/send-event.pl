@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!@root.install.perl@
 
 use strict;
 use Getopt::Mixed "nextOption";
@@ -17,6 +17,7 @@ use vars qw(
 	$UEI
 	$VERBOSE
 	$ZONE
+	$OPERINSTR
 	@PARMS
 
 	@SEVERITIES
@@ -31,7 +32,7 @@ $ZONE    = 'EST' unless defined $ZONE;
 
 @SEVERITIES = ( undef, 'Indeterminate', 'Cleared', 'Normal', 'Warning', 'Minor', 'Major', 'Critical' );
 	
-Getopt::Mixed::init('h help>h d=s descr>d i=s interface>i n=i nodeid>n p=s parm>p s=s service>s t=s timezone>t zone>t u=s uei>u V version>V v verbose>v x=s severity>x');
+Getopt::Mixed::init('h help>h d=s descr>d i=s interface>i n=i nodeid>n p=s parm>p s=s service>s t=s timezone>t zone>t u=s uei>u V version>V v verbose>v x=s severity>x o=s operinstr>o');
 while (my ($option, $value) = nextOption()) {
 
         $SERVICE   = $value if ($option eq "s");
@@ -41,6 +42,7 @@ while (my ($option, $value) = nextOption()) {
         $SEVERITY  = $value if ($option eq "x");
 	$VERBOSE   = 1      if ($option eq "v");
 	$ZONE      = $value if ($option eq "z");
+	$OPERINSTR = $value if ($option eq "o");
 	push(@PARMS, parse_parm($value)) if ($option eq "p");
 
 	if ($option eq "V") { print "$0 version $VERSION\n"; exit; }
@@ -153,6 +155,7 @@ $event .= "   <interface>$INTERFACE</interface>\n" if (defined $INTERFACE);
 $event .= "   <service>$SERVICE</service>\n"       if (defined $SERVICE);
 $event .= "   <descr>$DESCR</descr>\n"             if (defined $DESCR);
 $event .= "   <severity>$SEVERITY</severity>\n"    if (defined $SEVERITY);
+$event .= "   <operinstruct>$OPERINSTR</operinstruct>\n" if (defined $OPERINSTR);
 
 if (@PARMS) {
   $event .= "   <parms>\n";
