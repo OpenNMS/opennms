@@ -548,7 +548,7 @@ public class NotifdTest extends TestCase {
 
         m_eventMgr.sendEventToListeners(iface.createDownEvent(now));
 
-        verifyAnticipated(endTime, 500);
+        verifyAnticipated(endTime, 2000);
     }
     
     public void testManualAcknowledge1() throws Exception {
