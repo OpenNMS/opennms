@@ -590,10 +590,6 @@ your distribution.
 
     <available property="apple.apis.present" classname="com.apple.cocoa.foundation.NSArray" classpathref="libraries.java.path" />
 
-    <fail unless="apple.apis.present">
-     Couldn't find it!
-    </fail>
-
   </target>
  
  <target name="info" depends="prep"

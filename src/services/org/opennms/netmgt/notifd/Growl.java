@@ -8,7 +8,7 @@ package org.opennms.netmgt.notifd;
  *
  * Revisions:
  * $Log$
- * Revision 1.1.2.2  2005/03/25 16:10:43  rangerrick
+ * Revision 1.1.2.3  2005/03/25 16:15:09  rangerrick
  * fix growl to not build if you don't have the apple java APIs
  *
  *
