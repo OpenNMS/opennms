@@ -32,7 +32,6 @@
 	<classpathentry kind="lib" path="lib/mx4j.jar"/>
 	<classpathentry kind="lib" path="lib/mx4j-tools.jar"/>
 	<classpathentry kind="lib" path="lib/oro204.jar"/>
-	<classpathentry kind="lib" path="lib/postgresql.jar"/>
 	<classpathentry kind="lib" path="lib/pylib152e.jar"/>
 	<classpathentry kind="lib" path="lib/regexp120.jar"/>
 	<classpathentry kind="lib" path="lib/sablecc-2.17.2.jar"/>
