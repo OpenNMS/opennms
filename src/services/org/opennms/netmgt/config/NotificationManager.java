@@ -115,7 +115,7 @@ public abstract class NotificationManager {
         for (Enumeration e = m_notifications.enumerateNotification(); e.hasMoreElements();) {
             Notification notif = (Notification) e.nextElement();
     
-            if (uei.equals(notif.getUei()) | "MATCH-ANY-UEI".equals(notif.getUei())) {
+            if (uei.equals(notif.getUei()) || "MATCH-ANY-UEI".equals(notif.getUei())) {
                 return true;
             }
         }
