@@ -1,5 +1,7 @@
 - Move away from the ugly hacking of users pg_hba.conf file. Possibly use
-  debconf to prompt for more reasonable settings.
+  debconf to prompt for more reasonable settings. Better yet, make 
+  upstream changes to negate some or all of the need to change the 
+  defaults.
 
 - Move away from ugly hacking of users server.xml file. Possibly use 
   debconf to prompt the user and give them a choice.
@@ -16,5 +18,10 @@
 - Write a man page.
 
 - Look into lintian overrides
+
+- Tomcat policy is basically carpet bombing. Come up with something that
+  reduces privelages to only what is required.
+
+- Audit for Debian policy compliance
 
 -- Eric Evans, <eevans@opennms.org>
