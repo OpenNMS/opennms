@@ -77,7 +77,8 @@ create index server_name_idx on serverMap(serverName);
 
 create table serviceMap (
 	ipAddr			varchar(16) not null,
-	serviceMapName		varchar(32) not null );
+	serviceMapName		varchar(32) not null
+);
 create index servicemap_name_idx on serviceMap(serviceMapName);
 create index serviceMap_ipaddr_idx on serviceMap(ipAddr);
 
@@ -105,8 +106,7 @@ create index serviceMap_ipaddr_idx on serviceMap(ipAddr);
 --########################################################################
 
 create table distPoller (
-	dpName			varchar(12),
-				constraint pk_dpName primary key (dpName),
+	dpName			varchar(12) not null,
 	dpIP			varchar(16) not null,
 	dpComment		varchar(256),
 	dpDiscLimit		numeric(5,2),
@@ -114,7 +114,10 @@ create table distPoller (
 	dpLastEventPull		timestamp without time zone,
 	dpLastPackagePush	timestamp without time zone,
 	dpAdminState 		integer,
-	dpRunState		integer );
+	dpRunState		integer,
+
+	constraint pk_dpName primary key (dpName)
+);
 
 --########################################################################
 --# node Table - Contains information on nodes discovered and potentially
@@ -154,10 +157,8 @@ create table distPoller (
 --########################################################################
 
 create table node (
-	nodeID		integer,
-			constraint pk_nodeID primary key (nodeID),
+	nodeID		integer not null,
 	dpName		varchar(12),
-			constraint fk_dpName foreign key (dpName) references distPoller,
 	nodeCreateTime	timestamp without time zone not null,
 	nodeParentID	integer,
 	nodeType	char(1),
@@ -171,7 +172,11 @@ create table node (
         nodeNetBIOSName varchar(16),
 	nodeDomainName  varchar(16),
 	operatingSystem varchar(64),
-	lastCapsdPoll   timestamp without time zone );
+	lastCapsdPoll   timestamp without time zone,
+
+	constraint pk_nodeID primary key (nodeID),
+	constraint fk_dpName foreign key (dpName) references distPoller
+);
 
 create index node_id_type_idx on node(nodeID, nodeType);
 create index node_label_idx on node(nodeLabel);
@@ -215,14 +220,16 @@ create index node_label_idx on node(nodeLabel);
 
 create table ipInterface (
 	nodeID			integer,
-				constraint fk_nodeID1 foreign key (nodeID) references node ON DELETE CASCADE,
 	ipAddr			varchar(16) not null,
 	ifIndex			integer,
 	ipHostname		varchar(256),
 	isManaged		char(1),
 	ipStatus		integer,
 	ipLastCapsdPoll		timestamp without time zone,
-	isSnmpPrimary           char(1) );
+	isSnmpPrimary           char(1),
+
+	constraint fk_nodeID1 foreign key (nodeID) references node ON DELETE CASCADE
+);
 
 create index ipinterface_nodeid_ipaddr_ismanaged_idx on ipInterface(nodeID, ipAddr, isManaged);
 create index ipinterface_ipaddr_ismanaged_idx on ipInterface(ipAddr, isManaged);
@@ -271,7 +278,6 @@ create index ipinterface_nodeid_idx on ipInterface(nodeID);
 
 create table snmpInterface (
 	nodeID			integer,
-				constraint fk_nodeID2 foreign key (nodeID) references node ON DELETE CASCADE,
 	ipAddr			varchar(16) not null,
 	snmpIpAdEntNetMask	varchar(16),
 	snmpPhysAddr		char(12),
@@ -282,7 +288,10 @@ create table snmpInterface (
 	snmpIfSpeed		integer,
 	snmpIfAdminStatus	integer,
 	snmpIfOperStatus	integer,
-	snmpIfAlias		varchar(256)	);
+	snmpIfAlias		varchar(256),
+
+	constraint fk_nodeID2 foreign key (nodeID) references node ON DELETE CASCADE
+);
 
 create index snmpinterface_nodeid_ifindex_idx on snmpinterface(nodeID, snmpIfIndex);
 create index snmpinterface_nodeid_idx on snmpinterface(nodeID);
@@ -299,9 +308,11 @@ create index snmpinterface_ipaddr_idx on snmpinterface(ipaddr);
 --########################################################################
 
 create table service (
-	serviceID		integer,
-				constraint pk_serviceID primary key (serviceID),
-	serviceName		varchar(32) not null );
+	serviceID		integer not null,
+	serviceName		varchar(32) not null,
+
+	constraint pk_serviceID primary key (serviceID)
+);
 
 --########################################################################
 --# ifServices Table - Contains a mapping of interfaces to services available
@@ -337,17 +348,19 @@ create table service (
 
 create table ifServices (
 	nodeID			integer,
-				constraint fk_nodeID3 foreign key (nodeID) references node ON DELETE CASCADE,
 	ipAddr			varchar(16) not null,
 	ifIndex			integer,
 	serviceID		integer,
-				constraint fk_serviceID1 foreign key (serviceID) references service ON DELETE CASCADE,
 	lastGood		timestamp without time zone,
 	lastFail		timestamp without time zone,
 	qualifier		char(16),
 	status         		char(1),
 	source			char(1),
-	notify                  char(1) );
+	notify                  char(1),
+
+	constraint fk_nodeID3 foreign key (nodeID) references node ON DELETE CASCADE,
+	constraint fk_serviceID1 foreign key (serviceID) references service ON DELETE CASCADE
+);
 
 create index ifservices_nodeid_ipaddr_status on ifservices(nodeID, ipAddr, status);
 create index ifservices_nodeid_status on ifservices(nodeid, status);
@@ -448,11 +461,9 @@ create index ifservices_nodeid_serviceid_idx on ifservices(nodeID, serviceID);
 --##################################################################
 
 create table events (
-	eventID			integer,
-				constraint pk_eventID primary key (eventID),
+	eventID			integer not null,
 	eventUei		varchar(256) not null,
 	nodeID			integer,
-				constraint fk_nodeID6 foreign key (nodeID) references node ON DELETE CASCADE,
 	eventTime		timestamp without time zone not null,
 	eventHost		varchar(256),
 	eventSource		varchar(128) not null,
@@ -482,8 +493,11 @@ create table events (
 	eventLog		char(1) not null,
 	eventDisplay		char(1) not null,
 	eventAckUser		varchar(256),
-	eventAckTime		timestamp without time zone
-        );
+	eventAckTime		timestamp without time zone,
+
+	constraint pk_eventID primary key (eventID),
+	constraint fk_nodeID6 foreign key (nodeID) references node ON DELETE CASCADE
+);
 
 create index events_uei_idx on events(eventUei);
 create index events_nodeid_idx on events(nodeID);
@@ -517,20 +531,21 @@ create index events_acktime_idx on events(eventAckTime);
 --########################################################################
 
 create table outages (
-
-	outageID		integer,
-				constraint pk_outageID primary key (outageID),
+	outageID		integer not null,
 	svcLostEventID		integer,
-				constraint fk_eventID1 foreign key (svcLostEventID) references events (eventID) ON DELETE CASCADE,
 	svcRegainedEventID	integer,
-				constraint fk_eventID2 foreign key (svcRegainedEventID) references events (eventID) ON DELETE CASCADE,
 	nodeID			integer,
-					constraint fk_nodeID4 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE,
 	ipAddr			varchar(16) not null,
 	serviceID		integer,
-				constraint fk_serviceID2 foreign key (serviceID) references service (serviceID) ON DELETE CASCADE,
 	ifLostService		timestamp without time zone not null,
-	ifRegainedService	timestamp without time zone );
+	ifRegainedService	timestamp without time zone,
+
+	constraint pk_outageID primary key (outageID),
+	constraint fk_eventID1 foreign key (svcLostEventID) references events (eventID) ON DELETE CASCADE,
+	constraint fk_eventID2 foreign key (svcRegainedEventID) references events (eventID) ON DELETE CASCADE,
+	constraint fk_nodeID4 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE,
+	constraint fk_serviceID2 foreign key (serviceID) references service (serviceID) ON DELETE CASCADE
+);
 
 create index outages_svclostid_idx on outages(svcLostEventID);
 create index outages_svcregainedid_idx on outages(svcRegainedEventID);
@@ -571,8 +586,7 @@ create index outages_regainedservice_idx on outages(ifRegainedService);
 --########################################################################
 
 create table vulnerabilities (
-	vulnerabilityID		integer,
-				constraint pk_vulnerabilityID primary key (vulnerabilityID),
+	vulnerabilityID		integer not null,
 	nodeID			integer,
 	ipAddr			varchar(16),
 	serviceID		integer,
@@ -587,7 +601,10 @@ create table vulnerabilities (
 	descr			text,
 	port			integer,
 	protocol		varchar(32),
-	cveEntry		varchar(14) );
+	cveEntry		varchar(14),
+
+	constraint pk_vulnerabilityID primary key (vulnerabilityID)
+);
 
 create index vulnerabilities_nodeid_idx on vulnerabilities(nodeID);
 create index vulnerabilities_ipaddr_idx on vulnerabilities(ipAddr);
@@ -669,20 +686,21 @@ create table notifications (
        textMsg      varchar(4000) not null,
        subject      varchar(256),
        numericMsg   varchar(256),
-       notifyID	    integer,
-       			constraint pk_notifyID primary key (notifyID),
+       notifyID	    integer not null,
        pageTime     timestamp without time zone,
        respondTime  timestamp without time zone,
        answeredBy   varchar(256),
        nodeID	    integer,
-       			constraint fk_nodeID7 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE,
        interfaceID  varchar(16),
        serviceID    integer,
        queueID		varchar(256),
        eventID      integer,
-       			constraint fk_eventID3 foreign key (eventID) references events (eventID) ON DELETE CASCADE,
-       eventUEI     varchar(256) not null
-       );
+       eventUEI     varchar(256) not null,
+
+       constraint pk_notifyID primary key (notifyID),
+       constraint fk_nodeID7 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE,
+       constraint fk_eventID3 foreign key (eventID) references events (eventID) ON DELETE CASCADE
+);
 
 create index notifications_ipaddr_idx on notifications(interfaceID);
 create index notifications_serviceid_idx on notifications(serviceID);
@@ -706,10 +724,11 @@ create index notifications_answeredby_idx on notifications(answeredBy);
 create table usersNotified (
         userID          varchar(256) not null,
         notifyID        integer,
-			constraint fk_notifID2 foreign key (notifyID) references notifications (notifyID) ON DELETE CASCADE,
         notifyTime      timestamp without time zone,
         media           varchar(32),
-        contactinfo     varchar(64)
+        contactinfo     varchar(64),
+
+	constraint fk_notifID2 foreign key (notifyID) references notifications (notifyID) ON DELETE CASCADE
 );
 
 create index userid_notifyid_idx on usersNotified(userID, notifyID);
@@ -763,7 +782,6 @@ create index userid_notifyid_idx on usersNotified(userID, notifyID);
 
 create table assets (
         nodeID          integer,
-			constraint fk_nodeID5 foreign key (nodeID) references node ON DELETE CASCADE,
         category        varchar(64) not null,
         manufacturer    varchar(64),
         vendor          varchar(64),
@@ -802,8 +820,10 @@ create table assets (
         notifyCategory   varchar(64),
         pollerCategory   varchar(64),
         thresholdCategory   varchar(64),
-        comment         varchar(1024)
-       );
+        comment         varchar(1024),
+
+	constraint fk_nodeID5 foreign key (nodeID) references node ON DELETE CASCADE
+);
 
 
 --##################################################################

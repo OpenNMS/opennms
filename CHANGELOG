@@ -1,5 +1,8 @@
 1.2.0 to 1.2.1
 ----------------------------------------------------------------------
+- Move the column constraints in create.sql to be at the end of table
+  definitions, instead of immediately after the constrained column and
+  update the installer to allow this.  Unit tests included.  Bug 1159.
 - Have build.sh prefer the JRE at $JAVA_HOME/bin/java if JAVA_HOME is set.
   Bug 1154.  Thanks Chris Abernethy <opennms@obado.net>.
 - Clean up the text of the <fail> tasks in build.xml so they are more clear.
