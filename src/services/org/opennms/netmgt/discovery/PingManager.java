@@ -394,7 +394,10 @@ final class PingManager
 					}
 
 					IPPollAddress addr = (IPPollAddress) m_addressQ.remove();
-					boolean isKnown = DiscoveredIPMgr.isDiscoveredOrExcluded(addr.getAddress());
+					boolean isKnown = false;
+					if (addr != null) {
+					    isKnown = DiscoveredIPMgr.isDiscoveredOrExcluded(addr.getAddress());
+					}
 					if(addr != null && !isKnown)
 					{
 						synchronized(this)

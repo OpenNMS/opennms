@@ -11,7 +11,7 @@
 		<filter>IPADDR IPLIKE *.*.*.*</filter>
 		<specific>0.0.0.0</specific>
 		<include-range begin="1.1.1.1" end="254.254.254.254"/>
-		<include-url>file:@root.install@/etc/include</include-url>
+		<include-url>file:@install.etc.dir@/include</include-url>
                 <rrd step = "300">
                         <rra>RRA:AVERAGE:0.5:1:2016</rra>
                         <rra>RRA:AVERAGE:0.5:12:4464</rra>
@@ -36,7 +36,7 @@
                 <service name="ICMP" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="3"/>
 			<parameter key="timeout" value="3000"/>
-			<parameter key="rrd-repository" value="@root.install.share@/rrd/response"/>
+			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="ds-name" value="icmp"/>
 		</service>
 		<service name="DNS" interval="300000" user-defined="false" status="on">
@@ -44,13 +44,13 @@
 			<parameter key="timeout" value="5000"/>
 			<parameter key="port" value="53"/>
 			<parameter key="lookup" value="localhost"/>
-			<parameter key="rrd-repository" value="@root.install.share@/rrd/response"/>
+			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="ds-name" value="dns"/>
 		</service>
 		<service name="SMTP" interval="300000" user-defined="false" status="on">
 			<parameter key="timeout" value="3000"/>
 			<parameter key="port" value="25"/>
-			<parameter key="rrd-repository" value="@root.install.share@/rrd/response"/>
+			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="ds-name" value="smtp"/>
 		</service>
 		<service name="FTP" interval="300000" user-defined="false" status="on">
@@ -69,7 +69,7 @@
                         <parameter key="timeout" value="3000"/>
                         <parameter key="port" value="80"/>
                         <parameter key="url" value="/"/>
-			<parameter key="rrd-repository" value="@root.install.share@/rrd/response"/>
+			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="ds-name" value="http"/>
                 </service>
 		<service name="HTTP-MGMT" interval="300000" user-defined="false" status="on">
@@ -81,14 +81,14 @@
                         <parameter key="timeout" value="3000"/>
                         <parameter key="port" value="8080"/>
                         <parameter key="url" value="/"/>
-			<parameter key="rrd-repository" value="@root.install.share@/rrd/response"/>
+			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="ds-name" value="http-8080"/>
                 </service>
                 <service name="HTTP-8000" interval="300000" user-defined="false" status="on">
                         <parameter key="timeout" value="3000"/>
                         <parameter key="port" value="8000"/>
                         <parameter key="url" value="/"/>
-			<parameter key="rrd-repository" value="@root.install.share@/rrd/response"/>
+			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="ds-name" value="http-8000"/>
                 </service>
                 <service name="HTTPS" interval="300000" user-defined="false" status="on">
@@ -130,13 +130,13 @@
 			<parameter key="banner" value="SSH"/>
 			<parameter key="port" value="22"/>
 			<parameter key="timeout" value="3000"/>
-			<parameter key="rrd-repository" value="@root.install.share@/rrd/response"/>
+			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="ds-name" value="ssh"/>
 		</service>
 		<service name="DHCP" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="3"/>
 			<parameter key="timeout" value="3000"/>
-			<parameter key="rrd-repository" value="@root.install.share@/rrd/response"/>
+			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="ds-name" value="dhcp"/>
 		</service>
 		<service name="IMAP" interval="300000" user-defined="false" status="on">
@@ -146,7 +146,7 @@
 		<service name="POP3" interval="300000" user-defined="false" status="on">
 			<parameter key="port" value="110"/>
 			<parameter key="timeout" value="3000"/>
-			<parameter key="rrd-repository" value="@root.install.share@/rrd/response"/>
+			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="ds-name" value="pop3"/>
 		</service>
 

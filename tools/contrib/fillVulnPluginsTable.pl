@@ -1,4 +1,4 @@
-#!@root.install.perl@
+#!@install.perl.bin@
 
 
 use Net::Nessus::Client;

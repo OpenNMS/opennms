@@ -4,7 +4,7 @@
  -->
 <database name="opennms" engine="postgresql">
   <driver class-name="@install.database.driver@"
-      url="@install.database.url@">
+      url="@install.database.url@@install.database.name@?compatible=7.1">
   	<param name="user" value="@install.database.user@"/>
 	<param name="password" value="@install.database.password@"/>
   </driver>

@@ -60,13 +60,8 @@
 #include <netdb.h>
 #include <errno.h>
 
-#if defined(__SOLARIS__)
-#include "byteswap.h"
-#endif
-
 #if defined(__FreeBSD__)
 #include <sys/time.h>
-#include "byteswap.h"
 #endif
 
 #if defined(__DARWIN__)
@@ -76,16 +71,7 @@
 
 #include <jni.h>
 
-#if defined(__DARWIN__)
-typedef int32_t socklen_t;
-typedef struct ip iphdr_t;
-typedef struct icmp icmphdr_t;
-#define ihl ip_hl
-#elif defined(__SOLARIS__)
-typedef struct ip iphdr_t;
-typedef struct icmp icmphdr_t;
-#define ihl ip_hl
-#elif defined(__FreeBSD__)
+#if defined(__DARWIN__) || defined(__SOLARIS__) || defined (__FreeBSD__)
 typedef struct ip iphdr_t;
 typedef struct icmp icmphdr_t;
 #define ihl ip_hl
@@ -195,39 +181,37 @@ typedef struct icmphdr icmphdr_t;
  * Macros for doing byte swapping
  */
 
-#if defined(__LITTLE_ENDIAN) || defined(LITTLE_ENDIAN) || defined(_LITTLE_ENDIAN) || defined(__LITTLE_ENDIAN__)
-# ifndef ntohll
-#  if defined(__DARWIN__)
-#   define ntohll(_x_) NXSwapBigLongLongToHost(_x_)
-#  elif defined(__SOLARIS__)
-#   define ntohll(_x_) __bswap_64(_x_)
-#  elif defined(__FreeBSD__)
-#   define  ntohll(_x_) __bswap_64(_x_)
+#ifndef ntohll
+# if defined(__DARWIN__)
+#  define ntohll(_x_) NXSwapBigLongLongToHost(_x_)
+# elif defined(__SOLARIS__)
+#  if defined(_LITTLE_ENDIAN)
+#   define ntohll(_x_) ((((uint64_t)ntohl((_x_) >> 32)) & 0xffffffff) | (((uint64_t)ntohl(_x_)) << 32))
+#   define htonll(x) ntohll(x)
 #  else
-#   define ntohll(_x_) __bswap_64(_x_)
+#   define ntohll(_x_) (_x_)
 #  endif
+# elif defined(__FreeBSD__)
+#  define  ntohll(_x_) __bswap_64(_x_)
+# else
+#  define ntohll(_x_) __bswap_64(_x_)
 # endif
-# ifndef htonll
-#  if defined(__DARWIN__)
-#   define htonll(_x_) NXSwapHostLongLongToBig(_x_)
-#  elif defined(__SOLARIS__)
-#   define htonll(_x_) __bswap_64(_x_)
-#  elif defined(__FreeBSD__)
-#   define  htonll(_x_) __bswap_64(_x_)
+#endif
+#ifndef htonll
+# if defined(__DARWIN__)
+#  define htonll(_x_) NXSwapHostLongLongToBig(_x_)
+# elif defined(__SOLARIS__)
+#  if defined(_LITTLE_ENDIAN)
+#   define htonll(_x_) ((htonl((_x_ >> 32) & 0xffffffff) | ((uint64_t) (htonl(_x_ & 0xffffffff)) << 32)))
 #  else
-#   define htonll(_x_) __bswap_64(_x_)
+#   define htonll(_x_) (_x_)
 #  endif
+# elif defined(__FreeBSD__)
+#  define  htonll(_x_) __bswap_64(_x_)
+# else
+#  define htonll(_x_) __bswap_64(_x_)
 # endif
-#elif  defined(__BIG_ENDIAN) || defined(_BIG_ENDIAN) || defined(__BIG_ENDIAN__)
-# ifndef ntohll
-#  define ntohll(_x_) _x_
-# endif
-# ifndef htonll
-#  define htonll(_x_) _x_
-# endif
-#else /* No Endian selected */
-# error A byte order must be selected
-#endif 
+#endif
 
 /**
  * This routine is used to quickly compute the

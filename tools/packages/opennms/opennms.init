@@ -3,14 +3,14 @@
 # description: Starts and stops the OpenNMS network management
 #              poller and backend processes
 # processname: opennms.sh
-# pidfile: @root.install.pid@
+# pidfile: @install.pid.file@
 
 RETVAL=0
-LOGFILE=@root.install.logs@/output.log
+LOGFILE=@install.logs.dir@/output.log
 
 FUNCTIONS_LOADED=0
 # Source function library.
-for dir in @root.install.initdir@ /etc /etc/rc.d; do
+for dir in @install.init.dir@ /etc /etc/rc.d; do
 	if [ -f "$dir/init.d/functions" ] && [ "$FUNCTIONS_LOADED" = "0" ]; then
 		source "$dir/init.d/functions"
 		FUNCTIONS_LOADED=1
@@ -27,7 +27,7 @@ fi
 # Check for OPENNMS_HOME
 
 if test -z "$OPENNMS_HOME"; then
-	export OPENNMS_HOME="@root.install@"
+	export OPENNMS_HOME="@install.dir@"
 fi
 
 # Check for JAVA_HOME
@@ -52,7 +52,7 @@ fi
 start(){
 	export REDIRECT=$LOGFILE
 	echo -n $"Starting OpenNMS: "
-	daemon @root.install@/bin/opennms.sh start
+	daemon @install.bin.dir@/opennms.sh start
 	RETVAL=$?
 	echo
 	touch /var/lock/subsys/opennms
@@ -61,11 +61,11 @@ start(){
 
 stop(){
 	echo -n $"Stopping OpenNMS: "
-	daemon @root.install@/bin/opennms.sh stop
+	daemon @install.bin.dir@/opennms.sh stop
 	RETVAL=$?
 	echo
 	sleep 10
-	@root.install@/bin/opennms.sh kill >/dev/null 2>&1
+	@install.bin.dir@/opennms.sh kill >/dev/null 2>&1
 	rm -f /var/lock/subsys/opennms
 	return $RETVAL
 }
@@ -76,7 +76,7 @@ restart(){
 }
 
 status(){
-	@root.install@/bin/opennms.sh status
+	@install.bin.dir@/opennms.sh status
 	RETVAL=$?
 	echo
 	return $RETVAL

@@ -759,6 +759,20 @@ public class UserFactory
 		
 		return user.getPassword().equals(encryptPassword(aPassword));
 	}
+
+        /**
+         *
+	 */
+        public static boolean updateNeeded()
+        {
+	    if (m_usersConfFile == null) {
+		return true;
+	    }
+	    if (m_lastModified != m_usersConfFile.lastModified()) {
+		return true;
+	    }
+	    return false;
+        }
         
         /**
          *
@@ -766,7 +780,7 @@ public class UserFactory
         private static void updateFromFile()
                 throws IOException, MarshalException, ValidationException
         {
-                if (m_lastModified != m_usersConfFile.lastModified())
+	        if (updateNeeded())
 		{
 			reload();
 		}

@@ -8,7 +8,7 @@
 <web-app>
   <context-param>
     <param-name>opennms.home</param-name>
-    <param-value>@root.install@/</param-value>
+    <param-value>@install.dir@/</param-value>
   </context-param>
 
   <!-- Database parameters -->  
@@ -22,7 +22,7 @@
   </context-param>
   <context-param>
     <param-name>opennms.db.url</param-name>
-    <param-value>@install.database.url@</param-value>
+    <param-value>@install.database.url@@install.database.name@?compatible=7.1</param-value>
   </context-param>
   <context-param>
     <param-name>opennms.db.user</param-name>
@@ -159,7 +159,7 @@
     <servlet-class>org.opennms.web.performance.RRDDumpServlet</servlet-class>
     <init-param>
       <param-name>rrd-directory</param-name>
-      <param-value>@root.install.share@/rrd/snmp/</param-value>
+      <param-value>@install.share.dir@/rrd/snmp/</param-value>
     </init-param>
     <init-param>
       <param-name>rrd-dump-command</param-name>
@@ -191,7 +191,7 @@
     <servlet-class>org.opennms.web.response.RRDDumpServlet</servlet-class>
     <init-param>
       <param-name>rt-rrd-directory</param-name>
-      <param-value>@root.install.share@/rrd/snmp/</param-value>
+      <param-value>@install.share.dir@/rrd/snmp/</param-value>
     </init-param>
     <init-param>
       <param-name>rt-rrd-dump-command</param-name>
@@ -256,12 +256,12 @@
     </init-param>
     <init-param>
       <param-name>script.generateReport</param-name>
-      <param-value>@root.install@/bin/report.sh</param-value>
+      <param-value>@install.bin.dir@/report.sh</param-value>
       <description>Use this script to generate an Availability report on the command line.</description>
     </init-param>
     <init-param>
       <param-name>script.mailReport</param-name>
-      <param-value>@root.install@/bin/webreport.pl</param-value>
+      <param-value>@install.bin.dir@/webreport.pl</param-value>
       <description>Use this script to mail a file to a user from the command line.</description>
     </init-param>
   </servlet>

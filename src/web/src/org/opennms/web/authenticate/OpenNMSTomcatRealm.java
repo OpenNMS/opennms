@@ -101,24 +101,11 @@ public class OpenNMSTomcatRealm extends Object implements Realm
     protected PropertyChangeSupport propertyChangeSupport;
 
     /**
-     * The users.xml file that is read for the list of valid
-     * users and their passwords.
-     */
-    protected File xmlFile;
-    
-    /**
      * The magic-users.properties file that is read for the list of special
      * users, their passwords, and authorization roles.
      */
     protected File magicUsersFile;
     
-    /**
-     * The time (in milliseconds) that the users.xml file was 
-     * last modified.  This value is kept so that the users.xml
-     * file will be reparsed anytime it is modified.
-     */
-    protected long xmlFileLastModified = 0;
-
     /**
      * The time (in milliseconds) that the magic-users.properties file was 
      * last modified.  This value is kept so that the users.xml
@@ -178,9 +165,6 @@ public class OpenNMSTomcatRealm extends Object implements Realm
             }
             
             this.log.debug( "Loaded the regular users into the principal cache" );
-
-            //this.xmlFileLastModified = this.xmlFile.lastModified();
-            this.log.debug( "Updated the users.xml file last modified time stamp to " + this.xmlFileLastModified );            
         }
         catch( MarshalException e ) {
             this.log.error( "Could not parse the users.xml file", e );
@@ -270,16 +254,16 @@ public class OpenNMSTomcatRealm extends Object implements Realm
      * @param credentials Password or other credentials to use in
      *  authenticating this username
      */
-    public Principal authenticate(String username, String credentials) {
+    public synchronized Principal authenticate(String username, String credentials) {
         if( username == null || credentials == null ) {
             //throw new IllegalArgumentException( "Cannot take null parameters." );
             return null;
         }
 
         //check everytime to see if the users.xml file has changed
-        //if( this.isParseNecessary() ) {
+        if( this.isParseNecessary() ) {
             this.parse();
-        //}
+        }
 
         OpenNMSPrincipal principal = (OpenNMSPrincipal)this.principals.get( username );
 
@@ -398,9 +382,7 @@ public class OpenNMSTomcatRealm extends Object implements Realm
             throw new IllegalArgumentException( "Cannot take null parameters." );
         }
         
-        //this.xmlFile = new File( Vault.getProperty("opennms.home") + File.separator + filename );
-        this.log.debug( "XmlFile=" + this.xmlFile );
-        this.log.warn( "usserFile attribute used, but is deprecated.  Please use homeDir attribute instead." );        
+        this.log.warn( "userFile attribute used, but is deprecated.  Please use homeDir attribute instead." );        
     }
 
     
@@ -417,13 +399,11 @@ public class OpenNMSTomcatRealm extends Object implements Realm
         Vault.setHomeDir(homeDir);
         
         //configure the files to the given home dir
-        //this.xmlFile = new File(homeDir + File.separator + ConfigFileConstants.USERS_CONF_FILE_NAME);
         this.magicUsersFile = new File(homeDir + File.separator
 					+ "etc" + File.separator
 					+ ConfigFileConstants.getFileName(ConfigFileConstants.MAGIC_USERS_CONF_FILE_NAME));
         
         this.log.debug( "HomeDir=" + homeDir );
-        this.log.debug( "XmlFile=" + this.xmlFile );
         this.log.debug( "MagicUsersFile=" + this.magicUsersFile );
     }
 
@@ -442,7 +422,7 @@ public class OpenNMSTomcatRealm extends Object implements Realm
     protected boolean isParseNecessary() {
         boolean necessary = false;
 
-        if( this.xmlFile != null && this.xmlFile.lastModified() != this.xmlFileLastModified ) {
+        if( UserFactory.updateNeeded() ) {
             necessary = true;            
         }
         

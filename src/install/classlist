@@ -1,0 +1,2 @@
+org/opennms/install/**/*.class
+org/opennms/install/installer.properties
