@@ -31,6 +31,7 @@
                                 <element ref="escalate" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 			<attribute name="name" type="string" use="required"/>
+            <attribute name="initial-delay" type="string" use="optional" value="0s"/>
 		</complexType>
 	</element>
 
@@ -41,7 +42,6 @@
                                 <element name="command" type="string" minOccurs="1" maxOccurs="unbounded"/>	
 			</sequence>
                         <attribute name="interval" type="string" use="optional" value="0s"/>
-                        <attribute name="delay" type="string" use="optional" value="0s"/>    
 		</complexType>
 	</element>
         

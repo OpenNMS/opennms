@@ -363,6 +363,7 @@ final class BroadcastEventProcessor
                                                         log.error("Could not get destination path for " + notification.getDestinationPath() + ", please check the destinationPath.xml for errors.", e);
                                                         return;
                                                 }
+                                                String initialDelay = (path.getInitialDelay() == null ? "0s" : path.getInitialDelay());
                                                 Target[] targets = path.getTarget();
                                                 Escalate[] escalations = path.getEscalate();
 
@@ -390,7 +391,7 @@ final class BroadcastEventProcessor
                                                         return;
                                                 }
 
-                                                long startTime = System.currentTimeMillis();
+                                                long startTime = System.currentTimeMillis()+TimeConverter.convertToMillis(initialDelay);
                                                 List targetSiblings = new ArrayList();
 
                                                 try {
@@ -581,12 +582,11 @@ final class BroadcastEventProcessor
 		for (int i = 0; i < targets.length; i++)
 		{
 			String interval = (targets[i].getInterval()==null ? "0s" : targets[i].getInterval());
-            String delay = (targets[i].getDelay()==null ? "0s" : targets[i].getDelay());
 
                         String targetName = targets[i].getName();
 			ThreadCategory.getInstance(getClass()).debug("Processing target " + targetName + ":" + interval);
 			
-			long curSendTime = TimeConverter.convertToMillis(delay);
+			long curSendTime = 0;
 			
 			if (GroupFactory.getInstance().hasGroup((targetName)))
 			{
