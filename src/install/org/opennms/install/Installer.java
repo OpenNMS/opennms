@@ -679,7 +679,7 @@ public class Installer {
 		}
 	    } catch (SQLException e) {
 		if (e.toString().indexOf("does not exist") == -1) {
-		    throw new Exception(e);
+		    throw e;
 		}
 	    }
 
