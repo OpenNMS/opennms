@@ -195,6 +195,7 @@ your distribution.
 <!--  	<pathelement path="${packaged.lib.dir}/imap.jar"/> -->
 <!--  	<pathelement path="${packaged.lib.dir}/pop3.jar"/> -->
     <pathelement path="${packaged.lib.dir}/activation.jar"/>
+    <pathelement path="${packaged.lib.dir}/jmta.jar"/>
   </path>
 
   <!-- The jars listed for Class-Path in the MANIFEST.MF for the installer's
