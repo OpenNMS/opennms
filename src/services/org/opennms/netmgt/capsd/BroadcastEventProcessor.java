@@ -1968,13 +1968,16 @@ final class BroadcastEventProcessor implements EventListener {
 			List ipAddrs = new LinkedList();
 			while (rs.next()) {
 				String ipAddr = rs.getString(1);
+                log.debug("found interface "+ipAddr+" of node "+nodeId);
 				ipAddrs.add(ipAddr);
 			}
 
 			for (Iterator it = ipAddrs.iterator(); it.hasNext();) {
 				String ipAddr = (String) it.next();
+                log.debug("deleting services for interface "+ipAddr+" of node "+nodeId);
 				eventsToSend.addAll(markAllServicesForInterfaceDeleted(dbConn,
 						source, nodeId, ipAddr, txNo));
+                log.debug("deleting interface "+ipAddr+" of node "+nodeId);
 				eventsToSend.addAll(markInterfaceDeleted(dbConn, source,
 						nodeId, ipAddr, txNo));
 			}
