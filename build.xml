@@ -18,24 +18,43 @@ For more information consult the README file included in
 your distribution.
  </description>
  
+ <tstamp/>
  <!-- versioning options -->
  <property name="product.version" value="1.1.3"/>
- <property name="product.release" value="0"/>
+ <property name="product.subversion" value="0"/>
  <property name="product.snapshot" value="true"/>
+  <condition property="product.release" value="${product.subversion}.${DSTAMP}">
+    <istrue value="${product.snapshot}"/>
+  </condition>
+  <condition property="product.release" value="${product.subversion}">
+    <isfalse value="${product.snapshot}"/>
+  </condition>
 
  <!-- build options -->
  <property name="build.dir" value="work"/>
  <property name="build.lib.dir" value="lib"/>
  <property name="build.castor.source.dir" value="${build.dir}/castor"/>
  <property name="build.sablecc.source.dir" value="${build.dir}/sablecc"/>
- <property name="build.api.dir" value="${build.dir}/docs/javadoc"/>
+ <property name="build.docs.dir" value="${build.dir}/docs"/>
+ <property name="build.rpm.dir" value="${build.dir}/rpm"/>
+ <property name="build.filter.docs.dir" value="${build.dir}/docs/filter"/>
+ <property name="build.api.dir" value="${build.dir}/javadoc"/>
  <property name="build.classes.dir" value="${build.dir}/opennms/classes"/>
  <property name="build.jar.dir" value="${build.dir}/jar"/>
  <property name="build.jicmp.dir" value="${build.dir}/jicmp"/>
  <property name="build.jrrd.dir" value="${build.dir}/jrrd"/>
  <property name="build.postgresql.dir" value="${build.dir}/postgresql"/>
+ <property name="build.release.dir" value="${build.dir}/releases"/>
+ <property name="build.java.include.dir" value="/usr/lib/jvm/java-1.4.2-sun-1.4.2.03/include/linux"/>
  <property name="build.postgresql.include.dir" value="/usr/include/pgsql"/>
  <property name="build.postgresql.lib.dir" value="/usr/lib/pgsql"/>
+
+ <!--compiler options-->
+ <property name="compiler.debug" value="true"/>
+ <property name="compiler.optimize" value="true"/>
+ <property name="compiler.verbose" value="false"/>
+ <!-- This should be true, but will have to set it false for now -->
+ <property name="compiler.deprecation" value="false"/>
 
  <!--source directories -->
  <property name="core.source.dir" value="src/core"/>
@@ -44,6 +63,7 @@ your distribution.
  <property name="report.source.dir" value="src/report"/>
  <property name="services.source.dir" value="src/services"/>
  <property name="web.source.dir" value="src/web/src"/>
+ <property name="docs.source.dir" value="docs"/>
 
  <!-- castor specific -->
  <property name="castor.xsd.dir" value="schema/xsd"/>
@@ -52,6 +72,9 @@ your distribution.
 
  <!-- rpm specific -->
  <property name="rpm.sign" value="false"/>
+
+ <!-- overrride with site specific settings -->
+ <property file="build.properties"/>
 
  <!-- paths -->
  <path id="sources.java.path">
@@ -81,6 +104,13 @@ your distribution.
   <pathelement path="${build.lib.dir}/xmlrpc-1.2-b1.jar"/>
  </path>
 
+ <!-- filters -->
+ <filterset id="product.info.filter">
+  <filter token="ant.project.name" value="${ant.project.name}"/>
+  <filter token="product.version" value="${product.version}"/>
+  <filter token="product.release" value="${product.release}"/>
+ </filterset>
+
  <!-- ant tasks -->
  <taskdef name="sablecc" classname="org.sablecc.ant.taskdef.Sablecc"/>
  <taskdef name="castor" classname="org.apache.tools.ant.taskdefs.optional.castor.SourceGeneratorTask"/>
@@ -89,10 +119,10 @@ your distribution.
 
  <!-- PREP targets -->
  <target name="prep">
-  <tstamp/>
  </target>
 
  <!-- top-level initialization -->
+ <!-- Deprecated in favor of "prep" target -->
  <target name="init" unless="init.done">
   <tstamp/>
   <!-- set properties -->
@@ -108,20 +138,14 @@ your distribution.
   <property name="install.servlets" value="${root.installprefix}${root.install.servlets}"/>
   <property name="install.logs" value="${root.installprefix}${root.install.logs}"/>
   <property name="install.pid" value="${root.installprefix}${root.install.pid}"/>
-  <condition property="opennms.release.string" value="${DSTAMP}.${product.release}">
-    <istrue value="${opennms.snapshot}"/>
-  </condition>
-  <condition property="opennms.release.string" value="${product.release}">
-    <isfalse value="${opennms.snapshot}"/>
-  </condition>
   <property name="opennms.version.string" value="${product.version}-${opennms.release.string}"/>
 
   <condition property="wasrpm" value="true">
-   <available property="wasrpm" file="${root.build}/rpm" type="dir"/>
+   <available property="wasrpm" file="${build.rpm.dir}" type="dir"/>
   </condition>
   <condition property="wasrpm" value="false">
    <not>
-    <available property="wasrpm" file="${root.build}/rpm" type="dir"/>
+    <available property="wasrpm" file="${build.rpm.dir}" type="dir"/>
    </not>
   </condition>
 
@@ -142,11 +166,7 @@ your distribution.
   <!-- set filters -->
   <filter filtersfile="${root.source}/build.properties" />
   <filter token="install.log.dir" value="${root.install.logs}"/>
-  <filter token="opennms.version" value="${product.version}"/>
-  <filter token="product.version" value="${product.version}"/>
   <filter token="opennms.release" value="${product.release}"/>
-  <filter token="product.release" value="${product.release}"/>
-  <filter token="opennms.snapshot" value="${product.snapshot}"/>
   <filter token="opennms.version.string" value="${opennms.version.string}"/>
   <filter token="opennms.release.string" value="${opennms.release.string}"/>
   <filter token="root.install.perl" value="${root.install.perl}"/>
@@ -183,11 +203,10 @@ your distribution.
   <filter token="compile.jniext" value="${compile.jniext}"/>
  
   <!-- init wrapup -->
-  <antcall target="print.debug"/>
   <property name="init.done" value="true"/>
  </target>
  
- <target name="print.debug" if="debug">
+ <target name="info" depends="prep" description="Show information about this build instance">
   <echo>
   === Java ===
   JVM Version                  = ${java.fullversion}
@@ -238,10 +257,6 @@ your distribution.
 
  <!-- "meta" targets -->
  
- <target name="info" depends="init" description="Show information about this build instance">
-  <antcall target="print.debug"><param name="debug" value="true"/></antcall>
- </target>
-
  <target name="install"
 	depends="install.lib,install.servlet,install.init,install.etc,install.usr.bin,install.bin,install.logs,install.share,install.contrib"
 	description="build &quot;all&quot;, and install it in ${install}"/>
@@ -288,91 +303,46 @@ your distribution.
  
  <!-- archive/package targets -->
 
- <target name="rpm" depends="init" description="Build an RPM package">
-  <condition property="rpm.sign.arg" value="--sign">
-    <or>
-      <equals arg1="${opennms.snapshot}" arg2="true"/>
-      <equals arg1="${opennms.snapshot}" arg2="yes"/>
-    </or>
-  </condition>
-  <condition property="rpm.sign.arg" value="">
-    <or>
-      <equals arg1="${opennms.snapshot}" arg2="true"/>
-      <equals arg1="${opennms.snapshot}" arg2="yes"/>
-    </or>
-  </condition>
-  <property name="root.rpm" value="${root.build}/rpm"/>
-  <mkdir dir="${root.rpm}/BUILD"/>
-  <mkdir dir="${root.rpm}/RPMS/i386"/>
-  <mkdir dir="${root.rpm}/RPMS/i486"/>
-  <mkdir dir="${root.rpm}/RPMS/i586"/>
-  <mkdir dir="${root.rpm}/RPMS/i686"/>
-  <mkdir dir="${root.rpm}/RPMS/athlon"/>
-  <mkdir dir="${root.rpm}/RPMS/k6"/>
-  <mkdir dir="${root.rpm}/RPMS/noarch"/>
-  <mkdir dir="${root.rpm}/SOURCES"/>
-  <mkdir dir="${root.rpm}/SPECS"/>
-  <mkdir dir="${root.rpm}/SRPMS"/>
-  <mkdir dir="${root.rpm}/tmp"/>
-  <copy filtering="yes"   file="${root.source}/tools/packages/opennms/opennms.spec.in"
-                        tofile="${root.rpm}/SPECS/opennms.spec" overwrite="yes" />
-  <copy filtering="no" todir="${root.rpm}/SOURCES">
-   <fileset dir="${root.source}/tools/packages/opennms">
-    <include name="**/*.patch"/>
-    <include name="**/*.patch.gz"/>
-    <include name="**/*.patch.bz2"/>
-   </fileset>
-   <mapper type="flatten"/>
+ <target name="rpm" depends="prep,tgz.source.dist" description="Build an RPM package">
+  <mkdir dir="${build.rpm.dir}/BUILD"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i386"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i486"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i586"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i686"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/athlon"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/k6"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/noarch"/>
+  <mkdir dir="${build.rpm.dir}/SOURCES"/>
+  <mkdir dir="${build.rpm.dir}/SPECS"/>
+  <mkdir dir="${build.rpm.dir}/SRPMS"/>
+  <mkdir dir="${build.rpm.dir}/tmp"/>
+  <copy file="${build.release.dir}/${ant.project.name}-${product.version}-src.tgz" todir="${build.rpm.dir}/SOURCES"/>
+  <copy file="${basedir}/tools/packages/opennms/opennms.spec.in"
+   tofile="${build.rpm.dir}/SPECS/opennms.spec" filtering="yes">
+   <filterset refid="product.info.filter"/>
   </copy>
-  <touch file="${root.rpm}/SOURCES/${ant.project.name}-source-${opennms.version.string}.tar.gz"/>
-  <echo message="building RPM for OpenNMS version ${opennms.version.string}..."/>
-  <exec dir="${root.rpm}" executable="rpmbuild" failonerror="true">
-   <arg value="-ba"/>
-   <arg value="${root.rpm}/SPECS/opennms.spec"/>
-   <arg value="--define"/>
-   <arg value="platform ${rpm.platform}"/>
-   <arg value="--define"/>
-   <arg value="_topdir ${root.rpm}"/>
-   <arg value="--define"/>
-   <arg value="_tmppath ${root.rpm}/tmp"/>
-   <arg value="--define"/>
-   <arg value="snapshot ${opennms.snapshot}"/>
-   <arg value="--define"/>
-   <arg value="date ${DSTAMP}"/>
-   <arg value="--define"/>
-   <arg value="standalone 0"/>
-   <arg value="--define"/>
-   <arg value="builddocs ${rpm.builddocs}"/>
-   <arg line="${rpm.sign.arg}"/>
-  </exec>
+  <rpm topDir="${build.rpm.dir}" specFile="opennms.spec"/>
  </target>
  
  <target name="srpm" depends="init,release.source" description="Build an RPM and a source RPM package">
   <condition property="rpm.sign.arg" value="--sign">
-    <or>
-      <equals arg1="${opennms.snapshot}" arg2="true"/>
-      <equals arg1="${opennms.snapshot}" arg2="yes"/>
-    </or>
+    <istrue value="${product.snapshot}"/>
   </condition>
   <condition property="rpm.sign.arg" value="">
-    <or>
-      <equals arg1="${opennms.snapshot}" arg2="true"/>
-      <equals arg1="${opennms.snapshot}" arg2="yes"/>
-    </or>
+    <isfalse value="${product.snapshot}"/>
   </condition>
-  <property name="root.rpm" value="${root.build}/rpm"/>
-  <mkdir dir="${root.rpm}/BUILD"/>
-  <mkdir dir="${root.rpm}/RPMS/i386"/>
-  <mkdir dir="${root.rpm}/RPMS/i486"/>
-  <mkdir dir="${root.rpm}/RPMS/i586"/>
-  <mkdir dir="${root.rpm}/RPMS/i686"/>
-  <mkdir dir="${root.rpm}/RPMS/athlon"/>
-  <mkdir dir="${root.rpm}/RPMS/k6"/>
-  <mkdir dir="${root.rpm}/RPMS/noarch"/>
-  <mkdir dir="${root.rpm}/SOURCES"/>
-  <mkdir dir="${root.rpm}/SPECS"/>
-  <mkdir dir="${root.rpm}/SRPMS"/>
-  <mkdir dir="${root.rpm}/tmp"/>
+  <mkdir dir="${build.rpm.dir}/BUILD"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i386"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i486"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i586"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i686"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/athlon"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/k6"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/noarch"/>
+  <mkdir dir="${build.rpm.dir}/SOURCES"/>
+  <mkdir dir="${build.rpm.dir}/SPECS"/>
+  <mkdir dir="${build.rpm.dir}/SRPMS"/>
+  <mkdir dir="${build.rpm.dir}/tmp"/>
   <copy filtering="yes"   file="${root.source}/tools/packages/opennms/opennms.spec.in"
                         tofile="${root.rpm}/SPECS/opennms.spec" overwrite="${filter.overwrite}" />
   <copy filtering="no" todir="${root.rpm}/SOURCES">
@@ -397,7 +367,7 @@ your distribution.
    <arg value="--define"/>
    <arg value="_tmppath ${root.rpm}/tmp"/>
    <arg value="--define"/>
-   <arg value="snapshot ${opennms.snapshot}"/>
+   <arg value="snapshot ${product.snapshot}"/>
    <arg value="--define"/>
    <arg value="date ${DSTAMP}"/>
    <arg value="--define"/>
@@ -408,6 +378,55 @@ your distribution.
   </exec>
  </target>
  
+ <!-- DIST targets -->
+ <target name="dist" depends="source.dist,binary.dist,docs.dist" description="Generate a distribution"/>
+
+ <target name="source.dist" depends="zip.source.dist,tgz.source.dist,tbz2.source.dist">
+ </target>
+
+ <target name="zip.source.dist" depends="prep">
+  <mkdir dir="${build.release.dir}"/>
+  <zip destfile="${build.release.dir}/${ant.project.name}-${product.version}-src.zip" basedir="${basedir}/.." excludes="**/CVS/**,**/${build.dir}/**" includes="**/*"/>
+ </target>
+
+ <target name="tar.source.dist" depends="prep">
+  <mkdir dir="${build.release.dir}"/>
+  <tar destfile="${build.release.dir}/${ant.project.name}-${product.version}-src.tar" basedir="${basedir}/.." excludes="**/CVS/**,**/${build.dir}/**" includes="**/*"/>
+ </target>
+
+ <target name="tgz.source.dist" depends="prep,tar.source.dist">
+  <mkdir dir="${build.release.dir}"/>
+  <gzip destfile="${build.release.dir}/${ant.project.name}-${product.version}-src.tgz" src="${build.release.dir}/${ant.project.name}-${product.version}-src.tar"/>
+ </target>
+
+ <target name="tbz2.source.dist" depends="prep,tar.source.dist">
+  <mkdir dir="${build.release.dir}"/>
+  <bzip2 destfile="${build.release.dir}/${ant.project.name}-${product.version}-src.tbz2" src="${build.release.dir}/${ant.project.name}-${product.version}-src.tar"/>
+ </target>
+
+ <target name="binary.dist" depends="zip.binary.dist,tgz.binary.dist,tbz2.binary.dist"/>
+ <target name="zip.binary.dist" depends="prep">
+  <mkdir dir="${build.release.dir}"/>
+ </target>
+ <target name="tgz.binary.dist" depends="prep">
+  <mkdir dir="${build.release.dir}"/>
+ </target>
+ <target name="tbz2.binary.dist" depends="prep">
+  <mkdir dir="${build.release.dir}"/>
+ </target>
+
+ <target name="docs.dist" depends="zip.docs.dist,tgz.docs.dist,tbz2.docs.dist"/>
+ <target name="zip.docs.dist" depends="prep,html.docs">
+  <mkdir dir="${build.release.dir}"/>
+  <zip destfile="${build.release.dir}/${ant.project.name}-${product.version}-docs.zip" basedir="${build.docs.dir}" excludes="**/CVS/**,**/${build.dir}/**" includes="**/*"/>
+ </target>
+ <target name="tgz.docs.dist" depends="prep,html.docs">
+  <mkdir dir="${build.release.dir}"/>
+ </target>
+ <target name="tbz2.docs.dist" depends="prep,html.docs">
+  <mkdir dir="${build.release.dir}"/>
+ </target>
+
  <target name="release" depends="init,release.source,release.binary,release.docs" description="Build a release (source and binary)"/>
 
  <target name="release.prepare.docs" depends="init,docs">
@@ -1316,6 +1335,7 @@ OpenNMS as part of the post-install.
       </compiler>
       <linker name="gcc"/>
       <fileset dir="${build.jrrd.dir}" includes="rrd_jinterface.c"/>
+      <includepath path="${build.rrdtool.include.dir}"/>
     </cc>
   </target>
 
@@ -1439,7 +1459,7 @@ OpenNMS as part of the post-install.
  </target>
 
  <!-- DOCS targets -->
- <target name="docs" depends="javadoc.docs,docs.html" description="Build javadoc and manuals"/>
+ <target name="docs" depends="javadoc.docs,html.docs" description="Build javadoc and manuals"/>
  
  <target name="javadoc.docs" depends="prep,sources,javadoc.docs.uptodate"
   unless="javadoc.docs.uptodate">
@@ -1497,22 +1517,31 @@ OpenNMS as part of the post-install.
   </condition>
  </target>
 
- <target name="docs.filter" depends="init">
-  <mkdir dir="${root.build}/docs.filter"/>
-  <copy todir="${root.build}/docs.filter" filtering="yes" overwrite="${filter.overwrite}">
-   <fileset dir="${root.source}/docs"/>
+ <target name="html.docs" depends="prep,html.docs.uptodate"
+  unless="html.docs.uptodate">
+  <mkdir dir="${build.filter.docs.dir}"/>
+  <copy todir="${build.filter.docs.dir}" filtering="yes">
+   <fileset dir="${docs.source.dir}"/>
   </copy>
- </target>
-
- <target name="docs.html" depends="init,docs.filter">
-  <mkdir dir="${root.build}/docs"/>
-  <style basedir="${root.build}/docs.filter"
-	destdir="${root.build}/docs"
-	style="${root.build}/docs.filter/xsl/man2html.xsl"
-	includes="*/book.xml"
-	/>
+  <mkdir dir="${build.docs.dir}"/>
+  <style basedir="${build.filter.docs.dir}"
+	destdir="${build.docs.dir}"
+	style="${build.filter.docs.dir}/xsl/man2html.xsl"
+	includes="*/book.xml"/>
+  <delete dir="${build.filter.docs.dir}"/>
  </target>
  
+ <target name="html.docs.uptodate">
+  <dependset>
+   <srcfileset dir="${docs.source.dir}"/>
+   <targetfileset dir="${build.docs.dir}"/>
+  </dependset>
+  <condition property="html.docs.uptodate">
+   <!-- Magic file: canidate for refactoring -->
+   <available file="${build.docs.dir}/releasenotes/book.html" type="file"/>
+  </condition>
+ </target>
+
  <target name="docs.fot.uptodate" depends="init">
   <uptodate property="fot.is.uptodate" targetfile="${root.build}/work/docs/releasenotes/book.fot">
    <srcfiles dir="${root.source}/docs">
@@ -1524,7 +1553,7 @@ OpenNMS as part of the post-install.
   </uptodate>
  </target>
 
- <target name="docs.fot" depends="init,docs.filter,docs.fot.uptodate" unless="fot.is.uptodate">
+ <target name="docs.fot" depends="init,docs.fot.uptodate" unless="fot.is.uptodate">
   <mkdir dir="${root.build}/docs"/>
   <style basedir="${root.build}/docs.filter"
 	destdir="${root.build}/docs"
@@ -1535,7 +1564,7 @@ OpenNMS as part of the post-install.
 	/>
  </target>
 
- <target name="docs.pdf" depends="init,docs.fot">
+ <target name="pdf.docs" depends="init,docs.fot">
   <apply executable="${java.home}/bin/java" dir="${root.build}/docs">
    <arg line="-classpath '${root.source}/lib/fop0203.jar:${root.source}/lib/batik.jar:${java.class.path}' org.apache.fop.apps.Fop"/>
    <arg value="-fo"/>
