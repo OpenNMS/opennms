@@ -35,13 +35,13 @@ import junit.framework.TestCase;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.mock.EventAnticipator;
+import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockPollerConfig;
-import org.opennms.netmgt.mock.MockQueryManager;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.MockVisitor;
@@ -54,6 +54,8 @@ public class PollerTest extends TestCase {
     static boolean logSetup = false;
 
     MockNetwork m_network;
+    
+    MockDatabase m_db;
 
     Poller m_poller;
 
@@ -131,6 +133,9 @@ public class PollerTest extends TestCase {
         m_network.addService("ICMP");
         m_network.addService("HTTP");
         
+        m_db = new MockDatabase();
+        m_db.populate(m_network);
+        
         m_pollerConfig = new MockPollerConfig();
         m_pollerConfig.setNodeOutageProcessingEnabled(true);
         m_pollerConfig.setCriticalService("ICMP");
@@ -144,7 +149,7 @@ public class PollerTest extends TestCase {
 
         m_poller = new Poller();
         m_poller.setEventManager(m_eventMgr);
-        m_poller.setQueryMgr(new MockQueryManager(m_network));
+        m_poller.setDbConnectionFactory(m_db);
         m_poller.setPollerConfig(m_pollerConfig);
         m_poller.setPollOutagesConfig(m_pollerConfig);
 
@@ -152,6 +157,7 @@ public class PollerTest extends TestCase {
 
     public void tearDown() {
         assertTrue(MockUtil.noWarningsOrHigherLogged());
+        m_db.drop();
     }
 
     public void testBug709() {
@@ -541,8 +547,11 @@ public class PollerTest extends TestCase {
         m_poller.start();
 
         MockNode node = m_network.addNode(3, "TestNode");
+        m_db.writeNode(node);
         MockInterface iface = m_network.addInterface(3, "10.1.1.1");
-        MockService element = m_network.addService(3, "10.1.1.1", "NEW");
+        m_db.writeInterface(iface);
+        MockService element = m_network.addService(3, "10.1.1.1", "HTTP");
+        m_db.writeService(element);
         m_pollerConfig.addService(element);
 
         MockVisitor gainSvcSender = new MockVisitorAdapter() {
@@ -603,9 +612,6 @@ public class PollerTest extends TestCase {
         m_poller.stop();
     }
 
-    /**
-     * @param millis
-     */
     private void sleep(long millis) {
         try {
             Thread.sleep(millis);

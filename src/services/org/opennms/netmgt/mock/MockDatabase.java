@@ -417,8 +417,4 @@ public class MockDatabase implements DbConnectionFactory {
         return countRows("select * from outages where nodeId = ? and ipAddr = ? "+critSql, values);
     }
 
-    
-    
-
-    
 }
