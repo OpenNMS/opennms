@@ -738,8 +738,8 @@ final class BroadcastEventProcessor
 			User user = new User();
 			user.setUserId("email-address");
                         Contact contact = new Contact();
-                        //contact.setType("email");
-                        contact.setType("javaEmail");
+                        contact.setType("email");
+                        //contact.setType("javaEmail");
                         ThreadCategory.getInstance(getClass()).debug("email address = " + address);
                         contact.setInfo(address);
                         user.addContact(contact);
