@@ -117,14 +117,12 @@ public class PollableNetwork extends PollableContainer {
     }
 
     public Event createDownEvent(Date date) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("No down event for the network");
     }
     
     
     public Event createUpEvent(Date date) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("No up event for the network");
     }
     
     class DumpVisitor extends PollableVisitorAdaptor {
