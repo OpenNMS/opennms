@@ -239,6 +239,20 @@
 					</restriction>
 				</simpleType>
 			</attribute>
+			
+			<!-- Maximum Value
+			
+				 In order to correctly manage counter wraps, it is possible 
+				 to add a maximum value for a collection. For example, a 32-bit
+				 counter would have a max value of 4294967295.
+			-->
+			<attribute name="maxval" type="string" use="optional"/>
+			
+			<!-- Minimum Value
+			
+				 For completeness, adding the ability to use a minimum value.
+			-->
+			<attribute name="minval" type="string" use="optional"/>
 		</complexType>
 	</element>
 </schema>

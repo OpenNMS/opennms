@@ -1,5 +1,8 @@
 1.1.2 to 1.1.3
 ----------------------------------------------------------------------
+- Added "maxval" and "minval" options to mibObj definitions in order
+  to provide greater configuration for RRDs and to help with counter
+  wraps.
 - Added APC System Definition for data collection.
 - Fixed a null pointer exception with KSC reports.
 - Fixed a small bug with SNMP Performance links on interface pages.

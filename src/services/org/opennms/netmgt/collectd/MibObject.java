@@ -55,6 +55,16 @@ public class MibObject
 	 */
 	private String m_type;
 	
+	/** 
+	 * Object's maximum value.
+	 */
+	private String m_maxval;
+	
+	/** 
+	 * Object's minimum value.
+	 */
+	private String m_minval;
+	
 	/**
 	 * True if this object resides in a table. 
 	 */
@@ -95,6 +105,8 @@ public class MibObject
 		m_alias = null;
 		m_type = null;
 		m_instance = null;
+		m_maxval = null;
+		m_minval = null;
 	}
 
 	/**
@@ -128,6 +140,26 @@ public class MibObject
 	}
 	
 	/**
+	 * This method is used to assign the object's maximum value.
+	 *
+	 * @param type - object's maximum value
+	 */
+	public void setMaxval(String maxval)
+	{
+		m_maxval = maxval;
+	}
+	
+	/**
+	 * This method is used to assign the object's minimum value.
+	 *
+	 * @param type - object's maximum value
+	 */
+	public void setMinval(String minval)
+	{
+		m_minval = minval;
+	}
+	
+	/**
 	 * This method is used to specify the object's instance to be retrieved.
 	 * The instance specified here will be dereferenced if necessary and
 	 * appended to the object's identifier string.  Valid instance values
@@ -153,6 +185,26 @@ public class MibObject
 	public String getOid() 
 	{
 		return m_oid;
+	}
+	
+	/** 
+	 * Returns the object's maximum value.
+	 *
+	 * @return  The object's maxval.	
+	 */
+	public String getMaxval()
+	{
+		return m_maxval;
+	}
+	
+	/** 
+	 * Returns the object's minimum value.
+	 *
+	 * @return  The object's minval.	
+	 */
+	public String getMinval()
+	{
+		return m_minval;
 	}
 	
 	/** 

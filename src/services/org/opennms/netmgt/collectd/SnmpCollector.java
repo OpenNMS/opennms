@@ -1863,8 +1863,24 @@ final class SnmpCollector
 				// min & max values to "U" ("unknown").
 				ds = new RRDDataSource();
 				ds.setHeartbeat(2 * DataCollectionConfigFactory.getInstance().getStep(collectionName));
-				ds.setMin("U");
-				ds.setMax("U");
+				// For completeness, adding a minval option to the variable.
+
+				String ds_minval = obj.getMinval();
+				if (ds_minval == null)
+				{
+					ds_minval = "U";
+				}
+				ds.setMax(ds_minval);
+
+				// In order to handle counter wraps, we need to set a max
+				// value for the variable. 
+
+				String ds_maxval = obj.getMaxval();
+				if (ds_maxval == null)
+				{
+					ds_maxval = "U";
+				}
+				ds.setMax(ds_maxval);
 				
 				// Truncate MIB object name/alias if it exceeds 19 char max for
 				// RRD data source names.
@@ -1886,7 +1902,7 @@ final class SnmpCollector
 				ds.setOid(obj.getOid());
 				ds.setInstance(obj.getInstance());
 				if (log.isDebugEnabled())
-					log.debug("buildDataSourceList: ds_name: " + ds.getName() + " ds_oid: " + ds.getOid() + "." + ds.getInstance());
+					log.debug("buildDataSourceList: ds_name: " + ds.getName() + " ds_oid: " + ds.getOid() + "." + ds.getInstance() + " ds_max: " + ds.getMax() + " ds_min: " + ds.getMin());
 
 				// Add the new data source to the list
 				dsList.add(ds);

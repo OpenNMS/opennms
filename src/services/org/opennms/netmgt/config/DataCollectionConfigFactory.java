@@ -637,6 +637,8 @@ public final class DataCollectionConfigFactory
 			aMibObject.setAlias(mibObj.getAlias());
 			aMibObject.setType(mibObj.getType());
 			aMibObject.setInstance(mibObj.getInstance());
+			aMibObject.setMaxval(mibObj.getMaxval());
+			aMibObject.setMinval(mibObj.getMinval());
 				
 			// Add the MIB object provided it isn't already in the list
 			if (!mibObjectList.contains(aMibObject))
