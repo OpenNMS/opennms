@@ -9,7 +9,7 @@
 			<sequence>
 				<element ref="this:global" minOccurs="0" maxOccurs="1"/>
 				<element ref="this:event" minOccurs="1" maxOccurs="unbounded"/>
-				<element name="event-file" type="string" minOccurs="1" maxOccurs="unbounded"/>
+				<element name="event-file" type="string" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>
