@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.monitors.ServiceMonitor;
 import org.opennms.netmgt.xml.event.Event;
 
 /**

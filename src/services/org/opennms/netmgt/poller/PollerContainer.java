@@ -38,6 +38,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.opennms.netmgt.poller.pollables.PollStatus;
+
 /**
  * Represents an aggregate network element such as an interface containing svcs or
  * a node containing interfaces

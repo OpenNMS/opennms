@@ -43,6 +43,7 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
+import org.opennms.netmgt.poller.monitors.ServiceMonitor;
 
 /**
  * @author brozow

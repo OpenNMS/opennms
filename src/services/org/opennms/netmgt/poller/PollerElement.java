@@ -33,6 +33,7 @@ package org.opennms.netmgt.poller;
 
 import java.util.Date;
 
+import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 
 /**

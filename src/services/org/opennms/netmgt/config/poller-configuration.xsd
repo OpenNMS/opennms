@@ -96,7 +96,7 @@
 			<attribute name="service" type="string" use="required"/>
 
 			<!--- the class used to monitor/poll the service -
-			      must implement interface org.opennms.netmgt.poller.ServiceMonitor
+			      must implement interface org.opennms.netmgt.poller.monitors.ServiceMonitor
 			-->
 			<attribute name="class-name" type="string" use="required"/>
 		</complexType>

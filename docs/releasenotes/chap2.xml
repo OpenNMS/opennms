@@ -737,9 +737,9 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
     <para>One more thing in the poller-configuration file, you will need to
     add &lt;monitor&gt; tags at the bottom:</para>
 
-    <programlisting>  &lt;monitor service="Sybase-JDBC" class-name="org.opennms.netmgt.poller.JDBCMonitor"/&gt;
-  &lt;monitor service="MySQL-JDBC" class-name="org.opennms.netmgt.poller.JDBCMonitor"/&gt;
-  &lt;monitor service="PostgreSQL-JDBC" class-name="org.opennms.netmgt.poller.JDBCMonitor"/&gt;</programlisting>
+    <programlisting>  &lt;monitor service="Sybase-JDBC" class-name="org.opennms.netmgt.poller.monitors.JDBCMonitor"/&gt;
+  &lt;monitor service="MySQL-JDBC" class-name="org.opennms.netmgt.poller.monitors.JDBCMonitor"/&gt;
+  &lt;monitor service="PostgreSQL-JDBC" class-name="org.opennms.netmgt.poller.monitors.JDBCMonitor"/&gt;</programlisting>
 
     <para>Hats off to Jose for this work.</para>
 
@@ -831,7 +831,7 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
 
     <para>and the monitor service entry:</para>
 
-    <programlisting>&lt;monitor service="GPtest"   class-name="org.opennms.netmgt.poller.GpMonitor"/&gt;</programlisting>
+    <programlisting>&lt;monitor service="GPtest"   class-name="org.opennms.netmgt.poller.monitors.GpMonitor"/&gt;</programlisting>
 
     <para>Hats off to Bill for this work, and to Scott for ExecRunner.</para>
 

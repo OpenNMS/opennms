@@ -1,0 +1,84 @@
+Generating Status Change Events
+
+These are the operations that are required to generate the correct events and outages
+
+X Procedure A element - processStatusChanged
+1. On a service going down - processGoingDown
+	processGoingDown
+3. On a service coming up - processComingUp
+	processComingUp
+	
+X Procedure A container - processStatusChanged
+2. On a container going down - processGoingDown
+	processGoingDown
+4. On a container coming up - processComingUp
+	processComingUp
+5. On a container being up but unchanged
+	perform these steps for each of its members
+	
+X processComingUp
+	Event upEvent = sendEvent(createUpEvent(date))
+	PollEvent resolution = new PollEvent(upEvent, date);
+	processResolution(getCause(), resolution);
+	
+X processResolution - element
+	resolveOutage
+	
+X processResolution - container
+	resolveOutage
+	for each member procedureB(cause, resolution)
+	
+X resolveOutage - element
+	setCause(null);
+	
+X resolveOutage - service
+	super.resolveOutage
+	close outage in db
+	
+X processGoingDown
+	Event downEvent = sendEvent(createDownEvent(date));
+	PollEvent cause = new PollEvent(downEvent, date);
+	processCause(cause);
+	
+X processCause - element
+	createOutage(cause)
+	
+X processCause - container
+	super.processCause(cause);
+	for each member
+		member.processCause(cause);
+
+X createOutage - element
+	setCause(cause)
+	
+X createOutage - service
+	super.createOutage(cause);
+	open outage in db
+	
+X resolveAllOutages(cause, resolution) - element
+	if (cause.equals(getCause())
+		resolveOutage(resolution)
+	
+X resolveAllOutages(cause, resolution) - container
+	super.resolveAllOutages(cause, resolution)
+	for each member
+		member.resolveAllOutages(cause, resolution)
+	
+	
+X Procecure B - processLingeringCauses
+2. On a container down with the cause the same as resolvedCause
+	resolveAllOutages
+	processGoingDown
+
+4. On a container down with a different cause
+	do nothing
+
+6. On a container up with a cause the same as resolvedCause
+	processResolution
+
+8. On a container up with a cause different than resolvedCause
+	processComingUp
+	
+	
+	
+	

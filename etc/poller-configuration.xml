@@ -166,30 +166,30 @@
 
 	</package>
 
-        <monitor service="DominoIIOP" 	class-name="org.opennms.netmgt.poller.DominoIIOPMonitor"/>
-	<monitor service="ICMP" 	class-name="org.opennms.netmgt.poller.IcmpMonitor"/>
-        <monitor service="Citrix" 	class-name="org.opennms.netmgt.poller.CitrixMonitor"/>
-        <monitor service="LDAP" 	class-name="org.opennms.netmgt.poller.LdapMonitor"/>
-	<monitor service="HTTP" 	class-name="org.opennms.netmgt.poller.HttpMonitor"/>
-	<monitor service="HTTP-MGMT" 	class-name="org.opennms.netmgt.poller.HttpMonitor"/>
-	<monitor service="HTTP-8080"    class-name="org.opennms.netmgt.poller.HttpMonitor"/>
-        <monitor service="HTTP-8000"    class-name="org.opennms.netmgt.poller.HttpMonitor"/>
-        <monitor service="HTTPS" 	class-name="org.opennms.netmgt.poller.HttpsMonitor"/>
-	<monitor service="SMTP" 	class-name="org.opennms.netmgt.poller.SmtpMonitor"/>
-	<monitor service="DHCP" 	class-name="org.opennms.netmgt.poller.DhcpMonitor"/>
-	<monitor service="DNS"  	class-name="org.opennms.netmgt.poller.DnsMonitor" />
-	<monitor service="NTP"  	class-name="org.opennms.netmgt.poller.NtpMonitor" />
-	<monitor service="FTP"  	class-name="org.opennms.netmgt.poller.FtpMonitor"/>
-	<monitor service="SNMP"         class-name="org.opennms.netmgt.poller.SnmpMonitor"/>
-	<monitor service="Oracle" 	class-name="org.opennms.netmgt.poller.TcpMonitor"/>
-	<monitor service="Postgres" 	class-name="org.opennms.netmgt.poller.TcpMonitor"/>
-	<monitor service="MySQL" 	class-name="org.opennms.netmgt.poller.TcpMonitor"/>
-	<monitor service="Sybase" 	class-name="org.opennms.netmgt.poller.TcpMonitor"/>
-	<monitor service="Informix" 	class-name="org.opennms.netmgt.poller.TcpMonitor"/>
-	<monitor service="SQLServer" 	class-name="org.opennms.netmgt.poller.TcpMonitor"/>
-	<monitor service="SSH"		class-name="org.opennms.netmgt.poller.TcpMonitor"/>
-	<monitor service="IMAP" 	class-name="org.opennms.netmgt.poller.ImapMonitor"/>
-	<monitor service="POP3" 	class-name="org.opennms.netmgt.poller.Pop3Monitor"/>
+        <monitor service="DominoIIOP" 	class-name="org.opennms.netmgt.poller.monitors.DominoIIOPMonitor"/>
+	<monitor service="ICMP" 	class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/>
+        <monitor service="Citrix" 	class-name="org.opennms.netmgt.poller.monitors.CitrixMonitor"/>
+        <monitor service="LDAP" 	class-name="org.opennms.netmgt.poller.monitors.LdapMonitor"/>
+	<monitor service="HTTP" 	class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
+	<monitor service="HTTP-MGMT" 	class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
+	<monitor service="HTTP-8080"    class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
+        <monitor service="HTTP-8000"    class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
+        <monitor service="HTTPS" 	class-name="org.opennms.netmgt.poller.monitors.HttpsMonitor"/>
+	<monitor service="SMTP" 	class-name="org.opennms.netmgt.poller.monitors.SmtpMonitor"/>
+	<monitor service="DHCP" 	class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor"/>
+	<monitor service="DNS"  	class-name="org.opennms.netmgt.poller.monitors.DnsMonitor" />
+	<monitor service="NTP"  	class-name="org.opennms.netmgt.poller.monitors.NtpMonitor" />
+	<monitor service="FTP"  	class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
+	<monitor service="SNMP"         class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor"/>
+	<monitor service="Oracle" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
+	<monitor service="Postgres" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
+	<monitor service="MySQL" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
+	<monitor service="Sybase" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
+	<monitor service="Informix" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
+	<monitor service="SQLServer" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
+	<monitor service="SSH"		class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
+	<monitor service="IMAP" 	class-name="org.opennms.netmgt.poller.monitors.ImapMonitor"/>
+	<monitor service="POP3" 	class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor"/>
                	
 </poller-configuration>
 

@@ -54,6 +54,7 @@ import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.mock.PollAnticipator;
 import org.opennms.netmgt.mock.Querier;
 import org.opennms.netmgt.outage.OutageManager;
+import org.opennms.netmgt.poller.monitors.ServiceMonitor;
 import org.opennms.netmgt.xml.event.Event;
 
 public class PollerTest extends TestCase {

@@ -36,7 +36,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.monitors.ServiceMonitor;
 
 /**
  * @author brozow
