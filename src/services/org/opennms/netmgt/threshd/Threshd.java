@@ -69,6 +69,7 @@ import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.config.threshd.Thresholder;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
@@ -113,6 +114,11 @@ public final class Threshd
 	 * Reference to the threshd scheduler
 	 */
 	private Scheduler	m_scheduler;
+	
+	/**
+	 * Indicates if all the existing interfaces have been scheduled
+	 */
+	private boolean m_schedulingCompleted = false;
 
 	/**
 	 * Reference to the JMS event proxy for sending events.
@@ -163,7 +169,7 @@ public final class Threshd
 		ThreadCategory.setPrefix(LOG4J_CATEGORY);
 		
 		// get the category logger 
-		Category log = ThreadCategory.getInstance();
+		final Category log = ThreadCategory.getInstance();
 
 		if (log.isDebugEnabled())
 			log.debug("start: Initializing thresholding daemon");
@@ -400,15 +406,30 @@ public final class Threshd
 
 		// Schedule existing interfaces for thresholding
 		//
-		try
-		{
-			scheduleExistingInterfaces();
-		}
-		catch(SQLException sqlE)
-		{
-			if(log.isEnabledFor(Priority.ERROR))
-				log.error("start: Failed to schedule existing interfaces", sqlE);
-		}
+		
+		ReadyRunnable interfaceScheduler = new ReadyRunnable() {
+			
+			public boolean isReady() { return true; }
+			
+			public void run() {
+				//
+				try
+				{
+					scheduleExistingInterfaces();
+				}
+				catch(SQLException sqlE)
+				{
+					if(log.isEnabledFor(Priority.ERROR))
+						log.error("start: Failed to schedule existing interfaces", sqlE);
+				}
+				finally {
+				    setSchedulingCompleted(true);
+				}
+		
+			}
+		};
+		
+		m_scheduler.schedule(interfaceScheduler, 0);
 		
 		// Create an event receiver. The receiver will
 		// receive events, process them, creates network
@@ -839,4 +860,16 @@ public final class Threshd
 		return false;
 	}
 
+    /**
+     * @return Returns the schedulingCompleted.
+     */
+    public boolean isSchedulingCompleted() {
+        return m_schedulingCompleted;
+    }
+    /**
+     * @param schedulingCompleted The schedulingCompleted to set.
+     */
+    public void setSchedulingCompleted(boolean schedulingCompleted) {
+        m_schedulingCompleted = schedulingCompleted;
+    }
 }
