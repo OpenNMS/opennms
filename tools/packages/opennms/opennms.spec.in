@@ -3,6 +3,7 @@
 #
 %{!?version:%define version @product.version@}
 %{!?release:%define release @product.release.stamp@}
+%{!?releasenumber:%define releasenumber @product.release@}
 %{!?instprefix:%define instprefix @rpm.install.dir@}
 %{!?packagedir:%define packagedir @ant.project.name@-%version-%release}
 %{!?dbuser:%define dbuser @rpm.database.user@}
@@ -266,6 +267,7 @@ sh ./build.sh $COMPILER_FLAG -Dinstall.prefix=$RPM_BUILD_ROOT \
     -Dinstall.postgresql.service=%{psql_service} \
     -Dinstall.logs.dir=%{logdir} -Dinstall.pid.file=%{pidfile} \
     -Dfilter.overwrite="yes" -Disrpm="true" -Dproduct.snapshot=%{snapshot} \
+    -Dproduct.release=%{releasenumber} \
     $EXTRA_TARGETS install || exit $?
 echo "=== INSTALL COMPLETED ==="
 

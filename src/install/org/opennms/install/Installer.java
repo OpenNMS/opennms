@@ -188,8 +188,8 @@ public class Installer {
 	}
 
 	if (m_update_database) {
-	    createSequences();
 	    createTables();
+	    createSequences();
 	    createIndexes();
 	    // createFunctions(m_cfunctions); // Unused, not in create.sql
 	    // createLanguages(); // Unused, not in create.sql
@@ -683,8 +683,9 @@ public class Installer {
 		  42P01: ERROR: relation "%s" does not exist
 		  42703: ERROR: column "%s" does not exist
 		*/
-		if (!e.getSQLState().equals("42P01") &&
-		    !e.getSQLState().equals("42703")) {
+		if (e.toString().indexOf("does not exist") == -1 || 
+		   (!"42P01".equals(e.getSQLState()) &&
+		    !"42703".equals(e.getSQLState()))) {
 		    throw e;
 		}
 	    }
@@ -925,7 +926,8 @@ public class Installer {
 		        23505: ERROR: duplicate key violates unique
 			       constraint "%s"
 		    */
-		    if (e.getSQLState().equals("23505")) {
+		    if (e.toString().indexOf("duplicate key") != -1 ||
+		       "23505".equals(e.getSQLState())) {
 			exists = true;
 		    } else {
 			throw e;
@@ -1401,7 +1403,8 @@ public class Installer {
 	      SQL Status code:
 	        42883: ERROR: function %s does not exist
 	     */
-	    if (e.getSQLState().equals("42883")) {
+	    if (e.toString().indexOf("does not exist") != -1 ||
+	        "42883".equals("42883")) {
 		m_out.println("CLEAN");
 	    } else {
 		throw e;
@@ -1420,7 +1423,8 @@ public class Installer {
 	      SQL Status code:
 	        42883: ERROR: function %s does not exist
 	     */
-	    if (e.getSQLState().equals("42883")) {
+	    if (e.toString().indexOf("does not exist") != -1 ||
+	        "42883".equals(e.getSQLState())) {
 		m_out.println("CLEAN");
 	    } else {
 		throw e;
