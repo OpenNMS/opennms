@@ -307,11 +307,13 @@ public final class SmtpPlugin
 			{
 				try
 				{
+					log.debug("SmtpPlugin: Closing SMTP socket channel "+sChannel+(sChannel != null ? " with socket: "+sChannel.socket():"" ));
                                         if(sChannel != null)
                                         {
                                                 if (sChannel.socket() != null)
                                                         sChannel.socket().close();
                                                 sChannel.close();
+                            					log.debug("SmtpPlugin: Closed SMTP socket channel "+sChannel+(sChannel != null ? " with socket: "+sChannel.socket():"" ));
                                                 sChannel = null;
                                         }
 				}
