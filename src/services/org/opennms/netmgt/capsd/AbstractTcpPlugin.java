@@ -56,6 +56,8 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.utils.ParameterMap;
 
+// TODO need to completely javadoc this class
+
 /**
  * Implements the basic functionality of a Tcp based servicethat can be discovered by OpenNMS.
  * It extends the AbstractPlugin class and provides methods for creating the sockets and
@@ -97,8 +99,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
      * </P>
      * 
      * @param config
-     *            TODO
-     * 
+     *  
      * @return True if server supports Citrix on the specified port, false otherwise
      */
     final protected boolean checkConnection(ConnectionConfig config) {

@@ -581,11 +581,12 @@ final class BroadcastEventProcessor
 		for (int i = 0; i < targets.length; i++)
 		{
 			String interval = (targets[i].getInterval()==null ? "0s" : targets[i].getInterval());
+            String delay = (targets[i].getDelay()==null ? "0s" : targets[i].getDelay());
 
                         String targetName = targets[i].getName();
 			ThreadCategory.getInstance(getClass()).debug("Processing target " + targetName + ":" + interval);
 			
-			long curSendTime = 0;
+			long curSendTime = TimeConverter.convertToMillis(delay);
 			
 			if (GroupFactory.getInstance().hasGroup((targetName)))
 			{
