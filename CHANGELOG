@@ -1,5 +1,9 @@
 1.1.1 to 1.1.2
 ----------------------------------------------------------------------
+- Added an ORDER BY statement to correct issues with RTC not 
+  reflecting the problem number of down services.
+- Added a small fix to the HTTP and HTTPS monitors that could cause
+  a ClassCastException, marking the polled service as down. Thx Jim
 - Added Bill Ayers' code that creates a script based plugin and 
   monitor.
 - Added a fix to catch RRD update errors on nodeLostService events
