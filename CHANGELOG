@@ -1,5 +1,6 @@
 1.1.4 to 1.1.5
 ----------------------------------------------------------------------
+- Added new Compaq event definitions. Thx Mike
 - Added a number of new graphs for Net-SNMP collections.
   Thx Robert and Ray.
 - Totally reworked and reordered datacollection-config.xml and
