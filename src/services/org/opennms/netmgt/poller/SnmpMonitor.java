@@ -256,7 +256,7 @@ public final class SnmpMonitor
 		int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
 		String oid = ParameterMap.getKeyedString(parameters, "oid", DEFAULT_OBJECT_IDENTIFIER);
 		String operator = ParameterMap.getKeyedString(parameters, "operator", null);
-        String operand = ParameterMap.getKeyedString(parameters, "operatand", null);
+        String operand = ParameterMap.getKeyedString(parameters, "operand", null);
         
 		// set timeout and retries on SNMP peer object
 		//
