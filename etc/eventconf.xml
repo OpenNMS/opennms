@@ -42,6 +42,7 @@
         <event-file>@install.etc.dir@/events/Quintum.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Redline.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Sensaphone.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Snort.events.xml</event-file>
         <event-file>@install.etc.dir@/events/SonicWall.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Symbol.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Xerox.events.xml</event-file>
