@@ -105,7 +105,6 @@ public class Installer {
     String m_create_sql = null;
     String m_pg_iplike = null;
     String m_tomcat_conf = null;
-    String m_server_xml = null;
     String m_webappdir = null;
     String m_tomcatserverlibdir = null;
     String m_install_servletdir = null;
@@ -147,7 +146,6 @@ public class Installer {
 	    !m_update_iplike &&
 	    !m_update_unicode &&
 	    m_tomcat_conf == null &&
-	    m_server_xml == null &&
 	    !m_install_webapp) {
 	    throw new Exception("Nothing to do.\n" + m_required_options +
 				"\nUse '-h' for help.");
@@ -213,10 +211,6 @@ public class Installer {
 	    updateTomcatConf();
 	}
        
-	if (m_server_xml != null) {
-	    updateServerXml();
-	}
-	
 	if (m_update_iplike) {
 	    updateIplike();
 	}
@@ -349,11 +343,6 @@ public class Installer {
 		    case 'T':
 			i++;
 			m_tomcat_conf = getNextArg(argv, i, 'T');
-			break;
-
-		    case 'S':
-			i++;
-			m_server_xml = getNextArg(argv, i, 'S');
 			break;
 
 		    case 'w':
@@ -1090,13 +1079,6 @@ public class Installer {
 			     "-T option");
 	}
 
-	if (m_server_xml != null) {
-	    verifyFileExists(false,
-			     m_server_xml,
-			     "Tomcat server.xml",
-			     "-S option");
-	}
-
 	if (m_install_webapp) {
 	    verifyFileExists(true,
 			     m_webappdir,
@@ -1387,70 +1369,6 @@ public class Installer {
 	w.close();
 
 	m_out.println("done");
-    }
-
-    public void updateServerXml() throws Exception {
-	File f = new File(m_server_xml);
-
-	m_out.print("- checking Tomcat 4 for OpenNMS web UI... ");
-
-	BufferedReader r = new BufferedReader(new FileReader(f));
-	StringBuffer b = new StringBuffer();
-	String line;
-
-	while ((line = r.readLine()) != null) {
-	    b.append(line);
-	    b.append("\n");
-	}
-
-	r.close();
-
-	String server_in = b.toString();
-
-	// XXX Can the next two patterns be made more specific?
-	Matcher m = Pattern.compile("(?si)opennms").matcher(server_in);
-	if (m.find()) {
-	    m = Pattern.compile("(?s)homeDir").matcher(server_in);
-	    if (m.find()) {
-		m_out.println("FOUND");
-	    } else {
-		m_out.println("UPDATING");
-		server_in = server_in.replaceAll("(?s)userFile\\s*=\\s*\".*?\"\\s*", "homeDir=" + m_opennms_home + "\" ");
-		server_in = server_in.replaceAll("(?s)<Logger className=\"org.apache.catalina.logger.FileLogger\" prefix=\"localhost_opennms_log.\" suffix=\".txt\" timestamp=\"true\"/>", "<Logger className=\"org.opennms.web.log.Log4JLogger\" homeDir=\"" + m_opennms_home + "\" />");
-
-		f.renameTo(new File(m_server_xml + ".before-opennms" +
-				    System.currentTimeMillis()));
-
-		f = new File(m_server_xml);
-		PrintWriter w = new PrintWriter(new FileOutputStream(f));
-
-		w.print(server_in);
-		w.close();
-
-		m_out.println("DONE");
-	    }
-	} else {
-	    m_out.println("UPDATING");
-
-	    String add = "\n" +
-		"        <Context path=\"/opennms\" docBase=\"opennms\" debug=\"0\" reloadable=\"true\">\n" +
-		"         <Logger className=\"org.opennms.web.log.Log4JLogger\" homeDir=\"" + m_opennms_home + "\"/>\n" +
-		"         <Realm className=\"org.opennms.web.authenticate.OpenNMSTomcatRealm\" homeDir=\"" + m_opennms_home + "\"/>\n" +
-		"        </Context>\n";
-	    server_in = server_in.replaceAll("(?mi)^(.*)(</host>)",
-					     add + "$1$2");
-
-	    f.renameTo(new File(m_server_xml + ".before-opennms" +
-				System.currentTimeMillis()));
-
-	    f = new File(m_server_xml);
-	    PrintWriter w = new PrintWriter(new FileOutputStream(f));
-
-	    w.print(server_in);
-	    w.close();
-
-	    m_out.println("DONE");
-	}
     }
 
     public void updateIplike() throws Exception {
