@@ -693,6 +693,8 @@ final class SuspectEventProcessor implements Runnable {
                         xipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_UNMANAGED);
 
                         xipIfEntry.setIfIndex(ifindex.getValue());
+                        
+                        // FIXME: Should the below be ifIndex or ifindex.getValue() ?
                         int status = snmpc.getAdminStatus(ifIndex);
                         if (status != -1)
                             xipIfEntry.setStatus(status);
