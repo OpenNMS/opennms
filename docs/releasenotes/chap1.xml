@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="chap1" label="1.">
+    <title>Introduction</title>
+
+    <subtitle>About This Release</subtitle>
+
+    <para>OpenNMS 1.1.2 adds several new features and bug fixes. New features
+    include a JDBC poller, a script-based poller and script-based event
+    handler, as well as contributed support for a map.</para>
+
+    <para>OpenNMS 1.1.1 is the next step towards the production 1.2 release.
+    It contains a number of new features and bug fixes.</para>
+
+    <para>OpenNMS 1.1 extends the work that was begun with 1.0 to make OpenNMS
+    more powerful and easier to use. Almost all of the new functionality was
+    suggested by current OpenNMS users. It is hoped that these improvements
+    will prove useful, and will lead to even more suggestions on how to
+    improve the product.</para>
+
+    <para>OpenNMS 1.0.2 is a maintenance release that fixes several code
+    issues.</para>
+
+    <para>OpenNMS 1.0.1 is a maintenance release that fixes several code
+    issues.</para>
+
+    <para>Please, let us know if you have any problems at all at the <ulink
+    url="http://bugzilla.opennms.org/">OpenNMS Bugzilla</ulink> page.</para>
+</chapter>
+
