@@ -7,6 +7,14 @@ to make packages on solaris:
 
    ./build.sh -Dproduct.release=2 -Dproduct.snapshot=false -Dinstall.prefix=/tmp/opennms/ -Dinstall.dir=/usr/local/opennms -Dbuild.rrdtool.include.dir=/usr/local/rrdtool/include/ -Dbuild.postgresql.include.dir=/usr/local/pgsql/include/server -Dbuild.rrdtool.lib.dir=/usr/local/rrdtool/lib/ -Dbuild.rrdtool.bin=/usr/local/rrdtool/bin/rrdtool install
 
+1a: Run:
+
+./build.sh docs
+
+2b: Run:
+
+cp -pr work/docs /tmp/opennms/usr/local/opennms/
+
 2. go into your directory and walk down to /usr/local (install things in
    /usr/local just to fit with sunfreeware)
 
@@ -22,12 +30,14 @@ to make packages on solaris:
    # cd ../..
    # mkdir webapps
    # cd webapps
-   # ln -s ../../opennms/webapps/opennms ./opennms
+   # cp ../../opennms/webapps/opennms.xml .
 
 4. put the packaging files from the package dir here in that directory
    (so, for opennms you'd copy the pkginfo and postinstall scripts to
    /tmp/opennms/usr/local/ and then make /tmp/opennms/usr/local/etc and put
    the profile in there)
+
+4a. Edit the pkginfo file.
 
 5. generate the file list from /usr/local/
 
@@ -43,9 +53,12 @@ to make packages on solaris:
    i preinstall=./preinstall
    i postinstall=./postinstall
 
+7a. Edit the prototype file, go to the bottom and remove the references 
+    to postinstall, pkginfo and prototype.
+
 8. fix permissions -- it's best to change your username stuff to "bin bin"
 
-   # perl -pi -e 's,tarus staff,bin bin,' prototype
+   # perl -pi -e 's,root other,bin bin,' prototype
 
 9. put the package into the system package archive
 
