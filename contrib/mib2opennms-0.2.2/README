@@ -75,3 +75,20 @@ cwrTrapThresh trap received
  </logmsg>
  <severity>Indeterminate</severity>
 </event>
+
+SOME NOTES (added by Tarus):
+----------------------------
+
+If mib2opennms complains about a missing MIB, be sure that there is a file
+in your "-m" MIB path that has the *exact* name as the MIB it is complaining
+about.
+
+For example, if it complains "Can't find RFC-1213" and you have a file in
+your path called "RFC1213", you must rename it or copy it to "RFC-1213".
+
+The extensions .txt, .my and I believe .mib are acceptable, so in the
+above example, RFC-1213.txt should work.
+
+Also, the <mevalue> for generic should almost always be "6", although
+mib2opennms usually sets it to "0".
+
