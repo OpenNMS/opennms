@@ -12,7 +12,7 @@
 %>
 
 <%
-    String intervals[] = {"0m", "15m", "30m", "1h", "2h", "3h", "6h", "12h", "1d"};
+    String intervals[] = {"0m", "5m", "10m", "15m", "30m", "1h", "2h", "3h", "6h", "12h", "1d"};
     HttpSession user = request.getSession(true);
     Path newPath = (Path)user.getAttribute("newPath");
     List targetLinks = new ArrayList();
@@ -80,6 +80,10 @@
         if (trimmed=="")
         {
             alert("Please give this path a name.");
+        }
+        else if (trimmed.indexOf(" ") != -1)
+        {
+            alert("Please do not use spaces in path names.");
         }
         else if (document.outline.escalate0.options.length==0)
         {

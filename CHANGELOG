@@ -1,5 +1,6 @@
 1.0.0 to 1.1.0
 ----------------------------------------------------------------------
+- Disallowed spaces in Path names. Bug 657
 - Removed borders around Event and Notification lists (per Larry)
 - Added the ability to match an event to more than one notification.
   Added the boolean "match-all" to the notifd configuration to
