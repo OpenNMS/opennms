@@ -630,7 +630,7 @@ unless ($NOINSERT) {
 
 if ($TOMCAT) {
 
-	for my $dir in ('/var/tomcat4', '/sw/var/tomcat4', '/usr/local/tomcat4') {
+	for my $dir ('/var/tomcat4', '/sw/var/tomcat4', '/usr/local/tomcat4') {
 
 		my $serverxml = $dir . '/server.xml';
 	
