@@ -37,8 +37,6 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 
-import org.opennms.netmgt.config.GroupFactory;
-import org.opennms.netmgt.config.UserFactory;
 import org.opennms.web.category.RTCPostSubscriber;
 
 
