@@ -149,55 +149,6 @@ public class RrdFileConstants extends Object
 	 * necessary since the RRD filename is used on the commandline and 
 	 * specified in the graph URL.
 	 */
-	public static boolean isValidRrdName(String rrd) {
-		if( rrd == null ) {
-			throw new IllegalArgumentException("Cannot take null parameters.");
-		}
-	
-		int length = rrd.length(); 
-	
-		if( length > MAX_RRD_FILENAME_LENGTH ) {
-			return false;
-		}
-	
-		//cannot contain references to higher directories for security's sake
-		if(rrd.indexOf("..") >= 0) {
-			return false;
-		}
-	
-		for( int i=0; i < length; i++ ) {
-			char c = rrd.charAt(i);
-		
-			if( !(('A' <= c && c <= 'Z') || 
-				  ('a' <= c && c <= 'z') || 
-				  ('0' <= c && c <= '9') || 
-				  (c == '_') || 
-				  (c =='.') || 
-				  (c =='-') ||
-				  (c == '/')) 
-			   ) {
-				return false;
-			}
-		}            
-	
-		return true;
-	}
-	
-
-	/**
-	 * Checks an RRD filename to make sure it is of the proper length
-	 * and does not contain any unexpected charaters.  
-	 * 
-	 * The maximum length is specified by the 
-	 * {@link #MAX_RRD_FILENAME_LENGTH MAX_RRD_FILENAME_LENGTH} constant.  
-	 * The only valid characters are letters (A-Z and a-z), numbers (0-9), 
-	 * dashes (-), dots (.), and underscores (_).  These precautions are 
-	 * necessary since the RRD filename is used on the commandline and 
-	 * specified in the graph URL.
-	 *
-	 * @deprecated This method name does not use the correct Java naming 
-	 * convention.  Please use isValidRrdName instead.
-	 */
 	public static boolean isValidRRDName(String rrd) {
 		if( rrd == null ) {
 			throw new IllegalArgumentException("Cannot take null parameters.");
@@ -232,6 +183,7 @@ public class RrdFileConstants extends Object
 		return true;
 	}
 	
+
 	/** 
 	 * Note this method will <strong>not</strong> handle references to
 	 * higher directories ("..").

@@ -53,6 +53,7 @@ import org.apache.regexp.RESyntaxException;
 import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
 
@@ -162,7 +163,7 @@ public class RRDGraphServlet extends HttpServlet
             }
             
             for( int i=0; i < rrds.length; i++ ) {
-                if( !GraphUtil.isValidRRDName(rrds[i]) ) {
+                if( !RrdFileConstants.isValidRRDName(rrds[i]) ) {
                     this.log("Illegal RRD filename: " + rrds[i]);
                     throw new IllegalArgumentException("Illegal RRD filename: " + rrds[i]);
                 }

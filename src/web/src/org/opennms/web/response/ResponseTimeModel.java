@@ -37,7 +37,6 @@
 package org.opennms.web.response;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -47,15 +46,18 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.utils.IfLabel;
+import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.Util;
-import org.opennms.web.graph.GraphUtil;
 import org.opennms.web.graph.PrefabGraph;
 
 
@@ -74,28 +76,6 @@ public class ResponseTimeModel extends Object
     public static final String NODE_GRAPH_TYPE = "node";
     
     
-    /** Convenience filter that matches directories with RRD files in them. 
-     * 
-     * @deprecated Replaced by 
-     *     {@link org.opennms.netmgt.utils.RrdFileConstants#INTERFACE_DIRECTORY_FILTER}
-     */
-    public static final FileFilter INTERFACE_DIRECTORY_FILTER = new FileFilter() {
-        public boolean accept(File file) {
-            if(!file.isDirectory()) {
-                return false;              
-            }
-                        
-            File[] intfRRDs = file.listFiles(GraphUtil.RRD_FILENAME_FILTER);
-
-            if(intfRRDs != null && intfRRDs.length > 0) {
-                return true;
-            }
-
-            return false;
-        }
-    };    
-    
-
     protected Properties props;
     protected PrefabGraph[] queries;
     protected Map reportMap;
@@ -265,10 +245,10 @@ public class ResponseTimeModel extends Object
         
         ArrayList dataSources = new ArrayList();        
         File nodeDir = new File(this.rrdDirectory, nodeId);        
-        int suffixLength = GraphUtil.RRD_SUFFIX.length();
+        int suffixLength = RrdFileConstants.RRD_SUFFIX.length();
         
         //get the node data sources
-        File[] nodeFiles = nodeDir.listFiles(GraphUtil.RRD_FILENAME_FILTER);
+        File[] nodeFiles = nodeDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
         
         for(int i = 0; i < nodeFiles.length; i++ ) {
             String fileName = nodeFiles[i].getName();
@@ -296,7 +276,7 @@ public class ResponseTimeModel extends Object
         //File nodeDir = new File(this.rrdDirectory, nodeId);
         File intfDir = new File(this.rrdDirectory, intf);
         
-        int suffixLength = GraphUtil.RRD_SUFFIX.length();
+        int suffixLength = RrdFileConstants.RRD_SUFFIX.length();
         
         //get the node data sources
         //if(includeNodeQueries) {            
@@ -304,7 +284,7 @@ public class ResponseTimeModel extends Object
         //}
         
         //get the interface data sources
-        File[] intfFiles = intfDir.listFiles(GraphUtil.RRD_FILENAME_FILTER);
+        File[] intfFiles = intfDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
         
         for(int i = 0; i < intfFiles.length; i++ ) {
             String fileName = intfFiles[i].getName();
@@ -407,46 +387,49 @@ public class ResponseTimeModel extends Object
 
         // Get all of the numeric directory names in the RRD directory; these
         // are the nodeids of the nodes that have performance data
-        File[] intDirs = this.rrdDirectory.listFiles(INTERFACE_DIRECTORY_FILTER);
+        File[] intDirs = this.rrdDirectory.listFiles(RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
 
         if(intDirs != null && intDirs.length > 0) {
-            ArrayList nodeList = new ArrayList();
-
-            //create the main stem of the select statement
-            StringBuffer select = new StringBuffer("SELECT DISTINCT ipinterface.nodeid, node.nodeLabel FROM node, ipinterface WHERE node.nodetype != 'D' AND ipinterface.nodeid=node.nodeid AND ipinterface.ipaddr IN ('");
-
-            //add all but the last node id with a comma
-            for( int i=0; i < intDirs.length - 1; i++ ) {
-                select.append(intDirs[i].getName());
-                select.append("','");
+            List nodeList = new LinkedList();
+            
+            // create a set to test ipAddrs against.
+            Set queryableIpAddrs = new HashSet(intDirs.length);
+            for (int i = 0; i < intDirs.length; i++) {
+                String ipAddr = intDirs[i].getName();
+                queryableIpAddrs.add(ipAddr);
             }
 
-            //add the last node id without a comma
-            select.append(intDirs[intDirs.length - 1].getName());
-
-            //close the select
-            select.append("') ORDER BY node.nodeLabel");
+            //create the main stem of the select statement
+            StringBuffer select = new StringBuffer("SELECT DISTINCT ipinterface.ipAddr, ipinterface.nodeid, node.nodeLabel FROM node, ipinterface WHERE node.nodetype != 'D' AND ipinterface.nodeid=node.nodeid AND ipinterface.ismanaged != 'D' ORDER BY node.nodeLabel");
 
             Connection conn = Vault.getDbConnection();
 
+            Statement stmt = null;
+            ResultSet rs = null;
             try {
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(select.toString());
+                stmt = conn.createStatement();
+                rs = stmt.executeQuery(select.toString());
 
 
                 while( rs.next() ) {
-                    QueryableNode node = new QueryableNode();
-
-                    node.nodeId = rs.getInt("nodeid");
-                    node.nodeLabel = rs.getString("nodeLabel");
-
-                    nodeList.add(node);
+                    String ipAddr = rs.getString("ipAddr");
+                    
+                    if (queryableIpAddrs.contains(ipAddr)) {
+                        QueryableNode node = new QueryableNode();
+                        
+                        node.nodeId = rs.getInt("nodeid");
+                        node.nodeLabel = rs.getString("nodeLabel");
+                        
+                        nodeList.add(node);
+                    }
                 }
 
                 rs.close();
                 stmt.close();
             }
             finally {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
                 Vault.releaseDbConnection(conn);
             }
 
@@ -542,7 +525,7 @@ public class ResponseTimeModel extends Object
         File intfDir = new File(this.rrdDirectory, ipAddr);        
         
         if(intfDir.exists() && intfDir.isDirectory()) {
-            File[] intfFiles = intfDir.listFiles(GraphUtil.RRD_FILENAME_FILTER);
+            File[] intfFiles = intfDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
                 
             if(intfFiles != null && intfFiles.length > 0) {
                     isQueryable = true;

@@ -33,7 +33,6 @@
 package org.opennms.web.performance;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -42,16 +41,18 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.utils.IfLabel;
+import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.Util;
-import org.opennms.web.graph.GraphUtil;
 import org.opennms.web.graph.PrefabGraph;
 
 
@@ -67,67 +68,6 @@ public class PerformanceModel extends Object
     public static final String RRDTOOL_GRAPH_PROPERTIES_FILENAME = "/etc/snmp-graph.properties";
     public static final String INTERFACE_GRAPH_TYPE = "interface";
     public static final String NODE_GRAPH_TYPE = "node";
-    
-    
-    /** Convenience filter that matches directories with RRD files in them. 
-     * 
-     * @deprecated Replaced by 
-     *     {@link org.opennms.netmgt.utils.RrdFileConstants#INTERFACE_DIRECTORY_FILTER}
-     */
-    public static final FileFilter INTERFACE_DIRECTORY_FILTER = new FileFilter() {
-        public boolean accept(File file) {
-            if(!file.isDirectory()) {
-                return false;              
-            }
-                        
-            File[] intfRRDs = file.listFiles(GraphUtil.RRD_FILENAME_FILTER);
-
-            if(intfRRDs != null && intfRRDs.length > 0) {
-                return true;
-            }
-
-            return false;
-        }
-    };    
-    
-
-    /** 
-     * Convenience filter that matches integer-named directories that either 
-     * contain RRD files or directories that contain RRD files.
-     *
-      * @deprecated Replaced by 
-     *     {@link org.opennms.netmgt.utils.RrdFileConstants#NODE_DIRECTORY_FILTER}
-     */
-    public static final FileFilter NODE_DIRECTORY_FILTER = new FileFilter() {
-        public boolean accept(File file) {
-            if(!file.isDirectory()) {
-                return false;              
-            }
-            
-            try {
-                //if the directory name is an integer
-                Integer.parseInt(file.getName());
-            }
-            catch (Exception e) {
-                return false;
-            }
-                
-            //if the node dir contains RRDs, then it is queryable
-            File[] nodeRRDs = file.listFiles(GraphUtil.RRD_FILENAME_FILTER);
-            if(nodeRRDs != null && nodeRRDs.length > 0) {
-                return true;
-            }
-                              
-            //if the node dir contains queryable interface directories, then
-            //it is queryable                              
-            File[] intfDirs = file.listFiles(INTERFACE_DIRECTORY_FILTER);            
-            if(intfDirs != null && intfDirs.length > 0) {
-                return true;
-            }
-
-            return false;
-        }
-    };    
     
     
     protected Properties props;
@@ -200,7 +140,7 @@ public class PerformanceModel extends Object
         }
 
         //create a temporary list of queries to return
-        ArrayList returnList = new ArrayList();
+        List returnList = new LinkedList();
 
         //get the full list of all possible queries
         PrefabGraph[] queries = this.getQueries();
@@ -236,7 +176,7 @@ public class PerformanceModel extends Object
         }
 
         //create a temporary list of queries to return
-        ArrayList returnList = new ArrayList();
+        List returnList = new LinkedList();
 
         //get the full list of all possible queries
         PrefabGraph[] queries = this.getQueries();
@@ -297,12 +237,12 @@ public class PerformanceModel extends Object
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
         
-        ArrayList dataSources = new ArrayList();        
+        List dataSources = new ArrayList();        
         File nodeDir = new File(this.rrdDirectory, nodeId);        
-        int suffixLength = GraphUtil.RRD_SUFFIX.length();
+        int suffixLength = RrdFileConstants.RRD_SUFFIX.length();
         
         //get the node data sources
-        File[] nodeFiles = nodeDir.listFiles(GraphUtil.RRD_FILENAME_FILTER);
+        File[] nodeFiles = nodeDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
         
         for(int i = 0; i < nodeFiles.length; i++ ) {
             String fileName = nodeFiles[i].getName();
@@ -325,12 +265,12 @@ public class PerformanceModel extends Object
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
         
-        ArrayList dataSources = new ArrayList();
+        List dataSources = new ArrayList();
         
         File nodeDir = new File(this.rrdDirectory, nodeId);
         File intfDir = new File(nodeDir, intf);
         
-        int suffixLength = GraphUtil.RRD_SUFFIX.length();
+        int suffixLength = RrdFileConstants.RRD_SUFFIX.length();
         
         //get the node data sources
         if(includeNodeQueries) {            
@@ -338,7 +278,7 @@ public class PerformanceModel extends Object
         }
         
         //get the interface data sources
-        File[] intfFiles = intfDir.listFiles(GraphUtil.RRD_FILENAME_FILTER);
+        File[] intfFiles = intfDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
         
         for(int i = 0; i < intfFiles.length; i++ ) {
             String fileName = intfFiles[i].getName();
@@ -441,46 +381,49 @@ public class PerformanceModel extends Object
 
         // Get all of the numeric directory names in the RRD directory; these
         // are the nodeids of the nodes that have performance data
-        File[] nodeDirs = this.rrdDirectory.listFiles(NODE_DIRECTORY_FILTER);
-
+        File[] nodeDirs = this.rrdDirectory.listFiles(RrdFileConstants.NODE_DIRECTORY_FILTER);
+        
         if(nodeDirs != null && nodeDirs.length > 0) {
-            ArrayList nodeList = new ArrayList();
+            List nodeList = new LinkedList();
 
-            //create the main stem of the select statement
-            StringBuffer select = new StringBuffer("SELECT DISTINCT NODEID, NODELABEL FROM NODE WHERE NODETYPE != 'D' AND NODEID IN ('");
-
-            //add all but the last node id with a comma
-            for( int i=0; i < nodeDirs.length - 1; i++ ) {
-                select.append(nodeDirs[i].getName());
-                select.append("','");
+            // Construct a set containing the nodeIds that are queryable
+            BitSet queryableIds = new BitSet(nodeDirs.length);
+            for (int i = 0; i < nodeDirs.length; i++) {
+                String fileName = nodeDirs[i].getName();
+                int nodeId = Integer.parseInt(fileName);
+                queryableIds.set(nodeId);
             }
 
-            //add the last node id without a comma
-            select.append(nodeDirs[nodeDirs.length - 1].getName());
-
-            //close the select
-            select.append("') ORDER BY NODELABEL");
+            //create the main stem of the select statement
+            StringBuffer select = new StringBuffer("SELECT DISTINCT NODEID, NODELABEL FROM NODE WHERE NODETYPE != 'D' ORDER BY NODELABEL");
 
             Connection conn = Vault.getDbConnection();
 
+            Statement stmt = null;
+            ResultSet rs = null;
             try {
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(select.toString());
+                stmt = conn.createStatement();
+                rs = stmt.executeQuery(select.toString());
 
 
                 while( rs.next() ) {
-                    QueryableNode node = new QueryableNode();
-
-                    node.nodeId = rs.getInt("nodeid");
-                    node.nodeLabel = rs.getString("nodeLabel");
-
-                    nodeList.add(node);
+                    
+                    int nodeId = rs.getInt("nodeid");
+                    
+                    if (queryableIds.get(nodeId)) {
+                        QueryableNode node = new QueryableNode();
+                        
+                        node.nodeId = nodeId;
+                        node.nodeLabel = rs.getString("nodeLabel");
+                        
+                        nodeList.add(node);
+                    }
                 }
 
-                rs.close();
-                stmt.close();
             }
             finally {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
                 Vault.releaseDbConnection(conn);
             }
 
@@ -508,7 +451,7 @@ public class PerformanceModel extends Object
             throw new IllegalArgumentException("No such directory: " + nodeDir);
         }
         
-        File[] intfDirs = nodeDir.listFiles(INTERFACE_DIRECTORY_FILTER);
+        File[] intfDirs = nodeDir.listFiles(RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
         
         if(intfDirs != null && intfDirs.length > 0) {
             intfs = new String[intfDirs.length];
@@ -536,13 +479,13 @@ public class PerformanceModel extends Object
         File nodeDir = new File(this.rrdDirectory, nodeId);        
         
         if(nodeDir.exists() && nodeDir.isDirectory()) {
-            File[] nodeFiles = nodeDir.listFiles(GraphUtil.RRD_FILENAME_FILTER);
+            File[] nodeFiles = nodeDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
             
             if(nodeFiles != null && nodeFiles.length > 0) {
                 isQueryable = true;
             }
             else {                         
-                File[] intfDirs = nodeDir.listFiles(INTERFACE_DIRECTORY_FILTER);
+                File[] intfDirs = nodeDir.listFiles(RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
                 
                 if(intfDirs != null && intfDirs.length > 0) {
                     isQueryable = true;                
@@ -566,7 +509,7 @@ public class PerformanceModel extends Object
             File intfDir = new File(nodeDir, ifLabel);
             
             if(intfDir.exists() && intfDir.isDirectory()) {
-                File[] intfFiles = intfDir.listFiles(GraphUtil.RRD_FILENAME_FILTER);
+                File[] intfFiles = intfDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
                 
                 if(intfFiles != null && intfFiles.length > 0) {
                     isQueryable = true;

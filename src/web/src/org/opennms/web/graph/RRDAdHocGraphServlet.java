@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.Util;
 
 
@@ -133,7 +134,7 @@ public class RRDAdHocGraphServlet extends HttpServlet
             return;
         }
         
-        if( !GraphUtil.isValidRRDName(rrdDir) ) {
+        if( !RrdFileConstants.isValidRRDName(rrdDir) ) {
             this.log("Illegal RRD directory: " + rrdDir);
             throw new IllegalArgumentException("Illegal RRD directory: " + rrdDir);
         }
@@ -210,7 +211,7 @@ public class RRDAdHocGraphServlet extends HttpServlet
             String dsAbbrev = "ds" + Integer.toString( i );
  
             String dsName = dsNames[i];
-            String rrd = this.workDir + File.separator + rrdDir + File.separator + dsNames[i] + GraphUtil.RRD_SUFFIX;              
+            String rrd = this.workDir + File.separator + rrdDir + File.separator + dsNames[i] + RrdFileConstants.RRD_SUFFIX;              
             String dsAggregFxn = dsAggregFxns[i];
             String color = colors[i];
             String dsTitle = dsTitles[i];
@@ -224,7 +225,7 @@ public class RRDAdHocGraphServlet extends HttpServlet
             String dsAbbrev = "ds" + Integer.toString( i );
 
             String dsName = dsNames[i];
-            String rrd = rrdDir + File.separator + dsNames[i] + GraphUtil.RRD_SUFFIX;              
+            String rrd = rrdDir + File.separator + dsNames[i] + RrdFileConstants.RRD_SUFFIX;              
             String dsAggregFxn = dsAggregFxns[i];
             String color = colors[i];
             String dsTitle = dsTitles[i];
