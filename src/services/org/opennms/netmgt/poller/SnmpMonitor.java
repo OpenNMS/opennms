@@ -42,9 +42,11 @@ package org.opennms.netmgt.poller;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
@@ -54,12 +56,16 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.utils.SnmpResponseHandler;
+import org.opennms.protocols.snmp.SnmpCounter64;
+import org.opennms.protocols.snmp.SnmpInt32;
 import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpPduPacket;
 import org.opennms.protocols.snmp.SnmpPduRequest;
 import org.opennms.protocols.snmp.SnmpPeer;
 import org.opennms.protocols.snmp.SnmpSMI;
 import org.opennms.protocols.snmp.SnmpSession;
+import org.opennms.protocols.snmp.SnmpSyntax;
+import org.opennms.protocols.snmp.SnmpUInt32;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
@@ -97,6 +103,18 @@ public final class SnmpMonitor
 	 * SnmpPeer object.
 	 */
 	static final String SNMP_PEER_KEY	= "org.opennms.netmgt.collectd.SnmpCollector.SnmpPeer";
+    
+    /**
+     * Constant for less-than operand
+     */
+    static final String LESS_THAN = "<";
+    static final String GREATER_THAN = ">";
+    static final String LESS_THAN_EQUALS = "<=";
+    static final String GREATER_THAN_EQUALS = ">=";
+    static final String EQUALS = "=";
+    static final String NOT_EQUAL = "!=";
+    static final String MATCHES = "~";
+    
 	
 	/**
 	 * <P>Returns the name of the service that the plug-in monitors ("SNMP").</P>
@@ -237,7 +255,9 @@ public final class SnmpMonitor
 		int retries = ParameterMap.getKeyedInteger(parameters, "retries", peer.getRetries());
 		int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
 		String oid = ParameterMap.getKeyedString(parameters, "oid", DEFAULT_OBJECT_IDENTIFIER);
-		
+		String operator = ParameterMap.getKeyedString(parameters, "operator", null);
+        String operand = ParameterMap.getKeyedString(parameters, "operatand", null);
+        
 		// set timeout and retries on SNMP peer object
 		//
 		peer.setTimeout(timeout);
@@ -246,7 +266,8 @@ public final class SnmpMonitor
 		if (log.isDebugEnabled())
 			log.debug("poll: service= SNMP address= " + ipaddr.getHostAddress() + 
 							" port= " + port + " oid=" + oid + 
-							" timeout= " + timeout + " retries= " + retries);
+							" timeout= " + timeout + " retries= " + retries +
+                              " operator = " + operator + " operand = " + operand);
 							
 		// Establish SNMP session with interface
 		//
@@ -257,7 +278,7 @@ public final class SnmpMonitor
 			{
 				String nl = System.getProperty("line.separator");
 				log.debug("SnmpMonitor.poll: SnmpPeer configuration: address: " + peer.getPeer() +
-					  nl +"      version: " + ((peer.getParameters().getVersion() == SnmpSMI.SNMPV1)?"SNMPv1":"SNMPv2") +
+					  nl + "      version: " + ((peer.getParameters().getVersion() == SnmpSMI.SNMPV1)?"SNMPv1":"SNMPv2") +
 					  nl + "      timeout: " + peer.getTimeout() +
 					  nl + "      retries: " + peer.getRetries() +
 					  nl + "      read commString: " + peer.getParameters().getReadCommunity() +
@@ -314,8 +335,16 @@ public final class SnmpMonitor
 			if(handler.getResult() != null)
 			{
 				log.debug("poll: SNMP poll succeeded, addr=" + ipaddr.getHostAddress() + 
-										" oid=" + oid + " value=" + handler.getResult().getValue());	
-				status = SERVICE_AVAILABLE;
+										" oid=" + oid + " value=" + handler.getResult().getValue());
+                try {
+                    status = (meetsCriteria(handler.getResult().getValue(), operator, operand) ? SERVICE_AVAILABLE : SERVICE_UNAVAILABLE);
+                } catch (NumberFormatException e) {
+                    log.error("Number operator used on a non-number "+e.getMessage());
+                    status = SERVICE_AVAILABLE;
+                } catch (IllegalArgumentException e) {
+                    log.error("Invalid Snmp Criteria: "+e.getMessage());
+                    status = SERVICE_UNAVAILABLE;
+                }
 			}
 			else
 			{
@@ -348,5 +377,62 @@ public final class SnmpMonitor
 		
 		return status;
 	}
+
+    /**
+     * Verifies that the result of the SNMP query meets the criteria specified by the
+     * operator and the operand from the configuartion file.
+     * 
+     * @param result
+     * @param operator
+     * @param operand
+     * @return
+     */
+    public boolean meetsCriteria(SnmpSyntax result, String operator, String operand) {
+        if (result == null)
+            return false;
+        
+        if (operator == null || operand == null)
+            return true;
+
+        String value = result.toString();
+        if (EQUALS.equals(operator))
+            return operand.equals(value);
+        else if (NOT_EQUAL.equals(operator))
+            return !operand.equals(value);
+        else if (MATCHES.equals(operator))
+            return Pattern.compile(operand).matcher(value).find();
+        
+        
+        BigInteger val = null;
+        switch (result.typeId()) {
+        case SnmpSMI.SMI_INTEGER:
+            val = BigInteger.valueOf(((SnmpInt32)result).getValue());
+            break;
+        case SnmpSMI.SMI_COUNTER64:
+            val = ((SnmpCounter64)result).getValue();
+            break;
+        case SnmpSMI.SMI_GAUGE32:
+        case SnmpSMI.SMI_TIMETICKS:
+        case SnmpSMI.SMI_COUNTER32:
+            val = BigInteger.valueOf(((SnmpUInt32)result).getValue());
+            break;
+        default:
+            val = new BigInteger(result.toString());
+            break;
+        }
+        
+        BigInteger intOperand = new BigInteger(operand);
+        if (LESS_THAN.equals(operator)) {
+            return val.compareTo(intOperand) < 0;
+        } else if (LESS_THAN_EQUALS.equals(operator)) {
+            return val.compareTo(intOperand) <= 0;
+        } else if (GREATER_THAN.equals(operator)) {
+            return val.compareTo(intOperand) > 0;
+        } else if (GREATER_THAN_EQUALS.equals(operator)) {
+            return val.compareTo(intOperand) >= 0;
+        } else {
+            throw new IllegalArgumentException("operator "+operator+" is unknown");
+        }
+    }
 }
 
