@@ -373,7 +373,7 @@
 			</systemDef>
 
 			<systemDef name = "Windows NT/2000">
-				<sysoid>.1.3.6.1.4.1.311.1.1.3.1.1</sysoid>
+				<sysoidMask>.1.3.6.1.4.1.311.1.1.3.1.</sysoidMask>
 				<collect>
 					<includeGroup>mib2-interfaces</includeGroup>
 					<includeGroup>windows-host</includeGroup>
