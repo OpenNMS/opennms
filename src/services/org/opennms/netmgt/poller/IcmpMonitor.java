@@ -246,7 +246,6 @@ final class IcmpMonitor
 		Packet iPkt = new Packet(tid);
 		iPkt.setIdentity(FILTER_ID);
 		iPkt.setSequenceId(m_seqid++);
-		iPkt.computeChecksum();
 
 		byte[] data = iPkt.toBytes();
 		return new DatagramPacket(data, data.length, addr, 0);
@@ -356,12 +355,13 @@ final class IcmpMonitor
 			Packet replyPkt = reply.getPacket();
 			if (replyPkt != null)
 			{
-				long rtt = replyPkt.getReceivedTime() - replyPkt.getSentTime();
-				log.debug("Ping round trip time for " + ipv4Addr + ": " + rtt + "ms");
-				
-				// Store round-trip-time in RRD database
-				if (rtt >= 0 && rrdPath != null)
-					this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, rtt);
+                                long rtt = replyPkt.getPingRTT();
+                                log.debug("Ping round trip time for " + ipv4Addr + ": " + rtt + "us");
+
+                                // Store round-trip-time in RRD database
+                                if (rtt >= 0 && rrdPath != null)
+                                        this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, rtt);
+
 			}
 		}
 		

@@ -75,12 +75,17 @@ public final class Packet
 	 */
 	private byte[]	m_pad;
 
+        /**
+         * The ping rtt (microseconds)
+         */
+        private long    m_rtt;
+
 	/**
 	 * This is the amount of padding required to make the ICMP
 	 * echo request 56 bytes in length. This is just following
 	 * the available code for ping ;)
 	 */
-	private static final int	PAD_SIZE	= 24;
+	private static final int	PAD_SIZE	= 16;
 
 	/**
 	 * Converts a byte to a long and wraps the
@@ -128,7 +133,8 @@ public final class Packet
 		super(ICMPHeader.TYPE_ECHO_REQUEST, (byte)0);
 		setNextSequenceId();
 
-		m_sent = System.currentTimeMillis();
+		m_rtt = 0;
+		m_sent = 0;
 		m_recv = 0;
 		m_tid  = tid;
 
@@ -137,6 +143,7 @@ public final class Packet
 			m_pad[x] = NAMED_PAD[x];
 		for(int x = NAMED_PAD.length; x < PAD_SIZE; x++)
 			m_pad[x] = (byte)x;
+
 	}
 
 	/**
@@ -211,6 +218,23 @@ public final class Packet
 		m_recv = time;
 	}
 
+        /**
+         * Sets the ping Round Trip Time
+         */
+        public void setPingRTT(long time)
+        {
+                m_rtt = time;
+        }
+
+        /**
+         * Gets the ping Round Trip Time
+         */
+        public long getPingRTT()
+        {
+                return m_rtt;
+        }
+
+
 	/**
 	 * Returns the network size for this packet.
 	 * This is a combination of the headers size, 
@@ -218,7 +242,7 @@ public final class Packet
 	 */
 	public static int getNetworkSize( )
 	{
-		return (ICMPHeader.getNetworkSize() + 24 + PAD_SIZE);
+		return (ICMPHeader.getNetworkSize() + 32 + PAD_SIZE);
 	}
 	
 	/**
@@ -230,6 +254,7 @@ public final class Packet
 		OC16ChecksumProducer summer = new OC16ChecksumProducer();
 		
 		super.computeChecksum(summer);
+		summer.add(m_rtt);
 		summer.add(m_sent);
 		summer.add(m_recv);
 		summer.add(m_tid);
@@ -301,18 +326,27 @@ public final class Packet
 			m_sent <<= 8;
 			m_sent |= byteToLong(buf[offset++]);
 		}
+
 		m_recv = 0;
 		for(int x = 0; x < 8; x++)
 		{
 			m_recv <<= 8;
 			m_recv |= byteToLong(buf[offset++]);
 		}
+
 		m_tid  = 0;
 		for(int x = 0; x < 8; x++)
 		{
 			m_tid <<= 8;
 			m_tid |= byteToLong(buf[offset++]);
 		}
+
+                m_rtt = 0;
+                for(int x = 0; x < 8; x++)
+                {
+                        m_rtt <<= 8;
+                        m_rtt |= byteToLong(buf[offset++]);
+                }
 	
 		if(m_pad == null)
 			m_pad = new byte[PAD_SIZE];
@@ -365,6 +399,13 @@ public final class Packet
 			buf[offset++] = (byte)(t >>> 56);
 			t <<= 8;
 		}
+
+                t = m_rtt;
+                for(int x=0; x < 8; x++)
+                {
+                        buf[offset++] = (byte)(t >>> 56);
+                        t <<= 8;
+                }
 
 		for(int x = 0; x < PAD_SIZE; x++)
 			buf[offset++] = m_pad[x];

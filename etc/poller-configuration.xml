@@ -28,6 +28,8 @@
                 <service name="ICMP" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="3"/>
 			<parameter key="timeout" value="3000"/>
+			<parameter key="rrd-repository" value="@root.install.share@/rrd/response"/>
+			<parameter key="ds-name" value="icmp"/>
 		</service>
 		<service name="DNS" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="3"/>

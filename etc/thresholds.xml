@@ -39,7 +39,7 @@
 
 	<group name="icmp-latency"
                 rrdRepository = "@root.install.share@/rrd/response/">
-                <threshold type="high" ds-name="icmp"  ds-type="if" value="75" rearm="25" trigger="3"/>
+                <threshold type="high" ds-name="icmp"  ds-type="if" value="75000" rearm="25000" trigger="3"/>
         </group>
 
         <group name="http-latency"

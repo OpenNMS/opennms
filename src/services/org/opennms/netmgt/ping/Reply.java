@@ -139,7 +139,8 @@ public final class Reply
 		// Construct a new packet
 		//
 		Packet pkt = new Packet(packet.getData());
-		pkt.setReceivedTime();
+                if(pkt.getReceivedTime() == 0)
+                        pkt.setReceivedTime();
 
 		// Construct and return the new reply
 		//

@@ -7,7 +7,7 @@
   will return the hostname for the IP address of the interface.
   (Thx Nick W). Bug 654 
 - Added the ability to display reports on the response time for
-  HTTP, DNS and DHCP polls. Bug 612
+  ICMP, HTTP, DNS and DHCP polls. Bug 612
 - Added a new XML file called webui-colors. Currently this only
   allows one to set the colors for the categories display,
   but this will grow to include all the colors in the Web UI.

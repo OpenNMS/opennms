@@ -23,6 +23,7 @@
 // Tab Size = 8
 //
 //
+#include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -55,6 +56,167 @@ typedef struct icmphdr icmphdr_t;
 #pragma export on
 #include "IcmpSocket.h"
 #pragma export reset
+
+/**
+ * This macro is used to recover the current time
+ * in milliseconds.
+ */
+#ifndef CURRENTTIMEMILLIS
+#define CURRENTTIMEMILLIS(_dst_) \
+{				\
+	struct timeval tv;	\
+	gettimeofday(&tv,NULL); \
+	_dst_ = (unsigned long long)tv.tv_sec * 1000UL + (unsigned long long)tv.tv_usec / 1000UL; \
+}
+#endif
+
+/** 
+ * This macro is used to recover the current time
+ * in microseconds
+ */
+#ifndef CURRENTTIMEMICROS
+#define CURRENTTIMEMICROS(_dst_) \
+{				\
+	struct timeval tv;	\
+	gettimeofday(&tv,NULL); \
+	_dst_ = (unsigned long long)tv.tv_sec * 1000000UL + (unsigned long long)tv.tv_usec; \
+}
+#endif
+
+/**
+ * converts microseconds to milliseconds
+ */
+#ifndef MICROS_TO_MILLIS
+# define MICROS_TO_MILLIS(_val_) ((_val_) / 1000UL)
+#endif
+
+/**
+ * convert milliseconds to microseconds.
+ */
+#ifndef MILLIS_TO_MICROS
+# define MILLIS_TO_MICROS(_val_) ((_val_) * 1000UL)
+#endif
+
+/**
+ * This constant specifies the length of a 
+ * time field in the buffer
+ */
+#ifndef TIME_LENGTH
+# define TIME_LENGTH sizeof(unsigned long long)
+#endif
+
+/**
+ * Specifies the header offset and length
+ */
+#ifndef ICMP_HEADER_OFFSET
+# define ICMP_HEADER_OFFSET 0
+# define ICMP_HEADER_LENGTH 8
+#endif
+
+/** 
+ * specifies the offset of the sent time.
+ */
+#ifndef SENTTIME_OFFSET
+# define SENTTIME_OFFSET (ICMP_HEADER_OFFSET + ICMP_HEADER_LENGTH)
+#endif
+
+/**
+ * Sepcifies the offset of the received time.
+ */
+#ifndef RECVTIME_OFFSET
+# define RECVTIME_OFFSET (SENTTIME_OFFSET + TIME_LENGTH)
+#endif
+
+/**
+ * Specifies the offset of the thread identifer
+ */
+#ifndef THREADID_OFFSET
+# define THREADID_OFFSET (RECVTIME_OFFSET + TIME_LENGTH)
+#endif
+
+/**
+ * Specifies the offset of the round trip time
+ */
+#ifndef RTT_OFFSET
+# define RTT_OFFSET (THREADID_OFFSET + TIME_LENGTH)
+#endif
+
+/**
+ * specifies the magic tag and the offset/length of
+ * the tag in the header.
+ */
+#ifndef OPENNMS_TAG
+# define OPENNMS_TAG "OpenNMS!"
+# define OPENNMS_TAG_LEN 8
+# define OPENNMS_TAG_OFFSET (RTT_OFFSET + TIME_LENGTH)
+#endif
+
+/**
+ * Macros for doing byte swapping
+ */
+#ifdef __LITTLE_ENDIAN
+# ifndef ntohll
+#  define ntohll(_x_) __bswap_64(_x_)
+# endif
+# ifndef htonll
+#  define htonll(_x_) __bswap_64(_x_)
+# endif
+#elif  __BIG_ENDIAN 
+# ifndef ntohll
+#  define ntohll(_x_) _x_
+# endif
+# ifndef htonll
+#  define htonll(_x_) _x_
+# endif
+#else /* No Endien selected */
+# error A byte order must be selected
+#endif 
+
+/**
+ * This routine is used to quickly compute the
+ * checksum for a particular buffer. The checksum
+ * is done with 16-bit quantities and padded with
+ * zero if the buffer is not aligned on a 16-bit
+ * boundry.
+ *
+ */
+static
+unsigned short checksum(register unsigned short *p, register int sz)
+{
+	register unsigned long sum = 0;	// need a 32-bit quantity
+
+	/*
+	 * interate over the 16-bit values and 
+	 * accumulate a sum.
+	 */
+	while(sz > 1)
+	{
+		sum += *p++;
+		sz  -= 2;
+	}
+
+	if(sz == 1) /* handle the odd byte out */
+	{
+		/*
+		 * cast the pointer to an unsigned char pointer,
+		 * dereference and premote to an unsigned short.
+		 * Shift in 8 zero bits and whalla the value
+		 * is padded!
+		 */
+		sum += ((unsigned short) *((unsigned char *)p)) << 8;
+	}
+
+	/*
+	 * Add back the bits that may have overflowed the 
+	 * "16-bit" sum. First add high order 16 to low
+	 * order 16, then repeat
+	 */
+	while(sum >> 16)
+		sum = (sum >> 16) + (sum & 0xffffUL);
+
+	sum = ~sum & 0xffffUL; 
+	return sum;
+}
 
 /**
  * Opens a new raw socket that is set to send
@@ -465,6 +627,49 @@ Java_org_opennms_protocols_icmp_IcmpSocket_receive (JNIEnv *env, jobject instanc
 	icmpHdr = (icmphdr_t *)((char *)inBuf + (ipHdr->ihl << 2));
 
 	/**
+	 * Check the ICMP header for type equal 0, which is ECHO_REPLY, and
+	 * then check the payload for the 'OpenNMS!' marker. If it's one
+	 * we sent out then fix the recv time!
+	 *
+	 * Don't forget to check for a buffer overflow!
+	 */
+	if(iRC >= (OPENNMS_TAG_OFFSET + OPENNMS_TAG_LEN)
+	   && icmpHdr->type == 0
+	   && memcmp((char *)icmpHdr + OPENNMS_TAG_OFFSET, OPENNMS_TAG, OPENNMS_TAG_LEN) == 0)
+	{
+		unsigned long long now;
+		unsigned long long sent;
+		unsigned long long diff;
+
+		/**
+		 * get the current time in microseconds and then
+		 * compute the difference
+		 */
+		CURRENTTIMEMICROS(now);
+		memcpy((char *)&sent, (char *)icmpHdr + SENTTIME_OFFSET, TIME_LENGTH);
+		sent = ntohll(sent);
+		diff = now - sent;
+
+		/*
+		 * Now fill in the sent, received, and diff
+		 */
+		sent = MICROS_TO_MILLIS(sent);
+		sent = htonll(sent);
+		memcpy((char *)icmpHdr + SENTTIME_OFFSET, (char *)&sent, TIME_LENGTH);
+
+		now  = MICROS_TO_MILLIS(now);
+		now  = htonll(now);
+		memcpy((char *)icmpHdr + RECVTIME_OFFSET, (char *)&now, TIME_LENGTH);
+
+		diff = htonll(diff);
+		memcpy((char *)icmpHdr + RTT_OFFSET, (char *)&diff, TIME_LENGTH);
+
+		/* no need to recompute checksum on this on
+		 * since we don't actually check it upon receipt
+		 */
+	}
+
+	/**
 	 * Now construct a new java.net.InetAddress object from
 	 * the recipt information. The network address must
 	 * be passed in network byte order!
@@ -667,6 +872,33 @@ Java_org_opennms_protocols_icmp_IcmpSocket_send (JNIEnv *env, jobject instance, 
 		goto end_send;
 
 	(*env)->DeleteLocalRef(env, icmpDataArray);
+
+	/**
+	 * Check for 'OpenNMS!' at byte offset 32. If
+	 * it's found then we need to modify the time
+	 * and checksum for transmission. ICMP type
+	 * must equal 8 for ECHO_REQUEST
+	 *
+	 * Don't forget to check for a potential buffer
+	 * overflow!
+	 */
+	if(bufferLen >= (OPENNMS_TAG_OFFSET + OPENNMS_TAG_LEN)
+	   && ((icmphdr_t *)outBuffer)->type == 0x08
+	   && memcmp((char *)outBuffer + OPENNMS_TAG_OFFSET, OPENNMS_TAG, OPENNMS_TAG_LEN) == 0)
+	{
+		unsigned long long now = 0;
+
+		memcpy((char *)outBuffer + RECVTIME_OFFSET, (char *)&now, TIME_LENGTH);
+		memcpy((char *)outBuffer + RTT_OFFSET, (char *)&now, TIME_LENGTH);
+
+		CURRENTTIMEMICROS(now);
+		now = htonll(now);
+		memcpy((char *)outBuffer + SENTTIME_OFFSET, (char *)&now, TIME_LENGTH);
+
+		/* recompute the checksum */
+		((icmphdr_t *)outBuffer)->checksum = 0;
+		((icmphdr_t *)outBuffer)->checksum = checksum((unsigned short *)outBuffer, bufferLen);
+	}
 
 	/**
 	 * Now send the damn data before Jeff drives me nuts!
