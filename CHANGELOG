@@ -5,9 +5,10 @@
 - Rearrange ant libraries to add more control over the ant classpath
   in preparation for modifying castor xsd source generation.  This included
   fixing eclipse builders and tool launchers.
-- Changed default EclipseBuilder to 31M5GenSource that generates sablecc and castor
-  code directly using ant without an intervening script.  May require Eclipse 3.1M5.
-  You can reenable the old one (GenerateSouce) under Project -> Properties -> Builders
+- Changed default EclipseBuilder to 31M5GenSource that generates sablecc and
+  castor code directly using ant without an intervening script.  May require
+  Eclipse 3.1M5.  You can reenable the old one (GenerateSouce) under
+   Project -> Properties -> Builders
 - Added roles to users.xml and extend notifd to send notifications to 
   users scheduled for that role.
 - Use RPM "virtual packages" for the Java dependency.  Bug 1144.  Thanks
