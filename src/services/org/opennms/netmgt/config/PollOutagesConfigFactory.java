@@ -83,7 +83,7 @@ public final class PollOutagesConfigFactory
 	 */
 	private static void createDayOfWeekMapping()
 	{
-		m_dayOfWeekMap = new Hashtable();
+		m_dayOfWeekMap = new HashMap();
 		m_dayOfWeekMap.put("sunday", new Integer(Calendar.SUNDAY));
 		m_dayOfWeekMap.put("monday", new Integer(Calendar.MONDAY));
 		m_dayOfWeekMap.put("tuesday", new Integer(Calendar.TUESDAY));

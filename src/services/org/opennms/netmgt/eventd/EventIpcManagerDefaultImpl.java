@@ -26,7 +26,7 @@ package org.opennms.netmgt.eventd;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -60,7 +60,7 @@ public class EventIpcManagerDefaultImpl
 	/**
 	 * Hashtable of list of event listeners keyed by event UEI 
 	 */
-	private Hashtable  			m_ueiListeners;
+	private HashMap  			m_ueiListeners;
 
 	/**
 	 * The list of event listeners interested in all events
@@ -70,7 +70,7 @@ public class EventIpcManagerDefaultImpl
 	/**
 	 * Hashtable of event listener threads keyed by  the listener's id 
 	 */
-	private Hashtable  			m_listenerThreads;
+	private HashMap  			m_listenerThreads;
 
 	/**
 	 * The thread pool handling the events
@@ -210,10 +210,10 @@ public class EventIpcManagerDefaultImpl
 	 */
 	public EventIpcManagerDefaultImpl()
 	{
-		m_ueiListeners	  = new Hashtable();
+		m_ueiListeners	  = new HashMap();
 		m_listeners       = new ArrayList();
 
-		m_listenerThreads = new Hashtable();
+		m_listenerThreads = new HashMap();
 
 
 		// load the eventd configuration and get the number of threads that

@@ -173,7 +173,7 @@ public class DataManager extends Object
 	 */
 	private void addNodeIpSvcToCategory(long nodeid, String ip, String svcname,
 						RTCCategory cat,
-						Hashtable knownIPs,
+						HashMap knownIPs,
 						PreparedStatement outagesGetStmt)
 	{
 		Category log = ThreadCategory.getInstance(DataManager.class);
@@ -394,7 +394,7 @@ public class DataManager extends Object
 			throw new UndeclaredThrowableException(ex);
 		}
 
-		m_categories = new Hashtable();
+		m_categories = new HashMap();
 		
 		Enumeration enumCG = cFactory.getConfig().enumerateCategorygroup();
 		while(enumCG.hasMoreElements())
@@ -430,7 +430,7 @@ public class DataManager extends Object
 			throws SQLException, FilterParseException, RTCException
 	{
 		// create a hashtable of IP->RTCNodes list for startup to save on database access
-		Hashtable knownIPs	= new Hashtable();
+		HashMap knownIPs	= new HashMap();
 
 		// Create the filter
 		Filter filter =  new Filter();

@@ -100,7 +100,7 @@ public class EventConfFactory
 		
 		if (m_factoryInstances == null)
 		{
-			m_factoryInstances = new Hashtable();
+			m_factoryInstances = new HashMap();
 		}
 		
 		if (m_factoryInstances.containsKey(fileName))

@@ -152,7 +152,7 @@ final class DataSender implements Fiber
 		m_categories = categories;
 		
 		// create the category url map
-		m_catUrlMap = new Hashtable();
+		m_catUrlMap = new HashMap();
 
 		// create and start the data sender pool
 		m_dsrPool = new RunnableConsumerThreadPool( "DataSenderPool", 0.6f, 1.0f, numSenders);
