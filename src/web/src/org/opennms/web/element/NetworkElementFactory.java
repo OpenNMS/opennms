@@ -592,15 +592,13 @@ public class NetworkElementFactory extends Object {
 
         Node[] nodes = null;
         Vector vector = new Vector();
+        Object element = null;
 
         while (rs.next()) {
             Node node = new Node();
 
-            Object element = new Integer(rs.getInt("nodeId"));
-            node.m_nodeId = ((Integer) element).intValue();
-
-            element = rs.getString("dpName");
-            node.m_dpname = (String) element;
+            node.m_nodeId = rs.getInt("nodeId");
+            node.m_dpname = rs.getString("dpName");
 
             element = rs.getTimestamp("nodeCreateTime");
             if (element != null)
@@ -616,26 +614,13 @@ public class NetworkElementFactory extends Object {
                 node.m_nodeType = ((String) element).charAt(0);
             }
 
-            element = rs.getString("nodeSysOID");
-            node.m_nodeSysId = (String) element;
-
-            element = rs.getString("nodeSysName");
-            node.m_nodeSysName = (String) element;
-
-            element = rs.getObject("nodeSysDescription");
-            node.m_nodeSysDescr = (String) element;
-
-            element = rs.getString("nodeSysLocation");
-            node.m_nodeSysLocn = (String) element;
-
-            element = rs.getString("nodeSysContact");
-            node.m_nodeSysContact = (String) element;
-
-            element = rs.getString("nodelabel");
-            node.m_label = (String) element;
-
-            element = rs.getString("operatingsystem");
-            node.m_operatingSystem = (String) element;
+            node.m_nodeSysId = rs.getString("nodeSysOID");
+            node.m_nodeSysName = rs.getString("nodeSysName");
+            node.m_nodeSysDescr = rs.getString("nodeSysDescription");
+            node.m_nodeSysLocn = rs.getString("nodeSysLocation");
+            node.m_nodeSysContact = rs.getString("nodeSysContact");
+            node.m_label = rs.getString("nodelabel");
+            node.m_operatingSystem = rs.getString("operatingsystem");
 
             vector.addElement(node);
         }
@@ -658,23 +643,16 @@ public class NetworkElementFactory extends Object {
         Vector vector = new Vector();
 
         while (rs.next()) {
+            
+            Object element = null;
             Interface intf = new Interface();
 
-            Object element = new Integer(rs.getInt("nodeid"));
-            intf.m_nodeId = ((Integer) element).intValue();
-
-            element = new Integer(rs.getInt("ifIndex"));
-            intf.m_ifIndex = ((Integer) element).intValue();
-
-            element = new Integer(rs.getInt("ipStatus"));
-            intf.m_ipStatus = ((Integer) element).intValue();
-
-            element = rs.getString("ipHostname");
-            intf.m_ipHostName = (String) element;
-
-            element = rs.getString("ipAddr");
-            intf.m_ipAddr = (String) element;
-
+            intf.m_nodeId = rs.getInt("nodeid");
+            intf.m_ifIndex = rs.getInt("ifIndex");
+            intf.m_ipStatus = rs.getInt("ipStatus");
+            intf.m_ipHostName = rs.getString("ipHostname");
+            intf.m_ipAddr = rs.getString("ipAddr");
+            
             element = rs.getString("isManaged");
             if (element != null) {
                 intf.m_isManaged = ((String) element).charAt(0);
@@ -710,53 +688,33 @@ public class NetworkElementFactory extends Object {
                 ResultSet rs = pstmt.executeQuery();
 
                 if (rs.next()) {
-                    Object element = new Integer(rs.getInt("snmpifindex"));
-                    intfs[i].m_snmpIfIndex = ((Integer) element).intValue();
-
-                    element = rs.getString("snmpIpAdEntNetMask");
-                    intfs[i].m_snmpIpAdEntNetMask = (String) element;
-
-                    element = rs.getString("snmpPhysAddr");
-                    intfs[i].m_snmpPhysAddr = (String) element;
-
-                    element = rs.getString("snmpIfDescr");
-                    intfs[i].m_snmpIfDescr = (String) element;
-
-                    element = rs.getString("snmpIfName");
-                    intfs[i].m_snmpIfName = (String) element;
-
-                    element = new Integer(rs.getInt("snmpIfType"));
-                    intfs[i].m_snmpIfType = ((Integer) element).intValue();
-
-                    element = new Integer(rs.getInt("snmpIfOperStatus"));
-                    intfs[i].m_snmpIfOperStatus = ((Integer) element).intValue();
-
-                    element = new Integer(rs.getInt("snmpIfSpeed"));
-                    intfs[i].m_snmpIfSpeed = ((Integer) element).intValue();
-
-                    element = new Integer(rs.getInt("snmpIfAdminStatus"));
-                    intfs[i].m_snmpIfAdminStatus = ((Integer) element).intValue();
-
-                    element = rs.getString("snmpIfAlias");
-                    intfs[i].m_snmpIfAlias = (String) element;
+                    intfs[i].m_snmpIfIndex = rs.getInt("snmpifindex");
+                    intfs[i].m_snmpIpAdEntNetMask = rs.getString("snmpIpAdEntNetMask");
+                    intfs[i].m_snmpPhysAddr = rs.getString("snmpPhysAddr");
+                    intfs[i].m_snmpIfDescr = rs.getString("snmpIfDescr");
+                    intfs[i].m_snmpIfName = rs.getString("snmpIfName");
+                    intfs[i].m_snmpIfType = rs.getInt("snmpIfType");
+                    intfs[i].m_snmpIfOperStatus = rs.getInt("snmpIfOperStatus");
+                    intfs[i].m_snmpIfSpeed = rs.getInt("snmpIfSpeed");
+                    intfs[i].m_snmpIfAdminStatus = rs.getInt("snmpIfAdminStatus");
+                    intfs[i].m_snmpIfAlias = rs.getString("snmpIfAlias");
                 }
 
                 rs.close();
                 pstmt.close();
 
-                PreparedStatement pstmt2 = conn.prepareStatement("SELECT issnmpprimary FROM ipinterface WHERE nodeid=? AND ifindex=?");
-                pstmt2.setInt(1, intfs[i].getNodeId());
-                pstmt2.setInt(2, intfs[i].getIfIndex());
+                pstmt = conn.prepareStatement("SELECT issnmpprimary FROM ipinterface WHERE nodeid=? AND ifindex=?");
+                pstmt.setInt(1, intfs[i].getNodeId());
+                pstmt.setInt(2, intfs[i].getIfIndex());
 
-                ResultSet rs2 = pstmt2.executeQuery();
+                rs = pstmt.executeQuery();
 
-                if (rs2.next()) {
-                    Object issnmpprimary = new String(rs2.getString("issnmpprimary"));
-                    intfs[i].m_isSnmpPrimary = (String) issnmpprimary;
-		}
+                if (rs.next()) {
+                    intfs[i].m_isSnmpPrimary = rs.getString("issnmpprimary");
+                }
 
-                rs2.close();
-                pstmt2.close();
+                rs.close();
+                pstmt.close();
             }
         }
     }
@@ -768,31 +726,24 @@ public class NetworkElementFactory extends Object {
         while (rs.next()) {
             Service service = new Service();
 
-            Object element = new Integer(rs.getInt("nodeid"));
-            service.m_nodeId = ((Integer) element).intValue();
-
-            element = new Integer(rs.getInt("ifindex"));
-            service.m_ifIndex = ((Integer) element).intValue();
-
-            element = rs.getString("ipaddr");
-            service.m_ipAddr = (String) element;
+            Object element = null;
+            
+            service.m_nodeId = rs.getInt("nodeid");
+            service.m_ifIndex = rs.getInt("ifindex");
+            service.m_ipAddr = rs.getString("ipaddr");
 
             element = rs.getTimestamp("lastgood");
             if (element != null)
                 service.m_lastGood = EventConstants.formatToUIString(new Date(((Timestamp) element).getTime()));
 
-            element = new Integer(rs.getInt("serviceid"));
-            service.m_serviceId = ((Integer) element).intValue();
-
-            element = rs.getString("servicename");
-            service.m_serviceName = (String) element;
+            service.m_serviceId = rs.getInt("serviceid");
+            service.m_serviceName = rs.getString("servicename");
 
             element = rs.getTimestamp("lastfail");
             if (element != null)
                 service.m_lastFail = EventConstants.formatToUIString(new Date(((Timestamp) element).getTime()));
 
-            element = rs.getString("notify");
-            service.m_notify = (String) element;
+            service.m_notify = rs.getString("notify");
 
             element = rs.getString("status");
             if (element != null) {
