@@ -157,7 +157,7 @@
             </p>
       <% } %>
 
-      <table width="100%" cellspacing="0" cellpadding="2" border="1" bordercolor="black">
+      <table width="100%" cellspacing="0" cellpadding="2" border="0" bordercolor="black">
         <form action="notification/acknowledge" method="POST" name="acknowledge_form">
           <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
           
