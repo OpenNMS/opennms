@@ -75,7 +75,7 @@
       <table width="100%" cellspacing="0" cellpadding="0"border="0">
         <tr>
           <td>Version:</td>
-          <td>@product.version@-@product.release@</td>
+          <td>@product.fullversion.stamp@</td>
         </tr>
         <tr>
           <td>Server Time:</td>

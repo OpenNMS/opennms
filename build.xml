@@ -427,6 +427,8 @@ your distribution.
     <filter token="install.rrdtool.bin" value="${install.rrdtool.bin}"/>
     <filter token="install.tomcat.serverlibs"
 	    value="${install.tomcat.serverlibs}"/>
+    <filter token="product.fullversion.stamp"
+	    value="${product.fullversion.stamp}"/>
     <filter token="product.release" value="${product.release}"/>
     <filter token="product.release.stamp" value="${product.release.stamp}"/>
     <filter token="product.version" value="${product.version}"/>
