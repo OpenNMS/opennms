@@ -1,5 +1,6 @@
 1.1.0 to 1.1.1
 ----------------------------------------------------------------------
+- Added a two minute refresh to the Events list page. Thx Chris Y.
 - Disallowed Null Search Text. Bug 536
 - Added last day/week/month/year buttons to Performance and
   Response Time report pages. Bugs 546 and 618
