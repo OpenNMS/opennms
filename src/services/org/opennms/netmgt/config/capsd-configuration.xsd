@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
-	xmlns:capsd="http://xmlns.opennms.org/xsd/config/capsd"
-	targetNamespace="http://xmlns.opennms.org/xsd/config/capsd">
+	targetNamespace="http://xmlns.opennms.org/xsd/config/capsd" xmlns:this="http://xmlns.opennms.org/xsd/config/capsd">
 	
 		<!-- include SNMP configuration -->
 	<include schemaLocation="snmp-config.xsd"/>
@@ -10,13 +9,13 @@
 		<complexType>
 			<sequence>
 				<!-- a protocol/service plugin -->
-				<element ref="capsd:protocol-plugin" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:protocol-plugin" minOccurs="0" maxOccurs="unbounded"/>
 				
 				<!-- SMB protocol configuration (primarily for SMB authentication) -->
-				<element ref="capsd:smb-config" minOccurs="0" maxOccurs="1"/>
+				<element ref="this:smb-config" minOccurs="0" maxOccurs="1"/>
 				
 				<!-- managed/unmanaged IP addresses and ranges. -->
-				<element ref="capsd:ip-management" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:ip-management" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 			<!-- interval (in milliseconds) between IP address re-scans -->
 			<attribute name="rescan-frequency" type="long" use="optional"/>
@@ -86,10 +85,10 @@
 		<complexType>
 			<sequence>
 				<!-- IP address/range specific protocol configuration -->
-				<element ref="capsd:protocol-configuration" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:protocol-configuration" minOccurs="0" maxOccurs="unbounded"/>
 				
 				<!-- key/value pair passed in to the plugin -->
-				<element ref="capsd:property" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:property" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 			<!-- protocol name -->
 			<attribute name="protocol" type="string" use="required"/>
@@ -125,10 +124,10 @@
 				<element name="specific" type="string" minOccurs="0" maxOccurs="unbounded"/>
 				
 				<!-- IP address range to which the protocol configuration applies --> 
-				<element ref="capsd:range" minOccurs="0" maxOccurs="unbounded"/> 
+				<element ref="this:range" minOccurs="0" maxOccurs="unbounded"/> 
 				
 				<!-- key/value pair passed in to the plugin -->
-				<element ref="capsd:property" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:property" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 			
 			<!-- controls whether or not the protocol is actually scanned by Capsd
@@ -171,7 +170,7 @@
 		<complexType>
 			<sequence>
 				<!-- SMB authentication -->
-				<element ref="capsd:smb-auth" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="this:smb-auth" minOccurs="1" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -230,7 +229,7 @@
 				<element name="specific" type="string" minOccurs="0" maxOccurs="unbounded"/>
 				
 				<!-- IP address range -->
-				<element ref="capsd:range" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:range" minOccurs="0" maxOccurs="unbounded"/>
 				
 				<!-- url of text file containing list of IP addresses (one IP address
 				     per line).

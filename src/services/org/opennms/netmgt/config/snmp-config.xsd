@@ -1,13 +1,12 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
-	xmlns:capsd="http://xmlns.opennms.org/xsd/config/capsd"
-	targetNamespace="http://xmlns.opennms.org/xsd/config/capsd">
+	targetNamespace="http://xmlns.opennms.org/xsd/config/capsd" xmlns:this="http://xmlns.opennms.org/xsd/config/capsd">
 
 	<element name="snmp-config">
 		<complexType>
 			<sequence>
 				<!-- Maps IP addresses to specific SNMP parms (retries, timeouts...) -->
-				<element ref="capsd:definition" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:definition" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 			<!-- Default number of retries -->
 			<attribute name="retry" type="int" use="optional"/>
@@ -28,7 +27,7 @@
 		<complexType>
 			<sequence>
 				<!-- IP address range to which this definition applies. -->
-				<element ref="capsd:range" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:range" minOccurs="0" maxOccurs="unbounded"/>
 				<!-- Specific IP address to which this definition applies. -->
 				<element name="specific" type="string" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>

@@ -10,14 +10,27 @@
 	
 	<description>Build file for OpenNMS' castor-generated Java files.</description>
 
-	<taskdef classname="com.tombrus.cleanImports.ant.CleanImports" classpath="${basedir}/devlib/cleanImports.jar" name="cleanimports" />
-
-	<target name="clean.imports" if="build.clean.imports">
-		<echo>Cleaning imports for generated sources... </echo>
-		<cleanimports srcdir="${build.castor.source.dir}">
-			<classpath refid="libraries.java.path" />
-		</cleanimports>
-	</target>
+	<property name="dev.lib.dir" value="${basedir}/devlib"/>
+	<property name="package.lib.dir" value="${basedir}/lib"/>
+	
+	<taskdef classname="com.tombrus.cleanImports.ant.CleanImports" classpath="${dev.lib.dir}/cleanImports.jar" name="cleanimports" />
+	
+	<target name="castor.setup">
+		<mkdir dir="${build.dir}/castor-config/org/exolab/castor/builder" />
+		<copyfile dest="${build.dir}/castor-config/org/exolab/castor/builder/castorbuilder.properties" src="${dev.lib.dir}/castorbuilder.properties"/>
+		
+	
+	<taskdef name="castor" classname="org.exolab.castor.tools.ant.taskdefs.CastorSourceGenTask">
+	    <classpath>
+	    	  <pathelement location="${build.dir}/castor-config" />
+	    	  <pathelement location="${dev.lib.dir}/castor-0.9.6-srcgen-ant-task.jar" />
+	    	  <pathelement location="${package.lib.dir}/castor-0.9.6.jar" />
+	      <pathelement location="${dev.lib.dir}/xercesImpl.jar" />
+	    	  <pathelement location="${package.lib.dir}/commons-logging.jar" />
+	    </classpath>
+	</taskdef>
+	
+	
 
 
 	<macrodef name="castor-gen">
@@ -79,7 +92,15 @@
 						</path>
 						<!-- run castor -->
 						<sequential>
-							<castor file="@{xsd}" srcpackage="@{srcpackage}" destination="${build.castor.source.dir}" typefactory="${castor.typefactory}" />
+							<castor  file="@{xsd}" package="@{srcpackage}"
+								verbose="true"
+								properties="${dev.lib.dir}/castorbuilder.properties"
+								todir="${build.castor.source.dir}" types="${castor.typefactory}" />
+							<!--
+							<castor  file="@{xsd}" srcpackage="@{srcpackage}"
+								castorBuilderProperties="${dev.lib.dir}/castorbuilder.properties"
+								destination="${build.castor.source.dir}" typefactory="${castor.typefactory}" />
+							-->
 						</sequential>
 					</for>
 
@@ -99,10 +120,14 @@
 
 		</sequential>
 	</macrodef>
+		
+	</target>
+		
 
 	<!-- this target processes each xsd -->
 
-	<target name="castor.sources.generate">
+	<target name="castor.sources.generate" depends="castor.setup">
+		<castor-gen file="${castor.config.dir}/types.xsd" srcpackage="org.opennms.netmgt.config.common" />
 		<castor-gen srcpackage="org.opennms.netmgt.config.threshd">
 			<pathelement path="${castor.config.dir}/threshd-configuration.xsd" />
 			<pathelement path="${castor.config.dir}/thresholding-config.xsd" />
@@ -148,5 +173,8 @@
 		<castor-gen file="${castor.config.dir}/webui-colors.xsd" srcpackage="org.opennms.netmgt.config.webuiColors" />
 
 	</target>
+
+
+
 
 </project>

@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
@@ -159,7 +160,7 @@ public class ViewFactory {
         // Saves into "views.xml" file
         Views views = new Views();
         Collection viewList = (Collection) m_views.values();
-        views.setViewCollection(viewList);
+        views.setViewCollection(new ArrayList(viewList));
         saveViews(views);
     }
 
@@ -201,7 +202,7 @@ public class ViewFactory {
             // Saves into "views.xml" file
             m_views.clear();
             Views views = new Views();
-            views.setViewCollection((Collection) map.values());
+            views.setViewCollection(new ArrayList(map.values()));
             saveViews(views);
         } else {
             throw new Exception("ViewFactory:delete Invalid user name:" + name);
@@ -245,7 +246,7 @@ public class ViewFactory {
             }
             m_views.clear();
             Views views = new Views();
-            views.setViewCollection((Collection) map.values());
+            views.setViewCollection(new ArrayList(map.values()));
             saveViews(views);
         }
     }
@@ -321,7 +322,7 @@ public class ViewFactory {
         // Saves into "views.xml" file
         Collection coll = (Collection) m_views.values();
         Views views = new Views();
-        views.setViewCollection(coll);
+        views.setViewCollection(new ArrayList(coll));
         saveViews(views);
     }
 
@@ -341,7 +342,7 @@ public class ViewFactory {
         // Saves into "views.xml" file
         Views views = new Views();
         Collection viewList = (Collection) m_views.values();
-        views.setViewCollection(viewList);
+        views.setViewCollection(new ArrayList(viewList));
         saveViews(views);
     }
 

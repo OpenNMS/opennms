@@ -1,5 +1,10 @@
 1.2.X to 1.3.0
 ----------------------------------------------------------------------
+- Modify java code and build to use new castor-0.9.6 rather than the older version. 
+  New version depends on commons-logging.jar. 
+- Added commons-logging.jar to build in lib.
+- Chage the build to castorbuilder.properties is passed correctly.  properties
+  target of task fails to properly set it.
 - Revised build-castor.xml to make use of macros also made cleanImports run
   only if an xsd was processed
 - Revised build-sablecc.xml so cleanImports runs only if the .java files are 

@@ -360,8 +360,8 @@ public final class SnmpPeerFactory {
             }
 
             // Update changes made to sorted maps
-            definition.setSpecificCollection(specificsMap.values());
-            definition.setRangeCollection(rangesMap.values());
+            definition.setSpecificCollection(new ArrayList(specificsMap.values()));
+            definition.setRangeCollection(new ArrayList(rangesMap.values()));
         }
     }
 

@@ -51,7 +51,7 @@ import org.opennms.netmgt.config.poller.Interface;
 import org.opennms.netmgt.config.poller.Node;
 import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Outages;
-import org.opennms.netmgt.config.poller.Time;
+import org.opennms.netmgt.config.common.Time;
 
 /**
  * Represents a PollOutagesConfigManager

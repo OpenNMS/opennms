@@ -10,13 +10,11 @@
 	<classpathentry kind="src" path="work/sablecc"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/log4j.jar"/>
-	<classpathentry kind="lib" path="lib/castor-0.9.3.9.jar"/>
 	<classpathentry kind="lib" path="lib/fop0203.jar"/>
 	<classpathentry kind="lib" path="lib/avalon-framework-4.0.jar"/>
 	<classpathentry kind="lib" path="lib/batik.jar"/>
 	<classpathentry kind="lib" path="lib/bsf220.jar"/>
 	<classpathentry kind="lib" path="lib/bsh-1.2b7.jar"/>
-	<classpathentry kind="lib" path="lib/castor-0.9.3.9-xml.jar"/>
 	<classpathentry kind="lib" path="lib/catalina.jar"/>
 	<classpathentry kind="lib" path="lib/commons-jxpath-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/fop0170.jar"/>
@@ -53,6 +51,7 @@
 	<classpathentry kind="lib" path="devlib/servlet.jar"/>
 	<classpathentry kind="lib" path="lib/smack.jar"/>
 	<classpathentry kind="lib" path="lib/smackx.jar"/>
-    <classpathentry kind="lib" path="lib/SNMP4J.jar"/>
+	<classpathentry kind="lib" path="lib/castor-0.9.6.jar"/>
+	<classpathentry kind="lib" path="lib/SNMP4J.jar"/>
 	<classpathentry kind="output" path="work/opennms/classes"/>
 </classpath>

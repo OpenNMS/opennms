@@ -267,7 +267,7 @@ public class PollerConfigServlet extends HttpServlet {
             capsdProtocols.remove(name);
             pluginColl = capsdProtocols.values();
             capsdColl.remove(tmpproto);
-            capsdConfig.setProtocolPluginCollection(pluginColl);
+            capsdConfig.setProtocolPluginCollection(new ArrayList(pluginColl));
         }
     }
 

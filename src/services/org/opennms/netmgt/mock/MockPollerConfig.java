@@ -52,7 +52,7 @@ import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.config.poller.Time;
+import org.opennms.netmgt.config.common.Time;
 import org.opennms.netmgt.poller.monitors.ServiceMonitor;
 
 public class MockPollerConfig extends PollOutagesConfigManager implements PollerConfig {

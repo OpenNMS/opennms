@@ -347,7 +347,7 @@ public class EventconfFactory {
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
 
         Events newEvents = new Events();
-        newEvents.setEventCollection(m_events);
+        newEvents.setEventCollection(new ArrayList(m_events));
         newEvents.setGlobal(m_global);
 
         // marshall to a string first, then write the string to the file. This

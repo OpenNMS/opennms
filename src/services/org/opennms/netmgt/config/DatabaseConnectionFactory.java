@@ -914,15 +914,15 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
 
         m_dbcCache = new LinkedList();
 
-        Param[] parms = m_database.getDriver().getParam();
+        Param[] parms = m_database.getDatabaseChoice().getDriver().getParam();
         for (int i = 0; i < parms.length; i++) {
             if (parms[i].getName().equals("user"))
                 m_driverUser = parms[i].getValue();
             else if (parms[i].getName().equals("password"))
                 m_driverPass = parms[i].getValue();
         }
-        m_driverUrl = m_database.getDriver().getUrl();
-        String driverCN = m_database.getDriver().getClassName();
+        m_driverUrl = m_database.getDatabaseChoice().getDriver().getUrl();
+        String driverCN = m_database.getDatabaseChoice().getDriver().getClassName();
 
         Class.forName(driverCN);
     }
@@ -1010,7 +1010,7 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
      * @return the datasource configured for the database
      */
     public DataSource getDataSource() {
-        return m_database.getDataSource();
+        return m_database.getDatabaseChoice().getDataSource();
     }
 
     /**
@@ -1019,7 +1019,7 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
      * @return the driver configured for the database
      */
     public Driver getDriver() {
-        return m_database.getDriver();
+        return m_database.getDatabaseChoice().getDriver();
     }
 
     /**
@@ -1037,7 +1037,7 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
      * @return the JNDI configuration for the database
      */
     public Jndi getJndi() {
-        return m_database.getJndi();
+        return m_database.getDatabaseChoice().getJndi();
     }
 
     /**

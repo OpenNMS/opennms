@@ -47,5 +47,5 @@ if [ $VERBOSE -gt 0 ]; then
     set -x
 fi
 
-exec ${JAVA_HOME:+"${JAVA_HOME}/bin/"}java -mx256m \
+exec ${JAVA_HOME:+"${JAVA_HOME}/bin/"}java $ANT_OPTS -mx256m \
     -jar devlib/ant/lib/ant-launcher.jar "$@"
