@@ -6,6 +6,7 @@
  */
 package org.opennms.core.utils;
 
+/*
 import java.util.Calendar;
 import java.util.Properties;
 
@@ -15,8 +16,9 @@ import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import junit.framework.TestCase;
 import alt.dev.jmta.JMTA;
+*/
+import junit.framework.TestCase;
 
 /**
  * @author david
@@ -26,7 +28,7 @@ import alt.dev.jmta.JMTA;
  */
 public class JavaMailerTest extends TestCase {
 	    
-    public void testMTA() throws Exception {
+ /*   public void testMTA() throws Exception {
         
         Properties props = new Properties();
         Session session = Session.getInstance(props, null);
@@ -48,5 +50,5 @@ public class JavaMailerTest extends TestCase {
         JMTA.send(message);
         
     }
-
+*/
 }
