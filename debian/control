@@ -79,7 +79,7 @@ Package: libopennms-java
 Section: contrib/net
 Architecture: all
 Conflicts: opennms (<< 1.1.2-1)
-Depends: j2sdk1.4 | java2-runtime, libicmp-jni, librrd0-jni
+Depends: j2sdk1.4 | java2-runtime, libicmp-jni, librrd0-jni, libpgjava (>= 7.2)
 Suggests: j2sdk1.4 | java-virtual-machine
 Description: The Open Network Management System base libs
  OpenNMS is a network management system along the lines of HP's OpenView

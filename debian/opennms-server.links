@@ -4,4 +4,3 @@
 /usr/share/java/opennms_services.jar	/usr/share/opennms/lib/opennms_services.jar
 /usr/share/java/opennms_web.jar		/usr/share/opennms/lib/opennms_web.jar
 /usr/share/java/opennms_install.jar	/usr/share/opennms/lib/opennms_install.jar
-/usr/share/java/postgresql.jar		/usr/share/opennms/lib/postgresql.jar
