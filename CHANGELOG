@@ -1,3 +1,7 @@
+1.0.2 to 1.0.3
+----------------------------------------------------------------------
+- Fixed bug in Trap handler. Bug 676 (Thx Ross)
+
 1.0.1 to 1.0.2
 ----------------------------------------------------------------------
 - Added Event definitions for traps from 3Com, APC, Brocade, CIM, 
