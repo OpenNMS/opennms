@@ -1511,12 +1511,12 @@ OpenNMS as part of the post-install.
    <available file="${build.castor.source.dir}/org/opennms/netmgt/config/outage/OutageConfiguration.java" type="file"/>
   </condition>
   <dependset>
-    <srcfilelist dir="${castor.config.dir}" files="vacuumd-configuration.xsd"/>
-    <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/vacuumd" includes="*.java"/>
-   </dependset>
-   <condition property="castor.outage.sources.uptodate">
-     <available file="${build.castor.source.dir}/org/opennms/netmgt/config/vacuumd/VacuumdConfiguration.java" type="file"/>
-   </condition>
+   <srcfilelist dir="${castor.config.dir}" files="vacuumd-configuration.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/vacuumd" includes="*.java"/>
+  </dependset>
+  <condition property="castor.vacuumd.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/vacuumd/VacuumdConfiguration.java" type="file"/>
+  </condition>
    <dependset>
    <srcfilelist dir="${castor.config.dir}" files="poller-configuration.xsd"/>
    <srcfilelist dir="${castor.config.dir}" files="poll-outages.xsd"/>
