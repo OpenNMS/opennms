@@ -53,5 +53,6 @@
 	<classpathentry kind="lib" path="devlib/servlet.jar"/>
 	<classpathentry kind="lib" path="lib/smack.jar"/>
 	<classpathentry kind="lib" path="lib/smackx.jar"/>
+    <classpathentry kind="lib" path="lib/SNMP4J.jar"/>
 	<classpathentry kind="output" path="work/opennms/classes"/>
 </classpath>

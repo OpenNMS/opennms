@@ -40,6 +40,8 @@
 			<attribute name="read-community" type="string" use="optional"/>
 			<!-- Write community string (overrides default value). -->
 			<attribute name="write-community" type="string" use="optional"/>
+			<!-- The proxy host to use when communiciating with this agent -->
+			<attribute name="proxy-host" type="string" use="optional" />
 			<!-- If set, overrides UDP port 161 as the port where SNMP 
 				 GET/GETNEXT/GETBULK requests are sent.
 			-->

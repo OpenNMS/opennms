@@ -192,12 +192,28 @@ public class MockUtil {
 
 
     public static boolean eventsMatch(Event e1, Event e2) {
-        if (e1 == e2)
+        if (e1 == e2) {
             return true;
-        if (e1 == null || e2 == null)
+        }
+        if (e1 == null || e2 == null) {
             return false;
+        }
 
-        return (e1.getUei() == e2.getUei() || e1.getUei().equals(e2.getUei())) && (e1.getNodeid() == e2.getNodeid()) && (e1.getInterface() == e2.getInterface() || e1.getInterface().equals(e2.getInterface())) && (e1.getService() == e2.getService() || e1.getService().equals(e2.getService()));
+        if (e1.getUei() != e2.getUei() && (e1.getUei() == null || e2.getUei() == null || !e1.getUei().equals(e2.getUei()))) {
+			return false;
+        }
+		
+		if (e1.getNodeid() != e2.getNodeid()) {
+			return false;
+		}
+		if (e1.getInterface() != e2.getInterface() && (e1.getInterface() == null || e2.getInterface() == null || !e1.getInterface().equals(e2.getInterface()))) {
+			return false;
+		}
+		if (e1.getService() != e2.getService() && (e1.getService() == null || e2.getService() == null || !e1.getService().equals(e2.getService()))) {
+			return false;
+		}
+		
+		return true;
     }
 
    public static void setupLogging() {
@@ -223,18 +239,22 @@ public class MockUtil {
     static boolean printEnabled() {
         return "true".equals(System.getProperty("mock.debug", "true"));
     }
-
+	
     public static void printEvent(String prefix, Event event) {
-        if (!printEnabled()) return;
-        
-        if (prefix == null)
+        if (!printEnabled()) {
+			return;
+        }
+        if (prefix == null) {
             prefix = "Event";
+        }
         System.err.println(prefix + ": " + event.getUei() + "/" + event.getNodeid() + "/" + event.getInterface() + "/" + event.getService());
     }
 
-    public static void printEvents(String prefix, Collection events) {
-        if (!printEnabled()) return ;
-        
+	public static void printEvents(String prefix, Collection events) {
+        if (!printEnabled()) {
+			return;
+        }
+		
         Iterator it = events.iterator();
         while (it.hasNext()) {
             printEvent(prefix, (Event) it.next());

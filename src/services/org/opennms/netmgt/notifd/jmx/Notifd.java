@@ -34,6 +34,11 @@
 
 package org.opennms.netmgt.notifd.jmx;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.DestinationPathFactory;
@@ -95,6 +100,18 @@ public class Notifd implements NotifdMBean {
             PollOutagesConfigFactory.init();
         } catch (Exception e) {
             ThreadCategory.getInstance(getClass()).warn("start: Failed to init poll outage config factory.", e);
+        }
+        
+        try {
+            NotifdConfigFactory.init();
+        } catch (FileNotFoundException e) {
+            ThreadCategory.getInstance(getClass()).warn("start: Failed to init NotifdConfig factory.", e);
+        } catch (MarshalException e) {
+            ThreadCategory.getInstance(getClass()).warn("start: Failed to init NotifdConfig factory.", e);
+        } catch (ValidationException e) {
+            ThreadCategory.getInstance(getClass()).warn("start: Failed to init NotifdConfig factory.", e);
+        } catch (IOException e) {
+            ThreadCategory.getInstance(getClass()).warn("start: Failed to init NotifdConfig factory.", e);
         }
 
         getNotifd().setDbConnectionFactory(DatabaseConnectionFactory.getInstance());

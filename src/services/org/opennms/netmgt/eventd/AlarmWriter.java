@@ -38,7 +38,6 @@ import java.sql.SQLException;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
 
@@ -60,8 +59,8 @@ final class AlarmWriter extends Persist {
      * Constructor
      * @param connectionFactory 
      */
-    public AlarmWriter(DbConnectionFactory connectionFactory, String getNextAlarmIdStr) throws SQLException {
-        super(connectionFactory);
+    public AlarmWriter(String getNextAlarmIdStr) throws SQLException {
+        super();
         //
         // prepare the SQL statement
         //

@@ -116,28 +116,6 @@ public final class EventExpander {
     private final static String DEFAULT_TRAP_UEI = "uei.opennms.org/default/trap";
 
     /**
-     * This is the list of Universal Event Identifiers (UEIs) that map to the
-     * generic types in a SNMPv1 trap. These are not relevant to a SNMPv2c trap.
-     */
-    private final static String GENERIC_SNMP_UEIS[] = { "uei.opennms.org/mib2/generic/coldStart", // generic
-                                                                                                    // = 0,
-                                                                                                    // Cold
-                                                                                                    // Start
-            "uei.opennms.org/mib2/generic/warmStart", // generic = 1, Warm
-                                                        // Start
-            "uei.opennms.org/mib2/generic/linkDown", // generic = 2, Link
-                                                        // Down
-            "uei.opennms.org/mib2/generic/linkUp", // generic = 3, Link Up
-            "uei.opennms.org/mib2/generic/authenticationFailure", // generic =
-                                                                    // 4,
-                                                                    // Authentication
-                                                                    // Failure
-            "uei.opennms.org/mib2/generic/egpNeighborLoss", // generic = 5, EGP
-                                                            // Neighbor Loss
-            DEFAULT_TRAP_UEI // generic = 6, Enterprise Specific Trap
-    };
-
-    /**
      * private constructor
      */
     private EventExpander() {
@@ -407,7 +385,7 @@ public final class EventExpander {
      *                Thrown if the snmpInfo parameter that was passed is null.
      * 
      */
-    private static org.opennms.netmgt.xml.eventconf.Event lookup(Snmp snmpInfo) {
+    public static org.opennms.netmgt.xml.eventconf.Event lookup(Snmp snmpInfo) {
         // Check the passed argument and make sure that
         // it is valid. Throw the null pointer here instead of
         // waiting for an invalid reference.
@@ -598,7 +576,7 @@ public final class EventExpander {
             tticket.setContent(strRet);
         }
     }
-    
+
     /**
      * Expand the element values if they have parms in one of the following
      * formats

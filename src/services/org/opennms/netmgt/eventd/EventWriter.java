@@ -38,7 +38,6 @@ import java.sql.SQLException;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
 
@@ -71,8 +70,8 @@ final class EventWriter extends Persist {
      * @param connectionFactory 
      * @param getNextEventIdStr
      */
-    public EventWriter(DbConnectionFactory connectionFactory, String getNextEventIdStr) throws SQLException {
-        super(connectionFactory);
+    public EventWriter(String getNextEventIdStr) throws SQLException {
+        super();
         //
         // prepare the SQL statement
         //

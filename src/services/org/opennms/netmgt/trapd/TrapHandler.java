@@ -1,0 +1,408 @@
+//
+// This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included code and modified
+// code that was published under the GNU General Public License. Copyrights for modified 
+// and included code are below.
+//
+// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Modifications:
+//
+// 2003 Jan 31: Cleaned up some unused imports.
+// 2003 Jan 08: Added code to associate the IP address in traps with nodes
+//              and added the option to discover nodes based on traps.
+//
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.                                                            
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+//       
+// For more information contact: 
+//      OpenNMS Licensing       <license@opennms.org>
+//      http://www.opennms.org/
+//      http://www.opennms.com/
+//
+// 
+
+package org.opennms.netmgt.trapd;
+
+import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.util.Map;
+
+import org.apache.log4j.Category;
+import org.opennms.core.fiber.PausableFiber;
+import org.opennms.core.queue.FifoQueue;
+import org.opennms.core.queue.FifoQueueException;
+import org.opennms.core.queue.FifoQueueImpl;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.protocols.snmp.SnmpOctetString;
+import org.opennms.protocols.snmp.SnmpPduPacket;
+import org.opennms.protocols.snmp.SnmpPduTrap;
+import org.opennms.protocols.snmp.SnmpTrapHandler;
+import org.opennms.protocols.snmp.SnmpTrapSession;
+
+/**
+ * <p>
+ * The Trapd listens for SNMP traps on the standard port(162). Creates a
+ * SnmpTrapSession and implements the SnmpTrapHandler to get callbacks when
+ * traps are received
+ * </p>
+ * 
+ * <p>
+ * The received traps are converted into XML and sent to eventd
+ * </p>
+ * 
+ * <p>
+ * <strong>Note: </strong>Trapd is a PausableFiber so as to receive control
+ * events. However, a 'pause' on Trapd has no impact on the receiving and
+ * processing of traps
+ * </p>
+ * 
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * 
+ */
+public class TrapHandler implements SnmpTrapHandler, PausableFiber {
+	/**
+	 * The name of the logging category for Trapd.
+	 */
+	private static final String LOG4J_CATEGORY = "OpenNMS.TrapHandler";
+
+	/**
+	 * The singlton instance.
+	 */
+	private static final TrapHandler m_singleton = new TrapHandler();
+
+	/**
+	 * Set the Trapd configuration
+	 */
+	private TrapdConfig m_trapdConfig;
+	
+	/**
+	 * Event manager
+	 */
+	private EventIpcManager m_eventMgr;
+
+	/**
+	 * The trap session used by Trapd to receive traps
+	 */
+	private SnmpTrapSession m_trapSession;
+
+	/**
+	 * The name of this service.
+	 */
+	private String m_name = LOG4J_CATEGORY;
+
+	/**
+	 * The last status sent to the service control manager.
+	 */
+	private int m_status = START_PENDING;
+
+	/**
+	 * The communication queue
+	 */
+	private FifoQueue m_backlogQ;
+
+	/**
+	 * The list of known IPs
+	 */
+	private Map m_knownIps;
+
+	/**
+	 * The queue processing thread
+	 */
+	private TrapQueueProcessor m_processor;
+
+	/**
+	 * The class instance used to recieve new events from for the system.
+	 */
+	private BroadcastEventProcessor m_eventReader;
+
+	/**
+	 * <P>
+	 * Constructs a new Trapd object that receives and forwards trap messages
+	 * via JSDT. The session is initialized with the default client name of <EM>
+	 * OpenNMS.trapd</EM>. The trap session is started on the default port, as
+	 * defined by the SNMP libarary.
+	 * </P>
+	 * 
+	 * @see org.opennms.protocols.snmp.SnmpTrapSession
+	 */
+	public TrapHandler() {
+	}
+
+	public void setTrapdConfig(TrapdConfig trapdConfig) {
+		m_trapdConfig = trapdConfig;
+	}
+	
+	/**
+	 * <P>
+	 * Process the recieved SNMP v2c trap that was received by the underlying
+	 * trap session.
+	 * </P>
+	 * 
+	 * @param session
+	 *            The trap session that received the datagram.
+	 * @param agent
+	 *            The remote agent that sent the datagram.
+	 * @param port
+	 *            The remmote port the trap was sent from.
+	 * @param community
+	 *            The community string contained in the message.
+	 * @param pdu
+	 *            The protocol data unit containing the data
+	 * 
+	 */
+	public void snmpReceivedTrap(SnmpTrapSession session, InetAddress agent,
+			int port, SnmpOctetString community, SnmpPduPacket pdu) {
+		addTrap(new V2TrapInformation(agent, community, pdu));
+	}
+
+	/**
+	 * <P>
+	 * Process the recieved SNMP v1 trap that was received by the underlying
+	 * trap session.
+	 * </P>
+	 * 
+	 * @param session
+	 *            The trap session that received the datagram.
+	 * @param agent
+	 *            The remote agent that sent the datagram.
+	 * @param port
+	 *            The remmote port the trap was sent from.
+	 * @param community
+	 *            The community string contained in the message.
+	 * @param pdu
+	 *            The protocol data unit containing the data
+	 * 
+	 */
+	public void snmpReceivedTrap(SnmpTrapSession session, InetAddress agent,
+			int port, SnmpOctetString community, SnmpPduTrap pdu) {
+		addTrap(new V1TrapInformation(agent, community, pdu));
+	}
+
+	private void addTrap(Object o) {
+		try {
+			m_backlogQ.add(o);
+		} catch (InterruptedException ie) {
+			Category log = ThreadCategory.getInstance(getClass());
+			log
+					.warn(
+							"snmpReceivedTrap: Error adding trap to queue, it was interrupted",
+							ie);
+		} catch (FifoQueueException qe) {
+			Category log = ThreadCategory.getInstance(getClass());
+			log.warn("snmpReceivedTrap: Error adding trap to queue", qe);
+		}
+	}
+
+	/**
+	 * <P>
+	 * Processes an error condition that occurs in the SnmpTrapSession. The
+	 * errors are logged and ignored by the trapd class.
+	 * </P>
+	 */
+	public void snmpTrapSessionError(SnmpTrapSession session, int error,
+			Object ref) {
+		Category log = ThreadCategory.getInstance(getClass());
+
+		log.warn("Error Processing Received Trap: error = " + error
+				+ (ref != null ? ", ref = " + ref.toString() : ""));
+	}
+
+	public synchronized void init() {
+		ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
+		Category log = ThreadCategory.getInstance();
+
+		try {
+			// Get the newSuspectOnTrap flag
+			boolean m_newSuspect = m_trapdConfig.getNewSuspectOnTrap();
+
+			// set up the trap processor
+			m_backlogQ = new FifoQueueImpl();
+			m_processor = new TrapQueueProcessor(m_backlogQ, m_newSuspect, m_eventMgr);
+
+			log.debug("start: Creating the trap queue processor");
+
+			// Initialize the trapd session
+			m_trapSession = new SnmpTrapSession(this, m_trapdConfig
+					.getSnmpTrapPort());
+
+			log.debug("start: Creating the trap session");
+		} catch (SocketException e) {
+			log.error("Failed to setup SNMP trap port", e);
+			throw new UndeclaredThrowableException(e);
+		}
+
+			// Is this ever used?
+		/*
+		try {
+			m_eventReader = new BroadcastEventProcessor();
+		} catch (Exception ex) {
+			ThreadCategory.getInstance().error("Failed to create event reader",
+					ex);
+			throw new UndeclaredThrowableException(ex);
+		}
+		*/
+	}
+
+	/**
+	 * Create the SNMP trap session and create the JSDT communication channel to
+	 * communicate with eventd.
+	 * 
+	 * @exception java.lang.reflect.UndeclaredThrowableException
+	 *                if an unexpected database, or IO exception occurs.
+	 * 
+	 * @see org.opennms.protocols.snmp.SnmpTrapSession
+	 * @see org.opennms.protocols.snmp.SnmpTrapHandler
+	 */
+	public synchronized void start() {
+		m_status = STARTING;
+
+		ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
+		Category log = ThreadCategory.getInstance();
+
+		log.debug("start: Initializing the trapd config factory");
+
+		m_processor.start();
+
+		m_status = RUNNING;
+
+		log.debug("start: Trapd ready to receive traps");
+	}
+
+	/**
+	 * Pauses Trapd
+	 */
+	public void pause() {
+		if (m_status != RUNNING) {
+			return;
+		}
+
+		m_status = PAUSE_PENDING;
+
+		Category log = ThreadCategory.getInstance(getClass());
+
+		log.debug("Calling pause on processor");
+
+		m_processor.pause();
+
+		log.debug("Processor paused");
+
+		m_status = PAUSED;
+
+		log.debug("Trapd paused");
+	}
+
+	/**
+	 * Resumes Trapd
+	 */
+	public void resume() {
+		if (m_status != PAUSED) {
+			return;
+		}
+
+		m_status = RESUME_PENDING;
+
+		Category log = ThreadCategory.getInstance(getClass());
+
+		log.debug("Calling resume on processor");
+
+		m_processor.resume();
+
+		log.debug("Processor resumed");
+
+		m_status = RUNNING;
+
+		log.debug("Trapd resumed");
+	}
+
+	/**
+	 * Stops the currently running service. If the service is not running then
+	 * the command is silently discarded.
+	 */
+	public synchronized void stop() {
+		Category log = ThreadCategory.getInstance(getClass());
+
+		m_status = STOP_PENDING;
+
+		// shutdown and wait on the background processing thread to exit.
+		log.debug("exit: closing communication paths.");
+
+		try {
+			log.debug("stop: Closing SNMP trap session.");
+
+			m_trapSession.close();
+
+			log.debug("stop: SNMP trap session closed.");
+		} catch (IllegalStateException e) {
+			log.debug("stop: The SNMP session was already closed");
+		}
+
+		log.debug("stop: Stopping queue processor.");
+
+		// interrupt the processor daemon thread
+		m_processor.stop();
+
+		m_status = STOPPED;
+
+		log.debug("stop: Trapd stopped");
+	}
+
+	/**
+	 * Returns the current status of the service.
+	 * 
+	 * @return The service's status.
+	 */
+	public synchronized int getStatus() {
+		return m_status;
+	}
+
+	/**
+	 * Returns the singular instance of the trapd daemon. There can be only one
+	 * instance of this service per virtual machine.
+	 */
+	public static TrapHandler getInstance() {
+		return m_singleton;
+	}
+
+	/**
+	 * Returns the name of the service.
+	 * 
+	 * @return The service's name.
+	 */
+	public String getName() {
+		return m_name;
+	}
+	
+    public EventIpcManager getEventManager() {
+        return m_eventMgr;
+    }
+
+    public void setEventManager(EventIpcManager eventMgr) {
+        m_eventMgr = eventMgr;
+    }
+}

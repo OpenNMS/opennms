@@ -50,7 +50,6 @@ import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
@@ -93,8 +92,6 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
     private String m_getNextEventIdStr;
 
     private String m_getNextAlarmIdStr;
-
-    private static DbConnectionFactory m_dbConnectionFactory;
 
     /**
      * A thread dedicated to each listener. The events meant for each listener
@@ -250,7 +247,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         // create a new event handler for the events and queue it to the
         // eventhandler thread pool
         try {
-            m_eventHandlerPool.getRunQueue().add(new EventHandler(m_dbConnectionFactory, eventLog, m_getNextEventIdStr, m_getNextAlarmIdStr));
+            m_eventHandlerPool.getRunQueue().add(new EventHandler(eventLog, m_getNextEventIdStr, m_getNextAlarmIdStr));
         } catch (InterruptedException iE) {
             Category log = ThreadCategory.getInstance(this.getClass());
             log.warn("Unable to queue event log to the event handler pool queue", iE);
@@ -522,17 +519,11 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         return m_eventdConfigMgr;
     }
     
-
     /**
      * @param eventdConfigMgr The eventdConfigMgr to set.
      */
     public void setEventdConfigMgr(EventdConfigManager eventdConfigMgr) {
         m_eventdConfigMgr = eventdConfigMgr;
-    }
-
-    public void setDbConnectionFactory(DbConnectionFactory instance) {
-        m_dbConnectionFactory = instance;
-        
     }
     
 }

@@ -37,6 +37,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import junit.framework.Assert;
+
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -125,5 +127,55 @@ public class EventAnticipator {
      */
     public void eventProcessed(Event event) {
     }
+
+	public void verifyAnticipated(long wait,
+			long sleepMiddle,
+			long sleepAfter,
+			int anticipatedSize,
+			int unanticipatedSize) {
+		
+		StringBuffer problems = new StringBuffer();
+
+		Collection missingEvents = waitForAnticipated(wait);
+		
+		if (sleepMiddle > 0) {
+			try {
+				Thread.sleep(sleepMiddle);
+			} catch (InterruptedException e) {
+			}
+		}
+
+		if (missingEvents.size() != anticipatedSize) {
+			problems.append(missingEvents.size() +
+					" expected events still outstanding (expected " +
+					anticipatedSize + "):\n");
+			problems.append(listEvents("\t", missingEvents));
+		}
+		if (unanticipatedEvents().size() != unanticipatedSize) {
+			problems.append(unanticipatedEvents().size() +
+					" unanticipated events received (expected " +
+					unanticipatedSize + "):\n");
+			problems.append(listEvents("\t", unanticipatedEvents()));
+		}
+		
+		if (problems.length() > 0) {
+			problems.deleteCharAt(problems.length() - 1);
+			Assert.fail(problems.toString());
+		}
+	}
+
+	private static String listEvents(String prefix,
+			Collection events) {
+		StringBuffer b = new StringBuffer();
+		
+		for (Iterator it = events.iterator(); it.hasNext();) {
+			Event event = (Event) it.next();
+			b.append(prefix);
+			b.append(event.getUei() + "/" + event.getNodeid() + "/" + event.getInterface() + "/" + event.getService());
+			b.append("\n");
+		}
+
+		return b.toString();
+	}
 
 }

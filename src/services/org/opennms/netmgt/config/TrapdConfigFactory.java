@@ -62,7 +62,7 @@ import org.opennms.netmgt.config.trapd.TrapdConfiguration;
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class TrapdConfigFactory {
+public final class TrapdConfigFactory implements TrapdConfig {
     /**
      * The singleton instance of this factory
      */

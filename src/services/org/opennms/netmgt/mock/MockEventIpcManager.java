@@ -109,9 +109,9 @@ public class MockEventIpcManager implements EventIpcManager {
     }
 
     public void broadcastNow(Event event) {
-        MockUtil.printEvent("Sending", event);
-        Iterator it = m_listeners.iterator();
-        while (it.hasNext()) {
+    		MockUtil.println("Sending: " + new EventWrapper(event));
+		Iterator it = m_listeners.iterator();
+		while (it.hasNext()) {
             ListenerKeeper k = (ListenerKeeper) it.next();
             k.sendEventIfAppropriate(event);
         }
@@ -152,7 +152,7 @@ public class MockEventIpcManager implements EventIpcManager {
     public synchronized void sendNow(final Event event) {
         m_pendingEvents++;
         MockUtil.println("StartEvent processing: m_pendingEvents = "+m_pendingEvents);
-        MockUtil.printEvent("Received", event);
+        MockUtil.println("Received: "+ new EventWrapper(event));
         m_anticipator.eventReceived(event);
 
         Runnable r = new Runnable() {

@@ -46,7 +46,7 @@ import java.util.List;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DbConnectionFactory;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.eventd.db.AutoAction;
 import org.opennms.netmgt.eventd.db.Constants;
 import org.opennms.netmgt.eventd.db.OperatorAction;
@@ -779,9 +779,9 @@ class Persist {
      * Constructor
      * @param connectionFactory 
      */
-    public Persist(DbConnectionFactory connectionFactory) throws SQLException {
+    public Persist() throws SQLException {
         // Get a database connection
-        m_dbConn = connectionFactory.getConnection();
+        m_dbConn = DatabaseConnectionFactory.getInstance().getConnection();
     }
 
     /**

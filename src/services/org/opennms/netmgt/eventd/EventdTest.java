@@ -1184,7 +1184,6 @@ public class EventdTest extends TestCase {
 
         m_eventdIpcMgr = new EventIpcManagerDefaultImpl(m_eventdConfigMgr);
         EventIpcManagerFactory.setIpcManager(m_eventdIpcMgr);
-        m_eventdIpcMgr.setDbConnectionFactory(m_db);
         m_eventd.setEventIpcManager(m_eventdIpcMgr);
         m_eventd.init();
         m_eventd.start();

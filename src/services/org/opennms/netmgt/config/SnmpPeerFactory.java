@@ -547,6 +547,7 @@ public final class SnmpPeerFactory {
     private SnmpPeer create(InetAddress addr, Definition def, int supportedSnmpVersion) {
         // Allocate a new SNMP parameters
         //
+        InetAddress snmpHost = addr;
         SnmpParameters parms = new SnmpParameters();
 
         // get the version information, if any
@@ -584,10 +585,20 @@ public final class SnmpPeerFactory {
             parms.setWriteCommunity(m_config.getWriteCommunity());
         }
 
+        if (def.getProxyHost() != null) {
+            try {
+                snmpHost = InetAddress.getByName(def.getProxyHost());
+            }
+            catch (UnknownHostException e) {
+                Category log = ThreadCategory.getInstance(getClass());
+                log.error("SnmpPeerFactory: could not convert host " + def.getProxyHost() + " to InetAddress", e);
+            }
+        }
+        
         // Allocate a peer for this address
         // and set the parameters
         //
-        SnmpPeer peer = new SnmpPeer(addr);
+        SnmpPeer peer = new SnmpPeer(snmpHost);
         peer.setParameters(parms);
 
         // setup the retries
