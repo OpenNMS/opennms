@@ -4,10 +4,25 @@
  
    Build file for OpenNMS
  
+Refactoring notes: 
+ELB - All targets that should be displayed require a description attribute.
+ELB - All targets that should not be displayed require it's absence.
 ==================================================================== -->
  
 <project name="opennms" default="usage" basedir=".">
+ <description>
+Build file for OpenNMS.
+                                                                                
+OpenNMS is a network monitoring system implemented in JAVA.
+For more information consult the README file included in
+your distribution.
+ </description>
  
+ <!-- ant tasks -->
+ <taskdef name="sablecc" classname="org.sablecc.ant.taskdef.Sablecc"/>
+ <taskdef name="castor" classname="org.apache.tools.ant.taskdefs.optional.castor.SourceGeneratorTask"/>
+ <taskdef resource="cpptasks.tasks"/>
+ <taskdef resource="cpptasks.types"/>
  <!-- top-level initialization -->
  
  <target name="init" depends="init.setup,init.bb-global,init.opennms-global"/>
@@ -23,7 +38,6 @@
  <target name="init.setup" unless="init.done">
   <tstamp/>
   <taskdef name="if" classname="org.opennms.ant.If"/>
-  <taskdef name="sablecc" classname="org.sablecc.ant.taskdef.Sablecc"/>
 
   <!-- set properties -->
   <property file="${user.home}/.bb-global.properties"/>
@@ -163,19 +177,11 @@ ${print.headertext}
   </echo>
  </target>
  
- <target name="usage" depends="init" description="how to use this build file">
-  <antcall target="print.header"><param name="print.headertext" value="OpenNMS Main Build Usage"/></antcall>
- 
-  <echo>
-  all:          build everything (except documentation)
-  install:      build "all", and install it in ${install}
-  docs:         build javadoc and manuals
-  release:      build a release (source and binary)
-  info:         show information about this build instance
-  rpm:          build an RPM package
-  srpm:         build an RPM and a source RPM package
-  </echo>
- 
+ <!-- USAGE targets -->
+ <target name="usage" description="How to use this build file">
+  <java classname="org.apache.tools.ant.launch.Launcher">
+    <arg value="-projecthelp"/>
+  </java>
  </target>
 
  <!-- "meta" targets -->
@@ -184,7 +190,7 @@ ${print.headertext}
   <echo message="=== ${message} ==="/>
  </target>
  
- <target name="info" depends="init" description="print detailed information about your build parameters">
+ <target name="info" depends="init" description="Show information about this build instance">
   <antcall target="print.debug"><param name="debug" value="true"/></antcall>
  </target>
 
@@ -275,7 +281,7 @@ ${print.headertext}
  
  <!-- archive/package targets -->
 
- <target name="rpm" depends="init" description="build an RPM package">
+ <target name="rpm" depends="init" description="Build an RPM package">
   <if value="${rpm.sign}" match="true">
    <thenProperty name="rpm.sign.arg" value="--sign"/>
    <elseProperty name="rpm.sign.arg" value=""/>
@@ -326,7 +332,7 @@ ${print.headertext}
   </exec>
  </target>
  
- <target name="srpm" depends="init,release.source" description="build an RPM and source RPM package">
+ <target name="srpm" depends="init,release.source" description="Build an RPM and a source RPM package">
   <if value="${rpm.sign}" match="true">
    <thenProperty name="rpm.sign.arg" value="--sign"/>
    <elseProperty name="rpm.sign.arg" value=""/>
@@ -379,7 +385,7 @@ ${print.headertext}
   </exec>
  </target>
  
- <target name="release" depends="init,release.source,release.binary,release.docs"/>
+ <target name="release" depends="init,release.source,release.binary,release.docs" description="Build a release (source and binary)"/>
 
  <target name="release.prepare.docs" depends="init,docs">
   <mkdir dir="${root.build}/${ant.project.name}-${opennms.version}-${opennms.release}/docs"/>
@@ -1114,7 +1120,7 @@ OpenNMS as part of the post-install.
 
  <!-- documentation -->
 
- <target name="docs" depends="docs.javadoc,docs.html" description="build documentation"/>
+ <target name="docs" depends="docs.javadoc,docs.html" description="Build javadoc and manuals"/>
  
  <target name="docs.javadoc.uptodate">
   <uptodate property="javadoc.is.uptodate"
