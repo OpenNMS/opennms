@@ -14,8 +14,10 @@ Build file for OpenNMS' sablecc-generated Java files.
 <taskdef classname="com.tombrus.cleanImports.ant.CleanImports" classpath="${basedir}/devlib/cleanImports.jar" name="cleanimports"/>
 
  <!-- Generates Sablecc java files if necessary -->
- <target name="sablecc.filter.sources.generate"
-	 depends="sablecc.filter.sources.uptodate, clean.imports"
+ <target name="sablecc.filter.sources.generate" depends="sablecc.filter.sources.generator, clean.imports" />
+    
+ <target name="sablecc.filter.sources.generator"
+	 depends="sablecc.filter.sources.uptodate"
 	 unless="sablecc.filter.sources.uptodate">
   <sablecc src="${services.source.dir}/${sablecc.filter.dir}/"
 	   outputdirectory="${build.sablecc.source.dir}"
