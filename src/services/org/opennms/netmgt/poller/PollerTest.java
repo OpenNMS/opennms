@@ -318,6 +318,8 @@ public class PollerTest extends TestCase {
 
         startDaemons();
 
+	sleep(2000);
+
         // move the reparted interface and send a reparented event
         dotTwo.moveTo(node2);
         m_db.reparentInterface(dotTwo.getIpAddr(), node1.getNodeId(), node2.getNodeId());
