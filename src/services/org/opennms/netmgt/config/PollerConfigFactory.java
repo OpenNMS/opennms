@@ -197,14 +197,13 @@ public final class PollerConfigFactory implements PollerConfig {
             // to reload, reload() will need to be called
             return;
         }
-        
+
         OpennmsServerConfigFactory.init();
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
 
         ThreadCategory.getInstance(PollerConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
 
-        
         m_singleton = new PollerConfigFactory(OpennmsServerConfigFactory.getInstance(), new FileReader(cfgFile));
 
         m_loaded = true;
@@ -221,32 +220,30 @@ public final class PollerConfigFactory implements PollerConfig {
      *                Thrown if the contents do not match the required schema.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+        init();
         getInstance().update();
     }
 
-         /**
-          * Saves the current in-memory configuration to disk and reloads
-          */
-         public synchronized void saveCurrent()
-                 throws MarshalException, IOException, ValidationException
-         {
-                 File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
+    /**
+     * Saves the current in-memory configuration to disk and reloads
+     */
+    public synchronized void saveCurrent() throws MarshalException, IOException, ValidationException {
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
 
-                 //marshall to a string first, then write the string to the file. This way the original config
-                 //isn't lost if the xml from the marshall is hosed.
-                 StringWriter stringWriter = new StringWriter();
-                 Marshaller.marshal(m_config, stringWriter);
-                 if (stringWriter.toString()!=null)
-                 {
-                         FileWriter fileWriter = new FileWriter(cfgFile);
-                         fileWriter.write(stringWriter.toString());
-                         fileWriter.flush();
-                         fileWriter.close();
-                 }
+        // marshall to a string first, then write the string to the file. This
+        // way the original config
+        // isn't lost if the xml from the marshall is hosed.
+        StringWriter stringWriter = new StringWriter();
+        Marshaller.marshal(m_config, stringWriter);
+        if (stringWriter.toString() != null) {
+            FileWriter fileWriter = new FileWriter(cfgFile);
+            fileWriter.write(stringWriter.toString());
+            fileWriter.flush();
+            fileWriter.close();
+        }
 
-                 update();
-         }
-
+        update();
+    }
 
     /**
      * Return the singleton instance of this factory.
@@ -270,19 +267,16 @@ public final class PollerConfigFactory implements PollerConfig {
         return m_config;
     }
 
-
-       public synchronized  org.opennms.netmgt.config.poller.Package getPackage(String name) {
-               Enumeration packageEnum=m_config.enumeratePackage();
-               while(packageEnum.hasMoreElements()) {
-                       org.opennms.netmgt.config.poller.Package thisPackage=( org.opennms.netmgt.config.poller.Package)packageEnum.nextElement();
-                       if(thisPackage.getName().equals(name)) {
-                               return thisPackage;
-                       }
-               }
-               return null;
-       }
-
-
+    public synchronized org.opennms.netmgt.config.poller.Package getPackage(String name) {
+        Enumeration packageEnum = m_config.enumeratePackage();
+        while (packageEnum.hasMoreElements()) {
+            org.opennms.netmgt.config.poller.Package thisPackage = (org.opennms.netmgt.config.poller.Package) packageEnum.nextElement();
+            if (thisPackage.getName().equals(name)) {
+                return thisPackage;
+            }
+        }
+        return null;
+    }
 
     /**
      * This method is used to determine if the named interface is included in
@@ -291,16 +285,18 @@ public final class PollerConfigFactory implements PollerConfig {
      * returned.
      * 
      * <pre>
-     * The file URL is read and each entry in this file checked. Each line
-     *  in the URL file can be one of -
-     *  &lt;IP&gt;&lt;space&gt;#&lt;comments&gt;
-     *  or
-     *  &lt;IP&gt;
-     *  or
-     *  #&lt;comments&gt;
      * 
-     *  Lines starting with a '#' are ignored and so are characters after
-     *  a '&lt;space&gt;#' in a line.
+     *  The file URL is read and each entry in this file checked. Each line
+     *   in the URL file can be one of -
+     *   &lt;IP&gt;&lt;space&gt;#&lt;comments&gt;
+     *   or
+     *   &lt;IP&gt;
+     *   or
+     *   #&lt;comments&gt;
+     *  
+     *   Lines starting with a '#' are ignored and so are characters after
+     *   a '&lt;space&gt;#' in a line.
+     *  
      * </pre>
      * 
      * @param addr
@@ -802,7 +798,7 @@ public final class PollerConfigFactory implements PollerConfig {
     }
 
     public void update() throws IOException, MarshalException, ValidationException {
-        
+
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
 
         ThreadCategory.getInstance(PollerConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
