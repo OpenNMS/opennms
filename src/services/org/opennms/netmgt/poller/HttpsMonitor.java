@@ -355,7 +355,12 @@ final class HttpsMonitor
 					{
 						// Close the socket
 						if(sChannel != null)
+                                                {
+                                                        if (sChannel.socket() != null)
+                                                                sChannel.socket().close();
 							sChannel.close();
+                                                        sChannel = null;
+                                                }
 					}
 					catch(IOException e) 
 					{ 

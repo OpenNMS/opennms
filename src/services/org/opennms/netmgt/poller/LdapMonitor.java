@@ -162,7 +162,12 @@ final class LdapMonitor
 			// We're connected, so upgrade status to unresponsive
 			serviceStatus = SERVICE_UNRESPONSIVE;
                         if(sChannel != null)
+                        {
+                                if (sChannel.socket() != null)
+                                        sChannel.socket().close();
                                 sChannel.close();
+                                sChannel = null;
+                        }
 			
 			//lets detect the service
 			LDAPConnection lc = new LDAPConnection(new TimeoutLDAPSocket(timeout));

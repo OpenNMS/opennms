@@ -1,5 +1,6 @@
 1.1.1 to 1.1.2
 ----------------------------------------------------------------------
+- Fixed Plugins and Monitors to explicitly close sockets
 - Added an ORDER BY statement to correct issues with RTC not 
   reflecting the problem number of down services.
 - Added a small fix to the HTTP and HTTPS monitors that could cause

@@ -91,13 +91,23 @@ public class SocketChannelUtil extends Object
 		catch (IOException e)
 		{
 			if (sChannel != null)
+                        {
+                                if (sChannel.socket() != null)
+                                        sChannel.socket().close();
 				sChannel.close();
+                                sChannel = null;
+                        }
 			throw e;
 		}
 		catch (InterruptedException e)
 		{
 			if (sChannel != null)
+                        {
+                                if (sChannel.socket() != null)
+                                        sChannel.socket().close();
 				sChannel.close();
+                                sChannel = null;
+                        }
 			throw e;
 		}
 		

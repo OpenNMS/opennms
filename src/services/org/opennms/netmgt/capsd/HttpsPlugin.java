@@ -251,7 +251,12 @@ public class HttpsPlugin
 				try
 				{
 					if(sChannel != null)
+                                        {
+                                                if (sChannel.socket() != null)
+                                                        sChannel.socket().close();
 						sChannel.close();
+                                                sChannel = null;
+                                        }
 				}
 				catch(IOException e) { }
 			}
