@@ -3,12 +3,12 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 Blast Internet Services, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2004 Blast Consulting Company  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
 //
-// OpenNMS(R) is a registered trademark of Blast Internet Services, Inc.
+// OpenNMS(R) is a registered trademark of Blast Consulting Company
 //
 // Modifications:
 //
@@ -136,6 +136,8 @@
 
     String eventUrl = "event/list?filter=node%3D" + nodeId + "&filter=interface%3D" + ipAddr;
     
+    String deleteUrl = "admin/deleteInterface?node="+nodeId+"&intf="+ipAddr;
+    
     String telnetIp = null;
     Service telnetService = NetworkElementFactory.getService(nodeId, ipAddr, this.telnetServiceId);
     
@@ -208,8 +210,9 @@
             &nbsp;&nbsp;&nbsp;<a href="performance/addReportsToUrl?node=<%=nodeId%>&intf=<%=ifLabel%>&relativetime=lastday">SNMP Performance</a>
           <% } %>
         <% } %>
-        
-        
+      
+         &nbsp;&nbsp;&nbsp;<a href="<%=deleteUrl%>">Delete</a>
+         
         &nbsp;&nbsp;&nbsp;<a href="element/rescan.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Rescan</a>      
       </p>
 

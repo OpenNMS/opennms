@@ -77,6 +77,7 @@
     }
 
     String eventUrl = "event/list?filter=node%3D" + nodeId + "&filter=interface%3D" + ipAddr + "&filter=service%3D" + serviceId;
+    String deleteUrl = "admin/deleteService?node="+nodeId+"&intf="+ipAddr+"&service="+serviceId;
 %>
 
 <html>
@@ -110,7 +111,9 @@
     <td width="100%" valign="top" >
       <h2><%=service_db.getServiceName()%> service on <%=service_db.getIpAddress()%></h2>
 
-      <p><a href="<%=eventUrl%>">View Events</a>
+      <p>
+         <a href="<%=eventUrl%>">View Events</a>
+         &nbsp;&nbsp;&nbsp;<a href="<%=deleteUrl%>">Delete</a>
       </p>
  
       <table width="100%" border="0" cellspacing="0" cellpadding="2" >
