@@ -76,8 +76,6 @@
             <p><b>Availability Reports</b> provide graphical or numeric
                 view of your service level metrics for the current
                 month-to-date, previous month, and last twelve months by categories.
-                The graphical PDF report is generated automatically on Sundays at 12:00 
-                AM and is emailed to the <i>Reporting</i> group.
             </p>
             
             <p><b>Response Time Reports</b> provide a way to easily 
