@@ -1470,15 +1470,16 @@ OpenNMS as part of the post-install.
   </condition>
  </target>
 
- <target name="docs.fot.uptodate" depends="prep">
-  <uptodate property="fot.is.uptodate"
-	    targetfile="${build.docs.dir}/releasenotes/book.fot">
-   <srcfiles dir="${docs.source.dir}">
+ <target name="docs.fot.uptodate" depends="prep,copy.docs">
+  <uptodate property="fot.is.uptodate">
+   <srcfiles dir="${build.filter.docs.dir}">
     <include name="**/book.xml"/>
     <include name="**/bookinfo.xml"/>
     <include name="**/preface.xml"/>
     <include name="**/chap*.xml"/>
    </srcfiles>
+   <mapper type="regexp" from="^(.*)/[^/]+$$"
+           to="${build.docs.dir}/\1/book.fot"/>
   </uptodate>
  </target>
 
@@ -1487,7 +1488,7 @@ OpenNMS as part of the post-install.
   <mkdir dir="${build.docs.dir}"/>
   <style basedir="${build.filter.docs.dir}"
 	destdir="${build.docs.dir}"
-	style="${docs.source.dir}/xsl/docbook/fo/docbook.xsl"
+	style="${docs.source.dir}/common/fo-docbook.xsl"
 	includes="**/book.xml"
 	classpath="${packaged.lib.dir}/xalan231.jar"
 	extension=".fot"
