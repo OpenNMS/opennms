@@ -80,8 +80,9 @@ public class GroupFactory extends GroupManager {
 
     public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         if (!s_initialized) {
-            reload();
+            s_instance = new GroupFactory();
             s_initialized = true;
+            reload();
         }
     }
 
@@ -94,10 +95,6 @@ public class GroupFactory extends GroupManager {
     public static synchronized GroupFactory getInstance() {
         if (!s_initialized)
             return null;
-
-        if (s_instance == null) {
-            s_instance = new GroupFactory();
-        }
 
         return s_instance;
     }
