@@ -41,7 +41,7 @@ Package: opennms-db
 Section: contrib/net
 Architecture: all
 Conflicts: opennms (<< 1.1.2-1)
-Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl, libiplike-pgsql (=${Source-Version}), opennms-common (=${Source-Version}), postgresql (>= 7.2)
+Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl, libiplike-pgsql (=${Source-Version}), postgresql (>= 7.2)
 Recommends: opennms-webapp, qpage
 Suggests: opennms-doc
 Description: The Open Network Management System
