@@ -39,6 +39,7 @@
 package org.opennms.netmgt.rrd;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -273,6 +274,11 @@ public class JRobinRrdStrategy implements RrdStrategy {
             RrdGraphDef graphDef = new RrdGraphDef();
             long start = 0;
             long end = 0;
+            int height = 100;
+            int width = 400;
+            double lowerLimit = Double.NaN;
+            double upperLimit = Double.NaN;
+            boolean rigid = false;
             for (int i = 0; i < commandArray.length; i++) {
                 String arg = commandArray[i];
                 if (arg.startsWith("--start=")) {
@@ -285,6 +291,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
                     } else {
                         throw new IllegalArgumentException("--start must be followed by a start time");
                     }
+                    
                 } else if (arg.startsWith("--end=")) {
                     end = Long.parseLong(arg.substring("--end=".length()));
                     log.debug("JRobin end time: " + end);
@@ -295,6 +302,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
                     } else {
                         throw new IllegalArgumentException("--end must be followed by an end time");
                     }
+                    
                 } else if (arg.startsWith("--title=")) {
                     String[] title = tokenize(arg, "=", true);
                     graphDef.setTitle(title[1]);
@@ -304,32 +312,111 @@ public class JRobinRrdStrategy implements RrdStrategy {
                     } else {
                         throw new IllegalArgumentException("--title must be followed by a title");
                     }
+                    
+                } else if (arg.startsWith("--vertical-label=")) {
+                    String[] label = tokenize(arg, "=", true);
+                    graphDef.setVerticalLabel(label[1]);
+                } else if (arg.equals("--vertical-label")) {
+                    if (i + 1 < commandArray.length) {
+                        graphDef.setVerticalLabel(commandArray[++i]);
+                    } else {
+                        throw new IllegalArgumentException("--vertical-label must be followed by a label");
+                    }
+                    
+                } else if (arg.startsWith("--height=")) {
+                    String[] argParm = tokenize(arg, "=", true);
+                    height = Integer.parseInt(argParm[1]);
+                    log.debug("JRobin height: "+height);
+                } else if (arg.equals("--height")) {
+                    if (i + 1 < commandArray.length) {
+                        height = Integer.parseInt(commandArray[++i]);
+                        log.debug("JRobin height: "+height);
+                    } else {
+                        throw new IllegalArgumentException("--height must be followed by a number");
+                    }
+                
+                } else if (arg.startsWith("--width=")) {
+                    String[] argParm = tokenize(arg, "=", true);
+                    width = Integer.parseInt(argParm[1]);
+                    log.debug("JRobin width: "+height);
+                } else if (arg.equals("--width")) {
+                    if (i + 1 < commandArray.length) {
+                        width = Integer.parseInt(commandArray[++i]);
+                        log.debug("JRobin width: "+height);
+                    } else {
+                        throw new IllegalArgumentException("--width must be followed by a number");
+                    }
+                
+                } else if (arg.startsWith("--units-exponent=")) {
+                    String[] argParm = tokenize(arg, "=", true);
+                    int exponent = Integer.parseInt(argParm[1]);
+                    log.debug("JRobin units exponent: "+exponent);
+                    graphDef.setUnitsExponent(exponent);
+                } else if (arg.equals("--units-exponent")) {
+                    if (i + 1 < commandArray.length) {
+                        int exponent = Integer.parseInt(commandArray[++i]);
+                        log.debug("JRobin units exponent: "+exponent);
+                        graphDef.setUnitsExponent(exponent);
+                    } else {
+                        throw new IllegalArgumentException("--units-exponent must be followed by a number");
+                    }
+                
+                } else if (arg.startsWith("--lower-limit=")) {
+                    String[] argParm = tokenize(arg, "=", true);
+                    lowerLimit = Double.parseDouble(argParm[1]);
+                    log.debug("JRobin lower limit: "+lowerLimit);
+                } else if (arg.equals("--lower-limit")) {
+                    if (i + 1 < commandArray.length) {
+                        lowerLimit = Double.parseDouble(commandArray[++i]);
+                        log.debug("JRobin lower limit: "+lowerLimit);
+                    } else {
+                        throw new IllegalArgumentException("--lower-limit must be followed by a number");
+                    }
+                
+                } else if (arg.startsWith("--upper-limit=")) {
+                    String[] argParm = tokenize(arg, "=", true);
+                    upperLimit = Double.parseDouble(argParm[1]);
+                    log.debug("JRobin upp limit: "+lowerLimit);
+                } else if (arg.equals("--upper-limit")) {
+                    if (i + 1 < commandArray.length) {
+                        upperLimit = Double.parseDouble(commandArray[++i]);
+                        log.debug("JRobin upper limit: "+lowerLimit);
+                    } else {
+                        throw new IllegalArgumentException("--upper-limit must be followed by a number");
+                    }
+                
+                } else if (arg.equals("--rigid")) {
+                    rigid = true;
+                
                 } else if (arg.startsWith("DEF:")) {
                     String definition = arg.substring("DEF:".length());
                     String[] def = tokenize(definition, ":", true);
                     String[] ds = tokenize(def[0], "=", true);
                     File dsFile = new File(workDir, ds[1]);
                     graphDef.datasource(ds[0], dsFile.getAbsolutePath(), def[1], def[2]);
+                
                 } else if (arg.startsWith("CDEF:")) {
                     String definition = arg.substring("CDEF:".length());
                     String[] cdef = tokenize(definition, "=", true);
                     graphDef.datasource(cdef[0], cdef[1]);
+                
                 } else if (arg.startsWith("LINE1:")) {
                     String definition = arg.substring("LINE1:".length());
                     String[] line1 = tokenize(definition, ":", true);
                     String[] color = tokenize(line1[0], "#", true);
-                    graphDef.line(color[0], getColor(color[1]), line1[1]);
+                    graphDef.line(color[0], getColor(color[1]), (line1.length > 1 ? line1[1] : ""));
+                
                 } else if (arg.startsWith("LINE2:")) {
                     String definition = arg.substring("LINE2:".length());
                     String[] line2 = tokenize(definition, ":", true);
                     String[] color = tokenize(line2[0], "#", true);
-                    graphDef.line(color[0], getColor(color[1]), line2[1], 2);
+                    graphDef.line(color[0], getColor(color[1]), (line2.length > 1 ? line2[1] : ""), 2);
 
                 } else if (arg.startsWith("LINE3:")) {
                     String definition = arg.substring("LINE3:".length());
                     String[] line3 = tokenize(definition, ":", true);
                     String[] color = tokenize(line3[0], "#", true);
-                    graphDef.line(color[0], getColor(color[1]), line3[1], 3);
+                    graphDef.line(color[0], getColor(color[1]), (line3.length > 1 ? line3[1] : ""), 3);
 
                 } else if (arg.startsWith("GPRINT:")) {
                     String definition = arg.substring("GPRINT:".length());
@@ -337,31 +424,39 @@ public class JRobinRrdStrategy implements RrdStrategy {
                     String format = gprint[2];
                     format = format.replaceAll("%(\\d*\\.\\d*)lf", "@$1");
                     format = format.replaceAll("%s", "@s");
+                    format = format.replaceAll("%%", "%");
                     log.debug("gprint: oldformat = " + gprint[2] + " newformat = " + format);
                     graphDef.gprint(gprint[0], gprint[1], format);
 
+                } else if (arg.startsWith("COMMENT:")) {
+                    String comments[] = tokenize(arg, ":", true);
+                    graphDef.comment(comments[1]);
                 } else if (arg.startsWith("AREA:")) {
                     String definition = arg.substring("AREA:".length());
                     String area[] = tokenize(definition, ":", true);
                     String[] color = tokenize(area[0], "#", true);
-                    graphDef.area(color[0], getColor(color[1]), area[1]);
+                    graphDef.area(color[0], getColor(color[1]), (area.length > 1 ? area[1] : ""));
 
                 } else if (arg.startsWith("STACK:")) {
                     String definition = arg.substring("STACK:".length());
                     String stack[] = tokenize(definition, ":", true);
                     String[] color = tokenize(stack[0], "#", true);
-                    graphDef.stack(color[0], getColor(color[1]), stack[1]);
+                    graphDef.stack(color[0], getColor(color[1]), (stack.length > 1 ? stack[1] : ""));
+                
                 } else {
                     log.warn("JRobin: Unrecognized graph argument: " + arg);
                 }
             }
             graphDef.setTimePeriod(start, end);
+            graphDef.setGridRange(lowerLimit, upperLimit, rigid);
+            graphDef.setDefaultFont(new Font("Monospaced", Font.PLAIN, 10));
+            graphDef.setTitleFont(new Font("Monospaced", Font.PLAIN, 12));
 
             log.debug("JRobin Finished tokenizing checking: start time: " + start + "; end time: " + end);
 
             RrdGraph graph = new RrdGraph(graphDef, false);
 
-            byte[] bytes = graph.getPNGBytes();
+            byte[] bytes = graph.getPNGBytes(width, height);
 
             tempIn = new ByteArrayInputStream(bytes);
 
