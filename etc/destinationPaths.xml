@@ -210,4 +210,10 @@
                 <command>xmppMessage</command>
         </target>
     </path>
+    <path name="Growl-Admin">
+        <target>
+                <name>Admin</name>
+                <command>growlMessage</command>
+        </target>
+    </path>
 </destinationPaths>
