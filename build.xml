@@ -223,7 +223,7 @@ your distribution.
 
     <!-- set conditional properties -->
     <condition property="product.release.stamp"
-	       value="${DSTAMP}.${product.release}">
+	       value="0.${DSTAMP}.${product.release}">
       <istrue value="${product.snapshot}"/>
     </condition>
     <condition property="product.release.stamp" value="${product.release}">
