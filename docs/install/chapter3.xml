@@ -35,7 +35,7 @@
 
           <itemizedlist>
             <listitem>
-              <para> The java-common package is a dependency for the j2sdk1.4
+              <para>The java-common package is a dependency for the j2sdk1.4
               package you will be creating, and since it will be installed by
               dpkg, APT will not be there to pull it in so install it
               first.</para>
@@ -45,11 +45,24 @@
             </listitem>
 
             <listitem>
-              <para>Next, install the sun-jdk1.4-installer package and follow
-              the instructions printed on your screen.</para>
+              <para>Next, install the sun-jdk1.4-installer package</para>
 
               <para><computeroutput>[root@host /root]# apt-get install
               sun-jdk1.4-installer</computeroutput></para>
+            </listitem>
+
+            <listitem>
+              <para>Download the 1.4.2 SDK from Sun, get the non-RPM binary
+              package</para>
+            </listitem>
+
+            <listitem>
+              <para>Then run the following command:</para>
+
+              <para><programlisting>[root@host /root]# build-sun-jdk14 ./j2sdk-1_4_2_05-linux-i586.bin</programlisting></para>
+
+              <para>where <filename>j2sdk-1_4_2_05-linux-i586.bin</filename>
+              is the binary file you downloaded from Sun.</para>
             </listitem>
           </itemizedlist>
         </listitem>
@@ -57,7 +70,7 @@
         <listitem>
           <para>Obtain and install and your own version and meet the OpenNMS
           packages dependencies by installing the java-virtual-machine meta
-          package. </para>
+          package.</para>
 
           <para><computeroutput>[root@host /root]# apt-get install
           java-virtual-machine</computeroutput></para>
@@ -67,8 +80,10 @@
       <para>Then, install OpenNMS:</para>
 
       <para><computeroutput>[root@host /root]# apt-get install
-      opennms</computeroutput> Optionally install the documentation and/or
-      contrib packages</para>
+      opennms</computeroutput> </para>
+
+      <para>Optionally install the documentation and/or contrib
+      packages</para>
 
       <para><computeroutput>[root@host /root]# apt-get install opennms-doc
       opennms-contrib</computeroutput></para>
@@ -110,11 +125,24 @@
             </listitem>
 
             <listitem>
-              <para>Next, install the sun-jdk1.4-installer package and follow
-              the instructions printed on your screen.</para>
+              <para>Next, install the sun-jdk1.4-installer package</para>
 
               <para><computeroutput>[root@host /root]# apt-get install
               sun-jdk1.4-installer</computeroutput></para>
+            </listitem>
+
+            <listitem>
+              <para>Download the 1.4.2 SDK from Sun, get the non-RPM binary
+              package</para>
+            </listitem>
+
+            <listitem>
+              <para>Then run the following command:</para>
+
+              <para><programlisting>[root@host /root]# build-sun-jdk14 ./j2sdk-1_4_2_05-linux-i586.bin</programlisting></para>
+
+              <para>where <filename>j2sdk-1_4_2_05-linux-i586.bin</filename>
+              is the binary file you downloaded from Sun.</para>
             </listitem>
           </itemizedlist>
         </listitem>
