@@ -36,7 +36,7 @@ fork () {
 	OUTPUT="$1"; shift
 	echo "------------------------------------------------------------------------------" >> "$OUTPUT"
 	echo $@ >> "$OUTPUT"
-	nohup $@ >>"$OUTPUT" 2>&1 &
+	$@ >>"$OUTPUT" 2>&1 &
 	echo $! > "$PIDFILE"
 	disown
 }
