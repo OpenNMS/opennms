@@ -1741,7 +1741,10 @@ public final class CapsdConfigFactory
                 
 		PreparedStatement s = dbConn.prepareStatement(qs.toString());
 		s.setString(1, ifAddress.getHostAddress());
-		
+	
+                if (ifIndex != -1)
+                        s.setInt(2, ifIndex);
+                        
 		ResultSet rs = s.executeQuery();
 		int nodeid = -1;
 		if(rs.next())
