@@ -124,8 +124,8 @@
 				<!-- IP address to which the protocol configuration applies -->
 				<element name="specific" type="string" minOccurs="0" maxOccurs="unbounded"/>
 				
-				<!-- IP address range to which the protocol configuration applies 
-				<element ref="capsd:range" minOccurs="0" maxOccurs="unbounded"/> -->
+				<!-- IP address range to which the protocol configuration applies --> 
+				<element ref="capsd:range" minOccurs="0" maxOccurs="unbounded"/> 
 				
 				<!-- key/value pair passed in to the plugin -->
 				<element ref="capsd:property" minOccurs="0" maxOccurs="unbounded"/>
