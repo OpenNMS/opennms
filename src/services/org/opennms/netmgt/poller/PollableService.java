@@ -780,7 +780,8 @@ final class PollableService
 			{
 				// Does the outage apply to this interface?
 				
-				if (outageFactory.isInterfaceInOutage(m_address.getHostAddress(), outageName))
+				if ((outageFactory.isInterfaceInOutage(m_address.getHostAddress(), outageName)) ||
+				   (outageFactory.isInterfaceInOutage("match-any", outageName)))
 				{
 					if (ThreadCategory.getInstance(getClass()).isDebugEnabled())
 						ThreadCategory.getInstance(getClass()).debug("scheduledOutage: configured outage '" + 
