@@ -101,7 +101,7 @@
   </tr>
   <tr> 
     <td align="center" >
-      <font  SIZE="-1">Copyright &copy; 2002-2003 <a HREF="http://www.sortova.com/">Sortova Consulting Group, Inc.</a>. Parts Copyright &copy; 1999-2002 <a HREF="http://www.oculan.com/">Oculan Corp.</a>. Parts Copyright &copy; 2003 <a href="http://www.nksi.com/">NKSi.com.</a>. <BR> OpenNMS is a trademark of <a href="http://www.sortova.com">Sortova Consulting Group, Inc.</a>. </font>
+      <font  SIZE="-1">OpenNMS <a href="help/about.jsp">Copyright</a> &copy; 2002-2003 <a HREF="http://www.blast.com/">Blast Internet Services, Inc.</a>. OpenNMS&reg; is a registered trademark of <a href="http://www.blast.com">Blast Internet Services, Inc.</a>. </font>
     </td>
   </tr>
 </table>

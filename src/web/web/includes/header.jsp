@@ -44,7 +44,7 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="2" background="images/logo-background.gif">
   <tr> 
     <td WIDTH="30%">
-      <a href="index.jsp"><img src="images/logo.gif" hspace="0" vspace="0" border="0" alt="OpenNMS Web Console Home"></a>
+      <a href="index.jsp"><img src="images/logo.png" hspace="0" vspace="0" border="0" alt="OpenNMS Web Console Home"></a>
     </td>
     <td ALIGN="center">
       <b><%=title%></b>
