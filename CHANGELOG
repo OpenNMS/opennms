@@ -1,5 +1,6 @@
 1.1.4 to 1.1.5
 ----------------------------------------------------------------------
+- Corrected an issue with notification/event matching. Bug 740.
 - Added a check for improperly formatted v2 traps.
 - Deprecated many of the "standard" events that are no longer needed.
 - Added a new UEI named MATCH-ANY-UEI. When used in a notification
