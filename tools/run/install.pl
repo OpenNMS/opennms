@@ -714,7 +714,7 @@ END
 		$unicode->execute($DATABASE) or die("Unable to get the database encoding: " . $template->errstr);
 		(my $encoding) = $unicode->fetchrow_array;
 		stderr_on();
-		if ($encoding != 5) {
+		if ($encoding != 5 and $encoding != 6) {
 			print "FAILED: rebuilding as unicode\n";
 			$database->disconnect if (defined $database);
 			$template->disconnect if (defined $template);
