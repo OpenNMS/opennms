@@ -181,13 +181,19 @@
           &nbsp;&nbsp;&nbsp;<a href="response/addReportsToUrl?node=<%=nodeId%>&intf=<%=ipAddr%>&relativetime=lastday">Response Time</a>
         <% } %>
 
-        <% if(hasSNMPData(intf_db)) { %>
-          <% String ifLabel = IfLabel.getIfLabelfromIfIndex(nodeId, ipAddr, ifindexString); %>
-        
+        <% if(hasSNMPData(intf_db) && ifindexString == null) { %>
+              <% String ifLabel = IfLabel.getIfLabel(nodeId, ipAddr); %>
           <% if(this.perfModel.isQueryableInterface(nodeId, ifLabel)) { %>
             &nbsp;&nbsp;&nbsp;<a href="performance/addReportsToUrl?node=<%=nodeId%>&intf=<%=ifLabel%>&relativetime=lastday">SNMP Performance</a>
           <% } %>
         <% } %>
+        <% if(hasSNMPData(intf_db) && ifindexString != null) { %>
+              <% String ifLabel = IfLabel.getIfLabelfromIfIndex(nodeId, ipAddr, ifindexString); %>
+          <% if(this.perfModel.isQueryableInterface(nodeId, ifLabel)) { %>
+            &nbsp;&nbsp;&nbsp;<a href="performance/addReportsToUrl?node=<%=nodeId%>&intf=<%=ifLabel%>&relativetime=lastday">SNMP Performance</a>
+          <% } %>
+        <% } %>
+        
         
         &nbsp;&nbsp;&nbsp;<a href="element/rescan.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Rescan</a>      
       </p>
