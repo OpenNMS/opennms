@@ -12,6 +12,55 @@
   version 1.1.5 continues that progress.</para>
 
   <sect1>
+    <title>Changes in OpenNMS 1.2.1</title>
+
+    <bridgehead>New Features</bridgehead>
+
+    <para><emphasis>XMPP Support:</emphasis> Chris Abernethy contributed some
+    code to allow notifications using the XMPP instant messaging protocol.
+    This is most commonly associated with the Jabber open-source messaging
+    project.</para>
+
+    <para>Edit the <filename>xmpp-configuration.properties</filename> file to
+    include the username and password of the user you want to use as the
+    originator of the notice. Also include the server you wish to connect to
+    in order to send the notice.</para>
+
+    <para>Finally, add an XMPP Address to each user that should receive the
+    notification, such as "myname@jabber.org".</para>
+
+    <para>If your destination path command includes xmppMessage, then the
+    notification text will be sent via XMPP to the user's XMPP address. Note:
+    be sure that the user has allowed messages from the OpenNMS XMPP user.
+    When I first tested this, I was blocking all messages from people not on
+    my "buddy" list and I never received the notice. </para>
+
+    <para>This was enhancement bug 1168.</para>
+
+    <bridgehead>Bug Fixes</bridgehead>
+
+    <itemizedlist>
+      <listitem>
+        <para>There was an issue with SNMP version 2 data collection on large
+        devices (i.e. lots of interfaces) where the ifIndex values weren't
+        contiguous. This has been corrected. Bug 1141.</para>
+      </listitem>
+
+      <listitem>
+        <para>Added the notifd "RESOLVED" string to the body of notifications
+        (in addition to just the subject).</para>
+      </listitem>
+
+      <listitem>
+        <para>Many people reported issues with 1.2.0 errors with the new
+        ifAlias field. It was too small to hold the entire string associated
+        with some interfaces, so the size of this field has been increased to
+        256.</para>
+      </listitem>
+    </itemizedlist>
+  </sect1>
+
+  <sect1>
     <title>Changes in OpenNMS 1.2.0</title>
 
     <para>The only changes between 1.1.5 and 1.2.0 are some bug fixes and the

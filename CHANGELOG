@@ -1,5 +1,6 @@
 1.2.0 to 1.2.1
 ----------------------------------------------------------------------
+- Added XMPP Notifications (Jabber) to OpenNMS. Bug 1168. Thanks Chris
 - Added the ability to gather and display SNMP text properties in 
   reports. Bug 1115. Thx Craig.
 - Changed snmpIfAlias column size to 256. Bug 1127
