@@ -311,7 +311,7 @@ TOMCAT_USER="tomcat"
     database.</para>
 
     <para>OpenNMS requires version 7 of Postgres. Version 1.1 of OpenNMS
-    requires a version of at least 7.3.</para>
+    requires a version of at least 7.2.</para>
 
     <para>The minimum packages you will need to install should be:</para>
 
