@@ -1,5 +1,7 @@
 1.2.X to 1.3.0
 ----------------------------------------------------------------------
+- Added roles to users.xml and extend notifd to send notifications to 
+  users scheduled for that role.
 - Use RPM "virtual packages" for the Java dependency.  Bug 1144.  Thanks
   Ted Kaczmarek <tedkaz@optonline.net>.
 - Add "jsp.compile" target (and other associated targets) that compile

@@ -34,6 +34,7 @@ package org.opennms.netmgt.config.users;
 
 import java.util.BitSet;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -463,5 +464,11 @@ public class DutySchedule {
         buffer.append(m_startTime + "-" + m_stopTime);
 
         return buffer.toString();
+    }
+
+    public boolean isInSchedule(Date time) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(time);
+        return isInSchedule(cal);
     }
 }

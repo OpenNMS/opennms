@@ -57,6 +57,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.config.users.Header;
+import org.opennms.netmgt.config.users.Role;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.users.Users;
@@ -261,17 +262,18 @@ public abstract class UserManager {
     }
 
     /**
-     * Get a email by name
+     * Get the contact service provider, given a command string
      * 
-     * @param userid
-     *            the userid of the user to return
-     * @return String the email specified by name
+     * @param userID
+     *            the name of the user
+     * @param command
+     *            the command to look up the contact info for
+     * @return the contact information
      */
-    public String getEmail(String userid) throws IOException, MarshalException, ValidationException {
-    
+    public String getContactServiceProvider(String userID, String command) throws IOException, MarshalException, ValidationException {
         update();
     
-        User user = (User) m_users.get(userid);
+        User user = (User) m_users.get(userID);
         if (user == null)
             return "";
         String value = "";
@@ -279,13 +281,24 @@ public abstract class UserManager {
         while (contacts != null && contacts.hasMoreElements()) {
             Contact contact = (Contact) contacts.nextElement();
             if (contact != null) {
-                if (contact.getType().equals("email")) {
-                    value = contact.getInfo();
+                if (contact.getType().equals(command)) {
+                    value = contact.getServiceProvider();
                     break;
                 }
             }
         }
         return value;
+    }
+
+    /**
+     * Get a email by name
+     * 
+     * @param userid
+     *            the userid of the user to return
+     * @return String the email specified by name
+     */
+    public String getEmail(String userid) throws IOException, MarshalException, ValidationException {
+        return getContactInfo(userid, "email");
     }
 
     /**
@@ -296,108 +309,7 @@ public abstract class UserManager {
      * @return String the pager email
      */
     public String getPagerEmail(String userid) throws IOException, MarshalException, ValidationException {
-    
-        update();
-    
-        User user = (User) m_users.get(userid);
-        if (user == null)
-            return "";
-        String value = "";
-        Enumeration contacts = user.enumerateContact();
-        while (contacts != null && contacts.hasMoreElements()) {
-            Contact contact = (Contact) contacts.nextElement();
-            if (contact != null) {
-                if (contact.getType().equals("pagerEmail")) {
-                    value = contact.getInfo();
-                    break;
-                }
-            }
-        }
-        return value;
-    }
-
-    /**
-     * Get a numeric service provider
-     * 
-     * @param userid
-     *            the userid of the user to return
-     * @return String the service provider
-     */
-    public String getNumericPage(String userid) throws IOException, MarshalException, ValidationException {
-    
-        update();
-    
-        User user = (User) m_users.get(userid);
-        if (user == null)
-            return "";
-        String value = "";
-        Enumeration contacts = user.enumerateContact();
-        while (contacts != null && contacts.hasMoreElements()) {
-            Contact contact = (Contact) contacts.nextElement();
-            if (contact != null) {
-                if (contact.getType().equals("numericPage")) {
-                    value = contact.getServiceProvider();
-                    break;
-                }
-            }
-        }
-        return value;
-    }
-
-    /**
-     * Get a text pin
-     * 
-     * @param userid
-     *            the userid of the user to return
-     * @return String the text pin
-     */
-    public String getTextPin(String userid) throws IOException, MarshalException, ValidationException {
-    
-        update();
-    
-        User user = (User) m_users.get(userid);
-        if (user == null)
-            return "";
-        String value = "";
-        Enumeration contacts = user.enumerateContact();
-        while (contacts != null && contacts.hasMoreElements()) {
-            Contact contact = (Contact) contacts.nextElement();
-            if (contact != null) {
-                if (contact.getType().equals("textPage")) {
-                    value = contact.getInfo();
-                    break;
-                }
-            }
-        }
-        return value;
-    }
-
-    /**
-     * Get a Text Page Service Provider
-     * 
-     * @param userid
-     *            the userid of the user to return
-     * @return String the text page service provider.
-     */
-    public String getTextPage(String userid) throws IOException, MarshalException, ValidationException {
-    
-        update();
-    
-        User user = (User) m_users.get(userid);
-        if (user == null)
-            return "";
-        String value = "";
-        Enumeration contacts = user.enumerateContact();
-        while (contacts != null && contacts.hasMoreElements()) {
-            Contact contact = (Contact) contacts.nextElement();
-            if (contact != null) {
-                if (contact.getType().equals("textPage")) {
-                    value = contact.getServiceProvider();
-                    break;
-                }
-            }
-        }
-        return value;
+        return getContactInfo(userid, "pagerEmail");
     }
 
     /**
@@ -408,24 +320,40 @@ public abstract class UserManager {
      * @return String the numeric pin
      */
     public String getNumericPin(String userid) throws IOException, MarshalException, ValidationException {
-    
-        update();
-    
-        User user = (User) m_users.get(userid);
-        if (user == null)
-            return "";
-        String value = "";
-        Enumeration contacts = user.enumerateContact();
-        while (contacts != null && contacts.hasMoreElements()) {
-            Contact contact = (Contact) contacts.nextElement();
-            if (contact != null) {
-                if (contact.getType().equals("numericPage")) {
-                    value = contact.getInfo();
-                    break;
-                }
-            }
-        }
-        return value;
+        return getContactInfo(userid, "numericPage");
+    }
+
+    /**
+     * Get a numeric service provider
+     * 
+     * @param userid
+     *            the userid of the user to return
+     * @return String the service provider
+     */
+    public String getNumericPage(String userid) throws IOException, MarshalException, ValidationException {
+        return getContactServiceProvider(userid, "numericPage");
+    }
+
+    /**
+     * Get a text pin
+     * 
+     * @param userid
+     *            the userid of the user to return
+     * @return String the text pin
+     */
+    public String getTextPin(String userid) throws IOException, MarshalException, ValidationException {
+        return getContactInfo(userid, "textPage");
+    }
+
+    /**
+     * Get a Text Page Service Provider
+     * 
+     * @param userid
+     *            the userid of the user to return
+     * @return String the text page service provider.
+     */
+    public String getTextPage(String userid) throws IOException, MarshalException, ValidationException {
+        return getContactServiceProvider(userid, "textPage");
     }
 
     /**
@@ -635,5 +563,95 @@ public abstract class UserManager {
      * @throws ValidationException
      */
     protected abstract void update() throws IOException, FileNotFoundException, MarshalException, ValidationException;
+
+    public String[] getUsersWithRole(String roleid) throws IOException, MarshalException, ValidationException {
+        update();
+        
+        List usersWithRole = new ArrayList();
+        
+        Iterator i = m_users.values().iterator();
+        
+        while (i.hasNext()) {
+            User user = (User)i.next();
+            if (userHasRole(user, roleid)) {
+                usersWithRole.add(user.getUserId());
+            }
+        }
+        
+        return (String[]) usersWithRole.toArray(new String[usersWithRole.size()]);
+        
+    }
+    public boolean userHasRole(User user, String roleid) throws FileNotFoundException, MarshalException, ValidationException, IOException {
+        update();
+
+        if (roleid == null) throw new NullPointerException("roleid is null");
+        
+        Collection roles = user.getRoleCollection();
+        
+        for(Iterator it = roles.iterator(); it.hasNext();) {
+            Role role = (Role)it.next();
+            if (roleid.equals(role.getRoleId())) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    public boolean isUserScheduledForRole(User user, String roleid, Date time) throws FileNotFoundException, MarshalException, ValidationException, IOException {
+        update();
+
+        Collection roles = user.getRoleCollection();
+        
+        for(Iterator it = roles.iterator(); it.hasNext();) {
+            Role role = (Role)it.next();
+            if (roleid.equals(role.getRoleId())) {
+                DutySchedule dutySchedule = new DutySchedule(role.getSchedule());
+                if (dutySchedule.isInSchedule(time))
+                    return true;
+            }
+        }
+        
+        return false;
+    }
+    public String[] getUsersScheduledForRole(String roleid, Date time) throws MarshalException, ValidationException, IOException {
+        update();
+        
+        List usersScheduledForRole = new ArrayList();
+        
+        Iterator i = m_users.values().iterator();
+        
+        while (i.hasNext()) {
+            User user = (User)i.next();
+            if (isUserScheduledForRole(user, roleid, time)) {
+                usersScheduledForRole.add(user.getUserId());
+            }
+        }
+        
+        return (String[]) usersScheduledForRole.toArray(new String[usersScheduledForRole.size()]);
+    }
+
+    public boolean hasRole(String roleid) throws MarshalException, ValidationException, IOException {
+        update();
+        
+        List usersWithRole = new ArrayList();
+        
+        Iterator i = m_users.values().iterator();
+        
+        while (i.hasNext()) {
+            User user = (User)i.next();
+            if (userHasRole(user, roleid)) {
+                return true;
+            }
+        }
+        
+        return false;
+
+    }
+    public int countUsersWithRole(String roleid) throws MarshalException, ValidationException, IOException {
+        String[] users = getUsersWithRole(roleid);
+        if (users == null) return 0;
+        return users.length;
+    }
 
 }

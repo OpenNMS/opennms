@@ -32,8 +32,10 @@
 package org.opennms.netmgt.config;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.netmgt.config.groups.Group;
@@ -88,6 +90,7 @@ public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" +
     "           <user-comments>Test User</user-comments>\n" +
     "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
     "           <contact type=\"email\" info=\"brozow@opennms.org\"/>\n" + 
+    "           <role role-id=\"oncall\" schedule=\"MoWeFrSu0900-1700\" />" +
     "       </user>\n" + 
     "       <user>\n" + 
     "           <user-id>admin</user-id>\n" + 
@@ -95,6 +98,8 @@ public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" +
     "           <user-comments>Default administrator, do not delete</user-comments>\n" +
     "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
     "           <contact type=\"email\" info=\"admin@opennms.org\"/>\n" + 
+    "           <role role-id=\"oncall\" schedule=\"TuThSa0900-1700\" />" +
+    "           <role role-id=\"oncall\" schedule=\"Su0000-2400\" />" +
     "       </user>\n" + 
     "       <user>\n" + 
     "           <user-id>upUser</user-id>\n" + 
@@ -102,6 +107,7 @@ public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" +
     "           <user-comments>Default administrator, do not delete</user-comments>\n" +
     "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
     "           <contact type=\"email\" info=\"up@opennms.org\"/>\n" + 
+    "           <role role-id=\"unscheduled\" schedule=\"SuMoTuWeThFrSa0000-2400\"/>" +
     "       </user>\n" + 
     "       <user>\n" + 
     "           <user-id>david</user-id>\n" + 
@@ -112,12 +118,23 @@ public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" +
     "           <contact type=\"numericPage\" info=\"6789\" serviceProvider=\"ATT\"/>\n" + 
     "           <contact type=\"textPage\" info=\"9876\" serviceProvider=\"Sprint\"/>\n" + 
     "           <duty-schedule>MoTuWeThFrSaSu800-2300</duty-schedule>\n" + 
+    "           <role role-id=\"oncall\" schedule=\"MoTuWeThFrSaSu0000-0900\" />" +
+    "           <role role-id=\"oncall\" schedule=\"MoTuWeThFrSaSu1700-2359\" />" +
     "       </user>\n" + 
     "   </users>\n" + 
     "</userinfo>\n" + 
     "";
-private MockGroupManager m_groupManager;
-private MockUserManager m_userManager;
+private GroupManager m_groupManager;
+private UserManager m_userManager;
+
+private User brozow;
+private User admin;
+private User upUser;
+private User david;
+
+private Date night;
+private Date day;
+private Date sunday;
 
 
     public static void main(String[] args) {
@@ -129,6 +146,23 @@ private MockUserManager m_userManager;
         MockUtil.resetLogLevel();
         m_groupManager = new MockGroupManager(GROUP_MANAGER);
         m_userManager = new MockUserManager(m_groupManager, USER_MANAGER);
+        
+        night = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("21-FEB-2005 23:00:00"); // monday
+        day = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("21-FEB-2005 11:59:56"); // monday
+        sunday = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("30-JAN-2005 11:59:56"); // sunday
+
+        brozow = m_userManager.getUser("brozow");
+        assertNotNull(brozow);
+        assertEquals("brozow", brozow.getUserId());
+        admin = m_userManager.getUser("admin");
+        assertNotNull(admin);
+        assertEquals("admin", admin.getUserId());
+        upUser = m_userManager.getUser("upUser");
+        assertNotNull(upUser);
+        assertEquals("upUser", upUser.getUserId());
+        david = m_userManager.getUser("david");
+        assertNotNull(david);
+        assertEquals("david", david.getUserId());
 
     }
 
@@ -147,14 +181,12 @@ private MockUserManager m_userManager;
     }
     
     public void testSaveUser() throws Exception {
-        final String userName = "brozow";
-        User brozow = m_userManager.getUser(userName);
+        String userName = "brozow";
+        User user = brozow;
         
-        Date night = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("21-FEB-2005 23:59:56");
         Calendar nightCal = Calendar.getInstance();
         nightCal.setTime(night);
 
-        Date day = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("21-FEB-2005 11:59:56");
         Calendar dayCal = Calendar.getInstance();
         dayCal.setTime(day);
         
@@ -163,7 +195,7 @@ private MockUserManager m_userManager;
         assertTrue(m_userManager.isUserOnDuty(userName, nightCal));
 
         brozow.addDutySchedule("MoTuWeThFr0900-1700");
-        m_userManager.saveUser(userName, brozow);
+        m_userManager.saveUser(userName, user);
         
         // now user is on duty only from 9-5
         assertTrue(m_userManager.isUserOnDuty(userName, dayCal));
@@ -184,11 +216,9 @@ private MockUserManager m_userManager;
         final String groupName = "UpGroup";
         Group group = m_groupManager.getGroup(groupName);
         
-        Date night = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("21-FEB-2005 23:00:00");
         Calendar nightCal = Calendar.getInstance();
         nightCal.setTime(night);
 
-        Date day = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("21-FEB-2005 11:59:56");
         Calendar dayCal = Calendar.getInstance();
         dayCal.setTime(day);
         
@@ -210,6 +240,91 @@ private MockUserManager m_userManager;
         assertEquals(36000000, m_groupManager.groupNextOnDuty(groupName, nightCal));
         
 
+    }
+    
+    public void testUserHasRole() throws Exception {
+        assertTrue(m_userManager.userHasRole(brozow, "oncall"));
+        assertTrue(m_userManager.userHasRole(admin, "oncall"));
+        assertFalse(m_userManager.userHasRole(upUser, "oncall"));
+        assertTrue(m_userManager.userHasRole(david, "oncall"));
+    }
+    
+    public void testGetUsersWithRole() throws Exception {
+        String[] userNames = m_userManager.getUsersWithRole("oncall");
+        assertMembership(userNames, new User[] { brozow, admin, david });
+        
+    }
+    
+    public void testUserScheduledForRole() throws Exception {
+        // day and night are mondays at 11 am and 11 pm respectively
+        
+        // brozow scheduled only MoWeFr during the day
+        assertFalse(m_userManager.isUserScheduledForRole(brozow, "oncall", night));
+        assertTrue(m_userManager.isUserScheduledForRole(brozow, "oncall", day));
+        assertTrue(m_userManager.isUserScheduledForRole(brozow, "oncall", sunday));
+        assertFalse(m_userManager.isUserScheduledForRole(brozow, "unscheduled", day));
+        
+        // admin scheduled only TuThSa
+        assertFalse(m_userManager.isUserScheduledForRole(admin, "oncall", night));
+        assertFalse(m_userManager.isUserScheduledForRole(admin, "oncall", day));
+        assertTrue(m_userManager.isUserScheduledForRole(admin, "oncall", sunday));
+        assertFalse(m_userManager.isUserScheduledForRole(admin, "unscheduled", day));
+        
+        // user upUser is not schedule for the role 'oncall' at all
+        assertFalse(m_userManager.isUserScheduledForRole(upUser, "oncall", night));
+        assertFalse(m_userManager.isUserScheduledForRole(upUser, "oncall", day));
+        assertFalse(m_userManager.isUserScheduledForRole(upUser, "oncall", sunday));
+        assertTrue(m_userManager.isUserScheduledForRole(upUser, "unscheduled", day));
+        
+        // david is scheduled for the night shifts
+        assertTrue(m_userManager.isUserScheduledForRole(david, "oncall", night));
+        assertFalse(m_userManager.isUserScheduledForRole(david, "oncall", day));
+        assertFalse(m_userManager.isUserScheduledForRole(david, "oncall", sunday));
+        assertFalse(m_userManager.isUserScheduledForRole(david, "unscheduled", day));
+
+    }
+    
+    public void testGetUsersScheduledForRole() throws Exception {
+        String[] nightUserNames = m_userManager.getUsersScheduledForRole("oncall", night);
+        assertMembership(nightUserNames, new User[]{ david });
+        
+        String[] dayUserNames = m_userManager.getUsersScheduledForRole("oncall", day);
+        assertMembership(dayUserNames, new User[]{ brozow });
+        
+        String[] sundayUserNames = m_userManager.getUsersScheduledForRole("oncall", sunday);
+        assertMembership(sundayUserNames, new User[] { brozow, admin });
+        
+    }
+
+    private void assertMembership(String[] userNames, User[] expected) {
+        if (expected == null)
+            assertNull("Expected null list", userNames);
+        
+        assertNotNull("Unexpected null user list", userNames);
+        assertEquals("Unexpected number of users", expected.length, userNames.length);
+        
+        List nameList = Arrays.asList(userNames);
+        for(int i = 0; i < expected.length; i++) {
+            User u = expected[i];
+            assertTrue("Expected user "+u.getUserId()+" in list "+nameList, nameList.contains(u.getUserId()));
+        }
+    }
+
+    private String toString(List users) {
+        StringBuffer buf = new StringBuffer("[");
+        boolean first = true;
+        for (Iterator it = users.iterator(); it.hasNext();) {
+            User user = (User) it.next();
+            if (first)
+                first = false;
+            else
+                buf.append(" ");
+            buf.append(user.getUserId());
+                
+                    
+        }
+        buf.append("]");
+        return buf.toString();
     }
     
 

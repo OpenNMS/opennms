@@ -50,6 +50,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -470,6 +471,8 @@ final class BroadcastEventProcessor implements EventListener {
 
         if (m_notifd.getGroupManager().hasGroup(targetName)) {
             count = m_notifd.getGroupManager().getGroup(targetName).getUserCount();
+        } else if (m_notifd.getUserManager().hasRole(targetName)) {
+            count = m_notifd.getUserManager().countUsersWithRole(targetName);
         } else if (m_notifd.getUserManager().hasUser(targetName)) {
             count = 1;
         } else if (targetName.indexOf("@") > -1) {
@@ -593,6 +596,10 @@ final class BroadcastEventProcessor implements EventListener {
                 
                 tasks = makeGroupTasks(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, TimeConverter.convertToMillis(interval));
                 
+            } else if (m_notifd.getUserManager().hasRole(targetName)) {
+                
+                tasks = makeRoleTasks(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, TimeConverter.convertToMillis(interval));
+                
             } else if (m_notifd.getUserManager().hasUser(targetName)) {
                 
                 NotificationTask[] userTasks = { makeUserTask(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings) };
@@ -643,11 +650,14 @@ final class BroadcastEventProcessor implements EventListener {
             return null;
         }
 
+        return constructTasksFromUserList(users, startTime, next, params, noticeId, command, targetSiblings, interval);
+    }
+
+    private NotificationTask[] constructTasksFromUserList(String[] users, long startTime, long offset, Map params, int noticeId, String[] command, List targetSiblings, long interval) throws IOException, MarshalException, ValidationException {
         List taskList = new ArrayList(users.length);
         long curSendTime = 0;
-        
         for (int j = 0; j < users.length; j++) {
-            NotificationTask newTask = makeUserTask(next + startTime + curSendTime, params, noticeId, users[j], command, targetSiblings);
+            NotificationTask newTask = makeUserTask(offset + startTime + curSendTime, params, noticeId, users[j], command, targetSiblings);
 
             if (newTask != null) {
                 taskList.add(newTask);
@@ -658,8 +668,20 @@ final class BroadcastEventProcessor implements EventListener {
     }
     
     
-    NotificationTask[] makeRoleTasks(long startTime, Map params, int i, String string, String[] commands, LinkedList list, int j) {
-        return new NotificationTask[0];
+    NotificationTask[] makeRoleTasks(long startTime, Map params, int noticeId, String targetName, String[] command, List targetSiblings, long interval) throws MarshalException, ValidationException, IOException {
+        Category log = ThreadCategory.getInstance(getClass());
+
+        String[] users = m_notifd.getUserManager().getUsersScheduledForRole(targetName, new Date(startTime));
+        
+        // There are no users in the group
+        if (users == null || users.length == 0) {
+            log.debug("Not sending notice, no users scheduled for role  " + targetName);
+            return null;
+        }
+        
+        return constructTasksFromUserList(users, startTime, 0, params, noticeId, command, targetSiblings, interval);
+
+       
     }
 
 

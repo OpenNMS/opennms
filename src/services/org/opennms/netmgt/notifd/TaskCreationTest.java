@@ -135,10 +135,23 @@ public class TaskCreationTest extends NotificationsTestCase {
     }
     
     public void testMakeRoleTasks() throws Exception {
-        long startTime = System.currentTimeMillis();
-        NotificationTask[] tasks = m_eventProcessor.makeRoleTasks(startTime, m_params, 1, "onCall", m_commands, new LinkedList(), 1000);
+        Date day = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("21-FEB-2005 11:59:56");
+        long dayTime = day.getTime();
+        NotificationTask[] tasks = m_eventProcessor.makeRoleTasks(dayTime, m_params, 1, "oncall", m_commands, new LinkedList(), 1000);
         assertNotNull(tasks);
+        assertEquals(1, tasks.length);
+        assertEquals("brozow@opennms.org", tasks[0].getEmail());
+        assertEquals(dayTime, tasks[0].getSendTime());
         
+        Date sunday = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("30-JAN-2005 11:59:56"); // sunday
+        long sundayTime = sunday.getTime();
+        NotificationTask[] sundayTasks = m_eventProcessor.makeRoleTasks(sundayTime, m_params, 1, "oncall", m_commands, new LinkedList(), 1000);
+        assertNotNull(sundayTasks);
+        assertEquals(2, sundayTasks.length);
+        assertEquals("brozow@opennms.org", sundayTasks[0].getEmail());
+        assertEquals(sundayTime, sundayTasks[0].getSendTime());
+        assertEquals("admin@opennms.org", sundayTasks[1].getEmail());
+        assertEquals(sundayTime+1000, sundayTasks[1].getSendTime());
     }
     
     

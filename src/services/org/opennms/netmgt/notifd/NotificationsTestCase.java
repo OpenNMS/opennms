@@ -197,6 +197,14 @@ public class NotificationsTestCase extends TestCase {
                 "            <vbvalue>loadavg5</vbvalue>\n" + 
                 "        </varbind>\n" + 
                 "    </notification>" +
+                "    <notification name=\"Roled Based Test Event\" status=\"on\">\n" + 
+                "        <uei>uei.opennms.org/test/roleTestEvent</uei>\n" + 
+                "        <description>Test for notification of roles</description>\n" + 
+                "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+                "        <destinationPath>OnCall</destinationPath>\n" + 
+                "        <text-message>Notification Test</text-message>\n" + 
+                "        <subject>notification test</subject>\n" + 
+                "    </notification>" +
                 "</notifications>\n" + 
                 "";
     public static final String GROUP_MANAGER = "<?xml version=\"1.0\"?>\n" + 
@@ -248,14 +256,16 @@ public class NotificationsTestCase extends TestCase {
                 "           <user-comments>Test User</user-comments>\n" +
                 "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
                 "           <contact type=\"email\" info=\"brozow@opennms.org\"/>\n" + 
+                "           <role role-id=\"oncall\" schedule=\"MoWeFrSu0900-1700\" />" +
                 "       </user>\n" + 
                 "       <user>\n" + 
                 "           <user-id>admin</user-id>\n" + 
                 "           <full-name>Administrator</full-name>\n" + 
-//                "           <role role-id=\"oncall\" schedule=\"MoTuWeThFrSaSu600-700\"/> \n"+
                 "           <user-comments>Default administrator, do not delete</user-comments>\n" +
                 "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
                 "           <contact type=\"email\" info=\"admin@opennms.org\"/>\n" + 
+                "           <role role-id=\"oncall\" schedule=\"TuThSa0900-1700\" />" +
+                "           <role role-id=\"oncall\" schedule=\"Su0000-2400\" />" +
                 "       </user>\n" + 
                 "       <user>\n" + 
                 "           <user-id>upUser</user-id>\n" + 
@@ -275,6 +285,8 @@ public class NotificationsTestCase extends TestCase {
                 "           <contact type=\"numericPage\" info=\"6789\" serviceProvider=\"ATT\"/>\n" + 
                 "           <contact type=\"textPage\" info=\"9876\" serviceProvider=\"Sprint\"/>\n" + 
                 "           <duty-schedule>MoTuWeThFrSaSu800-2300</duty-schedule>\n" + 
+                "           <role role-id=\"oncall\" schedule=\"MoTuWeThFrSaSu0000-0900\" />" +
+                "           <role role-id=\"oncall\" schedule=\"MoTuWeThFrSaSu1700-2359\" />" +
                 "       </user>\n" + 
                 "   </users>\n" + 
                 "</userinfo>\n" + 
@@ -286,6 +298,12 @@ public class NotificationsTestCase extends TestCase {
                 "        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
                 "        <mstation>localhost</mstation>\n" + 
                 "    </header>\n" + 
+                "    <path name=\"OnCall\" initial-delay=\"0s\">\n" + 
+                "        <target>\n" + 
+                "            <name>oncall</name>\n" + 
+                "            <command>mockNotifier</command>\n" + 
+                "        </target>\n" + 
+                "    </path>\n" + 
                 "    <path name=\"NoEscalate\" initial-delay=\"0s\">\n" + 
                 "        <target>\n" + 
                 "            <name>InitialGroup</name>\n" + 
@@ -351,29 +369,19 @@ public class NotificationsTestCase extends TestCase {
         MockUtil.setupLogging();
         MockUtil.resetLogLevel();
         
-        m_network = new MockNetwork();
-        m_network.setCriticalService("ICMP");
-        m_network.addNode(1, "Router");
-        m_network.addInterface("192.168.1.1");
-        m_network.addService("ICMP");
-        m_network.addService("SMTP");
-        m_network.addInterface("192.168.1.2");
-        m_network.addService("ICMP");
-        m_network.addService("SMTP");
-        m_network.addNode(2, "Server");
-        m_network.addInterface("192.168.1.3");
-        m_network.addService("ICMP");
-        m_network.addService("HTTP");
+        m_network = createMockNetwork();
         
-        m_db = new MockDatabase();
-        m_db.populate(m_network);
+        m_db = createDatabase(m_network);
     
         m_eventMgr = new MockEventIpcManager();
         m_eventMgr.setEventWriter(m_db);
+        
         m_notifdConfig = new MockNotifdConfigManager(NOTIFD_CONFIG_MANAGER);
         m_notifdConfig.setNextNotifIdSql(m_db.getNextNotifIdSql());
-        m_groupManager = new MockGroupManager(GROUP_MANAGER);
-        m_userManager = new MockUserManager(m_groupManager, USER_MANAGER);
+        
+        m_groupManager = createGroupManager();
+        m_userManager = createUserManager(m_groupManager);
+        
         m_destinationPathManager = new MockDestinationPathManager(PATH_MANAGER);        
         m_notificationCommandManger = new MockNotificationCommandManager(CMD_MANAGER);
         m_notificationManager = new MockNotificationManager(m_notifdConfig, m_db, NOTIFICATION_MANAGER);
@@ -408,6 +416,37 @@ public class NotificationsTestCase extends TestCase {
     
     }
 
+    private MockDatabase createDatabase(MockNetwork network) {
+        MockDatabase db = new MockDatabase();
+        db.populate(network);
+        return db;
+    }
+
+    private MockNetwork createMockNetwork() {
+        MockNetwork network = new MockNetwork();
+        network.setCriticalService("ICMP");
+        network.addNode(1, "Router");
+        network.addInterface("192.168.1.1");
+        network.addService("ICMP");
+        network.addService("SMTP");
+        network.addInterface("192.168.1.2");
+        network.addService("ICMP");
+        network.addService("SMTP");
+        network.addNode(2, "Server");
+        network.addInterface("192.168.1.3");
+        network.addService("ICMP");
+        network.addService("HTTP");
+        return network;
+    }
+
+    private MockUserManager createUserManager(MockGroupManager groupManager) throws MarshalException, ValidationException {
+        return new MockUserManager(groupManager, USER_MANAGER);
+    }
+
+    private MockGroupManager createGroupManager() throws MarshalException, ValidationException {
+        return new MockGroupManager(GROUP_MANAGER);
+    }
+
     protected void tearDown() throws Exception {
         m_eventMgr.finishProcessingEvents();
         m_notifd.stop();
@@ -417,6 +456,10 @@ public class NotificationsTestCase extends TestCase {
         assertTrue("Unexpected Warnings in Log", MockUtil.noWarningsOrHigherLogged());
         super.tearDown();
     }
+    
+    public void testDoNothing() {
+        // this is only here to ensure that we don't get an error when running AllTests
+    }
 
     protected long anticipateNotificationsForGroup(String subject, String groupName, Date startTime, long interval) throws Exception {
         return anticipateNotificationsForGroup(subject, groupName, startTime.getTime(), interval);
@@ -425,6 +468,19 @@ public class NotificationsTestCase extends TestCase {
     protected long anticipateNotificationsForGroup(String subject, String groupName, long startTime, long interval) throws Exception {
         Group group = m_groupManager.getGroup(groupName);
         String[] users = group.getUser();
+        return anticipateNotificationsForUsers(users, subject, startTime, interval);
+    }
+    
+    protected long anticipateNotificationsForRole(String subject, String groupName, Date startTime, long interval) throws Exception {
+        return anticipateNotificationsForRole(subject, groupName, startTime.getTime(), interval);
+    }
+
+    protected long anticipateNotificationsForRole(String subject, String roleName, long startTime, long interval) throws MarshalException, ValidationException, IOException {
+        String[] users = m_userManager.getUsersScheduledForRole(roleName, new Date(startTime));
+        return anticipateNotificationsForUsers(users, subject, startTime, interval);
+    }
+
+    protected long anticipateNotificationsForUsers(String[] users, String subject, long startTime, long interval) throws IOException, MarshalException, ValidationException {
         long expectedTime = startTime;
         for (int i = 0; i < users.length; i++) {
             User user = m_userManager.getUser(users[i]);

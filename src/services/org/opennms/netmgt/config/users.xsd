@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:users="http://xmlns.opennms.org/xsd/users"
 	targetNamespace="http://xmlns.opennms.org/xsd/users">
 
 	<element name="userinfo">
 		<complexType>
 			<sequence>
-				<element ref="header" minOccurs="1" maxOccurs="1"/>
-				<element ref="users" minOccurs="0" maxOccurs="1"/>
+				<element ref="users:header" minOccurs="1" maxOccurs="1"/>
+				<element ref="users:users" minOccurs="0" maxOccurs="1"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -27,7 +28,7 @@
 	<element name="users">
 		<complexType>
 			<sequence>
-				<element ref="user" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="users:user" minOccurs="1" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -37,10 +38,10 @@
 			<sequence>
 				<element name="user-id" type="string" minOccurs="1" maxOccurs="1"/>
 				<element name="full-name" type="string" minOccurs="0" maxOccurs="1"/>
-				<element ref="role" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="users:role" minOccurs="0" maxOccurs="unbounded"/>
 				<element name="user-comments" type="string" minOccurs="0" maxOccurs="1"/>
 				<element name="password" type="string" minOccurs="1" maxOccurs="1"/>
-				<element ref="contact" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="users:contact" minOccurs="0" maxOccurs="unbounded"/>
 				<element name="duty-schedule" type="string" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
@@ -55,7 +56,7 @@
         
         <element name="contact">
                 <complexType>
-                        <attribute name="type" use="required" type="string">
+                        <attribute name="type" use="required">
 			        <simpleType>
 				        <restriction base="string">
 					        <pattern value="(email|pagerEmail|textPage|numericPage)"/>

@@ -351,19 +351,26 @@ public class NotifdTest extends NotificationsTestCase {
             };
             m_notificationManager.forEachUserNotification(notifId.intValue(), rp);
 	   
-	    for (Iterator i = expectedResults.iterator(); i.hasNext(); ) {
-		assertTrue(actualResults.remove(i.next()));
-	    }
-	    assertEquals(actualResults.size(), 0);
+            for (Iterator i = expectedResults.iterator(); i.hasNext(); ) {
+                assertTrue(actualResults.remove(i.next()));
+            }
+            assertEquals(actualResults.size(), 0);
         }
     }
     
-    public void testGetUsersInRole() throws Exception {
+    public void testRoleNotification() throws Exception {
         
-        Collection userNames = getUsersInRole("oncall");
+        MockNode node = m_network.getNode(1);
+
+        Date downDate = new Date();
+        long finishedDowns = anticipateNotificationsForRole("notification test", "oncall", downDate, 0);
+
+        m_eventMgr.sendEventToListeners(MockUtil.createNodeEvent("Test", "uei.opennms.org/test/roleTestEvent", node));
+
+        verifyAnticipated(finishedDowns, 500);
         
-        assertFalse(userNames.isEmpty());
-        assertTrue(userNames.size() == 1);
+        m_anticipator.reset();
+        
         
     }
 
