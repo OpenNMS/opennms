@@ -1,0 +1,72 @@
+==============================================================================
+Post-Installation Tasks
+==============================================================================
+
+------------------------------------------------------------------------------
+System Limits -- Mac OS X 10.2 and Lower
+------------------------------------------------------------------------------
+
+On MacOSX 10.2 and lower, to be able to give PostgreSQL enough buffers and
+such to run properly, you will need to change the shared memory buffers in
+the startup item:
+
+  /System/Library/StartupItems/SystemTuning/SystemTuning
+
+On our test system we multiplied the supplied values by 4 and all seems to
+run OK.  Just look for the sysctl lines near the bottom and set them to:
+
+  sysctl -w kern.maxfiles=65536
+  sysctl -w kern.sysv.shmmax=16777216
+  sysctl -w kern.sysv.shmmin=1
+  sysctl -w kern.sysv.shmmni=128
+  sysctl -w kern.sysv.shmseg=32
+  sysctl -w kern.sysv.shmall=4096
+
+Be warned, these settings can get changed back on OS upgrade!
+
+------------------------------------------------------------------------------
+System Limits -- Mac OS X 10.3 and Higher
+------------------------------------------------------------------------------
+
+On recent versions of Mac OS X, these settings are now in:
+
+  /etc/rc
+
+You should do something similar to the limits above (multiply by 4 and reboot)
+for OpenNMS to run properly.  Your mileage may vary, you may need to raise
+them higher, depending on how large your network is.
+
+------------------------------------------------------------------------------
+PostgreSQL Limits -- All Platforms
+------------------------------------------------------------------------------
+
+Once you do that, you will need to edit
+@PREFIX@/var/postgresql/data/postgresql.conf (as root, or postgres), and
+make sure that the following values are set:
+
+  tcpip_socket    = true
+  max_connections = 192
+  shared_buffers  = 384
+
+------------------------------------------------------------------------------
+Database Setup -- All Platforms
+------------------------------------------------------------------------------
+
+Then, you can run @PREFIX@/var/opennms/bin/install.pl to configure the
+database, like so:
+
+  sudo @PREFIX@/var/opennms/bin/install.pl -q \
+		@PREFIX@/var/opennms/etc/create.sql
+
+------------------------------------------------------------------------------
+Startup
+------------------------------------------------------------------------------
+
+Now you're ready to start everything up!  Check the configuration files
+in @PREFIX@/var/opennms/etc and set them up for your network (as per the
+quick start guide at http://www.opennms.org/users/docs/) and run:
+
+  sudo @PREFIX@/bin/pgsql.sh start
+  sudo @PREFIX@/var/opennms/bin/opennms.sh start
+  sudo -u tomcat @PREFIX@/bin/tomcat start
+

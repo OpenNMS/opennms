@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="chap3" label="3.">
+  <title>Known Issues and Caveats</title>
+
+  <subtitle>Known Problems And Workarounds In This Release</subtitle>
+
+  <para>Here is the list of known issues in this release of OpenNMS.</para>
+
+  <sect1 id="chap3sect2" label="3.2.">
+    <title>New Requirements for Tomcat and PostgreSQL</title>
+
+    <para>Version 1.1.2 and beyond of OpenNMS will require at a minimum Tomcat
+    version 4.1.18 and PostgreSQL 7.2. OpenNMS will no longer supply "onms"
+    versions of these applications, and instead will use main distributions
+    from their maintainers.</para>
+
+    <para>Note that upgrading these programs is not simple.</para>
+
+    <bridgehead>Tomcat4</bridgehead>
+
+    <para>For Tomcat, the best thing to do is uninstall version 4.0 and then
+    install 4.1. Version 4.1 is not seen as an upgrade to 4.0, but is instead
+    seen as a separate product by rpm and apt. You will need to make the
+    following changes to the tomcat4.conf file (located in /etc/tomcat4 on Red
+    Hat):</para>
+
+    <programlisting># you could also override JAVA_HOME here
+# Where your java installation lives
+# JAVA_HOME="/usr/java/jdk"
+# JAVA_HOME="/opt/IBMJava2-131"
+JAVA_HOME="[location of your Java Home dir"
+
+# What user should run tomcat
+TOMCAT_USER="root"</programlisting>
+
+    <para>You do not have to run Tomcat as root if you change the permissions
+    on <filename>$OPENNMS/logs</filename> and
+    <filename>$OPENNMS/etc</filename> so that the Tomcat user can write to
+    them.</para>
+
+    <bridgehead>PostgreSQL</bridgehead>
+
+    <para>Two main changes need to be made to the Postgres configuration in
+    order to allow OpenNMS to access it properly. Postgres needs to have been
+    started at least once to create the "data" directory that will contain the
+    configuration files.</para>
+
+    <para>Edit <filename>postgresql.conf</filename> (located in
+    <filename>/var/pgsql/data</filename> on Red Hat) and insure the following
+    values exist:<programlisting> tcpip_socket = true 
+ max_connections = 256
+ shared_buffers = 1024 </programlisting></para>
+
+    <para>Edit <filename>pg_hba.conf</filename> (host based authentication) to
+    allow all users to access the database from the local host by
+    un-commenting:</para>
+
+    <programlisting># TYPE  DATABASE    USER        IP-ADDRESS        IP-MASK           METHOD
+
+local   all         all                                             trust
+host    all         all         127.0.0.1         255.255.255.255   trust</programlisting>
+
+    <para>and you may need to uncomment:</para>
+
+    <programlisting># Using sockets credentials for improved security. Not available everywhere,
+# but works on Linux, *BSD (and probably some others)
+
+# local  all    all             ident   sameuser</programlisting>
+
+    <para>Note that this opens up Postgres to all users on the system (as long
+    as they know the database password). Contact your database administrator
+    if you want to limit this to a specific user, like root.</para>
+  </sect1>
+</chapter>

@@ -1,0 +1,513 @@
+1.1.3 to 1.1.4
+----------------------------------------------------------------------
+- Added the ability to sort on parameters as well as events for
+  notifications.
+- Added some new standard performance reports. Thx Ted.
+
+
+1.1.2 to 1.1.3
+----------------------------------------------------------------------
+- Fixed mistake with "ports" in HttpPlugin. Bug 889.
+- Fixed issue with custom notification rules being erased. Bug 754
+- Fixed Asset Import issues. Thx Jonathan. Bug 700
+- Added support for centos3 (RHES 3) for rpm builds. Bug 801
+- Added response time info to JDBS poller. Bug 830
+- Added some opennms.init changes to support SuSE. Thx Deej. Bug 713
+- Added some build changes to support SuSE. Thx Deej. Bug 712
+- Modified plugins and polloers to uses Socket.connect w/ timeout 
+  rather than SocketChannels.  Bug 784
+- Updated dtd link in web.xml. Thx Xavier. Bug 813
+- Added a small workaround to "import" issues in jsps. Bug 820
+- Fixed "unary operator" issue on CentOS (RHES) in opennms.sh. Bug 795
+- (ELB) Fixed a number of javadoc warnings
+- Fixed issues with event and notification browsing. Thx Jay. Bug 677
+- Made a small change to support Fedora - Thx Thomas
+- Added BEA Weblogic events. Thx Kyle
+- Fixed admin pages to work with later Tomcat4 versions. Thx Doug
+- Added Backup Exec event definitions. Thx Chris
+- Corrected numbering at bottom of asset import page. Thx Jonathan
+  Bug 806
+- Fixed Pop3Monitor exception error. Thx. Xavier. Bug 807
+- Fixed vulscand class cast error. Thx Siddhartha. Bug 810
+- When a new service is added, like SNMP, the categories for the node
+  that gained the service will be rescanned to see if the new service
+  modifies the filter for a particular category. Bug 683
+- When a service is deleted from a node, the node will not be deleted
+  from all categories. Bug 796 and 775
+- When new services are discovered via a rescan, they were not being
+  polled until OpenNMS was restarted. This is now fixed.
+- Fixed a Delete Nodes issues with RTC - Bug 797
+- Added support to build OpenNMS on FreeBSD. Thx Andrei
+- HttpMonitor and HttpsMonitor now use "port" instead of "ports".
+  Bug 744
+- Modified the DecimalFormat in CategoryUtil from ".000" to "0.000"
+  Bug 468
+- Added a sort to KSC reports - Thx Craig - Bug 751
+- Fixed typos - Thx Volker - Bug 750
+- Merge some more changes from the Rackspace branch.
+- Made some serious performance enhancements to startup times.
+- Added an XML RPC daemon for sending OpenNMS to an external server
+- Added some new asset categories for use with notifications and
+  polling. Thx Bill A.
+- Made some changes to the .spec file to support Fedora
+- Updated copyright information in preparation for 1.2.
+- Added "maxval" and "minval" options to mibObj definitions in order
+  to provide greater configuration for RRDs and to help with counter
+  wraps.
+- Added APC System Definition for data collection.
+- Fixed a null pointer exception with KSC reports.
+- Fixed a small bug with SNMP Performance links on interface pages.
+
+1.1.1 to 1.1.2
+----------------------------------------------------------------------
+- Fixed issues in events when nodes are deleted. Bug 708
+- Fixed issues with null issnmpprimary values. Bug 741
+- Added the ScriptD daemon for running BeanShell scripts. Thx Jim
+- Set caspd not to reset the parentId on a rescan (useful for maps)
+- Fixed a bug that caused certain rules to match all. Bug 752
+- Fixed Plugins and Monitors to explicitly close sockets
+- Added an ORDER BY statement to correct issues with RTC not 
+  reflecting the problem number of down services.
+- Added a small fix to the HTTP and HTTPS monitors that could cause
+  a ClassCastException, marking the polled service as down. Thx Jim
+- Added Bill Ayers' code that creates a script based plugin and 
+  monitor.
+- Added a fix to catch RRD update errors on nodeLostService events
+  that can cause nodeDown events. Bug 748.
+- Fixed a typo in mail.pl in contrib
+- Added Derek's code to implement mapping in OpenNMS. This is the
+  initial attempt, and thus it is disabled by default. Please
+  read $OPENNMS_HOME/etc/map.disable in order to enable mapping.
+  Thx. Derek
+- Added a new JDBC poller which does a synthetic transaction. (Thx 
+  Jose)
+- Added some new trap definitions from IBM and Intel.
+- Added an SSH specific poller that sends an identification string
+  when connecting. Helps reduce the number of logs.
+- Added a "bits" report and made it the default report for KSC.
+- Added the ability to define a null filter (speeds things up)
+- Added new Cisco and UCD-SNMP reports (Thx Tony and Stuart)
+- Added RFC2325 to datacollection-config.xml
+- Changed the count for notifications to reflect just those for the
+  user logged in.
+- Added security roles to web.xml. Bug 715. Thx DJ
+- Corrected issues with last day/week/month/year buttons in webUI.
+- Added check to handle null terminated strings in traps. Thx Dave W.
+
+1.1.0 to 1.1.1
+----------------------------------------------------------------------
+- Fixed a small bug with RRAs. Bug 707. Thx Volker
+- Slightly improved the output of mib2opennms. Thx John and Rick
+- Added trap definitions for Dell OpenManage.
+- Added trap definitions for Foundry Networks. Thx Bill W.
+- Added trap definitions for ADIC devices. Thx Robert M.
+- Added Key SNMP Custom (KSC) Performance report builder, under 
+  the Reports section of the GUI. Thx Dave M.
+- fixed JNI calling on MacOSX 10.2 (jnilibs now build as 2-level
+  namespace)
+- updated logging to log4j 1.2.7
+- fixed install.pl to consider type "6" as unicode as well (fixes
+  unicode check on postgresql 7.3+)
+- Added a two minute refresh to the Events list page. Thx Chris Y.
+- Added an event cache to fix the problem where "up" events
+  are recorded before "down" events. Bug 650
+- Disallowed Null Search Text. Bug 536
+- Added last day/week/month/year buttons to Performance and
+  Response Time report pages. Bugs 546 and 618
+- Corrected some SQL syntax in the Outage WebUI. Bug 681
+- Increased the size of the contactinfo field in the usersnotified
+  table from 32 to 64 characters. Bug 671
+- Added an HTTP button for nodes and interfaces with the HTTP
+  service. Bug 469
+- Added Response Time links to node and interface pages. Bug 684
+- Added an "order by" to a notifications SQL statement. Bug 648
+- Added the option to define "match-any" as the IP address in 
+  the poll-outages calendar.
+- Added the ability to define RRAs for response time data per
+  poller package. Bug 680
+- Fixed a style sheet issue in the WebUI. Bug 568
+- Added non-blocking I/O to HTTPS service.
+- Added Response Time collection to the following Monitors:
+  Citrix, FTP, HTTPS, IMAP, POP3, SMTP and TCP. Bug 693
+- Allowed for the default action of generating a newSuspect event
+  when a trap is received from an unknown IP address to be turned
+  off.
+- Associated traps with nodes. Bug 582
+- Fixed small bug in Trap handler. Bug 676
+- Fixed interface/node sorting bug (Derek Glidden) Bug 443
+
+1.0.0 to 1.1.0
+----------------------------------------------------------------------
+- Added Event definitions for traps from 3Com, APC, Brocade, CIM,
+  Cisco, Fore, HP, Intel, Microsoft, Novell, Oracle, SonicWall,
+  and Xerox devices.
+- Changed most capsd plugins and poller service monitors to 
+  use non-blocking I/O in case of NoRouteToHost.
+- Added the ability to choose NOT to notify on a given service
+  via the WebUI. (Thx Nick W).
+- Added two new fields for notifications: %nodelabel% will return
+  the nodelabel for the nodeid in the event, and %interfaceresolve%
+  will return the hostname for the IP address of the interface.
+  (Thx Nick W). Bug 654 
+- Added the ability to display reports on the response time for
+  ICMP, HTTP, DNS and DHCP polls. Bug 612
+- Added a new XML file called webui-colors. Currently this only
+  allows one to set the colors for the categories display,
+  but this will grow to include all the colors in the Web UI.
+- Since the UEI is just a string, removed the "http://" and all
+  references to "bluebird" in UEIs.
+- Disallowed spaces in Path names. Bug 657
+- Removed borders around Event and Notification lists (per Larry)
+- Added the ability to match an event to more than one notification.
+  Added the boolean "match-all" to the notifd configuration to
+  control this (default is false or off). Thx Nick Wesselman for
+  most of the code for this.
+- Fixed a small bug with wildcards in eventconf.xml
+- Added a "clear" attribute to the acknowledge tag for notifications,
+  so now the "up" can be ack'd along with the "down". Bug 544
+- Added a "title" to categories to reflect the last update. Bug 517
+- Fixed the AM/PM in the Performance Report drop down. Bug 515
+- Fixed some typos and bad URLs in error messages. Bug 662
+- Changed all references to Hashtable (deprecated) to HashMap
+- Fixed multipart message mistake. Bug 591
+- Added the ability to associate events in eventconf.xml with 
+  specific parameters (varbinds). Bug 626
+- Modified eventconf.xml to allow for event definition files to be
+  included using the <event-file> tag.
+- Added a Threshold Rearm event for both Low and High Thresholds.
+- Added an Admin GUI page for deleting nodes. Bug 602
+- Added the ability to select which non-IP interfaces would be 
+  scheduled for data collection, and built an Admin WebUI page
+  to configure it. Bug 616
+- Loopback interfaces will now be discovered, and are preferred
+  as the Primary SNMP interface. Applies to non-127.*.*.*
+  interfaces only.
+- fixed issue with capsd pulling all of the ifTable for interface.
+  Could cause issues with some HP switches.
+- Bug 664: Notifications not filtering on services.
+- Bug 666: Generic SNMP Traps are hard-coded and cannot be 
+  managed via eventconf.xml. This fix also included a change
+  that fixes and enforces the order of events in eventconf.xml.
+  Care must be taken so that the most specific mask matches are
+  listed  before more generic ones. But this fix insures that the
+  correct wildcards and exact matches work as ordered.
+- Fixed a NullPointer exception when deleting a node due to a
+  poller downtime model.
+- fixed bug with Admin/Oper status types causing exception
+- removed duplicate listings for LDAP and Citrix in capsd config
+- fixed bug with rescans on certain devices (net-snmp on MACOSX)
+- fixed bug to allow threshold events to cause notifications
+- included workaround to handle eventconf.xml issues
+- added numerous updates to datacollection-config.xml and
+  snmp-graph.properties.xml
+- added a contrib directory and Tomas Carlsson mib2opennms program
+
+1.0.2 to 1.0.3
+----------------------------------------------------------------------
+- Added workaround to actiond to help with 1.4.1 JDK issues (Thx Nick)
+- Fixed bug in Trap handler. Bug 676 (Thx Ross)
+
+1.0.1 to 1.0.2
+----------------------------------------------------------------------
+- Added Event definitions for traps from 3Com, APC, Brocade, CIM, 
+  Cisco, Fore, HP, Intel, Microsoft, Novell, Oracle, SonicWall,
+  and Xerox devices.
+- Disallowed spaces in Path name. Bug 657
+- fixed small bug with wildcards in eventconf.xml
+- fixed AM/PM ordering on Performance Report drop down. Bug 515
+- fixed typo - Bug 662 - thanks Volker
+- fixed issue with capsd pulling all of the ifTable for interface.
+  Could cause issues with some HP switches.
+- Bug 664: Notifications not filtering on services.
+
+0.9.9 to 1.0.0
+----------------------------------------------------------------------
+- reporting bugfixes
+- the "OpenSSH" service is now "SSH", to catch commercial SSH servers
+  as well
+- capsd "url" tag changed to "include-url" for including a file for
+  capability checks
+- HTTPS was missing from the "web servers" category
+- new support for marking a service as unresponsive if a poller is
+  able to connect, but unable to make a service poll (this is disabled
+  by default; to enable, set serviceUnresponsiveEnabled to "true" in
+  the poller-configuration.xml file
+- addition of a few new trap events
+- some infrastructure (capsd, collectd, etc.) code cleanups and minor
+  bugfixes
+- better handling of unusual packets from faulty DHCP servers
+- some minor changes to event persistence
+- a fix for "Calculating..." never going away if the webapp tries to
+  get RTC information before RTC is ready
+- a few minor bugfixes and cosmetic changes in the web UI
+- more fixes to upgrades in install.pl
+- OIDs with numeric (usually floating-point) data in an octet string
+  can now be collected on
+
+0.9.6 to 0.9.9 (rc)
+----------------------------------------------------------------------
+- OpenNMS now relies on the 1.4 JDK
+- JMS IPC mechanism replaced with much faster custom IPC
+- Start of JMX-enumeration of services
+- major performance updates
+- some bugfixes for compiling on solaris
+- SNMP collection is now part of it's own subsystem -- 'collectd'
+- addition of thresholding with 'threshd'
+- last vestiges of views.xml removed (all configuration occurs through
+  categories and viewsdisplay; views.xml may return in a later WebUI
+  incarnation that has proper multi-user support)
+- reporting subsystem rewritten and cleaned up
+- timestamp handling changed in the database - event times are now
+  proper timestamps
+- many database indexes added for better table performance
+- many SNMP data collection bugfixes (default storageflag is now
+  "all"!  Be warned that on large networks with many switches, this
+  can use disk space up very quickly.)
+- addition of the outage browser
+
+0.9.5 to 0.9.6
+----------------------------------------------------------------------
+- addition of "abort-protocol-scans-if-no-route" option to the
+  capsd-configuration.xml to account for ICMP-eating firewalls
+- addition of dhcpd-configuration.xml for configuration of MAC address
+  so that DHCP polling works with more DHCP servers
+- addition of Domino IIOP poller
+- rrd graph updates
+- cleanup of some obscure SNMP bugs, as well as some not-so-obscure,
+  obvious and annoying RRD bugs  :)
+- addition of a totally unsupported but mildly useful perl interface
+  to the category availability panel
+- addition of event parm support to send-event.pl
+
+0.9.4 to 0.9.5
+----------------------------------------------------------------------
+- added an "updates" directory that "hotfixes" can go into for bug
+  fix purposes between releases
+- OpenNMS has been successfully run on MacOSX, with some coaxing --
+  there are still a lot of dependencies that need to be worked out
+  for a proper fink install, however
+- added HTTPS poller
+- reporting/RRD interface is still being reworked before 1.0 for
+  future flexibility
+- more work on documenting XSDs
+- more cleanup and additions to event mask functionality
+- fixed the bug where acknowledged events show in the event UI
+- addition of advanced query panel for events
+- the port on which eventd listens (TCP and UDP) can be configured
+  in eventd-configuration.xml
+- fixed a bug where setting snmpQueryFlag to "all" in the data
+  collection XML would cause the "Execute Query" action on the
+  home page to fail
+
+0.9.3 to 0.9.4
+----------------------------------------------------------------------
+- very large bug in handling of dates in RTC fixed; RTC is probably
+  broken on all previously releases (but only in January =)
+- build now works with OSX, although there are still major runtime
+  issues -- once worked out, fink packages will be on the way (see
+  http://fink.sourceforge.net/)
+- there have been a number of other small shell/init fixes
+- addition of a Notes HTTP poller, as well as the reintroduction of
+  the SQLServer/Informix/Sybase/Oracle TCP poller configuration that
+  disappeared around 0.9.0
+- some report bugfixes and additions
+- the SNMP poller has been totally reworked, and now supports "packages"
+  for SNMP, allowing customized levels of data collection, including
+  node-level collection, and the ability to do different collections
+  based on interface type.  This also affects the location of RRDs, a
+  conversion tool was not ready at the time of release.
+- filtering in the web interface has been cleaned up, as well as a
+  number of other usability fixes
+
+0.9.2 to 0.9.3
+----------------------------------------------------------------------
+- rearranging of the build process (jar copying and such) has knocked
+  a good 4MB off the resultant binary packages
+- cleaned up the install doc to be current
+- added Citrix and LDAP pollers
+- logging warning cleanups
+- a new categories.xml config file (if upgrading from source, please
+  re-run install.pl)
+- new plpgsql stored procedures
+- the webui now gets 'Overall Avaliability' for a node using stored
+  procedures
+- the 'ifServices' table has a new 'status' value -> 'N' and the
+  'ipInterface' table has a new 'isManaged' value -> 'N' (Look at
+  etc/create.sql for explanation)
+- other minor bugfixes
+
+0.9.1 to 0.9.2
+----------------------------------------------------------------------
+- fixed a few minor build issues
+- changed some of the default configuration to be more like 0.8.x
+- some workarounds for i18n issues
+- rearranging of constants for better code reuse
+- some minor capsd updates (mostly rescan handling and configuration
+  loading updates)
+- some node reparenting bugfixes
+- a few JMS code updates
+- notification bugfixes
+- web UI broken link fixes
+
+0.9.0 to 0.9.1
+----------------------------------------------------------------------
+- build cleanups, including reintroduction of ability to build PDF
+  docs (./build.sh docs.pdf)
+- documentation updated to Docbook XML 4.1.2
+- more conversion updates, including a script to run it   =)   just
+  run convert-conf.sh to convert an OpenNMS 0.8.1 or earler set of
+  configuration files to 0.9.x
+- internationalization updates for date storage
+- path cleanups in some code
+- reporting tweaks and fixes
+- a very large bug in actiond that was preventing notifications and
+  automatic actions from working was fixed
+- capsd updates for node rescans
+- event processing fixes
+- other discovery and polling fixes
+- updated web UI to work with tomcat 4.0.1 (yay!)
+- a few other small documentation and wording changes in the web UI
+- fix for the report.sh script not looping over all categories
+- install.pl now properly converts columns that have changed
+
+0.8.1 to 0.9.0
+----------------------------------------------------------------------
+- swing GUI is gone
+- SNMPv2 bulk-get polling whenever possible
+- completely new notifications engine
+- many many web UI changes and cleanups
+- rearranged API
+- no more JSDT, no more RPC
+
+0.8.0 to 0.8.1
+----------------------------------------------------------------------
+- icmpd replaced by JNI native interface
+- some small configuration file tweaks
+- better IP handling in capsd
+- DHCP poller updates
+- notification bugfixes
+- small event updates
+- updated configurable categories in the Web UI
+- changed scheduler VMs for smaller memory usage (scmconfig.xml)
+
+0.7.5 to 0.8.0
+----------------------------------------------------------------------
+
+- permissions updates in the RPMs
+- configuration file default value updates (better example groups,
+  notifications, etc.)
+- new DHCP service poller
+- new (well, working =) SMB/NetBIOS service poller and discovery
+- more log4j improvements (the move to log4j should be complete)
+- many updates to web reports
+- HTTP service poller updates (more generalized)
+- all new icmpd with SCM support -- no more "opennms icmpd start"!
+- many SCM updates
+- many RTC improvements
+- many other misc. updates, bugfixes and cleanups
+- as always, too many WebUI updates to mention, although it is
+  important to note that event views are now split up into 100 at
+  a time (formerly in KNOWN_ISSUES)
+- we now require PostgreSQL 7.1 for some things to function
+  (hooray for outer joins!)
+
+
+0.7.3 to 0.7.5 (0.7.4 was an internal sync-point)
+----------------------------------------------------------------------
+
+- updated the quick start documentation (yay!)
+- more build and opennms.sh updates (better JDK detection)
+- documentation is not built by default
+- newer crimson and jaxp required for tomcat now; fixes sealing
+  violations, so xercesTomcat.jar has been removed from the build
+- send-event.pl script added to send fake events to OpenNMS
+- more additions and changes to the default configuration files,
+  including better event messages, and updated default ranges
+- lots of log4j updates
+- lots of capsd updates, including new node labels
+- lots of GUI updates
+- start of fleshing out reports
+- "opennms.sh passwd" is now genpasswd.sh
+- added notify.sh for sending pager/email notifications
+- many web UI updates
+
+0.7.2 to 0.7.3
+----------------------------------------------------------------------
+
+- fix for RedHat 7.1 and JDK 1.3.0_02
+- build changes -- updates to paths and some files missing from dist
+  and install
+- INSTALL.html now auto-generated again
+- fixes for install.pl for perl 5.6.1, auto-parsing of the homeDir
+  entry in server.xml
+- some changes to compilation defaults
+- RPM updates
+- started in on a lot of path updates
+- better parsing of external exec command-lines (notifications,
+  automated actions)
+- lots of logging updates
+- lots of capsd updates (better constants handling, logging, and more)
+- URLs now work for discovery input "ranges"
+- better node name/hostname handling
+- swing code cleanups
+- updated ONCRPC code to latest snapshot
+- report code updates
+- new event columns
+- lots of web updates
+
+0.7.1 to 0.7.2
+----------------------------------------------------------------------
+
+- completely new build system that should make it easier to port to
+  other POSIX systems
+- some small changes to install.pl that should make it better about
+  finding the database, as well as options for specifying the postgres
+  super-user account and password
+- data collection now works with properly-configured linux systems
+  (with net-snmp installed), as well as many other data collection
+  updates
+- simplified RPMs with less dependencies
+- a much more user-friendly default event configuration
+- more overhaul work to SCM, with a new custom classloader that should
+  reduce memory consumption more, and clean up jsdt channel
+  interaction.  This should open up the possibility of restarting
+  services without jsdt issues, although it is not implemented yet.
+- start of path cleanups to remove the dependency of running from
+  $BB_HOME (not yet complete)
+- start of move to Log4J for all logging, which will allow customizing
+  log file behaviour (rotating, syslog logging, etc.)
+- beginning support for simple event correlation
+- many updates to notification
+- many updates to RTC
+- too many Web UI updates to mention
+
+0.6.1-2 to 0.7.1
+----------------------------------------------------------------------
+
+- many many documentation updates (both references and JavaDoc APIs)
+- many small updates to the RPM build, as well as updated support
+  RPM packages as well... things should install much cleaner now
+- many small buglets fixed in the build process
+- many small updates to the install.pl
+- new capability checker for the daytime service, as well as some
+  other logging and code updates on capsd
+- updates to configuration files for saner defaults (including some
+  new events)
+- a number of minor updates and cleanups in the poller, including
+  an update to paging calendaring, default ports for the HTTP
+  service monitor, updates to scheduling, and other tweaks
+- better parsing of user info, groups, and views
+- too many updates and additions to the web interface to list
+- updates to outage handling
+- updates to the opennms.sh script
+- cleanups and updates to SCM, including better error handling
+
+0.6.1 to 0.6.1-2
+----------------------------------------------------------------------
+
+- small logging changes
+- documentation updates
+- property file defaults updated
+- a DTD fix for views
+- fixes for RRDTool graph display on Linux
+

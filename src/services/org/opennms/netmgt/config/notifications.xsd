@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/notifications">
+
+	<element name="notifications">
+		<complexType>
+			<sequence>
+				<element ref="header" minOccurs="1" maxOccurs="1"/>
+				<element ref="notification" minOccurs="1" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="header">
+		<complexType>
+			<sequence>
+				<element name="rev" type="string" minOccurs="1" maxOccurs="1"/>
+
+				<!-- creation time in the 'dow mon dd hh:mm:ss zzz yyyy' format -->
+				<element name="created" type="string" minOccurs="1" maxOccurs="1"/>
+
+				<element name="mstation" type="string" minOccurs="1" maxOccurs="1"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="notification">
+		<complexType>
+			<sequence>
+				<element name="uei" type="string" minOccurs="1" maxOccurs="1"/>
+				<element name="description" type="string" minOccurs="0" maxOccurs="1"/>
+                                <element name="rule" type="string" minOccurs="1" maxOccurs="1"/>
+                                <element name="notice-queue" type="string" minOccurs="0" maxOccurs="1"/>
+				<element name="destinationPath" type="string" minOccurs="1" maxOccurs="1"/>
+                                <element name="text-message" type="string" minOccurs="1" maxOccurs="1"/>
+                                <element name="subject" type="string" minOccurs="0" maxOccurs="1"/>
+                                <element name="numeric-message" type="string" minOccurs="0" maxOccurs="1"/>
+                                <element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+                                <element ref="varbind" minOccurs="0" maxOccurs="1"/>
+			</sequence>
+			<attribute name="name" type="string" use="required"/>
+                        <attribute name="status" type="string" use="required"/>
+                        <attribute name="writeable" type="string" value="yes"/>
+		</complexType>
+	</element>
+        
+        <element name="parameter" type="string">
+		<complexType>
+                        <attribute name="name" type="string" use="required"/>
+                        <attribute name="value" type="string" use="required"/>
+                </complexType>
+        </element>
+
+        <!-- The varbind element -->
+        <element name="varbind">
+                <complexType>
+                        <sequence>
+                                <!-- The varbind element number -->
+                                <element name="vbname" type="string" minOccurs="1" maxOccurs="1"/>
+
+                                <!-- The varbind element value -->
+                                <element name="vbvalue" type="string" minOccurs="1" maxOccurs="1"/>
+                        </sequence>
+                </complexType>
+        </element>
+
+
+</schema>

@@ -1,0 +1,3 @@
+<OutageConfiguration writers="1"
+	getNextOutageID="SELECT nextval('outageNxtId')" deletePropagation="false">
+</OutageConfiguration>

@@ -1,0 +1,13 @@
+<!--
+<!DOCTYPE databases PUBLIC "-//EXOLAB/Castor JDO Configuration DTD Version 1.0//EN"
+	"http://castor.exolab.org/jdo-conf.dtd">
+ -->
+<database name="opennms" engine="postgresql">
+  <driver class-name="@install.database.driver@"
+      url="@install.database.url@@install.database.name@?compatible=7.1">
+  	<param name="user" value="@install.database.user@"/>
+	<param name="password" value="@install.database.password@"/>
+  </driver>
+  <mapping href="opennms-mapping.xml"/>
+</database>
+

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference
+  PUBLIC "-//Norman Walsh//DTD JRefEntry V1.1//EN" "http://docbook.sourceforge.net/release/jrefentry/1.1/jrefentry.dtd">
+<reference>
+<referenceinfo>
+<releaseinfo role="meta">
+</releaseinfo>
+<author><surname>Walsh</surname>
+<firstname>Norman</firstname></author>
+<copyright><year>1999</year><year>2000</year>
+<holder>Norman Walsh</holder>
+</copyright>
+</referenceinfo>
+<title>HTML EBNF Reference</title>
+
+<partintro>
+<section><title>Introduction</title>
+
+
+<para>This is technical reference documentation for the DocBook XSL
+Stylesheets; it documents (some of) the parameters, templates, and
+other elements of the stylesheets.</para>
+
+
+
+<para>This reference describes the templates and parameters relevant
+to formatting EBNF markup.</para>
+
+
+
+<para>This is not intended to be <quote>user</quote> documentation.
+It is provided for developers writing customization layers for the
+stylesheets, and for anyone who's interested in <quote>how it
+works</quote>.</para>
+
+
+
+<para>Although I am trying to be thorough, this documentation is known
+to be incomplete. Don't forget to read the source, too :-)</para>
+
+</section>
+</partintro>
+
+<refentry id="param.ebnf.table.bgcolor">
+<refnamediv>
+<refname>ebnf.table.bgcolor</refname>
+<refpurpose>Background color for EBNF tables</refpurpose>
+</refnamediv>
+<refsynopsisdiv>
+<synopsis>
+&lt;xsl:param name="ebnf.table.bgcolor"&gt;#F5DCB3&lt;/xsl:param&gt;</synopsis>
+</refsynopsisdiv>
+<refdescription>
+
+<para>Sets the background color for EBNF tables. No <sgmltag>bgcolor</sgmltag>
+attribute is output if <varname>ebnf.table.bgcolor</varname> is set to
+the null string. The default value matches the value used in recent
+online versions of the W3C's XML Spec productions.</para>
+
+</refdescription></refentry>
+
+<refentry id="param.ebnf.table.border">
+<refnamediv>
+<refname>ebnf.table.border</refname>
+<refpurpose>Selects border on EBNF tables</refpurpose>
+</refnamediv>
+<refsynopsisdiv>
+<synopsis>
+&lt;xsl:param name="ebnf.table.border"&gt;1&lt;/xsl:param&gt;</synopsis>
+</refsynopsisdiv>
+<refdescription>
+
+<para>Selects the border on EBNF tables. If non-zero, the tables have
+borders, otherwise they don't.</para>
+
+</refdescription></refentry>
+</reference>

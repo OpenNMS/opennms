@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE reference
+  PUBLIC "-//Norman Walsh//DTD JRefEntry V1.1//EN" "http://docbook.sourceforge.net/release/jrefentry/1.1/jrefentry.dtd">
+<reference>
+<referenceinfo>
+<releaseinfo role="meta">
+</releaseinfo>
+<author><surname>Walsh</surname>
+<firstname>Norman</firstname></author>
+<copyright><year>1999</year><year>2000</year>
+<holder>Norman Walsh</holder>
+</copyright>
+</referenceinfo>
+<title>Library Template Reference</title>
+
+<partintro>
+<section><title>Introduction</title>
+
+
+<para>This is technical reference documentation for the DocBook XSL
+Stylesheets; it documents (some of) the parameters, templates, and
+other elements of the stylesheets.</para>
+
+
+
+<para>This is not intended to be <quote>user</quote> documentation.
+It is provided for developers writing customization layers for the
+stylesheets, and for anyone who's interested in <quote>how it
+works</quote>.</para>
+
+
+
+<para>Although I am trying to be thorough, this documentation is known
+to be incomplete. Don't forget to read the source, too :-)</para>
+
+</section>
+</partintro>
+
+<refentry id="template.string.subst">
+<refnamediv>
+<refname>string.subst</refname>
+<refpurpose>Substitute one text string for another in a string</refpurpose>
+</refnamediv>
+<refsynopsisdiv>
+<synopsis>&lt;xsl:template name="string.subst"&gt;
+&lt;xsl:param name="string"/&gt;
+&lt;xsl:param name="target"/&gt;
+&lt;xsl:param name="replacement"/&gt;
+  ...
+&lt;/xsl:template&gt;</synopsis>
+</refsynopsisdiv>
+<refdescription>
+
+<para>The <function>string.subst</function> template replaces all
+occurances of <parameter>target</parameter> in <parameter>string</parameter>
+with <parameter>replacement</parameter> and returns the result.
+</para>
+
+</refdescription></refentry>
+
+<refentry id="template.xpointer.idref">
+<refnamediv>
+<refname>xpointer.idref</refname>
+<refpurpose>Extract IDREF from an XPointer</refpurpose>
+</refnamediv>
+<refsynopsisdiv>
+<synopsis>&lt;xsl:template name="xpointer.idref"&gt;
+&lt;xsl:param name="xpointer"&gt;http://...&lt;/xsl:param&gt;
+  ...
+&lt;/xsl:template&gt;</synopsis>
+</refsynopsisdiv>
+<refdescription>
+
+<para>The <function>xpointer.idref</function> template returns the
+ID portion of an XPointer which is a pointer to an ID within the current
+document, or the empty string if it is not.</para>
+
+
+<para>In other words, <function>xpointer.idref</function> returns
+<quote>foo</quote> when passed either <literal>#foo</literal>
+or <literal>#xpointer(id('foo'))</literal>, otherwise it returns
+the empty string.</para>
+
+</refdescription></refentry>
+
+<refentry id="template.length-magnitude">
+<refnamediv>
+<refname>length-magnitude</refname>
+<refpurpose>Return the unqualified dimension from a length specification</refpurpose>
+</refnamediv>
+<refsynopsisdiv>
+<synopsis>&lt;xsl:template name="length-magnitude"&gt;
+&lt;xsl:param name="length" select="'0pt'"/&gt;
+  ...
+&lt;/xsl:template&gt;</synopsis>
+</refsynopsisdiv>
+<refdescription>
+
+<para>The <function>length-magnitude</function> template returns the
+unqualified length ("20" for "20pt") from a dimension.
+</para>
+
+</refdescription></refentry>
+
+<refentry id="template.length-spec">
+<refnamediv>
+<refname>length-spec</refname>
+<refpurpose>Return a fully qualified length specification</refpurpose>
+</refnamediv>
+<refsynopsisdiv>
+<synopsis>&lt;xsl:template name="length-spec"&gt;
+&lt;xsl:param name="length" select="'0pt'"/&gt;
+&lt;xsl:param name="default.units" select="'pt'"/&gt;
+  ...
+&lt;/xsl:template&gt;</synopsis>
+</refsynopsisdiv>
+<refdescription>
+
+<para>The <function>length-spec</function> template returns the
+qualified length from a dimension. If an unqualified length is given,
+the <parameter>default.units</parameter> will be added to it.
+</para>
+
+</refdescription></refentry>
+</reference>

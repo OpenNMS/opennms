@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/notificationCommands">
+
+	<element name="notification-commands">
+		<complexType>
+			<sequence>
+				<element ref="header" minOccurs="1" maxOccurs="1"/>
+				<element ref="command" minOccurs="1" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="header">
+		<complexType>
+			<sequence>
+				<element name="ver" type="string" minOccurs="1" maxOccurs="1"/>
+
+				<!-- creation time in the 'dow mon dd hh:mm:ss zzz yyyy' format -->
+				<element name="created" type="string" minOccurs="1" maxOccurs="1"/>
+
+				<element name="mstation" type="string" minOccurs="1" maxOccurs="1"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="command">
+		<complexType>
+			<sequence>
+				<element name="name" type="string" minOccurs="1" maxOccurs="1"/>
+                                <element name="execute" type="string" minOccurs="1" maxOccurs="1"/>
+				<element name="comment" type="string" minOccurs="0" maxOccurs="1"/>
+				<element ref="argument" minOccurs="0" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="argument">
+		<complexType>
+			<sequence>
+				<element name="substitution" type="string" minOccurs="0" maxOccurs="1"/>
+                                <element name="switch" type="string" minOccurs="0" maxOccurs="1"/>
+			</sequence>
+			<attribute name="streamed" use="required" value="false">
+				<simpleType>
+					<restriction base="string">
+						<pattern value="(true|false)"/>
+					</restriction>
+				</simpleType>
+			</attribute>
+		</complexType>
+	</element>
+
+</schema>
+
