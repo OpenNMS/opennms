@@ -512,8 +512,9 @@ final class IfCollector
 								continue;
 	
 							// now check for loopback
-							//
-							if(subtarget.getHostAddress().startsWith("127") || ifType.getValue() == 24)
+							// now will allow loopback as long as its IP Address doesn't
+							// start with 127
+							if(subtarget.getHostAddress().startsWith("127"))
 							{
 								// Skip if loopback
 								if (log.isDebugEnabled())

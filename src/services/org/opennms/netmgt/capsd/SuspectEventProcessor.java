@@ -220,7 +220,6 @@ final class SuspectEventProcessor
 			// or if this interface is of type loopback
 				if (ipAddress == null || 
 					ipAddress.getHostAddress().equals("0.0.0.0") ||
-					ifType == 24 || 
 					ipAddress.getHostAddress().startsWith("127."))
 				continue;
 				
@@ -752,7 +751,7 @@ final class SuspectEventProcessor
 								
 				// Skip loopback interfaces
 				//
-				if (aaddrs[0].getHostAddress().startsWith("127.") || ifType == 24)
+				if (aaddrs[0].getHostAddress().startsWith("127."))
 					continue;
 					
 				DbSnmpInterfaceEntry snmpEntry = DbSnmpInterfaceEntry.create(node.getNodeId(), xifIndex);
@@ -947,6 +946,27 @@ final class SuspectEventProcessor
 	}
 	
 	/**
+	 * Utility method which determines returns the ifType for
+	 * the passed IP address.  
+	 * 
+	 * @param ipaddr	IP address
+	 * @param snmpc		SNMP collection
+	 * 
+	 * @return TRUE if an ifIndex value was found in the SNMP collection for
+	 *      	the provided IP address, FALSE otherwise.
+	 */
+	static int getIfType(InetAddress ipaddr, IfSnmpCollector snmpc)
+	{
+		int ifIndex = snmpc.getIfIndex(ipaddr);
+		int ifType = snmpc.getIfType(ifIndex);
+		
+		Category log = ThreadCategory.getInstance(Capsd.class);
+		if (log.isDebugEnabled())
+			log.debug("getIfType: ipAddress: " + ipaddr.getHostAddress() + " has ifIndex: " + ifIndex + " and ifType: " + ifType);
+		return ifType;
+	}
+	
+	/**
 	 * Utility method which compares two InetAddress objects based on the provided method (MIN/MAX)
 	 * and returns the InetAddress which is to be considered the primary interface.  
 	 * 
@@ -1002,6 +1022,83 @@ final class SuspectEventProcessor
 			return newPrimary;
 		else
 			return oldPrimary;
+	}
+	
+	/**
+	 * Builds a list of InetAddress objects representing each of
+	 * the interfaces from the IfCollector object which support SNMP
+	 * and have a valid ifIndex and is a loopback interface.
+	 * 
+	 * This is in order to allow a non-127.*.*.* loopback address to
+	 * be chosen as the primary SNMP interface.
+	 *
+	 * @param collector 	IfCollector object containing SNMP and SMB info.
+	 * 
+	 * @return List of InetAddress objects.
+	 */
+	private static List buildLBSnmpAddressList(IfCollector collector)
+	{
+		Category log = ThreadCategory.getInstance(SuspectEventProcessor.class);
+		
+		List addresses = new ArrayList();
+		
+		// Verify that SNMP info is available 
+		if (collector.getSnmpCollector() == null)
+		{
+			if (log.isDebugEnabled())
+				log.debug("buildLBSnmpAddressList: no SNMP info for " + collector.getTarget());
+			return addresses;
+		} 
+		
+		// Verify that both the ifTable and ipAddrTable were 
+		// successfully collected.
+		IfSnmpCollector snmpc = collector.getSnmpCollector();
+		if (!snmpc.hasIfTable() || !snmpc.hasIpAddrTable())
+		{
+			log.info("buildLBSnmpAddressList: missing SNMP info for " + collector.getTarget());
+			return addresses;
+		}
+		
+		// To be eligible to be the primary SNMP interface for a node:
+		//
+		// 1. The interface must support SNMP
+		// 2. The interface must have a valid ifIndex
+		//
+
+		// Add eligible target.
+		//
+		InetAddress ipAddr = collector.getTarget();
+		if ( supportsSnmp(collector.getSupportedProtocols()) && 
+			hasIfIndex(ipAddr, snmpc) && getIfType(ipAddr, snmpc) == 24)
+		{
+			if (log.isDebugEnabled())
+				log.debug("buildLBSnmpAddressList: adding target interface " + ipAddr.getHostAddress() + " temporarily marked as primary!");
+			addresses.add(ipAddr);
+		}
+			
+		// Add eligible subtargets.  
+		//
+		if (collector.hasAdditionalTargets())
+		{
+			Map extraTargets = collector.getAdditionalTargets();
+			Iterator iter = extraTargets.keySet().iterator();
+			while(iter.hasNext())
+			{
+				InetAddress currIf = (InetAddress)iter.next();
+			
+				// Test current subtarget.
+				// 
+				if (supportsSnmp((List)extraTargets.get(currIf)) &&
+					getIfType(currIf, snmpc) == 24 )
+				{
+					if (log.isDebugEnabled())
+						log.debug("buildLBSnmpAddressList: adding subtarget interface " + currIf.getHostAddress() + " temporarily marked as primary!");
+					addresses.add(currIf);
+				}
+			} // end while()
+		} // end if()
+
+		return addresses;
 	}
 	
 	/**
@@ -1155,6 +1252,7 @@ final class SuspectEventProcessor
 		// Track changes to primary SNMP interface
 		InetAddress oldSnmpPrimaryIf = null;
 		InetAddress newSnmpPrimaryIf = null;
+		InetAddress newLBSnmpPrimaryIf = null;
 		
 		// Update the database
 		//
@@ -1216,9 +1314,23 @@ final class SuspectEventProcessor
 						// table.  Necessary because the IP address must already be in 
 						// the database to evaluate against a filter rule.
 						//
-						List snmpAddresses = buildSnmpAddressList(collector);
-						newSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpAddresses);
-						setPrimarySnmpInterface(dbc, entryNode, newSnmpPrimaryIf, oldSnmpPrimaryIf);
+						// First create a list of eligible loopback addresses, and 
+						// choose one if valid.
+
+						List snmpLBAddresses = buildLBSnmpAddressList(collector);
+						newLBSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpLBAddresses);
+						if (newLBSnmpPrimaryIf == null)
+						{
+							List snmpAddresses = buildSnmpAddressList(collector);
+							newSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpAddresses);
+							setPrimarySnmpInterface(dbc, entryNode, newSnmpPrimaryIf, oldSnmpPrimaryIf);
+						}
+						else 
+						{
+							if(log.isDebugEnabled())
+								log.debug("SuspectEventProcessor: Loopback Address set as primary: " + newLBSnmpPrimaryIf);
+							setPrimarySnmpInterface(dbc, entryNode, newLBSnmpPrimaryIf, oldSnmpPrimaryIf);
+						}
 		
 						// Update 
 						updateCompleted = true;

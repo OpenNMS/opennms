@@ -1523,6 +1523,91 @@ final class RescanProcessor
 	/** 
 	 * Builds a list of InetAddress objects representing each of
 	 * the interfaces from the collector map object which support SNMP
+	 * and have a valid ifIndex and have an IfType of loopback.
+	 * 
+	 * This is part of a feature to choose a non 127.*.*.* loopback
+	 * address as the primary SNMP interface.
+	 *
+	 * @param collectorMap Map of IfCollector objects containing data collected
+	 * 			from all of the node's interfaces.
+	 * @param snmpc	 Reference to SNMP collection object
+	 *
+	 * @return List of InetAddress objects.
+	 */
+	private static List buildLBSnmpAddressList(Map collectorMap, IfSnmpCollector snmpc)
+	{
+		Category log = ThreadCategory.getInstance(RescanProcessor.class);
+		
+		List addresses = new ArrayList();
+		
+		// Verify that we have SNMP info
+		if (snmpc == null)
+		{
+			if (log.isDebugEnabled())
+				log.debug("buildLBSnmpAddressList: no SNMP info available...");
+			return addresses;
+		}
+			
+		// To be eligible to be the primary SNMP interface for a node:
+		// 
+		// 1. The interface must support SNMP
+		// 2. The interface must have a valid ifIndex.
+		//
+		Collection values = collectorMap.values();
+		Iterator iter = values.iterator();
+		List alreadyTested = new ArrayList();
+		while(iter.hasNext())
+		{
+			IfCollector ifc = (IfCollector)iter.next();
+			
+			// Add eligible target.
+			//
+			InetAddress ifaddr = ifc.getTarget();
+			
+			if (addresses.contains(ifaddr) == false)
+			{
+				if ( SuspectEventProcessor.supportsSnmp(ifc.getSupportedProtocols()) && 
+					SuspectEventProcessor.hasIfIndex(ifaddr, snmpc) && SuspectEventProcessor.getIfType(ifaddr, snmpc) == 24)
+				{
+					if (log.isDebugEnabled())
+						log.debug("buildLBSnmpAddressList: adding target interface " + ifaddr.getHostAddress() + " temporarily marked as primary!");
+					addresses.add(ifaddr);
+				}
+			}
+
+			// Now go through list of sub-targets
+			if (ifc.hasAdditionalTargets())
+			{
+				Map subTargets = ifc.getAdditionalTargets();
+				Set keys = subTargets.keySet();
+				Iterator siter = keys.iterator();
+				
+				while(siter.hasNext())
+				{
+					// Add eligible subtargets.  
+					//
+					InetAddress xifaddr = (InetAddress)siter.next();
+					if (addresses.contains(xifaddr) == false)
+					{
+						if (SuspectEventProcessor.supportsSnmp((List)subTargets.get(xifaddr)) && 
+							SuspectEventProcessor.hasIfIndex(xifaddr, snmpc) && SuspectEventProcessor.getIfType(xifaddr, snmpc) == 24)
+						{ 
+							if (log.isDebugEnabled())
+								log.debug("buildLBSnmpAddressList: adding subtarget interface " + xifaddr.getHostAddress() + " temporarily marked as primary!");
+							addresses.add(xifaddr);
+						}
+					}
+				}
+			}
+		}
+		
+		return addresses;
+	}
+	
+	
+	/** 
+	 * Builds a list of InetAddress objects representing each of
+	 * the interfaces from the collector map object which support SNMP
 	 * and have a valid ifIndex.
 	 *
 	 * @param collectorMap Map of IfCollector objects containing data collected
@@ -2180,19 +2265,36 @@ final class RescanProcessor
 					// table.  Necessary because the IP address must already be in 
 					// the database to evaluate against a filter rule.
 					//
-					List snmpAddresses = buildSnmpAddressList(collectorMap, snmpc);
-					InetAddress newPrimarySnmpIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpAddresses);
-					SuspectEventProcessor.setPrimarySnmpInterface(dbc, dbNodeEntry, newPrimarySnmpIf, oldPrimarySnmpIf);
-					
+					// First create a list of eligible loopback interfaces.
+					//
+					List snmpLBAddresses = buildLBSnmpAddressList(collectorMap, snmpc);
+                                        InetAddress newLBSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpLBAddresses);
+					// Now create a list of all eligible interfaces. Choose loopback
+					// if exists.
+
+                                        List snmpAddresses = buildSnmpAddressList(collectorMap, snmpc);
+                                        InetAddress newSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpAddresses);
+                                        if (newLBSnmpPrimaryIf == null)
+                                        {
+                                                SuspectEventProcessor.setPrimarySnmpInterface(dbc, dbNodeEntry, newSnmpPrimaryIf, oldPrimarySnmpIf);
+                                        }
+                                        else
+                                        {
+						newSnmpPrimaryIf = newLBSnmpPrimaryIf;
+                                                if(log.isDebugEnabled())
+                                                        log.debug("SuspectEventProcessor: Loopback Address set as primary: " + newLBSnmpPrimaryIf);
+                                                SuspectEventProcessor.setPrimarySnmpInterface(dbc, dbNodeEntry, newLBSnmpPrimaryIf, oldPrimarySnmpIf);
+                                        }
+
 					// Now that we've identified the new primary SNMP interface
 					// we can determine if it is necessary to generate certain
 					// SNMP data collection related events
 					//
-					generateSnmpDataCollectionEvents(dbNodeEntry, oldPrimarySnmpIf, newPrimarySnmpIf);
+					generateSnmpDataCollectionEvents(dbNodeEntry, oldPrimarySnmpIf, newSnmpPrimaryIf);
 					
 					// Update the node table entry
 					//
-					DbNodeEntry updatedNodeEntry = updateNode(dbc, now, dbNodeEntry, newPrimarySnmpIf, dbInterfaces, collectorMap);
+					DbNodeEntry updatedNodeEntry = updateNode(dbc, now, dbNodeEntry, newSnmpPrimaryIf, dbInterfaces, collectorMap);
 					
 					updateCompleted = true;
 				}
