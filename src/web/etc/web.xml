@@ -1226,4 +1226,26 @@
     <auth-method>BASIC</auth-method>
     <realm-name>OpenNMS Web Console</realm-name>
   </login-config>
+
+  <security-role>
+    <description>
+      OpenNMS Administrator
+    </description>
+    <role-name>OpenNMS Administrator</role-name>
+  </security-role>
+
+  <security-role>
+    <description>
+      OpenNMS RTC Daemon
+    </description>
+    <role-name>OpenNMS RTC Daemon</role-name>
+  </security-role>
+
+  <security-role>
+    <description>
+      OpenNMS User
+    </description>
+    <role-name>OpenNMS User</role-name>
+  </security-role>
+
 </web-app>
