@@ -35,7 +35,6 @@ package org.opennms.netmgt.config;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.security.MessageDigest;
@@ -70,11 +69,7 @@ import org.opennms.netmgt.config.users.Users;
  */
 public abstract class UserManager {
 
-    protected GroupFactory groupFactory;
-    /**
-     * An input stream for the users configuration file
-     */
-    protected InputStream configIn;
+    protected GroupManager groupFactory;
     /**
      * A mapping of user ids to the User objects
      */
@@ -85,6 +80,9 @@ public abstract class UserManager {
     protected HashMap m_dutySchedules;
     private Header oldHeader;
 
+    protected UserManager(GroupManager groupManager) {
+        groupFactory = groupManager;
+    }
     /**
      * @param reader
      * @throws MarshalException

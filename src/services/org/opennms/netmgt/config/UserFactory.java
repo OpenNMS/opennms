@@ -83,7 +83,7 @@ public class UserFactory extends UserManager {
      * Initializes the factory
      */
     public UserFactory() {
-        groupFactory = GroupFactory.getInstance();
+        super(GroupFactory.getInstance());
     }
 
     public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
