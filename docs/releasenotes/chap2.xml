@@ -11,7 +11,7 @@
   release. Release 1.1.4 was a major step toward that next stable release, and
   version 1.1.5 continues that progress.</para>
 
-  <sect1>
+  <section>
     <title>Changes in OpenNMS 1.2.1</title>
 
     <bridgehead>New Features</bridgehead>
@@ -58,16 +58,16 @@
         256.</para>
       </listitem>
     </itemizedlist>
-  </sect1>
+  </section>
 
-  <sect1>
+  <section>
     <title>Changes in OpenNMS 1.2.0</title>
 
     <para>The only changes between 1.1.5 and 1.2.0 are some bug fixes and the
     addition of a few more datacollection values and reports.</para>
-  </sect1>
+  </section>
 
-  <sect1>
+  <section>
     <title>Changes in OpenNMS 1.1.5</title>
 
     <para>The current development goal of the OpenNMS team is to get a new,
@@ -326,9 +326,9 @@
 
     <para>There are other small fixes and improvements too numerous to list.
     Please feel free to check out CVS and the CHANGELOG for more.</para>
-  </sect1>
+  </section>
 
-  <sect1>
+  <section>
     <title>Changes in OpenNMS 1.1.4</title>
 
     <para>Longtime users of OpenNMS will be pleasantly surprised at the speed
@@ -702,9 +702,9 @@
     </itemizedlist>
 
     <para></para>
-  </sect1>
+  </section>
 
-  <sect1>
+  <section>
     <title>Changes in OpenNMS 1.1.3 and above</title>
 
     <para>A tremendous amount of work has been done "under the covers" to
@@ -940,9 +940,9 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
 
     <para>We have lots of bug fixes. I am really tired. Check out the <ulink
     url="http://cvs.sourceforge.net/viewcvs.py/opennms/opennms/CHANGELOG?rev=1.97&amp;view=auto">CHANGELOG</ulink>.</para>
-  </sect1>
+  </section>
 
-  <sect1 id="chap2sect1">
+  <section id="chap2sect1">
     <title>Changes in OpenNMS 1.1.2 and Above</title>
 
     <para>The following features were added in 1.1.2:</para>
@@ -1483,9 +1483,9 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
         events</para>
       </listitem>
     </itemizedlist>
-  </sect1>
+  </section>
 
-  <sect1 id="chap2sect2">
+  <section id="chap2sect2">
     <title>Changes in OpenNMS 1.1.1 and Above</title>
 
     <para>The following features were added in 1.1.1:</para>
@@ -1552,9 +1552,9 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
 
     <para>For a variety of reasons, OpenNMS 1.1.1 and beyond will require
     Tomcat4 version 4.1.18 or higher.</para>
-  </sect1>
+  </section>
 
-  <sect1 id="chap2sect3">
+  <section id="chap2sect3">
     <title>Changes in OpenNMS 1.1.0 and Above</title>
 
     <para>There were many changes to OpenNMS between 1.0 and 1.1. Here are a
@@ -1837,9 +1837,9 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
     <para>Many bugfixes, including allowing Threshold events to generate
     notifications, AdminStatus and OperStatus values causing exceptions, and
     rescans with certain devices.</para>
-  </sect1>
+  </section>
 
-  <sect1 id="chap2sect4">
+  <section id="chap2sect4">
     <title>Changes in OpenNMS 1.0.0 and Above</title>
 
     <para>The following major changes occurred between 0.9.9 and 1.0.0:</para>
@@ -1861,5 +1861,5 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
 
     <para>Many small bugfixes, including the "Calculating..." problem if RTC
     has not come up yet when tomcat starts.</para>
-  </sect1>
+  </section>
 </chapter>
