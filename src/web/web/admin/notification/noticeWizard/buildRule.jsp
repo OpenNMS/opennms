@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2004 Jun 03: Modified to allow rules other than IPADDR IPLIKE.
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 2002 Nov 13: Added the ability to choose NOT to notify on a service via the webUI.
@@ -107,12 +108,12 @@
     <h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br>" : "")%></h2>
     <h3><% String mode = request.getParameter("mode");
            if ("failed".equals(mode)) { %>
-              <font color="FF0000">The rule as entered is invalid, probably due to a malformed TCP/IP address. Please correct the rule to continue.</font>
+              <font color="FF0000">The rule as entered is invalid, possibly due to a malformed TCP/IP address or invalid
+		      rule syntax. Please correct the rule to continue.</font>
            <% } else { %>
               Build the rule that determines if a notification is sent for this event based on the interface and service information contained in the event.
            <% } %>
     </h3>
-    <h3>Current Rule: '<%=newRule%>'</h3>
     <form METHOD="POST" NAME="rule" ACTION="admin/notification/noticeWizard/notificationWizard" >
       <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_RULE%>"/>
       <input type="hidden" name="nextPage" value=""/>
@@ -125,17 +126,21 @@
                octet. Ranges are indicated by two numbers separated by a dash (-), and
                commas are used for list demarcation.
             </p>
-            <p>For example, the following fields are all valid and would each create
-               the same result set--all TCP/IP addresses from 192.168.0.0 through
-               192.168.255.255:
+            <p>The following examples are all valid and yield the set of addresses from
+	       192.168.0.0 through 192.168.3.255.
                <ul>
-                  <li>192.168.*.*
-                  <li>192.168.0-255.0-255
-                  <li>192.168.0,1,2,3-255.*
+                  <li>192.168.0-3.*
+                  <li>192.168.0-3.0-255
+                  <li>192.168.0,1,2,3.*
                </ul>
             </p>
-             TCP/IP Address like:<br>
-             <input type="text" name="ipaddr" value='<%=getIpaddr(newRule)%>'/>
+	    <p>To Use a rule based on TCP/IP addresses as described above, enter<BR><BR>
+	       IPADDR IPLIKE *.*.*.*<BR><BR>in the Current Rule box below, substituting your
+	       desired address fields for *.*.*.*.
+	       <BR>Otherwise, you may enter any valid rule.
+	    </p>
+	    Current Rule:<br>
+	    <input type="text" size=100 name="newRule" value="<%=newRule%>"/>
           </td>
         </tr>
         <tr>

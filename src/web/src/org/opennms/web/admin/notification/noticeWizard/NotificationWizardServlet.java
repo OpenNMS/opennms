@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of Blast Internet Services, Inc.
 //
+// Modifications:
+//
+// 2004 Jun 03: Modified to allow rules other than IPADDR IPLIKE.
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -36,6 +40,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -68,6 +73,7 @@ public class NotificationWizardServlet extends HttpServlet
 		String sourcePage = request.getParameter( "sourcePage" );
                 HttpSession user = request.getSession(true);
                 
+		StringBuffer rule = new StringBuffer("");
                 StringBuffer redirectString = new StringBuffer();
                 
                 if (sourcePage.equals(SOURCE_PAGE_NOTICES))
@@ -135,15 +141,20 @@ public class NotificationWizardServlet extends HttpServlet
                         newNotice.setUei(request.getParameter("uei"));
                         
                         Map params = new HashMap();
-                        params.put("newRule", newNotice.getRule());
+			rule.append(newNotice.getRule());
+			rule = toSingleQuote(rule);
+                        params.put("newRule", rule.toString());
                         
                         redirectString.append(SOURCE_PAGE_RULE).append(makeQueryString(params));
                 }
                 else if (sourcePage.equals(SOURCE_PAGE_RULE))
                 {
-                        StringBuffer rule = new StringBuffer("IPADDR IPLIKE ");
-                        rule.append(request.getParameter("ipaddr"));
-                        
+			rule.append(request.getParameter("newRule"));
+			rule = toSingleQuote(rule);
+			rule = stripExtraWhite(rule.toString());
+			rule = stripServices(rule.toString());
+			rule = checkParens(rule);
+
                         String services[] = request.getParameterValues("services");
                         if (services!=null)
                         {
@@ -184,7 +195,6 @@ public class NotificationWizardServlet extends HttpServlet
                         {
                                 params.put("notServices", notServices);
                         }
-                        params.put("ipaddr", request.getParameter("ipaddr"));
                         
                         //page to redirect to, either validate or skip validation
                         String redirectPage = request.getParameter("nextPage");
@@ -219,7 +229,6 @@ public class NotificationWizardServlet extends HttpServlet
                         {
                                 Map params = new HashMap();
                                 params.put("newRule", request.getParameter("newRule"));
-                                params.put("ipaddr", request.getParameter("ipaddr"));
                                 String services[] = request.getParameterValues("services");
                                 if (services != null)
                                         params.put("services", services);
@@ -349,4 +358,44 @@ public class NotificationWizardServlet extends HttpServlet
                 
                 return buffer.toString();
         }
+	private static StringBuffer toSingleQuote (StringBuffer buffer) {
+		for( int i = 0; (i < buffer.length()); i++ ) {
+			if((i < buffer.length() - 5) && (buffer.substring(i, i + 6).equals("&quot;"))) {
+				buffer.replace(i, i + 6, "'" );
+			}
+			else if(buffer.charAt(i) == '"') {
+				buffer.replace(i, i + 1, "'" );
+			}
+		}
+		return buffer;
+	}
+	private static StringBuffer stripExtraWhite (String s) {
+		String myregex = "\\s+";
+		Pattern pattern = Pattern.compile(myregex);
+		Matcher matcher = pattern.matcher(s);
+		String mys = matcher.replaceAll(" ");
+		myregex = "^\\s";
+		pattern = Pattern.compile(myregex);
+		matcher = pattern.matcher(mys);
+		mys = matcher.replaceAll("");
+		myregex = "\\s$";
+		pattern = Pattern.compile(myregex);
+		matcher = pattern.matcher(mys);
+		StringBuffer buffer = new StringBuffer(matcher.replaceAll(""));
+		return buffer;
+	}
+	private static StringBuffer stripServices (String s) {
+		String myregex = "\\s*\\&\\s*\\(\\s*\\!?is.+";
+		Pattern pattern = Pattern.compile(myregex);
+		Matcher matcher = pattern.matcher(s);
+		StringBuffer buffer = new StringBuffer(matcher.replaceAll(""));
+		return buffer;
+	}
+	private static StringBuffer checkParens (StringBuffer buffer) {
+		if((buffer.charAt(0) != '(') || (buffer.charAt(buffer.length() - 1) != ')')) {
+			buffer.append( ")" );
+			buffer.insert( 0, "(" );
+		}
+		return buffer;
+	}
 }
