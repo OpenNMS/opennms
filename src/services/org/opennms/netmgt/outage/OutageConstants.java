@@ -42,6 +42,7 @@ package org.opennms.netmgt.outage;
 /**
  * <P>This class is a repository for constant, static information concerning the Outage Manager. 
  *
+ * @author <A HREF="mailto:jamesz@blast.com">James Zuo</A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
  * @author <A HREF="http://www.opennms.org">OpenNMS</A>
  */
@@ -97,12 +98,6 @@ public final class OutageConstants
 	public static final String DB_UPDATE_OUTAGE_FOR_SERVICE = "UPDATE outages set svcRegainedEventID=?, ifRegainedService=? where (nodeid = ? AND ipAddr = ? AND serviceID = ? and (ifRegainedService IS NULL))";
 
 	/**
-	 * The sql statement used to flag an entry from the ifServices table as deleted based on
-	 * a node/interface/service tuple
-	 */
-	public static final String DB_DELETE_SERVICE = "UPDATE ifservices SET status = 'D' WHERE nodeid = ? AND ipAddr = ? AND serviceID = ?";
-	
-	/**
 	 * The sql statement used to get all SNMP/SNMPv2 entries for a node from the ifServices
 	 * that are currently active
 	 */
@@ -116,6 +111,8 @@ public final class OutageConstants
 	
 	/**
 	 * The sql statement used to clear snmp related data for a nodeid
+         * 
+         * Note: this statement is got depreciated after OpenNMS 1.1.3
 	 */ 
 	public static final String DB_CLEAR_NODE_SNMP_INFO = "UPDATE node set nodesysoid=null, nodesysname=null, nodesysdescription=null, nodesyslocation=null, nodesyscontact=null WHERE nodeid = ?";
 
@@ -143,13 +140,6 @@ public final class OutageConstants
 	 */
 	public static final String DB_DELETE_INTERFACE = "UPDATE ipinterface SET isManaged = 'D' WHERE nodeid = ? AND ipAddr = ?";
 	
-	/**
-	 * The sql statement used to determine if there are any remaining managed
-	 * entries in the 'ipInterface' table for a specific nodeID
-	 * following the deletion of an interface entry.
-	 */ 
-	public static final String DB_GET_INTERFACE_LIST = "SELECT isManaged FROM ipinterface WHERE nodeid = ?";
-
 	/**
 	 * The sql statement used to flag all interface entries from the 'ipInterface'
 	 * table as deleted for a specific node (called when there are only unmanaged
@@ -194,6 +184,61 @@ public final class OutageConstants
          */
         public static final String DB_INS_CACHE_HIT = "INSERT INTO outages (outageID, svcLostEventID, nodeID, ipAddr, serviceID, ifLostService, svcRegainedEventID, ifRegainedService) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
+	/**
+	 * The sql statement used to count if there are other interfaces exist on the node except the interface to delete.
+	 */
+	public static final String DB_COUNT_REMAIN_INTERFACES_ON_NODE = "SELECT count(*) FROM ipinterface " +
+                                                                        "WHERE nodeid = ? AND ipAddr != ? " +
+                                                                        "AND isManaged != 'D'";
+
+	/**
+	 * The sql statement used to count if there are other services exist on the interface 
+         * except the service to delete.
+	 */
+	public static final String DB_COUNT_REMAIN_SERVICES_ON_INTERFACE = "SELECT count(*) FROM ifservices " +
+                                                                           "WHERE nodeid = ? AND ipAddr = ? " +
+                                                                           "AND serviceID != ? AND status != 'D'";
+	/**
+	 * The sql statement used to delete a service from the ifServices table based on
+	 * a node/interface/service tuple
+	 */
+	public static final String DB_DELETE_SERVICE = "DELETE FROM ifservices WHERE nodeid = ? AND ipAddr = ? AND serviceID = ?";
+
+	/**
+	 * The sql statement used to delete usersNotified records from the database based on
+	 * a node/interface/service tuple
+	 */
+	public static final String DB_DELETE_USERSNOTIFIED_ON_SERVICE = "DELETE FROM usersNotified WHERE notifyID " +
+                                                                        "IN (SELECT notifyID FROM notifications " +
+                                                                        "    WHERE nodeid = ? AND interfaceid = ? " +
+                                                                        "    AND serviceID = ?)";
+	/**
+	 * The sql statement used to delete notifications from the database based on
+	 * a node/interface/service tuple
+	 */
+	public static final String DB_DELETE_NOTIFICATIONS_ON_SERVICE = "DELETE FROM notifications " +
+                                                       "WHERE nodeid = ? AND interfaceid = ? AND serviceID = ?";
+
+	/**
+	 * The sql statement used to delete all outages from the database based on
+	 * a node/interface/service tuple
+	 */
+	public static final String DB_DELETE_OUTAGES_ON_SERVICE = "DELETE FROM outages " +
+                                                       "WHERE nodeid = ? AND ipAddr = ? AND serviceID = ?";
+
+	/**
+	 * The sql statement used to delete all events from the database based on
+	 * a node/interface/service tuple
+	 */
+	public static final String DB_DELETE_EVENTS_ON_SERVICE = "DELETE FROM events " +
+                                                       "WHERE nodeid = ? AND ipAddr = ? AND serviceID = ?";
+        
+        /**
+         * The sql statement used to query if an interface is the SNMP primary interface for a nodeid
+         */
+        public static final String DB_QUERY_PRIMARY_INTERFACE = "SELECT isSnmpPrimary FROM ipinterface " +
+                                                                "WHERE nodeid = ? AND ipAddr = ?";
+        
         /**
          * The sql statement used to retrieve the nodeLabel for a nodeid
          */

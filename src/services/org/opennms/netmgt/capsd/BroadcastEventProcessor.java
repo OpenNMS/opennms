@@ -62,6 +62,7 @@ import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.utils.XmlrpcUtil;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
@@ -92,37 +93,31 @@ final class BroadcastEventProcessor
          * SQL statement used to query the 'node' and 'ipinterface' tables to verify if a 
          * specified ipaddr and node label have already exist in the database.
          */
-        private static String SQL_QUERY_IPINTERFACE_EXIST = "SELECT nodelabel, ipaddr FROM node, ipinterface WHERE node.nodeid = ipinterface.nodeid AND node.nodelabel = ? AND ipinterface.ipaddr = ?";
+        private static String SQL_QUERY_IPINTERFACE_EXIST = "SELECT nodelabel, ipaddr FROM node, ipinterface WHERE node.nodeid = ipinterface.nodeid AND node.nodelabel = ? AND ipinterface.ipaddr = ? AND isManaged !='D' AND nodeType !='D'";
         
         /**
          * SQL statement used to query if a node with the specified nodelabel exist in 
          * the database, and the nodeid from the database if exists.
          */
-        private static String SQL_QUERY_NODE_EXIST = "SELECT nodeid, dpname FROM node WHERE nodelabel = ?"; 
+        private static String SQL_QUERY_NODE_EXIST = "SELECT nodeid, dpname FROM node WHERE nodelabel = ? AND nodeType !='D'"; 
 
         /**
          * SQL statement used to verify if an ifservice with the specified ip address and 
          * service name exists in the database.
          */
-        private static String SQL_QUERY_SERVICE_EXIST = "SELECT nodeid FROM ifservices, service WHERE ifservices.serviceid = service.serviceid AND ipaddr = ? and servicename = ?"; 
+        private static String SQL_QUERY_SERVICE_EXIST = "SELECT nodeid FROM ifservices, service WHERE ifservices.serviceid = service.serviceid AND ipaddr = ? AND servicename = ? AND status !='D'"; 
 
         /**
          * SQL statement used to verify if an ipinterface with the specified ip address 
          * exists in the database and retrieve the nodeid if exists.
          */
-        private static String SQL_QUERY_IPADDRESS_EXIST = "SELECT nodeid FROM ipinterface WHERE ipaddr = ?";
+        private static String SQL_QUERY_IPADDRESS_EXIST = "SELECT nodeid FROM ipinterface WHERE ipaddr = ? AND isManaged !='D'";
 
         /**
          * SQL statement used to retrieve the serviced id from the database with a specified
          * service name.
          */
         private static String SQL_RETRIEVE_SERVICE_ID = "SELECT serviceid FROM service WHERE servicename = ?";
-
-        /**
-         * SQL statement used to delete a ifservice record from the database with the specified 
-         * ip address and serviced id.
-         */
-        private static String SQL_DELETE_SERVICE = "DELETE FROM ifservices WHERE ipaddr = ? AND serviceid = ?";
 
         /**
          * SQL statement used to delete all the ipinterfaces with a specified nodeid.
@@ -181,6 +176,46 @@ final class BroadcastEventProcessor
          */
          private static String SQL_DELETE_ASSETS_ON_NODE = "DELETE FROM assets WHERE nodeid = ?";
 
+        /**
+         * SQL statement used to delete all usersnotified info associated with a specified interface 
+         * from the database.
+         */
+         private static String SQL_DELETE_USERSNOTIFIED_ON_INTERFACE = "DELETE FROM usersnotified WHERE notifyid IN " +
+                                                                    "(SELECT notifid FROM notifications " +
+                                                                    " WHERE nodeid = ? AND interfaceid = ?)";
+        /**
+         * SQL statement used to delete all notifications associated with a specified interface 
+         * from the database.
+         */
+         private static String SQL_DELETE_NOTIFICATIONS_ON_INTERFACE = "DELETE FROM notifications " +
+                                                                    "WHERE nodeid = ? AND interfaceid = ?";
+        
+        /**
+         * SQL statement used to delete all notifications associated with a specified interface 
+         * from the database.
+         */
+         private static String SQL_DELETE_OUTAGES_ON_INTERFACE = "DELETE FROM outages " +
+                                                                 "WHERE nodeid = ? AND ipaddr = ?";
+        /**
+         * SQL statement used to delete all events associated with a specified interface 
+         * from the database.
+         */
+         private static String SQL_DELETE_EVENTS_ON_INTERFACE = "DELETE FROM events " +
+                                                                "WHERE nodeid = ? AND ipaddr = ?";
+        
+        /**
+         * SQL statement used to delete the snmpinterface entry associated with a specified interface 
+         * from the database.
+         */
+         private static String SQL_DELETE_SNMPINTERFACE_ON_INTERFACE = "DELETE FROM snmpinterface " +
+                                                                       "WHERE nodeid = ? AND ipaddr = ?";
+        
+        /**
+         * SQL statement used to query if an interface is the snmp primary interface of a node.
+         */
+         private static String SQL_QUERY_PRIMARY_INTERFACE = "SELECT isSnmpPrimary FROM ipinterface " +
+                                                             "WHERE nodeid = ? AND ipaddr = ?";
+        
         /**
          * SQL statement used to delete all ifservices from the database with 
          * a specified interface.
@@ -343,114 +378,6 @@ final class BroadcastEventProcessor
 		EventIpcManagerFactory.getInstance().getManager().removeEventListener(this);
 	}
 
-        /**
-         * This method is responsible for generating an xmlrpcNotification event and sending
-         * it to eventd..
-         *
-         * @param txNo          the transaction no.
-         * @param sourceUei     The uei of the source event that this event to report for.
-         * @param message       The message for external xmlrpc server.
-         * @param status        flag to indicate the type of this notification.
-         *
-         */
-        private void createAndSendXmlrpcNotificationEvent( long txNo, String sourceUei, 
-                                                                String message, int status)
-        {
-		Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-			log.debug("createAndSendXmlrpcNotificationEvent:  txNo= " + txNo + "\n"
-                                + " uei = " + sourceUei + "\n"
-                                + " message = " + message + "\n"
-                                + " status = " + status);
-        
-                Event newEvent = new Event();
-                newEvent.setUei(EventConstants.XMLRPC_NOTIFICATION_EVENT_UEI);
-                newEvent.setSource("OpenNMS.Capsd");
-                newEvent.setHost(Capsd.getLocalHostAddress());
-                newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-                // Add appropriate parms
-                Parms eventParms = new Parms();
-                Parm eventParm = null;
-                Value parmValue = null;
-
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-                parmValue = new Value();
-                parmValue.setContent(new Long(txNo).toString());
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-
-                // Add source event uei
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_SOURCE_EVENT_UEI);
-                parmValue = new Value();
-                parmValue.setContent(new String(sourceUei));
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-                
-                // Add message parameter 
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_SOURCE_EVENT_MESSAGE);
-                parmValue = new Value();
-                parmValue.setContent(new String(message));
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-               
-                // Add status parameter
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_SOURCE_EVENT_STATUS);
-                parmValue = new Value();
-                parmValue.setContent(new Integer(status).toString());
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-                
-                // Add Parms to the event
-                newEvent.setParms(eventParms);
-
-                // Send event to Eventd
-                try
-                {
-                        EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
-
-                        if (log.isDebugEnabled())
-                                log.debug("createdAndSendXmlrpcNotificationEvent: successfully sent " 
-                                        + "XMLRPC notification event for txno: " + txNo + " / " 
-                                        + sourceUei + " " + status); 
-                }
-                catch(Throwable t)
-                {
-                        log.warn("run: unexpected throwable exception caught during send to middleware", t);
-               
-                        int failureFlag = 2;
-                        eventParms.removeParm(eventParm);
-                        
-                        // Add status parameter
-                        eventParm = new Parm();
-                        eventParm.setParmName(EventConstants.PARM_SOURCE_EVENT_STATUS);
-                        parmValue = new Value();
-                        parmValue.setContent(new Integer(failureFlag).toString());
-                        eventParm.setValue(parmValue);
-                        eventParms.addParm(eventParm);
-                       
-                        // Add Parms to the event
-                        newEvent.setParms(eventParms);
-                        try
-                        {
-                                EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
-
-                                if (log.isDebugEnabled())
-                                        log.debug("createdAndSendXmlrpcNotificationEvent: successfully sent " 
-                                                + "XMLRPC notification event for txno: " + txNo + " / " 
-                                                + sourceUei + " " + failureFlag); 
-                        }
-                        catch(Throwable te)
-                        {
-                                log.warn("run: unexpected throwable exception caught during send to middleware", te);
-                        }
-                }
-        }                
-        
 	/**
 	 * Process the event,  add a node with the specified node label and interface 
          * to the database
@@ -527,7 +454,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, sourceUei, "Invalid parameters", status);
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, "Invalid parameters", 
+                                        status, "OpenNMS.Capsd");
                         }
                         
 			return;
@@ -558,10 +486,11 @@ final class BroadcastEventProcessor
                                 if (m_xmlrpc)
                                 {
                                         int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                        createAndSendXmlrpcNotificationEvent( txNo, 
+                                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, 
                                                                               sourceUei, 
                                                                               "Node allready exist.",
-                                                                              status);
+                                                                              status,
+                                                                              "OpenNMS.Capsd");
                                 }
 			        return;
 			}
@@ -577,8 +506,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                                        sqlE.getMessage(), status);
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
+                                                        sqlE.getMessage(), status, "OpenNMS.Capsd");
                         }
 		}
 		catch(java.net.UnknownHostException e)
@@ -587,7 +516,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, sourceUei, e.getMessage(), status); 
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, e.getMessage(), 
+                                        status, "OpenNMS.Capsd"); 
                         }
 		}
 		finally
@@ -637,10 +567,11 @@ final class BroadcastEventProcessor
                 if (m_xmlrpc)
                 {
                         int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                        createAndSendXmlrpcNotificationEvent( txNo, 
+                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, 
                                                               callerUei, 
                                                               "Successfully added node" + nodeLabel,
-                                                              status);
+                                                              status,
+                                                              "OpenNMS.Capsd");
                 }
 
 		if (log.isDebugEnabled())
@@ -660,10 +591,11 @@ final class BroadcastEventProcessor
                         int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
                         String message = new String("Successfully added interface: ") + ipaddr 
                                                         + " to node: " + nodeLabel;
-                        createAndSendXmlrpcNotificationEvent( txNo, 
+                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, 
                                                               callerUei, 
                                                               message,
-                                                              status);
+                                                              status,
+                                                              "OpenNMS.Capsd");
                 }
         }
 
@@ -730,8 +662,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
-                                        "caught unexpected throwable exception.", status);
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
+                                        "caught unexpected throwable exception.", status, "OpenNMS.Capsd");
                         }
                 }
         }                
@@ -797,8 +729,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
-                                        "caught unexpected throwable exception.", status);
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
+                                        "caught unexpected throwable exception.", status, "OpenNMS.Capsd");
                         }
                 }
         }                
@@ -879,7 +811,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, sourceUei, "Invalid parameters", status);
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
+                                        "Invalid parameters", status, "OpenNMS.Capsd");
                         }
                         
 			return;
@@ -911,8 +844,8 @@ final class BroadcastEventProcessor
 		        {
 			        log.error("DeleteNode: There is no node with node label: " + nodeLabel + " exists in the database.");
                                 int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                        "Node does not exist in the database", status);
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
+                                        "Node does not exist in the database", status, "OpenNMS.Capsd");
 			        return;
 		        }
 		
@@ -993,7 +926,8 @@ final class BroadcastEventProcessor
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
                                 String message = new String("Successfully deleted node with node label: ")  + nodeLabel;
-                                createAndSendXmlrpcNotificationEvent(txNo, sourceUei, message, status); 
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, message, 
+                                        status, "OpenNMS.Capsd"); 
                         }
 
                 }
@@ -1003,8 +937,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                        sqlE.getMessage(), status); 
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
+                                        sqlE.getMessage(), status, "OpenNMS.Capsd"); 
                         }
 		}
 		finally
@@ -1080,8 +1014,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
-                                                "caught unexpected throwable exception.", status);
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
+                                                "caught unexpected throwable exception.", status, "OpenNMS.Capsd");
                         }
                 }
         }                
@@ -1164,8 +1098,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                                "Invalid parameters.", status);
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
+                                        "Invalid parameters.", status, "OpenNMS.Capsd");
                         }
                         
 			return;
@@ -1196,8 +1130,8 @@ final class BroadcastEventProcessor
                                 if (m_xmlrpc)
                                 {
                                         int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                        createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                                "interface already exists on the node.", status);
+                                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
+                                                "interface already exists on the node.", status, "OpenNMS.Capsd");
                                 }
 			        return;
 			}
@@ -1240,7 +1174,8 @@ final class BroadcastEventProcessor
                                         String message = new String("Successfully added interface: ") + ipaddr 
                                                         + " to node: " + nodeLabel;
                                         int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                        createAndSendXmlrpcNotificationEvent(txNo, sourceUei, message, status); 
+                                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, message, 
+                                                status, "OpenNMS.Capsd"); 
                                 }
                                 return;
                         }
@@ -1255,8 +1190,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                        sqlE.getMessage(), status); 
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
+                                        sqlE.getMessage(), status, "OpenNMS.Capsd"); 
                         }
 		}
 		catch(java.net.UnknownHostException e)
@@ -1265,8 +1200,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                        e.getMessage(), status); 
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
+                                        e.getMessage(), status, "OpenNMS.Capsd"); 
                         }
 		}
 		finally
@@ -1361,8 +1296,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                        "Invalid parameters.", status); 
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
+                                        "Invalid parameters.", status, "OpenNMS.Capsd"); 
                         }
                         
 			return;
@@ -1395,12 +1330,12 @@ final class BroadcastEventProcessor
                                 if (m_xmlrpc)
                                 {
                                         int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                        createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                                        "No node with the specified node label exists.", status);
+                                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
+                                                "No node with the specified node label exists.", status, "OpenNMS.Capsd");
                                 }
 			        return;
 		        }
-		
+	                rs.close();	
                         stmt.close();
                         
                         // Count interfaces on the node
@@ -1423,7 +1358,67 @@ final class BroadcastEventProcessor
                         }
                         else
                         {
-        	                // Deleting all the ifservices associated with the nodeid and ipaddress
+                                // Deleting all usersnotified info associated with the nodeid and ipaddress
+        			stmt = dbConn.prepareStatement(SQL_DELETE_USERSNOTIFIED_ON_INTERFACE);
+        			stmt.setInt(1, nodeid);
+                                stmt.setString(2, ipaddr);
+        			stmt.executeUpdate();
+        			if (log.isDebugEnabled())
+                                {
+        				log.debug("deleteInterfaceHandler: deleted all usersnotified info on interface: "
+                                                + ipaddr + " at nodeid: " + nodeid);
+                                }
+                                stmt.close();
+        	                
+                                // Deleting all the notifications associated with the nodeid and ipaddress
+        			stmt = dbConn.prepareStatement(SQL_DELETE_NOTIFICATIONS_ON_INTERFACE);
+        			stmt.setInt(1, nodeid);
+                                stmt.setString(2, ipaddr);
+        			stmt.executeUpdate();
+        			if (log.isDebugEnabled())
+                                {
+        				log.debug("deleteInterfaceHandler: deleted all notifications on interface: "
+                                                + ipaddr + " at nodeid: " + nodeid);
+                                }
+                                stmt.close();
+                                
+                                // Deleting all outages associated with the nodeid and ipaddress
+        			stmt = dbConn.prepareStatement(SQL_DELETE_OUTAGES_ON_INTERFACE);
+        			stmt.setInt(1, nodeid);
+                                stmt.setString(2, ipaddr);
+        			stmt.executeUpdate();
+        			if (log.isDebugEnabled())
+                                {
+        				log.debug("deleteInterfaceHandler: deleted all outages on interface: "
+                                                + ipaddr + " at nodeid: " + nodeid);
+                                }
+                                stmt.close();
+                                
+                                // Deleting all events associated with the nodeid and ipaddress
+        			stmt = dbConn.prepareStatement(SQL_DELETE_EVENTS_ON_INTERFACE);
+        			stmt.setInt(1, nodeid);
+                                stmt.setString(2, ipaddr);
+        			stmt.executeUpdate();
+        			if (log.isDebugEnabled())
+                                {
+        				log.debug("deleteInterfaceHandler: deleted all events on interface: "
+                                                + ipaddr + " at nodeid: " + nodeid);
+                                }
+                                stmt.close();
+                                
+                                // Deleting the snmpinterface entry with the nodeid and ipaddress
+        			stmt = dbConn.prepareStatement(SQL_DELETE_SNMPINTERFACE_ON_INTERFACE);
+        			stmt.setInt(1, nodeid);
+                                stmt.setString(2, ipaddr);
+        			stmt.executeUpdate();
+        			if (log.isDebugEnabled())
+                                {
+        				log.debug("deleteInterfaceHandler: deleted the snmpinterface entry of interface: "
+                                                + ipaddr + " at nodeid: " + nodeid);
+                                }
+                                stmt.close();
+                                
+                                // Deleting all the ifservices associated with the nodeid and ipaddress
         			stmt = dbConn.prepareStatement(SQL_DELETE_IFSERVICES_ON_INTERFACE);
         			stmt.setInt(1, nodeid);
                                 stmt.setString(2, ipaddr);
@@ -1435,31 +1430,51 @@ final class BroadcastEventProcessor
                                 }
                                 stmt.close();
         
-        
+                                // if the deleted interface is the SNMP primary interface of a node,
+                                // an forceRescan event should be issued.
+                                //
+                                stmt = dbConn.prepareStatement(SQL_QUERY_PRIMARY_INTERFACE);
+                                stmt.setInt(1, nodeid);
+                                stmt.setString(2, ipaddr);
+                                
+                                rs = stmt.executeQuery();
+                                char isPrimary = 'N';
+                                if (rs.next())
+                                        isPrimary = rs.getString(1).charAt(0);
+
+                                rs.close();
+                                stmt.close();
         	                // Deleting the interface on the node
         			stmt = dbConn.prepareStatement(SQL_DELETE_INTERFACE);
         			stmt.setInt(1, nodeid);
-                                stmt.setString(2, event.getInterface());
+                                stmt.setString(2, ipaddr);
         			stmt.executeUpdate();
-        			if (log.isDebugEnabled())
+        			
+                                stmt.close();
+                                
+                                if (log.isDebugEnabled())
                                 {
         				log.debug("deleteInterfaceHandler: deleted the ipaddress: " 
                                                 + ipaddr + " on  nodeid: " + nodeid);
                                 
         			}
-                        
-                                // Create an interfaceDeleted event and send it to eventd, this new event will remove all
-                                // the services on the interface and the interface from the nodeid/interface/services 
-                                // conbination of the pollable node list.
+                                        
+                                // Create an interfaceDeleted event and send it to eventd, this new event will 
+                                // remove all the services on the interface and the interface from the 
+                                // nodeid/interface/services conbination of the pollable node list.
+                                //
                                 createAndSendInterfaceDeletedEvent(nodeid, event.getHost(), ipaddr, txNo, sourceUei);
                                 if (m_xmlrpc)
                                 {
                                         int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
                                         String message = new String("Successfully deleted interface: ") + ipaddr 
                                                         + " on node: " + nodeLabel;
-                                        createAndSendXmlrpcNotificationEvent(txNo, sourceUei, message, status); 
+                                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, message, 
+                                                status, "OpenNMS.Capsd"); 
                                 }
-        
+                                
+                                if (isPrimary == 'P')
+                                        createAndSendForceRescanEvent(event.getHost(), (long)nodeid);
                         }
 	                
 		}
@@ -1469,8 +1484,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                        sqlE.getMessage(), status); 
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
+                                        sqlE.getMessage(), status, "OpenNMS.Capsd"); 
                         }
 		}
 		finally
@@ -1491,7 +1506,7 @@ final class BroadcastEventProcessor
          * it to eventd..
          *
          * @param hostName      the Host server name. 
-         * @param nodeLabel     the node label of the deleted node.
+         * @param nodeLabel     the nodelabel of the deleted node.
          * @param txNo          the external transaction No of the event.
          * @param callerUei     the uei of the caller event.
          */
@@ -1544,12 +1559,46 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
-                                                "caught unexpected throwable exception.", status);
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
+                                           "caught unexpected throwable exception.", status, "OpenNMS.Capsd");
                         }
                 }
         }                
         
+        /**
+         * This method is responsible for generating a forceRescan event and sending
+         * it to eventd..
+         *
+         * @param hostName      the Host server name. 
+         * @param nodeId        the node ID of the node to rescan.
+         */
+        private void createAndSendForceRescanEvent(String hostName, long nodeId)
+        {
+		Category log = ThreadCategory.getInstance(getClass());
+		if (log.isDebugEnabled())
+                        log.debug("createdAndSendForceRescanEvent: processing forceRescan event... "); 
+        
+                Event newEvent = new Event();
+                newEvent.setUei(EventConstants.FORCE_RESCAN_EVENT_UEI);
+                newEvent.setSource("OpenNMS.Capsd");
+                newEvent.setNodeid(nodeId);
+                newEvent.setHost(hostName);
+                newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+
+                // Send event to Eventd
+                try
+                {
+                        EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
+
+                        if (log.isDebugEnabled())
+                                log.debug("createAndSendForceRescanEvent: successfully sent forceRescan event for node: " 
+                                        + nodeId);
+                }
+                catch(Throwable t)
+                {
+                        log.warn("run: unexpected throwable exception caught during send to middleware", t);
+                }
+        }                
        
         /**
          * This method is responsible for generating an interfaceDeleted event and sending
@@ -1607,8 +1656,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
-                                                "caught unexpected throwable exception.", status);
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
+                                           "caught unexpected throwable exception.", status, "OpenNMS.Capsd");
                         }
                 }
         }                
@@ -1692,8 +1741,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                                "Invalid parameters.", status);
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
+                                           "Invalid parameters.", status, "OpenNMS.Capsd");
                         }
                         
 			return;
@@ -1728,8 +1777,8 @@ final class BroadcastEventProcessor
                                 {
                                         StringBuffer message = new StringBuffer("Invalid service: ").append(serviceName);
                                         int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                        createAndSendXmlrpcNotificationEvent( txNo, sourceUei, 
-                                                                              message.toString(), status);
+                                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei, 
+                                                   message.toString(), status, "OpenNMS.Capsd");
                                 }
                                 return;
                         }
@@ -1758,34 +1807,19 @@ final class BroadcastEventProcessor
                                 // but just return for the 'ADD' operation.
                                 if (action.equalsIgnoreCase("DELETE"))
                                 {
-				        if (log.isDebugEnabled())
-				        {
-					        log.debug("changeServiceHandler: delete service: " + serviceName  
-                                                + " on IPAddress: " + ipaddr);
-				        }
-			                stmt = dbConn.prepareStatement(SQL_DELETE_SERVICE);
-	
-			                stmt.setString(1, ipaddr);
-			                stmt.setInt(2, serviceId);
-	
-			                stmt.executeUpdate();
+                                        // Create a deleteService event to eventd
+                                        DbNodeEntry nodeEntry = DbNodeEntry.get(nodeId);
+                                        createAndSendDeleteServiceEvent(nodeEntry, InetAddress.getByName(ipaddr), 
+                                                                         serviceName, txNo, sourceUei);
                                         
                                         if (m_xmlrpc)
                                         {
                                                 StringBuffer message = new StringBuffer("Deleted service: ");
                                                 message.append(serviceName).append(" on ").append(ipaddr);
                                                 int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                                createAndSendXmlrpcNotificationEvent( txNo, sourceUei, 
-                                                                                      message.toString(), status);
+                                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei, 
+                                                           message.toString(), status, "OpenNMS.Capsd");
                                         }
-                                        
-                                        // Create a serviceDeleted event to eventd
-                                        DbNodeEntry nodeEntry = DbNodeEntry.get(nodeId);
-                                        createAndSendServiceDeletedEvent(nodeEntry, InetAddress.getByName(ipaddr), 
-                                                                         serviceName, txNo, sourceUei);
-                                        //Create a restartPollingInterface event to eventd. 
-                                        createAndSendRestartPollingInterfaceEvent(nodeId, ipaddr, 
-                                                event.getHost(), txNo, sourceUei);
                                 }
 			        else // could not perform 'ADD' since the service already exists.
                                 {
@@ -1795,8 +1829,8 @@ final class BroadcastEventProcessor
                                                 StringBuffer message = new StringBuffer("Could not add in service: ");
                                                 message.append(serviceName).append(". It is already in the database.");
                                                 int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                                createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                                                                message.toString(), status);
+                                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
+                                                           message.toString(), status, "OpenNMS.Capsd");
                                         }
                                 }
                                 
@@ -1845,8 +1879,8 @@ final class BroadcastEventProcessor
                                                 message.append(serviceName).append(" to ").append(ipaddr);
                                                 message.append(" on node: ").append(nodeEntry.getLabel());
                                                 int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                                createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                                                                message.toString(), status);
+                                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
+                                                           message.toString(), status, "OpenNMS.Capsd");
                                         }
                                 }
                         }
@@ -1858,8 +1892,8 @@ final class BroadcastEventProcessor
                                         StringBuffer message = new StringBuffer("Could not delete non-existing service: ");
                                         message.append(serviceName).append(".");
                                         int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                        createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                                                              message.toString(), status);
+                                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
+                                                   message.toString(), status, "OpenNMS.Capsd");
                                 }
                         }
 		}
@@ -1869,8 +1903,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                                sqlE.getMessage(), status);
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
+                                           sqlE.getMessage(), status, "OpenNMS.Capsd");
                         }
 		}
 		catch(java.net.UnknownHostException e)
@@ -1879,8 +1913,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                                e.getMessage(), status);
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
+                                           e.getMessage(), status, "OpenNMS.Capsd");
                         }
 		}
 		finally
@@ -1997,32 +2031,32 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
-                                                "caught unexpected throwable exception.", status);
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
+                                           "caught unexpected throwable exception.", status, "OpenNMS.Capsd");
                         }
                 }
         }                
 	
         /**
-         * This method is responsible for generating a serviceDeleted event and sending
+         * This method is responsible for generating a deleteService event and sending
          * it to eventd..
          *
-         * @param nodeEntry     The node that the service got deleted on.
-         * @param ifaddr        the interface the service got deleted on.
-         * @param service       the service deleted.
+         * @param nodeEntry     The node that the service to get deleted on.
+         * @param ifaddr        the interface the service to get deleted on.
+         * @param service       the service to delete.
          * @param txNo          the transaction no.
          * @param callerUei     the uei of the caller event.
          */
-        private void createAndSendServiceDeletedEvent( DbNodeEntry nodeEntry, InetAddress ifaddr, 
+        private void createAndSendDeleteServiceEvent( DbNodeEntry nodeEntry, InetAddress ifaddr, 
                                                        String service, long txNo, String callerUei)
         {
 		Category log = ThreadCategory.getInstance(getClass());
 		if (log.isDebugEnabled())
-			log.debug("createAndSendServiceDeletedEvent:  nodeId/interface/service  " 
+			log.debug("createAndSendDeleteServiceEvent:  nodeId/interface/service  " 
                         + nodeEntry.getNodeId() + "/" + ifaddr.getHostAddress() + "/" + service);
         
                 Event newEvent = new Event();
-                newEvent.setUei(EventConstants.SERVICE_DELETED_EVENT_UEI);
+                newEvent.setUei(EventConstants.DELETE_SERVICE_EVENT_UEI);
                 newEvent.setSource("OpenNMS.Capsd");
                 newEvent.setNodeid(nodeEntry.getNodeId());
                 newEvent.setHost(Capsd.getLocalHostAddress());
@@ -2069,7 +2103,7 @@ final class BroadcastEventProcessor
                         EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
 
                         if (log.isDebugEnabled())
-                                log.debug("createdAndSendServiceDeletedEvent: successfully sent serviceDeleted event "
+                                log.debug("createdAndSendDeleteServiceEvent: successfully sent serviceDeleted event "
                                         + "for nodeid/interface/service: " 
                                         + nodeEntry.getNodeId() + "/"
                                         + ifaddr.getHostAddress() + "/" + service);
@@ -2081,73 +2115,12 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
-                                                "caught unexpected throwable exception.", status);
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
+                                           "caught unexpected throwable exception.", status, "OpenNMS.Capsd");
                         }
                 }
         }                
 
-        /**
-         * This method is responsible for generating a restartPollingInterface  event 
-         * and sending it to eventd..
-         *
-         * @param ipaddr        IP address of the interface to restart polling.
-         * @param hostName      the Host server name 
-         * @param txNo          the external transaction No of the original event.
-         * @param callerUei     the uei of the caller event.
-         */
-        private void createAndSendRestartPollingInterfaceEvent( int nodeId, String ipaddr, 
-                                                                String hostName, long txNo, String callerUei)
-        {
-		Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-			log.debug("createAndSendRetartPollingInterfaceEvent:  processing changeService event for interface:  " 
-                                + ipaddr);
-        
-                Event newEvent = new Event();
-                newEvent.setUei(EventConstants.RESTART_POLLING_INTERFACE_EVENT_UEI);
-                newEvent.setSource("OpenNMS.capsd");
-                newEvent.setNodeid(nodeId);
-                newEvent.setInterface(ipaddr);
-                newEvent.setHost(hostName);
-                newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-                // Add appropriate parms
-                Parms eventParms = new Parms();
-                Parm eventParm = null;
-                Value parmValue = null;
-
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-                parmValue = new Value();
-                parmValue.setContent((new Long(txNo)).toString());
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-                
-                // Add Parms to the event
-                newEvent.setParms(eventParms);
-                // Send event to Eventd
-                try
-                {
-                        EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
-
-                        if (log.isDebugEnabled())
-                                log.debug("createAndSendRestartPollingInterfaceEvent: successfully sent " 
-                                        + " restartPollingInterface event for interface: " + ipaddr);
-                }
-                catch(Throwable t)
-                {
-                        log.warn("run: unexpected throwable exception caught during send to middleware", t);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
-                                                "caught unexpected throwable exception.", status);
-                        }
-                }
-        }                
-
-        
 	/**
 	 * Process the event, add or remove a specified interface from an opennms server. An 'action'
          * parameter wraped in the event will tell which action to take to the interface, and a 'nodelabel'
@@ -2236,7 +2209,8 @@ final class BroadcastEventProcessor
                         message.append(". nodeLabel/ipaddr/hostname: ").append(nodeLabel).append("/");
                         message.append(ipaddr).append("/").append(hostName);
                         int status = EventConstants.XMLRPC_NOTIFY_RECEIVED;
-                        createAndSendXmlrpcNotificationEvent(txNo, sourceUei,message.toString(), status); 
+                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei,message.toString(), 
+                                status, "OpenNMS.Capsd"); 
                 }
 		boolean invalidParameters = ((ipaddr == null) || (hostName == null) || (nodeLabel == null) || (action == null));
                 if (m_xmlrpc)
@@ -2250,8 +2224,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                                                      "Invalid parameters.", status); 
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
+                                           "Invalid parameters.", status, "OpenNMS.Capsd"); 
                         }
                         
 			return;
@@ -2320,8 +2294,8 @@ final class BroadcastEventProcessor
                                         if (m_xmlrpc)
                                         {
                                                 int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                                createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                                                      "Interface already exists.", status); 
+                                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
+                                                           "Interface already exists.", status, "OpenNMS.Capsd"); 
                                         }
                                 }
                                 
@@ -2357,8 +2331,8 @@ final class BroadcastEventProcessor
                                 if (m_xmlrpc)
                                 {
                                         int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                        createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                                              "Interface not exist yet.", status); 
+                                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
+                                                   "Interface not exist yet.", status, "OpenNMS.Capsd"); 
                                 }
                         }
 		}
@@ -2368,8 +2342,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                                              sqlE.getMessage(), status); 
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
+                                           sqlE.getMessage(), status, "OpenNMS.Capsd"); 
                         }
 		}
 		finally
@@ -2449,13 +2423,11 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent( txNo, callerUei,
-                                                "caught unexpected throwable exception.", status);
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, callerUei,
+                                           "caught unexpected throwable exception.", status, "OpenNMS.Capsd");
                         }
                 }
         }                
-
-        
        
         /**
          * This method is responsible for generating a deleteInterface  event 
@@ -2520,8 +2492,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent( txNo, callerUei,
-                                                "caught unexpected throwable exception.", status);
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, callerUei,
+                                           "caught unexpected throwable exception.", status, "OpenNMS.Capsd");
                         }
                 }
         }                
@@ -2604,7 +2576,8 @@ final class BroadcastEventProcessor
                         int status = EventConstants.XMLRPC_NOTIFY_RECEIVED;
                         StringBuffer message = new StringBuffer("Received event: updateService/action --");
                         message.append(action).append("  ").append(serviceName);
-                        createAndSendXmlrpcNotificationEvent( txNo, sourceUei, message.toString(), status);
+                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei, 
+                                message.toString(), status, "OpenNMS.Capsd");
                 }
                 
                 boolean invalidParameters = ((ipaddr == null) || (serviceName == null) || (action == null));
@@ -2619,8 +2592,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                                "Invalid parameters.", status);
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
+                                           "Invalid parameters.", status, "OpenNMS.Capsd");
                         }
                         
 			return;
@@ -2656,8 +2629,8 @@ final class BroadcastEventProcessor
                                         int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
                                         StringBuffer message = new StringBuffer("The specified service: ").append(serviceName);
                                         message.append(" does not exist in the database.");
-                                        createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                                message.toString(), status);
+                                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
+                                                message.toString(), status, "OpenNMS.Capsd");
                                 }
                                 return;
                         }
@@ -2704,8 +2677,8 @@ final class BroadcastEventProcessor
                                         if (m_xmlrpc)
                                         {
                                                 int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                                createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                                "Service already exists.", status);
+                                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
+                                                        "Service already exists.", status, "OpenNMS.Capsd");
                                         }
                                 }
                                 
@@ -2741,8 +2714,8 @@ final class BroadcastEventProcessor
                                         int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
                                         StringBuffer message = new StringBuffer("Non-existing service: ");
                                         message.append(serviceName);
-                                        createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                                message.toString(), status);
+                                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
+                                                message.toString(), status, "OpenNMS.Capsd");
                                 }
                         }
 		}
@@ -2752,8 +2725,8 @@ final class BroadcastEventProcessor
                         if (m_xmlrpc)
                         {
                                 int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                                sqlE.getMessage(), status);
+                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
+                                           sqlE.getMessage(), status, "OpenNMS.Capsd");
                         }
 		}
 		finally
@@ -2831,11 +2804,10 @@ final class BroadcastEventProcessor
                 {
                         log.warn("run: unexpected throwable exception caught during send to middleware", t);
                         int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                        createAndSendXmlrpcNotificationEvent( txNo, callerUei,
-                                                "caught unexpected throwable exception.", status);
+                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, callerUei,
+                                   "caught unexpected throwable exception.", status, "OpenNMS.Capsd");
                 }
         }                
-
         
         /**
 	 * This method is invoked by the EventIpcManager

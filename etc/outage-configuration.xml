@@ -1,6 +1,3 @@
-<OutageConfiguration
-	writers="1"
-	getNextOutageID="SELECT nextval('outageNxtId')"
-        xmlrpc="false"
-        xmlrpcServerUrl="@install.xmlrpc.server@">
+<OutageConfiguration writers="1"
+	getNextOutageID="SELECT nextval('outageNxtId')" deletePropagation="false">
 </OutageConfiguration>

@@ -563,6 +563,11 @@ final class SuspectEventProcessor
 			org.opennms.netmgt.config.poller.Package ipPkg = null;
 			if (!addrUnmanaged)
 			{
+                                // The newly discoveried IP addr is not in the Package IPList 
+                                // Mapping yet, so rebuild the list.
+                                //
+                                PollerConfigFactory.getInstance().rebuildPackageIpListMap();
+                                
 				boolean ipToBePolled = false;
 				ipPkg = pollerCfgFactory.getFirstPackageMatch(ifaddr.getHostAddress());
 				if (ipPkg != null)
@@ -621,7 +626,12 @@ final class SuspectEventProcessor
 			org.opennms.netmgt.config.poller.Package ipPkg = null;
 			if (!addrUnmanaged)
 			{
-				boolean ipToBePolled = false;
+                                // The newly discoveried IP addr is not in the Package IPList 
+                                // Mapping yet, so rebuild the list.
+                                //
+                                PollerConfigFactory.getInstance().rebuildPackageIpListMap();
+				
+                                boolean ipToBePolled = false;
 				ipPkg = pollerCfgFactory.getFirstPackageMatch(ifaddr.getHostAddress());
 				if (ipPkg != null)
 					ipToBePolled = true;
@@ -738,6 +748,11 @@ final class SuspectEventProcessor
 				org.opennms.netmgt.config.poller.Package xipPkg = null;
 				if (!xaddrUnmanaged)
 				{
+                                        // The newly discoveried IP addr is not in the Package IPList 
+                                        // Mapping yet, so rebuild the list.
+                                        //
+                                        PollerConfigFactory.getInstance().rebuildPackageIpListMap();
+                                        
 					boolean xipToBePolled = false;
 					xipPkg = pollerCfgFactory.getFirstPackageMatch(xifaddr.getHostAddress());
 					if (xipPkg != null)

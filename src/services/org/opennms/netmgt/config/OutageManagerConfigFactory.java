@@ -54,6 +54,7 @@ import org.opennms.netmgt.ConfigFileConstants;
  * <em>init()</em> is called before calling any other method to ensure
  * the config is loaded before accessing other convenience methods</p>
  *
+ * @author <a href="mailto:jamesz@blast.com">James Zuo</a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
@@ -182,5 +183,22 @@ public final class OutageManagerConfigFactory
 	public synchronized String getGetNextOutageID()
 	{
 		return m_config.getGetNextOutageID();
+	}
+
+	/**
+	 * <p>Return a boolean flag to indicate if a deleteService should be propagated to
+         * the interface or node level deletion when approciate.</p>
+	 *
+	 * @return true for delete propagation otherwise false.
+	 */
+	public synchronized boolean deletePropagation()
+	{
+                boolean propagation = true;
+                
+		String deletePropagation = m_config.getDeletePropagation();
+                if (deletePropagation != null && deletePropagation.equals("false"))
+                        propagation = false;
+
+                return propagation;
 	}
 }
