@@ -237,6 +237,16 @@ public class EventConstants
 	public final static String HIGH_THRESHOLD_EVENT_UEI = "http://uei.opennms.org/products/bluebird/threshold/highThresholdExceeded";   
 
 	/**
+	 * The high threshold exceeded event UEI
+	 */
+	public final static String HIGH_THRESHOLD_REARM_EVENT_UEI = "http://uei.opennms.org/products/bluebird/threshold/highThresholdRearmed";   
+
+	/**
+	 * The high threshold exceeded event UEI
+	 */
+	public final static String LOW_THRESHOLD_REARM_EVENT_UEI = "http://uei.opennms.org/products/bluebird/threshold/lowThresholdRearmed";   
+
+	/**
 	 * The interface index changed event
 	 */
 	public final static String INTERFACE_INDEX_CHANGED_EVENT_UEI = "http://uei.opennms.org/products/bluebird/nodes/interfaceIndexChanged";

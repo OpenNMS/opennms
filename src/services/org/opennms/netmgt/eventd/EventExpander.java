@@ -385,27 +385,27 @@ public final class EventExpander
 		// type and see if we can process it.
 		//
 		if (eConf == null)
-		{
-			if(snmpInfo.getGeneric() >= 0 && snmpInfo.getGeneric() < GENERIC_SNMP_UEIS.length)
-			{
+		//{
+		//	if(snmpInfo.getGeneric() >= 0 && snmpInfo.getGeneric() < GENERIC_SNMP_UEIS.length)
+		//	{
 				// Get the lookup string and see if we can find a matching 
 				// event conf for the uei
 				//
-				String  uei = GENERIC_SNMP_UEIS[snmpInfo.getGeneric()];
+		//		String  uei = GENERIC_SNMP_UEIS[snmpInfo.getGeneric()];
 		
 				// Look the event configuration, do special processing for
 				// a specific trap
 				//
-				eConf = EventConfigurationManager.getByUei(uei);
+		//		eConf = EventConfigurationManager.getByUei(uei);
 
-			}
-			else
-			{
+		//	}
+		//	else
+		//	{
 				// take the configuration of the default event
 				//
 				eConf = EventConfigurationManager.getByUei(DEFAULT_TRAP_UEI);
-			}
-		}
+		//	}
+		//}
 
 		// return the found event base object
 		//

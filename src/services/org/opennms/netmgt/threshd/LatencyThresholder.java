@@ -656,6 +656,28 @@ final class LatencyThresholder
 										EventConstants.LOW_THRESHOLD_EVENT_UEI, 
 										date));
 						}
+
+						if (result == ThresholdEntity.HIGH_AND_LOW_REARMED ||
+							result == ThresholdEntity.HIGH_REARMED)
+						{
+							events.addEvent(createEvent(nodeId,
+										ipAddr,
+										dsValue.doubleValue(),
+										threshold.getHighThreshold(),
+										EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, 
+										date));
+						}
+						
+						if (result == ThresholdEntity.HIGH_AND_LOW_REARMED ||
+							result == ThresholdEntity.LOW_REARMED)
+						{
+							events.addEvent(createEvent(nodeId,
+										ipAddr,
+										dsValue.doubleValue(),
+										threshold.getLowThreshold(),
+										EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, 
+										date));
+						}
 					}
 				}
 			}

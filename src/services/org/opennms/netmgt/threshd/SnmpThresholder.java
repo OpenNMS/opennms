@@ -734,6 +734,30 @@ final class SnmpThresholder
 										EventConstants.LOW_THRESHOLD_EVENT_UEI, 
 										date));
 						}
+
+						if (result == ThresholdEntity.HIGH_AND_LOW_REARMED ||
+							result == ThresholdEntity.HIGH_REARMED)
+						{
+							events.addEvent(createEvent(nodeId, 
+										primary,
+										null,
+										dsValue.doubleValue(),
+										threshold.getHighThreshold(),
+										EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, 
+										date));
+						}
+						
+						if (result == ThresholdEntity.HIGH_AND_LOW_REARMED ||
+							result == ThresholdEntity.LOW_REARMED)
+						{
+							events.addEvent(createEvent(nodeId, 
+										primary, 
+										null,
+										dsValue.doubleValue(),
+										threshold.getLowThreshold(),
+										EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, 
+										date));
+						}
 					}
 				}
 			}
@@ -976,6 +1000,30 @@ final class SnmpThresholder
 										dsValue.doubleValue(),
 										threshold.getLowThreshold(),
 										EventConstants.LOW_THRESHOLD_EVENT_UEI, 
+										date));
+						}
+						
+						if (result == ThresholdEntity.HIGH_AND_LOW_REARMED ||
+							result == ThresholdEntity.HIGH_REARMED)
+						{
+							events.addEvent(createEvent(nodeId, 
+										primary,
+										ifDataMap,
+										dsValue.doubleValue(),
+										threshold.getHighThreshold(),
+										EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, 
+										date));
+						}
+						
+						if (result == ThresholdEntity.HIGH_AND_LOW_REARMED ||
+							result == ThresholdEntity.LOW_REARMED)
+						{
+							events.addEvent(createEvent(nodeId, 
+										primary, 
+										ifDataMap,
+										dsValue.doubleValue(),
+										threshold.getLowThreshold(),
+										EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, 
 										date));
 						}
 					}

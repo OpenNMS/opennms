@@ -46,6 +46,9 @@ final class ThresholdEntity
 	static final int HIGH_TRIGGERED = 1;
 	static final int LOW_TRIGGERED = 2;
 	static final int HIGH_AND_LOW_TRIGGERED = 3;
+	static final int HIGH_REARMED = 4;
+	static final int LOW_REARMED = 5;
+	static final int HIGH_AND_LOW_REARMED = 6;
 	
 	static final String HIGH_THRESHOLD = "high";
 	static final String LOW_THRESHOLD = "low";
@@ -292,6 +295,8 @@ final class ThresholdEntity
 		
 		boolean highTriggered = false;
 		boolean lowTriggered = false;
+		boolean highRearmed = false;
+		boolean lowRearmed = false;
 		
 		if (log.isDebugEnabled())
 			log.debug("evaluate: value= " + dsValue + " against threshold: " + this);
@@ -331,6 +336,7 @@ final class ThresholdEntity
 					if (log.isDebugEnabled())
 						log.debug("evaluate: high threshold rearmed!");
 					m_highArmed = true;
+					highRearmed = true;
 					m_highCount = 0;
 				}
 			}
@@ -378,6 +384,7 @@ final class ThresholdEntity
 					if (log.isDebugEnabled())
 						log.debug("evaluate: low threshold rearmed!");
 					m_lowArmed = true;
+					lowRearmed = true;
 					m_lowCount = 0;
 				}
 			}
@@ -398,6 +405,13 @@ final class ThresholdEntity
 			return LOW_TRIGGERED;
 		else if (highTriggered)
 			return HIGH_TRIGGERED;
+                else if (lowRearmed && highRearmed)
+                        return HIGH_AND_LOW_REARMED;
+                else if (lowRearmed)
+                        return LOW_REARMED;
+                else if (highRearmed)
+                        return HIGH_REARMED;
+
 		else
 			return NONE_TRIGGERED;
 	}
