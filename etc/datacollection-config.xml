@@ -64,13 +64,17 @@
 				<mibObj oid=".1.3.6.1.4.1.9.2.1.8"  instance="0" alias="freeMem"     type="gauge"/>
 				<mibObj oid=".1.3.6.1.4.1.9.2.1.46" instance="0" alias="bufferFail"  type="counter"/>
 				<mibObj oid=".1.3.6.1.4.1.9.2.1.47" instance="0" alias="bufferNoMem" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="1" alias="ciscoInFanTemp" type="gauge"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="3" alias="ciscoOutFanTemp" type="gauge"/>
 			</group>
                         <group  name = "cisco-router-if-stats" ifType = "all">
                                 <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.7" instance="ifIndex" alias="locIfInPktsSec" type="integer"/>
                                 <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.9" instance="ifIndex" alias="locIfOutPktsSec" type="integer"/>
                         </group>
+			<group name = "cisco-router-env" ifType = "ignore">
+				<mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="1" alias="tempin" type="gauge32"/>
+				<mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="2" alias="tempout1" type="gauge32"/>
+				<mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="3" alias="tempout2" type="gauge32"/>
+				<mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="4" alias="tempout3" type="gauge32"/>
+			</group>
 			<group 	name = "bay-router" ifType = "ignore">
 				<mibObj oid=".1.3.6.1.4.1.18.3.3.2.5.1.1.9"  instance="0" alias="wfkernelTasksTotal"  type="gauge"/>
 				<mibObj oid=".1.3.6.1.4.1.18.3.3.2.5.1.1.10" instance="0" alias="wfkernelTasksInQue"  type="counter"/>
@@ -308,6 +312,7 @@
 					<includeGroup>mib2-interfaces</includeGroup>
 					<includeGroup>cisco-router</includeGroup>
 					<includeGroup>cisco-router-if-stats</includeGroup>
+					<includeGroup>cisco-router-env</includeGroup>
 				</collect>
 			</systemDef>
 
