@@ -26,7 +26,7 @@ if [ "`uname`" = "Darwin" ]; then
 	LD="/usr/bin/cc"
 fi
 
-for dir in /usr/local/pgqsl/lib /usr/local/lib /usr/lib /sw/lib; do
+for dir in /usr/local/pgsql/lib /usr/local/lib /usr/lib /sw/lib; do
 	if [ -f "$dir/libpq.so.2" ]; then
 		PG_LIBDIR="$dir"
 		break
