@@ -57,7 +57,6 @@ tell(){
 # Give the user some basic help.
 #
 printHelp() {
-#    while getopts cf:hnqrsS: c
     echo "usage: $basename [-f] [-n] [-q]"
     echo "       {-s | -S <JRE path> | -c | -r <java options> | -h}"
     echo ""
@@ -290,7 +289,7 @@ runJava() {
 	add_ld_path
 	exec "$JP" "$@"
     else
-	echo "Dry run mode is set.  Would have executed: $JP $*"
+	tell "Dry run mode is set.  Would have executed: $JP $*"
     fi
 }
 
@@ -347,18 +346,20 @@ setJava() {
     if [ ! -x "$JP" ]; then
 	die "specified JRE \"$JP\" does not exist or is not executable"
     fi
-    if javaCheck; then
-	tell "specified JRE is good."
-	saveJava
-	return $?
-    else
+    javaCheck
+    if [ $? -ne 0 ]; then
 	if [ $force -gt 0 ]; then
 	    warn "JRE is not an appropriate version"
 	    warn "Ignoring Java warning due to '-f' option being used"
 	else
 	    die "specified JRE \"$JP\" is not an appropriate JRE"
 	fi
+    else
+	tell "specified JRE is good."
     fi
+
+    saveJava
+    return $?
 }
 
 saveJava() {
@@ -387,7 +388,7 @@ parseArgsAndDoStuff() {
     search=0
     location=""
     
-    while getopts cf:hnqrsS: c
+    while getopts cfhnqrsS: c
     do
       case $c in
           c)
@@ -422,7 +423,7 @@ parseArgsAndDoStuff() {
     	  exclusive=`expr $exclusive + 1`
     	  ;;
 
-          S)
+	  S)
     	  location="$OPTARG"
     	  exclusive=`expr $exclusive + 1`
     	  ;;
