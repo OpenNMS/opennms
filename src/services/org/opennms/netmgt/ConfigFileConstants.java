@@ -430,19 +430,19 @@ public final class ConfigFileConstants
 		KSC_REPORT_FILE_NAME			= 46;
         	SCRIPTD_CONFIG_FILE_NAME		= 47;
 
-                OPENNMS_SERVER_CONFIG_FILE_NAME         = 47;
-                XMLRPCD_CONFIG_FILE_NAME                = 48;
+                OPENNMS_SERVER_CONFIG_FILE_NAME         = 48;
+                XMLRPCD_CONFIG_FILE_NAME                = 49;
                 
-                DHCPD_CONFIG_FILE_NAME = 49;
+                DHCPD_CONFIG_FILE_NAME = 50;
                 
-                RRD_CONFIG_FILE_NAME = 50;
+                RRD_CONFIG_FILE_NAME = 51;
                 
-                JAVA_MAIL_CONFIG_FILE_NAME = 51;
-                VACUUMD_CONFIG_FILE_NAME = 52;
+                JAVA_MAIL_CONFIG_FILE_NAME = 52;
+                VACUUMD_CONFIG_FILE_NAME = 53;
                 
 		// Allocate and build the mapping of identifiers to names
 		//
-		FILE_ID_TO_NAME = new String[53];
+		FILE_ID_TO_NAME = new String[54];
 
 		FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] 		= "opennms-database.xml";
 		FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME]		= "opennms-jms.xml";
