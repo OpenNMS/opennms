@@ -60,11 +60,6 @@ if(deleteName!=null) {
 <title>Scheduled Outage administration</title>
 <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
 <link rel="stylesheet" type="text/css" href="includes/styles.css" />
-<style>
-TD {
-        font-size: 0.8em;
-}
-</style>
 <body>
 <% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
 <% String breadcrumb2 = "Manage Scheduled Outages"; %>
@@ -163,8 +158,12 @@ for(int i=0; i<outages.length; i++) {
 	Time[] outageTimes=pollFactory.getOutageTimes(outageName);
 	for(int j=0; j<outageTimes.length; j++) {
 		Time thisOutageTime=outageTimes[j];
-		String rawDay=thisOutageTime.getDay();
-		String day=(rawDay==null)?"":(String)shortDayNames.get(rawDay);
+                String rawDay=thisOutageTime.getDay();
+                String day = rawDay;
+                if ("weekly".equals(pollFactory.getOutageType(outageName)))
+                        day=(rawDay==null)?"":(String)shortDayNames.get(rawDay);
+                if ("specific".equals(pollFactory.getOutageType(outageName)))
+                        day= "";
 		%><%=day%> <%=thisOutageTime.getBegins()%> -<%="specific".equals(pollFactory.getOutageType(outageName))?"<BR>":""%> <%=thisOutageTime.getEnds()%><BR><%
 	}
 	%>

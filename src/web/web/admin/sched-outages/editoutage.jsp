@@ -382,11 +382,6 @@ theOutage.getInterfaceCollection().contains("match-any");
 <title>Scheduled Outage administration</title>
 <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
 <link rel="stylesheet" type="text/css" href="includes/styles.css" />
-<style>
-TD {
-        font-size: 0.8em;
-}
-</style>
 <script>
 function outageTypeChanged(selectElement) {
 	var isSpecific=selectElement.options(selectElement.selectedIndex).value=="specific";
