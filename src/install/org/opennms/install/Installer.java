@@ -201,6 +201,11 @@ public class Installer {
 		printDiagnostics();
 
 		verifyFilesAndDirectories();
+		
+		if (m_install_webapp) {
+			checkWebappOldOpennmsDir();
+			checkServerXmlOldOpennmsContext();
+		}
 
 		if (m_update_database || m_fix_constraint) {
 			readTables();
@@ -782,7 +787,7 @@ public class Installer {
 			String query = "SELECT count(" + table + "." + column + ") FROM "
 					+ table + " "
 					+ getForeignConstraintWhere(table, column, ftable, fcolumn);
-
+			
 			ResultSet rs = st.executeQuery(query);
 
 			rs.next();
@@ -1462,6 +1467,54 @@ public class Installer {
 
 		rs = st.executeQuery(query);
 		return rs.next();
+	}
+	
+	public void checkWebappOldOpennmsDir() throws Exception {
+		File f = new File(m_webappdir + File.separator + "opennms");
+		
+		m_out.print("- Checking for old opennms webapp directory in " + f.getAbsolutePath() + "... ");
+		
+		if (f.exists()) {
+			throw new Exception("Old OpenNMS web application exists: " +
+				f.getAbsolutePath() + ".  You need to remove this " +
+				"before continuing.");
+		}
+		
+		m_out.println("OK");
+	}
+	
+	public void checkServerXmlOldOpennmsContext() throws Exception {
+		String search_regexp = "(?m).*<Context\\s+path=\"/opennms\".*";
+		StringBuffer b = new StringBuffer();
+		
+		File f = new File(m_webappdir + File.separator + ".." + File.separator + "conf" +
+					File.separator + "server.xml");
+		
+		m_out.print("- Checking for old opennms context in " + f.getAbsolutePath() + "... ");
+		
+		if (!f.exists()) {
+			m_out.println("DID NOT CHECK (file does not exist)");
+			return;
+		}
+
+		BufferedReader r = new BufferedReader(new FileReader(f));
+		String line;
+
+		while ((line = r.readLine()) != null) {
+			b.append(line);
+			b.append("\n");
+		}
+		r.close();
+		
+		if (b.toString().matches(search_regexp)) {
+			throw new Exception("Old OpenNMS context found in " + f.getAbsolutePath() + ".  " +
+					"You must remove this context from server.xml and re-run the " +
+					"installer.");
+		}
+		
+		m_out.println("OK");
+
+		return;
 	}
 
 	public void installWebApp() throws Exception {
