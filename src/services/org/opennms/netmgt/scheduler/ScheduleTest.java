@@ -53,10 +53,14 @@ public class ScheduleTest extends TestCase {
         junit.textui.TestRunner.run(ScheduleTest.class);
     }
     
-    class MockSchedulable implements Runnable {
+    class MockSchedulable implements ReadyRunnable {
         private int runCount = 0;
         private boolean m_callingAdjustSchedule;
-
+        
+        public boolean isReady() {
+            return true;
+        }
+    
         public void run() {
             runCount++;
             if (isCallingAdjustSchedule())

@@ -41,6 +41,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.poller.monitors.IPv4NetworkInterface;
 import org.opennms.netmgt.poller.monitors.NetworkInterface;
 import org.opennms.netmgt.scheduler.PostponeNecessary;
+import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -49,7 +50,7 @@ import org.opennms.netmgt.xml.event.Event;
  *
  * @author brozow
  */
-public class PollableService extends PollableElement implements Runnable {
+public class PollableService extends PollableElement implements ReadyRunnable {
 
     private String m_svcName;
     private PollConfig m_pollConfig;
@@ -253,6 +254,10 @@ public class PollableService extends PollableElement implements Runnable {
     }
     private void setStatusChangeTime(long statusChangeTime) {
         m_statusChangeTime = statusChangeTime;
+    }
+    
+    public boolean isReady() {
+        return isTreeLockAvailable();
     }
 
 

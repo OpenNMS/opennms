@@ -289,20 +289,19 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
      * This method is used to schedule a ready runnable in the system. The
      * interval is used as the key for determining which queue to add the
      * runnable.
-     * 
-     * @param runnable
-     *            The element to run when interval expires.
      * @param interval
      *            The queue to add the runnable to.
+     * @param runnable
+     *            The element to run when interval expires.
      * 
      * @throws java.lang.RuntimeException
      *             Thrown if an error occurs adding the element to the queue.
      */
-    public synchronized void schedule(final Runnable runnable, long interval) {
+    public synchronized void schedule(long interval, final ReadyRunnable runnable) {
         final long timeToRun = getCurrentTime()+interval;
         ReadyRunnable timeKeeper = new ReadyRunnable() {
             public boolean isReady() {
-                return getCurrentTime() >= timeToRun;
+                return getCurrentTime() >= timeToRun && runnable.isReady();
             }
             
             public void run() {

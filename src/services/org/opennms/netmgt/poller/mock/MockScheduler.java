@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.ScheduleTimer;
 
 
@@ -55,7 +56,7 @@ public class MockScheduler implements ScheduleTimer {
     }
 
     
-    public void schedule(Runnable schedule, long interval) {
+    public void schedule(long interval, ReadyRunnable schedule) {
         Long nextTime = new Long(getCurrentTime()+interval);
         //MockUtil.println("Scheduled "+schedule+" for "+nextTime);
         List entries = (List)m_scheduleEntries.get(nextTime);

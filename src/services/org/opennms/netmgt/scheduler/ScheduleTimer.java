@@ -39,6 +39,6 @@ package org.opennms.netmgt.scheduler;
  */
 public interface ScheduleTimer extends Timer {
     
-    public void schedule(Runnable schedule, long interval);
+    public void schedule(long interval, ReadyRunnable schedule);
 
 }

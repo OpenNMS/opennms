@@ -118,6 +118,10 @@ abstract public class PollableElement {
         return (parent == null ? this : parent.getLockRoot());
     }
     
+    public boolean isTreeLockAvailable() {
+        return getLockRoot().isTreeLockAvailable();
+    }
+    
     public void obtainTreeLock(long timeout) {
         getLockRoot().obtainTreeLock(timeout);
     }

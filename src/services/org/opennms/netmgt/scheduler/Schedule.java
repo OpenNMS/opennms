@@ -41,14 +41,14 @@ import org.opennms.core.utils.ThreadCategory;
  */
 public class Schedule {
 
-    private Runnable m_schedulable;
+    private ReadyRunnable m_schedulable;
     private ScheduleInterval m_interval;
     private ScheduleTimer m_timer;
     private int m_currentExpirationCode;
     private long m_currentInterval;
     private boolean m_scheduled = false;
     
-    class ScheduleEntry implements Runnable {
+    class ScheduleEntry implements ReadyRunnable {
         private int m_expirationCode;
 
         public ScheduleEntry(int expirationCode) {
@@ -61,6 +61,10 @@ public class Schedule {
         private boolean isExpired() {
             return m_expirationCode < m_currentExpirationCode;
         }
+        
+        public boolean isReady() {
+            return isExpired() || m_schedulable.isReady();
+        }
 
         public void run() {
             if (isExpired()) {
@@ -72,7 +76,7 @@ public class Schedule {
                 try {
                     Schedule.this.run();
                 } catch (PostponeNecessary e) {
-                    m_timer.schedule(this, 10000);
+                    m_timer.schedule(10000, this);
                     return;
                 }
             }
@@ -86,7 +90,7 @@ public class Schedule {
             
             long interval = m_interval.getInterval();
             if (interval >= 0 && m_scheduled)
-                m_timer.schedule(this, interval);
+                m_timer.schedule(interval, this);
 
         }
         
@@ -99,7 +103,7 @@ public class Schedule {
      * @param m_schedulable
      * 
      */
-    public Schedule(Runnable schedulable, ScheduleInterval interval, ScheduleTimer timer) {
+    public Schedule(ReadyRunnable schedulable, ScheduleInterval interval, ScheduleTimer timer) {
         m_schedulable = schedulable;
         m_interval = interval;
         m_timer = timer;
@@ -116,7 +120,7 @@ public class Schedule {
 
     private void schedule(long interval) {
         if (interval >= 0 && m_scheduled)
-            m_timer.schedule(new ScheduleEntry(++m_currentExpirationCode), interval);
+            m_timer.schedule(interval, new ScheduleEntry(++m_currentExpirationCode));
     }
 
     /**

@@ -99,6 +99,13 @@ public class PollableNode extends PollableContainer {
             }
         }
 
+        /**
+         * @return
+         */
+        public synchronized boolean isLockAvailable() {
+            return m_owner == null;
+        }
+
     }
     private int m_nodeId;
     private Lock m_lock = new Lock();
@@ -190,6 +197,10 @@ public class PollableNode extends PollableContainer {
 
     public PollableElement getLockRoot() {
         return this;
+    }
+    
+    public boolean isTreeLockAvailable() {
+        return m_lock.isLockAvailable();
     }
     
     public void obtainTreeLock(long timeout) {
