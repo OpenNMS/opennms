@@ -8,7 +8,7 @@
 	<package name="example1">
 		<filter>IPADDR IPLIKE *.*.*.*</filter>
 		<specific>0.0.0.0</specific>
-		<include-range begin="192.168.0.1" end="192.168.0.254"/>
+		<include-range begin="1.1.1.1" end="254.254.254.254"/>
 		<include-url>file:@root.install@/etc/include</include-url>
 		<service name="DominoIIOP" interval="300000" user-defined="false" status="on">
                         <parameter key="retry" value="3"/>
@@ -58,6 +58,11 @@
                         <parameter key="ports" value="80"/>
                         <parameter key="url" value="/"/>
 			<parameter key="rrd-repository" value="@root.install.share@/rrd/http"/>
+                </service>
+		<service name="HTTP-MGMT" interval="300000" user-defined="false" status="on">
+                        <parameter key="timeout" value="3000"/>
+                        <parameter key="ports" value="280"/>
+                        <parameter key="url" value="/"/>
                 </service>
                 <service name="HTTP-8080" interval="300000" user-defined="false" status="on">
                         <parameter key="timeout" value="3000"/>
@@ -139,6 +144,7 @@
         <monitor service="Citrix" 	class-name="org.opennms.netmgt.poller.CitrixMonitor"/>
         <monitor service="LDAP" 	class-name="org.opennms.netmgt.poller.LdapMonitor"/>
 	<monitor service="HTTP" 	class-name="org.opennms.netmgt.poller.HttpMonitor"/>
+	<monitor service="HTTP-MGMT" 	class-name="org.opennms.netmgt.poller.HttpMonitor"/>
 	<monitor service="HTTP-8080"    class-name="org.opennms.netmgt.poller.HttpMonitor"/>
         <monitor service="HTTP-8000"    class-name="org.opennms.netmgt.poller.HttpMonitor"/>
         <monitor service="HTTPS" 	class-name="org.opennms.netmgt.poller.HttpsMonitor"/>

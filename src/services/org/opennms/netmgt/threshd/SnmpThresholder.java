@@ -1143,7 +1143,7 @@ final class SnmpThresholder
 		newEvent.setUei(uei);
 		newEvent.setNodeid(nodeId.longValue());
 		newEvent.setService(this.serviceName());
-		
+
 		// set the source of the event to the datasource name
 		newEvent.setSource("OpenNMS.Threshd." + threshold.getDsName());
 		
