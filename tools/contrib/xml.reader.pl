@@ -1,4 +1,4 @@
-#!@root.install.perl@ -w
+#!@install.perl.bin@ -w
 use strict;
 
 my $BF_XML;

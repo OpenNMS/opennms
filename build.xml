@@ -4,319 +4,529 @@
  
    Build file for OpenNMS
  
+Refactoring notes: 
+ELB - All targets that should be displayed require a description attribute.
+ELB - All targets that should not be displayed require it's absence.
 ==================================================================== -->
  
 <project name="opennms" default="usage" basedir=".">
+  <description>
+Build file for OpenNMS.
+
+OpenNMS is a network monitoring system implemented in Java.
+For more information consult the README file included in
+your distribution.
+  </description>
+
+  <!-- overrride with site-specific settings (first proprety set wins) -->
+  <property file="build.properties"/>
  
- <!-- top-level initialization -->
- 
- <target name="init" depends="init.setup,init.bb-global,init.opennms-global"/>
+  <!-- versioning options -->
+  <property name="product.version" value="1.1.3"/>
+  <property name="product.release" value="0"/>
+  <property name="product.snapshot" value="true"/>
+  <property name="product.fullversion"
+	    value="${product.version}-${product.release}"/>
 
- <target name="init.opennms-global" if="opennms-global.exists">
-  <filter filtersfile="${user.home}/.${ant.project.name}-global.properties"/>
- </target>
+  <!-- build options -->
+  <!-- Warning: there are some internal ant properties named build.* -->
+  <property name="build.dir" value="work"/>
+  <property name="build.castor.source.dir" value="${build.dir}/castor"/>
+  <property name="build.sablecc.source.dir" value="${build.dir}/sablecc"/>
+  <property name="build.docs.dir" value="${build.dir}/docs"/>
+  <property name="build.rpm.dir" value="${build.dir}/rpm"/>
+  <property name="build.filter.docs.dir" value="${build.dir}/docs.filter"/>
+  <property name="build.api.dir" value="${build.dir}/javadoc"/>
+  <property name="build.classes.dir" value="${build.dir}/opennms/classes"/>
+  <property name="build.jar.dir" value="${build.dir}/jar"/>
+  <property name="build.jicmp.dir" value="${build.dir}/jicmp"/>
+  <property name="build.jrrd.dir" value="${build.dir}/jrrd"/>
+  <property name="build.postgresql.dir" value="${build.dir}/postgresql"/>
+  <property name="build.release.dir" value="${build.dir}/releases"/>
 
- <target name="init.bb-global" if="bb-global.exists">
-  <filter filtersfile="${user.home}/.bb-global.properties"/>
- </target>
+  <property name="build.postgresql.include.dir"
+	    value="/usr/include/pgsql/server"/>
+  <property name="build.rrdtool.include.dir" value="/usr/include"/>
+  <property name="build.rrdtool.lib.dir" value="/usr/lib"/>
+  <property name="build.rrdtool.bin" value="/usr/bin/rrdtool"/>
+  <property name="database.name" value="opennms"/>
+  <property name="database.user" value="opennms"/>
+  <property name="database.password" value="opennms"/>
 
- <target name="init.setup" unless="init.done">
-  <tstamp/>
-  <taskdef name="if" classname="org.opennms.ant.If"/>
+  <!--compiler options-->
+  <property name="compiler.debug" value="true"/>
+  <property name="compiler.optimize" value="true"/>
+  <property name="compiler.verbose" value="false"/>
+  <!-- XXX This should be true, but will have to set it false for now -->
+  <property name="compiler.deprecation" value="false"/>
+
+  <!--source directories -->
+  <property name="core.source.dir" value="src/core"/>
+  <property name="joesnmp.source.dir" value="src/joesnmp"/>
+  <property name="postgresql.source.dir" value="src/postgresql"/>
+  <property name="report.source.dir" value="src/report"/>
+  <property name="services.source.dir" value="src/services"/>
+  <property name="install.source.dir" value="src/install"/>
+  <property name="web.source.dir" value="src/web/src"/>
+  <property name="docs.source.dir" value="docs"/>
+
+  <!--library directory-->
+  <property name="packaged.lib.dir" value="lib"/>
+
+  <!-- castor specific -->
+  <property name="castor.xsd.dir" value="schema/xsd"/>
+  <property name="castor.config.dir"
+	    value="${services.source.dir}/org/opennms/netmgt/config"/>
+  <property name="castor.typefactory" value="j2"/>
+
+  <!-- sablecc specific -->
+  <property name="sablecc.filter.dir" value="org/opennms/netmgt/filter"/>
+
+  <!-- relative directories for use in filesets and for install.dir -->
+  <property name="relative.install" value="dist"/>
+
+  <!-- dist options and archive names -->
+  <property name="dist.excludes"
+	    value="**/CVS/**, ${build.dir}/**, ${relative.install}/**"/>
+  <property name="dist.source.archive.prefix"
+	    value="${ant.project.name}-${product.version}-src"/>
+  <property name="dist.docs.archive.prefix"
+	    value="${ant.project.name}-${product.version}-docs"/>
+  
+  <!-- install directories -->
+
+  <!-- install.dir: the top directory into which to install OpenNMS -->
+  <property name="install.dir" value="${basedir}/${relative.install}"/>
+
+  <property name="install.init.dir" value="${install.dir}/bin"/>
+  <property name="install.servlet.dir"
+	    value="${install.dir}/webapps/opennms"/>
+  <property name="install.share.dir" value="${install.dir}/share"/>
+  <property name="install.bin.dir" value="${install.dir}/bin"/>
+  <property name="install.postgresql.dir" value="${install.dir}/lib"/>
+  <property name="install.contrib.dir" value="${install.dir}/contrib"/>
+  <property name="install.etc.dir" value="${install.dir}/etc"/>
+  <property name="install.logs.dir" value="${install.dir}/logs"/>
+  <property name="install.pid.file" value="${install.dir}/logs/opennms.pid"/>
+
+  <!-- install.prefix: a prefix used for installation in or chroot -->
+  <property name="install.prefix" value=""/>
+
+  <property name="install.database.name" value="${database.name}"/>
+  <property name="install.database.user" value="${database.user}"/>
+  <property name="install.database.password" value="${database.password}"/>
+  <property name="install.database.driver" value="org.postgresql.Driver"/>
+  <!-- XXX why is compatible=7.1 being used? -->
+  <property name="install.database.url"
+	    value="jdbc:postgresql://localhost:5432/"/>
+  <property name="install.rrdtool.bin" value="${build.rrdtool.bin}"/>
+  <property name="install.perl.bin" value="/usr/bin/perl"/>
+
+  <!-- rpm specific -->
+  <property name="rpm.install.dir" value="/opt/OpenNMS"/>
+  <property name="rpm.build.executable" value="rpmbuild"/>
+  <property name="rpm.build.docs" value="1"/>
+  <property name="rpm.sign" value="false"/>
+  <property name="rpm.buildtests" value="true"/>
+  <property name="rpm.database.name" value="opennms"/>
+  <property name="rpm.database.password" value="opennms"/>
+  <property name="rpm.database.user" value="opennms"/>
+  <property name="rpm.additional.args" value=""/>
+
+  <!-- paths -->
+  <path id="sources.java.path">
+    <pathelement path="${build.castor.source.dir}"/>
+    <pathelement path="${build.sablecc.source.dir}"/>
+    <pathelement path="${core.source.dir}"/>
+    <pathelement path="${joesnmp.source.dir}"/>
+    <pathelement path="${services.source.dir}"/>
+    <pathelement path="${web.source.dir}"/>
+    <pathelement path="${report.source.dir}"/>
+    <pathelement path="${install.source.dir}"/>
+  </path>
+
+  <path id="libraries.java.path">
+    <pathelement path="${packaged.lib.dir}/log4j.jar"/>
+    <pathelement path="${packaged.lib.dir}/regexp120.jar"/>
+    <pathelement path="${packaged.lib.dir}/servlet.jar"/>
+    <pathelement path="${packaged.lib.dir}/ldap.jar"/>
+    <pathelement path="${packaged.lib.dir}/catalina.jar"/>
+    <pathelement path="${packaged.lib.dir}/castor-0.9.3.9.jar"/>
+    <pathelement path="${packaged.lib.dir}/fop0203.jar"/>
+    <pathelement path="${packaged.lib.dir}/batik.jar"/>
+    <pathelement path="${packaged.lib.dir}/mx4j.jar"/>
+    <pathelement path="${packaged.lib.dir}/jdhcp.jar"/>
+    <pathelement path="${packaged.lib.dir}/jcifs.jar"/>
+    <pathelement path="${packaged.lib.dir}/bsf220.jar"/>
+    <pathelement path="${packaged.lib.dir}/xerces201.jar"/>
+    <pathelement path="${packaged.lib.dir}/xmlrpc-1.2-b1.jar"/>
+  </path>
+
+  <path id="tomcatlib.jars.path">
+    <pathelement path="${basedir}${packaged.lib.dir}/log4j.jar"/>
+    <pathelement path="${basedir}${packaged.lib.dir}/castor-0.9.3.9.jar"/>
+    <pathelement path="${basedir}${packaged.lib.dir}/castor-0.9.3.9-xml.jar"/>
+    <pathelement path="${basedir}${build.jar.dir}/opennms_core.jar"/>
+    <pathelement path="${basedir}${build.jar.dir}/opennms_services.jar"/>
+    <pathelement path="${basedir}${build.jar.dir}/opennms_web.jar"/>
+    <!-- These are the libraries that were in opennms.spec.in:
+	castor-0.9.3.9.jar \
+	log4j.jar \
+	opennms_common.jar \
+	opennms_core.jar \
+	opennms_services.jar \
+	opennms_web.jar \
+	-->
+  </path>
+
+  <!-- patterns and sets -->
+  <patternset id="not.run">
+    <exclude name="nightly-build.pl"/>
+    <exclude name="*.bat"/>
+    <exclude name="opennms.init"/>
+  </patternset>
+  
+  <patternset id="lib.jars">
+    <include name="*.jar" />
+    <exclude name="ant*.jar" />
+    <exclude name="fop0170.jar" />
+    <exclude name="jakarta-regexp*.jar" />
+    <exclude name="pylib*.jar" />
+    <exclude name="sablecc*.jar" />
+  </patternset>
+
+  <patternset id="web.jars">
+    <include name="castor*.jar" />
+    <include name="fop0203.jar" />
+    <include name="jms*.jar" />
+    <include name="log4j*.jar" />
+    <include name="postgresql*.jar" />
+    <include name="regexp*.jar" />
+    <include name="w3c*.jar" />
+    <include name="xalan231.jar" />
+    <include name="avalon-framework-4.0.jar" />
+    <include name="logkit-1.0.jar" />
+    <include name="batik.jar" />
+    <include name="jcifs.jar" />
+    <include name="ldap.jar" />
+  </patternset>
+
+  <!-- ant tasks -->
   <taskdef name="sablecc" classname="org.sablecc.ant.taskdef.Sablecc"/>
+  <taskdef name="castor" classname="org.apache.tools.ant.taskdefs.optional.castor.SourceGeneratorTask"/>
+  <taskdef resource="cpptasks.tasks"/>
+  <taskdef resource="cpptasks.types"/>
 
-  <!-- set properties -->
-  <property file="${user.home}/.bb-global.properties"/>
-  <property file="${user.home}/.${ant.project.name}-global.properties"/>
-  <property file="${root.source}/build.properties"/>
-  <property environment="env"/>
-  <property name="install" value="${root.installprefix}${root.install}"/>
-  <property name="install.initdir" value="${root.installprefix}${root.install.initdir}"/>
-  <property name="install.sbindir" value="${root.installprefix}${root.install.sbindir}"/>
-  <property name="install.contrib" value="${root.installprefix}${root.install.contrib}"/>
-  <property name="install.rrdtool" value="${root.installprefix}${root.install.rrdtool}"/>
-  <property name="install.share" value="${root.installprefix}${root.install.share}"/>
-  <property name="install.rrdtool" value="${root.installprefix}${root.install.rrdtool}"/>
-  <property name="install.servlets" value="${root.installprefix}${root.install.servlets}"/>
-  <property name="install.logs" value="${root.installprefix}${root.install.logs}"/>
-  <property name="install.pid" value="${root.installprefix}${root.install.pid}"/>
-  <if value="${opennms.snapshot}" regexp="^(true|yes)$">
-   <thenProperty name="opennms.release.string" value="0.${DSTAMP}.${opennms.release}"/>
-   <elseProperty name="opennms.release.string" value="${opennms.release}"/>
-  </if>
-  <property name="opennms.version.string" value="${opennms.version}-${opennms.release.string}"/>
+  <!-- PREP target -->
+  <target name="prep" depends="platform.check, java.check" unless="prep.done">
+    <tstamp/>
 
-  <if exists="${root.build}/rpm">
-   <thenProperty name="wasrpm" value="true"/>
-   <elseProperty name="wasrpm" value="false"/>
-  </if>
+    <!-- set conditional properties -->
+    <condition property="product.release.stamp"
+	       value="${DSTAMP}.${product.release}">
+      <istrue value="${product.snapshot}"/>
+    </condition>
+    <condition property="product.release.stamp" value="${product.release}">
+      <isfalse value="${product.snapshot}"/>
+    </condition>
 
-  <condition property="rpm.tainted" value="true">
-   <or>
-    <equals arg1="${wasrpm}" arg2="true"/>
-    <equals arg1="${isrpm}" arg2="true"/>
-   </or>
-  </condition>
+    <condition property="rpm.sign.arg" value="--sign">
+      <istrue value="${product.snapshot}"/>
+    </condition>
+    <condition property="rpm.sign.arg" value="">
+      <isfalse value="${product.snapshot}"/>
+    </condition>
 
-  <if value="${rpm.tainted}" match="true">
-   <thenProperty name="filter.overwrite" value="yes"/>
-   <elseProperty name="filter.overwrite" value="no"/>
-  </if>
+    <condition property="wasrpm" value="true">
+      <available property="wasrpm" file="${build.rpm.dir}" type="dir"/>
+    </condition>
+    <condition property="wasrpm" value="false">
+      <not>
+	<available property="wasrpm" file="${build.rpm.dir}" type="dir"/>
+      </not>
+    </condition>
 
-  <!-- set filters -->
-  <filter filtersfile="${root.source}/build.properties" />
-  <filter token="install.log.dir" value="${root.install.logs}"/>
-  <filter token="opennms.version.string" value="${opennms.version.string}"/>
-  <filter token="opennms.release.string" value="${opennms.release.string}"/>
-  <if isFile="${user.home}/.bb-global.properties">
-   <thenProperty name="bb-global.exists" value="true"/>
-  </if>
-  <if isFile="${user.home}/.${ant.project.name}-global.properties">
-   <thenProperty name="opennms-global.exists" value="true"/>
-  </if>
-  <filter token="root.install.perl" value="${root.install.perl}"/>
-  <filter token="root.source" value="${root.source}"/>
-  <filter token="root.build" value="${root.build}"/>
-  <filter token="root.install" value="${root.install}"/>
-  <filter token="root.install.initdir" value="${root.install.initdir}"/>
-  <filter token="root.install.sbindir" value="${root.install.sbindir}"/>
-  <filter token="root.install.contrib" value="${root.install.contrib}"/>
-  <filter token="root.install.servlets" value="${root.install.servlets}"/>
-  <filter token="root.install.share" value="${root.install.share}"/>
-  <filter token="root.install.rrdtool" value="${root.install.rrdtool}"/>
-  <filter token="root.install.postgresql" value="${root.install.postgresql}"/>
-  <filter token="root.install.logs" value="${root.install.logs}"/>
-  <filter token="root.install.pid" value="${root.install.pid}"/>
-  <filter token="root.installprefix" value="${root.installprefix}"/>
-  <filter token="relative.build" value="${relative.build}"/>
-  <filter token="relative.install" value="${relative.install}"/>
-  <filter token="relative.install.initdir" value="${relative.install.initdir}"/>
-  <filter token="relative.install.sbindir" value="${relative.install.sbindir}"/>
-  <filter token="relative.install.contrib" value="${relative.install.contrib}"/>
-  <filter token="relative.install.servlets" value="${relative.install.servlets}"/>
-  <filter token="relative.install.share" value="${relative.install.share}"/>
-  <filter token="relative.install.rrdtool" value="${relative.install.rrdtool}"/>
-  <filter token="relative.install.postgresql" value="${relative.install.postgresql}"/>
-  <filter token="relative.install.logs" value="${relative.install.logs}"/>
-  <filter token="relative.install.pid" value="${relative.install.pid}"/>
-  <filter token="install.database.driver" value="${install.database.driver}"/>
-  <filter token="install.database.url" value="${install.database.url}"/>
-  <filter token="install.database.user" value="${install.database.user}"/>
-  <filter token="install.database.password" value="${install.database.password}"/>
-  <filter token="ant.project.name" value="${ant.project.name}"/>
-  <filter token="compile.soext" value="${compile.soext}"/>
-  <filter token="compile.jniext" value="${compile.jniext}"/>
+    <condition property="rpm.tainted" value="true">
+      <or>
+	<istrue value="${wasrpm}"/>
+	<istrue value="${isrpm}"/>
+      </or>
+    </condition>
+
+    <condition property="filter.overwrite" value="true">
+      <istrue value="${rpm.tainted}"/>
+    </condition>
+
+    <condition property="filter.overwrite" value="false">
+      <isfalse value="${rpm.tainted}"/>
+    </condition>
+
+    <condition property="clean.dist.done" value="true">
+      <isset property="skip.dist"/>
+    </condition>
+
+    <!-- set properties which are dependent on conditional properties above -->
+    <property name="product.fullversion.stamp"
+	      value="${product.version}-${product.release.stamp}"/>
+
+    <!-- release directories -->
+    <property name="release.docs.dir"
+	      value="${ant.project.name}-${product.fullversion}/docs"/>
+    <property name="release.docs.archive.prefix"
+	      value="${ant.project.name}-docs-${product.fullversion.stamp}"/>
+    <property name="release.source.dir"
+	      value="${ant.project.name}-${product.fullversion}/source"/>
+    <property name="release.source.archive.prefix"
+	      value="${ant.project.name}-source-${product.fullversion.stamp}"/>
+    <property name="release.binary.dir"
+	      value="${ant.project.name}-${product.fullversion}/binary"/>
+    <property name="release.binary.archive.prefix"
+	      value="${ant.project.name}-binary-${product.fullversion.stamp}"/>
+
+    <pathconvert targetos="unix" refid="tomcatlib.jars.path"
+		 property="install.tomcat.serverlibs">
+      <map from="${basedir}${packaged.lib.dir}/" to=""/>
+      <map from="${basedir}${build.jar.dir}/" to=""/>
+    </pathconvert>
+
+
+    <!-- set filters -->
+    <!-- This little Bourne shell script will spit out <filter token="..."/>
+	 tags for all of the filters found in the OpenNMS files as long as
+	 they contain an embedded period:
+
+	 find . -type f  -print | \
+	 xargs perl -ne '
+	 while (s/(@[a-z.]+\.[a-z.]+@)//) {
+	 print "$ARGV $1\n";
+	 }' | \
+	 awk '{ print $2 }' | \
+	 sort -u | \
+	 sed 's/^@//;s/@$//;s/\(.*\)/<filter token="\1" value="${\1}"\/>/'
+
+	 Get rid of everything after "awk" to get a list of which files have
+	 which filtering tokens.
+      -->
+    <filter token="ant.project.name" value="${ant.project.name}"/>
+    <filter token="build.soext" value="${build.soext}"/>
+    <filter token="root.source" value="${basedir}"/>
+    <filter token="install.database.driver"
+	    value="${install.database.driver}"/>
+    <filter token="install.database.name" value="${install.database.name}"/>
+    <filter token="install.database.password"
+	    value="${install.database.password}"/>
+    <filter token="install.database.url" value="${install.database.url}"/>
+    <filter token="install.database.user" value="${install.database.user}"/>
+    <filter token="install.perl.bin" value="${install.perl.bin}"/>
+    <filter token="install.rrdtool.bin" value="${install.rrdtool.bin}"/>
+    <filter token="install.tomcat.serverlibs"
+	    value="${install.tomcat.serverlibs}"/>
+    <filter token="product.fullversion.stamp"
+	    value="${product.fullversion.stamp}"/>
+    <filter token="product.release" value="${product.release}"/>
+    <filter token="product.release.stamp" value="${product.release.stamp}"/>
+    <filter token="product.version" value="${product.version}"/>
+    <filter token="install.etc.dir" value="${install.etc.dir}"/>
+    <filter token="install.bin.dir" value="${install.bin.dir}"/>
+    <filter token="install.init.dir" value="${install.init.dir}"/>
+    <filter token="install.logs.dir" value="${install.logs.dir}"/>
+    <filter token="install.pid.file" value="${install.pid.file}"/>
+    <filter token="install.postgresql.dir" value="${install.postgresql.dir}"/>
+    <filter token="install.servlet.dir" value="${install.servlet.dir}"/>
+    <filter token="install.share.dir" value="${install.share.dir}"/>
+    <filter token="install.dir" value="${install.dir}"/>
+    <filter token="rpm.buildtests" value="${rpm.buildtests}"/>
+    <filter token="rpm.database.name" value="${rpm.database.name}"/>
+    <filter token="rpm.database.password" value="${rpm.database.password}"/>
+    <filter token="rpm.database.user" value="${rpm.database.user}"/>
+    <filter token="rpm.install.dir" value="${rpm.install.dir}"/>
+    <filter token="rpm.platform" value="${rpm.platform}"/>
+
+    <!-- prep wrapup -->
+    <property name="prep.done" value="true"/>
+  </target>
+
+  <target name="platform.check" depends="platform.init, platform.darwin,
+					 platform.freebsd, platform.linux,
+					 platform.sun, platform.default"/>
+
+  <target name="platform.init">
+    <condition property="platform.darwin">
+      <os name="Mac OS X"/>
+    </condition>
+    <condition property="platform.freebsd">
+      <os name="FreeBSD"/>
+    </condition>
+    <condition property="platform.linux">
+      <os name="Linux"/>
+    </condition>
+    <condition property="platform.sun">
+      <os name="SunOS"/>
+    </condition>
+  </target>
+
+  <target name="platform.darwin" if="platform.darwin">
+    <property name="build.platform.define" value="__DARWIN__"/>
+    <property name="build.soext" value="dylib"/>
+    <property name="build.jniext" value="jnilib"/>
+    <property name="build.java.jnimd.dir" value=""/>
+  </target>
+
+  <target name="platform.freebsd" if="platform.freebsd">
+    <property name="build.platform.define" value="__FreeBSD__"/>
+    <property name="build.soext" value="so"/>
+    <property name="build.jniext" value="so"/>
+    <property name="build.java.jnimd.dir" value="/freebsd"/>
+  </target>
+
+  <target name="platform.linux" if="platform.linux">
+    <property name="build.platform.define" value="__LINUX__"/>
+    <property name="build.soext" value="so"/>
+    <property name="build.jniext" value="so"/>
+    <property name="build.java.jnimd.dir" value="/linux"/>
+  </target>
+
+  <target name="platform.sun" if="platform.sun">
+    <property name="build.platform.define" value="__SOLARIS__"/>
+    <property name="build.soext" value="so"/>
+    <property name="build.jniext" value="so"/>
+    <property name="build.java.jnimd.dir" value="/solaris"/>
+    <property name="build.jrrd.linker.arg" value="-R${build.rrdtool.lib.dir}"/>
+  </target>
+
+  <target name="platform.default" unless="build.platform.define">
+    <fail>
+      build.xml does not support your operating system.
+    </fail>
+  </target>
+
+  <target name="java.check">
+    <condition property="java.versionokay">
+      <contains string="${java.vm.version}" substring="1.4."/>
+    </condition>
+
+    <fail unless="java.versionokay">
+      java version is not 1.4
+    </fail>
+  </target>
+
+  <target name="compile.check" depends="prep">
+    <condition property="compile.check.postgresql.include">
+      <available file="${build.postgresql.include.dir}/postgres.h"/>
+    </condition>
+   
+    <fail unless="compile.check.postgresql.include">
+      Could not find postgres.h include file in ${build.postgresql.include.dir}.
+      Set build.postgresql.include.dir to the directory that contains 
+      postgres.h.  See README.build for details.
+    </fail>
+
+    <condition property="compile.check.rrdtool.include">
+      <available file="${build.rrdtool.include.dir}/rrd.h"/>
+    </condition>
+   
+    <fail unless="compile.check.rrdtool.include">
+      Could not find rrd.h include file in ${build.rrdtool.include.dir}.
+      Set build.rrdtool.include.dir to the directory that contains rrd.h.
+      See README.build for details.
+    </fail>
+
+    <condition property="compile.check.rrdtool.lib">
+      <or>
+	<available file="${build.rrdtool.lib.dir}/librrd.a"/>
+	<available file="${build.rrdtool.lib.dir}/librrd.so"/>
+      </or>
+    </condition>
+   
+    <fail unless="compile.check.rrdtool.lib">
+      Could not find librrd.a or librrd.so library in ${build.rrdtool.lib.dir}.
+      Set build.rrdtool.lib.dir to the directory that contains librrd.a or
+      librrd.so.  See README.build for details.
+    </fail>
+  </target>
  
-  <!-- init wrapup -->
-  <antcall target="print.header"><param name="print.headertext" value="OpenNMS Main Build Initializing"/></antcall>
-  <antcall target="print.debug"/>
-  <property name="init.done" value="true"/>
- </target>
- 
- <target name="print.header">
-  <echo>
-==============================================================================
-${print.headertext}
-==============================================================================
-  </echo>
- </target>
- 
- <target name="print.debug" if="debug">
+ <target name="info" depends="prep"
+	 description="Show information about this build instance">
   <echo>
   === Java ===
-  JVM Version                  = ${java.fullversion}
-  JAVA_HOME                    = ${env.JAVA_HOME}
+  JVM Version                  = ${java.vm.vendor} ${java.vm.name} ${java.vm.version}
+  Java Home                    = ${java.home}
   CLASSPATH                    = ${java.class.path}
   Ant Version                  = ${ant.version}
+  Ant project name             = ${ant.project.name}
+  Ant project base directory   = ${basedir}
 
   === System ===
   OS Name                      = ${os.name}
   OS Version                   = ${os.version}
   User                         = ${user.name}
   Home Directory               = ${user.home}
-  OpenNMS Version              = ${opennms.version.string}
-  Compilation Defines          = ${compile.platform.define}
+  OpenNMS Version              = ${product.fullversion.stamp}
+  Compilation Defines          = ${build.platform.define}
 
   === Build/Install Tools ===
-  "cc" Executable              = ${compile.cc}
-  "make" Executable            = ${compile.make}
-  "ld" Executable              = ${compile.ld}
-  "ld" Dynamic Flag            = ${compile.ld.dynamic}
-  "ld" Static Flag             = ${compile.ld.static}
-  "ld" Shared Flag             = ${compile.ld.shared}
-  PostgreSQL Include Arguments = ${compile.postgresql.include}
-  PostgreSQL Library Arguments = ${compile.postgresql.lib}
-  RRDTool Include Arguments    = ${compile.rrdtool.include}
-  RRDTool Library Arguments    = ${compile.rrdtool.lib}
+  PostgreSQL Include Arguments = ${build.postgresql.include.dir}
+  RRDTool Include Arguments    = ${build.rrdtool.include.dir}
+  RRDTool Library Arguments    = ${build.rrdtool.lib.dir}
 
-  === Build/Install Directories ===
-  Build Working Directory      = ${relative.build}
-  Class Working Directory      = ${relative.build.classes}
-  Installation Directory       = ${relative.install}
-  Installation Prefix          = ${relative.installprefix}
-  init.d Directory             = ${relative.install.initdir}
-  PostgreSQL Library Directory = ${relative.install.postgresql}
-  RRDTool Library Directory    = ${relative.install.rrdtool}
-  Shared Files Directory       = ${relative.install.share}
-  Servlet Directory            = ${relative.install.servlets}
-  Release Tarball Directory    = ${relative.release}
+  === Build Directories ===
+  Build Working Directory      = ${build.dir}
+  Class Working Directory      = ${build.classes.dir}
+  Release Tarball Directory    = ${build.release.dir}
+
+  === Install Directories ===
+  Installation Prefix          = ${install.prefix}
+  Installation Directory       = ${install.dir}
+  init.d Directory             = ${install.init.dir}
+  PostgreSQL Library Directory = ${install.postgresql.dir}
+  Shared Files Directory       = ${install.share.dir}
+  Servlet Directory            = ${install.servlet.dir}
+
+  === RPM Details ===
+  RPM Platform                 = ${rpm.platform}
+  RPM Install Directory        = ${rpm.install.dir}
   </echo>
  </target>
  
- <target name="usage" depends="init" description="how to use this build file">
-  <antcall target="print.header"><param name="print.headertext" value="OpenNMS Main Build Usage"/></antcall>
- 
-  <echo>
-  all:          build everything (except documentation)
-  install:      build "all", and install it in ${install}
-  docs:         build javadoc and manuals
-  release:      build a release (source and binary)
-  info:         show information about this build instance
-  rpm:          build an RPM package
-  srpm:         build an RPM and a source RPM package
-  </echo>
- 
+ <!-- USAGE targets -->
+ <target name="usage" description="How to use this build file">
+  <java classname="org.apache.tools.ant.launch.Launcher">
+    <arg value="-projecthelp"/>
+  </java>
  </target>
 
  <!-- "meta" targets -->
- 
- <target name="echo">
-  <echo message="=== ${message} ==="/>
- </target>
- 
- <target name="info" depends="init" description="print detailed information about your build parameters">
-  <antcall target="print.debug"><param name="debug" value="true"/></antcall>
- </target>
-    
- <target name="sources" description ="generate the generated sources" depends="init,compile.java.sablecc.preproc,compile.java.castor.preproc"/>
-  
+ <target name="check" depends="java.check, platform.check, compile.check"
+	  description="check prerequisites for build"/>
 
  <target name="install"
-	depends="install.lib,install.servlet,install.init,install.etc,install.usr.bin,install.bin,install.logs,install.share,install.contrib"
-	description="build &quot;all&quot;, and install it in ${install}"/>
- <target name="all" depends="compile,jar" description="build everything (except documentation)"/>
+	depends="install.lib, install.servlet, install.init, install.etc,
+		 install.bin, install.logs, install.share, install.contrib"
+	description="build &quot;all&quot;, and install"/>
+
+ <target name="all" depends="compile, jar"
+	 description="build everything (except documentation)"/>
  
- <target name="clean.do-rm" if="isunix">
-  <exec executable="rm">
-   <arg value="-rf"/>
-   <arg value="${root.build}/rpm"/>
-  </exec>
+ <target name="test" depends="compile.java.test, test.jsp"/>
+
+ <!-- CLEAN targets -->
+ <target name="clean" depends="prep">
+   <delete dir="${build.dir}"/>
  </target>
 
- <target name="test" depends="compile.java.test,test.jsp"/>
-
- <target name="clean" depends="init">
-  <condition property="isunix">
-   <os family="unix"/>
-  </condition>
-  <antcall target="clean.do-rm"/>
-  <delete includeEmptyDirs="true" failonerror="false">
-   <fileset dir="${root.build}">
-    <exclude name="tools/classes/org/opennms/ant/**/*.class"/>
-   </fileset>
-   <fileset dir="${root.source}/debian/opennms"/>
-   <fileset dir="${root.source}">
-    <include name="build-stamp"/>
-    <include name="configure-stamp"/>
-   </fileset>
-  </delete>
- </target>
-
- <!-- !WARNING!  Undocumented because it removes your installation directory too... be careful! -->
- <target name="mrproper" depends="clean">
-  <delete includeEmptyDirs="true" dir="${root.install}"/>
-  <delete dir="${root.build}" includeEmptyDirs="true" failonerror="false"/>
- </target>
-
- <!-- patterns and sets -->
- 
- <path id="path.sources">
-  <pathelement path="${root.build}/castor"/>
-  <pathelement path="${root.build}/sablecc"/>
-  <pathelement path="src/core"/>
-  <pathelement path="src/joesnmp"/>
-  <pathelement path="src/services"/>
-  <pathelement path="src/web/src"/>
-  <pathelement path="src/report"/>
- </path>
-
- <patternset id="not.core"     excludesfile="${root.source}/src/core/classlist"/>
- <patternset id="not.joesnmp"  excludesfile="${root.source}/src/joesnmp/classlist"/>
- <patternset id="not.services" excludesfile="${root.source}/src/services/classlist"/>
- <patternset id="not.web"      excludesfile="${root.source}/src/web/classlist"/>
-
- <patternset id="not.run">
-  <exclude name="nightly-build.pl"/>
-  <exclude name="*.bat"/>
-  <exclude name="opennms.init"/>
- </patternset>
-
- <patternset id="lib.jars">
-  <include name="*.jar" />
-  <exclude name="ant*.jar" />
-  <exclude name="fop0170.jar" />
-  <exclude name="jakarta-regexp*.jar" />
-  <exclude name="pylib*.jar" />
-  <exclude name="sablecc*.jar" />
- </patternset>
-
- <patternset id="web.jars">
-  <include name="castor*.jar" />
-  <include name="fop0203.jar" />
-  <include name="jms*.jar" />
-  <include name="log4j*.jar" />
-  <include name="postgresql*.jar" />
-  <include name="regexp*.jar" />
-  <include name="w3c*.jar" />
-  <include name="xalan231.jar" />
-  <include name="avalon-framework-4.0.jar" />
-  <include name="logkit-1.0.jar" />
-  <include name="batik.jar" />
-  <include name="jcifs.jar" />
-  <include name="ldap.jar" />
- </patternset>
- 
  <!-- archive/package targets -->
-
- <target name="rpm" depends="init" description="build an RPM package">
-  <if value="${rpm.sign}" match="true">
-   <thenProperty name="rpm.sign.arg" value="--sign"/>
-   <elseProperty name="rpm.sign.arg" value=""/>
-  </if>
-  <property name="root.rpm" value="${root.build}/rpm"/>
-  <mkdir dir="${root.rpm}/BUILD"/>
-  <mkdir dir="${root.rpm}/RPMS/i386"/>
-  <mkdir dir="${root.rpm}/RPMS/i486"/>
-  <mkdir dir="${root.rpm}/RPMS/i586"/>
-  <mkdir dir="${root.rpm}/RPMS/i686"/>
-  <mkdir dir="${root.rpm}/RPMS/athlon"/>
-  <mkdir dir="${root.rpm}/RPMS/k6"/>
-  <mkdir dir="${root.rpm}/RPMS/noarch"/>
-  <mkdir dir="${root.rpm}/SOURCES"/>
-  <mkdir dir="${root.rpm}/SPECS"/>
-  <mkdir dir="${root.rpm}/SRPMS"/>
-  <mkdir dir="${root.rpm}/tmp"/>
-  <copy filtering="yes"   file="${root.source}/tools/packages/opennms/opennms.spec.in"
-                        tofile="${root.rpm}/SPECS/opennms.spec" overwrite="yes" />
-  <copy filtering="no" todir="${root.rpm}/SOURCES">
-   <fileset dir="${root.source}/tools/packages/opennms">
-    <include name="**/*.patch"/>
-    <include name="**/*.patch.gz"/>
-    <include name="**/*.patch.bz2"/>
-   </fileset>
-   <mapper type="flatten"/>
-  </copy>
-  <touch file="${root.rpm}/SOURCES/${ant.project.name}-source-${opennms.version.string}.tar.gz"/>
-  <echo message="building RPM for OpenNMS version ${opennms.version.string}..."/>
-  <exec dir="${root.rpm}" executable="rpmbuild" failonerror="true">
+ <target name="rpm" depends="prep, rpm.check, rpm.prepare"
+	 description="Build an RPM package">
+  <exec dir="${build.rpm.dir}" executable="${rpm.build.executable}"
+	failonerror="true">
    <arg value="-bb"/>
-   <arg value="${root.rpm}/SPECS/opennms.spec"/>
+   <arg value="SPECS/opennms.spec"/>
    <arg value="--define"/>
    <arg value="platform ${rpm.platform}"/>
    <arg value="--define"/>
-   <arg value="_topdir ${root.rpm}"/>
+   <arg value="_topdir ${basedir}/${build.rpm.dir}"/>
    <arg value="--define"/>
-   <arg value="_tmppath ${root.rpm}/tmp"/>
+   <arg value="_tmppath ${basedir}/${build.rpm.dir}/tmp"/>
    <arg value="--define"/>
    <arg value="snapshot ${opennms.snapshot}"/>
    <arg value="--define"/>
@@ -324,97 +534,164 @@ ${print.headertext}
    <arg value="--define"/>
    <arg value="standalone 0"/>
    <arg value="--define"/>
-   <arg value="builddocs ${rpm.builddocs}"/>
+   <arg value="builddocs ${rpm.build.docs}"/>
    <arg line="${rpm.sign.arg}"/>
+   <arg line="${rpm.additional.args}"/>
   </exec>
  </target>
  
- <target name="srpm" depends="init,release.source" description="build an RPM and source RPM package">
-  <if value="${rpm.sign}" match="true">
-   <thenProperty name="rpm.sign.arg" value="--sign"/>
-   <elseProperty name="rpm.sign.arg" value=""/>
-  </if>
-  <property name="root.rpm" value="${root.build}/rpm"/>
-  <mkdir dir="${root.rpm}/BUILD"/>
-  <mkdir dir="${root.rpm}/RPMS/i386"/>
-  <mkdir dir="${root.rpm}/RPMS/i486"/>
-  <mkdir dir="${root.rpm}/RPMS/i586"/>
-  <mkdir dir="${root.rpm}/RPMS/i686"/>
-  <mkdir dir="${root.rpm}/RPMS/athlon"/>
-  <mkdir dir="${root.rpm}/RPMS/k6"/>
-  <mkdir dir="${root.rpm}/RPMS/noarch"/>
-  <mkdir dir="${root.rpm}/SOURCES"/>
-  <mkdir dir="${root.rpm}/SPECS"/>
-  <mkdir dir="${root.rpm}/SRPMS"/>
-  <mkdir dir="${root.rpm}/tmp"/>
-  <copy filtering="yes"   file="${root.source}/tools/packages/opennms/opennms.spec.in"
-                        tofile="${root.rpm}/SPECS/opennms.spec" overwrite="${filter.overwrite}" />
-  <copy filtering="no" todir="${root.rpm}/SOURCES">
-   <fileset dir="${root.source}/tools/packages/opennms">
+ <target name="srpm" depends="prep, rpm.check, release.source, rpm.prepare"
+	 description="Build an RPM and a source RPM package">
+  <copy todir="${build.rpm.dir}/SOURCES"
+	file="${build.release.dir}/${release.source.archive.prefix}.tar.gz"/>
+  <echo message="building RPM for OpenNMS version ${product.fullversion.stamp}..."/>
+  <exec dir="${build.rpm.dir}" executable="${rpm.build.executable}"
+	failonerror="true">
+   <arg value="-ba"/>
+   <arg value="SPECS/opennms.spec"/>
+   <arg value="--define"/>
+   <arg value="platform ${rpm.platform}"/>
+   <arg value="--define"/>
+   <arg value="_topdir ${basedir}/${build.rpm.dir}"/>
+   <arg value="--define"/>
+   <arg value="_tmppath ${basedir}/${build.rpm.dir}/tmp"/>
+   <arg value="--define"/>
+   <arg value="standalone 1"/>
+   <arg value="--define"/>
+   <arg value="builddocs ${rpm.build.docs}"/>
+   <arg line="${rpm.sign.arg}"/>
+   <arg line="${rpm.additional.args}"/>
+  </exec>
+ </target>
+
+ <target name="rpm.prepare">
+  <mkdir dir="${build.rpm.dir}/BUILD"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i386"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i486"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i586"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i686"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/athlon"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/k6"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/noarch"/>
+  <mkdir dir="${build.rpm.dir}/SOURCES"/>
+  <mkdir dir="${build.rpm.dir}/SPECS"/>
+  <mkdir dir="${build.rpm.dir}/SRPMS"/>
+  <mkdir dir="${build.rpm.dir}/tmp"/>
+  <copy filtering="yes"
+	file="tools/packages/opennms/opennms.spec.in"
+        tofile="${build.rpm.dir}/SPECS/opennms.spec"
+	overwrite="${filter.overwrite}" />
+  <copy todir="${build.rpm.dir}/SOURCES">
+   <fileset dir="tools/packages/opennms">
     <include name="**/*.patch"/>
     <include name="**/*.patch.gz"/>
     <include name="**/*.patch.bz2"/>
    </fileset>
-   <fileset dir="${root.release}">
-    <include name="${ant.project.name}-source-${opennms.version.string}.tar.gz"/>
-   </fileset>
    <mapper type="flatten"/>
   </copy>
-  <echo message="building RPM for OpenNMS version ${opennms.version.string}..."/>
-  <exec dir="${root.rpm}" executable="rpmbuild" failonerror="true">
-   <arg value="-ba"/>
-   <arg value="${root.rpm}/SPECS/opennms.spec"/>
-   <arg value="--define"/>
-   <arg value="platform ${rpm.platform}"/>
-   <arg value="--define"/>
-   <arg value="_topdir ${root.rpm}"/>
-   <arg value="--define"/>
-   <arg value="_tmppath ${root.rpm}/tmp"/>
-   <arg value="--define"/>
-   <arg value="snapshot ${opennms.snapshot}"/>
-   <arg value="--define"/>
-   <arg value="date ${DSTAMP}"/>
-   <arg value="--define"/>
-   <arg value="standalone 1"/>
-   <arg value="--define"/>
-   <arg value="builddocs ${rpm.builddocs}"/>
-   <arg line="${rpm.sign.arg}"/>
-  </exec>
  </target>
- 
- <target name="release" depends="init,release.source,release.binary,release.docs"/>
 
- <target name="release.prepare.docs" depends="init,docs">
-  <mkdir dir="${root.build}/${ant.project.name}-${opennms.version}-${opennms.release}/docs"/>
-  <copy todir="${root.build}/${ant.project.name}-${opennms.version}-${opennms.release}/docs">
-   <fileset dir="${root.build}/docs"/>
+ <target name="rpm.check">
+   <fail unless="rpm.platform">
+     You must set rpm.platform to one of the platforms listed in
+     tools/packages/opennms/opennms.spec.in.  E.g.:
+         ./build.sh -Drpm.platform=linux-i386-fedora-1 rpm
+   </fail>
+ </target>
+
+ <!-- DIST targets -->
+ <target name="dist" depends="clean.dist, source.dist, binary.dist, docs.dist"
+	 description="Generate a distribution"/>
+ 
+ <target name="clean.dist" depends="prep" unless="clean.dist.done">
+  <delete dir="${build.release.dir}"/>
+  <property name="clean.dist.done" value="true"/>
+ </target>
+
+ <target name="prepare.dist" depends="prep">
+   <mkdir dir="${build.release.dir}"/>
+ </target>
+
+ <target name="source.dist" depends="zip.source.dist, tgz.source.dist,
+				     tbz2.source.dist"/>
+
+ <target name="zip.source.dist" depends="prepare.dist" unless="skip.dist">
+  <zip destfile="${build.release.dir}/${dist.source.archive.prefix}.zip"
+       basedir="${basedir}" excludes="${dist.excludes}" includes="**/*"/>
+ </target>
+
+ <target name="tar.source.dist" depends="prepare.dist" unless="skip.dist">
+  <tar destfile="${build.release.dir}/${dist.source.archive.prefix}.tar"
+       basedir="${basedir}" excludes="${dist.excludes}" includes="**/*"/>
+ </target>
+
+ <target name="tgz.source.dist" depends="tar.source.dist" unless="skip.dist">
+  <gzip destfile="${build.release.dir}/${dist.source.archive.prefix}.tgz"
+	src="${build.release.dir}/${dist.source.archive.prefix}.tar"/>
+ </target>
+
+ <target name="tbz2.source.dist" depends="tar.source.dist" unless="skip.dist">
+  <bzip2 destfile="${build.release.dir}/${dist.source.archive.prefix}.tbz2"
+	 src="${build.release.dir}/${dist.source.archive.prefix}.tar"/>
+ </target>
+
+ <target name="binary.dist" depends="zip.binary.dist, tgz.binary.dist,
+				     tbz2.binary.dist" unless="skip.dist"/>
+
+ <target name="zip.binary.dist" depends="prepare.dist">
+ </target>
+
+ <target name="tgz.binary.dist" depends="prepare.dist">
+ </target>
+
+ <target name="tbz2.binary.dist" depends="prepare.dist">
+ </target>
+
+ <target name="docs.dist" depends="zip.docs.dist, tgz.docs.dist,
+				   tbz2.docs.dist" unless="skip.dist"/>
+
+ <target name="zip.docs.dist" depends="prepare.dist, html.docs">
+  <zip destfile="${build.release.dir}/${dist.docs.archive.prefix}.zip"
+       basedir="${build.docs.dir}" excludes="${dist.excludes}"
+       includes="**/*"/>
+ </target>
+
+ <target name="tgz.docs.dist" depends="prepare.dist, html.docs">
+ </target>
+
+ <target name="tbz2.docs.dist" depends="prepare.dist, html.docs">
+ </target>
+
+
+ <!-- RELEASE targets -->
+ <target name="release" depends="prep,release.source, release.binary, 
+				 release.docs"
+	 description="Build a release (source and binary)"/>
+
+ <target name="release.prepare.docs" depends="prep, docs">
+  <mkdir dir="${build.dir}/${release.docs.dir}"/>
+  <copy todir="${build.dir}/${release.docs.dir}">
+    <fileset dir="${build.docs.dir}"/>
   </copy>
  </target>
 
- <target name="release.docs" depends="init,release.prepare.docs">
-  <mkdir dir="${root.release}"/>
-  <tar tarfile="${root.release}/${ant.project.name}-docs-${opennms.version}-${opennms.release.string}.tar" basedir="${root.build}" longfile="gnu" includes="${ant.project.name}-${opennms.version}-${opennms.release}/docs/"/>
-  <delete file="${root.release}/${ant.project.name}-docs-${opennms.version}-${opennms.release.string}.tar.gz"/>
-  <gzip src="${root.release}/${ant.project.name}-docs-${opennms.version}-${opennms.release.string}.tar"
-	zipfile="${root.release}/${ant.project.name}-docs-${opennms.version}-${opennms.release.string}.tar.gz"/>
-  <delete file="${root.release}/${ant.project.name}-docs-${opennms.version}-${opennms.release.string}.tar"/>
-  <zip zipfile="${root.release}/${ant.project.name}-docs-${opennms.version}-${opennms.release.string}.zip" basedir="${root.build}">
-   <include name="${ant.project.name}-${opennms.version}-${opennms.release}/docs/"/>
-  </zip>
+ <target name="release.docs" depends="prep, release.prepare.docs">
+  <mkdir dir="${build.release.dir}"/>
+  <tar tarfile="${build.release.dir}/${release.docs.archive.prefix}.tar.gz"
+       basedir="${build.dir}" longfile="gnu" compression="gzip"
+       includes="${release.docs.dir}/"/>
+  <zip zipfile="${build.release.dir}/${release.docs.archive.prefix}.zip"
+       basedir="${build.dir}"
+       includes="${release.docs.dir}/"/>
  </target>
 
- <target name="release.prepare.source" depends="init">
-  <mkdir dir="${root.build}/${ant.project.name}-${opennms.version}-${opennms.release}/source"/>
-  <copy todir="${root.build}/${ant.project.name}-${opennms.version}-${opennms.release}/source">
-   <fileset dir="${root.source}">
+ <target name="release.prepare.source" depends="prep">
+  <mkdir dir="${build.dir}/${release.source.dir}"/>
+  <copy todir="${build.dir}/${release.source.dir}">
+   <fileset dir="${basedir}">
     <include name="**/*"/>
-    <exclude name="${relative.build}/**"/>
+    <exclude name="${build.dir}/**"/>
     <exclude name="${relative.install}/**"/>
-    <exclude name="${relative.install.servlets}/**"/>
-    <exclude name="${relative.install.share}/**"/>
-    <exclude name="${relative.install.postgresql}/**"/>
-    <exclude name="${relative.install.rrdtool}/**"/>
-    <exclude name="${relative.build.classes}/**"/>
     <exclude name="debian/opennms/**"/>
     <exclude name="CVSROOT/**"/>
     <exclude name="**/*.swp"/>
@@ -423,83 +700,75 @@ ${print.headertext}
  </target>
  
  <target name="release.source" depends="release.prepare.source">
-  <mkdir dir="${root.release}"/>
-  <tar tarfile="${root.release}/${ant.project.name}-source-${opennms.version}-${opennms.release.string}.tar" basedir="${root.build}" longfile="gnu" includes="${ant.project.name}-${opennms.version}-${opennms.release}/source/"/>
-  <delete file="${root.release}/${ant.project.name}-source-${opennms.version}-${opennms.release.string}.tar.gz"/>
-  <gzip src="${root.release}/${ant.project.name}-source-${opennms.version}-${opennms.release.string}.tar"
-        zipfile="${root.release}/${ant.project.name}-source-${opennms.version}-${opennms.release.string}.tar.gz"/>
-  <delete file="${root.release}/${ant.project.name}-source-${opennms.version}-${opennms.release.string}.tar"/>
-  <zip zipfile="${root.release}/${ant.project.name}-source-${opennms.version}-${opennms.release.string}.zip" basedir="${root.build}">
-   <include name="${ant.project.name}-${opennms.version}-${opennms.release}/source/"/>
-  </zip>
+  <mkdir dir="${build.release.dir}"/>
+  <tar tarfile="${build.release.dir}/${release.source.archive.prefix}.tar.gz"
+       basedir="${build.dir}" longfile="gnu" compression="gzip"
+       includes="${release.source.dir}/"/>
+  <zip zipfile="${build.release.dir}/${release.source.archive.prefix}.zip"
+       basedir="${build.dir}"
+       includes="${release.source.dir}/"/>
  </target>
 
- <target name="release.prepare.binary" depends="init">
-  <mkdir dir="${root.build}/${ant.project.name}-${opennms.version}-${opennms.release}/binary"/>
+
+ <!-- XXX need to rethink how this is done, especially the use of the
+      properties in the antcall -->
+ <target name="release.prepare.binary" depends="prep">
+  <mkdir dir="${build.dir}/${release.binary.dir}"/>
   <antcall target="install">
-   <param name="install" value="${root.build}/opt/OpenNMS"/>
-   <param name="prefix.install" value="/opt/OpenNMS"/>
-   <param name="prefix.install.servlets" value="/opt/OpenNMS/webapps"/>
-   <param name="prefix.installprefix" value="${root.build}"/>
+   <param name="install.dir" value="/opt/OpenNMS"/>
+   <param name="install.prefix" value="${basedir}${build.dir}"/>
   </antcall>
-  <move todir="${root.build}/${ant.project.name}-${opennms.version}-${opennms.release}/binary">
-   <fileset dir="${root.build}/opt/OpenNMS" includes="**/*"/>
+  <move todir="${build.dir}/${release.binary.dir}">
+   <fileset dir="${build.dir}/opt/OpenNMS" includes="**/*"/>
   </move>
-  <delete dir="${root.build}/opt" includeEmptyDirs="true"/>
+  <delete dir="${build.dir}/opt" includeEmptyDirs="true"/>
  </target>
 
  <target name="release.binary" depends="release.prepare.binary">
-  <mkdir dir="${root.release}"/>
-  <tar tarfile="${root.release}/${ant.project.name}-binary-${opennms.version}-${opennms.release.string}.tar" basedir="${root.build}" longfile="gnu" includes="${ant.project.name}-${opennms.version}-${opennms.release}/binary/" />
-  <delete file="${root.release}/${ant.project.name}-binary-${opennms.version}-${opennms.release.string}.tar.gz"/>
-  <gzip src="${root.release}/${ant.project.name}-binary-${opennms.version}-${opennms.release.string}.tar"
-        zipfile="${root.release}/${ant.project.name}-binary-${opennms.version}-${opennms.release.string}.tar.gz"/>
-  <delete file="${root.release}/${ant.project.name}-binary-${opennms.version}-${opennms.release.string}.tar"/>
-  <zip zipfile="${root.release}/${ant.project.name}-binary-${opennms.version}-${opennms.release.string}.zip" basedir="${root.build}">
-   <include name="${ant.project.name}-${opennms.version}-${opennms.release}/binary/"/>
-  </zip>
+  <mkdir dir="${build.release.dir}"/>
+  <tar tarfile="${build.release.dir}/${release.binary.archive.prefix}.tar.gz"
+       basedir="${build.dir}" longfile="gnu" compression="gzip"
+       includes="${release.binary.dir}/" />
+  <zip zipfile="${build.release.dir}/${release.binary.archive.prefix}.zip"
+       basedir="${build.dir}"
+       includes="${release.binary.dir}/"/>
  </target>
 
  <!-- installation targets -->
 
- <target name="install.usr.bin" depends="init" if="isrpm">
-  <mkdir dir="${root.installprefix}/usr/bin"/>
-  <echo file="${root.installprefix}/usr/bin/${ant.project.name}">#!/bin/bash
-
-${root.install}/bin/opennms.sh $$@
-  </echo>
- </target>
-
- <target name="install.bin" depends="init,copy.bin">
-  <mkdir dir="${install}/bin"/>
-  <copy todir="${install}/bin">
-   <fileset dir="${root.build}/bin"/>
+ <target name="install.bin" depends="prep, copy.bin">
+  <mkdir dir="${install.prefix}${install.bin.dir}"/>
+  <copy todir="${install.prefix}${install.bin.dir}">
+   <fileset dir="${build.dir}/bin"/>
   </copy>
   <chmod perm="0755" parallel="false">
-   <fileset dir="${install}/bin"/>
+   <fileset dir="${install.prefix}${install.bin.dir}"/>
   </chmod>
  </target>
 
- <target name="install.init" depends="init">
-  <copy file="${root.source}/tools/packages/opennms/opennms.init" tofile="${install.initdir}/opennms" filtering="yes" overwrite="${filter.overwrite}" />
+ <target name="install.init" depends="prep">
+  <copy file="tools/packages/opennms/opennms.init"
+	tofile="${install.prefix}${install.init.dir}/${ant.project.name}"
+	filtering="yes"
+	overwrite="${filter.overwrite}" />
  </target>
 
- <target name="install.etc" depends="init,copy.etc">
-  <copy todir="${install}/etc">
-   <fileset dir="${root.build}/etc"/>
+ <target name="install.etc" depends="prep,copy.etc">
+  <copy todir="${install.prefix}${install.dir}/etc">
+   <fileset dir="${build.dir}/etc"/>
   </copy>
  </target>
 
- <target name="install.contrib" depends="init,copy.contrib">
-  <copy todir="${install.contrib}">
-   <fileset dir="${root.build}/contrib"/>
+ <target name="install.contrib" depends="prep,copy.contrib">
+  <copy todir="${install.prefix}${install.contrib.dir}">
+   <fileset dir="${build.dir}/contrib"/>
   </copy>
  </target>
 
- <target name="install.lib" depends="init,compile.native,jar">
-  <mkdir dir="${install}/lib"/>
-  <mkdir dir="${install}/lib/updates"/>
-  <echo file="${install}/lib/updates/README.updates">
+ <target name="install.lib" depends="prep,compile,jar">
+  <mkdir dir="${install.prefix}${install.dir}/lib"/>
+  <mkdir dir="${install.prefix}${install.dir}/lib/updates"/>
+  <echo file="${install.prefix}${install.dir}/lib/updates/README.updates">
 
 =========================================================
 This directory is ONLY for class file and jar updates
@@ -511,76 +780,106 @@ OpenNMS as part of the post-install.
 =========================================================
 
   </echo>
-  <copy todir="${install}/lib">
-   <fileset dir="${root.build}/jars" includes="*.jar" />
-   <fileset dir="${root.build}/jicmp" includes="*${compile.jniext}*"/>
-   <fileset dir="${root.build}/jrrd" includes="*${compile.jniext}*"/>
-   <fileset dir="${root.build}/postgresql" includes="*.${compile.soext}.*"/>
-   <fileset dir="${root.source}/lib">
+
+  <copy todir="${install.prefix}${install.dir}/lib">
+   <fileset dir="${build.jar.dir}" includes="*.jar" />
+   <fileset dir="${packaged.lib.dir}">
     <patternset refid="lib.jars" />
    </fileset>
+   <!-- classpathref="libraries.java.path" --> <!-- XXX what's this? -->
   </copy>
-
-  <chmod perm="0755">
-   <fileset dir="${install}/lib"/>
-  </chmod>
   <chmod perm="0664">
-   <fileset dir="${install}/lib">
+   <fileset dir="${install.prefix}${install.dir}/lib">
     <include name="*.jar"/>
    </fileset>
   </chmod>
-  <mkdir dir="${install}/lib/scripts"/>
-  <copy todir="${install}/lib/scripts" filtering="yes">
-   <fileset dir="${root.source}/tools/infrastructure">
+
+  <copy todir="${install.prefix}${install.dir}/lib">
+   <fileset dir="${build.jicmp.dir}" includes="libjicmp.${build.jniext}"/>
+   <fileset dir="${build.jrrd.dir}" includes="libjrrd.${build.jniext}"/>
+  </copy>
+
+  <copy todir="${install.prefix}${install.postgresql.dir}">
+   <fileset dir="${build.postgresql.dir}" includes="iplike.${build.soext}"/>
+  </copy>
+
+  <!-- XXX Are these links at all useful?  Should they be removed?  Should
+       they include the version of the program or libraries we link against -->
+  <exec executable="ln" dir="${install.prefix}${install.dir}/lib"
+	failonerror="true">
+    <arg value="-sf"/>
+    <arg value="libjicmp.${build.jniext}"/>
+    <arg value="libjicmp.${build.jniext}.${product.version}"/>
+  </exec>
+  <exec executable="ln" dir="${install.prefix}${install.dir}/lib"
+	failonerror="true">
+    <arg value="-sf"/>
+    <arg value="libjrrd.${build.jniext}"/>
+    <arg value="libjrrd.${build.jniext}.${product.version}"/>
+  </exec>
+  <exec executable="ln" dir="${install.prefix}${install.postgresql.dir}"
+	failonerror="true">
+    <arg value="-sf"/>
+    <arg value="iplike.${build.soext}"/>
+    <arg value="iplike.${build.soext}.${product.version}"/>
+  </exec>
+
+  <chmod perm="0755">
+   <fileset dir="${install.prefix}${install.dir}/lib">
+     <include name="*.${build.jniext}"/>
+     <include name="*.${build.soext}"/>
+   </fileset>
+  </chmod>
+
+  <mkdir dir="${install.prefix}${install.dir}/lib/scripts"/>
+  <copy todir="${install.prefix}${install.dir}/lib/scripts" filtering="yes"
+        overwrite="${filter.overwrite}">
+   <fileset dir="tools/infrastructure">
     <include name="**/*.sh"/>
     <include name="**/*.pl"/>
    </fileset>
   </copy>
   <chmod perm="0755">
-   <fileset dir="${install}/lib/scripts"/>
+   <fileset dir="${install.prefix}${install.dir}/lib/scripts"/>
   </chmod>
-  <exec executable="ln" dir="${install}/lib"><arg line="-sf libjicmp.${compile.jniext} libjicmp.${compile.jniext}.${opennms.version}"/></exec>
-  <exec executable="ln" dir="${install}/lib"><arg line="-sf libjicmp.${compile.jniext} libjicmp.${compile.jniext}.${opennms.version.major}"/></exec>
-  <exec executable="ln" dir="${install}/lib"><arg line="-sf libjrrd.${compile.jniext} libjrrd.${compile.jniext}.${opennms.version}"/></exec>
-  <exec executable="ln" dir="${install}/lib"><arg line="-sf libjrrd.${compile.jniext} libjrrd.${compile.jniext}.${opennms.version.major}"/></exec>
-  <exec executable="ln" dir="${install}/lib"><arg line="-sf iplike.${compile.soext}.${opennms.version} iplike.${compile.soext}"/></exec>
-  <exec executable="ln" dir="${install}/lib"><arg line="-sf iplike.${compile.soext}.${opennms.version} iplike.${compile.soext}.${opennms.version.major}"/></exec>
  </target>
 
- <target name="install.logs" depends="init">
-  <mkdir dir="${install.logs}"/>
+ <target name="install.logs" depends="prep">
+  <mkdir dir="${install.prefix}${install.logs.dir}"/>
  </target>
 
- <target name="install.share" depends="init">
-  <mkdir dir="${install.share}"/>
-  <mkdir dir="${install.share}/reports"/>
-  <mkdir dir="${install.share}/events"/>
-  <mkdir dir="${install.share}/rrd"/>
+ <target name="install.share" depends="prep">
+  <mkdir dir="${install.prefix}${install.share.dir}"/>
+  <mkdir dir="${install.prefix}${install.share.dir}/reports"/>
+  <mkdir dir="${install.prefix}${install.share.dir}/events"/>
+  <mkdir dir="${install.prefix}${install.share.dir}/rrd"/>
  </target>
 
  <!-- token translation targets -->
 
- <target name="copy.bin" depends="init">
-  <mkdir dir="${root.build}/bin"/>
-  <copy todir="${root.build}/bin" filtering="yes" overwrite="${filter.overwrite}">
-   <fileset dir="${root.source}/tools/run"/>
-   <fileset dir="${root.source}/tools/contrib"/>
+ <target name="copy.bin" depends="prep">
+  <mkdir dir="${build.dir}/bin"/>
+  <copy todir="${build.dir}/bin" filtering="yes"
+	overwrite="${filter.overwrite}">
+   <fileset dir="tools/run"/>
+   <fileset dir="tools/contrib"/>
   </copy>
  </target>
 
- <target name="copy.etc" depends="init">
-  <mkdir dir="${root.build}/etc"/>
-  <copy todir="${root.build}/etc" filtering="yes" overwrite="${filter.overwrite}">
-   <fileset dir="${root.source}/etc">
+ <target name="copy.etc" depends="prep">
+  <mkdir dir="${build.dir}/etc"/>
+  <copy todir="${build.dir}/etc" filtering="yes"
+	overwrite="${filter.overwrite}">
+   <fileset dir="etc">
     <include name="**/*"/>
     <exclude name="**/*.gif"/>
     <exclude name="**/*.jpg"/>
     <exclude name="**/*.png"/>
    </fileset>
-   <fileset dir="${root.source}/src/postgresql" includes="*.sql"/>
+   <fileset dir="${postgresql.source.dir}" includes="*.sql"/>
   </copy>
-  <copy todir="${root.build}/etc" filtering="no" overwrite="yes">
-   <fileset dir="${root.source}/etc">
+  <copy todir="${build.dir}/etc">
+   <fileset dir="etc">
     <include name="**/*.gif"/>
     <include name="**/*.jpg"/>
     <include name="**/*.png"/>
@@ -588,315 +887,868 @@ OpenNMS as part of the post-install.
   </copy>
  </target>
 
- <target name="copy.contrib" depends="init">
-  <mkdir dir="${root.build}/contrib"/>
-  <copy todir="${root.build}/contrib" filtering="no" overwrite="yes">
-   <fileset dir="${root.source}/contrib">
+ <target name="copy.contrib" depends="prep">
+  <mkdir dir="${build.dir}/contrib"/>
+  <copy todir="${build.dir}/contrib">
+   <fileset dir="contrib">
     <include name="**/*"/>
    </fileset>
   </copy>
  </target>
 
- <!-- compilation targets -->
+ <target name="copy.docs" depends="prep">
+  <mkdir dir="${build.filter.docs.dir}"/>
+  <copy todir="${build.filter.docs.dir}" filtering="yes"
+	overwrite="${filter.overwrite}">
+   <fileset dir="${docs.source.dir}"/>
+  </copy>
+ </target>
+				   
+ <target name="copy.install" depends="prep">
+   <copy todir="${build.classes.dir}" filtering="yes"
+         overwrite="${filter.overwrite}">
+     <fileset dir="${install.source.dir}">
+       <include name="**/installer.properties"/>
+     </fileset>
+   </copy>
+ </target>
+
+ <!-- SOURCES targets -->
+ <!-- This target should be used to generate all source code
+      That does not already exist in CVS -->
+ <target name="sources"
+	 depends="sablecc.filter.sources.generate, castor.sources.generate" 
+  description="Update Java source code generated by Castor and Sablecc"/>
+
+ <!-- Generates Sablecc java files if necessary -->
+ <target name="sablecc.filter.sources.generate"
+	 depends="sablecc.filter.sources.uptodate"
+	 unless="sablecc.filter.sources.uptodate">
+  <sablecc src="${services.source.dir}/${sablecc.filter.dir}/"
+	   outputdirectory="${build.sablecc.source.dir}"
+	   includes="filter.grammar"/>
+ </target>
+
+<!--
+    Alternative to explicitly specifying all files in the targetfileset
+ <target name="sablecc.filter.sources.uptodate" depends="prep">
+   <mkdir dir="${build.sablecc.source.dir}"/>
+   <dependset>
+     <srcfileset
+       file="${services.source.dir}/${sablecc.filter.dir}/filter.grammer"/>
+     <targetfileset dir="${build.sablecc.source.dir}">
+       <include name="**/*.java"/>
+       <include name="**/*.dat"/>
+     </targetfileset>
+   </dependset>
+   <condition property="sablecc.filter.sources.uptodate">
+     <and>
+       <available file="${build.sablecc.source.dir}/${sablecc.filter.dir}/lexer/lexer.dat" type="file"/>
+       <available file="${build.sablecc.source.dir}/${sablecc.filter.dir}/parser/parser.dat" type="file"/>
+     </and>
+   </condition>
+ </target>
+-->
+
+ <!-- Removes any old Sablecc java files and flags if they are up to date -->
+ <target name="sablecc.filter.sources.uptodate" depends="prep">
+  <mkdir dir="${build.sablecc.source.dir}"/>
+  <dependset>
+   <srcfilelist dir="${services.source.dir}/org/opennms/netmgt/filter"
+    files="filter.grammar"/>
+   <targetfileset dir="${build.sablecc.source.dir}">
+    <include name="org/opennms/netmgt/filter/analysis/Analysis.java"/>
+    <include name="org/opennms/netmgt/filter/analysis/AnalysisAdapter.java"/>
+    <include name="org/opennms/netmgt/filter/analysis/DepthFirstAdapter.java"/>
+    <include name="org/opennms/netmgt/filter/analysis/ReversedDepthFirstAdapter.java"/>
+    <include name="org/opennms/netmgt/filter/lexer/lexer.dat"/>
+    <include name="org/opennms/netmgt/filter/lexer/LexerException.java"/>
+    <include name="org/opennms/netmgt/filter/lexer/Lexer.java"/>
+    <include name="org/opennms/netmgt/filter/lexer/Lexer.java"/>
+    <include name="org/opennms/netmgt/filter/node/AAndRule.java"/>
+    <include name="org/opennms/netmgt/filter/node/ACompareExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/AExprParensExpr.java"/>
+    <include name="org/opennms/netmgt/filter/node/AExprPartExpr.java"/>
+    <include name="org/opennms/netmgt/filter/node/AGtrThanEqualExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/AGtrThanExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/AIdentExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/AIntegerCompareRight.java"/>
+    <include name="org/opennms/netmgt/filter/node/AIntegerOctet.java"/>
+    <include name="org/opennms/netmgt/filter/node/AIpaddrIpIdent.java"/>
+    <include name="org/opennms/netmgt/filter/node/AIplikeExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/ALessThanEqualExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/ALessThanExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/ALikeExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/ANotEqualExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/ANotExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/AOctetListOctet.java"/>
+    <include name="org/opennms/netmgt/filter/node/AOctetRangeListOctet.java"/>
+    <include name="org/opennms/netmgt/filter/node/AOctetRangeOctet.java"/>
+    <include name="org/opennms/netmgt/filter/node/AOrRule.java"/>
+    <include name="org/opennms/netmgt/filter/node/ARuleExprRule.java"/>
+    <include name="org/opennms/netmgt/filter/node/AStarOctet.java"/>
+    <include name="org/opennms/netmgt/filter/node/AStringCompareRight.java"/>
+    <include name="org/opennms/netmgt/filter/node/Cast.java"/>
+    <include name="org/opennms/netmgt/filter/node/EOF.java"/>
+    <include name="org/opennms/netmgt/filter/node/NoCast.java"/>
+    <include name="org/opennms/netmgt/filter/node/NodeCast.java"/>
+    <include name="org/opennms/netmgt/filter/node/Node.java"/>
+    <include name="org/opennms/netmgt/filter/node/PCompareRight.java"/>
+    <include name="org/opennms/netmgt/filter/node/PExpr.java"/>
+    <include name="org/opennms/netmgt/filter/node/PExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/PIpIdent.java"/>
+    <include name="org/opennms/netmgt/filter/node/POctet.java"/>
+    <include name="org/opennms/netmgt/filter/node/PRule.java"/>
+    <include name="org/opennms/netmgt/filter/node/Start.java"/>
+    <include name="org/opennms/netmgt/filter/node/Switchable.java"/>
+    <include name="org/opennms/netmgt/filter/node/Switch.java"/>
+    <include name="org/opennms/netmgt/filter/node/TAnd.java"/>
+    <include name="org/opennms/netmgt/filter/node/TBlank.java"/>
+    <include name="org/opennms/netmgt/filter/node/TCompare.java"/>
+    <include name="org/opennms/netmgt/filter/node/TDot.java"/>
+    <include name="org/opennms/netmgt/filter/node/TGtrThan.java"/>
+    <include name="org/opennms/netmgt/filter/node/TGtrThanEqual.java"/>
+    <include name="org/opennms/netmgt/filter/node/TIdent.java"/>
+    <include name="org/opennms/netmgt/filter/node/TInteger.java"/>
+    <include name="org/opennms/netmgt/filter/node/TIplike.java"/>
+    <include name="org/opennms/netmgt/filter/node/TLessThanEqual.java"/>
+    <include name="org/opennms/netmgt/filter/node/TLessThan.java"/>
+    <include name="org/opennms/netmgt/filter/node/TLike.java"/>
+    <include name="org/opennms/netmgt/filter/node/TLparen.java"/>
+    <include name="org/opennms/netmgt/filter/node/TNotEqual.java"/>
+    <include name="org/opennms/netmgt/filter/node/TNot.java"/>
+    <include name="org/opennms/netmgt/filter/node/TOctetList.java"/>
+    <include name="org/opennms/netmgt/filter/node/TOctetRange.java"/>
+    <include name="org/opennms/netmgt/filter/node/TOctetRangeList.java"/>
+    <include name="org/opennms/netmgt/filter/node/Token.java"/>
+    <include name="org/opennms/netmgt/filter/node/TOr.java"/>
+    <include name="org/opennms/netmgt/filter/node/TQuotedString.java"/>
+    <include name="org/opennms/netmgt/filter/node/TRparen.java"/>
+    <include name="org/opennms/netmgt/filter/node/TSemi.java"/>
+    <include name="org/opennms/netmgt/filter/node/TStar.java"/>
+    <include name="org/opennms/netmgt/filter/node/TypedLinkedList.java"/>
+    <include name="org/opennms/netmgt/filter/parser/parser.dat"/>
+    <include name="org/opennms/netmgt/filter/parser/ParserException.java"/>
+    <include name="org/opennms/netmgt/filter/parser/Parser.java"/>
+    <include name="org/opennms/netmgt/filter/parser/State.java"/>
+    <include name="org/opennms/netmgt/filter/parser/TokenIndex.java"/>
+   </targetfileset>
+  </dependset>
+  <condition property="sablecc.filter.sources.uptodate">
+   <and>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/analysis/Analysis.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/analysis/AnalysisAdapter.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/analysis/DepthFirstAdapter.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/analysis/ReversedDepthFirstAdapter.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/lexer/lexer.dat" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/lexer/LexerException.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/lexer/Lexer.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/lexer/Lexer.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AAndRule.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/ACompareExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AExprParensExpr.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AExprPartExpr.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AGtrThanEqualExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AIdentExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AIntegerCompareRight.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AIntegerOctet.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AIpaddrIpIdent.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AIplikeExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/ALessThanEqualExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/ALessThanExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/ALikeExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/ANotEqualExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/ANotExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AOctetListOctet.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AOctetRangeListOctet.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AOctetRangeOctet.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AOrRule.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/ARuleExprRule.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AStarOctet.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AStringCompareRight.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/Cast.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/EOF.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/NoCast.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/NodeCast.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/Node.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/PCompareRight.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/PExpr.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/PExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/PIpIdent.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/POctet.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/PRule.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/Start.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/Switchable.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/Switch.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TAnd.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TBlank.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TCompare.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TDot.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TGtrThan.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TGtrThanEqual.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TIdent.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TInteger.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TIplike.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TLessThanEqual.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TLessThan.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TLike.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TLparen.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TNotEqual.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TNot.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TOctetList.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TOctetRange.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TOctetRangeList.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/Token.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TOr.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TQuotedString.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TRparen.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TSemi.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TStar.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TypedLinkedList.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/parser/parser.dat" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/parser/ParserException.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/parser/Parser.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/parser/State.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/parser/TokenIndex.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/parser/TokenIndex.java" type="file"/>
+   </and>
+  </condition>
+ </target>
+
+ <!-- Generates Castor java files if necessary -->
+ <target name="castor.sources.generate"
+  depends="castor.actiond.sources.generate,      castor.availability.sources.generate,
+   castor.capsd.sources.generate,                castor.categories.sources.generate,
+   castor.collectd.sources.generate,             castor.destinationPaths.sources.generate,
+   castor.dhcpd.sources.generate,                castor.discovery.sources.generate,
+   castor.event.sources.generate,                castor.eventconf.sources.generate,
+   castor.eventd.sources.generate,               castor.events.sources.generate,
+   castor.filter.sources.generate,               castor.groups.sources.generate,
+   castor.kscReports.sources.generate,           castor.notifd.sources.generate,
+   castor.notificationCommands.sources.generate, castor.notifications.sources.generate,
+   castor.outage.sources.generate,               castor.poller.sources.generate,
+   castor.rtc.sources.generate,                  castor.rtceui.sources.generate,             
+   castor.scriptd.sources.generate,              castor.server.sources.generate,
+   castor.service.sources.generate,              castor.trapd.sources.generate,
+   castor.threshd.sources.generate,              castor.vulnscand.sources.generate,
+   castor.xmlrpcd.sources.generate,              castor.users.sources.generate,
+   castor.views.sources.generate,                castor.viewsdisplay.sources.generate,
+   castor.webuiColors.sources.generate"/>
+
+ <!-- this doesn't work... not sure if I can easily get something like this
+      to work...
+ <macrodef name="castorgenerate">
+   <attribute name="xsd"/>
+   <attribute name="srcpackage"/>
+   <attribute name="targetdir"/>
+   <attribute name="class"/>
+
+   <sequential>
+     <dependset>
+       <srcfilelist dir="${castor.config.dir}"
+		    files="@{xsd}"/>
+       <targetfileset dir="${build.castor.source.dir}/@{targetdir}"
+		      includes="*.java"/>
+     </dependset>
+     <condition property="castor.sources.@{srcpackage}.uptodate">
+       <and>
+	 <available
+	    file="${build.castor.source.dir}/@{targetdir}/@{class}.java"
+	    type="file"/>
+	 <available
+	    file="${build.castor.source.dir}/@{targetdir}/@{class}Descriptor.java"
+	    type="file"/>
+       </and>
+     </condition>
+
+     <target name="castor.sources.${srcpackage}.generate"
+	     depends="castor.sources.@{srcpackage}.uptodate"
+	     unless="castor.sources.@{srcpackage}.uptodate">
+       <castor file="${castor.config.dir}/@{xsd}"
+	       srcpackage="@{srcpackage}"
+	       destination="${build.castor.source.dir}"
+	       typefactory="${castor.typefactory}"/>
+     </target>
+   </sequential>
+ </macrodef>
+ -->
+
+ <!-- These targets generate a specific set of castor classes based on the
+      xsd the target refers to -->
+ <target name="castor.actiond.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.actiond.sources.uptodate">
+  <castor file="${castor.config.dir}/actiond-configuration.xsd" srcpackage="org.opennms.netmgt.config.actiond"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.availability.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.availability.sources.uptodate">
+  <castor file="${castor.xsd.dir}/availability_report.xsd" srcpackage="org.opennms.report.availability"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.capsd.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.capsd.sources.uptodate">
+  <castor file="${castor.config.dir}/capsd-configuration.xsd" srcpackage="org.opennms.netmgt.config.capsd"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.categories.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.categories.sources.uptodate">
+  <castor file="${castor.config.dir}/categories.xsd" srcpackage="org.opennms.netmgt.config.categories"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.collectd.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.collectd.sources.uptodate">
+  <delete quiet="true">
+   <fileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/collectd" includes="*.java"/>
+  </delete>
+  <castor file="${castor.config.dir}/collectd-configuration.xsd" srcpackage="org.opennms.netmgt.config.collectd"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+  <castor file="${castor.config.dir}/datacollection-config.xsd" srcpackage="org.opennms.netmgt.config.collectd"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.destinationPaths.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.destinationPaths.sources.uptodate">
+  <castor file="${castor.config.dir}/destinationPaths.xsd" srcpackage="org.opennms.netmgt.config.destinationPaths"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.dhcpd.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.dhcpd.sources.uptodate">
+  <castor file="${castor.config.dir}/dhcpd-configuration.xsd" srcpackage="org.opennms.netmgt.config.dhcpd"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.discovery.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.discovery.sources.uptodate">
+  <castor file="${castor.config.dir}/discovery-configuration.xsd" srcpackage="org.opennms.netmgt.config.discovery"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.event.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.event.sources.uptodate">
+  <castor file="${castor.xsd.dir}/event.xsd" srcpackage="org.opennms.netmgt.xml.event"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.eventconf.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.eventconf.sources.uptodate">
+  <castor file="${castor.xsd.dir}/eventconf.xsd" srcpackage="org.opennms.netmgt.xml.eventconf"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.eventd.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.eventd.sources.uptodate">
+  <castor file="${castor.config.dir}/eventd-configuration.xsd" srcpackage="org.opennms.netmgt.config.eventd"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.events.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.events.sources.uptodate">
+  <castor file="${castor.config.dir}/events-archiver-configuration.xsd" srcpackage="org.opennms.netmgt.config.archiver.events"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.filter.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.filter.sources.uptodate">
+  <castor file="${castor.config.dir}/database-schema.xsd" srcpackage="org.opennms.netmgt.config.filter"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.groups.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.groups.sources.uptodate">
+  <castor file="${castor.config.dir}/groups.xsd" srcpackage="org.opennms.netmgt.config.groups"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.kscReports.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.kscReports.sources.uptodate">
+  <castor file="${castor.config.dir}/ksc-performance-reports.xsd" srcpackage="org.opennms.netmgt.config.kscReports"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.notifd.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.notifd.sources.uptodate">
+  <castor file="${castor.config.dir}/notifd-configuration.xsd" srcpackage="org.opennms.netmgt.config.notifd"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.notificationCommands.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.notificationCommands.sources.uptodate">
+  <castor file="${castor.config.dir}/notificationCommands.xsd" srcpackage="org.opennms.netmgt.config.notificationCommands"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.notifications.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.notifications.sources.uptodate">
+  <castor file="${castor.config.dir}/notifications.xsd" srcpackage="org.opennms.netmgt.config.notifications"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.outage.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.outage.sources.uptodate">
+  <castor file="${castor.config.dir}/outage-configuration.xsd" srcpackage="org.opennms.netmgt.config.outage"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.poller.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.poller.sources.uptodate">
+  <delete quiet="true">
+   <fileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/poller" includes="*.java"/>
+  </delete>
+  <castor file="${castor.config.dir}/poller-configuration.xsd" srcpackage="org.opennms.netmgt.config.poller"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+  <castor file="${castor.config.dir}/poll-outages.xsd" srcpackage="org.opennms.netmgt.config.poller"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.rtc.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.rtc.sources.uptodate">
+  <castor file="${castor.config.dir}/rtc-configuration.xsd" srcpackage="org.opennms.netmgt.config.rtc"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.rtceui.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.rtceui.sources.uptodate">
+  <castor file="${castor.xsd.dir}/rtceui.xsd" srcpackage="org.opennms.netmgt.xml.rtc"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.scriptd.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.scriptd.sources.uptodate">
+  <castor file="${castor.config.dir}/scriptd-configuration.xsd" srcpackage="org.opennms.netmgt.config.scriptd"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.server.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.server.sources.uptodate">
+  <castor file="${castor.config.dir}/opennms-server.xsd" srcpackage="org.opennms.netmgt.config.server"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.service.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.service.sources.uptodate">
+  <castor file="${castor.config.dir}/service-configuration.xsd" srcpackage="org.opennms.netmgt.config.service"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.trapd.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.trapd.sources.uptodate">
+  <castor file="${castor.config.dir}/trapd-configuration.xsd" srcpackage="org.opennms.netmgt.config.trapd"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.threshd.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.threshd.sources.uptodate">
+  <delete quiet="true">
+   <fileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/threshd" includes="*.java"/>
+  </delete>
+  <castor file="${castor.config.dir}/threshd-configuration.xsd" srcpackage="org.opennms.netmgt.config.threshd"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+  <castor file="${castor.config.dir}/thresholding-config.xsd" srcpackage="org.opennms.netmgt.config.threshd"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.vulnscand.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.vulnscand.sources.uptodate">
+  <castor file="${castor.config.dir}/vulnscand-configuration.xsd" srcpackage="org.opennms.netmgt.config.vulnscand"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.xmlrpcd.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.xmlrpcd.sources.uptodate">
+  <castor file="${castor.config.dir}/xmlrpcd-configuration.xsd" srcpackage="org.opennms.netmgt.config.xmlrpcd"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.users.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.users.sources.uptodate">
+  <castor file="${castor.config.dir}/users.xsd" srcpackage="org.opennms.netmgt.config.users"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.views.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.views.sources.uptodate">
+  <castor file="${castor.config.dir}/views.xsd" srcpackage="org.opennms.netmgt.config.views"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.viewsdisplay.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.viewsdisplay.sources.uptodate">
+  <castor file="${castor.config.dir}/viewsdisplay.xsd" srcpackage="org.opennms.netmgt.config.viewsdisplay"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.webuiColors.sources.generate" depends="castor.sources.uptodate"
+  unless="castor.webuiColors.sources.uptodate">
+  <castor file="${castor.config.dir}/webui-colors.xsd" srcpackage="org.opennms.netmgt.config.webuiColors"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+
+ <!-- This target is used to determine if the castor sources are up to date.
+      First it uses a dependset rule to remove all files older than the xsd,
+      then it uses a condition to see if the root class described in the xsd
+      exists, and if it does, it sets an uptodate property for the xsd. -->
+ <target name="castor.sources.uptodate" depends="prep">
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="actiond-configuration.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/actiond" includes="*.java"/>
+  </dependset>
+  <condition property="castor.actiond.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/actiond/ActiondConfiguration.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.xsd.dir}" files="availability_report.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/report/availability" includes="*.java"/>
+  </dependset>
+  <condition property="castor.availability.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/report/availability/Report.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="capsd-configuration.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/capsd" includes="*.java"/>
+  </dependset>
+  <condition property="castor.capsd.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/capsd/CapsdConfiguration.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="categories.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/categories" includes="*.java"/>
+  </dependset>
+  <condition property="castor.categories.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/categories/Catinfo.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="collectd-configuration.xsd"/>
+   <srcfilelist dir="${castor.config.dir}" files="datacollection-config.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/collectd" includes="*.java"/>
+  </dependset>
+  <condition property="castor.collectd.sources.uptodate">
+   <and>
+    <available file="${build.castor.source.dir}/org/opennms/netmgt/config/collectd/CollectdConfiguration.java" type="file"/>
+    <available file="${build.castor.source.dir}/org/opennms/netmgt/config/collectd/DatacollectionConfig.java" type="file"/>
+   </and>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="destinationPaths.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/destinationPaths" includes="*.java"/>
+  </dependset>
+  <condition property="castor.destinationPaths.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/destinationPaths/DestinationPaths.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="dhcpd-configuration.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/dhcpd" includes="*.java"/>
+  </dependset>
+  <condition property="castor.dhcpd.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/dhcpd/DhcpdConfiguration.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="discovery-configuration.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/discovery" includes="*.java"/>
+  </dependset>
+  <condition property="castor.discovery.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/discovery/DiscoveryConfiguration.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.xsd.dir}" files="event.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/xml/event" includes="*.java"/>
+  </dependset>
+  <condition property="castor.event.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/xml/event/Event.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.xsd.dir}" files="eventconf.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/xml/eventconf" includes="*.java"/>
+  </dependset>
+  <condition property="castor.eventconf.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/xml/eventconf/Events.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="eventd-configuration.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/eventd" includes="*.java"/>
+  </dependset>
+  <condition property="castor.eventd.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/eventd/EventdConfiguration.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="events-archiver-configuration.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/archiver/events" includes="*.java"/>
+  </dependset>
+  <condition property="castor.events.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/archiver/events/EventsArchiverConfiguration.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="database-schema.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/filter" includes="*.java"/>
+  </dependset>
+  <condition property="castor.filter.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/filter/DatabaseSchema.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="groups.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/groups" includes="*.java"/>
+  </dependset>
+  <condition property="castor.groups.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/groups/Groupinfo.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="ksc-performance-reports.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/kscReports" includes="*.java"/>
+  </dependset>
+  <condition property="castor.kscReports.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/kscReports/ReportsList.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="notifd-configuration.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/notifd" includes="*.java"/>
+  </dependset>
+  <condition property="castor.notifd.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/notifd/NotifdConfiguration.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="notificationCommands.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/notificationCommands" includes="*.java"/>
+  </dependset>
+  <condition property="castor.notificationCommands.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/notificationCommands/NotificationCommands.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="notifications.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/notifications" includes="*.java"/>
+  </dependset>
+  <condition property="castor.notifications.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/notifications/Notifications.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="outage-configuration.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/outage" includes="*.java"/>
+  </dependset>
+  <condition property="castor.outage.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/outage/OutageConfiguration.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="poller-configuration.xsd"/>
+   <srcfilelist dir="${castor.config.dir}" files="poll-outages.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/poller" includes="*.java"/>
+  </dependset>
+  <condition property="castor.poller.sources.uptodate">
+   <and>
+    <available file="${build.castor.source.dir}/org/opennms/netmgt/config/poller/PollerConfiguration.java" type="file"/>
+    <available file="${build.castor.source.dir}/org/opennms/netmgt/config/poller/Outages.java" type="file"/>
+   </and>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="rtc-configuration.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/rtc" includes="*.java"/>
+  </dependset>
+  <condition property="castor.rtc.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/rtc/RTCConfiguration.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.xsd.dir}" files="rtceui.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/xml/rtc" includes="*.java"/>
+  </dependset>
+  <condition property="castor.rtceui.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/xml/rtc/EuiLevel.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="scriptd-configuration.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/scriptd" includes="*.java"/>
+  </dependset>
+  <condition property="castor.scriptd.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/scriptd/ScriptdConfiguration.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="opennms-server.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/server" includes="*.java"/>
+  </dependset>
+  <condition property="castor.server.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/server/LocalServer.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="service-configuration.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/service" includes="*.java"/>
+  </dependset>
+  <condition property="castor.service.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/service/ServiceConfiguration.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="trapd-configuration.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/trapd" includes="*.java"/>
+  </dependset>
+  <condition property="castor.trapd.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/trapd/TrapdConfiguration.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="threshd-configuration.xsd"/>
+   <srcfilelist dir="${castor.config.dir}" files="thresholding-config.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/threshd" includes="*.java"/>
+  </dependset>
+  <condition property="castor.threshd.sources.uptodate">
+   <and>
+    <available file="${build.castor.source.dir}/org/opennms/netmgt/config/threshd/ThreshdConfiguration.java" type="file"/>
+    <available file="${build.castor.source.dir}/org/opennms/netmgt/config/threshd/ThresholdingConfig.java" type="file"/>
+   </and>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="vulnscand-configuration.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/vulnscand" includes="*.java"/>
+  </dependset>
+  <condition property="castor.vulnscand.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/vulnscand/VulnscandConfiguration.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="xmlrpcd-configuration.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/xmlrpcd" includes="*.java"/>
+  </dependset>
+  <condition property="castor.xmlrpcd.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/xmlrpcd/XmlrpcdConfiguration.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="users.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/users" includes="*.java"/>
+  </dependset>
+  <condition property="castor.users.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/users/Userinfo.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="views.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/views" includes="*.java"/>
+  </dependset>
+  <condition property="castor.views.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/views/Viewinfo.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="viewsdisplay.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/viewsdisplay" includes="*.java"/>
+  </dependset>
+  <condition property="castor.viewsdisplay.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/viewsdisplay/Viewinfo.java" type="file"/>
+  </condition>
+  <dependset>
+   <srcfilelist dir="${castor.config.dir}" files="webui-colors.xsd"/>
+   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/webuiColors" includes="*.java"/>
+  </dependset>
+  <condition property="castor.webuiColors.sources.uptodate">
+   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/webuiColors/CategoryColors.java" type="file"/>
+  </condition>
+ </target>
+
+ <!-- COMPILE targets -->
  
- <target name="compile" depends="compile.java"
-        description="compile all code" unless="compile.is.uptodate">
-  <property name="compile.is.uptodate" value="true"/>
+ <target name="compile" depends="compile.check,java.compile,jicmp.compile,jrrd.compile,postgresql.compile" description="compile all code"/>
+
+ <target name="java.compile" depends="prep,sources">
+  <mkdir dir="${build.classes.dir}"/>
+  <javac destdir="${build.classes.dir}"
+	 debug="${compiler.debug}"
+	 optimize="${compiler.optimize}"
+	 verbose="${compiler.verbose}"
+	 classpathref="libraries.java.path"
+	 deprecation="${compiler.deprecation}">
+   <src>
+    <path refid="sources.java.path"/>
+   </src>
+   <include name="**/*.java"/>
+  </javac>
+  <copy todir="${build.classes.dir}">
+   <fileset dir="${build.sablecc.source.dir}">
+    <include name="**/*.dat"/>
+   </fileset>
+  </copy>
  </target>
 
- <target name="compile.java.sablecc.preproc.uptodate" depends="init">
-  <uptodate property="sablecc.is.uptodate"
-        targetfile="${root.build}/sablecc/org/opennms/netmgt/filter/parser/State.java">
-   <srcfiles dir="${root.source}/src/services/org/opennms/netmgt/filter" includes="*.grammar"/>
-  </uptodate>
-  <if value="${sablecc.is.uptodate}" match="true">
-   <then target="echo"><param name="message" value="SableCC is up to date"/></then>
-  </if>
- </target>
+  <target name="jicmp.compile" depends="prep,java.compile">
+    <mkdir dir="${build.jicmp.dir}"/>
+    <javah class="org.opennms.protocols.icmp.IcmpSocket"
+	   classpath="${build.classes.dir}"
+           outputFile="${build.jicmp.dir}/IcmpSocket.h"/>
+    <copy todir="${build.jicmp.dir}">
+      <fileset dir="${services.source.dir}/org/opennms/protocols/icmp">
+        <include name="IcmpSocket.c"/>
+        <include name="byteswap.h"/>
+      </fileset>
+    </copy>
+    <cc debug="true" link="shared"
+        objdir="${build.jicmp.dir}"
+	outfile="${build.jicmp.dir}/jicmp-build"
+	outputfileproperty="build.jicmp.output.lib">
+      <compiler name="gcc">
+	 <compilerarg value="-D${build.platform.define}"/>
+      </compiler>
+      <linker name="gcc"/>
+      <fileset dir="${build.jicmp.dir}" includes="IcmpSocket.c"/>
+      <includepath path="${java.home}/include"/>
+      <includepath path="${java.home}/include${build.java.jnimd.dir}"/>
+      <!-- XXX hack -->
+      <includepath path="${java.home}/../include"/>
+      <includepath path="${java.home}/../include${build.java.jnimd.dir}"/>
+    </cc>
+    <copy file="${build.jicmp.output.lib}"
+          tofile="${build.jicmp.dir}/libjicmp.${build.jniext}"/>
+  </target>
 
- <target name="compile.java.sablecc.preproc" depends="init,compile.java.sablecc.preproc.uptodate" unless="sablecc.is.uptodate">
-  <mkdir dir="${root.build}/sablecc"/>
-  <sablecc src="${root.source}/src/services/org/opennms/netmgt/filter" outputdirectory="${root.build}/sablecc" includes="*.grammar" />
- </target>
+  <target name="jrrd.compile" depends="prep,java.compile">
+    <mkdir dir="${build.jrrd.dir}"/>
+    <javah class="org.opennms.netmgt.rrd.Interface"
+	   classpath="${build.classes.dir}"
+           outputFile="${build.jrrd.dir}/rrd_jinterface.h"/>
+    <copy todir="${build.jrrd.dir}">
+      <fileset dir="${services.source.dir}/org/opennms/netmgt/rrd">
+        <include name="rrd_jinterface.c"/>
+      </fileset>
+    </copy>
+    <cc debug="true" link="shared"
+        objdir="${build.jrrd.dir}"
+	outfile="${build.jrrd.dir}/jrrd-build"
+	outputfileproperty="build.jrrd.output.lib">
+      <compiler name="gcc">
+        <compilerarg value="-D${build.platform.define}"/>
+      </compiler>
+      <linker name="gcc">
+	<linkerarg value="${build.jrrd.linker.arg}"
+		   if="build.jrrd.linker.arg"/>
+      </linker>
+      <fileset dir="${build.jrrd.dir}" includes="rrd_jinterface.c"/>
+      <libset dir="${build.rrdtool.lib.dir}" libs="rrd"/>
+      <includepath path="${java.home}/include"/>
+      <includepath path="${java.home}/include${build.java.jnimd.dir}"/>
+      <!-- XXX hack -->
+      <includepath path="${java.home}/../include"/>
+      <includepath path="${java.home}/../include${build.java.jnimd.dir}"/>
+      <includepath path="${build.rrdtool.include.dir}"/>
+    </cc>
+    <copy file="${build.jrrd.output.lib}"
+          tofile="${build.jrrd.dir}/libjrrd.${build.jniext}"/>
+  </target>
 
- <target name="castor.uptodate" depends="init">
-  <uptodate property="${castor.xsd}.is.uptodate"
-	targetfile="${castor.output.path}/${castor.xsd.path}/${castor.xsd}.build">
-   <srcfiles dir="${castor.xsd.path}" includes="${castor.xsd}"/>
-  </uptodate>
- </target>
- <target name="castor.uptodate." if="${castor.xsd}.is.uptodate">
-  <antcall target="echo"><param name="message" value="${castor.xsd} is up to date"/></antcall>
- </target>
-
- <target name="castor" depends="init,castor.uptodate,castor.uptodate." unless="${castor.xsd}.is.uptodate">
-  <mkdir dir="${castor.output.path}/${castor.xsd.path}"/>
-  <touch file="${castor.output.path}/${castor.xsd.path}/${castor.xsd}.build"/>
-  <java classname="org.exolab.castor.builder.SourceGenerator">
-   <arg value="-dest"/>
-   <arg value="${castor.output.path}"/>
-   <arg value="-types"/>
-   <arg value="j2"/>
-   <arg value="-f"/>
-   <arg value="-package"/>
-   <arg value="${castor.package}"/>
-   <arg value="-i"/>
-   <arg value="${castor.xsd.path}/${castor.xsd}"/>
-  </java>
- </target>
-
- <target name="compile.java.castor.preproc" depends="init" unless="castor.is.uptodate">
-  <antcall target="print.header"><param name="print.headertext" value="Making XSD-Generated Code"/></antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.xml.event"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/schema/xsd"/>
-   <param name="castor.xsd" value="event.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.report.availability"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/schema/xsd"/>
-   <param name="castor.xsd" value="availability_report.xsd"/>
-  </antcall>	
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.xml.eventconf"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/schema/xsd"/>
-   <param name="castor.xsd" value="eventconf.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.xml.rtc"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/schema/xsd"/>
-   <param name="castor.xsd" value="rtceui.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.filter"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="database-schema.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.service"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="service-configuration.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.discovery"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="discovery-configuration.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.actiond"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="actiond-configuration.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.trapd"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="trapd-configuration.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.poller"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="poller-configuration.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.collectd"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="collectd-configuration.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.vulnscand"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="vulnscand-configuration.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.scriptd"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="scriptd-configuration.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.collectd"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="datacollection-config.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.threshd"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="threshd-configuration.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.threshd"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="thresholding-config.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.outage"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="outage-configuration.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.rtc"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="rtc-configuration.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.poller"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="poll-outages.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.dhcpd"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="dhcpd-configuration.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.eventd"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="eventd-configuration.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.xmlrpcd"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="xmlrpcd-configuration.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.capsd"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="capsd-configuration.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.notifd"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="notifd-configuration.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.users"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="users.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.views"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="views.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.categories"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="categories.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.groups"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="groups.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.destinationPaths"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="destinationPaths.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.notifications"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="notifications.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.notificationCommands"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="notificationCommands.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.archiver.events"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="events-archiver-configuration.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.viewsdisplay"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="viewsdisplay.xsd"/>
-  </antcall>  
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.webuiColors"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="webui-colors.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.kscReports"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="ksc-performance-reports.xsd"/>
-  </antcall>
-  <antcall target="castor">
-   <param name="castor.package" value="org.opennms.netmgt.config.server"/>
-   <param name="castor.output.path" value="${root.build}/castor"/>
-   <param name="castor.xsd.path" value="${root.source}/src/services/org/opennms/netmgt/config"/>
-   <param name="castor.xsd" value="opennms-server.xsd"/>
-  </antcall>
- </target>
+  <target name="postgresql.compile" depends="prep">
+    <mkdir dir="${build.postgresql.dir}"/>
+    <copy todir="${build.postgresql.dir}">
+      <fileset dir="${postgresql.source.dir}">
+        <include name="iplike.c"/>
+      </fileset>
+    </copy>
+    <cc debug="true" link="plugin"
+        objdir="${build.postgresql.dir}"
+	outfile="${build.postgresql.dir}/iplike-build"
+	outputfileproperty="build.postgresql.output.lib">
+      <compiler name="gcc">
+      </compiler>
+      <fileset dir="${build.postgresql.dir}" includes="iplike.c"/>
+      <includepath path="${build.postgresql.include.dir}"/>
+    </cc>
+    <copy file="${build.postgresql.output.lib}"
+          tofile="${build.postgresql.dir}/iplike.${build.soext}"/>
+  </target>
 
  <!-- tests -->
 
  <target name="test.jsp" depends="install.jsp"
-	description="compile the JSPs" unless="wasrpm">
-  <antcall target="print.header"><param name="print.headertext" value="Generating and Test Compiling the JSPs"/></antcall>
-  <mkdir dir="${root.build}/jspsource"/>
-  <mkdir dir="${root.build}/jsp"/>
-  <exec executable="/bin/sh">
-   <arg value="${root.source}/jspcompile.sh"/>
-   <arg value="${root.build}/jsp-java"/>
-   <arg value="${root.build}/jsp-class"/>
-   <arg value="${install.servlets}"/>
-  </exec>
+	 description="compile the JSPs" unless="wasrpm">
+   <mkdir dir="${build.dir}/jspsource"/>
+   <mkdir dir="${build.dir}/jsp"/>
+   <exec executable="/bin/sh" failonerror="true">
+     <!-- Note: jspcompile.sh requres full paths for all of its directories -->
+     <arg value="jspcompile.sh"/>
+     <arg value="${basedir}/${build.dir}/jsp-java"/>
+     <arg value="${basedir}/${build.dir}/jsp-class"/>
+     <arg value="${install.prefix}${install.servlet.dir}"/>
+   </exec>
  </target>
 
  <!-- java build -->
 
- <target name="compile.java.test" depends="init,compile.java.castor.preproc,compile.java.sablecc.preproc" unless="compile.java.test.is.uptodate">
-  <mkdir dir="${root.build.classes}"/>
-  <javac destdir="${root.build.classes}"
-         debug="${opennms.debug}"
-         optimize="${opennms.optimize}"
-         verbose="${opennms.verbose}"
-         deprecation="${opennms.deprecation}">
+
+ <target name="compile.java.test" depends="prep,sources"
+	 unless="compile.java.test.is.uptodate">
+  <mkdir dir="${build.classes.dir}"/>
+  <javac destdir="${build.classes.dir}"
+         debug="${compiler.debug}"
+         optimize="${compiler.optimize}"
+         verbose="${compiler.verbose}"
+	 classpathref="libraries.java.path"
+         deprecation="${compiler.deprecation}">
    <src>
-    <path refid="path.sources"/>
-    <pathelement path="${root.source}/tests/src"/>
+    <path refid="sources.java.path"/>
+    <pathelement path="tests/src"/>
    </src>
    <include name="**/*.java"/>
   </javac>
-  <copy todir="${root.build.classes}">
-   <fileset dir="${root.build}/sablecc">
+  <copy todir="${build.classes.dir}">
+   <fileset dir="${build.sablecc.source.dir}">
     <include name="**/*.dat"/>
    </fileset>
   </copy>
@@ -904,318 +1756,219 @@ OpenNMS as part of the post-install.
   <property name="compile.java.test.is.uptodate" value="true"/>
  </target>
 
- <target name="compile.java" depends="init,compile.java.castor.preproc,compile.java.sablecc.preproc" unless="compile.java.is.uptodate">
-  <mkdir dir="${root.build.classes}"/>
-  <antcall target="print.header"><param name="print.headertext" value="Building Java Code"/></antcall>
-  <javac
-        destdir="${root.build.classes}"
-        debug="${opennms.debug}"
-        optimize="${opennms.optimize}"
-        verbose="${opennms.verbose}"
-        deprecation="${opennms.deprecation}">
-   <src>
-    <path refid="path.sources"/>
-   </src>
-   <include name="**/*.java"/>
-   <exclude name="work/**"/>
-  </javac>
-  <copy todir="${root.build.classes}">
-   <fileset dir="${root.build}/sablecc">
-    <include name="**/*.dat"/>
-   </fileset>
-  </copy>
-  <property name="compile.java.is.uptodate" value="true"/>
- </target>
-
- <!-- native build -->
-
- <target name="compile.native" depends="init,compile.native.postgresql,compile.native.jicmp,compile.native.jrrd"/>
-
- <target name="compile.native.osx.check">
-  <condition property="isOSX">
-   <and>
-    <os family="mac" />
-    <os family="unix" />
-   </and>
-  </condition>
- </target>
-
- <target name="compile.native.solaris.check">
-  <if value="${os.name}" match="SunOS">
-   <thenProperty name="network.libs" value="-lsocket -lnsl"/>
-   <elseProperty name="network.libs" value=""/>
-  </if>
- </target>
-
- <target name="compile.native.postgresql" depends="init">
-  <mkdir dir="${root.build}/postgresql"/>
-  <apply executable="${compile.cc}" dir="${root.source}/src/postgresql" failonerror="true"
-	dest="${root.build}/postgresql">
-   <arg line="-fpic ${compile.cflags} -I${compile.postgresql.include} -I${compile.postgresql.include}/server -D${compile.platform.define} -c -o"/>
-   <targetfile/>
-   <srcfile/>
-   <fileset dir="${root.source}/src/postgresql" includes="*.c"/>
-   <mapper type="glob" from="*.c" to="*.o"/>
-  </apply>
-  <apply executable="${compile.ld}" dir="${root.build}/postgresql" failonerror="true"
-	dest="${root.build}/postgresql">
-   <arg line="${compile.ld.dynamic} ${compile.ld.shared} -L${compile.postgresql.lib} -o"/>
-   <targetfile/>
-   <srcfile/>
-   <fileset dir="${root.build}/postgresql" includes="*.o"/>
-   <mapper type="glob" from="*.o" to="*.${compile.soext}.${opennms.version}"/>
-  </apply>
- </target>
-
- <target name="compile.native.jicmp.javah" depends="init,compile.java">
-  <mkdir dir="${root.build}/jicmp"/>
-  <javah class="org.opennms.protocols.icmp.IcmpSocket" classpath="${root.build.classes}"
-	outputFile="${root.build}/jicmp/IcmpSocket.h"/>
-  <copy todir="${root.build}/jicmp">
-   <fileset dir="${root.source}/src/services/org/opennms/protocols/icmp" includes="*.c" />
-   <fileset dir="${root.source}/src/services/org/opennms/protocols/icmp" includes="*.h" />
-  </copy>
- </target>
-
- <target name="compile.native.jicmp" depends="init,compile.native.osx.check,compile.native.jicmp.osx,compile.native.jicmp.unix" />
-
- <target name="compile.native.jicmp.osx" depends="init,compile.native.jicmp.javah" if="isOSX">
-  <mkdir dir="${root.build}/jicmp"/>
-
-  <!-- generate .so files -->
-  <apply executable="${compile.cc}" dir="${root.build}/jicmp" failonerror="true" dest="${root.build}/jicmp">
-   <arg line="-dynamiclib -install_name ${root.install}/lib/libjicmp.${compile.jniext} -framework JavaVM -I${java.framework}/include -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jicmp -I. -D${compile.platform.define} -o"/>
-   <targetfile/>
-   <srcfile/>
-   <fileset dir="${root.build}/jicmp" includes="*.c"/>
-   <mapper type="glob" from="IcmpSocket.c" to="libjicmp.${compile.jniext}"/>
-  </apply>
- </target>
-
- <target name="compile.native.jicmp.unix" depends="init,compile.native.jicmp.javah" unless="isOSX">
-  <mkdir dir="${root.build}/jicmp"/>
-
-  <!-- generate .o files -->
-  <apply executable="${compile.cc}" dir="${root.build}/jicmp" failonerror="true" dest="${root.build}/jicmp">
-   <arg line="${compile.cflags} -fPIC -I. -I${java.framework}/include -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jicmp -D${compile.platform.define} -c -o"/>
-   <targetfile/>
-   <srcfile/>
-   <fileset dir="${root.source}/src/services/org/opennms/protocols/icmp" includes="*.c"/>
-   <mapper type="glob" from="*.c" to="*.o"/>
-  </apply>
-
-  <!-- generate .so files -->
-  <apply executable="${compile.ld}" dir="${root.build}/jicmp" failonerror="true" dest="${root.build}/jicmp">
-   <arg line="${compile.ld.dynamic} ${compile.ld.shared} -o"/>
-   <targetfile/>
-   <srcfile/>
-   <fileset dir="${root.build}/jicmp" includes="*.o"/>
-   <mapper type="glob" from="IcmpSocket.o" to="libjicmp.${compile.jniext}"/>
-  </apply>
- </target>
-
- <target name="compile.native.jrrd.javah" depends="init,compile.java">
-  <mkdir dir="${root.build}/jrrd"/>
-  <javah class="org.opennms.netmgt.rrd.Interface" classpath="${root.build.classes}"
-	outputFile="${root.build}/jrrd/rrd_jinterface.h"/>
- </target>
-
- <target name="compile.native.jrrd" depends="compile.native.jrrd.osx,compile.native.jrrd.unix" />
-
- <target name="compile.native.jrrd.osx" depends="init,compile.native.jrrd.javah" if="isOSX">
-  <mkdir dir="${root.build}/jrrd"/>
-
-  <!-- generate .so files -->
-  <copy todir="${root.build}/jrrd">
-   <fileset dir="${root.source}/src/services/org/opennms/netmgt/rrd" includes="*.c"/>
-  </copy>
-  <apply executable="${compile.cc}" dir="${root.build}/jrrd" failonerror="true" dest="${root.build}/jrrd">
-   <arg line="-dynamiclib -framework JavaVM -install_name ${root.install}/lib/libjrrd.${compile.jniext} -I${java.framework}/include -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jrrd -I${compile.rrdtool.include} -I. -L${compile.rrdtool.lib} -D${compile.platform.define} -lrrd -o"/>
-   <targetfile/>
-   <srcfile/>
-   <fileset dir="${root.build}/jrrd" includes="*.c"/>
-   <mapper type="glob" from="rrd_jinterface.c" to="libjrrd.${compile.jniext}"/>
-  </apply>
- </target>
-
- <target name="compile.native.jrrd.unix" depends="init,compile.native.jrrd.javah" unless="isOSX">
-  <mkdir dir="${root.build}/jrrd"/>
-
-  <!-- generate .o files -->
-  <apply executable="${compile.cc}" dir="${root.build}/jrrd" failonerror="true" dest="${root.build}/jrrd">
-   <arg line="${compile.cflags} -fPIC -I${java.framework}/include -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jrrd -I${compile.rrdtool.include} -D${compile.platform.define} -c -o"/>
-   <targetfile/>
-   <srcfile/>
-   <fileset dir="${root.source}/src/services/org/opennms/netmgt/rrd" includes="*.c"/>
-   <mapper type="glob" from="*.c" to="*.o"/>
-  </apply>
-
-  <!-- generate .so files -->
-  <apply executable="${compile.ld}" dir="${root.build}/jrrd" failonerror="true" dest="${root.build}/jrrd">
-   <arg line="${compile.ld.dynamic} ${compile.ld.shared} -L${compile.rrdtool.lib} -lrrd -o"/>
-   <targetfile/>
-   <srcfile/>
-   <fileset dir="${root.build}/jrrd" includes="*.o"/>
-   <mapper type="glob" from="rrd_jinterface.o" to="libjrrd.${compile.jniext}"/>
-  </apply>
- </target>
-
- <!-- create JAR files -->
+ <!-- JAR targets -->
+ <target name="jar" depends="opennms_core.jar, opennms_joesnmp.jar,
+			     opennms_web.jar, opennms_common.jar,
+			     opennms_services.jar, opennms_install.jar"
+	 description="create jar files"/>
  
- <target name="jar.copyxml" depends="init">
-  <mkdir dir="${root.build}/opennms/xmlfiles"/>
-  <copy todir="${root.build}/opennms/xmlfiles">
-   <fileset dir="${root.source}/src/services">
+ <target name="jar.copyxml" depends="prep">
+  <mkdir dir="${build.dir}/opennms/xmlfiles"/>
+  <copy todir="${build.dir}/opennms/xmlfiles">
+   <fileset dir="src/services">
     <include name="**/*.xml"/>
    </fileset>
   </copy>
  </target>
 
- <target name="jar.copyconfig" depends="init">
-  <mkdir dir="${root.build}/opennms/configfiles"/>
-  <copy todir="${root.build}/opennms/configfiles">
-   <fileset dir="${root.source}/etc"/>
+ <target name="jar.copyconfig" depends="prep">
+  <mkdir dir="${build.dir}/opennms/configfiles"/>
+  <copy todir="${build.dir}/opennms/configfiles">
+   <fileset dir="etc"/>
   </copy>
  </target>
 
- <target name="jar.build" depends="init">
-  <mkdir dir="${root.build}/jars"/>
-  <jar jarfile="${root.build}/jars/${jarfile}.jar">
-   <fileset dir="${root.build.classes}" includesfile="${root.source}/src/${pattern}/classlist"/>
+ <target name="opennms_core.jar" depends="prep,java.compile">
+  <mkdir dir="${build.jar.dir}"/>
+  <jar jarfile="${build.jar.dir}/opennms_core.jar">
+   <fileset dir="${build.classes.dir}"
+	    includesfile="${core.source.dir}/classlist"/>
   </jar>
  </target>
  
- <target name="jar" depends="init,compile.java,jar.copyxml,jar.copyconfig" description="create jar files">
-  <mkdir dir="${root.build}/jars"/>
-  <antcall target="jar.build">
-   <param name="jarfile" value="opennms_core" />
-   <param name="pattern" value="core" />
-  </antcall>
-  <antcall target="jar.build">
-   <param name="jarfile" value="opennms_joesnmp" />
-   <param name="pattern" value="joesnmp" />
-  </antcall>
-  <antcall target="jar.build">
-   <param name="jarfile" value="opennms_services" />
-   <param name="pattern" value="services" />
-  </antcall>
-  <antcall target="jar.build">
-   <param name="jarfile" value="opennms_web" />
-   <param name="pattern" value="web" />
-  </antcall>
+ <target name="opennms_joesnmp.jar" depends="prep,java.compile">
+  <mkdir dir="${build.jar.dir}"/>
+  <jar jarfile="${build.jar.dir}/opennms_joesnmp.jar">
+   <fileset dir="${build.classes.dir}"
+	    includesfile="${joesnmp.source.dir}/classlist"/>
+  </jar>
+ </target>
 
-  <!-- jar anything that isn't caught and put it in jcommon -->
-  <jar jarfile="${root.build}/jars/opennms_common.jar">
-   <fileset dir="${root.build.classes}">
-    <patternset refid="not.core"/>
-    <patternset refid="not.joesnmp"/>
-    <patternset refid="not.services"/>
-    <patternset refid="not.web"/>        
+ <target name="opennms_services.jar" depends="prep,java.compile">
+  <mkdir dir="${build.jar.dir}"/>
+  <jar jarfile="${build.jar.dir}/opennms_services.jar">
+   <fileset dir="${build.classes.dir}"
+	    includesfile="${services.source.dir}/classlist"/>
+  </jar>
+ </target>
+
+ <target name="opennms_web.jar" depends="prep,java.compile">
+  <mkdir dir="${build.jar.dir}"/>
+  <jar jarfile="${build.jar.dir}/opennms_web.jar">
+   <fileset dir="${build.classes.dir}"
+	    includesfile="${web.source.dir}/classlist"/>
+  </jar>
+ </target>
+
+ <target name="opennms_install.jar"
+	 depends="prep,java.compile,copy.install">
+  <mkdir dir="${build.jar.dir}"/>
+  <jar jarfile="${build.jar.dir}/opennms_install.jar"
+       manifest="${install.source.dir}/MANIFEST.MF">
+   <fileset dir="${build.classes.dir}"
+	    includesfile="${install.source.dir}/classlist"/>
+  </jar>
+ </target>
+
+ <!-- XXX Ugly hack, jar files should be restructured to not depend on
+      classlist files -->
+ <target name="opennms_common.jar" depends="prep,java.compile">
+  <mkdir dir="${build.jar.dir}"/>
+  <jar jarfile="${build.jar.dir}/opennms_common.jar"> 
+   <fileset dir="${build.classes.dir}">
+    <patternset>
+     <excludesfile name="${core.source.dir}/classlist"/>
+     <excludesfile name="${joesnmp.source.dir}/classlist"/>
+     <excludesfile name="${services.source.dir}/classlist"/>
+     <excludesfile name="${web.source.dir}/classlist"/>
+     <excludesfile name="${install.source.dir}/classlist"/>
+    </patternset>
    </fileset>
   </jar>
  </target>
 
- <!-- documentation -->
-
- <target name="docs" depends="docs.javadoc,docs.html" description="build documentation"/>
+ <!-- DOCS targets -->
+ <!-- Note: pdf.docs doesn't currently work, so it has been removed from the
+      depends list below -->
+ <target name="docs" depends="javadoc.docs,html.docs"
+	 description="Build javadoc and manuals"/>
  
- <target name="docs.javadoc.uptodate">
-  <uptodate property="javadoc.is.uptodate"
-        targetfile="${root.build}/docs/javadoc/index.html">
-   <srcfiles dir="${root.source}/src" includes="**/*.java"/>
-  </uptodate>
-  <if value="${javadoc.is.uptodate}" match="true">
-   <then target="echo"><param name="message" value="JavaDOC is up to date"/></then>
-  </if>
- </target>
- 
- <target name="docs.javadoc"
-	depends="init,compile.java.castor.preproc,compile.java.sablecc.preproc,docs.javadoc.uptodate"
-	unless="javadoc.is.uptodate">
-  <mkdir dir="${root.build}/docs/javadoc"/>
-  <javadoc
-        destdir="${root.build}/docs/javadoc"
-        packagenames="HelpFrame.*,ToolTipTree.*,org.opennms.*"
-        author="true"
-        version="true"
-        use="true"
-        private="true"
-        windowtitle="OpenNMS API"
-        doctitle="OpenNMS API ${o.version.opennms}"
-        header="OpenNMS API ${o.version.opennms}"
-        footer="OpenNMS API ${o.version.opennms}"
-        bottom="Generated by ${user.name} on ${TODAY} ${TSTAMP}."
-        splitindex="true"
-        failonerror="true"
-        maxmemory="128m" >
-   <sourcepath>
-    <path refid="path.sources"/>
-   </sourcepath>
-   <link href="http://java.sun.com/j2se/1.4/docs/api/"/>
-   <!-- <link href="http://jakarta.apache.org/log4j/docs/api/"/> broken -->
+ <target name="javadoc.docs" depends="prep,sources,javadoc.docs.uptodate"
+  unless="javadoc.docs.uptodate">
+  <mkdir dir="${build.api.dir}"/>
+  <javadoc destdir="${build.api.dir}"
+   packagenames="HelpFrame.*,ToolTipTree.*,org.opennms.*"
+   author="true"
+   version="true"
+   private="true"
+   windowtitle="OpenNMS API"
+   doctitle="OpenNMS API ${product.version}"
+   header="OpenNMS API ${product.version}"
+   footer="OpenNMS API ${product.version}"
+   bottom="Generated by ${user.name} on ${TODAY} ${TSTAMP}."
+   splitindex="true"
+   failonerror="true"
+   classpathref="libraries.java.path"
+   maxmemory="128m" >
+  <sourcepath>
+   <path refid="sources.java.path"/>
+  </sourcepath>
   </javadoc>
  </target>
- 
- <target name="docs.filter" depends="init">
-  <mkdir dir="${root.build}/docs.filter"/>
-  <copy todir="${root.build}/docs.filter" filtering="yes" overwrite="${filter.overwrite}">
-   <fileset dir="${root.source}/docs"/>
-  </copy>
+
+ <target name="javadoc.docs.uptodate" depends="prep">
+  <dependset>
+   <srcfileset dir="${core.source.dir}">
+    <include name="**/*.java"/>
+   </srcfileset>
+   <srcfileset dir="${joesnmp.source.dir}">
+    <include name="**/*.java"/>
+   </srcfileset>
+   <srcfileset dir="${postgresql.source.dir}">
+    <include name="**/*.java"/>
+   </srcfileset>
+   <srcfileset dir="${report.source.dir}">
+    <include name="**/*.java"/>
+   </srcfileset>
+   <srcfileset dir="${services.source.dir}">
+    <include name="**/*.java"/>
+   </srcfileset>
+   <srcfileset dir="${web.source.dir}">
+    <include name="**/*.java"/>
+   </srcfileset>
+   <srcfileset dir="${install.source.dir}">
+    <include name="**/*.java"/>
+   </srcfileset>
+   <targetfileset dir="${build.api.dir}">
+    <include name="**/*.html"/>
+    <include name="package-list"/>
+    <include name="stylesheet.css"/>
+    <include name="resources/inherit.gif"/>
+   </targetfileset>
+  </dependset>
+  <condition property="javadoc.docs.uptodate">
+   <available file="${build.api.dir}/index.html" type="file"/>
+  </condition>
  </target>
 
- <target name="docs.html" depends="init,docs.filter">
-  <mkdir dir="${root.build}/docs"/>
-  <style basedir="${root.build}/docs.filter"
-	destdir="${root.build}/docs"
-	style="${root.build}/docs.filter/xsl/man2html.xsl"
-	includes="*/book.xml"
-	/>
+ <target name="html.docs" depends="prep,copy.docs,html.docs.uptodate"
+	 unless="html.docs.uptodate">
+  <mkdir dir="${build.docs.dir}"/>
+  <style basedir="${build.filter.docs.dir}"
+	destdir="${build.docs.dir}"
+	style="${build.filter.docs.dir}/xsl/man2html.xsl"
+	includes="*/book.xml"/>
  </target>
  
- <target name="docs.fot.uptodate" depends="init">
-  <uptodate property="fot.is.uptodate" targetfile="${root.build}/work/docs/releasenotes/book.fot">
-   <srcfiles dir="${root.source}/docs">
+ <target name="html.docs.uptodate">
+  <dependset>
+   <srcfileset dir="${docs.source.dir}"/>
+   <targetfileset dir="${build.docs.dir}"/>
+  </dependset>
+  <condition property="html.docs.uptodate">
+   <!-- Magic file: canidate for refactoring -->
+   <available file="${build.docs.dir}/releasenotes/book.html" type="file"/>
+  </condition>
+ </target>
+
+ <target name="docs.fot.uptodate" depends="prep">
+  <uptodate property="fot.is.uptodate"
+	    targetfile="${build.docs.dir}/releasenotes/book.fot">
+   <srcfiles dir="${docs.source.dir}">
     <include name="**/book.xml"/>
     <include name="**/bookinfo.xml"/>
     <include name="**/preface.xml"/>
     <include name="**/chap*.xml"/>
    </srcfiles>
   </uptodate>
-  <if value="${fot.is.uptodate}" match="true">
-   <then target="echo"><param name="message" value="FOT templates are up to date"/></then>
-  </if>
  </target>
 
- <target name="docs.fot" depends="init,docs.filter,docs.fot.uptodate" unless="fot.is.uptodate">
-  <mkdir dir="${root.build}/docs"/>
-  <style basedir="${root.build}/docs.filter"
-	destdir="${root.build}/docs"
-	style="${root.build}/docs.filter/xsl/docbook/fo/docbook.xsl"
+ <target name="docs.fot" depends="prep,docs.fot.uptodate,copy.docs"
+	 unless="fot.is.uptodate">
+  <mkdir dir="${build.docs.dir}"/>
+  <style basedir="${build.filter.docs.dir}"
+	destdir="${build.docs.dir}"
+	style="${build.filter.docs.dir}/xsl/docbook/fo/docbook.xsl"
 	includes="**/book.xml"
-	classpath="${root.source}/lib/xalan231.jar"
+	classpath="${packaged.lib.dir}/xalan231.jar"
 	extension=".fot"
-	/>
+	 />
  </target>
 
- <target name="docs.pdf" depends="init,docs.fot">
-  <apply executable="${java.home}/bin/java" dir="${root.build}/docs">
-   <arg line="-classpath '${root.source}/lib/fop0203.jar:${root.source}/lib/batik.jar:${java.class.path}' org.apache.fop.apps.Fop"/>
+ <!-- XXX target pdf.docs doesn't currently work due to errors from FOP:
+      [apply] [ERROR]: 'master-reference' for 'fo:page-sequence'matches no 'simple-page-master' or 'page-sequence-master'
+   -->
+ <target name="pdf.docs" depends="prep,docs.fot">
+  <apply executable="${java.home}/bin/java"
+	 dest="${build.docs.dir}">
+   <arg line="-classpath '${packaged.lib.dir}/fop0203.jar:${packaged.lib.dir}/logkit-1.0.jar:${packaged.lib.dir}/avalon-framework-4.0.jar:${packaged.lib.dir}/batik.jar:${java.class.path}' org.apache.fop.apps.Fop"/>
    <arg value="-fo"/>
    <srcfile/>
    <arg value="-pdf"/>
    <targetfile/>
-   <fileset dir="${root.build}/docs">
+   <fileset dir="${build.docs.dir}">
     <include name="**/*.fot"/>
    </fileset>
-   <mapper type="glob" from="*.fot" to="work/docs/*.pdf"/>
+   <mapper type="glob" from="*.fot" to="*.pdf"/>
   </apply>
  </target>
  
  <!-- copy web UI JSPs to the webapp directory -->
- <target name="install.jsp" depends="init">
-  <mkdir dir="${install.servlets}"/>
-  <copy todir="${install.servlets}" filtering="yes" overwrite="${filter.overwrite}">
-   <fileset dir="${root.source}/src/web/web">
+ <target name="install.jsp" depends="prep">
+  <mkdir dir="${install.prefix}${install.servlet.dir}"/>
+  <copy todir="${install.prefix}${install.servlet.dir}" filtering="yes"
+	overwrite="${filter.overwrite}">
+   <fileset dir="src/web/web">
     <include name="**/*"/>
     <exclude name="**/*.jar"/>
     <exclude name="**/*.png"/>
@@ -1223,8 +1976,8 @@ OpenNMS as part of the post-install.
     <exclude name="**/*.gif"/>    
    </fileset>
   </copy>
-  <copy todir="${install.servlets}" filtering="no">
-   <fileset dir="${root.source}/src/web/web">
+  <copy todir="${install.prefix}${install.servlet.dir}">
+   <fileset dir="src/web/web">
     <include name="**/*.jar"/>
     <include name="**/*.png"/>
     <include name="**/*.jpg"/>
@@ -1234,22 +1987,22 @@ OpenNMS as part of the post-install.
  </target>
 
  <!-- copy web UI to the webapp directory -->
- <target name="install.servlet" depends="init,jar,install.jsp">
-  <mkdir dir="${install.servlets}/WEB-INF"/>
-  <copy todir="${install.servlets}/WEB-INF" filtering="yes" overwrite="${filter.overwrite}">
-   <fileset dir="${root.source}/src/web/etc">
+ <target name="install.servlet" depends="prep,jar,install.jsp">
+  <mkdir dir="${install.prefix}${install.servlet.dir}/WEB-INF"/>
+  <copy todir="${install.prefix}${install.servlet.dir}/WEB-INF"
+        filtering="yes"	overwrite="${filter.overwrite}">
+   <fileset dir="src/web/etc">
     <include name="**/*"/>
    </fileset>
   </copy>
-  <mkdir dir="${install.servlets}/WEB-INF/lib"/>
-  <copy todir="${install.servlets}/WEB-INF/lib" filtering="no">
-   <fileset dir="${root.source}/lib">
+  <mkdir dir="${install.prefix}${install.servlet.dir}/WEB-INF/lib"/>
+  <copy todir="${install.prefix}${install.servlet.dir}/WEB-INF/lib">
+   <fileset dir="${packaged.lib.dir}">
     <patternset refid="web.jars"/>    
    </fileset>
-   <fileset dir="${install}/lib">
+   <fileset dir="${install.prefix}${install.dir}/lib">
     <include name="opennms_*.jar" />
    </fileset>
   </copy>
  </target>
-
 </project>

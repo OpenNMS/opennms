@@ -1,4 +1,4 @@
-#!@root.install.perl@
+#!@install.perl.bin@
 
 use strict;
 use Getopt::Mixed "nextOption";

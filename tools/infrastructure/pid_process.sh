@@ -1,8 +1,5 @@
 #!/bin/bash
 
-VERSION_BUILD_PID_PROCESS='1.4'
-PACKAGES="$PACKAGES PID_PROCESS"
-
 if `ps auxwww >/dev/null 2>&1`; then
 	PS="ps auxwww"
 elif `ps -ef >/dev/null 2>&1`; then
@@ -22,11 +19,11 @@ list_opennms_pids () {
 		| grep OPENNMSLAUNCH \
 		| grep -v grep \
 		| awk '{print $2}'
-	if [ -f @root.install.pid@ ]; then
+	if [ -f @install.pid.file@ ]; then
 		$PS \
 			| grep -v grep \
 			| awk '{print $2}' \
-			| grep "^`cat @root.install.pid@`$"
+			| grep "^`cat @install.pid.file@`$"
 	fi
 	return $?
 }

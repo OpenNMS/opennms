@@ -24,23 +24,23 @@
 				<tbody>
 					<row>
 						<entry>OpenNMS Binaries</entry>
-						<entry>@root.install@/bin</entry>
+						<entry>@install.bin.dir@</entry>
 					</row>
 					<row>
 						<entry>OpenNMS Config Files</entry>
-						<entry>@root.install@/etc/</entry>
+						<entry>@install.etc.dir@</entry>
 					</row>
 					<row>
 						<entry>SQL Libraries</entry>
-						<entry>@root.install.postgresql@</entry>
+						<entry>@install.postgresql.dir@</entry>
 					</row>
 					<row>
 						<entry>Boot script</entry>
-						<entry>@root.install.initdir@/opennms</entry>
+						<entry>@install.init.dir@/opennms</entry>
 					</row>
 					<row>
 						<entry>Database Store</entry>
-						<entry>/var/lib/pgsql (and @root.install.share@ for SNMP performance data)</entry>
+						<entry>/var/lib/pgsql (and @install.share.dir@ for SNMP performance data)</entry>
 					</row>
 				</tbody>
 			</tgroup>
@@ -110,7 +110,7 @@
 				<para>
 					Make sure the following environment variables are set to the correct locations 
 					<programlisting>
-	export OPENNMS_HOME=@root.install@
+	export OPENNMS_HOME=@install.dir@
 	export JAVA_HOME=/usr/java/j2sdk-1.4.0
 	export TOMCAT_HOME=/var/tomcat4
 					</programlisting>
@@ -123,8 +123,10 @@
 					(Note that if PostgreSQL and RRDTool are installed in standard places, like /usr
 					or /usr/local, these will be set automatically by the build.)
 					<programlisting>
-	compile.include=-I/usr/local/pgsql/include -I/usr/include -I. -I/usr/local/rrdtool-1.0.35/include
-	compile.lib=-L/usr/local/pgsql/lib -L/usr/local/rrdtool-1.0.35/lib
+	build.postgresql.include.dir=-I/usr/local/pgsql/include
+	build.postgresql.lib.dir=-L/usr/local/pgsql/lib 
+	build.rrdtool.include.dir=-I/usr/local/rrdtool-1.0.35/include
+	build.rrdtool.lib.dir=-L/usr/local/rrdtool-1.0.35/lib
 					</programlisting>
 				</para>
 			</listitem>

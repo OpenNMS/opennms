@@ -9,27 +9,27 @@
 			<doNotOverride>script</doNotOverride>
 		</security>
 	</global>
-        <event-file>@root.install@/etc/events/3Com.events.xml</event-file>
-        <event-file>@root.install@/etc/events/ADIC-v2.events.xml</event-file>
-        <event-file>@root.install@/etc/events/APC.events.xml</event-file>
-        <event-file>@root.install@/etc/events/BackupExec.events.xml</event-file>
-        <event-file>@root.install@/etc/events/BEA.events.xml</event-file>
-        <event-file>@root.install@/etc/events/Brocade.events.xml</event-file>
-        <event-file>@root.install@/etc/events/CIM.events.xml</event-file>
-        <event-file>@root.install@/etc/events/Cisco.events.xml</event-file>
-        <event-file>@root.install@/etc/events/DellOpenManage.events.xml</event-file>
-        <event-file>@root.install@/etc/events/Fore.events.xml</event-file>
-        <event-file>@root.install@/etc/events/FoundryNetworks.events.xml</event-file>
-        <event-file>@root.install@/etc/events/HP.events.xml</event-file>
-        <event-file>@root.install@/etc/events/IBM.events.xml</event-file>
-        <event-file>@root.install@/etc/events/Intel.events.xml</event-file>
-        <event-file>@root.install@/etc/events/Microsoft.events.xml</event-file>
-        <event-file>@root.install@/etc/events/Novell.events.xml</event-file>
-        <event-file>@root.install@/etc/events/Oracle.events.xml</event-file>
-        <event-file>@root.install@/etc/events/SonicWall.events.xml</event-file>
-        <event-file>@root.install@/etc/events/Xerox.events.xml</event-file>
-        <event-file>@root.install@/etc/events/Standard.events.xml</event-file>
-	<event-file>@root.install@/etc/events/Mylex.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/3Com.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/ADIC-v2.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/APC.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/BackupExec.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/BEA.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Brocade.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/CIM.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Cisco.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/DellOpenManage.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Fore.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/FoundryNetworks.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/HP.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/IBM.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Intel.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Microsoft.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Novell.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Oracle.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/SonicWall.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Xerox.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Standard.events.xml</event-file>
+	<event-file>@install.etc.dir@/events/Mylex.events.xml</event-file>
 	<event>
 		<uei>uei.opennms.org/internal/capsd/discPause</uei>
 		<event-label>OpenNMS-defined internal event: capsd discPause</event-label>
@@ -1042,5 +1042,5 @@
                 </logmsg>
                 <severity>Indeterminate</severity>
         </event>
-	<event-file>@root.install@/etc/events/default.events.xml</event-file>
+	<event-file>@install.etc.dir@/events/default.events.xml</event-file>
 </events>

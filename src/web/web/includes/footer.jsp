@@ -13,7 +13,7 @@
 
 <%
     String location = (String)request.getParameter( "location" );
-    File file = new File("@root.install@/etc/map.enable");
+    File file = new File("@install.etc.dir@/map.enable");
 %>
 
 <!-- Footer -->

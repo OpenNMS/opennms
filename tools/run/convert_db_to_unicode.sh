@@ -17,12 +17,14 @@ SQL_FILE="$1"; shift
 LOG_FILE="/tmp/unicode-convert.log"
 
 if [ -z "$SQL_FILE" ]; then
-	SQL_FILE=@root.install@/etc/create.sql
+	SQL_FILE=@install.etc.dir@/create.sql
 fi
 
-FILE="/tmp/pg_dump-${DATABASE}.gz"
+FILE="/tmp/pg_dump-${DATABASE}"
 
 echo "------------------------------------------------------------------------------" >> $LOG_FILE
+
+sleep 1
 
 print() {
 	echo -e "- $@... \c";
@@ -30,12 +32,14 @@ print() {
 }
 
 print "dumping data to $FILE"
-su $PG_USER -c "pg_dump -a -D $DATABASE | gzip -c > $FILE" 2>>$LOG_FILE
+pg_dump -U $PG_USER -a -D $DATABASE > $FILE 2>>$LOG_FILE
 if [ $? -ne 0 ]; then
 	echo "failed"
 	exit 10
 fi
 echo "ok"
+
+sleep 1
 
 print "dropping old database"
 dropdb -U $PG_USER $DATABASE >>$LOG_FILE 2>&1
@@ -54,7 +58,7 @@ fi
 echo "ok"
 
 print "recreating tables..."
-cat $SQL_FILE | psql -U $DB_USER $DATABASE >>$LOG_FILE 2>&1
+psql -U $DB_USER -f $SQL_FILE $DATABASE >>$LOG_FILE 2>&1
 if [ $? -ne 0 ]; then
 	echo "failed"
 	exit 40
@@ -62,7 +66,7 @@ fi
 echo "ok"
 
 print "restoring data..."
-gzip -dc $FILE | psql -U $DB_USER $DATABASE >>$LOG_FILE 2>&1
+psql -U $DB_USER -f $SQL_FILE $DATABASE >>$LOG_FILE 2>&1
 if [ $? -ne 0 ]; then
 	echo "failed"
 	exit 50

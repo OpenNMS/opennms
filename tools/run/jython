@@ -35,11 +35,11 @@ else
         fi
 fi
 
-OPENNMS_HOME="@root.install@"
+OPENNMS_HOME="@install.dir@"
 
 # load libraries
 for script in pid_process arg_process build_classpath check_tools \
-	compiler_setup find_jarfile handle_properties java_lint \
+	find_jarfile handle_properties java_lint \
 	ld_path version_compare; do
 	source $OPENNMS_HOME/lib/scripts/${script}.sh
 done
