@@ -195,6 +195,10 @@ public class Constraint {
     }
 
     public boolean equals(Object other_o) {
+	return equals(other_o, false);
+    }
+
+    public boolean equals(Object other_o, boolean ignoreFdelType) {
 	Constraint other = (Constraint) other_o;
 	    
 	if ((m_name == null && other.getName() != null) ||
@@ -237,13 +241,15 @@ public class Constraint {
 	    return false;
 	}
 
-	if ((m_fdeltype == null && other.getForeignDelType() != null) ||
-	    (m_fdeltype != null && other.getForeignDelType() == null)) {
-	    return false;
-	}
-	if (m_fdeltype != null && other.m_fdeltype != null &&
-	    !m_fdeltype.equals(other.getForeignDelType())) {
-	    return false;
+	if (!ignoreFdelType) {
+	    if ((m_fdeltype == null && other.getForeignDelType() != null) ||
+		(m_fdeltype != null && other.getForeignDelType() == null)) {
+		return false;
+	    }
+	    if (m_fdeltype != null && other.m_fdeltype != null &&
+		!m_fdeltype.equals(other.getForeignDelType())) {
+		return false;
+	    }
 	}
 
 	return true;
