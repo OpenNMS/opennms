@@ -225,7 +225,7 @@ public class NotificationFactory
 			String eventIf = (String)event.getInterface();
 			String eventSrv = (String)event.getService();
 
-                        if (eventNode == 0)
+                        if (eventNode == 0 && eventIf == null && eventSrv == null)
                         {
                         	return true;
                         }
