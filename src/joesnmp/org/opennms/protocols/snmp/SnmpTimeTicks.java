@@ -216,7 +216,7 @@ public class SnmpTimeTicks
 		else 
 			buf.append("0s ");
 
-		buf.append(tmp*10).append("ms");
+		buf.append(time*10).append("ms");
 
 		return buf.toString();
 	}
