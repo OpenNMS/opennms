@@ -27,6 +27,10 @@ import junit.framework.TestCase;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class JavaMailerTest extends TestCase {
+    
+    public void testNothing() throws Exception {
+        
+    }
 	    
  /*   public void testMTA() throws Exception {
         
