@@ -44,7 +44,9 @@ package org.opennms.netmgt;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * This class holds all OpenNMS events related constants - the UEI's, parm
@@ -658,7 +660,7 @@ public class EventConstants {
      * @see java.text.DateFormat
      */
     public static final Date parseToDate(String timeString) throws ParseException {
-        return DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL).parse(timeString);
+	return DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL).parse(timeString);
     }
 
     /**
@@ -668,7 +670,10 @@ public class EventConstants {
      * @see java.text.DateFormat
      */
     public static final String formatToString(Date date) {
-        return DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL).format(date);
+	DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL,
+						       DateFormat.FULL);
+	df.setTimeZone(TimeZone.getTimeZone("GMT"));
+	return df.format(date);
     }
 
     /**

@@ -27,12 +27,11 @@ use vars qw(
 
 $VERSION = '0.2';
 $VERBOSE = 0;
-$ZONE    = strftime("%Z", localtime);
-$ZONE    = 'EST' unless defined $ZONE;
+$ZONE    = 'GMT';
 
 @SEVERITIES = ( undef, 'Indeterminate', 'Cleared', 'Normal', 'Warning', 'Minor', 'Major', 'Critical' );
 	
-Getopt::Mixed::init('h help>h d=s descr>d i=s interface>i n=i nodeid>n p=s parm>p s=s service>s t=s timezone>t zone>t u=s uei>u V version>V v verbose>v x=s severity>x o=s operinstr>o');
+Getopt::Mixed::init('h help>h d=s descr>d i=s interface>i n=i nodeid>n p=s parm>p s=s service>s t=s  u=s uei>u V version>V v verbose>v x=s severity>x o=s operinstr>o');
 while (my ($option, $value) = nextOption()) {
 
         $SERVICE   = $value if ($option eq "s");
@@ -41,7 +40,6 @@ while (my ($option, $value) = nextOption()) {
         $DESCR     = $value if ($option eq "d");
         $SEVERITY  = $value if ($option eq "x");
 	$VERBOSE   = 1      if ($option eq "v");
-	$ZONE      = $value if ($option eq "z");
 	$OPERINSTR = $value if ($option eq "o");
 	push(@PARMS, parse_parm($value)) if ($option eq "p");
 
@@ -129,7 +127,7 @@ if (defined $SERVICE) {
 	($SERVICE) = simple_parse($SERVICE);
 }
 
-my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time);
 $year += 1900;
 my $month = $mon;
 $min   = sprintf("%02d", $min);
