@@ -120,7 +120,9 @@ your distribution.
   <property name="install.database.user" value="${database.user}"/>
   <property name="install.database.password" value="${database.password}"/>
   <property name="install.database.driver" value="org.postgresql.Driver"/>
-  <!-- XXX why is compatible=7.1 being used? -->
+  <!-- XXX why is compatible=7.1 being used?
+       It's not added here... see etc/opennms-database.xml and
+       src/web/etc/web.xml where @install.database.driver@ is used. -->
   <property name="install.database.url"
 	    value="jdbc:postgresql://localhost:5432/"/>
   <property name="install.database.bindir"
@@ -139,6 +141,9 @@ your distribution.
   <property name="rpm.database.user" value="opennms"/>
   <property name="rpm.additional.args" value=""/>
 
+  <!-- jars that are referenced in multiple places -->
+  <property name="postgresql.jar" value="pg74.215.jdbc3.jar" />
+
   <!-- paths -->
   <path id="sources.java.path">
     <pathelement path="${build.castor.source.dir}"/>
@@ -151,6 +156,7 @@ your distribution.
     <pathelement path="${install.source.dir}"/>
   </path>
 
+  <!-- Classpath reference for <javac/> and <javadoc/> -->
   <path id="libraries.java.path">
     <pathelement path="${packaged.lib.dir}/log4j.jar"/>
     <pathelement path="${packaged.lib.dir}/regexp120.jar"/>
@@ -166,7 +172,7 @@ your distribution.
     <pathelement path="${packaged.lib.dir}/bsf220.jar"/>
     <pathelement path="${packaged.lib.dir}/xerces201.jar"/>
     <pathelement path="${packaged.lib.dir}/xmlrpc-1.2-b1.jar"/>
-  	<pathelement path="${packaged.lib.dir}/jrobin-1.4.0.jar"/>
+    <pathelement path="${packaged.lib.dir}/jrobin-1.4.0.jar"/>
     <pathelement path="${packaged.lib.dir}/mailapi.jar"/>
     <pathelement path="${packaged.lib.dir}/smtp.jar"/>
 <!--  	<pathelement path="${packaged.lib.dir}/imap.jar"/> -->
@@ -174,13 +180,29 @@ your distribution.
     <pathelement path="${packaged.lib.dir}/activation.jar"/>
   </path>
 
+  <!-- The jars listed for Class-Path in the MANIFEST.MF for the installer's
+       JAR file -->
+  <path id="install.manifest.jars">
+    <pathelement path="${basedir}/${packaged.lib.dir}/${postgresql.jar}"/>
+  </path>
+
+  <pathconvert refid="install.manifest.jars" pathsep=" "
+	       property="install.manifest.classes">
+    <map from="${basedir}/${packaged.lib.dir}/" to=""/>
+  </pathconvert>
+
+  <!-- Libraries that are linked into Tomcat's server/lib directory from
+       WEB-INF/lib by the installer or by the RPM.  These also need to be
+       in web.jars or one of the opennms_*.jar files so that the libraries
+       make it into WEB-INF/lib.  See the "install.servlet" target to see
+       how things are copied into WEB-INF/lib. -->
   <path id="tomcatlib.jars.path">
-    <pathelement path="${basedir}${packaged.lib.dir}/log4j.jar"/>
-    <pathelement path="${basedir}${packaged.lib.dir}/castor-0.9.3.9.jar"/>
-    <pathelement path="${basedir}${packaged.lib.dir}/castor-0.9.3.9-xml.jar"/>
-    <pathelement path="${basedir}${build.jar.dir}/opennms_core.jar"/>
-    <pathelement path="${basedir}${build.jar.dir}/opennms_services.jar"/>
-    <pathelement path="${basedir}${build.jar.dir}/opennms_web.jar"/>
+    <pathelement path="${basedir}/${packaged.lib.dir}/log4j.jar"/>
+    <pathelement path="${basedir}/${packaged.lib.dir}/castor-0.9.3.9.jar"/>
+    <pathelement path="${basedir}/${packaged.lib.dir}/castor-0.9.3.9-xml.jar"/>
+    <pathelement path="${basedir}/${build.jar.dir}/opennms_core.jar"/>
+    <pathelement path="${basedir}/${build.jar.dir}/opennms_services.jar"/>
+    <pathelement path="${basedir}/${build.jar.dir}/opennms_web.jar"/>
     <!-- These are the libraries that were in opennms.spec.in:
 	castor-0.9.3.9.jar \
 	log4j.jar \
@@ -191,13 +213,23 @@ your distribution.
 	-->
   </path>
 
+  <pathconvert targetos="unix" refid="tomcatlib.jars.path"
+	       property="install.tomcat.serverlibs">
+    <map from="${basedir}/${packaged.lib.dir}/" to=""/>
+    <map from="${basedir}/${build.jar.dir}/" to=""/>
+  </pathconvert>
+
   <!-- patterns and sets -->
+  <!-- XXX not used -->
+  <!--
   <patternset id="not.run">
     <exclude name="nightly-build.pl"/>
     <exclude name="*.bat"/>
-    <exclude name="opennms.init"/>
   </patternset>
+  -->
   
+  <!-- Files in ${packaged.lib.dir} that are copied into ${install.dir}/lib.
+       Note: everything in ${build.jar.dir} is also copied.  -->
   <patternset id="lib.jars">
     <include name="*.jar" />
     <exclude name="ant*.jar" />
@@ -207,12 +239,15 @@ your distribution.
     <exclude name="sablecc*.jar" />
   </patternset>
 
+  <!-- Files in ${packaged.lib.dir} that are copied into
+       ${install.servlet.dir}/WEB-INF/lib.
+       Note: opennms_*.jar from ${build.jar.dir} is also copied.  -->
   <patternset id="web.jars">
     <include name="castor*.jar" />
     <include name="fop0203.jar" />
     <include name="jms*.jar" />
     <include name="log4j*.jar" />
-    <include name="postgresql*.jar" />
+    <include name="${postgresql.jar}" />
     <include name="regexp*.jar" />
     <include name="w3c*.jar" />
     <include name="xalan231.jar" />
@@ -221,7 +256,7 @@ your distribution.
     <include name="batik.jar" />
     <include name="jcifs.jar" />
     <include name="ldap.jar" />
-  	<include name="jrobin*.jar" />
+    <include name="jrobin*.jar" />
   </patternset>
 
   <!-- The includes in this patternset need to match the directories in
@@ -313,12 +348,6 @@ your distribution.
     <property name="release.binary.archive.prefix"
 	      value="${ant.project.name}-binary-${product.fullversion.stamp}"/>
 
-    <pathconvert targetos="unix" refid="tomcatlib.jars.path"
-		 property="install.tomcat.serverlibs">
-      <map from="${basedir}${packaged.lib.dir}/" to=""/>
-      <map from="${basedir}${build.jar.dir}/" to=""/>
-    </pathconvert>
-
 
     <!-- set filters -->
     <!-- This little Bourne shell script will spit out <filter token="..."/>
@@ -364,6 +393,8 @@ your distribution.
     <filter token="install.bin.dir" value="${install.bin.dir}"/>
     <filter token="install.init.dir" value="${install.init.dir}"/>
     <filter token="install.logs.dir" value="${install.logs.dir}"/>
+    <filter token="install.manifest.classes"
+	    value="${install.manifest.classes}"/>
     <filter token="install.pid.file" value="${install.pid.file}"/>
     <filter token="install.postgresql.dir" value="${install.postgresql.dir}"/>
     <filter token="install.webapps.dir" value="${install.webapps.dir}"/>
@@ -943,10 +974,12 @@ OpenNMS as part of the post-install.
  </target>
 				   
  <target name="copy.install" depends="prep">
+   <mkdir dir="${build.classes.dir}"/>
    <copy todir="${build.classes.dir}" filtering="yes"
          overwrite="${filter.overwrite}">
      <fileset dir="${install.source.dir}">
        <include name="**/installer.properties"/>
+       <include name="**/MANIFEST.MF"/>
      </fileset>
    </copy>
  </target>
@@ -1864,12 +1897,12 @@ OpenNMS as part of the post-install.
  </target>
 
  <target name="opennms_install.jar"
-	 depends="prep,java.compile,copy.install">
+	 depends="prep, java.compile, copy.install">
   <mkdir dir="${build.jar.dir}"/>
   <jar jarfile="${build.jar.dir}/opennms_install.jar"
-       manifest="${install.source.dir}/MANIFEST.MF">
-   <fileset dir="${build.classes.dir}"
-	    includesfile="${install.source.dir}/classlist"/>
+       manifest="${build.classes.dir}/org/opennms/install/MANIFEST.MF">
+    <fileset dir="${build.classes.dir}"
+	     includesfile="${install.source.dir}/classlist"/>
   </jar>
  </target>
 
