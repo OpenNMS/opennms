@@ -125,7 +125,7 @@ public class IfLabel extends Object
 
 					// If the mac address portion of the ifLabel matches 
 				// an entry in the snmpinterface table...
-				if (mac == null || rs.getString("snmpphysaddr").equals(mac))
+				if (mac == null || mac.equals(rs.getString("snmpphysaddr")))
 				{
 					ThreadCategory.getInstance(IfLabel.class).debug("getInterfaceInfoFromIfLabel: found match...");
 					for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++)
