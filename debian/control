@@ -1,7 +1,7 @@
 Source: opennms
 Section: contrib/net
 Priority: optional
-Maintainer: Eric Evans <eevans@opennms.org>
+Maintainer: Eric Evans <eevans@sym-link.com>
 Build-Depends: debhelper (>> 3.0.0), ant, j2sdk1.4 | java2-compiler, librrd0-dev (>= 1.0.35), postgresql-dev (>= 7.2)
 Standards-Version: 3.5.8
 
@@ -11,102 +11,163 @@ Architecture: all
 Depends: opennms-db (=${Source-Version}), opennms-server (=${Source-Version}), opennms-webapp (=${Source-Version})
 Suggests: opennms-doc
 Description: The Open Network Management System
- OpenNMS is a network management system along the lines of HP's OpenView
- or IBM's Tivoli.  This is a meta package to install the server and webapp
- components of OpenNMS, which currently must live together in the same
- place.  This package makes it easy to get all the OpenNMS you need in one
- apt-get.
+ OpenNMS is an enterprise-grade network management system written in Java.
+ It can perform availability monitoring of various network services to
+ determine status and service level availability. Data collection is
+ performed using protocols such as SNMP to generate reports as well as
+ alert on thresholds. An extensible event managment and notification 
+ system handles both internally and externally generated events, (such as 
+ SNMP traps), plus generates notices, (email, pager, SMS, etc), for 
+ configured events.
 
 Package: opennms-common
 Section: contrib/net
 Architecture: all
-Conflicts: opennms (<< 1.1.2-1)
+Conflicts: opennms (<< 1.1.3-3)
 Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl, libgetopt-mixed-perl
 Recommends: libnet-snmp-perl
-Description: The Open Network Management System core
- OpenNMS is a network management system along the lines of HP's OpenView
- or IBM's Tivoli.  This package includes scripts and base directories
- common to all components.
+Description: The Open Network Management System, (common files)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ It can perform availability monitoring of various network services to
+ determine status and service level availability. Data collection is
+ performed using protocols such as SNMP to generate reports as well as
+ alert on thresholds. An extensible event managment and notification 
+ system handles both internally and externally generated events, (such as 
+ SNMP traps), plus generates notices, (email, pager, SMS, etc), for 
+ configured events.
+ .
+ This package provides the scripts, utilities and support files common to
+ all OpenNMS configurations.
 
 Package: opennms-contrib
 Section: contrib/net
 Architecture: all
-Conflicts: opennms (<< 1.1.2-1)
+Conflicts: opennms (<< 1.1.3-3)
 Depends: ${perl:Depends}, libwww-perl, libgtk-perl, opennms-common (=${Source-Version})
-Description: The Open Network Management System contribs
- OpenNMS is a network management system along the lines of HP's OpenView
- or IBM's Tivoli.  Extras contributed along with OpenNMS.
+Description: The Open Network Management System, (contributed files)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ It can perform availability monitoring of various network services to
+ determine status and service level availability. Data collection is
+ performed using protocols such as SNMP to generate reports as well as
+ alert on thresholds. An extensible event managment and notification 
+ system handles both internally and externally generated events, (such as 
+ SNMP traps), plus generates notices, (email, pager, SMS, etc), for 
+ configured events.
+ .
+ The contrib package provides additional features and functionality that
+ are not a part of OpenNMS proper.
 
 Package: opennms-db
 Section: contrib/net
 Architecture: all
-Conflicts: opennms (<< 1.1.2-1)
-Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl, libiplike-pgsql (=${Source-Version}), postgresql (>= 7.2)
+Conflicts: opennms (<< 1.1.3-3)
+Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl, libiplike-pgsql (=${Source-Version}), opennms-common (=${Source-Version}), postgresql (>= 7.2)
 Recommends: opennms-webapp, qpage
 Suggests: opennms-doc
-Description: The Open Network Management System
- OpenNMS is a network management system along the lines of HP's OpenView
- or IBM's Tivoli.
+Description: The Open Network Management System, (database specific files)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ It can perform availability monitoring of various network services to
+ determine status and service level availability. Data collection is
+ performed using protocols such as SNMP to generate reports as well as
+ alert on thresholds. An extensible event managment and notification 
+ system handles both internally and externally generated events, (such as 
+ SNMP traps), plus generates notices, (email, pager, SMS, etc), for 
+ configured events.
+ .
+ This package contains the database specific components of OpenNMS
 
 Package: opennms-server
 Section: contrib/net
 Architecture: all
-Conflicts: opennms (<< 1.1.2-1)
+Conflicts: opennms (<< 1.1.3-3)
 Depends: j2sdk1.4 | java-virtual-machine | java2-runtime, libopennms-java (=${Source-Version}), mailx, metamail, opennms-common (=${Source-Version}), rrdtool
 Recommends: opennms-db, opennms-webapp, qpage
 Suggests: opennms-doc
 Description: The Open Network Management System
- OpenNMS is a network management system along the lines of HP's OpenView
- or IBM's Tivoli.
+ OpenNMS is an enterprise-grade network management system written in Java.
+ It can perform availability monitoring of various network services to
+ determine status and service level availability. Data collection is
+ performed using protocols such as SNMP to generate reports as well as
+ alert on thresholds. An extensible event managment and notification
+ system handles both internally and externally generated events, such as
+ SNMP traps), plus generates notices, (email, pager, SMS, etc), for
+ configured events.
 
 Package: opennms-webapp
 Section: contrib/net
 Architecture: all
-Conflicts: opennms (<< 1.1.2-1)
-Depends: j2sdk1.4 | java-virtual-machine | java2-runtime, libopennms-java (=${Source-Version}), opennms-common (=${Source-Version}), tomcat4 (>= 4.1.18)
+Conflicts: opennms (<< 1.1.3-3)
+Depends: j2sdk1.4 | java-virtual-machine | java2-runtime, libopennms-java (=${Source-Version}), opennms-common (=${Source-Version}), tomcat4 (>= 4.1.18), debconf
 Suggests: opennms-doc
-Description: The Open Network Management System web application frontend
- The web console and frontend management application portion of OpenNMS.
+Description: The Open Network Management System, (web interface)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ It can perform availability monitoring of various network services to
+ determine status and service level availability. Data collection is
+ performed using protocols such as SNMP to generate reports as well as
+ alert on thresholds. An extensible event managment and notification 
+ system handles both internally and externally generated events, (such as 
+ SNMP traps), plus generates notices, (email, pager, SMS, etc), for 
+ configured events.
+ .
+ This is web console and frontend management portion of OpenNMS.
 
 Package: opennms-doc
 Section: contrib/doc
 Architecture: all
-Conflicts: opennms (<< 1.1.2-1)
-Description: The Open Network Management System documentation
- JavaDoc and other release documents for OpenNMS.
+Conflicts: opennms (<< 1.1.3-3)
+Description: The Open Network Management System, (documentation)
+ OpenNMS is an enterprise-grade network management system written in Java.
+ It can perform availability monitoring of various network services to
+ determine status and service level availability. Data collection is
+ performed using protocols such as SNMP to generate reports as well as
+ alert on thresholds. An extensible event managment and notification 
+ system handles both internally and externally generated events, (such as 
+ SNMP traps), plus generates notices, (email, pager, SMS, etc), for 
+ configured events.
+ .
+ This is the OpenNMS user, administration, and programing documentation.
 
 Package: libopennms-java
 Section: contrib/net
 Architecture: all
-Conflicts: opennms (<< 1.1.2-1)
+Conflicts: opennms (<< 1.1.3-3)
 Depends: j2sdk1.4 | java2-runtime, libicmp-jni, librrd0-jni, libpgjava (>= 7.2)
 Suggests: j2sdk1.4 | java-virtual-machine
-Description: The Open Network Management System base libs
- OpenNMS is a network management system along the lines of HP's OpenView
- or IBM's Tivoli.  Core jar files used by OpenNMS.
+Description: An open source network monitoring and management application
+ OpenNMS is an enterprise-grade network management system written in Java.
+ It can perform availability monitoring of various network services to
+ determine status and service level availability. Data collection is
+ performed using protocols such as SNMP to generate reports as well as
+ alert on thresholds. An extensible event managment and notification 
+ system handles both internally and externally generated events, (such as 
+ SNMP traps), plus generates notices, (email, pager, SMS, etc), for 
+ configured events.
+ .
+ This package provides the Java libraries common to all OpenNMS 
+ configurations.
 
 Package: libicmp-jni
 Section: contrib/net
 Architecture: any
-Conflicts: opennms (<< 1.1.2-1)
+Conflicts: opennms (<< 1.1.3-3)
 Depends: ${shlibs:Depends}
-Description: Java native libs for ICMP
- ICMP native libs for java, currently only used by the OpenNMS package.
+Description: Java native interface library for ICMP
+ Native libraries used as an interface to ICMP from Java
 
 Package: librrd0-jni
 Section: contrib/net
 Architecture: any
-Conflicts: opennms (<< 1.1.2-1)
+Conflicts: opennms (<< 1.1.3-3)
 Depends: ${shlibs:Depends}
-Description: Java native libs for RRD
- RRD native libs for java, currently only used by the OpenNMS package.
+Description: Java native interface library for rrdtool
+ Native libraries used as an interface to rrdtool from Java
 
 Package: libiplike-pgsql
 Section: contrib/net
 Architecture: any
-Conflicts: opennms (<< 1.1.2-1)
+Conflicts: opennms (<< 1.1.3-3)
 Depends: postgresql (>= 7.2)
-Description: IPLike stored procedure for Postgresql
- A stored procedure for Postgresql, providing the "iplike()" function,
- currently only used by the OpenNMS package.
+Description: A PostgreSQL stored procedure used for searching IP addresses
+ A stored procedure for Postgresql that allows you to search attributes of
+ type "inet" using ranges and wildcards.
 

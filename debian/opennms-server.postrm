@@ -1,8 +1,8 @@
 #! /bin/sh
-
-# $Id$
-
 # postrm script for opennms-server
+#
+# $Id$
+#
 
 set -e
 

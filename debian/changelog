@@ -1,39 +1,43 @@
-opennms (1.1.4-1woody) stable; urgency=low
+opennms (1.1.4-1woody) unstable; urgency=low
 
-  * New upstream release, (not yet released).
+  * New upstream release.
+  * Added debconf note to opennms-webapp regarding need to manually
+    remove the old server context, (conditional upon upgrade from 
+    versions < 1.1.4).
 
- -- Eric Evans <eevans@sym-link.com>  Mon, 23 Aug 2004 10:13:59 -0500
+ -- Eric Evans <eevans@sym-link.com>  Thu, 11 Nov 2004 11:23:06 -0600
+ 
+opennms (1.1.3-2) unstable; urgency=low
 
-opennms (1.1.3-2woody) stable; urgency=low
+  * Updated dependencies to include libpgjava, and dropped the copy of 
+    postgresql.jar that was being installed by upstream.
+  * Re-added clobbered conffiles
 
-  * Removed postgresql.jar from libopennms-java, and included dependency
-    for libpgjava.
-  * Reinstated missing conffiles
+ -- Eric Evans <eevans@sym-link.com>  Tue, 27 Jul 2004 09:30:17 -0500
 
- -- Eric Evans <eevans@sym-link.com>  Tue, 27 Jul 2004 10:13:59 -0500
+opennms (1.1.3-1) unstable; urgency=low
 
-opennms (1.1.3-1woody) stable; urgency=low
-
-  * Not yet released
   * New upstream release
-  * Updated for new java-based build and install system.
-  * Updated opennms-db postinst to allow trusted access from host
-    'localhost' instead of local, (needed for new installer).
-  * Added libgetopt-mixed-perl as a dependency for common, removed it
-    as a dependency for contrib, (it was backward before, this is how
-    it should have been).
-  * Added opennms-common as a dependency for opennms-db.
+  * Updated opennms-db post-install to accomodate the new java-based 
+    installer.
+  * Updated opennms-webapp post-install to accomodate the new java-based
+    installer.
+  * Added libgetopt-mixed-perl as a dependency for common, removed it as
+    a dependency for contrib, (it was backward before, this is how it 
+    should have been).
+  * Added opennms-common as a dependency for opennms-db, and moved 
+    install.pl from common to db.
   * Added a symlink to CATALINA_HOME/server/lib for upstream copy of 
     log4j and removed dependency on package from Debian repository.
   * Reverted log4j.properties back to upstream defaults.
   * Changed opennms-db.postinst and opennms-db.postrm to be kinder
     about starting and stoping the database, (see
     http://bugs.opennms.org/cgi-bin/bugzilla/show_bug.cgi?id=814).
-  * Moved opennms.sh wrapper from /usr/bin to /usr/sbin
+  * Eliminated opennms-server.preinst
 
- -- Eric Evans <eevans@sym-link.com>  Fri,  5 Sep 2003 14:10:00 -0500
+ -- Eric Evans <eevans@sym-link.com>  Sat,  14 Feb 2004 14:10:00 -0600
 
-opennms (1.1.2-1woody) stable; urgency=low
+opennms (1.1.2-1) stable; urgency=low
 
   * Made /etc/opennms/web.xml a symlink that points to
     /usr/share/java/webapps/opennms/WEB-INF/web.xml to make tomcat happy.

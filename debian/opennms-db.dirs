@@ -1,3 +1,3 @@
 etc/opennms
-usr/share/lintian/overrides
 usr/share/opennms/bin
+usr/share/lintian/overrides

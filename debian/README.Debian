@@ -8,12 +8,15 @@ For comprehensive offline documentation install the opennms-doc package,
 or check out the online documentation at http://www.opennms.org/users/docs/
 
 For troubleshooting installation and configuration issues see the FAQ, 
-http://faq.opennms.org/faq/fom-serve/cache/1.html
+https://wiki.opennms.org/tiki-list_faqs.php.
 
-If you have a question that is not answered in the documentation or FAQ
-you can always ask on one of the mailing lists, (although you may want to
-search the archive first to see if the question has already been asked 
-and/or answered ;), http://lists.opennms.org/mailman/listinfo
+If you are upgrading, be sure to check out the release notes, 
+(http://sourceforge.net/docman/?group_id=4141).
+
+If you have a question that is not answered in the documentation, FAQ, or 
+release notes you can always ask on one of the mailing lists, (search the 
+archive first to see if the question has already been asked and/or 
+answered),  http://sourceforge.net/mail/?group_id=4141
 
 
 Differences in the Debian packages
@@ -40,8 +43,12 @@ Known Issues
   than it is on the other supported distributions so the opennms-db 
   post-install makes some rather liberal changes to your pg_hba.conf.
 
-- The install process no longer sets up tomcat to run as root, (but it is
-  still necessary). You may need to edit /etc/default/tomcat4 and set
-  TOMCAT4_USER to root.
+- The new installer does not address the need to run tomcat4 as root, so 
+  you must manually edit /etc/default/tomcat4.
 
--- Eric Evans <eevans@opennms.org>, Wed, 14 Nov 2004 15:50:00 -0600
+- The new java installer, (opennms_install.jar), is packaged in 
+  opennms-server, but it currently invoked during the post install of both
+  opennms-webapp and opennms-db, make neither of them installable without
+  also installing opennms-server.
+
+-- Eric Evans <eevans@sym-link.com>, Wed, 14 Nov 2004 15:50:00 -0600

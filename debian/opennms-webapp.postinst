@@ -1,8 +1,7 @@
 #! /bin/sh
-
-# $Id$
-
 # postinst script for opennms-webapp
+#
+# $Id$
 
 set -e
 
@@ -11,12 +10,12 @@ TOMCAT4_PIDFILE=/var/run/tomcat4.pid
 getjava()
 {
     for dir in /usr/java/jdk1.4* /usr/java/j2sdk1.4* /usr/lib/j2sdk1.4* /usr/lib/j2sdk-1.4* /opt/IBMJava2-13 /usr/java/jdk1.3* /usr/java/j2sdk1.3* /usr/lib/j2sdk1.3*
-	do
-	    if [ -d "$dir" -a -f "$dir/lib/tools.jar" ]; then
-                JAVA_HOME="$dir"
-                break
-	    fi
-	done
+    do
+        if [ -d "$dir" -a -f "$dir/lib/tools.jar" ]; then
+            JAVA_HOME="$dir"
+            break
+        fi
+    done
 
     export JAVA_HOME
 }
@@ -25,9 +24,9 @@ case "$1" in
     configure)
         [ -z "$JAVA_HOME" ] && getjava
 
-	[ -x "$JAVA_HOME" ] && $JAVA_HOME/bin/java -jar \
-	    /usr/share/opennms/lib/opennms_install.jar -S \
-	    /etc/tomcat4/server.xml
+#        [ -x "$JAVA_HOME" ] && $JAVA_HOME/bin/java -jar \
+#	    /usr/share/opennms/lib/opennms_install.jar -y \
+#            -w /usr/share/opennms/webapp -W /usr/share/tomcat4/server/lib
 
 	if [ -f $TOMCAT4_PIDFILE ]; then
 		invoke-rc.d --quiet tomcat4 restart
@@ -50,5 +49,3 @@ esac
 #DEBHELPER#
 
 exit 0
-
-

@@ -1,8 +1,7 @@
 #! /bin/sh
-
-# $Id$
-
 # prerm script for opennms-server
+#
+# $Id$
 
 set -e
 

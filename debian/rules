@@ -10,7 +10,7 @@ export DH_COMPAT=3
 
 # Added to move the JAVA_HOME check up top
 FIXIT=$(shell chmod o+x debian/getjava)
-JAVA_HOME=$(sh debian/getjava)
+JAVA_HOME=$(shell debian/getjava)
 export JAVA_HOME
 
 export BUILDDEFINES=\
@@ -18,7 +18,7 @@ export BUILDDEFINES=\
 	-Dinstall.init.dir=/etc/init.d \
 	-Dinstall.rrdtool.bin=/usr/bin/rrdtool \
 	-Dinstall.share.dir=/var/lib/opennms \
-	-Dinstall.servlet.dir=/usr/share/java/webapps/opennms \
+	-Dinstall.servlet.dir=/usr/share/opennms/webapp \
 	-Dinstall.logs.dir=/var/log/opennms \
 	-Dinstall.pid.file=/var/run/opennms.pid \
 	-Dinstall.postgresql.dir=/usr/lib/postgresql/lib/opennms \
@@ -74,7 +74,7 @@ install: build
 	##
 	## Setup the libiplike-pgsql package
 	##
-	install -m 644  $(CURDIR)/debian/libiplike-pgsql.overrides \
+	install -m 644 $(CURDIR)/debian/libiplike-pgsql.overrides \
 		$(LIBIPLK)/usr/share/lintian/overrides/libiplike-pgsql
 	mv $(TMP)/usr/lib/postgresql/lib/opennms/iplike.so* \
 		$(LIBIPLK)/usr/lib/postgresql/lib/opennms/
@@ -82,11 +82,11 @@ install: build
 	##
 	## Setup the libicmp-jni package
 	##
-	install -m 644  $(CURDIR)/debian/libicmp-jni.overrides \
+	install -m 644 $(CURDIR)/debian/libicmp-jni.overrides \
 		$(LIBICMP)/usr/share/lintian/overrides/libicmp-jni
 	mv $(TMP)/usr/share/opennms/lib/libjicmp.so \
-		$(LIBICMP)/usr/lib/libjicmp.so.$(VER)
-	chmod 644 $(LIBICMP)/usr/lib/libjicmp.so.*
+		$(LIBICMP)/usr/lib/jni/libjicmp.so.$(VER)
+	chmod 644 $(LIBICMP)/usr/lib/jni/libjicmp.so.*
 
 	##
 	## Setup the librrd0-jni package
@@ -94,23 +94,15 @@ install: build
 	install -m 644 $(CURDIR)/debian/librrd0-jni.overrides \
 		$(LIBRRD0)/usr/share/lintian/overrides/librrd0-jni
 	mv $(TMP)/usr/share/opennms/lib/libjrrd.so \
-		$(LIBRRD0)/usr/lib/libjrrd.so.$(VER)
-	chmod 644 $(LIBRRD0)/usr/lib/libjrrd.so.*
-
-	##
-	## Setup the libopennms-java package
-	##
-	mv $(TMP)/usr/share/opennms/lib/opennms*.jar \
-		$(LIBONMS)/usr/share/java/
-	chmod 644 $(LIBONMS)/usr/share/java/*.jar
+		$(LIBRRD0)/usr/lib/jni/libjrrd.so.$(VER)
+	chmod 644 $(LIBRRD0)/usr/lib/jni/libjrrd.so.*
 
 	##
 	## Setup the opennms-db package
 	##
 	install -m 644 $(CURDIR)/debian/opennms-db.overrides \
 		$(ONMSDB)/usr/share/lintian/overrides/opennms-db
-	mv $(TMP)/usr/share/opennms/etc/*.sql \
-		$(ONMSDB)/etc/opennms/
+	mv $(TMP)/usr/share/opennms/etc/*.sql $(ONMSDB)/etc/opennms/
 	chgrp nogroup $(ONMSDB)/etc/opennms
 	chmod 2775 $(ONMSDB)/etc/opennms
 	chmod 644 $(ONMSDB)/etc/opennms/*.sql
@@ -118,7 +110,7 @@ install: build
 	##
 	## Setup the opennms-common package
 	##
-	cp $(CURDIR)/debian/opennms-common.overrides \
+	install -m 644  $(CURDIR)/debian/opennms-common.overrides \
 		$(ONMSCOM)/usr/share/lintian/overrides/opennms-common
 	mv $(TMP)/usr/share/opennms/bin/* \
 		$(ONMSCOM)/usr/share/opennms/bin/
@@ -133,12 +125,22 @@ install: build
 		$(ONMSCOM)/usr/share/opennms/lib/updates/
 	mv $(TMP)/var/lib/opennms/* \
 		$(ONMSCOM)/var/lib/opennms/
+	mv $(TMP)/usr/share/opennms/lib/opennms_install.jar \
+		$(ONMSCOM)/usr/share/opennms/lib
 	chgrp -R nogroup $(ONMSCOM)/etc/opennms $(ONMSCOM)/var/lib/opennms/* \
 		$(ONMSCOM)/var/log/opennms
-	chmod 2775 $(ONMSCOM)/etc/opennms $(ONMSCOM)/var/lib/opennms/* \
+	chmod 2775 $(ONMSCOM)/etc/opennms \
+		$(ONMSCOM)/var/lib/opennms/* \
 		$(ONMSCOM)/var/log/opennms
 	chmod 755 $(ONMSCOM)/usr/share/opennms/bin/opennms.sh
 	chmod 644 $(ONMSCOM)/usr/share/opennms/lib/updates/README.updates
+
+	##
+	## Setup the libopennms-java package
+	##
+	mv $(TMP)/usr/share/opennms/lib/opennms*.jar \
+		$(LIBONMS)/usr/share/java/
+	chmod 644 $(LIBONMS)/usr/share/java/*.jar
 
 	##
 	## Setup the opennms-contrib package
@@ -157,14 +159,12 @@ install: build
 	##
 	## Setup the opennms-server package
 	##
-
 	install -m 755 $(CURDIR)/debian/opennms.binscript \
 		$(ONMSSVR)/usr/sbin/opennms
 	install -m 644 $(CURDIR)/debian/opennms-server.overrides \
 		$(ONMSSVR)/usr/share/lintian/overrides/opennms-server
 	mv $(TMP)/usr/share/opennms/etc/* $(ONMSSVR)/etc/opennms/
-	mv $(TMP)/usr/share/opennms/lib/*.jar \
-		$(ONMSSVR)/usr/share/opennms/lib/
+	mv $(TMP)/usr/share/opennms/lib/*.jar $(ONMSSVR)/usr/share/opennms/lib/
 
 	# Fix up some of the scripts and configs for Debian file/dir locations
 	sed -e 's/bin\/mail/usr\/bin\/mail/' \
@@ -196,31 +196,29 @@ install: build
 	##
 	## Setup the opennms-webapp package
 	##
-	mv $(TMP)/usr/share/java/webapps/opennms \
-		$(ONMSWEB)/usr/share/java/webapps/
-#	mv $(ONMSWEB)/usr/share/java/webapps/opennms/WEB-INF/web.xml \
-#		$(ONMSWEB)/etc/opennms/
+	mv $(TMP)/usr/share/opennms/webapp/* \
+		$(ONMSWEB)/usr/share/opennms/webapp/
+	mv $(TMP)/usr/share/opennms/webapps/opennms.xml \
+		$(ONMSWEB)/var/lib/tomcat4/webapps/
 	install -m 644 $(CURDIR)/debian/opennms-webapp.overrides \
 		$(ONMSWEB)/usr/share/lintian/overrides/opennms-webapp
 	install -m 644 $(CURDIR)/debian/tomcat.policy \
 		$(ONMSWEB)/etc/tomcat4/policy.d/opennms.policy
 
 	# Fix tomcat port number for Debian standard tomcat4 8180
-#	sed -e 's/localhost:8080/localhost:8180/g' \
-#		$(ONMSWEB)/etc/opennms/web.xml > \
-#		$(ONMSWEB)/etc/opennms/web.xml.tmp
-#	mv $(ONMSWEB)/etc/opennms/web.xml.tmp $(ONMSWEB)/etc/opennms/web.xml
 	sed -e 's/localhost:8080/localhost:8180/g' \
-		$(ONMSWEB)/usr/share/java/webapps/opennms/WEB-INF/web.xml > \
-		$(ONMSWEB)/usr/share/java/webapps/opennms/WEB-INF/web.xml.tmp
-	mv $(ONMSWEB)/usr/share/java/webapps/opennms/WEB-INF/web.xml.tmp \
-		$(ONMSWEB)/usr/share/java/webapps/opennms/WEB-INF/web.xml
+		$(ONMSWEB)/usr/share/opennms/webapp/WEB-INF/web.xml> \
+		$(ONMSWEB)/usr/share/opennms/webapp/WEB-INF/web.xml.tmp
+	mv $(ONMSWEB)/usr/share/opennms/webapp/WEB-INF/web.xml.tmp \
+		$(ONMSWEB)/usr/share/opennms/webapp/WEB-INF/web.xml
+
 
 	# Fix permissions and ownership
 	chgrp -R nogroup $(ONMSWEB)/etc/opennms
 	chmod 2775 $(ONMSWEB)/etc/opennms
-	chmod 660 $(ONMSWEB)/usr/share/java/webapps/opennms/WEB-INF/web.xml
+	chmod 660 $(ONMSWEB)/usr/share/opennms/webapp/WEB-INF/web.xml
 	chmod 644 $(ONMSWEB)/etc/tomcat4/policy.d/opennms.policy
+	chmod 644 $(ONMSWEB)/var/lib/tomcat4/webapps/opennms.xml
 
 	##
 	## Setup the opennms-doc package
@@ -236,11 +234,11 @@ binary-indep: build install
 binary-arch: build install
 	dh_testdir
 	dh_testroot
-#	dh_installdebconf	
 	dh_installdocs
 	dh_installinit -n --init-script=opennms
 	dh_installman
 	dh_installchangelogs CHANGELOG
+	dh_installdebconf
 	dh_link
 	dh_strip
 	dh_compress

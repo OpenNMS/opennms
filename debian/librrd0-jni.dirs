@@ -1,3 +1,2 @@
-usr/lib
-usr/share/opennms/lib
+usr/lib/jni
 usr/share/lintian/overrides
