@@ -1032,7 +1032,7 @@ final class RescanProcessor
 			// Interface not found with this nodeId so create new interface entry
 			if (log.isDebugEnabled())
 				log.debug("updateInterface: interface " + ifaddr + " not in database under nodeid " + node.getNodeId() + ", creating new interface object.");
-			dbIpIfEntry = DbIpInterfaceEntry.create(node.getNodeId(), ifaddr);
+			dbIpIfEntry = DbIpInterfaceEntry.create(node.getNodeId(), ifaddr, ifIndex);
 			newIpIfEntry = true;
 		}
 		
@@ -1044,7 +1044,7 @@ final class RescanProcessor
 		// Create IP interface entry representing latest information
 		// retrieved for the interface via the collector
 		//
-		DbIpInterfaceEntry currIpIfEntry = DbIpInterfaceEntry.create(node.getNodeId(), ifaddr);
+		DbIpInterfaceEntry currIpIfEntry = DbIpInterfaceEntry.create(node.getNodeId(), ifaddr, ifIndex);
 			
 		// Hostname
 		currIpIfEntry.setHostname(ifaddr.getHostName());

@@ -61,6 +61,7 @@ import org.opennms.netmgt.config.DatabaseConnectionFactory;
  * mode, then the caller must call <code>commit</code> to inform
  * the database that the transaction is complete.
  *
+ * @author <a href="mailto:jamesz@blast.com">James Zuo</a>
  * @author <a href="mailto:weave@opennms.org">Weave</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  *
@@ -557,11 +558,12 @@ public final class DbIpInterfaceEntry
 	 * @param nid		The node identifier.
 	 * @param address	The target interface address.
 	 * @param ifIndex	The target ifIndex of the node/address pair
+	 * @param exists	True if the interface already exists.
 	 *
 	 */
-	private DbIpInterfaceEntry(int nid, InetAddress address, int ifIndex)
+	private DbIpInterfaceEntry(int nid, InetAddress address, int ifIndex, boolean exists)
 	{
-		m_fromDb   = true;
+		m_fromDb   = exists;
 		m_nodeId   = nid;
 		m_ipAddr   = address;
 		m_ifIndex  = ifIndex;
@@ -994,6 +996,22 @@ public final class DbIpInterfaceEntry
 		return new DbIpInterfaceEntry(nid, address, false);
 	}
 
+	/**
+	 * Creates a new entry. The entry is created in memory, but
+	 * is not written to the database until the first call
+	 * to <code>store</code>.
+	 *
+	 * @param address	The address of the interface.
+	 * @param nid		The node id of the interface.
+	 * @param ifIndex	The ifindex of the interface.
+	 *
+	 * @return A new interface record.
+	 */
+	static DbIpInterfaceEntry create(int nid, InetAddress address, int ifIndex)
+	{
+		return new DbIpInterfaceEntry(nid, address, ifIndex, false);
+	}
+
 	/** 
 	 * Clones an existing entry.
 	 * 
@@ -1120,7 +1138,7 @@ public final class DbIpInterfaceEntry
 	static DbIpInterfaceEntry get(Connection db, int nid, InetAddress addr, int ifIndex)
 		throws SQLException
 	{
-		DbIpInterfaceEntry entry = new DbIpInterfaceEntry(nid, addr, ifIndex);
+		DbIpInterfaceEntry entry = new DbIpInterfaceEntry(nid, addr, ifIndex, true);
 		if(!entry.load(db))
 			entry = null;
 		return entry;
