@@ -34,6 +34,7 @@ package org.opennms.web.jWebUnitTests;
 import java.io.FileReader;
 import java.io.StringBufferInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import net.sourceforge.jwebunit.ExpectedCell;
@@ -56,7 +57,6 @@ import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebTable;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
-import com.sun.rsasign.l;
 
 public class OutageEditorWebTest extends WebTestCase {
 
@@ -232,6 +232,7 @@ public class OutageEditorWebTest extends WebTestCase {
     private MockNetwork m_network;
     private MockDatabase m_db;
     private Outages m_outages;
+    private String[] m_menu = { "List Nodes", "Search", "Outages", "Events", "Notification", "Assets", "Reports", "Help" };
     
 
     protected void setUp() throws Exception {
@@ -334,42 +335,84 @@ public class OutageEditorWebTest extends WebTestCase {
         }
     }
 
-    public void testHeader() throws Exception {
-        beginAt("/admin/index.jsp");
+    public void testSearchHeader() throws Exception {
+        beginAt("/element/index.jsp");
         
-        //Check that the header table is present
+        assertHeaderPresent("Element Search", "Search", new String[]{"Home", "Search"});
+        
+    }
+
+    public void testHelpHeader() throws Exception {
+        beginAt("/help/index.jsp");
+        
+        assertHeaderPresent("Help", "Help", new String[]{"Home", "Help"});
+        
+    }
+
+    // TODO: Add tests for Admin vs not Admin in header and footer
+    // TODO: Add tets for mapenabled vs not enable in header and footer
+    
+    private void assertHeaderPresent(String title, String location, String[] breadcrumbs) {
+
         assertTablePresent("header");
 
-        //Get the table
         WebTable headertable = getDialog().getWebTableBySummaryOrId("header");
         
-//        assertCellImage(headertable, 0, 0);
-        //First line 
-        assertCell(headertable, 0, 1, "Admin");
-//        assertCell(table, 0, 2, "", 1);  //Date time stuff
+        // ensure the logo image is there
+        assertCellImage(headertable, 0, 0,  null);
+        
+        // ensure the title is correct 
+        assertCell(headertable, 0, 1, title);
         
         //Second line had a table in it that spans the three columns, we call it sub-header
+
         //Chect that the sub-header table is present
         assertTablePresent("sub-header");
         
-        //Get the table
         WebTable subheadertable = getDialog().getWebTableBySummaryOrId("sub-header");
         
-        String[] headerCell = { "List Nodes", "Search", "Outages", "Events", "Notification", "Assets", "Reports", "Help" };
-        assertCellLink(subheadertable, 0, 1, headerCell);
-        
+        // Ensure the bread crumbs are correct
+        assertBreadCrumbs(breadcrumbs, subheadertable.getTableCell(0,0));
+
+        // Ensure the menu links are correct
+        assertMenu(location, m_menu, subheadertable.getTableCell(0,1));
     }
         
-    public void testFooter() throws Exception {
-        beginAt("/admin/index.jsp");
-        
-        assertTablePresent("footer");
+    private void assertBreadCrumbs(String[] breadcrumbs, TableCell cell) {
+        if (breadcrumbs != null && breadcrumbs.length > 0)
+            assertMenu(breadcrumbs[breadcrumbs.length-1], breadcrumbs, cell);
+    }
 
-        WebTable table = getDialog().getWebTableBySummaryOrId("footer");
+    public void testHelpFooter() throws Exception {
+        beginAt("/help/index.jsp");
         
-        String[] footerCell = { "List Nodes", "Search", "Outages", "Events", "Notification", "Assets", "Reports", "Help" };
-        assertCellLink(table, 0, 0, footerCell);
+        assertFooterPresent("Help");
+    }
+    
+    public void testSearchFooter() throws Exception {
+        beginAt("/element/index.jsp");
+        assertFooterPresent("Search");
+    }
+
+    private void assertFooterPresent(String location) {
+        assertTablePresent("footer");
+        WebTable table = getDialog().getWebTableBySummaryOrId("footer");
+        TableCell cell = table.getTableCell(0, 0);
+        System.err.println(cell.getText());
+        assertMenu(location, m_menu, cell);
         assertCell(table, 1, 0, "OpenNMS Copyright \u00a9 2002-2005 The OpenNMS Group, Inc. OpenNMS\u00ae is a registered trademark of The OpenNMS Group, Inc.");
+    }
+
+    private void assertMenu(String location, String[] menu, TableCell cell) {
+        if (location != null)
+            assertTrue("Expected disabled menu item "+location, cell.getText().indexOf(location) >= 0);
+        List links = new ArrayList();
+        for(int i = 0; i < menu.length; i++) {
+            if (!menu[i].equals(location)) {
+                links.add(menu[i]);
+            }
+        }
+        assertLinks((String[]) links.toArray(new String[links.size()]), cell.getLinks());
     }
     
     private String computeImgSrc(Outage outage) {
@@ -389,7 +432,8 @@ public class OutageEditorWebTest extends WebTestCase {
         assertEquals(1, table.getTableCell(row, col).getImages().length);
         WebImage img = table.getTableCell(row, col).getImages()[0];
         assertNotNull(img);
-        assertEquals(imgSrc, img.getSource());
+        if (imgSrc != null)
+            assertEquals(imgSrc, img.getSource());
     }
     
     public void assertCellLink(WebTable table, int row, int col, String text, String url) {
@@ -400,14 +444,17 @@ public class OutageEditorWebTest extends WebTestCase {
         assertEquals(url, link.getURLString());
     }
     
-    public void assertCellLink(WebTable table, int row, int col, String[] text) {
-        assertEquals(text.length, table.getTableCell(row, col).getLinks().length);
-
-      for (int i = 0; i < text.length; i++) {
-        WebLink link = table.getTableCell(row, col).getLinks()[i];
-        assertNotNull(link);
-        assertEquals(text[i], link.getText());
-      }
+    private void assertLinks(String[] text, WebLink[] links) {
+        for (int i = 0; i < text.length; i++) {
+            assertTrue("Missing Link '"+text[i]+"'", i < links.length);
+            WebLink link = links[i];
+            assertNotNull(link);
+            assertEquals("Missing Link '"+text[i]+"'", text[i], link.getText());
+        }
+        
+        if (text.length < links.length) {
+            fail((links.length - text.length)+" unexpected links starting at '"+links[text.length].getText()+"'");
+        }
     }
     
     public void assertCell(WebTable table, int row, int col, String contents, int colspan) {
