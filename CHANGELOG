@@ -1,5 +1,7 @@
 1.1.1 to 1.1.2
 ----------------------------------------------------------------------
+- Changed the count for notifications to reflect just those for the
+  user logged in.
 - Added security roles to web.xml. Bug 715. Thx DJ
 - Corrected issues with last day/week/month/year buttons in webUI.
 - Added check to handle null terminated strings in traps. Thx Dave W.
