@@ -1,5 +1,6 @@
 1.2.0 to 1.2.1
 ----------------------------------------------------------------------
+- Fix source RPM builds ("srpm" build target).  Bug 1112.  Thanks, Tarus.
 - An Admin GUI is now available to modify snmp-config.xml. Bug 1167
   Thx Gerald
 - Added the ability to remove "secondary" status from interfaces

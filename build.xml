@@ -681,7 +681,7 @@ your distribution.
   </exec>
  </target>
  
- <target name="srpm" depends="prep, rpm.check, release.source, rpm.prepare"
+ <target name="srpm" depends="prep, rpm.check, release.source.tar, rpm.prepare"
 	 description="Build an RPM and a source RPM package">
   <copy todir="${build.rpm.dir}/SOURCES"
 	file="${build.release.dir}/${release.source.archive.prefix}.tar.gz"/>
@@ -834,7 +834,10 @@ your distribution.
        includes="${release.docs.dir}/"/>
  </target>
 
- <target name="release.prepare.source" depends="prep">
+ <target name="release.source" depends="release.source.tar,
+					release.source.zip"/>
+
+ <target name="release.source.copy" depends="prep">
   <mkdir dir="${build.dir}/${release.source.dir}"/>
   <copy todir="${build.dir}/${release.source.dir}">
    <fileset dir="${basedir}">
@@ -848,11 +851,19 @@ your distribution.
   </copy>
  </target>
  
- <target name="release.source" depends="release.prepare.source">
+ <target name="release.source.prep">
   <mkdir dir="${build.release.dir}"/>
+ </target>
+
+ <target name="release.source.tar" depends="release.source.copy,
+					    release.source.prep">
   <tar tarfile="${build.release.dir}/${release.source.archive.prefix}.tar.gz"
        basedir="${build.dir}" longfile="gnu" compression="gzip"
        includes="${release.source.dir}/"/>
+ </target>
+
+ <target name="release.source.zip" depends="release.source.copy,
+					    release.source.prep">
   <zip zipfile="${build.release.dir}/${release.source.archive.prefix}.zip"
        basedir="${build.dir}"
        includes="${release.source.dir}/"/>
