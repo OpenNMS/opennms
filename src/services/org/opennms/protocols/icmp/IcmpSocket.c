@@ -163,7 +163,7 @@ typedef struct icmphdr icmphdr_t;
  */
 
 /* just turn and look away, you don't want to see this */
-#ifdef __BIG_ENDIAN__
+#if defined(__BIG_ENDIAN__) && defined(__ppc__)
 # undef LITTLE_ENDIAN
 #endif
 

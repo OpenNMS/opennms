@@ -9,6 +9,7 @@ item:
 On our test system we multiplied the supplied values by 4 and all seems to
 run OK.  Just look for the sysctl lines near the bottom and set them to:
 
+  sysctl -w kern.maxfiles=65536
   sysctl -w kern.sysv.shmmax=16777216
   sysctl -w kern.sysv.shmmin=1
   sysctl -w kern.sysv.shmmni=128
@@ -20,8 +21,8 @@ Once you do that, you will need to edit
 make sure that the following values are set:
 
   tcpip_socket    = true
-  max_connections = 256
-  shared_buffers  = 512
+  max_connections = 192
+  shared_buffers  = 384
 
 Then, you can run @PREFIX@/var/opennms/bin/install.pl to configure the
 database, like so:

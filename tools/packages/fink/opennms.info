@@ -1,18 +1,18 @@
 Package: opennms
 Version: 1.1.1
-Revision: 0.20030206.1
+Revision: 1
 
 CustomMirror: <<
   nam-US: ftp://ftp.opennms.org/pub/development/snapshots
   nam-US: http://ranger.befunk.com/fink
   nam-CA: http://www.southofheaven.net/befunk
 <<
-Source: mirror:custom:opennms-20030206.tar.bz2
-Source-MD5: 5fbb4b251c32ca0df69a81a8230fed4c
+Source: ftp://ftp.opennms.org/pub/releases/OpenNMS/1.1/source/%n-%v-1.tar.gz
 SourceDirectory: %n
+#Patch: %f.patch
 
-BuildDepends: ant (>= 1.5), postgresql-dev (>= 7.3.1) | postgresql-ssl-dev (>= 7.3.1), tomcat (>= 4.1.18-4), commons-logging (>= 1.0.3), rrdtool (>= 1.0.40-2), passwd (>= 20030202-1)
-Depends: postgresql (>= 7.3.1), tomcat (>= 4.1.18-4), commons-logging (>= 1.0.3), rrdtool (>= 1.0.40-2), daemonic, passwd (>= 20030202-1), dbd-pg-pm (>= 1.21), getopt-mixed-pm
+BuildDepends: ant (>= 1.5), postgresql73-dev | postgresql73-ssl-dev, tomcat (>= 4.1.18-4), commons-logging (>= 1.0.3), rrdtool (>= 1.0.40-2), passwd (>= 20030202-1)
+Depends: postgresql73 | postgresql73-ssl, tomcat (>= 4.1.18-4), commons-logging (>= 1.0.3), rrdtool (>= 1.0.40-2), daemonic, passwd (>= 20030202-1), dbd-pg-pm (>= 1.21), getopt-mixed-pm
 ConfFiles: <<
   %p/var/opennms/etc/actiond-configuration.xml
   %p/var/opennms/etc/capsd-configuration.xml
@@ -186,7 +186,7 @@ RuntimeVars: OPENNMS_HOME: %p/var/opennms
 Homepage: http://www.opennms.org/
 Maintainer: Benjamin Reed <ranger@befunk.com>
 Description: Network Management System
-DocFiles: README.Darwin
+DocFiles: tools/packages/fink/README.Darwin
 DescDetail: <<
 OpenNMS is an open-source, enterprise-level network management system
 along the lines of HP's OpenView line of network management tools, or
