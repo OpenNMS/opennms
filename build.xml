@@ -44,6 +44,7 @@ your distribution.
   <property name="build.filter.docs.dir" value="${build.dir}/docs.filter"/>
   <property name="build.api.dir" value="${build.docs.dir}/javadoc"/>
   <property name="build.classes.dir" value="${build.dir}/opennms/classes"/>
+  <property name="build.tests.dir" value="${build.dir}/opennms/tests"/>
   <property name="build.jar.dir" value="${build.dir}/jar"/>
   <property name="build.jicmp.dir" value="${build.dir}/jicmp"/>
   <property name="build.jrrd.dir" value="${build.dir}/jrrd"/>
@@ -339,12 +340,7 @@ your distribution.
     </condition>
 
     <condition property="wasrpm" value="true">
-      <available property="wasrpm" file="${build.rpm.dir}" type="dir"/>
-    </condition>
-    <condition property="wasrpm" value="false">
-      <not>
-	<available property="wasrpm" file="${build.rpm.dir}" type="dir"/>
-      </not>
+      <available file="${build.rpm.dir}" type="dir"/>
     </condition>
 
     <condition property="rpm.tainted" value="true">
@@ -619,7 +615,7 @@ your distribution.
  <target name="all" depends="compile, jar"
 	 description="build everything (except documentation)"/>
  
- <target name="test" depends="compile.java.test, test.jsp"/>
+ <target name="test" depends="junit.compile, test.jsp"/>
 
  <!-- CLEAN targets -->
  <target name="clean" depends="prep">
@@ -1170,43 +1166,77 @@ OpenNMS as part of the post-install.
 
  <target name="test.jsp" depends="install.jsp"
 	 description="compile the JSPs" unless="wasrpm">
-   <mkdir dir="${build.dir}/jspsource"/>
-   <mkdir dir="${build.dir}/jsp"/>
+   <mkdir dir="${build.dir}/jsp-source"/>
+   <mkdir dir="${build.dir}/jsp-classes"/>
+   <jspc srcdir="${install.prefix}${install.servlet.dir}" destdir="${build.dir}/jsp-source"> 
+       <include name="**/*.jsp"/>
+      <classpath>
+         <path refid="libraries.java.path" />
+         <path refid="sources.java.path" />
+         <fileset dir="${dev.lib.dir}">
+		<include name="**/*.jar"/>
+	</fileset>
+     </classpath>  
+   </jspc>
+   
+  <javac srcdir="${build.dir}/jsp-source"
+	destdir="${build.dir}/jsp-classes"
+	 debug="${compiler.debug}"
+	 optimize="${compiler.optimize}"
+	 verbose="${compiler.verbose}"
+	 deprecation="${compiler.deprecation}">
+      <classpath>
+         <path refid="libraries.java.path" />
+         <path refid="tomcatlib.jars.path" />
+     </classpath>  
+   <include name="**/*.java"/>
+   <exclude name="**/*Test.java"/>
+  </javac>
+  <!--
+
    <exec executable="/bin/sh" failonerror="true">
-     <!-- Note: jspcompile.sh requres full paths for all of its directories -->
      <arg value="jspcompile.sh"/>
-     <arg value="${basedir}/${build.dir}/jsp-java"/>
-     <arg value="${basedir}/${build.dir}/jsp-class"/>
+     <arg value="${build.dir}/jsp-java"/>
+     <arg value="${build.dir}/jsp-class"/>
      <arg value="${install.prefix}${install.servlet.dir}"/>
    </exec>
+   -->
  </target>
 
  <!-- java build -->
 
 
- <target name="compile.java.test" depends="prep,sources"
-	 unless="compile.java.test.is.uptodate">
-  <mkdir dir="${build.classes.dir}"/>
-  <javac destdir="${build.classes.dir}"
-         debug="${compiler.debug}"
-         optimize="${compiler.optimize}"
-         verbose="${compiler.verbose}"
-	 classpathref="libraries.java.path"
-         deprecation="${compiler.deprecation}">
+ <target name="junit.compile" depends="prep,java.compile">
+  <mkdir dir="${build.tests.dir}" />
+  <javac destdir="${build.tests.dir}"
+	 debug="${compiler.debug}"
+	 optimize="${compiler.optimize}"
+	 verbose="${compiler.verbose}"
+	 deprecation="${compiler.deprecation}">
    <src>
     <path refid="sources.java.path"/>
-    <pathelement path="tests/src"/>
    </src>
-   <include name="**/*.java"/>
+   <include name="**/*Test.java"/>
+   <classpath>
+     <path refid="libraries.java.path"/>
+     <pathelement location="${dev.lib.dir}/junit.jar"/>
+   </classpath>
   </javac>
-  <copy todir="${build.classes.dir}">
-   <fileset dir="${build.sablecc.source.dir}">
-    <include name="**/*.dat"/>
-   </fileset>
-  </copy>
-  <property name="compile.java.is.uptodate" value="true"/>
-  <property name="compile.java.test.is.uptodate" value="true"/>
- </target>
+  <junit printsummary="withOutAndErr" filtertrace="off">
+     <classpath>
+       <path refid="libraries.java.path"/>
+       <pathelement location="${dev.lib.dir}/junit.jar"/>
+       <pathelement location="${build.classes.dir}" />
+       <pathelement location="${build.tests.dir}" />
+     </classpath>
+     <batchtest fork="true" todir="${basedir}">
+	<fileset dir="${basedir}/src/services">
+          <include name="**/*Test.java"/>
+          <exclude name="**/AllTests.java"/>
+	</fileset>
+      </batchtest>
+  </junit>
+</target>
 
  <!-- JAR targets -->
  <target name="jar" depends="opennms_core.jar, opennms_joesnmp.jar,
