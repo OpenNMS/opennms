@@ -244,7 +244,7 @@ public class KSC_PerformanceReportFactory
         {
             Graph new_graph = new Graph();
             new_graph.setTitle(""); 
-            new_graph.setGraphtype("octets"); 
+            new_graph.setGraphtype("bits"); 
             new_graph.setTimespan("7_day"); 
             return new_graph; 
         } 
