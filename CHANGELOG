@@ -1,5 +1,7 @@
 1.1.1 to 1.1.2
 ----------------------------------------------------------------------
+- Added Bill Ayers' code that creates a script based plugin and 
+  monitor.
 - Added a fix to catch RRD update errors on nodeLostService events
   that can cause nodeDown events. Bug 748.
 - Fixed a typo in mail.pl in contrib
