@@ -693,8 +693,7 @@ final class SuspectEventProcessor implements Runnable {
 
                         xipIfEntry.setIfIndex(ifindex.getValue());
                         
-                        // FIXME: Should the below be ifIndex or ifindex.getValue() ?
-                        int status = snmpc.getAdminStatus(ifIndex);
+                        int status = snmpc.getAdminStatus(ifindex.getValue());
                         if (status != -1)
                             xipIfEntry.setStatus(status);
 
