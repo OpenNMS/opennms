@@ -23,29 +23,9 @@
     document.manageRanges.submit();
   }
   
-  function manageSnmp()
+  function snmpManagePost()
   {
-    document.manageSnmp.submit();
-  }
-  
-  function networkConnection()
-  {
-    document.networkConnection.submit();
-  }
-  
-  function dns()
-  {
-    document.dns.submit();
-  }
-  
-  function communication()
-  {
-      document.communication.submit();
-  }
-  
-  function manageRanges()
-  {
-    document.manageRanges.submit();
+    document.snmpManage.submit();
   }
   
   function manageSnmp()
@@ -91,6 +71,10 @@
   <input type="hidden"/>
 </FORM>
 
+<FORM METHOD="POST" NAME="snmpManage" ACTION="admin/snmpGetNodes">
+  <input type="hidden"/>
+</FORM>
+
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
   <tr>
     <td> &nbsp; </td>
@@ -106,6 +90,8 @@
         <a HREF="admin/notification/index.jsp">Configure Notifications</a>
       <p>
         <a HREF="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a>
+      <p>
+        <a HREF="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a>
       <p>
         <a HREF="javascript:deletePost()">Delete Nodes</a>
       <p>
@@ -181,6 +167,10 @@
             may change. <b>Manage and Unmanage Interfaces and Services</b> allows you to change 
             your OpenNMS configuration along with your network.
         </p>
+
+	<P><B>Manage SNMP Data Collection per Interface</b>: This interface will allow you
+	to configure which non-IP interfaces are used in SNMP Data Collection.
+	</P>
 
         <p><b>Delete Nodes</b> is an interface to permanently delete nodes from the database.
         </p>

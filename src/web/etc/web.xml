@@ -561,6 +561,11 @@
     <servlet-class>org.opennms.web.admin.nodeManagement.DeleteGetNodesServlet</servlet-class>
   </servlet>
   <servlet>
+    <!-- servlet for grabbing SNMP node information -->
+    <servlet-name>snmpGetNodes</servlet-name>
+    <servlet-class>org.opennms.web.admin.nodeManagement.SnmpGetNodesServlet</servlet-class>
+  </servlet>
+  <servlet>
     <!-- servlet for grabbing node, interface and service information -->
     <servlet-name>getNodes</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.GetNodesServlet</servlet-class>
@@ -569,6 +574,11 @@
     <!-- servlet for managing and unmanaging interfaces and services -->
     <servlet-name>manageNodes</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.ManageNodesServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for managing and unmanaging interfaces and services -->
+    <servlet-name>snmpManageNodes</servlet-name>
+    <servlet-class>org.opennms.web.admin.nodeManagement.SnmpManageNodesServlet</servlet-class>
   </servlet>
   
   <!-- servlets for editing the poller configuration files -->
@@ -991,12 +1001,20 @@
     <url-pattern>/admin/deleteNodes</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
+    <servlet-name>snmpGetNodes</servlet-name>
+    <url-pattern>/admin/snmpGetNodes</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
     <servlet-name>getNodes</servlet-name>
     <url-pattern>/admin/getNodes</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>manageNodes</servlet-name>
     <url-pattern>/admin/manageNodes</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>snmpManageNodes</servlet-name>
+    <url-pattern>/admin/changeCollectStatus</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>pollerConfig</servlet-name>
