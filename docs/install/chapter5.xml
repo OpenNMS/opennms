@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter>
-  <title>Building and Installing From Source</title>
+  <title>Building From Source</title>
 
   <section>
     <title>Are you sure you want to do this?</title>
@@ -28,6 +28,11 @@
     to download released source unless you wish to do development or are
     looking for specific features or bug fixes that are not yet in a
     release.</para>
+
+    <note>
+      <para>The commands listed below can be executed as any user, but they
+      will all need to be executed as the same user.</para>
+    </note>
 
     <section>
       <title>Retrieve released source</title>
@@ -95,57 +100,12 @@
 
     <para>This part is easy. Execute this command:</para>
 
-    <para><programlisting><computeroutput>$ </computeroutput><command>./build.sh compile</command></programlisting></para>
+    <para><programlisting><computeroutput>$ </computeroutput><command>sh build.sh compile</command></programlisting></para>
   </section>
 
   <section>
     <title>Installing OpenNMS</title>
 
-    <para>This part is pretty easy, too. Note: this will install into
-    <filename>dist</filename> in the same directory as the
-    <filename>build.xml</filename>, unless you changed
-    <filename>install.dir</filename> as mentioned above. Note that you need to
-    be root to install, however you can execute the previous commands as any
-    user.</para>
-
-    <para>Execute this command to install:</para>
-
-    <para><programlisting><computeroutput># </computeroutput><command>./build.sh install</command></programlisting></para>
-
-    <para>Once the files are installed, you need execute
-    <filename>runjava</filename> to find and configure a suitable Java Runtime
-    Environment for OpenNMS and then run the OpenNMS installer to setup the
-    database and other items. First, execute <filename>runjava -s</filename>.
-    Note that <filename><code>$OPENNMS_HOME</code></filename> is the location
-    where OpenNMS is installed. This is the <code>install.dir</code> that was
-    set above in your <filename>build.properties</filename> file. You can set
-    the environment variable <code>$OPENNMS_HOME</code> in your shell or
-    substitute your OpenNMS install location by hand when you execute the
-    commands below.</para>
-
-    <para><programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/runjava -s</command></programlisting></para>
-
-    <para>Then, execute the installer to install the database-related
-    bits:</para>
-
-    <para><programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/install -disU</command></programlisting></para>
-
-    <para>And execute the installer again, this time to setup the Tomcat bits.
-    The variable <code>$CATALINA_HOME</code> is used below in addition to
-    <code>$OPENNMS_HOME</code> which was used above. This should either be set
-    as an environment variable to point at the location where you have
-    installed Tomcat 4, or you should replace all instances of
-    <filename>$CATALINA_HOME</filename> with the location of your Tomcat 4
-    installation.</para>
-
-    <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/install -y -w $CATALINA_HOME/webapps -W $CATALINA_HOME/server/lib</command></programlisting>
-  </section>
-
-  <section>
-    <title>Starting OpenNMS</title>
-
-    <para>Execute the startup script:</para>
-
-    <para><programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/opennms start</command></programlisting></para>
+    <para>Please see the chapter on installing OpenNMS for details.</para>
   </section>
 </chapter>

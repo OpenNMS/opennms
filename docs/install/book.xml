@@ -11,14 +11,13 @@
 <!ENTITY __chapter6 SYSTEM "chapter6.xml">
 ]>
 <book>
-  <title><trademark class="registered">OpenNMS</trademark>
-    Installation Guide</title>
+  <title><trademark class="registered">OpenNMS</trademark> Installation
+  Guide</title>
 
   <bookinfo>
     <date>23 July 2004</date>
 
-    <subtitle>Instructions on Installing the OpenNMS Network Management
-    Application</subtitle>
+    <subtitle>Installing the OpenNMS Network Management Application</subtitle>
 
     <edition>Version @product.version@-@product.release@</edition>
 

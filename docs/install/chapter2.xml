@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter>
-  <title>Prerequisite Applications for OpenNMS</title>
+  <title>Prerequisite Applications</title>
 
   <para>This section will discuss the applications needed to support OpenNMS.
   They include:<itemizedlist>
@@ -39,9 +39,9 @@
   <section>
     <title>Java</title>
 
-    <para>OpenNMS is written mainly in Java (there are a few JNI calls to some
-    C code in order to implement things such as ICMP), and so it follows that
-    Java would need to be installed.</para>
+    <para>OpenNMS is written mainly in Java, although there are a few JNI
+    calls to some C code in order to implement things such as ICMP. and so it
+    follows that Java would need to be installed.</para>
 
     <para>As the current code has a small dependency on a Sun-only library
     ("com.sun.net.ssl.internal.www.protocol" in the HTTPS Monitor), it is
@@ -103,7 +103,7 @@
     Tomcat4.</para>
 
     <para>We need to make a few changes to Tomcat. Most of these should be
-    done via the installer, but you will need to make </para>
+    done via the installer, but you will need to make</para>
 
     <para>Two changes will need to be made manually to Tomcat:</para>
 
@@ -127,7 +127,7 @@
     <filename>/etc/tomcat4/</filename> on the Red Hat and Fedora series of
     Linux distributions. It looks like this:</para>
 
-    <para><programlisting># tomcat /etc/rc.d script example configuration file
+    <para><programlisting>j# tomcat /etc/rc.d script example configuration file
 # Use with version 1.07 of the scripts or later
 
 # Use Jpackage utils if present

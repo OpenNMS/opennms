@@ -6,7 +6,7 @@
     <title>Common Installation Issues</title>
 
     <para>The following section contains advice for overcoming common
-    installation issues.</para>
+    installation issues. If your issue is not addressed below, please </para>
 
     <section>
       <title>Dependency Problems</title>
@@ -327,17 +327,26 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
     project (unless it is through a commercial support contract).</para>
 
     <section>
+      <title>The Release Notes</title>
+
+      <para>Check the release notes for this release. They are in the <ulink
+      url="http://sourceforge.net/docman/?group_id=4141">Documentation</ulink>
+      section of the OpenNMS project page at SourceForge.</para>
+    </section>
+
+    <section>
       <title>The OpenNMS Web Site</title>
 
       <para>The main OpenNMS <ulink url="http://www.opennms.org">site</ulink>
       is a Wiki. As a community project, there is a lot of good advice and
       information available there. In particular, we suggest checking the
-      <ulink url="http://wiki.opennms.org/tiki-list_faqs.php">FAQ</ulink> and
-      the <ulink
+      above-mentioned release notes, the <ulink
+      url="http://wiki.opennms.org/tiki-list_faqs.php">FAQ</ulink>, the <ulink
       url="http://bugzilla.opennms.org/cgi-bin/bugzilla/index.cgi">bug
-      database</ulink>. You might also find useful information in the <ulink
-      url="http://faq.opennms.org/">old FAQ</ulink>, but please realize that
-      this information may be out of date.</para>
+      database</ulink> and <ulink url="http://www.google.com/">Google</ulink>
+      before posting to a mailing list. You might also find useful information
+      in the <ulink url="http://faq.opennms.org/">old FAQ</ulink>, but please
+      realize that this information may be out of date.</para>
     </section>
 
     <section>
@@ -379,7 +388,7 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
           <glossterm>opennms-discuss</glossterm>
 
           <glossdef>
-            <para>This is the main OpenNMS discuss list. Its pretty friendly.
+            <para>This is the main OpenNMS discuss list. It's pretty friendly.
             Pretty much anything goes here, however it is suggested that
             installation-related issues to go
             <glossterm>opennms-install</glossterm>.</para>
