@@ -148,7 +148,8 @@ install: build
 		$(ONMSCOM)/var/lib/opennms/* \
 		$(ONMSCOM)/var/log/opennms
 	chmod 755 $(ONMSCOM)/usr/share/opennms/bin/install.pl \
-		$(ONMSCOM)/usr/share/opennms/bin/opennms.sh
+		$(ONMSCOM)/usr/share/opennms/bin/opennms.sh |
+		$(ONMSCOM)/usr/share/opennms/bin/tomcat-install.pl
 	chmod 644 $(ONMSCOM)/usr/share/opennms/lib/updates/README.updates
 
 	##

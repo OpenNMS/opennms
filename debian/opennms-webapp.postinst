@@ -9,9 +9,7 @@ TOMCAT4_PIDFILE=/var/run/tomcat4.pid
 
 case "$1" in
     configure)
-    	# install.pl doesn't support this anymore
-	## Add the needed section to tomcat4 server.xml
-	##/usr/share/opennms/bin/install.pl -n -t
+	/usr/share/opennms/bin/tomcat-install.pl -u -r -c
 
 	if [ -f $TOMCAT4_PIDFILE ]; then
 		invoke-rc.d --quiet tomcat4 restart
