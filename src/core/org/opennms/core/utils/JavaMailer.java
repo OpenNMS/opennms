@@ -36,13 +36,14 @@ import com.sun.mail.smtp.SMTPTransport;
  */
 public class JavaMailer {
 
-    private static final String DEFAULT_FROM_ADDRESS = JavaMailerConfig.getProperty("org.opennms.config.utils.fromAddress", "root@127.0.0.1");
+    private static final String DEFAULT_FROM_ADDRESS = JavaMailerConfig.getProperty("org.opennms.core.utils.fromAddress", "root@127.0.0.1");
     private static final String DEFAULT_MAIL_HOST = JavaMailerConfig.getProperty("org.opennms.core.utils.mailHost", "127.0.0.1");
     private static final boolean DEFAULT_AUTHENTICATE = JavaMailerConfig.getProperty("org.opennms.core.utils.authenticate", false);
     private static final String DEFAULT_AUTHENTICATE_USER = JavaMailerConfig.getProperty("org.opennms.core.utils.authenticateUser", "opennms");
     private static final String DEFAULT_AUTHENTICATE_PASSWORD = JavaMailerConfig.getProperty("org.opennms.core.utils.authenticatePassword", "opennms");
     private static final String DEFAULT_MAILER = JavaMailerConfig.getProperty("org.opennms.core.utils.mailer", "smtpsend");
     private static final String DEFAULT_TRANSPORT = JavaMailerConfig.getProperty("org.opennms.core.utils.transport", "smtp");
+    private static final boolean DEFAULT_MAILER_DEBUG = JavaMailerConfig.getProperty("org.opennms.core.utils.debug", false);
 
 	private String _mailHost = DEFAULT_MAIL_HOST;
 	private String _mailer = DEFAULT_MAILER;
@@ -180,8 +181,8 @@ public class JavaMailer {
 
 		// Get a Session object
 		Session session = Session.getInstance(props, null);
-		boolean debug = true;
-		if (debug)
+
+		if (DEFAULT_MAILER_DEBUG)
 			session.setDebug(true);
 
 		// construct the message
