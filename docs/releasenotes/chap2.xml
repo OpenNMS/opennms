@@ -140,6 +140,76 @@ report.netsnmp.disk1percent.command=--title="Percentage Disk Space on {ns-disk-1
       tell exactly which disk (but it should be easy to look up).</para>
 
       <para>Many thanks to Craig for this work.</para>
+
+      <bridgehead>New DHCP Poller</bridgehead>
+
+      <para>Bill Ayres (OGP) has improved the DHCP poller. The new default
+      <filename>dhcp-configuration.xml</filename> file now looks like
+      this:</para>
+
+      <programlisting>&lt;DhcpdConfiguration
+        port="5818"
+        macAddress="00:06:0D:BE:9C:B2"
+        myIpAddress="127.0.0.1"
+        extendedMode="false"
+        requestIpAddress="127.0.0.1"&gt;
+&lt;/DhcpdConfiguration&gt;</programlisting>
+
+      <para>The <varname>port</varname> and <varname>macAddress</varname>
+      options were there before, but now you can add
+      <varname>myIpAddress</varname>, <varname>extendedMode</varname> and a
+      <varname>requestIpAddress</varname>.</para>
+
+      <para>With the default configuration, the DHCP poller should act as
+      before (although on my test network it now correctly sees that my
+      Airport Express does not have a DHCP server on it that is accessible
+      from the "wired" side). This is "broadcast" mode.</para>
+
+      <para>The following describes each of the new variables:</para>
+
+      <para><emphasis>myIpAddress</emphasis>: This parameter will usually be
+      set to the ip address of the OpenNMS server, which puts the DHCP poller
+      in "relay" mode as opposed to "broadcast" mode. In "relay" mode, the
+      DHCP server being polled will unicast its responses directly back to the
+      specified ip address rather than broadcasting its responses. This allows
+      DHCP servers to be polled even though they are not on the same subnet as
+      the OpenNMS server, and without the aid of an external relay. </para>
+
+      <para>usage: myIpAddress="10.11.12.13" or myIpAddress="broadcast"
+      (default)</para>
+
+      <para><emphasis>extendedMode</emphasis>: When extendedMode is false, the
+      DHCP poller will send a DISCOVER and expect an OFFER in return. When
+      extendedMode is true, the DHCP poller will first send a DISCOVER. If no
+      valid response is received it will send an INFORM. If no valid response
+      is received it will then send a REQUEST. OFFER, ACK, and NAK are all
+      considered valid responses in extendedMode.</para>
+
+      <para>usage: extendedMode="true" or extendedMode="false"
+      (default)</para>
+
+      <para><emphasis>requestIpAddress</emphasis>: This parameter only applies
+      to REQUEST queries sent to the DHCP service when extendedMode is true.
+      If an ip address is specified, that ip address will be requested in the
+      query. If "targetHost" is specified, the DHCP server's own ip address
+      will be requested. Since a well-managed server will probably not respond
+      to a request for its own ip, this parameter can also be set to
+      "targetSubnet". This is similar to "targetHost" except the DHCP server's
+      ip address is incremented or decremented by 1 to obtain an ip address
+      that is on the same subnet. (The resulting address will not be on the
+      same subnet if the DHCP server's subnet is a /32 or /31. Otherwise, the
+      algorithm used should be reliable.) </para>
+
+      <para>usage: requestIpAddress="10.77.88.99" or
+      requestIpAddress="targetHost" or requestIpAddress="targetSubnet"
+      (default) </para>
+
+      <para><emphasis role="bold">Caution on usage:</emphasis> If in extended
+      mode, the time required to complete the poll for an unresponsive node is
+      increased by a factor of 3. Thus it is a good idea to limit the number
+      of retries to a small number.</para>
+
+      <para>Thanks to Bill for his hard work on this.</para>
     </section>
 
     <section>
