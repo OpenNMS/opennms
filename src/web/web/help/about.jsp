@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2003 Dec 01: Moved items on this page around.
 // 2003 Mar 18: Another copyright update.
 // 2003 Mar 03: Updated copyright info.
 // 2003 Feb 07: Fixed URLEncoder issues.
@@ -70,34 +71,6 @@
 
     <td>
       <h3>OpenNMS Web Console</h3>
-      <p>
-        The <a href="http://www.opennms.org/">OpenNMS</a> software, as distributed here, is copyright &copy; 2002-2003 <a href="http://www.sortova.com">Sortova Consulting Group, Inc.</a>, the current maintainers of the project. Being a community effort, portions of the code have been contributed by others, most notably from the <a href="http://www.oculan.com">Oculan Corporation</a>, the original maintainers of the project and creators of the bulk of the code. Please see the source for detailed copyright notices. 
-      </p>
-        
-      <p>
-        This program is free software; you can redistribute it and/or
-        modify it under the terms of the 
-        <a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a>
-        as published by the <a href="http://www.gnu.org/">Free Software Foundation</a>; either version 2
-        of the License, or (at your option) any later version.
-      </p>
-
-      <p>        
-        This program is distributed in the hope that it will be useful,
-        but <strong>without any warranty</strong>; without even the implied warranty of
-        <strong>merchantability</strong> or <strong>fitness for a particular purpose</strong>.  See the
-        <a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a> for more details.
-      </p>
-        
-      <p>
-        You should have received a copy of the <a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a>
-        along with this program; if not, write to the 
-        <pre>
-          Free Software Foundation, Inc.
-          59 Temple Place - Suite 330
-          Boston, MA  02111-1307, USA
-        </pre>
-      </p>
 
       <table width="100%" cellspacing="0" cellpadding="0"border="0">
         <tr>
@@ -133,22 +106,86 @@
           <td><%=request.getHeader( "User-Agent" )%></td>
         </tr>    
       </table>
+
       
       <p>
-        This product includes software developed by the
-        <a href="http://www.apache.org/" target="_new">Apache Software Foundation</a>.
+        The <a href="http://www.opennms.org/">OpenNMS&reg;</a> software, as distributed here, is copyright &copy; 2002-2003 <a href="http://www.blast.com">Blast Internet Services, Inc.</a> <a href="http://www.opennms.org/">OpenNMS&reg;</a> is a registered trademark of <a href="http://www.blast.com">Blast Internet Services, Inc.</a>
       </p>
+
       <p>
-       This product includes code licensed from RSA Security, Inc.
+      OpenNMS is a derivative work, containing both original code, included code and modified code that was published under the GNU General Public License. Please see the source for detailed copyright notices, but some notable copyright owners are listed below:
       </p>
+	<table>
+	<tr>
+	<td>
+	Original code base for OpenNMS version 1.0.0 &copy; 1999-2001 <a href="http://www.oculan.com">Oculan Corporation</a>.
+	</td>
+	</tr>
+	<tr>
+	<td>
+	Mapping code Copyright &copy; 2003 <a href="http://www.nksi.com">Networked Knowledge Systems, Inc.</a>
+	</td>
+	</tr>
+        <tr>
+        <td>
+        ScriptD code Copyright &copy; 2003 <a href="http://www.tavve.com">Tavve Software Company</a>.
+        </td>
+        </tr>
+	</table>
+
+    <h3>License and Copyright</h3>
+
       <p>
-       Some portions licensed from IBM are available at
-       <a href="http://oss.software.ibm.com/icu4j/" target="_new">http://oss.software.ibm.com/icu4j/</a>.
+        This program is free software; you can redistribute it and/or
+        modify it under the terms of the 
+        <a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a>
+        as published by the <a href="http://www.gnu.org/">Free Software Foundation</a>; either version 2
+        of the License, or (at your option) any later version.
       </p>
+
+      <p>        
+        This program is distributed in the hope that it will be useful,
+        but <strong>without any warranty</strong>; without even the implied warranty of
+        <strong>merchantability</strong> or <strong>fitness for a particular purpose</strong>.  See the
+        <a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a> for more details.
+      </p>
+        
       <p>
-        <a href="http://www.rrdtool.org/" target="_new"><img src="images/rrdtool.gif" hspace="0" vspace="0"
-           border="0" alt="www.rrdtool.org"></a>
-      </p>      
+        You should have received a copy of the <a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a>
+        along with this program; if not, write to the 
+        <pre>
+          Free Software Foundation, Inc.
+          59 Temple Place - Suite 330
+          Boston, MA  02111-1307, USA
+        </pre>
+      </p>
+
+      <h3>Supporting Applications</h3>
+
+	<table>
+	   <tr>
+      
+      	   <td>
+		<p>
+        	Powered By Tomcat<br>
+		<a href="http://jakarta.apache.org/tomcat/" target="_new"><img src="images/tomcat.gif" hspace="0" vspace="0" 
+      		   border="0" alt="jakarta.apache.org"></a>.
+      		</p>
+	   </td>
+           <td>
+		<p>
+        	<a href="http://www.rrdtool.org/" target="_new"><img src="images/rrdtool.gif" hspace="0" vspace="0"
+           	border="0" alt="www.rrdtool.org"></a>
+      		</p>      
+	   </td>
+           <td>
+		<p>
+        	<a href="http://www.postgresql.org/" target="_new"><img src="images/pg-power.jpg" hspace="0" vspace="0"
+           	border="0" alt="www.postgresql.org"></a>
+      		</p>      
+	   </td>
+	   </tr>
+	</table>
     </td>
 
     <td> &nbsp; </td>
