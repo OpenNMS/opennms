@@ -572,12 +572,8 @@ public class NotifdTest extends TestCase {
         m_eventMgr.sendEventToListeners(e);
 
         m_db.acknowledgeNoticesForEvent(e);
-        
-        sleep(5000);
-        
-        printNotifications("Unexpected notifications", m_anticipator.getUnanticipated());
-        assertTrue("Unexpected notifications received", m_anticipator.getUnanticipated().isEmpty());
-        
+  
+        verifyAnticipated(0, 0, 5000);
     }
 
     public void testManualAcknowledge2() throws Exception {
@@ -667,27 +663,23 @@ public class NotifdTest extends TestCase {
     }
     
     public void testBug1114() throws Exception {
+		// XXX Needing to bump up this number is bogus
     		m_anticipator.setExpectedDifference(5000);
     		
         MockService svc = m_network.getService(1, "192.168.1.1", "ICMP");
         
-        Date date = new Date();
-        
         long interval = computeInterval();
 
-        String dateString = DateFormat.getDateTimeInstance(DateFormat.FULL,
-        			DateFormat.FULL).format(date);
-        long endTime = anticipateNotificationsForGroup("time " + dateString + ".", "Timestamp: " + dateString + ".", "InitialGroup", date, interval);
-
-        //Event event = svc.createDownEvent(date);
         Event event = MockUtil.createServiceEvent("Test", "uei.opennms.org/tests/nodeTimeTest", svc);
         
-        String eventTime = EventConstants.formatToString(date);
-        event.setCreationTime(eventTime);
-        event.setTime(eventTime);
+        Date date = EventConstants.parseToDate(event.getTime());
+        String dateString = DateFormat.getDateTimeInstance(DateFormat.FULL,
+        		DateFormat.FULL).format(date);
+        long endTime = anticipateNotificationsForGroup("time " + dateString + ".", "Timestamp: " + dateString + ".", "InitialGroup", date, interval);
   
         m_eventMgr.sendEventToListeners(event);
 
+		// XXX Needing to decrease the end time is bogus
         verifyAnticipated(endTime - 5000, 500);
     }
     
@@ -805,30 +797,9 @@ public class NotifdTest extends TestCase {
     }
 
     private void verifyAnticipated(long lastNotifyTime, long waitTime, long sleepTime) {
-        long totalWaitTime = Math.max(0, lastNotifyTime + waitTime - System.currentTimeMillis());
+        m_anticipator.verifyAnticipated(lastNotifyTime, waitTime, sleepTime);
+    }
         
-        Collection missingNotifications = m_anticipator.waitForAnticipated(totalWaitTime);
-        // make sure that we didn't start before we should have
-        long now = System.currentTimeMillis();
-        sleep(sleepTime);
-        printNotifications("Missing notifications", missingNotifications);
-        MockUtil.println("Expected notifications no sooner than "+lastNotifyTime+", currentTime is "+now);
-        printNotifications("Unexpected notifications", m_anticipator.getUnanticipated());
-        assertEquals("Some expected notifications still outstanding.", 0, missingNotifications.size());
-        assertTrue("Anticipated notifications received before expected start time", now > lastNotifyTime);
-        assertEquals("Unexpected notifications forthcoming.", 0, m_anticipator.getUnanticipated().size());
-    }
-
-    /**
-     * @param missingNotifications
-     */
-    private void printNotifications(String prefix, Collection missingNotifications) {
-        for (Iterator it = missingNotifications.iterator(); it.hasNext();) {
-            MockNotification notification = (MockNotification) it.next();
-            MockUtil.println(prefix+": "+notification);
-        }
-    }
-
     private void sleep(long millis) {
         try {
             Thread.sleep(millis);
