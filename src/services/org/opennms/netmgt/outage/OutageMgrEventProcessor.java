@@ -51,13 +51,13 @@ import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * BroadcastEventProcessor is responsible for receiving events from eventd and
+ * OutageMgrEventProcessor is responsible for receiving events from eventd and
  * queing them to the outage writer pool.
  * 
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class BroadcastEventProcessor implements EventListener {
+final class OutageMgrEventProcessor implements EventListener {
     /**
      * The location where incoming events of interest are enqueued
      */
@@ -76,7 +76,7 @@ final class BroadcastEventProcessor implements EventListener {
      * @param writerQ
      *            The queue where events of interest are added.
      */
-    BroadcastEventProcessor(OutageManager outageMgr, FifoQueue writerQ) {
+    OutageMgrEventProcessor(OutageManager outageMgr, FifoQueue writerQ) {
         m_writerQ = writerQ;
         m_outageMgr = outageMgr;
     }
@@ -175,6 +175,6 @@ final class BroadcastEventProcessor implements EventListener {
      * Return an id for this event listener
      */
     public String getName() {
-        return "OutageManager:BroadcastEventProcessor";
+        return "OutageManager:OutageMgrEventProcessor";
     }
 } // end class

@@ -83,7 +83,7 @@ public final class Poller implements PausableFiber {
 
     private int m_status;
 
-    private BroadcastEventProcessor m_receiver;
+    private PollerEventProcessor m_receiver;
 
     private PollableNetwork m_network = new PollableNetwork(this);
 
@@ -145,7 +145,7 @@ public final class Poller implements PausableFiber {
         try {
             log.debug("start: Creating event broadcast event processor");
 
-            m_receiver = new BroadcastEventProcessor(this);
+            m_receiver = new PollerEventProcessor(this);
         } catch (Throwable t) {
             log.fatal("start: Failed to initialized the broadcast event receiver", t);
 

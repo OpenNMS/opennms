@@ -95,7 +95,7 @@ public final class OutageManager implements PausableFiber {
     /**
      * The events receiver
      */
-    private BroadcastEventProcessor m_eventReceiver;
+    private OutageMgrEventProcessor m_eventReceiver;
 
     /**
      * The RunnableConsumerThreadPool that runs writers that update the database
@@ -256,7 +256,7 @@ public final class OutageManager implements PausableFiber {
         if (log.isDebugEnabled())
             log.debug("Created writer pool");
 
-        m_eventReceiver = new BroadcastEventProcessor(this, m_writerPool.getRunQueue());
+        m_eventReceiver = new OutageMgrEventProcessor(this, m_writerPool.getRunQueue());
         if (log.isDebugEnabled())
             log.debug("Created event receiver");
 

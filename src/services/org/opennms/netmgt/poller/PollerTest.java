@@ -221,8 +221,6 @@ public class PollerTest extends TestCase {
         bringDownCritSvcs(node);
 
         verifyAnticipated(2000);
-
-
     }
     
     // what about scheduled outages?

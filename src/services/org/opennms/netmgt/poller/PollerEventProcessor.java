@@ -65,7 +65,7 @@ import org.opennms.netmgt.xml.event.Value;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class BroadcastEventProcessor implements EventListener {
+final class PollerEventProcessor implements EventListener {
 
     /**
      * Integer constant for passing in to PollableNode.getNodeLock() method in
@@ -825,7 +825,7 @@ final class BroadcastEventProcessor implements EventListener {
      * @param pollableServices
      *            List of all the PollableService objects scheduled for polling
      */
-    BroadcastEventProcessor(Poller poller) {
+    PollerEventProcessor(Poller poller) {
 
         m_poller = poller;
 
@@ -868,17 +868,17 @@ final class BroadcastEventProcessor implements EventListener {
         // print out the uei
         //
         if (log.isDebugEnabled()) {
-            log.debug("BroadcastEventProcessor: received event, uei = " + event.getUei());
+            log.debug("PollerEventProcessor: received event, uei = " + event.getUei());
         }
 
         // If the event doesn't have a nodeId it can't be processed.
         if (!event.hasNodeid()) {
-            log.info("BroadcastEventProcessor: no database node id found, discarding event");
+            log.info("PollerEventProcessor: no database node id found, discarding event");
         } else if (event.getUei().equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
             //
             if (event.getInterface() == null || event.getInterface().length() == 0) {
-                log.info("BroadcastEventProcessor: no interface found, discarding event");
+                log.info("PollerEventProcessor: no interface found, discarding event");
             } else {
                 nodeGainedServiceHandler(event);
             }
@@ -886,7 +886,7 @@ final class BroadcastEventProcessor implements EventListener {
             // If there is no interface then it cannot be processed
             //
             if (event.getInterface() == null || event.getInterface().length() == 0) {
-                log.info("BroadcastEventProcessor: no interface found, cannot resume polling service, discarding event");
+                log.info("PollerEventProcessor: no interface found, cannot resume polling service, discarding event");
             } else {
                 nodeGainedServiceHandler(event);
             }
@@ -894,7 +894,7 @@ final class BroadcastEventProcessor implements EventListener {
             // If there is no interface then it cannot be processed
             //
             if (event.getInterface() == null || event.getInterface().length() == 0) {
-                log.info("BroadcastEventProcessor: no interface found, cannot suspend polling service, discarding event");
+                log.info("PollerEventProcessor: no interface found, cannot suspend polling service, discarding event");
             } else {
                 nodeRemovePollableServiceHandler(event);
             }
@@ -902,13 +902,13 @@ final class BroadcastEventProcessor implements EventListener {
             // If there is no interface then it cannot be processed
             //
             if (event.getInterface() == null || event.getInterface().length() == 0) {
-                log.info("BroadcastEventProcessor: no interface found, discarding event");
+                log.info("PollerEventProcessor: no interface found, discarding event");
             } else {
                 interfaceReparentedHandler(event);
             }
         } else if (event.getUei().equals(EventConstants.NODE_DELETED_EVENT_UEI) || event.getUei().equals(EventConstants.DUP_NODE_DELETED_EVENT_UEI)) {
             if (event.getNodeid() < 0) {
-                log.info("BroadcastEventProcessor: no node or interface found, discarding event");
+                log.info("PollerEventProcessor: no node or interface found, discarding event");
             }
             // NEW NODE OUTAGE EVENTS
             nodeDeletedHandler(event);
@@ -916,7 +916,7 @@ final class BroadcastEventProcessor implements EventListener {
             // If there is no interface then it cannot be processed
             //
             if (event.getNodeid() < 0 || event.getInterface() == null || event.getInterface().length() == 0) {
-                log.info("BroadcastEventProcessor: invalid nodeid or no interface found, discarding event");
+                log.info("PollerEventProcessor: invalid nodeid or no interface found, discarding event");
             } else {
                 interfaceDeletedHandler(event);
             }
@@ -924,7 +924,7 @@ final class BroadcastEventProcessor implements EventListener {
             // If there is no interface then it cannot be processed
             //
             if ((event.getNodeid() < 0) || (event.getInterface() == null) || (event.getInterface().length() == 0) || (event.getService() == null)) {
-                log.info("BroadcastEventProcessor: invalid nodeid or no nodeinterface " + "or service found, discarding event");
+                log.info("PollerEventProcessor: invalid nodeid or no nodeinterface " + "or service found, discarding event");
             } else {
                 serviceDeletedHandler(event);
             }
@@ -937,7 +937,7 @@ final class BroadcastEventProcessor implements EventListener {
      * Return an id for this event listener
      */
     public String getName() {
-        return "Poller:BroadcastEventProcessor";
+        return "Poller:PollerEventProcessor";
     }
 
     /**
