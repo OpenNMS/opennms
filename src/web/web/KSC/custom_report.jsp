@@ -177,7 +177,7 @@
                         </td>
               
                         <td align="left">
-                            <img src="snmp/performance/graph.png?report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
+                            <img src="snmp/performance/graph.png?props=<%=nodeId%>/strings.properties&report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
                         </td>
                     </tr>
                 <% }  //end for loop %> 
@@ -226,6 +226,11 @@
                     </tr>
                 </table>
             </td> 
+        </tr>
+        <tr>
+            <td>
+              Please make sure to save the added graph with the report, as the first save only adds it to the the present view.
+            </td>
         </tr>
 
     </table>

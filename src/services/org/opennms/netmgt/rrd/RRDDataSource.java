@@ -33,6 +33,20 @@
 //
 
 package org.opennms.netmgt.rrd;
+import java.util.List;
+
+import org.opennms.netmgt.collectd.DataSource;
+import org.opennms.netmgt.collectd.MibObject;
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
+
+import org.apache.log4j.Category;
+import org.apache.log4j.Priority;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.protocols.snmp.SnmpSMI;
+import org.opennms.protocols.snmp.SnmpSyntax;
+import org.opennms.protocols.snmp.SnmpOctetString;
+import org.opennms.protocols.snmp.SnmpTimeTicks;
+
 
 /**
  * This class encapsulates an RRDTool data source. Data source information
@@ -47,7 +61,10 @@ package org.opennms.netmgt.rrd;
  * @version 1.1.1.1
  * 
  */
-public class RRDDataSource {
+public class RRDDataSource extends DataSource {
+	private static final int MAX_DS_NAME_LENGTH = 19;
+	public static final String RRD_ERROR = "RRD_ERROR";
+
     /**
      * Defines the list of supported (MIB) object types whic may be mapped to
      * one of the supported RRD data source types. Currently the only two
@@ -84,26 +101,6 @@ public class RRDDataSource {
     // private static final String DST_ABSOLUTE = "ABSOLUTE";
 
     /**
-     * Object's identifier in dotted-decimal notation (e.g, ".1.3.6.1.2.1.1.1").
-     * Identifies the MIB object which is the source of data values for this RRD
-     * data source.
-     */
-    private String m_oid;
-
-    /**
-     * Instance identifier which is appended to the object identifier to
-     * identify a particular MIB entry. This value may be an integer value or
-     * "ifIndex".
-     */
-    private String m_instance;
-
-    /**
-     * Data Source Name. This is not only the name of the data source but should
-     * identify the MIB object as well (e.g., "ifOctetsIn").
-     */
-    private String m_name;
-
-    /**
      * Data Source Type. This must be one of the available RRDTool data source
      * type values: GAUGE, COUNTER, DERIVE, or ABSOLUTE
      */
@@ -127,6 +124,16 @@ public class RRDDataSource {
      * the data supplied by this data source. May be set to "U" for Unknown.
      */
     private String m_max;
+
+	/**
+          * @param objectType MIB object type being inquired about
+          * @return true if RRDDataSource can  handle the given type, false if it can't
+          */
+         public static boolean handlesType(String objectType) {
+                 return (RRDDataSource.mapType(objectType)!=null);
+         }
+
+
 
     /**
      * Static method which takes a MIB object type (counter, counter32,
@@ -177,14 +184,58 @@ public class RRDDataSource {
      * Constructor
      */
     public RRDDataSource() {
-        m_oid = null;
-        m_instance = null;
-        m_name = null;
+	super();
         m_type = null;
         m_heartbeat = 600; // 10 minutes
         m_min = "U";
         m_max = "U";
     }
+
+       public RRDDataSource(MibObject obj, String collectionName) {
+                super(obj);
+                Category log = ThreadCategory.getInstance(getClass());
+
+                // Assign heartbeat using formula (2 * step) and hard code
+                // min & max values to "U" ("unknown").
+                this.setHeartbeat(
+                        2
+                                * DataCollectionConfigFactory.getInstance().getStep(
+                                        collectionName));
+
+                // Truncate MIB object name/alias if it exceeds the 19 char max for
+                // RRD data source names.
+                if (this.getName().length() > MAX_DS_NAME_LENGTH) {
+                        if (log.isEnabledFor(Priority.WARN))
+                                log.warn(
+                                        "buildDataSourceList: Mib object name/alias '"
+                                                + obj.getAlias()
+                                                + "' exceeds 19 char maximum for RRD data source names, truncatin g.");
+                        char[] temp = this.getName().toCharArray();
+                        this.setName(String.copyValueOf(temp, 0, MAX_DS_NAME_LENGTH));
+                }
+
+                // Map MIB object data type to RRD data type
+                this.setType(RRDDataSource.mapType(obj.getType()));
+                this.m_min = "U";
+                this.m_max = "U";
+
+                // Assign the data source object identifier and instance
+                if (log.isDebugEnabled()) {
+                        log.debug(
+                                "buildDataSourceList: ds_name: "
+                                        + this.getName()
+                                        + " ds_oid: "
+                                        + this.getOid()
+                                        + "."
+                                        + this.getInstance()
+                                        + " ds_max: "
+                                        + this.getMax()
+                                        + " ds_min: "
+                                        + this.getMin());
+                }
+
+        }
+
 
     /**
      * Class copy constructor. Constructs a new object that is an identical to
@@ -203,37 +254,6 @@ public class RRDDataSource {
         m_heartbeat = second.m_heartbeat;
         m_min = second.m_min;
         m_max = second.m_max;
-    }
-
-    /**
-     * This method is used to assign the object's identifier.
-     * 
-     * @param oid -
-     *            object identifier in dotted decimal notation (e.g.,
-     *            ".1.3.6.1.2.1.1.1")
-     */
-    public void setOid(String oid) {
-        m_oid = oid;
-    }
-
-    /**
-     * This method is used to assign the object's instance id.
-     * 
-     * @param instance -
-     *            instance identifier (to be appended to oid)
-     */
-    public void setInstance(String instance) {
-        m_instance = instance;
-    }
-
-    /**
-     * This method is used to assign the data source name.
-     * 
-     * @param name
-     *            object alias: "sysDescription".
-     */
-    public void setName(String name) {
-        m_name = name;
     }
 
     /**
@@ -256,33 +276,6 @@ public class RRDDataSource {
 
     public void setMax(String maximum) {
         m_max = maximum;
-    }
-
-    /**
-     * Returns the object's identifier.
-     * 
-     * @return The object's identifier string.
-     */
-    public String getOid() {
-        return m_oid;
-    }
-
-    /**
-     * Returns the object's instance id.
-     * 
-     * @return The object's instance id string.
-     */
-    public String getInstance() {
-        return m_instance;
-    }
-
-    /**
-     * Returns the object's name.
-     * 
-     * @return The object's name.
-     */
-    public String getName() {
-        return m_name;
     }
 
     /**
@@ -335,5 +328,65 @@ public class RRDDataSource {
         buffer.append("\n   max:       ").append(m_max);
 
         return buffer.toString();
+    }
+       
+	public boolean performUpdate(
+		String collectionName,
+		String owner,
+                String repository,
+		String dsName,
+		String val) {
+
+	        int step = DataCollectionConfigFactory.getInstance().getStep(collectionName);
+	        List rraList = DataCollectionConfigFactory.getInstance().getRRAList(collectionName);
+		boolean result=false;
+		try {
+		        RrdUtils.createRRD(owner, repository, this.getName(), step, this.getType(), this.getHeartbeat(), 
+				this.getMin(), this.getMax(), rraList);
+	
+			RrdUtils.updateRRD(owner, repository, dsName, val);
+		} catch (RrdException e) {
+			result=true;
+		}
+		return result;
+	}
+
+    public String getStorableValue(SnmpSyntax snmpVar) {
+        // RRD only supports the storage of integer data types. If we see a
+        // data type other than those listed below an error will be logged
+        // and no RRD update will take place.
+        // Am I missing any SNMP data types here?
+        switch (snmpVar.typeId()) {
+        case SnmpSMI.SMI_INTEGER:
+            return snmpVar.toString();
+        case SnmpSMI.SMI_COUNTER32:
+            return snmpVar.toString();
+        case SnmpSMI.SMI_COUNTER64:
+            return snmpVar.toString();
+        case SnmpSMI.SMI_GAUGE32:
+            return snmpVar.toString();
+        // *NOTE* Same as SnmpSMI.SMI_GAUGE32
+        // case SnmpSMI.SMI_UNSIGNED32:
+        // dsValue = ((SnmpUInt32)snmpVar).getValue();
+        // break;
+        case SnmpSMI.SMI_TIMETICKS:
+            return "" + (((SnmpTimeTicks) snmpVar).getValue());
+        case SnmpSMI.SMI_STRING:
+            String dsValue = ((SnmpOctetString) snmpVar).toString();
+
+            // Validate that the octet string value represents an
+            // integer/double value, otherwise it can't be stored in the RRD
+            // database
+            try {
+                new Double(dsValue);
+                return dsValue;
+            } catch (NumberFormatException nfE) {
+                throw new IllegalArgumentException("number format exception attempting to convert octet string value '" + dsValue + "' to a numeric value for data source '" + this.getName() + "'");
+
+            }
+        default:
+            throw new IllegalArgumentException("SNMP value of data source '" + this.getName() + "' is not one of the supported data types by RRD, invalid typeID: " + snmpVar.typeId() + " Valid RRD data types are:  COUNTER, GAUGE, DERIVE, & ABSOLUTE.  Please check content of 'DataCollection.xml' file.");
+        }
+
     }
 }

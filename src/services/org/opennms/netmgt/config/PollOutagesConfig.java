@@ -74,6 +74,8 @@ public interface PollOutagesConfig {
      * @return true if time is in outage
      */
     public abstract boolean isTimeInOutage(long time, String outName);
+
+    public abstract void update() throws Exception;
     
 
 }

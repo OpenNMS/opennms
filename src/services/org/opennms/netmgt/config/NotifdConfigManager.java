@@ -215,7 +215,8 @@ public abstract class NotifdConfigManager {
                 else
                     parmContent = parmValue.getContent();
 
-                if (parmName.equals(notfName) && parmContent.equals(notfValue)) {
+                if (parmName.equals(notfName) && parmContent.startsWith(notfValue))
+		{
                     parmmatch = true;
                 }
 

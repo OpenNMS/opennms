@@ -75,6 +75,8 @@ public class MockNotificationStrategy implements NotificationStrategy {
                 notification.setSubject(arg.getValue());
             } else if (arg.getSwitch().equals("-email")) {
                 notification.setEmail(arg.getValue());
+            } else if (arg.getSwitch().equals("-tm")) {
+				notification.setTextMsg(arg.getValue());
             }
         }
         notification.setExpectedTime(System.currentTimeMillis());

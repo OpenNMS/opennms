@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -59,7 +58,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.notificationCommands.Argument;
 import org.opennms.netmgt.config.notificationCommands.Command;
-import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
 
 /**
@@ -204,10 +202,16 @@ public class NotificationTask extends Thread {
                     // send the notice
 
                     ExecutorStrategy command = null;
+                    String cntct = "";
 
                     for (int i = 0; i < m_commands.length; i++) {
+                        if (m_user.getUserId().equals("email-address")) {
+                            cntct = m_user.getContact()[0].getInfo();
+                        } else {
+                            cntct = m_notifd.getUserManager().getContactInfo(m_user.getUserId(), m_commands[i].getName());
+                        }
                         try {
-                            m_notifd.getNotificationManager().updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), m_notifd.getUserManager().getContactInfo(m_user.getUserId(), m_commands[i].getName()));
+                            m_notifd.getNotificationManager().updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), cntct);
                         } catch (SQLException e) {
                             log.error("Could not insert notice info into database, aborting send notice...", e);
                             continue;
@@ -276,9 +280,11 @@ public class NotificationTask extends Thread {
             if (NotificationManager.PARAM_DESTINATION.equals(aSwitch)) {
                 value = m_user.getUserId();
             } else if (NotificationManager.PARAM_EMAIL.equals(aSwitch)) {
-                value = getEmail(m_user);
+                value =m_notifd.getUserManager().getEmail(m_user.getUserId());
             } else if (NotificationManager.PARAM_PAGER_EMAIL.equals(aSwitch)) {
                 value = m_notifd.getUserManager().getPagerEmail(m_user.getUserId());
+            } else if (NotificationManager.PARAM_XMPP_ADDRESS.equals(aSwitch)) {
+            	value = m_notifd.getUserManager().getXMPPAddress(m_user.getUserId());
             } else if (NotificationManager.PARAM_TEXT_PAGER_PIN.equals(aSwitch)) {
                 value = m_notifd.getUserManager().getTextPin(m_user.getUserId());
             } else if (NotificationManager.PARAM_NUM_PAGER_PIN.equals(aSwitch)) {
@@ -293,22 +299,4 @@ public class NotificationTask extends Thread {
         return value;
     }
 
-    /**
-     * 
-     */
-    private String getEmail(User user) {
-
-        String value = "";
-        Enumeration contacts = user.enumerateContact();
-        while (contacts != null && contacts.hasMoreElements()) {
-            Contact contact = (Contact) contacts.nextElement();
-            if (contact != null) {
-                if (contact.getType().equals("email")) {
-                    value = contact.getInfo();
-                    break;
-                }
-            }
-        }
-        return value;
-    }
 }

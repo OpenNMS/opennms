@@ -114,23 +114,25 @@ final class Receiver implements Runnable, Fiber {
             try {
                 DatagramPacket pkt = new DatagramPacket(dgbuf, dgbuf.length);
                 m_receiver.receive(pkt);
-                log.debug("Receiver:  got a DHCP broadcast response.");
+                log.debug("got a DHCP response.");
                 Message msg = new Message(pkt.getAddress(), new DHCPMessage(pkt.getData()));
 
-                log.debug("Receiver:  Forwarding DHCP message to all clients.");
                 synchronized (m_clients) {
                     Iterator iter = m_clients.iterator();
+                    if(!iter.hasNext()) {
+                        log.debug("No client waiting for response.");
+                    }
                     while (iter.hasNext()) {
                         Client c = (Client) iter.next();
                         if (c.getStatus() == RUNNING) {
                             try {
-                                log.debug("Receiver:  sending DHCP response pkt to client " + c.getName());
+                                log.debug("sending DHCP response pkt to client " + c.getName());
                                 c.sendMessage(msg);
                             } catch (IOException ex) {
                                 log.warn("Error sending response to client " + c.getName());
                             }
                         } else if (c.getStatus() == STOPPED) {
-                            log.debug("Receiver:  Removing stale client " + c.getName());
+                            log.debug("Removing stale client " + c.getName());
                             iter.remove();
                         }
                     }
