@@ -180,7 +180,7 @@ public abstract class NotificationManager {
             String eventIf = (String) event.getInterface();
             String eventSrv = (String) event.getService();
     
-            if (eventNode == 0 || eventIf == null || eventSrv == null) {
+            if (eventNode == 0 && eventIf == null && eventSrv == null) {
                 return true;
             }
     
