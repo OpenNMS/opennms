@@ -20,6 +20,8 @@
 %{!?buildtests:%define buildtests @rpm.buildtests@}
 %{!?platform:%define platform @rpm.platform@}
 
+%define debug_package %{nil}
+
 %if "%{buildtests}" == "true"
 %define buildtests	1
 %endif
