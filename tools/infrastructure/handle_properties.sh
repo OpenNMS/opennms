@@ -1,8 +1,5 @@
 #!/bin/bash
 
-VERSION_BUILD_HANDLE_PROPERTIES='1.2'
-PACKAGES="$PACKAGES HANDLE_PROPERTIES"
-
 # find_property_file()
 #   input : none
 #   output: the property file to use for overrides

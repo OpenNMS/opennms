@@ -1,8 +1,5 @@
 #!/bin/bash
 
-VERSION_BUILD_ARG_PROCESS='1.1.1.1'
-PACKAGES="$PACKAGES ARG_PROCESS"
-
 # check_arg ()
 #   input : an argument
 #   output: true if argument processing should

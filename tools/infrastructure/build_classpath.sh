@@ -1,8 +1,5 @@
 #!/bin/bash
 
-VERSION_BUILD_BUILD_CLASSPATH='1.1.1.1'
-PACKAGES="$PACKAGES BUILD_CLASSPATH"
-
 # build_classpath ()
 #   input : a list of targets
 #           dir:<directory>

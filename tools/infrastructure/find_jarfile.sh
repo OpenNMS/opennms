@@ -1,7 +1,5 @@
 #!/bin/bash
 
-VERSION_BUILD_FIND_JARFILE='1.2'
-PACKAGES="$PACKAGES FIND_JARFILE"
 JAR_SEARCH_PATH="$OPENNMS_HOME/lib/updates $PREFIX/lib $OPENNMS_HOME/lib /usr/share/java"
 
 # set_jarfile ()

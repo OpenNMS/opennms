@@ -1,8 +1,5 @@
 #!/bin/bash
 
-VERSION_BUILD_VERSION_COMPARE='1.2'
-PACKAGES="$PACKAGES VERSION_COMPARE"
-
 # format_version()
 #   input : version number
 #   output: a cleaned up version number for comparisons

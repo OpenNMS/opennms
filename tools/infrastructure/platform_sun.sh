@@ -1,8 +1,5 @@
 #!/bin/bash
 
-VERSION_BUILD_PLATFORM_SUN='1.1.1.1'
-PACKAGES="$PACKAGES PLATFORM_SUN"
-
 if [ `uname` = 'SunOS' ]; then
 	PATH="/usr/local/bin:/usr/ccs/bin:/usr/xpg4/bin:$PATH" export PATH
         LD_LIBRARY_PATH="/usr/local/lib:/usr/local/ssl/lib/:/usr/local/pgsql/lib:/usr/local/opennms/lib:/usr/local/pgsql/include/server/lib:/usr/local/pgsql/include/internal/lib:$LD_LIBRARY_PATH" export LD_LIBRARY_PATH

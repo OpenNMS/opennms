@@ -1,8 +1,5 @@
 #!/bin/bash
 
-VERSION_BUILD_PLATFORM_LINUX='1.1.1.1'
-PACKAGES="$PACKAGES PLATFORM_LINUX"
-
 if [ `uname` = 'Linux' ]; then
 	PLATFORM="linux" export PLATFORM
 

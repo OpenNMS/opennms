@@ -1,7 +1,5 @@
 #!/bin/bash
 
-VERSION_BUILD='1.18'
-
 # workaround for buggy libc's
 ulimit -s 2048
 
@@ -42,7 +40,7 @@ SABLECC_CLASSES="`get_property 'root.build'`/classes/sablecc"
 
 if [ "$QUIET" != "1" ]; then
 	echo "------------------------------------------------------------------------------"
-	echo "OpenNMS Build ($VERSION_BUILD)"
+	echo "OpenNMS Build"
 	echo "------------------------------------------------------------------------------"
 	echo ""
 fi
@@ -81,32 +79,9 @@ if [ "$VERBOSE" = "1" ]; then
 	echo "\$PATH:	 $PATH"
 	echo "\$DEFINES:      $DEFINES"
 	echo ""
-	echo "------------------------------------------------------------------------------"
-	echo "Build Script Info"
-	echo "------------------------------------------------------------------------------"
-	echo "$VERSION_BUILD"
-	echo '2001/11/11 17:42:32'
-	echo 'ben'
-	echo ""
-	echo "------------------------------------------------------------------------------"
-	echo "Build Components"
-	echo "------------------------------------------------------------------------------"
-	for package in $PACKAGES; do
-		eval "echo \"${package}: \$VERSION_BUILD_${package}\""
-	done
-	echo ""
 
 	DEFINES="$DEFINES -Ddebug=true"
 fi
-
-# check to make sure the tools are up to date
-
-for ARG; do
-	if [ "$ARG" = "clean" ]; then
-		TOOL_ARGS=clean
-		break
-	fi
-done
 
 if [ "$VERBOSE" = "1" ]; then
 	DEFINES="$DEFINES -verbose"

@@ -1,8 +1,5 @@
 #!/bin/bash
 
-VERSION_LD_PATH='$Revision$'
-PACKAGES="$PACKAGES LD_PATH"
-
 # add_ld_path ()
 #   input : a path to add to the (DY)LD_LIBRARY_PATH
 #   output: true if successful

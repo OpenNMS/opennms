@@ -1,8 +1,5 @@
 #!/bin/bash
 
-VERSION_BUILD_COMPILER_SETUP='1.2'
-PACKAGES="$PACKAGES COMPILER_SETUP"
-
 for make in gmake make; do
 	MAKE=`which $make 2>&1 | grep -v "no $make in" | grep -v "not found"`
 	if [ -n "$MAKE" ]; then
