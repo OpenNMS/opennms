@@ -843,7 +843,7 @@ final class RescanProcessor
         					int index = tmpIfArray[i].getIfIndex();
         						
         					// Skip non-IP or loopback interfaces
-        					if (addr.getHostAddress().equals("0.0.0.0") && 
+        					if (addr.getHostAddress().equals("0.0.0.0") || 
         						addr.getHostAddress().startsWith("127.")) 
         					{
         						continue;
@@ -2417,7 +2417,7 @@ final class RescanProcessor
                 {
                         InetAddress ipaddr = dbInterfaces[i].getIfAddress();
   			// Skip non-IP or loopback interfaces
-       			if (ipaddr.getHostAddress().equals("0.0.0.0") && 
+       			if (ipaddr.getHostAddress().equals("0.0.0.0") || 
        				ipaddr.getHostAddress().startsWith("127.")) 
        			{
        				continue;
@@ -2430,7 +2430,7 @@ final class RescanProcessor
                                 InetAddress addr = (InetAddress)iter.next();
 
   				// Skip non-IP or loopback interfaces
-       				if (addr.getHostAddress().equals("0.0.0.0") && 
+       				if (addr.getHostAddress().equals("0.0.0.0") || 
        					addr.getHostAddress().startsWith("127.")) 
        				{
        					continue;
