@@ -8198,7 +8198,7 @@
  draining(8) connected(9)&lt;/p&gt;
  &lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
  </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: RSRB Peer State Change Notifitcation.&lt;/p&gt;</logmsg>
+ <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: RSRB Peer State Change Notification.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
 </event>
 <!-- End of Cisco MIB: CISCO-RSRB-MIB -->
