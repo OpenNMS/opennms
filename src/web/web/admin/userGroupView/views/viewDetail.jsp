@@ -50,9 +50,9 @@
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("admin/index.jsp") + "'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='" + java.net.URLEncoder.encode("admin/userGroupView/index.jsp") + "'>Users, Groups, and Views</a>"; %>
-<% String breadcrumb3 = "<a href='" + java.net.URLEncoder.encode("admin/userGroupView/views/list.jsp") + "'>Views List</a>"; %>
+<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
+<% String breadcrumb2 = "<a href='admin/userGroupView/index.jsp'>Users, Groups, and Views</a>"; %>
+<% String breadcrumb3 = "<a href='admin/userGroupView/views/list.jsp'>Views List</a>"; %>
 <% String breadcrumb4 = "View Detail"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="View Detail" />

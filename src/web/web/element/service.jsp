@@ -76,10 +76,10 @@
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("element/index.jsp" ) + "'>Search</a>"; %>
-<% String breadcrumb2 = "<a href='" + java.net.URLEncoder.encode("element/node.jsp?node=" + nodeId ) + "'>Node</a>"; %>
-<% String breadcrumb3 = "<a href='" + java.net.URLEncoder.encode("element/interface.jsp?node=" + nodeId + "&intf=" + ipAddr ) + "'>Interface</a>"; %>
-<% String breadcrumb4 = java.net.URLEncoder.encode("Service"); %>
+<% String breadcrumb1 = "<a href='element/index.jsp"  + "'>Search</a>"; %>
+<% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
+<% String breadcrumb3 = "<a href='element/interface.jsp?node=" + nodeId + "&intf=" + ipAddr  + "'>Interface</a>"; %>
+<% String breadcrumb4 = "Service"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Service" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
@@ -133,8 +133,8 @@
           
           <td valign="top" width="48%">
             <!-- events list box -->
-            <% String eventHeader = "<a href='" + java.net.URLEncoder.encode(eventUrl) + "'>Recent Events</a>"; %>
-            <% String moreEventsUrl = java.net.URLEncoder.encode(eventUrl); %>
+            <% String eventHeader = "<a href='" + eventUrl + "'>Recent Events</a>"; %>
+            <% String moreEventsUrl = eventUrl; %>
             <jsp:include page="/includes/eventlist.jsp" flush="false" >
               <jsp:param name="node" value="<%=nodeId%>" />
               <jsp:param name="ipAddr" value="<%=ipAddr%>" />

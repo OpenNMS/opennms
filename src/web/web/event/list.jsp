@@ -131,8 +131,8 @@
 
 <body marginwidth="0" marginheight="0" leftmargin="0" rightmargin="0" topmargin="0">
 
-<% String breadcrumb1 = "<a href= '" + java.net.URLEncoder.encode("event/index.jsp") + "' title='" + java.net.URLEncoder.encode("Events System Page") + "'>Events</a>"; %>
-<% String breadcrumb2 = java.net.URLEncoder.encode("List"); %>
+<% String breadcrumb1 = "<a href= 'event/index.jsp' title='Events System Page'>Events</a>"; %>
+<% String breadcrumb2 = "List"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Event List" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />

@@ -59,8 +59,8 @@
 </head>
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("asset/index.jsp") + "'>Assets</a>"; %>
-<% String breadcrumb2 = java.net.URLEncoder.encode("Asset List"); %>
+<% String breadcrumb1 = "<a href='asset/index.jsp'>Assets</a>"; %>
+<% String breadcrumb2 = "Asset List"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Asset List" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />

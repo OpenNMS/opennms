@@ -57,9 +57,9 @@
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
 <% if( ipAddr == null ) { %>
-  <% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("element/index.jsp") + "'>Search</a>"; %>
-  <% String breadcrumb2 = "<a href='" + java.net.URLEncoder.encode("element/node.jsp?node=" + nodeId ) + "'>Node</a>"; %>
-  <% String breadcrumb3 = java.net.URLEncoder.encode("Rescan"); %>
+  <% String breadcrumb1 = "<a href='element/index.jsp'>Search</a>"; %>
+  <% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
+  <% String breadcrumb3 = "Rescan"; %>
   <jsp:include page="/includes/header.jsp" flush="false" >
     <jsp:param name="title" value="Rescan" />
     <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
@@ -68,10 +68,10 @@
   </jsp:include>
 <% } else { %>
   <% String intfCrumb = ""; %>
-  <% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("element/index.jsp") + "'>Search</a>"; %>
-  <% String breadcrumb2 = "<a href='" + java.net.URLEncoder.encode("element/node.jsp?node=" + nodeId ) + "'>Node</a>"; %>
-  <% String breadcrumb3 = "<a href='" + java.net.URLEncoder.encode("element/interface.jsp?node=" + nodeId + "&intf=" + ipAddr ) + "'>Interface</a>"; %>
-  <% String breadcrumb4 = java.net.URLEncoder.encode("Rescan"); %>
+  <% String breadcrumb1 = "<a href='element/index.jsp'>Search</a>"; %>
+  <% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
+  <% String breadcrumb3 = "<a href='element/interface.jsp?node=" + nodeId + "&intf=" + ipAddr  + "'>Interface</a>"; %>
+  <% String breadcrumb4 = "Rescan"; %>
   <jsp:include page="/includes/header.jsp" flush="false" >
     <jsp:param name="title" value="Rescan" />
     <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />

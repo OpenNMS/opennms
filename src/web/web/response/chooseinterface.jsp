@@ -93,9 +93,9 @@
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("report/index.jsp") + "'>Reports</a>"; %>
-<% String breadcrumb2 = "<a href='" + java.net.URLEncoder.encode("response/index.jsp") + "'>Response Time</a>"; %>
-<% String breadcrumb3 = java.net.URLEncoder.encode("Choose Interface"); %>
+<% String breadcrumb1 = "<a href='report/index.jsp'>Reports</a>"; %>
+<% String breadcrumb2 = "<a href='response/index.jsp'>Response Time</a>"; %>
+<% String breadcrumb3 = "Choose Interface"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Choose Interface" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />

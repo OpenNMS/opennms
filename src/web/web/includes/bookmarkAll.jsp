@@ -48,14 +48,14 @@ function addbookmark()
 		to = path.search("/")
 		if(to != -1)
 			path = x.substring(1, to+1)
-		javascript:window.external.AddFavorite(protocol+"//"+hostname+":" + port + "/" + path + "/" + "outage/", "Outage - OpenNMS Web Console View");
-		javascript:window.external.AddFavorite(protocol+"//"+hostname+":" + port + "/" + path + "/" + "event/", "Events - OpenNMS Web Console View");
-		javascript:window.external.AddFavorite(protocol+"//"+hostname+":" + port + "/" + path + "/" + "element/", "Element - OpenNMS Web Console View ");
-		javascript:window.external.AddFavorite(protocol+"//"+hostname+":" + port + "/" + path + "/" + "notification/", "Notification - OpenNMS Web Console View  ");
-		javascript:window.external.AddFavorite(protocol+"//"+hostname+":" + port + "/" + path + "/" + "report/", "Report - OpenNMS Web Console View ");
+		javascript:window.external.AddFavorite(protocol+"//"+hostname+":" + port + "/" + path + "/outage/", "Outage - OpenNMS Web Console View");
+		javascript:window.external.AddFavorite(protocol+"//"+hostname+":" + port + "/" + path + "/event/", "Events - OpenNMS Web Console View");
+		javascript:window.external.AddFavorite(protocol+"//"+hostname+":" + port + "/" + path + "/element/", "Element - OpenNMS Web Console View ");
+		javascript:window.external.AddFavorite(protocol+"//"+hostname+":" + port + "/" + path + "/notification/", "Notification - OpenNMS Web Console View  ");
+		javascript:window.external.AddFavorite(protocol+"//"+hostname+":" + port + "/" + path + "/report/", "Report - OpenNMS Web Console View ");
 		if(document.forms[0].role.value == "true")
 		{
-			javascript:window.external.AddFavorite(protocol+"//"+hostname+":" + port + "/" + path + "/" + "admin/", "Admin - OpenNMS Web Console View ");
+			javascript:window.external.AddFavorite(protocol+"//"+hostname+":" + port + "/" + path + "/admin/", "Admin - OpenNMS Web Console View ");
 		}
 	}
 	else if(!document.all)

@@ -63,7 +63,7 @@
 </head>
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = java.net.URLEncoder.encode("Assets"); %>
+<% String breadcrumb1 = "Assets"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Assets" />
   <jsp:param name="location" value="asset" />

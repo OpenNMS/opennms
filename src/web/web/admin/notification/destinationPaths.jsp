@@ -88,8 +88,8 @@
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("admin/index.jsp") + "'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='" + java.net.URLEncoder.encode("admin/notification/index.jsp") + "'>Configure Notifications</a>"; %>
+<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
+<% String breadcrumb2 = "<a href='admin/notification/index.jsp'>Configure Notifications</a>"; %>
 <% String breadcrumb3 = "Destination Paths"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Destination Paths" />

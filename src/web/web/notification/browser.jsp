@@ -129,8 +129,8 @@
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("notification/index.jsp") + "' title='" + java.net.URLEncoder.encode("Notice System Page") + "'>Notices</a>"; %>
-<% String breadcrumb2 = java.net.URLEncoder.encode("List"); %>
+<% String breadcrumb1 = "<a href='notification/index.jsp' title='Notice System Page'>Notices</a>"; %>
+<% String breadcrumb2 = "List"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Notice List" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />

@@ -67,8 +67,8 @@
 
 <body marginwidth="0" marginheight="0" leftmargin="0" rightmargin="0" topmargin="0">
 
-<% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("outage/index.jsp") + "'>Outages</a>"; %>
-<% String breadcrumb2 = java.net.URLEncoder.encode("Detail"); %>
+<% String breadcrumb1 = "<a href='outage/index.jsp'>Outages</a>"; %>
+<% String breadcrumb2 = "Detail"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Outage Details" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />

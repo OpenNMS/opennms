@@ -116,7 +116,7 @@
                 String outageColor = CategoryUtil.getCategoryColor( category, servicePercentage );
             %>
                 <tr>
-                  <td><a href="rtc/category.jsp?category=<%=java.net.URLEncoder.encode(categoryName)%>" title="<%=(title == null) ? categoryName : title%>"><%=categoryName%></a></td>
+                  <td><a href="rtc/category.jsp?category=<%= java.net.URLEncoder.encode(categoryName) %>" title="<%=(title == null) ? categoryName : title%>"><%=categoryName%></a></td>
                   <td bgcolor="<%=outageColor%>" align="right" title="Updated: <%=category.getLastUpdated()%>"><%=serviceDownCount%> of <%=serviceCount%></td>
                   <td bgcolor="<%=color%>" align="right" title="Updated: <%=category.getLastUpdated()%>"><b><%=CategoryUtil.valueFormat.format( category.getValue() )%>%</b></td>
                   <!-- Last updated <%=category.getLastUpdated()%> -->
@@ -125,7 +125,7 @@
             <% } else { %>
               <% notFoundCategoryCount++; %>            
               <tr>              
-                <td><a href="rtc/category.jsp?category=<%=java.net.URLEncoder.encode(categoryName)%>" title="<%=(title == null) ? categoryName : title%>"><%=categoryName%></a></td>
+                <td><a href="rtc/category.jsp?category=<%= java.net.URLEncoder.encode(categoryName) %>" title="<%=(title == null) ? categoryName : title%>"><%=categoryName%></a></td>
                 <td bgcolor="lightblue" align="right">Calculating...</td>
                 <td bgcolor="lightblue" align="right">Calculating...</td>
               </tr>            

@@ -74,8 +74,8 @@
 
 <body marginwidth="0" marginheight="0" leftmargin="0" rightmargin="0" topmargin="0">
 
-<% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("outage/index.jsp") + "' title='" + java.net.URLEncoder.encode("Outages System Page") + "'>Outages</a>"; %>
-<% String breadcrumb2 = java.net.URLEncoder.encode("List"); %>
+<% String breadcrumb1 = "<a href='outage/index.jsp' title='Outages System Page'>Outages</a>"; %>
+<% String breadcrumb2 = "List"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Outage List" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
@@ -102,7 +102,7 @@
             <%--<jsp:include page="/outage/querypanel.jsp" flush="false" />--%>
           
             <% if( outageCount > 0 ) { %>
-              <% String baseUrl = java.net.URLEncoder.encode(OutageUtil.makeLink(request, parms)); %>
+              <% String baseUrl = OutageUtil.makeLink(request, parms); %>
               <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
                 <jsp:param name="count"    value="<%=outageCount%>" />
                 <jsp:param name="baseurl"  value="<%=baseUrl%>"    />

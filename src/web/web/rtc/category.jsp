@@ -84,8 +84,8 @@
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("rtc/index.jsp") + "'>SLM</a>"; %>
-<% String breadcrumb2 = java.net.URLEncoder.encode("Category"); %>
+<% String breadcrumb1 = "<a href='rtc/index.jsp'>SLM</a>"; %>
+<% String breadcrumb2 = "Category"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Category Service Level Monitoring" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />

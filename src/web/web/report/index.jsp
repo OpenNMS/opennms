@@ -35,7 +35,7 @@
 </head>
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = java.net.URLEncoder.encode("Reports"); %>
+<% String breadcrumb1 = "Reports"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Reports" />
   <jsp:param name="location" value="report" />

@@ -36,7 +36,7 @@
 </head>
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = java.net.URLEncoder.encode("SLM"); %>
+<% String breadcrumb1 = "SLM"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Service Level Monitoring" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />

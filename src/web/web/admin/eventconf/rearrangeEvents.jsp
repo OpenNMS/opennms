@@ -87,8 +87,8 @@
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("admin/index.jsp") + "'> Admin </a>"; %>
-<% String breadcrumb2 = "<a href='" + java.net.URLEncoder.encode("admin/eventconf/list.jsp") + "'> Event Configuration </a>"; %>
+<% String breadcrumb1 = "<a href='admin/index.jsp'> Admin </a>"; %>
+<% String breadcrumb2 = "<a href='admin/eventconf/list.jsp'> Event Configuration </a>"; %>
 <% String breadcrumb3 = "Rearrange Events"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Rearrange Events" />

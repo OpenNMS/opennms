@@ -45,8 +45,8 @@
 
 <body bgcolor="white" text="#000000" link="#0000cc" vlink="#800080" alink="#ff0000" marginwidth="0" marginheight="0" LEFTMARGIN="0" rightmargin="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("outage/index.jsp") + "'>Outages</a>"; %>
-<% String breadcrumb2 = java.net.URLEncoder.encode("Current By Node"); %>
+<% String breadcrumb1 = "<a href='outage/index.jsp'>Outages</a>"; %>
+<% String breadcrumb2 = "Current By Node"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Current Outages" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />

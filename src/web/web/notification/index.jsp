@@ -35,7 +35,7 @@
 </head>
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = java.net.URLEncoder.encode("Notification"); %>
+<% String breadcrumb1 = "Notification"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Notification" />
   <jsp:param name="location" value="notification" />
@@ -53,7 +53,7 @@
       <h3>Notification queries</h3>
 
       <p>
-        <a HREF="notification/browse?akctype=unack&filter=<%=java.net.URLEncoder.encode("user="+request.getRemoteUser())%>">Check your outstanding notices</a>
+        <a HREF="notification/browse?akctype=unack&filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check your outstanding notices</a>
       </p>
       <p>
         <a HREF="notification/browse?acktype=unack">View all outstanding notices</a>

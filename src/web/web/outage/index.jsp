@@ -36,7 +36,7 @@
 </head>
 <body marginwidth="0" marginheight="0" leftmargin="0" rightmargin="0" topmargin="0">
 
-<% String breadcrumb1 = java.net.URLEncoder.encode("Outages"); %>
+<% String breadcrumb1 = "Outages"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Outages" />
   <jsp:param name="location" value="outage" />
