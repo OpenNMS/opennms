@@ -268,6 +268,11 @@ final class RescanProcessor
 					currNodeEntry.setSystemContact(str);
 			}
 		}
+
+		// Currently, we do not use the ParentId except in mapping. Unforunately, this is never
+		// set in the currNodeEntry so it gets reset here. As a workaround, setting it to the old value.
+
+		currNodeEntry.updateParentId(dbNodeEntry.getParentId());
 		
 		// Update any fields which have changed
 		if (log.isDebugEnabled())
