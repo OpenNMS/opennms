@@ -5,53 +5,52 @@
 
 set -e
 
-pgrunning=1
+PG_CTL=/usr/lib/postgresql/bin/pg_ctl
+DATA_DIR=/var/lib/postgres/data
+PGHBA_CONF=/etc/postgresql/pg_hba.conf
+
+drop_database() {
+    if [ -x /usr/lib/postgresql/bin/dropdb ]; then
+        echo -n "- removing the opennms database tables..."
+	su - postgres -c '/usr/lib/postgresql/bin/dropdb "opennms"' \
+	    >/dev/null || :
+	echo " done."
+    fi
+}
+
+remove_acls() {
+    echo -n "- removing opennms database access controls..."
+    TMPFILE=`mktemp /etc/postgresql/pg_hba.conf.XXXXXX`
+    grep -v "^host.*opennms" $PGHBA_CONF > $TMPFILE
+    mv $TMPFILE $PGHBA_CONF
+    grep -v "^local all trust" $PGHBA_CONF > $TMPFILE
+    mv $TMPFILE $PGHBA_CONF
+    chmod 644 $PGHBA_CONF
+    chown postgres:postgres $PGHBA_CONF
+    echo " done."
+}
 
 case "$1" in
     purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
-	if [ "$1" = "purge" ]; then
-		# Start up postgres if needed
-		if [ ! -f /var/run/postgresql/.s.PGSQL.5432.lock ]; then
-			pgrunning=0
-			invoke-rc.d postgresql start
-		fi
-
-		if [ -x /usr/lib/postgresql/bin/dropdb ]; then
-			echo -n "- removing the opennms database tables..."
-			su - postgres -c \
-				'/usr/lib/postgresql/bin/dropdb "opennms"' \
-				> /dev/null || :
-			echo " done."
-		fi
-
-		echo -n "- removing opennms database access controls..."
-		TMPFILE=`mktemp /etc/postgresql/pg_hba.conf.XXXXXX`
-		grep -v "^host.*opennms" /etc/postgresql/pg_hba.conf > $TMPFILE
-		mv $TMPFILE /etc/postgresql/pg_hba.conf
-		grep -v "^local template1 trust" \
-			/etc/postgresql/pg_hba.conf > $TMPFILE
-		mv $TMPFILE /etc/postgresql/pg_hba.conf
-		chmod 644 /etc/postgresql/pg_hba.conf
-		chown postgres:postgres /etc/postgresql/pg_hba.conf
-		echo " done."
-
-		# Not used anymore
-		#echo -n "- removing opennms database user..."
-		#su - postgres -c '/usr/bin/dropuser root'
-		#echo " done."
-
-		if [ $pgrunning -eq 0 ]; then
-			invoke-rc.d postgresql stop || :
-		else
-			invoke-rc.d postgresql restart || :
-		fi
-	fi
-	;;
+        if [ "$1" = "purge" ]; then
+	    if $PG_CTL -D $DATA_DIR status &> /dev/null ; then
+	        drop_database
+		remove_acls
+		$PG_CTL -D $DATA_DIR reload &> /dev/null
+            else
+	        invoke-rc.d postgresql start
+		drop_database
+		remove_acls
+		invoke-rc.d postgresql stop
+	    fi
+	    
+        fi
+        ;;
 
     *)
 	echo "postrm called with unknown argument \`$1'" >&2
 	exit 0
-	;;
+        ;;
 esac
 
 # dh_installdeb will replace this with shell code automatically
