@@ -47,6 +47,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.eventd.db.Constants;
 import org.opennms.netmgt.utils.Querier;
+import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.netmgt.utils.Updater;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -189,7 +190,8 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
                 "       answeredBy   varchar(256)," + 
                 "       nodeID      integer," + 
                 "       interfaceID  varchar(16)," + 
-                "       serviceID    integer," + 
+                "       serviceID    integer," +
+                "       queueID      varchar(256), " +
                 "       eventID      integer," + 
                 "       eventUEI     varchar(256) not null," + 
                 "                   constraint pk_notifyID primary key (notifyID)," + 
@@ -312,21 +314,6 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
         return "select next value for outageNxtId from seqQueryTable";
     }
     
-    class SingleResultQuerier extends Querier {
-        SingleResultQuerier(MockDatabase db, String sql) {
-            super(db, sql);
-        }
-        
-        private Object m_result;
-        
-        public Object getResult() { return m_result; }
-        
-        public void processRow(ResultSet rs) throws SQLException {
-            m_result = rs.getObject(1);
-        }
-        
-    };
-
     public Integer getNextOutageId() {
         return getNextId(getNextOutageIdStatement());
         
@@ -569,6 +556,21 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     public void acknowledgeNoticesForEvent(Event e) {
         Object[] values = { new Timestamp(System.currentTimeMillis()), new Integer(e.getDbid()) };
         update ("update notifications set respondTime = ? where eventID = ? and respondTime is null", values);
+    }
+
+    /**
+     * @param event
+     * @return
+     */
+    public Collection findNoticesForEvent(Event event) {
+        final List notifyIds = new LinkedList();
+        Querier loadExisting = new Querier(this, "select notifyId from notifications where eventID = ?") {
+            public void processRow(ResultSet rs) throws SQLException {
+                notifyIds.add(rs.getObject(1));
+            }
+        };
+        loadExisting.execute(new Integer(event.getDbid()));
+        return notifyIds;
     }
     
 

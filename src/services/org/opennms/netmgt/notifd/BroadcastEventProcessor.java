@@ -45,6 +45,7 @@
 package org.opennms.netmgt.notifd;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -76,6 +77,7 @@ import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.eventd.EventUtil;
+import org.opennms.netmgt.utils.RowProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
 
@@ -190,8 +192,12 @@ final class BroadcastEventProcessor implements EventListener {
                     try {
                         ThreadCategory.getInstance(getClass()).debug("Acknowledging event " + curAck.getAcknowledge() + " " + event.getNodeid() + ":" + event.getInterface() + ":" + event.getService());
                         Collection notifIDs = getNotificationManager().acknowledgeNotice(event, curAck.getAcknowledge(), curAck.getMatch());
-                        if (curAck.getNotify()) {
-                            sendResolvedNotifications(notifIDs, event, curAck.getAcknowledge(), curAck.getMatch());
+                        try {
+                            if (curAck.getNotify()) {
+                                sendResolvedNotifications(notifIDs, event, curAck.getAcknowledge(), curAck.getMatch());
+                            }
+                        } catch (Exception e) {
+                            ThreadCategory.getInstance(getClass()).error("Failed to send resolution notifications.", e);
                         }
                     } catch (SQLException e) {
                         ThreadCategory.getInstance(getClass()).error("Failed to auto acknowledge notice.", e);
@@ -204,7 +210,61 @@ final class BroadcastEventProcessor implements EventListener {
         }
     }
 
-    private void sendResolvedNotifications(Collection notifIDs, Event event, String acknowledge, String[] match) {
+    private void sendResolvedNotifications(Collection notifIDs, Event event, String acknowledge, String[] match) throws Exception {
+        for (Iterator it = notifIDs.iterator(); it.hasNext();) {
+            int notifId = ((Integer) it.next()).intValue();
+            final Map parmMap = rebuildParameterMap(notifId);
+            
+            String queueID = getNotificationManager().getQueueForNotification(notifId);
+            
+            
+            final Map userNotifitcations = new HashMap();
+            RowProcessor acknowledgeNotification = new RowProcessor() {
+                public void processRow(ResultSet rs) throws SQLException {
+                    String userID = rs.getString("userID");
+                    String cmd = rs.getString("media");
+                    List cmdList = (List)userNotifitcations.get(userID);
+                    if (cmdList == null) {
+                        cmdList = new ArrayList();
+                        userNotifitcations.put(userID, cmdList);
+                    }
+                    cmdList.add(cmd);
+                }
+            };
+            getNotificationManager().forEachUserNotification(notifId, acknowledgeNotification);
+            
+            for (Iterator userIt = userNotifitcations.keySet().iterator(); userIt.hasNext();) {
+                String userID = (String) userIt.next();
+                List cmdList = (List)userNotifitcations.get(userID);
+                String[] cmds = (String[]) cmdList.toArray(new String[cmdList.size()]);
+                sendResolvedNotificationsToUser(queueID, userID, cmds, parmMap);
+            }
+            
+        }
+    }
+
+    protected void sendResolvedNotificationsToUser(String queueID, String targetName, String[] commands, Map params) throws Exception {
+        int noticeId = -1;
+        NoticeQueue noticeQueue = (NoticeQueue) m_noticeQueues.get(queueID);
+        long now = System.currentTimeMillis();
+        
+        if (m_notifd.getUserManager().hasUser(targetName)) {
+            NotificationTask newTask = makeUserTask(now, params, noticeId, targetName, commands, null);
+            
+            if (newTask != null) {
+                noticeQueue.put(new Long(now), newTask);
+            }
+        } else if (targetName.indexOf("@") > -1) {
+            NotificationTask newTask = makeEmailTask(now, params, noticeId, targetName, commands, null);
+            
+            if (newTask != null) {
+                noticeQueue.put(new Long(now), newTask);
+            }
+        } else {
+            Category log = ThreadCategory.getInstance(getClass());
+            log.warn("Unrecognized target '" + targetName + "' contained in destinationPaths.xml. Please check the configuration.");
+        }
+
         
     }
 
@@ -343,7 +403,7 @@ final class BroadcastEventProcessor implements EventListener {
                         }
 
                         try {
-                            getNotificationManager().insertNotice(noticeId, paramMap);
+                            getNotificationManager().insertNotice(noticeId, paramMap, queueID);
                         } catch (SQLException e) {
                             log.error("Failed to enter notification into database, exiting this notification", e);
                             return;
@@ -444,7 +504,7 @@ final class BroadcastEventProcessor implements EventListener {
     /**
      * 
      */
-    private Map buildParameterMap(Notification notification, Event event, int noticeId) {
+    Map buildParameterMap(Notification notification, Event event, int noticeId) {
         Map paramMap = new HashMap();
         Parameter[] parameters = notification.getParameter();
         for (int i = 0; i < parameters.length; i++) {
@@ -646,6 +706,15 @@ final class BroadcastEventProcessor implements EventListener {
      */
     public String getName() {
         return "Notifd:BroadcastEventProcessor";
+    }
+
+    /**
+     * @param i
+     * @return
+     */
+    public Map rebuildParameterMap(int notifId) throws Exception {
+        return getNotificationManager().rebuildParamterMap(notifId);
+
     }
 
 } // end class

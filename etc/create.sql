@@ -675,6 +675,7 @@ create table notifications (
        			constraint fk_nodeID7 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE,
        interfaceID  varchar(16),
        serviceID    integer,
+       queueID		varchar(256),
        eventID      integer,
        			constraint fk_eventID3 foreign key (eventID) references events (eventID) ON DELETE CASCADE,
        eventUEI     varchar(256) not null

@@ -273,7 +273,7 @@ public class PollablesTest extends TestCase {
         final InitCause causeSetter = new InitCause();
         
         Querier querier = new Querier(db, sql) {
-            protected void processRow(ResultSet rs) throws SQLException {
+            public void processRow(ResultSet rs) throws SQLException {
                 int nodeId = rs.getInt("nodeId");
                 String ipAddr = rs.getString("ipAddr");
                 String serviceName = rs.getString("serviceName");

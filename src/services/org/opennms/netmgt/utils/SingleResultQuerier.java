@@ -31,44 +31,23 @@
 //
 package org.opennms.netmgt.utils;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.opennms.netmgt.config.DbConnectionFactory;
 
 
-public class Querier extends JDBCTemplate implements RowProcessor {
-     private int m_count;
-    private RowProcessor m_rowProcessor;
-     public Querier(DbConnectionFactory db, String sql, RowProcessor rowProcessor) {
-         super(db, sql);
-         if (rowProcessor == null)
-             m_rowProcessor = this;
-         else 
-             m_rowProcessor = rowProcessor;
-         m_count = 0;
-     }
-     
-     public Querier(DbConnectionFactory db, String sql) {
-         this(db, sql, null);
-     }
-     
-     public int getCount() {
-         return m_count;
-     }
-     
-     protected void executeStmt(PreparedStatement stmt) throws SQLException {
-         //System.err.println("Executing "+stmt);
-        ResultSet rs = stmt.executeQuery();
-         m_count = 0;
-         while (rs.next()) {
-             m_rowProcessor.processRow(rs);
-             m_count++;
-         }
+public class SingleResultQuerier extends Querier {
+    public SingleResultQuerier(DbConnectionFactory db, String sql) {
+        super(db, sql);
     }
-
+    
+    private Object m_result;
+    
+    public Object getResult() { return m_result; }
+    
     public void processRow(ResultSet rs) throws SQLException {
+        m_result = rs.getObject(1);
     }
-
- }
+    
+}

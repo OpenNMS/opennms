@@ -34,9 +34,16 @@
 package org.opennms.netmgt.notifd;
 
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -46,6 +53,7 @@ import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.groups.Group;
+import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.mock.MockDatabase;
@@ -64,6 +72,7 @@ import org.opennms.netmgt.notifd.mock.MockNotificationManager;
 import org.opennms.netmgt.notifd.mock.MockNotificationStrategy;
 import org.opennms.netmgt.notifd.mock.MockUserManager;
 import org.opennms.netmgt.notifd.mock.NotificationAnticipator;
+import org.opennms.netmgt.utils.RowProcessor;
 import org.opennms.netmgt.xml.event.Event;
 /**
  * @author david
@@ -400,10 +409,10 @@ public class NotifdTest extends TestCase {
         m_notifd.start();
         
         Date downDate = new Date();
-        anticipateNotificationsForGroup("node 1 down.", "InitialGroup", downDate, 0);
+        anticipateNotificationsForGroup("node 2 down.", "InitialGroup", downDate, 0);
 
         //bring node down now
-        m_eventMgr.sendEventToListeners(m_network.getNode(1).createDownEvent(downDate));
+        m_eventMgr.sendEventToListeners(m_network.getNode(2).createDownEvent(downDate));
 
         m_anticipator.waitForAnticipated(2000);
         
@@ -659,6 +668,67 @@ public class NotifdTest extends TestCase {
 
         sleep(1000);
         
+        Collection notifIds = m_db.findNoticesForEvent(event);
+        
+        Notification[] notification = m_notificationManager.getNotifForEvent(event);
+        
+        int index = 0;
+        for (Iterator it = notifIds.iterator(); it.hasNext(); index++) {
+            Integer notifId = (Integer) it.next();
+            
+            Map originalMap = m_notifd.getBroadcastEventProcessor().buildParameterMap(notification[index], event, notifId.intValue());
+            
+            Map resolutionMap = new HashMap(originalMap);
+            resolutionMap.put(NotificationManager.PARAM_SUBJECT, "RESOLVED: "+resolutionMap.get(NotificationManager.PARAM_SUBJECT));
+           
+            
+            Map rebuiltMap = m_notifd.getBroadcastEventProcessor().rebuildParameterMap(notifId.intValue());
+            
+            assertEquals(resolutionMap, rebuiltMap);
+            
+        }
+    }
+    
+    public void testGetUsersNotified() throws Exception {
+        MockInterface iface = m_network.getInterface(1, "192.168.1.1");
+
+        Date downDate = new Date();
+        long finishedDowns = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "InitialGroup", downDate, 0);
+
+        //bring node down now
+        Event event = iface.createDownEvent(downDate);
+        m_eventMgr.sendEventToListeners(event);
+
+        sleep(1000);
+        
+        Collection expectedResults = new LinkedList();
+        Collection users = getUsersInGroup("InitialGroup");
+        for (Iterator userIt = users.iterator(); userIt.hasNext();) {
+            String userID = (String) userIt.next();
+            List cmdList = new LinkedList();
+            cmdList.add(userID);
+            cmdList.add("mockNotifier");
+            expectedResults.add(cmdList);
+        }
+        
+        Collection notifIds = m_db.findNoticesForEvent(event);
+        
+        for (Iterator notifIt = notifIds.iterator(); notifIt.hasNext();) {
+            Integer notifId = (Integer) notifIt.next();
+            
+            final Collection actualResults = new LinkedList();
+            RowProcessor rp = new RowProcessor() {
+                public void processRow(ResultSet rs) throws SQLException {
+                    List cmdList = new LinkedList();
+                    cmdList.add(rs.getString("userID"));
+                    cmdList.add(rs.getString("media"));
+                    actualResults.add(cmdList);
+                }
+            };
+            m_notificationManager.forEachUserNotification(notifId.intValue(), rp);
+            
+            assertEquals(expectedResults, actualResults);
+        }
     }
     
     private long anticipateNotificationsForGroup(String subject, String groupName, Date startTime, long interval) throws Exception {
@@ -681,6 +751,13 @@ public class NotifdTest extends TestCase {
             expectedTime += interval;
         }
         return expectedTime-interval;
+    }
+    
+    private Collection getUsersInGroup(String groupName) throws Exception {
+        Group group = m_groupManager.getGroup(groupName);
+        String[] users = group.getUser();
+        return Arrays.asList(users);
+        
     }
 
     private void verifyAnticipated(int waitTime) {

@@ -355,7 +355,7 @@ public final class Poller implements PausableFiber {
         
         
         Querier querier = new Querier(m_dbConnectionFactory, sql) {
-            protected void processRow(ResultSet rs) throws SQLException {
+            public void processRow(ResultSet rs) throws SQLException {
                 scheduleService(rs.getInt("nodeId"), rs.getString("ipAddr"), rs.getString("serviceName"), 
                                 (Number)rs.getObject("svcLostEventId"), rs.getTimestamp("ifLostService"), 
                                 rs.getString("svcLostEventUei"));

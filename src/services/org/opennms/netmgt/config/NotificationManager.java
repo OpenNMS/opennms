@@ -64,6 +64,9 @@ import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Notifications;
 import org.opennms.netmgt.filter.Filter;
 import org.opennms.netmgt.filter.FilterParseException;
+import org.opennms.netmgt.utils.Querier;
+import org.opennms.netmgt.utils.RowProcessor;
+import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -315,7 +318,7 @@ public abstract class NotificationManager {
      * to by any member of the group the page was sent to.
      */
     public boolean noticeOutstanding(int noticeId) throws IOException, MarshalException, ValidationException {
-        boolean response = false;
+        boolean outstanding = false;
     
         Connection connection = null;
         try {
@@ -335,7 +338,7 @@ public abstract class NotificationManager {
             }
     
             if (count == 0) {
-                response = true;
+                outstanding = true;
             }
     
             statement.close();
@@ -351,7 +354,7 @@ public abstract class NotificationManager {
             }
         }
     
-        return response;
+        return outstanding;
     }
     /**
      * 
@@ -491,6 +494,7 @@ public abstract class NotificationManager {
      * 
      */
     public void updateNoticeWithUserInfo(String userId, int noticeId, String media, String contactInfo) throws SQLException {
+        if (noticeId < 0) return;
         Connection connection = null;
         try {
             connection = getConnection();
@@ -518,12 +522,13 @@ public abstract class NotificationManager {
     /**
      * This method inserts a row into the notifications table in the database.
      * This row indicates that the page has been sent out.
+     * @param queueID
      */
-    public void insertNotice(int notifyId, Map params) throws SQLException {
+    public void insertNotice(int notifyId, Map params, String queueID) throws SQLException {
         Connection connection = null;
         try {
             connection = getConnection();
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO notifications (textmsg, numericmsg, notifyid, pagetime, nodeid, interfaceid, serviceid, eventid, eventuei, subject) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO notifications (textmsg, numericmsg, notifyid, pagetime, nodeid, interfaceid, serviceid, eventid, eventuei, subject, queueID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
             // notifications textMsg field
             statement.setString(1, (String) params.get(NotificationManager.PARAM_TEXT_MSG));
@@ -567,8 +572,11 @@ public abstract class NotificationManager {
     
             statement.setString(9, (String) params.get("eventUEI"));
             
-            // notifications textMsg field
-            statement.setString(1, (String) params.get(NotificationManager.PARAM_SUBJECT));
+            // notifications subject field
+            statement.setString(10, (String) params.get(NotificationManager.PARAM_SUBJECT));
+            
+            // the queue this will be sent on
+            statement.setString(11, queueID);
     
             statement.executeUpdate();
             statement.close();
@@ -766,4 +774,45 @@ public abstract class NotificationManager {
      */
     protected abstract void update() throws IOException, MarshalException, ValidationException;
 
+    /**
+     * @param notifId
+     */
+    public Map rebuildParamterMap(int notifId) throws Exception {
+        final Map parmMap = new HashMap();
+        Querier querier = new Querier(m_dbConnectionFactory, "select notifications.*, service.* from notifications left outer join service on notifications.serviceID = service.serviceID  where notifyId = ?") {
+            public void processRow(ResultSet rs) throws SQLException {
+                parmMap.put(NotificationManager.PARAM_TEXT_MSG, rs.getObject("textMsg"));
+                parmMap.put(NotificationManager.PARAM_NUM_MSG, rs.getObject("numericMsg"));
+                parmMap.put(NotificationManager.PARAM_SUBJECT, "RESOLVED: "+rs.getObject("subject"));
+                parmMap.put(NotificationManager.PARAM_NODE, rs.getObject("nodeID").toString());
+                parmMap.put(NotificationManager.PARAM_INTERFACE, rs.getObject("interfaceID"));
+                parmMap.put(NotificationManager.PARAM_SERVICE, rs.getObject("serviceName"));
+                parmMap.put("noticeid", rs.getObject("notifyID").toString());
+                parmMap.put("eventID", rs.getObject("eventID").toString());
+                parmMap.put("eventUEI", rs.getObject("eventUEI"));
+
+            }
+        };
+        querier.execute(new Integer(notifId));
+        return parmMap;
+    }
+
+    /**
+     * @param notifId
+     * @return
+     */
+    public void forEachUserNotification(int notifId, RowProcessor rp) {
+        Querier querier = new Querier(m_dbConnectionFactory, "select * from usersNotified where notifyId = ?", rp);
+        querier.execute(new Integer(notifId));
+    }
+
+    /**
+     * @param notifId
+     * @return
+     */
+    public String getQueueForNotification(int notifId) {
+        SingleResultQuerier querier = new SingleResultQuerier(m_dbConnectionFactory, "select queueID from notifications where notifyId = ?");
+        querier.execute(new Integer(notifId));
+        return (String)querier.getResult();
+    }
 }
