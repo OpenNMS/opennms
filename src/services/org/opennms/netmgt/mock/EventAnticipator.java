@@ -50,7 +50,7 @@ public class EventAnticipator {
     /**
      * Need this class because Event doesn't properly implement hashCode
      */
-    static class EventWrapper {
+    protected static class EventWrapper {
         Event m_event;
 
         EventWrapper(Event event) {
@@ -78,14 +78,6 @@ public class EventAnticipator {
     /**
      */
     public EventAnticipator() {
-    }
-
-    /**
-     * @param service
-     */
-    public void add(MockElement element) {
-        // TODO Auto-generated method stub
-
     }
 
     /**
@@ -119,14 +111,6 @@ public class EventAnticipator {
         return events;
     }
 
-    /**
-     * @param service
-     */
-    public void remove(MockElement element) {
-        // TODO Auto-generated method stub
-
-    }
-
     public void reset() {
         m_anticipatedEvents = new ArrayList();
         m_unanticipatedEvents = new ArrayList();
@@ -158,6 +142,12 @@ public class EventAnticipator {
             waitTime -= (now - start);
         }
         return getAnticipatedEvents();
+    }
+
+    /**
+     * @param event
+     */
+    public void eventProcessed(Event event) {
     }
 
 }

@@ -40,14 +40,13 @@ import java.util.Date;
 import junit.framework.TestCase;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.OutageManagerConfig;
-import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
+import org.opennms.netmgt.mock.MockOutageConfig;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.MockVisitor;
@@ -62,26 +61,6 @@ public class OutageTest extends TestCase {
     private MockDatabase m_db;
     private MockEventIpcManager m_eventMgr;
     private boolean m_started = false;
-    
-    private class MockOutageConfig implements OutageManagerConfig {
-        
-        private String m_getNextOutageID;
-        public boolean deletePropagation() {
-            return true;
-        }
-        public String getGetNextOutageID() {
-            return m_getNextOutageID;
-        }
-        public int getWriters() {
-            return 1;
-        }
-        /**
-         * @param nextOutageIdStatement
-         */
-        public void setGetNextOutageID(String nextOutageIdStatement) {
-            m_getNextOutageID = nextOutageIdStatement;
-        }
-    }
     
     protected void setUp() throws Exception {
         MockUtil.setupLogging();
@@ -106,15 +85,7 @@ public class OutageTest extends TestCase {
         m_db.populate(m_network);
         
         m_eventMgr = new MockEventIpcManager();
-
-        EventListener eventWriter = new EventListener() {
-            public String getName() { return "EventWriter"; }
-            
-            public void onEvent(Event e) {
-                m_db.writeEvent(e);
-            }
-        };
-        m_eventMgr.addEventListener(eventWriter);
+        m_eventMgr.setEventWriter(m_db);
         
         MockOutageConfig config = new MockOutageConfig();
         config.setGetNextOutageID(m_db.getNextOutageIdStatement());
@@ -133,14 +104,18 @@ public class OutageTest extends TestCase {
     }
 
     protected void tearDown() throws Exception {
-        if (m_started) {
-            m_outageMgr.stop();
-        }
+        stopOutageMgr();
         sleep(100);
         assertTrue(MockUtil.noWarningsOrHigherLogged());
         m_db.drop();
     }
     
+    private void stopOutageMgr() {
+        if (m_started) {
+            m_outageMgr.stop();
+        }
+    }
+
     class OutageChecker extends Querier { 
         private Event m_lostSvcEvent;
         private Timestamp m_lostSvcTime;

@@ -78,7 +78,7 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
         m_currentPkg.addDowntime(downtime);
     }
 
-    public void addOutage(String outageName, long begin, long end, String ipAddr) {
+    public void addScheduledOutage(String outageName, long begin, long end, String ipAddr) {
         Outage outage = new Outage();
         outage.setName(outageName);
 

@@ -79,13 +79,19 @@ public class MockEventIpcManager implements EventIpcManager {
     }
 
     private EventAnticipator m_anticipator;
+    
+    private EventWriter m_eventWriter = new EventWriter() {
+        public void writeEvent(Event e) {
+            
+        }
+    };
 
     private List m_listeners = new ArrayList();
 
     public MockEventIpcManager() {
         m_anticipator = new EventAnticipator();
     }
-
+    
     public void addEventListener(EventListener listener) {
         m_listeners.add(new ListenerKeeper(listener, null));
     }
@@ -99,12 +105,24 @@ public class MockEventIpcManager implements EventIpcManager {
     }
 
     public void broadcastNow(Event event) {
-        // TODO Auto-generated method stub
-
+        MockUtil.printEvent("Sending", event);
+        Iterator it = m_listeners.iterator();
+        while (it.hasNext()) {
+            ListenerKeeper k = (ListenerKeeper) it.next();
+            k.sendEventIfAppropriate(event);
+        }
+    }
+    
+    public void setEventWriter(EventWriter eventWriter) {
+        m_eventWriter = eventWriter;
     }
 
     public EventAnticipator getEventAnticipator() {
         return m_anticipator;
+    }
+    
+    public void setEventAnticipator(EventAnticipator anticipator) {
+        m_anticipator = anticipator;
     }
 
     public void removeEventListener(EventListener listener) {
@@ -123,17 +141,16 @@ public class MockEventIpcManager implements EventIpcManager {
      * @param event
      */
     public void sendEventToListeners(Event event) {
-        MockUtil.printEvent("Sending", event);
-        Iterator it = m_listeners.iterator();
-        while (it.hasNext()) {
-            ListenerKeeper k = (ListenerKeeper) it.next();
-            k.sendEventIfAppropriate(event);
-        }
+        m_eventWriter.writeEvent(event);
+        broadcastNow(event);
     }
 
     public void sendNow(Event event) {
         MockUtil.printEvent("Received", event);
+        m_eventWriter.writeEvent(event);
         m_anticipator.eventReceived(event);
+        // we should broadcast this as well
+        m_anticipator.eventProcessed(event);
     }
 
     public void sendNow(Log eventLog) {

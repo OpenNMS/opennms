@@ -1230,7 +1230,7 @@ OpenNMS as part of the post-install.
    </classpath>
   </javac>
 </target>
-<target name="test" depends="prep, java.compile, junit.compile">
+<target name="test" depends="prep, java.compile, junit.compile" description="Run all the unit tests">
   <delete dir="${test.xml.dir}"/>
   <mkdir dir="${test.xml.dir}"/>
   <junit errorProperty="test.failed" failureProperty="test.failed">
@@ -1251,6 +1251,7 @@ OpenNMS as part of the post-install.
          </fileset>
      </batchtest>
      <sysproperty key="mock.logLevel" value="WARN" />
+     <sysproperty key="mock.debug" value="false" />
   </junit>
   <fail message="Tests failed! Check test reports." if="test.failed" />
 </target>

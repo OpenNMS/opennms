@@ -533,8 +533,8 @@ public class MockNetworkTest extends TestCase {
         long now = System.currentTimeMillis();
         long tenMinutes = 600000L;
 
-        m_pollerConfig.addOutage("outage1", now - tenMinutes, now + tenMinutes, "192.168.1.1");
-        m_pollerConfig.addOutage("outage2", now - tenMinutes, now, "192.168.1.2");
+        m_pollerConfig.addScheduledOutage("outage1", now - tenMinutes, now + tenMinutes, "192.168.1.1");
+        m_pollerConfig.addScheduledOutage("outage2", now - tenMinutes, now, "192.168.1.2");
 
         Package pkg = m_pollerConfig.getPackage("TestPackage");
         assertNotNull(pkg);

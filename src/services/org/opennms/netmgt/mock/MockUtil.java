@@ -184,14 +184,22 @@ public class MockUtil {
             PropertyConfigurator.configure(logConfig);
         }
     }
+    
+    static boolean printEnabled() {
+        return "true".equals(System.getProperty("mock.debug", "true"));
+    }
 
     public static void printEvent(String prefix, Event event) {
+        if (!printEnabled()) return;
+        
         if (prefix == null)
             prefix = "Event";
         System.err.println(prefix + ": " + event.getUei() + "/" + event.getNodeid() + "/" + event.getInterface() + "/" + event.getService());
     }
 
     public static void printEvents(String prefix, Collection events) {
+        if (!printEnabled()) return ;
+        
         Iterator it = events.iterator();
         while (it.hasNext()) {
             printEvent(prefix, (Event) it.next());
@@ -210,6 +218,14 @@ public class MockUtil {
     
     public static boolean noWarningsOrHigherLogged() {
         return Level.INFO.isGreaterOrEqual(m_logLevel);
+    }
+
+    /**
+     * @param string
+     */
+    public static void println(String string) {
+        if (MockUtil.printEnabled())
+            System.err.println(string);
     }
 
 }

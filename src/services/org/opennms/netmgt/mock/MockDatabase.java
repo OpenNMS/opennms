@@ -50,7 +50,7 @@ import org.opennms.netmgt.xml.event.Event;
  * testing.  Can be populated from a MockNetwork
  * @author brozow
  */
-public class MockDatabase implements DbConnectionFactory {
+public class MockDatabase implements DbConnectionFactory, EventWriter {
 
 
     private Server m_server;
@@ -65,6 +65,7 @@ public class MockDatabase implements DbConnectionFactory {
     }
     
     public void create() {
+        update("shutdown");
         update("create table node (" +
                    "nodeID integer, " +
                    "dpName      varchar(12)," +
@@ -358,6 +359,9 @@ public class MockDatabase implements DbConnectionFactory {
      */
     public void writeEvent(Event e) {
         Integer eventId = getNextEventId();
+        
+        if (e.getCreationTime() == null) 
+            e.setCreationTime(e.getTime());
 
         Object[] values = {
                 eventId,
