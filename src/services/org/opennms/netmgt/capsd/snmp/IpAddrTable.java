@@ -575,6 +575,7 @@ public class IpAddrTable implements SnmpHandler {
             if (ndx != null) {
                 // extract the addresses
                 //
+                ThreadCategory.getInstance(IpAddrTable.class).debug("Running new and improved (read working) getIpAddresses");
                 SnmpIPAddress ifAddr = (SnmpIPAddress) entry.get(IpAddrTableEntry.IP_ADDR_ENT_ADDR);
                 if (ifAddr != null) {
                     try {
