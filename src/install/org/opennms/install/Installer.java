@@ -176,14 +176,15 @@ public class Installer {
         if (!m_update_database && !m_do_inserts && !m_update_iplike && !m_update_unicode && m_tomcat_conf == null && !m_install_webapp) {
             throw new Exception("Nothing to do.\n" + m_required_options + "\nUse '-h' for help.");
         }
-
-        // Don't bother checking the Java version. Leave it up to runjava.
+            
+        // Don't bother checking the Java version.  Leave it up to runjava.
         // checkJava();
         // XXX Check Tomcat version?
 
         if (m_update_database || m_update_iplike || m_update_unicode || m_do_inserts) {
             databaseConnect("template1");
             databaseCheckVersion();
+            databaseCheckLanguage();
         }
 
         printDiagnostics();
@@ -205,7 +206,7 @@ public class Installer {
 
         if (m_update_database || m_update_iplike || m_update_unicode || m_do_inserts) {
             databaseDisconnect();
-
+            
             databaseConnect(m_database);
         }
 
@@ -216,10 +217,10 @@ public class Installer {
             // createFunctions(m_cfunctions); // Unused, not in create.sql
             // createLanguages(); // Unused, not in create.sql
             // createFunctions(m_functions); // Unused, not in create.sql
-
+            
             fixData();
         }
-
+          
         if (m_do_inserts) {
             insertData();
         }
@@ -235,16 +236,16 @@ public class Installer {
         if (m_tomcat_conf != null) {
             updateTomcatConf();
         }
-
+       
         if (m_update_iplike) {
             updateIplike();
         }
 
         if (m_update_database) {
             // XXX should we be using createFunctions and createLanguages
-            // instead?
+            //     instead?
             updatePlPgsql();
-
+       
             // XXX should we be using createFunctions instead?
             addStoredProcedures();
         }
@@ -556,6 +557,8 @@ public class Installer {
     }
 
     public void databaseCheckVersion() throws Exception {
+        m_out.print("- checking database version... ");
+
         Statement st = m_dbconnection.createStatement();
         ResultSet rs = st.executeQuery("SELECT version()");
         if (!rs.next()) {
@@ -572,16 +575,79 @@ public class Installer {
         if (!m.find()) {
             throw new Exception("Could not parse version number out of " + "version string: " + versionString);
         }
-        String version = m.group(1);
-        m_pg_version = Float.parseFloat(version);
+        m_pg_version = Float.parseFloat(m.group(1));
 
         if (m_pg_version < POSTGRES_MIN_VERSION) {
-            throw new Exception("Unsupported database version \"" + m_pg_version + "\" -- you need at least " + POSTGRES_MIN_VERSION);
+           throw new Exception("Unsupported database version \"" + m_pg_version + "\" -- you need at least " + POSTGRES_MIN_VERSION);
         }
 
         if (m_pg_version >= 7.3) {
             m_cascade = " CASCADE";
         }
+
+        m_out.println(Float.toString(m_pg_version));
+        m_out.println("  - Full version string: " + versionString);
+    }
+
+    public void databaseCheckLanguage() throws Exception {
+        /*
+         * Don't bother checking if the database version is 7.4 or greater
+         * and just return without throwing an exception.  We can (and do)
+         * use SQL state checks instead of matching on the exception text,
+         * so the language of server error messages does not matter.
+         */
+        if (m_pg_version >= 7.4) {
+            return;
+        }
+
+        /*
+         * Use column names that should never exist and also encode the
+         * current time, in hopes that this should never actually succeed.
+         */
+        String timestamp = Long.toString(System.currentTimeMillis());
+        String bogus_query = "SELECT bogus_column_" + timestamp + " " +
+            "FROM bogus_table_" + timestamp + " " +
+            "WHERE another_bogus_column_" + timestamp + " IS NULL";
+
+        // Expected error: "ERROR:  relation "bogus_table" does not exist"
+        try {
+            Statement st = m_dbconnection.createStatement();
+            ResultSet rs = st.executeQuery(bogus_query);
+        } catch (SQLException e) {
+            if (e.toString().indexOf("does not exist") != -1) {
+                /*
+                 * Everything is fine, since we matched the error.  We
+                 * should be safe to assume that all of the other error
+                 * messages we need to check for are in English.
+                 */
+                return;
+            }
+            throw new Exception("The database server's error messages " +
+                                "are not in English, however the installer " +
+                                "requires them to be in English when using " +
+                                "PostgreSQL earlier than 7.4.  You either " +
+                                "need to set \"lc_messages = 'C'\" in your " +
+                                "postgresql.conf file and restart " +
+                                "PostgreSQL or upgrade to PostgreSQL 7.4 or " +
+                                "later.  The installer executed the query " +
+                                "\"" + bogus_query + "\" and expected " +
+                                "\"does not exist\" in the error message, " +
+                                "but this exception was received instead: " +
+                                e, e);
+        }
+
+        /*
+         * We should not get here, as the above command should always
+         * throw an exception, so complain and throw an exception about
+         * not getting the exception we were expecting.  Are you lost yet?
+         * Good!
+         */
+        throw new Exception("Expected an SQLException when executing a " +
+                            "bogus query to test for the server's error " +
+                            "message language, however the query succeeded " +
+                            "unexpectedly.  SQL query: \"" + bogus_query +
+                            "\".");
+        
     }
 
     public boolean databaseUserExists() throws Exception {
