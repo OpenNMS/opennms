@@ -179,7 +179,7 @@ public class MockNetworkTest extends TestCase {
     private void anticipateServiceEvents(final EventAnticipator anticipator, MockElement element, final String uei) {
         MockVisitor eventSetter = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
-                Event event = MockUtil.createEvent("Test", uei, svc.getNodeId(), svc.getIpAddr(), svc.getName());
+                Event event = MockUtil.createServiceEvent("Test", uei, svc);
                 anticipator.anticipateEvent(event);
             }
         };
@@ -366,7 +366,7 @@ public class MockNetworkTest extends TestCase {
         assertEquals(0, anticipator.unanticipatedEvents().size());
 
         MockNode node = m_network.getNode(1);
-        Event nodeEvent = MockUtil.createEvent("Test", EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null);
+        Event nodeEvent = MockUtil.createNodeDownEvent("Test", node);
 
         anticipator.reset();
         m_eventMgr.sendNow(nodeEvent);
@@ -599,9 +599,10 @@ public class MockNetworkTest extends TestCase {
     }
 
     public void testWaitForEvent() throws Throwable {
-        final Event event1 = MockUtil.createEvent("Test", EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null);
-        final Event event2 = MockUtil.createEvent("Test", EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null);
-        final Event event3 = MockUtil.createEvent("Test", EventConstants.NODE_DOWN_EVENT_UEI, 2, null, null);
+        MockNode node = m_network.getNode(1);
+        final Event event1 = MockUtil.createNodeDownEvent("Test", node);
+        final Event event2 = MockUtil.createNodeDownEvent("Test", node);
+        final Event event3 = MockUtil.createNodeDownEvent("Test", m_network.getNode(2));
 
         EventAnticipator anticipator = m_eventMgr.getEventAnticipator();
 

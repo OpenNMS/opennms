@@ -71,7 +71,67 @@ public class MockUtil {
         parm.setValue(value);
         parms.addParm(parm);
     }
+    
+    public static Event createNodeLostServiceEvent(String source, MockService svc) {
+        return createServiceEvent(source, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc);
+    }
 
+    public static Event createNodeRegainedServiceEvent(String source, MockService svc) {
+        return createServiceEvent(source, EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, svc);
+    }
+    
+    public static Event createNodeGainedServiceEvent(String source, MockService svc) {
+        return createServiceEvent(source, EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, svc);
+    }
+    
+    public static Event createServiceDeletedEvent(String source, MockService svc) {
+        return createServiceEvent(source, EventConstants.SERVICE_DELETED_EVENT_UEI, svc);
+    }
+    
+    public static Event createSuspendPollingServiceEvent(String source, MockService svc) {
+        return createServiceEvent(source, EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, svc);
+    }
+    
+    public static Event createResumePollingServiceEvent(String source, MockService svc) {
+        return createServiceEvent(source, EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, svc);
+    }
+    
+    public static Event createServiceEvent(String source, String uei, MockService svc) {
+        return createEvent(source, uei, svc.getNodeId(), svc.getIpAddr(), svc.getName());
+    }
+    
+    public static Event createInterfaceDownEvent(String source, MockInterface iface) {
+        return createInterfaceEvent(source, EventConstants.INTERFACE_DOWN_EVENT_UEI, iface);
+    }
+    
+    public static Event createInterfaceUpEvent(String source, MockInterface iface) {
+        return createInterfaceEvent(source, EventConstants.INTERFACE_UP_EVENT_UEI, iface);
+    }
+    
+    public static Event createInterfaceDeletedEvent(String source, MockInterface iface) {
+        return createInterfaceEvent(source, EventConstants.INTERFACE_DELETED_EVENT_UEI, iface);
+    }
+    
+    public static Event createInterfaceEvent(String source, String uei, MockInterface iface) {
+        return createEvent(source, uei, iface.getNodeId(), iface.getIpAddr(), null);
+    }
+    
+    public static Event createNodeDownEvent(String source, MockNode node) {
+        return createNodeEvent(source, EventConstants.NODE_DOWN_EVENT_UEI, node);
+    }
+    
+    public static Event createNodeUpEvent(String source, MockNode node) {
+        return createNodeEvent(source, EventConstants.NODE_UP_EVENT_UEI, node);
+    }
+    
+    public static Event createNodeDeletedEvent(String source, MockNode node) {
+        return createNodeEvent(source, EventConstants.NODE_DELETED_EVENT_UEI, node);
+    }
+    
+    public static Event createNodeEvent(String source, String uei, MockNode node) {
+        return createEvent(source, uei, node.getNodeId(), null, null);
+    }
+    
     public static Event createEvent(String source, String uei, int nodeId, String ipAddr, String svcName) {
         
         Event event = new Event();

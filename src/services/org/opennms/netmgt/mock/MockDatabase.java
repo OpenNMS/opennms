@@ -39,6 +39,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.hsqldb.Server;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.eventd.db.Constants;
@@ -51,6 +52,8 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class MockDatabase implements DbConnectionFactory {
 
+
+    private Server m_server;
 
     public MockDatabase() {
         try {
@@ -101,7 +104,8 @@ public class MockDatabase implements DbConnectionFactory {
                    "constraint pk_serviceID primary key (serviceID)" +
         ")");
         
-        update("create table ifServices (nodeID          integer, " +
+        update("create table ifServices (" +
+                   "nodeID          integer, " +
                    "ipAddr          varchar(16) not null," +
                    "ifIndex         integer," +
                    "serviceID       integer," +
@@ -176,17 +180,19 @@ public class MockDatabase implements DbConnectionFactory {
         
     }
     
+    public void startServer() {
+        m_server = new Server();
+        m_server.setDatabasePath(0, "mem:test");
+        synchronized(m_server) {
+            m_server.start();
+        }
+        
+    }
+    
     public void drop() {
-        // order matters here because of referential integrity constraints
-        update("drop table seqQueryTable");
-        update("drop sequence eventNxtId");
-        update("drop sequence outageNxtId");
-        update("drop table outages if exists");
-        update("drop table events if exists");
-        update("drop table ifServices if exists");
-        update("drop table service");
-        update("drop table ipInterface if exists");
-        update("drop table node if exists");
+        if (m_server != null)
+            m_server.stop();
+        update("shutdown");
     }
     
     public void populate(MockNetwork network) {
@@ -245,8 +251,12 @@ public class MockDatabase implements DbConnectionFactory {
     }
     
     public int countRows(String sql) {
+        return countRows(sql, new Object[0]);
+    }
+    
+    public int countRows(String sql, Object[] values) {
         Querier querier = new Querier(this, sql);
-        querier.execute();
+        querier.execute(values);
         return querier.getCount();
     }
 
@@ -265,9 +275,9 @@ public class MockDatabase implements DbConnectionFactory {
             super(db, sql);
         }
         
-        Object m_result;
+        private Object m_result;
         
-        Object getResult() { return m_result; }
+        public Object getResult() { return m_result; }
         
         public void processRow(ResultSet rs) throws SQLException {
             m_result = rs.getObject(1);
@@ -306,22 +316,30 @@ public class MockDatabase implements DbConnectionFactory {
         querier.execute(new Integer(serviceId));
         return (String)querier.getResult();
     }
+    
+    public int countOutagesForService(MockService svc) {
+        return countOutagesForService(svc, null);
+    }
+    
+    public int countOutagesForService(MockService svc, String criteria) {
+        String critSql = (criteria == null ? "" : " and "+criteria);
+        Object[] values = { new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()) };
+        return countRows("select * from outages where nodeId = ? and ipAddr = ? and serviceId = ?"+critSql, values);
+    }
 
-    public void createOutage(MockService svc, Date lost, Date regained) {
+    public void createOutage(MockService svc, Event svcLostEvent) {
         
         
         Object[] values = {
                 getNextOutageId(), // outageID
-                null,           // svcLostEventId
-                null,           // svcRegainedEventId
+                new Integer(svcLostEvent.getDbid()),           // svcLostEventId
                 new Integer(svc.getNodeId()), // nodeId
                 svc.getIpAddr(),                // ipAddr
                 new Integer(svc.getId()),       // serviceID
-                new java.sql.Date(lost.getTime()), // ifLostService
-                null,                              // ifRegainedService
+                convertEventTimeToTimeStamp(svcLostEvent.getTime()), // ifLostService
                };
         
-        update("insert into outages (outageId, svcLostEventId, svcRegainedEventId, nodeId, ipAddr, serviceId, ifLostService, ifRegainedService) values (?, ?, ?, ?, ?, ?, ?, ?)", values);
+        update("insert into outages (outageId, svcLostEventId, nodeId, ipAddr, serviceId, ifLostService) values (?, ?, ?, ?, ?, ?)", values);
         
     }
     
@@ -358,6 +376,47 @@ public class MockDatabase implements DbConnectionFactory {
         e.setDbid(eventId.intValue());
         update("insert into events (eventId, eventSource, eventUei, eventCreateTime, eventTime, eventSeverity, nodeId, ipAddr, serviceId, eventDpName, eventLog, eventDisplay) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", values);
     }
+    
+    public void setServiceStatus(MockService svc, char newStatus) {
+        Object[] values = { String.valueOf(newStatus), new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()) };
+        update("update ifServices set status = ? where nodeId = ? and ipAddr = ? and serviceId = ?", values);
+    }
+
+    public char getServiceStatus(MockService svc) {
+        SingleResultQuerier querier = new SingleResultQuerier(this, "select status from ifServices where nodeId = ? and ipAddr = ? and serviceID = ?");
+        querier.execute(new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()));
+        String result = (String)querier.getResult();
+        if (result == null || "".equals(result)) {
+            return 'X';
+        }
+        return result.charAt(0);
+    }
+
+    public void setInterfaceStatus(MockInterface iface, char newStatus) {
+        Object[] values = { String.valueOf(newStatus), new Integer(iface.getNodeId()), iface.getIpAddr() };
+        update("update ipInterface set isManaged = ? where nodeId = ? and ipAddr = ?", values);
+    }
+    
+    public char getInterfaceStatus(MockInterface iface) {
+        SingleResultQuerier querier = new SingleResultQuerier(this, "select isManaged from ipInterface where nodeId = ? and ipAddr = ?");
+        querier.execute(new Integer(iface.getNodeId()), iface.getIpAddr());
+        String result = (String)querier.getResult();
+        if (result == null || "".equals(result)) {
+            return 'X';
+        }
+        return result.charAt(0);
+    }
+    
+    public int countOutagesForInterface(MockInterface iface) {
+        return countOutagesForInterface(iface, null);
+    }
+
+    public int countOutagesForInterface(MockInterface iface, String criteria) {
+        String critSql = (criteria == null ? "" : " and "+criteria);
+        Object[] values = { new Integer(iface.getNodeId()), iface.getIpAddr() };
+        return countRows("select * from outages where nodeId = ? and ipAddr = ? "+critSql, values);
+    }
+
     
     
 

@@ -34,7 +34,6 @@ package org.opennms.netmgt.outage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -62,6 +61,7 @@ public class OutageTest extends TestCase {
     private MockNetwork m_network;
     private MockDatabase m_db;
     private MockEventIpcManager m_eventMgr;
+    private boolean m_started = false;
     
     private class MockOutageConfig implements OutageManagerConfig {
         
@@ -122,13 +122,19 @@ public class OutageTest extends TestCase {
         m_outageMgr.setEventMgr(m_eventMgr);
         m_outageMgr.setOutageMgrConfig(config);
         m_outageMgr.setDbConnectionFactory(m_db);
-        m_outageMgr.init();
-        m_outageMgr.start();
         
     }
 
+    private void startOutageMgr() {
+        m_outageMgr.init();
+        m_outageMgr.start();
+        m_started = true;
+    }
+
     protected void tearDown() throws Exception {
-        m_outageMgr.stop();
+        if (m_started) {
+            m_outageMgr.stop();
+        }
         m_db.drop();
     }
     
@@ -169,14 +175,16 @@ public class OutageTest extends TestCase {
     
 
     public void testNodeLostRegainedService() throws Exception {
+        startOutageMgr();
+
         MockService svc = m_network.getService(1, "192.168.1.1", "SMTP");
         String svcLostTime = EventConstants.formatToString(november(20, 2004, 12, 34, 56));
         String svcRegainedTime = EventConstants.formatToString(november(21, 2004, 12, 34, 56));
 
-        Event lostService = MockUtil.createEvent("Test", EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName());
+        Event lostService = MockUtil.createNodeLostServiceEvent("Test", svc);
         lostService.setTime(svcLostTime);
 
-        Event regainService = MockUtil.createEvent("Test", EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName());
+        Event regainService = MockUtil.createNodeRegainedServiceEvent("Test", svc);
         regainService.setTime(svcRegainedTime);
         
         testServices(svc, lostService, regainService);
@@ -184,6 +192,8 @@ public class OutageTest extends TestCase {
     }
     
     public void testInterfaceDownUp() {
+        startOutageMgr();
+
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
         testInterface(iface);
     }
@@ -192,24 +202,26 @@ public class OutageTest extends TestCase {
         String svcLostTime = EventConstants.formatToString(november(20, 2004, 12, 34, 56));
         String svcRegainedTime = EventConstants.formatToString(november(21, 2004, 12, 34, 56));
 
-        Event lostService = MockUtil.createEvent("Test", EventConstants.INTERFACE_DOWN_EVENT_UEI, iface.getNodeId(), iface.getIpAddr(), null);
+        Event lostService = MockUtil.createInterfaceDownEvent("Test", iface);
         lostService.setTime(svcLostTime);
 
-        Event regainService = MockUtil.createEvent("Test", EventConstants.INTERFACE_UP_EVENT_UEI, iface.getNodeId(), iface.getIpAddr(), null);
+        Event regainService = MockUtil.createInterfaceUpEvent("Test", iface);
         regainService.setTime(svcRegainedTime);
         
         testServices(iface, lostService, regainService);
     }
 
     public void testNodeDownUp() {
+        startOutageMgr();
+
         MockNode node = m_network.getNode(1);
         String svcLostTime = EventConstants.formatToString(november(20, 2004, 12, 34, 56));
         String svcRegainedTime = EventConstants.formatToString(november(21, 2004, 12, 34, 56));
 
-        Event lostService = MockUtil.createEvent("Test", EventConstants.NODE_DOWN_EVENT_UEI, node.getNodeId(), null, null);
+        Event lostService = MockUtil.createNodeDownEvent("Test", node);
         lostService.setTime(svcLostTime);
 
-        Event regainService = MockUtil.createEvent("Test", EventConstants.NODE_UP_EVENT_UEI, node.getNodeId(), null, null);
+        Event regainService = MockUtil.createNodeUpEvent("Test", node);
         regainService.setTime(svcRegainedTime);
         
         testServices(node, lostService, regainService);
@@ -217,7 +229,8 @@ public class OutageTest extends TestCase {
 
     // interfaceReparented: EventConstants.INTERFACE_REPARENTED_EVENT_UEI
     public void testInterfaceReparented() {
-        
+        startOutageMgr();
+
         // this creates an outage record for the interface
         testInterface(m_network.getInterface(1, "192.168.1.2"));
 
@@ -238,13 +251,65 @@ public class OutageTest extends TestCase {
         
     }
     
+    // test open outages for unmanaged services
+    public void testUnmangedWithOpenOutageAtStartup() {
+        // before we start we need to initialize the database
+        
+        // create an outage for the service
+        MockService svc = m_network.getService(1, "192.168.1.1", "SMTP");
+        MockInterface iface = m_network.getInterface(1, "192.168.1.2");
+        
+        Event svcLostEvent = MockUtil.createNodeLostServiceEvent("Test", svc);
+        m_db.writeEvent(svcLostEvent);
+        createOutages(svc, svcLostEvent);
+        
+        Event ifaceDownEvent = MockUtil.createInterfaceDownEvent("Test", iface);
+        m_db.writeEvent(ifaceDownEvent);
+        createOutages(iface, ifaceDownEvent);
+        
+        // mark the service as unmanaged
+        m_db.setServiceStatus(svc, 'U');
+        m_db.setInterfaceStatus(iface, 'U');
+        
+        // assert that we have an open outage
+        assertEquals(1, m_db.countOutagesForService(svc, " ifRegainedService is null"));
+        assertEquals(1, m_db.countOutagesForService(svc));
+        
+        assertEquals(iface.getServices().size(), m_db.countOutagesForInterface(iface));
+        assertEquals(iface.getServices().size(), m_db.countOutagesForInterface(iface, "ifRegainedService is null"));
+        
+        startOutageMgr();
+        
+        // assert that we have no open outages
+        assertEquals(0, m_db.countOutagesForService(svc, " ifRegainedService is null"));
+        assertEquals(1, m_db.countOutagesForService(svc));
+
+        assertEquals(0, m_db.countOutagesForInterface(iface, "ifRegainedService is null"));
+        assertEquals(iface.getServices().size(), m_db.countOutagesForInterface(iface));
+
+    }
+    
+    public void createOutages(MockElement element, final Event event) {
+        MockVisitor outageCreater = new MockVisitorAdapter() {
+            public void visitService(MockService svc) {
+                m_db.createOutage(svc, event);
+            }
+        };
+        element.visit(outageCreater);
+    }
+    
+    
     private void testServices(MockElement element, Event lostService, Event regainService) {
         m_eventMgr.sendEventToListeners(lostService);
+        
+        sleep(200);
         
         assertTrue(lostService.hasDbid());
         checkAllServices(element, lostService, null);
 
         m_eventMgr.sendEventToListeners(regainService);
+        
+        sleep(200);
         
         assertTrue(regainService.hasDbid());
         checkAllServices(element, lostService, regainService);
@@ -281,8 +346,5 @@ public class OutageTest extends TestCase {
     }
     
     
-    // TODO: deletion of services because they are old... delete propagation
-    
-
 
 }

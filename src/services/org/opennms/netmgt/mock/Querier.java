@@ -50,6 +50,7 @@ public class Querier extends JDBCTemplate {
      }
      
      protected void executeStmt(PreparedStatement stmt) throws SQLException {
+         //System.err.println("Executing "+stmt);
         ResultSet rs = stmt.executeQuery();
          m_count = 0;
          while (rs.next()) {

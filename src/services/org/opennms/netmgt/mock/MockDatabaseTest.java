@@ -33,15 +33,13 @@ package org.opennms.netmgt.mock;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
 
 import junit.framework.TestCase;
 
+import org.opennms.netmgt.xml.event.Event;
+
 /**
  * @author brozow
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class MockDatabaseTest extends TestCase {
 
@@ -138,8 +136,12 @@ public class MockDatabaseTest extends TestCase {
     
     public void testOutage() {
         final MockService svc = m_network.getService(1, "192.168.1.1", "ICMP");
-        m_db.createOutage(svc, new Date(), null);
-        m_db.createOutage(svc, new Date(), null);
+        Event svcLostEvent = MockUtil.createNodeLostServiceEvent("TEST", svc);
+        
+        m_db.writeEvent(svcLostEvent);
+        m_db.createOutage(svc, svcLostEvent);
+        m_db.createOutage(svc, svcLostEvent);
+        assertEquals(2, m_db.countOutagesForService(svc));
         Querier querier = new Querier(m_db, "select * from outages") {
             public void processRow(ResultSet rs) throws SQLException {
                 int nodeId = rs.getInt("nodeId");
@@ -154,6 +156,14 @@ public class MockDatabaseTest extends TestCase {
         assertEquals(2, querier.getCount());
         
     }
+    
+    public void testSetServiceStatus() {
+        MockService svc = m_network.getService(1, "192.168.1.1", "SMTP");
+        assertEquals('A', m_db.getServiceStatus(svc));
+        m_db.setServiceStatus(svc, 'U');
+        assertEquals('U', m_db.getServiceStatus(svc));
+    }
+    
     
 
 }
