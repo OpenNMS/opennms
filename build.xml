@@ -750,9 +750,9 @@ your distribution.
 
  <target name="tar.source.dist" depends="prepare.dist" unless="skip.dist">
    <tar destfile="${build.release.dir}/${dist.source.archive.prefix}.tar">
-     <fileset dir="${basedir}">
+     <tarfileset dir="${basedir}">
        <patternset refid="source.dirs" />
-     </fileset>
+     </tarfileset>
    </tar>
  </target>
 
