@@ -64,6 +64,18 @@ public class Notifd implements NotifdMBean {
             ThreadCategory.getInstance(getClass()).warn("start: Failed to init database connection factory.", e);
         }
 
+        try {
+            GroupFactory.init();
+        } catch (Exception e) {
+            ThreadCategory.getInstance(getClass()).warn("start: Failed to init group factory.", e);
+        }
+
+        try {
+            UserFactory.init();
+        } catch (Exception e) {
+            ThreadCategory.getInstance(getClass()).warn("start: Failed to init user factory.", e);
+        }
+
         getNotifd().setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
         getNotifd().setEventManager(EventIpcManagerFactory.getInstance().getManager());
         
