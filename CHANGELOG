@@ -1,5 +1,7 @@
 1.1.2 to 1.1.3
 ----------------------------------------------------------------------
+- Modified the DecimalFormat in CategoryUtil from ".000" to "0.000"
+  Bug 468
 - Added a sort to KSC reports - Thx Craig - Bug 751
 - Fixed typos - Thx Volker - Bug 750
 - Merge some more changes from the Rackspace branch.

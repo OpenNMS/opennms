@@ -60,7 +60,7 @@ public class CategoryUtil extends Object
      * To hide the implementation (so we can change it later), please call
      * {@link #formatValue formatValue} instead.</p>     
      */
-    public static final DecimalFormat valueFormat = new DecimalFormat( ".000" );
+    public static final DecimalFormat valueFormat = new DecimalFormat( "0.000" );
     
     /** HTML color code for the color of green we use. */
     // public static final String GREEN  = m_green;
