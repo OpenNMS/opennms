@@ -52,23 +52,18 @@ import org.opennms.netmgt.ConfigFileConstants;
  */
 class JavaMailerConfig {
 
-    private static Properties _properties = null;
     /**
      * This loads the configuration file.
      * @return a Properties object representing the configuration properties
      * @throws IOException
      */
     private static synchronized Properties getProperties() throws IOException {
-        if (_properties == null) {
-            Properties properties = new Properties(System.getProperties());
-            File configFile = ConfigFileConstants.getFile(ConfigFileConstants.JAVA_MAIL_CONFIG_FILE_NAME);
-            InputStream in = new FileInputStream(configFile);
-            properties.load(in);
-            in.close();
-            _properties = properties;
-        }
-        return _properties;
- 
+        Properties properties = new Properties(System.getProperties());
+        File configFile = ConfigFileConstants.getFile(ConfigFileConstants.JAVA_MAIL_CONFIG_FILE_NAME);
+        InputStream in = new FileInputStream(configFile);
+        properties.load(in);
+        in.close();
+        return properties; 
     }
     
     /**
