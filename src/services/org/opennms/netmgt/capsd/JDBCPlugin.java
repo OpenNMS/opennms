@@ -217,9 +217,7 @@ public final class JDBCPlugin
 		catch (Exception exp) {
 		  log.error(exp.toString());
 	  	} 
-		finally {
-		  	return status;
-	  	}
+		return status;
   	}
 
   	/**
@@ -258,16 +256,14 @@ public final class JDBCPlugin
                 int retries = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
 		String db_driver = ParameterMap.getKeyedString(qualifiers, "driver", DBTools.DEFAULT_JDBC_DRIVER);
 
-    		try 
+		try 
 		{
-	    		status = isServer(db_user, db_pass, db_hostname, db_url, timeout, retries, db_driver);
-    		} 
+			status = isServer(db_user, db_pass, db_hostname, db_url, timeout, retries, db_driver);
+		} 
 		catch (Exception exp) {
-	    		log.info(exp.toString());
-    		} 
-		finally {
-	    		return status;
-    		}
+			log.info(exp.toString());
+		} 
+		return status;
   	}
 
 } // End of class

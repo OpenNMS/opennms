@@ -162,6 +162,7 @@ public class AddNewInterfaceServlet extends HttpServlet
                         {
                                 nodeId = rs.getInt(1);
                         }
+                        return nodeId;
                 }
                 finally {
                         if (stmt != null)
@@ -178,7 +179,6 @@ public class AddNewInterfaceServlet extends HttpServlet
                                         conn.close();
                                 } catch (SQLException e2) {}
                         }
-                        return nodeId;
                 }
         }
     

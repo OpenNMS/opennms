@@ -1127,6 +1127,7 @@ final class RescanProcessor
                         {
         		        duplicate = true;
                         }
+                        return duplicate;
                 }
 		catch(SQLException sqlE)
 		{
@@ -1141,7 +1142,6 @@ final class RescanProcessor
 			        stmt.close();
                         }
                         catch (SQLException e) {}
-                        return duplicate;
 		}
                 
         }
