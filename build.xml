@@ -1241,6 +1241,7 @@ OpenNMS as part of the post-install.
        <path refid="libraries.java.path"/>
        <pathelement location="${dev.lib.dir}/junit.jar"/>
        <pathelement location="${packaged.lib.dir}/hsqldb.jar"/>
+       <pathelement location="${packaged.lib.dir}/${postgresql.jar}"/>
        <pathelement location="${build.classes.dir}" />
        <pathelement location="${build.tests.dir}" />
      </classpath>
@@ -1250,6 +1251,9 @@ OpenNMS as part of the post-install.
          <fileset dir="${source.dir}/services">
             <include name="**/*Test.java" />
             <exclude name="**/AllTest.java" /> 
+         </fileset>
+         <fileset dir="${source.dir}/install">
+            <include name="**/*Test.java" />
          </fileset>
      </batchtest>
      <sysproperty key="mock.logLevel" value="${mock.logLevel}" />
@@ -1275,6 +1279,7 @@ OpenNMS as part of the post-install.
        <path refid="libraries.java.path"/>
        <pathelement location="${dev.lib.dir}/junit.jar"/>
        <pathelement location="${packaged.lib.dir}/hsqldb.jar"/>
+       <pathelement location="${packaged.lib.dir}/${postgresql.jar}"/>
        <pathelement location="${build.classes.dir}" />
        <pathelement location="${build.tests.dir}" />
      </classpath>

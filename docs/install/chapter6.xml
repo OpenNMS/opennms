@@ -50,22 +50,28 @@
       <filename>http://[opennms server]:8180/opennms</filename> on Debian -
       where [opennms server] is the name of the OpenNMS machine) make sure
       that Tomcat is running, and if necessary restart it. You should also be
-      able to access the main Tomcat page by leaving of the
+      able to access the main Tomcat page by leaving off the
       "<filename>/opennms</filename>".</para>
 
       <para>Check to make sure that the OpenNMS web application is installed
-      correctly. In Tomcat's <varname> CATALINA_HOME</varname> (usually
-      <filename>/var/tomcat4</filename>), you should see a subdirectory called
-      <filename>webapps</filename>. The OpenNMS webapp directory,
-      <filename>opennms</filename>, will need to be either a sub-directory in
-      <filename>webapps</filename> or linked from thre. The OpenNMS installer
-      should do this.</para>
+      correctly. In Tomcat's <varname>CATALINA_HOME</varname> (usually
+      <filename>/var/tomcat4</filename>), you should see a sub-directory called
+      <filename>webapps</filename>.  Starting in OpenNMS 1.1.4, we no longer
+      place the OpenNMS webapp directly into this <filename>webapps</filename>
+      directory.  Inside of <filename>webapps</filename>, you should only see
+      a file (or symbolic link) called <filename>opennms.xml</filename>.  If
+      you see a directory (or symbolic link) called
+      <filename>opennms</filename>, delete it (this is not done automatically
+      by the installer when upgrading).</para>
 
       <para>Also in <varname>CATALINA_HOME</varname> there is a sub-directory
-      called conf and in that directory is a file called server.xml. We need
-      to add a "context" to that file in order for Tomcat to know where
-      OpenNMS lives. The install should also do this update, but for reference
-      it looks like:</para>
+      called conf and in that directory is a file called
+      <filename>server.xml</filename>.  Before OpenNMS 1.1.4, we needed to
+      add a "context" to that file, however this is no longer needed in
+      OpenNMS 1.1.4.  In fact, if you are upgrading from 1.1.3 or earlier,
+      you must manually remove this "context" from
+      <filename>server.xml</filename> (it is not done automatically when
+      upgrading).  Here is what it looks like looks like:</para>
 
       <programlisting>&lt;!-- Example Server Configuration File --&gt;
 &lt;Server ...
@@ -119,7 +125,73 @@
         </listitem>
       </itemizedlist>
     </section>
+    
+    <section>
+      <title>"runjava: Could not find an appropriate JRE"</title>
+	
+      <para>XXX</para>
+    </section>
+
+    <section>
+      <title>"Column X in new table has NOT NULL constraint ..."</title>
+	
+      <para>XXX</para>
+    </section>
+
+    <section>
+      <title>"One or more backup tables from a previous install still
+      exists"</title>
+
+      <para>When the installer runs to upgrade the OpenNMS database from a
+	previous install, it often updates table schemas.  When it does this,
+	it copies the data in a table to a temporary table (e.g.: the
+	contents of <filename>node</filename> are copied into
+	<filename>node_old_11033991291234</filename>).  The original table is
+	deleted, the new version of the table is created, the data in the
+	temporary table is translated into the new table, and finally the
+	temporary table is deleted.</para>
+
+      <para>Unfortunately, the installer cannot
+	check for all problems that might break translation, so sometimes the
+	translation step fails.  In this case, the installer "reverts" the
+	table it was processing by dropping the new table and moving the
+	temporary table into its place.</para>
+      
+      <para>Reverting the table in case of a problem is all good and well,
+	but sometimes even it does not work properly, especially with older
+	versions of the Java installer.  If this happens, the
+	temporary table (the one with "_old_" in it) is left with all of the
+	old data.  Until OpenNMS 1.1.5, this problem would not be caught the
+	nnext time you ran the installer.  The installer would see that you
+	did not have the <filename>node</filename> table, for example, and
+	happily continue to create a new one for you.  This is bad,
+	especially since you probably still have data that you care about
+	that is now in the "old" table.</para>
+
+      <para>If you get this error, you will want to get rid of the table(s)
+	containing "_old_", however you want to first check if they contain
+	data.  For example, if you have a single table,
+	<filename>node_old_11033991291234</filename>, no other
+	<filename>node_old_*</filename> tables, and no
+	<filename>node</filename> table, you can simply rename the table.
+	Example:
+      </para>
+
+      <programlisting>
+psql -U opennms opennms
+ALTER TABLE node_old_11033991291234 RENAME TO node;</programlisting>
+
+      <para>You can use the "\d" command within <filename>psql</filename> to
+	see what other tables exist in your database.  You can use
+	<filename>SELECT count(*) from table</filename> (fill in the table
+	name for "table") to get a count of rows in any table.  If you
+	have empty tables, you can just drop them.  If you have multiple
+	tables with data, you will have to decide which table of data you
+	want to keep or merge them.  This is left as a (not so simple)
+	exercise for the reader.</para>
+    </section>
   </section>
+
 
   <section>
     <title>Where to Get Help</title>
@@ -198,9 +270,9 @@
       <title>Commercial Support</title>
 
       <para>If you are using OpenNMS in a production environment, or are
-      considering it, you might be interested in commercial support. <ulink
-      url="http://www.opennms.com/opennms_about.html">Blast Internet
-      Services</ulink> maintains the OpenNMS project, and we also offer
+      considering it, you might be interested in commercial support.  The
+      <ulink url="http://www.opennms.com/opennms_about.html">OpenNMS
+      Group</ulink> maintains the OpenNMS project, and we also offer
       support, training, consulting services and custom development.</para>
     </section>
   </section>

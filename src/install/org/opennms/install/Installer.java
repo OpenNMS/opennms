@@ -211,6 +211,7 @@ public class Installer {
         }
 
         if (m_update_database) {
+	    checkOldTables();
             createTables();
             createSequences();
             createIndexes();
@@ -650,7 +651,40 @@ public class Installer {
         
     }
 
-    public boolean databaseUserExists() throws Exception {
+    public void checkOldTables() throws Exception {
+        Statement st = m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT relname FROM pg_class " +
+				       "WHERE relkind = 'r' AND " +
+				       "relname LIKE '%_old_%'");
+	LinkedList oldTables = new LinkedList();
+
+        m_out.print("- checking database for old backup tables... ");
+
+
+        while (rs.next()) {
+	    oldTables.add(rs.getString(1));
+	}
+
+        rs.close();
+        st.close();
+
+	if (oldTables.size() == 0) {
+	    // No problems, so just print "NONE" and return.
+	    m_out.println("NONE");
+	    return;
+	}
+
+	String oldTableList =
+	    join("\n\t", (String[]) oldTables.toArray(new String[0]));
+
+	throw new Exception("One or more backup tables from a previous " +
+			    "install still exists--aborting installation.  " +
+			    "You either need to remove them or rename them " +
+			    "so they do not contain the string '_old_'.  " +
+			    "Backup tables: \n\t" + oldTableList);
+    }
+
+    public boolean databaseUserExists() throws SQLException {
         boolean exists;
 
         Statement st = m_dbconnection.createStatement();
@@ -664,12 +698,12 @@ public class Installer {
         return exists;
     }
 
-    public void databaseAddUser() throws Exception {
+    public void databaseAddUser() throws SQLException {
         Statement st = m_dbconnection.createStatement();
         st.execute("CREATE USER " + m_user + " WITH PASSWORD '" + m_pass + "' CREATEDB CREATEUSER");
     }
 
-    public boolean databaseDBExists() throws Exception {
+    public boolean databaseDBExists() throws SQLException {
         boolean exists;
 
         Statement st = m_dbconnection.createStatement();
@@ -687,6 +721,7 @@ public class Installer {
         Statement st = m_dbconnection.createStatement();
         st.execute("CREATE DATABASE " + m_database + " WITH ENCODING='UNICODE'");
     }
+
 
     public void createSequences() throws Exception {
         Statement st = m_dbconnection.createStatement();

@@ -261,7 +261,15 @@ TOMCAT_USER="tomcat"
     second, the installation process must be able to create the
     database.</para>
 
-    <para>OpenNMS requires version 7.2 or later of Postgres.</para>
+    <para>OpenNMS requires version 7.2 or later of PostgreSQL.  If you are
+    using a version of PostgreSQL prior to 7.4, the server error messages
+    are required to be in English (the 'C' locale).  In particular, the
+    parameter <filename>lc_messages</filename> must be set to
+    <filename>'C'</filename>.  This is set in
+    <filename>postgresql.conf</filename> in he PostgreSQL data directory and
+    it requires the database be restarted if you change the setting.  See the
+    section below on <filename>pg_hba.conf</filename> for details on the
+    location of the <filename>data</filename> directory.</para>
 
     <para>The minimum packages you will need to install should be:</para>
 
@@ -342,11 +350,11 @@ TOMCAT_USER="tomcat"
       database (do not add the last line if your system does not support
       IPv6):</para>
 
-      <para><programlisting># TYPE  DATABASE    USER        IP-ADDRESS        IP-MASK           METHOD
+      <para><computeroutput># TYPE  DATABASE  USER   IP-ADDRESS   IP-MASK           METHOD
 
-local   all         all                                             trust
-host    all         all         127.0.0.1         255.255.255.255   trust
-host    all         all         ::1               ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff    trust</programlisting></para>
+local   all       all                                   trust
+host    all       all    127.0.0.1    255.255.255.255   trust
+host    all       all    ::1          ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff    trust</computeroutput></para>
 
       <para>Make sure that no other lines are uncommented in this file.</para>
 

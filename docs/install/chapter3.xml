@@ -327,7 +327,7 @@
       <para><computeroutput>JAVA_HOME=/usr/java/j2sdk1.4.2_02
       </computeroutput> (or whatever your Java home dir is)</para>
 
-      <para><computeroutput>LD_LIBRARY_PATH=/usr/local/lib:/usr/local/ssl/lib/:/usr/local/pgsql/lib:/usr/local/opennms/lib:/usr/local/pgsql/include/server/lib:/usr/local/pgsql/inclu</computeroutput>de/internal/lib</para>
+      <para><computeroutput>LD_LIBRARY_PATH=/usr/local/lib:/usr/local/ssl/lib/:/usr/local/pgsql/lib:/usr/local/opennms/lib:/usr/local/pgsql/include/server/lib:/usr/local/pgsql/include/internal/lib</computeroutput></para>
 
       <para><computeroutput>POSTGRES_LIB=/usr/local/pgsql/lib</computeroutput></para>
 
