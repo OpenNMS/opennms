@@ -51,6 +51,12 @@
 
 <script language="Javascript" type="text/javascript" >
 
+  function addInterfacePost()
+  {
+      document.addInterface.action="admin/newInterface.jsp?action=new";
+      document.addInterface.submit();
+  }
+  
   function deletePost()
   {
       document.deleteNodes.submit();
@@ -110,6 +116,10 @@
   <input type="hidden"/>
 </FORM>
 
+<FORM METHOD="POST" NAME="addInterface">
+  <input type="hidden"/>
+</FORM>
+
 <FORM METHOD="POST" NAME="deleteNodes" ACTION="admin/deleteNodes">
   <input type="hidden"/>
 </FORM>
@@ -135,6 +145,8 @@
         <a HREF="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a>
       <p>
         <a HREF="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a>
+      <p>
+        <a HREF="javascript:addInterfacePost()">Add Interface</a>
       <p>
         <a HREF="javascript:deletePost()">Delete Nodes</a>
       <p>
@@ -215,6 +227,11 @@
 	to configure which non-IP interfaces are used in SNMP Data Collection.
 	</P>
 
+        <p><b>Add Interface</b> is an interface to add an interface to the database. If the 
+            IP address of the interface is contained in the ipAddrTable of an existing node, 
+            the interface will be added into the node. Otherwise, a new node will be created.
+        </p>
+        
         <p><b>Delete Nodes</b> is an interface to permanently delete nodes from the database.
         </p>
 
