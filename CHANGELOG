@@ -1,5 +1,6 @@
 1.1.2 to 1.1.3
 ----------------------------------------------------------------------
+- Made a small change to support Fedora - Thx Thomas
 - Added BEA Weblogic events. Thx Kyle
 - Fixed admin pages to work with later Tomcat4 versions. Thx Doug
 - Added Backup Exec event definitions. Thx Chris

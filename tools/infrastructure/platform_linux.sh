@@ -18,6 +18,18 @@ if [ `uname` = 'Linux' ]; then
 		# nothing needed for mandrake?
 		:
 
+        elif [ -e /etc/fedora-release ] ; then
+                relnum=`cat /etc/fedora-release | awk '{print $4}'`
+ 
+                major=`echo $relnum | cut -d'.' -f1`
+                minor=`echo $relnum | cut -d'.' -f2`
+ 
+                # Use this, if needed
+ 
+                unset relnum
+                unset major
+                unset minor
+
 	elif [ -e /etc/redhat-release ] ; then
 
 		fedtest=`cat /etc/redhat-release | awk '{print $1}'`
