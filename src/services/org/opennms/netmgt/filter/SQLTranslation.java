@@ -490,6 +490,16 @@ public class SQLTranslation
 		m_tables.add(t);
         }
 
+	public void addServiceToSelect()
+	{
+		m_selectList.add("service.serviceName");
+		
+		m_from = new StringBuffer(" FROM ipinterface, ifservices, service");
+		m_where = new StringBuffer(" WHERE ");
+
+		m_where.append("( (ifservices.serviceID = service.serviceID AND ipInterface.ipAddr = ifServices.ipAddr) AND ");
+	}
+
     	public void outStart(Start node)
 	{
 		//finish the where clause by putting in the join clauses to 

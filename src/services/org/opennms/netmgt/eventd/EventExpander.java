@@ -384,28 +384,9 @@ public final class EventExpander
 		// If no lookup has been possible yet, check the SNMP generic
 		// type and see if we can process it.
 		//
-		if (eConf == null)
-		//{
-		//	if(snmpInfo.getGeneric() >= 0 && snmpInfo.getGeneric() < GENERIC_SNMP_UEIS.length)
-		//	{
-				// Get the lookup string and see if we can find a matching 
-				// event conf for the uei
-				//
-		//		String  uei = GENERIC_SNMP_UEIS[snmpInfo.getGeneric()];
-		
-				// Look the event configuration, do special processing for
-				// a specific trap
-				//
-		//		eConf = EventConfigurationManager.getByUei(uei);
-
-		//	}
-		//	else
-		//	{
-				// take the configuration of the default event
-				//
-				eConf = EventConfigurationManager.getByUei(DEFAULT_TRAP_UEI);
-		//	}
-		//}
+		// Note: This is now changed. There are no more default generic events
+		// so that users can customize the Generic Traps 0-5. This does require
+		// an entry in eventconf.xml to catch these traps explicitly.
 
 		// return the found event base object
 		//

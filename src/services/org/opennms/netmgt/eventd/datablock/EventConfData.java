@@ -141,13 +141,6 @@ public class EventConfData extends Object
 
 			// get the event value for this key
 			String eventvalue = EventKey.getMaskElementValue(event, key);
-
-			// maskMatch = eventValueMatchesMaskValue(eventvalue, maskValues);
-			// if (!maskMatch)
-			// {
-			// 	return maskMatch;
-			// }
-
 			maskMatch = eventValuePassesMaskValue(eventvalue, maskValues);
 			if (!maskMatch)
 			{
@@ -190,27 +183,6 @@ public class EventConfData extends Object
 		
 		return maskMatch;
 	}
-
-        private boolean eventValueMatchesMaskValue(String eventvalue, List maskValues)
-        {
-                boolean maskMatch = false;
-
-                Iterator valiter = maskValues.iterator();
-                while(valiter.hasNext() && !maskMatch)
-                {
-                        String keyvalue  = (String)valiter.next();
-                        if (keyvalue != null && eventvalue != null)
-                        {
-                                if (keyvalue.equals(eventvalue))
-                                {
-                                        maskMatch = true;
-                                }
-                        }
-                }
-
-                return maskMatch;
-        }
-
 
 
 	/**
