@@ -32,10 +32,10 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 
 
@@ -57,16 +57,16 @@ abstract public class PollableContainer extends PollableElement {
      * @param integer
      * @return
      */
-    protected PollableElement getMember(Object key) {
+    protected synchronized PollableElement getMember(Object key) {
         return (PollableElement)m_members.get(key);
     }
 
-    protected int getMemberCount() {
+    protected synchronized int getMemberCount() {
         return m_members.size();
     }
     
-    protected Collection getMembers() {
-        return Collections.unmodifiableCollection(m_members.values());
+    protected synchronized Collection getMembers() {
+        return new LinkedList(m_members.values());
     }
     
     /**
@@ -78,12 +78,12 @@ abstract public class PollableContainer extends PollableElement {
     /**
      * @param node
      */
-    protected void addMember(PollableElement member) {
+    protected synchronized void addMember(PollableElement member) {
         Object key = createMemberKey(member);
         m_members.put(key, member);
     }
     
-    public void removeMember(PollableElement member) {
+    public synchronized void removeMember(PollableElement member) {
         Object key = createMemberKey(member);
         m_members.remove(key);
     }
@@ -96,13 +96,14 @@ abstract public class PollableContainer extends PollableElement {
     }
 
     public void delete() {
-        for (Iterator it = m_members.keySet().iterator(); it.hasNext();) {
-            Object key = (Object) it.next();
-            PollableElement member = (PollableElement)m_members.get(key);
-            it.remove();
-            member.delete();
+        synchronized (getTreeLock()) {
+            Collection members = getMembers();
+            for (Iterator it = members.iterator(); it.hasNext();) {
+                PollableElement member = (PollableElement) it.next();
+                member.delete();
+            }
+            super.delete();
         }
-        super.delete();
     }
     
     public void visit(PollableVisitor v) {
@@ -146,25 +147,29 @@ abstract public class PollableContainer extends PollableElement {
     }
     
     public void recalculateStatus() {
-        SimpleIter iter = new SimpleIter(PollStatus.STATUS_DOWN) {
-            public void forEachElement(PollableElement elem) {
-                elem.recalculateStatus();
-                if (elem.getStatus().isUp())
-                    setResult(PollStatus.STATUS_UP);
-            }
-        };
-        forEachMember(iter);
-        updateStatus((PollStatus)iter.getResult());
+        synchronized (getTreeLock()) {
+            SimpleIter iter = new SimpleIter(PollStatus.STATUS_DOWN) {
+                public void forEachElement(PollableElement elem) {
+                    elem.recalculateStatus();
+                    if (elem.getStatus().isUp())
+                        setResult(PollStatus.STATUS_UP);
+                }
+            };
+            forEachMember(iter);
+            updateStatus((PollStatus)iter.getResult());
+        }
     }
     
     public void resetStatusChanged() {
-        super.resetStatusChanged();
-        Iter iter = new Iter() {
-            public void forEachElement(PollableElement elem) {
-                elem.resetStatusChanged();
-            }
-        };
-        forEachMember(iter);
+        synchronized (getTreeLock()) {
+            super.resetStatusChanged();
+            Iter iter = new Iter() {
+                public void forEachElement(PollableElement elem) {
+                    elem.resetStatusChanged();
+                }
+            };
+            forEachMember(iter);
+        }
     }
     
     PollableElement findMemberWithDescendent(PollableElement elem) {
@@ -177,12 +182,14 @@ abstract public class PollableContainer extends PollableElement {
 
 
     protected PollStatus poll(PollableElement elem) {
-        PollableElement member = findMemberWithDescendent(elem);
-        PollStatus memberStatus = member.poll(elem);
-        if (memberStatus.isUp() != getStatus().isUp() && member.isStatusChanged()) {
-            updateStatus(pollRemainingMembers(member));
+        synchronized (getTreeLock()) {
+            PollableElement member = findMemberWithDescendent(elem);
+            PollStatus memberStatus = member.poll(elem);
+            if (memberStatus.isUp() != getStatus().isUp() && member.isStatusChanged()) {
+                updateStatus(pollRemainingMembers(member));
+            }
+            return getStatus();
         }
-        return getStatus();
     }
 
     /**
@@ -231,11 +238,14 @@ abstract public class PollableContainer extends PollableElement {
         return member.selectPollElement();
             
     }
+
     public void processStatusChange(Date date) {
-        if (isStatusChanged()) {
-            super.processStatusChange(date);
-        } else if (getStatus().isUp()) {
-            processMemberStatusChanges(date);
+        synchronized (getTreeLock()) {
+            if (isStatusChanged()) {
+                super.processStatusChange(date);
+            } else if (getStatus().isUp()) {
+                processMemberStatusChanges(date);
+            }
         }
         
     }

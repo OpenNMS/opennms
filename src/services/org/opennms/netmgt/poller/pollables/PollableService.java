@@ -159,14 +159,12 @@ public class PollableService extends PollableElement implements Runnable {
     /**
      * @return the top changed element whose status changes needs to be processed
      */
-    public PollableElement doPoll() {
+    public void doPoll() {
         if (getContext().isNodeProcessingEnabled()) {
             getParent().doPoll(this);
-            return getNode();
         }
         else {
             poll();
-            return this;
         }
     }
     
@@ -257,12 +255,23 @@ public class PollableService extends PollableElement implements Runnable {
      * @see java.lang.Runnable#run()
      */
     public void run() {
-        PollableElement target = doPoll();
-        target.processStatusChange(new Date());
+        if (getContext().isNodeProcessingEnabled()) {
+            synchronized (getTreeLock()) {
+                doPoll();
+                getNode().processStatusChange(new Date());
+            }
+        }
+        else {
+            doPoll();
+            processStatusChange(new Date());
+        }
+
     }
 
     public void delete() {
-        super.delete();
-        m_schedule.unschedule();
+        synchronized (getTreeLock()) {
+            super.delete();
+            m_schedule.unschedule();
+        }
     }
 }

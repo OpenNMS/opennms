@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.scheduler.ScheduleTimer;
 
 

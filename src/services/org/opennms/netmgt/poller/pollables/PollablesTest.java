@@ -677,10 +677,6 @@ public class PollablesTest extends TestCase {
 
     }
     
-    public void testReparentCauseChanges() {
-        
-    }
-    
     public void testStatus() throws Exception {
         PollableVisitor updater = new PollableVisitorAdaptor() {
             public void visitElement(PollableElement e) {

@@ -34,6 +34,8 @@ package org.opennms.netmgt.poller.pollables;
 import java.net.InetAddress;
 import java.util.Date;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.xml.event.Event;
 
 
@@ -84,9 +86,12 @@ public class PollableNetwork extends PollableContainer {
     }
 
     public PollableService createService(int nodeId, InetAddress addr, String svcName) {
-        PollableNode node = getNode(nodeId);
-        if (node == null)
-            node = createNode(nodeId);
+        PollableNode node;
+        synchronized(this) {
+            node = getNode(nodeId);
+            if (node == null)
+                node = createNode(nodeId);
+        }
         return node.createService(addr, svcName);
         
     }
@@ -120,6 +125,36 @@ public class PollableNetwork extends PollableContainer {
     public Event createUpEvent(Date date) {
         // TODO Auto-generated method stub
         return null;
+    }
+    
+    class DumpVisitor extends PollableVisitorAdaptor {
+        
+        private Category m_log;
+
+        public DumpVisitor(Category log) {
+            m_log = log;
+        }
+        public void visitNode(PollableNode pNode) {
+            m_log.debug(" nodeid=" + pNode.getNodeId() + " status=" + pNode.getStatus());
+        }
+
+        public void visitInterface(PollableInterface pIf) {;
+            m_log.debug("     interface=" + pIf.getIpAddr() + " status=" + pIf.getStatus());
+        }
+
+        public void visitService(PollableService pSvc) {
+            m_log.debug("         service=" + pSvc.getSvcName() + " status=" + pSvc.getStatus());
+        }
+    };
+
+
+    
+    public void dump() {
+        final Category log = ThreadCategory.getInstance(getClass());
+
+        DumpVisitor dumper = new DumpVisitor(log);
+        visit(dumper);
+        
     }
 
 }

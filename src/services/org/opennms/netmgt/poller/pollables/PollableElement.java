@@ -61,7 +61,7 @@ abstract public class PollableElement {
         m_parent = newParent;
     }
 
-public void visit(PollableVisitor v) {
+    public void visit(PollableVisitor v) {
         visitThis(v);
     }
     
@@ -107,6 +107,11 @@ public void visit(PollableVisitor v) {
         }
         else
             return getParent().doPoll(elem);
+    }
+    
+    public Object getTreeLock() {
+        PollableContainer parent = getParent();
+        return (parent == null ? this : parent.getTreeLock());
     }
 
     /**
@@ -209,10 +214,12 @@ public void visit(PollableVisitor v) {
         return m_deleted;
     }
     public void delete() {
-        m_deleted = true;
-        if (m_parent != null) {
-            getParent().deleteMember(this);
-            getParent().recalculateStatus();
+        synchronized (getTreeLock()) {
+            m_deleted = true;
+            if (m_parent != null) {
+                getParent().deleteMember(this);
+                getParent().recalculateStatus();
+            }
         }
     }
 

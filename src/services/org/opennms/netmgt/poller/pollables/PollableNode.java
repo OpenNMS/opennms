@@ -56,9 +56,11 @@ public class PollableNode extends PollableContainer {
     }
     
     public PollableInterface createInterface(InetAddress addr) {
-        PollableInterface iface =  new PollableInterface(this, addr);
-        addMember(iface);
-        return iface;
+        synchronized(getTreeLock()) {
+            PollableInterface iface =  new PollableInterface(this, addr);
+            addMember(iface);
+            return iface;
+        }
     }
 
     public PollableInterface getInterface(InetAddress addr) {
@@ -84,10 +86,12 @@ public class PollableNode extends PollableContainer {
      * @return
      */
     public PollableService createService(InetAddress addr, String svcName) {
-        PollableInterface iface = getInterface(addr);
-        if (iface == null)
-            iface = createInterface(addr);
-        return iface.createService(svcName);
+        synchronized(getTreeLock()) {
+            PollableInterface iface = getInterface(addr);
+            if (iface == null)
+                iface = createInterface(addr);
+            return iface.createService(svcName);
+        }
     }
 
     /**
@@ -116,5 +120,8 @@ public class PollableNode extends PollableContainer {
     
     public String toString() { return String.valueOf(getNodeId()); }
 
+    public Object getTreeLock() {
+        return this;
+    }
 
 }

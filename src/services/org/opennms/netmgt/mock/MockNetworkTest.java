@@ -55,8 +55,6 @@ import org.opennms.netmgt.poller.monitors.IPv4NetworkInterface;
 import org.opennms.netmgt.poller.monitors.ServiceMonitor;
 import org.opennms.netmgt.xml.event.Event;
 
-import com.sun.rsasign.s;
-
 /**
  * Test the MockNetwork and related classes
  * 
