@@ -62,7 +62,7 @@
 </script>
 
 <br>
-<h3>Please enter the new Password and confirm.</h3><br>
+<h3>Please enter the New Password and Confirm.</h3><br>
 <form method="post" name="goForm">
 
 <table>
@@ -93,6 +93,10 @@
     </tr>
 </table>
 </form>
+<P>
+Note: Be sure to click "Finish" at the bottom of the user page to save changes.
+</P>
+
 
 </body>
 </html>
