@@ -66,6 +66,7 @@ import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.poller.pollables.PollableElement;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
+import org.opennms.netmgt.poller.pollables.PollableNode;
 import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.poller.pollables.PollableServiceConfig;
 import org.opennms.netmgt.poller.pollables.PollableVisitorAdaptor;
@@ -348,18 +349,37 @@ public final class Poller implements PausableFiber {
 
     }
     
-    public void scheduleService(int nodeId, String ipAddr, String svcName) {
-        Category log = ThreadCategory.getInstance(getClass());
+    public void scheduleService(final int nodeId, final String ipAddr, final String svcName) {
+        final Category log = ThreadCategory.getInstance(getClass());
         try {
-            int matchCount = scheduleMatchingServices("ifServices.nodeId = "+nodeId+" AND ifServices.ipAddr = '"+ipAddr+"' AND service.serviceName = '"+svcName+"'");
-            if (matchCount <= 0)
-                log.error("Attempt to schedule service "+nodeId+"/"+ipAddr+"/"+svcName+" found no active service");
+            PollableNode node;
+            synchronized (m_network) {
+                node = m_network.getNode(nodeId);
+                if (node == null) {
+                    node = m_network.createNode(nodeId);
+                }
+            }
+
+            final PollableNode svcNode = node;
+            Runnable r = new Runnable() {
+                public void run() {
+                    int matchCount = scheduleMatchingServices("ifServices.nodeId = "+nodeId+" AND ifServices.ipAddr = '"+ipAddr+"' AND service.serviceName = '"+svcName+"'");
+                    if (matchCount > 0) {
+                        svcNode.recalculateStatus();
+                        svcNode.resetStatusChanged();
+                    } else {
+                        log.error("Attempt to schedule service "+nodeId+"/"+ipAddr+"/"+svcName+" found no active service");
+                    }
+                }
+            };
+            node.withTreeLock(r);
+
         } catch (Exception e) {
             log.error("Unable to schedule service "+nodeId+"/"+ipAddr+"/"+svcName, e);
         }
     }
     
-    private int scheduleMatchingServices(String criteria) throws Exception {
+    private int scheduleMatchingServices(String criteria) {
         final Category log = ThreadCategory.getInstance();
         String sql = "SELECT ifServices.nodeId AS nodeId, ifServices.ipAddr AS ipAddr, " +
                 "ifServices.serviceId AS serviceId, service.serviceName AS serviceName, " +
