@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
+// Copyright (C) 2002-2003 Sortova Consulting Group, Inc.  All rights reserved.
 // Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -58,6 +58,10 @@ import org.opennms.netmgt.utils.RelaxedX509TrustManager;
 
 import org.opennms.netmgt.utils.ParameterMap;
 
+import java.nio.channels.SocketChannel;
+
+import org.opennms.netmgt.utils.SocketChannelUtil;
+
 /**
  * <P>This class is designed to be used by the service poller
  * framework to test the availability of the HTTPS service on 
@@ -66,11 +70,12 @@ import org.opennms.netmgt.utils.ParameterMap;
  * plug-ins by the service poller framework.</P>
  *
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
  * @author <A HREF="mailto:jason@opennms.org">Jason</A>
  *
  */
 final class HttpsMonitor
-	extends IPv4Monitor
+        extends IPv4LatencyMonitor
 {
 	/** 
 	 * Default HTTPS ports.
@@ -125,6 +130,18 @@ final class HttpsMonitor
 		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
 		int[] ports = ParameterMap.getKeyedIntegerArray(parameters, "ports", DEFAULT_PORTS);
 		String url  = ParameterMap.getKeyedString(parameters, "url", DEFAULT_URL);
+                String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
+                String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
+
+                if (rrdPath == null)
+                {
+                        log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
+                }
+                if (dsName == null)
+                {
+                        dsName = DS_NAME;
+                }
+
 
 		int response = ParameterMap.getKeyedInteger(parameters, "response", -1);
 		String responseText = ParameterMap.getKeyedString(parameters, "response text", null);
@@ -158,6 +175,8 @@ final class HttpsMonitor
 		// Cycle through the port list
 		//
 		int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+                long responseTime = -1;
+
 		int currentPort = -1;
 		for (int portIndex=0; portIndex < ports.length && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; portIndex++)
 		{
@@ -171,7 +190,8 @@ final class HttpsMonitor
 
 			for (int attempts=0; attempts <= retry && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; attempts++)
 			{
-				Socket portal = null;
+                                SocketChannel sChannel = null;
+                                Socket  sslSocket = null;
 				try
 				{
 					//set up the certificate validation. USING THIS SCHEME WILL ACCEPT ALL CERTIFICATES
@@ -183,11 +203,18 @@ final class HttpsMonitor
 					sslSF = sslContext.getSocketFactory();
 					
 					//connect and communicate
-					Socket normSocket = new Socket(ipv4Addr, currentPort);
+	                                long sentTime = System.currentTimeMillis();
+                                        sChannel = SocketChannelUtil.getConnectedSocketChannel(ipv4Addr, currentPort, timeout);
+                                        if (sChannel == null)
+                                        {
+                                                // Connection failed, retry until attempts exceeded
+                                                log.debug(getClass().getName()+": failed to connect within specified timeout (attempt #" + attempts + ")");
+                                                continue;
+                                        }
+                                        log.debug(getClass().getName()+": connect successful!!");
 					// We're connected, so upgrade status to unresponsive
 					serviceStatus = SERVICE_UNRESPONSIVE;
-					normSocket.setSoTimeout(timeout);
-					Socket sslSocket = sslSF.createSocket(normSocket, ipv4Addr.getHostAddress(), currentPort, true);
+					sslSocket = sslSF.createSocket(sChannel.socket(), ipv4Addr.getHostAddress(), currentPort, true);
 					sslSocket.getOutputStream().write(cmd.getBytes());
 
 					//
@@ -196,6 +223,7 @@ final class HttpsMonitor
 					//
 					BufferedReader lineRdr = new BufferedReader(new InputStreamReader(sslSocket.getInputStream()));
 					String line = lineRdr.readLine();
+	                                responseTime = System.currentTimeMillis() - sentTime;
 					if (line == null)
 						continue;
 
@@ -220,10 +248,16 @@ final class HttpsMonitor
 						if (bStrictResponse && rVal == response)
 						{
 							serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;	
+                                        		// Store response time in RRD
+                                  	   	 	if (responseTime >= 0 && rrdPath != null)
+                                                		this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime);
 						}
 						else if(!bStrictResponse && rVal > 99 && rVal < 500)
 						{
 							serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
+                                        		// Store response time in RRD
+                                  	   	 	if (responseTime >= 0 && rrdPath != null)
+                                                		this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime);
 						}
 						else
 						{
@@ -290,6 +324,13 @@ final class HttpsMonitor
 					e.fillInStackTrace();
 					log.debug("IOException while polling address " + ipv4Addr, e);
 				}
+                                catch(InterruptedException e)
+                                {
+                                        e.fillInStackTrace();
+                                        log.warn(getClass().getName()+": thread interrupted while polling address: " + ipv4Addr, e);
+                                        portIndex = ports.length; // Will cause outer for(;;) to terminate
+                                        break; // Break out of for(;;)
+                                }
 				catch(Throwable t)
 				{
 					log.warn(getClass().getName()+": An undeclared throwable exception caught contacting host " + ipv4Addr, t);
@@ -300,8 +341,8 @@ final class HttpsMonitor
 					try
 					{
 						// Close the socket
-						if(portal != null)
-							portal.close();
+						if(sChannel != null)
+							sChannel.close();
 					}
 					catch(IOException e) 
 					{ 

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
+// Copyright (C) 2002-2003 Sortova Consulting Group, Inc.  All rights reserved.
 // Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@ import java.lang.*;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
+import java.io.InterruptedIOException;
 
 import java.nio.channels.SocketChannel;
 import org.opennms.netmgt.utils.SocketChannelUtil;
@@ -55,13 +56,14 @@ import org.opennms.netmgt.utils.ParameterMap;
  * interface that allows it to be used along with other
  * plug-ins by the service poller framework.</P>
  *
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
  * @author <A HREF="mike@opennms.org">Mike</A>
- * @author <A HREF="weave@opennms.org">Weave</A>
+ * @author Weave
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */
 final class TcpMonitor
-	extends IPv4Monitor
+        extends IPv4LatencyMonitor
 {	
 	/** 
 	 * Default port.
@@ -114,6 +116,17 @@ final class TcpMonitor
 
 		int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
 		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+                String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
+                String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
+
+                if (rrdPath == null)
+                {
+                        log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
+                }
+                if (dsName == null)
+                {
+                        dsName = DS_NAME;
+                }
 
 		// Port
 		//
@@ -139,6 +152,8 @@ final class TcpMonitor
 		// Give it a whirl
 		//
 		int serviceStatus = SERVICE_UNAVAILABLE;
+                long responseTime = -1;
+
 		for (int attempts=0; attempts <= retry && serviceStatus != SERVICE_AVAILABLE; attempts++)
 		{
                         SocketChannel sChannel = null;
@@ -147,6 +162,8 @@ final class TcpMonitor
 				//
 				// create a connected socket
 				//
+                                long sentTime = System.currentTimeMillis();
+
                                 sChannel = SocketChannelUtil.getConnectedSocketChannel(ipv4Addr, port, timeout);
                                 if (sChannel == null)
                                 {
@@ -171,13 +188,23 @@ final class TcpMonitor
 				// line for a valid return.
 				//
 				String response = rdr.readLine();
+                                responseTime = System.currentTimeMillis() - sentTime;
+
 				if (response == null)
 					continue;
 				if(log.isDebugEnabled())
+				{
 					log.debug("poll: banner = " + response);
+                                        log.debug("poll: responseTime= " + responseTime + "ms");
+				}
 
 				if (response.indexOf(strBannerMatch) > -1)
+				{
 					serviceStatus = SERVICE_AVAILABLE;
+                        		// Store response time in RRD
+                        		if (responseTime >= 0 && rrdPath != null)
+                                		this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime);
+				}
 				else 
 					serviceStatus = SERVICE_UNAVAILABLE;
 			}

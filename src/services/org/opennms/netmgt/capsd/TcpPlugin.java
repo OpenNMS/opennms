@@ -185,6 +185,12 @@ public final class TcpPlugin
 				log.info("TcpPlugin: An expected I/O exception occured connecting to host " + host.getHostAddress() + " on port " + port, e);
 				isAServer = false;
 			}
+                        catch(InterruptedException e)
+                        {
+                                log.warn("TcpPlugin: thread interrupted while testing host " + host.getHostAddress(), e);
+                                isAServer = false;
+                                break;
+                        }
 			catch(Throwable t)
 			{
 				isAServer = false;

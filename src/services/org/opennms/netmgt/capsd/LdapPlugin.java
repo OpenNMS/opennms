@@ -141,8 +141,14 @@ public final class LdapPlugin
 		try
 		{
                         sChannel = SocketChannelUtil.getConnectedSocketChannel(host, port, timeout);
-                        if(sChannel != null)
-                                sChannel.close();
+                        if (sChannel == null)
+                        {
+                                // Connection failed, retry until attempts exceeded
+                                log.debug("LDAPPlugin: failed to connect within specified timeout");
+                                return false;
+                        }
+
+                        log.debug("LDAPPlugin.isServer: connect successful");
 
 			//now go ahead and attempt to determin if LDAP is on this host
 			for (int attempts=0; attempts <= retries && !isAServer; attempts++)
@@ -177,10 +183,24 @@ public final class LdapPlugin
 			// ignore totally, we expect to get this
 			//
 		}
+                catch(InterruptedException e)
+                {
+                        log.warn(getClass().getName()+": thread interrupted while testing host " + host.getHostAddress(), e);
+                }
 		catch(Throwable t)
 		{
 			log.warn(getClass().getName()+": An undeclared throwable exception caught contacting host " + host.getHostAddress(), t);
 		}
+                finally
+                {
+                        try
+                        {
+                                // close the socket channel
+                                if (sChannel != null)
+                                        sChannel.close();
+                        }
+                        catch(IOException e) { }
+                }
 
 		return isAServer;
 	}

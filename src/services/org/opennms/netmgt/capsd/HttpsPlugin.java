@@ -63,6 +63,8 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.utils.RelaxedX509TrustManager;
 import org.opennms.netmgt.utils.ParameterMap;
 
+import java.nio.channels.SocketChannel;
+import org.opennms.netmgt.utils.SocketChannelUtil;
 
 /**
  * <P>This class is designed to be used by the capabilities
@@ -167,8 +169,8 @@ public class HttpsPlugin
 		for (int attempts=0; attempts <= retries && !isAServer; attempts++)
 		{
 			log.debug(getClass().getName()+".isServer: attempt " + attempts + " to connect host " + host.getHostAddress());
-
-			Socket  portal    = null; 
+                        SocketChannel sChannel = null;
+                        Socket  sslSocket = null;    
 			try
 			{
 				BufferedReader lineRdr = null;
@@ -182,9 +184,17 @@ public class HttpsPlugin
 				sslSF = sslContext.getSocketFactory();
 				
 				//connect and communicate
-				Socket normSocket = new Socket(host, port);
-				normSocket.setSoTimeout(timeout);
-				Socket sslSocket = sslSF.createSocket(normSocket, host.getHostAddress(), port, true);
+                                sChannel = SocketChannelUtil.getConnectedSocketChannel(host, port, timeout);
+                                if (sChannel == null)
+                                {
+                                        // Connection failed, retry until attempts exceeded
+                                        log.debug(getClass().getName() + ": failed to connect within specified timeout (attempt #" + attempts + ")");
+                                        continue;
+                                }
+
+                                log.debug(getClass().getName()+": connect successful!!");
+
+                                sslSocket = sslSF.createSocket(sChannel.socket(), host.getHostAddress(), port, true);
 				lineRdr = new BufferedReader(new InputStreamReader(sslSocket.getInputStream()));
 				sslSocket.getOutputStream().write(QUERY_STRING.getBytes());
 				
@@ -247,8 +257,8 @@ public class HttpsPlugin
 			{
 				try
 				{
-					if(portal != null)
-						portal.close();
+					if(sChannel != null)
+						sChannel.close();
 				}
 				catch(IOException e) { }
 			}

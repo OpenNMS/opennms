@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
+// Copyright (C) 2002-2003 Sortova Consulting Group, Inc.  All rights reserved.
 // Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -55,12 +55,13 @@ import org.opennms.netmgt.utils.ParameterMap;
  * interface that allows it to be used along with other
  * plug-ins by the service poller framework.</P>
  *
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
  * @author <A HREF="mailto:mike@opennms.org">Mike</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */
 final class Pop3Monitor
-	extends IPv4Monitor
+        extends IPv4LatencyMonitor
 {
 	/** 
 	 * Default POP3 port.
@@ -112,6 +113,17 @@ final class Pop3Monitor
 		int retry   = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
 		int port    = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
 		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT) + 1;
+                String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
+                String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
+
+                if (rrdPath == null)
+                {
+                        log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
+                }
+                if (dsName == null)
+                {
+                        dsName = DS_NAME;
+                }
 
 		InetAddress ipv4Addr = (InetAddress)iface.getAddress();
 
@@ -119,6 +131,8 @@ final class Pop3Monitor
 			log.debug("poll: address = " + ipv4Addr + ", port = " + port + ", timeout = " + timeout + ", retry = " + retry);
 
 		int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+                long responseTime = -1;
+
 		for (int attempts=0; attempts <= retry && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; attempts++)
 		{
                         SocketChannel sChannel = null;
@@ -127,6 +141,8 @@ final class Pop3Monitor
 				//
 				// create a connected socket
 				//
+                                long sentTime = System.currentTimeMillis();
+
                                 sChannel = SocketChannelUtil.getConnectedSocketChannel(ipv4Addr, port, timeout);
                                 if (sChannel == null)
                                 {
@@ -147,6 +163,8 @@ final class Pop3Monitor
 				// Server response should start with: "+OK"
 				//
 				String banner = rdr.readLine();
+                                responseTime = System.currentTimeMillis() - sentTime;
+
 				if (banner == null)
 					continue;
 				StringTokenizer t = new StringTokenizer(banner);
@@ -169,6 +187,10 @@ final class Pop3Monitor
 					if (t.nextToken().equals("+OK"))
 					{
 						serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
+                	                        // Store response time in RRD
+        	                                if (responseTime >= 0 && rrdPath != null)
+	                                                this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime);
+
 					}
 				}
 				

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
+// Copyright (C) 2002-2003 Sortova Consulting Group, Inc.  All rights reserved.
 // Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -55,13 +55,14 @@ import org.opennms.netmgt.utils.ParameterMap;
  * interface that allows it to be used along with other
  * plug-ins by the service poller framework.</P>
  *
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
  * @author <A HREF="mailto:jason@opennms.org">Jason</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  *
  */
 final class CitrixMonitor
-	extends IPv4Monitor
+        extends IPv4LatencyMonitor
 {
 	/** 
 	 * Default FTP port.
@@ -113,6 +114,18 @@ final class CitrixMonitor
 		int retry   = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
 		int port    = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
 		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+                String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
+                String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
+
+                if (rrdPath == null)
+                {
+                        log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
+                }
+                if (dsName == null)
+                {
+                        dsName = DS_NAME;
+                }
+
 		//don't let the user set the timeout to 0, an infinite loop will occur if the server is down
 		if (timeout==0)
 			timeout=10;
@@ -126,6 +139,8 @@ final class CitrixMonitor
 			log.debug("CitrixMonitor.poll: Polling interface: " + host + " timeout: " + timeout + " retry: " + retry);
 		
 		int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+                long responseTime = -1;
+
 		for (int attempts=0; attempts <= retry && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; attempts++)
 		{
                         SocketChannel sChannel = null;
@@ -133,6 +148,8 @@ final class CitrixMonitor
 			{
 				// create a connected socket
 				//
+                                long sentTime = System.currentTimeMillis();
+
                                 sChannel = SocketChannelUtil.getConnectedSocketChannel(ipv4Addr, port, timeout);
                                 if (sChannel == null)
                                 {
@@ -158,6 +175,9 @@ final class CitrixMonitor
 					if (buffer.toString().indexOf("ICA")>-1)
 					{
 						serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
+		                                responseTime = System.currentTimeMillis() - sentTime;
+                	                        if (responseTime >= 0 && rrdPath != null)
+		                                        this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime);
 					}
 					else
 					{
@@ -192,6 +212,12 @@ final class CitrixMonitor
 			{
 				log.info("CitrixPlugin: Error communicating with host " + host, e);
 				serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+			}
+                        catch(InterruptedException e)                                
+                        {                                                             
+                                log.warn("CitrixMonitor: Thread interrupted while connecting to host " + host, e); 
+                                serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+                                break;                                                
 			}
 			catch(Throwable t)
 			{

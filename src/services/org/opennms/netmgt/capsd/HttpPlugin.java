@@ -239,6 +239,12 @@ public class HttpPlugin
 			{
 				log.warn(getClass().getName()+": An undeclared I/O exception occured contacting host " + host.getHostAddress(), e);
 			}
+                        catch(InterruptedException e)
+                        {
+                                log.warn(getClass().getName()+": thread interrupted while testing host " + host.getHostAddress(), e);
+                                isAServer = false;
+                                break;
+                        }
 			catch(Throwable t)
 			{
 				log.warn(getClass().getName()+": An undeclared throwable exception caught contacting host " + host.getHostAddress(), t);

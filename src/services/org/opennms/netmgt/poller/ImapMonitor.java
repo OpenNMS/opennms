@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
+// Copyright (C) 2002-2003 Sortova Consulting Group, Inc.  All rights reserved.
 // Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -53,6 +53,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * interface that allows it to be used along with other
  * plug-ins by the service poller framework.</P>
  *
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
  * @author <A HREF="mailto:mike@opennms.org">Mike Davidson</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
@@ -61,7 +62,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  *
  */
 final class ImapMonitor
-	extends IPv4Monitor
+        extends IPv4LatencyMonitor
 {	
 	/** 
 	 * Default IMAP port.
@@ -137,6 +138,18 @@ final class ImapMonitor
 		int retry   = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
 		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
 		int port    = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
+                String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
+                String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
+
+                if (rrdPath == null)
+                {
+                        log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
+                }
+                if (dsName == null)
+                {
+                        dsName = DS_NAME;
+                }
+
 
 		// Get interface address from NetworkInterface
 		//
@@ -146,6 +159,8 @@ final class ImapMonitor
 			log.debug("ImapMonitor.poll: address: " + ipv4Addr + " port: " + port + " timeout: " + timeout + " retry: " + retry);
 		
 		int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+                long responseTime = -1;
+
 		for (int attempts=0; attempts <= retry && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; attempts++)
 		{
                         SocketChannel sChannel = null;
@@ -154,6 +169,8 @@ final class ImapMonitor
 				//
 				// create a connected socket
 				//
+                                long sentTime = System.currentTimeMillis();
+
                                 sChannel = SocketChannelUtil.getConnectedSocketChannel(ipv4Addr, port, timeout);
                                 if (sChannel == null)
                                 {
@@ -172,6 +189,8 @@ final class ImapMonitor
 				// line for a valid return.
 				//
 				String banner = rdr.readLine();
+                                responseTime = System.currentTimeMillis() - sentTime;
+
 				if (log.isDebugEnabled())
 					log.debug("ImapMonitor.Poll(): banner: " + banner);
 
@@ -194,6 +213,9 @@ final class ImapMonitor
 						if(response != null && response.startsWith(IMAP_LOGOUT_RESPONSE_PREFIX))
 						{
 							serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
+                		                        // Store response time in RRD
+        	                	                if (responseTime >= 0 && rrdPath != null)
+	                                	                this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime);
 						}
 					}
 				}

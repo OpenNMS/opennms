@@ -131,7 +131,7 @@ public final class DominoIIOPPlugin
 			catch (Exception e)
 			{
 				if(log.isDebugEnabled())
-					log.debug("DominoIIOPMonitor: failed to get the corba IOR from " + host.getHostAddress(), e);
+					log.debug("DominoIIOPMonitor: failed to get the corba IOR from " + host.getHostAddress());
 				isAServer = false;
 				break;
 			}
@@ -177,9 +177,15 @@ public final class DominoIIOPPlugin
 			}
 			catch(IOException e)
 			{
-				log.info("DominoIIOPMonitor: An expected I/O exception occured connecting to host " + host.getHostAddress() + " on port " + port, e);
+				log.info("DominoIIOPMonitor: An expected I/O exception occured connecting to host " + host.getHostAddress() + " on port " + port);
 				isAServer = false;
 			}
+                        catch(InterruptedException e)
+                        {
+                                log.warn("DominoIIOPPlugin: thread interrupted while testing host " + host.getHostAddress(), e);
+                                isAServer = false;
+                                break;
+                        }
 			catch(Throwable t)
 			{
 				isAServer = false;

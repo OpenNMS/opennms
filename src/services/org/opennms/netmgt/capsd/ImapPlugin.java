@@ -199,6 +199,12 @@ public final class ImapPlugin
 				log.info("ImapPlugin: unexpected I/O exception caught during imap test to host " + host.getHostAddress(), e);
 				isAServer = false;
 			}
+                        catch(InterruptedException e)
+                        {
+                                log.warn("ImapPlugin: thread interrupted while testing host " + host.getHostAddress(), e);
+                                isAServer = false;
+                                break;
+                        }
 			catch(Throwable t)
 			{
 				log.warn("ImapPlugin: undeclared throwable exception caught testing host " + host.getHostAddress(), t);

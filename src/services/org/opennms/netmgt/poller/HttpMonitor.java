@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
+// Copyright (C) 2002-2003 Sortova Consulting Group, Inc.  All rights reserved.
 // Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -60,6 +60,7 @@ import org.opennms.netmgt.rrd.Interface;
  * plug-ins by the service poller framework.</P>
  *
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
  * @author <A HREF="mailto:mike@opennms.org">Mike</A>
  *
  */

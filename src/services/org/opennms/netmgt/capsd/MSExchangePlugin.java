@@ -157,9 +157,12 @@ public final class MSExchangePlugin
 				// substring "Microsoft Exchange"
 				//
 				String banner = lineRdr.readLine();
-				int rc = banner.indexOf(BANNER_STRING);
-				if (rc > -1)
-					isAServer = true;
+				if (banner != null)
+				{
+					int rc = banner.indexOf(BANNER_STRING);
+					if (rc > -1)
+						isAServer = true;
+				}
 			}
 			catch(ConnectException e)
 			{
