@@ -645,7 +645,7 @@ unless ($NOINSERT) {
 if ($TOMCAT) {
 
 	for my $dir ('/etc/tomcat4/conf', '/etc/tomcat4') {
-		my $tomcatconf = $dir . '/tomcat4.conf';
+		my $tomcatconf = $dir . '/tomcat.conf';
 
 		if (-f $tomcatconf) {
 			my $conf_in;
