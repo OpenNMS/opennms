@@ -380,7 +380,9 @@ public final class Poller implements PausableFiber {
                 // Schedule the service
                 //
                 Schedule schedule = pSvc.getSchedule();
-                schedule.schedulePoll(pSvc.recalculateInterval());
+                schedule.schedulePoll();
+                
+                // schedule = pSvc.createSchedule(new ServiceConfig(pkg, svcName));
 
             } catch (UnknownHostException ex) {
                 log.error("scheduleService: Failed to schedule interface " + ipAddr + " for service monitor " + svcName + ", illegal address", ex);

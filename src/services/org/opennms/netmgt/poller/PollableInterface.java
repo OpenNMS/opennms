@@ -285,7 +285,7 @@ public class PollableInterface extends PollableElement implements Pollable {
                 // Service to be polled is critical service?
                 if (pSvc.getServiceName().equals(criticalSvcName)) {
                     // Issue poll
-                    svcStatus = pSvc.poll();
+                    svcStatus = pSvc.getSchedule().poll();
                     criticalSvc = pSvc;
                 } else {
                     // This may be the first time this status has been
@@ -300,15 +300,19 @@ public class PollableInterface extends PollableElement implements Pollable {
                      * this logic out for now, need to implement code to create
                      * PollableServiceProxy objects and this doesn't fit in well
                      * with that...will revisit this afterwards.
-                     * -------------------------------------------- // Determine
-                     * if we need to repoll the critical // service using the
-                     * statement: // NOW - T:critical >= I:svc // where // NOW =
-                     * current time // T:critical= time critical svc last polled //
-                     * I:svc = current poll interval for scheduled svc // // If
-                     * the statement resolves to true we should go // ahead and
-                     * repoll the critical svc otherwise // simply
-                     * return.criticalSvc.getLastPollTime() criticalSvc =
-                     * this.getService(criticalSvcName); if (criticalSvc !=
+                     * -------------------------------------------- 
+                     * // Determine if we need to repoll the critical 
+                     * // service using the statement: 
+                     * // NOW - T:critical >= I:svc 
+                     * // where 
+                     * // NOW = current time 
+                     * // T:critical= time critical svc last polled 
+                     * // I:svc = current poll interval for scheduled svc 
+                     * // 
+                     * // If the statement resolves to true we should go 
+                     * // ahead and repoll the critical svc otherwise 
+                     * // simply return.criticalSvc.getLastPollTime() 
+                     * criticalSvc = this.getService(criticalSvcName); if (criticalSvc !=
                      * null) { long timeSinceLastCriticalPoll =
                      * System.currentTimeMillis() -
                      * criticalSvc.getLastPollTime(); if (log.isDebugEnabled())
@@ -341,7 +345,7 @@ public class PollableInterface extends PollableElement implements Pollable {
                             continue;
 
                         // Poll the service
-                        int tmpStatus = svc.poll();
+                        int tmpStatus = svc.getSchedule().poll();
 
                         // If status of non-critical service changes to UP
                         // then create PollableServiceProxy object and
@@ -357,9 +361,7 @@ public class PollableInterface extends PollableElement implements Pollable {
                         // object and it is updated with an interval based on
                         // its new status.
                         if (tmpStatus == Pollable.STATUS_UP) {
-                            long runAt = svc.recalculateInterval() + System.currentTimeMillis();
-                            m_scheduler.schedule(new PollableServiceProxy(svc, runAt), svc.recalculateInterval());
-                            log.debug("poll: scheduling new PollableServiceProxy for " + m_address.getHostAddress() + "/" + svc.getServiceName() + " at interval= " + svc.recalculateInterval());
+                            svc.adjustSchedule();
                         }
                     }
 
@@ -374,11 +376,9 @@ public class PollableInterface extends PollableElement implements Pollable {
                             InetAddress addr = (InetAddress) tmp.getAddress();
                             if (addr.equals(m_address)) {
                                 if (!m_services.containsValue(tmp)) {
-                                    int tmpStatus = tmp.poll();
+                                    int tmpStatus = tmp.getSchedule().poll();
                                     if (tmpStatus == Pollable.STATUS_UP) {
-                                        long runAt = tmp.recalculateInterval() + System.currentTimeMillis();
-                                        m_scheduler.schedule(new PollableServiceProxy(tmp, runAt), tmp.recalculateInterval());
-                                        log.debug("poll: scheduling new PollableServiceProxy for " + m_address.getHostAddress() + "/" + tmp.getServiceName() + " at interval= " + tmp.recalculateInterval());
+                                        tmp.adjustSchedule();
                                     }
                                 }
                             }
@@ -389,7 +389,7 @@ public class PollableInterface extends PollableElement implements Pollable {
             // Critical svc not defined or not supported by interface.
             else {
                 // Issue poll
-                svcStatus = pSvc.poll();
+                svcStatus = pSvc.getSchedule().poll();
                 if (svcStatus == Pollable.STATUS_UP && pSvc.statusChanged()) {
                     // Mark interface as up
                     setStatus(Pollable.STATUS_UP);
@@ -406,7 +406,7 @@ public class PollableInterface extends PollableElement implements Pollable {
                             // Skip service that was just polled
                             if (svc == pSvc)
                                 continue;
-                            svc.poll();
+                            svc.getSchedule().poll();
                         }
                     }
                 }
@@ -416,7 +416,7 @@ public class PollableInterface extends PollableElement implements Pollable {
         //
         else if (getStatus() == Pollable.STATUS_UP) {
             // Issue poll
-            svcStatus = pSvc.poll();
+            svcStatus = pSvc.getSchedule().poll();
             if (svcStatus == Pollable.STATUS_DOWN && pSvc.statusChanged()) {
                 // If this is the only service supported by
                 // the interface mark it as down
@@ -440,7 +440,7 @@ public class PollableInterface extends PollableElement implements Pollable {
                     if (pSvc == criticalSvc) {
                         criticalSvcStatus = svcStatus;
                     } else {
-                        criticalSvcStatus = criticalSvc.poll();
+                        criticalSvcStatus = criticalSvc.getSchedule().poll();
                     }
 
                     if (criticalSvcStatus == Pollable.STATUS_DOWN) {
@@ -468,7 +468,7 @@ public class PollableInterface extends PollableElement implements Pollable {
                             // Skip service that was already polled
                             if (tmpSvc == pSvc)
                                 continue;
-                            int tmpStatus = tmpSvc.poll();
+                            int tmpStatus = tmpSvc.getSchedule().poll();
                             if (tmpStatus == Pollable.STATUS_UP) {
                                 allSvcDown = false;
                             }

@@ -39,27 +39,25 @@ import java.util.TreeMap;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollOutagesConfig;
+import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
 
 /**
  * @author brozow
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class ServiceConfig {
     
     private final Package m_pkg;
     private final Service m_service;
-    private final PollOutagesConfig m_pollOutages;
+    private final Poller m_poller;
     private final Map m_svcProperties;
     private String m_svcPropKey;
 
-    public ServiceConfig(Package pkg, String svcName, PollOutagesConfig config) {
+    public ServiceConfig(Poller poller, Package pkg, String svcName) {
         m_pkg = pkg;
-        m_pollOutages = config;
+        m_poller = poller;
         Service svc = null;
         Enumeration esvc = getPackage().enumerateService();
         while (esvc.hasMoreElements()) {
@@ -88,6 +86,10 @@ public class ServiceConfig {
         return getPackage().getName();
     }
     
+    public ServiceMonitor getServiceMonitor() {
+        return m_poller.getServiceMonitor(getServiceName());
+    }
+    
     public Service getService() {
         return m_service;
     }
@@ -112,7 +114,15 @@ public class ServiceConfig {
 
 
     public PollOutagesConfig getPollOutages() {
-        return m_pollOutages;
+        return m_poller.getPollOutagesConfig();
+    }
+    
+    public PollerConfig getPollerConfig() {
+        return m_poller.getPollerConfig();
+    }
+    
+    public Poller getPoller() {
+        return m_poller;
     }
 
     boolean scheduledOutage(PollableService svc) {
@@ -134,7 +144,7 @@ public class ServiceConfig {
             if (outageFactory.isCurTimeInOutage(outageName)) {
                 // Does the outage apply to this interface?
     
-                if ((outageFactory.isInterfaceInOutage(svc.getAddress().getHostAddress(), outageName)) || (outageFactory.isInterfaceInOutage("match-any", outageName))) {
+                if ((outageFactory.isInterfaceInOutage(svc.getIpAddr(), outageName)) || (outageFactory.isInterfaceInOutage("match-any", outageName))) {
                     if (ThreadCategory.getInstance(getClass()).isDebugEnabled())
                         ThreadCategory.getInstance(getClass()).debug("scheduledOutage: configured outage '" + outageName + "' applies, " + svc + " will not be polled.");
                     outageFound = true;

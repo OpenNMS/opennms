@@ -61,7 +61,7 @@ public class MockMonitor implements ServiceMonitor {
     public void initialize(PollerConfig config, Map parameters) {
     }
 
-    public int poll(NetworkInterface iface, Map parameters, Package pkg) {
+    public int poll(NetworkInterface iface, Map parameters, Package unused) {
         synchronized(m_network) {
             String ipAddr = ((InetAddress) iface.getAddress()).getHostAddress();
             int nodeId = m_network.getNodeIdForInterface(ipAddr);

@@ -69,16 +69,16 @@ import org.opennms.netmgt.scheduler.Scheduler;
  * @see PollableService
  * @see Scheduler
  */
-final class PollableServiceProxy implements ReadyRunnable {
+final class ScheduleProxy implements ReadyRunnable {
     /**
      * interface that this service belongs to
      */
-    private PollableService _service;
+    private Schedule m_schedule;
 
     /**
      * the time (in milliseconds) after which this proxy is supposed to run
      */
-    private long _scheduledRuntime;
+    private long m_scheduledRuntime;
 
     /**
      * Constructs a new instance of a proxy object that proxies for the
@@ -89,9 +89,9 @@ final class PollableServiceProxy implements ReadyRunnable {
      * @param runAt
      *            The timestamp after which this proxy should run.
      */
-    PollableServiceProxy(PollableService psvc, long runAt) {
-        this._service = psvc;
-        this._scheduledRuntime = runAt;
+    ScheduleProxy(Schedule schedule, long runAt) {
+        this.m_schedule = schedule;
+        this.m_scheduledRuntime = runAt;
     }
 
     /**
@@ -119,7 +119,7 @@ final class PollableServiceProxy implements ReadyRunnable {
         Category log = ThreadCategory.getInstance(getClass());
 
         // Check to see if the proxied service has caught up with the proxy
-        if (System.currentTimeMillis() > this._service.getScheduledRuntime()) {
+        if (System.currentTimeMillis() > this.m_schedule.getScheduledRuntime()) {
             log.debug("run: Proxied service got ahead of proxy.  politely going away.");
             return; // Return and politely go away
         }
@@ -127,18 +127,18 @@ final class PollableServiceProxy implements ReadyRunnable {
         try {
             // Run the service, specifying that it should not reschedule itself
             log.debug("run: Proxy calling run() on the proxied service");
-            this._service.run(false);
+            this.m_schedule.runButDontReschedule(false);
 
             // Calculate the interval and the next scheduled runtime
-            long interval = this._service.recalculateInterval();
-            this._scheduledRuntime = System.currentTimeMillis() + interval;
+            long interval = this.m_schedule.recalculateInterval();
+            this.m_scheduledRuntime = System.currentTimeMillis() + interval;
 
             /*
              * If the next scheduled runtime is sooner than the one scheduled
              * for the proxied pollable, then go ahead and register it with the
              * scheduler.
              */
-            if (this._scheduledRuntime < this._service.getScheduledRuntime()) {
+            if (this.m_scheduledRuntime < this.m_schedule.getScheduledRuntime()) {
                 log.debug("run: Proxy rescheduling itself at " + interval + " ms");
                 getScheduler().schedule(this, interval);
             } else {
@@ -159,7 +159,7 @@ final class PollableServiceProxy implements ReadyRunnable {
      * @return
      */
     private Scheduler getScheduler() {
-        return _service.getPoller().getScheduler();
+        return m_schedule.getScheduler();
     }
 
     /**
@@ -167,6 +167,6 @@ final class PollableServiceProxy implements ReadyRunnable {
      * run.
      */
     private long getScheduledRuntime() {
-        return this._scheduledRuntime;
+        return this.m_scheduledRuntime;
     }
 }
