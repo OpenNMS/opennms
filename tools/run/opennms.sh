@@ -105,7 +105,7 @@ SERVICE=$2
 [ "$SERVICE" = "all" ] && SERVICE=""
 
 # where to redirect "start" output
-REDIRECT="@root.install.logs/output.log"
+REDIRECT="@root.install.logs@/output.log"
 
 ###############################################################################
 # Run opennms.sh with the "-t" option to enable the Java Platform Debugging
