@@ -94,6 +94,13 @@ Requires:		postgresql-server >= 7.1
 Requires:		postgresql-server >= 7.1, libstdc++2.10
 %endif
 
+%if "%{platform}" == "linux-i386-mandrake-9"
+%define	initdir		/etc
+%define	psql		/usr/bin/psql
+%define psql_service	postgresql
+Requires:		postgresql-server >= 7.1, libstdc++2.10
+%endif
+
 %if "%{platform}" == "linux-i386-redhat-6"
 %define	initdir		/etc/rc.d
 %define	psql		/usr/bin/psql
@@ -102,6 +109,13 @@ Requires:		postgresql-server >= 7.1
 %endif
 
 %if "%{platform}" == "linux-i386-redhat-7"
+%define	initdir		/etc
+%define	psql		/usr/bin/psql
+%define psql_service	postgresql
+Requires:		postgresql-server >= 7.1, compat-libstdc++
+%endif
+
+%if "%{platform}" == "linux-i386-redhat-8"
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
@@ -127,7 +141,7 @@ for OpenNMS.
 %package webapp
 Summary:	Web interface servlet for the OpenNMS network management platform
 Group:		Applications/System
-Requires:	tomcat4 >= 4.0.3, rrdtool, %{name} = %{version}-%{release}
+Requires:	tomcat4 >= 4.1.10, rrdtool, %{name} = %{version}-%{release}
 
 %description webapp
 The web UI for OpenNMS.
