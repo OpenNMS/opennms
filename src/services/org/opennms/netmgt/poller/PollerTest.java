@@ -243,6 +243,27 @@ public class PollerTest extends TestCase {
 
 
     }
+    
+    // test to ensure we change poll schedule on down and up
+    public void xtestDowntimeModel() {
+        long start = System.currentTimeMillis();
+        
+        m_pollerConfig.clearDowntime();
+
+        MockService svc = m_network.getService(1, "192.168.1.2", "SMTP");
+
+        startDaemons();
+
+        long now = System.currentTimeMillis();
+        sleep(3000 - (now - start));
+
+        assertEquals(0, svc.getPollCount());
+
+        sleep(5000);
+
+        assertTrue(0 < svc.getPollCount());
+        
+    }
 
     // Test harness that tests any type of node, interface or element.
     private void testElementDeleted(MockElement element, Event deleteEvent) {
@@ -654,7 +675,7 @@ public class PollerTest extends TestCase {
         sleep(2000);
         MockUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
         assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
-        sleep(500);
+        sleep(1000);
         assertEquals("Wrong number of outages opened", m_outageAnticipator.getExpectedOpens(), m_outageAnticipator.getActualOpens());
         assertEquals("Wrong number of outages in outage table", m_outageAnticipator.getExpectedOutages(), m_outageAnticipator.getActualOutages());
         assertTrue("Created outages don't match the expected outages", m_outageAnticipator.checkAnticipated());

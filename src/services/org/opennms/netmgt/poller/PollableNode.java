@@ -102,7 +102,7 @@ public class PollableNode extends PollableElement {
      * Constructor.
      */
     public PollableNode(int nodeId, Poller poller) {
-        super(Pollable.STATUS_UNKNOWN);
+        super(PollStatus.STATUS_UNKNOWN);
         m_poller = poller;
 
         m_nodeId = nodeId;
@@ -127,9 +127,9 @@ public class PollableNode extends PollableElement {
     public synchronized void addInterface(PollableInterface pInterface) {
         m_interfaces.put(pInterface.getAddress().getHostAddress(), pInterface);
 
-        int oldStatus = getStatus();
+        PollStatus oldStatus = getStatus();
         this.recalculateStatus();
-        int newStatus = getStatus();
+        PollStatus newStatus = getStatus();
         if (oldStatus != newStatus)
             m_statusChangedFlag = true;
     }
@@ -144,9 +144,9 @@ public class PollableNode extends PollableElement {
 
     public synchronized void removeInterface(PollableInterface pInterface) {
         m_interfaces.remove(pInterface.getAddress().getHostAddress());
-        int oldStatus = getStatus();
+        PollStatus oldStatus = getStatus();
         this.recalculateStatus();
-        int newStatus = getStatus();
+        PollStatus newStatus = getStatus();
         if (oldStatus != newStatus)
             m_statusChangedFlag = true;
         
@@ -185,7 +185,7 @@ public class PollableNode extends PollableElement {
         if (log.isDebugEnabled())
             log.debug("recalculateStatus: nodeId=" + m_nodeId);
 
-        int status = Pollable.STATUS_UNKNOWN;
+        PollStatus status = PollStatus.STATUS_UNKNOWN;
 
         // Inspect status of each of the node's interfaces
         // in order to determine the current status of the node.
@@ -194,10 +194,10 @@ public class PollableNode extends PollableElement {
         Iterator iter = m_interfaces.values().iterator();
         while (iter.hasNext()) {
             PollableInterface pIf = (PollableInterface) iter.next();
-            if (pIf.getStatus() == Pollable.STATUS_UNKNOWN)
+            if (pIf.getStatus() == PollStatus.STATUS_UNKNOWN)
                 pIf.recalculateStatus();
 
-            if (pIf.getStatus() == Pollable.STATUS_UP) {
+            if (pIf.getStatus() == PollStatus.STATUS_UP) {
                 if (log.isDebugEnabled())
                     log.debug("recalculateStatus: interface=" + pIf.getAddress().getHostAddress() + " status=Up, atleast one interface is UP!");
                 allInterfacesDown = false;
@@ -206,14 +206,14 @@ public class PollableNode extends PollableElement {
         }
 
         if (allInterfacesDown)
-            status = Pollable.STATUS_DOWN;
+            status = PollStatus.STATUS_DOWN;
         else
-            status = Pollable.STATUS_UP;
+            status = PollStatus.STATUS_UP;
 
         setStatus(status);
 
         if (log.isDebugEnabled())
-            log.debug("recalculateStatus: completed, nodeId=" + m_nodeId + " status=" + Pollable.statusType[getStatus()]);
+            log.debug("recalculateStatus: completed, nodeId=" + m_nodeId + " status=" + getStatus());
 
     }
 
@@ -261,12 +261,12 @@ public class PollableNode extends PollableElement {
         // for the time on all generated events
         java.util.Date date = new java.util.Date();
 
-        if (m_statusChangedFlag && getStatus() == Pollable.STATUS_DOWN) {
+        if (m_statusChangedFlag && getStatus() == PollStatus.STATUS_DOWN) {
             // create nodeDown event and add it to the event list
             events.addEvent(createEvent(EventConstants.NODE_DOWN_EVENT_UEI, null, null, date));
 
             resetStatusChanged();
-        } else if (m_statusChangedFlag && getStatus() == Pollable.STATUS_UP) {
+        } else if (m_statusChangedFlag && getStatus() == PollStatus.STATUS_UP) {
             // send nodeUp event
             events.addEvent(createEvent(EventConstants.NODE_UP_EVENT_UEI, null, null, date));
             resetStatusChanged();
@@ -282,21 +282,21 @@ public class PollableNode extends PollableElement {
             Iterator i = m_interfaces.values().iterator();
             while (i.hasNext()) {
                 PollableInterface pIf = (PollableInterface) i.next();
-                if (pIf.getStatus() == Pollable.STATUS_DOWN) {
+                if (pIf.getStatus() == PollStatus.STATUS_DOWN) {
                     events.addEvent(createEvent(EventConstants.INTERFACE_DOWN_EVENT_UEI, pIf.getAddress(), null, date));
                     pIf.resetStatusChanged();
-                } else if (pIf.getStatus() == Pollable.STATUS_UP) {
+                } else if (pIf.getStatus() == PollStatus.STATUS_UP) {
                     Iterator s = pIf.getServices().iterator();
                     while (s.hasNext()) {
                         PollableService pSvc = (PollableService) s.next();
-                        if (pSvc.getStatus() == Pollable.STATUS_DOWN) {
+                        if (pSvc.getStatus() == PollStatus.STATUS_DOWN) {
                             events.addEvent(createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, pIf.getAddress(), pSvc.getServiceName(), date));
                             pSvc.resetStatusChanged();
                         }
                     }
                 }
             }
-        } else if (getStatus() == Pollable.STATUS_UP) {
+        } else if (getStatus() == PollStatus.STATUS_UP) {
             // iterate over the node's interfaces
             // if status of interface changed to DOWN
             // generate interfaceDown event
@@ -315,17 +315,17 @@ public class PollableNode extends PollableElement {
             Iterator i = m_interfaces.values().iterator();
             while (i.hasNext()) {
                 PollableInterface pIf = (PollableInterface) i.next();
-                if (pIf.statusChanged() && pIf.getStatus() == Pollable.STATUS_DOWN) {
+                if (pIf.statusChanged() && pIf.getStatus() == PollStatus.STATUS_DOWN) {
                     events.addEvent(createEvent(EventConstants.INTERFACE_DOWN_EVENT_UEI, pIf.getAddress(), null, date));
                     pIf.resetStatusChanged();
-                } else if (pIf.statusChanged() && pIf.getStatus() == Pollable.STATUS_UP) {
+                } else if (pIf.statusChanged() && pIf.getStatus() == PollStatus.STATUS_UP) {
                     events.addEvent(createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, pIf.getAddress(), null, date));
                     pIf.resetStatusChanged();
 
                     Iterator s = pIf.getServices().iterator();
                     while (s.hasNext()) {
                         PollableService pSvc = (PollableService) s.next();
-                        if (pSvc.getStatus() == Pollable.STATUS_DOWN) {
+                        if (pSvc.getStatus() == PollStatus.STATUS_DOWN) {
                             events.addEvent(createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, pIf.getAddress(), pSvc.getServiceName(), date));
                             pSvc.resetStatusChanged();
                         }
@@ -334,10 +334,10 @@ public class PollableNode extends PollableElement {
                     Iterator s = pIf.getServices().iterator();
                     while (s.hasNext()) {
                         PollableService pSvc = (PollableService) s.next();
-                        if (pSvc.statusChanged() && pSvc.getStatus() == Pollable.STATUS_DOWN) {
+                        if (pSvc.statusChanged() && pSvc.getStatus() == PollStatus.STATUS_DOWN) {
                             events.addEvent(createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, pIf.getAddress(), pSvc.getServiceName(), date));
                             pSvc.resetStatusChanged();
-                        } else if (pSvc.statusChanged() && pSvc.getStatus() == Pollable.STATUS_UP) {
+                        } else if (pSvc.statusChanged() && pSvc.getStatus() == PollStatus.STATUS_UP) {
                             events.addEvent(createEvent(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, pIf.getAddress(), pSvc.getServiceName(), date));
                             pSvc.resetStatusChanged();
                         }
@@ -477,131 +477,35 @@ public class PollableNode extends PollableElement {
      * If the interface changes status then node outage processing will be
      * invoked and the status of the entire node will be evaluated.
      */
-    public synchronized int poll(PollableService pSvc) {
+    public synchronized PollStatus poll(PollableService pSvc) {
         Category log = ThreadCategory.getInstance(getClass());
 
         if (log.isDebugEnabled())
-            log.debug("poll: polling nodeid " + m_nodeId + " status=" + Pollable.statusType[getStatus()]);
+            log.debug("poll: polling nodeid " + m_nodeId + " status=" + getStatus());
 
         m_statusChangedFlag = false;
 
+        PollStatus currentStatus = getStatus();
+        
         // Retrieve PollableInterface object from the NIF
         PollableInterface pInterface = pSvc.getInterface();
-
-        int ifStatus = Pollable.STATUS_UNKNOWN;
-
-        // Get critical service
-        String criticalSvc = getPollerConfig().getCriticalService();
-
-        // Polling logic if node is currently DOWN
-        //
-        if (getStatus() == Pollable.STATUS_DOWN) {
-            // Poll the service via the PollableInterface object
-            ifStatus = pInterface.poll(pSvc);
-
-            // If interface status changed to UP
-            if (ifStatus == Pollable.STATUS_UP && pInterface.statusChanged()) {
-                // Check status of node's other interfaces
-                //
-                if (m_interfaces.size() > 1) {
-                    // Iterate over list of interfaces
-                    Iterator iter = m_interfaces.values().iterator();
-                    while (iter.hasNext()) {
-                        PollableInterface pIf = (PollableInterface) iter.next();
-
-                        // Skip interface that was already polled
-                        if (pIf == pInterface)
-                            continue;
-
-                        // If critical service defined and interface supports
-                        // the
-                        // critical service (regardless of package) then poll
-                        // the
-                        // interface passing it the critical service
-                        if (criticalSvc != null && pIf.supportsService(criticalSvc)) {
-                            PollableService criticalNif = pIf.findService(criticalSvc);
-                            pIf.poll(criticalNif);
-                        } else {
-                            // No critical service defined or interface doesn't
-                            // support it...still need to test the interface so
-                            // simply retrieve any (.i.e, the first) service
-                            // supported
-                            // by the interface and poll the interface passing
-                            // it
-                            // that service
-                            Iterator s = pIf.getServices().iterator();
-                            PollableService firstSvc = (PollableService) s.next();
-                            pIf.poll(firstSvc);
-                        }
-                    }
-                }
-
-                // Mark node as UP
-                setStatus(Pollable.STATUS_UP);
-                m_statusChangedFlag = true;
-            }
-        }
-        // Polling logic if node is currently UP
-        //
-        else if (getStatus() == Pollable.STATUS_UP) {
-            // Poll the service via the PollableInterface object
-            ifStatus = pInterface.poll(pSvc);
-
-            // If interface status changed to DOWN
-            if (ifStatus == Pollable.STATUS_DOWN && pInterface.statusChanged()) {
-                boolean allInterfacesDown = true;
-
-                log.debug("poll: requested interface is down; testing remaining interfaces");
-                // Check status of node's other interfaces to determine
-                // if ALL the interfaces on the node are now DOWN
-                //
-                if (m_interfaces.size() > 1) {
-                    // Iterate over list of interfaces
-                    Iterator iter = m_interfaces.values().iterator();
-                    while (iter.hasNext()) {
-                        PollableInterface pIf = (PollableInterface) iter.next();
-
-                        // Skip the interface that was already polled
-                        if (pIf == pInterface)
-                            continue;
-
-                        log.debug("poll: (node outage) testing interface " + pIf.getAddress().getHostAddress());
-
-                        // If critical service defined and interface supports
-                        // the
-                        // critical service (regardless of package) then poll
-                        // the
-                        // interface passing it the critical service
-                        int tmpStatus = Pollable.STATUS_UNKNOWN;
-                        if (criticalSvc != null && pIf.supportsService(criticalSvc)) {
-                            PollableService criticalNif = pIf.findService(criticalSvc);
-                            tmpStatus = pIf.poll(criticalNif);
-                        } else {
-                            // No critical service defined or interface doesn't
-                            // support it...still need to test the interface so
-                            // simply retrieve any (.i.e, the first) service
-                            // supported
-                            // by the interface and poll the interface passing
-                            // it
-                            // that service
-                            Iterator s = pIf.getServices().iterator();
-                            PollableService firstSvc = (PollableService) s.next();
-                            tmpStatus = pIf.poll(firstSvc);
-                        }
-
-                        if (tmpStatus == Pollable.STATUS_UP) {
-                            allInterfacesDown = false;
-                            log.debug("poll: (node outage) not a node outage - at least one interface is up");
-                        }
-                    }
-                }
-
-                // If all interfaces are now DOWN then mark node DOWN
-                if (allInterfacesDown) {
-                    setStatus(Pollable.STATUS_DOWN);
-                    m_statusChangedFlag = true;
-                }
-            }
+        
+        // Poll the service via the PollableInterface object
+        PollStatus ifStatus = pInterface.poll(pSvc);
+        
+        // If interface status changed and is different from the node status
+        if (ifStatus != currentStatus && pInterface.statusChanged()) {
+        
+            log.debug("poll: requested interface is "+ifStatus+"; testing remaining interfaces");
+        
+            // the order below is important because if we switch the order 
+            // the remaining interfaces won't be polled it the interfaces is down
+            boolean allInterfacesDown = pollRemainingInterfaces(pInterface) && ifStatus.isDown();
+        
+            // update the nodes status
+            PollStatus newStatus = (allInterfacesDown ? PollStatus.STATUS_DOWN : PollStatus.STATUS_UP);
+            updateStatus(newStatus);
+        
         }
 
         // Call generateEvents() which will inspect the current status
@@ -610,14 +514,62 @@ public class PollableNode extends PollableElement {
         generateEvents();
 
         if (log.isDebugEnabled())
-            log.debug("poll: poll of nodeid " + m_nodeId + " completed, status=" + Pollable.statusType[getStatus()]);
+            log.debug("poll: poll of nodeid " + m_nodeId + " completed, status=" + getStatus());
 
         return getStatus();
     }
 
-    /**
-     * @return
-     */
+    public void updateStatus(PollStatus newStatus) {
+        if (getStatus() != newStatus) {
+            setStatus(newStatus);
+            m_statusChangedFlag = true;
+        }
+    }
+
+    private boolean pollRemainingInterfaces(PollableInterface pInterface) {
+        
+        Category log = ThreadCategory.getInstance(getClass());
+
+        boolean allInterfacesDown = true;
+
+        // Iterate over list of interfaces
+        Iterator iter = m_interfaces.values().iterator();
+        while (iter.hasNext()) {
+            PollableInterface pIf = (PollableInterface) iter.next();
+            
+            // Skip the interface that was already polled
+            if (pIf != pInterface) {
+                log.debug("poll: (node outage) testing interface " + pIf.getAddress().getHostAddress());
+                
+                PollStatus ifStatus = pollInterface(pIf);
+                
+                if (ifStatus == PollStatus.STATUS_UP) {
+                    // we don't return early because we want to poll ALL the interfaces
+                    allInterfacesDown = false;
+                    log.debug("poll: (node outage) not a node outage - at least one interface is up");
+                }
+            }
+        }
+
+        return allInterfacesDown;
+    }
+
+    private PollStatus pollInterface(PollableInterface pIf) {
+        
+        // Get critical service
+        String critSvcName = getPollerConfig().getCriticalService();
+
+        PollableService svc;
+        if (critSvcName != null && pIf.supportsService(critSvcName)) {
+            // poll the critical service if the interface has one
+            svc = pIf.findService(critSvcName);
+        } else {
+            // can't find a critical service to just pick a service
+            svc = (PollableService) pIf.getServices().iterator().next();
+        }
+        return pIf.poll(svc);
+    }
+
     Poller getPoller() {
         return m_poller;
     }

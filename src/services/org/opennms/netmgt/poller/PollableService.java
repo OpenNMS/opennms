@@ -70,7 +70,7 @@ import org.opennms.netmgt.xml.event.Value;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final class PollableService extends PollableElement implements Pollable {
+final class PollableService extends PollableElement {
     /**
      * interface that this service belongs to
      */
@@ -126,7 +126,7 @@ final class PollableService extends PollableElement implements Pollable {
      *            The package with the polling information
      * 
      */
-    PollableService(PollableInterface pInterface, String svcName, Package pkg, int status, Date svcLostDate) {
+    PollableService(PollableInterface pInterface, String svcName, Package pkg, PollStatus status, Date svcLostDate) {
         super(status);
         m_pInterface = pInterface;
         m_netInterface = new IPv4NetworkInterface(pInterface.getAddress());
@@ -141,7 +141,7 @@ final class PollableService extends PollableElement implements Pollable {
         // Set status change values.
         setStatusChangeTime(0L);
         resetStatusChanged();
-        if (getStatus() == ServiceMonitor.SERVICE_UNAVAILABLE) {
+        if (getStatus() == PollStatus.STATUS_DOWN) {
             if (svcLostDate == null)
                 throw new IllegalArgumentException("The svcLostDate parm cannot be null if status is UNAVAILABLE!");
 
@@ -176,7 +176,7 @@ final class PollableService extends PollableElement implements Pollable {
         m_statusChangedFlag = true;
     }
 
-    public void updateStatus(int status) {
+    public void updateStatus(PollStatus status) {
         if (getStatus() != status) {
             setStatus(status);
             setStatusChangeTime(System.currentTimeMillis());
@@ -428,15 +428,6 @@ final class PollableService extends PollableElement implements Pollable {
         return getInterface().getPoller();
     }
 
-    /**
-     * <P>
-     * Invokes a poll of the service via the ServiceMonitor.
-     * </P>
-     */
-    public int poll() {
-        return m_schedule.poll();
-    }
-
     public String getIpAddr() {
         return getAddress().getHostAddress();
     }
@@ -498,8 +489,160 @@ final class PollableService extends PollableElement implements Pollable {
         m_unresponsive = unresponsiveFlag;
     }
 
-    public boolean isUnresponsive() {
+    public boolean getUnresponsive() {
         return m_unresponsive;
+    }
+
+    public PollStatus poll() {
+        Category log = ThreadCategory.getInstance(getClass());
+    
+        m_schedule.setLastPoll(System.currentTimeMillis());
+        resetStatusChanged();
+        
+        if (log.isDebugEnabled())
+            log.debug("poll: starting new poll for " + this + ":" + m_schedule.getPackageName());
+    
+        PollStatus status = m_schedule.callMonitor();
+    
+        // serviceUnresponsive behavior disabled?
+        //
+        if (!m_schedule.getPollerConfig().serviceUnresponsiveEnabled()) {
+            // serviceUnresponsive behavior is disabled, a status
+            // of SERVICE_UNRESPONSIVE is treated as SERVICE_UNAVAILABLE
+            if (status == PollStatus.STATUS_UNRESPONSIVE)
+                status = PollStatus.STATUS_UNRESPONSIVE;
+        } else {
+            // Update unresponsive flag based on latest status
+            // returned by the monitor and generate serviceUnresponsive
+            // or serviceResponsive event if necessary.
+            //
+            if (status == PollStatus.STATUS_UNRESPONSIVE) {
+                // Check unresponsive flag to determine if we need
+                // to generate a 'serviceUnresponsive' event.
+                //
+                if (getUnresponsive() == false) {
+                    setUnresponsive(true);
+                    sendEvent(EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, m_schedule.getPropertyMap());
+    
+                    // Set status back to available, don't want unresponsive
+                    // service to generate outage
+                    status = PollStatus.STATUS_UP;
+                }
+            } 
+            else if (status == PollStatus.STATUS_UP) {
+                // Check unresponsive flag to determine if we
+                // need to generate a 'serviceResponsive' event
+                if (getUnresponsive() == true) {
+                    setUnresponsive(false);
+                    sendEvent(EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, m_schedule.getPropertyMap());
+                }
+            } 
+            else if (status == PollStatus.STATUS_DOWN) {    
+                // Clear unresponsive flag
+                setUnresponsive(false);
+            }    
+        }
+    
+        // Any change in status?
+        //
+        if (status != getStatus()) {
+            // get the time of the status change
+            //
+            setStatusChanged();
+            setStatusChangeTime(System.currentTimeMillis());
+    
+            // Is node outage processing disabled?
+            if (!m_schedule.getPollerConfig().nodeOutageProcessingEnabled()) {
+                // node outage processing disabled, go ahead and generate
+                // transition events.
+                if (log.isDebugEnabled())
+                    log.debug("poll: node outage disabled, status change will trigger event.");
+    
+                // Send the appropriate event
+                //
+                if (status == PollStatus.STATUS_UP) {
+                    sendEvent(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, m_schedule.getPropertyMap());
+                }    
+                else if (status == PollStatus.STATUS_DOWN) { 
+                    sendEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, m_schedule.getPropertyMap());
+                }
+            }
+        }
+    
+        // Set status
+        setStatus(status);
+    
+        // Reschedule the interface
+        // 
+        // NOTE: rescheduling now handled by PollableService.run()
+        // reschedule(false);
+    
+        return getStatus();
+    }
+
+    /**
+     * @throws InterruptedException
+     */
+    void doPoll() throws InterruptedException {
+        Category log = ThreadCategory.getInstance(getClass());
+        // NodeId
+        PollableNode pNode = getNode();
+        int nodeId = pNode.getNodeId();
+    
+        // Is node outage processing enabled?
+        if (m_schedule.getServiceConfig().getPollerConfig().nodeOutageProcessingEnabled()) {
+    
+            /*
+             * Acquire lock to 'PollableNode'
+             */
+            boolean ownLock = false;
+            try {
+                // Attempt to obtain node lock...wait no longer than 500ms
+                // We don't want to tie up the thread for long periods of time
+                // waiting for the lock on the PollableNode to be released.
+                if (log.isDebugEnabled())
+                    log.debug("run: ------------- requesting node lock for nodeid: " + nodeId + " -----------");
+    
+                if (!(ownLock = pNode.getNodeLock(500)))
+                    throw new LockUnavailableException("failed to obtain lock on nodeId " + nodeId);
+            } catch (InterruptedException iE) {
+                // failed to acquire lock
+                throw new InterruptedException("failed to obtain lock on nodeId " + nodeId + ": " + iE.getMessage());
+            }
+            // Now we have a lock
+    
+            if (ownLock) // This is probably redundant, but better to be
+                            // sure.
+            {
+                try {
+                    // Make sure the node hasn't been deleted.
+                    if (!pNode.isDeleted()) {
+                        if (log.isDebugEnabled())
+                            log.debug("run: calling poll() for " + this);
+    
+                        pNode.poll(this);
+    
+                        if (log.isDebugEnabled())
+                            log.debug("run: call to poll() finished for " + this);
+                    }
+                } finally {
+                    if (log.isDebugEnabled())
+                        log.debug("run: ----------- releasing node lock for nodeid: " + nodeId + " ----------");
+                    try {
+                        pNode.releaseNodeLock();
+                    } catch (InterruptedException iE) {
+                        log.error("run: thread interrupted...failed to release lock on nodeId " + nodeId);
+                    }
+                }
+            }
+        } else {
+            // Node outage processing disabled so simply poll the service
+            if (log.isDebugEnabled())
+                log.debug("run: node outage processing disabled, polling: " + this);
+            poll();
+        }
+        
+        
     }
 
 }

@@ -37,7 +37,6 @@
 
 package org.opennms.netmgt.poller;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
@@ -161,9 +160,6 @@ final public class SmbMonitor extends IPv4Monitor {
         } catch (UnknownHostException uhE) {
             if (log.isDebugEnabled())
                 log.debug("poll: Unknown host exception generated for " + ipv4Addr.toString() + ", reason: " + uhE.getLocalizedMessage());
-        } catch (IOException ioE) {
-            if (log.isEnabledFor(Priority.ERROR))
-                log.error("poll: IOException during SMB communication", ioE);
         } catch (RuntimeException rE) {
             if (log.isEnabledFor(Priority.ERROR))
                 log.error("poll: Unexpected runtime exception", rE);

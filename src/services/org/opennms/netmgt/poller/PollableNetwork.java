@@ -128,15 +128,15 @@ public class PollableNetwork {
             m_log = log;
         }
         public void visitNode(PollableNode pNode) {
-            m_log.debug(" nodeid=" + pNode.getNodeId() + " status=" + Pollable.statusType[pNode.getStatus()]);
+            m_log.debug(" nodeid=" + pNode.getNodeId() + " status=" + pNode.getStatus());
         }
 
         public void visitInterface(PollableInterface pIf) {
-            m_log.debug("     interface=" + pIf.getAddress().getHostAddress() + " status=" + Pollable.statusType[pIf.getStatus()]);
+            m_log.debug("     interface=" + pIf.getAddress().getHostAddress() + " status=" + pIf.getStatus());
         }
 
         public void visitService(PollableService pSvc) {
-            m_log.debug("         service=" + pSvc.getServiceName() + " status=" + Pollable.statusType[pSvc.getStatus()]);
+            m_log.debug("         service=" + pSvc.getServiceName() + " status=" + pSvc.getStatus());
         }
     };
 
@@ -156,7 +156,7 @@ public class PollableNetwork {
         visitNode(node, dumper);
     }
 
-    public PollableService createPollableService(int nodeId, String ipAddr, String svcName, Package pkg, int lastKnownStatus, Date svcLostDate) throws InterruptedException, UnknownHostException {
+    public PollableService createPollableService(int nodeId, String ipAddr, String svcName, Package pkg, PollStatus lastKnownStatus, Date svcLostDate) throws InterruptedException, UnknownHostException {
         Category log = ThreadCategory.getInstance();
         PollableService pSvc;
         PollableNode pNode = null;

@@ -600,16 +600,16 @@ final class PollerEventProcessor implements EventListener {
                 // Debug dump pollable node content
                 //
                 if (log.isDebugEnabled()) {
-                    log.debug("Interface deletion completed, dumping node info for nodeid " + pNode.getNodeId() + ", status=" + Pollable.statusType[pNode.getStatus()]);
+                    log.debug("Interface deletion completed, dumping node info for nodeid " + pNode.getNodeId() + ", status=" + pNode.getStatus());
                     Iterator k = pNode.getInterfaces().iterator();
                     while (k.hasNext()) {
                         PollableInterface tmpIf = (PollableInterface) k.next();
-                        log.debug("		interface=" + tmpIf.getAddress().getHostAddress() + " status=" + Pollable.statusType[tmpIf.getStatus()]);
+                        log.debug("		interface=" + tmpIf.getAddress().getHostAddress() + " status=" + tmpIf.getStatus());
 
                         Iterator s = tmpIf.getServices().iterator();
                         while (s.hasNext()) {
                             PollableService tmpSvc = (PollableService) s.next();
-                            log.debug("			service=" + tmpSvc.getServiceName() + " status=" + Pollable.statusType[tmpSvc.getStatus()]);
+                            log.debug("			service=" + tmpSvc.getServiceName() + " status=" + tmpSvc.getStatus());
                         }
                     }
                 }

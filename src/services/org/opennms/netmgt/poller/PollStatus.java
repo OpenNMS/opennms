@@ -32,33 +32,53 @@
 package org.opennms.netmgt.poller;
 
 /**
- * Represents a network element in the Poller
+ * Represents the status of a node, interface or services
  * @author brozow
- *
  */
-public class PollableElement {
-
+public class PollStatus {
+    
     /**
-     * last known/current status of the node
+     * Status of the pollable object.
      */
-    private PollStatus m_status;
 
-    /**
-     * @return Returns the status.
-     */
-    public PollStatus getStatus() {
-        return m_status;
+    public static final PollStatus STATUS_UP = new PollStatus(ServiceMonitor.SERVICE_AVAILABLE, "Up");
+
+    public static final PollStatus STATUS_DOWN = new PollStatus(ServiceMonitor.SERVICE_UNAVAILABLE, "Down");
+    
+    public static final PollStatus STATUS_UNRESPONSIVE = new PollStatus(ServiceMonitor.SERVICE_UNRESPONSIVE, "Unresponsive");
+    
+    public static final PollStatus STATUS_UNKNOWN = new PollStatus(ServiceMonitor.SERVICE_UNKNOWN, "Unknown");
+    
+    public static PollStatus getPollStatus(int status) {
+        switch (status) {
+        case ServiceMonitor.SERVICE_AVAILABLE:
+            return STATUS_UP;
+        case ServiceMonitor.SERVICE_UNRESPONSIVE:
+            return STATUS_UNRESPONSIVE;
+        case ServiceMonitor.SERVICE_UNAVAILABLE:
+        default:
+            return STATUS_DOWN;
+        }
     }
-
-    /**
-     * @param status The status to set.
-     */
-    protected void setStatus(PollStatus status) {
-        m_status = status;
+    
+    int m_statusCode;
+    String m_statusName;
+    
+    private PollStatus(int statusCode, String statusName) {
+        m_statusCode = statusCode;
+        m_statusName = statusName;
     }
-
-    public PollableElement(PollStatus status) {
-        m_status = status;
+    
+    public boolean isUp() {
+        return !isDown();
+    }
+    
+    public boolean isDown() {
+        return this == STATUS_DOWN;
+    }
+    
+    public String toString() {
+        return m_statusName;
     }
 
 }

@@ -354,16 +354,7 @@ public final class Poller implements PausableFiber {
             // be available...based on outage information on the 'outages'
             // table.
             Date svcLostDate = getQueryMgr().getServiceLostDate(nodeId, ipAddr, svcName, getServiceIdByName(svcName));
-            int lastKnownStatus = -1;
-            if (svcLostDate != null) {
-                lastKnownStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
-                if (log.isDebugEnabled())
-                    log.debug("scheduleService: address= " + ipAddr + " svc= " + svcName + " lastKnownStatus= unavailable" + " svcLostDate= " + svcLostDate);
-            } else {
-                lastKnownStatus = ServiceMonitor.SERVICE_AVAILABLE;
-                if (log.isDebugEnabled())
-                    log.debug("scheduleService: address= " + ipAddr + " svc= " + svcName + " lastKnownStatus= available");
-            }
+            PollStatus lastKnownStatus = (svcLostDate == null ? PollStatus.STATUS_UP : PollStatus.STATUS_DOWN);
 
             // Criteria checks have all been padded...update
             // Node Outage
