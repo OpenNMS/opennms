@@ -286,8 +286,8 @@ public class NotifdTest extends TestCase {
         m_notifd.setNotificationManager(m_notificationManager);
         
         // FIXME: Needed to comment these out so the build worked
-        //m_notifd.init();
-        //m_notifd.start();
+        m_notifd.init();
+        m_notifd.start();
     }
 
     /*

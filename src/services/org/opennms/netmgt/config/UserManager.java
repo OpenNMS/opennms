@@ -69,7 +69,7 @@ import org.opennms.netmgt.config.users.Users;
  */
 public abstract class UserManager {
 
-    protected GroupManager groupFactory;
+    protected GroupManager m_groupManager;
     /**
      * A mapping of user ids to the User objects
      */
@@ -81,7 +81,7 @@ public abstract class UserManager {
     private Header oldHeader;
 
     protected UserManager(GroupManager groupManager) {
-        groupFactory = groupManager;
+        m_groupManager = groupManager;
     }
     /**
      * @param reader
@@ -456,7 +456,7 @@ public abstract class UserManager {
             m_users.remove(name);
     
             // Delete the user in the group.
-            groupFactory.deleteUser(name);
+            m_groupManager.deleteUser(name);
     
             // Delete the user in the view.
             // viewFactory.deleteUser(name);
@@ -522,7 +522,7 @@ public abstract class UserManager {
                 m_users.put(newName, data);
     
                 // Rename the user in the group.
-                groupFactory.renameUser(oldName, newName);
+                m_groupManager.renameUser(oldName, newName);
     
                 // Rename the user in the view.
                 // viewFactory.renameUser(oldName, newName);

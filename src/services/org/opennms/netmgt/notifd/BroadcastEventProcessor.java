@@ -140,7 +140,6 @@ final class BroadcastEventProcessor implements EventListener {
             /*
              * TODO: these need to be removed
              */
-            UserFactory.init();
             DestinationPathFactory.init();
             NotificationCommandFactory.init();
         } catch (Exception e) {
