@@ -308,6 +308,7 @@ your distribution.
       <pathelement location="${dev.lib.dir}/sablecc-2.17.2.jar" />
     </classpath>
   </taskdef>
+
   <taskdef name="castor"
 	   classname="org.apache.tools.ant.taskdefs.optional.castor.SourceGeneratorTask">
     <classpath>
@@ -315,6 +316,7 @@ your distribution.
       <pathelement location="${dev.lib.dir}/castor-0.9.3.9.jar" />
     </classpath>
   </taskdef>
+
   <taskdef name="fop" classname="org.apache.fop.tools.anttasks.Fop">
     <classpath>
       <pathelement location="${packaged.lib.dir}/fop0203.jar"/>
@@ -323,17 +325,41 @@ your distribution.
       <pathelement location="${packaged.lib.dir}/batik.jar"/>
     </classpath>
   </taskdef>
+
   <taskdef resource="cpptasks.tasks">
     <classpath>
       <pathelement location="${dev.lib.dir}/cpptasks.jar"/>
     </classpath>
   </taskdef>
+
   <taskdef resource="cpptasks.types">
     <classpath>
       <pathelement location="${dev.lib.dir}/cpptasks.jar"/>
     </classpath>
   </taskdef>
 
+   <taskdef classname="org.apache.jasper.JspC" name="jasper2" > 
+      <classpath>
+        <pathelement location="${dev.lib.dir}/jasper/jasper-compiler.jar"/>
+        <pathelement location="${dev.lib.dir}/jasper/jasper-runtime.jar"/>
+        <pathelement location="${packaged.lib.dir}/servlet.jar"/>
+      </classpath> 
+    </taskdef> 
+
+<!--        <pathelement location="${java.home}/../lib/tools.jar"/>  -->
+<!--        <fileset dir="${dev.lib.dir}"> 
+          <include name="*.jar"/> 
+        </fileset> 
+-->
+
+<!--
+    <jasper2 
+             validateXml="false" 
+             uriroot="${webapp.path}" 
+             webXmlFragment="${webapp.path}/WEB-INF/generated_web.xml" 
+             outputDir="${webapp.path}/WEB-INF/src" /> 
+
+-->
 
   <!-- PREP target -->
   <target name="prep" depends="platform.check, java.check" unless="prep.done">
@@ -1182,43 +1208,60 @@ OpenNMS as part of the post-install.
 
  <!-- tests -->
 
- <target name="jsp.compile" depends="install"
-	 description="compile the JSPs" >
+ <target name="jsp.compile" depends="jsp.compile.prep, jsp.compile.jspc,
+				     jsp.compile.javac"
+	 description="compile the JSPs"/>
+
+ <target name="jsp.compile.prep" depends="install">
    <mkdir dir="${build.dir}/jsp-source"/>
    <mkdir dir="${build.dir}/jsp-classes"/>
-   <jspc srcdir="${install.prefix}${install.servlet.dir}" destdir="${build.dir}/jsp-source"> 
-       <include name="**/*.jsp"/>
-      <classpath>
-         <path refid="libraries.java.path" />
-         <path refid="sources.java.path" />
-         <fileset dir="${dev.lib.dir}">
-		<include name="**/*.jar"/>
-	</fileset>
-     </classpath>  
-   </jspc>
-   
-  <javac srcdir="${build.dir}/jsp-source"
-	destdir="${build.dir}/jsp-classes"
-	 debug="${compiler.debug}"
-	 optimize="${compiler.optimize}"
-	 verbose="${compiler.verbose}"
-	 deprecation="${compiler.deprecation}">
-      <classpath>
-         <path refid="libraries.java.path" />
-         <path refid="tomcatlib.jars.path" />
-     </classpath>  
-   <include name="**/*.java"/>
-   <exclude name="**/*Test.java"/>
-  </javac>
-  <!--
+ </target>
 
-   <exec executable="/bin/sh" failonerror="true">
-     <arg value="jspcompile.sh"/>
-     <arg value="${build.dir}/jsp-java"/>
-     <arg value="${build.dir}/jsp-class"/>
-     <arg value="${install.prefix}${install.servlet.dir}"/>
-   </exec>
-   -->
+ <target name="jsp.compile.jspc" depends="jsp.compile.prep">
+   <jasper2 validateXml="false" 
+            uriroot="${install.prefix}${install.servlet.dir}" 
+            webXmlFragment="${build.dir}/jsp-source/WEB-INF/web.xml" 
+            outputDir="${build.dir}/jsp-source" />
+ </target>
+
+ <target name="jsp.compile.javac" depends="jsp.compile.jspc">
+   <path id="jsp.compile.path">
+     <path refid="libraries.java.path" />
+     <path refid="tomcatlib.jars.path" />
+     <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_common.jar"/>
+     <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_core.jar"/>
+     <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_install.jar"/>
+     <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_joesnmp.jar"/>
+     <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_services.jar"/>
+     <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_web.jar"/>
+     <pathelement location="${dev.lib.dir}/jasper/jasper-compiler.jar"/>
+     <pathelement location="${dev.lib.dir}/jasper/jasper-runtime.jar"/>
+     <pathelement location="${packaged.lib.dir}/servlet.jar"/>
+   </path>  
+   <pathconvert targetos="unix" refid="jsp.compile.path"
+		property="jsp.compile.classpath">
+     <map from="${basedir}/" to=""/>
+   </pathconvert>
+
+   <apply executable="${java.home}/bin/javac"
+	  dest="${build.dir}/jsp-classes/org/apache/jsp"
+	  dir="${basedir}" failonerror="true">
+     <fileset dir="${build.dir}/jsp-source">
+       <include name="**/*.java"/>
+       <exclude name="KSC/include_init1_jsp.java"/>
+       <exclude name="KSC/include_init2_jsp.java"/>
+       <exclude name="KSC/include_nodereport_jsp.java"/>
+       <exclude name="KSC/include_rrd_jsp.java"/>
+       <exclude name="admin/eventconf/**"/>
+       <exclude name="admin/notification/assignNotices_jsp.java"/>
+       <exclude name="errors/errorpage_jsp.java"/>
+     </fileset>
+     <mapper type="glob" from="*.java" to="*.class"/>
+     <arg value="-classpath"/>
+     <arg value="${jsp.compile.classpath}"/>
+     <arg value="-d"/>
+     <arg value="${build.dir}/jsp-classes"/>
+   </apply>
  </target>
 
  <!-- java build -->
