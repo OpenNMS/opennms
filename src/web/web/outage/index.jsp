@@ -39,7 +39,7 @@
 <% String breadcrumb1 = "Outages"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Outages" />
-  <jsp:param name="location" value="outage" />
+  <jsp:param name="location" value="outages" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />  
 </jsp:include>
 
