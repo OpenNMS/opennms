@@ -40,31 +40,27 @@ package org.opennms.netmgt.threshd;
 
 import org.opennms.core.fiber.Fiber;
 
-
 /**
- * This class is used to launch/start the thresholding daemon service
- * in a Java Virtual Machine. It contains the method 
- * <code>main</code> which is a well defined entry point
- * for the virtual machine.
- *
+ * This class is used to launch/start the thresholding daemon service in a Java
+ * Virtual Machine. It contains the method <code>main</code> which is a well
+ * defined entry point for the virtual machine.
+ * 
  */
-public final class StartService
-{
-	/**
-	 * The main method used as a starting point for the Threshd
-	 * service. This method has the required signature necessary
-	 * for the virtual machine to invoke on startup.
-	 *
-	 * @param args	The arguments to the main method (not used).
-	 *
-	 */
-	public static void main(String[] args)
-	{
-		Threshd svc = Threshd.getInstance();
-		int status = svc.getStatus();
-		if (status == Fiber.START_PENDING || status == Fiber.STOPPED)
-		{
-			svc.start();
-		}
-	}
+public final class StartService {
+    /**
+     * The main method used as a starting point for the Threshd service. This
+     * method has the required signature necessary for the virtual machine to
+     * invoke on startup.
+     * 
+     * @param args
+     *            The arguments to the main method (not used).
+     * 
+     */
+    public static void main(String[] args) {
+        Threshd svc = Threshd.getInstance();
+        int status = svc.getStatus();
+        if (status == Fiber.START_PENDING || status == Fiber.STOPPED) {
+            svc.start();
+        }
+    }
 }

@@ -37,47 +37,42 @@ import java.security.Principal;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.users.User;
 
-
 /**
  * Package protected class representing an individual user's Principal object.
- * It is built from a {@link User User} data structure.
- *
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * It is built from a {@link User User}data structure.
+ * 
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-class OpenNMSPrincipal extends Object implements Principal 
-{
+class OpenNMSPrincipal extends Object implements Principal {
 
     /**
      * The internal representation of all user information.
-     */        
+     */
     protected User userInfo;
-
 
     /**
      * Construct a new OpenNMSPrincipal instance.
-     *
-     * @param userInfo The user info for this Principal
+     * 
+     * @param userInfo
+     *            The user info for this Principal
      */
-    public OpenNMSPrincipal( User userInfo ) {
+    public OpenNMSPrincipal(User userInfo) {
         this.userInfo = userInfo;
     }
-
 
     /**
      * Return the name of this Principal.
      */
     public String getName() {
-        return( this.userInfo.getUserId() );
+        return (this.userInfo.getUserId());
     }
-
 
     /**
      * Return the password of this Principal.
      */
-    public boolean comparePasswords( String password ) {
-        return( this.userInfo.getPassword().equals(UserFactory.encryptPassword(password)) );        
+    public boolean comparePasswords(String password) {
+        return (this.userInfo.getPassword().equals(UserFactory.encryptPassword(password)));
     }
 
 }
-

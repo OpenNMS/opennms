@@ -46,152 +46,135 @@ import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- *
- * @author <a href="mailto:seth@opennms.org">Seth Leger</a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * 
+ * @author <a href="mailto:seth@opennms.org">Seth Leger </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class BroadcastEventProcessor
-	implements EventListener
-{
-	/**
-	 * SQL query to retrieve nodeid of a particulary interface address
-	 */
-	private static String 	SQL_RETRIEVE_NODEID = "select nodeid from ipinterface where ipaddr=? and isManaged!='D'";
-	
-	/**
-	 * The location where suspectInterface events are enqueued
-	 * for processing.
-	 */
-	private FifoQueue	m_suspectQ;
+final class BroadcastEventProcessor implements EventListener {
+    /**
+     * SQL query to retrieve nodeid of a particulary interface address
+     */
+    private static String SQL_RETRIEVE_NODEID = "select nodeid from ipinterface where ipaddr=? and isManaged!='D'";
 
-	/**
-	 * The Vulnscand rescan scheduler
-	 */
-	private Scheduler 	m_scheduler;
+    /**
+     * The location where suspectInterface events are enqueued for processing.
+     */
+    private FifoQueue m_suspectQ;
 
-	/**
-	 * Create message selector to set to the subscription
-	 */
-	private void installJmsMessageSelector()
-	{
-		// Create the JMS selector for the ueis this service is interested in
-		//
-		List ueiList = new ArrayList();
+    /**
+     * The Vulnscand rescan scheduler
+     */
+    private Scheduler m_scheduler;
 
-		// specificVulnerabilityScan
-		ueiList.add(EventConstants.SPECIFIC_VULN_SCAN_EVENT_UEI);
+    /**
+     * Create message selector to set to the subscription
+     */
+    private void installJmsMessageSelector() {
+        // Create the JMS selector for the ueis this service is interested in
+        //
+        List ueiList = new ArrayList();
 
-		EventIpcManagerFactory.getInstance().getManager().addEventListener(this, ueiList);
-	}
+        // specificVulnerabilityScan
+        ueiList.add(EventConstants.SPECIFIC_VULN_SCAN_EVENT_UEI);
 
-	/**
-	 * This constructor is called to initilize the JMS event receiver.
-	 * A connection to the message server is opened and this instance
-	 * is setup as the endpoint for broadcast events. When a new
-	 * event arrives it is processed and the appropriate action
-	 * is taken.
-	 *
-	 * @param suspectQ	The queue where new Runnable objects
-	 *                      are enqueued for running..
-	 * @param scheduler	Rescan scheduler.
-	 *
-	 */
-	BroadcastEventProcessor(FifoQueue suspectQ, Scheduler scheduler)
-	{
-		Category log = ThreadCategory.getInstance(getClass());
+        EventIpcManagerFactory.getInstance().getManager().addEventListener(this, ueiList);
+    }
 
-		// Suspect queue
-		//
-		m_suspectQ = suspectQ;
+    /**
+     * This constructor is called to initilize the JMS event receiver. A
+     * connection to the message server is opened and this instance is setup as
+     * the endpoint for broadcast events. When a new event arrives it is
+     * processed and the appropriate action is taken.
+     * 
+     * @param suspectQ
+     *            The queue where new Runnable objects are enqueued for
+     *            running..
+     * @param scheduler
+     *            Rescan scheduler.
+     * 
+     */
+    BroadcastEventProcessor(FifoQueue suspectQ, Scheduler scheduler) {
+        Category log = ThreadCategory.getInstance(getClass());
 
-		// Scheduler
-		//
-		m_scheduler = scheduler;
-		
-		installJmsMessageSelector();
-	}
+        // Suspect queue
+        //
+        m_suspectQ = suspectQ;
 
-	/**
-	 * </p>Closes the current connections to the Java
-	 * Message Queue if they are still active. This
-	 * call may be invoked more than once safely and
-	 * may be invoked during object finalization.</p>
-	 *
-	 */
-	synchronized void close()
-	{
-		EventIpcManagerFactory.getInstance().getManager().removeEventListener(this);
-	}
+        // Scheduler
+        //
+        m_scheduler = scheduler;
 
-	/**
-	 * This method may be invoked by the garbage collection. Once
-	 * invoked it ensures that the <code>close</code> method is
-	 * called <em>at least</em> once during the cycle of this
-	 * object.
-	 *
-	 */
-	protected void finalize()
-		throws Throwable
-	{
-		close(); // ensure it's closed
-	}
+        installJmsMessageSelector();
+    }
 
-	/**
-	 * This method is invoked by the JMS topic session
-	 * when a new event is available for processing. Currently
-	 * only text based messages are processed by this callback.
-	 * Each message is examined for its Universal Event Identifier
-	 * and the appropriate action is taking based on each UEI.
-	 *
-	 * @param event	The event message.
-	 *
-	 */
-	public void onEvent(Event event)
-	{
-		Category log = ThreadCategory.getInstance(getClass());
+    /**
+     * </p>
+     * Closes the current connections to the Java Message Queue if they are
+     * still active. This call may be invoked more than once safely and may be
+     * invoked during object finalization.
+     * </p>
+     * 
+     */
+    synchronized void close() {
+        EventIpcManagerFactory.getInstance().getManager().removeEventListener(this);
+    }
 
-		String eventUei = event.getUei();
-		if (eventUei == null)
-			return;
+    /**
+     * This method may be invoked by the garbage collection. Once invoked it
+     * ensures that the <code>close</code> method is called <em>at least</em>
+     * once during the cycle of this object.
+     * 
+     */
+    protected void finalize() throws Throwable {
+        close(); // ensure it's closed
+    }
 
-		if (log.isDebugEnabled())
-			log.debug("Received event: " + eventUei);
+    /**
+     * This method is invoked by the JMS topic session when a new event is
+     * available for processing. Currently only text based messages are
+     * processed by this callback. Each message is examined for its Universal
+     * Event Identifier and the appropriate action is taking based on each UEI.
+     * 
+     * @param event
+     *            The event message.
+     * 
+     */
+    public void onEvent(Event event) {
+        Category log = ThreadCategory.getInstance(getClass());
 
-		if(eventUei.equals(EventConstants.SPECIFIC_VULN_SCAN_EVENT_UEI))
-		{
+        String eventUei = event.getUei();
+        if (eventUei == null)
+            return;
 
-// ADD RESCAN CAPABILITIES HERE
-// NEED TO GET THE SCAN LEVEL,
-// LAST SCAN DATE FROM THE DATABASE,
-// AND THE RESCAN INTERVAL
+        if (log.isDebugEnabled())
+            log.debug("Received event: " + eventUei);
 
-/*
-			// new poll event
-			try
-			{
-				if (log.isDebugEnabled())
-					log.debug("onMessage: Adding interface to suspectInterface Q: " + event.getInterface());
-				m_suspectQ.add(new NessusScan(new NessusScanConfiguration(InetAddress.getByName(event.getInterface()), int newScanLevel, Date newLastScan, long newInterval)));
-			}
-			catch (java.net.UnknownHostException ex)
-			{
-				log.error("onMessage: Could not schedule invalid interface: \"" + event.getInterface() + "\"", ex);
-			}
-			catch(Exception ex)
-			{
-				log.error("onMessage: Failed to add interface \"" + event.getInterface() + "\" to suspect queue", ex);
-			}
-*/
-		}
-		else
-		{
-			log.error("Cannot process event with UEI: " + event.getUei());
-		}
-	} // end onEvent()
+        if (eventUei.equals(EventConstants.SPECIFIC_VULN_SCAN_EVENT_UEI)) {
 
-	public String getName()
-	{
-		return "Vulnscand:BroadcastEventProcessor";
-	}
+            // ADD RESCAN CAPABILITIES HERE
+            // NEED TO GET THE SCAN LEVEL,
+            // LAST SCAN DATE FROM THE DATABASE,
+            // AND THE RESCAN INTERVAL
+
+            /*
+             * // new poll event try { if (log.isDebugEnabled())
+             * log.debug("onMessage: Adding interface to suspectInterface Q: " +
+             * event.getInterface()); m_suspectQ.add(new NessusScan(new
+             * NessusScanConfiguration(InetAddress.getByName(event.getInterface()),
+             * int newScanLevel, Date newLastScan, long newInterval))); } catch
+             * (java.net.UnknownHostException ex) { log.error("onMessage: Could
+             * not schedule invalid interface: \"" + event.getInterface() +
+             * "\"", ex); } catch(Exception ex) { log.error("onMessage: Failed
+             * to add interface \"" + event.getInterface() + "\" to suspect
+             * queue", ex); }
+             */
+        } else {
+            log.error("Cannot process event with UEI: " + event.getUei());
+        }
+    } // end onEvent()
+
+    public String getName() {
+        return "Vulnscand:BroadcastEventProcessor";
+    }
 } // end class

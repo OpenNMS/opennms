@@ -68,21 +68,22 @@ import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.utils.RelaxedX509TrustManager;
 
 /**
- * This class is designed to be used by the service poller framework to test the availability
- * of the HTTPS service on remote interfaces. The class implements the ServiceMonitor interface
- * that allows it to be used along with other plug-ins by the service poller framework.
+ * This class is designed to be used by the service poller framework to test the
+ * availability of the HTTPS service on remote interfaces. The class implements
+ * the ServiceMonitor interface that allows it to be used along with other
+ * plug-ins by the service poller framework.
  * 
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
- *  
+ * 
  */
 final class HttpsMonitor extends IPv4LatencyMonitor {
 
     /**
      * Default HTTPS ports.
      */
-    private static final int[] DEFAULT_PORTS = { 443};
+    private static final int[] DEFAULT_PORTS = { 443 };
 
     /**
      * Default retries.
@@ -95,34 +96,38 @@ final class HttpsMonitor extends IPv4LatencyMonitor {
     private static final String DEFAULT_URL = "/";
 
     /**
-     * Default timeout. Specifies how long (in milliseconds) to block waiting for data from the
-     * monitored interface.
+     * Default timeout. Specifies how long (in milliseconds) to block waiting
+     * for data from the monitored interface.
      */
-    private static final int DEFAULT_TIMEOUT = 30000; // 30 second timeout on read()
+    private static final int DEFAULT_TIMEOUT = 30000; // 30 second timeout on
+                                                        // read()
 
     /**
      * Poll the specified address for HTTPS service availability.
      * 
-     * During the poll an attempt is made to connect on the specified port(s) (by default TCP
-     * port 443). If the connection request is successful, an HTTP 'GET' command is sent to the
-     * interface. The response is parsed and a return code extracted and verified. Provided
-     * that the interface's response is valid we set the service status to SERVICE_AVAILABLE
-     * and return.
+     * During the poll an attempt is made to connect on the specified port(s)
+     * (by default TCP port 443). If the connection request is successful, an
+     * HTTP 'GET' command is sent to the interface. The response is parsed and a
+     * return code extracted and verified. Provided that the interface's
+     * response is valid we set the service status to SERVICE_AVAILABLE and
+     * return.
      * 
      * @param iface
      *            The network interface to test the service on.
      * @param parameters
-     *            The package parameters (timeout, retry, etc...) to be used for this poll.
+     *            The package parameters (timeout, retry, etc...) to be used for
+     *            this poll.
      * 
-     * @return The availibility of the interface and if a transition event should be supressed.
-     *  
+     * @return The availibility of the interface and if a transition event
+     *         should be supressed.
+     * 
      */
     public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         //
         // Get interface address from NetworkInterface
         //
         if (iface.getType() != NetworkInterface.TYPE_IPV4)
-                throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
+            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
 
         Category log = ThreadCategory.getInstance(getClass());
 
@@ -144,15 +149,15 @@ final class HttpsMonitor extends IPv4LatencyMonitor {
         String responseText = ParameterMap.getKeyedString(parameters, "response text", null);
 
         // Set to true if "response" property has a valid return code specified.
-        //  By default response will be deemed valid if the return code
-        //  falls in the range: 100 < rc < 400
-        //  This is based on the following information from RFC 1945 (HTTP 1.0)
-        // 		HTTP 1.0 GET return codes:
-        //		 	1xx: Informational - Not used, future use
-        //			2xx: Success
-        //			3xx: Redirection
-        //			4xx: Client error
-        //			5xx: Server error
+        // By default response will be deemed valid if the return code
+        // falls in the range: 100 < rc < 400
+        // This is based on the following information from RFC 1945 (HTTP 1.0)
+        // HTTP 1.0 GET return codes:
+        // 1xx: Informational - Not used, future use
+        // 2xx: Success
+        // 3xx: Redirection
+        // 4xx: Client error
+        // 5xx: Server error
         boolean bStrictResponse = (response > 99 && response < 600);
 
         // Extract the ip address
@@ -164,7 +169,7 @@ final class HttpsMonitor extends IPv4LatencyMonitor {
         //
         final String cmd = "GET " + url + " HTTP/1.0\r\n\r\n";
 
-        //set properties to allow the use of SSL for the https connection
+        // set properties to allow the use of SSL for the https connection
         System.setProperty("java.protocol.handler.pkgs", "com.sun.net.ssl.internal.www.protocol");
         Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
 
@@ -185,15 +190,16 @@ final class HttpsMonitor extends IPv4LatencyMonitor {
                 Socket socket = null;
                 Socket sslSocket = null;
                 try {
-                    //set up the certificate validation. USING THIS SCHEME WILL ACCEPT ALL
+                    // set up the certificate validation. USING THIS SCHEME WILL
+                    // ACCEPT ALL
                     // CERTIFICATES
                     SSLSocketFactory sslSF = null;
-                    TrustManager[] tm = { new RelaxedX509TrustManager()};
+                    TrustManager[] tm = { new RelaxedX509TrustManager() };
                     SSLContext sslContext = SSLContext.getInstance("SSL");
                     sslContext.init(null, tm, new java.security.SecureRandom());
                     sslSF = sslContext.getSocketFactory();
 
-                    //connect and communicate
+                    // connect and communicate
                     long sentTime = System.currentTimeMillis();
                     socket = new Socket();
                     socket.connect(new InetSocketAddress(ipv4Addr, currentPort), timeout);
@@ -211,9 +217,11 @@ final class HttpsMonitor extends IPv4LatencyMonitor {
                     BufferedReader lineRdr = new BufferedReader(new InputStreamReader(sslSocket.getInputStream()));
                     String line = lineRdr.readLine();
                     responseTime = System.currentTimeMillis() - sentTime;
-                    if (line == null) continue;
+                    if (line == null)
+                        continue;
 
-                    if (log.isDebugEnabled()) log.debug("HttpPlugin.poll: Response = " + line);
+                    if (log.isDebugEnabled())
+                        log.debug("HttpPlugin.poll: Response = " + line);
 
                     if (line.startsWith("HTTP/")) {
                         StringTokenizer t = new StringTokenizer(line);
@@ -262,15 +270,18 @@ final class HttpsMonitor extends IPv4LatencyMonitor {
                     }
 
                     if (serviceStatus == ServiceMonitor.SERVICE_AVAILABLE && responseText != null && responseText.length() > 0) {
-                        // This loop will rip through the rest of the Response Header
+                        // This loop will rip through the rest of the Response
+                        // Header
                         //
                         do {
                             line = lineRdr.readLine();
 
                         } while (line != null && line.length() != 0);
-                        if (line == null) continue;
+                        if (line == null)
+                            continue;
 
-                        // Now lets rip through the Entity-Body (i.e., content) looking
+                        // Now lets rip through the Entity-Body (i.e., content)
+                        // looking
                         // for the required text.
                         //
                         boolean bResponseTextFound = false;
@@ -279,19 +290,22 @@ final class HttpsMonitor extends IPv4LatencyMonitor {
 
                             if (line != null) {
                                 int responseIndex = line.indexOf(responseText);
-                                if (responseIndex != -1) bResponseTextFound = true;
+                                if (responseIndex != -1)
+                                    bResponseTextFound = true;
                             }
 
                         } while (line != null && !bResponseTextFound);
 
                         // Set the status back to failed
                         //
-                        if (!bResponseTextFound) serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+                        if (!bResponseTextFound)
+                            serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
                     }
                 } catch (NoRouteToHostException e) {
                     e.fillInStackTrace();
                     log.warn("No route to host exception for address " + ipv4Addr, e);
-                    portIndex = ports.length; // Will cause outer for(;;) to terminate
+                    portIndex = ports.length; // Will cause outer for(;;) to
+                                                // terminate
                     break; // Break out of inner for(;;)
                 } catch (ConnectException e) {
                     // Connection Refused!! Continue to retry.
@@ -312,7 +326,8 @@ final class HttpsMonitor extends IPv4LatencyMonitor {
                 } finally {
                     try {
                         // Close the socket
-                        if (socket != null) socket.close();
+                        if (socket != null)
+                            socket.close();
                     } catch (IOException e) {
                         e.fillInStackTrace();
                         log.debug("Error closing socket connection", e);

@@ -40,58 +40,56 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 
 /**
- *
- * @author 	<A HREF="mailto:weave@oculan.com">Brian Weaver</A>
- * @author 	<A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
- * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
+ * 
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public interface EventIpcManager
-{
-	/**
-	 * Called by a service to send an event to eventd
-	 */
-	public void sendNow(Event event);
+public interface EventIpcManager {
+    /**
+     * Called by a service to send an event to eventd
+     */
+    public void sendNow(Event event);
 
-	/**
-	 * Called by a service to send a set of events to eventd
-	 */
-	public void sendNow(Log eventLog);
+    /**
+     * Called by a service to send a set of events to eventd
+     */
+    public void sendNow(Log eventLog);
 
-	/**
-	 * Called by eventd to send an event to all interested listeners
-	 */
-	public void broadcastNow(Event event);
+    /**
+     * Called by eventd to send an event to all interested listeners
+     */
+    public void broadcastNow(Event event);
 
-	/**
-	 * Registers an event listener that is interested in all events
-	 */
-	public void addEventListener(EventListener listener);
+    /**
+     * Registers an event listener that is interested in all events
+     */
+    public void addEventListener(EventListener listener);
 
-	/**
-	 * Registers an event listener interested in the UEIs in the passed list
-	 */
-	public void addEventListener(EventListener listener, List ueilist);
+    /**
+     * Registers an event listener interested in the UEIs in the passed list
+     */
+    public void addEventListener(EventListener listener, List ueilist);
 
-	/**
-	 * Registers an event listener interested in the passed UEI
-	 */
-	public void addEventListener(EventListener listener, String uei);
+    /**
+     * Registers an event listener interested in the passed UEI
+     */
+    public void addEventListener(EventListener listener, String uei);
 
-	/**
-	 * Removes a registered event listener
-	 */
-	public void removeEventListener(EventListener listener);
+    /**
+     * Removes a registered event listener
+     */
+    public void removeEventListener(EventListener listener);
 
-	/**
-	 * Removes a registered event listener - the UEI list indicates the list
-	 * of events the listener is no more interested in
-	 */
-	public void removeEventListener(EventListener listener, List ueiList);
+    /**
+     * Removes a registered event listener - the UEI list indicates the list of
+     * events the listener is no more interested in
+     */
+    public void removeEventListener(EventListener listener, List ueiList);
 
-	/**
-	 * Removes a registered event listener - the UEI indicates an event
-	 * the listener is no more interested in
-	 */
-	public void removeEventListener(EventListener listener, String uei);
+    /**
+     * Removes a registered event listener - the UEI indicates an event the
+     * listener is no more interested in
+     */
+    public void removeEventListener(EventListener listener, String uei);
 }
-

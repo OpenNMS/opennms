@@ -37,30 +37,29 @@ package org.opennms.netmgt.eventd.db;
 import org.opennms.netmgt.xml.event.Logmsg;
 
 /**
- * This is an utility class used to format the event log message
- * info - to be inserted into the 'events' table
- *
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * This is an utility class used to format the event log message info - to be
+ * inserted into the 'events' table
+ * 
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public final class LogMessage
-{
-	/**
-	 * Format the logmsg entry
-	 *
-	 * @param msg	the logmsg
-	 *
-	 * @return the formatted logmsg
-	 */
-	public static String format(Logmsg msg)
-	{
-		String txt = Constants.escape(msg.getContent(), Constants.DB_ATTRIB_DELIM);
-		String log = msg.getDest();
-		
-		String fmsg = txt + Constants.DB_ATTRIB_DELIM + log;
-		if(fmsg.length() >= 256)
-			fmsg = fmsg.substring(0, 252) + Constants.VALUE_TRUNCATE_INDICATOR;
-		
-		return fmsg;
-	}
+public final class LogMessage {
+    /**
+     * Format the logmsg entry
+     * 
+     * @param msg
+     *            the logmsg
+     * 
+     * @return the formatted logmsg
+     */
+    public static String format(Logmsg msg) {
+        String txt = Constants.escape(msg.getContent(), Constants.DB_ATTRIB_DELIM);
+        String log = msg.getDest();
+
+        String fmsg = txt + Constants.DB_ATTRIB_DELIM + log;
+        if (fmsg.length() >= 256)
+            fmsg = fmsg.substring(0, 252) + Constants.VALUE_TRUNCATE_INDICATOR;
+
+        return fmsg;
+    }
 }

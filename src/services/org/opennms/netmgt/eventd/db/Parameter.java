@@ -41,77 +41,75 @@ import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
 /**
- * This is an utility class used to format the event parameters
- * - to be inserted into the 'events' table
- *
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
- * @author <A HREF="http://www.opennms.org">OpenNMS</A>
+ * This is an utility class used to format the event parameters - to be inserted
+ * into the 'events' table
+ * 
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS </A>
  */
-public final class Parameter
-{
-	/**
-	 * Format the list of event paramaters
-	 *
-	 * @param parms	the list
-	 *
-	 * @return the formatted event parameters string
-	 */
-	public static String format(Parms parms)
-	{
-		boolean 	first = true;
+public final class Parameter {
+    /**
+     * Format the list of event paramaters
+     * 
+     * @param parms
+     *            the list
+     * 
+     * @return the formatted event parameters string
+     */
+    public static String format(Parms parms) {
+        boolean first = true;
 
-		Enumeration enum = parms.enumerateParm();
+        Enumeration enum = parms.enumerateParm();
 
-		StringBuffer	parmbuf = new StringBuffer();
-		while(enum.hasMoreElements())
-		{
-			Parm parm = (Parm)enum.nextElement();
-			if(!first)
-				parmbuf.append(Constants.MULTIPLE_VAL_DELIM);
-			parmbuf.append(format(parm));
-			first = false;
-		}
-		
-		return parmbuf.toString();
-	}
+        StringBuffer parmbuf = new StringBuffer();
+        while (enum.hasMoreElements()) {
+            Parm parm = (Parm) enum.nextElement();
+            if (!first)
+                parmbuf.append(Constants.MULTIPLE_VAL_DELIM);
+            parmbuf.append(format(parm));
+            first = false;
+        }
 
-	/**
-	 * Format each parameter
-	 *
-	 * @param parm	the parameter
-	 *
-	 * @return the formatted event parameter string
-	 */
-	public static String format(Parm parm)
-	{
-		Value pValue = parm.getValue();
+        return parmbuf.toString();
+    }
 
-		String type = pValue.getType();
-		String encoding = pValue.getEncoding();
-		
-		String tmp  = Constants.escape(parm.getParmName(), Constants.NAME_VAL_DELIM);
-		String name = Constants.escape(tmp, Constants.MULTIPLE_VAL_DELIM);
-		tmp = Constants.escape(pValue.getContent(), Constants.NAME_VAL_DELIM);
-		String value = Constants.escape(tmp, Constants.MULTIPLE_VAL_DELIM);
+    /**
+     * Format each parameter
+     * 
+     * @param parm
+     *            the parameter
+     * 
+     * @return the formatted event parameter string
+     */
+    public static String format(Parm parm) {
+        Value pValue = parm.getValue();
 
-		String empty = "";
-		name     = (name != null ? name.trim() : empty);
-		value    = (value != null ? value.trim() : empty);
-		type 	 = (type != null ? type.trim() : empty);
-		encoding = (encoding != null ? encoding.trim() : empty);
+        String type = pValue.getType();
+        String encoding = pValue.getEncoding();
 
-		StringBuffer buf = new StringBuffer();
-		buf.append(name);
-		buf.append(Constants.NAME_VAL_DELIM);
-		buf.append(value);
-		buf.append('(');
-		buf.append(type);
-		buf.append(Constants.DB_ATTRIB_DELIM);
-		buf.append(encoding);
-		buf.append(')');
+        String tmp = Constants.escape(parm.getParmName(), Constants.NAME_VAL_DELIM);
+        String name = Constants.escape(tmp, Constants.MULTIPLE_VAL_DELIM);
+        tmp = Constants.escape(pValue.getContent(), Constants.NAME_VAL_DELIM);
+        String value = Constants.escape(tmp, Constants.MULTIPLE_VAL_DELIM);
 
-		return buf.toString();
-		//return 	name + Constants.NAME_VAL_DELIM + value + "(" + type + Constants.DB_ATTRIB_DELIM + encoding + ")";
-	}
+        String empty = "";
+        name = (name != null ? name.trim() : empty);
+        value = (value != null ? value.trim() : empty);
+        type = (type != null ? type.trim() : empty);
+        encoding = (encoding != null ? encoding.trim() : empty);
+
+        StringBuffer buf = new StringBuffer();
+        buf.append(name);
+        buf.append(Constants.NAME_VAL_DELIM);
+        buf.append(value);
+        buf.append('(');
+        buf.append(type);
+        buf.append(Constants.DB_ATTRIB_DELIM);
+        buf.append(encoding);
+        buf.append(')');
+
+        return buf.toString();
+        // return name + Constants.NAME_VAL_DELIM + value + "(" + type +
+        // Constants.DB_ATTRIB_DELIM + encoding + ")";
+    }
 }
-

@@ -64,24 +64,25 @@ import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * <P>
- * This class is designed to be used by the capabilities daemon to test for the existance of an
- * SMTP server on remote interfaces. The class implements the Plugin interface that allows it
- * to be used along with other plugins by the daemon.
+ * This class is designed to be used by the capabilities daemon to test for the
+ * existance of an SMTP server on remote interfaces. The class implements the
+ * Plugin interface that allows it to be used along with other plugins by the
+ * daemon.
  * </P>
  * 
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
  * 
- *  
+ * 
  */
 public final class SmtpPlugin extends AbstractPlugin {
 
     /**
-     * The regular expression test used to determine if the reply is a multi line reply. A
-     * multi line reply is one that each line, but the last, is in the form of "ddd-" where
-     * 'ddd' is the result code.
-     *  
+     * The regular expression test used to determine if the reply is a multi
+     * line reply. A multi line reply is one that each line, but the last, is in
+     * the form of "ddd-" where 'ddd' is the result code.
+     * 
      */
     private static final RE MULTILINE_RESULT;
 
@@ -131,9 +132,10 @@ public final class SmtpPlugin extends AbstractPlugin {
 
     /**
      * <P>
-     * Test to see if the passed host-port pair is the endpoint for an SMTP server. If there is
-     * an SMTP server at that destination then a value of true is returned from the method.
-     * Otherwise a false value is returned to the caller.
+     * Test to see if the passed host-port pair is the endpoint for an SMTP
+     * server. If there is an SMTP server at that destination then a value of
+     * true is returned from the method. Otherwise a false value is returned to
+     * the caller.
      * </P>
      * 
      * @param host
@@ -141,7 +143,8 @@ public final class SmtpPlugin extends AbstractPlugin {
      * @param port
      *            The remote port on the host.
      * 
-     * @return True if server supports SMTP on the specified port, false otherwise
+     * @return True if server supports SMTP on the specified port, false
+     *         otherwise
      */
     private boolean isServer(InetAddress host, int port, int retries, int timeout) {
         // get a log to send errors
@@ -186,18 +189,21 @@ public final class SmtpPlugin extends AbstractPlugin {
                     String cmd = "HELO " + LOCALHOST_NAME + "\r\n";
                     socket.getOutputStream().write(cmd.getBytes());
 
-                    // Response from HELO command may be a multi-line response (but
+                    // Response from HELO command may be a multi-line response
+                    // (but
                     // most likely will be single-line)..
                     // We are expecting to get a response with an integer return
                     // code in the first token. We can't ge sure that the first
-                    // response will give us what we want. Consider the following
+                    // response will give us what we want. Consider the
+                    // following
                     // reponse for example:
                     //
-                    // 	250-First line
-                    //	250-Second line
-                    //	250 Requested mail action okay, completed
+                    // 250-First line
+                    // 250-Second line
+                    // 250 Requested mail action okay, completed
                     //
-                    // In this case the final line of the response contains the return
+                    // In this case the final line of the response contains the
+                    // return
                     // code we are looking for.
                     do {
                         result = lineRdr.readLine();
@@ -218,17 +224,22 @@ public final class SmtpPlugin extends AbstractPlugin {
                         cmd = "QUIT\r\n";
                         socket.getOutputStream().write(cmd.getBytes());
 
-                        // Response from QUIT command may be a multi-line response.
-                        // We are expecting to get a response with an integer return
-                        // code in the first token. We can't ge sure that the first
-                        // response will give us what we want. Consider the following
+                        // Response from QUIT command may be a multi-line
+                        // response.
+                        // We are expecting to get a response with an integer
+                        // return
+                        // code in the first token. We can't ge sure that the
+                        // first
+                        // response will give us what we want. Consider the
+                        // following
                         // reponse for example:
                         //
-                        // 	221-First line
-                        //	221-Second line
-                        //	221 <domain> Service closing transmission channel.
+                        // 221-First line
+                        // 221-Second line
+                        // 221 <domain> Service closing transmission channel.
                         //
-                        // In this case the final line of the response contains the return
+                        // In this case the final line of the response contains
+                        // the return
                         // code we are looking for.
                         do {
                             result = lineRdr.readLine();
@@ -243,7 +254,8 @@ public final class SmtpPlugin extends AbstractPlugin {
                         t = new StringTokenizer(result);
                         rc = Integer.parseInt(t.nextToken());
 
-                        if (rc == 221) isAServer = true;
+                        if (rc == 221)
+                            isAServer = true;
                     }
                 }
             } catch (NumberFormatException e) {
@@ -271,7 +283,8 @@ public final class SmtpPlugin extends AbstractPlugin {
                 isAServer = false;
             } finally {
                 try {
-                    if (socket != null) socket.close();
+                    if (socket != null)
+                        socket.close();
                 } catch (IOException e) {
                 }
             }
@@ -285,8 +298,8 @@ public final class SmtpPlugin extends AbstractPlugin {
     }
 
     /**
-     * Returns the name of the protocol that this plugin checks on the target system for
-     * support.
+     * Returns the name of the protocol that this plugin checks on the target
+     * system for support.
      * 
      * @return The protocol name for this plugin.
      */
@@ -295,8 +308,8 @@ public final class SmtpPlugin extends AbstractPlugin {
     }
 
     /**
-     * Returns true if the protocol defined by this plugin is supported. If the protocol is not
-     * supported then a false value is returned to the caller.
+     * Returns true if the protocol defined by this plugin is supported. If the
+     * protocol is not supported then a false value is returned to the caller.
      * 
      * @param address
      *            The address to check for support.
@@ -308,10 +321,11 @@ public final class SmtpPlugin extends AbstractPlugin {
     }
 
     /**
-     * Returns true if the protocol defined by this plugin is supported. If the protocol is not
-     * supported then a false value is returned to the caller. The qualifier map passed to the
-     * method is used by the plugin to return additional information by key-name. These
-     * key-value pairs can be added to service events if needed.
+     * Returns true if the protocol defined by this plugin is supported. If the
+     * protocol is not supported then a false value is returned to the caller.
+     * The qualifier map passed to the method is used by the plugin to return
+     * additional information by key-name. These key-value pairs can be added to
+     * service events if needed.
      * 
      * @param address
      *            The address to check for support.
@@ -332,9 +346,9 @@ public final class SmtpPlugin extends AbstractPlugin {
         }
 
         boolean result = isServer(address, port, retries, timeout);
-        if (result && qualifiers != null && !qualifiers.containsKey("port")) qualifiers.put("port", new Integer(port));
+        if (result && qualifiers != null && !qualifiers.containsKey("port"))
+            qualifiers.put("port", new Integer(port));
 
         return result;
     }
 }
-

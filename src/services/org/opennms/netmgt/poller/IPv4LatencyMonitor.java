@@ -51,11 +51,12 @@ import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 
 /**
- * <p>This class provides a basic implementation for most of the interface
- * methods of the <code>ServiceMonitor</code> class in addition to methods
- * for creating and updating RRD files with latency information. Since most pollers 
- * do not do any special initialization, and only require that the interface is an
- * <code>InetAddress</code> object this class provides eveything by the
+ * <p>
+ * This class provides a basic implementation for most of the interface methods
+ * of the <code>ServiceMonitor</code> class in addition to methods for
+ * creating and updating RRD files with latency information. Since most pollers
+ * do not do any special initialization, and only require that the interface is
+ * an <code>InetAddress</code> object this class provides eveything by the
  * <code>poll<code> interface.
  *
  * @author <A HREF="mike@opennms.org">Mike</A>
@@ -63,184 +64,203 @@ import org.opennms.netmgt.rrd.RrdUtils;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */
-abstract class IPv4LatencyMonitor
-	implements ServiceMonitor
-{
-	/** 
-	 * RRD data source name which doubles as the RRD file name.
-	 */
-	static String DS_NAME = "response-time";
-	private PollerConfig m_pollerConfig;
-	
-	/**
-	 * <P>This method is called after the framework creates an
-	 * instance of the plug-in. The framework passes the object a proxy
-	 * object that can be used to retreive configuration information 
-	 * specific to the plug-in. Additionally, any parameters for the 
-	 * plug-in from the package definition are passed using the 
-	 * parameters element.</P>
-	 *
-	 * <P>If there is a critical error, like missing service libraries, the
-	 * the montior may throw a ServiceMonitorException. If the plug-in 
-	 * throws an exception then the plug-in will be disabled in the
-	 * framework.</P>
-	 *
-	 * @param parameters	Not currently used
-	 *
-	 * @exception java.lang.RuntimeException Thrown if
-	 * 	an unrecoverable error occurs that prevents the plug-in from functioning.
-	 *
-	 */
-	public void initialize(PollerConfig pollerConfig, Map parameters) 
-	{
-		// Log4j category
-		//
-		Category log = ThreadCategory.getInstance(getClass());
-		
+abstract class IPv4LatencyMonitor implements ServiceMonitor {
+    /**
+     * RRD data source name which doubles as the RRD file name.
+     */
+    static String DS_NAME = "response-time";
+
+    private PollerConfig m_pollerConfig;
+
+    /**
+     * <P>
+     * This method is called after the framework creates an instance of the
+     * plug-in. The framework passes the object a proxy object that can be used
+     * to retreive configuration information specific to the plug-in.
+     * Additionally, any parameters for the plug-in from the package definition
+     * are passed using the parameters element.
+     * </P>
+     * 
+     * <P>
+     * If there is a critical error, like missing service libraries, the the
+     * montior may throw a ServiceMonitorException. If the plug-in throws an
+     * exception then the plug-in will be disabled in the framework.
+     * </P>
+     * 
+     * @param parameters
+     *            Not currently used
+     * 
+     * @exception java.lang.RuntimeException
+     *                Thrown if an unrecoverable error occurs that prevents the
+     *                plug-in from functioning.
+     * 
+     */
+    public void initialize(PollerConfig pollerConfig, Map parameters) {
+        // Log4j category
+        //
+        Category log = ThreadCategory.getInstance(getClass());
+
         m_pollerConfig = pollerConfig;
-        
+
         try {
             RrdUtils.initialize();
-        }
-        catch (RrdException e) {
-            if(log.isEnabledFor(Priority.ERROR))
+        } catch (RrdException e) {
+            if (log.isEnabledFor(Priority.ERROR))
                 log.error("initialize: Unable to initialize RrdUtils", e);
             throw new RuntimeException("Unable to initialize RrdUtils", e);
         }
 
         if (log.isDebugEnabled())
-			log.debug("initialize: successfully instantiated JNI interface to RRD...");
-		
-		return;
-	}
-		
-	/**
-	 * <P>This method is called whenever the plug-in is being unloaded, normally
-	 * during framework exit. During this time the framework may release any 
-	 * resource and save any state information using the proxy object from the
-	 * initialization routine.</P>
-	 *
-	 * <P>Even if the plug-in throws a monitor exception, it will not prevent
-	 * the plug-in from being unloaded. The plug-in should not return until all
-	 * of its state information is saved. Once the plug-in returns from this 
-	 * call its configuration proxy object is considered invalid.</P>
-	 *
-	 * @exception java.lang.RuntimeException Thrown if an error occurs
-	 * 	during deallocation.
-	 *
-	 */
-	public void release() 
-	{
-		return;
-	}
-	
-	/**
-	 * <P>This method is called whenever a new interface that supports the 
-	 * plug-in service is added to the scheduling system. The plug-in has the
-	 * option to load and/or associate configuration information with the
-	 * interface before the framework begins scheduling the new device.</P>
-	 *
-	 * <P>Should a monitor exception be thrown during an initialization call
-	 * then the framework will log an error and discard the interface from 
-	 * scheduling.</P>
-	 *
-	 * @param iface		The network interface to be added to the scheduler.
-	 *
-	 * @exception java.lang.RuntimeException Thrown if an unrecoverable error
-	 *	 occurs that prevents the interface from being monitored.
-	 * @exception org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException Thrown
-	 * 	if the passed interface is invalid for this monitor.
-	 *
-	 */
-	public void initialize(NetworkInterface iface) 
-	{
-		if(!(iface.getAddress() instanceof InetAddress))
-			throw new NetworkInterfaceNotSupportedException("Address type not supported");
-		return;
-	}
-	
-	/**
-	 * <P>This method is the called whenever an interface is being removed from 
-	 * the scheduler. For example, if a service is determined as being no longer
-	 * supported then this method will be invoked to cleanup any information 
-	 * associated with this device. This gives the implementor of the interface
-	 * the ability to serialize any data prior to the interface being discarded.</P>
-	 *
-	 * <P>If an exception is thrown during the release the exception will be
-	 * logged, but the interface will still be discarded for garbage collection.</P>
-	 *
-	 * @param iface		The network interface that was being monitored.
-	 *
-	 * @exception java.lang.RuntimeException Thrown if an unrecoverable error
-	 *	 occurs that prevents the interface from being monitored.
-	 */
-	public void release(NetworkInterface iface) 
-	{
-		return;
-	}
-	
-	/**
-	 * Create an RRD database file for storing latency/response time
-	 * data.
-	 * 
-	 * @param rrdJniInterface 	interface used to issue RRD commands.
-	 * @param repository		path to the RRD file repository
-	 * @param addr			interface address
-	 * @param dsName		data source/RRD file name
-	 * 
-	 * @return true if RRD file successfully created, false otherwise
-	 */
-	public boolean createRRD(String repository, InetAddress addr, String dsName, org.opennms.netmgt.config.poller.Package pkg) throws RrdException
-	{
-		Category log = ThreadCategory.getInstance(this.getClass());
-	
+            log.debug("initialize: successfully instantiated JNI interface to RRD...");
+
+        return;
+    }
+
+    /**
+     * <P>
+     * This method is called whenever the plug-in is being unloaded, normally
+     * during framework exit. During this time the framework may release any
+     * resource and save any state information using the proxy object from the
+     * initialization routine.
+     * </P>
+     * 
+     * <P>
+     * Even if the plug-in throws a monitor exception, it will not prevent the
+     * plug-in from being unloaded. The plug-in should not return until all of
+     * its state information is saved. Once the plug-in returns from this call
+     * its configuration proxy object is considered invalid.
+     * </P>
+     * 
+     * @exception java.lang.RuntimeException
+     *                Thrown if an error occurs during deallocation.
+     * 
+     */
+    public void release() {
+        return;
+    }
+
+    /**
+     * <P>
+     * This method is called whenever a new interface that supports the plug-in
+     * service is added to the scheduling system. The plug-in has the option to
+     * load and/or associate configuration information with the interface before
+     * the framework begins scheduling the new device.
+     * </P>
+     * 
+     * <P>
+     * Should a monitor exception be thrown during an initialization call then
+     * the framework will log an error and discard the interface from
+     * scheduling.
+     * </P>
+     * 
+     * @param iface
+     *            The network interface to be added to the scheduler.
+     * 
+     * @exception java.lang.RuntimeException
+     *                Thrown if an unrecoverable error occurs that prevents the
+     *                interface from being monitored.
+     * @exception
+     *                org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException
+     *                Thrown if the passed interface is invalid for this
+     *                monitor.
+     * 
+     */
+    public void initialize(NetworkInterface iface) {
+        if (!(iface.getAddress() instanceof InetAddress))
+            throw new NetworkInterfaceNotSupportedException("Address type not supported");
+        return;
+    }
+
+    /**
+     * <P>
+     * This method is the called whenever an interface is being removed from the
+     * scheduler. For example, if a service is determined as being no longer
+     * supported then this method will be invoked to cleanup any information
+     * associated with this device. This gives the implementor of the interface
+     * the ability to serialize any data prior to the interface being discarded.
+     * </P>
+     * 
+     * <P>
+     * If an exception is thrown during the release the exception will be
+     * logged, but the interface will still be discarded for garbage collection.
+     * </P>
+     * 
+     * @param iface
+     *            The network interface that was being monitored.
+     * 
+     * @exception java.lang.RuntimeException
+     *                Thrown if an unrecoverable error occurs that prevents the
+     *                interface from being monitored.
+     */
+    public void release(NetworkInterface iface) {
+        return;
+    }
+
+    /**
+     * Create an RRD database file for storing latency/response time data.
+     * 
+     * @param rrdJniInterface
+     *            interface used to issue RRD commands.
+     * @param repository
+     *            path to the RRD file repository
+     * @param addr
+     *            interface address
+     * @param dsName
+     *            data source/RRD file name
+     * 
+     * @return true if RRD file successfully created, false otherwise
+     */
+    public boolean createRRD(String repository, InetAddress addr, String dsName, org.opennms.netmgt.config.poller.Package pkg) throws RrdException {
+        Category log = ThreadCategory.getInstance(this.getClass());
+
         List rraList = getPollerConfig().getRRAList(pkg);
 
         // add interface address to RRD repository path
-		String path = repository + File.separator + addr.getHostAddress();
-        
-		return RrdUtils.createRRD(addr.getHostAddress(), path, dsName, getPollerConfig().getStep(pkg), "GAUGE", 600, "U", "U", rraList);
-        
-		
-	}
-	
-	/**
-	 * @return
-	 */
-	private PollerConfig getPollerConfig() {
-		return m_pollerConfig;
-	}
+        String path = repository + File.separator + addr.getHostAddress();
 
-	/**
-	 * Update an RRD database file with latency/response time data.
-	 * 
-	 * @param rrdJniInterface 	interface used to issue RRD commands.
-	 * @param repository		path to the RRD file repository
-	 * @param addr			interface address
-	 * @param value			value to update the RRD file with
-	 * 
-	 * @return true if RRD file successfully created, false otherwise
-	 */
-	public void updateRRD(String repository, InetAddress addr, String dsName, long value, org.opennms.netmgt.config.poller.Package pkg)
-	{
-		Category log = ThreadCategory.getInstance(this.getClass());
-		
-		try {
-		    // Create RRD if it doesn't already exist
-		    createRRD(repository, addr, dsName, pkg);
-            
-		    // add interface address to RRD repository path
-		    String path = repository + File.separator + addr.getHostAddress();
-		    
-		    RrdUtils.updateRRD(addr.getHostAddress(), path, dsName, Long.toString(value));
-		    
-        }
-		catch (RrdException e) {
-			if(log.isEnabledFor(Priority.ERROR)) {
+        return RrdUtils.createRRD(addr.getHostAddress(), path, dsName, getPollerConfig().getStep(pkg), "GAUGE", 600, "U", "U", rraList);
+
+    }
+
+    /**
+     * @return
+     */
+    private PollerConfig getPollerConfig() {
+        return m_pollerConfig;
+    }
+
+    /**
+     * Update an RRD database file with latency/response time data.
+     * 
+     * @param rrdJniInterface
+     *            interface used to issue RRD commands.
+     * @param repository
+     *            path to the RRD file repository
+     * @param addr
+     *            interface address
+     * @param value
+     *            value to update the RRD file with
+     * 
+     * @return true if RRD file successfully created, false otherwise
+     */
+    public void updateRRD(String repository, InetAddress addr, String dsName, long value, org.opennms.netmgt.config.poller.Package pkg) {
+        Category log = ThreadCategory.getInstance(this.getClass());
+
+        try {
+            // Create RRD if it doesn't already exist
+            createRRD(repository, addr, dsName, pkg);
+
+            // add interface address to RRD repository path
+            String path = repository + File.separator + addr.getHostAddress();
+
+            RrdUtils.updateRRD(addr.getHostAddress(), path, dsName, Long.toString(value));
+
+        } catch (RrdException e) {
+            if (log.isEnabledFor(Priority.ERROR)) {
                 String msg = e.getMessage();
                 log.error(msg);
                 throw new RuntimeException(msg, e);
             }
-		}
-	}
+        }
+    }
 }

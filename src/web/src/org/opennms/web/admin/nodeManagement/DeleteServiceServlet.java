@@ -51,78 +51,73 @@ import org.opennms.web.element.Service;
 
 /**
  * @author brozow
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * 
+ * TODO To change the template for this generated type comment go to Window -
+ * Preferences - Java - Code Style - Code Templates
  */
 public class DeleteServiceServlet extends HttpServlet {
 
-    /* (non-Javadoc)
-     * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest,
+     *      javax.servlet.http.HttpServletResponse)
      */
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
-    {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            
+
             checkParameters(request);
-            
+
             int nodeId = Integer.parseInt(request.getParameter("node"));
             String ipAddr = request.getParameter("intf");
             String ifIndexString = request.getParameter("ifIndex");
             int ifIndex = (ifIndexString == null || "".equals(ifIndexString)) ? -1 : Integer.parseInt(ifIndexString);
             int serviceId = Integer.parseInt(request.getParameter("service"));
-            
-            Service service_db = NetworkElementFactory.getService( nodeId, ipAddr, serviceId );
-            
-            if( service_db == null ) {
-                //handle this WAY better, very awful
-                throw new ServletException( "No such service in database" );
+
+            Service service_db = NetworkElementFactory.getService(nodeId, ipAddr, serviceId);
+
+            if (service_db == null) {
+                // handle this WAY better, very awful
+                throw new ServletException("No such service in database");
             }
-            
-            
+
             Event e = EventUtils.createDeleteServiceEvent("OpenNMS.WebUI", nodeId, ipAddr, service_db.getServiceName(), -1L);
             sendEvent(e);
-            
-            
-            //forward the request for proper display
+
+            // forward the request for proper display
             RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/serviceDeleted.jsp");
-            dispatcher.forward( request, response );
-        }
-        catch (SQLException e) {
+            dispatcher.forward(request, response);
+        } catch (SQLException e) {
             throw new ServletException("Error communicating with database", e);
         }
-        
+
     }
-    
+
     public void checkParameters(HttpServletRequest request) {
-        String nodeIdString = request.getParameter( "node" );
-        String ipAddr = request.getParameter( "intf" );
-        String ifindexString = request.getParameter( "ifindex" );
+        String nodeIdString = request.getParameter("node");
+        String ipAddr = request.getParameter("intf");
+        String ifindexString = request.getParameter("ifindex");
         String serviceId = request.getParameter("service");
-        
-        if( nodeIdString == null ) {
-            throw new org.opennms.web.MissingParameterException( "node", new String[] { "node", "intf", "service", "ifindex?"} );
+
+        if (nodeIdString == null) {
+            throw new org.opennms.web.MissingParameterException("node", new String[] { "node", "intf", "service", "ifindex?" });
         }
 
-        if( ipAddr == null ) {
-            throw new org.opennms.web.MissingParameterException( "intf", new String[] { "node", "intf", "service", "ifindex?" } );
+        if (ipAddr == null) {
+            throw new org.opennms.web.MissingParameterException("intf", new String[] { "node", "intf", "service", "ifindex?" });
         }
-        
+
         if (serviceId == null) {
-            throw new org.opennms.web.MissingParameterException( "service", new String[] { "node", "intf", "service", "ifindex?" } );
+            throw new org.opennms.web.MissingParameterException("service", new String[] { "node", "intf", "service", "ifindex?" });
         }
 
     }
-   
-    private void sendEvent(Event event) throws ServletException 
-    {
-        try
-        {
+
+    private void sendEvent(Event event) throws ServletException {
+        try {
             EventProxy eventProxy = new TcpEventProxy();
             eventProxy.send(event);
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             throw new ServletException("Could not send event " + event.getUei(), e);
         }
     }

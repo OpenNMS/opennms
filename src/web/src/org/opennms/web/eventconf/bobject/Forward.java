@@ -31,137 +31,127 @@
 
 package org.opennms.web.eventconf.bobject;
 
-
 /**
- * This is a data class for storing snmp event configuration information
- * as parsed from the eventconf.xml file
- *
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
+ * This is a data class for storing snmp event configuration information as
+ * parsed from the eventconf.xml file
+ * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * 
  * @version 1.1.1.1
- *
+ * 
  * @deprecated Replaced by a Castor-generated implementation.
- *
+ * 
  * @see org.opennms.netmgt.xml.eventconf.Forward
- *
+ * 
  */
-public class Forward implements Cloneable
-{
-	/**The different mechanism values for the forwards. If this array changes
-	   please update the FORWARD_MECHANISM_DEFAULT_INDEX member if needed.
-	*/
-	public static final String FORWARD_MECHANISM_VALUES[] = {"snmpudp",
-		             	                                 "snmptcp",
-								 "xmltcp",
-								 "xmludp"};
-	
-	/**The index into the FORWARD_MECHANISM_VALUES array indicating
-	   the default mechanism of the forward. If the values array
-	   changes please update this index if needed.
-	*/
-	public static final int FORWARD_MECHANISM_DEFAULT_INDEX = 0;
-	
-	/**A list of values for forward states. If this array changes
-	   please update any of the FORWARD_STATE_DEFAULT_INDEX members if needed.
-	*/
-	public static final String FORWARD_STATES[] = {"on","off"};
-	
-	/**The index into the FORWARD_STATES array indicating
-	   the default state of a forward. If the values array
-	   changes please update this index if needed.
-	*/
-	public static final int FORWARD_STATE_DEFAULT_INDEX = 0;
-	
-	/**
-	*/
-	private String m_forward;
-	
-	/**
-	*/
-	private String m_state;
-	
-	/**
-	*/
-	private String m_mechanism;
-	
-	/**Default constructor, intializes the member variables.
-	*/
-	public Forward()
-	{
-		m_state = FORWARD_STATES[FORWARD_STATE_DEFAULT_INDEX];
-		m_mechanism = FORWARD_MECHANISM_VALUES[FORWARD_MECHANISM_DEFAULT_INDEX];
-	}
-	
-	/**
-	*/
-	public Object clone()
-	{
-		try
-		{
-			super.clone();
-		}
-		catch(CloneNotSupportedException e)
-		{
-			return null;
-		}
-		
-		Forward newForward = new Forward();
-		
-		newForward.setForward(m_forward);
-		newForward.setState(m_state);
-		newForward.setMechanism(m_mechanism);
-		
-		return newForward;
-	}
-	
-	/**
-	*/
-	public void setForward(String forward)
-	{
-		m_forward = forward;
-	}
-	
-	/**
-	*/
-	public String getForward()
-	{
-		return m_forward;
-	}
-	
-	/**
-	*/
-	public void setState(String state)
-	{
-		/*
-		if (index < 0 || index > FORWARD_STATES.length)
-			throw new InvalidParameterException("The forward state index("+index+") must be >= 0 and <= " + FORWARD_STATES.length);
-		*/
-		m_state = state;
-	}
-	
-	/**
-	*/
-	public String getState()
-	{
-		return m_state;
-	}
-	
-	/**
-	*/
-	public void setMechanism(String mechanism)
-	{
-		/*
-		if (index < 0 || index > FORWARD_MECHANISM_VALUES.length)
-			throw new InvalidParameterException("The forward mechanism index("+index+") must be >= 0 and <= " + FORWARD_MECHANISM_VALUES.length);
-		*/
-		m_mechanism = mechanism;
-	}
-	
-	/**
-	*/
-	public String getMechanism()
-	{
-		return m_mechanism;
-	}
+public class Forward implements Cloneable {
+    /**
+     * The different mechanism values for the forwards. If this array changes
+     * please update the FORWARD_MECHANISM_DEFAULT_INDEX member if needed.
+     */
+    public static final String FORWARD_MECHANISM_VALUES[] = { "snmpudp", "snmptcp", "xmltcp", "xmludp" };
+
+    /**
+     * The index into the FORWARD_MECHANISM_VALUES array indicating the default
+     * mechanism of the forward. If the values array changes please update this
+     * index if needed.
+     */
+    public static final int FORWARD_MECHANISM_DEFAULT_INDEX = 0;
+
+    /**
+     * A list of values for forward states. If this array changes please update
+     * any of the FORWARD_STATE_DEFAULT_INDEX members if needed.
+     */
+    public static final String FORWARD_STATES[] = { "on", "off" };
+
+    /**
+     * The index into the FORWARD_STATES array indicating the default state of a
+     * forward. If the values array changes please update this index if needed.
+     */
+    public static final int FORWARD_STATE_DEFAULT_INDEX = 0;
+
+    /**
+     */
+    private String m_forward;
+
+    /**
+     */
+    private String m_state;
+
+    /**
+     */
+    private String m_mechanism;
+
+    /**
+     * Default constructor, intializes the member variables.
+     */
+    public Forward() {
+        m_state = FORWARD_STATES[FORWARD_STATE_DEFAULT_INDEX];
+        m_mechanism = FORWARD_MECHANISM_VALUES[FORWARD_MECHANISM_DEFAULT_INDEX];
+    }
+
+    /**
+     */
+    public Object clone() {
+        try {
+            super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
+
+        Forward newForward = new Forward();
+
+        newForward.setForward(m_forward);
+        newForward.setState(m_state);
+        newForward.setMechanism(m_mechanism);
+
+        return newForward;
+    }
+
+    /**
+     */
+    public void setForward(String forward) {
+        m_forward = forward;
+    }
+
+    /**
+     */
+    public String getForward() {
+        return m_forward;
+    }
+
+    /**
+     */
+    public void setState(String state) {
+        /*
+         * if (index < 0 || index > FORWARD_STATES.length) throw new
+         * InvalidParameterException("The forward state index("+index+") must be >=
+         * 0 and <= " + FORWARD_STATES.length);
+         */
+        m_state = state;
+    }
+
+    /**
+     */
+    public String getState() {
+        return m_state;
+    }
+
+    /**
+     */
+    public void setMechanism(String mechanism) {
+        /*
+         * if (index < 0 || index > FORWARD_MECHANISM_VALUES.length) throw new
+         * InvalidParameterException("The forward mechanism index("+index+")
+         * must be >= 0 and <= " + FORWARD_MECHANISM_VALUES.length);
+         */
+        m_mechanism = mechanism;
+    }
+
+    /**
+     */
+    public String getMechanism() {
+        return m_mechanism;
+    }
 }

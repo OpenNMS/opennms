@@ -45,7 +45,7 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.poller.Poller;
 
 public class Pollerd implements PollerdMBean {
-    
+
     public void init() {
         Category log = ThreadCategory.getInstance();
         try {
@@ -62,7 +62,7 @@ public class Pollerd implements PollerdMBean {
         org.opennms.netmgt.poller.Poller poller = getPoller();
         poller.setPollerConfig(PollerConfigFactory.getInstance());
         poller.setPollOutagesConfig(PollOutagesConfigFactory.getInstance());
-        
+
         EventIpcManagerFactory.init();
         EventIpcManager mgr = EventIpcManagerFactory.getInstance().getManager();
         poller.setEventManager(mgr);

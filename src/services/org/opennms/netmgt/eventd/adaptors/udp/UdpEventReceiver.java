@@ -53,277 +53,235 @@ import org.opennms.netmgt.eventd.adaptors.EventHandlerMBeanProxy;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
 
 /**
- * This class implements the User Datagram Protocol (UDP) event
- * receiver. When the an agent sends an event via UDP/IP the receiver
- * will process the event and then add the UUIDs to the internal list.
- * If the event is successfully processed then an event-receipt is 
- * returned to the caller.
- *
- * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
- * @author <a href="http://www.oculan.com">Oculan Corporation</a>
- *
+ * This class implements the User Datagram Protocol (UDP) event receiver. When
+ * the an agent sends an event via UDP/IP the receiver will process the event
+ * and then add the UUIDs to the internal list. If the event is successfully
+ * processed then an event-receipt is returned to the caller.
+ * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.oculan.com">Oculan Corporation </a>
+ * 
  */
-public final class UdpEventReceiver
-	implements EventReceiver,
-		UdpEventReceiverMBean
-{
-	/**
-	 * The default User Datagram Port for the receipt and
-	 * transmission of events.
-	 */
-	private static final int UDP_PORT = 5817;
+public final class UdpEventReceiver implements EventReceiver, UdpEventReceiverMBean {
+    /**
+     * The default User Datagram Port for the receipt and transmission of
+     * events.
+     */
+    private static final int UDP_PORT = 5817;
 
-	/** 
-	 * The UDP receiver thread.
-	 */
-	private UdpReceiver	m_receiver;
+    /**
+     * The UDP receiver thread.
+     */
+    private UdpReceiver m_receiver;
 
-	/** 
-	 * The user datagram packet processor
-	 */
-	private UdpProcessor	m_processor;
+    /**
+     * The user datagram packet processor
+     */
+    private UdpProcessor m_processor;
 
-	/** 
-	 * The event receipt generator and sender thread.
-	 */
-	private UdpUuidSender	m_output;
+    /**
+     * The event receipt generator and sender thread.
+     */
+    private UdpUuidSender m_output;
 
-	/**
-	 * The list of incomming events.
-	 */
-	private List 		m_eventsIn;
+    /**
+     * The list of incomming events.
+     */
+    private List m_eventsIn;
 
-	/** 
-	 * The list of outgoing event-receipts
-	 * by UUID.
-	 */
-	private List		m_eventUuidsOut;
-	
-	/**
-	 * The list of registered event handlers.
-	 */
-	private List		m_handlers;
+    /**
+     * The list of outgoing event-receipts by UUID.
+     */
+    private List m_eventUuidsOut;
 
-	/**
-	 * The Fiber's status.
-	 */
-	private volatile int	m_status;
+    /**
+     * The list of registered event handlers.
+     */
+    private List m_handlers;
 
-	/** 
-	 * The UDP socket for receipt and transmission
-	 * of packets from agents.
-	 */
-	private DatagramSocket	m_dgSock;
+    /**
+     * The Fiber's status.
+     */
+    private volatile int m_status;
 
-	/**
-	 * The UDP socket port binding.
-	 */
-	private int		m_dgPort;
+    /**
+     * The UDP socket for receipt and transmission of packets from agents.
+     */
+    private DatagramSocket m_dgSock;
 
-	/**
-	 * The log prefix
-	 */
-	private String		m_logPrefix;
+    /**
+     * The UDP socket port binding.
+     */
+    private int m_dgPort;
 
-	public UdpEventReceiver()
-	{
-		m_dgSock  = null;
-		m_dgPort  = UDP_PORT;
+    /**
+     * The log prefix
+     */
+    private String m_logPrefix;
 
-		m_eventsIn = new LinkedList();
-		m_eventUuidsOut = new LinkedList();
+    public UdpEventReceiver() {
+        m_dgSock = null;
+        m_dgPort = UDP_PORT;
 
-		m_handlers = new ArrayList(3);
-		m_status   = START_PENDING; 
+        m_eventsIn = new LinkedList();
+        m_eventUuidsOut = new LinkedList();
 
-		m_dgSock = null;
-		m_receiver = null;
-		m_processor= null;
-		m_output   = null;
-		m_logPrefix = null;
-	}
+        m_handlers = new ArrayList(3);
+        m_status = START_PENDING;
 
-	public UdpEventReceiver(int port)
-	{
-		m_dgSock  = null;
-		m_dgPort  = port;
+        m_dgSock = null;
+        m_receiver = null;
+        m_processor = null;
+        m_output = null;
+        m_logPrefix = null;
+    }
 
-		m_eventsIn = new LinkedList();
-		m_eventUuidsOut = new LinkedList();
+    public UdpEventReceiver(int port) {
+        m_dgSock = null;
+        m_dgPort = port;
 
-		m_handlers = new ArrayList(3);
-		m_status   = START_PENDING; 
+        m_eventsIn = new LinkedList();
+        m_eventUuidsOut = new LinkedList();
 
-		m_dgSock = null;
-		m_receiver = null;
-		m_processor= null;
-		m_output   = null;
-		m_logPrefix = null;
-	}
+        m_handlers = new ArrayList(3);
+        m_status = START_PENDING;
 
-	public synchronized void start()
-	{
-		if(m_status != START_PENDING)
-			throw new RuntimeException("The Fiber is in an incorrect state");
+        m_dgSock = null;
+        m_receiver = null;
+        m_processor = null;
+        m_output = null;
+        m_logPrefix = null;
+    }
 
-		m_status = STARTING;
+    public synchronized void start() {
+        if (m_status != START_PENDING)
+            throw new RuntimeException("The Fiber is in an incorrect state");
 
-		try
-		{
-			m_dgSock = new DatagramSocket(m_dgPort);
+        m_status = STARTING;
 
-			m_receiver  = new UdpReceiver(m_dgSock, m_eventsIn);
-			m_processor = new UdpProcessor(m_handlers,
-						       m_eventsIn,
-						       m_eventUuidsOut);
-			m_output    = new UdpUuidSender(m_dgSock,
-							m_eventUuidsOut,
-							m_handlers);
+        try {
+            m_dgSock = new DatagramSocket(m_dgPort);
 
-			if(m_logPrefix != null)
-			{
-				m_receiver.setLogPrefix(m_logPrefix);
-				m_processor.setLogPrefix(m_logPrefix);
-				m_output.setLogPrefix(m_logPrefix);
-			}
-		}
-		catch(IOException e)
-		{
-			throw new java.lang.reflect.UndeclaredThrowableException(e);
-		}
+            m_receiver = new UdpReceiver(m_dgSock, m_eventsIn);
+            m_processor = new UdpProcessor(m_handlers, m_eventsIn, m_eventUuidsOut);
+            m_output = new UdpUuidSender(m_dgSock, m_eventUuidsOut, m_handlers);
 
-		Thread rThread = new Thread(m_receiver, "UDP Event Receiver[" + m_dgPort + "]");
-		Thread pThread = new Thread(m_processor, "UDP Event Processor[" + m_dgPort + "]");
-		Thread oThread = new Thread(m_output, "UDP UUID Sender[" + m_dgPort + "]");
-		try
-		{
-			rThread.start();
-			pThread.start();
-			oThread.start();
-		}
-		catch(RuntimeException e)
-		{
-			rThread.interrupt();
-			pThread.interrupt();
-			oThread.interrupt();
+            if (m_logPrefix != null) {
+                m_receiver.setLogPrefix(m_logPrefix);
+                m_processor.setLogPrefix(m_logPrefix);
+                m_output.setLogPrefix(m_logPrefix);
+            }
+        } catch (IOException e) {
+            throw new java.lang.reflect.UndeclaredThrowableException(e);
+        }
 
-			m_status = STOPPED;
-			throw e;
-		}
+        Thread rThread = new Thread(m_receiver, "UDP Event Receiver[" + m_dgPort + "]");
+        Thread pThread = new Thread(m_processor, "UDP Event Processor[" + m_dgPort + "]");
+        Thread oThread = new Thread(m_output, "UDP UUID Sender[" + m_dgPort + "]");
+        try {
+            rThread.start();
+            pThread.start();
+            oThread.start();
+        } catch (RuntimeException e) {
+            rThread.interrupt();
+            pThread.interrupt();
+            oThread.interrupt();
 
-		m_status = RUNNING;
-	}
+            m_status = STOPPED;
+            throw e;
+        }
 
-	public synchronized void stop()
-	{
-		if(m_status == STOPPED)
-			return;
-		if(m_status == START_PENDING)
-		{
-			m_status = STOPPED;
-			return;
-		}
+        m_status = RUNNING;
+    }
 
-		m_status = STOP_PENDING;
+    public synchronized void stop() {
+        if (m_status == STOPPED)
+            return;
+        if (m_status == START_PENDING) {
+            m_status = STOPPED;
+            return;
+        }
 
-		try
-		{
-			m_receiver.stop();
-			m_processor.stop();
-			m_output.stop();
-		}
-		catch(InterruptedException e)
-		{
-			Category log = ThreadCategory.getInstance(this.getClass());
-			log.warn("The thread was interrupted while attempting to join sub-threads", e);
-		}
+        m_status = STOP_PENDING;
 
-		m_dgSock.close();
+        try {
+            m_receiver.stop();
+            m_processor.stop();
+            m_output.stop();
+        } catch (InterruptedException e) {
+            Category log = ThreadCategory.getInstance(this.getClass());
+            log.warn("The thread was interrupted while attempting to join sub-threads", e);
+        }
 
-		m_status = STOPPED;
-	}
+        m_dgSock.close();
 
-	public String getName()
-	{
-		return "Event UDP Receiver[" + m_dgPort + "]";
-	}
+        m_status = STOPPED;
+    }
 
-	public int getStatus()
-	{
-		return m_status;
-	}
+    public String getName() {
+        return "Event UDP Receiver[" + m_dgPort + "]";
+    }
 
-	public void init()
-	{
-	}
+    public int getStatus() {
+        return m_status;
+    }
 
-	public void destroy()
-	{
-	}
+    public void init() {
+    }
 
-	public void setPort(Integer port)
-	{
-		if(m_status == STARTING || m_status == RUNNING || m_status == STOP_PENDING)
-			throw new IllegalStateException("The process is already running");
+    public void destroy() {
+    }
 
-		m_dgPort = port.intValue();
-	}
+    public void setPort(Integer port) {
+        if (m_status == STARTING || m_status == RUNNING || m_status == STOP_PENDING)
+            throw new IllegalStateException("The process is already running");
 
-	public Integer getPort()
-	{
-		return new Integer(m_dgPort);
-	}
+        m_dgPort = port.intValue();
+    }
 
-	/**
-	 * Adds a new event handler to receiver. When new
-	 * events are received the decoded event is passed
-	 * to the handler.
-	 *
-	 * @param handler	A reference to an event handler
-	 *
-	 */
-	public void addEventHandler(EventHandler handler)
-	{
-		synchronized(m_handlers)
-		{
-			if(!m_handlers.contains(handler))
-				m_handlers.add(handler);
-		}
-	}
+    public Integer getPort() {
+        return new Integer(m_dgPort);
+    }
 
-	/**
-	 * Removes an event handler from the list of handler
-	 * called when an event is received. The handler is
-	 * removed based upon the method <code>equals()</code>
-	 * inherieted from the <code>Object</code> class.
-	 *
-	 * @param handler	A reference to the event handler.
-	 *
-	 */
-	public void removeEventHandler(EventHandler handler)
-	{
-		synchronized(m_handlers)
-		{
-			m_handlers.remove(handler);
-		}
-	}
+    /**
+     * Adds a new event handler to receiver. When new events are received the
+     * decoded event is passed to the handler.
+     * 
+     * @param handler
+     *            A reference to an event handler
+     * 
+     */
+    public void addEventHandler(EventHandler handler) {
+        synchronized (m_handlers) {
+            if (!m_handlers.contains(handler))
+                m_handlers.add(handler);
+        }
+    }
 
-	public void addEventHandler(String name)
-		throws MalformedObjectNameException, 
-			InstanceNotFoundException
-	{
-		addEventHandler(new EventHandlerMBeanProxy(new ObjectName(name)));
-	}
+    /**
+     * Removes an event handler from the list of handler called when an event is
+     * received. The handler is removed based upon the method
+     * <code>equals()</code> inherieted from the <code>Object</code> class.
+     * 
+     * @param handler
+     *            A reference to the event handler.
+     * 
+     */
+    public void removeEventHandler(EventHandler handler) {
+        synchronized (m_handlers) {
+            m_handlers.remove(handler);
+        }
+    }
 
-	public void removeEventHandler(String name)
-		throws MalformedObjectNameException, 
-			InstanceNotFoundException
-	{
-		removeEventHandler(new EventHandlerMBeanProxy(new ObjectName(name)));
-	}
+    public void addEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException {
+        addEventHandler(new EventHandlerMBeanProxy(new ObjectName(name)));
+    }
 
-	public void setLogPrefix(String prefix)
-	{
-		m_logPrefix = prefix;
-	}
+    public void removeEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException {
+        removeEventHandler(new EventHandlerMBeanProxy(new ObjectName(name)));
+    }
+
+    public void setLogPrefix(String prefix) {
+        m_logPrefix = prefix;
+    }
 }

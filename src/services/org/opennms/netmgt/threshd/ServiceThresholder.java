@@ -38,32 +38,38 @@ import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.utils.EventProxy;
 
 /**
- * <P>The Thresholder class...</P>
+ * <P>
+ * The Thresholder class...
+ * </P>
  * 
- * @author <A HREF="mailto:mike@opennms.org">Mike</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
+ * @author <A HREF="mailto:mike@opennms.org">Mike </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * 
  */
-public interface ServiceThresholder
-{
-	/** 
-	 * Status of the thresholder object.
-	 */
-	public static final int		THRESHOLDING_UNKNOWN 	= 0;
-	public static final int 	THRESHOLDING_SUCCEEDED	= 1;
-	public static final int		THRESHOLDING_FAILED 	= 2;
-	
-	public static final String[]  statusType = {"Unknown", "THRESHOLDING_SUCCEEDED", "THRESHOLDING_FAILED"};
-	
-	public void initialize(Map parameters);
-	public void release();
-	
-	public void initialize(NetworkInterface iface, Map parameters);
-	public void release(NetworkInterface iface);
-	
-	/**
-	 * <P>Invokes threshold checking on the object.</P>
-	 */
-	public int check(NetworkInterface iface, EventProxy eproxy, Map parameters);
-}
+public interface ServiceThresholder {
+    /**
+     * Status of the thresholder object.
+     */
+    public static final int THRESHOLDING_UNKNOWN = 0;
 
+    public static final int THRESHOLDING_SUCCEEDED = 1;
+
+    public static final int THRESHOLDING_FAILED = 2;
+
+    public static final String[] statusType = { "Unknown", "THRESHOLDING_SUCCEEDED", "THRESHOLDING_FAILED" };
+
+    public void initialize(Map parameters);
+
+    public void release();
+
+    public void initialize(NetworkInterface iface, Map parameters);
+
+    public void release(NetworkInterface iface);
+
+    /**
+     * <P>
+     * Invokes threshold checking on the object.
+     * </P>
+     */
+    public int check(NetworkInterface iface, EventProxy eproxy, Map parameters);
+}

@@ -54,97 +54,85 @@ import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
 
 /**
-*/
-public class NotificationCommandFactory
-{
-	/**
-	*/
-	private static NotificationCommandFactory instance;
-	
-	/**
-	*/
-	private static File m_commandConfFile;
-	
-	/**
-	 *
-	 */
-	private static Map m_commands;
-	
-	/**
-	*/
-	protected static InputStream configIn;
-	
-	/**
-	 * Boolean indicating if the init() method has been called
-	 */
-	private static boolean initialized = false;
-	
-	/**
-	 *
-	 */
-	private NotificationCommandFactory()
-	{
-	}
-	
-	/**
-	 *
-	 */
-	public static synchronized void init()
-		throws IOException, MarshalException, ValidationException
-	{
-		if (!initialized)
-		{
-			configIn = new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.NOTIF_COMMANDS_CONF_FILE_NAME));
-			reload();
-			initialized = true;
-		}
-	}
-	
-	/**
-	*/
-	public static synchronized NotificationCommandFactory getInstance()
-	{
-		if (!initialized)
-			return null;
-		
-		if (instance == null)
-		{
-			instance = new NotificationCommandFactory();
-		}
-		
-		return instance;
-	}
-	
-	/**
-	 *
-	 */
-	public static synchronized void reload() 
-		throws MarshalException, ValidationException
-	{
-		Collection commands = ((NotificationCommands)Unmarshaller.unmarshal(NotificationCommands.class, new InputStreamReader(configIn))).getCommandCollection();
-		m_commands = new HashMap();
-		
-		Iterator i = commands.iterator();
-		while(i.hasNext())
-		{
-			Command curCommand = (Command)i.next();
-			m_commands.put(curCommand.getName(), curCommand);
-		}
-	}
-	
-	/**
-	 *
-	 */
-	public Command getCommand(String name)
-	{
-		return (Command)m_commands.get(name);
-	}
-	
-	/**
-	 *
-	 */
-	public Map getCommands()
-	{
-		return m_commands;
-	}
+ */
+public class NotificationCommandFactory {
+    /**
+     */
+    private static NotificationCommandFactory instance;
+
+    /**
+     */
+    private static File m_commandConfFile;
+
+    /**
+     * 
+     */
+    private static Map m_commands;
+
+    /**
+     */
+    protected static InputStream configIn;
+
+    /**
+     * Boolean indicating if the init() method has been called
+     */
+    private static boolean initialized = false;
+
+    /**
+     * 
+     */
+    private NotificationCommandFactory() {
+    }
+
+    /**
+     * 
+     */
+    public static synchronized void init() throws IOException, MarshalException, ValidationException {
+        if (!initialized) {
+            configIn = new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.NOTIF_COMMANDS_CONF_FILE_NAME));
+            reload();
+            initialized = true;
+        }
+    }
+
+    /**
+     */
+    public static synchronized NotificationCommandFactory getInstance() {
+        if (!initialized)
+            return null;
+
+        if (instance == null) {
+            instance = new NotificationCommandFactory();
+        }
+
+        return instance;
+    }
+
+    /**
+     * 
+     */
+    public static synchronized void reload() throws MarshalException, ValidationException {
+        Collection commands = ((NotificationCommands) Unmarshaller.unmarshal(NotificationCommands.class, new InputStreamReader(configIn))).getCommandCollection();
+        m_commands = new HashMap();
+
+        Iterator i = commands.iterator();
+        while (i.hasNext()) {
+            Command curCommand = (Command) i.next();
+            m_commands.put(curCommand.getName(), curCommand);
+        }
+    }
+
+    /**
+     * 
+     */
+    public Command getCommand(String name) {
+        return (Command) m_commands.get(name);
+    }
+
+    /**
+     * 
+     */
+    public Map getCommands() {
+        return m_commands;
+    }
 }

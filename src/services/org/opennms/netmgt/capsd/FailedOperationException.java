@@ -38,17 +38,16 @@
 
 package org.opennms.netmgt.capsd;
 
-
 /**
  * @author brozow
  * 
- * FIXME To change the template for this generated type comment go to Window - Preferences -
- * Java - Code Generation - Code and Comments
+ * FIXME To change the template for this generated type comment go to Window -
+ * Preferences - Java - Code Generation - Code and Comments
  */
 public class FailedOperationException extends Exception {
 
     /**
-     *  
+     * 
      */
     public FailedOperationException() {
         super();

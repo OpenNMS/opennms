@@ -39,154 +39,129 @@ import java.util.Date;
 import org.opennms.netmgt.config.VulnscandConfigFactory;
 
 /**
-* This class encapsulates the information about an interface necessary
-* to schedule it for scans.
-*/
-final class NessusScanConfiguration
-{
-	/**
-	 * Nessus username
-	 */
-	public String		username;
+ * This class encapsulates the information about an interface necessary to
+ * schedule it for scans.
+ */
+final class NessusScanConfiguration {
+    /**
+     * Nessus username
+     */
+    public String username;
 
-	/**
-	 * Nessus password
-	 */
-	public String		password;
+    /**
+     * Nessus password
+     */
+    public String password;
 
-	/**
-	 * Hostname of the Nessus daemon
-	 */
-	public InetAddress	hostname;
+    /**
+     * Hostname of the Nessus daemon
+     */
+    public InetAddress hostname;
 
-	/**
-	 * Port number where Nessusd is running
-	 */
-	public int		hostport;
+    /**
+     * Port number where Nessusd is running
+     */
+    public int hostport;
 
-	/**
-	 * Target of the Nessus scan
-	 */
-	public InetAddress	targetAddress;
+    /**
+     * Target of the Nessus scan
+     */
+    public InetAddress targetAddress;
 
-	/**
-	 * Level of intrusiveness of the scanning (1-4)
-	 */
-	public int		scanLevel;
+    /**
+     * Level of intrusiveness of the scanning (1-4)
+     */
+    public int scanLevel;
 
-	/**
-	 * Timestamp of last scanned time
-	 */
-	Timestamp 		lastScan;
+    /**
+     * Timestamp of last scanned time
+     */
+    Timestamp lastScan;
 
-	/**
-	 * Milliseconds between the end of a scan and the beginning
-	 * of the next scan of this interface
-	 */
-	long 			interval;
+    /**
+     * Milliseconds between the end of a scan and the beginning of the next scan
+     * of this interface
+     */
+    long interval;
 
-	/**
-	 * Marker that tells whether or not the object is currently
-	 * scheduled
-	 */
-	boolean 		scheduled;
+    /**
+     * Marker that tells whether or not the object is currently scheduled
+     */
+    boolean scheduled;
 
-	NessusScanConfiguration(InetAddress address, int newScanLevel, Timestamp newLastScan, long newInterval)
-	{
-		targetAddress = address;
-		scanLevel = newScanLevel;
-		lastScan = newLastScan;
-		interval = newInterval;
+    NessusScanConfiguration(InetAddress address, int newScanLevel, Timestamp newLastScan, long newInterval) {
+        targetAddress = address;
+        scanLevel = newScanLevel;
+        lastScan = newLastScan;
+        interval = newInterval;
 
-		init();
-	}
+        init();
+    }
 
-	NessusScanConfiguration(InetAddress address, int newScanLevel, Date newLastScan, long newInterval)
-	{
-		targetAddress = address;
-		scanLevel = newScanLevel;
-		lastScan = new Timestamp(newLastScan.getTime());
-		interval = newInterval;
+    NessusScanConfiguration(InetAddress address, int newScanLevel, Date newLastScan, long newInterval) {
+        targetAddress = address;
+        scanLevel = newScanLevel;
+        lastScan = new Timestamp(newLastScan.getTime());
+        interval = newInterval;
 
-		init();
-	}
+        init();
+    }
 
-	/**
-	 * Enter values from the configuration
-	 */
-	private void init()
-	{
-		VulnscandConfigFactory config = VulnscandConfigFactory.getInstance();
+    /**
+     * Enter values from the configuration
+     */
+    private void init() {
+        VulnscandConfigFactory config = VulnscandConfigFactory.getInstance();
 
-		scheduled = false;
-		hostname = config.getServerAddress();
-		hostport = config.getServerPort();
-		username = config.getServerUsername();
-		password = config.getServerPassword();
-	}
+        scheduled = false;
+        hostname = config.getServerAddress();
+        hostport = config.getServerPort();
+        username = config.getServerUsername();
+        password = config.getServerPassword();
+    }
 
-	boolean isScheduled()
-	{
-		return scheduled;
-	}
+    boolean isScheduled() {
+        return scheduled;
+    }
 
-	InetAddress getAddress()
-	{
-		return targetAddress;
-	}
+    InetAddress getAddress() {
+        return targetAddress;
+    }
 
-	Timestamp getLastScanned()
-	{
-		return lastScan;
-	}
+    Timestamp getLastScanned() {
+        return lastScan;
+    }
 
-	long getRescanInterval()
-	{
-		return interval;
-	}
+    long getRescanInterval() {
+        return interval;
+    }
 
-	void setScheduled(boolean newScheduled)
-	{
-		scheduled = newScheduled;
-	}
+    void setScheduled(boolean newScheduled) {
+        scheduled = newScheduled;
+    }
 
-	void setLastScanned(Date newLastScan)
-	{
-		lastScan = new Timestamp(newLastScan.getTime());
-	}
+    void setLastScanned(Date newLastScan) {
+        lastScan = new Timestamp(newLastScan.getTime());
+    }
 
-	void setLastScanned(Timestamp newLastScan)
-	{
-		lastScan = newLastScan;
-	}
+    void setLastScanned(Timestamp newLastScan) {
+        lastScan = newLastScan;
+    }
 
-	boolean isTimeForRescan()
-	{
-		if (System.currentTimeMillis() >= (lastScan.getTime() + interval))
-			return true;
-		else
-			return false;
-	}
+    boolean isTimeForRescan() {
+        if (System.currentTimeMillis() >= (lastScan.getTime() + interval))
+            return true;
+        else
+            return false;
+    }
 
-	/**
-	 * Validation function.
-	 */
-	public boolean isValid()
-	{
-		//Category log = ThreadCategory.getInstance(getClass());
+    /**
+     * Validation function.
+     */
+    public boolean isValid() {
+        // Category log = ThreadCategory.getInstance(getClass());
 
-		boolean retval = (
-			(hostname != null) &&
-			(username != null) &&
-			(username != "") &&
-			(password != null) &&
-			(password != "") &&
-			(scanLevel > 0) &&
-			(scanLevel < 5) &&
-			(targetAddress != null) &&
-			(hostport > 0) &&
-			(hostport < (1 << 16))
-		);
-		return retval;
-	}
+        boolean retval = ((hostname != null) && (username != null) && (username != "") && (password != null) && (password != "") && (scanLevel > 0) && (scanLevel < 5) && (targetAddress != null) && (hostport > 0) && (hostport < (1 << 16)));
+        return retval;
+    }
 }

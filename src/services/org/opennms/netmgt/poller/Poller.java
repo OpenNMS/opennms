@@ -75,7 +75,7 @@ public final class Poller implements PausableFiber {
      * Holds map of service names to service identifiers
      */
     private Map m_svcNameToId = new HashMap();
-    
+
     private Map m_svcIdToName = new HashMap();
 
     private Scheduler m_scheduler;
@@ -83,7 +83,7 @@ public final class Poller implements PausableFiber {
     private int m_status;
 
     private BroadcastEventProcessor m_receiver;
-    
+
     private PollableNetwork m_network = new PollableNetwork(this);
 
     /**
@@ -98,9 +98,8 @@ public final class Poller implements PausableFiber {
     private PollOutagesConfig m_pollOutagesConfig;
 
     private EventIpcManager m_eventMgr;
-    
+
     private boolean m_initialized = false;
-    
 
     public Poller() {
         m_scheduler = null;
@@ -119,7 +118,7 @@ public final class Poller implements PausableFiber {
         createServiceMaps();
 
         // serviceUnresponsive behavior enabled/disabled?
-        log.debug("start: serviceUnresponsive behavior: " + (getPollerConfig().serviceUnresponsiveEnabled() ? "enabled" : "disabled")); 
+        log.debug("start: serviceUnresponsive behavior: " + (getPollerConfig().serviceUnresponsiveEnabled() ? "enabled" : "disabled"));
 
         createScheduler();
 
@@ -146,13 +145,13 @@ public final class Poller implements PausableFiber {
 
             throw new UndeclaredThrowableException(t);
         }
-        
+
         m_initialized = true;
 
     }
 
     private void createScheduler() {
-        
+
         Category log = ThreadCategory.getInstance();
         // Create a scheduler
         //
@@ -291,7 +290,7 @@ public final class Poller implements PausableFiber {
         while (i.hasNext()) {
             String svcName = (String) i.next();
             scheduleInterfacesWithService(svcName);
-        } 
+        }
 
         // Debug dump pollable network
         //
@@ -320,7 +319,7 @@ public final class Poller implements PausableFiber {
             while (it.hasNext()) {
                 IfKey key = (IfKey) it.next();
                 scheduleService(key.getNodeId(), key.getIpAddr(), svcName);
-            } 
+            }
         } catch (SQLException sqle) {
             log.warn("scheduleInterfacesWithService: SQL exception while querying ipInterface table", sqle);
             throw sqle;
@@ -394,7 +393,7 @@ public final class Poller implements PausableFiber {
 
     public boolean packageIncludesIfAndSvc(Package pkg, String ipAddr, String svcName) {
         Category log = ThreadCategory.getInstance();
-        
+
         if (!getPollerConfig().serviceInPackageAndEnabled(svcName, pkg)) {
             if (log.isDebugEnabled())
                 log.debug("packageIncludesIfAndSvc: address/service: " + ipAddr + "/" + svcName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
@@ -404,7 +403,7 @@ public final class Poller implements PausableFiber {
         // Is the interface in the package?
         //
         if (!getPollerConfig().interfaceInPackage(ipAddr, pkg)) {
-            
+
             if (m_initialized) {
                 getPollerConfig().rebuildPackageIpListMap();
                 if (!getPollerConfig().interfaceInPackage(ipAddr, pkg)) {
@@ -434,7 +433,6 @@ public final class Poller implements PausableFiber {
     public void setPollerConfig(PollerConfig pollerConfig) {
         m_pollerConfig = pollerConfig;
     }
-    
 
     PollOutagesConfig getPollOutagesConfig() {
         return m_pollOutagesConfig;
@@ -443,7 +441,7 @@ public final class Poller implements PausableFiber {
     public void setPollOutagesConfig(PollOutagesConfig pollOutagesConfig) {
         m_pollOutagesConfig = pollOutagesConfig;
     }
-    
+
     public EventIpcManager getEventManager() {
         return m_eventMgr;
     }
@@ -458,18 +456,19 @@ public final class Poller implements PausableFiber {
     private Map getServiceMonitors() {
         return getPollerConfig().getServiceMonitors();
     }
-    
+
     int getServiceIdByName(String svcName) {
-        Integer id = (Integer)m_svcNameToId.get(svcName);
+        Integer id = (Integer) m_svcNameToId.get(svcName);
         return (id == null ? -1 : id.intValue());
     }
-    
+
     String getServiceNameById(int svcId) {
-        return (String)m_svcIdToName.get(new Integer(svcId));
+        return (String) m_svcIdToName.get(new Integer(svcId));
     }
 
     /**
-     * @param queryMgr The queryMgr to set.
+     * @param queryMgr
+     *            The queryMgr to set.
      */
     void setQueryMgr(QueryManager queryMgr) {
         m_queryMgr = queryMgr;

@@ -40,64 +40,61 @@ import java.util.List;
 import org.opennms.netmgt.xml.event.Operaction;
 
 /**
- * This is an utility class used to format the event operator actions
- * info - to be inserted into the 'events' table. This class only uses the
- * operator action and operator state information - the operator menu goes
- * into a separate database field
- *
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * This is an utility class used to format the event operator actions info - to
+ * be inserted into the 'events' table. This class only uses the operator action
+ * and operator state information - the operator menu goes into a separate
+ * database field
+ * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class OperatorAction
-{
-	/**
-	 * Format each operator action entry
-	 *
-	 * @param opact	the entry
-	 *
-	 * @return the formatted string
-	 */
-	public static String format(Operaction opact)
-	{
-		String text  = opact.getContent();
-		String state = opact.getState();
-		
-		return  Constants.escape(text, Constants.DB_ATTRIB_DELIM) 
-			+ Constants.DB_ATTRIB_DELIM + state;
-			
-	}
-	
-	/**
-	 * Format the list of operator action entries of the event
-	 *
-	 * @param opacts	the list
-	 * @param sz	the size to which the formatted string is to be limited to(usually the size of the column in the database)
-	 *
-	 * @return the formatted string
-	 */
-	public static String format(List opacts, int sz)
-	{
-		StringBuffer	buf = new StringBuffer();
-		boolean		first = true;
-		
-		Iterator 	i = opacts.iterator();
-		while(i.hasNext())
-		{
-			if(!first)
-				buf.append(Constants.MULTIPLE_VAL_DELIM);
-			else
-				first = false;
+public class OperatorAction {
+    /**
+     * Format each operator action entry
+     * 
+     * @param opact
+     *            the entry
+     * 
+     * @return the formatted string
+     */
+    public static String format(Operaction opact) {
+        String text = opact.getContent();
+        String state = opact.getState();
 
-			buf.append(Constants.escape(format((Operaction)i.next()), Constants.MULTIPLE_VAL_DELIM));
-		}
-		
-		if(buf.length() >= sz)
-		{
-			buf.setLength(sz-4);
-			buf.append(Constants.VALUE_TRUNCATE_INDICATOR);
-		}
-		
-		return buf.toString();
-	}
+        return Constants.escape(text, Constants.DB_ATTRIB_DELIM) + Constants.DB_ATTRIB_DELIM + state;
+
+    }
+
+    /**
+     * Format the list of operator action entries of the event
+     * 
+     * @param opacts
+     *            the list
+     * @param sz
+     *            the size to which the formatted string is to be limited
+     *            to(usually the size of the column in the database)
+     * 
+     * @return the formatted string
+     */
+    public static String format(List opacts, int sz) {
+        StringBuffer buf = new StringBuffer();
+        boolean first = true;
+
+        Iterator i = opacts.iterator();
+        while (i.hasNext()) {
+            if (!first)
+                buf.append(Constants.MULTIPLE_VAL_DELIM);
+            else
+                first = false;
+
+            buf.append(Constants.escape(format((Operaction) i.next()), Constants.MULTIPLE_VAL_DELIM));
+        }
+
+        if (buf.length() >= sz) {
+            buf.setLength(sz - 4);
+            buf.append(Constants.VALUE_TRUNCATE_INDICATOR);
+        }
+
+        return buf.toString();
+    }
 }
-

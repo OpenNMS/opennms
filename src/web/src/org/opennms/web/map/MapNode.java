@@ -33,37 +33,44 @@
 package org.opennms.web.map;
 
 /**
- * This class stores the information that will be represented on the
- * map we generate.  It's easier to have an intermediary class like
- * this than to try to massage the data directly from our source into
- * the format we need.  This also helps by abstracting the maths
- * needed to figure out where to put everything on the page into this
- * class where its easier to change globally if we want to change how
- * we place things.
- *
- * @author <A HREF="mailto:dglidden@opennms.org">Derek Glidden</A>
- * @author <A HREF="http://www.nksi.com/">NKSi</A>
+ * This class stores the information that will be represented on the map we
+ * generate. It's easier to have an intermediary class like this than to try to
+ * massage the data directly from our source into the format we need. This also
+ * helps by abstracting the maths needed to figure out where to put everything
+ * on the page into this class where its easier to change globally if we want to
+ * change how we place things.
+ * 
+ * @author <A HREF="mailto:dglidden@opennms.org">Derek Glidden </A>
+ * @author <A HREF="http://www.nksi.com/">NKSi </A>
  */
 
 public class MapNode {
 
     private int nodeID;
+
     private int nodeParent;
+
     private int x;
+
     private int y;
 
     private double RTC;
 
     private String hostname;
+
     private String iconName;
+
     private String ipAddress;
+
     private String status;
 
     public static int defaultNodeWidth = 100;
-    public static int defaultNodeHeight = 90;
-    public static int widthBuffer = 10;
-    public static int heightBuffer = 20;
 
+    public static int defaultNodeHeight = 90;
+
+    public static int widthBuffer = 10;
+
+    public static int heightBuffer = 20;
 
     /**
      * constructor
@@ -82,7 +89,6 @@ public class MapNode {
         this.ipAddress = new String();
         this.status = new String();
     }
-
 
     /**
      * setters
@@ -123,7 +129,6 @@ public class MapNode {
     public void setStatus(String status) {
         this.status = status;
     }
-
 
     /**
      * getters

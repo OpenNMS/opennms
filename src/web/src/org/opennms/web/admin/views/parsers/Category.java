@@ -37,213 +37,202 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
-*/
-public class Category 
-	implements Cloneable
-{
-	/**
-	*/
-	private String m_label;
-	
-	/**
-	*/
-	private String m_rule;
-	
-	/**
-	*/
-	private String m_normal;
-	
-	/**
-	*/
-	private String m_warning;
-	
-	/**
-	*/
-	private List m_services;
-	
-	/**
-	*/
-	private String m_comments;
-	
-	/**
-	*/
-	public Category()
-	{
-		m_services = new ArrayList();
-	}
-	
-	/**
-	*/
-	public Category(String aLabel, String aRule, String aNormal, String aWarning)
-	{
-		m_label = aLabel;
-		m_rule = aRule;
-		m_normal = aNormal;
-		m_warning = aWarning;
-		m_comments="";
-		m_services = new ArrayList();
-	}
-	
-	/**
-	*/
-	public Object clone()
-	{
-		try
-		{
-			super.clone();
-		}
-		catch(CloneNotSupportedException e)
-		{
-			return null;
-		}
-		
-		Category newCategory = new Category(m_label, m_rule, m_normal, m_warning);
-		newCategory.setComments(m_comments);
-		
-		for(int i = 0; i < m_services.size(); i++)
-		{
-			newCategory.addService((String)m_services.get(i));
-		}
-		
-		return newCategory;
-	}
-	
-	/**This constructor creates a Category by parsing a string in the UserManager format
-	   @param aDataString a string in the format "label$normal$warning$rule"
-	   @deprecated
-	*/
-	public Category(String aDataString)
-	{	
-		//each parameter is stored in the string delimited by the $ symbol
-		StringTokenizer tokens = new StringTokenizer(aDataString, "$");
-		
-		while(tokens.hasMoreTokens())
-		{
-			//add a new threshold panel with the Tab name, the high value, the low value and the 
-			//rule in that order, parsed from the tokenizer
-			m_label = tokens.nextToken();
-			
-			//this is a hack because of the dumb ass way this data is being kept
-			String normal = tokens.nextToken();
-			try
-			{
-				//this is a check to see if the UserManager has put a stupid string
-				//default value for this category. This would take the form
-				//"Common$Type your rule here...#" instead of 
-				//"Common$95.5$90$isHTTP", so if the second value parsed is not
-				//a float, then don't bother trying to extract the rest
-				Float.valueOf(normal);
-				
-				m_normal = (normal);
-				m_warning = (tokens.nextToken());
-				m_rule = (tokens.nextToken());
-			}
-			catch(NumberFormatException e)
-			{
-				//do nothing with this exception, if a token doesn't exist for any of the
-				//parameters the default value is already set.
-			}
-		}
-	}
-	
-	/**
-	*/
-	public void setLabel(String aValue)
-	{
-		m_label = aValue;
-	}
-	
-	/**
-	*/
-	public String getLabel()
-	{
-		return m_label;
-	}
-	
-	/**
-	*/
-	public void setRule(String aValue)
-	{
-		m_rule = aValue;
-	}
-	
-	/**
-	*/
-	public String getRule()
-	{
-		return m_rule;
-	}
-	
-	/**
-	*/
-	public void setNormal(String aValue)
-	{
-		m_normal = aValue;
-	}
-	
-	/**
-	*/
-	public String getNormal()
-	{
-		return m_normal;
-	}
-	
-	/**
-	*/
-	public void setWarning(String aValue)
-	{
-		m_warning = aValue;
-	}
-	
-	/**
-	*/
-	public String getWarning()
-	{
-		return m_warning;
-	}
-	
-	/**Adds a service to this category
-	   @param name the service name.
-	*/
-	public void addService(String name)
-	{
-		m_services.add(name);
-	}
-	
-	/**Returns the list of services in this category
-	   @return the list of services.
-	*/
-	public List getServices()
-	{
-		return m_services;
-	}
-	
-	/**Sets the list of services
-	   @param services a list of service names
-	*/
-	public void setServices(List services)
-	{
-		m_services = services;
-	}
-	
-	/**
-	*/
-	public void setComments(String comment)
-	{
-		m_comments = comment;
-	}
-	
-	/**
-	*/
-	public String getComments()
-	{
-		return m_comments;
-	}
-	
-	/**@deprecated
-	*/
-	public String getUserManagerFormat()
-	{
-		return m_label + "$" + m_normal + "$" + m_warning + "$" + m_rule + "#";
-	}
+ */
+public class Category implements Cloneable {
+    /**
+     */
+    private String m_label;
+
+    /**
+     */
+    private String m_rule;
+
+    /**
+     */
+    private String m_normal;
+
+    /**
+     */
+    private String m_warning;
+
+    /**
+     */
+    private List m_services;
+
+    /**
+     */
+    private String m_comments;
+
+    /**
+     */
+    public Category() {
+        m_services = new ArrayList();
+    }
+
+    /**
+     */
+    public Category(String aLabel, String aRule, String aNormal, String aWarning) {
+        m_label = aLabel;
+        m_rule = aRule;
+        m_normal = aNormal;
+        m_warning = aWarning;
+        m_comments = "";
+        m_services = new ArrayList();
+    }
+
+    /**
+     */
+    public Object clone() {
+        try {
+            super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
+
+        Category newCategory = new Category(m_label, m_rule, m_normal, m_warning);
+        newCategory.setComments(m_comments);
+
+        for (int i = 0; i < m_services.size(); i++) {
+            newCategory.addService((String) m_services.get(i));
+        }
+
+        return newCategory;
+    }
+
+    /**
+     * This constructor creates a Category by parsing a string in the
+     * UserManager format
+     * 
+     * @param aDataString
+     *            a string in the format "label$normal$warning$rule"
+     * @deprecated
+     */
+    public Category(String aDataString) {
+        // each parameter is stored in the string delimited by the $ symbol
+        StringTokenizer tokens = new StringTokenizer(aDataString, "$");
+
+        while (tokens.hasMoreTokens()) {
+            // add a new threshold panel with the Tab name, the high value, the
+            // low value and the
+            // rule in that order, parsed from the tokenizer
+            m_label = tokens.nextToken();
+
+            // this is a hack because of the dumb ass way this data is being
+            // kept
+            String normal = tokens.nextToken();
+            try {
+                // this is a check to see if the UserManager has put a stupid
+                // string
+                // default value for this category. This would take the form
+                // "Common$Type your rule here...#" instead of
+                // "Common$95.5$90$isHTTP", so if the second value parsed is not
+                // a float, then don't bother trying to extract the rest
+                Float.valueOf(normal);
+
+                m_normal = (normal);
+                m_warning = (tokens.nextToken());
+                m_rule = (tokens.nextToken());
+            } catch (NumberFormatException e) {
+                // do nothing with this exception, if a token doesn't exist for
+                // any of the
+                // parameters the default value is already set.
+            }
+        }
+    }
+
+    /**
+     */
+    public void setLabel(String aValue) {
+        m_label = aValue;
+    }
+
+    /**
+     */
+    public String getLabel() {
+        return m_label;
+    }
+
+    /**
+     */
+    public void setRule(String aValue) {
+        m_rule = aValue;
+    }
+
+    /**
+     */
+    public String getRule() {
+        return m_rule;
+    }
+
+    /**
+     */
+    public void setNormal(String aValue) {
+        m_normal = aValue;
+    }
+
+    /**
+     */
+    public String getNormal() {
+        return m_normal;
+    }
+
+    /**
+     */
+    public void setWarning(String aValue) {
+        m_warning = aValue;
+    }
+
+    /**
+     */
+    public String getWarning() {
+        return m_warning;
+    }
+
+    /**
+     * Adds a service to this category
+     * 
+     * @param name
+     *            the service name.
+     */
+    public void addService(String name) {
+        m_services.add(name);
+    }
+
+    /**
+     * Returns the list of services in this category
+     * 
+     * @return the list of services.
+     */
+    public List getServices() {
+        return m_services;
+    }
+
+    /**
+     * Sets the list of services
+     * 
+     * @param services
+     *            a list of service names
+     */
+    public void setServices(List services) {
+        m_services = services;
+    }
+
+    /**
+     */
+    public void setComments(String comment) {
+        m_comments = comment;
+    }
+
+    /**
+     */
+    public String getComments() {
+        return m_comments;
+    }
+
+    /**
+     * @deprecated
+     */
+    public String getUserManagerFormat() {
+        return m_label + "$" + m_normal + "$" + m_warning + "$" + m_rule + "#";
+    }
 }

@@ -38,10 +38,9 @@
 
 package org.opennms.netmgt.rrd;
 
-
 /**
- * This exception indicates an error has occurred creating, updating, or fetching data
- * from an Rrd file
+ * This exception indicates an error has occurred creating, updating, or
+ * fetching data from an Rrd file
  * 
  * @author brozow
  */

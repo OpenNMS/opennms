@@ -48,200 +48,212 @@ import org.apache.log4j.Category;
 
 /**
  * Provides convenience methods for use the HTTP POST method.
- *
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
+ * 
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * 
  */
-public final class HttpUtils extends Object 
-{ 
-    /** Private constructor so this class will not be instantiated. */    
-    private HttpUtils() {}
-    
+public final class HttpUtils extends Object {
+    /** Private constructor so this class will not be instantiated. */
+    private HttpUtils() {
+    }
 
-    /** Default buffer size for reading data.  (Default is one kilobyte.) */    
+    /** Default buffer size for reading data. (Default is one kilobyte.) */
     public final static int DEFAULT_POST_BUFFER_SIZE = 1024;
 
-
-    /** 
-     * Post a given <code>InputStream</code>s data to a URL.
+    /**
+     * Post a given <code>InputStream</code> s data to a URL.
      * 
-     * @param url the <code>URL</code> to post to
-     * @param dataStream an input stream containing the data to send
+     * @param url
+     *            the <code>URL</code> to post to
+     * @param dataStream
+     *            an input stream containing the data to send
      * @return An <code>InputStream</a> that the programmer can read from
      * to get the HTTP server's response.
      */
-    public static InputStream post( URL url, InputStream dataStream ) throws IOException {
-        return( post( url, dataStream, null, null, DEFAULT_POST_BUFFER_SIZE ));
+    public static InputStream post(URL url, InputStream dataStream) throws IOException {
+        return (post(url, dataStream, null, null, DEFAULT_POST_BUFFER_SIZE));
     }
 
-    
-    /** 
-     * Post a given <code>InputStream</code>s data to a URL using BASIC authentication
-     * and the given username and password.
+    /**
+     * Post a given <code>InputStream</code> s data to a URL using BASIC
+     * authentication and the given username and password.
      * 
-     * @param url the <code>URL</code> to post to
-     * @param dataStream an input stream containing the data to send
-     * @param username the username to use in the BASIC authentication
-     * @param password the password to use in the BASIC authentication
+     * @param url
+     *            the <code>URL</code> to post to
+     * @param dataStream
+     *            an input stream containing the data to send
+     * @param username
+     *            the username to use in the BASIC authentication
+     * @param password
+     *            the password to use in the BASIC authentication
      * @return An <code>InputStream</a> that the programmer can read from
      * to get the HTTP server's response.
      */
-    public static InputStream post( URL url, InputStream dataStream, String username, String password ) throws IOException {
-        return( post( url, dataStream, username, password, DEFAULT_POST_BUFFER_SIZE ));
+    public static InputStream post(URL url, InputStream dataStream, String username, String password) throws IOException {
+        return (post(url, dataStream, username, password, DEFAULT_POST_BUFFER_SIZE));
     }
-    
 
-    /** 
-     * Post a given <code>InputStream</code>s data to a URL using BASIC authentication,
-     * the given username and password, and a buffer size. 
+    /**
+     * Post a given <code>InputStream</code> s data to a URL using BASIC
+     * authentication, the given username and password, and a buffer size.
      * 
-     * @param url the <code>URL</code> to post to
-     * @param dataStream an input stream containing the data to send
-     * @param username the username to use in the BASIC authentication
-     * @param password the password to use in the BASIC authentication
-     * @param bufSize the size of the buffer to read from <code>dataStream</code>
-     * and write to the HTTP server
+     * @param url
+     *            the <code>URL</code> to post to
+     * @param dataStream
+     *            an input stream containing the data to send
+     * @param username
+     *            the username to use in the BASIC authentication
+     * @param password
+     *            the password to use in the BASIC authentication
+     * @param bufSize
+     *            the size of the buffer to read from <code>dataStream</code>
+     *            and write to the HTTP server
      * @return An <code>InputStream</a> that the programmer can read from
-     * to get the HTTP server's response.     
+     * to get the HTTP server's response.
      */
-    public static InputStream post( URL url, InputStream dataStream, String username, String password, int bufSize ) throws IOException {
-        if( url == null || dataStream == null ) {
-            throw new IllegalArgumentException( "Cannot take null parameters." );
+    public static InputStream post(URL url, InputStream dataStream, String username, String password, int bufSize) throws IOException {
+        if (url == null || dataStream == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
         }
-        
-        if( bufSize < 1 ) {
-            throw new IllegalArgumentException( "Cannot use zero or negative buffer size." );
+
+        if (bufSize < 1) {
+            throw new IllegalArgumentException("Cannot use zero or negative buffer size.");
         }
-        
-        if(!"http".equals(url.getProtocol()))  {
-            throw new IllegalArgumentException( "Cannot use non-HTTP URLs." );
+
+        if (!"http".equals(url.getProtocol())) {
+            throw new IllegalArgumentException("Cannot use non-HTTP URLs.");
         }
-        
-        HttpURLConnection conn = (HttpURLConnection)url.openConnection();        
-        
-        //in a post we both write output and read input 
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        // in a post we both write output and read input
         conn.setDoOutput(true);
         conn.setDoInput(true);
-        
+
         try {
-            //the name of this method is post after all
+            // the name of this method is post after all
             conn.setRequestMethod("POST");
-        }
-        catch( java.net.ProtocolException e ) {
-            //this would really really really bad... when can you not use POST in HTTP?
-            throw new IllegalStateException( "Could not set a HttpURLConnection's method to POST." );
+        } catch (java.net.ProtocolException e) {
+            // this would really really really bad... when can you not use POST
+            // in HTTP?
+            throw new IllegalStateException("Could not set a HttpURLConnection's method to POST.");
         }
 
-        //add the authorization header if the username and password were given
-        if( username != null && password != null ) {
+        // add the authorization header if the username and password were given
+        if (username != null && password != null) {
             byte[] authBytes = (username + ":" + password).getBytes();
             String authString = new String(Base64.encodeBase64(authBytes));
             conn.setRequestProperty("Authorization", "Basic " + authString);
         }
 
-        //get the out-going HTTP connection           
+        // get the out-going HTTP connection
         OutputStream ostream = conn.getOutputStream();
-        
-        //initialize a buffer to use to read and write
+
+        // initialize a buffer to use to read and write
         byte[] b = new byte[bufSize];
 
-        //write the given data stream over the out-going HTTP connection         
-        int bytesRead = dataStream.read( b, 0, bufSize ); 
-        while( bytesRead > 0 ) {
+        // write the given data stream over the out-going HTTP connection
+        int bytesRead = dataStream.read(b, 0, bufSize);
+        while (bytesRead > 0) {
             ostream.write(b, 0, bytesRead);
             bytesRead = dataStream.read(b, 0, bufSize);
         }
-    
-        //close the out-going HTTP connection
+
+        // close the out-going HTTP connection
         ostream.close();
-        
-        //return the in-coming HTTP connection so the programmer can read the response
-        return( conn.getInputStream() );
+
+        // return the in-coming HTTP connection so the programmer can read the
+        // response
+        return (conn.getInputStream());
     }
 
-    /** 
-     * Post a given <code>Reader</code>s data to a URL using BASIC authentication,
-     * the given username and password, and a buffer size. 
+    /**
+     * Post a given <code>Reader</code> s data to a URL using BASIC
+     * authentication, the given username and password, and a buffer size.
      * 
-     * @param url the <code>URL</code> to post to
-     * @param dataReader an input reader containing the data to send
-     * @param username the username to use in the BASIC authentication
-     * @param password the password to use in the BASIC authentication
-     * @param bufSize the size of the buffer to read from <code>dataStream</code>
-     * and write to the HTTP server
+     * @param url
+     *            the <code>URL</code> to post to
+     * @param dataReader
+     *            an input reader containing the data to send
+     * @param username
+     *            the username to use in the BASIC authentication
+     * @param password
+     *            the password to use in the BASIC authentication
+     * @param bufSize
+     *            the size of the buffer to read from <code>dataStream</code>
+     *            and write to the HTTP server
      * @return An <code>InputStream</a> that the programmer can read from
-     * to get the HTTP server's response.     
+     * to get the HTTP server's response.
      */
-    public static InputStream post( URL url, Reader dataReader, String username, String password, int bufSize ) throws IOException {
-        if( url == null || dataReader == null ) {
-            throw new IllegalArgumentException( "Cannot take null parameters." );
-        }
-        
-        if( bufSize < 1 ) {
-            throw new IllegalArgumentException( "Cannot use zero or negative buffer size." );
-        }
-        
-        if(!"http".equals(url.getProtocol()))  {
-            throw new IllegalArgumentException( "Cannot use non-HTTP URLs." );
-        }
-        
-        HttpURLConnection conn = (HttpURLConnection)url.openConnection();        
-        
-        //in a post we both write output and read input 
-        conn.setDoOutput(true);
-        conn.setDoInput(true);
-        
-        try {
-            //the name of this method is post after all
-            conn.setRequestMethod("POST");
-        }
-        catch( java.net.ProtocolException e ) {
-            //this would really really really bad... when can you not use POST in HTTP?
-            throw new IllegalStateException( "Could not set a HttpURLConnection's method to POST." );
+    public static InputStream post(URL url, Reader dataReader, String username, String password, int bufSize) throws IOException {
+        if (url == null || dataReader == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        //add the authorization header if the username and password were given
-        if( username != null && password != null ) {
+        if (bufSize < 1) {
+            throw new IllegalArgumentException("Cannot use zero or negative buffer size.");
+        }
+
+        if (!"http".equals(url.getProtocol())) {
+            throw new IllegalArgumentException("Cannot use non-HTTP URLs.");
+        }
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        // in a post we both write output and read input
+        conn.setDoOutput(true);
+        conn.setDoInput(true);
+
+        try {
+            // the name of this method is post after all
+            conn.setRequestMethod("POST");
+        } catch (java.net.ProtocolException e) {
+            // this would really really really bad... when can you not use POST
+            // in HTTP?
+            throw new IllegalStateException("Could not set a HttpURLConnection's method to POST.");
+        }
+
+        // add the authorization header if the username and password were given
+        if (username != null && password != null) {
             byte[] authBytes = (username + ":" + password).getBytes();
             String authString = new String(Base64.encodeBase64(authBytes));
             conn.setRequestProperty("Authorization", "Basic " + authString);
         }
 
-        //get the out-going HTTP connection           
+        // get the out-going HTTP connection
         OutputStreamWriter ostream = new OutputStreamWriter(conn.getOutputStream(), "US-ASCII");
-        
-	// log data
-	Category log = Category.getInstance("POSTDATALOG");
-	if (log.isDebugEnabled())
-	{
-		String nl = System.getProperty("line.separator");
-		log.debug(nl + "HTTP Post: Current time: "
-			  + new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.GregorianCalendar().getTime()));
-		log.debug(nl + "Data posted:" + nl);
-	}
 
-        //initialize a buffer to use to read and write
+        // log data
+        Category log = Category.getInstance("POSTDATALOG");
+        if (log.isDebugEnabled()) {
+            String nl = System.getProperty("line.separator");
+            log.debug(nl + "HTTP Post: Current time: " + new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.GregorianCalendar().getTime()));
+            log.debug(nl + "Data posted:" + nl);
+        }
+
+        // initialize a buffer to use to read and write
         char[] b = new char[bufSize];
 
-        //write the given data stream over the out-going HTTP connection
-        int bytesRead = dataReader.read( b, 0, bufSize );
-	if (bytesRead > 0 && log.isDebugEnabled())
-		log.debug(new String(b, 0, bytesRead));
+        // write the given data stream over the out-going HTTP connection
+        int bytesRead = dataReader.read(b, 0, bufSize);
+        if (bytesRead > 0 && log.isDebugEnabled())
+            log.debug(new String(b, 0, bytesRead));
 
-        while( bytesRead > 0 ) {
+        while (bytesRead > 0) {
             ostream.write(b, 0, bytesRead);
             bytesRead = dataReader.read(b, 0, bufSize);
-	    
-	    if (bytesRead > 0 && log.isDebugEnabled())
-	    	log.debug(new String(b, 0, bytesRead));
+
+            if (bytesRead > 0 && log.isDebugEnabled())
+                log.debug(new String(b, 0, bytesRead));
         }
-    
-        //close the out-going HTTP connection
+
+        // close the out-going HTTP connection
         ostream.close();
-        
-        //return the in-coming HTTP connection so the programmer can read the response
-        return( conn.getInputStream() );
+
+        // return the in-coming HTTP connection so the programmer can read the
+        // response
+        return (conn.getInputStream());
     }
 
 }

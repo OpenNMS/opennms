@@ -39,130 +39,115 @@ import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
 /**
- *
- * @author <a href="mailto:jamesz@opennms.com">James Zuo</a>
+ * 
+ * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
  */
-public final class XmlrpcUtil
-{
-        /**
-         * This method is responsible for generating an xmlrpcNotification event and sending
-         * it to eventd..
-         *
-         * @param txNo          the transaction no.
-         * @param sourceUei     The uei of the source event that this event to report for.
-         * @param message       The message for external xmlrpc server.
-         * @param status        flag to indicate the type of this notification.
-         * @param generator     openNMS daemon where this event is produced.
-         *
-         */
-        public static void createAndSendXmlrpcNotificationEvent( long txNo, String sourceUei, 
-                                                                String message, int status, String generator)
-        {
-		Category log = ThreadCategory.getInstance("XmlrpcUtil");
-		if (log.isDebugEnabled())
-			log.debug("createAndSendXmlrpcNotificationEvent:  txNo= " + txNo + "\n"
-                                + " uei = " + sourceUei + "\n"
-                                + " message = " + message + "\n"
-                                + " status = " + status);
-        
-                Event newEvent = new Event();
-                newEvent.setUei(EventConstants.XMLRPC_NOTIFICATION_EVENT_UEI);
-                newEvent.setSource(generator);
-                
-                String hostAddress = null;
-                try
-                {
-                        hostAddress = InetAddress.getLocalHost().getHostAddress();
-                }
-                catch (UnknownHostException uhE)
-                {
-                        hostAddress = "localhost";
-                        log.warn("createAndSendXmlrpcNotificationEvent: Could not lookup the host name for "
-                                + " the local host machine, address set to localhost", uhE);
-                }
-                
-                newEvent.setHost(hostAddress);
-                newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+public final class XmlrpcUtil {
+    /**
+     * This method is responsible for generating an xmlrpcNotification event and
+     * sending it to eventd..
+     * 
+     * @param txNo
+     *            the transaction no.
+     * @param sourceUei
+     *            The uei of the source event that this event to report for.
+     * @param message
+     *            The message for external xmlrpc server.
+     * @param status
+     *            flag to indicate the type of this notification.
+     * @param generator
+     *            openNMS daemon where this event is produced.
+     * 
+     */
+    public static void createAndSendXmlrpcNotificationEvent(long txNo, String sourceUei, String message, int status, String generator) {
+        Category log = ThreadCategory.getInstance("XmlrpcUtil");
+        if (log.isDebugEnabled())
+            log.debug("createAndSendXmlrpcNotificationEvent:  txNo= " + txNo + "\n" + " uei = " + sourceUei + "\n" + " message = " + message + "\n" + " status = " + status);
 
-                // Add appropriate parms
-                Parms eventParms = new Parms();
-                Parm eventParm = null;
-                Value parmValue = null;
+        Event newEvent = new Event();
+        newEvent.setUei(EventConstants.XMLRPC_NOTIFICATION_EVENT_UEI);
+        newEvent.setSource(generator);
 
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-                parmValue = new Value();
-                parmValue.setContent(new Long(txNo).toString());
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
+        String hostAddress = null;
+        try {
+            hostAddress = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException uhE) {
+            hostAddress = "localhost";
+            log.warn("createAndSendXmlrpcNotificationEvent: Could not lookup the host name for " + " the local host machine, address set to localhost", uhE);
+        }
 
-                // Add source event uei
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_SOURCE_EVENT_UEI);
-                parmValue = new Value();
-                parmValue.setContent(new String(sourceUei));
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-                
-                // Add message parameter 
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_SOURCE_EVENT_MESSAGE);
-                parmValue = new Value();
-                parmValue.setContent(new String(message));
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-               
-                // Add status parameter
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_SOURCE_EVENT_STATUS);
-                parmValue = new Value();
-                parmValue.setContent(new Integer(status).toString());
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-                
-                // Add Parms to the event
-                newEvent.setParms(eventParms);
+        newEvent.setHost(hostAddress);
+        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
 
-                // Send event to Eventd
-                try
-                {
-                        EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
+        // Add appropriate parms
+        Parms eventParms = new Parms();
+        Parm eventParm = null;
+        Value parmValue = null;
 
-                        if (log.isDebugEnabled())
-                                log.debug("createdAndSendXmlrpcNotificationEvent: successfully sent " 
-                                        + "XMLRPC notification event for txno: " + txNo + " / " 
-                                        + sourceUei + " " + status); 
-                }
-                catch(Throwable t)
-                {
-                        log.warn("run: unexpected throwable exception caught during send to middleware", t);
-               
-                        int failureFlag = 2;
-                        eventParms.removeParm(eventParm);
-                        
-                        // Add status parameter
-                        eventParm = new Parm();
-                        eventParm.setParmName(EventConstants.PARM_SOURCE_EVENT_STATUS);
-                        parmValue = new Value();
-                        parmValue.setContent(new Integer(failureFlag).toString());
-                        eventParm.setValue(parmValue);
-                        eventParms.addParm(eventParm);
-                       
-                        // Add Parms to the event
-                        newEvent.setParms(eventParms);
-                        try
-                        {
-                                EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
+        eventParm = new Parm();
+        eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
+        parmValue = new Value();
+        parmValue.setContent(new Long(txNo).toString());
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
 
-                                if (log.isDebugEnabled())
-                                        log.debug("createdAndSendXmlrpcNotificationEvent: successfully sent " 
-                                                + "XMLRPC notification event for txno: " + txNo + " / " 
-                                                + sourceUei + " " + failureFlag); 
-                        }
-                        catch(Throwable te)
-                        {
-                                log.warn("run: unexpected throwable exception caught during send to middleware", te);
-                        }
-                }
-        }               
+        // Add source event uei
+        eventParm = new Parm();
+        eventParm.setParmName(EventConstants.PARM_SOURCE_EVENT_UEI);
+        parmValue = new Value();
+        parmValue.setContent(new String(sourceUei));
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+
+        // Add message parameter
+        eventParm = new Parm();
+        eventParm.setParmName(EventConstants.PARM_SOURCE_EVENT_MESSAGE);
+        parmValue = new Value();
+        parmValue.setContent(new String(message));
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+
+        // Add status parameter
+        eventParm = new Parm();
+        eventParm.setParmName(EventConstants.PARM_SOURCE_EVENT_STATUS);
+        parmValue = new Value();
+        parmValue.setContent(new Integer(status).toString());
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+
+        // Add Parms to the event
+        newEvent.setParms(eventParms);
+
+        // Send event to Eventd
+        try {
+            EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
+
+            if (log.isDebugEnabled())
+                log.debug("createdAndSendXmlrpcNotificationEvent: successfully sent " + "XMLRPC notification event for txno: " + txNo + " / " + sourceUei + " " + status);
+        } catch (Throwable t) {
+            log.warn("run: unexpected throwable exception caught during send to middleware", t);
+
+            int failureFlag = 2;
+            eventParms.removeParm(eventParm);
+
+            // Add status parameter
+            eventParm = new Parm();
+            eventParm.setParmName(EventConstants.PARM_SOURCE_EVENT_STATUS);
+            parmValue = new Value();
+            parmValue.setContent(new Integer(failureFlag).toString());
+            eventParm.setValue(parmValue);
+            eventParms.addParm(eventParm);
+
+            // Add Parms to the event
+            newEvent.setParms(eventParms);
+            try {
+                EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
+
+                if (log.isDebugEnabled())
+                    log.debug("createdAndSendXmlrpcNotificationEvent: successfully sent " + "XMLRPC notification event for txno: " + txNo + " / " + sourceUei + " " + failureFlag);
+            } catch (Throwable te) {
+                log.warn("run: unexpected throwable exception caught during send to middleware", te);
+            }
+        }
+    }
 }

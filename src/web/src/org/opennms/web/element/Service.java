@@ -32,31 +32,29 @@
 
 package org.opennms.web.element;
 
+public class Service {
+    int m_nodeId;
 
-public class Service
-{
-    int     m_nodeId;
-    int     m_ifIndex;
-    String  m_ipAddr;
-    int     m_serviceId;
-    String  m_serviceName;
-    String  m_lastGood;
-    String  m_lastFail;
-    String  m_notify;
-    char    m_status;
+    int m_ifIndex;
 
-    public Service() {}
+    String m_ipAddr;
 
-    public Service( int nodeid, 
-                            int ifindex, 
-                            String ipaddr, 
-                            int serviceid, 
-                            String serviceName,
-                            String lastGood, 
-                            String lastFail,
-                            String notify,
-                            char status)
-    {
+    int m_serviceId;
+
+    String m_serviceName;
+
+    String m_lastGood;
+
+    String m_lastFail;
+
+    String m_notify;
+
+    char m_status;
+
+    public Service() {
+    }
+
+    public Service(int nodeid, int ifindex, String ipaddr, int serviceid, String serviceName, String lastGood, String lastFail, String notify, char status) {
         m_nodeId = nodeid;
         m_ifIndex = ifindex;
         m_ipAddr = ipaddr;
@@ -68,67 +66,55 @@ public class Service
         m_status = status;
     }
 
-
-    public int getNodeId()
-    {
+    public int getNodeId() {
         return m_nodeId;
     }
 
-    public int getIfIndex()
-    {
+    public int getIfIndex() {
         return m_ifIndex;
     }
 
-    public String getIpAddress()
-    {
+    public String getIpAddress() {
         return m_ipAddr;
     }
 
-    public int getServiceId()
-    {
+    public int getServiceId() {
         return m_serviceId;
     }
 
-    public String getServiceName()
-    {
+    public String getServiceName() {
         return m_serviceName;
     }
 
-    public String getLastGood()
-    {
+    public String getLastGood() {
         return m_lastGood;
     }
 
-    public String getLastFail()
-    {
+    public String getLastFail() {
         return m_lastFail;
     }
-    
-    public String getNotify()
-    {
+
+    public String getNotify() {
         return m_notify;
     }
 
     public char getStatus() {
         return m_status;
     }
-    
-    public boolean isManaged()
-    {
-            return (m_status == 'A');
-    }    
 
-    
-    public String toString()
-    {
-        StringBuffer str = new StringBuffer("Node Id = " + m_nodeId + "\n" );
-        str.append("Ifindex = " + m_ifIndex + "\n" );
-        str.append("Ipaddr = " + m_ipAddr + "\n" );
-        str.append("Service id = " + m_serviceId + "\n" );
+    public boolean isManaged() {
+        return (m_status == 'A');
+    }
+
+    public String toString() {
+        StringBuffer str = new StringBuffer("Node Id = " + m_nodeId + "\n");
+        str.append("Ifindex = " + m_ifIndex + "\n");
+        str.append("Ipaddr = " + m_ipAddr + "\n");
+        str.append("Service id = " + m_serviceId + "\n");
         str.append("Service name = " + m_serviceName + "\n");
-        str.append("Last Good = " + m_lastGood + "\n" );
-        str.append("Last Fail  = " + m_lastFail + "\n" );
-        str.append("Status = " + m_status + "\n" );
+        str.append("Last Good = " + m_lastGood + "\n");
+        str.append("Last Fail  = " + m_lastFail + "\n");
+        str.append("Status = " + m_status + "\n");
         return str.toString();
     }
 }

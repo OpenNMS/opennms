@@ -41,84 +41,88 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-
 /**
- * A trivial implementation of <code>DbConnectionFactory</code> that creates a new connection 
- * for every request and does no caching or connection sharing.
- *
- * <p>Note that no real connection pooling is occurring within this class.  This factory 
- * will be an inefficient connection management scheme for most real-world applications.
- * It was designed only for development/debugging purposes and for applications that
- * are <strong>very</strong> infrequently used.  In those cases, caching idle database 
- * connections for long periods of time can be wasteful, and this pooling scheme would
- * be appropriate.</p>
- *
- * <p>This manager simply initializes the JDBC driver and then stores the database
- * credential information (if any).  Then when a connection is requested, a new
- * connection is made with the stored credentials (if any). </p> 
- *
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * A trivial implementation of <code>DbConnectionFactory</code> that creates a
+ * new connection for every request and does no caching or connection sharing.
+ * 
+ * <p>
+ * Note that no real connection pooling is occurring within this class. This
+ * factory will be an inefficient connection management scheme for most
+ * real-world applications. It was designed only for development/debugging
+ * purposes and for applications that are <strong>very </strong> infrequently
+ * used. In those cases, caching idle database connections for long periods of
+ * time can be wasteful, and this pooling scheme would be appropriate.
+ * </p>
+ * 
+ * <p>
+ * This manager simply initializes the JDBC driver and then stores the database
+ * credential information (if any). Then when a connection is requested, a new
+ * connection is made with the stored credentials (if any).
+ * </p>
+ * 
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class SimpleDbConnectionFactory extends Object implements DbConnectionFactory
-{    
+public class SimpleDbConnectionFactory extends Object implements DbConnectionFactory {
     protected String url = null;
+
     protected String username = null;
+
     protected String password = null;
+
     protected Properties properties = null;
 
     /**
-     * Initialize a new database pool.  This method will only load the JDBC driver.
+     * Initialize a new database pool. This method will only load the JDBC
+     * driver.
      */
-    public void init( String dbUrl, String dbDriver ) throws ClassNotFoundException, SQLException {
-        if( dbUrl == null || dbDriver == null ) {
-            throw new IllegalArgumentException( "Cannot take null parameters." );
+    public void init(String dbUrl, String dbDriver) throws ClassNotFoundException, SQLException {
+        if (dbUrl == null || dbDriver == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Class.forName( dbDriver );
+        Class.forName(dbDriver);
         this.url = dbUrl;
     }
 
-
-    /** 
-     * Initialize a new database pool with the given database username and password.
-     * This method will load the JDBC driver and store the given database credentials.
-     * When a connection is requested, a new connection will be made using the credentials.
+    /**
+     * Initialize a new database pool with the given database username and
+     * password. This method will load the JDBC driver and store the given
+     * database credentials. When a connection is requested, a new connection
+     * will be made using the credentials.
      */
-    public void init( String dbUrl, String dbDriver, String username, String password ) throws ClassNotFoundException, SQLException {
-        if( dbUrl == null || dbDriver == null || username == null || password == null ) {
-            throw new IllegalArgumentException( "Cannot take null parameters." );
+    public void init(String dbUrl, String dbDriver, String username, String password) throws ClassNotFoundException, SQLException {
+        if (dbUrl == null || dbDriver == null || username == null || password == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Class.forName( dbDriver );
+        Class.forName(dbDriver);
 
         this.url = dbUrl;
         this.username = username;
         this.password = password;
     }
 
-
-    /** 
-     * Initialize a new database pool with the given database properties.
-     * This method will load the JDBC driver and store the given database properties.
-     * When a connection is requested, a new connection will be made using the properties.
+    /**
+     * Initialize a new database pool with the given database properties. This
+     * method will load the JDBC driver and store the given database properties.
+     * When a connection is requested, a new connection will be made using the
+     * properties.
      */
-    public void init( String dbUrl, String dbDriver, Properties properties ) throws ClassNotFoundException, SQLException {
-        if( dbUrl == null || dbDriver == null || properties == null ) {
-            throw new IllegalArgumentException( "Cannot take null parameters." );
+    public void init(String dbUrl, String dbDriver, Properties properties) throws ClassNotFoundException, SQLException {
+        if (dbUrl == null || dbDriver == null || properties == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        Class.forName( dbDriver );
+        Class.forName(dbDriver);
 
         this.url = dbUrl;
         this.properties = properties;
     }
 
-
-
-    /** 
+    /**
      * Clear all database URL and credential information so no more connections
-     * can be requested. 
+     * can be requested.
      */
     public void destroy() {
         this.url = null;
@@ -127,40 +131,36 @@ public class SimpleDbConnectionFactory extends Object implements DbConnectionFac
         this.properties = null;
     }
 
-    
     /**
-     * Create a new connection for the given database URL.  This method
-     * will check to ensure that the URL has already been registered as
-     * a valid database pool.  If any database credentials or properties
-     * were registered, those will be used when creating the new connection.
+     * Create a new connection for the given database URL. This method will
+     * check to ensure that the URL has already been registered as a valid
+     * database pool. If any database credentials or properties were registered,
+     * those will be used when creating the new connection.
      */
     public Connection getConnection() throws SQLException {
-        if( this.url == null ) {
-            throw new IllegalArgumentException( "This database factory has not been initialized or has been destroyed." );
+        if (this.url == null) {
+            throw new IllegalArgumentException("This database factory has not been initialized or has been destroyed.");
         }
 
         Connection connection = null;
 
-        if( this.properties != null ) {
-            connection = DriverManager.getConnection( this.url, this.properties );
-        }
-        else if( this.username != null && this.password != null ) {
-            connection = DriverManager.getConnection( this.url, this.username, this.password );
-        }
-        else {
-            connection = DriverManager.getConnection( this.url );
+        if (this.properties != null) {
+            connection = DriverManager.getConnection(this.url, this.properties);
+        } else if (this.username != null && this.password != null) {
+            connection = DriverManager.getConnection(this.url, this.username, this.password);
+        } else {
+            connection = DriverManager.getConnection(this.url);
         }
 
-        return( connection );
+        return (connection);
     }
-
 
     /**
      * Close the given connection.
      */
-    public void releaseConnection( Connection connection ) throws SQLException {
-        if( connection == null ) {
-            throw new IllegalArgumentException( "Cannot take null parameters." );
+    public void releaseConnection(Connection connection) throws SQLException {
+        if (connection == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
         connection.close();

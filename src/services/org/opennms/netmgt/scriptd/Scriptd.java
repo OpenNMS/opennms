@@ -52,229 +52,196 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ScriptdConfigFactory;
 
 /**
- * This class implements a script execution service. This service
- * subscribes to all events, and passes received events to the set
- * of configured scripts.
- *
- * This services uses the Bean Scripting Framework (BSF) in order to
- * allow scripts to be written in a variety of registered languages.
- *
- * @author <a href="mailto:jim.doble@tavve.com">Jim Doble</a>
- * @author <a href="http://www.opennms.org/">OpenNMS.org</a>
+ * This class implements a script execution service. This service subscribes to
+ * all events, and passes received events to the set of configured scripts.
+ * 
+ * This services uses the Bean Scripting Framework (BSF) in order to allow
+ * scripts to be written in a variety of registered languages.
+ * 
+ * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
  */
-public final class Scriptd implements PausableFiber
-{
-	/**
-	 * The log4j category used to log debug messsages
-	 * and statements.
-	 */
-	private static final String LOG4J_CATEGORY = "OpenNMS.Scriptd";
+public final class Scriptd implements PausableFiber {
+    /**
+     * The log4j category used to log debug messsages and statements.
+     */
+    private static final String LOG4J_CATEGORY = "OpenNMS.Scriptd";
 
-	/**
-	 * The singleton instance.
-	 */
-	private static final Scriptd	m_singleton = new Scriptd();
+    /**
+     * The singleton instance.
+     */
+    private static final Scriptd m_singleton = new Scriptd();
 
-	/**
-	 * The execution launcher
-	 */
-	private Executor		m_execution;
+    /**
+     * The execution launcher
+     */
+    private Executor m_execution;
 
-	/**
-	 * The broadcast event receiver.
-	 */
-	private BroadcastEventProcessor	m_eventReader;
+    /**
+     * The broadcast event receiver.
+     */
+    private BroadcastEventProcessor m_eventReader;
 
-	/**
-	 * The current status of this fiber
-	 */
-	private int			m_status;
+    /**
+     * The current status of this fiber
+     */
+    private int m_status;
 
-	/**
-	 * Constructs a new Script execution daemon.
-	 */
-	private Scriptd()
-	{
-		m_execution   = null;
-		m_eventReader = null;
-		m_status      = START_PENDING;
-	}
+    /**
+     * Constructs a new Script execution daemon.
+     */
+    private Scriptd() {
+        m_execution = null;
+        m_eventReader = null;
+        m_status = START_PENDING;
+    }
 
-	/**
-	 * Initialize the <em>Scriptd</em> service.
-	 */
-	public synchronized void init()
-	{
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		Category log = ThreadCategory.getInstance();
+    /**
+     * Initialize the <em>Scriptd</em> service.
+     */
+    public synchronized void init() {
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        Category log = ThreadCategory.getInstance();
 
-		// Load the configuration information
-		//
-		ScriptdConfigFactory aFactory = null;
-		
-		try
-		{
-			ScriptdConfigFactory.reload();
-			aFactory = ScriptdConfigFactory.getInstance();
-		}
-		catch(MarshalException ex)
-		{
-			log.error("Failed to load scriptd configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(ValidationException ex)
-		{
-			log.error("Failed to load scriptd configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(IOException ex)
-		{
-			log.error("Failed to load scriptd configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
+        // Load the configuration information
+        //
+        ScriptdConfigFactory aFactory = null;
 
-		// A queue for execution
+        try {
+            ScriptdConfigFactory.reload();
+            aFactory = ScriptdConfigFactory.getInstance();
+        } catch (MarshalException ex) {
+            log.error("Failed to load scriptd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (ValidationException ex) {
+            log.error("Failed to load scriptd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (IOException ex) {
+            log.error("Failed to load scriptd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
 
-		FifoQueue execQ = new FifoQueueImpl();
+        // A queue for execution
 
-		// start the event reader
+        FifoQueue execQ = new FifoQueueImpl();
 
-		try
-		{
-			m_eventReader = new BroadcastEventProcessor(execQ);
-		}
-		catch(Exception ex)
-		{
-			log.error("Failed to setup event reader", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
+        // start the event reader
 
-		m_execution = new Executor(execQ, aFactory);
-	}
+        try {
+            m_eventReader = new BroadcastEventProcessor(execQ);
+        } catch (Exception ex) {
+            log.error("Failed to setup event reader", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
 
-	/**
-	 * Starts the <em>Scriptd</em> service. The process of starting
-	 * the service involves reading the configuration data, starting
-	 * an event receiver, and creating an execution fiber. If the
-	 * service is already running then an exception is thrown.
-	 *
-	 * @throws java.lang.IllegalStateException Thrown if the service
-	 * 	is already running.
-	 */
-	public synchronized void start()
-	{
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		Category log = ThreadCategory.getInstance();
+        m_execution = new Executor(execQ, aFactory);
+    }
 
-		if(m_status == START_PENDING)
-		{
-			m_status = STARTING;
-			if(m_execution == null)
-			{
-				init();
-			}
+    /**
+     * Starts the <em>Scriptd</em> service. The process of starting the
+     * service involves reading the configuration data, starting an event
+     * receiver, and creating an execution fiber. If the service is already
+     * running then an exception is thrown.
+     * 
+     * @throws java.lang.IllegalStateException
+     *             Thrown if the service is already running.
+     */
+    public synchronized void start() {
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        Category log = ThreadCategory.getInstance();
 
-			m_execution.start();
-			m_status = RUNNING;
+        if (m_status == START_PENDING) {
+            m_status = STARTING;
+            if (m_execution == null) {
+                init();
+            }
 
-			log.info("Scriptd running");
-		}
-		else if(m_execution != null && m_execution.getStatus() != STOPPED)
-		{
-			// Service is already running?
-			throw new IllegalStateException("The scriptd service is already running");
-		}
-	}
+            m_execution.start();
+            m_status = RUNNING;
 
-	/**
-	 * Stops the <em>Scriptd</em> service. If the service is not running then the 
-	 * command is silently discarded.
-	 */
-	public synchronized void stop()
-	{
-		m_status  = STOP_PENDING;
+            log.info("Scriptd running");
+        } else if (m_execution != null && m_execution.getStatus() != STOPPED) {
+            // Service is already running?
+            throw new IllegalStateException("The scriptd service is already running");
+        }
+    }
 
-		try
-		{
-			if(m_execution != null)
-			{
-				m_execution.stop();
-			}
-		}
-		catch(Exception e)
-		{ }
+    /**
+     * Stops the <em>Scriptd</em> service. If the service is not running then
+     * the command is silently discarded.
+     */
+    public synchronized void stop() {
+        m_status = STOP_PENDING;
 
-		if(m_eventReader != null)
-		{
-			m_eventReader.close();
-		}
+        try {
+            if (m_execution != null) {
+                m_execution.stop();
+            }
+        } catch (Exception e) {
+        }
 
-		m_eventReader = null;
-		m_execution   = null;
-		m_status = STOPPED;
-	}
+        if (m_eventReader != null) {
+            m_eventReader.close();
+        }
 
-	/**
-	 * Returns the current status of the <em>Scriptd</em> service.
-	 *
-	 * @return The service's status.
-	 */
-	public synchronized int getStatus()
-	{
-		return m_status;
-	}
+        m_eventReader = null;
+        m_execution = null;
+        m_status = STOPPED;
+    }
 
-	/**
-	 * Returns the name of the <em>Scriptd</em> service.
-	 *
-	 * @return The service's name.
-	 */
-	public String getName()
-	{
-		return "OpenNMS.Scriptd";
-	}
+    /**
+     * Returns the current status of the <em>Scriptd</em> service.
+     * 
+     * @return The service's status.
+     */
+    public synchronized int getStatus() {
+        return m_status;
+    }
 
-	/**
-	 * Pauses the <em>Scriptd</em> service if its currently running
-	 */
-	public synchronized void pause()
-	{
-		if(m_status != RUNNING)
-		{
-			return;
-		}
+    /**
+     * Returns the name of the <em>Scriptd</em> service.
+     * 
+     * @return The service's name.
+     */
+    public String getName() {
+        return "OpenNMS.Scriptd";
+    }
 
-		m_status = PAUSE_PENDING;
+    /**
+     * Pauses the <em>Scriptd</em> service if its currently running
+     */
+    public synchronized void pause() {
+        if (m_status != RUNNING) {
+            return;
+        }
 
-		m_execution.pause();
-		m_status = PAUSED;
-	}
+        m_status = PAUSE_PENDING;
 
-	/**
-	 * Resumes the <em>Scriptd</em> service if its currently paused
-	 */
-	public synchronized void resume()
-	{
-		if(m_status != PAUSED)
-		{
-			return;
-		}
+        m_execution.pause();
+        m_status = PAUSED;
+    }
 
-		m_status = RESUME_PENDING;
+    /**
+     * Resumes the <em>Scriptd</em> service if its currently paused
+     */
+    public synchronized void resume() {
+        if (m_status != PAUSED) {
+            return;
+        }
 
-		m_execution.resume();
-		m_status = RUNNING;
-	}
+        m_status = RESUME_PENDING;
 
-	/**
-	 * Returns the singular instance of the <em>Scriptd</em>
-	 * daemon. There can be only one instance of this
-	 * service per virtual machine.
-	 *
-	 * @return  The singular instance.
-	 */
-	public static Scriptd getInstance()
-	{
-		return m_singleton;
-	}
+        m_execution.resume();
+        m_status = RUNNING;
+    }
+
+    /**
+     * Returns the singular instance of the <em>Scriptd</em> daemon. There can
+     * be only one instance of this service per virtual machine.
+     * 
+     * @return The singular instance.
+     */
+    public static Scriptd getInstance() {
+        return m_singleton;
+    }
 }

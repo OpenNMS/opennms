@@ -54,68 +54,73 @@ import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.web.Util;
 
-
-
-
 /**
- * Provides an rrdtool based implementation of RrdStrategy.  It uses the existing
- * JNI based single-threaded interface to write the rrdtool compatibile RRD files.
+ * Provides an rrdtool based implementation of RrdStrategy. It uses the existing
+ * JNI based single-threaded interface to write the rrdtool compatibile RRD
+ * files.
  * 
- * The JNI interface takes command-like arguments and doesn't provide open files so
- * the the Objects used to represent open files are really partial command strings
+ * The JNI interface takes command-like arguments and doesn't provide open files
+ * so the the Objects used to represent open files are really partial command
+ * strings
  * 
  * See the individual methods for more details
  */
 class JniRrdStrategy implements RrdStrategy {
-    
+
     boolean initialized = false;
+
     boolean graphicsInitialized = false;
-    
+
     /**
-     * The 'closes' the rrd file.  This is where the actual work of writing the RRD
-     * files takes place.  The passed in rrd is actually an rrd command string containing
-     * updates.  This method executes this command. 
+     * The 'closes' the rrd file. This is where the actual work of writing the
+     * RRD files takes place. The passed in rrd is actually an rrd command
+     * string containing updates. This method executes this command.
      */
     public void closeFile(Object rrd) throws Exception {
         checkState("closeFile");
         String[] results = Interface.launch(rrd.toString());
-        if (results[0] != null) { throw new Exception(results[0]); }
+        if (results[0] != null) {
+            throw new Exception(results[0]);
+        }
     }
 
     /**
      * Ensures that the initialize method has been called.
-     * @param methodName the name of the method we are called from
-     * @throws IllegalState exception of intialize has not been called.
+     * 
+     * @param methodName
+     *            the name of the method we are called from
+     * @throws IllegalState
+     *             exception of intialize has not been called.
      */
     private void checkState(String methodName) {
-        if (!initialized) throw new IllegalStateException("the "+methodName+" method cannot be called before initialize");
+        if (!initialized)
+            throw new IllegalStateException("the " + methodName + " method cannot be called before initialize");
     }
 
     /**
-     * Constructs an rrdtool create command string that can be used to create the rrd file
-     * and returns it as the rrdDefinition object.
+     * Constructs an rrdtool create command string that can be used to create
+     * the rrd file and returns it as the rrdDefinition object.
      * 
      */
-    public Object createDefinition(String creator, String directory, String dsName, int step, String dsType, int dsHeartbeat, String dsMin,
-            String dsMax, List rraList) throws Exception {
-        
+    public Object createDefinition(String creator, String directory, String dsName, int step, String dsType, int dsHeartbeat, String dsMin, String dsMax, List rraList) throws Exception {
+
         checkState("createDefinition");
-        
+
         File f = new File(directory);
         f.mkdirs();
-        
-        String fileName = directory+File.separator+dsName+".rrd";
+
+        String fileName = directory + File.separator + dsName + ".rrd";
 
         StringBuffer createCmd = new StringBuffer("create");
 
         createCmd.append(' ' + fileName);
-        
-        createCmd.append(" --start="+(System.currentTimeMillis()/1000L - 10L));
+
+        createCmd.append(" --start=" + (System.currentTimeMillis() / 1000L - 10L));
 
         createCmd.append(" --step=" + step);
 
-        createCmd.append(" DS:" + dsName + ":"+dsType+":" + dsHeartbeat + ':' + dsMin + ':' + dsMax);
-        
+        createCmd.append(" DS:" + dsName + ":" + dsType + ":" + dsHeartbeat + ':' + dsMin + ':' + dsMax);
+
         for (Iterator it = rraList.iterator(); it.hasNext();) {
             String rra = (String) it.next();
             createCmd.append(' ');
@@ -126,8 +131,8 @@ class JniRrdStrategy implements RrdStrategy {
     }
 
     /**
-     * Creates a the rrd file from the rrdDefinition.  Since this definition is really 
-     * just the create command string it just executes it.
+     * Creates a the rrd file from the rrdDefinition. Since this definition is
+     * really just the create command string it just executes it.
      */
     public void createFile(Object rrdDef) throws Exception {
         checkState("createFile");
@@ -135,9 +140,9 @@ class JniRrdStrategy implements RrdStrategy {
     }
 
     /**
-     * The 'opens' the given rrd file.  In actuality since the JNI interface does not
-     * provide files that may be open, this constructs the beginning portion of the rrd
-     * command to update the file.
+     * The 'opens' the given rrd file. In actuality since the JNI interface does
+     * not provide files that may be open, this constructs the beginning portion
+     * of the rrd command to update the file.
      */
     public Object openFile(String fileName) throws Exception {
         checkState("openFile");
@@ -145,16 +150,16 @@ class JniRrdStrategy implements RrdStrategy {
     }
 
     /**
-     * This 'updates' the given rrd file by providing data.  Since the JNI interface
-     * does not provide files that can be open, this just appends the data to the command
-     * string constructed so far.  The data is not immediately written to the file since
-     * this would eliminate the possibility of getting performance benefit by doing more
-     * than one write per open.  The updates are all performed at once in the closeFile
-     * method. 
+     * This 'updates' the given rrd file by providing data. Since the JNI
+     * interface does not provide files that can be open, this just appends the
+     * data to the command string constructed so far. The data is not
+     * immediately written to the file since this would eliminate the
+     * possibility of getting performance benefit by doing more than one write
+     * per open. The updates are all performed at once in the closeFile method.
      */
     public void updateFile(Object rrd, String data) throws Exception {
         checkState("updateFile");
-        StringBuffer cmd = (StringBuffer)rrd;
+        StringBuffer cmd = (StringBuffer) rrd;
         cmd.append(' ');
         cmd.append(data);
     }
@@ -166,17 +171,19 @@ class JniRrdStrategy implements RrdStrategy {
         Interface.init();
         initialized = true;
     }
-    
-   
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.opennms.netmgt.rrd.RrdStrategy#graphicsInitialize()
      */
     public void graphicsInitialize() throws Exception {
         // nothing to do here
     }
+
     /**
-     * Fetches the last value directly from the rrd file using the JNI Interface.
+     * Fetches the last value directly from the rrd file using the JNI
+     * Interface.
      */
     public Double fetchLastValue(String rrdFile, int interval) throws NumberFormatException, RrdException {
         checkState("fetchLastValue");
@@ -184,29 +191,32 @@ class JniRrdStrategy implements RrdStrategy {
         //
         Category log = ThreadCategory.getInstance(getClass());
 
-        // Generate rrd_fetch() command through jrrd JNI interface in order to retrieve
+        // Generate rrd_fetch() command through jrrd JNI interface in order to
+        // retrieve
         // LAST pdp for the datasource stored in the specified RRD file
         //
         // String array returned from launch() native method format:
-        //  String[0] - If success is null, otherwise contains reason for failure
-        //  String[1] - All data source names contained in the RRD (space delimited)
-        //  String[2]...String[n] - RRD fetch data in the following format:
-        //      <timestamp> <value1> <value2> ... <valueX> where X is
-        //          the total number of data sources
+        // String[0] - If success is null, otherwise contains reason for failure
+        // String[1] - All data source names contained in the RRD (space
+        // delimited)
+        // String[2]...String[n] - RRD fetch data in the following format:
+        // <timestamp> <value1> <value2> ... <valueX> where X is
+        // the total number of data sources
         //
         // NOTE: Specifying start time of 'now-<interval>' and
-        //        end time of 'now-<interval>' where <interval> is the
-        //    configured thresholding interval (and should be the
-        //    same as the RRD step size) in order to guarantee that
-        //        we don't get a 'NaN' value from the fetch command. This
-        //    is necessary because the collection is being done by collectd
-        //    and there is nothing keeping us in sync.
+        // end time of 'now-<interval>' where <interval> is the
+        // configured thresholding interval (and should be the
+        // same as the RRD step size) in order to guarantee that
+        // we don't get a 'NaN' value from the fetch command. This
+        // is necessary because the collection is being done by collectd
+        // and there is nothing keeping us in sync.
         // 
-        //    interval argument is in milliseconds so must convert to seconds
+        // interval argument is in milliseconds so must convert to seconds
         //
         String fetchCmd = "fetch " + rrdFile + " AVERAGE -s now-" + interval / 1000 + " -e now-" + interval / 1000;
 
-        if (log.isDebugEnabled()) log.debug("fetch: Issuing RRD command: " + fetchCmd);
+        if (log.isDebugEnabled())
+            log.debug("fetch: Issuing RRD command: " + fetchCmd);
 
         String[] fetchStrings = Interface.launch(fetchCmd);
 
@@ -249,52 +259,52 @@ class JniRrdStrategy implements RrdStrategy {
                 dsValue = new Double(fetchStrings[2].trim());
             } catch (NumberFormatException nfe) {
                 if (log.isEnabledFor(Priority.WARN))
-                        log.warn("fetch: Unable to convert fetched value (" + fetchStrings[2].trim() + ") to Double for data source " + dsName);
+                    log.warn("fetch: Unable to convert fetched value (" + fetchStrings[2].trim() + ") to Double for data source " + dsName);
                 throw nfe;
             }
         }
 
-        if (log.isDebugEnabled()) log.debug("fetch: fetch successful: " + dsName + "= " + dsValue);
+        if (log.isDebugEnabled())
+            log.debug("fetch: fetch successful: " + dsName + "= " + dsValue);
 
         return dsValue;
     }
-    
+
     /**
-     * Executes the given graph comnmand as process with workDir as the current directory.  The
-     * output stream of the command (a PNG image) is copied to a the InputStream returned
-     * from the method.
+     * Executes the given graph comnmand as process with workDir as the current
+     * directory. The output stream of the command (a PNG image) is copied to a
+     * the InputStream returned from the method.
      */
     public InputStream createGraph(String command, File workDir) throws IOException, RrdException {
         InputStream tempIn;
-        String[] commandArray = Util.createCommandArray( command, '@' );
-        Process process = Runtime.getRuntime().exec( commandArray, null, workDir );
-        
+        String[] commandArray = Util.createCommandArray(command, '@');
+        Process process = Runtime.getRuntime().exec(commandArray, null, workDir);
+
         ByteArrayOutputStream tempOut = new ByteArrayOutputStream();
-        BufferedInputStream in = new BufferedInputStream( process.getInputStream() );
-        
-        Util.streamToStream( in, tempOut );
-        
+        BufferedInputStream in = new BufferedInputStream(process.getInputStream());
+
+        Util.streamToStream(in, tempOut);
+
         in.close();
         tempOut.close();
-        
-        BufferedReader err = new BufferedReader( new InputStreamReader( process.getErrorStream() ));
+
+        BufferedReader err = new BufferedReader(new InputStreamReader(process.getErrorStream()));
         String line = err.readLine();
         StringBuffer buffer = new StringBuffer();
-        
-        while( line != null ) {
-            buffer.append( line );
+
+        while (line != null) {
+            buffer.append(line);
             line = err.readLine();
         }
-        
+
         if (buffer.length() > 0) {
             throw new RrdException(buffer.toString());
         }
-        
+
         byte[] byteArray = tempOut.toByteArray();
-        tempIn = new ByteArrayInputStream( byteArray );
+        tempIn = new ByteArrayInputStream(byteArray);
         return tempIn;
     }
-
 
     /**
      * No stats are kept for this implementation.

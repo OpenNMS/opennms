@@ -40,94 +40,102 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
-
 /**
- * A <code>DbConnectionFactory</code> allocates and deallocates
- * connections from a database.  The concrete implementations
- * of this interface specify a particular allocation/deallocation
- * policy.  
- *
- * <p>For example, an implementation might use and reuse 
- * connections from a persistent pool of connections, while another
- * might dynamically allocate and deallocate connections for each
- * request. </p> 
- *
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * A <code>DbConnectionFactory</code> allocates and deallocates connections
+ * from a database. The concrete implementations of this interface specify a
+ * particular allocation/deallocation policy.
+ * 
+ * <p>
+ * For example, an implementation might use and reuse connections from a
+ * persistent pool of connections, while another might dynamically allocate and
+ * deallocate connections for each request.
+ * </p>
+ * 
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public interface DbConnectionFactory
-{
+public interface DbConnectionFactory {
     /**
      * Initialize a database factory with the given URL and driver classname.
-     * Will guarantee that the JDBC driver is loaded and that connections 
-     * will now be available.
-     *
-     * <p>Only one <code>init</code> method should be called.
-     *
-     * @param dbUrl the JDBC URL used to retrieve connections 
-     * @param dbDriver a fully qualified class name for the JDBC driver that
-     * handles this JDBC URL
+     * Will guarantee that the JDBC driver is loaded and that connections will
+     * now be available.
+     * 
+     * <p>
+     * Only one <code>init</code> method should be called.
+     * 
+     * @param dbUrl
+     *            the JDBC URL used to retrieve connections
+     * @param dbDriver
+     *            a fully qualified class name for the JDBC driver that handles
+     *            this JDBC URL
      */
-    public void init( String dbUrl, String dbDriver ) throws ClassNotFoundException, SQLException;
-
+    public void init(String dbUrl, String dbDriver) throws ClassNotFoundException, SQLException;
 
     /**
-     * Initialize a database factory with the given URL, driver classname, and database 
-     * credentials.  Will guarantee that the JDBC driver is loaded and that connections 
-     * will be available.     
-     *
-     * <p>Only one <code>init</code> method should be called.
-     *
-     * @param dbUrl the JDBC URL used to retrieve connections 
-     * @param dbDriver a fully qualified class name for the JDBC driver that will 
-     * handle this JDBC URL
-     * @param username the name to use to authenticate us with the database
-     * @param password the credentials use to authenticate the username
+     * Initialize a database factory with the given URL, driver classname, and
+     * database credentials. Will guarantee that the JDBC driver is loaded and
+     * that connections will be available.
+     * 
+     * <p>
+     * Only one <code>init</code> method should be called.
+     * 
+     * @param dbUrl
+     *            the JDBC URL used to retrieve connections
+     * @param dbDriver
+     *            a fully qualified class name for the JDBC driver that will
+     *            handle this JDBC URL
+     * @param username
+     *            the name to use to authenticate us with the database
+     * @param password
+     *            the credentials use to authenticate the username
      */
-    public void init( String dbUrl, String dbDriver, String username, String password ) throws ClassNotFoundException, SQLException;
-
+    public void init(String dbUrl, String dbDriver, String username, String password) throws ClassNotFoundException, SQLException;
 
     /**
-     * Initialize a database factory with the given URL, driver classname, and 
-     * database properties.  Will guarantee that the JDBC driver is loaded 
-     * and that connections will be available.
-     *
-     * <p>Only one <code>init</code> method should be called.
-     *
-     * @param dbUrl the JDBC URL used to retrieve connections 
-     * @param dbDriver a fully qualified class name for the JDBC driver that will 
-     * handle this JDBC URL
-     * @param properties a collection of database properties, these may be specific
-     * to your particular database
+     * Initialize a database factory with the given URL, driver classname, and
+     * database properties. Will guarantee that the JDBC driver is loaded and
+     * that connections will be available.
+     * 
+     * <p>
+     * Only one <code>init</code> method should be called.
+     * 
+     * @param dbUrl
+     *            the JDBC URL used to retrieve connections
+     * @param dbDriver
+     *            a fully qualified class name for the JDBC driver that will
+     *            handle this JDBC URL
+     * @param properties
+     *            a collection of database properties, these may be specific to
+     *            your particular database
      */
-    public void init( String dbUrl, String dbDriver, Properties properties ) throws ClassNotFoundException, SQLException;
-
+    public void init(String dbUrl, String dbDriver, Properties properties) throws ClassNotFoundException, SQLException;
 
     /**
-     * Deallocate all the resources that may have been allocated to 
-     * this database connection factory.  Makes this factory unavailable 
-     * for new connection requests.
+     * Deallocate all the resources that may have been allocated to this
+     * database connection factory. Makes this factory unavailable for new
+     * connection requests.
      */
     public void destroy() throws SQLException;
 
-
     /**
      * Retrieve a connection from the given database connection pool.
-     *
-     * @throws IllegalStateException If the factory has not been initialized
-     * or has been destroyed.
+     * 
+     * @throws IllegalStateException
+     *             If the factory has not been initialized or has been
+     *             destroyed.
      */
     public Connection getConnection() throws SQLException;
 
-
     /**
-     * Replace a database connection back in the pool of available 
-     * connections for its parent pool.
-     *
-     * @param connection the connection to release
-     * @throws IllegalStateException If the factory has not been initialized
-     * or has been destroyed.
+     * Replace a database connection back in the pool of available connections
+     * for its parent pool.
+     * 
+     * @param connection
+     *            the connection to release
+     * @throws IllegalStateException
+     *             If the factory has not been initialized or has been
+     *             destroyed.
      */
-    public void releaseConnection( Connection connection ) throws SQLException;
+    public void releaseConnection(Connection connection) throws SQLException;
 
 }

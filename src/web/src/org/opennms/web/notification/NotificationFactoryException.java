@@ -32,40 +32,35 @@
 
 package org.opennms.web.notification;
 
-/**This exception is used to indicate that the NotificationFactory had a problem
-   
-   @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
-   @author <A HREF="http://www.opennms.org/">OpenNMS</A>
-   @version 1.1.1.1  
-*/
-public class NotificationFactoryException extends Exception
-{
+/**
+ * This exception is used to indicate that the NotificationFactory had a problem
+ * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version 1.1.1.1
+ */
+public class NotificationFactoryException extends Exception {
     private Throwable rootCause;
 
-       public NotificationFactoryException() 
-       {
-	       super();
-       }
-       
-       public NotificationFactoryException(String message) 
-       {
-	       super(message);
-       }
-       
-       public NotificationFactoryException(String message, Throwable rootCause) 
-       {
-	       super(message);
-	       this.rootCause = rootCause;
-       }
-       
-       public NotificationFactoryException(Throwable rootCause)
-       {
-	       super(rootCause.getLocalizedMessage());
-	       this.rootCause = rootCause;
-       }
-       
-       public Throwable getRootCause() 
-       {
-	       return rootCause;
-       }
+    public NotificationFactoryException() {
+        super();
+    }
+
+    public NotificationFactoryException(String message) {
+        super(message);
+    }
+
+    public NotificationFactoryException(String message, Throwable rootCause) {
+        super(message);
+        this.rootCause = rootCause;
+    }
+
+    public NotificationFactoryException(Throwable rootCause) {
+        super(rootCause.getLocalizedMessage());
+        this.rootCause = rootCause;
+    }
+
+    public Throwable getRootCause() {
+        return rootCause;
+    }
 }

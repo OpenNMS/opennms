@@ -33,70 +33,70 @@
 
 package org.opennms.netmgt.outage;
 
-
-
 /**
  * This class defines the entries in the Outage cache.
- *
- * @author <A HREF="mailto:tarus@opennms.org">Tarus</A>
+ * 
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus </A>
  * 
  */
-public final class OutageEventEntry
-{
-	/**
-	 * Lookup the event type
-	 */
-	public static final int	EVENT_TYPE_REGAINED_SERVICE 	= 1;
-	public static final int EVENT_TYPE_LOST_SERVICE 	= 2;
-	public static final int EVENT_TYPE_INTERFACE_UP 	= 3;
-	public static final int EVENT_TYPE_INTERFACE_DOWN 	= 4;
-	public static final int EVENT_TYPE_NODE_UP	 	= 5;
-	public static final int EVENT_TYPE_NODE_DOWN 		= 6;
+public final class OutageEventEntry {
+    /**
+     * Lookup the event type
+     */
+    public static final int EVENT_TYPE_REGAINED_SERVICE = 1;
 
-	private long 	m_nodeId;
-	private String  m_ipAddr;
-	private long    m_serviceId;
-	private long	m_eventId;
-	private String  m_eventTime;
-	private int     m_type;   
+    public static final int EVENT_TYPE_LOST_SERVICE = 2;
 
-	public OutageEventEntry(long eventId, long nodeId, String ipAddr, long serviceId, String eventTime, int type)
-	{
-		m_nodeId = nodeId;
-		m_ipAddr = ipAddr;
-		m_serviceId = serviceId;
-		m_eventId = eventId;
-		m_eventTime = eventTime;
-		m_type = type;
-	}
-	
-	long getNodeId()
-	{
-		return m_nodeId;
-	}
-	
-	String getIpAddr()
-	{
-		return m_ipAddr;
-	}
-	
-	long getSvcId()
-	{
-		return m_serviceId;
-	}
-	
-	String getEventTime()
-	{
-		return m_eventTime;
-	}
-	
-	int getType()
-	{
-		return m_type;
-	}
-	
-	long getEventId()
-	{
-		return m_eventId;
-	}
+    public static final int EVENT_TYPE_INTERFACE_UP = 3;
+
+    public static final int EVENT_TYPE_INTERFACE_DOWN = 4;
+
+    public static final int EVENT_TYPE_NODE_UP = 5;
+
+    public static final int EVENT_TYPE_NODE_DOWN = 6;
+
+    private long m_nodeId;
+
+    private String m_ipAddr;
+
+    private long m_serviceId;
+
+    private long m_eventId;
+
+    private String m_eventTime;
+
+    private int m_type;
+
+    public OutageEventEntry(long eventId, long nodeId, String ipAddr, long serviceId, String eventTime, int type) {
+        m_nodeId = nodeId;
+        m_ipAddr = ipAddr;
+        m_serviceId = serviceId;
+        m_eventId = eventId;
+        m_eventTime = eventTime;
+        m_type = type;
+    }
+
+    long getNodeId() {
+        return m_nodeId;
+    }
+
+    String getIpAddr() {
+        return m_ipAddr;
+    }
+
+    long getSvcId() {
+        return m_serviceId;
+    }
+
+    String getEventTime() {
+        return m_eventTime;
+    }
+
+    int getType() {
+        return m_type;
+    }
+
+    long getEventId() {
+        return m_eventId;
+    }
 }

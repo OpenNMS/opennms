@@ -64,9 +64,10 @@ import com.novell.ldap.LDAPSocketFactory;
 
 /**
  * <P>
- * This class is designed to be used by the capabilities daemon to test for the existance of an
- * LDAP server on remote interfaces. The class implements the Plugin interface that allows it
- * to be used along with other plugins by the daemon.
+ * This class is designed to be used by the capabilities daemon to test for the
+ * existance of an LDAP server on remote interfaces. The class implements the
+ * Plugin interface that allows it to be used along with other plugins by the
+ * daemon.
  * </P>
  * 
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
@@ -74,7 +75,7 @@ import com.novell.ldap.LDAPSocketFactory;
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
  * 
  * @version 1.1.1.1
- *  
+ * 
  */
 public final class LdapPlugin extends AbstractPlugin {
 
@@ -82,10 +83,11 @@ public final class LdapPlugin extends AbstractPlugin {
 
     /**
      * <P>
-     * The default ports on which the host is checked to see if it supports LDAP.
+     * The default ports on which the host is checked to see if it supports
+     * LDAP.
      * </P>
      */
-    private static final int[] DEFAULT_PORTS = { LDAPConnection.DEFAULT_PORT};
+    private static final int[] DEFAULT_PORTS = { LDAPConnection.DEFAULT_PORT };
 
     /**
      * Default number of retries for HTTP requests.
@@ -98,7 +100,8 @@ public final class LdapPlugin extends AbstractPlugin {
     private final static int DEFAULT_TIMEOUT = 5000; // in milliseconds
 
     /**
-     * A class to add a timeout to the socket that the LDAP code uses to access an LDAP server
+     * A class to add a timeout to the socket that the LDAP code uses to access
+     * an LDAP server
      */
     private class TimeoutLDAPSocket implements LDAPSocketFactory {
 
@@ -117,9 +120,10 @@ public final class LdapPlugin extends AbstractPlugin {
 
     /**
      * <P>
-     * Test to see if the passed host-port pair is the endpoint for an LDAP server. If there is
-     * an LDAP server at that destination then a value of true is returned from the method.
-     * Otherwise a false value is returned to the caller.
+     * Test to see if the passed host-port pair is the endpoint for an LDAP
+     * server. If there is an LDAP server at that destination then a value of
+     * true is returned from the method. Otherwise a false value is returned to
+     * the caller.
      * </P>
      * 
      * @param host
@@ -127,20 +131,25 @@ public final class LdapPlugin extends AbstractPlugin {
      * @param port
      *            The remote port to connect to.
      * 
-     * @return True if server supports HTTP on the specified port, false otherwise
+     * @return True if server supports HTTP on the specified port, false
+     *         otherwise
      */
     private boolean isServer(InetAddress host, int port, int retries, int timeout) {
         Category log = ThreadCategory.getInstance(getClass());
 
         boolean isAServer = false;
 
-        //first just try a connection to the box via socket. Just in case there is
-        //a no way to route to the address, don't iterate through the retries, as a
-        //NoRouteToHost exception will only be thrown after about 5 minutes, thus tying
-        //up the thread
+        // first just try a connection to the box via socket. Just in case there
+        // is
+        // a no way to route to the address, don't iterate through the retries,
+        // as a
+        // NoRouteToHost exception will only be thrown after about 5 minutes,
+        // thus tying
+        // up the thread
         Socket socket = null;
 
-        // TODO Avoid doing this by making TimeoutLDAPSocket use timed connect instead.
+        // TODO Avoid doing this by making TimeoutLDAPSocket use timed connect
+        // instead.
         try {
 
             socket = new Socket();
@@ -149,7 +158,7 @@ public final class LdapPlugin extends AbstractPlugin {
 
             log.debug("LDAPPlugin.isServer: connect successful");
 
-            //now go ahead and attempt to determin if LDAP is on this host
+            // now go ahead and attempt to determin if LDAP is on this host
             for (int attempts = 0; attempts <= retries && !isAServer; attempts++) {
                 log.debug("LDAPPlugin.isServer: attempt " + attempts + " to connect host " + host.getHostAddress());
                 LDAPConnection lc = null;
@@ -161,7 +170,8 @@ public final class LdapPlugin extends AbstractPlugin {
                     isAServer = false;
                 } finally {
                     try {
-                        if (lc != null) lc.disconnect();
+                        if (lc != null)
+                            lc.disconnect();
                     } catch (LDAPException e) {
                     }
                 }
@@ -183,7 +193,8 @@ public final class LdapPlugin extends AbstractPlugin {
         } finally {
             try {
                 // close the socket channel
-                if (socket != null) socket.close();
+                if (socket != null)
+                    socket.close();
             } catch (IOException e) {
             }
         }
@@ -192,8 +203,8 @@ public final class LdapPlugin extends AbstractPlugin {
     }
 
     /**
-     * Returns the name of the protocol that this plugin checks on the target system for
-     * support.
+     * Returns the name of the protocol that this plugin checks on the target
+     * system for support.
      * 
      * @return The protocol name for this plugin.
      */
@@ -202,8 +213,8 @@ public final class LdapPlugin extends AbstractPlugin {
     }
 
     /**
-     * Returns true if the protocol defined by this plugin is supported. If the protocol is not
-     * supported then a false value is returned to the caller.
+     * Returns true if the protocol defined by this plugin is supported. If the
+     * protocol is not supported then a false value is returned to the caller.
      * 
      * @param address
      *            The address to check for support.
@@ -212,16 +223,18 @@ public final class LdapPlugin extends AbstractPlugin {
      */
     public boolean isProtocolSupported(InetAddress address) {
         for (int i = 0; i < DEFAULT_PORTS.length; i++) {
-            if (isServer(address, DEFAULT_PORTS[i], DEFAULT_RETRY, DEFAULT_TIMEOUT)) return true;
+            if (isServer(address, DEFAULT_PORTS[i], DEFAULT_RETRY, DEFAULT_TIMEOUT))
+                return true;
         }
         return false;
     }
 
     /**
-     * Returns true if the protocol defined by this plugin is supported. If the protocol is not
-     * supported then a false value is returned to the caller. The qualifier map passed to the
-     * method is used by the plugin to return additional information by key-name. These
-     * key-value pairs can be added to service events if needed.
+     * Returns true if the protocol defined by this plugin is supported. If the
+     * protocol is not supported then a false value is returned to the caller.
+     * The qualifier map passed to the method is used by the plugin to return
+     * additional information by key-name. These key-value pairs can be added to
+     * service events if needed.
      * 
      * @param address
      *            The address to check for support.
@@ -245,4 +258,3 @@ public final class LdapPlugin extends AbstractPlugin {
         return false;
     }
 }
-

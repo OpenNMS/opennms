@@ -45,24 +45,22 @@ import org.opennms.web.admin.views.parsers.View;
 
 /**
  * A servlet that handles adding a new view
- *
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class AddNewViewServlet extends HttpServlet
-{
-    public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException 
-    {
-       	String viewName = request.getParameter("viewName");
-	
-	View newView = new View();
-	newView.setViewName(viewName);
-	
-	HttpSession userSession = request.getSession(false);
-	userSession.setAttribute("view.modifyView.jsp", newView);
-	
-	//forward the request for proper display
+public class AddNewViewServlet extends HttpServlet {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String viewName = request.getParameter("viewName");
+
+        View newView = new View();
+        newView.setViewName(viewName);
+
+        HttpSession userSession = request.getSession(false);
+        userSession.setAttribute("view.modifyView.jsp", newView);
+
+        // forward the request for proper display
         RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/userGroupView/views/modifyView.jsp");
-        dispatcher.forward( request, response );
+        dispatcher.forward(request, response);
     }
 }

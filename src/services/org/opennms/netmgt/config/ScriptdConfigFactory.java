@@ -53,169 +53,148 @@ import org.opennms.netmgt.config.scriptd.StartScript;
 import org.opennms.netmgt.config.scriptd.StopScript;
 
 /**
- * This is the singleton class used to load the configuration for
- * the OpenNMS Scriptd from the scriptd-configuration xml file.
- *
- * <strong>Note:</strong>Users of this class should make sure the 
- * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods.
- *
- * @author <a href="mailto:jim.doble@tavve.com">Jim Doble</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * This is the singleton class used to load the configuration for the OpenNMS
+ * Scriptd from the scriptd-configuration xml file.
+ * 
+ * <strong>Note: </strong>Users of this class should make sure the
+ * <em>init()</em> is called before calling any other method to ensure the
+ * config is loaded before accessing other convenience methods.
+ * 
+ * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class ScriptdConfigFactory
-{
-	/**
-	 * The singleton instance of this factory
-	 */
-	private static ScriptdConfigFactory		m_singleton=null;
+public final class ScriptdConfigFactory {
+    /**
+     * The singleton instance of this factory
+     */
+    private static ScriptdConfigFactory m_singleton = null;
 
-	/**
-	 * The config class loaded from the config file
-	 */
-	private ScriptdConfiguration			m_config;
+    /**
+     * The config class loaded from the config file
+     */
+    private ScriptdConfiguration m_config;
 
-	/**
-	 * This member is set to true if the configuration file
-	 * has been loaded.
-	 */
-	private static boolean				m_loaded=false;
+    /**
+     * This member is set to true if the configuration file has been loaded.
+     */
+    private static boolean m_loaded = false;
 
-	/**
-	 * Private constructor
-	 *
-	 * @exception java.io.IOException Thrown if the specified config
-	 * 	file cannot be read
-	 * @exception org.exolab.castor.xml.MarshalException Thrown if the 
-	 * 	file does not conform to the schema.
-	 * @exception org.exolab.castor.xml.ValidationException Thrown if 
-	 *	the contents do not match the required schema.
-	 */
-	private ScriptdConfigFactory(String configFile)
-		throws 	IOException,
-			MarshalException, 
-			ValidationException
-	{
-		InputStream cfgIn = new FileInputStream(configFile);
+    /**
+     * Private constructor
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     */
+    private ScriptdConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
+        InputStream cfgIn = new FileInputStream(configFile);
 
-		m_config = (ScriptdConfiguration) Unmarshaller.unmarshal(ScriptdConfiguration.class, new InputStreamReader(cfgIn));
-		cfgIn.close();
+        m_config = (ScriptdConfiguration) Unmarshaller.unmarshal(ScriptdConfiguration.class, new InputStreamReader(cfgIn));
+        cfgIn.close();
 
-	}
+    }
 
-	/**
-	 * Load the config from the default config file and create the 
-	 * singleton instance of this factory.
-	 *
-	 * @exception java.io.IOException Thrown if the specified config
-	 * 	file cannot be read
-	 * @exception org.exolab.castor.xml.MarshalException Thrown if the 
-	 * 	file does not conform to the schema.
-	 * @exception org.exolab.castor.xml.ValidationException Thrown if 
-	 *	the contents do not match the required schema.
-	 */
-	public static synchronized void init()
-		throws 	IOException,
-			MarshalException, 
-			ValidationException
-	{
-		if (m_loaded)
-		{
-			// init already called - return
-			// to reload, reload() will need to be called
-			return;
-		}
+    /**
+     * Load the config from the default config file and create the singleton
+     * instance of this factory.
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     */
+    public static synchronized void init() throws IOException, MarshalException, ValidationException {
+        if (m_loaded) {
+            // init already called - return
+            // to reload, reload() will need to be called
+            return;
+        }
 
-		File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SCRIPTD_CONFIG_FILE_NAME);
-		m_singleton = new ScriptdConfigFactory(cfgFile.getPath());
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SCRIPTD_CONFIG_FILE_NAME);
+        m_singleton = new ScriptdConfigFactory(cfgFile.getPath());
 
-		m_loaded = true;
-	}
+        m_loaded = true;
+    }
 
-	/**
-	 * Reload the config from the default config file
-	 *
-	 * @exception java.io.IOException Thrown if the specified config
-	 * 	file cannot be read/loaded
-	 * @exception org.exolab.castor.xml.MarshalException Thrown if the 
-	 * 	file does not conform to the schema.
-	 * @exception org.exolab.castor.xml.ValidationException Thrown if 
-	 *	the contents do not match the required schema.
-	 */
-	public static synchronized void reload()
-		throws 	IOException,
-			MarshalException,
-			ValidationException
-	{
-		m_singleton = null;
-		m_loaded    = false;
+    /**
+     * Reload the config from the default config file
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read/loaded
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     */
+    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+        m_singleton = null;
+        m_loaded = false;
 
-		init();
-	}
+        init();
+    }
 
-	/**
-	 * Return the singleton instance of this factory.
-	 *
-	 * @return The current factory instance.
-	 *
-	 * @throws java.lang.IllegalStateException Thrown if the factory
-	 * 	has not yet been initialized.
-	 */
-	public static synchronized ScriptdConfigFactory getInstance()
-	{
-		if(!m_loaded)
-			throw new IllegalStateException("The factory has not been initialized");
+    /**
+     * Return the singleton instance of this factory.
+     * 
+     * @return The current factory instance.
+     * 
+     * @throws java.lang.IllegalStateException
+     *             Thrown if the factory has not yet been initialized.
+     */
+    public static synchronized ScriptdConfigFactory getInstance() {
+        if (!m_loaded)
+            throw new IllegalStateException("The factory has not been initialized");
 
-		return m_singleton;
-	}
+        return m_singleton;
+    }
 
-	/**
-	 * Return the array of configured engines.
-	 *
-	 * @return the array of configured engines
-	 */
-	public synchronized Engine[] getEngines()
-	{
-		return m_config.getEngine();
-	}
-	
-	/**
-	 * Return the array of start scripts.
-	 *
-	 * @return the array of start scripts
-	 */
-	public synchronized StartScript[] getStartScripts()
-	{
-		return m_config.getStartScript();
-	}
-	
-	/**
-	 * Return the array of stop scripts.
-	 *
-	 * @return the array of stop scripts
-	 */
-	public synchronized StopScript[] getStopScripts()
-	{
-		return m_config.getStopScript();
-	}
+    /**
+     * Return the array of configured engines.
+     * 
+     * @return the array of configured engines
+     */
+    public synchronized Engine[] getEngines() {
+        return m_config.getEngine();
+    }
 
-	/**
-	 * Return the array of reload scripts.
-	 *
-	 * @return the array of reload scripts
-	 */
-	public synchronized ReloadScript[] getReloadScripts()
-	{
-		return m_config.getReloadScript();
-	}
+    /**
+     * Return the array of start scripts.
+     * 
+     * @return the array of start scripts
+     */
+    public synchronized StartScript[] getStartScripts() {
+        return m_config.getStartScript();
+    }
 
-	/**
-	 * Return the array of configured event scripts.
-	 *
-	 * @return the array of configured event scripts
-	 */
-	public synchronized EventScript[] getEventScripts()
-	{
-		return m_config.getEventScript();
-	}
+    /**
+     * Return the array of stop scripts.
+     * 
+     * @return the array of stop scripts
+     */
+    public synchronized StopScript[] getStopScripts() {
+        return m_config.getStopScript();
+    }
+
+    /**
+     * Return the array of reload scripts.
+     * 
+     * @return the array of reload scripts
+     */
+    public synchronized ReloadScript[] getReloadScripts() {
+        return m_config.getReloadScript();
+    }
+
+    /**
+     * Return the array of configured event scripts.
+     * 
+     * @return the array of configured event scripts
+     */
+    public synchronized EventScript[] getEventScripts() {
+        return m_config.getEventScript();
+    }
 }

@@ -38,32 +38,38 @@ import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.utils.EventProxy;
 
 /**
- * <P>The Collector class...</P>
+ * <P>
+ * The Collector class...
+ * </P>
  * 
- * @author <A HREF="mailto:mike@opennms.org">Mike</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
+ * @author <A HREF="mailto:mike@opennms.org">Mike </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * 
  */
-public interface ServiceCollector
-{
-	/** 
-	 * Status of the collector object.
-	 */
-	public static final int		COLLECTION_UNKNOWN 	= 0;
-	public static final int 	COLLECTION_SUCCEEDED	= 1;
-	public static final int		COLLECTION_FAILED = 2;
-	
-	public static final String[]  statusType = {"Unknown", "COLLECTION_SUCCEEDED", "COLLECTION_FAILED"};
-	
-	public void initialize(Map parameters);
-	public void release();
-	
-	public void initialize(NetworkInterface iface, Map parameters);
-	public void release(NetworkInterface iface);
-	
-	/**
-	 * <P>Invokes a collection on the object.</P>
-	 */
-	public int collect(NetworkInterface iface, EventProxy eproxy, Map parameters);
-}
+public interface ServiceCollector {
+    /**
+     * Status of the collector object.
+     */
+    public static final int COLLECTION_UNKNOWN = 0;
 
+    public static final int COLLECTION_SUCCEEDED = 1;
+
+    public static final int COLLECTION_FAILED = 2;
+
+    public static final String[] statusType = { "Unknown", "COLLECTION_SUCCEEDED", "COLLECTION_FAILED" };
+
+    public void initialize(Map parameters);
+
+    public void release();
+
+    public void initialize(NetworkInterface iface, Map parameters);
+
+    public void release(NetworkInterface iface);
+
+    /**
+     * <P>
+     * Invokes a collection on the object.
+     * </P>
+     */
+    public int collect(NetworkInterface iface, EventProxy eproxy, Map parameters);
+}

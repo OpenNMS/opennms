@@ -34,166 +34,156 @@
 
 package org.opennms.report.datablock;
 
-
 /**
- * This class holds the managed node/ip/service information for valid outage nodes. 
- *
- * @author      <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios</A>
- * @author      <A HREF="http://www.oculan.com">oculan.com</A>
- *
+ * This class holds the managed node/ip/service information for valid outage
+ * nodes.
+ * 
+ * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
+ * @author <A HREF="http://www.oculan.com">oculan.com </A>
+ * 
  */
-public class IfService extends Object
-{
+public class IfService extends Object {
 
-	/** 
-	 * Nodeid
-	 */
-	int nodeid;
+    /**
+     * Nodeid
+     */
+    int nodeid;
 
-	/** 
-	 * Ipaddress
-	 */
-	String ipaddr;
+    /**
+     * Ipaddress
+     */
+    String ipaddr;
 
-	/** 
-	 * Serviceid
-	 */
-	int serviceid;
+    /**
+     * Serviceid
+     */
+    int serviceid;
 
-        /**
-         * Node Name
-         */
-        String nodeName;
+    /**
+     * Node Name
+     */
+    String nodeName;
 
-        /**
-         * Service Name
-         */
-        String serviceName;
+    /**
+     * Service Name
+     */
+    String serviceName;
 
-	/**
-	 * Default Constructor.
-	 */
-	public IfService()
-	{
-		nodeid = -1;
-		ipaddr = null;
-		serviceid = -1;
-	}
+    /**
+     * Default Constructor.
+     */
+    public IfService() {
+        nodeid = -1;
+        ipaddr = null;
+        serviceid = -1;
+    }
 
-	/**
-	 * Constructor that initialises the nodeid, ipaddr, service.
-	 */
-	public IfService(int node, String ip, int service, String name, String svcname)
-	{
-		nodeid  = node;
-		ipaddr = ip;
-		serviceid = service;
-		nodeName = name;
-		serviceName = svcname;
-	}
+    /**
+     * Constructor that initialises the nodeid, ipaddr, service.
+     */
+    public IfService(int node, String ip, int service, String name, String svcname) {
+        nodeid = node;
+        ipaddr = ip;
+        serviceid = service;
+        nodeName = name;
+        serviceName = svcname;
+    }
 
-        /**
-         * Sets the node id.
-         *
-         * @param id Node id to be set
-         */
-        public void setNodeID(int id)
-        {
-                nodeid = id;
-        }
+    /**
+     * Sets the node id.
+     * 
+     * @param id
+     *            Node id to be set
+     */
+    public void setNodeID(int id) {
+        nodeid = id;
+    }
 
-	/**
-         * Return node name
-         *
-         */
-        public String getNodeName()
-        {
-                return nodeName;
-        }
+    /**
+     * Return node name
+     * 
+     */
+    public String getNodeName() {
+        return nodeName;
+    }
 
-        /**
-         * Sets the  Service name.
-         *
-         * @param name Service name 
-         */
-        public void setServiceName(String name)
-        {
-                serviceName = name;
-        }
+    /**
+     * Sets the Service name.
+     * 
+     * @param name
+     *            Service name
+     */
+    public void setServiceName(String name) {
+        serviceName = name;
+    }
 
-        /**
-         * Return service name
-         *
-         */
-        public String getServiceName()
-        {
-                return serviceName;
-        }
+    /**
+     * Return service name
+     * 
+     */
+    public String getServiceName() {
+        return serviceName;
+    }
 
-	/**
-	 * Sets the node name.
-	 *
-	 * @param name Node name to be set
-	 */
-	public void setNodeName(String name)
-	{
-		nodeName = name;
-	}
+    /**
+     * Sets the node name.
+     * 
+     * @param name
+     *            Node name to be set
+     */
+    public void setNodeName(String name) {
+        nodeName = name;
+    }
 
-	/**
-	 * Returns the Node id
-	 *
-	 * @return node id.
-	 */
-	public int getNodeID()
-	{
-		return nodeid;
-	}
+    /**
+     * Returns the Node id
+     * 
+     * @return node id.
+     */
+    public int getNodeID() {
+        return nodeid;
+    }
 
-        /**
-         * Sets the ipaddr.
-         *
-         * @param ip ipaddress to be set
-         */
-        public void setIpaddr(String ip)
-        {
-                ipaddr = ip;
-        }
+    /**
+     * Sets the ipaddr.
+     * 
+     * @param ip
+     *            ipaddress to be set
+     */
+    public void setIpaddr(String ip) {
+        ipaddr = ip;
+    }
 
-	/**
-	 * This method returns the ipaddress.
-	 *
-	 * @return Returns the ipaddress.
-	 */
-        public String getIpaddr()
-        {
-                return ipaddr;
-        }
+    /**
+     * This method returns the ipaddress.
+     * 
+     * @return Returns the ipaddress.
+     */
+    public String getIpaddr() {
+        return ipaddr;
+    }
 
-        /**
-         * This method sets the service.
-         *
-         * @param service Service id to be set.
-         */
-        public void setServiceId(int service)
-        {
-                serviceid = service;
-        }
+    /**
+     * This method sets the service.
+     * 
+     * @param service
+     *            Service id to be set.
+     */
+    public void setServiceId(int service) {
+        serviceid = service;
+    }
 
-	/**
-	 * This returns the service id.
-	 */
-        public int getServiceId()
-        {
-                return serviceid;
-        }
+    /**
+     * This returns the service id.
+     */
+    public int getServiceId() {
+        return serviceid;
+    }
 
-	/**
-	 * toString method
-	 */
-	public String toString()
-	{
-		return ("Node id " + nodeName + " Ipaddr " + ipaddr + " Service name " + serviceName);
-	}
+    /**
+     * toString method
+     */
+    public String toString() {
+        return ("Node id " + nodeName + " Ipaddr " + ipaddr + " Service name " + serviceName);
+    }
 }
-

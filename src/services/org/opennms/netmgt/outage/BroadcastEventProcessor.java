@@ -51,125 +51,111 @@ import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * BroadcastEventProcessor is responsible for receiving events from eventd
- * and queing them to the outage writer pool.
- *
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * BroadcastEventProcessor is responsible for receiving events from eventd and
+ * queing them to the outage writer pool.
+ * 
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class BroadcastEventProcessor
-	implements EventListener
-{
-	/**
-	 * The location where incoming events of interest
-	 * are enqueued
-	 */
-	private FifoQueue	m_writerQ;
+final class BroadcastEventProcessor implements EventListener {
+    /**
+     * The location where incoming events of interest are enqueued
+     */
+    private FifoQueue m_writerQ;
 
-	/**
-	 * Constructor 
-	 *
-	 * @param writerQ	The queue where events of interest are added.
-	 */
-	BroadcastEventProcessor(FifoQueue writerQ)
-	{
-		m_writerQ = writerQ;
-	}
+    /**
+     * Constructor
+     * 
+     * @param writerQ
+     *            The queue where events of interest are added.
+     */
+    BroadcastEventProcessor(FifoQueue writerQ) {
+        m_writerQ = writerQ;
+    }
 
-	/**
-	 * Create a list of UEIs of interest to the OutageManager and
-	 * subscribe to eventd
-	 */
-	public void start()
-	{
-		// Create the selector for the ueis this service is interested in
-		//
-		List ueiList = new ArrayList();
+    /**
+     * Create a list of UEIs of interest to the OutageManager and subscribe to
+     * eventd
+     */
+    public void start() {
+        // Create the selector for the ueis this service is interested in
+        //
+        List ueiList = new ArrayList();
 
-		// nodeLostService
-		ueiList.add(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
+        // nodeLostService
+        ueiList.add(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
 
-		// interfaceDown
-		ueiList.add(EventConstants.INTERFACE_DOWN_EVENT_UEI);
+        // interfaceDown
+        ueiList.add(EventConstants.INTERFACE_DOWN_EVENT_UEI);
 
-		// nodeDown
-		ueiList.add(EventConstants.NODE_DOWN_EVENT_UEI);
+        // nodeDown
+        ueiList.add(EventConstants.NODE_DOWN_EVENT_UEI);
 
-		// nodeUp
-		ueiList.add(EventConstants.NODE_UP_EVENT_UEI);
+        // nodeUp
+        ueiList.add(EventConstants.NODE_UP_EVENT_UEI);
 
-		// interfaceUp
-		ueiList.add(EventConstants.INTERFACE_UP_EVENT_UEI);
+        // interfaceUp
+        ueiList.add(EventConstants.INTERFACE_UP_EVENT_UEI);
 
-		// nodeRegainedService
-		ueiList.add(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI);
+        // nodeRegainedService
+        ueiList.add(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI);
 
-		// interfaceReparented
-		ueiList.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
-		
-		EventIpcManagerFactory.init();
-		EventIpcManagerFactory.getInstance().getManager().addEventListener(this, ueiList);
-	}
+        // interfaceReparented
+        ueiList.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
 
-	/**
-	 * Unsubscribe from eventd
-	 */
-	public void close()
-	{
-		EventIpcManagerFactory.getInstance().getManager().removeEventListener(this);
-	}
+        EventIpcManagerFactory.init();
+        EventIpcManagerFactory.getInstance().getManager().addEventListener(this, ueiList);
+    }
 
-	/**
-	 * This method is invoked by the EventIpcManager
-	 * when a new event is available for processing.
-	 * Each message is examined for its Universal Event Identifier
-	 * and the appropriate action is taking based on each UEI.
-	 *
-	 * @param event	The event 
-	 */
-	public void onEvent(Event event)
-	{
-		if (event == null)
-			return;
+    /**
+     * Unsubscribe from eventd
+     */
+    public void close() {
+        EventIpcManagerFactory.getInstance().getManager().removeEventListener(this);
+    }
 
-		Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-			log.debug("About to start processing recd. event");
+    /**
+     * This method is invoked by the EventIpcManager when a new event is
+     * available for processing. Each message is examined for its Universal
+     * Event Identifier and the appropriate action is taking based on each UEI.
+     * 
+     * @param event
+     *            The event
+     */
+    public void onEvent(Event event) {
+        if (event == null)
+            return;
 
-		try
-		{
-			String uei = event.getUei();
-			if (uei == null)
-				return;
+        Category log = ThreadCategory.getInstance(getClass());
+        if (log.isDebugEnabled())
+            log.debug("About to start processing recd. event");
 
-			m_writerQ.add(new OutageWriter(event));
+        try {
+            String uei = event.getUei();
+            if (uei == null)
+                return;
 
-			if (log.isDebugEnabled())
-				log.debug("Event " + uei + " added to writer queue");
-		}
-		catch(InterruptedException ex)
-		{
-			log.error("Failed to process event", ex);
-			return;
-		}
-		catch(FifoQueueException ex)
-		{
-			log.error("Failed to process event", ex);
-			return;
-		}
-		catch(Throwable t)
-		{
-			log.error("Failed to process event", t);
-			return;
-		}
+            m_writerQ.add(new OutageWriter(event));
 
-	}
+            if (log.isDebugEnabled())
+                log.debug("Event " + uei + " added to writer queue");
+        } catch (InterruptedException ex) {
+            log.error("Failed to process event", ex);
+            return;
+        } catch (FifoQueueException ex) {
+            log.error("Failed to process event", ex);
+            return;
+        } catch (Throwable t) {
+            log.error("Failed to process event", t);
+            return;
+        }
 
-	/**
-	 * Return an id for this event listener
-	 */
-	public String getName()
-	{
-		return "OutageManager:BroadcastEventProcessor";
-	}
+    }
+
+    /**
+     * Return an id for this event listener
+     */
+    public String getName() {
+        return "OutageManager:BroadcastEventProcessor";
+    }
 } // end class

@@ -55,7 +55,7 @@ class RrdStresser {
 
     static final int FILE_COUNT = Integer.getInteger("stresstest.filecount", 10000).intValue();
 
-    static final int ZERO_FILES = Integer.getInteger("stresstest.zerofiles", (FILE_COUNT/2)).intValue();
+    static final int ZERO_FILES = Integer.getInteger("stresstest.zerofiles", (FILE_COUNT / 2)).intValue();
 
     static final int FILES_PER_DIR = Integer.getInteger("stresstest.filesperdir", 0).intValue();
 
@@ -92,21 +92,21 @@ class RrdStresser {
     static Date updateStart = null;
 
     static final boolean USE_JNI = "true".equals(System.getProperty("stresstest.usejni", "false"));
-    
+
     static final boolean USE_QUEUE = "true".equals(System.getProperty("stresstest.usequeue", "true"));
-    
+
     static final boolean QUEUE_CREATES = "true".equals(System.getProperty("stresstest.queuecreates", "true"));
 
     static final int UPDATE_TIME = Integer.getInteger("stresstest.updatetime", 300).intValue();
-    
+
     static final String EXTENSION = ".rrd";
-    
+
     static long filesPerZero = FILE_COUNT / ZERO_FILES;
-    
+
     static RrdStrategy rrd = null;
-    
+
     /**
-     *  
+     * 
      */
     private static synchronized void countUpdate() {
         if (updateCount == FILE_COUNT) {
@@ -124,8 +124,7 @@ class RrdStresser {
         Date now = new Date();
         long avgSpeed = (long) (updateCount * 1000.0 / (now.getTime() - updateStart.getTime()));
         long updateSpeed = (long) ((updateCount - FILE_COUNT) * 1000.0 / (now.getTime() - firstUpdateComplete.getTime()));
-        print(updateCount + " samples stored, " + updateSpeed + " updates/sec avg since first update " + avgSpeed
-                + " updates/sec avg for all time: " +rrdGetStats());
+        print(updateCount + " samples stored, " + updateSpeed + " updates/sec avg since first update " + avgSpeed + " updates/sec avg for all time: " + rrdGetStats());
     }
 
     static String getFileName(int fileNum) {
@@ -146,12 +145,12 @@ class RrdStresser {
             dataPosition[fileNum]++;
         }
         String update = updateData[pos];
-        
+
         if (ZERO_FILES > 0) {
             if (fileNum % filesPerZero == 0) {
                 update = makeZeroUpdate(fileNum, update);
             }
-        }        
+        }
         return update;
     }
 
@@ -161,12 +160,12 @@ class RrdStresser {
             if (colon >= 0) {
                 long initialTimeStamp = Long.parseLong(update.substring(0, colon));
                 if (initialTimeStamp == 0)
-                    print("ZERO ERROR: created a zero update with ts=0 for file: "+getFileName(fileNum)+" data: "+update);
-                
-                update = initialTimeStamp+":0";
+                    print("ZERO ERROR: created a zero update with ts=0 for file: " + getFileName(fileNum) + " data: " + update);
+
+                update = initialTimeStamp + ":0";
             }
         } catch (NumberFormatException e) {
-            
+
         }
         return update;
     }
@@ -237,7 +236,7 @@ class RrdStresser {
     }
 
     /**
-     *  
+     * 
      */
     private static void printHeader() {
         System.out.println("********************************************************************");
@@ -275,17 +274,12 @@ class RrdStresser {
         String fileName = getFileName(fileNum);
         File file = new File(fileName);
         String dir = file.getParent();
-        String[] rraList = {
-                "RRA:AVERAGE:0.5:1:8928",
-                "RRA:AVERAGE:0.5:12:8784",
-                "RRA:MIN:0.5:12:8784",
-                "RRA:MAX:0.5:12:8784",
-        };
+        String[] rraList = { "RRA:AVERAGE:0.5:1:8928", "RRA:AVERAGE:0.5:12:8784", "RRA:MIN:0.5:12:8784", "RRA:MAX:0.5:12:8784", };
         String dsName = file.getName();
         if (dsName.endsWith(".rrd")) {
             dsName = dsName.substring(0, dsName.length() - ".rrd".length());
         }
-        return rrd.createDefinition("stressTest", dir, dsName, 300, "GAUGE", 600, "U","U", Arrays.asList(rraList));
+        return rrd.createDefinition("stressTest", dir, dsName, 300, "GAUGE", 600, "U", "U", Arrays.asList(rraList));
     }
 
     private static void rrdCreateFile(Object rrdDef) throws Exception {
@@ -307,7 +301,7 @@ class RrdStresser {
     private static Object rrdOpenFile(String fileName) throws Exception {
         return rrd.openFile(fileName);
     }
-    
+
     private static String rrdGetStats() {
         return rrd.getStats();
     }
@@ -318,8 +312,8 @@ class RrdStresser {
     }
 
     public void execute(String[] args) throws Exception {
-        
-        double millisPerUpdate = ((double)UPDATE_TIME*1000) / ((double)(MAX_UPDATES));
+
+        double millisPerUpdate = ((double) UPDATE_TIME * 1000) / ((double) (MAX_UPDATES));
 
         while (moreUpdates()) {
             int fileNum = nextFileNum();
@@ -328,11 +322,14 @@ class RrdStresser {
             for (int i = 0; i < UPDATES_PER_OPEN; i++) {
                 Date now = new Date();
                 long elapsedTime = now.getTime() - updateStart.getTime();
-                long expectedTime = (long)(millisPerUpdate * (double)updateCount);
+                long expectedTime = (long) (millisPerUpdate * (double) updateCount);
                 if (expectedTime > elapsedTime) {
-                    try { Thread.sleep(expectedTime-elapsedTime); } catch (InterruptedException e) {}
+                    try {
+                        Thread.sleep(expectedTime - elapsedTime);
+                    } catch (InterruptedException e) {
+                    }
                 }
-                
+
                 String line = getNextLine(fileNum);
                 try {
                     rrdUpdateFile(rrd, line);

@@ -35,68 +35,66 @@ package org.opennms.report.datablock;
 import java.util.Date;
 
 /**
- * <B>OutageSince</B> holds the temporary storage for data used during availability report generation presented in the report.
+ * <B>OutageSince </B> holds the temporary storage for data used during
+ * availability report generation presented in the report.
  */
-public class OutageSince 
-{
-	/**
-	 * Node name
-	 */
-	private String m_nodename;
+public class OutageSince {
+    /**
+     * Node name
+     */
+    private String m_nodename;
 
-	/**
-	 * Down since
-	 */
-	private long m_outTime;
+    /**
+     * Down since
+     */
+    private long m_outTime;
 
-	/**
-	 * DownTime
-	 */
-	private long m_outage;
+    /**
+     * DownTime
+     */
+    private long m_outage;
 
-	/**
-	 * Constructor
-	 *
-	 * @param nodename Node Name
-	 * @param outTime Start of Outage
-	 * @param outage Downtime
-	 */
-	public OutageSince(String nodename, long outTime, long outage)
-	{
-		m_nodename = nodename;
-		m_outTime = outTime;
-		m_outage = outage;
-	}
+    /**
+     * Constructor
+     * 
+     * @param nodename
+     *            Node Name
+     * @param outTime
+     *            Start of Outage
+     * @param outage
+     *            Downtime
+     */
+    public OutageSince(String nodename, long outTime, long outage) {
+        m_nodename = nodename;
+        m_outTime = outTime;
+        m_outage = outage;
+    }
 
-	/**
-	 * Returns Node name
-	 */
-	public String getNodeName()
-	{
-		return m_nodename;
-	}
+    /**
+     * Returns Node name
+     */
+    public String getNodeName() {
+        return m_nodename;
+    }
 
-	/**
-	 * Returns Downtime
-	 */
-	public long getOutage()
-	{
-		return m_outage;
-	}
-	
-	/**
-	 * Returns Down since
-	 */
-	public long getOutTime()
-	{
-		return m_outTime;
-	}
+    /**
+     * Returns Downtime
+     */
+    public long getOutage() {
+        return m_outage;
+    }
 
-	/**
-	 * Returns the string format of this object
-	 */
-	public String toString()
-	{
-		return " Node Name: "  + m_nodename + " Out Time Since : " + new Date(m_outTime) + " Outage : " + m_outage  ;
-	}
+    /**
+     * Returns Down since
+     */
+    public long getOutTime() {
+        return m_outTime;
+    }
+
+    /**
+     * Returns the string format of this object
+     */
+    public String toString() {
+        return " Node Name: " + m_nodename + " Out Time Since : " + new Date(m_outTime) + " Outage : " + m_outage;
+    }
 }

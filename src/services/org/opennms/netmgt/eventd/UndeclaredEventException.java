@@ -37,20 +37,16 @@ package org.opennms.netmgt.eventd;
 import java.lang.reflect.UndeclaredThrowableException;
 
 /**
- *
- * @author 	<A HREF="mailto:weave@oculan.com">Brian Weaver</A>
- * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
+ * 
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public final class UndeclaredEventException extends UndeclaredThrowableException
-{
-	public UndeclaredEventException(Throwable t)
-	{
-		super(t);
-	}
-	
-	public UndeclaredEventException(Throwable t, String s)
-	{
-		super(t, s);
-	}
-}
+public final class UndeclaredEventException extends UndeclaredThrowableException {
+    public UndeclaredEventException(Throwable t) {
+        super(t);
+    }
 
+    public UndeclaredEventException(Throwable t, String s) {
+        super(t, s);
+    }
+}

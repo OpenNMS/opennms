@@ -51,124 +51,109 @@ import org.opennms.netmgt.dhcpd.Dhcpd;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
- * This class is designed to be used by the service poller
- * framework to test the availability of the DHCP service on 
- * remote interfaces as defined by RFC 2131.
+ * This class is designed to be used by the service poller framework to test the
+ * availability of the DHCP service on remote interfaces as defined by RFC 2131.
  * 
- * This class relies on the DHCP API provided by JDHCP v1.1.1
- * (please refer to
- * <A HREF="http://www.dhcp.org/javadhcp">http://www.dhcp.org/javadhcp</A>).
- *
- * The class implements the ServiceMonitor interface that allows 
- * it to be used along with other plug-ins by the service poller 
- * framework.
- *
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
+ * This class relies on the DHCP API provided by JDHCP v1.1.1 (please refer to
+ * <A HREF="http://www.dhcp.org/javadhcp">http://www.dhcp.org/javadhcp </A>).
+ * 
+ * The class implements the ServiceMonitor interface that allows it to be used
+ * along with other plug-ins by the service poller framework.
+ * 
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * 
  */
-final class DhcpMonitor
-	extends IPv4LatencyMonitor
-{
-	/** 
-	 * Default retries.
-	 */
-	private static final int DEFAULT_RETRY 		= 0;
+final class DhcpMonitor extends IPv4LatencyMonitor {
+    /**
+     * Default retries.
+     */
+    private static final int DEFAULT_RETRY = 0;
 
-	/** 
-	 * Default timeout. Specifies how long (in milliseconds) to block waiting
-	 * for data from the monitored interface.
-	 */
-	private static final int DEFAULT_TIMEOUT 	= 3000; // 3 second timeout on read()
+    /**
+     * Default timeout. Specifies how long (in milliseconds) to block waiting
+     * for data from the monitored interface.
+     */
+    private static final int DEFAULT_TIMEOUT = 3000; // 3 second timeout on
+                                                        // read()
 
-	/**
-	 * Poll the specified address for DHCP service availability.
-	 *
-	 * @param iface		The network interface to test the service on.
-	 * @param parameters	The package parameters (timeout, retry, etc...) to be 
-	 *  used for this poll.
-	 *
-	 * @return The availability of the interface and if a transition event
-	 * 	should be supressed.
-	 *
-	 */
-	public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) 
-	{
-		// Get interface address from NetworkInterface
-		//
-		if (iface.getType() != NetworkInterface.TYPE_IPV4)
-			throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
+    /**
+     * Poll the specified address for DHCP service availability.
+     * 
+     * @param iface
+     *            The network interface to test the service on.
+     * @param parameters
+     *            The package parameters (timeout, retry, etc...) to be used for
+     *            this poll.
+     * 
+     * @return The availability of the interface and if a transition event
+     *         should be supressed.
+     * 
+     */
+    public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+        // Get interface address from NetworkInterface
+        //
+        if (iface.getType() != NetworkInterface.TYPE_IPV4)
+            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
 
-		// Process parameters
-		//
-		Category log = ThreadCategory.getInstance(getClass());
+        // Process parameters
+        //
+        Category log = ThreadCategory.getInstance(getClass());
 
-		// Retries
-		//
-		int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
-		String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-                String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
+        // Retries
+        //
+        int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+        String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
+        String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
 
-		if (rrdPath == null)
-		{
-			log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
-		}
+        if (rrdPath == null) {
+            log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
+        }
 
-                if (dsName == null)
-                {
-                        dsName = DS_NAME;
+        if (dsName == null) {
+            dsName = DS_NAME;
+        }
+
+        // Get interface address from NetworkInterface
+        //
+        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+
+        if (log.isDebugEnabled())
+            log.debug("DhcpMonitor.poll: address: " + ipv4Addr + " timeout: " + timeout + " retry: " + retry);
+
+        int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+        long responseTime = -1;
+        try {
+            // Dhcpd.isServer() returns the response time in milliseconds
+            // if the remote box is a DHCP server or -1 if the remote
+            // box is NOT a DHCP server.
+            // 
+            responseTime = Dhcpd.isServer(ipv4Addr, (long) timeout, retry);
+            if (responseTime >= 0) {
+                serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
+            }
+        } catch (IOException ioE) {
+            ioE.fillInStackTrace();
+            log.warn("DhcpMonitor.poll: An I/O exception occured during DHCP discovery", ioE);
+        }
+
+        // Store response time if available
+        //
+        if (serviceStatus == ServiceMonitor.SERVICE_AVAILABLE) {
+            // Store response time in RRD
+            if (responseTime >= 0 && rrdPath != null) {
+                try {
+                    this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
+                } catch (RuntimeException rex) {
+                    log.debug("There was a problem writing the RRD:" + rex);
                 }
+            }
+        }
 
-		// Get interface address from NetworkInterface
-		//
-		InetAddress ipv4Addr = (InetAddress)iface.getAddress();
-
-		if(log.isDebugEnabled())
-			log.debug("DhcpMonitor.poll: address: " + ipv4Addr + " timeout: " + timeout + " retry: " + retry);
-		
-		int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
-		long responseTime = -1;
-		try
-		{
-			// Dhcpd.isServer() returns the response time in milliseconds
-			// if the remote box is a DHCP server or -1 if the remote
-			// box is NOT a DHCP server.
-			// 
-			responseTime = Dhcpd.isServer(ipv4Addr, (long)timeout, retry);
-			if (responseTime >= 0)
-			{
-				serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
-			}
-		}
-		catch(IOException ioE)
-		{
-			ioE.fillInStackTrace();
-			log.warn("DhcpMonitor.poll: An I/O exception occured during DHCP discovery", ioE);
-		}
-
-		// Store response time if available
-		//
-		if (serviceStatus == ServiceMonitor.SERVICE_AVAILABLE)
-		{
-			// Store response time in RRD
-			if (responseTime >= 0 && rrdPath != null)
-			{
-                        	try
-                                {
-					this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
-                                }
-                                catch(RuntimeException rex)
-                                {
-                                	log.debug("There was a problem writing the RRD:" + rex);
-                                }
-			}
-		}
-		
-		//
-		// return the status of the service
-		//
-		return serviceStatus;
-	}
+        //
+        // return the status of the service
+        //
+        return serviceStatus;
+    }
 }
-

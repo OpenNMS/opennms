@@ -43,279 +43,248 @@ import java.util.Date;
 import org.opennms.protocols.ip.OC16ChecksumProducer;
 
 /**
- * This is the implementation of an ICMP timestamp reply
- * object. The object can be stored in a buffer to send or
- * loaded from a received buffer. The class is marked final
- * since it is not intended to be extended.
- *
- * @version	0.1
- * @author	Brian Weaver <weave@oculan.com>
- *
+ * This is the implementation of an ICMP timestamp reply object. The object can
+ * be stored in a buffer to send or loaded from a received buffer. The class is
+ * marked final since it is not intended to be extended.
+ * 
+ * @version 0.1
+ * @author Brian Weaver <weave@oculan.com>
+ * 
  */
-public final class TimestampReply 
-	extends ICMPHeader
-{
-	private int m_origStamp;
-	private int m_recvStamp;
-	private int m_xmitStamp;
+public final class TimestampReply extends ICMPHeader {
+    private int m_origStamp;
 
-	/**
-	 * Creates a new ICMP Timestamp Reply object.
-	 *
-	 */
-	public TimestampReply( )
-	{
-		super(ICMPHeader.TYPE_TIMESTAMP_REPLY, (byte)0);
-		m_origStamp = (int)((new Date()).getTime() & 0xffffffff);
-		m_recvStamp = m_origStamp;
-		m_xmitStamp = m_origStamp;
-	}
+    private int m_recvStamp;
 
-	/**
-	 * Creates a new ICMP timestamp reply from
-	 * the spcified data at the specific offset.
-	 *
-	 * @param buf	The buffer containing the data.
-	 * @param offset The start of the icmp data.
-	 *
-	 * @exception java.lang.IndexOutOfBoundsException Thrown if there
-	 *	is not sufficent data in the buffer.
-	 * @exception java.lang.IllegalArgumentException Thrown if the ICMP type
-	 *	is not an Timestamp Reply.
-	 */
-	public TimestampReply(byte[] buf, int offset)
-	{
-		super();
-		loadFromBuffer(buf, offset);
-	}
+    private int m_xmitStamp;
 
-	/**
-	 * Computes the ones compliment 16-bit checksum for
-	 * the ICMP message.
-	 *
-	 */
-	public final void computeChecksum( )
-	{
-		OC16ChecksumProducer summer = new OC16ChecksumProducer();
-		super.computeChecksum(summer);
-		
-		summer.add(m_origStamp);
-		summer.add(m_recvStamp);
-		summer.add(m_xmitStamp);
-		setChecksum(summer.getChecksum());
-	}
+    /**
+     * Creates a new ICMP Timestamp Reply object.
+     * 
+     */
+    public TimestampReply() {
+        super(ICMPHeader.TYPE_TIMESTAMP_REPLY, (byte) 0);
+        m_origStamp = (int) ((new Date()).getTime() & 0xffffffff);
+        m_recvStamp = m_origStamp;
+        m_xmitStamp = m_origStamp;
+    }
 
-	/**
-	 * Writes the ICMP address mask reply out to the specified
-	 * buffer at the starting offset. If the buffer
-	 * does not have sufficent data to store the 
-	 * information then an IndexOutOfBoundsException is
-	 * thrown.
-	 *
-	 * @param buf		The storage buffer.
-	 * @param offset	The location to start in buf.
-	 *
-	 * @return The new offset after storing to the buffer.
-	 *
-	 * @exception java.lang.IndexOutOfBoundsException Thrown if the buffer
-	 *	does not have enough storage space.
-	 *
-	 */
-	public final int storeToBuffer(byte[] buf, int offset)
-	{
-		if(buf.length < (offset + 20))
-			throw new IndexOutOfBoundsException("Array index overflow in buffer build");
+    /**
+     * Creates a new ICMP timestamp reply from the spcified data at the specific
+     * offset.
+     * 
+     * @param buf
+     *            The buffer containing the data.
+     * @param offset
+     *            The start of the icmp data.
+     * 
+     * @exception java.lang.IndexOutOfBoundsException
+     *                Thrown if there is not sufficent data in the buffer.
+     * @exception java.lang.IllegalArgumentException
+     *                Thrown if the ICMP type is not an Timestamp Reply.
+     */
+    public TimestampReply(byte[] buf, int offset) {
+        super();
+        loadFromBuffer(buf, offset);
+    }
 
-		computeChecksum();
-		offset = super.storeToBuffer(buf, offset);
+    /**
+     * Computes the ones compliment 16-bit checksum for the ICMP message.
+     * 
+     */
+    public final void computeChecksum() {
+        OC16ChecksumProducer summer = new OC16ChecksumProducer();
+        super.computeChecksum(summer);
 
-		//
-		// store the current timestamp
-		//
-		buf[offset++] = (byte)((m_origStamp >> 24) & 0xff);
-		buf[offset++] = (byte)((m_origStamp >> 16) & 0xff);
-		buf[offset++] = (byte)((m_origStamp >>  8) & 0xff);
-		buf[offset++] = (byte)(m_origStamp & 0xff);
+        summer.add(m_origStamp);
+        summer.add(m_recvStamp);
+        summer.add(m_xmitStamp);
+        setChecksum(summer.getChecksum());
+    }
 
-		buf[offset++] = (byte)((m_recvStamp >> 24) & 0xff);
-		buf[offset++] = (byte)((m_recvStamp >> 16) & 0xff);
-		buf[offset++] = (byte)((m_recvStamp >>  8) & 0xff);
-		buf[offset++] = (byte)(m_recvStamp & 0xff);
+    /**
+     * Writes the ICMP address mask reply out to the specified buffer at the
+     * starting offset. If the buffer does not have sufficent data to store the
+     * information then an IndexOutOfBoundsException is thrown.
+     * 
+     * @param buf
+     *            The storage buffer.
+     * @param offset
+     *            The location to start in buf.
+     * 
+     * @return The new offset after storing to the buffer.
+     * 
+     * @exception java.lang.IndexOutOfBoundsException
+     *                Thrown if the buffer does not have enough storage space.
+     * 
+     */
+    public final int storeToBuffer(byte[] buf, int offset) {
+        if (buf.length < (offset + 20))
+            throw new IndexOutOfBoundsException("Array index overflow in buffer build");
 
-		buf[offset++] = (byte)((m_xmitStamp >> 24) & 0xff);
-		buf[offset++] = (byte)((m_xmitStamp >> 16) & 0xff);
-		buf[offset++] = (byte)((m_xmitStamp >>  8) & 0xff);
-		buf[offset++] = (byte)(m_xmitStamp & 0xff);
+        computeChecksum();
+        offset = super.storeToBuffer(buf, offset);
 
-	
-		return offset;
-	}
+        //
+        // store the current timestamp
+        //
+        buf[offset++] = (byte) ((m_origStamp >> 24) & 0xff);
+        buf[offset++] = (byte) ((m_origStamp >> 16) & 0xff);
+        buf[offset++] = (byte) ((m_origStamp >> 8) & 0xff);
+        buf[offset++] = (byte) (m_origStamp & 0xff);
 
-	/**
-	 * Reads the ICMP Address Mask Reqeust from the specified 
-	 * buffer and sets the internal fields equal to the data. 
-	 * If the buffer does not have sufficent data to restore the
-	 * header then an IndexOutOfBoundsException is thrown
-	 * by the method. If the buffer does not contain an
-	 * address mask reqeust then an IllegalArgumentException
-	 * is thrown.
-	 *
-	 * @param buf	The buffer to read the data from.
-	 * @param offset The offset to start reading data.
-	 *
-	 * @return The new offset after reading the data.
-	 *
-	 * @exception java.lang.IndexOutOfBoundsException Thrown if there
-	 *	is not sufficent data in the buffer.
-	 * @exception java.lang.IllegalArgumentException Thrown if the ICMP type
-	 *	is not an Timestamp Reply.
-	 */
-	public final int loadFromBuffer(byte[] buf, int offset)
-	{
-		if(buf.length < (offset + 20))
-			throw new IndexOutOfBoundsException("Insufficient data to load ICMP header");
+        buf[offset++] = (byte) ((m_recvStamp >> 24) & 0xff);
+        buf[offset++] = (byte) ((m_recvStamp >> 16) & 0xff);
+        buf[offset++] = (byte) ((m_recvStamp >> 8) & 0xff);
+        buf[offset++] = (byte) (m_recvStamp & 0xff);
 
-		offset = super.loadFromBuffer(buf, offset);
+        buf[offset++] = (byte) ((m_xmitStamp >> 24) & 0xff);
+        buf[offset++] = (byte) ((m_xmitStamp >> 16) & 0xff);
+        buf[offset++] = (byte) ((m_xmitStamp >> 8) & 0xff);
+        buf[offset++] = (byte) (m_xmitStamp & 0xff);
 
-		if(getType() != TYPE_TIMESTAMP_REPLY)
-			throw new IllegalArgumentException("The buffer did not contain an Timestamp Reply");
+        return offset;
+    }
 
-		m_origStamp = byteToInt(buf[offset++]) << 24 |
-			      byteToInt(buf[offset++]) << 16 |
-			      byteToInt(buf[offset++]) << 8  |
-			      byteToInt(buf[offset++]);
+    /**
+     * Reads the ICMP Address Mask Reqeust from the specified buffer and sets
+     * the internal fields equal to the data. If the buffer does not have
+     * sufficent data to restore the header then an IndexOutOfBoundsException is
+     * thrown by the method. If the buffer does not contain an address mask
+     * reqeust then an IllegalArgumentException is thrown.
+     * 
+     * @param buf
+     *            The buffer to read the data from.
+     * @param offset
+     *            The offset to start reading data.
+     * 
+     * @return The new offset after reading the data.
+     * 
+     * @exception java.lang.IndexOutOfBoundsException
+     *                Thrown if there is not sufficent data in the buffer.
+     * @exception java.lang.IllegalArgumentException
+     *                Thrown if the ICMP type is not an Timestamp Reply.
+     */
+    public final int loadFromBuffer(byte[] buf, int offset) {
+        if (buf.length < (offset + 20))
+            throw new IndexOutOfBoundsException("Insufficient data to load ICMP header");
 
-		m_recvStamp = byteToInt(buf[offset++]) << 24 |
-			      byteToInt(buf[offset++]) << 16 |
-			      byteToInt(buf[offset++]) << 8  |
-			      byteToInt(buf[offset++]);
+        offset = super.loadFromBuffer(buf, offset);
 
-		m_xmitStamp = byteToInt(buf[offset++]) << 24 |
-			      byteToInt(buf[offset++]) << 16 |
-			      byteToInt(buf[offset++]) << 8  |
-			      byteToInt(buf[offset++]);
+        if (getType() != TYPE_TIMESTAMP_REPLY)
+            throw new IllegalArgumentException("The buffer did not contain an Timestamp Reply");
 
-		return offset;
-	}
-	
-	/**
-	 * Sets the originate timestamp to the current
-	 * date in millisecond resolution.
-	 *
-	 * @see java.util.Date#getTime
-	 *
-	 */
-	public final void setOriginateTS( )
-	{
-		m_origStamp = (int)((new Date()).getTime() & 0xffffffff);
-	}
+        m_origStamp = byteToInt(buf[offset++]) << 24 | byteToInt(buf[offset++]) << 16 | byteToInt(buf[offset++]) << 8 | byteToInt(buf[offset++]);
 
-	/**
-	 * Sets the originate timestamp to the
-	 * passed value.
-	 *
-	 * @param ts The timestamp in milliseconds
-	 *
-	 */
-	public final void setOriginateTS(int ts)
-	{
-		m_origStamp = ts;
-	}
+        m_recvStamp = byteToInt(buf[offset++]) << 24 | byteToInt(buf[offset++]) << 16 | byteToInt(buf[offset++]) << 8 | byteToInt(buf[offset++]);
 
-	/**
-	 * Retreives the current timestamp of the 
-	 * reqeust object.
-	 *
-	 * @return The 32-bit timestamp in milliseconds.
-	 *
-	 */
-	public final int getOriginateTS( )
-	{
-		return m_origStamp;
-	}
+        m_xmitStamp = byteToInt(buf[offset++]) << 24 | byteToInt(buf[offset++]) << 16 | byteToInt(buf[offset++]) << 8 | byteToInt(buf[offset++]);
 
-	
-	/**
-	 * Sets the receive timestamp to the current
-	 * date in millisecond resolution.
-	 *
-	 * @see java.util.Date#getTime
-	 *
-	 */
-	public final void setReceiveTS( )
-	{
-		m_recvStamp = (int)((new Date()).getTime() & 0xffffffff);
-	}
+        return offset;
+    }
 
-	/**
-	 * Sets the receive timestamp to the
-	 * passed value.
-	 *
-	 * @param ts The timestamp in milliseconds
-	 *
-	 */
-	public final void setReceiveTS(int ts)
-	{
-		m_recvStamp = ts;
-	}
+    /**
+     * Sets the originate timestamp to the current date in millisecond
+     * resolution.
+     * 
+     * @see java.util.Date#getTime
+     * 
+     */
+    public final void setOriginateTS() {
+        m_origStamp = (int) ((new Date()).getTime() & 0xffffffff);
+    }
 
-	/**
-	 * Retreives the current received timestamp of the 
-	 * reqeust object.
-	 *
-	 * @return The 32-bit timestamp in milliseconds.
-	 *
-	 */
-	public final int getReceiveTS( )
-	{
-		return m_recvStamp;
-	}
+    /**
+     * Sets the originate timestamp to the passed value.
+     * 
+     * @param ts
+     *            The timestamp in milliseconds
+     * 
+     */
+    public final void setOriginateTS(int ts) {
+        m_origStamp = ts;
+    }
 
-	
-	/**
-	 * Sets the transmit timestamp to the current
-	 * date in millisecond resolution.
-	 *
-	 * @see java.util.Date#getTime
-	 *
-	 */
-	public final void setTransmitTS( )
-	{
-		m_xmitStamp = (int)((new Date()).getTime() & 0xffffffff);
-	}
+    /**
+     * Retreives the current timestamp of the reqeust object.
+     * 
+     * @return The 32-bit timestamp in milliseconds.
+     * 
+     */
+    public final int getOriginateTS() {
+        return m_origStamp;
+    }
 
-	/**
-	 * Sets the tranmit timestamp to the
-	 * passed value.
-	 *
-	 * @param ts The timestamp in milliseconds
-	 *
-	 */
-	public final void setTransmitTS(int ts)
-	{
-		m_xmitStamp = ts;
-	}
+    /**
+     * Sets the receive timestamp to the current date in millisecond resolution.
+     * 
+     * @see java.util.Date#getTime
+     * 
+     */
+    public final void setReceiveTS() {
+        m_recvStamp = (int) ((new Date()).getTime() & 0xffffffff);
+    }
 
-	/**
-	 * Retreives the current transmit timestamp of the 
-	 * reply object.
-	 *
-	 * @return The 32-bit timestamp in milliseconds.
-	 *
-	 */
-	public final int getTransmitTS( )
-	{
-		return m_xmitStamp;
-	}
+    /**
+     * Sets the receive timestamp to the passed value.
+     * 
+     * @param ts
+     *            The timestamp in milliseconds
+     * 
+     */
+    public final void setReceiveTS(int ts) {
+        m_recvStamp = ts;
+    }
 
-	/**
-	 * Converts the object to an array of bytes.
-	 *
-	 */
-	public final byte[] toBytes()
-	{
-		byte[] b = new byte[20];
-		storeToBuffer(b, 0);
-		return b;
-	}
+    /**
+     * Retreives the current received timestamp of the reqeust object.
+     * 
+     * @return The 32-bit timestamp in milliseconds.
+     * 
+     */
+    public final int getReceiveTS() {
+        return m_recvStamp;
+    }
+
+    /**
+     * Sets the transmit timestamp to the current date in millisecond
+     * resolution.
+     * 
+     * @see java.util.Date#getTime
+     * 
+     */
+    public final void setTransmitTS() {
+        m_xmitStamp = (int) ((new Date()).getTime() & 0xffffffff);
+    }
+
+    /**
+     * Sets the tranmit timestamp to the passed value.
+     * 
+     * @param ts
+     *            The timestamp in milliseconds
+     * 
+     */
+    public final void setTransmitTS(int ts) {
+        m_xmitStamp = ts;
+    }
+
+    /**
+     * Retreives the current transmit timestamp of the reply object.
+     * 
+     * @return The 32-bit timestamp in milliseconds.
+     * 
+     */
+    public final int getTransmitTS() {
+        return m_xmitStamp;
+    }
+
+    /**
+     * Converts the object to an array of bytes.
+     * 
+     */
+    public final byte[] toBytes() {
+        byte[] b = new byte[20];
+        storeToBuffer(b, 0);
+        return b;
+    }
 }

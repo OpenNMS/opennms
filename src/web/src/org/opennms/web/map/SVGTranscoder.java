@@ -53,25 +53,25 @@ import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.w3c.dom.Document;
 
 /**
- * This class should be called from inside of an <img> tag.  We
- * generate an SVG document and pass it to the Batik Transcoder and
- * output a PNG file of the tree map of nodes.
- *
- * <b>It is very important to note</b> that the Batik Transcoder
- * can use <i>tremendous</i> amounts of memory when it is doing its
- * Transcoding.  That's Java for ya, I guess...
- *
- * @author <A HREF="mailto:dglidden@opennms.org">Derek Glidden</A>
- * @author <A HREF="http://www.nksi.com/">NKSi</A>
+ * This class should be called from inside of an <img>tag. We generate an SVG
+ * document and pass it to the Batik Transcoder and output a PNG file of the
+ * tree map of nodes.
+ * 
+ * <b>It is very important to note </b> that the Batik Transcoder can use
+ * <i>tremendous </i> amounts of memory when it is doing its Transcoding. That's
+ * Java for ya, I guess...
+ * 
+ * @author <A HREF="mailto:dglidden@opennms.org">Derek Glidden </A>
+ * @author <A HREF="http://www.nksi.com/">NKSi </A>
  */
 
 public class SVGTranscoder extends HttpServlet {
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
         // the docbase to which all our elements will be relative
-        // String base = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/";
+        // String base = request.getScheme() + "://" + request.getServerName() +
+        // ":" + request.getServerPort() + request.getContextPath() + "/";
 
         response.setContentType("image/png");
 
@@ -86,17 +86,17 @@ public class SVGTranscoder extends HttpServlet {
             // grab SVG directly from the jsp page.
             // gosh darn it this was such a supremely elegant trick
             // until I discovered it didn't work with HTTP
-            // Authentication.  *sigh*
-            // TranscoderInput input = new TranscoderInput(base + "/inline.jsp");
-
+            // Authentication. *sigh*
+            // TranscoderInput input = new TranscoderInput(base +
+            // "/inline.jsp");
 
             // create the object that will make our SVG for us
             // DocumentGenerator docgen = new DocumentGenerator();
             // now we get this from our HttpSession via jsp
             DocumentGenerator docgen = (DocumentGenerator) request.getSession().getAttribute("docgen");
 
-
-            // pass the servlet context so the DocumentGenerator can find its icons
+            // pass the servlet context so the DocumentGenerator can find its
+            // icons
             // ServletContext ctx = getServletContext();
             // docgen.setNodes(nodes);
             // docgen.setServletContext(ctx);
@@ -104,10 +104,10 @@ public class SVGTranscoder extends HttpServlet {
 
             // generate and retrieve the SVG DOM we've got to get it
             // out of the Document object format into something the
-            // transcoder recognizes.  For some reason, even though
+            // transcoder recognizes. For some reason, even though
             // there is a TranscoderInput(Document) constructor, it
             // doesn't seem to be able to do anything with the
-            // Document object.  So I turn the Document into a String
+            // Document object. So I turn the Document into a String
             // and feed that into the TranscoderInput.
 
             Document doc = docgen.getHostDocument(true);
@@ -127,9 +127,8 @@ public class SVGTranscoder extends HttpServlet {
             OutputStream ostream = response.getOutputStream();
             TranscoderOutput output = new TranscoderOutput(ostream);
 
-
             // this isn't really necessary, and in fact slows the JVM
-            // down a little bit when we gc.  the Transcoder uses so
+            // down a little bit when we gc. the Transcoder uses so
             // much memory though, that I like to keep this in here to
             // see what it's doing.
 
@@ -148,14 +147,14 @@ public class SVGTranscoder extends HttpServlet {
 
             try {
                 t.transcode(input, output);
-            } catch(HeadlessException e) {
-                // doesn't seem to do this anymore.  Something changed...
+            } catch (HeadlessException e) {
+                // doesn't seem to do this anymore. Something changed...
                 log("HeadlessException in SVGTranscoder during transcoding");
                 log(e.toString());
-            } catch(TranscoderException e) {
+            } catch (TranscoderException e) {
                 log("TranscoderException in SVGTranscoder during transcoding");
                 log(e.toString());
-            } catch(Exception e) {
+            } catch (Exception e) {
                 log("Exception in SVGTranscoder during transcoding");
                 log(e.toString());
             }
@@ -163,10 +162,10 @@ public class SVGTranscoder extends HttpServlet {
             log("finished transcoding");
             log("Allocated memory: " + rt.totalMemory());
             log("Free memory: " + rt.freeMemory());
-        } catch(IOException e) {
+        } catch (IOException e) {
             log("IOException in SVGTranscoder");
             log(e.toString());
-        } catch(Exception e) {
+        } catch (Exception e) {
             log("Exception in SVGTranscoder");
             log(e.toString());
         }

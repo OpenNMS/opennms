@@ -50,122 +50,100 @@ import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- *
- * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class BroadcastEventProcessor
-	implements EventListener
-{
-	/**
-	 * The location where executable events are enqueued
-	 * to be executed.
-	 */
-	private FifoQueue	m_execQ;
+final class BroadcastEventProcessor implements EventListener {
+    /**
+     * The location where executable events are enqueued to be executed.
+     */
+    private FifoQueue m_execQ;
 
-	/**
-	 * This constructor subscribes to eventd for all events
-	 *
-	 * @param execQ		The queue where executable events are stored.
-	 *
-	 */
-	BroadcastEventProcessor(FifoQueue execQ)
-	{
-		// set up the exectuable queue first
-		//
-		m_execQ = execQ;
+    /**
+     * This constructor subscribes to eventd for all events
+     * 
+     * @param execQ
+     *            The queue where executable events are stored.
+     * 
+     */
+    BroadcastEventProcessor(FifoQueue execQ) {
+        // set up the exectuable queue first
+        //
+        m_execQ = execQ;
 
-		// subscribe for all events
-		EventIpcManagerFactory.init();
-		EventIpcManagerFactory.getInstance().getManager().addEventListener(this);
+        // subscribe for all events
+        EventIpcManagerFactory.init();
+        EventIpcManagerFactory.getInstance().getManager().addEventListener(this);
 
-	}
+    }
 
-	/**
-	 * Unsubscribe from eventd
-	 */
-	public synchronized void close()
-	{
-		EventIpcManagerFactory.getInstance().getManager().removeEventListener(this);
-	}
+    /**
+     * Unsubscribe from eventd
+     */
+    public synchronized void close() {
+        EventIpcManagerFactory.getInstance().getManager().removeEventListener(this);
+    }
 
+    /**
+     * This method is invoked by the EventIpcManager when a new event is
+     * available for processing. Each event's autoactions and trouble tickets
+     * are queued to be run
+     * 
+     * @param event
+     *            The event
+     */
+    public void onEvent(Event event) {
+        Category log = ThreadCategory.getInstance(BroadcastEventProcessor.class);
 
-	/**
-	 * This method is invoked by the EventIpcManager
-	 * when a new event is available for processing.
-	 * Each event's autoactions and trouble tickets are
-	 * queued to be run 
-	 *
-	 * @param event	The event
-	 */
-	public void onEvent(Event event)
-	{
-		Category log = ThreadCategory.getInstance(BroadcastEventProcessor.class);
+        if (event == null) {
+            return;
+        }
 
-		if (event == null)
-		{
-			return;
-		}
+        // Handle autoactions
+        //
+        Enumeration walker = event.enumerateAutoaction();
+        while (walker.hasMoreElements()) {
+            try {
+                Autoaction aact = (Autoaction) walker.nextElement();
+                if (aact.getState().equalsIgnoreCase("on")) {
+                    m_execQ.add(aact.getContent()); // java.lang.String
+                }
 
-		// Handle autoactions
-		//
-		Enumeration walker = event.enumerateAutoaction();
-		while(walker.hasMoreElements())
-		{
-			try
-			{
-				Autoaction aact = (Autoaction)walker.nextElement();
-				if(aact.getState().equalsIgnoreCase("on"))
-				{
-					m_execQ.add(aact.getContent()); // java.lang.String
-				}
-				
-				if (log.isDebugEnabled())
-				{
-					log.debug("Added event \'" + event.getUei() + "\' to execute autoaction \'" + aact.getContent() + "\'");
-				}
-			}
-			catch(FifoQueueException ex)
-			{
-				log.error("Failed to add event to execution queue", ex);
-				break;
-			}
-			catch(InterruptedException ex)
-			{
-				log.error("Failed to add event to execution queue", ex);
-				break;
-			}
-		}
+                if (log.isDebugEnabled()) {
+                    log.debug("Added event \'" + event.getUei() + "\' to execute autoaction \'" + aact.getContent() + "\'");
+                }
+            } catch (FifoQueueException ex) {
+                log.error("Failed to add event to execution queue", ex);
+                break;
+            } catch (InterruptedException ex) {
+                log.error("Failed to add event to execution queue", ex);
+                break;
+            }
+        }
 
-		// Handle trouble tickets
-		//
-		if(event.getTticket() != null && event.getTticket().getState().equalsIgnoreCase("on"))
-		{
-			try
-			{
-				m_execQ.add(event.getTticket().getContent()); // java.lang.String
-				
-				if (log.isDebugEnabled())
-					log.debug("Added event \'" + event.getUei() + "\' to execute tticket \'" + event.getTticket().getContent() + "\'");
-			}
-			catch(FifoQueueException ex)
-			{
-				log.error("Failed to add event to execution queue", ex);
-			}
-			catch(InterruptedException ex)
-			{
-				log.error("Failed to add event to execution queue", ex);
-			}
-		}
+        // Handle trouble tickets
+        //
+        if (event.getTticket() != null && event.getTticket().getState().equalsIgnoreCase("on")) {
+            try {
+                m_execQ.add(event.getTticket().getContent()); // java.lang.String
 
-	} // end onMessage()
+                if (log.isDebugEnabled())
+                    log.debug("Added event \'" + event.getUei() + "\' to execute tticket \'" + event.getTticket().getContent() + "\'");
+            } catch (FifoQueueException ex) {
+                log.error("Failed to add event to execution queue", ex);
+            } catch (InterruptedException ex) {
+                log.error("Failed to add event to execution queue", ex);
+            }
+        }
 
-	/**
-	 * Return an id for this event listener
-	 */
-	public String getName()
-	{
-		return "Actiond:BroadcastEventProcessor";
-	}
+    } // end onMessage()
+
+    /**
+     * Return an id for this event listener
+     */
+    public String getName() {
+        return "Actiond:BroadcastEventProcessor";
+    }
 
 } // end class

@@ -68,268 +68,229 @@ import org.opennms.netmgt.config.ViewsDisplayFactory;
 import org.opennms.netmgt.config.viewsdisplay.Section;
 import org.opennms.netmgt.config.viewsdisplay.View;
 
-
 public class CategoryList {
     protected static final long s_disconnect_time = 130000; // 130 seconds
+
     protected static final String s_web_console_view = "WebConsoleView";
 
     protected CategoryModel m_model;
+
     protected ServletContext m_context;
 
-    /** 
-     * Display rules from viewsdisplay.xml.  If null, then just show all known
-     * categories under the header "Category".  (See the getSections method.)
+    /**
+     * Display rules from viewsdisplay.xml. If null, then just show all known
+     * categories under the header "Category". (See the getSections method.)
      */
-    protected Section[] m_sections; 
+    protected Section[] m_sections;
 
     public CategoryList(ServletContext context) throws ServletException {
-	m_context = context;
+        m_context = context;
 
-	try {
-	    m_model = CategoryModel.getInstance();
-	} catch (Exception e) { 
-	    m_context.log("failed to instantiate the category model", e);
-	    throw new ServletException("failed to instantiate the category " +
-				       "model", e);
-	}
-  
-	try {
-	    ViewsDisplayFactory.init();    
-	    ViewsDisplayFactory viewsDisplayFactory =
-		ViewsDisplayFactory.getInstance();
-          
-	    View view = viewsDisplayFactory.getView(s_web_console_view);
-          
-	    if (view != null) {
-		m_sections = view.getSection();
-		m_context.log("DEBUG: found display rules from " +
-			      "viewsdisplay.xml");
-	    } else {
-		m_context.log("DEBUG: did not find display rules " +
-			      "from viewsdisplay.xml");
-	    }
-	} catch (Exception e) {
-	    m_context.log("Couldn't open viewsdisplay factory on " +
-			  "categories box.", e);
-	}
+        try {
+            m_model = CategoryModel.getInstance();
+        } catch (Exception e) {
+            m_context.log("failed to instantiate the category model", e);
+            throw new ServletException("failed to instantiate the category " + "model", e);
+        }
+
+        try {
+            ViewsDisplayFactory.init();
+            ViewsDisplayFactory viewsDisplayFactory = ViewsDisplayFactory.getInstance();
+
+            View view = viewsDisplayFactory.getView(s_web_console_view);
+
+            if (view != null) {
+                m_sections = view.getSection();
+                m_context.log("DEBUG: found display rules from " + "viewsdisplay.xml");
+            } else {
+                m_context.log("DEBUG: did not find display rules " + "from viewsdisplay.xml");
+            }
+        } catch (Exception e) {
+            m_context.log("Couldn't open viewsdisplay factory on " + "categories box.", e);
+        }
     }
 
     /**
-     * For the given map of category names to Category objects, organize
-     * the categories into the currently active display rules.
-     *
-     * <p>If there are no display rules, a single section named 
-     * <em>Category</em> will be returned.  It will include all the categories
-     * in the category map, in alphabetical order by category name.</p>
+     * For the given map of category names to Category objects, organize the
+     * categories into the currently active display rules.
+     * 
+     * <p>
+     * If there are no display rules, a single section named <em>Category</em>
+     * will be returned. It will include all the categories in the category map,
+     * in alphabetical order by category name.
+     * </p>
      */
     public List getSections(Map categoryMap) throws IOException {
-	if (m_sections != null) {
-	    // Just return the display rules as a list.
-	    return Arrays.asList(m_sections);
-	}
+        if (m_sections != null) {
+            // Just return the display rules as a list.
+            return Arrays.asList(m_sections);
+        }
 
-	List sectionList = null;
-    
-	Section section = new Section();
-	section.setSectionName("Category");
+        List sectionList = null;
 
-	// Put the categories in a TreeMap to sort them alphabetically.
-	TreeMap orderedMap = new TreeMap(categoryMap);
-            
-	// Iterate over the categories, adding each to the name list.
-	for (Iterator i = orderedMap.entrySet().iterator(); i.hasNext();) {
-	    Map.Entry entry = (Map.Entry)i.next();
-	    Category category = (Category)entry.getValue();
+        Section section = new Section();
+        section.setSectionName("Category");
 
-	    section.addCategory(category.getName());
-	}
+        // Put the categories in a TreeMap to sort them alphabetically.
+        TreeMap orderedMap = new TreeMap(categoryMap);
 
-	// Add our one section to the sections list.
-	sectionList = new ArrayList();
-	sectionList.add(section);
+        // Iterate over the categories, adding each to the name list.
+        for (Iterator i = orderedMap.entrySet().iterator(); i.hasNext();) {
+            Map.Entry entry = (Map.Entry) i.next();
+            Category category = (Category) entry.getValue();
 
-	return sectionList;
+            section.addCategory(category.getName());
+        }
+
+        // Add our one section to the sections list.
+        sectionList = new ArrayList();
+        sectionList.add(section);
+
+        return sectionList;
     }
 
-    public Map getCategoryData()
-	throws IOException, MarshalException, ValidationException {
+    public Map getCategoryData() throws IOException, MarshalException, ValidationException {
 
-	Map categoryMap = m_model.getCategoryMap();
-	List sectionList = getSections(categoryMap);
+        Map categoryMap = m_model.getCategoryMap();
+        List sectionList = getSections(categoryMap);
 
-	Map categoryData = new LinkedHashMap();
+        Map categoryData = new LinkedHashMap();
 
-	for (Iterator i = sectionList.iterator(); i.hasNext(); ) {
-	    Section section = (Section) i.next();
+        for (Iterator i = sectionList.iterator(); i.hasNext();) {
+            Section section = (Section) i.next();
 
-	    List categories = new LinkedList();
+            List categories = new LinkedList();
 
-	    String[] categoryNames = section.getCategory();
+            String[] categoryNames = section.getCategory();
 
-	    for (int j = 0; j < categoryNames.length; j++) {
-		String categoryName = categoryNames[j]; 
-		Category category = (Category)categoryMap.get(categoryName);
+            for (int j = 0; j < categoryNames.length; j++) {
+                String categoryName = categoryNames[j];
+                Category category = (Category) categoryMap.get(categoryName);
 
-		if (category == null) {
-		    categories.add(new Category(categoryName));
-		} else {
-		    categories.add(category);
-		}
-	    }
+                if (category == null) {
+                    categories.add(new Category(categoryName));
+                } else {
+                    categories.add(category);
+                }
+            }
 
-	    categoryData.put(section.getSectionName(), categories);
-	}
+            categoryData.put(section.getSectionName(), categories);
+        }
 
-	return categoryData;
+        return categoryData;
     }
 
     /**
      * Returns the earliest update time for the categories in categoryData.
-     *
-     * @param   categoryData category data to evaluate.
-     *                       From getCategoryData().
-     * @returns the earliest update time.  If one of the categories has
-     *          no RTC data, -1 is returned.  If no categories exist in
-     *          categoryData, 0 is returned.
+     * 
+     * @param categoryData
+     *            category data to evaluate. From getCategoryData().
+     * @returns the earliest update time. If one of the categories has no RTC
+     *          data, -1 is returned. If no categories exist in categoryData, 0
+     *          is returned.
      */
     public long getEarliestUpdate(Map categoryData) {
-	long earliestUpdate = 0;
+        long earliestUpdate = 0;
 
-	for (Iterator i = categoryData.keySet().iterator(); i.hasNext(); ) {
-	    String sectionName = (String) i.next();
-	    List categories = (List) categoryData.get(sectionName);
-	    
-	    for (Iterator j = categories.iterator(); j.hasNext(); ) {
-		Category category = (Category) j.next();
-		
-		if (category.getLastUpdated() == null) {
-		    return -1;
-		} else if (earliestUpdate == 0 ||
-			   earliestUpdate >
-			   category.getLastUpdated().getTime()) {
-		    earliestUpdate = category.getLastUpdated().getTime();
-		}
-	    }
-	}
-       
-	return earliestUpdate;
+        for (Iterator i = categoryData.keySet().iterator(); i.hasNext();) {
+            String sectionName = (String) i.next();
+            List categories = (List) categoryData.get(sectionName);
+
+            for (Iterator j = categories.iterator(); j.hasNext();) {
+                Category category = (Category) j.next();
+
+                if (category.getLastUpdated() == null) {
+                    return -1;
+                } else if (earliestUpdate == 0 || earliestUpdate > category.getLastUpdated().getTime()) {
+                    earliestUpdate = category.getLastUpdated().getTime();
+                }
+            }
+        }
+
+        return earliestUpdate;
     }
 
-    public boolean isDisconnected()
-	throws IOException, MarshalException, ValidationException {
-	return isDisconnected(getEarliestUpdate(getCategoryData()));
+    public boolean isDisconnected() throws IOException, MarshalException, ValidationException {
+        return isDisconnected(getEarliestUpdate(getCategoryData()));
     }
 
     public boolean isDisconnected(long earliestUpdate) {
-	if (earliestUpdate < 1 ||
-	    (earliestUpdate + s_disconnect_time) <
-	    System.currentTimeMillis()) {
-	    return true;
-	} else {
-	    return false;
-	}
+        if (earliestUpdate < 1 || (earliestUpdate + s_disconnect_time) < System.currentTimeMillis()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /*
-      XXX This isn't used.  This functionality is in category-box.jsp.
-      XXX It is marked private so that no one can use it unless they fix
-      XXX its accessability and this comment. :-P
-    */
-    private void printBox(JspWriter out, HttpServletResponse response)
-	throws IOException, MarshalException, ValidationException {
+     * XXX This isn't used. This functionality is in category-box.jsp. XXX It is
+     * marked private so that no one can use it unless they fix XXX its
+     * accessability and this comment. :-P
+     */
+    private void printBox(JspWriter out, HttpServletResponse response) throws IOException, MarshalException, ValidationException {
 
-	Map categoryData = getCategoryData();
+        Map categoryData = getCategoryData();
 
-	out.println("<table width=\"100%\" border=\"1\" cellspacing=\"0\" " +
-		    "cellpadding=\"2\" bordercolor=\"black\" " +
-		    "bgcolor=\"#cccccc\">");
+        out.println("<table width=\"100%\" border=\"1\" cellspacing=\"0\" " + "cellpadding=\"2\" bordercolor=\"black\" " + "bgcolor=\"#cccccc\">");
 
-	long earliestUpdate = getEarliestUpdate(categoryData);
-	boolean opennmsDisconnect = isDisconnected(earliestUpdate); 
+        long earliestUpdate = getEarliestUpdate(categoryData);
+        boolean opennmsDisconnect = isDisconnected(earliestUpdate);
 
-	for (Iterator i = categoryData.keySet().iterator(); i.hasNext(); ) {
-	    String sectionName = (String) i.next();
+        for (Iterator i = categoryData.keySet().iterator(); i.hasNext();) {
+            String sectionName = (String) i.next();
 
-	    out.println("<tr bgcolor=\"#999999\">");
-	    out.println("<td width=\"50%\"><b>" + sectionName +	"</b></td>");
-	    out.println("<td width=\"20%\" align=\"right\">" +
-			"<b>Outages</b></td>");
-	    out.println("<td width=\"30%\" align=\"right\">" +
-			"<b>24hr Avail</b></td>");
-	    out.println("</tr>");
-	    
-	    List categories = (List) categoryData.get(sectionName);
+            out.println("<tr bgcolor=\"#999999\">");
+            out.println("<td width=\"50%\"><b>" + sectionName + "</b></td>");
+            out.println("<td width=\"20%\" align=\"right\">" + "<b>Outages</b></td>");
+            out.println("<td width=\"30%\" align=\"right\">" + "<b>24hr Avail</b></td>");
+            out.println("</tr>");
 
-	    String title;
-	    String lastUpdated;
-	    long lastUpdatedTime;
-	    String outageText;
-	    String outageColor;
-	    String availText;
-	    String availColor;
-	    
-	    for (Iterator j = categories.iterator(); j.hasNext(); ) {
-		Category category = (Category) j.next();
-		String categoryName = category.getName();
+            List categories = (List) categoryData.get(sectionName);
 
-		title = category.getTitle();
+            String title;
+            String lastUpdated;
+            long lastUpdatedTime;
+            String outageText;
+            String outageColor;
+            String availText;
+            String availColor;
 
-		outageColor = (opennmsDisconnect ? "lightblue" :
-			       category.getOutageColor());
-		availColor = (opennmsDisconnect ? "lightblue" :
-			      category.getAvailColor());
-		
-		lastUpdated = (category.getLastUpdated() == null ?
-			       "Never" :
-			       category.getLastUpdated().toString());
-		lastUpdatedTime = (category.getLastUpdated() == null ?
-				   -1 :
-				   category.getLastUpdated().getTime());
+            for (Iterator j = categories.iterator(); j.hasNext();) {
+                Category category = (Category) j.next();
+                String categoryName = category.getName();
 
-		outageText = category.getOutageText();
+                title = category.getTitle();
 
-		availText = "<b>" + category.getAvailText() + "</b>";
+                outageColor = (opennmsDisconnect ? "lightblue" : category.getOutageColor());
+                availColor = (opennmsDisconnect ? "lightblue" : category.getAvailColor());
 
-		out.println("<tr>");
+                lastUpdated = (category.getLastUpdated() == null ? "Never" : category.getLastUpdated().toString());
+                lastUpdatedTime = (category.getLastUpdated() == null ? -1 : category.getLastUpdated().getTime());
 
-		out.println("<td><a href=\"rtc/category.jsp?category=" +
-			    URLEncoder.encode(response.encodeURL(categoryName),
-					      "UTF-8") +
-			    "\" title=\"" + title +
-			    "\">" + categoryName + "</a></td>");
-		out.println("<td bgcolor=\"" + outageColor +
-			    "\" align=\"right\" title=\"Updated: " +
-			    lastUpdated + "\">" +
-			    outageText +
-			    "</td>");
-		out.println("<td bgcolor=\"" + availColor +
-			    "\" align=\"right\" title=\"Updated: " +
-			    lastUpdated + "\">" +
-			    availText +
-			    "</td>");
-		out.println("<!-- Last updated " + lastUpdated + " -->");
-		out.println("<!-- Epoch time:  " + lastUpdatedTime + " -->");
-		
-		out.println("</tr>");
-	    }
-	}
-    
-	out.println("<tr bgcolor=\"#999999\">");
-	if (opennmsDisconnect) {
-	    out.println("<td colspan=\"3\"><font color=\"#bb1111\">" +
-			"OpenNMS Disconnect -- is the OpenNMS daemon " +
-			"running?<br/>Last update: " +
-			(earliestUpdate > 0 ?
-			 new Date(earliestUpdate).toString() :
-			 "one or more categories have never been udpated.") +
-			"</font></td>");
-	} else {
-	    out.println("<td colspan=\"3\">Percentage over last " +
-			"24 hours</td>");
-	}
+                outageText = category.getOutageText();
 
-	out.println("</tr>");
-	out.println("</table>");
+                availText = "<b>" + category.getAvailText() + "</b>";
+
+                out.println("<tr>");
+
+                out.println("<td><a href=\"rtc/category.jsp?category=" + URLEncoder.encode(response.encodeURL(categoryName), "UTF-8") + "\" title=\"" + title + "\">" + categoryName + "</a></td>");
+                out.println("<td bgcolor=\"" + outageColor + "\" align=\"right\" title=\"Updated: " + lastUpdated + "\">" + outageText + "</td>");
+                out.println("<td bgcolor=\"" + availColor + "\" align=\"right\" title=\"Updated: " + lastUpdated + "\">" + availText + "</td>");
+                out.println("<!-- Last updated " + lastUpdated + " -->");
+                out.println("<!-- Epoch time:  " + lastUpdatedTime + " -->");
+
+                out.println("</tr>");
+            }
+        }
+
+        out.println("<tr bgcolor=\"#999999\">");
+        if (opennmsDisconnect) {
+            out.println("<td colspan=\"3\"><font color=\"#bb1111\">" + "OpenNMS Disconnect -- is the OpenNMS daemon " + "running?<br/>Last update: " + (earliestUpdate > 0 ? new Date(earliestUpdate).toString() : "one or more categories have never been udpated.") + "</font></td>");
+        } else {
+            out.println("<td colspan=\"3\">Percentage over last " + "24 hours</td>");
+        }
+
+        out.println("</tr>");
+        out.println("</table>");
     }
 }
-

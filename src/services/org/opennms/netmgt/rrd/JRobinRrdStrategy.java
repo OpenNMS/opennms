@@ -63,7 +63,7 @@ import org.opennms.core.utils.ThreadCategory;
  * open)
  */
 public class JRobinRrdStrategy implements RrdStrategy {
-    
+
     private boolean m_initialized = false;
 
     /**
@@ -85,7 +85,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
 
         RrdDef def = new RrdDef(fileName);
 
-        //def.setStartTime(System.currentTimeMillis()/1000L - 2592000L);
+        // def.setStartTime(System.currentTimeMillis()/1000L - 2592000L);
         def.setStartTime(1000);
         def.setStep(step);
 
@@ -139,12 +139,15 @@ public class JRobinRrdStrategy implements RrdStrategy {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.opennms.netmgt.rrd.RrdStrategy#graphicsInitialize()
      */
     public void graphicsInitialize() throws Exception {
         initialize();
     }
+
     /**
      * Fetch the last value from the JRobin RrdDb file.
      */
@@ -164,14 +167,14 @@ public class JRobinRrdStrategy implements RrdStrategy {
             throw new org.opennms.netmgt.rrd.RrdException("Exception occurred fetching data from " + fileName, e);
         } catch (RrdException e) {
             throw new org.opennms.netmgt.rrd.RrdException("Exception occurred fetching data from " + fileName, e);
-        }
-        finally {
-            if (rrd != null) try {
-                rrd.close();
-            } catch (IOException e) {
-                Category log = ThreadCategory.getInstance(getClass());
-                log.error("Failed to close rrd file: "+fileName, e);
-            }
+        } finally {
+            if (rrd != null)
+                try {
+                    rrd.close();
+                } catch (IOException e) {
+                    Category log = ThreadCategory.getInstance(getClass());
+                    log.error("Failed to close rrd file: " + fileName, e);
+                }
         }
     }
 
@@ -212,11 +215,12 @@ public class JRobinRrdStrategy implements RrdStrategy {
                 if (debugTokens)
                     log.debug("tokenize: found a backslash... escaping currToken = " + currToken);
                 if (quoting && !processQuoted)
-                		currToken.append(ch);
+                    currToken.append(ch);
                 else
-                		escaping = true;
+                    escaping = true;
             } else if (ch == '\"') {
-            	   if (!processQuoted) currToken.append(ch);
+                if (!processQuoted)
+                    currToken.append(ch);
                 if (quoting) {
                     if (debugTokens)
                         log.debug("tokenize: found a quote ending quotation currToken = " + currToken);

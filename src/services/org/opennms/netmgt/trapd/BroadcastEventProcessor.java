@@ -49,97 +49,83 @@ import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- *
- * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * 
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class BroadcastEventProcessor
-	implements EventListener
-{
-	/**
-	 * Create message selector to set to the subscription
-	 */
-	BroadcastEventProcessor()
-	{
-		// Create the selector for the ueis this service is interested in
-		//
-		List ueiList = new ArrayList();
+final class BroadcastEventProcessor implements EventListener {
+    /**
+     * Create message selector to set to the subscription
+     */
+    BroadcastEventProcessor() {
+        // Create the selector for the ueis this service is interested in
+        //
+        List ueiList = new ArrayList();
 
-		// nodeGainedInterface
-		ueiList.add(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI);
+        // nodeGainedInterface
+        ueiList.add(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI);
 
-		// interfaceDeleted
-		ueiList.add(EventConstants.INTERFACE_DELETED_EVENT_UEI);
-		
-		EventIpcManagerFactory.init();
-		EventIpcManagerFactory.getInstance().getManager().addEventListener(this, ueiList);
-	}
+        // interfaceDeleted
+        ueiList.add(EventConstants.INTERFACE_DELETED_EVENT_UEI);
 
-	/**
-	 * Unsubscribe from eventd
-	 */
-	public void close()
-	{
-		EventIpcManagerFactory.getInstance().getManager().removeEventListener(this);
-	}
+        EventIpcManagerFactory.init();
+        EventIpcManagerFactory.getInstance().getManager().addEventListener(this, ueiList);
+    }
 
-	/**
-	 * This method is invoked by the EventIpcManager
-	 * when a new event is available for processing.
-	 * Each message is examined for its Universal Event Identifier
-	 * and the appropriate action is taking based on each UEI.
-	 *
-	 * @param event	The event 
-	 *
-	 */
-	public void onEvent(Event event)
-	{
-		Category log = ThreadCategory.getInstance(getClass());
+    /**
+     * Unsubscribe from eventd
+     */
+    public void close() {
+        EventIpcManagerFactory.getInstance().getManager().removeEventListener(this);
+    }
 
-		String eventUei = event.getUei();
-		if (eventUei == null)
-			return;
-			
-		if (log.isDebugEnabled())
-			log.debug("Received event: " + eventUei);
+    /**
+     * This method is invoked by the EventIpcManager when a new event is
+     * available for processing. Each message is examined for its Universal
+     * Event Identifier and the appropriate action is taking based on each UEI.
+     * 
+     * @param event
+     *            The event
+     * 
+     */
+    public void onEvent(Event event) {
+        Category log = ThreadCategory.getInstance(getClass());
 
-		if(eventUei.equals(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI))
-		{
-			// add to known nodes
-			if (Long.toString(event.getNodeid()) != null && event.getInterface() != null)
-			{
-				TrapdIPMgr.setNodeId(event.getInterface().toString(), Long.toString(event.getNodeid()));
-			}
-			if (log.isDebugEnabled())
-				log.debug("Added "  + event.getInterface() + " to known node list");
-		}
-		else if (eventUei.equals(EventConstants.INTERFACE_DELETED_EVENT_UEI))
-		{
-			// remove from known nodes
-                        if (event.getInterface() != null)
-                        {
-                                TrapdIPMgr.removeNodeId(event.getInterface().toString());
-                        }
-			if (log.isDebugEnabled())
-				log.debug("Removed "  + event.getInterface() + " from known node list");
-		}
-		else if(eventUei.equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI))
-		{
-			// add to known nodes
-			if (Long.toString(event.getNodeid()) != null && event.getInterface() != null)
-			{
-				TrapdIPMgr.setNodeId(event.getInterface().toString(), Long.toString(event.getNodeid()));
-			}
-			if (log.isDebugEnabled())
-				log.debug("Reparented "  + event.getInterface() + " to known node list");
-		}
-	}
-	
-	/**
-	 * Return an id for this event listener
-	 */
-	public String getName()
-	{
-		return "Trapd:BroadcastEventProcessor";
-	}
+        String eventUei = event.getUei();
+        if (eventUei == null)
+            return;
+
+        if (log.isDebugEnabled())
+            log.debug("Received event: " + eventUei);
+
+        if (eventUei.equals(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)) {
+            // add to known nodes
+            if (Long.toString(event.getNodeid()) != null && event.getInterface() != null) {
+                TrapdIPMgr.setNodeId(event.getInterface().toString(), Long.toString(event.getNodeid()));
+            }
+            if (log.isDebugEnabled())
+                log.debug("Added " + event.getInterface() + " to known node list");
+        } else if (eventUei.equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
+            // remove from known nodes
+            if (event.getInterface() != null) {
+                TrapdIPMgr.removeNodeId(event.getInterface().toString());
+            }
+            if (log.isDebugEnabled())
+                log.debug("Removed " + event.getInterface() + " from known node list");
+        } else if (eventUei.equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
+            // add to known nodes
+            if (Long.toString(event.getNodeid()) != null && event.getInterface() != null) {
+                TrapdIPMgr.setNodeId(event.getInterface().toString(), Long.toString(event.getNodeid()));
+            }
+            if (log.isDebugEnabled())
+                log.debug("Reparented " + event.getInterface() + " to known node list");
+        }
+    }
+
+    /**
+     * Return an id for this event listener
+     */
+    public String getName() {
+        return "Trapd:BroadcastEventProcessor";
+    }
 }

@@ -72,7 +72,7 @@ import org.opennms.netmgt.filter.parser.ParserException;
  * 
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- *  
+ * 
  */
 public class Filter {
     /**
@@ -94,8 +94,7 @@ public class Filter {
         if (rule != null && rule.length() > 0) {
             try {
                 // Create a Parser instance.
-                Parser p = new Parser(new Lexer(new PushbackReader(
-                        new StringReader(rule))));
+                Parser p = new Parser(new Lexer(new PushbackReader(new StringReader(rule))));
 
                 // Parse the input.
                 m_parseTree = p.parse();
@@ -154,13 +153,12 @@ public class Filter {
      *                if a rule is syntactically incorrect or failed in
      *                executing the SQL statement.
      */
-    public boolean isValid(String addr, String rule)
-            throws FilterParseException {
+    public boolean isValid(String addr, String rule) throws FilterParseException {
         if (rule.length() == 0)
             return true;
         else
-            //see if the ip address is contained in the list that the
-            //rule returns
+            // see if the ip address is contained in the list that the
+            // rule returns
             //
             return getIPList(rule).contains(addr);
     }
@@ -170,7 +168,7 @@ public class Filter {
 
         // parse the rule
         parseRule(rule);
-        //return getIPServiceMappingStatement();
+        // return getIPServiceMappingStatement();
 
         // get the database connection
         Connection conn = null;
@@ -178,12 +176,12 @@ public class Filter {
             DatabaseConnectionFactory.init();
             conn = DatabaseConnectionFactory.getInstance().getConnection();
 
-            //execute query and return the list of ip addresses
+            // execute query and return the list of ip addresses
             //
             Statement stmt = conn.createStatement();
             ResultSet rset = stmt.executeQuery(getIPServiceMappingStatement());
 
-            //fill up the array list if the result set has values
+            // fill up the array list if the result set has values
             //
             if (rset != null) {
                 // Iterate through the result and build the array list
@@ -228,8 +226,7 @@ public class Filter {
             throw new UndeclaredThrowableException(ve);
         } catch (ClassNotFoundException e) {
             Category log = ThreadCategory.getInstance(getClass());
-            log.fatal("Class Not Found Exception getting database connection",
-                    e);
+            log.fatal("Class Not Found Exception getting database connection", e);
             throw new UndeclaredThrowableException(e);
         } finally {
             if (conn != null) {
@@ -270,18 +267,18 @@ public class Filter {
             DatabaseConnectionFactory.init();
             conn = DatabaseConnectionFactory.getInstance().getConnection();
 
-            //parse the rule and get the sql select statement
+            // parse the rule and get the sql select statement
             //
             sqlString = getSQLStatement();
             if (log.isDebugEnabled())
                 log.debug("Filter: SQL statement: \n" + sqlString);
 
-            //execute query and return the list of ip addresses
+            // execute query and return the list of ip addresses
             //
             Statement stmt = conn.createStatement();
             ResultSet rset = stmt.executeQuery(sqlString);
 
-            //fill up the array list if the result set has values
+            // fill up the array list if the result set has values
             //
             if (rset != null) {
                 // Iterate through the result and build the array list

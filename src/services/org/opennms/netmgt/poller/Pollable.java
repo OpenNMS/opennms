@@ -33,42 +33,44 @@
 package org.opennms.netmgt.poller;
 
 /**
- * <P>The Pollable class...</P>
+ * <P>
+ * The Pollable class...
+ * </P>
  * 
- * @author <A HREF="mailto:mike@opennms.org">Mike</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
+ * @author <A HREF="mailto:mike@opennms.org">Mike </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * 
  */
-public interface Pollable
-{
-	/** 
-	 * Status of the pollable object.
-	 * 
-	 * WARNING:  Don't change the integer value of these constants.
-	 *           They are set up to correspond to the integer values
-	 * 	     of the ServiceMonitor.SERVICE_AVAILABLE, and
-	 *  	     ServiceMonitor.SERVICE_UNAVAILABLE, 
-	 */
-	public static final int STATUS_UNKNOWN = ServiceMonitor.SERVICE_UNKNOWN;
-	public static final int STATUS_UP = ServiceMonitor.SERVICE_AVAILABLE;
-	public static final int STATUS_DOWN = ServiceMonitor.SERVICE_UNAVAILABLE;
-	
-	public static final String[]  statusType = {"Unknown", "Up", "Down"};
-	
-	/*
-	 * Returns TRUE if object has changed status as 
-	 * result of last poll()
-	 */
-	public boolean  statusChanged();
-	
-	/**
-	 * Returns current status of the object 
-	 */
-	public int	getStatus();
-	
-	/**
-	 * <P>Invokes a poll on the object.</P>
-	 */
-	//public int poll(Pollable pollable);
-}
+public interface Pollable {
+    /**
+     * Status of the pollable object.
+     * 
+     * WARNING: Don't change the integer value of these constants. They are set
+     * up to correspond to the integer values of the
+     * ServiceMonitor.SERVICE_AVAILABLE, and ServiceMonitor.SERVICE_UNAVAILABLE,
+     */
+    public static final int STATUS_UNKNOWN = ServiceMonitor.SERVICE_UNKNOWN;
 
+    public static final int STATUS_UP = ServiceMonitor.SERVICE_AVAILABLE;
+
+    public static final int STATUS_DOWN = ServiceMonitor.SERVICE_UNAVAILABLE;
+
+    public static final String[] statusType = { "Unknown", "Up", "Down" };
+
+    /*
+     * Returns TRUE if object has changed status as result of last poll()
+     */
+    public boolean statusChanged();
+
+    /**
+     * Returns current status of the object
+     */
+    public int getStatus();
+
+    /**
+     * <P>
+     * Invokes a poll on the object.
+     * </P>
+     */
+    // public int poll(Pollable pollable);
+}

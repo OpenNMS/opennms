@@ -50,15 +50,16 @@ import java.net.Socket;
 
 /**
  * <P>
- * This class is designed to be used by the capabilities daemon to test for the existance of an
- * IMAP server on remote interfaces. The class implements the Plugin interface that allows it
- * to be used along with other plugins by the daemon.
+ * This class is designed to be used by the capabilities daemon to test for the
+ * existance of an IMAP server on remote interfaces. The class implements the
+ * Plugin interface that allows it to be used along with other plugins by the
+ * daemon.
  * </P>
  * 
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
- *  
+ * 
  */
 public final class ImapPlugin extends AbstractTcpPlugin {
 
@@ -117,8 +118,8 @@ public final class ImapPlugin extends AbstractTcpPlugin {
     /**
      * @param isAServer
      * @param socket
-     * @return @throws
-     *         IOException
+     * @return
+     * @throws IOException
      */
     protected boolean checkProtocol(Socket socket, ConnectionConfig config) throws IOException {
 

@@ -38,22 +38,22 @@ import java.security.cert.CertificateException;
 
 import javax.net.ssl.X509TrustManager;
 
-/** 
- * This class is used to change the behaviour of the X509TrustManager
- * that is used to validate certificates from an HTTPS server. With this
- * class all certificates will be approved
- *
- * @author <A HREF="mailto:jason@opennms.org">Jason</A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS</A>
+/**
+ * This class is used to change the behaviour of the X509TrustManager that is
+ * used to validate certificates from an HTTPS server. With this class all
+ * certificates will be approved
+ * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason </A>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
  */
-public class RelaxedX509TrustManager implements X509TrustManager
-{
-        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException
-        { }
-        
-        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException
-        { }
-        
-        public java.security.cert.X509Certificate[] getAcceptedIssuers() 
-        { return null; }
+public class RelaxedX509TrustManager implements X509TrustManager {
+    public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+    }
+
+    public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+    }
+
+    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+        return null;
+    }
 }

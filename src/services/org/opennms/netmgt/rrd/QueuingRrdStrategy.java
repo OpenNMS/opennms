@@ -85,26 +85,26 @@ import org.jrobin.core.Util;
  * 
  * System properites effecting the operation:
  * 
- * org.opennms.rrd.queuing.writethreads: (default 2)
- *   The number of rrd write threads that process the queue
+ * org.opennms.rrd.queuing.writethreads: (default 2) The number of rrd write
+ * threads that process the queue
  * 
- * org.opennms.rrd.queuing.queueCreates: (default true)
- *   indicates whether rrd file creates should be queued or processed synchronously
+ * org.opennms.rrd.queuing.queueCreates: (default true) indicates whether rrd
+ * file creates should be queued or processed synchronously
  * 
- * org.opennms.rrd.queuing.maxInsigUpdateSeconds: (default 0)
- *    the number of seconds over which all files with significant updates only should
- *    be promoted onto the significant less.  This is to ensure they don't stay
- *    unprocessed forever.  Zero means not promotion.
+ * org.opennms.rrd.queuing.maxInsigUpdateSeconds: (default 0) the number of
+ * seconds over which all files with significant updates only should be promoted
+ * onto the significant less. This is to ensure they don't stay unprocessed
+ * forever. Zero means not promotion.
  * 
- * org.opennms.rrd.queuing.modulus: (default 10000)
- *    the number of updates the get enqueued between statistics output
+ * org.opennms.rrd.queuing.modulus: (default 10000) the number of updates the
+ * get enqueued between statistics output
  * 
- * org.opennms.rrd.queuing.category: (default "UNCATEGORIZED")
- *    the log category to place the statistics output in
+ * org.opennms.rrd.queuing.category: (default "UNCATEGORIZED") the log category
+ * to place the statistics output in
  * 
  * 
  * 
- * TODO: Promote files when ZeroUpdate operations can't be merged.  This may be a
+ * TODO: Promote files when ZeroUpdate operations can't be merged. This may be a
  * collection miss which we want to push thru. It should also help with memory.
  * 
  * TODO: Set an upper bound on enqueued operations
@@ -187,8 +187,6 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
     long lastDequeuedItems = 0;
 
     long lastOpsPending = 0;
-
-
 
     /**
      * This is the base class for an enqueueable operation
@@ -306,7 +304,7 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
     }
 
     /**
-     * Represents an update whose value is 0. These operations can be merged 
+     * Represents an update whose value is 0. These operations can be merged
      * together and take up less memory
      */
     public class ZeroUpdateOperation extends UpdateOperation {
@@ -430,11 +428,11 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
     }
 
     // 
-    //  Queue management functions.
+    // Queue management functions.
     //
-    //  TODO: Put this all in a class of its own.  This is really ugly.
+    // TODO: Put this all in a class of its own. This is really ugly.
     //
-    
+
     /**
      * Add an operation to the queue.
      */
@@ -453,7 +451,7 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
     /**
      * Ensure that we have threads started to process the queue.
-     *
+     * 
      */
     public synchronized void ensureThreadsStarted() {
         if (threadsRunning < WRITE_THREADS) {
@@ -463,9 +461,9 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
         }
     }
 
-    
     /**
      * Get the operations for the next file that should be worked on.
+     * 
      * @return a linkedList of oeprations to be processed all for the same file.
      */
     public LinkedList getNext() {
@@ -510,8 +508,9 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
     }
 
     /**
-     * We need to track which files are being processed by which threads so that we
-     * don't try to process updates for the same file on more than one thread.
+     * We need to track which files are being processed by which threads so that
+     * we don't try to process updates for the same file on more than one
+     * thread.
      */
     private synchronized void storeAssignment(Operation op) {
         // look and see if there a pending ops list for this file
@@ -541,8 +540,9 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
     }
 
     /**
-     * Ensure that files with insignificant changes are getting promoted if necessary
-     *
+     * Ensure that files with insignificant changes are getting promoted if
+     * necessary
+     * 
      */
     private synchronized void promoteAgedFiles() {
 
@@ -574,7 +574,8 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
     }
 
     /**
-     * Return true if and only if all the operations in the list are insignificant
+     * Return true if and only if all the operations in the list are
+     * insignificant
      */
     private boolean hasOnlyInsignificant(LinkedList pendingOps) {
         for (Iterator it = pendingOps.iterator(); it.hasNext();) {
@@ -587,8 +588,9 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
     }
 
     /**
-     * register the file that the currentThread is be working on.  This enables
-     * us to ensure that another thread doesn't try to work on operations for that file.
+     * register the file that the currentThread is be working on. This enables
+     * us to ensure that another thread doesn't try to work on operations for
+     * that file.
      */
     private LinkedList takeAssignment(String newAssignment) {
         LinkedList ops;
@@ -634,13 +636,13 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
             reservedFiles.remove(previousAssignment);
     }
 
-    
     public QueuingRrdStrategy(RrdStrategy delegate) {
         m_delegate = delegate;
     }
 
     //
-    // RrdStrategy Implementation..  These methods just enqueue the calls as operations
+    // RrdStrategy Implementation.. These methods just enqueue the calls as
+    // operations
     //
 
     /*
@@ -651,7 +653,7 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
     public void closeFile(Object rrd) throws Exception {
         // no need to do anything here
     }
-    
+
     /*
      * (non-Javadoc)
      * 
@@ -684,15 +686,16 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
     public void initialize() throws Exception {
         m_delegate.initialize();
     }
-    
-    
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.opennms.netmgt.rrd.RrdStrategy#graphicsInitialize()
      */
     public void graphicsInitialize() throws Exception {
         m_delegate.graphicsInitialize();
     }
+
     /*
      * (non-Javadoc)
      * 
@@ -722,15 +725,13 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
         return m_delegate.createGraph(command, workDir);
     }
 
+    //
+    // These methods are run by the write threads the process the queues.
+    //
 
-    
-    //
-    //  These methods are run by the write threads the process the queues.
-    //
-    
     public void run() {
         try {
-           
+
             long waitStart = -1L;
             long delayed = 0;
             while (delayed < WRITE_THREAD_EXIT_DELAY) {
@@ -738,16 +739,17 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
                     delayed = 0;
                     waitStart = -1L;
                     processPendingOperations();
-                }
-                else {
+                } else {
                     if (waitStart < 0) {
                         waitStart = System.currentTimeMillis();
                     }
-                    try { Thread.sleep(WRITE_THREAD_SLEEP_TIME); } catch (InterruptedException e) {}
+                    try {
+                        Thread.sleep(WRITE_THREAD_SLEEP_TIME);
+                    } catch (InterruptedException e) {
+                    }
                     long now = System.currentTimeMillis();
                     delayed = now - waitStart;
                 }
-                
 
             }
         } finally {
@@ -759,7 +761,8 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
     }
 
     /**
-     *  Actually process the operations be calling the underlying delegate strategy
+     * Actually process the operations be calling the underlying delegate
+     * strategy
      */
     private void processPendingOperations() {
         Object rrd = null;

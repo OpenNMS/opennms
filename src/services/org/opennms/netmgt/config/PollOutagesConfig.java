@@ -32,32 +32,32 @@
 
 package org.opennms.netmgt.config;
 
-
 /**
  * @author brozow
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * 
+ * TODO To change the template for this generated type comment go to Window -
+ * Preferences - Java - Code Style - Code Templates
  */
 public interface PollOutagesConfig {
 
     /**
      * Return if interfaces is part of specified outage.
-     *
-     * @param linterface	the interface to be looked up
-     * @param outName	the outage name
-     *
+     * 
+     * @param linterface
+     *            the interface to be looked up
+     * @param outName
+     *            the outage name
+     * 
      * @return the interface is part of the specified outage
      */
-    public abstract boolean isInterfaceInOutage(String linterface,
-            String outName);
-
+    public abstract boolean isInterfaceInOutage(String linterface, String outName);
 
     /**
      * Return if current time is part of specified outage.
-     *
-     * @param outName	the outage name
-     *
+     * 
+     * @param outName
+     *            the outage name
+     * 
      * @return true if current time is in outage
      */
     public abstract boolean isCurTimeInOutage(String outName);

@@ -34,36 +34,28 @@
 
 package org.opennms.netmgt.notifd.jmx;
 
-public class Notifd
-	implements NotifdMBean
-{
-	public void init()
-	{
-		org.opennms.netmgt.notifd.Notifd.getInstance().init();
-	}
+public class Notifd implements NotifdMBean {
+    public void init() {
+        org.opennms.netmgt.notifd.Notifd.getInstance().init();
+    }
 
-	public void start()
-	{
-		org.opennms.netmgt.notifd.Notifd.getInstance().start();
-	}
+    public void start() {
+        org.opennms.netmgt.notifd.Notifd.getInstance().start();
+    }
 
-	public void stop()
-	{
-		org.opennms.netmgt.notifd.Notifd.getInstance().stop();
-	}
+    public void stop() {
+        org.opennms.netmgt.notifd.Notifd.getInstance().stop();
+    }
 
-	public int getStatus()
-	{
-		return org.opennms.netmgt.notifd.Notifd.getInstance().getStatus();
-	}
+    public int getStatus() {
+        return org.opennms.netmgt.notifd.Notifd.getInstance().getStatus();
+    }
 
-	public String status()
-	{
-		return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-	}
+    public String status() {
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
 
-	public String getStatusText()
-	{
-		return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-	}
+    public String getStatusText() {
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
 }

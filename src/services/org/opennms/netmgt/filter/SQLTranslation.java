@@ -84,10 +84,11 @@ import org.opennms.netmgt.filter.node.Start;
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- *  
+ * 
  */
 public class SQLTranslation extends DepthFirstAdapter {
     private DatabaseSchemaConfigFactory m_schemaFactory = DatabaseSchemaConfigFactory.getInstance();
+
     /**
      * Constant to identify a virtual column for determining if an interface
      * supports a service
@@ -100,12 +101,12 @@ public class SQLTranslation extends DepthFirstAdapter {
     private List m_tables;
 
     /**
-     *  The list of columns to be returned by the SQL.
+     * The list of columns to be returned by the SQL.
      */
     private List m_selectList;
 
     /**
-     *  A modifier on the selectList (like 'DISTINCT')
+     * A modifier on the selectList (like 'DISTINCT')
      */
     private String m_selectModifier;
 
@@ -167,9 +168,10 @@ public class SQLTranslation extends DepthFirstAdapter {
     }
 
     /**
-     * Validate the identifier by ensuring it is references in the schema.  Also checks 
-     * for 'virtual columns' be checking the prefix.  If it is this turns into a reference
-     * to the 'serviceName' column of the service table and the appropriate join.
+     * Validate the identifier by ensuring it is references in the schema. Also
+     * checks for 'virtual columns' be checking the prefix. If it is this turns
+     * into a reference to the 'serviceName' column of the service table and the
+     * appropriate join.
      */
     private String validateIdent(String ident) {
         String expr = null;
@@ -185,20 +187,19 @@ public class SQLTranslation extends DepthFirstAdapter {
             // internally
             //
             tableForIdent = m_schemaFactory.findTableByVisableColumn("serviceName");
-            if (tableForIdent != null) 
+            if (tableForIdent != null)
                 expr = addColumnToStatement(tableForIdent, "serviceName");
             if (expr != null)
-                expr = expr+" = '"+serviceName+'\'';
+                expr = expr + " = '" + serviceName + '\'';
         }
-        
+
         if (expr == null) {
-            throw new FilterParseException("The token " + ident
-                    + " is an illegal column value.");
+            throw new FilterParseException("The token " + ident + " is an illegal column value.");
         }
 
         return expr;
     }
-    
+
     /**
      * Adds a column to the statement. This means insuring that this column is
      * valid, its table is listed in the m_tables list as well as any
@@ -212,7 +213,8 @@ public class SQLTranslation extends DepthFirstAdapter {
      */
     private String addColumnToStatement(String colName) {
         Table t = m_schemaFactory.findTableByVisableColumn(colName);
-        if (t == null) throw new FilterParseException("Could not find the column '"+colName+"' in the database schema");
+        if (t == null)
+            throw new FilterParseException("Could not find the column '" + colName + "' in the database schema");
         return addColumnToStatement(t, colName).toString();
     }
 
@@ -237,19 +239,20 @@ public class SQLTranslation extends DepthFirstAdapter {
      */
     private String addColumnToStatement(Table t, String colName) {
         String[] joinTableNames = m_schemaFactory.getJoinTablesForTable(t);
-        for(int i = 0; i < joinTableNames.length; i++) {
+        for (int i = 0; i < joinTableNames.length; i++) {
             Table joinTable = m_schemaFactory.getTableByName(joinTableNames[i]);
-            if (joinTable == null) throw new FilterParseException("Unable to locate visable table for "+joinTableNames[i]+" referrenced in join for table "+t.getName());
+            if (joinTable == null)
+                throw new FilterParseException("Unable to locate visable table for " + joinTableNames[i] + " referrenced in join for table " + t.getName());
             if (!m_tables.contains(joinTable)) {
                 if (m_tables.size() == 0)
                     m_from.append(joinTable.getName());
                 else
                     m_from.append(", ").append(joinTable.getName());
-                
+
                 m_tables.add(joinTable);
             }
         }
-        return t.getName()+"."+colName;
+        return t.getName() + "." + colName;
     }
 
     /**
@@ -261,8 +264,8 @@ public class SQLTranslation extends DepthFirstAdapter {
      * 
      */
     private String convertString(String string) {
-        //for a string we need to change any encapsulating double
-        //quotes to single quotes
+        // for a string we need to change any encapsulating double
+        // quotes to single quotes
         //
         StringBuffer buffer = new StringBuffer(string);
         buffer.setCharAt(0, '\'');
@@ -284,11 +287,9 @@ public class SQLTranslation extends DepthFirstAdapter {
         try {
             int ipnum = Integer.parseInt(octet);
             if (ipnum < 0 || ipnum > 255)
-                throw new IndexOutOfBoundsException(
-                        "The specified IP octet is not valid, value = " + octet);
+                throw new IndexOutOfBoundsException("The specified IP octet is not valid, value = " + octet);
         } catch (NumberFormatException e) {
-            throw new IndexOutOfBoundsException(
-                    "The specified IP octet is not valid, value = " + octet);
+            throw new IndexOutOfBoundsException("The specified IP octet is not valid, value = " + octet);
         }
     }
 
@@ -313,8 +314,7 @@ public class SQLTranslation extends DepthFirstAdapter {
         clause.append(m_selectModifier).append(" ");
 
         for (int i = 0; i < m_selectList.size(); i++) {
-            clause.append((String) m_selectList.get(i)).append(
-                    i < m_selectList.size() - 1 ? ", " : "");
+            clause.append((String) m_selectList.get(i)).append(i < m_selectList.size() - 1 ? ", " : "");
         }
 
         return clause.toString();
@@ -326,13 +326,12 @@ public class SQLTranslation extends DepthFirstAdapter {
      * of the rule.
      */
     public void setDefaultTranslation() {
-        
+
         m_selectModifier = "DISTINCT";
 
         m_selectList.clear();
         m_selectList.add(addColumnToStatement("ipAddr"));
     }
-
 
     public void setIPServiceMappingTranslation() {
         m_selectModifier = "";
@@ -340,8 +339,8 @@ public class SQLTranslation extends DepthFirstAdapter {
         m_selectList.clear();
         m_selectList.add(addColumnToStatement("ipAddr"));
         m_selectList.add(addColumnToStatement("serviceName"));
-        
-                                                                                                                      // ");
+
+        // ");
     }
 
     /**
@@ -362,9 +361,9 @@ public class SQLTranslation extends DepthFirstAdapter {
      */
     public void setConstraintTranslation(long nodeId, String ipaddr, String service) {
         m_selectModifier = "DISTINCT";
-        
+
         m_selectList.clear();
-       
+
         String ipAddrColumn = addColumnToStatement("ipAddr");
         m_selectList.add(ipAddrColumn);
 
@@ -392,13 +391,10 @@ public class SQLTranslation extends DepthFirstAdapter {
             constraint.append(serviceColumn).append(" = '").append(service).append('\'');
             needAnd = true;
         }
-        
+
         m_where.append(constraint).append(") AND (");
 
-
-
     }
-    
 
     public void setInterfaceWithServiceTranslation() {
         m_selectModifier = "DISTINCT";
@@ -409,11 +405,10 @@ public class SQLTranslation extends DepthFirstAdapter {
         m_selectList.add(addColumnToStatement("nodeID"));
     }
 
-
     public void outStart(Start node) {
-        //finish the where clause by putting in the join clauses to
-        //the ipinterface table, separating them from the rest of the
-        //where clause
+        // finish the where clause by putting in the join clauses to
+        // the ipinterface table, separating them from the rest of the
+        // where clause
         //
         m_where.append(")" + constructJoin());
     }
@@ -580,16 +575,15 @@ public class SQLTranslation extends DepthFirstAdapter {
         if (node.getOctetList() != null) {
             node.getOctetList().apply(this);
 
-            //validate the list
+            // validate the list
             //
-            StringTokenizer tokens = new StringTokenizer(node.getOctetList()
-                    .getText(), ",");
+            StringTokenizer tokens = new StringTokenizer(node.getOctetList().getText(), ",");
 
             while (tokens.hasMoreTokens()) {
                 checkIPNum(tokens.nextToken());
             }
 
-            //append it to the address
+            // append it to the address
             //
             m_ipaddr.append(node.getOctetList().getText());
         }
@@ -601,16 +595,15 @@ public class SQLTranslation extends DepthFirstAdapter {
         if (node.getOctetRange() != null) {
             node.getOctetRange().apply(this);
 
-            //validate the list
+            // validate the list
             //
-            StringTokenizer tokens = new StringTokenizer(node.getOctetRange()
-                    .getText(), "-");
+            StringTokenizer tokens = new StringTokenizer(node.getOctetRange().getText(), "-");
 
             while (tokens.hasMoreTokens()) {
                 checkIPNum(tokens.nextToken());
             }
 
-            //append it to the address
+            // append it to the address
             //
             m_ipaddr.append(node.getOctetRange().getText());
         }
@@ -622,26 +615,24 @@ public class SQLTranslation extends DepthFirstAdapter {
         if (node.getOctetRangeList() != null) {
             node.getOctetRangeList().apply(this);
 
-            //validate the list
+            // validate the list
             //
-            StringTokenizer listTokens = new StringTokenizer(node
-                    .getOctetRangeList().getText(), ",");
-            StringTokenizer rangeTokens = new StringTokenizer(listTokens
-                    .nextToken());
+            StringTokenizer listTokens = new StringTokenizer(node.getOctetRangeList().getText(), ",");
+            StringTokenizer rangeTokens = new StringTokenizer(listTokens.nextToken());
 
-            //check the range numbers
+            // check the range numbers
             //
             while (rangeTokens.hasMoreTokens()) {
                 checkIPNum(rangeTokens.nextToken());
             }
 
-            //check the list numbers
+            // check the list numbers
             //
             while (listTokens.hasMoreTokens()) {
                 checkIPNum(listTokens.nextToken());
             }
 
-            //append it to the address
+            // append it to the address
             //
             m_ipaddr.append(node.getOctetRangeList().getText());
         }
@@ -662,10 +653,10 @@ public class SQLTranslation extends DepthFirstAdapter {
      * This method returns the complete sql statement for the filter that was
      * parsed. The SQL statement is the result of the select, from, and where
      * components assembled from the code.
-     *  
+     * 
      */
     public String getStatement() {
-        //don't walk tree if there is no tree to walk
+        // don't walk tree if there is no tree to walk
         if (m_node == null)
             return null;
 

@@ -32,43 +32,32 @@
 
 package org.opennms.netmgt.vulnscand;
 
-
 /**
-* Class that holds the return values
-* when parsing a port/protocol field from
-* Nessus.
-*/
-public class PortValues
-{
-	int port;
-	String protocol;
+ * Class that holds the return values when parsing a port/protocol field from
+ * Nessus.
+ */
+public class PortValues {
+    int port;
 
-	public PortValues()
-	{
-		port = -1;
-		protocol = null;
-	}
+    String protocol;
 
-	public void useDefaults()
-	{
-		protocol = "unknown";
-	}
+    public PortValues() {
+        port = -1;
+        protocol = null;
+    }
 
-	public boolean isValid()
-	{
-		if (
-			(protocol != null)
-		)
-			return true;
-		else
-			return false;
-	}
+    public void useDefaults() {
+        protocol = "unknown";
+    }
 
-	public String toString()
-	{
-		return (
-			"port: " + port +
-			"\nprotocol: " + protocol + "\n"
-		);
-	}
+    public boolean isValid() {
+        if ((protocol != null))
+            return true;
+        else
+            return false;
+    }
+
+    public String toString() {
+        return ("port: " + port + "\nprotocol: " + protocol + "\n");
+    }
 }

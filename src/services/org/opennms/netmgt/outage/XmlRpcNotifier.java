@@ -50,185 +50,188 @@ import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * <p>This class create an XMLRPC client and provide methods to notify the 
- * external XMLRPC server for 'nodeLostService', 'nodeRegainedService',
- * 'interfaceDown', 'interfaceUp', 'nodeDown' and 'nodeUp' events.</p>
- *
- * @author 	<A HREF="mailto:jamesz@opennms.com">James Zuo</A>
- * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
+ * <p>
+ * This class create an XMLRPC client and provide methods to notify the external
+ * XMLRPC server for 'nodeLostService', 'nodeRegainedService', 'interfaceDown',
+ * 'interfaceUp', 'nodeDown' and 'nodeUp' events.
+ * </p>
+ * 
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public final class XmlRpcNotifier
-{
+public final class XmlRpcNotifier {
 
-	/**
-	 * The event from which data is to be read
-	 */
-	private Event			m_event;
+    /**
+     * The event from which data is to be read
+     */
+    private Event m_event;
 
-        /**
-         * The xmlrpc client to be used to notify the external xmlrpc server
-         * of the occurance of an event
-         */
-        private XmlRpcClient            m_notifier;
-        
- 	/**
-	 * The constructor
-	 *
-	 * @param url	        the xmlrpc server url 
-	 * @param event 	the event to be notified to the external xmlrpc server
-	 */
-	public XmlRpcNotifier(String url, Event event) throws MalformedURLException
-	{
-		m_event = event;
-                m_notifier= new XmlRpcClient(url);
-                 
-	}
+    /**
+     * The xmlrpc client to be used to notify the external xmlrpc server of the
+     * occurance of an event
+     */
+    private XmlRpcClient m_notifier;
 
-	/**
-	 * <p>Notify the external xmlrpc server the occurance of the 'nodeLostService' event.
-	 */
-	public String sendServiceDownEvent() throws XmlRpcException, IOException
-	{
-                // Create the request parameters list
-                Vector params = new Vector();
-                params.addElement(new String(getNodeLabel(m_event.getNodeid())));
-                params.addElement(new String(m_event.getInterface()));
-                params.addElement(new String(m_event.getService()));
-                params.addElement(new String("Not Available"));
-                params.addElement(new String(m_event.getHost()));
-                params.addElement(new String(m_event.getTime())); 
-                return sendXmlrpcRequest("sendServiceDownEvent", params);
-	}
-	
-        /**
-	 * <p>Notify the external xmlrpc server the occurance of the 'nodeRegainedService' event.
-	 */
-	public String sendServiceUpEvent() throws XmlRpcException, IOException
-	{
-                // Create the request parameters list
-                Vector params = new Vector();
-                params.addElement(new String(getNodeLabel(m_event.getNodeid())));
-                params.addElement(new String(m_event.getInterface()));
-                params.addElement(new String(m_event.getService()));
-                params.addElement(new String("Not Available"));
-                params.addElement(new String(m_event.getHost()));
-                params.addElement(new String(m_event.getTime())); 
-                return sendXmlrpcRequest("sendServiceUpEvent", params);
-	}
-        
-	/**
-	 * <p>Notify the external xmlrpc server the occurance of the 'interfaceDown' event.
-	 */
-	public String sendInterfaceDownEvent() throws XmlRpcException, IOException
-	{
-                // Create the request parameters list
-                Vector params = new Vector();
-                params.addElement(new String(getNodeLabel(m_event.getNodeid())));
-                params.addElement(new String(m_event.getInterface()));
-                params.addElement(new String(m_event.getHost()));
-                params.addElement(new String(m_event.getTime())); 
-                return sendXmlrpcRequest("sendInterfaceDownEvent", params);
-	}
-        
-	/**
-	 * <p>Notify the external xmlrpc server the occurance of the 'interfaceUp' event.
-	 */
-	public String sendInterfaceUpEvent() throws XmlRpcException, IOException
-	{
-                // Create the request parameters list
-                Vector params = new Vector();
-                params.addElement(new String(getNodeLabel(m_event.getNodeid())));
-                params.addElement(new String(m_event.getInterface()));
-                params.addElement(new String(m_event.getHost()));
-                params.addElement(new String(m_event.getTime())); 
-                return sendXmlrpcRequest("sendInterfaceUpEvent", params);
-	}
-        
-	/**
-	 * <p>Notify the external xmlrpc server the occurance of the 'nodeDown' event.
-	 */
-	public String sendNodeDownEvent() throws XmlRpcException, IOException
-	{
-                // Create the request parameters list
-                Vector params = new Vector();
-                params.addElement(new String(getNodeLabel(m_event.getNodeid())));
-                params.addElement(new String(m_event.getHost()));
-                params.addElement(new String(m_event.getTime())); 
-                return sendXmlrpcRequest("sendNodeDownEvent", params);
-	}
-        
-	/**
-	 * <p>Notify the external xmlrpc server the occurance of the 'nodeUp' event.
-	 */
-	public String sendNodeUpEvent() throws XmlRpcException, IOException
-	{
-                // Create the request parameters list
-                Vector params = new Vector();
-                params.addElement(new String(getNodeLabel(m_event.getNodeid())));
-                params.addElement(new String(m_event.getHost()));
-                params.addElement(new String(m_event.getTime())); 
-                return sendXmlrpcRequest("sendNodeUpEvent", params);
-	}
+    /**
+     * The constructor
+     * 
+     * @param url
+     *            the xmlrpc server url
+     * @param event
+     *            the event to be notified to the external xmlrpc server
+     */
+    public XmlRpcNotifier(String url, Event event) throws MalformedURLException {
+        m_event = event;
+        m_notifier = new XmlRpcClient(url);
 
-        /**
-         * <p>This method sends an xmlrpc request to an external xmlrpc server and 
-         *    gets the response from the xmlrpc server as a String.</p>
-         * @param command       The server command to process the request.
-         * @param params        a list of parameters need for the external server 
-         *                      command to process the request.
-         */
-	private String sendXmlrpcRequest(String command, Vector params)
-                throws XmlRpcException, IOException
-        {
-                Object reply = m_notifier.execute(command, params);
-                return reply.toString();
-                        
+    }
+
+    /**
+     * <p>
+     * Notify the external xmlrpc server the occurance of the 'nodeLostService'
+     * event.
+     */
+    public String sendServiceDownEvent() throws XmlRpcException, IOException {
+        // Create the request parameters list
+        Vector params = new Vector();
+        params.addElement(new String(getNodeLabel(m_event.getNodeid())));
+        params.addElement(new String(m_event.getInterface()));
+        params.addElement(new String(m_event.getService()));
+        params.addElement(new String("Not Available"));
+        params.addElement(new String(m_event.getHost()));
+        params.addElement(new String(m_event.getTime()));
+        return sendXmlrpcRequest("sendServiceDownEvent", params);
+    }
+
+    /**
+     * <p>
+     * Notify the external xmlrpc server the occurance of the
+     * 'nodeRegainedService' event.
+     */
+    public String sendServiceUpEvent() throws XmlRpcException, IOException {
+        // Create the request parameters list
+        Vector params = new Vector();
+        params.addElement(new String(getNodeLabel(m_event.getNodeid())));
+        params.addElement(new String(m_event.getInterface()));
+        params.addElement(new String(m_event.getService()));
+        params.addElement(new String("Not Available"));
+        params.addElement(new String(m_event.getHost()));
+        params.addElement(new String(m_event.getTime()));
+        return sendXmlrpcRequest("sendServiceUpEvent", params);
+    }
+
+    /**
+     * <p>
+     * Notify the external xmlrpc server the occurance of the 'interfaceDown'
+     * event.
+     */
+    public String sendInterfaceDownEvent() throws XmlRpcException, IOException {
+        // Create the request parameters list
+        Vector params = new Vector();
+        params.addElement(new String(getNodeLabel(m_event.getNodeid())));
+        params.addElement(new String(m_event.getInterface()));
+        params.addElement(new String(m_event.getHost()));
+        params.addElement(new String(m_event.getTime()));
+        return sendXmlrpcRequest("sendInterfaceDownEvent", params);
+    }
+
+    /**
+     * <p>
+     * Notify the external xmlrpc server the occurance of the 'interfaceUp'
+     * event.
+     */
+    public String sendInterfaceUpEvent() throws XmlRpcException, IOException {
+        // Create the request parameters list
+        Vector params = new Vector();
+        params.addElement(new String(getNodeLabel(m_event.getNodeid())));
+        params.addElement(new String(m_event.getInterface()));
+        params.addElement(new String(m_event.getHost()));
+        params.addElement(new String(m_event.getTime()));
+        return sendXmlrpcRequest("sendInterfaceUpEvent", params);
+    }
+
+    /**
+     * <p>
+     * Notify the external xmlrpc server the occurance of the 'nodeDown' event.
+     */
+    public String sendNodeDownEvent() throws XmlRpcException, IOException {
+        // Create the request parameters list
+        Vector params = new Vector();
+        params.addElement(new String(getNodeLabel(m_event.getNodeid())));
+        params.addElement(new String(m_event.getHost()));
+        params.addElement(new String(m_event.getTime()));
+        return sendXmlrpcRequest("sendNodeDownEvent", params);
+    }
+
+    /**
+     * <p>
+     * Notify the external xmlrpc server the occurance of the 'nodeUp' event.
+     */
+    public String sendNodeUpEvent() throws XmlRpcException, IOException {
+        // Create the request parameters list
+        Vector params = new Vector();
+        params.addElement(new String(getNodeLabel(m_event.getNodeid())));
+        params.addElement(new String(m_event.getHost()));
+        params.addElement(new String(m_event.getTime()));
+        return sendXmlrpcRequest("sendNodeUpEvent", params);
+    }
+
+    /**
+     * <p>
+     * This method sends an xmlrpc request to an external xmlrpc server and gets
+     * the response from the xmlrpc server as a String.
+     * </p>
+     * 
+     * @param command
+     *            The server command to process the request.
+     * @param params
+     *            a list of parameters need for the external server command to
+     *            process the request.
+     */
+    private String sendXmlrpcRequest(String command, Vector params) throws XmlRpcException, IOException {
+        Object reply = m_notifier.execute(command, params);
+        return reply.toString();
+
+    }
+
+    /**
+     * <p>
+     * This method retrieves the nodeLable from the database for a given nodeId.
+     * </p>
+     * 
+     * @param nodeId
+     *            the nodeId to retrieve the node label for.
+     */
+    private String getNodeLabel(long nodeId) {
+        Category log = ThreadCategory.getInstance(XmlRpcNotifier.class);
+
+        Connection dbConn = null;
+        String nodeLabel = null;
+
+        try {
+            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+
+            if (log.isDebugEnabled())
+                log.debug("getNodeLabel: retrieve node label for: " + nodeId);
+
+            PreparedStatement stmt = dbConn.prepareStatement(OutageConstants.DB_GET_NODE_LABEL);
+            stmt.setLong(1, nodeId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                nodeLabel = rs.getString(1);
+            }
+
+        } catch (SQLException sqle) {
+            log.warn("SQL exception while retrieving nodeLabel for: " + nodeId, sqle);
+        } finally {
+            try {
+                if (dbConn != null)
+                    dbConn.close();
+            } catch (SQLException e) {
+                log.warn("Exception closing JDBC connection", e);
+            }
         }
-
-        /**
-         * <p> This method retrieves the nodeLable from the database for a given nodeId. </p>
-         *
-         * @param nodeId        the nodeId to retrieve the node label for.
-         */
-         private String getNodeLabel(long nodeId) 
-         {
-                Category log = ThreadCategory.getInstance(XmlRpcNotifier.class);
-                
-         
-                Connection dbConn = null;
-                String nodeLabel = null;
-                
-                try
-                {
-                        dbConn = DatabaseConnectionFactory.getInstance().getConnection();
-                        
-                        if (log.isDebugEnabled())
-                                log.debug("getNodeLabel: retrieve node label for: " + nodeId);
-                                
-                        PreparedStatement stmt = dbConn.prepareStatement(OutageConstants.DB_GET_NODE_LABEL);
-                        stmt.setLong(1, nodeId);
-                        ResultSet rs = stmt.executeQuery();
-
-                        while(rs.next())
-                        {
-                                nodeLabel = rs.getString(1);
-                        }
-
-                                
-                } catch (SQLException sqle)
-                {
-                        log.warn("SQL exception while retrieving nodeLabel for: " + nodeId, sqle);
-                } finally
-                {
-                        try
-                        {
-                                if (dbConn != null)
-                                        dbConn.close();
-                        } catch (SQLException e)
-                        {
-                                log.warn("Exception closing JDBC connection", e);
-                        }
-                }
-                return nodeLabel;
-         }
+        return nodeLabel;
+    }
 }

@@ -51,309 +51,286 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.protocols.icmp.IcmpSocket;
 
 /**
- * <p>This class is designed to be a single point of reciept for
- * all ICMP messages received by an {@link org.opennms.protocols.icmp.IcmpSocket
- * IcmpSocket} instance. The class implements the 
- * {@link org.opennms.core.fiber.PausableFiber PausableFiber} interface
- * as a means to control the operation of the receiver.</p>
- *
- * <p>Once the receiver is started it will process all recieved datagrams
- * and filter them based upon their ICMP code and the filter identifier
- * used to construct the reciever. All ICMP messages, except for Echo
- * Replies, are discared by the reciever. In addition, only those echo
- * replies that have their identifier set to the passed filter identifier
- * are also discarded.</p>
- *
- * <p>Received datagrams that pass the requirement of the receiver are
- * added to the reply queue for processing by the application. Only 
- * instances of the {@link Reply Reply} class are added to the queue
- * for processing.</p>
- *
- * @author <A HREF="sowmya@opennms.org">Sowmya</A>
- * @author <A HREF="weave@oculan.com">Brian Weaver</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
+ * <p>
+ * This class is designed to be a single point of reciept for all ICMP messages
+ * received by an {@link org.opennms.protocols.icmp.IcmpSocketIcmpSocket}
+ * instance. The class implements the
+ * {@link org.opennms.core.fiber.PausableFiber PausableFiber}interface as a
+ * means to control the operation of the receiver.
+ * </p>
+ * 
+ * <p>
+ * Once the receiver is started it will process all recieved datagrams and
+ * filter them based upon their ICMP code and the filter identifier used to
+ * construct the reciever. All ICMP messages, except for Echo Replies, are
+ * discared by the reciever. In addition, only those echo replies that have
+ * their identifier set to the passed filter identifier are also discarded.
+ * </p>
+ * 
+ * <p>
+ * Received datagrams that pass the requirement of the receiver are added to the
+ * reply queue for processing by the application. Only instances of the
+ * {@link Reply Reply}class are added to the queue for processing.
+ * </p>
+ * 
+ * @author <A HREF="sowmya@opennms.org">Sowmya </A>
+ * @author <A HREF="weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * 
  */
-public final class ReplyReceiver
-	implements PausableFiber, Runnable
-{
-	/**
-	 * The name of this instance, always starts the same
-	 * and the filterID is appended to the name.
-	 */
-	private static final String NAME = "ICMPReceiver";
+public final class ReplyReceiver implements PausableFiber, Runnable {
+    /**
+     * The name of this instance, always starts the same and the filterID is
+     * appended to the name.
+     */
+    private static final String NAME = "ICMPReceiver";
 
-	/**
-	 * The queue to write the received replies
-	 */
-	private FifoQueue	m_replyQ;
-	
-	/**
-	 * The connection to the icmp daemon.
-	 */
-	private IcmpSocket	m_portal;
+    /**
+     * The queue to write the received replies
+     */
+    private FifoQueue m_replyQ;
 
-	/**
-	 * The filter to look for
-	 */
-	private short		m_filterID;
+    /**
+     * The connection to the icmp daemon.
+     */
+    private IcmpSocket m_portal;
 
-	/**
-	 * The paused flag
-	 */
-	private volatile boolean m_paused;
+    /**
+     * The filter to look for
+     */
+    private short m_filterID;
 
-	/**
-	 * The name of this instance.
-	 */
-	private String 		m_name;
+    /**
+     * The paused flag
+     */
+    private volatile boolean m_paused;
 
-	/**
-	 * The underlying thread doing the work.
-	 */
-	private Thread		m_worker;
+    /**
+     * The name of this instance.
+     */
+    private String m_name;
 
-	/**
-	 * The thread's status
-	 */
-	private int		m_status;
-	
-	/**
-	 * The default constructor is marked private to 
-	 * prevent it's used. The constructor always throws
-	 * an UnsupportedOperationException.
-	 *
-	 * @exception java.lang.UnsupportedOperationException Always thrown.
-	 */
-	private ReplyReceiver()
-		throws java.lang.UnsupportedOperationException
-	{
-		throw new java.lang.UnsupportedOperationException("invalid constructor invocation");
-	}		
-	
-	/**
-	 * <p>Processes the received datagram and adds a new {@link Reply Reply}
-	 * instance to the reply queue. The recieved packet must pass the 
-	 * following criteria:</p>
-	 *
-	 * <ul>
-	 *	<li>ICMP Type == Echo Reply</li>
-	 *	<li>ICMP Identity == Filter ID</li>
-	 *	<li>ICMP Length == {@link Packet#getNetworkSize Packet.getNetworkSize()}</li>
-	 * </ul>
-	 *
-	 * @param pkt	The datagram to process.
-	 *
-	 * @throws java.lang.InterruptedException Thrown if the thread is interrupted.
-	 * @throws org.opennms.core.fiber.FifoQueueException Thrown if a queue exception
-	 *	occurs adding a new reply.
-	 *
-	 */
-	protected void process(DatagramPacket pkt)
-		throws InterruptedException, FifoQueueException
-	{
-		boolean doIt = false;
-		synchronized(this)
-		{
-			doIt = m_paused;
-		}
+    /**
+     * The underlying thread doing the work.
+     */
+    private Thread m_worker;
 
-		if(!doIt)
-		{
-			Reply reply = null;
-			try
-			{
-				reply = Reply.create(pkt);	// create a reply
-			}
-			catch(IllegalArgumentException iaE)
-			{
-				// Throw by Reply.create if the packet
-				// is not of type Packet
-				//
-				// Discard
-				return;
-			}
-			catch(IndexOutOfBoundsException iooB)
-			{
-				// Throw by Reply.create if the packet
-				// is not the correct length
-				//
-				// Discard
-				return;
-			}
+    /**
+     * The thread's status
+     */
+    private int m_status;
 
-			// Test the match criteria
-			//
-			if(reply.isEchoReply() && reply.getIdentity() == m_filterID)
-			{
-				Category log = ThreadCategory.getInstance(getClass());
-				m_replyQ.add(reply);
-				if(log.isDebugEnabled())
-					log.debug("process: received matching echo reply from host " + pkt.getAddress().getHostAddress());
-			}
-		}
-	}
+    /**
+     * The default constructor is marked private to prevent it's used. The
+     * constructor always throws an UnsupportedOperationException.
+     * 
+     * @exception java.lang.UnsupportedOperationException
+     *                Always thrown.
+     */
+    private ReplyReceiver() throws java.lang.UnsupportedOperationException {
+        throw new java.lang.UnsupportedOperationException("invalid constructor invocation");
+    }
 
-	/**
-	 * <p>Constructs a ping reciever thread that reads datagrams from
-	 * the connection and adds them to the queue. As each datagram is
-	 * received and processed by the receiver, replies matching the 
-	 * criteria are added to the queue. Each reply must be of type 
-	 * ICMP Echo Reply, its identity must match the filterID, and
-	 * its length must be equal to the {@link Packet ping packet's}
-	 * length.</p>
-	 *
-	 * @param portal	The ICMP socket
-	 * @param replyQ	The reply queue for matching messages.
-	 * @param filterID	The ICMP Identity for matching.
-	 *
-	 */
-	public ReplyReceiver(IcmpSocket portal, FifoQueue replyQ, short filterID)
-	{
-		m_portal = portal;
-		m_replyQ = replyQ;
-		m_filterID = filterID;
-		m_paused = false;
-		m_name = NAME + (filterID < 0 ? filterID + 0x10000 : filterID);
-		m_worker = null;
-		m_status = START_PENDING;
-	}
+    /**
+     * <p>
+     * Processes the received datagram and adds a new {@link Reply Reply}
+     * instance to the reply queue. The recieved packet must pass the following
+     * criteria:
+     * </p>
+     * 
+     * <ul>
+     * <li>ICMP Type == Echo Reply</li>
+     * <li>ICMP Identity == Filter ID</li>
+     * <li>ICMP Length =={@link Packet#getNetworkSize Packet.getNetworkSize()}
+     * </li>
+     * </ul>
+     * 
+     * @param pkt
+     *            The datagram to process.
+     * 
+     * @throws java.lang.InterruptedException
+     *             Thrown if the thread is interrupted.
+     * @throws org.opennms.core.fiber.FifoQueueException
+     *             Thrown if a queue exception occurs adding a new reply.
+     * 
+     */
+    protected void process(DatagramPacket pkt) throws InterruptedException, FifoQueueException {
+        boolean doIt = false;
+        synchronized (this) {
+            doIt = m_paused;
+        }
 
-	/**
-	 * Starts the ICMP receiver. Once started the receiver reads new messages
-	 * from the ICMP socket and processes them. Packets that match the proper
-	 * criteria are added to the queue. If the receiver is already started
-	 * then an exception is thrown.
-	 *
-	 * @throws java.lang.IllegalStateException Thrown if the receiver has
-	 *	already been started.
-	 *
-	 */
-	public final synchronized void start()
-	{
-		if(m_worker != null)
-			throw new IllegalStateException("The Fiber is already running or has run");
+        if (!doIt) {
+            Reply reply = null;
+            try {
+                reply = Reply.create(pkt); // create a reply
+            } catch (IllegalArgumentException iaE) {
+                // Throw by Reply.create if the packet
+                // is not of type Packet
+                //
+                // Discard
+                return;
+            } catch (IndexOutOfBoundsException iooB) {
+                // Throw by Reply.create if the packet
+                // is not the correct length
+                //
+                // Discard
+                return;
+            }
 
-		m_status = STARTING;
-		m_worker = new Thread(this, m_name);
-		m_worker.setDaemon(true);
-		m_worker.start();
-	}
+            // Test the match criteria
+            //
+            if (reply.isEchoReply() && reply.getIdentity() == m_filterID) {
+                Category log = ThreadCategory.getInstance(getClass());
+                m_replyQ.add(reply);
+                if (log.isDebugEnabled())
+                    log.debug("process: received matching echo reply from host " + pkt.getAddress().getHostAddress());
+            }
+        }
+    }
 
-	/**
-	 * Stops the current receiver. If the receiver was never
-	 * started then an exception is thrown.
-	 *
-	 * @throws java.lang.IllegalStateException Thrown if the receiver
-	 * 	was never started.
-	 *
-	 */
-	public final synchronized void stop()
-	{
-		if(m_worker == null)
-			throw new IllegalStateException("The Fiber has not been started");
+    /**
+     * <p>
+     * Constructs a ping reciever thread that reads datagrams from the
+     * connection and adds them to the queue. As each datagram is received and
+     * processed by the receiver, replies matching the criteria are added to the
+     * queue. Each reply must be of type ICMP Echo Reply, its identity must
+     * match the filterID, and its length must be equal to the
+     * {@link Packet ping packet's}length.
+     * </p>
+     * 
+     * @param portal
+     *            The ICMP socket
+     * @param replyQ
+     *            The reply queue for matching messages.
+     * @param filterID
+     *            The ICMP Identity for matching.
+     * 
+     */
+    public ReplyReceiver(IcmpSocket portal, FifoQueue replyQ, short filterID) {
+        m_portal = portal;
+        m_replyQ = replyQ;
+        m_filterID = filterID;
+        m_paused = false;
+        m_name = NAME + (filterID < 0 ? filterID + 0x10000 : filterID);
+        m_worker = null;
+        m_status = START_PENDING;
+    }
 
-		if(m_worker.isAlive())
-		{
-			if(m_status != STOPPED)
-				m_status = STOP_PENDING;
-			m_worker.interrupt();
-		}
-		else
-			m_status = STOPPED;
-	}
+    /**
+     * Starts the ICMP receiver. Once started the receiver reads new messages
+     * from the ICMP socket and processes them. Packets that match the proper
+     * criteria are added to the queue. If the receiver is already started then
+     * an exception is thrown.
+     * 
+     * @throws java.lang.IllegalStateException
+     *             Thrown if the receiver has already been started.
+     * 
+     */
+    public final synchronized void start() {
+        if (m_worker != null)
+            throw new IllegalStateException("The Fiber is already running or has run");
 
-	/**
-	 * Pauses the reciever. While the receiver is pauses the 
-	 * it still reads and processes new ICMP datagrams. However,
-	 * all datagrams are discarded while in a paused state regardless
-	 * of matching criteria. Messages are still read since the
-	 * operating system will continue to deliver them.
-	 *
-	 */
-	public final synchronized void pause()
-	{
-		if(m_worker == null || !m_worker.isAlive())
-			throw new IllegalStateException("The fiber is not running");
-		m_paused = true;
-	}
+        m_status = STARTING;
+        m_worker = new Thread(this, m_name);
+        m_worker.setDaemon(true);
+        m_worker.start();
+    }
 
-	/**
-	 * Resumes the recipt and processing of ICMP messages.
-	 *
-	 */
-	public final synchronized void resume()
-	{
-		if(m_worker == null || !m_worker.isAlive())
-			throw new IllegalStateException("The fiber is not running");
-		m_paused = false;
-	}
+    /**
+     * Stops the current receiver. If the receiver was never started then an
+     * exception is thrown.
+     * 
+     * @throws java.lang.IllegalStateException
+     *             Thrown if the receiver was never started.
+     * 
+     */
+    public final synchronized void stop() {
+        if (m_worker == null)
+            throw new IllegalStateException("The Fiber has not been started");
 
-	/**
-	 * Returns the name of this fiber.
-	 *
-	 * @return The fiber's name.
-	 */
-	public final String getName()
-	{
-		return m_name;
-	}
+        if (m_worker.isAlive()) {
+            if (m_status != STOPPED)
+                m_status = STOP_PENDING;
+            m_worker.interrupt();
+        } else
+            m_status = STOPPED;
+    }
 
-	/**
-	 * Returns the status of the fiber.
-	 *
-	 * @return The fiber's status.
-	 */
-	public final synchronized int getStatus()
-	{
-		if(m_status == RUNNING && m_paused)
-			return PAUSED;
+    /**
+     * Pauses the reciever. While the receiver is pauses the it still reads and
+     * processes new ICMP datagrams. However, all datagrams are discarded while
+     * in a paused state regardless of matching criteria. Messages are still
+     * read since the operating system will continue to deliver them.
+     * 
+     */
+    public final synchronized void pause() {
+        if (m_worker == null || !m_worker.isAlive())
+            throw new IllegalStateException("The fiber is not running");
+        m_paused = true;
+    }
 
-		return m_status;
-	}
+    /**
+     * Resumes the recipt and processing of ICMP messages.
+     * 
+     */
+    public final synchronized void resume() {
+        if (m_worker == null || !m_worker.isAlive())
+            throw new IllegalStateException("The fiber is not running");
+        m_paused = false;
+    }
 
-	/**
-	 * The run() method does the actual work of reading
-	 * messages from the daemon and placing those messages
-	 * in the appropoiate queue for use by other threads.
-	 *
-	 */
-	public final void run()
-	{
-		synchronized(this)
-		{
-			m_status = RUNNING;
-		}
-		
-		try
-		{
-			for(;;)
-			{
-				synchronized(this)
-				{
-					if(m_status == STOP_PENDING)
-						break;
-				}
-				process(m_portal.receive());
-			}
-		}
-		catch(Exception e)
-		{
-			Category log = ThreadCategory.getInstance(getClass());
-			if(log.isDebugEnabled())
-				log.debug("run: an exception occured processing the datagram, thread exiting");
-			return;
-		}
-		finally
-		{
-			synchronized(this)
-			{
-				m_status = STOPPED;
-			}
-		}
-	}
+    /**
+     * Returns the name of this fiber.
+     * 
+     * @return The fiber's name.
+     */
+    public final String getName() {
+        return m_name;
+    }
+
+    /**
+     * Returns the status of the fiber.
+     * 
+     * @return The fiber's status.
+     */
+    public final synchronized int getStatus() {
+        if (m_status == RUNNING && m_paused)
+            return PAUSED;
+
+        return m_status;
+    }
+
+    /**
+     * The run() method does the actual work of reading messages from the daemon
+     * and placing those messages in the appropoiate queue for use by other
+     * threads.
+     * 
+     */
+    public final void run() {
+        synchronized (this) {
+            m_status = RUNNING;
+        }
+
+        try {
+            for (;;) {
+                synchronized (this) {
+                    if (m_status == STOP_PENDING)
+                        break;
+                }
+                process(m_portal.receive());
+            }
+        } catch (Exception e) {
+            Category log = ThreadCategory.getInstance(getClass());
+            if (log.isDebugEnabled())
+                log.debug("run: an exception occured processing the datagram, thread exiting");
+            return;
+        } finally {
+            synchronized (this) {
+                m_status = STOPPED;
+            }
+        }
+    }
 
 } // end class ReplyReceiver
-
-
 

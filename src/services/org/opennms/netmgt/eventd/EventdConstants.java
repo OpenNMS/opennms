@@ -34,46 +34,41 @@
 
 package org.opennms.netmgt.eventd;
 
-
 /**
- * This class is a repository for constant, static information
- * concerning Eventd.
- *
- * @author	<A HREF="mailto:weave@oculan.com">Sowmya Nataraj</A>
- * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
+ * This class is a repository for constant, static information concerning
+ * Eventd.
+ * 
+ * @author <A HREF="mailto:weave@oculan.com">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public final class EventdConstants
-{
-	/**
-	 * The SQL statement necessary to read service id
-	 * and service name into map.
-	 */
-	public final static String 	SQL_DB_SVC_TABLE_READ		= "SELECT serviceID, serviceName FROM service";
+public final class EventdConstants {
+    /**
+     * The SQL statement necessary to read service id and service name into map.
+     */
+    public final static String SQL_DB_SVC_TABLE_READ = "SELECT serviceID, serviceName FROM service";
 
-	/**
-	 * The SQL insertion string used by eventd to store the 
-	 * event information into the database.
-	 */
-	public final static String	SQL_DB_INS_EVENT			= "INSERT into events (eventID, eventUei, nodeID, eventTime, eventHost, ipAddr, eventDpName, eventSnmpHost, serviceID, eventSnmp, eventParms, eventCreateTime, eventDescr, eventLoggroup, eventLogmsg, eventLog, eventDisplay, eventSeverity, eventPathOutage, eventCorrelation, eventSuppressedCount, eventOperInstruct, eventAutoAction, eventOperAction, eventOperActionMenuText, eventNotification, eventTticket, eventTticketState, eventForward, eventMouseOverText, eventAckUser, eventAckTime, eventSource) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-	
-	/**
-	 * The SQL string used by eventd to update number of duplicate
-	 * events in case of duplicate event suppression.
-	 */
-	public final static String	SQL_DB_UPDATE_EVENT_COUNT		= "UPDATE events set eventSuppressedCount=? where (eventID=?)";
-	
-	/**
-	 * The SQL statement necessary to convert
-	 * the service name into a service id using the distributed
-	 * poller database.
-	 */
-	public final static String 	SQL_DB_SVCNAME_TO_SVCID			= "SELECT serviceID FROM service WHERE serviceName = ?";
+    /**
+     * The SQL insertion string used by eventd to store the event information
+     * into the database.
+     */
+    public final static String SQL_DB_INS_EVENT = "INSERT into events (eventID, eventUei, nodeID, eventTime, eventHost, ipAddr, eventDpName, eventSnmpHost, serviceID, eventSnmp, eventParms, eventCreateTime, eventDescr, eventLoggroup, eventLogmsg, eventLog, eventDisplay, eventSeverity, eventPathOutage, eventCorrelation, eventSuppressedCount, eventOperInstruct, eventAutoAction, eventOperAction, eventOperActionMenuText, eventNotification, eventTticket, eventTticketState, eventForward, eventMouseOverText, eventAckUser, eventAckTime, eventSource) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-	/**
-	 * The SQL statement necessary to convert
-	 * the event host into a hostname using the 'ipinterface' table.
-	 */
-	public final static String 	SQL_DB_HOSTIP_TO_HOSTNAME		= "SELECT ipHostname FROM ipinterface WHERE ipAddr = ?";
+    /**
+     * The SQL string used by eventd to update number of duplicate events in
+     * case of duplicate event suppression.
+     */
+    public final static String SQL_DB_UPDATE_EVENT_COUNT = "UPDATE events set eventSuppressedCount=? where (eventID=?)";
+
+    /**
+     * The SQL statement necessary to convert the service name into a service id
+     * using the distributed poller database.
+     */
+    public final static String SQL_DB_SVCNAME_TO_SVCID = "SELECT serviceID FROM service WHERE serviceName = ?";
+
+    /**
+     * The SQL statement necessary to convert the event host into a hostname
+     * using the 'ipinterface' table.
+     */
+    public final static String SQL_DB_HOSTIP_TO_HOSTNAME = "SELECT ipHostname FROM ipinterface WHERE ipAddr = ?";
 
 }
-

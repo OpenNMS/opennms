@@ -32,19 +32,17 @@
 
 package org.opennms.netmgt;
 
-
 /**
  * This class holds all OpenNMS regular expression related constants.
- *
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * 
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version 1.2
  */
-public class RegularExpressionConstants
-{
-	
-	/** 
-	 * A regular expression for matching interface addresses. Will strictly match 0-255 in all octets 
-	 */
-	public static final String INTERFACE_ADDRESS = "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])";
-}
+public class RegularExpressionConstants {
 
+    /**
+     * A regular expression for matching interface addresses. Will strictly
+     * match 0-255 in all octets
+     */
+    public static final String INTERFACE_ADDRESS = "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])";
+}

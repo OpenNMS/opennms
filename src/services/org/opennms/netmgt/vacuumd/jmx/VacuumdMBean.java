@@ -36,16 +36,20 @@
 
 package org.opennms.netmgt.vacuumd.jmx;
 
-
 /**
  * This interface represents the methods available for the Vacuumd MBean
  */
 public interface VacuumdMBean {
     public void init();
+
     public void start();
+
     public void stop();
+
     public int getStatus();
+
     public String status();
+
     public String getStatusText();
 
 }

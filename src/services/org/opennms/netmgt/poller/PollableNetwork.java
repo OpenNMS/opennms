@@ -51,12 +51,14 @@ import org.opennms.netmgt.config.poller.Package;
 public class PollableNetwork {
 
     private Poller m_poller;
+
     /**
      * Map of 'PollableNode' objects keyed by nodeId
      */
     private Map m_pollableNodes;
+
     private List m_pollableServices;
-    
+
     public PollableNetwork(Poller poller) {
         m_poller = poller;
         m_pollableNodes = Collections.synchronizedMap(new HashMap());
@@ -94,7 +96,7 @@ public class PollableNetwork {
     public void removeNode(int nodeId) {
         m_pollableNodes.remove(new Integer(nodeId));
     }
-    
+
     public void visit(PollableVisitor v) {
         Iterator j = m_pollableNodes.values().iterator();
         while (j.hasNext()) {
@@ -111,7 +113,7 @@ public class PollableNetwork {
                 }
             }
         }
-        
+
     }
 
     /**
@@ -119,22 +121,22 @@ public class PollableNetwork {
      */
     public void dumpNetwork() {
         final Category log = ThreadCategory.getInstance(getClass());
-        
+
         PollableVisitor dumper = new PollableVisitor() {
             public void visitNode(PollableNode pNode) {
                 log.debug(" nodeid=" + pNode.getNodeId() + " status=" + Pollable.statusType[pNode.getStatus()]);
             }
-            
+
             public void visitInterface(PollableInterface pIf) {
                 log.debug("     interface=" + pIf.getAddress().getHostAddress() + " status=" + Pollable.statusType[pIf.getStatus()]);
             }
-            
+
             public void visitService(PollableService pSvc) {
                 log.debug("         service=" + pSvc.getServiceName() + " status=" + Pollable.statusType[pSvc.getStatus()]);
             }
         };
         visit(dumper);
-    
+
     }
 
     public PollableService createPollableService(int nodeId, String ipAddr, String svcName, Package pkg, int lastKnownStatus, Date svcLostDate) throws InterruptedException, UnknownHostException {
@@ -146,7 +148,7 @@ public class PollableNetwork {
             PollableInterface pInterface = null;
             boolean nodeCreated = false;
             boolean interfaceCreated = false;
-    
+
             // Does the node already exist in the poller's
             // pollable node map?
             //
@@ -160,7 +162,7 @@ public class PollableNetwork {
                 //
                 ownLock = pNode.getNodeLock(Poller.WAIT_FOREVER);
             }
-    
+
             // Does the interface exist in the pollable
             // node?
             //
@@ -170,13 +172,13 @@ public class PollableNetwork {
                 pInterface = new PollableInterface(pNode, InetAddress.getByName(ipAddr));
                 interfaceCreated = true;
             }
-    
+
             // Create a new PollableService representing
             // this node, interface,
             // service and package pairing
             //
             pSvc = new PollableService(pInterface, svcName, pkg, lastKnownStatus, svcLostDate);
-    
+
             // Add the service to the PollableInterface
             // object
             //
@@ -192,7 +194,7 @@ public class PollableNetwork {
             // on the interface
             log.debug("createPollableService: adding pollable service to service list of interface: " + ipAddr);
             pInterface.addService(pSvc);
-    
+
             if (interfaceCreated) {
                 // Add the interface to the node
                 //
@@ -206,7 +208,7 @@ public class PollableNetwork {
                 //
                 pNode.recalculateStatus();
             }
-    
+
             if (nodeCreated) {
                 // Add the node to the node map
                 //
@@ -214,12 +216,11 @@ public class PollableNetwork {
                     log.debug("createPollableService: adding new pollable node: " + nodeId);
                 addNode(pNode);
             }
-            
+
             // Add new service to the pollable services
             // list.
             //
             m_pollableServices.add(pSvc);
-
 
         } finally {
             if (ownLock) {
@@ -229,7 +230,7 @@ public class PollableNetwork {
                     log.error("createPollableService: Failed to release node lock on nodeid " + pNode.getNodeId() + ", thread interrupted.");
                 }
             }
-    
+
         }
         return pSvc;
     }

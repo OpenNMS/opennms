@@ -61,16 +61,17 @@ import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * <P>
- * This class is designed to be used by the capabilities daemon to test for the existance of MS
- * Exchange server on remote interfaces. The class implements the Plugin interface that allows
- * it to be used along with other plugins by the daemon.
+ * This class is designed to be used by the capabilities daemon to test for the
+ * existance of MS Exchange server on remote interfaces. The class implements
+ * the Plugin interface that allows it to be used along with other plugins by
+ * the daemon.
  * </P>
  * 
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
  * 
- *  
+ * 
  */
 public final class Pop3Plugin extends AbstractPlugin {
 
@@ -100,10 +101,11 @@ public final class Pop3Plugin extends AbstractPlugin {
 
     /**
      * <P>
-     * Test to see if the passed host is running Microsoft Exchange server. If the remote host
-     * is running POP3, IMAP or MAPI and we are able to retreive a banner from any of the ports
-     * these services listen on wich include the text "Microsoft Exchange" then this method
-     * will return true. Otherwise a false value is returned to the caller.
+     * Test to see if the passed host is running Microsoft Exchange server. If
+     * the remote host is running POP3, IMAP or MAPI and we are able to retreive
+     * a banner from any of the ports these services listen on wich include the
+     * text "Microsoft Exchange" then this method will return true. Otherwise a
+     * false value is returned to the caller.
      * </P>
      * 
      * @param host
@@ -148,7 +150,8 @@ public final class Pop3Plugin extends AbstractPlugin {
                     // Server response should start with: "+OK"
                     //
                     t = new StringTokenizer(lineRdr.readLine());
-                    if (t.nextToken().equals("+OK")) isAServer = true;
+                    if (t.nextToken().equals("+OK"))
+                        isAServer = true;
                 }
             } catch (ConnectException cE) {
                 // Connection refused!! Continue to retry.
@@ -174,7 +177,8 @@ public final class Pop3Plugin extends AbstractPlugin {
                 log.error("Pop3Plugin: An undeclared throwable exception was caught contacting host " + host.getHostAddress(), t);
             } finally {
                 try {
-                    if (socket != null) socket.close();
+                    if (socket != null)
+                        socket.close();
                 } catch (IOException e) {
                 }
             }
@@ -184,8 +188,8 @@ public final class Pop3Plugin extends AbstractPlugin {
     }
 
     /**
-     * Returns the name of the protocol that this plugin checks on the target system for
-     * support.
+     * Returns the name of the protocol that this plugin checks on the target
+     * system for support.
      * 
      * @return The protocol name for this plugin.
      */
@@ -194,8 +198,8 @@ public final class Pop3Plugin extends AbstractPlugin {
     }
 
     /**
-     * Returns true if the protocol defined by this plugin is supported. If the protocol is not
-     * supported then a false value is returned to the caller.
+     * Returns true if the protocol defined by this plugin is supported. If the
+     * protocol is not supported then a false value is returned to the caller.
      * 
      * @param address
      *            The address to check for support.
@@ -207,10 +211,11 @@ public final class Pop3Plugin extends AbstractPlugin {
     }
 
     /**
-     * Returns true if the protocol defined by this plugin is supported. If the protocol is not
-     * supported then a false value is returned to the caller. The qualifier map passed to the
-     * method is used by the plugin to return additional information by key-name. These
-     * key-value pairs can be added to service events if needed.
+     * Returns true if the protocol defined by this plugin is supported. If the
+     * protocol is not supported then a false value is returned to the caller.
+     * The qualifier map passed to the method is used by the plugin to return
+     * additional information by key-name. These key-value pairs can be added to
+     * service events if needed.
      * 
      * @param address
      *            The address to check for support.
@@ -231,10 +236,10 @@ public final class Pop3Plugin extends AbstractPlugin {
         }
 
         boolean result = isServer(address, port, retries, timeout);
-        if (result && qualifiers != null && !qualifiers.containsKey("port")) qualifiers.put("port", new Integer(port));
+        if (result && qualifiers != null && !qualifiers.containsKey("port"))
+            qualifiers.put("port", new Integer(port));
 
         return result;
     }
 
 }
-

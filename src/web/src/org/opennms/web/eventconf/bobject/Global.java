@@ -35,66 +35,58 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is a data class for storing snmp event configuration information
- * as parsed from the eventconf.xml file
- *
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
+ * This is a data class for storing snmp event configuration information as
+ * parsed from the eventconf.xml file
+ * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * 
  * @version 1.1.1.1
- *
+ * 
  * @deprecated Replaced by a Castor-generated implementation.
- *
+ * 
  * @see org.opennms.netmgt.xml.eventconf.Global
- *
+ * 
  */
-public class Global implements Cloneable
-{
-	/**
-	*/
-	private List m_securityList;
-	
-	/**Default constructor, intializes the member variables.
-	*/
-	public Global()
-	{
-		m_securityList = new ArrayList();
-	}
-	
-	/**
-	*/
-	public Object clone()
-	{
-		try
-		{
-			super.clone();
-		}
-		catch(CloneNotSupportedException e)
-		{
-			return null;
-		}
-		
-		Global newGlobal = new Global();
-		
-		for (int i = 0; i < m_securityList.size(); i++)
-		{
-			newGlobal.addSecurity((String)m_securityList.get(i));
-		}
-		
-		return newGlobal;
-	}
-	
-	/**
-	*/
-	public void addSecurity(String security)
-	{
-		m_securityList.add(security);
-	}
-	
-	/**
-	*/
-	public List getSecurities()
-	{
-		return m_securityList;
-	}
+public class Global implements Cloneable {
+    /**
+     */
+    private List m_securityList;
+
+    /**
+     * Default constructor, intializes the member variables.
+     */
+    public Global() {
+        m_securityList = new ArrayList();
+    }
+
+    /**
+     */
+    public Object clone() {
+        try {
+            super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
+
+        Global newGlobal = new Global();
+
+        for (int i = 0; i < m_securityList.size(); i++) {
+            newGlobal.addSecurity((String) m_securityList.get(i));
+        }
+
+        return newGlobal;
+    }
+
+    /**
+     */
+    public void addSecurity(String security) {
+        m_securityList.add(security);
+    }
+
+    /**
+     */
+    public List getSecurities() {
+        return m_securityList;
+    }
 }

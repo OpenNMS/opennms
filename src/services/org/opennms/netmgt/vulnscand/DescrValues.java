@@ -35,48 +35,35 @@ package org.opennms.netmgt.vulnscand;
 import org.opennms.netmgt.eventd.db.Constants;
 
 /**
-* Class that holds the return values
-* when parsing a description field from
-* Nessus.
-*/
-public class DescrValues
-{
-	String descr;
-	String cveEntry;
-	int severity;
+ * Class that holds the return values when parsing a description field from
+ * Nessus.
+ */
+public class DescrValues {
+    String descr;
 
-	public DescrValues()
-	{
-		descr = null;
-		cveEntry = null;
-		severity = -1;
-	}
+    String cveEntry;
 
-	public void useDefaults()
-	{
-		descr = "";
-		severity = Constants.SEV_INDETERMINATE;
-	}
+    int severity;
 
-	public boolean isValid()
-	{
-		if (
-			(descr != null) &&
-			(severity > 0)
-		)
-			return true;
-		else
-			return false;
-	}
+    public DescrValues() {
+        descr = null;
+        cveEntry = null;
+        severity = -1;
+    }
 
-	public String toString()
-	{
-		return (
-			"descr: " + descr +
-			"\ncveEntry: " + cveEntry +
-			"\nseverity: " + severity + "\n"
-		);
-	}
+    public void useDefaults() {
+        descr = "";
+        severity = Constants.SEV_INDETERMINATE;
+    }
+
+    public boolean isValid() {
+        if ((descr != null) && (severity > 0))
+            return true;
+        else
+            return false;
+    }
+
+    public String toString() {
+        return ("descr: " + descr + "\ncveEntry: " + cveEntry + "\nseverity: " + severity + "\n");
+    }
 }
-
-

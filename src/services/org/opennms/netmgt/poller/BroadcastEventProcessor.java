@@ -190,9 +190,9 @@ final class BroadcastEventProcessor implements EventListener {
         // schedule
 
         String ipAddr = event.getInterface();
-        int nodeid = (int)event.getNodeid();
+        int nodeid = (int) event.getNodeid();
         String svcName = event.getService();
-        
+
         if (!getPoller().getQueryMgr().activeServiceExists(whichEvent, nodeid, ipAddr, svcName)) {
             if (log.isDebugEnabled()) {
                 log.debug(whichEvent + nodeid + "/" + ipAddr + "/" + svcName + " not active - hence not scheduled");
@@ -200,7 +200,7 @@ final class BroadcastEventProcessor implements EventListener {
             return;
         }
 
-        getPoller().scheduleService(nodeid, ipAddr, svcName);   
+        getPoller().scheduleService(nodeid, ipAddr, svcName);
     }
 
     /**

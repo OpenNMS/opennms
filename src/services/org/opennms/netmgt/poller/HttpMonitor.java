@@ -63,21 +63,22 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
- * This class is designed to be used by the service poller framework to test the availability
- * of the HTTP service on remote interfaces. The class implements the ServiceMonitor interface
- * that allows it to be used along with other plug-ins by the service poller framework.
+ * This class is designed to be used by the service poller framework to test the
+ * availability of the HTTP service on remote interfaces. The class implements
+ * the ServiceMonitor interface that allows it to be used along with other
+ * plug-ins by the service poller framework.
  * 
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- *  
+ * 
  */
 final class HttpMonitor extends IPv4LatencyMonitor {
 
     /**
      * Default HTTP ports.
      */
-    private static final int[] DEFAULT_PORTS = { 80, 8080, 8888};
+    private static final int[] DEFAULT_PORTS = { 80, 8080, 8888 };
 
     /**
      * Default retries.
@@ -90,34 +91,38 @@ final class HttpMonitor extends IPv4LatencyMonitor {
     private static final String DEFAULT_URL = "/";
 
     /**
-     * Default timeout. Specifies how long (in milliseconds) to block waiting for data from the
-     * monitored interface.
+     * Default timeout. Specifies how long (in milliseconds) to block waiting
+     * for data from the monitored interface.
      */
-    private static final int DEFAULT_TIMEOUT = 3000; // 3 second timeout on read()
+    private static final int DEFAULT_TIMEOUT = 3000; // 3 second timeout on
+                                                        // read()
 
     /**
      * Poll the specified address for HTTP service availability.
      * 
-     * During the poll an attempt is made to connect on the specified port(s) (by default TCP
-     * ports 80, 8080, 8888). If the connection request is successful, an HTTP 'GET' command is
-     * sent to the interface. The response is parsed and a return code extracted and verified.
-     * Provided that the interface's response is valid we set the service status to
+     * During the poll an attempt is made to connect on the specified port(s)
+     * (by default TCP ports 80, 8080, 8888). If the connection request is
+     * successful, an HTTP 'GET' command is sent to the interface. The response
+     * is parsed and a return code extracted and verified. Provided that the
+     * interface's response is valid we set the service status to
      * SERVICE_AVAILABLE and return.
      * 
      * @param iface
      *            The network interface to test the service on.
      * @param parameters
-     *            The package parameters (timeout, retry, and others) to be used for this poll.
+     *            The package parameters (timeout, retry, and others) to be used
+     *            for this poll.
      * 
-     * @return The availibility of the interface and if a transition event should be supressed.
-     *  
+     * @return The availibility of the interface and if a transition event
+     *         should be supressed.
+     * 
      */
     public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         //
         // Get interface address from NetworkInterface
         //
         if (iface.getType() != NetworkInterface.TYPE_IPV4)
-                throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
+            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
 
         Category log = ThreadCategory.getInstance(getClass());
 
@@ -137,15 +142,15 @@ final class HttpMonitor extends IPv4LatencyMonitor {
         String responseText = ParameterMap.getKeyedString(parameters, "response text", null);
 
         // Set to true if "response" property has a valid return code specified.
-        //  By default response will be deemed valid if the return code
-        //  falls in the range: 99 < rc < 500
-        //  This is based on the following information from RFC 1945 (HTTP 1.0)
-        // 		HTTP 1.0 GET return codes:
-        //		 	1xx: Informational - Not used, future use
-        //			2xx: Success
-        //			3xx: Redirection
-        //			4xx: Client error
-        //			5xx: Server error
+        // By default response will be deemed valid if the return code
+        // falls in the range: 99 < rc < 500
+        // This is based on the following information from RFC 1945 (HTTP 1.0)
+        // HTTP 1.0 GET return codes:
+        // 1xx: Informational - Not used, future use
+        // 2xx: Success
+        // 3xx: Redirection
+        // 4xx: Client error
+        // 5xx: Server error
         boolean bStrictResponse = (response > 99 && response < 600);
 
         // Extract the ip address
@@ -186,7 +191,8 @@ final class HttpMonitor extends IPv4LatencyMonitor {
                     serviceStatus = SERVICE_UNRESPONSIVE;
 
                     //
-                    // Issue HTTP 'GET' command and check the return code in the response
+                    // Issue HTTP 'GET' command and check the return code in the
+                    // response
                     //
                     long sentTime = System.currentTimeMillis();
                     socket.getOutputStream().write(cmd.getBytes());
@@ -198,7 +204,8 @@ final class HttpMonitor extends IPv4LatencyMonitor {
                     BufferedReader lineRdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     String line = lineRdr.readLine();
                     responseTime = System.currentTimeMillis() - sentTime;
-                    if (line == null) continue;
+                    if (line == null)
+                        continue;
 
                     if (log.isDebugEnabled()) {
                         log.debug("poll: response= " + line);
@@ -228,15 +235,18 @@ final class HttpMonitor extends IPv4LatencyMonitor {
                     }
 
                     if (serviceStatus == ServiceMonitor.SERVICE_AVAILABLE && responseText != null && responseText.length() > 0) {
-                        // This loop will rip through the rest of the Response Header
+                        // This loop will rip through the rest of the Response
+                        // Header
                         //
                         do {
                             line = lineRdr.readLine();
 
                         } while (line != null && line.length() != 0);
-                        if (line == null) continue;
+                        if (line == null)
+                            continue;
 
-                        // Now lets rip through the Entity-Body (i.e., content) looking
+                        // Now lets rip through the Entity-Body (i.e., content)
+                        // looking
                         // for the required text.
                         //
                         boolean bResponseTextFound = false;
@@ -245,19 +255,22 @@ final class HttpMonitor extends IPv4LatencyMonitor {
 
                             if (line != null) {
                                 int responseIndex = line.indexOf(responseText);
-                                if (responseIndex != -1) bResponseTextFound = true;
+                                if (responseIndex != -1)
+                                    bResponseTextFound = true;
                             }
 
                         } while (line != null && !bResponseTextFound);
 
                         // Set the status back to failed
                         //
-                        if (!bResponseTextFound) serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+                        if (!bResponseTextFound)
+                            serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
                     }
                 } catch (NoRouteToHostException e) {
                     e.fillInStackTrace();
                     log.warn("No route to host exception for address " + ipv4Addr, e);
-                    portIndex = ports.length; // Will cause outer for(;;) to terminate
+                    portIndex = ports.length; // Will cause outer for(;;) to
+                                                // terminate
                     break; // Break out of inner for(;;)
                 } catch (InterruptedIOException e) {
                     // Ignore
@@ -276,7 +289,8 @@ final class HttpMonitor extends IPv4LatencyMonitor {
                 } finally {
                     try {
                         // Close the socket
-                        if (socket != null) socket.close();
+                        if (socket != null)
+                            socket.close();
                     } catch (IOException e) {
                         e.fillInStackTrace();
                         log.debug("Error closing socket connection", e);

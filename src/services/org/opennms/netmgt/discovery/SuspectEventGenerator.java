@@ -55,246 +55,221 @@ import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
 /**
- * This class represents a suspect event generator that takes
- * instances of ping replies and converts them to events. The
- * events are then sent to the event daemon.
- *
- * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
- *
+ * This class represents a suspect event generator that takes instances of ping
+ * replies and converts them to events. The events are then sent to the event
+ * daemon.
+ * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * 
  */
-final class SuspectEventGenerator
-	implements Runnable, Fiber
-{
-	/**
-	 * The value used as the source of the event.
-	 */
-	final static String	EVENT_SOURCE_VALUE 	= "OpenNMS.Discovery";
+final class SuspectEventGenerator implements Runnable, Fiber {
+    /**
+     * The value used as the source of the event.
+     */
+    final static String EVENT_SOURCE_VALUE = "OpenNMS.Discovery";
 
-	/**
-	 * The queue where ping replies are recovered.
-	 */
-	private FifoQueue	m_replies;
+    /**
+     * The queue where ping replies are recovered.
+     */
+    private FifoQueue m_replies;
 
-	/**
-	 * The time to live to set on events sent out
-	 */
-	private long		m_ttl;
+    /**
+     * The time to live to set on events sent out
+     */
+    private long m_ttl;
 
-	/**
-	 * The status of the fiber.
-	 */
-	private int		m_status;
+    /**
+     * The status of the fiber.
+     */
+    private int m_status;
 
-	/**
-	 * The name of the fiber.
-	 */
-	private String		m_name;
+    /**
+     * The name of the fiber.
+     */
+    private String m_name;
 
-	/**
-	 * The worker thread that reads replies and sends
-	 * events.
-	 */
-	private Thread		m_worker;
+    /**
+     * The worker thread that reads replies and sends events.
+     */
+    private Thread m_worker;
 
-	/**
-	 * Construts a new instance of the class that is used to send
-	 * new suspect events. The reply queue passed during construction
-	 * is used to extract instances of {@link org.opennms.netmgt.ping.Reply ping replies}
-	 * found by the discovery process. The replies are turned into suspect node
-	 * events and sent to eventd
-	 *
-	 */
-	SuspectEventGenerator(FifoQueue replyQ, long ttl)
-	{
-		m_name    = "Discovery:SuspectEventGenerator";
-		m_replies = replyQ;
-		m_ttl     = ttl;
-		m_status  = START_PENDING;
-		m_worker  = null;
-	}
+    /**
+     * Construts a new instance of the class that is used to send new suspect
+     * events. The reply queue passed during construction is used to extract
+     * instances of {@link org.opennms.netmgt.ping.Reply ping replies}found by
+     * the discovery process. The replies are turned into suspect node events
+     * and sent to eventd
+     * 
+     */
+    SuspectEventGenerator(FifoQueue replyQ, long ttl) {
+        m_name = "Discovery:SuspectEventGenerator";
+        m_replies = replyQ;
+        m_ttl = ttl;
+        m_status = START_PENDING;
+        m_worker = null;
+    }
 
-	/**
-	 * <p>Starts the fiber. The fiber is transitioned from 
-	 * <code>START_PENDING</code> to <code>STARTING</code>
-	 * and once the fiber startup is complete the status 
-	 * is changed to <code>RUNNING</code>.</p>
-	 *
-	 * <p>If the fiber has already been started then an
-	 * exception is generated.</p>
-	 *
-	 * @throws java.lang.IllegalStateException Thrown if the fiber
-	 * 	has already been started.
-	 *
-	 */
-	public synchronized void start()
-	{
-		if(m_worker != null)
-			throw new IllegalStateException("The fiber has already been start or has already run");
+    /**
+     * <p>
+     * Starts the fiber. The fiber is transitioned from
+     * <code>START_PENDING</code> to <code>STARTING</code> and once the
+     * fiber startup is complete the status is changed to <code>RUNNING</code>.
+     * </p>
+     * 
+     * <p>
+     * If the fiber has already been started then an exception is generated.
+     * </p>
+     * 
+     * @throws java.lang.IllegalStateException
+     *             Thrown if the fiber has already been started.
+     * 
+     */
+    public synchronized void start() {
+        if (m_worker != null)
+            throw new IllegalStateException("The fiber has already been start or has already run");
 
-		m_status = STARTING;
-		m_worker = new Thread(this, getName());
-		m_worker.start();
-	}
-	
-	/**
-	 * Stops the fiber if it is running. If the fiber has
-	 * never run then an illegal state exception is generated.
-	 * This method sends the shutdown signal to the thread, but
-	 * does not wait on the thread to complete.
-	 *
-	 * @throws java.lang.IllegalStateException Thrown if the fiber was
-	 * 	never started.
-	 */
-	public synchronized void stop()
-	{
-		if(m_worker == null)
-			throw new IllegalStateException("The fiber has never been started");
+        m_status = STARTING;
+        m_worker = new Thread(this, getName());
+        m_worker.start();
+    }
 
-		if(m_status != STOPPED)
-		{
-			m_status = STOP_PENDING;
-			m_worker.interrupt();
-		}
-	}
+    /**
+     * Stops the fiber if it is running. If the fiber has never run then an
+     * illegal state exception is generated. This method sends the shutdown
+     * signal to the thread, but does not wait on the thread to complete.
+     * 
+     * @throws java.lang.IllegalStateException
+     *             Thrown if the fiber was never started.
+     */
+    public synchronized void stop() {
+        if (m_worker == null)
+            throw new IllegalStateException("The fiber has never been started");
 
-	/**
-	 * Returns the current status of the fiber.
-	 *
-	 * @return The fiber's status.
-	 */
-	public synchronized int getStatus()
-	{
-		if(m_worker != null && !m_worker.isAlive())
-			m_status = STOPPED;
+        if (m_status != STOPPED) {
+            m_status = STOP_PENDING;
+            m_worker.interrupt();
+        }
+    }
 
-		return m_status;
-	}
+    /**
+     * Returns the current status of the fiber.
+     * 
+     * @return The fiber's status.
+     */
+    public synchronized int getStatus() {
+        if (m_worker != null && !m_worker.isAlive())
+            m_status = STOPPED;
 
-	/**
-	 * Returns the name of this fiber.
-	 *
-	 * @return The name of the fiber.
-	 */
-	public String getName()
-	{
-		return m_name;
-	}
+        return m_status;
+    }
 
-	/**
-	 * <p>This method is used to do the main work for the fiber. This
-	 * method is invoked once and will not return until the fiber
-	 * is stopped, or a non-recovereable error occurs.</p>
-	 *
-	 * <p>After starting the status is changed to <code>RUNNING</code>
-	 * and a loop starts. The loop extracts the instances of
-	 * {@link org.opennms.netmgt.ping.Reply Reply} objects and then
-	 * generates XML based event messages that are sent to eventd</p>
-	 *
-	 */
-	public void run()
-	{
-		Category log = ThreadCategory.getInstance(getClass());
-		if(log.isDebugEnabled())
-			log.debug("run: Thread Started");
+    /**
+     * Returns the name of this fiber.
+     * 
+     * @return The name of the fiber.
+     */
+    public String getName() {
+        return m_name;
+    }
 
-		synchronized(this)
-		{
-			m_status = RUNNING;
-		}
+    /**
+     * <p>
+     * This method is used to do the main work for the fiber. This method is
+     * invoked once and will not return until the fiber is stopped, or a
+     * non-recovereable error occurs.
+     * </p>
+     * 
+     * <p>
+     * After starting the status is changed to <code>RUNNING</code> and a loop
+     * starts. The loop extracts the instances of
+     * {@link org.opennms.netmgt.ping.Reply Reply}objects and then generates
+     * XML based event messages that are sent to eventd
+     * </p>
+     * 
+     */
+    public void run() {
+        Category log = ThreadCategory.getInstance(getClass());
+        if (log.isDebugEnabled())
+            log.debug("run: Thread Started");
 
-		for(;;)
-		{
-			// Check for exit!
-			//
-			synchronized(this)
-			{
-				if(m_status != RUNNING)
-					break;
-			}
+        synchronized (this) {
+            m_status = RUNNING;
+        }
 
-			// Get the next element from the queue
-			//
-			Reply r = null;
-			try
-			{
-				r = (Reply) m_replies.remove();
+        for (;;) {
+            // Check for exit!
+            //
+            synchronized (this) {
+                if (m_status != RUNNING)
+                    break;
+            }
 
-				if(log.isDebugEnabled())
-					log.debug("run: received next reply, " + m_replies.size() + " left in queue");
-			}
-			catch(InterruptedException ex)
-			{
-				log.debug("run: thread interrupted", ex);
-				break;
-			}
-			catch(FifoQueueException ex)
-			{
-				log.info("run: queue exception", ex);
-				break;
-			}
-			catch(ClassCastException ex)
-			{
-				log.warn("run: Invalid class type found in queue", ex);
-				continue;
-			}
+            // Get the next element from the queue
+            //
+            Reply r = null;
+            try {
+                r = (Reply) m_replies.remove();
 
-			// Make sure it's not null
-			//
-			if(r != null)
-			{
-				// Create an event
-				//
-				Event event = new Event();
-				event.setSource(EVENT_SOURCE_VALUE);
-				event.setUei(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
-				event.setInterface(r.getAddress().getHostAddress());
-				try
-				{
-					event.setHost(InetAddress.getLocalHost().getHostName());
-				}
-				catch(UnknownHostException uhE)
-				{
-					event.setHost("unresolved.host");
-					log.warn("Failed to resolve local hostname", uhE);
-				}
+                if (log.isDebugEnabled())
+                    log.debug("run: received next reply, " + m_replies.size() + " left in queue");
+            } catch (InterruptedException ex) {
+                log.debug("run: thread interrupted", ex);
+                break;
+            } catch (FifoQueueException ex) {
+                log.info("run: queue exception", ex);
+                break;
+            } catch (ClassCastException ex) {
+                log.warn("run: Invalid class type found in queue", ex);
+                continue;
+            }
 
-				event.setTime(EventConstants.formatToString(new java.util.Date()));
+            // Make sure it's not null
+            //
+            if (r != null) {
+                // Create an event
+                //
+                Event event = new Event();
+                event.setSource(EVENT_SOURCE_VALUE);
+                event.setUei(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
+                event.setInterface(r.getAddress().getHostAddress());
+                try {
+                    event.setHost(InetAddress.getLocalHost().getHostName());
+                } catch (UnknownHostException uhE) {
+                    event.setHost("unresolved.host");
+                    log.warn("Failed to resolve local hostname", uhE);
+                }
 
-				Parms parms = new Parms();
-				Parm rttParm = new Parm(); // the response time parm
-				rttParm.setParmName("RTT");
+                event.setTime(EventConstants.formatToString(new java.util.Date()));
 
-				Value v = new Value();
-				v.setType("int");
-				v.setContent(Long.toString(r.getPacket().getReceivedTime() - r.getPacket().getSentTime()));
-				rttParm.setValue(v);
-				parms.addParm(rttParm);
-				event.setParms(parms);
-			
+                Parms parms = new Parms();
+                Parm rttParm = new Parm(); // the response time parm
+                rttParm.setParmName("RTT");
 
-				try
-				{
-					EventIpcManagerFactory.getInstance().getManager().sendNow(event);
+                Value v = new Value();
+                v.setType("int");
+                v.setContent(Long.toString(r.getPacket().getReceivedTime() - r.getPacket().getSentTime()));
+                rttParm.setValue(v);
+                parms.addParm(rttParm);
+                event.setParms(parms);
 
-					if(log.isDebugEnabled())
-					{
-						log.debug("Sent event: " + EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
-					}
-				}
-				catch(Throwable t)
-				{
-					log.warn("run: unexpected throwable exception caught during send to middleware", t);
-				}
-			}
-		} // end for(;;)
-	
-		synchronized(this)
-		{
-			m_status = STOPPED;
-		}
-		if(log.isDebugEnabled())
-			log.debug("run: Thread exiting");
+                try {
+                    EventIpcManagerFactory.getInstance().getManager().sendNow(event);
 
-	} // end run
+                    if (log.isDebugEnabled()) {
+                        log.debug("Sent event: " + EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
+                    }
+                } catch (Throwable t) {
+                    log.warn("run: unexpected throwable exception caught during send to middleware", t);
+                }
+            }
+        } // end for(;;)
+
+        synchronized (this) {
+            m_status = STOPPED;
+        }
+        if (log.isDebugEnabled())
+            log.debug("run: Thread exiting");
+
+    } // end run
 }

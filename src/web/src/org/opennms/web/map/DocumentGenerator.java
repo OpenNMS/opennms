@@ -52,28 +52,32 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * The core of the SVG generation.  We get a Vector of MapNode
- * objects, do all our calculations to figure out how to draw the map,
- * where everything goes, and generate the SVG here.
- *
- * @author <A HREF="mailto:dglidden@opennms.org">Derek Glidden</A>
- * @author <A HREF="http://www.nksi.com/">NKSi</A>
+ * The core of the SVG generation. We get a Vector of MapNode objects, do all
+ * our calculations to figure out how to draw the map, where everything goes,
+ * and generate the SVG here.
+ * 
+ * @author <A HREF="mailto:dglidden@opennms.org">Derek Glidden </A>
+ * @author <A HREF="http://www.nksi.com/">NKSi </A>
  */
 
 public class DocumentGenerator {
 
     private int documentWidth;
+
     private int documentHeight;
 
     private Document document;
+
     private String namespace;
 
     private Vector nodes;
+
     private Hashtable iconNames;
 
     private ServletContext ctx;
 
     private String mapType;
+
     private String urlBase;
 
     /**
@@ -94,7 +98,7 @@ public class DocumentGenerator {
         this.iconNames = new Hashtable();
 
         // this maps from the "server type" to the filename for the
-        // SVG icon.  except that loading the icons from disk into
+        // SVG icon. except that loading the icons from disk into
         // the SVG we generate isn't working, so at the moment, this
         // is dead code.
         iconNames.put("infrastructure", "images/infrastructure.svg");
@@ -110,20 +114,18 @@ public class DocumentGenerator {
         // loadIcons();
     }
 
-
     /**
-     * log a message.  preferably use the ServletContext' log method,
-     * but if we don't have one, just go out to System.err
+     * log a message. preferably use the ServletContext' log method, but if we
+     * don't have one, just go out to System.err
      */
 
     private void log(String message) {
-        if(this.ctx == null) {
+        if (this.ctx == null) {
             System.err.println(message);
         } else {
             this.ctx.log(message);
         }
     }
-
 
     /**
      * set the Vector of nodes that we need to map
@@ -133,26 +135,23 @@ public class DocumentGenerator {
         this.nodes = nodes;
     }
 
-
     /**
-     * set the ServletContext so we can find the path to load icons
-     * from the filesystem directly and use the log method.
+     * set the ServletContext so we can find the path to load icons from the
+     * filesystem directly and use the log method.
      */
 
     public void setServletContext(ServletContext ctx) {
         this.ctx = ctx;
     }
 
-
     /**
-     * set the URL base so we can create absolute references to
-     * content embedded in our SVG
+     * set the URL base so we can create absolute references to content embedded
+     * in our SVG
      */
 
     public void setUrlBase(String base) {
         this.urlBase = base;
     }
-
 
     /**
      * set the type of map we want to draw: "tree" or "boring"
@@ -162,17 +161,15 @@ public class DocumentGenerator {
         this.mapType = type;
     }
 
-
     /**
-     * load the SVG icon data so we can embed it directly into the SVG
-     * we output instead of loading each icon as an external entity.
-     *
-     * this doesn't work right for some reason.  when the SVG is
-     * rendered, the icons are all messed up or don't show up.  For
-     * now, forget trying to load the icons as "symbol" elements
-     * inside of the SVG document and just refer to them as external
-     * entities...
-     *
+     * load the SVG icon data so we can embed it directly into the SVG we output
+     * instead of loading each icon as an external entity.
+     * 
+     * this doesn't work right for some reason. when the SVG is rendered, the
+     * icons are all messed up or don't show up. For now, forget trying to load
+     * the icons as "symbol" elements inside of the SVG document and just refer
+     * to them as external entities...
+     * 
      * When I have more time, I will try to fix this.
      */
 
@@ -184,7 +181,7 @@ public class DocumentGenerator {
 
             Enumeration e = iconNames.keys();
             System.err.println("Loading icons");
-            while(e.hasMoreElements()) {
+            while (e.hasMoreElements()) {
                 String icon = (String) e.nextElement();
                 String filename = (String) iconNames.get(icon);
                 String uriStr = "file:///opt/tomcat/webapps/batik/images/" + filename;
@@ -211,44 +208,45 @@ public class DocumentGenerator {
                 symbol.appendChild(clonedIcon);
                 this.document.getDocumentElement().appendChild(symbol);
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             log("IOException in DocumentGenerator.loadIcons()");
             log(e.toString());
-        } catch(Exception e) {
+        } catch (Exception e) {
             log("Exception in DocumentGenerator.loadIcons()");
             log(e.toString());
         }
     }
 
-
     /**
      * tell me if a given node is child of another node
-     *
-     * @param parent the parent node you are testing for the
-     * parent-child relationship
-     * @param child the child node you are testing for the
-     * parent-child relationship
+     * 
+     * @param parent
+     *            the parent node you are testing for the parent-child
+     *            relationship
+     * @param child
+     *            the child node you are testing for the parent-child
+     *            relationship
      */
 
     private boolean isChildNode(MapNode parent, MapNode child) {
         return parent.getNodeID() == child.getNodeParent();
     }
 
-
     /**
-     * find out how many immediate parent hosts for this
-     * host. (adapted from nagios code)
-     *
-     * @param child the child node for which you wish to find the number of
-     * parents
+     * find out how many immediate parent hosts for this host. (adapted from
+     * nagios code)
+     * 
+     * @param child
+     *            the child node for which you wish to find the number of
+     *            parents
      */
 
     private int numberOfImmediateParents(MapNode child) {
         int parents = 0;
         Iterator i = this.nodes.iterator();
-        while(i.hasNext()) {
+        while (i.hasNext()) {
             MapNode parent = (MapNode) i.next();
-            if(isChildNode(parent, child)) {
+            if (isChildNode(parent, child)) {
                 parents++;
             }
         }
@@ -256,43 +254,40 @@ public class DocumentGenerator {
         return parents;
     }
 
-
     /**
-     * figure out the max child width for the map. (adapted from
-     * nagios code)
-     *
-     * @param parent the parent node for which you wish to find the
-     * maximum width of children somewhere down its tree of child
-     * nodes
+     * figure out the max child width for the map. (adapted from nagios code)
+     * 
+     * @param parent
+     *            the parent node for which you wish to find the maximum width
+     *            of children somewhere down its tree of child nodes
      */
-
 
     private int findMaxChildWidth(MapNode parent) {
         int childWidth = 0;
         Iterator i = this.nodes.iterator();
-        while(i.hasNext()) {
+        while (i.hasNext()) {
             MapNode child = (MapNode) i.next();
-            if(isChildNode(parent, child)) {
+            if (isChildNode(parent, child)) {
                 childWidth += findMaxChildWidth(child);
             }
         }
 
-        if(childWidth == 0) {
+        if (childWidth == 0) {
             return 1;
         } else {
             return childWidth;
         }
     }
 
-
     /**
-     * calculate coordinates for all hosts, doing a balanced-tree
-     * drawing thingie.  (heavily adapted from nagios code.  in fact,
-     * it would be better to say this is based on the algorithms
-     * nagios uses than to say it's in any way based on that code...)
-     *
-     * @param parent the parent node for which you will start to
-     * calculate the rest of the tree coordinates
+     * calculate coordinates for all hosts, doing a balanced-tree drawing
+     * thingie. (heavily adapted from nagios code. in fact, it would be better
+     * to say this is based on the algorithms nagios uses than to say it's in
+     * any way based on that code...)
+     * 
+     * @param parent
+     *            the parent node for which you will start to calculate the rest
+     *            of the tree coordinates
      */
 
     private void calculateBalancedTreeCoordinates(MapNode parent) {
@@ -301,9 +296,9 @@ public class DocumentGenerator {
         int currentDrawingX = startDrawingX;
 
         Iterator i = this.nodes.iterator();
-        while(i.hasNext()) {
+        while (i.hasNext()) {
             MapNode n = (MapNode) i.next();
-            if(isChildNode(parent, n)) {
+            if (isChildNode(parent, n)) {
                 int thisWidth = findMaxChildWidth(n);
                 n.setX(currentDrawingX + ((thisWidth - 1) / 2));
                 n.setY(parent.getY() + 1);
@@ -314,11 +309,10 @@ public class DocumentGenerator {
         }
     }
 
-
     /**
-     * start the job of figuring out where on the screen to draw each
-     * host by starting to calculate the Balanced Tree coordinates
-     * from the root node (node "0")
+     * start the job of figuring out where on the screen to draw each host by
+     * starting to calculate the Balanced Tree coordinates from the root node
+     * (node "0")
      */
 
     private void calculateTreeHostCoordinates() {
@@ -330,10 +324,9 @@ public class DocumentGenerator {
         calculateBalancedTreeCoordinates(rootNode);
     }
 
-
     /**
-     * do a really stupid and simple "draw hosts left to right, 10
-     * columns by as many rows as necessary
+     * do a really stupid and simple "draw hosts left to right, 10 columns by as
+     * many rows as necessary
      */
 
     private void calculateBoringHostCoordinates() {
@@ -343,12 +336,12 @@ public class DocumentGenerator {
         // we start at 1 since the "pseudo-node" for the OpenNMS
         // monitor is inserted into the node array at 0 and will never
         // have any real status associated with it
-        for(int i = 1; i < this.nodes.size(); i++) {
+        for (int i = 1; i < this.nodes.size(); i++) {
             MapNode mn = (MapNode) this.nodes.get(i);
             mn.setX(col);
             mn.setY(row);
 
-            if(i % 8 == 0) {
+            if (i % 8 == 0) {
                 col = 0;
                 row++;
             } else {
@@ -359,9 +352,11 @@ public class DocumentGenerator {
 
     /**
      * draw a line from parent to child
-     *
-     * @param parent the starting point of the line
-     * @param child the ending point of the line
+     * 
+     * @param parent
+     *            the starting point of the line
+     * @param child
+     *            the ending point of the line
      */
 
     private void drawLine(MapNode parent, MapNode child) {
@@ -377,44 +372,42 @@ public class DocumentGenerator {
         root.appendChild(line);
     }
 
-
     /**
      * draw the lines between parents and children
      */
 
     private void drawLines(MapNode parent) {
         Iterator i = this.nodes.iterator();
-        while(i.hasNext()) {
+        while (i.hasNext()) {
             MapNode n = (MapNode) i.next();
-            if(isChildNode(parent, n)) {
+            if (isChildNode(parent, n)) {
                 drawLine(parent, n);
                 drawLines(n);
             }
         }
     }
 
-
     /**
      * generate SVG for each host
-     *
-     * @param loadIcons tell me whether I should generate file://
-     * references to load icons from the filesystem or generate URL
-     * references.  "true" will generate file:// references for when
-     * we are sending the output to the Batik Transcoder, while
-     * "false" will generate http:// references for when we are
-     * downloading the SVG directly into an external viewer.
+     * 
+     * @param loadIcons
+     *            tell me whether I should generate file:// references to load
+     *            icons from the filesystem or generate URL references. "true"
+     *            will generate file:// references for when we are sending the
+     *            output to the Batik Transcoder, while "false" will generate
+     *            http:// references for when we are downloading the SVG
+     *            directly into an external viewer.
      */
 
     private void drawHosts(boolean loadIcons) {
         Element root = this.document.getDocumentElement();
         Iterator i = this.nodes.iterator();
-        while(i.hasNext()) {
+        while (i.hasNext()) {
             MapNode n = (MapNode) i.next();
             Element host = createHostElement(n, loadIcons);
             root.appendChild(host);
         }
     }
-
 
     /**
      * figure out the width and height of the document
@@ -425,17 +418,17 @@ public class DocumentGenerator {
         int maxY = 0;
 
         Iterator i = this.nodes.iterator();
-        while(i.hasNext()) {
+        while (i.hasNext()) {
             MapNode n = (MapNode) i.next();
 
             int nodeX = n.getX();
             int nodeY = n.getY();
 
-            if(nodeX > maxX) {
+            if (nodeX > maxX) {
                 maxX = nodeX;
             }
 
-            if(nodeY > maxY) {
+            if (nodeY > maxY) {
                 maxY = nodeY;
             }
         }
@@ -445,15 +438,16 @@ public class DocumentGenerator {
     }
 
     /**
-     * create an SVG subtree, contained inside <g></g> elements, for a
-     * given node
-     *
-     * @param loadIcons tell me whether I should generate file://
-     * references to load icons from the filesystem or generate URL
-     * references.  "true" will generate file:// references for when
-     * we are sending the output to the Batik Transcoder, while
-     * "false" will generate http:// references for when we are
-     * downloading the SVG directly into an external viewer.
+     * create an SVG subtree, contained inside <g></g> elements, for a given
+     * node
+     * 
+     * @param loadIcons
+     *            tell me whether I should generate file:// references to load
+     *            icons from the filesystem or generate URL references. "true"
+     *            will generate file:// references for when we are sending the
+     *            output to the Batik Transcoder, while "false" will generate
+     *            http:// references for when we are downloading the SVG
+     *            directly into an external viewer.
      */
 
     private Element createHostElement(MapNode n, boolean loadIcons) {
@@ -475,7 +469,7 @@ public class DocumentGenerator {
             cModel = CategoryModel.getInstance();
             normalThreshold = cModel.getCategoryNormalThreshold(CategoryModel.OVERALL_AVAILABILITY_CATEGORY);
             warningThreshold = cModel.getCategoryWarningThreshold(CategoryModel.OVERALL_AVAILABILITY_CATEGORY);
-        } catch(Exception e) {
+        } catch (Exception e) {
             log("Exception in DocumentGenerator.createHostElement()");
             log("Exception in CategoryModel.getInstance()");
             log(e.toString());
@@ -493,7 +487,7 @@ public class DocumentGenerator {
         icon.setAttributeNS(null, "height", "40px");
         // icon.setAttributeNS(null, "xlink:href", "#" + n.getIconName());
 
-        if(loadIcons) {
+        if (loadIcons) {
             // we're using the Transcoder, so generate filesystem references
             String path = "file://" + ctx.getRealPath("map/images/svg/" + n.getIconName() + ".svg");
             icon.setAttributeNS(null, "xlink:href", path);
@@ -520,20 +514,16 @@ public class DocumentGenerator {
         rtc.setAttributeNS(null, "font-family", "sans-serif");
         rtc.setAttributeNS(null, "font-size", "12");
 
-        if(cModel != null) {
+        if (cModel != null) {
             try {
-                rtc.setAttributeNS(null,
-                        "fill",
-                        CategoryUtil.getCategoryColor(normalThreshold,
-                                warningThreshold,
-                                n.getRTC()));
-            } catch(IOException e) {
+                rtc.setAttributeNS(null, "fill", CategoryUtil.getCategoryColor(normalThreshold, warningThreshold, n.getRTC()));
+            } catch (IOException e) {
                 log("IOException in CategoryUtil.getCategoryColor");
                 log(e.toString());
-            } catch(org.exolab.castor.xml.MarshalException e) {
+            } catch (org.exolab.castor.xml.MarshalException e) {
                 log("org.exolab.castor.xml.MarshalException in CategoryUtil.getCategoryColor");
                 log(e.toString());
-            } catch(org.exolab.castor.xml.ValidationException e) {
+            } catch (org.exolab.castor.xml.ValidationException e) {
                 log("org.exolab.castor.xml.ValidationException in CategoryUtil.getCategoryColor");
                 log(e.toString());
             }
@@ -555,7 +545,7 @@ public class DocumentGenerator {
         status.setAttributeNS(null, "style", "text-anchor: middle");
         textString = this.document.createTextNode(n.getStatus());
 
-        if(n.getStatus().equals("Up")) {
+        if (n.getStatus().equals("Up")) {
             status.setAttributeNS(null, "fill", "green");
         } else {
             status.setAttributeNS(null, "fill", "red");
@@ -575,13 +565,12 @@ public class DocumentGenerator {
         return host;
     }
 
-
     /**
      * calculate the coordinates of each node in the map based on the map type
      */
 
     public void calculateHostCoordinates() {
-        if(this.mapType.equals("tree")) {
+        if (this.mapType.equals("tree")) {
             calculateTreeHostCoordinates();
         } else {
             calculateBoringHostCoordinates();
@@ -591,22 +580,22 @@ public class DocumentGenerator {
     }
 
     /**
-     * generate HTML that will output imagemap information for the map
-     * that corresponds to the HostDocument created later.  This is
-     * currently dependent on the NodeFactory generating the same
-     * nodes with the same parent/child relationship since the
-     * createJavascriptMap and createHostDocument each call it
-     * independently.  It would be A Good Idea(tm) to call it
-     * somewhere externally and, e.g. put it into a Session attribute
-     * or something along those lines so we don't run the risk of
-     * having the information change between method calls.  Will do
-     * later...
-     *
-     * @param mapname the "name" of the HTML element that will have
-     * the imagemap attached.  e.g. <map name="mapname">
-     * @param uri the page and parameters that will be created for the
-     * link for the given node.  e.g. "node.jsp?node=" will result in
-     * a link to "[urlbase]/node.jsp?node=[nodeid]"
+     * generate HTML that will output imagemap information for the map that
+     * corresponds to the HostDocument created later. This is currently
+     * dependent on the NodeFactory generating the same nodes with the same
+     * parent/child relationship since the createJavascriptMap and
+     * createHostDocument each call it independently. It would be A Good
+     * Idea(tm) to call it somewhere externally and, e.g. put it into a Session
+     * attribute or something along those lines so we don't run the risk of
+     * having the information change between method calls. Will do later...
+     * 
+     * @param mapname
+     *            the "name" of the HTML element that will have the imagemap
+     *            attached. e.g. <map name="mapname">
+     * @param uri
+     *            the page and parameters that will be created for the link for
+     *            the given node. e.g. "node.jsp?node=" will result in a link to
+     *            "[urlbase]/node.jsp?node=[nodeid]"
      */
 
     public String getImageMap(String mapname, String uri) {
@@ -614,7 +603,7 @@ public class DocumentGenerator {
 
         map.append("<map name=" + mapname + ">\n");
         Iterator i = nodes.iterator();
-        while(i.hasNext()) {
+        while (i.hasNext()) {
             MapNode mn = (MapNode) i.next();
             map.append("<area shape=\"rect\" ");
             map.append("coords=");
@@ -630,13 +619,13 @@ public class DocumentGenerator {
         return map.toString();
     }
 
-
     /**
-     * create a SVGDOMDocument containing all the elements for each
-     * host including icon, hostname, IP address and status.
-     *
-     * @param loadIcons tell me whether I should load the icons from
-     * the filesystem (true) or generate them as URLs (false)
+     * create a SVGDOMDocument containing all the elements for each host
+     * including icon, hostname, IP address and status.
+     * 
+     * @param loadIcons
+     *            tell me whether I should load the icons from the filesystem
+     *            (true) or generate them as URLs (false)
      */
 
     public Document getHostDocument(boolean loadIcons) {
@@ -647,7 +636,7 @@ public class DocumentGenerator {
 
         Element root = this.document.getDocumentElement();
 
-        if(this.mapType.equals("tree")) {
+        if (this.mapType.equals("tree")) {
             drawLines((MapNode) this.nodes.get(0));
         }
         drawHosts(loadIcons);
@@ -681,23 +670,20 @@ public class DocumentGenerator {
         return this.document;
     }
 
-
     /**
-     * get the width of the SVG created.  this is useful for embedding
-     * the SVG in an HTML page.  you'll need to call getHostDocument
-     * first so that there is a width and height to retrieve.
+     * get the width of the SVG created. this is useful for embedding the SVG in
+     * an HTML page. you'll need to call getHostDocument first so that there is
+     * a width and height to retrieve.
      */
 
     public int getDocumentWidth() {
         return this.documentWidth;
     }
 
-
     /**
-     * get the height of the SVG created.  this is useful for
-     * embedding the SVG in an HTML page.  you'll need to call
-     * getHostDocument first so that there is a width and height to
-     * retrieve.
+     * get the height of the SVG created. this is useful for embedding the SVG
+     * in an HTML page. you'll need to call getHostDocument first so that there
+     * is a width and height to retrieve.
      */
 
     public int getDocumentHeight() {
@@ -705,4 +691,3 @@ public class DocumentGenerator {
     }
 
 }
-

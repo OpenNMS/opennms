@@ -32,102 +32,110 @@
 
 package org.opennms.web.notification.bobject;
 
-
-
-/**A NotificationTarget representing another notifcation group
- * parsed from the notifications.xml.
+/**
+ * A NotificationTarget representing another notifcation group parsed from the
+ * notifications.xml.
  * 
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  * @version 1.1.1.1
-*/
-public class NotifTarget extends NotificationTarget
-{
-	/**The name of the notification
-	*/
-	private String m_notifName;
-	
-	/**The Notification object associated with this target
-	*/
-	private Notification m_notification;
-	
-	/**The overriding interval, takes precedence over the Notification interval.
-	*/
-	private String m_interval;
-	
-	/**Default Constructor
-	*/
-	public NotifTarget()
-	{
-	}
-	
-	/**Sets the name of the notification target
-	   @param name the name of the notification target to be set.
-	*/
-	public void setNotifName(String name)
-	{
-		m_notifName = name;
-	}
-	
-	/**Returns the name of the notification
-	   @return the name of the notification target.
-	*/
-	public String getNotifName()
-	{
-		return m_notifName;
-	}
-	
-	/**Sets the Notification object for this target
-	   @param notification the notification object to be set.
-	*/
-	public void setNotification(Notification notification)
-	{
-		m_notification = notification;
-	}
-	
-	/**Returns the notification for this target
-	  @return the notification object.
-	*/
-	public Notification getNotification()
-	{
-		return m_notification;
-	}
-	
-	/**Sets the overriding interval for this target
-	   @param interval the overriding interval to be set.
-	*/
-	public void setInterval(String interval)
-	{
-		m_interval = interval;
-	}
-	
-	/**Returns the interval to use for this target. If an overriding interval
-	   was set that will be returned, otherwise the interval from the Notification
-	   will be returned.
-	   @return the interval for this object.
-	*/
-	public String getInterval()
-	{
-		String interval = null;
-		
-		if (m_interval != null)
-		{
-			interval = m_interval;
-		}
-		else if (m_notification != null)
-		{
-			interval = m_notification.getInterval();
-		}
-		
-		return interval;
-	}
-	
-	/**Returns the type of the target
-	   @return the target type, compare to NotificationTask.TARGET_TYPE_NOTIF.
-	*/
-	public int getType()
-	{
-		return TARGET_TYPE_NOTIF;
-	}
+ */
+public class NotifTarget extends NotificationTarget {
+    /**
+     * The name of the notification
+     */
+    private String m_notifName;
+
+    /**
+     * The Notification object associated with this target
+     */
+    private Notification m_notification;
+
+    /**
+     * The overriding interval, takes precedence over the Notification interval.
+     */
+    private String m_interval;
+
+    /**
+     * Default Constructor
+     */
+    public NotifTarget() {
+    }
+
+    /**
+     * Sets the name of the notification target
+     * 
+     * @param name
+     *            the name of the notification target to be set.
+     */
+    public void setNotifName(String name) {
+        m_notifName = name;
+    }
+
+    /**
+     * Returns the name of the notification
+     * 
+     * @return the name of the notification target.
+     */
+    public String getNotifName() {
+        return m_notifName;
+    }
+
+    /**
+     * Sets the Notification object for this target
+     * 
+     * @param notification
+     *            the notification object to be set.
+     */
+    public void setNotification(Notification notification) {
+        m_notification = notification;
+    }
+
+    /**
+     * Returns the notification for this target
+     * 
+     * @return the notification object.
+     */
+    public Notification getNotification() {
+        return m_notification;
+    }
+
+    /**
+     * Sets the overriding interval for this target
+     * 
+     * @param interval
+     *            the overriding interval to be set.
+     */
+    public void setInterval(String interval) {
+        m_interval = interval;
+    }
+
+    /**
+     * Returns the interval to use for this target. If an overriding interval
+     * was set that will be returned, otherwise the interval from the
+     * Notification will be returned.
+     * 
+     * @return the interval for this object.
+     */
+    public String getInterval() {
+        String interval = null;
+
+        if (m_interval != null) {
+            interval = m_interval;
+        } else if (m_notification != null) {
+            interval = m_notification.getInterval();
+        }
+
+        return interval;
+    }
+
+    /**
+     * Returns the type of the target
+     * 
+     * @return the target type, compare to NotificationTask.TARGET_TYPE_NOTIF.
+     */
+    public int getType() {
+        return TARGET_TYPE_NOTIF;
+    }
 }

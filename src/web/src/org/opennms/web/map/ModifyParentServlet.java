@@ -46,16 +46,16 @@ import javax.servlet.http.HttpSession;
 import org.opennms.core.resource.Vault;
 
 /**
- * Update the NODE table in the database to set the NODEPARENTID
- * information to establish Parent-Child relationships between nodes.
- *
- * I'm sure that this is The Wrong Way to do this, but I don't know
- * exactly what The Right Way is.  There doesn't, in fact, seem to be
- * a Right Way.  So I'm doing this.  Which is ugly.  And Wrong.  But
- * it works.  At least I'm using connections from the Vault.
- *
- * @author <A HREF="mailto:dglidden@opennms.org">Derek Glidden</A>
- * @author <A HREF="http://www.nksi.com/">NKSi</A>
+ * Update the NODE table in the database to set the NODEPARENTID information to
+ * establish Parent-Child relationships between nodes.
+ * 
+ * I'm sure that this is The Wrong Way to do this, but I don't know exactly what
+ * The Right Way is. There doesn't, in fact, seem to be a Right Way. So I'm
+ * doing this. Which is ugly. And Wrong. But it works. At least I'm using
+ * connections from the Vault.
+ * 
+ * @author <A HREF="mailto:dglidden@opennms.org">Derek Glidden </A>
+ * @author <A HREF="http://www.nksi.com/">NKSi </A>
  */
 
 public class ModifyParentServlet extends HttpServlet {
@@ -65,7 +65,7 @@ public class ModifyParentServlet extends HttpServlet {
         String parentID = request.getParameter("parentID");
         String childID = request.getParameter("childID");
 
-        if(parentID == null || childID == null || childID.equals("0")) {
+        if (parentID == null || childID == null || childID.equals("0")) {
             // don't need to change anything
             session.setAttribute("message", "No changes made");
             response.sendRedirect("parent.jsp");
@@ -81,9 +81,9 @@ public class ModifyParentServlet extends HttpServlet {
                 session.setAttribute("message", "Changes successful");
                 Vault.releaseDbConnection(conn);
                 response.sendRedirect("parent.jsp");
-            } catch(SQLException e) {
+            } catch (SQLException e) {
                 throw new ServletException("SQLException in ModifyParentServlet: " + e.toString());
-            } catch(Exception e) {
+            } catch (Exception e) {
                 throw new ServletException("Exception in ModifyParentServlet: " + e.toString());
             }
         }

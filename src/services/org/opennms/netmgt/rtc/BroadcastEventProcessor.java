@@ -52,146 +52,131 @@ import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * BroadcastEventProcessor is responsible for receiving events from eventd
- * and queuing them to the data updaters.
- *
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * BroadcastEventProcessor is responsible for receiving events from eventd and
+ * queuing them to the data updaters.
+ * 
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class BroadcastEventProcessor
-	implements EventListener
-{
-	/**
-	 * The location where incoming events of interest
-	 * are enqueued
-	 */
-	private FifoQueue	m_updaterQ;
+final class BroadcastEventProcessor implements EventListener {
+    /**
+     * The location where incoming events of interest are enqueued
+     */
+    private FifoQueue m_updaterQ;
 
-	/**
-	 * Constructor 
-	 *
-	 * @param updaterQ	The queue where events of interest are added.
-	 */
-	BroadcastEventProcessor(FifoQueue updaterQ)
-	{
-		m_updaterQ = updaterQ;
-	}
+    /**
+     * Constructor
+     * 
+     * @param updaterQ
+     *            The queue where events of interest are added.
+     */
+    BroadcastEventProcessor(FifoQueue updaterQ) {
+        m_updaterQ = updaterQ;
+    }
 
-	/**
-	 * Create a list of UEIs of interest to the RTC and subscribe to eventd
-	 */
-	public void start()
-	{
-		List ueisOfInterest = new ArrayList();
+    /**
+     * Create a list of UEIs of interest to the RTC and subscribe to eventd
+     */
+    public void start() {
+        List ueisOfInterest = new ArrayList();
 
-		// add the nodeGainedService event
-		ueisOfInterest.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
+        // add the nodeGainedService event
+        ueisOfInterest.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
 
-		// add the nodeLostService event
-		ueisOfInterest.add(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
+        // add the nodeLostService event
+        ueisOfInterest.add(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
 
-		// add the interfaceDown event
-		ueisOfInterest.add(EventConstants.INTERFACE_DOWN_EVENT_UEI);
+        // add the interfaceDown event
+        ueisOfInterest.add(EventConstants.INTERFACE_DOWN_EVENT_UEI);
 
-		// add the nodeDown event
-		ueisOfInterest.add(EventConstants.NODE_DOWN_EVENT_UEI);
+        // add the nodeDown event
+        ueisOfInterest.add(EventConstants.NODE_DOWN_EVENT_UEI);
 
-		// add the nodeUp event
-		ueisOfInterest.add(EventConstants.NODE_UP_EVENT_UEI);
+        // add the nodeUp event
+        ueisOfInterest.add(EventConstants.NODE_UP_EVENT_UEI);
 
-		// add the interfaceUp event
-		ueisOfInterest.add(EventConstants.INTERFACE_UP_EVENT_UEI);
+        // add the interfaceUp event
+        ueisOfInterest.add(EventConstants.INTERFACE_UP_EVENT_UEI);
 
-		// add the nodeRegainedService event
-		ueisOfInterest.add(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI);
+        // add the nodeRegainedService event
+        ueisOfInterest.add(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI);
 
-		// add the serviceDeleted event
-		ueisOfInterest.add(EventConstants.SERVICE_DELETED_EVENT_UEI);
+        // add the serviceDeleted event
+        ueisOfInterest.add(EventConstants.SERVICE_DELETED_EVENT_UEI);
 
-		// add the interfaceReparented event
-		ueisOfInterest.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
+        // add the interfaceReparented event
+        ueisOfInterest.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
 
-		// add the rtc subscribe event
-		ueisOfInterest.add(EventConstants.RTC_SUBSCRIBE_EVENT_UEI);
+        // add the rtc subscribe event
+        ueisOfInterest.add(EventConstants.RTC_SUBSCRIBE_EVENT_UEI);
 
-		// add the rtc unsubscribe event
-		ueisOfInterest.add(EventConstants.RTC_UNSUBSCRIBE_EVENT_UEI);
+        // add the rtc unsubscribe event
+        ueisOfInterest.add(EventConstants.RTC_UNSUBSCRIBE_EVENT_UEI);
 
-		// add the asset info changed event
-		ueisOfInterest.add(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI);
-		
-		EventIpcManagerFactory.init();
-		EventIpcManagerFactory.getInstance().getManager().addEventListener(this, ueisOfInterest);
-	}
+        // add the asset info changed event
+        ueisOfInterest.add(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI);
 
+        EventIpcManagerFactory.init();
+        EventIpcManagerFactory.getInstance().getManager().addEventListener(this, ueisOfInterest);
+    }
 
-	/**
-	 * Unsubscribe from eventd
-	 */
-	public void close()
-	{
-		EventIpcManagerFactory.getInstance().getManager().removeEventListener(this);
-	}
+    /**
+     * Unsubscribe from eventd
+     */
+    public void close() {
+        EventIpcManagerFactory.getInstance().getManager().removeEventListener(this);
+    }
 
-	/**
-	 * This method is invoked by the EventIpcManager
-	 * when a new event is available for processing.
-	 * Each message is examined for its Universal Event Identifier
-	 * and the appropriate action is taking based on each UEI.
-	 *
-	 * @param event	The event 
-	 */
-	public void onEvent(Event event)
-	{
-		if (event == null)
-			return;
+    /**
+     * This method is invoked by the EventIpcManager when a new event is
+     * available for processing. Each message is examined for its Universal
+     * Event Identifier and the appropriate action is taking based on each UEI.
+     * 
+     * @param event
+     *            The event
+     */
+    public void onEvent(Event event) {
+        if (event == null)
+            return;
 
-		Category log = ThreadCategory.getInstance(getClass());
-		
-		if (log.isDebugEnabled())
-			log.debug("About to start processing recd. event");
+        Category log = ThreadCategory.getInstance(getClass());
 
-		try
-		{
-			// check on timertasks and events counter
-			RTCManager.getInstance().checkTimerTasksOnEventReceipt();
+        if (log.isDebugEnabled())
+            log.debug("About to start processing recd. event");
 
-			String uei = event.getUei();
-			if (uei == null)
-				return;
+        try {
+            // check on timertasks and events counter
+            RTCManager.getInstance().checkTimerTasksOnEventReceipt();
 
-			m_updaterQ.add(new DataUpdater(event));
+            String uei = event.getUei();
+            if (uei == null)
+                return;
 
-			if (log.isDebugEnabled())
-				log.debug("Event " + uei + " added to updater queue");
+            m_updaterQ.add(new DataUpdater(event));
 
-			// Reset the user timer
-			RTCManager.getInstance().resetUserTimer();
-		}
-		catch(InterruptedException ex)
-		{
-			log.error("Failed to process event", ex);
-			return;
-		}
-		catch(FifoQueueException ex)
-		{
-			log.error("Failed to process event", ex);
-			return;
-		}
-		catch(Throwable t)
-		{
-			log.error("Failed to process event", t);
-			return;
-		}
+            if (log.isDebugEnabled())
+                log.debug("Event " + uei + " added to updater queue");
 
-	} // end onEvent()
+            // Reset the user timer
+            RTCManager.getInstance().resetUserTimer();
+        } catch (InterruptedException ex) {
+            log.error("Failed to process event", ex);
+            return;
+        } catch (FifoQueueException ex) {
+            log.error("Failed to process event", ex);
+            return;
+        } catch (Throwable t) {
+            log.error("Failed to process event", t);
+            return;
+        }
 
-	/**
-	 * Return an id for this event listener
-	 */
-	public String getName()
-	{
-		return "RTCManager:BroadcastEventProcessor";
-	}
+    } // end onEvent()
+
+    /**
+     * Return an id for this event listener
+     */
+    public String getName() {
+        return "RTCManager:BroadcastEventProcessor";
+    }
 
 } // end class

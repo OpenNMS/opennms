@@ -51,160 +51,142 @@ import org.opennms.protocols.snmp.asn1.ASN1;
 //
 
 /**
- * Defines an SNMPv2 Party Clock. The Party Clock is currently
- * Obsolete, but included for backwards compatability
- *
- * @deprecated	Obsoleted in RFC 1902.
- *
- * @author	Brian Weaver <weave@oculan.com>
- * @version	1.1.1.1
+ * Defines an SNMPv2 Party Clock. The Party Clock is currently Obsolete, but
+ * included for backwards compatability
+ * 
+ * @deprecated Obsoleted in RFC 1902.
+ * 
+ * @author Brian Weaver <weave@oculan.com>
+ * @version 1.1.1.1
  */
-public class SnmpV2PartyClock extends SnmpUInt32
-{
-	/**
-	 * Used to define the serialization formation
-	 */
-	static final long serialVersionUID = -1875039304592596058L;
+public class SnmpV2PartyClock extends SnmpUInt32 {
+    /**
+     * Used to define the serialization formation
+     */
+    static final long serialVersionUID = -1875039304592596058L;
 
-	/**
-	 * The ASN.1 type for this object
-	 */
-	public static final byte ASNTYPE = (ASN1.APPLICATION | 0x07);
+    /**
+     * The ASN.1 type for this object
+     */
+    public static final byte ASNTYPE = (ASN1.APPLICATION | 0x07);
 
-	/**
-	 * The class constructor. Constructs a default object 
-	 * with the default value. See the super class constructor
-	 * for more infomation
-	 */
-	public SnmpV2PartyClock( )
-	{
-		super();
-	}
-	
-	/**
-	 * Creates a SNMPv2 Party Clock with the specific
-	 * value.
-	 *
-	 * @param value	The unsigned value for the party clock
-	 *
-	 */
-	public SnmpV2PartyClock(long value)
-	{
-		super(value);
-	}
+    /**
+     * The class constructor. Constructs a default object with the default
+     * value. See the super class constructor for more infomation
+     */
+    public SnmpV2PartyClock() {
+        super();
+    }
 
-	/**
-	 * Creates a SNMPv2 Party Clock with the specific
-	 * value.
-	 *
-	 * @param value The unsigned value for the party clock
-	 *
-	 */
-	public SnmpV2PartyClock(Long value)
-	{
-		super(value);
-	}
+    /**
+     * Creates a SNMPv2 Party Clock with the specific value.
+     * 
+     * @param value
+     *            The unsigned value for the party clock
+     * 
+     */
+    public SnmpV2PartyClock(long value) {
+        super(value);
+    }
 
-	/**
-	 * Class copy constructor. Constructs a duplicate party
-	 * clock.
-	 *
-	 * @param second	The party clock to duplicate
-	 *
-	 */
-	public SnmpV2PartyClock(SnmpV2PartyClock second)
-	{
-		super(second);
-	}
+    /**
+     * Creates a SNMPv2 Party Clock with the specific value.
+     * 
+     * @param value
+     *            The unsigned value for the party clock
+     * 
+     */
+    public SnmpV2PartyClock(Long value) {
+        super(value);
+    }
 
-	/**
-	 * Constructs a SNMPv2 Party Clock with the specified value.
-	 *
-	 * @param uint32 The super class value to initialize self with.
-	 *
-	 */
-	public SnmpV2PartyClock(SnmpUInt32 uint32)
-	{
-		super(uint32);
-	}
+    /**
+     * Class copy constructor. Constructs a duplicate party clock.
+     * 
+     * @param second
+     *            The party clock to duplicate
+     * 
+     */
+    public SnmpV2PartyClock(SnmpV2PartyClock second) {
+        super(second);
+    }
 
-	/**
-	 * Used to retreive the ASN.1 value for this object.
-	 *
-	 * @return The ASN.1 type.
-	 *
-	 */
-	public byte typeId()
-	{
-		return ASNTYPE;
-	}
+    /**
+     * Constructs a SNMPv2 Party Clock with the specified value.
+     * 
+     * @param uint32
+     *            The super class value to initialize self with.
+     * 
+     */
+    public SnmpV2PartyClock(SnmpUInt32 uint32) {
+        super(uint32);
+    }
 
-	/**
-	 * Creates and returns a duplicate object of self.
-	 *
-	 * @return A newly created copy of self.
-	 *
-	 */
-	public SnmpSyntax duplicate() 
-	{
-		return new SnmpV2PartyClock(this);
-	}
+    /**
+     * Used to retreive the ASN.1 value for this object.
+     * 
+     * @return The ASN.1 type.
+     * 
+     */
+    public byte typeId() {
+        return ASNTYPE;
+    }
 
-	/**
-	 * Creates and returns a duplicate object of self.
-	 *
-	 * @return A newly created copy of self.
-	 *
-	 */
-	public Object clone()
-	{
-		return new SnmpV2PartyClock(this);
-	}
+    /**
+     * Creates and returns a duplicate object of self.
+     * 
+     * @return A newly created copy of self.
+     * 
+     */
+    public SnmpSyntax duplicate() {
+        return new SnmpV2PartyClock(this);
+    }
 
-	/**
-	 * Returns the string representation of the object.
-	 *
-	 */
-	public String toString()
-	{
-		StringBuffer buf = new StringBuffer();
-		long time = getValue();
-		long tmp = 0;
-		if((tmp = (time / (24 * 3600 * 100))) > 0)
-		{
-			buf.append(tmp).append("d ");
-			time = time % (24 * 3600 * 100);
-		}
-		else 
-			buf.append("0d ");
+    /**
+     * Creates and returns a duplicate object of self.
+     * 
+     * @return A newly created copy of self.
+     * 
+     */
+    public Object clone() {
+        return new SnmpV2PartyClock(this);
+    }
 
-		if((tmp = time / (3600 * 100)) > 0)
-		{
-			buf.append(tmp).append("h ");
-			time = time % (3600 * 100);
-		}
-		else
-			buf.append("0h ");
+    /**
+     * Returns the string representation of the object.
+     * 
+     */
+    public String toString() {
+        StringBuffer buf = new StringBuffer();
+        long time = getValue();
+        long tmp = 0;
+        if ((tmp = (time / (24 * 3600 * 100))) > 0) {
+            buf.append(tmp).append("d ");
+            time = time % (24 * 3600 * 100);
+        } else
+            buf.append("0d ");
 
-		if((tmp = time / 6000) > 0)
-		{
-			buf.append(tmp).append("m ");
-			time = time % 6000;
-		}
-		else
-			buf.append("0m ");
+        if ((tmp = time / (3600 * 100)) > 0) {
+            buf.append(tmp).append("h ");
+            time = time % (3600 * 100);
+        } else
+            buf.append("0h ");
 
-		if((tmp = time / 100) > 0)
-		{
-			buf.append(tmp).append("s ");
-			time = time % 100;
-		}
-		else 
-			buf.append("0s ");
+        if ((tmp = time / 6000) > 0) {
+            buf.append(tmp).append("m ");
+            time = time % 6000;
+        } else
+            buf.append("0m ");
 
-		buf.append(tmp*10).append("ms");
+        if ((tmp = time / 100) > 0) {
+            buf.append(tmp).append("s ");
+            time = time % 100;
+        } else
+            buf.append("0s ");
 
-		return buf.toString();
-		
-	}
+        buf.append(tmp * 10).append("ms");
+
+        return buf.toString();
+
+    }
 }

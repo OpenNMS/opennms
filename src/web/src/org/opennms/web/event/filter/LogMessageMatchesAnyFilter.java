@@ -40,89 +40,89 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 /**
- * @author <A HREF="mailto:jamesz@opennms.com">James Zuo</A>
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
  */
-public class LogMessageMatchesAnyFilter extends Object implements Filter 
-{
+public class LogMessageMatchesAnyFilter extends Object implements Filter {
     public static final String TYPE = "msgmatchany";
+
     protected String[] substrings;
 
     /**
-     * @param stringList a space-delimited list of search substrings 
+     * @param stringList
+     *            a space-delimited list of search substrings
      */
     public LogMessageMatchesAnyFilter(String stringList) {
-        if( stringList == null ) {
-            throw new IllegalArgumentException("Cannot take null parameters.");            
-        }
-        
-        StringTokenizer tokenizer = new StringTokenizer(stringList);
-        ArrayList list = new ArrayList();
-        
-        while(tokenizer.hasMoreTokens()) {
-            list.add(tokenizer.nextToken());
-        }
-            
-        if(list.size() == 0) {
-            throw new IllegalArgumentException("Cannot take a zero-length list of substrings");
-        }
-        
-        this.substrings = (String[])list.toArray(new String[list.size()]);
-    }    
-    
-    public LogMessageMatchesAnyFilter(String[] substrings) {
-        if( substrings == null ) {
+        if (stringList == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
-        
+
+        StringTokenizer tokenizer = new StringTokenizer(stringList);
+        ArrayList list = new ArrayList();
+
+        while (tokenizer.hasMoreTokens()) {
+            list.add(tokenizer.nextToken());
+        }
+
+        if (list.size() == 0) {
+            throw new IllegalArgumentException("Cannot take a zero-length list of substrings");
+        }
+
+        this.substrings = (String[]) list.toArray(new String[list.size()]);
+    }
+
+    public LogMessageMatchesAnyFilter(String[] substrings) {
+        if (substrings == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+
         this.substrings = substrings;
     }
-    
+
     public String getSql() {
         StringBuffer buffer = new StringBuffer(" (");
-        
+
         buffer.append("UPPER(EVENTLOGMSG) LIKE '%");
         buffer.append(getQueryString().toUpperCase());
         buffer.append("%'");
         buffer.append(")");
-        
+
         return buffer.toString();
     }
-    
+
     public String getDescription() {
-        return( TYPE + "=" + this.getQueryString() );
+        return (TYPE + "=" + this.getQueryString());
     }
-    
-    public String getTextDescription(){
-        StringBuffer buffer = new StringBuffer("message containing \"");        
+
+    public String getTextDescription() {
+        StringBuffer buffer = new StringBuffer("message containing \"");
         buffer.append(getQueryString());
         buffer.append("\"");
-                
+
         return buffer.toString();
     }
 
     public String toString() {
-        return( "<LogMessageMatchesAnyFilter: " + this.getDescription() + ">" );
+        return ("<LogMessageMatchesAnyFilter: " + this.getDescription() + ">");
     }
 
     public String[] getSubstrings() {
-        return( this.substrings );
+        return (this.substrings);
     }
 
-    public boolean equals( Object obj ) {
-        return( this.toString().equals( obj.toString() ));
+    public boolean equals(Object obj) {
+        return (this.toString().equals(obj.toString()));
     }
-    
+
     public String getQueryString() {
-        StringBuffer buffer = new StringBuffer();        
+        StringBuffer buffer = new StringBuffer();
         buffer.append(this.substrings[0]);
 
-        for(int i=1; i < this.substrings.length; i++ ) {
+        for (int i = 1; i < this.substrings.length; i++) {
             buffer.append(" ");
             buffer.append(this.substrings[i]);
         }
-                
-        return( buffer.toString() );
-    }
-    
-}
 
+        return (buffer.toString());
+    }
+
+}

@@ -32,132 +32,115 @@
 
 package org.opennms.web.element;
 
+public class Node {
+    int m_nodeId;
 
-public class Node
-{
-        int     m_nodeId;
-        int     m_nodeParent;
-        String  m_label;
-        String  m_dpname;
-        String  m_nodeCreateTime;
-        String  m_nodeSysId;
-        String  m_nodeSysName;
-        String  m_nodeSysDescr;
-        String  m_nodeSysLocn;
-        String  m_nodeSysContact;
-        char    m_nodeType;
-	String	m_operatingSystem;
-        
-        /* package-protected so only the NetworkElementFactory can instantiate */
-        Node()
-        {
-        }
+    int m_nodeParent;
 
-        /* package-protected so only the NetworkElementFactory can instantiate */
-        Node(   int nodeId,
-                int nodeParent,
-                String label,
-                String dpname,
-                String nodeCreateTime,
-                String nodeSysId,
-                String nodeSysName,
-                String nodeSysDescr,
-                String nodeSysLocn,
-                String nodeSysContact,
-                char nodeType,
-		String operatingSystem)
-        {
-                m_nodeId = nodeId;
-                m_nodeParent = nodeParent;
-                m_label = label;
-                m_dpname = dpname;
-                m_nodeCreateTime = nodeCreateTime; 
-                m_nodeSysId = nodeSysId;
-                m_nodeSysName = nodeSysName;
-                m_nodeSysDescr = nodeSysDescr;
-                m_nodeSysLocn = nodeSysLocn;
-                m_nodeSysContact = nodeSysContact;
-                m_nodeType = nodeType;
-		m_operatingSystem = operatingSystem;
-        }
+    String m_label;
 
-        public int getNodeId()
-        {
-                return m_nodeId;
-        }
+    String m_dpname;
 
-        public int getNodeParent()
-        {
-                return m_nodeParent;
-        }
+    String m_nodeCreateTime;
 
-        public String getLabel()
-        {
-                return m_label;
-        }
+    String m_nodeSysId;
 
-        public String getDpName()
-        {
-                return m_dpname;
-        }
+    String m_nodeSysName;
 
-        public String getNodeCreateTime()
-        {
-                return m_nodeCreateTime;
-        }
+    String m_nodeSysDescr;
 
-        public String getNodeSysId()
-        {
-                return m_nodeSysId;
-        }
+    String m_nodeSysLocn;
 
-        public String getNodeSysName()
-        {
-                return htmlify(m_nodeSysName);
-        }
+    String m_nodeSysContact;
 
-        public String getNodeSysDescr()
-        {
-                return htmlify(m_nodeSysDescr);
-        }
+    char m_nodeType;
 
-        public String getNodeSysLocn()
-        {
-                return htmlify(m_nodeSysLocn);
-        }
+    String m_operatingSystem;
 
-        public String getNodeSysContact()
-        {
-                return htmlify(m_nodeSysContact);
-        }
+    /* package-protected so only the NetworkElementFactory can instantiate */
+    Node() {
+    }
 
-        public char getNodeType()
-        {
-                return m_nodeType;
-        }
+    /* package-protected so only the NetworkElementFactory can instantiate */
+    Node(int nodeId, int nodeParent, String label, String dpname, String nodeCreateTime, String nodeSysId, String nodeSysName, String nodeSysDescr, String nodeSysLocn, String nodeSysContact, char nodeType, String operatingSystem) {
+        m_nodeId = nodeId;
+        m_nodeParent = nodeParent;
+        m_label = label;
+        m_dpname = dpname;
+        m_nodeCreateTime = nodeCreateTime;
+        m_nodeSysId = nodeSysId;
+        m_nodeSysName = nodeSysName;
+        m_nodeSysDescr = nodeSysDescr;
+        m_nodeSysLocn = nodeSysLocn;
+        m_nodeSysContact = nodeSysContact;
+        m_nodeType = nodeType;
+        m_operatingSystem = operatingSystem;
+    }
 
-        public String getOperatingSystem()
-        {
-                return htmlify(m_operatingSystem);
-        }
+    public int getNodeId() {
+        return m_nodeId;
+    }
 
-        public String toString()
-        {
-                StringBuffer str = new StringBuffer("Node Id = " + m_nodeId + "\n" );
-                str.append("Node Parent = " + m_nodeParent + "\n" );
-                str.append("Node Create Time = " + m_nodeCreateTime + "\n" );
-                str.append("Dp name = " + m_dpname + "\n" );
-                str.append("Node Sys Id = " + m_nodeSysId + "\n" );
-                str.append("Node Sys Name = " + m_nodeSysName + "\n" );
-                str.append("Node Sys Descr = " + m_nodeSysDescr + "\n" );
-                str.append("Node Sys Locn = " + m_nodeSysLocn + "\n" );
-                str.append("Node Sys Contact = " + m_nodeSysContact + "\n" );
-                str.append("Node Sys Type = " + m_nodeType + "\n" );
-                str.append("Operating System = " + m_operatingSystem + "\n" );
-                return str.toString();
-        }
-        
-        private String htmlify(String input) {
-            return (input == null ? null : input.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
-        }
+    public int getNodeParent() {
+        return m_nodeParent;
+    }
+
+    public String getLabel() {
+        return m_label;
+    }
+
+    public String getDpName() {
+        return m_dpname;
+    }
+
+    public String getNodeCreateTime() {
+        return m_nodeCreateTime;
+    }
+
+    public String getNodeSysId() {
+        return m_nodeSysId;
+    }
+
+    public String getNodeSysName() {
+        return htmlify(m_nodeSysName);
+    }
+
+    public String getNodeSysDescr() {
+        return htmlify(m_nodeSysDescr);
+    }
+
+    public String getNodeSysLocn() {
+        return htmlify(m_nodeSysLocn);
+    }
+
+    public String getNodeSysContact() {
+        return htmlify(m_nodeSysContact);
+    }
+
+    public char getNodeType() {
+        return m_nodeType;
+    }
+
+    public String getOperatingSystem() {
+        return htmlify(m_operatingSystem);
+    }
+
+    public String toString() {
+        StringBuffer str = new StringBuffer("Node Id = " + m_nodeId + "\n");
+        str.append("Node Parent = " + m_nodeParent + "\n");
+        str.append("Node Create Time = " + m_nodeCreateTime + "\n");
+        str.append("Dp name = " + m_dpname + "\n");
+        str.append("Node Sys Id = " + m_nodeSysId + "\n");
+        str.append("Node Sys Name = " + m_nodeSysName + "\n");
+        str.append("Node Sys Descr = " + m_nodeSysDescr + "\n");
+        str.append("Node Sys Locn = " + m_nodeSysLocn + "\n");
+        str.append("Node Sys Contact = " + m_nodeSysContact + "\n");
+        str.append("Node Sys Type = " + m_nodeType + "\n");
+        str.append("Operating System = " + m_operatingSystem + "\n");
+        return str.toString();
+    }
+
+    private String htmlify(String input) {
+        return (input == null ? null : input.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
+    }
 }

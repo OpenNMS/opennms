@@ -33,36 +33,28 @@
 //
 package org.opennms.netmgt.outage.jmx;
 
-public class Outaged
-	implements OutagedMBean
-{
-	public void init()
-	{
-		org.opennms.netmgt.outage.OutageManager.getInstance().init();
-	}
+public class Outaged implements OutagedMBean {
+    public void init() {
+        org.opennms.netmgt.outage.OutageManager.getInstance().init();
+    }
 
-	public void start()
-	{
-		org.opennms.netmgt.outage.OutageManager.getInstance().start();
-	}
+    public void start() {
+        org.opennms.netmgt.outage.OutageManager.getInstance().start();
+    }
 
-	public void stop()
-	{
-		org.opennms.netmgt.outage.OutageManager.getInstance().stop();
-	}
+    public void stop() {
+        org.opennms.netmgt.outage.OutageManager.getInstance().stop();
+    }
 
-	public int getStatus()
-	{
-		return org.opennms.netmgt.outage.OutageManager.getInstance().getStatus();
-	}
+    public int getStatus() {
+        return org.opennms.netmgt.outage.OutageManager.getInstance().getStatus();
+    }
 
-	public String status()
-	{
-		return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-	}
+    public String status() {
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
 
-	public String getStatusText()
-	{
-		return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-	}
+    public String getStatusText() {
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
 }

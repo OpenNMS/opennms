@@ -43,61 +43,62 @@ import java.util.Date;
 import java.util.StringTokenizer;
 
 /**
- * <P>Runs external executables, optionally under a watched thread.
+ * <P>
+ * Runs external executables, optionally under a watched thread.
  * 
  * In addition, probably the most useful feature of ExecRunner is using it to
  * run a command-line program and obtain its stdout and stderr results in two
- * strings.  This is done with exec(String) - see that method for an example.
- *
- * With acknowledgements to Michael C. Daconta, author of "Java Pitfalls,
- * Time Saving Solutions, and Workarounds to Improve Programs." and his
- * article in JavaWorld "When Runtime.exec() Won't".</P>
- *
- * @author <a href="mailto:smccrory@users.sourceforge.net">Scott McCrory</a>.
+ * strings. This is done with exec(String) - see that method for an example.
+ * 
+ * With acknowledgements to Michael C. Daconta, author of "Java Pitfalls, Time
+ * Saving Solutions, and Workarounds to Improve Programs." and his article in
+ * JavaWorld "When Runtime.exec() Won't".
+ * </P>
+ * 
+ * @author <a href="mailto:smccrory@users.sourceforge.net">Scott McCrory </a>.
  * @version CVS $Id$
  */
 public class ExecRunner {
 
-    /** Win NT/2K/MEPro require cmd.exe to run programs **/
+    /** Win NT/2K/MEPro require cmd.exe to run programs * */
     private static final String WINDOWS_NT_2000_COMMAND_1 = "cmd.exe";
 
-    /** Win NT/2K/MEPro require the /C to specify what to run **/
+    /** Win NT/2K/MEPro require the /C to specify what to run * */
     private static final String WINDOWS_NT_2000_COMMAND_2 = "/C";
 
-    /** Win 9X/MEHome require cmd.exe to run programs **/
+    /** Win 9X/MEHome require cmd.exe to run programs * */
     private static final String WINDOWS_9X_ME_COMMAND_1 = "command.exe";
 
-    /** Win 9X/MEHome require the /C to specify what to run **/
+    /** Win 9X/MEHome require the /C to specify what to run * */
     private static final String WINDOWS_9X_ME_COMMAND_2 = "/C";
 
-    /** String to send to STDERR if program exceeds max run time **/
-    private static final String MAX_RUN_TIME_EXCEEDED_STRING =
-    "MAX_RUN_TIME_EXCEEDED";
+    /** String to send to STDERR if program exceeds max run time * */
+    private static final String MAX_RUN_TIME_EXCEEDED_STRING = "MAX_RUN_TIME_EXCEEDED";
 
-    /** String to capture STDOUT **/
+    /** String to capture STDOUT * */
     private String out = new String();
 
-    /** String to capture STDERR **/
+    /** String to capture STDERR * */
     private String err = new String();
 
-    /** Default max run time (in seconds) **/
+    /** Default max run time (in seconds) * */
     private int maxRunTimeSecs = 0;
 
-    /** Flag to indicate if we've exceeded max run time **/
+    /** Flag to indicate if we've exceeded max run time * */
     private boolean maxRunTimeExceeded = false;
 
-    /** The name of this class for logging **/
+    /** The name of this class for logging * */
     private static final String CLASS_NAME = "ExecRunner";
 
-    /** The version of this class (filled in by CVS) **/
+    /** The version of this class (filled in by CVS) * */
     private static final String VERSION = "CVS $Revision$";
 
-    /** Number of miliseconds to wait between polling watched thread **/
+    /** Number of miliseconds to wait between polling watched thread * */
     private static final int POLL_DELAY_MS = 100;
 
     /**
      * Basic ExecRunner constructor.
-     *
+     * 
      */
     public ExecRunner() {
         super();
@@ -105,30 +106,33 @@ public class ExecRunner {
 
     /**
      * ExecRunner constructor which also conveniently runs exec(String).
-     *
-     * @param command The program or command to run
-     * @throws ExceptionInInitializerError thrown if a problem occurs
+     * 
+     * @param command
+     *            The program or command to run
+     * @throws ExceptionInInitializerError
+     *             thrown if a problem occurs
      */
     public ExecRunner(String command) throws ExceptionInInitializerError {
         this();
         try {
             exec(command);
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             throw new ExceptionInInitializerError(ioe.getMessage());
-        }
-        catch (InterruptedException inte) {
+        } catch (InterruptedException inte) {
             throw new ExceptionInInitializerError(inte.getMessage());
         }
 
     }
 
     /**
-     * We override the <code>clone</code> method here to prevent cloning of our class.
-     *
-     * @throws CloneNotSupportedException To indicate cloning is not allowed
-     * @return Nothing ever really returned since we throw a CloneNotSupportedException
-     **/
+     * We override the <code>clone</code> method here to prevent cloning of
+     * our class.
+     * 
+     * @throws CloneNotSupportedException
+     *             To indicate cloning is not allowed
+     * @return Nothing ever really returned since we throw a
+     *         CloneNotSupportedException
+     */
     public final Object clone() throws CloneNotSupportedException {
 
         throw new java.lang.CloneNotSupportedException();
@@ -136,35 +140,37 @@ public class ExecRunner {
     }
 
     /**
-     * The <B>exec(String)</B> method runs a process inside of a watched thread.
-     * It returns the client's exit code and feeds its STDOUT and STDERR to
-     * ExecRunner's out and err strings, where you then use getOutString()
-     * and getErrString() to obtain these values.  Example:
-     *
+     * The <B>exec(String) </B> method runs a process inside of a watched
+     * thread. It returns the client's exit code and feeds its STDOUT and STDERR
+     * to ExecRunner's out and err strings, where you then use getOutString()
+     * and getErrString() to obtain these values. Example:
+     * 
      * <pre>
+     * 
      * // Execute the program and grab the results
      * try {
      *     ExecRunner er = new ExecRunner();
      *     er.setMaxRunTimeSecs(5);
-     *     er.exec("ls -l");
+     *     er.exec(&quot;ls -l&quot;);
      *     if (!er.getMaxRunTimeExceeded()) {
      *         out = er.getOutString();
      *         err = er.getErrString();
+     *     } else {
+     *         System.out.println(&quot;Maximum run time exceeded!&quot;);
      *     }
-     *     else {
-     *         System.out.println("Maximum run time exceeded!");
-     *     }
-     * }
-     * catch (Exception e) {
-     *     System.out.println("Error executing " + program + ": " + e.getMessage());
+     * } catch (Exception e) {
+     *     System.out.println(&quot;Error executing &quot; + program + &quot;: &quot; + e.getMessage());
      *     continue;
      * }
      * </pre>
-     *
+     * 
      * @return The command's return code
-     * @param command The program or command to run
-     * @throws IOException thrown if a problem occurs
-     * @throws InterruptedException thrown if a problem occurs
+     * @param command
+     *            The program or command to run
+     * @throws IOException
+     *             thrown if a problem occurs
+     * @throws InterruptedException
+     *             thrown if a problem occurs
      */
     public int exec(String command) throws IOException, InterruptedException {
 
@@ -185,19 +191,20 @@ public class ExecRunner {
 
     /**
      * Convenience method for calling exec with OutputStreams.
-     *
+     * 
      * @return The command's return code
-     * @param command The program or command to run
-     * @param stdoutStream java.io.OutputStream 
-     * @param stderrStream java.io.OutputStream
-     * @throws IOException thrown if a problem occurs
-     * @throws InterruptedException thrown if a problem occurs
-     **/
-    public int exec(
-                   String command,
-                   OutputStream stdoutStream,
-                   OutputStream stderrStream)
-    throws IOException, InterruptedException {
+     * @param command
+     *            The program or command to run
+     * @param stdoutStream
+     *            java.io.OutputStream
+     * @param stderrStream
+     *            java.io.OutputStream
+     * @throws IOException
+     *             thrown if a problem occurs
+     * @throws InterruptedException
+     *             thrown if a problem occurs
+     */
+    public int exec(String command, OutputStream stdoutStream, OutputStream stderrStream) throws IOException, InterruptedException {
 
         PrintWriter pwOut = new PrintWriter(stdoutStream, true);
         PrintWriter pwErr = new PrintWriter(stderrStream, true);
@@ -207,27 +214,28 @@ public class ExecRunner {
     }
 
     /**
-     * The <code>exec(String, PrintWriter, PrintWriter)</code> method runs
-     * a process inside of a watched thread.  It returns the client's exit code
-     * and feeds its STDOUT and STDERR to the passed-in streams.
-     *
+     * The <code>exec(String, PrintWriter, PrintWriter)</code> method runs a
+     * process inside of a watched thread. It returns the client's exit code and
+     * feeds its STDOUT and STDERR to the passed-in streams.
+     * 
      * @return The command's return code
-     * @param command The program or command to run
-     * @param stdoutWriter java.io.PrintWriter 
-     * @param stderrWriter java.io.PrintWriter 
-     * @throws IOException thrown if a problem occurs
-     * @throws InterruptedException thrown if a problem occurs
-     **/
-    public int exec(
-                   String command,
-                   PrintWriter stdoutWriter,
-                   PrintWriter stderrWriter)
-    throws IOException, InterruptedException {
+     * @param command
+     *            The program or command to run
+     * @param stdoutWriter
+     *            java.io.PrintWriter
+     * @param stderrWriter
+     *            java.io.PrintWriter
+     * @throws IOException
+     *             thrown if a problem occurs
+     * @throws InterruptedException
+     *             thrown if a problem occurs
+     */
+    public int exec(String command, PrintWriter stdoutWriter, PrintWriter stderrWriter) throws IOException, InterruptedException {
 
         // Default exit value is non-zero to indicate a problem.
         int exitVal = 1;
 
-        ////////////////////////////////////////////////////////////////
+        // //////////////////////////////////////////////////////////////
         Runtime rt = Runtime.getRuntime();
         Process proc;
         String[] cmd = null;
@@ -237,25 +245,20 @@ public class ExecRunner {
         long startTimeMs = startTime.getTime();
         long maxTimeMs = startTimeMs + (maxRunTimeSecs * 1000);
 
-        ////////////////////////////////////////////////////////////////
+        // //////////////////////////////////////////////////////////////
         // First determine the OS to build the right command string
         String osName = System.getProperty("os.name");
         if (osName.equals("Windows NT") || osName.equals("Windows 2000")) {
             cmd = new String[3];
             cmd[0] = WINDOWS_NT_2000_COMMAND_1;
             cmd[1] = WINDOWS_NT_2000_COMMAND_2;
-            cmd[   2]    =    command;
-        }
-        else if (
-                osName.equals("Windows 95")
-                || osName.equals("Windows 98")
-                || osName.equals("Windows ME")) {
+            cmd[2] = command;
+        } else if (osName.equals("Windows 95") || osName.equals("Windows 98") || osName.equals("Windows ME")) {
             cmd = new String[3];
             cmd[0] = WINDOWS_9X_ME_COMMAND_1;
             cmd[1] = WINDOWS_9X_ME_COMMAND_2;
             cmd[2] = command;
-        }
-        else {
+        } else {
             // Linux (and probably other *nixes) prefers to be called
             // with each argument supplied separately, so we first
             // Tokenize it across spaces as the boundary.
@@ -264,24 +267,21 @@ public class ExecRunner {
             int token = 0;
             while (st.hasMoreTokens()) {
                 String tokenString = st.nextToken();
-                //System.out.println(tokenString);
+                // System.out.println(tokenString);
                 cmd[token++] = tokenString;
             }
         }
 
         // Execute the command and start the two output gobblers
         if (cmd != null && cmd.length > 0) {
-            //System.out.println("**Checkpoint** :" + cmd.length);
+            // System.out.println("**Checkpoint** :" + cmd.length);
             proc = rt.exec(cmd);
-        }
-        else {
+        } else {
             throw new IOException("Insufficient commands!");
         }
 
-        StreamGobbler outputGobbler =
-        new StreamGobbler(proc.getInputStream(), stdoutWriter);
-        StreamGobbler errorGobbler =
-        new StreamGobbler(proc.getErrorStream(), stderrWriter);
+        StreamGobbler outputGobbler = new StreamGobbler(proc.getInputStream(), stdoutWriter);
+        StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), stderrWriter);
         outputGobbler.start();
         errorGobbler.start();
 
@@ -292,8 +292,7 @@ public class ExecRunner {
             try {
                 exitVal = proc.exitValue();
                 break;
-            }
-            catch (IllegalThreadStateException e) {
+            } catch (IllegalThreadStateException e) {
 
                 // If we get this exception, then the process isn't
                 // done executing and we determine if our time is up.
@@ -302,7 +301,8 @@ public class ExecRunner {
                     Date endTime = new Date();
                     long endTimeMs = endTime.getTime();
                     if (endTimeMs > maxTimeMs) {
-                        // Time's up - kill the process and the gobblers and return
+                        // Time's up - kill the process and the gobblers and
+                        // return
                         proc.destroy();
                         maxRunTimeExceeded = true;
                         stderrWriter.println(MAX_RUN_TIME_EXCEEDED_STRING);
@@ -310,9 +310,9 @@ public class ExecRunner {
                         errorGobbler.quit();
                         return exitVal;
 
-                    }
-                    else {
-                        // Time is not up yet so wait 100 ms before testing again
+                    } else {
+                        // Time is not up yet so wait 100 ms before testing
+                        // again
                         Thread.sleep(POLL_DELAY_MS);
                     }
 
@@ -322,12 +322,12 @@ public class ExecRunner {
 
         }
 
-        ////////////////////////////////////////////////////////////////
+        // //////////////////////////////////////////////////////////////
         // Wait for output gobblers to finish forwarding the output
         while (outputGobbler.isAlive() || errorGobbler.isAlive()) {
         }
 
-        ////////////////////////////////////////////////////////////////
+        // //////////////////////////////////////////////////////////////
         // All done, flush the streams and return the exit value
         stdoutWriter.flush();
         stderrWriter.flush();
@@ -337,7 +337,7 @@ public class ExecRunner {
 
     /**
      * Returns the error string if exec(String) was invoked.
-     *
+     * 
      * @return The error string if exec(String) was invoked.
      */
     public String getErrString() {
@@ -346,8 +346,9 @@ public class ExecRunner {
 
     /**
      * Returns whether the maximum runtime was exceeded or not.
-     *
-     * @return boolean indicating whether the maximum runtime was exceeded or not.
+     * 
+     * @return boolean indicating whether the maximum runtime was exceeded or
+     *         not.
      */
     public boolean isMaxRunTimeExceeded() {
         return maxRunTimeExceeded;
@@ -355,7 +356,7 @@ public class ExecRunner {
 
     /**
      * Returns the maximum run time in seconds for this object.
-     *
+     * 
      * @return the maximum run time in seconds for this object.
      */
     public int getMaxRunTimeSecs() {
@@ -364,7 +365,7 @@ public class ExecRunner {
 
     /**
      * Returns the output string if exec(String) was invoked.
-     *
+     * 
      * @return The output string if exec(String) was invoked.
      */
     public String getOutString() {
@@ -373,41 +374,43 @@ public class ExecRunner {
 
     /**
      * This is for unit testing of the class.
-     *
-     * @param args an array of command-line arguments
-     * @throws IOException thrown if a problem occurs
-     **/
+     * 
+     * @param args
+     *            an array of command-line arguments
+     * @throws IOException
+     *             thrown if a problem occurs
+     */
     public static void main(String[] args) throws IOException {
 
         try {
 
             ExecRunner er = new ExecRunner();
 
-            /////////////////////////////////////////////////////////////////////
+            // ///////////////////////////////////////////////////////////////////
             // Linux: Test the exec operation with just STDOUT and STDERR
-            //System.out.println("Testing ExecRunner with STDOUT and STDERR...");
-            //er.exec("ls -l", System.out, System.err);
-            //System.out.println("Complete");
+            // System.out.println("Testing ExecRunner with STDOUT and
+            // STDERR...");
+            // er.exec("ls -l", System.out, System.err);
+            // System.out.println("Complete");
 
-            /////////////////////////////////////////////////////////////////////
+            // ///////////////////////////////////////////////////////////////////
             // Windows: Test the exec operation with just STDOUT and STDERR
             System.out.println("Testing ExecRunner with StringWriter...");
 
             er = new ExecRunner();
             er.setMaxRunTimeSecs(1);
             er.exec("dir /s c:\\");
-            //er.exec("ls -l");
+            // er.exec("ls -l");
 
             System.out.println("<STDOUT>\n" + er.getOutString() + "</STDOUT>");
             System.out.println("<STDERR>\n" + er.getErrString() + "</STDERR>");
             System.out.println("Testing Done");
 
-            /////////////////////////////////////////////////////////////////////
+            // ///////////////////////////////////////////////////////////////////
             // Exit nicely
             System.exit(0);
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
             e.printStackTrace();
             System.exit(1);
@@ -418,10 +421,12 @@ public class ExecRunner {
     /**
      * We override the <code>readObject</code> method here to prevent
      * deserialization of our class for security reasons.
-     *
-     * @param in java.io.ObjectInputStream
-     * @throws IOException thrown if a problem occurs
-     **/
+     * 
+     * @param in
+     *            java.io.ObjectInputStream
+     * @throws IOException
+     *             thrown if a problem occurs
+     */
     private final void readObject(ObjectInputStream in) throws IOException {
 
         throw new IOException("Object cannot be deserialized");
@@ -429,11 +434,11 @@ public class ExecRunner {
     }
 
     /**
-     * Sets the maximum run time in seconds.
-     * If you do not want to limit the executable's run time, simply pass in
-     * a 0 (which is also the default).
-     *
-     * @param max Maximim number of seconds to let program run
+     * Sets the maximum run time in seconds. If you do not want to limit the
+     * executable's run time, simply pass in a 0 (which is also the default).
+     * 
+     * @param max
+     *            Maximim number of seconds to let program run
      */
     public void setMaxRunTimeSecs(int max) {
 
@@ -444,10 +449,12 @@ public class ExecRunner {
     /**
      * We override the <code>writeObject</code> method here to prevent
      * serialization of our class for security reasons.
-     *
-     * @param out java.io.ObjectOutputStream
-     * @throws IOException thrown if a problem occurs
-     **/
+     * 
+     * @param out
+     *            java.io.ObjectOutputStream
+     * @throws IOException
+     *             thrown if a problem occurs
+     */
     private final void writeObject(ObjectOutputStream out) throws IOException {
 
         throw new IOException("Object cannot be serialized");

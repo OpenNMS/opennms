@@ -35,7 +35,6 @@
 //
 //
 
-
 //
 // RFC 1902: Structure of Management Information for SNMPv2
 //
@@ -80,126 +79,116 @@
 
 package org.opennms.protocols.snmp;
 
-
 /**
- * This class defines the SNMPv2 GetBulk request sent
- * from the management platform to the agent. The Get
- * Bulk request is designed to minimize the number of
- * message exchanges to get a large amount of information.
- *
- * The Get Bulk works in the same way as multiple Get Next
- * requests would work. It returns a set of lexicograpical
- * successors that are selected.
- *
- * For more information on the use of a GetBulk request see
- * [Stallings99] page 378-383.
- *
- * @author	<a href="mailto:weave@oculan.com">Brian Weaver</a>
- * @version	1.1.1.1
+ * This class defines the SNMPv2 GetBulk request sent from the management
+ * platform to the agent. The Get Bulk request is designed to minimize the
+ * number of message exchanges to get a large amount of information.
+ * 
+ * The Get Bulk works in the same way as multiple Get Next requests would work.
+ * It returns a set of lexicograpical successors that are selected.
+ * 
+ * For more information on the use of a GetBulk request see [Stallings99] page
+ * 378-383.
+ * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @version 1.1.1.1
  */
-public class SnmpPduBulk extends SnmpPduPacket
-{
-	/**
-	 * Constructs a default get bulk request.
-	 */
-	public SnmpPduBulk( )
-	{
-		super(SnmpPduPacket.GETBULK);
-	}
+public class SnmpPduBulk extends SnmpPduPacket {
+    /**
+     * Constructs a default get bulk request.
+     */
+    public SnmpPduBulk() {
+        super(SnmpPduPacket.GETBULK);
+    }
 
-	/**
-	 * Constructs a duplicate get bulk request
-	 * that is an identical copy of the passed object.
-	 *
-	 * @param second	The object to copy.
-	 *
-	 */
-	public SnmpPduBulk(SnmpPduBulk second)
-	{
-		super(second);
-	}
+    /**
+     * Constructs a duplicate get bulk request that is an identical copy of the
+     * passed object.
+     * 
+     * @param second
+     *            The object to copy.
+     * 
+     */
+    public SnmpPduBulk(SnmpPduBulk second) {
+        super(second);
+    }
 
-	/**
-	 * Constructs a get bulk request with the 
-	 * specified variables, non-repeaters, and maximum
-	 * repititions.
-	 *
-	 * @param nonRepeaters		The number of non-repeating variables
-	 * @param maxRepititions	The number of "repeating" variables to get
-	 * @param vars			The SNMP variables
-	 */
-	public SnmpPduBulk(int nonRepeaters, int maxRepititions, SnmpVarBind[] vars)
-	{
-		super(SnmpPduPacket.GETBULK, vars);
-		super.m_errStatus = nonRepeaters;
-		super.m_errIndex  = maxRepititions;
-	}
+    /**
+     * Constructs a get bulk request with the specified variables,
+     * non-repeaters, and maximum repititions.
+     * 
+     * @param nonRepeaters
+     *            The number of non-repeating variables
+     * @param maxRepititions
+     *            The number of "repeating" variables to get
+     * @param vars
+     *            The SNMP variables
+     */
+    public SnmpPduBulk(int nonRepeaters, int maxRepititions, SnmpVarBind[] vars) {
+        super(SnmpPduPacket.GETBULK, vars);
+        super.m_errStatus = nonRepeaters;
+        super.m_errIndex = maxRepititions;
+    }
 
-	/**
-	 * Returns the number of non-repeating elements
-	 *
-	 * @return The non-repeating value
-	 */
-	public int getNonRepeaters()
-	{
-		return super.m_errStatus;
-	}
+    /**
+     * Returns the number of non-repeating elements
+     * 
+     * @return The non-repeating value
+     */
+    public int getNonRepeaters() {
+        return super.m_errStatus;
+    }
 
-	/**
-	 * Sets the number of non-repeating elements in this
-	 * PDU.
-	 *
-	 * @param nonreps	The number of non-repeaters
-	 *
-	 */
-	public void setNonRepeaters(int nonreps)
-	{
-		super.m_errStatus = nonreps;
-	}
+    /**
+     * Sets the number of non-repeating elements in this PDU.
+     * 
+     * @param nonreps
+     *            The number of non-repeaters
+     * 
+     */
+    public void setNonRepeaters(int nonreps) {
+        super.m_errStatus = nonreps;
+    }
 
-	/**
-	 * Used to retreive the number of reptitions to get
-	 * for the repeating variables.
-	 *
-	 * @return The number of maximum reptitions.
-	 *
-	 */
-	public int getMaxRepititions()
-	{
-		return super.m_errIndex;
-	}
+    /**
+     * Used to retreive the number of reptitions to get for the repeating
+     * variables.
+     * 
+     * @return The number of maximum reptitions.
+     * 
+     */
+    public int getMaxRepititions() {
+        return super.m_errIndex;
+    }
 
-	/**
-	 * Used to set the number of maximum repititions
-	 * to be collected by the PDU.
-	 *
-	 * @param maxreps	The maximum number of repititions
-	 *
-	 */
-	public void setMaxRepititions(int maxreps)
-	{
-		super.m_errIndex = maxreps;
-	}
+    /**
+     * Used to set the number of maximum repititions to be collected by the PDU.
+     * 
+     * @param maxreps
+     *            The maximum number of repititions
+     * 
+     */
+    public void setMaxRepititions(int maxreps) {
+        super.m_errIndex = maxreps;
+    }
 
-	/**
-	 * Creates a new duplicate object of self that shares
-	 * no references with the original PDU.
-	 *
-	 * @return A newly created copy of self.
-	 */
-	public SnmpSyntax duplicate()
-	{
-		return new SnmpPduBulk(this);
-	}
+    /**
+     * Creates a new duplicate object of self that shares no references with the
+     * original PDU.
+     * 
+     * @return A newly created copy of self.
+     */
+    public SnmpSyntax duplicate() {
+        return new SnmpPduBulk(this);
+    }
 
-	/**
-	 * Creates a new duplicate object of self that shares
-	 * no references with the original PDU.
-	 *
-	 * @return A newly created copy of self.
-	 */
-	public Object clone()
-	{
-		return new SnmpPduBulk(this);
-	}
+    /**
+     * Creates a new duplicate object of self that shares no references with the
+     * original PDU.
+     * 
+     * @return A newly created copy of self.
+     */
+    public Object clone() {
+        return new SnmpPduBulk(this);
+    }
 }

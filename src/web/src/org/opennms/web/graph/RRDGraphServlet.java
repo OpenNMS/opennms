@@ -57,33 +57,33 @@ import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
 
-
 /**
- * A servlet that creates a graph of network performance data
- * using the <a href="http://www.rrdtool.org/">RRDTool</a>.
- *
- * <p>This servlet executes an <em>rrdtool graph</em> command
- * in another process, piping its PNG file to standard out.  The
- * servlet then reads that PNG file and returns it on the
- * <code>ServletOutputStream</code>. </p>
- *
- * <p>This servlet requires the following parameters:
+ * A servlet that creates a graph of network performance data using the <a
+ * href="http://www.rrdtool.org/">RRDTool </a>.
+ * 
+ * <p>
+ * This servlet executes an <em>rrdtool graph</em> command in another process,
+ * piping its PNG file to standard out. The servlet then reads that PNG file and
+ * returns it on the <code>ServletOutputStream</code>.
+ * </p>
+ * 
+ * <p>
+ * This servlet requires the following parameters:
  * <ul>
- *   <li><em>report</em> The name of the key in the rrdtool-graph properties
- *       file that contains information (including the command line options)
- *       to execute specific graph query.
- *   <li><em>rrd</em> The name of the ".rrd" file to graph.  The file must
- *       exist in the input directory specified in the rrdtool-graph properties file.
- *   <li><em>start</em> The start time.
- *   <li><em>end</em> The end time.
+ * <li><em>report</em> The name of the key in the rrdtool-graph properties
+ * file that contains information (including the command line options) to
+ * execute specific graph query.
+ * <li><em>rrd</em> The name of the ".rrd" file to graph. The file must exist
+ * in the input directory specified in the rrdtool-graph properties file.
+ * <li><em>start</em> The start time.
+ * <li><em>end</em> The end time.
  * </ul>
  * </p>
- *
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * 
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class RRDGraphServlet extends HttpServlet
-{
+public class RRDGraphServlet extends HttpServlet {
     /**
      * The working directory as specifed in the rrdtool-graph properties file.
      */
@@ -95,174 +95,166 @@ public class RRDGraphServlet extends HttpServlet
      */
     protected String commandPrefix;
 
-
     /**
      * The mime type of the image we will return.
      */
     protected String mimeType;
 
-
     /**
-     * Holds the graph definitions specified in the rrdtool-graph properties 
-     * file.  It maps report names to {@link PrefabGraph PrefabGraph} instances.
+     * Holds the graph definitions specified in the rrdtool-graph properties
+     * file. It maps report names to {@link PrefabGraph PrefabGraph}instances.
      */
     protected Map reportMap;
-
 
     /**
      * Initializes this servlet by reading the rrdtool-graph properties file.
      */
     public void init() throws ServletException {
         Properties properties = new Properties();
-        
+
         try {
             String propertiesFilename = Vault.getHomeDir() + this.getServletConfig().getInitParameter("rrd-properties");
-            properties.load( new FileInputStream( propertiesFilename ));
+            properties.load(new FileInputStream(propertiesFilename));
 
-            RrdUtils.graphicsInitialize(); 
-            
-        }
-        catch( FileNotFoundException e ) {
+            RrdUtils.graphicsInitialize();
+
+        } catch (FileNotFoundException e) {
             log("Could not find configuration file", e);
-            throw new ServletException( "Could not find configuration file", e );
-        } catch( IOException e ) {
+            throw new ServletException("Could not find configuration file", e);
+        } catch (IOException e) {
             log("Could not load configuration file", e);
-            throw new ServletException( "Could not load configuration file: ", e );
+            throw new ServletException("Could not load configuration file: ", e);
         } catch (RrdException e) {
             log("Could not inititalize the graphing system", e);
-            throw new ServletException( "Could not initialize graphing system: "+e.getMessage(), e);
+            throw new ServletException("Could not initialize graphing system: " + e.getMessage(), e);
         } catch (Throwable e) {
             log("Unexpected exception or error occurred", e);
-            throw new ServletException("Unexpected exception or error occured: "+e.getMessage(), e);
+            throw new ServletException("Unexpected exception or error occured: " + e.getMessage(), e);
         }
 
-        this.workDir = new File( properties.getProperty( "command.input.dir" ));
-        this.commandPrefix = properties.getProperty( "command.prefix" );
-        this.mimeType = properties.getProperty( "output.mime" );        
+        this.workDir = new File(properties.getProperty("command.input.dir"));
+        this.commandPrefix = properties.getProperty("command.prefix");
+        this.mimeType = properties.getProperty("output.mime");
         this.reportMap = PrefabGraph.getPrefabGraphDefinitions(properties);
-        
+
     }
 
-
     /**
-     * Checks the parameters passed to this servlet, and if all are okay, executes
-     * the RRDTool command in another process and pipes its PNG output to the
-     * <code>ServletOutputStream</code> back to the requesting web browser.
+     * Checks the parameters passed to this servlet, and if all are okay,
+     * executes the RRDTool command in another process and pipes its PNG output
+     * to the <code>ServletOutputStream</code> back to the requesting web
+     * browser.
      */
-    public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            String report = request.getParameter( "report" );
-            String[] rrds = request.getParameterValues( "rrd" );
-            String start  = request.getParameter( "start" );
-            String end    = request.getParameter( "end" );
-            
-            if( report == null || rrds == null || start == null || end == null ) {
-                response.setContentType( "image/png" );
-                Util.streamToStream( this.getServletContext().getResourceAsStream( "/images/rrd/missingparams.png"), response.getOutputStream() );
+            String report = request.getParameter("report");
+            String[] rrds = request.getParameterValues("rrd");
+            String start = request.getParameter("start");
+            String end = request.getParameter("end");
+
+            if (report == null || rrds == null || start == null || end == null) {
+                response.setContentType("image/png");
+                Util.streamToStream(this.getServletContext().getResourceAsStream("/images/rrd/missingparams.png"), response.getOutputStream());
                 return;
             }
-            
-            for( int i=0; i < rrds.length; i++ ) {
-                if( !RrdFileConstants.isValidRRDName(rrds[i]) ) {
+
+            for (int i = 0; i < rrds.length; i++) {
+                if (!RrdFileConstants.isValidRRDName(rrds[i])) {
                     this.log("Illegal RRD filename: " + rrds[i]);
                     throw new IllegalArgumentException("Illegal RRD filename: " + rrds[i]);
                 }
             }
-            
-            String command = this.createPrefabCommand( request, report, rrds, start, end );
-            
+
+            String command = this.createPrefabCommand(request, report, rrds, start, end);
+
             InputStream tempIn = null;
             ServletOutputStream out = response.getOutputStream();
             try {
-                
-                this.log( "Executing RRD command in this directory: " + workDir );
-                this.log( command );
-                
+
+                this.log("Executing RRD command in this directory: " + workDir);
+                this.log(command);
+
                 File workDir = this.workDir;
-                
+
                 tempIn = RrdUtils.createGraph(command, workDir);
-                
+
             } catch (RrdException e) {
-                this.log("Read from stderr: "+e.getMessage());
-                response.setContentType( "image/png" );
-                Util.streamToStream( this.getServletContext().getResourceAsStream( "/images/rrd/error.png"), out );
+                this.log("Read from stderr: " + e.getMessage());
+                response.setContentType("image/png");
+                Util.streamToStream(this.getServletContext().getResourceAsStream("/images/rrd/error.png"), out);
             }
-            
+
             if (tempIn != null) {
-                response.setContentType( this.mimeType );
-                Util.streamToStream( tempIn, out );
-                
+                response.setContentType(this.mimeType);
+                Util.streamToStream(tempIn, out);
+
                 tempIn.close();
             }
             out.close();
-        } catch (Exception e) { 
-            this.log("Exception occurred: "+e.getMessage(), e);
+        } catch (Exception e) {
+            this.log("Exception occurred: " + e.getMessage(), e);
         }
     }
 
+    protected String createPrefabCommand(HttpServletRequest request, String reportName, String[] rrds, String start, String end) throws ServletException {
+        PrefabGraph graph = (PrefabGraph) this.reportMap.get(reportName);
 
-    protected String createPrefabCommand( HttpServletRequest request, String reportName, String[] rrds, String start, String end ) throws ServletException {
-        PrefabGraph graph = (PrefabGraph)this.reportMap.get(reportName);
-        
-        if(graph == null) {
+        if (graph == null) {
             throw new IllegalArgumentException("Unknown report name: " + reportName);
         }
-        
+
         StringBuffer buf = new StringBuffer();
-        buf.append( this.commandPrefix );
-        buf.append( " " );
-        buf.append( graph.getCommand() );
+        buf.append(this.commandPrefix);
+        buf.append(" ");
+        buf.append(graph.getCommand());
         String command = buf.toString();
 
-        //remember rrdtool wants the time in seconds, not milliseconds;
-        //java.util.Date.getTime() returns milliseconds, so divide by 1000
-        String starttime = Long.toString( Long.parseLong(start)/1000 );
-        String endtime   = Long.toString( Long.parseLong(end)/1000 );
+        // remember rrdtool wants the time in seconds, not milliseconds;
+        // java.util.Date.getTime() returns milliseconds, so divide by 1000
+        String starttime = Long.toString(Long.parseLong(start) / 1000);
+        String endtime = Long.toString(Long.parseLong(end) / 1000);
 
         HashMap translationMap = new HashMap();
-        
-        for(int i=0; i < rrds.length; i++ ) {
-            String key = "{rrd" + (i+1) + "}";
-            translationMap.put(RE.simplePatternToFullRegularExpression(key), rrds[i] );
+
+        for (int i = 0; i < rrds.length; i++) {
+            String key = "{rrd" + (i + 1) + "}";
+            translationMap.put(RE.simplePatternToFullRegularExpression(key), rrds[i]);
         }
-        
-        translationMap.put(RE.simplePatternToFullRegularExpression("{startTime}"), starttime );
-        translationMap.put(RE.simplePatternToFullRegularExpression("{endTime}"), endtime );        
-        
-        //names of values specified outside of the RRD data (external values)
+
+        translationMap.put(RE.simplePatternToFullRegularExpression("{startTime}"), starttime);
+        translationMap.put(RE.simplePatternToFullRegularExpression("{endTime}"), endtime);
+
+        // names of values specified outside of the RRD data (external values)
         String[] externalValues = graph.getExternalValues();
 
-        if( externalValues != null || externalValues.length > 0 ) {
-            for( int i = 0; i < externalValues.length; i++ ) {
-                String value = request.getParameter( externalValues[i] );
+        if (externalValues != null || externalValues.length > 0) {
+            for (int i = 0; i < externalValues.length; i++) {
+                String value = request.getParameter(externalValues[i]);
 
-                if( value == null ) {
-                    throw new MissingParameterException( externalValues[i] );
-                }
-                else {
+                if (value == null) {
+                    throw new MissingParameterException(externalValues[i]);
+                } else {
                     translationMap.put(RE.simplePatternToFullRegularExpression("{" + externalValues[i] + "}"), value);
-                }                
+                }
             }
         }
-        
+
         try {
             Iterator iter = translationMap.keySet().iterator();
-    
-            while(iter.hasNext()) {
-                String s1 = (String)iter.next();
-                String s2 = (String)translationMap.get(s1);
-    
-                //replace s1 with s2
+
+            while (iter.hasNext()) {
+                String s1 = (String) iter.next();
+                String s2 = (String) translationMap.get(s1);
+
+                // replace s1 with s2
                 RE re = new RE(s1);
-                command = re.subst(command, s2);             
-            }    
-        }
-        catch( RESyntaxException e ) {
+                command = re.subst(command, s2);
+            }
+        } catch (RESyntaxException e) {
             throw new ServletException("Invalid regular expression syntax, check rrd-properties file", e);
         }
-        
+
         return command;
     }
 
 }
-

@@ -62,14 +62,14 @@ import com.novell.ldap.LDAPSearchResults;
 import com.novell.ldap.LDAPSocketFactory;
 
 /**
- * This class is designed to be used by the service poller framework to test the availability
- * of a generic LDAP service on remote interfaces. The class implements the ServiceMonitor
- * interface that allows it to be used along with other plug-ins by the service poller
- * framework.
+ * This class is designed to be used by the service poller framework to test the
+ * availability of a generic LDAP service on remote interfaces. The class
+ * implements the ServiceMonitor interface that allows it to be used along with
+ * other plug-ins by the service poller framework.
  * 
  * @author <A HREF="jason@opennms.org">Jason </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- *  
+ * 
  */
 final class LdapMonitor extends IPv4Monitor {
 
@@ -79,10 +79,11 @@ final class LdapMonitor extends IPv4Monitor {
     private static final int DEFAULT_RETRY = 1;
 
     /**
-     * Default timeout. Specifies how long (in milliseconds) to block waiting for data from the
-     * monitored interface.
+     * Default timeout. Specifies how long (in milliseconds) to block waiting
+     * for data from the monitored interface.
      */
-    private static final int DEFAULT_TIMEOUT = 3000; // 3 second timeout on read()
+    private static final int DEFAULT_TIMEOUT = 3000; // 3 second timeout on
+                                                        // read()
 
     /**
      * Default search base for an LDAP search
@@ -95,7 +96,8 @@ final class LdapMonitor extends IPv4Monitor {
     private static final String DEFAULT_FILTER = "(objectclass=*)";
 
     /**
-     * A class to add a timeout to the socket that the LDAP code uses to access an LDAP server
+     * A class to add a timeout to the socket that the LDAP code uses to access
+     * an LDAP server
      */
     private class TimeoutLDAPSocket implements LDAPSocketFactory {
 
@@ -117,15 +119,17 @@ final class LdapMonitor extends IPv4Monitor {
      * 
      * During the poll an attempt is made to connect the service.
      * 
-     * Provided that the interface's response is valid we set the service status to
-     * SERVICE_AVAILABLE and return.
+     * Provided that the interface's response is valid we set the service status
+     * to SERVICE_AVAILABLE and return.
      * 
      * @param iface
      *            The network interface to test the service on.
      * @param parameters
-     *            The package parameters (timeout, retry, etc...) to be used for this poll.
+     *            The package parameters (timeout, retry, etc...) to be used for
+     *            this poll.
      * 
-     * @return The availibility of the interface and if a transition event should be supressed.
+     * @return The availibility of the interface and if a transition event
+     *         should be supressed.
      * 
      * @throws java.lang.RuntimeException
      *             Thrown if the interface experiences errors during the poll.
@@ -150,12 +154,16 @@ final class LdapMonitor extends IPv4Monitor {
         String address = null;
         if (addressObject instanceof InetAddress)
             address = ((InetAddress) addressObject).getHostAddress();
-        else if (addressObject instanceof String) address = (String) addressObject;
+        else if (addressObject instanceof String)
+            address = (String) addressObject;
 
-        //first just try a connection to the box via socket. Just in case there is
-        //a no way to route to the address, don't iterate through the retries, as a
-        //NoRouteToHost exception will only be thrown after about 5 minutes, thus tying
-        //up the thread
+        // first just try a connection to the box via socket. Just in case there
+        // is
+        // a no way to route to the address, don't iterate through the retries,
+        // as a
+        // NoRouteToHost exception will only be thrown after about 5 minutes,
+        // thus tying
+        // up the thread
         Socket socket = null;
         try {
 
@@ -167,15 +175,16 @@ final class LdapMonitor extends IPv4Monitor {
             // We're connected, so upgrade status to unresponsive
             serviceStatus = SERVICE_UNRESPONSIVE;
 
-            if (socket != null) socket.close();
+            if (socket != null)
+                socket.close();
 
-            //lets detect the service
+            // lets detect the service
             LDAPConnection lc = new LDAPConnection(new TimeoutLDAPSocket(timeout));
 
             for (int attempts = 1; attempts <= retries && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; attempts++) {
                 log.debug("polling LDAP on " + address + ", attempt " + attempts + " of " + (retries == 0 ? "1" : retries + ""));
 
-                //connect to the ldap server
+                // connect to the ldap server
                 try {
                     lc.connect(address, ldapPort);
                     log.debug("connected to LDAP server " + address + " on port " + ldapPort);
@@ -184,7 +193,7 @@ final class LdapMonitor extends IPv4Monitor {
                     continue;
                 }
 
-                //bind if possible
+                // bind if possible
                 if (ldapDn != null && password != null) {
                     try {
                         lc.bind(ldapVersion, ldapDn, password);
@@ -201,9 +210,9 @@ final class LdapMonitor extends IPv4Monitor {
                     }
                 }
 
-                //do a quick search and see if any results come back
+                // do a quick search and see if any results come back
                 boolean attributeOnly = true;
-                String attrs[] = { LDAPConnection.NO_ATTRS};
+                String attrs[] = { LDAPConnection.NO_ATTRS };
                 int searchScope = LDAPConnection.SCOPE_ONE;
 
                 log.debug("running search " + searchFilter + " from " + searchBase);

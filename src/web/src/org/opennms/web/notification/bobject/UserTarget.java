@@ -34,108 +34,124 @@ package org.opennms.web.notification.bobject;
 
 import org.opennms.web.admin.users.parsers.User;
 
-
-/**A NotificationTarget representing a user target
- * parsed from the notifications xml file.
+/**
+ * A NotificationTarget representing a user target parsed from the notifications
+ * xml file.
  * 
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  * @version 1.1.1.1
-*/
-public class UserTarget extends NotificationTarget
-{
-	/**The userId of the target
-	*/
-	private String m_userName;
-	
-	/**The User object associated with this target
-	*/
-	private User m_user;
-	
-	/**The command name to use to contact this user
-	*/
-	private String m_commandName;
-	
-	/**The Command object to use to contact this user
-	*/
-	private Command m_command;
-	
-	/**Default Constructor
-	*/
-	public UserTarget()
-	{
-	}
-	
-	/**Sets the userId for this target
-	   @param name the username to be set.
-	*/
-	public void setUserName(String name)
-	{
-		m_userName = name;
-	}
-	
-	/**Returns the userId for this target
-	   @return the username.
-	*/
-	public String getUserName()
-	{
-		return m_userName;
-	}
-	
-	/**Sets the User object for this target
-	   @param user the user object to be set.
-	*/
-	public void setUser(User user)
-	{
-		m_user = user;
-	}
-	
-	/**Returns the User object for this target
-	   @return the user object.
-	*/
-	public User getUser()
-	{
-		return m_user;
-	}
-	
-	/**Sets the command name for this target
-	   @param commandName the command name to be set.
-	*/
-	public void setCommandName(String commandName)
-	{
-		m_commandName = commandName;
-	}
-	
-	/**Returns the command name for this target
-	   @return the command name.
-	*/
-	public String getCommandName()
-	{
-		return m_commandName;
-	}
-	
-	/**Sets the Command object for this target
-	   @param command the command to be set.
-	*/
-	public void setCommand(Command command)
-	{
-		m_command = command;
-	}
-	
-	/**Returns the Command object for this target
-	   @return the command.
-	*/
-	public Command getCommand()
-	{
-		return m_command;
-	}
-	
-	/**Returns the type of the target
-	   @return the type, compare to NotificationTask.TARGET_TYPE_USER.
-	*/
-	public int getType()
-	{
-		return TARGET_TYPE_USER;
-	}
+ */
+public class UserTarget extends NotificationTarget {
+    /**
+     * The userId of the target
+     */
+    private String m_userName;
+
+    /**
+     * The User object associated with this target
+     */
+    private User m_user;
+
+    /**
+     * The command name to use to contact this user
+     */
+    private String m_commandName;
+
+    /**
+     * The Command object to use to contact this user
+     */
+    private Command m_command;
+
+    /**
+     * Default Constructor
+     */
+    public UserTarget() {
+    }
+
+    /**
+     * Sets the userId for this target
+     * 
+     * @param name
+     *            the username to be set.
+     */
+    public void setUserName(String name) {
+        m_userName = name;
+    }
+
+    /**
+     * Returns the userId for this target
+     * 
+     * @return the username.
+     */
+    public String getUserName() {
+        return m_userName;
+    }
+
+    /**
+     * Sets the User object for this target
+     * 
+     * @param user
+     *            the user object to be set.
+     */
+    public void setUser(User user) {
+        m_user = user;
+    }
+
+    /**
+     * Returns the User object for this target
+     * 
+     * @return the user object.
+     */
+    public User getUser() {
+        return m_user;
+    }
+
+    /**
+     * Sets the command name for this target
+     * 
+     * @param commandName
+     *            the command name to be set.
+     */
+    public void setCommandName(String commandName) {
+        m_commandName = commandName;
+    }
+
+    /**
+     * Returns the command name for this target
+     * 
+     * @return the command name.
+     */
+    public String getCommandName() {
+        return m_commandName;
+    }
+
+    /**
+     * Sets the Command object for this target
+     * 
+     * @param command
+     *            the command to be set.
+     */
+    public void setCommand(Command command) {
+        m_command = command;
+    }
+
+    /**
+     * Returns the Command object for this target
+     * 
+     * @return the command.
+     */
+    public Command getCommand() {
+        return m_command;
+    }
+
+    /**
+     * Returns the type of the target
+     * 
+     * @return the type, compare to NotificationTask.TARGET_TYPE_USER.
+     */
+    public int getType() {
+        return TARGET_TYPE_USER;
+    }
 }

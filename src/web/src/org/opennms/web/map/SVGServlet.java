@@ -44,7 +44,7 @@ import org.apache.batik.dom.util.DOMUtilities;
 import org.w3c.dom.Document;
 
 /**
- * This class should be called from inside of an <embed> tag.  We
+ * This class should be called from inside of an <embed>tag.  We
  * generate and emit an SVG document of the tree map of nodes.  (this
  * used to be svg.jsp but it's neater to put it into a servlet where
  * it really belongs.
@@ -55,8 +55,7 @@ import org.w3c.dom.Document;
 
 public class SVGServlet extends HttpServlet {
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
         response.setContentType("image/svg+xml");
 
@@ -77,10 +76,10 @@ public class SVGServlet extends HttpServlet {
             // flush and close
             docwriter.flush();
             docwriter.close();
-        } catch(IOException e) {
+        } catch (IOException e) {
             log("IOException in SVGServlet");
             log(e.toString());
-        } catch(Exception e) {
+        } catch (Exception e) {
             log("Exception in SVGServlet");
             log(e.toString());
         }

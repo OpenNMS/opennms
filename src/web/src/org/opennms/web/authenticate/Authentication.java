@@ -34,26 +34,25 @@ package org.opennms.web.authenticate;
 
 import org.apache.log4j.Category;
 
-
 /**
  * An uninstantiatable class that provides a servlet container-independent
  * interface to the authentication system and a list of useful constants.
- *
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * 
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public final class Authentication extends Object
-{
+public final class Authentication extends Object {
     /** The Log4J category for logging web authentication messages. */
     public static Category log = Category.getInstance("OpenNMS.WEB.AUTH");
-    
+
     /** The name of the role defined for users in the web.xml file. */
-    public static final String USER_ROLE  = "OpenNMS User";
+    public static final String USER_ROLE = "OpenNMS User";
 
     /** The name of the role defined for administrators in the web.xml file. */
     public static final String ADMIN_ROLE = "OpenNMS Administrator";
 
     /** Private, empty constructor so this class cannot be instantiated. */
-    private Authentication() {}
+    private Authentication() {
+    }
 
 }

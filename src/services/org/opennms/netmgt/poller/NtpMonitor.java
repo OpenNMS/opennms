@@ -59,7 +59,7 @@ import org.opennms.protocols.ntp.NtpMessage;
  * 
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- *  
+ * 
  */
 final class NtpMonitor extends IPv4LatencyMonitor {
     /**
@@ -99,7 +99,7 @@ final class NtpMonitor extends IPv4LatencyMonitor {
      * 
      * @return The availibility of the interface and if a transition event
      *         should be supressed.
-     *  
+     * 
      */
     public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         //
@@ -137,7 +137,7 @@ final class NtpMonitor extends IPv4LatencyMonitor {
         try {
             socket = new DatagramSocket();
             socket.setSoTimeout(timeout); // will force the
-                                          // InterruptedIOException
+            // InterruptedIOException
 
             for (int attempts = 0; attempts <= retry && serviceStatus != SERVICE_AVAILABLE; attempts++) {
                 try {
@@ -150,7 +150,7 @@ final class NtpMonitor extends IPv4LatencyMonitor {
 
                     // Get NTP Response
                     //
-                    //byte[] buffer = new byte[512];
+                    // byte[] buffer = new byte[512];
                     DatagramPacket incoming = new DatagramPacket(data, data.length);
                     socket.receive(incoming);
                     responseTime = System.currentTimeMillis() - sentTime;
@@ -173,7 +173,7 @@ final class NtpMonitor extends IPv4LatencyMonitor {
             e.fillInStackTrace();
             log.debug("No route to host exception for address: " + ipv4Addr, e);
         } catch (ConnectException e) {
-            //Connection refused. Continue to retry.
+            // Connection refused. Continue to retry.
             //
             e.fillInStackTrace();
             log.debug("Connection exception for address: " + ipv4Addr, e);

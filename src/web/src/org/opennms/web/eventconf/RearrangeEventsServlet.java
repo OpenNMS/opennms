@@ -42,38 +42,31 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 /**
  * A servlet that handles rearranging event configurations
- *
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class RearrangeEventsServlet extends HttpServlet
-{
-    public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException 
-    {
-       	try
-	{
-		EventConfFactory eventConfFactory = EventConfFactory.getInstance();
-		
-		List newList = new ArrayList();
-		String ueis[] = request.getParameterValues("eventUEIs");
-		
-		for (int i = 0; i < ueis.length; i++)
-		{
-			newList.add(eventConfFactory.getEvent(ueis[i]));
-		}
-		
-		eventConfFactory.saveEvents(newList);
-	}
-	catch (Exception e)
-	{
-		throw new ServletException("Couldn't initialize EventConfFactory", e);
-	}
-	
-        //forward the request for proper display
+public class RearrangeEventsServlet extends HttpServlet {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            EventConfFactory eventConfFactory = EventConfFactory.getInstance();
+
+            List newList = new ArrayList();
+            String ueis[] = request.getParameterValues("eventUEIs");
+
+            for (int i = 0; i < ueis.length; i++) {
+                newList.add(eventConfFactory.getEvent(ueis[i]));
+            }
+
+            eventConfFactory.saveEvents(newList);
+        } catch (Exception e) {
+            throw new ServletException("Couldn't initialize EventConfFactory", e);
+        }
+
+        // forward the request for proper display
         RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/eventconf/list.jsp");
-        dispatcher.forward( request, response );
+        dispatcher.forward(request, response);
     }
 }

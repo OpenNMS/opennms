@@ -32,11 +32,14 @@
 
 package org.opennms.netmgt.vulnscand.jmx;
 
-public interface VulnscandMBean
-{
-	public void start();
-	public void stop();
-	public int getStatus();
-	public String status();
-	public String getStatusText();
+public interface VulnscandMBean {
+    public void start();
+
+    public void stop();
+
+    public int getStatus();
+
+    public String status();
+
+    public String getStatusText();
 }

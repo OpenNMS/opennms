@@ -40,40 +40,29 @@ import java.net.UnknownHostException;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
-class NessusConnectionFactory
-{
-	static public Socket getConnection(InetAddress hostname, int hostport)
-	{
-		Category log = ThreadCategory.getInstance(NessusConnectionFactory.class);
+class NessusConnectionFactory {
+    static public Socket getConnection(InetAddress hostname, int hostport) {
+        Category log = ThreadCategory.getInstance(NessusConnectionFactory.class);
 
-		try
-		{
-			Socket retval = new Socket(hostname, hostport);
-			return retval;
-		}
-		catch (UnknownHostException ex)
-		{
-			log.warn(ex);
-			return null;
-		}
-		catch (IOException ex)
-		{
-			log.warn(ex);
-			return null;
-		}
-	}
+        try {
+            Socket retval = new Socket(hostname, hostport);
+            return retval;
+        } catch (UnknownHostException ex) {
+            log.warn(ex);
+            return null;
+        } catch (IOException ex) {
+            log.warn(ex);
+            return null;
+        }
+    }
 
-	static public void releaseConnection(Socket socket)
-	{
-		Category log = ThreadCategory.getInstance(NessusConnectionFactory.class);
+    static public void releaseConnection(Socket socket) {
+        Category log = ThreadCategory.getInstance(NessusConnectionFactory.class);
 
-		try
-		{
-			socket.close();
-		}
-		catch (IOException ex)
-		{
-			log.error("Could not close socket", ex);
-		}
-	}
+        try {
+            socket.close();
+        } catch (IOException ex) {
+            log.error("Could not close socket", ex);
+        }
+    }
 }

@@ -32,116 +32,136 @@
 
 package org.opennms.web.notification.bobject;
 
-/**This is a data class to store the argument information
- * for a Command
+/**
+ * This is a data class to store the argument information for a Command
  * 
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * 
  * @version 1.1.1.1
  * 
  */
-public class Argument
-{
-	/**The switch that the Notify class identifies with the value of this argument
-	*/
-	private String m_switch;
-	
-	/**The substitution switch that should be used when using this argument with 
-	   the console command.
-	*/
-	private String m_substitution;
-	
-	/**The value of the argument
-	*/
-	private String m_value;
-	
-	/**A boolean indicating if this argument should be sent to the console command
-	   via an input stream.
-	*/
-	private boolean m_streamed;
-	
-	/**Default constructor, initializes the members
-	*/
-	public Argument()
-	{
-		m_switch = "";
-		m_substitution = "";
-		m_value = "";
-		m_streamed = false;
-	}
-	
-	/**Sets the switch member
-	   @param aValue the value of the switch
-	*/
-	public void setSwitch(String aValue)
-	{
-		m_switch = aValue;
-	}
-	
-	/**Sets the substitution switch
-	   @param aValue the value of the substitution
-	*/
-	public void setSubstitution(String aValue)
-	{
-		m_substitution = aValue;
-	}
-	
-	/**Sets the value of the argument
-	   @param aValue the value of the argument
-	*/
-	public void setValue(String aValue)
-	{
-		m_value = aValue;
-	}
-	
-	/**Returns the switch
-	   @return the switch string
-	*/
-	public String getSwitch()
-	{
-		return m_switch;
-	}
-	
-	/**Returns the substitution switch
-	   @return the substitution
-	*/
-	public String getSubstitution()
-	{
-		return m_substitution;
-	}
-	
-	/**Returns the value of the argument
-	   @return the value of the argument
-	*/
-	public String getValue()
-	{
-		return m_value;
-	}
-	
-	/**Sets the boolean indicating if this argument should be sent to 
-	   an input stream
-	   @param aBool true if the argument should be sent to a input stream, false otherwise
-	*/
-	public void setStreamed(boolean aBool)
-	{
-		m_streamed = aBool;
-	}
-	
-	/**Returns the boolean indicating if this argument should be sent
-	   to an input stream.
-	   @return true if the argument should be sent to a input stream, false otherwise
-	*/
-	public boolean isStreamed()
-	{
-		return m_streamed;
-	}
-	
-	/**Returns a string representation of the argument, for purposes of debugging
-	   @return a string representation
-	*/
-	public String toString()
-	{
-		return m_switch + "(" + m_substitution + ") " + m_value;
-	}
+public class Argument {
+    /**
+     * The switch that the Notify class identifies with the value of this
+     * argument
+     */
+    private String m_switch;
+
+    /**
+     * The substitution switch that should be used when using this argument with
+     * the console command.
+     */
+    private String m_substitution;
+
+    /**
+     * The value of the argument
+     */
+    private String m_value;
+
+    /**
+     * A boolean indicating if this argument should be sent to the console
+     * command via an input stream.
+     */
+    private boolean m_streamed;
+
+    /**
+     * Default constructor, initializes the members
+     */
+    public Argument() {
+        m_switch = "";
+        m_substitution = "";
+        m_value = "";
+        m_streamed = false;
+    }
+
+    /**
+     * Sets the switch member
+     * 
+     * @param aValue
+     *            the value of the switch
+     */
+    public void setSwitch(String aValue) {
+        m_switch = aValue;
+    }
+
+    /**
+     * Sets the substitution switch
+     * 
+     * @param aValue
+     *            the value of the substitution
+     */
+    public void setSubstitution(String aValue) {
+        m_substitution = aValue;
+    }
+
+    /**
+     * Sets the value of the argument
+     * 
+     * @param aValue
+     *            the value of the argument
+     */
+    public void setValue(String aValue) {
+        m_value = aValue;
+    }
+
+    /**
+     * Returns the switch
+     * 
+     * @return the switch string
+     */
+    public String getSwitch() {
+        return m_switch;
+    }
+
+    /**
+     * Returns the substitution switch
+     * 
+     * @return the substitution
+     */
+    public String getSubstitution() {
+        return m_substitution;
+    }
+
+    /**
+     * Returns the value of the argument
+     * 
+     * @return the value of the argument
+     */
+    public String getValue() {
+        return m_value;
+    }
+
+    /**
+     * Sets the boolean indicating if this argument should be sent to an input
+     * stream
+     * 
+     * @param aBool
+     *            true if the argument should be sent to a input stream, false
+     *            otherwise
+     */
+    public void setStreamed(boolean aBool) {
+        m_streamed = aBool;
+    }
+
+    /**
+     * Returns the boolean indicating if this argument should be sent to an
+     * input stream.
+     * 
+     * @return true if the argument should be sent to a input stream, false
+     *         otherwise
+     */
+    public boolean isStreamed() {
+        return m_streamed;
+    }
+
+    /**
+     * Returns a string representation of the argument, for purposes of
+     * debugging
+     * 
+     * @return a string representation
+     */
+    public String toString() {
+        return m_switch + "(" + m_substitution + ") " + m_value;
+    }
 }

@@ -193,7 +193,8 @@ public class PollerTest extends TestCase {
 
         // FIXME: Bug 709: The following event never occurs. We sent a
         // nodeLostService earlier we should send a nodeGainedService
-        // anticipateSvcStatusChanged(httpService, anticipator, ServiceMonitor.SERVICE_AVAILABLE);
+        // anticipateSvcStatusChanged(httpService, anticipator,
+        // ServiceMonitor.SERVICE_AVAILABLE);
 
         // bring up all the services on the node
         node.bringUp();
@@ -241,11 +242,11 @@ public class PollerTest extends TestCase {
 
         long now = System.currentTimeMillis();
         sleep(3000 - (now - start));
-        
+
         assertEquals(0, iface.getPollCount());
 
         sleep(3000);
-        
+
         assertTrue(0 < iface.getPollCount());
 
         m_poller.stop();
@@ -273,7 +274,7 @@ public class PollerTest extends TestCase {
 
         // now ensure that no invalid polls have occurred
         sleep(3000);
-        
+
         assertEquals(0, m_network.getInvalidPollCount());
 
         m_poller.stop();
@@ -339,7 +340,7 @@ public class PollerTest extends TestCase {
         reparentedIface.bringDown();
 
         sleep(5000);
-        
+
         // MockUtil.printEvents("Anticipated",
         // anticipator.waitForAnticipated(2000));
         assertEquals(0, anticipator.waitForAnticipated(3000).size());
@@ -594,13 +595,13 @@ public class PollerTest extends TestCase {
         } catch (InterruptedException e) {
         }
     }
-    
+
     // TODO: test multiple polling packages
-    
+
     // TODO: test overlapping polling packages
-    
+
     // TODO: test two packages both with the crit service and status propagation
-    
+
     // TODO: how does unmanaging a node/iface/service work with the poller
 
 }

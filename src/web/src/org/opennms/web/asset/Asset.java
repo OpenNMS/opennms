@@ -35,652 +35,576 @@ package org.opennms.web.asset;
 
 import java.util.Date;
 
-
-public class Asset extends Object
-{
+public class Asset extends Object {
 
     public static final String UNSPECIFIED_CATEGORY = "Unspecified";
+
     public static final String INFRASTRUCTURE_CATEGORY = "Infrastructure";
+
     public static final String SERVER_CATEGORY = "Server";
+
     public static final String DESKTOP_CATEGORY = "Desktop";
+
     public static final String LAPTOP_CATEGORY = "Laptop";
+
     public static final String PRINTER_CATEGORY = "Printer";
+
     public static final String TELEPHONY_CATEGORY = "Telephony";
+
     public static final String OTHER_CATEGORY = "Other";
 
-    public static final String[] CATEGORIES = new String[] {
-        UNSPECIFIED_CATEGORY,
-        INFRASTRUCTURE_CATEGORY,
-        SERVER_CATEGORY,
-        DESKTOP_CATEGORY,
-        LAPTOP_CATEGORY,
-        PRINTER_CATEGORY,
-        TELEPHONY_CATEGORY,
-        OTHER_CATEGORY
-    };
-
+    public static final String[] CATEGORIES = new String[] { UNSPECIFIED_CATEGORY, INFRASTRUCTURE_CATEGORY, SERVER_CATEGORY, DESKTOP_CATEGORY, LAPTOP_CATEGORY, PRINTER_CATEGORY, TELEPHONY_CATEGORY, OTHER_CATEGORY };
 
     protected int nodeId;
+
     protected Date lastModifiedDate;
+
     protected String userLastModified = "";
+
     protected String category = UNSPECIFIED_CATEGORY;
+
     protected String manufacturer = "";
+
     protected String vendor = "";
+
     protected String modelNumber = "";
+
     protected String serialNumber = "";
+
     protected String description = "";
+
     protected String circuitId = "";
+
     protected String assetNumber = "";
+
     protected String operatingSystem = "";
+
     protected String rack = "";
+
     protected String slot = "";
+
     protected String port = "";
+
     protected String region = "";
+
     protected String division = "";
+
     protected String department = "";
+
     protected String address1 = "";
+
     protected String address2 = "";
+
     protected String city = "";
+
     protected String state = "";
+
     protected String zip = "";
+
     protected String building = "";
+
     protected String floor = "";
+
     protected String room = "";
+
     protected String vendorPhone = "";
+
     protected String vendorFax = "";
+
     protected String dateInstalled = "";
+
     protected String lease = "";
+
     protected String leaseExpires = "";
+
     protected String supportPhone = "";
+
     protected String maintContract = "";
+
     protected String vendorAssetNumber = "";
+
     protected String maintContractExpires = "";
+
     protected String displayCategory = "";
+
     protected String notifyCategory = "";
+
     protected String pollerCategory = "";
+
     protected String thresholdCategory = "";
+
     protected String comments = "";
 
-
-    public void setNodeId( int nodeId ) {
+    public void setNodeId(int nodeId) {
         this.nodeId = nodeId;
     }
-    
-    
+
     public int getNodeId() {
-        return( this.nodeId );
+        return (this.nodeId);
     }
 
-
-    public void setLastModifiedDate( Date lastModifiedDate ) {
+    public void setLastModifiedDate(Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
-    
-    
+
     public Date getLastModifiedDate() {
-        return( this.lastModifiedDate );
+        return (this.lastModifiedDate);
     }
 
-    
-    public void setCategory( String category ) {
-        if( category != null ) {
+    public void setCategory(String category) {
+        if (category != null) {
             this.category = category;
-        }
-        else {
+        } else {
             this.category = UNSPECIFIED_CATEGORY;
         }
     }
-    
-    
+
     public String getCategory() {
-        return( this.category );
+        return (this.category);
     }
-    
-   public void setDisplayCategory( String displayCategory ) {
-	if( displayCategory != null ) {
-	    this.displayCategory = displayCategory;
-	}
-	else {
-	    this.displayCategory = "";
-	}
-   }
 
-   public String getDisplayCategory() {
-	return( this.displayCategory );
-   }
+    public void setDisplayCategory(String displayCategory) {
+        if (displayCategory != null) {
+            this.displayCategory = displayCategory;
+        } else {
+            this.displayCategory = "";
+        }
+    }
 
-   public void setNotifyCategory( String notifyCategory ) {
-	if( notifyCategory != null ) {
-	    this.notifyCategory = notifyCategory;
-	}
-	else {
-	    this.notifyCategory = "";
-	}
-   }
+    public String getDisplayCategory() {
+        return (this.displayCategory);
+    }
 
-   public String getNotifyCategory() {
-	return( this.notifyCategory );
-   }
+    public void setNotifyCategory(String notifyCategory) {
+        if (notifyCategory != null) {
+            this.notifyCategory = notifyCategory;
+        } else {
+            this.notifyCategory = "";
+        }
+    }
 
-   public void setPollerCategory( String pollerCategory ) {
-	if( pollerCategory != null ) {
-	    this.pollerCategory = pollerCategory;
-	}
-	else {
-	    this.pollerCategory = "";
-	}
-   }
+    public String getNotifyCategory() {
+        return (this.notifyCategory);
+    }
 
-   public String getPollerCategory() {
-	return( this.pollerCategory );
-   }
+    public void setPollerCategory(String pollerCategory) {
+        if (pollerCategory != null) {
+            this.pollerCategory = pollerCategory;
+        } else {
+            this.pollerCategory = "";
+        }
+    }
 
-   public void setThresholdCategory( String thresholdCategory ) {
-	if( thresholdCategory != null ) {
-	    this.thresholdCategory = thresholdCategory;
-	}
-	else {
-	    this.thresholdCategory = "";
-	}
-   }
+    public String getPollerCategory() {
+        return (this.pollerCategory);
+    }
+
+    public void setThresholdCategory(String thresholdCategory) {
+        if (thresholdCategory != null) {
+            this.thresholdCategory = thresholdCategory;
+        } else {
+            this.thresholdCategory = "";
+        }
+    }
 
     public String getThresholdCategory() {
-	return( this.thresholdCategory );
+        return (this.thresholdCategory);
     }
 
-    public void setManufacturer( String manufacturer ) {
-        if( manufacturer != null ) {
+    public void setManufacturer(String manufacturer) {
+        if (manufacturer != null) {
             this.manufacturer = manufacturer;
-        }
-        else {
+        } else {
             this.manufacturer = "";
         }
     }
-    
-    
+
     public String getManufacturer() {
-        return( this.manufacturer );
+        return (this.manufacturer);
     }
-    
-    
-    public void setVendor( String vendor ) {
-        if( vendor != null ) {
+
+    public void setVendor(String vendor) {
+        if (vendor != null) {
             this.vendor = vendor;
-        }
-        else {
+        } else {
             this.vendor = "";
         }
     }
-    
-    
+
     public String getVendor() {
-        return( this.vendor );
+        return (this.vendor);
     }
-    
-    
-    public void setModelNumber( String modelNumber ) {
-        if( modelNumber != null ) {
+
+    public void setModelNumber(String modelNumber) {
+        if (modelNumber != null) {
             this.modelNumber = modelNumber;
-        }
-        else {
+        } else {
             this.modelNumber = "";
         }
     }
-    
-    
+
     public String getModelNumber() {
-        return( this.modelNumber );
+        return (this.modelNumber);
     }
-    
-    
-    public void setSerialNumber( String serialNumber ) {
-        if( serialNumber != null ) {
+
+    public void setSerialNumber(String serialNumber) {
+        if (serialNumber != null) {
             this.serialNumber = serialNumber;
-        }
-        else {
+        } else {
             this.serialNumber = "";
         }
     }
-    
-    
+
     public String getSerialNumber() {
-        return( this.serialNumber );
+        return (this.serialNumber);
     }
-    
-    
-    public void setDescription( String description ) {
-        if( description != null ) {
+
+    public void setDescription(String description) {
+        if (description != null) {
             this.description = description;
-        }
-        else {
+        } else {
             this.description = "";
         }
     }
-    
-    
+
     public String getDescription() {
-        return( this.description );
+        return (this.description);
     }
-    
-    
-    public void setCircuitId( String circuitId ) {
-        if( circuitId != null ) {
+
+    public void setCircuitId(String circuitId) {
+        if (circuitId != null) {
             this.circuitId = circuitId;
-        }
-        else {
+        } else {
             this.circuitId = "";
         }
     }
-    
-    
+
     public String getCircuitId() {
-        return( this.circuitId );
+        return (this.circuitId);
     }
-    
-    
-    public void setAssetNumber( String assetNumber ) {
-        if( assetNumber != null ) {
+
+    public void setAssetNumber(String assetNumber) {
+        if (assetNumber != null) {
             this.assetNumber = assetNumber;
-        }
-        else {
+        } else {
             this.assetNumber = "";
         }
     }
-    
-    
+
     public String getAssetNumber() {
-        return( this.assetNumber );
+        return (this.assetNumber);
     }
-    
-    
-    public void setOperatingSystem( String operatingSystem ) {
-        if( operatingSystem != null ) {
+
+    public void setOperatingSystem(String operatingSystem) {
+        if (operatingSystem != null) {
             this.operatingSystem = operatingSystem;
-        }
-        else {
+        } else {
             this.operatingSystem = "";
         }
     }
-    
-    
+
     public String getOperatingSystem() {
-        return( this.operatingSystem );
+        return (this.operatingSystem);
     }
-    
-    
-    public void setRack( String rack ) {
-        if( rack != null ) {
+
+    public void setRack(String rack) {
+        if (rack != null) {
             this.rack = rack;
-        }
-        else {
+        } else {
             this.rack = "";
         }
     }
-    
-    
+
     public String getRack() {
-        return( this.rack );
+        return (this.rack);
     }
-    
-    
-    public void setSlot( String slot ) {
-        if( slot != null ) {
+
+    public void setSlot(String slot) {
+        if (slot != null) {
             this.slot = slot;
-        }
-        else {
+        } else {
             this.slot = "";
         }
     }
-    
-    
+
     public String getSlot() {
-        return( this.slot );
+        return (this.slot);
     }
-    
-    
-    public void setPort( String port ) {
-        if( port != null ) {
+
+    public void setPort(String port) {
+        if (port != null) {
             this.port = port;
-        }
-        else {
+        } else {
             this.port = "";
         }
     }
-    
-    
+
     public String getPort() {
-        return( this.port );
+        return (this.port);
     }
-    
-    
-    public void setRegion( String region ) {
-        if( region != null ) {
+
+    public void setRegion(String region) {
+        if (region != null) {
             this.region = region;
-        }
-        else {
+        } else {
             this.region = "";
         }
     }
-    
-    
+
     public String getRegion() {
-        return( this.region );
+        return (this.region);
     }
-    
-    
-    public void setDivision( String division ) {
-        if( division != null ) {
+
+    public void setDivision(String division) {
+        if (division != null) {
             this.division = division;
-        }
-        else {
+        } else {
             this.division = "";
         }
     }
-    
-    
+
     public String getDivision() {
-        return( this.division );
+        return (this.division);
     }
-    
-    
-    public void setDepartment( String department ) {
-        if( department != null ) {
+
+    public void setDepartment(String department) {
+        if (department != null) {
             this.department = department;
-        }
-        else {
+        } else {
             this.department = "";
         }
     }
-    
-    
+
     public String getDepartment() {
-        return( this.department );
+        return (this.department);
     }
-    
-    
-    public void setAddress1( String address1 ) {
-        if( address1 != null ) {
+
+    public void setAddress1(String address1) {
+        if (address1 != null) {
             this.address1 = address1;
-        }
-        else {
+        } else {
             this.address1 = "";
         }
     }
-    
-    
+
     public String getAddress1() {
-        return( this.address1 );
+        return (this.address1);
     }
-    
-    
-    public void setAddress2( String address2 ) {
-        if( address2 != null ) {
+
+    public void setAddress2(String address2) {
+        if (address2 != null) {
             this.address2 = address2;
-        }
-        else {
+        } else {
             this.address2 = "";
         }
     }
-    
-    
+
     public String getAddress2() {
-        return( this.address2 );
+        return (this.address2);
     }
-    
-    
-    public void setCity( String city ) {
-        if( city != null ) {
+
+    public void setCity(String city) {
+        if (city != null) {
             this.city = city;
-        }
-        else {
+        } else {
             this.city = "";
         }
     }
-    
-    
+
     public String getCity() {
-        return( this.city );
+        return (this.city);
     }
-    
-    
-    public void setState( String state ) {
-        if( state != null ) {
+
+    public void setState(String state) {
+        if (state != null) {
             this.state = state;
-        }
-        else {
+        } else {
             this.state = "";
         }
     }
-    
-    
+
     public String getState() {
-        return( this.state );
+        return (this.state);
     }
-    
-    
-    public void setZip( String zip ) {
-        if( zip != null ) {
+
+    public void setZip(String zip) {
+        if (zip != null) {
             this.zip = zip;
-        }
-        else {
+        } else {
             this.zip = "";
         }
     }
-    
-    
+
     public String getZip() {
-        return( this.zip );
+        return (this.zip);
     }
-    
-    
-    public void setBuilding( String building ) {
-        if( building != null ) {
+
+    public void setBuilding(String building) {
+        if (building != null) {
             this.building = building;
-        }
-        else {
+        } else {
             this.building = "";
         }
     }
-    
-    
+
     public String getBuilding() {
-        return( this.building );
+        return (this.building);
     }
-    
-    
-    public void setFloor( String floor ) {
-        if( floor != null ) {
+
+    public void setFloor(String floor) {
+        if (floor != null) {
             this.floor = floor;
-        }
-        else {
+        } else {
             this.floor = "";
         }
     }
-    
-    
+
     public String getFloor() {
-        return( this.floor );
+        return (this.floor);
     }
-    
-    
-    public void setRoom( String room ) {
-        if( room != null ) {
+
+    public void setRoom(String room) {
+        if (room != null) {
             this.room = room;
-        }
-        else {
+        } else {
             this.room = "";
         }
     }
-    
-    
+
     public String getRoom() {
-        return( this.room );
+        return (this.room);
     }
-    
-    
-    public void setVendorPhone( String vendorPhone ) {
-        if( vendorPhone != null ) {
+
+    public void setVendorPhone(String vendorPhone) {
+        if (vendorPhone != null) {
             this.vendorPhone = vendorPhone;
-        }
-        else {
+        } else {
             this.vendorPhone = "";
         }
     }
-    
-    
+
     public String getVendorPhone() {
-        return( this.vendorPhone );
+        return (this.vendorPhone);
     }
-    
-    
-    public void setVendorFax( String vendorFax ) {
-        if( vendorFax != null ) {
+
+    public void setVendorFax(String vendorFax) {
+        if (vendorFax != null) {
             this.vendorFax = vendorFax;
-        }
-        else {
+        } else {
             this.vendorFax = "";
         }
     }
-    
-    
+
     public String getVendorFax() {
-        return( this.vendorFax );
+        return (this.vendorFax);
     }
-    
-    
-    public void setUserLastModified( String userLastModified ) {
-        if( userLastModified != null ) {
+
+    public void setUserLastModified(String userLastModified) {
+        if (userLastModified != null) {
             this.userLastModified = userLastModified;
-        }
-        else {
+        } else {
             this.userLastModified = "";
         }
     }
-    
-    
+
     public String getUserLastModified() {
-        return( this.userLastModified );
+        return (this.userLastModified);
     }
-    
-    
-    public void setDateInstalled( String dateInstalled ) {
-        if( dateInstalled != null ) {
+
+    public void setDateInstalled(String dateInstalled) {
+        if (dateInstalled != null) {
             this.dateInstalled = dateInstalled;
-        }
-        else {
+        } else {
             this.dateInstalled = "";
         }
     }
-    
-    
+
     public String getDateInstalled() {
-        return( this.dateInstalled );
+        return (this.dateInstalled);
     }
-    
-    
-    public void setLease( String lease ) {
-        if( lease != null ) {
+
+    public void setLease(String lease) {
+        if (lease != null) {
             this.lease = lease;
-        }
-        else {
+        } else {
             this.lease = "";
         }
     }
-    
-    
+
     public String getLease() {
-        return( this.lease );
+        return (this.lease);
     }
-    
-    
-    public void setLeaseExpires( String leaseExpires ) {
-        if( leaseExpires != null ) {
+
+    public void setLeaseExpires(String leaseExpires) {
+        if (leaseExpires != null) {
             this.leaseExpires = leaseExpires;
-        }
-        else {
+        } else {
             this.leaseExpires = "";
         }
     }
-    
-    
+
     public String getLeaseExpires() {
-        return( this.leaseExpires );
+        return (this.leaseExpires);
     }
-    
-    
-    public void setSupportPhone( String supportPhone ) {
-        if( supportPhone != null ) {
+
+    public void setSupportPhone(String supportPhone) {
+        if (supportPhone != null) {
             this.supportPhone = supportPhone;
-        }
-        else {
+        } else {
             this.supportPhone = "";
         }
     }
-    
-    
+
     public String getSupportPhone() {
-        return( this.supportPhone );
+        return (this.supportPhone);
     }
-    
-    
-    public void setMaintContract( String maintContract ) {
-        if( maintContract != null ) {
+
+    public void setMaintContract(String maintContract) {
+        if (maintContract != null) {
             this.maintContract = maintContract;
-        }
-        else {
+        } else {
             this.maintContract = "";
         }
     }
-    
-    
+
     public String getMaintContract() {
-        return( this.maintContract );
+        return (this.maintContract);
     }
-    
-    
-    public void setVendorAssetNumber( String vendorAssetNumber ) {
-        if( vendorAssetNumber != null ) {
+
+    public void setVendorAssetNumber(String vendorAssetNumber) {
+        if (vendorAssetNumber != null) {
             this.vendorAssetNumber = vendorAssetNumber;
-        }
-        else {
+        } else {
             this.vendorAssetNumber = "";
         }
     }
-    
-    
+
     public String getVendorAssetNumber() {
-        return( this.vendorAssetNumber );
+        return (this.vendorAssetNumber);
     }
-    
-    
-    public void setMaintContractExpires( String maintContractExpires ) {
-        if( maintContractExpires != null ) {
+
+    public void setMaintContractExpires(String maintContractExpires) {
+        if (maintContractExpires != null) {
             this.maintContractExpires = maintContractExpires;
-        }
-        else {
+        } else {
             this.maintContractExpires = "";
         }
     }
-    
-    
+
     public String getMaintContractExpires() {
-        return( this.maintContractExpires );
+        return (this.maintContractExpires);
     }
-    
-    
-    public void setComments( String comments ) {
-        if( comments != null ) {
+
+    public void setComments(String comments) {
+        if (comments != null) {
             this.comments = comments;
-        }
-        else {
+        } else {
             this.comments = "";
         }
     }
-    
-    
+
     public String getComments() {
-        return( this.comments );
+        return (this.comments);
     }
-    
 
 }

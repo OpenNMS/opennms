@@ -12,20 +12,23 @@ import java.util.Map;
 
 import org.opennms.netmgt.utils.ParameterMap;
 
-
 /**
  * @author brozow
- *
+ * 
  * TODO Need to javadoc this class
  * 
  */
 public class ConnectionConfig {
     InetAddress m_inetAddress;
+
     Map m_qualifiers;
+
     int m_port;
+
     int m_timeout;
+
     int m_retry;
-    
+
     /**
      * @param address
      * @param qualifiers
@@ -40,46 +43,48 @@ public class ConnectionConfig {
         m_timeout = timeout;
         m_retry = retry;
     }
-    
+
     public ConnectionConfig(InetAddress address, int port) {
         m_inetAddress = address;
         m_port = port;
-        
+
     }
-    
+
     public ConnectionConfig(InetAddress inetAddress, int port, int timeout, int retry) {
         this(inetAddress, null, port, timeout, retry);
     }
-    
+
     public InetSocketAddress getSocketAddress() {
         return new InetSocketAddress(getInetAddress(), getPort());
     }
-    
-    
+
     /**
      * @return Returns the address.
      */
     public InetAddress getInetAddress() {
         return m_inetAddress;
     }
+
     /**
-     * @param inetAddress The inetAddresss to set.
+     * @param inetAddress
+     *            The inetAddresss to set.
      */
     public void setInetAddress(InetAddress inetAddress) {
         m_inetAddress = inetAddress;
     }
-    
+
     public int getKeyedInteger(String key, int defaultVal) {
         if (m_qualifiers == null)
             return defaultVal;
         else
             return ParameterMap.getKeyedInteger(m_qualifiers, key, defaultVal);
     }
-    
+
     public void saveKeyedInteger(String key, int value) {
         if (m_qualifiers != null && !m_qualifiers.containsKey(key))
             m_qualifiers.put(key, new Integer(value));
     }
+
     /**
      * @return Returns the port.
      */
@@ -93,20 +98,25 @@ public class ConnectionConfig {
     public int getRetry() {
         return m_retry;
     }
+
     /**
-     * @param retry The retries to set.
+     * @param retry
+     *            The retries to set.
      */
     public void setRetry(int retry) {
         m_retry = retry;
     }
+
     /**
      * @return Returns the timeout.
      */
     public int getTimeout() {
         return m_timeout;
     }
+
     /**
-     * @param timeout The timeout to set.
+     * @param timeout
+     *            The timeout to set.
      */
     public void setTimeout(int timeout) {
         m_timeout = timeout;

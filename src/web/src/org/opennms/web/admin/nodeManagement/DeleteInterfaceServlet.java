@@ -48,61 +48,60 @@ import org.opennms.netmgt.xml.event.Event;
 
 /**
  * @author brozow
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * 
+ * TODO To change the template for this generated type comment go to Window -
+ * Preferences - Java - Code Style - Code Templates
  */
 public class DeleteInterfaceServlet extends HttpServlet {
 
-    /* (non-Javadoc)
-     * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest,
+     *      javax.servlet.http.HttpServletResponse)
      */
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
-    {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         checkParameters(request);
-        
+
         long nodeId = Long.parseLong(request.getParameter("node"));
         String ipAddr = request.getParameter("intf");
         String ifIndexString = request.getParameter("ifIndex");
         int ifIndex = (ifIndexString == null || "".equals(ifIndexString)) ? -1 : Integer.parseInt(ifIndexString);
 
-        // TODO provide a way to delete an interface that has a non-unique ipAddr
-        
+        // TODO provide a way to delete an interface that has a non-unique
+        // ipAddr
+
         Event e = EventUtils.createDeleteInterfaceEvent("OpenNMS.WebUI", nodeId, ipAddr, -1L);
         sendEvent(e);
-        
+
         // forward the request for proper display
         RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/interfaceDeleted.jsp");
-        dispatcher.forward( request, response );
+        dispatcher.forward(request, response);
 
     }
-    
-    private void sendEvent(Event event) throws ServletException 
-    {
-        try
-        {
+
+    private void sendEvent(Event event) throws ServletException {
+        try {
             EventProxy eventProxy = new TcpEventProxy();
             eventProxy.send(event);
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             throw new ServletException("Could not send event " + event.getUei(), e);
         }
     }
-    
+
     public void checkParameters(HttpServletRequest request) {
-        String nodeIdString = request.getParameter( "node" );
-        String ipAddr = request.getParameter( "intf" );
-        String ifindexString = request.getParameter( "ifindex" );
-        
-        if( nodeIdString == null ) {
-            throw new org.opennms.web.MissingParameterException( "node", new String[] { "node", "intf", "ifindex?"} );
+        String nodeIdString = request.getParameter("node");
+        String ipAddr = request.getParameter("intf");
+        String ifindexString = request.getParameter("ifindex");
+
+        if (nodeIdString == null) {
+            throw new org.opennms.web.MissingParameterException("node", new String[] { "node", "intf", "ifindex?" });
         }
 
-        if( ipAddr == null ) {
-            throw new org.opennms.web.MissingParameterException( "intf", new String[] { "node", "intf", "ifindex?" } );
+        if (ipAddr == null) {
+            throw new org.opennms.web.MissingParameterException("intf", new String[] { "node", "intf", "ifindex?" });
         }
 
     }
-    
+
 }
