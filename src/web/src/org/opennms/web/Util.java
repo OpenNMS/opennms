@@ -652,4 +652,8 @@ public abstract class Util extends Object {
         return list;
     }
 
+    public static String htmlify(String input) {
+        return (input == null ? null : input.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
+    }
+
 }

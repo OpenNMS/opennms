@@ -32,6 +32,8 @@
 
 package org.opennms.web.element;
 
+import org.opennms.web.Util;
+
 public class Node {
     int m_nodeId;
 
@@ -102,19 +104,19 @@ public class Node {
     }
 
     public String getNodeSysName() {
-        return htmlify(m_nodeSysName);
+        return Util.htmlify(m_nodeSysName);
     }
 
     public String getNodeSysDescr() {
-        return htmlify(m_nodeSysDescr);
+        return Util.htmlify(m_nodeSysDescr);
     }
 
     public String getNodeSysLocn() {
-        return htmlify(m_nodeSysLocn);
+        return Util.htmlify(m_nodeSysLocn);
     }
 
     public String getNodeSysContact() {
-        return htmlify(m_nodeSysContact);
+        return Util.htmlify(m_nodeSysContact);
     }
 
     public char getNodeType() {
@@ -122,7 +124,7 @@ public class Node {
     }
 
     public String getOperatingSystem() {
-        return htmlify(m_operatingSystem);
+        return Util.htmlify(m_operatingSystem);
     }
 
     public String toString() {
@@ -138,9 +140,5 @@ public class Node {
         str.append("Node Sys Type = " + m_nodeType + "\n");
         str.append("Operating System = " + m_operatingSystem + "\n");
         return str.toString();
-    }
-
-    private String htmlify(String input) {
-        return (input == null ? null : input.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
     }
 }
