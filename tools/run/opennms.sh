@@ -27,17 +27,59 @@
 # pidfile: @install.pid.file@
 #
 
+#### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
+#### Create $OPENNMS_HOME/etc/opennms.conf and put overrides in there. ####
+#### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
 
-VERSION_OPENNMS='1.21'
+# Home directory for OpenNMS.
 OPENNMS_HOME="@install.dir@"
-OPENNMS_PIDFILE="@install.pid.file@"
-OPENNMS_INITDIR="@install.init.dir@"
-REDIRECT="@install.logs.dir@/output.log" # where to redirect "start" output
-START_TIMEOUT="180" # number of seconds before timing out on startup
-DEFAULT_JAVA_HEAP_SIZE=256 # value of the -Xmx<size>m option passed to Java
-INVOKE_URL="http://localhost:8181/invoke?objectname=OpenNMS:Name=FastExit"
-WAIT_FOR_STARTUP="yes"
 
+# PID file for OpenNMS.
+OPENNMS_PIDFILE="@install.pid.file@"
+
+# Where to redirect "start" output.
+REDIRECT="@install.logs.dir@/output.log"
+
+# Number of times to do "opennms status" after starting OpenNMS to see
+# if it comes up completely.  Set to "0" to disable.  Between each
+# attempt we sleep for STATUS_WAIT seconds.  
+START_TIMEOUT=10
+
+# Number of seconds to wait between each "opennms status" check when
+# START_TIMEOUT > 0.
+STATUS_WAIT=0
+
+# Value of the -Xmx<size>m option passed to Java.
+JAVA_HEAP_SIZE=256
+
+# Additional options that should be passed to Java when starting OpenNMS.
+ADDITIONAL_MANAGER_OPTIONS=""
+
+# Use incremental garbage collection.
+USE_INCGC=""
+
+# Use the Java Hotspot server VM.
+HOTSPOT=""
+
+# Enable verbose garbage collection debugging.
+VERBOSE_GC=""
+
+# Additional options to pass to runjava.
+RUNJAVA_OPTIONS=""
+
+# URL that this script uses to communicate with a running OpenNMS daemon.
+INVOKE_URL="http://localhost:8181/invoke?objectname=OpenNMS:Name=FastExit"
+
+
+#### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
+#### Create $OPENNMS_HOME/etc/opennms.conf and put overrides in there. ####
+#### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
+
+
+# Load opennms.conf, if it exists, to override above configuration options.
+if [ -f $OPENNMS_HOME/etc/opennms.conf ]; then
+    . $OPENNMS_HOME/etc/opennms.conf
+fi
 
 show_help () {
     cat <<END
@@ -54,7 +96,8 @@ Usage: $0 [-n] [-t] [-v] <command> [<service>]
     -n    "No execute" mode.  Don't call Java to do anything.
     -t    Test mode.  Enable JPDA on port 8001.
     -v    Verbose mode.  When used with the "status" command, gives the
-          results for all OpenNMS services.
+          results for all OpenNMS services.  When used with "start", enables
+          some verbose debugging, such as details on garbage collection.
 
 END
     return
@@ -223,22 +266,25 @@ doStart(){
 	# disown # XXX specific to bash
     fi
 
-    if [ x"$WAIT_FOR_STARTUP" != x"" ]; then
-        # wait for it to startup
-	STATUS_ATTEMPTS=0
-	while [ $STATUS_ATTEMPTS -lt 10 ]; do
-	    if doStatus; then
-		return 0
-	    fi
-	    sleep 5
-	    STATUS_ATTEMPTS=`expr $STATUS_ATTEMPTS + 1`
-	done
-
-	echo "Started OpenNMS, but it has not finished starting up" >&2
-	return 1
-    else
+    if [ $START_TIMEOUT -eq 0 ]; then
+	# don't wait for OpenNMS to startup
+	$echo "(not waiting for startup) \c"
 	return 0
     fi
+
+    # wait for OpenNMS to startup
+    STATUS_ATTEMPTS=0
+    while [ $STATUS_ATTEMPTS -lt $START_TIMEOUT ]; do
+	if doStatus; then
+	    return 0
+	fi
+	sleep $STATUS_WAIT
+	STATUS_ATTEMPTS=`expr $STATUS_ATTEMPTS + 1`
+    done
+
+    echo "Started OpenNMS, but it has not finished starting up" >&2
+    return 1
+    
 }
 
 doPause(){
@@ -352,7 +398,6 @@ determineStatus(){
     fi
 }
 
-RETVAL=0
 FUNCTIONS_LOADED=0
 
 if [ -f /etc/SuSE-release ]; then
@@ -362,7 +407,7 @@ if [ -f /etc/SuSE-release ]; then
 else
     # Source function library.
     for dir in @install.init.dir@ /etc /etc/rc.d; do
-	if [ -f "$dir/init.d/functions" ] && [ "$FUNCTIONS_LOADED" = "0" ]; then
+	if [ -f "$dir/init.d/functions" -a $FUNCTIONS_LOADED -eq 0 ]; then
 	    . "$dir/init.d/functions"
 	    FUNCTIONS_LOADED=1
 	fi
@@ -393,7 +438,7 @@ umask 002
 cd "$OPENNMS_HOME" || { echo "could not \"cd $OPENNMS_HOME\"" >&2; exit 1; }
 
 # define needed for grep to find opennms easily
-JAVA_CMD="$OPENNMS_HOME/bin/runjava -r --"
+JAVA_CMD="$OPENNMS_HOME/bin/runjava -r $RUNJAVA_OPTIONS --"
 
 APP_CLASSPATH="$OPENNMS_HOME/etc"
 for jar in $OPENNMS_HOME/lib/*.jar; do
@@ -401,23 +446,28 @@ for jar in $OPENNMS_HOME/lib/*.jar; do
 done
 
 MANAGER_CLASS=org.opennms.netmgt.vmmgr.Manager
-MANAGER_OPTIONS="-DOPENNMSLAUNCH -Dopennms.home=$OPENNMS_HOME -Djcifs.properties=$OPENNMS_HOME/etc/jcifs.properties"
-if [ -z "$JAVA_HEAP_SIZE" ] ; then
-    JAVA_HEAP_SIZE=$DEFAULT_JAVA_HEAP_SIZE
-fi
-if echo "$JAVA_HEAP_SIZE" | egrep '^[0-9]+$' >/dev/null; then
-    MANAGER_OPTIONS="-Xmx${JAVA_HEAP_SIZE}m $MANAGER_OPTIONS"
-fi
+MANAGER_OPTIONS="-DOPENNMSLAUNCH"
+MANAGER_OPTIONS="$MANAGER_OPTIONS -Dopennms.home=$OPENNMS_HOME"
+MANAGER_OPTIONS="$MANAGER_OPTIONS -Djcifs.properties=$OPENNMS_HOME/etc/jcifs.properties"
+MANAGER_OPTIONS="$MANAGER_OPTIONS -Xmx${JAVA_HEAP_SIZE}m"
+
 if [ -n "$USE_INCGC" -a "$USE_INCGC" = true ] ; then
-    MANAGER_OPTIONS="-Xincgc $MANAGER_OPTIONS"
+    MANAGER_OPTIONS="$MANAGER_OPTIONS -Xincgc"
 fi
+
+if [ x"$ADDITIONAL_MANAGER_OPTIONS" != x"" ]; then
+    MANAGER_OPTIONS="$MANAGER_OPTIONS $ADDITIONAL_MANAGER_OPTIONS"
+fi
+
+
 if [ -n "$HOTSPOT" -a "$HOTSPOT" = true ] ; then
     JAVA_CMD="$JAVA_CMD -server"
 fi
 
 CONTROLLER_CLASS=org.opennms.netmgt.vmmgr.Manager
-CONTROLLER_LOG4J_CONFIG=log4j.properties
-CONTROLLER_OPTIONS="-Dopennms.home=$OPENNMS_HOME -Dlog4j.configuration=$CONTROLLER_LOG4J_CONFIG"
+CONTROLLER_OPTIONS="-Dopennms.home=$OPENNMS_HOME"
+CONTROLLER_OPTIONS="-Dlog4j.configuration=log4j.properties"
+
 
 TEST=0
 NOEXECUTE=""
@@ -435,6 +485,7 @@ while getopts ntv c; do
 	    ;;
 	v)
 	    VERBOSE=1
+	    VERBOSE_GC=1
 	    ;;
 
 	"?")
@@ -467,6 +518,9 @@ if [ x"$SERVICE" = x"all" ]; then
     SERVICE=""
 fi
 
+if [ x"$VERBOSE_GC" != x"" ]; then
+    MANAGER_OPTIONS="$MANAGER_OPTIONS -verbose:gc"
+fi
 
 case "$COMMAND" in
     start|spawn)
