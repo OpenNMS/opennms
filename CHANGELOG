@@ -1,5 +1,7 @@
 1.1.0 to 1.1.1
 ----------------------------------------------------------------------
+- Added Key SNMP Custom (KSC) Performance report builder, under 
+  the Reports section of the GUI. Thx Dave M.
 - fixed JNI calling on MacOSX 10.2 (jnilibs now build as 2-level
   namespace)
 - updated logging to log4j 1.2.7
