@@ -37,7 +37,6 @@
 package org.opennms.netmgt.notifd;
 
 import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -57,8 +56,7 @@ import org.opennms.core.utils.ClassExecutor;
 import org.opennms.core.utils.CommandExecutor;
 import org.opennms.core.utils.ExecutorStrategy;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.NotificationFactory;
-import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.notificationCommands.Argument;
 import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.users.Contact;
@@ -110,24 +108,20 @@ public class NotificationTask extends Thread {
      */
     private SortedMap m_notifTree;
 
+    private Notifd m_notifd;
+
     /**
      * Constructor, initializes some information
      * 
      * @param someParams
      *            the parameters from Notify
      */
-    public NotificationTask(long sendTime, Map someParams, List siblings) throws SQLException {
+    public NotificationTask(Notifd notifd, long sendTime, Map someParams, List siblings) throws SQLException {
+        m_notifd = notifd;
         m_sendTime = sendTime;
         m_params = new HashMap(someParams);
         m_siblings = siblings;
 
-        try {
-            UserFactory.init();
-            NotificationFactory.init();
-        } catch (Exception e) {
-            ThreadCategory.getInstance(getClass()).error("Error initializing UserFactory or NotificationFactory", e);
-            throw new UndeclaredThrowableException(e);
-        }
     }
 
     /**
@@ -198,7 +192,7 @@ public class NotificationTask extends Thread {
 
         boolean responded = false;
         try {
-            responded = NotificationFactory.getInstance().noticeOutstanding(m_notifyId);
+            responded = m_notifd.getNotificationManager().noticeOutstanding(m_notifyId);
         } catch (Exception e) {
             log.error("Unable to get response status on notice #" + m_notifyId, e);
         }
@@ -206,14 +200,14 @@ public class NotificationTask extends Thread {
         // check to see if someone has responded, if so remove all the brothers
         if (responded) {
             try {
-                if (UserFactory.getInstance().isUserOnDuty(m_user.getUserId(), Calendar.getInstance())) {
+                if (m_notifd.getUserManager().isUserOnDuty(m_user.getUserId(), Calendar.getInstance())) {
                     // send the notice
 
                     ExecutorStrategy command = null;
 
                     for (int i = 0; i < m_commands.length; i++) {
                         try {
-                            NotificationFactory.getInstance().updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), UserFactory.getInstance().getContactInfo(m_user.getUserId(), m_commands[i].getName()));
+                            m_notifd.getNotificationManager().updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), m_notifd.getUserManager().getContactInfo(m_user.getUserId(), m_commands[i].getName()));
                         } catch (SQLException e) {
                             log.error("Could not insert notice info into database, aborting send notice...", e);
                             continue;
@@ -279,16 +273,16 @@ public class NotificationTask extends Thread {
         String value = "";
 
         try {
-            if (NotificationFactory.PARAM_DESTINATION.equals(aSwitch)) {
+            if (NotificationManager.PARAM_DESTINATION.equals(aSwitch)) {
                 value = m_user.getUserId();
-            } else if (NotificationFactory.PARAM_EMAIL.equals(aSwitch)) {
+            } else if (NotificationManager.PARAM_EMAIL.equals(aSwitch)) {
                 value = getEmail(m_user);
-            } else if (NotificationFactory.PARAM_PAGER_EMAIL.equals(aSwitch)) {
-                value = UserFactory.getInstance().getPagerEmail(m_user.getUserId());
-            } else if (NotificationFactory.PARAM_TEXT_PAGER_PIN.equals(aSwitch)) {
-                value = UserFactory.getInstance().getTextPin(m_user.getUserId());
-            } else if (NotificationFactory.PARAM_NUM_PAGER_PIN.equals(aSwitch)) {
-                value = UserFactory.getInstance().getNumericPin(m_user.getUserId());
+            } else if (NotificationManager.PARAM_PAGER_EMAIL.equals(aSwitch)) {
+                value = m_notifd.getUserManager().getPagerEmail(m_user.getUserId());
+            } else if (NotificationManager.PARAM_TEXT_PAGER_PIN.equals(aSwitch)) {
+                value = m_notifd.getUserManager().getTextPin(m_user.getUserId());
+            } else if (NotificationManager.PARAM_NUM_PAGER_PIN.equals(aSwitch)) {
+                value = m_notifd.getUserManager().getNumericPin(m_user.getUserId());
             } else if (m_params.containsKey(aSwitch)) {
                 value = (String) m_params.get(aSwitch);
             }

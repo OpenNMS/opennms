@@ -72,7 +72,7 @@ class OpenNMSPrincipal extends Object implements Principal {
      * Return the password of this Principal.
      */
     public boolean comparePasswords(String password) {
-        return (this.userInfo.getPassword().equals(UserFactory.encryptPassword(password)));
+        return (this.userInfo.getPassword().equals(UserFactory.getInstance().encryptedPassword(password)));
     }
 
 }

@@ -46,7 +46,12 @@ import java.util.Map;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DbConnectionFactory;
+import org.opennms.netmgt.config.GroupFactory;
+import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.NotifdConfigManager;
+import org.opennms.netmgt.config.NotificationManager;
+import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.notifd.Queue;
 import org.opennms.netmgt.eventd.EventIpcManager;
 
@@ -97,6 +102,12 @@ public final class Notifd implements PausableFiber {
     private NotifdConfigManager m_configManager;
 
     private DbConnectionFactory m_dbConnectionFactory;
+
+    private NotificationManager m_notificationManager;
+    
+    private GroupManager m_groupManager;
+
+    private UserManager m_userManager;
 
     /**
      * Constructs a new Notifd service daemon.
@@ -151,6 +162,30 @@ public final class Notifd implements PausableFiber {
     
     public void setConfigManager(NotifdConfigManager configManager ) {
         m_configManager = configManager;
+    }
+    
+    public GroupManager getGroupManager() {
+        return m_groupManager;
+    }
+    
+    public void setGroupManager(GroupManager groupManager) {
+        m_groupManager = new GroupFactory();
+    }
+    
+    public UserManager getUserManager() {
+        return m_userManager;
+    }
+    
+    public void setUserManager(UserManager userManager) {
+        m_userManager = new UserFactory();
+    }
+
+    public NotificationManager getNotificationManager() {
+        return m_notificationManager;
+    }
+    
+    public void setNotificationManager(NotificationManager notificationManager) {
+        m_notificationManager = notificationManager;
     }
 
     /**

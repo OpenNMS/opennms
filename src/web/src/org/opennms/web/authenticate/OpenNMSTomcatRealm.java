@@ -146,8 +146,7 @@ public class OpenNMSTomcatRealm extends Object implements Realm {
         this.principals = new HashMap();
 
         try {
-            // load the regular users
-            UserFactory.reload();
+            UserFactory.getInstance().reload();
             UserFactory factory = UserFactory.getInstance();
             this.log.debug("Reloaded the users.xml file into memory");
 
@@ -188,7 +187,7 @@ public class OpenNMSTomcatRealm extends Object implements Realm {
 
                 User magicUser = new User();
                 magicUser.setUserId(name);
-                magicUser.setPassword(UserFactory.encryptPassword(password));
+                magicUser.setPassword(UserFactory.getInstance().encryptedPassword(password));
 
                 this.principals.put(name, new OpenNMSPrincipal(magicUser));
             }
@@ -410,7 +409,7 @@ public class OpenNMSTomcatRealm extends Object implements Realm {
     protected boolean isParseNecessary() {
         boolean necessary = false;
 
-        if (UserFactory.updateNeeded()) {
+        if (UserFactory.getInstance().isUpdateNeeded()) {
             necessary = true;
         }
 

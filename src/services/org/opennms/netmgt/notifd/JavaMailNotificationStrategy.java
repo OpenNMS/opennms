@@ -12,7 +12,7 @@ import org.opennms.core.utils.Argument;
 import org.opennms.core.utils.JavaMailer;
 import org.opennms.core.utils.JavaMailerException;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.NotificationFactory;
+import org.opennms.netmgt.config.NotificationManager;
 
 /**
  * Implements NotificationStragey pattern used to send notifications via the
@@ -72,16 +72,16 @@ public class JavaMailNotificationStrategy implements NotificationStrategy {
              * (PARAM_EMAIL or PARAM_PAGER_EMAIL) are specified last in the
              * notificationCommands.xml file
              */
-            if (NotificationFactory.PARAM_EMAIL.equals(arg.getSwitch())) {
+            if (NotificationManager.PARAM_EMAIL.equals(arg.getSwitch())) {
                 log.debug("Found: PARAM_EMAIL");
                 jm.setTo(arg.getValue());
-            } else if (NotificationFactory.PARAM_PAGER_EMAIL.equals(arg.getSwitch())) {
+            } else if (NotificationManager.PARAM_PAGER_EMAIL.equals(arg.getSwitch())) {
                 log.debug("Found: PARAM_PAGER_EMAIL");
                 jm.setTo(arg.getValue());
-            } else if (NotificationFactory.PARAM_SUBJECT.equals(arg.getSwitch())) {
+            } else if (NotificationManager.PARAM_SUBJECT.equals(arg.getSwitch())) {
                 log.debug("Found: PARAM_SUBJECT");
                 jm.setSubject(arg.getValue());
-            } else if (NotificationFactory.PARAM_TEXT_MSG.equals(arg.getSwitch())) {
+            } else if (NotificationManager.PARAM_TEXT_MSG.equals(arg.getSwitch())) {
                 log.debug("Found: PARAM_TEXT_MSG");
                 jm.setMessageText(arg.getValue());
             }

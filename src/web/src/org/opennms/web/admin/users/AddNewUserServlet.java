@@ -75,7 +75,7 @@ public class AddNewUserServlet extends HttpServlet {
         } else {
             User newUser = new User();
             newUser.setUserId(userID);
-            newUser.setPassword(UserFactory.encryptPassword(password));
+            newUser.setPassword(UserFactory.getInstance().encryptedPassword(password));
 
             HttpSession userSession = request.getSession(false);
             userSession.setAttribute("user.modifyUser.jsp", newUser);

@@ -75,7 +75,7 @@ public class GroupFactory extends GroupManager {
     /**
      * Constructor which parses the file
      */
-    private GroupFactory() {
+    public GroupFactory() {
     }
 
     public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {

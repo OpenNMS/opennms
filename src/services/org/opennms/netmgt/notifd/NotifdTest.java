@@ -33,9 +33,11 @@
 
 package org.opennms.netmgt.notifd;
 
+import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.notifd.mock.MockNotifdConfigManager;
+import org.opennms.netmgt.notifd.mock.MockNotificationManager;
 
 import junit.framework.TestCase;
 /**
@@ -94,6 +96,175 @@ public class NotifdTest extends TestCase {
             "                </handler-class>\n" + 
             "        </queue>\n" + 
             "</notifd-configuration>";
+    
+    private static final String NOTIFICATION_MANAGER = "<?xml version=\"1.0\"?>\n" + 
+            "<notifications xmlns=\"http://xmlns.opennms.org/xsd/notifications\">\n" + 
+            "    <header>\n" + 
+            "        <rev>1.2</rev>\n" + 
+            "        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
+            "        <mstation>localhost</mstation>\n" + 
+            "    </header>\n" + 
+            "    <notification name=\"serviceUnresponsive\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/nodes/serviceUnresponsive</uei>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <text-message>The %service% poll to interface %interfaceresolve% (%interface%) \n" + 
+            "on node %nodelabel% successfully \n" + 
+            "completed a connection to the service listener on the \n" + 
+            "remote machine. However, the synthetic transaction failed \n" + 
+            "to complete within %parm[timeout]% milliseconds, over \n" + 
+            "%parm[attempts]% attempts.  This event will NOT impact service \n" + 
+            "level agreements, but may be an indicator of other problems on that node.  \n" + 
+            "   </text-message>\n" + 
+            "        <subject>Notice #%noticeid%: %service% service on %interfaceresolve% (%interface%) on node %nodelabel% is unresponsive.</subject>\n" + 
+            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
+            "    </notification>\n" + 
+            "    <notification name=\"serviceResponsive\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/nodes/serviceResponsive</uei>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <text-message>The %service% service on %interfaceresolve% (%interface%) \n" + 
+            "on node %nodelabel% has recovered from a previously \n" + 
+            "UNRESPONSIVE state.  Synthetic transactions to this service \n" + 
+            "are completing within the alotted timeout and retry period.</text-message>\n" + 
+            "        <subject>Notice #%noticeid%: %service% service on %interfaceresolve% (%interface%) on node %nodelabel% has recovered.</subject>\n" + 
+            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
+            "    </notification>\n" + 
+            "    <notification name=\"interfaceDown\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/nodes/interfaceDown</uei>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <text-message>All services are down on interface %interfaceresolve% (%interface%) \n" + 
+            "on node %nodelabel%.  New Outage records have been created \n" + 
+            "and service level availability calculations will be impacted \n" + 
+            "until this outage is resolved.  \n" + 
+            "   </text-message>\n" + 
+            "        <subject>Notice #%noticeid%: %interfaceresolve% (%interface%) on node %nodelabel% down.</subject>\n" + 
+            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
+            "    </notification>\n" + 
+            "    <notification name=\"nodeDown\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/nodes/nodeDown</uei>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <text-message>All services are down on node %nodelabel%.  New Outage records have \n" + 
+            "been created and service level availability calculations will \n" + 
+            "be impacted until this outage is resolved.  \n" + 
+            "   </text-message>\n" + 
+            "        <subject>Notice #%noticeid%: node %nodelabel% down.</subject>\n" + 
+            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
+            "    </notification>\n" + 
+            "    <notification name=\"interfaceUp\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/nodes/interfaceUp</uei>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <text-message>The interface %interfaceresolve% (%interface%) \n" + 
+            "on node %nodelabel% which was previously down is now up.</text-message>\n" + 
+            "        <subject>Notice #%noticeid%: Interface %interfaceresolve% (%interface%) on node %nodelabel% has been cleared</subject>\n" + 
+            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
+            "    </notification>\n" + 
+            "    <notification name=\"nodeUp\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/nodes/nodeUp</uei>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <text-message>The node %nodelabel% which was previously down is now up.</text-message>\n" + 
+            "        <subject>Notice #%noticeid%: Node %nodelabel% has been cleared.</subject>\n" + 
+            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
+            "    </notification>\n" + 
+            "    <notification name=\"nodeLostService\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/nodes/nodeLostService</uei>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <text-message>The %service% service poll on interface %interfaceresolve% (%interface%) \n" + 
+            "on node %nodelabel% failed at %time%. \n" + 
+            "   </text-message>\n" + 
+            "        <subject>Notice #%noticeid%: %service% down on %interfaceresolve% (%interface%) on node %nodelabel%.</subject>\n" + 
+            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
+            "    </notification>\n" + 
+            "    <notification name=\"nodeRegainedService\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/nodes/nodeRegainedService</uei>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <text-message>%service% service restored on interface %interfaceresolve% (%interface%) \n" + 
+            "on node %nodelabel%.</text-message>\n" + 
+            "        <subject>Notice #%noticeid%: %interfaceresolve% (%interface%) on node %nodelabel%&apos;s %service% service restored.</subject>\n" + 
+            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
+            "    </notification>\n" + 
+            "    <notification name=\"coldStart\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/generic/traps/SNMP_Cold_Start</uei>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <text-message>An SNMP coldStart trap has been received from\n" + 
+            "interface %snmphost%.  This indicates that the box has been\n" + 
+            "powered up.</text-message>\n" + 
+            "        <subject>Notice #%noticeid%: %snmphost% powered up.</subject>\n" + 
+            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
+            "    </notification>\n" + 
+            "    <notification name=\"warmStart\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/generic/traps/SNMP_Warm_Start</uei>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <text-message>An SNMP warmStart trap has been received from\n" + 
+            "interface %snmphost%.  This indicates that the box has been rebooted.</text-message>\n" + 
+            "        <subject>Notice #%noticeid%: %snmphost% rebooted.</subject>\n" + 
+            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
+            "    </notification>\n" + 
+            "    <notification name=\"authenticationFailure\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/generic/traps/SNMP_Authen_Failure</uei>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <text-message>An Authentication Failure has been identified on\n" + 
+            "network device %snmphost%.  This message is usually\n" + 
+            "generated by an authentication failure during a user login\n" + 
+            "attempt or an SNMP request failed due to incorrect community string.</text-message>\n" + 
+            "        <subject>Notice #%noticeid%: [OpenNMS] Authentication Failure on %snmphost%.</subject>\n" + 
+            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
+            "    </notification>\n" + 
+            "    <notification name=\"serviceDeleted\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/nodes/serviceDeleted</uei>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <text-message>Due to extended downtime, the %service% service on\n" + 
+            "interface %interfaceresolve% (%interface%) on node %nodelabel% \n" + 
+            "has been deleted from OpenNMS&apos;s polling database.</text-message>\n" + 
+            "        <subject>Notice #%noticeid%: %interfaceresolve% (%interface%) on node %nodelabel%&apos;s %service% service deleted.</subject>\n" + 
+            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
+            "    </notification>\n" + 
+            "    <notification name=\"nodeAdded\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/nodes/nodeAdded</uei>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <text-message>OpenNMS has discovered a new node named\n" + 
+            "%parm[nodelabel]%. Please be advised.</text-message>\n" + 
+            "        <subject>Notice #%noticeid%: %parm[nodelabel]% discovered.</subject>\n" + 
+            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
+            "    </notification>\n" + 
+            "    <notification name=\"nodeInfoChanged\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/nodes/nodeInfoChanged</uei>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <text-message>Node information has changed for a device in your\n" + 
+            "network.  The new information is included:    System Name:\n" + 
+            "%parm[nodesysname]%  System Description:\n" + 
+            "%parm[nodesysdescription]%  System Object Identifier:\n" + 
+            "%parm[nodesysobjectid]%  System Location:\n" + 
+            "%parm[nodesyslocation]%  System Contact:\n" + 
+            "%parm[nodesyscontact]%  NetBIOS Name: %parm[nodenetbiosname]%</text-message>\n" + 
+            "        <subject>Notice #%noticeid%: Node information changed.</subject>\n" + 
+            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
+            "    </notification>\n" + 
+            "    <notification name=\"interfaceDeleted\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/nodes/interfaceDeleted</uei>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <text-message>Due to extended downtime, the interface %interfaceresolve% (%interface%) \n" + 
+            "on node %nodelabel% has been deleted from OpenNMS&apos;s polling database.</text-message>\n" + 
+            "        <subject>Notice #%noticeid%: [OpenNMS] %interfaceresolve% (%interface%) on node %nodelabel% deleted.</subject>\n" + 
+            "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
+            "    </notification>\n" + 
+            "</notifications>\n" + 
+            "";
+    
+    private NotificationManager m_notificationManager;
 
     /*
      * @see TestCase#setUp()
@@ -108,9 +279,13 @@ public class NotifdTest extends TestCase {
         
         m_notifd = new Notifd();
         m_notifdConfig = new MockNotifdConfigManager(m_configString);
-        // FIXME: Needed to comment these out so the build worked
         m_notifd.setEventManager(m_eventMgr);
         m_notifd.setConfigManager(m_notifdConfig);
+        
+        m_notificationManager = new MockNotificationManager(m_notifdConfig, NOTIFICATION_MANAGER);
+        m_notifd.setNotificationManager(m_notificationManager);
+        
+        // FIXME: Needed to comment these out so the build worked
         //m_notifd.init();
         //m_notifd.start();
     }

@@ -75,7 +75,7 @@ public class UpdateUserServlet extends HttpServlet {
 
             String password = request.getParameter("password");
             if (password != null && !password.trim().equals("")) {
-                newUser.setPassword(UserFactory.encryptPassword(password));
+                newUser.setPassword(UserFactory.getInstance().encryptedPassword(password));
             }
 
             String userid = newUser.getUserId();

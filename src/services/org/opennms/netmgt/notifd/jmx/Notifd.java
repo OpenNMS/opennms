@@ -34,13 +34,12 @@
 
 package org.opennms.netmgt.notifd.jmx;
 
-import java.io.IOException;
-
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
+import org.opennms.netmgt.config.NotificationFactory;
+import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
 public class Notifd implements NotifdMBean {
@@ -54,6 +53,12 @@ public class Notifd implements NotifdMBean {
         }
         
         try {
+            NotificationFactory.init();
+        } catch( Throwable t) {
+            ThreadCategory.getInstance(getClass()).warn("start: Failed to init NotificationFactory.", t);
+        }
+        
+        try {
             DatabaseConnectionFactory.init();
         } catch (Exception e) {
             ThreadCategory.getInstance(getClass()).warn("start: Failed to init database connection factory.", e);
@@ -63,6 +68,9 @@ public class Notifd implements NotifdMBean {
         getNotifd().setEventManager(EventIpcManagerFactory.getInstance().getManager());
         
         getNotifd().setConfigManager(NotifdConfigFactory.getInstance());
+        getNotifd().setNotificationManager(NotificationFactory.getInstance());
+        getNotifd().setGroupManager(GroupFactory.getInstance());
+        getNotifd().setUserManager(UserFactory.getInstance());
         getNotifd().init();
         
     }

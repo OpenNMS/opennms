@@ -65,7 +65,7 @@ import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.NotifdConfigManager;
 import org.opennms.netmgt.config.NotificationCommandFactory;
-import org.opennms.netmgt.config.NotificationFactory;
+import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.destinationPaths.Escalate;
 import org.opennms.netmgt.config.destinationPaths.Path;
@@ -136,9 +136,11 @@ final class BroadcastEventProcessor implements EventListener {
 
         // initialize the factory instances
         try {
-            GroupFactory.init();
+            
+            /*
+             * TODO: these need to be removed
+             */
             UserFactory.init();
-            NotificationFactory.init();
             DestinationPathFactory.init();
             NotificationCommandFactory.init();
         } catch (Exception e) {
@@ -208,7 +210,7 @@ final class BroadcastEventProcessor implements EventListener {
                 if (curAck.getUei().equals(event.getUei())) {
                     try {
                         ThreadCategory.getInstance(getClass()).debug("Acknowledging event " + curAck.getAcknowledge() + " " + event.getNodeid() + ":" + event.getInterface() + ":" + event.getService());
-                        NotificationFactory.getInstance().acknowledgeNotice(event, curAck.getAcknowledge(), curAck.getMatch());
+                        getNotificationManager().acknowledgeNotice(event, curAck.getAcknowledge(), curAck.getMatch());
                     } catch (SQLException e) {
                         ThreadCategory.getInstance(getClass()).error("Failed to auto acknowledge notice.", e);
                     }
@@ -218,7 +220,7 @@ final class BroadcastEventProcessor implements EventListener {
                 if (curAck.getUei().equals(event.getUei()) && curAck.getClear()) {
                     try {
                         ThreadCategory.getInstance(getClass()).debug("Acknowledging source event " + event.getUei() + " " + event.getNodeid() + ":" + event.getInterface() + ":" + event.getService());
-                        NotificationFactory.getInstance().acknowledgeNotice(event, event.getUei(), curAck.getMatch());
+                        getNotificationManager().acknowledgeNotice(event, event.getUei(), curAck.getMatch());
                     } catch (SQLException e) {
                         ThreadCategory.getInstance(getClass()).error("Failed to auto acknowledge source notice.", e);
                     }
@@ -228,6 +230,13 @@ final class BroadcastEventProcessor implements EventListener {
         } catch (Exception e) {
             ThreadCategory.getInstance(getClass()).error("Unable to auto acknowledge notice due to exception.", e);
         }
+    }
+
+    /**
+     * @return
+     */
+    private NotificationManager getNotificationManager() {
+        return m_notifd.getNotificationManager();
     }
 
     /**
@@ -258,7 +267,7 @@ final class BroadcastEventProcessor implements EventListener {
         try {
             // check the database to see if notices were turned off for this
             // service
-            String notify = NotificationFactory.getInstance().getServiceNoticeStatus(nodeID, ipAddr, service);
+            String notify = getNotificationManager().getServiceNoticeStatus(nodeID, ipAddr, service);
             if ("Y".equals(notify)) {
                 continueNotice = true;
                 ThreadCategory.getInstance(getClass()).debug("notify status for service " + service + " on interface/node " + ipAddr + "/" + nodeID + " is 'Y', continuing...");
@@ -282,7 +291,7 @@ final class BroadcastEventProcessor implements EventListener {
         boolean mapsToNotice = false;
 
         try {
-            mapsToNotice = NotificationFactory.getInstance().hasUei(event.getUei());
+            mapsToNotice = getNotificationManager().hasUei(event.getUei());
         } catch (Exception e) {
             log.error("Couldn't map uei " + event.getUei() + " to a notification entry, not scheduling notice.", e);
             return;
@@ -295,7 +304,7 @@ final class BroadcastEventProcessor implements EventListener {
                 Notification[] notifications = null;
 
                 try {
-                    notifications = NotificationFactory.getInstance().getNotifForEvent(event);
+                    notifications = getNotificationManager().getNotifForEvent(event);
                 } catch (Exception e) {
                     log.error("Couldn't get notification mapping for event " + event.getUei() + ", not scheduling notice.", e);
                     return;
@@ -318,7 +327,7 @@ final class BroadcastEventProcessor implements EventListener {
                         int noticeId = 0;
 
                         try {
-                            noticeId = NotificationFactory.getInstance().getNoticeId();
+                            noticeId = getNotificationManager().getNoticeId();
                         } catch (Exception e) {
                             log.error("Failed to get a unique id # for notification, exiting this notification", e);
                             return;
@@ -328,12 +337,12 @@ final class BroadcastEventProcessor implements EventListener {
                         String queueID = (notification.getNoticeQueue() != null ? notification.getNoticeQueue() : "default");
 
                         log.debug("destination : " + notification.getDestinationPath());
-                        log.debug("text message: " + (String) paramMap.get(NotificationFactory.PARAM_TEXT_MSG));
-                        log.debug("num message : " + (String) paramMap.get(NotificationFactory.PARAM_NUM_MSG));
-                        log.debug("subject     : " + (String) paramMap.get(NotificationFactory.PARAM_SUBJECT));
-                        log.debug("node        : " + (String) paramMap.get(NotificationFactory.PARAM_NODE));
-                        log.debug("interface   : " + (String) paramMap.get(NotificationFactory.PARAM_INTERFACE));
-                        log.debug("service     : " + (String) paramMap.get(NotificationFactory.PARAM_SERVICE));
+                        log.debug("text message: " + (String) paramMap.get(NotificationManager.PARAM_TEXT_MSG));
+                        log.debug("num message : " + (String) paramMap.get(NotificationManager.PARAM_NUM_MSG));
+                        log.debug("subject     : " + (String) paramMap.get(NotificationManager.PARAM_SUBJECT));
+                        log.debug("node        : " + (String) paramMap.get(NotificationManager.PARAM_NODE));
+                        log.debug("interface   : " + (String) paramMap.get(NotificationManager.PARAM_INTERFACE));
+                        log.debug("service     : " + (String) paramMap.get(NotificationManager.PARAM_SERVICE));
 
                         // get the target and escalation information
                         Path path = null;
@@ -356,7 +365,7 @@ final class BroadcastEventProcessor implements EventListener {
                         try {
                             if (getUserCount(targets, escalations) == 0) {
                                 log.warn("The path " + notification.getDestinationPath() + " assigned to notification " + notification.getName() + " has no targets or escalations specified, not sending notice.");
-                                sendNotifEvent(EventConstants.NOTIFICATION_WITHOUT_USERS, "The path " + notification.getDestinationPath() + " assigned to notification " + notification.getName() + " has no targets or escalations specified.", "The message of the notification is as follows: " + (String) paramMap.get(NotificationFactory.PARAM_TEXT_MSG));
+                                sendNotifEvent(EventConstants.NOTIFICATION_WITHOUT_USERS, "The path " + notification.getDestinationPath() + " assigned to notification " + notification.getName() + " has no targets or escalations specified.", "The message of the notification is as follows: " + (String) paramMap.get(NotificationManager.PARAM_TEXT_MSG));
                                 return;
                             }
                         } catch (Exception e) {
@@ -365,7 +374,7 @@ final class BroadcastEventProcessor implements EventListener {
                         }
 
                         try {
-                            NotificationFactory.getInstance().insertNotice(noticeId, paramMap);
+                            getNotificationManager().insertNotice(noticeId, paramMap);
                         } catch (SQLException e) {
                             log.error("Failed to enter notification into database, exiting this notification", e);
                             return;
@@ -479,9 +488,9 @@ final class BroadcastEventProcessor implements EventListener {
         String subject = (notification.getSubject() != null ? notification.getSubject() : "Notice #" + noticeId);
 
         paramMap.put("noticeid", Integer.toString(noticeId));
-        paramMap.put(NotificationFactory.PARAM_NODE, String.valueOf(event.getNodeid()));
-        paramMap.put(NotificationFactory.PARAM_INTERFACE, event.getInterface());
-        paramMap.put(NotificationFactory.PARAM_SERVICE, event.getService());
+        paramMap.put(NotificationManager.PARAM_NODE, String.valueOf(event.getNodeid()));
+        paramMap.put(NotificationManager.PARAM_INTERFACE, event.getInterface());
+        paramMap.put(NotificationManager.PARAM_SERVICE, event.getService());
         paramMap.put("eventID", String.valueOf(event.getDbid()));
         paramMap.put("eventUEI", event.getUei());
 
@@ -494,21 +503,21 @@ final class BroadcastEventProcessor implements EventListener {
 
         String finalTextMessage = EventUtil.expandParms(textMessage, event);
         if (finalTextMessage == null)
-            paramMap.put(NotificationFactory.PARAM_TEXT_MSG, textMessage);
+            paramMap.put(NotificationManager.PARAM_TEXT_MSG, textMessage);
         else
-            paramMap.put(NotificationFactory.PARAM_TEXT_MSG, finalTextMessage);
+            paramMap.put(NotificationManager.PARAM_TEXT_MSG, finalTextMessage);
 
         String finalNumericMessage = EventUtil.expandParms(numericMessage, event);
         if (finalNumericMessage == null)
-            paramMap.put(NotificationFactory.PARAM_NUM_MSG, numericMessage);
+            paramMap.put(NotificationManager.PARAM_NUM_MSG, numericMessage);
         else
-            paramMap.put(NotificationFactory.PARAM_NUM_MSG, finalNumericMessage);
+            paramMap.put(NotificationManager.PARAM_NUM_MSG, finalNumericMessage);
 
         String finalSubjectLine = EventUtil.expandParms(subjectLine, event);
         if (finalSubjectLine == null)
-            paramMap.put(NotificationFactory.PARAM_SUBJECT, subjectLine);
+            paramMap.put(NotificationManager.PARAM_SUBJECT, subjectLine);
         else
-            paramMap.put(NotificationFactory.PARAM_SUBJECT, finalSubjectLine);
+            paramMap.put(NotificationManager.PARAM_SUBJECT, finalSubjectLine);
 
         return paramMap;
     }
@@ -604,7 +613,7 @@ final class BroadcastEventProcessor implements EventListener {
         NotificationTask task = null;
 
         try {
-            task = new NotificationTask(sendTime, parameters, siblings);
+            task = new NotificationTask(m_notifd, sendTime, parameters, siblings);
 
             User user = UserFactory.getInstance().getUser(targetName);
 
@@ -637,7 +646,7 @@ final class BroadcastEventProcessor implements EventListener {
         NotificationTask task = null;
 
         try {
-            task = new NotificationTask(sendTime, parameters, siblings);
+            task = new NotificationTask(m_notifd, sendTime, parameters, siblings);
 
             User user = new User();
             user.setUserId("email-address");
