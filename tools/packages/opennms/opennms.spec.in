@@ -372,38 +372,7 @@ rm -rf $RPM_BUILD_ROOT
 %{tomcatdir}/server
 %config %{servletdir}/WEB-INF/web.xml
 
-%pre
-
-@runjava.contents@
-
-# Do the equivalent to: %{instprefix}/bin/runjava -q -s -n
-
-# quiet mode, "-q"
-exec 3>/dev/null
-
-# dryrun mode, "-n"
-dryrun=1
-
-# search mode, "-s"
-setupJava
-if [ $? -ne 0 ]; then
-    echo "A suitable Java Runtime Environment could not be found." >&2
-    echo "Please set and export the JAVA_HOME environment variable to" >&2
-    echo "point where your JDK is installed." >&2
-    exit 1
-fi
-
 %post
-
-echo -e "- executing runjava to choose a Java Runtime Environment... \c"
-%{instprefix}/bin/runjava -q -s
-if [ $? -ne 0 ]; then
-    echo "A suitable Java Runtime Environment could not be found." >&2
-    echo "Please set and export the JAVA_HOME environment variable to" >&2
-    echo "point where your JDK is installed." >&2
-    exit 1
-fi
-echo "done"
 
 echo -e "- moving *.sql.rpmnew files (if any)... \c"
 if [ `ls %{instprefix}/etc/*.sql.rpmnew 2>/dev/null | wc -l` -gt 0 ]; then
@@ -412,42 +381,6 @@ if [ `ls %{instprefix}/etc/*.sql.rpmnew 2>/dev/null | wc -l` -gt 0 ]; then
 	done
 fi
 echo "done"
-
-echo -e "- running the installer... \c"
-%{instprefix}/bin/install -r -disU >> %{logdir}/install.log 2>&1
-if [ $? -ne 0 ]; then
-    echo "Error running installer, see %{logdir}/install.log for details." >&2
-    exit 1
-fi
-echo "done"
-
-
-# add the OpenNMS init
-
-if [ -x /sbin/chkconfig ]; then
-    chkconfig="/sbin/chkconfig"
-elif [ -x "`which chkconfig 2>&1`" ]; then
-    chkconfig="`which chkconfig 2>&1`"
-else
-    chkconfig=""
-fi
-
-echo -e "- adding OpenNMS init script using 'chkconfig'... \c"
-if [ -n "$chkconfig" ]; then
-    if $chkconfig --add opennms > /dev/null; then 
-       echo "done"
-    else
-       echo "Warn: Couldn't add OpenNMS to init scripts." >&2
-       echo "      To make OpenNMS startup automatically," >&2
-       echo "      resolve these errors.  Consult the chkconfig" >&2
-       echo "      man pages.  If you are using insserv, this maybe" >&2
-       echo "      a postgresql dependency problem." >&2
-    fi
-else
-    echo "Warn: Couldn't find the chkconfig script to configure" >&2
-    echo "      OpenNMS to start automatically.  You'll need to" >&2
-    echo "      configure this your self." >&2
-fi
 
 echo -e "- checking for old update files... \c"
 
@@ -465,43 +398,11 @@ else
 	echo "done"
 fi
 
-%preun
-
-if [ $1 != 0 ]; then
-    # Do nothing
-    exit 0
-fi
-
-echo "- Stopping OpenNMS... "
-%{initdir}/init.d/opennms stop
-echo "- Stopping OpenNMS... done"
-
-echo -e "- adding OpenNMS init script using 'chkconfig'... \c"
-if [ -x /sbin/chkconfig ]; then
-    /sbin/chkconfig --del opennms > /dev/null
-else
-    if [ -x `which chkconfig 2>&1` ]; then
-	`which chkconfig` --del opennms > /dev/null
-    fi
-fi
-echo "done"
-
-%pre webapp
-
-echo -e "- executing runjava to check the Java Runtime Environment... \c"
-%{instprefix}/bin/runjava -c || exit 1
-echo "done"
-
-echo -e "- clearing out the Tomcat work directory... \c"
-rm -rf %{tomcatdir}/work/* >/dev/null 2>&1 || :
-echo "done"
-
-%post webapp
-
-echo -e "- executing the installer for the webapp... \c"
-echo "done"
-
 %changelog
+* Thu Jan 20 2004 DJ Gregor <dj@opennms.org>
+- Remove much of the automatic bits that were performed at
+  install time.
+
 * Tue Sep 28 2004 Matt Brozowski <brozow@opennms.org>
 - Modified to use opennms.xml rather than changes to server.xml
 
