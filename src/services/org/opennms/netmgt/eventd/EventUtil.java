@@ -45,7 +45,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.TimeZone;
 import java.text.DateFormat;
 
 import org.apache.log4j.Category;
