@@ -36,7 +36,7 @@ your distribution.
   <property name="build.docs.dir" value="${build.dir}/docs"/>
   <property name="build.rpm.dir" value="${build.dir}/rpm"/>
   <property name="build.filter.docs.dir" value="${build.dir}/docs.filter"/>
-  <property name="build.api.dir" value="${build.dir}/javadoc"/>
+  <property name="build.api.dir" value="${build.docs.dir}/javadoc"/>
   <property name="build.classes.dir" value="${build.dir}/opennms/classes"/>
   <property name="build.jar.dir" value="${build.dir}/jar"/>
   <property name="build.jicmp.dir" value="${build.dir}/jicmp"/>

@@ -1641,15 +1641,22 @@ public class Installer {
 	return s.toString();
     }
 
+    public boolean tableExists(String table) throws SQLException {
+	Statement st = m_dbconnection.createStatement();
+	ResultSet rs;
+
+	rs = st.executeQuery("SELECT DISTINCT tablename FROM pg_tables " +
+			     "WHERE lower(tablename) = '" +
+			     table.toLowerCase() + "'");
+	return rs.next();
+    }
+
     public List getTableColumnsFromDB(String table) throws Exception {
 	Statement st = m_dbconnection.createStatement();
 	ResultSet rs;
 	LinkedList r = new LinkedList();
 
-	rs = st.executeQuery("SELECT DISTINCT tablename FROM pg_tables " +
-			     "WHERE lower(tablename) = '" +
-			     table.toLowerCase() + "'");
-	if (!rs.next()) {
+	if (!tableExists(table)) {
 	    return r;
 	}
 
@@ -1842,7 +1849,7 @@ public class Installer {
 	m_changed.add(table);
 
 	m_out.println("SCHEMA DOES NOT MATCH");
-	m_out.println("  - differences:");
+	m_out.println("    - differences:");
 
 	// XXX This doesn't check for old column rows that don't exist
 	//     in newColumns.
@@ -1852,7 +1859,7 @@ public class Installer {
 					  newColumn.getName());
 
 	    if (oldColumn == null || !newColumn.equals(oldColumn)) {
-		m_out.println("    - column \"" + newColumn.getName() +
+		m_out.println("      - column \"" + newColumn.getName() +
 				   "\" is different");
 	    }
 
@@ -1914,32 +1921,48 @@ public class Installer {
 		    columnChange.setUpgradeTimestamp(true);
 		}
 	    } else {
-		m_out.println("    * WARNING: column \"" +
+		m_out.println("      * WARNING: column \"" +
 				   oldColumn.getName() + "\" exists in the " +
 				   "database but is not in the new schema.  " +
-				   "NOT REMOVING COLUMN");
+				   "REMOVING COLUMN");
 	    }
 	}
 
-	String oldTable = table + "_old_" + System.currentTimeMillis();
-
-	st.execute("ALTER TABLE " + table + " RENAME TO " + oldTable);
+	String tmpTable = table + "_old_" + System.currentTimeMillis();
 
 	try {
+	    if (tableExists(tmpTable)) {
+		st.execute("DROP TABLE " + tmpTable + m_cascade);
+	    }
+
+	    m_out.print("    - creating temporary table... ");
+	    st.execute("CREATE TABLE " + tmpTable + " AS SELECT " +
+		       join(", ", oldColumnNames) +
+		       " FROM " + table);
+	    m_out.println("done");
+
+	    st.execute("DROP TABLE " + table + m_cascade);
+
+	    m_out.print("    - creating new '" + table + "' table... ");
 	    st.execute("CREATE TABLE " + table + "(" + getTableFromSQL(table) +
 		       ")");
+	    m_out.println("done");
 
-	    transformData(table, oldTable, columnChanges, oldColumnNames);
+	    transformData(table, tmpTable, columnChanges, oldColumnNames);
 
 	    st.execute("GRANT ALL ON " + table + " TO " + m_user);
 
-	    m_out.print("  - optimizing table " + table + "... ");
+	    m_out.print("    - optimizing table " + table + "... ");
 	    st.execute("VACUUM ANALYZE " + table);
 	    m_out.println("DONE");
 	} catch (Exception e) {
 	    try {
-		st.execute("DROP TABLE " + table + m_cascade);
-		st.execute("ALTER TABLE " + oldTable + " RENAME TO " + table);
+		if (tableExists(table)) {
+		    st.execute("DROP TABLE " + table + m_cascade);
+		}
+		st.execute("CREATE TABLE " + table + " AS SELECT " +
+			   join(", ", oldColumnNames) +
+			   " FROM " + tmpTable);
 	    } catch (SQLException se) {
 		throw new Exception("Got SQLException while trying to " +
 				    "revert table changes due to original " +
@@ -1947,14 +1970,16 @@ public class Installer {
 				    "SQLException while reverting table: " +
 				    se, e);
 	    }
+	    m_out.println("FAILED!  Old data restored, however indexes and " +
+			  "constraints on this table were not re-added");
 	    throw e;
 	}
 
-	// We don't care if dropping the old table fails since we've
+	// We don't care if dropping the tmp table fails since we've
 	// completed copying it, so it's outside of the try/catch block above.
-	st.execute("DROP TABLE " + oldTable);
+	st.execute("DROP TABLE " + tmpTable);
 
-	m_out.println("  - completed updating table... ");
+	m_out.println("    - completed updating table... ");
     }
 
     public void transformData(String table, String oldTable,
@@ -1986,7 +2011,7 @@ public class Installer {
 	/* Pull everything in from the old table and filter it to update
 	   the data to any new formats. */
 
-	m_out.print("  - transforming data into the new table...\r");
+	m_out.print("    - transforming data into the new table...\r");
 
 	if (table.equals("events")) {
 	    st.execute("INSERT INTO events (eventid, eventuei, eventtime, " +
@@ -2012,7 +2037,7 @@ public class Installer {
 	String dbcmd = "SELECT " + join(", ", oldColumnNames) + " FROM " +
 	    oldTable + order;
 	if (m_debug) {
-	    m_out.println("  - performing select: " + dbcmd);
+	    m_out.println("    - performing select: " + dbcmd);
 	}
 	select = m_dbconnection.prepareStatement(dbcmd);
 	// error =		      "Unable to prepare select from temp";
@@ -2020,7 +2045,7 @@ public class Installer {
 	dbcmd = "INSERT INTO " + table + " (" + join(", ", columns) +
 	    ") values (" + join(", ", questionMarks) + ")";
 	if (m_debug) {
-	    m_out.println("  - performing insert: " + dbcmd);
+	    m_out.println("    - performing insert: " + dbcmd);
 	}
 	insert = m_dbconnection.prepareStatement(dbcmd);
 	// error = 	      "Unable to prepare insert into " + table);
@@ -2051,7 +2076,7 @@ public class Installer {
 		    }
 		} else {
 		    if (m_debug) {
-			m_out.println("    - don't know what to do " +
+			m_out.println("      - don't know what to do " +
 					   "for \"" +
 					   name + "\", prepared column " +
 					   change.getPrepareIndex() +
@@ -2066,7 +2091,7 @@ public class Installer {
 		if (obj == null && change.isNullReplace()) {
 		    obj = change.getNullReplace();
 		    if (m_debug) {
-			m_out.println("    - " + name +
+			m_out.println("      - " + name +
 					   " was NULL but is a " +
 					   "requires NULL replacement -- " +
 					   "replacing with '" + obj + "'");
@@ -2077,25 +2102,25 @@ public class Installer {
 		    if (change.isUpgradeTimestamp() &&
 			!obj.getClass().equals(java.sql.Timestamp.class)) {
 			if (m_debug) {
-			    m_out.println("    - " + name +
+			    m_out.println("      - " + name +
 					       " is an old-style timestamp");
 			}
 			String newObj =
 			    dateFormatter.format(dateParser.parse((String)
 								  obj));
 			if (m_debug) {
-			    m_out.println("    - " +
+			    m_out.println("      - " +
 					       obj + " -> " + newObj);
 			}
 
 			obj = newObj;
 		    }
 		    if (m_debug) {
-			m_out.println("    - " + name + " = " + obj);
+			m_out.println("      - " + name + " = " + obj);
 		    }
 		} else {
 		    if (m_debug) {
-			m_out.println("    - " + name + " = undefined");
+			m_out.println("      - " + name + " = undefined");
 		    }
 		}
 
@@ -2122,7 +2147,7 @@ public class Installer {
 	    current_row++;
 
 	    if ((current_row % 20) == 0) {
-		m_out.print("  - transforming data into the new " +
+		m_out.print("    - transforming data into the new " +
 				 "table... " +
 				 (int)Math.floor((current_row * 100) / num_rows) +
 				 "%  [" + spin[(current_row / 20) % spin.length] + "]\r");
@@ -2132,7 +2157,7 @@ public class Installer {
 	m_dbconnection.commit();
 	m_dbconnection.setAutoCommit(true);
 
-	m_out.println("  - transforming data into the new table... " +
+	m_out.println("    - transforming data into the new table... " +
 			   "DONE           ");
     }
 
