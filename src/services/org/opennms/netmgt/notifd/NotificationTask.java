@@ -206,9 +206,13 @@ public class NotificationTask extends Thread
 					ExecutorStrategy command = null;
 
 					for (int i = 0; i < m_commands.length; i++) {
+						try {
 						NotificationFactory.updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), UserFactory
 								.getInstance().getContactInfo(m_user.getUserId(), m_commands[i].getName()));
-
+						} catch (SQLException e) {
+							log.error("Could not insert notice info into database, aborting send notice...", e);
+							continue;
+						}
 						String binaryCommand = m_commands[i].getBinary();
 						if (binaryCommand == null) {
 							log.error("binary flag not set for command: "+m_commands[i].getExecute()+".  Guessing false.");
@@ -227,8 +231,6 @@ public class NotificationTask extends Thread
 				} else {
 					log.debug("User " + m_user.getUserId() + " is not on duty, skipping...");
 				}
-			} catch (SQLException e) {
-				log.debug("Could not insert notice info into database, aborting send notice...", e);
 			} catch (IOException e) {
 				log.debug("Could not get user duty schedule information: ", e);
 			} catch (MarshalException e) {
