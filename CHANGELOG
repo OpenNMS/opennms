@@ -1,5 +1,6 @@
 1.1.2 to 1.1.3
 ----------------------------------------------------------------------
+- Added response time info to JDBS poller. Bug 830
 - Added some opennms.init changes to support SuSE. Thx Deej. Bug 713
 - Added some build changes to support SuSE. Thx Deej. Bug 712
 - Modified plugins and polloers to uses Socket.connect w/ timeout 

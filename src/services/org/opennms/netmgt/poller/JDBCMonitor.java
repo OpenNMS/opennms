@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2004 May 19: Added response time information to poller. Bug 830
 // 2003 May 01: Added this JDBC poller, based on generic poller code.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -63,7 +64,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @since 0.1
  */
 final class JDBCMonitor 
-	extends IPv4Monitor 
+	extends IPv4LatencyMonitor 
 {
   	/**
    	* Number of miliseconds to wait before timing out a database login using JDBC
@@ -223,12 +224,23 @@ final class JDBCMonitor
 		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
 		String db_user = ParameterMap.getKeyedString(parameters, "user", DBTools.DEFAULT_DATABASE_USER);
 		String db_pass = ParameterMap.getKeyedString(parameters, "password", DBTools.DEFAULT_DATABASE_PASSWORD);
+	        String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
+    		String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
+	
+       		if (rrdPath == null) {
+            		log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
+        	}
+        	if (dsName == null) {
+            		dsName = DS_NAME;
+        	}
 
     		for (int attempts = 0; attempts <= retries; attempts++) 
 		{ 
       		try 
 		{
+			long responseTime = -1;
         		DriverManager.setLoginTimeout(timeout);
+			long sentTime = System.currentTimeMillis();
         		con = DriverManager.getConnection(url, db_user, db_pass);
 
         		// We are connected, upgrade the status to unresponsive
@@ -243,13 +255,24 @@ final class JDBCMonitor
 					resultset.getString(1);
 				}
 
-          			// The query worked, asume than the server is ok
+          			// The query worked, assume than the server is ok
           			if (resultset != null) 
 				{
+					responseTime = System.currentTimeMillis() - sentTime;
             				status = SERVICE_AVAILABLE;
 	  				if (log.isDebugEnabled()) {
             					log.debug(getClass().getName() + ": JDBC service is AVAILABLE on: " + ipv4Addr.getCanonicalHostName());
+				                log.debug("poll: responseTime= " + responseTime + "ms");
+
 					}
+					// Update response time
+				        if (responseTime >= 0 && rrdPath != null) {
+                        			try {
+                            				this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime, pkg);
+                        			} catch (RuntimeException rex) {
+                            				log.debug("There was a problem writing the RRD:" + rex);
+                        			}
+                    			}
             				break;
           			}
         		} // end if con

@@ -178,14 +178,17 @@
       <input type="hidden" name="index"/>
       <input type="hidden" name="userAction"/>
       <input type="hidden" name="escalation" value="false"/>
-      Name: 
+      <tr><td>Name: 
       <% if (newPath.getName()==null) { %>
         <input type="text" name="name" value=""/>
       <% } else { %>
         <input type="text" name="name" value="<%=newPath.getName()%>"/>
       <% } %>
+      </td></tr>
       <br>
+      <tr><td>
       Initial Delay: <%=buildDelaySelect(intervals, "initialDelay", newPath.getInitialDelay())%>
+      </td></tr>
       <% for (int i = 0; i < targetLinks.size(); i++) { %>
         <tr><td>
         <table width="15%" bgcolor="#999999" cellspacing="2" cellpadding="2" border="1">
