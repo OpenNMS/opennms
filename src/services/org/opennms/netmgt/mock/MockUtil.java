@@ -140,12 +140,17 @@ public class MockUtil {
     
     public static Event createEvent(String source, String uei, int nodeId, String ipAddr, String svcName) {
         
-        Event event = new Event();
-        event.setSource(source);
-        event.setUei(uei);
+        Event event = createEvent(source, uei);
         event.setNodeid(nodeId);
         event.setInterface(ipAddr);
         event.setService(svcName);
+        return event;
+    }
+
+    public static Event createEvent(String source, String uei) {
+        Event event = new Event();
+        event.setSource(source);
+        event.setUei(uei);
         String eventTime = EventConstants.formatToString(new Date());
         event.setCreationTime(eventTime);
         event.setTime(eventTime);
