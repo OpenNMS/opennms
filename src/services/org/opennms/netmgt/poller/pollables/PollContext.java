@@ -69,7 +69,7 @@ public interface PollContext {
      * @param date
      * @return
      */
-    public Event createEvent(String node_lost_service_event_uei, int nodeId, InetAddress address, String svcName, Date date);
+    public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date);
 
     /**
      * @param outage
@@ -84,5 +84,11 @@ public interface PollContext {
      * @return
      */
     public boolean isServiceUnresponsiveEnabled();
+
+    /**
+     * @param iface
+     * @param newNode
+     */
+    public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId);
 
 }

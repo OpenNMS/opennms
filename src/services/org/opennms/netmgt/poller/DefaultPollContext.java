@@ -105,6 +105,10 @@ public class DefaultPollContext implements PollContext {
         int serviceId = m_poller.getServiceIdByName(svc.getSvcName());
         m_poller.getQueryMgr().resolveOutage(svc.getNodeId(), svc.getIpAddr(), serviceId, svcRegainEvent.getEventId(), EventConstants.formatToString(svcRegainEvent.getDate()));
     }
+    
+    public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
+        m_poller.getQueryMgr().reparentOutages(ipAddr, oldNodeId, newNodeId);
+    }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.pollables.PollContext#isServiceUnresponsiveEnabled()

@@ -54,6 +54,10 @@ public class PollableInterface extends PollableContainer {
     public PollableNode getNode() {
         return (PollableNode)getParent();
     }
+    
+    private void setNode(PollableNode newNode) {
+        setParent(newNode);
+    }
 
     public PollableNetwork getNetwork() {
         return getNode().getNetwork();
@@ -154,5 +158,39 @@ public class PollableInterface extends PollableContainer {
     }
     
     public String toString() { return getNode()+":"+getIpAddr(); }
+
+    /**
+     * @param node2
+     */
+    public void reparentTo(final PollableNode newNode) {
+        if (getNode().equals(newNode)) return;
+        
+        getContext().reparentOutages(getIpAddr(), getNodeId(), newNode.getNodeId());
+        final PollableNode oldNode = getNode();
+        oldNode.removeMember(this);
+        newNode.addMember(this);
+        setNode(newNode);
+        
+        if (getCause() == null || getCause().equals(oldNode.getCause())) {
+            // the current interface outage is a node outage or no outage at all
+            if (newNode.getCause() != null) {
+                // if the new Node has a node outage then we recursively set the 
+                // causes so when process events we properly handle the causes
+                PollableVisitor visitor = new PollableVisitorAdaptor() {
+                    public void visitElement(PollableElement element) {
+                        boolean matches = (element.getCause() == null ? oldNode.getCause() == null : element.getCause().equals(oldNode.getCause()));
+                        if (matches) {
+                            element.setCause(newNode.getCause());
+                        }
+                    }
+                };
+                visit(visitor);
+            } 
+        }
+        
+        oldNode.recalculateStatus();
+        newNode.recalculateStatus();
+    }
+
 
 }

@@ -83,9 +83,14 @@ abstract public class PollableContainer extends PollableElement {
         m_members.put(key, member);
     }
     
-    public void deleteMember(PollableElement member) {
+    public void removeMember(PollableElement member) {
         Object key = createMemberKey(member);
         m_members.remove(key);
+    }
+
+    
+    public void deleteMember(PollableElement member) {
+        removeMember(member);
         if (m_members.size() == 0)
             this.delete();
     }

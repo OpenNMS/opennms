@@ -142,7 +142,8 @@ public class PollablesTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
-
+        MockUtil.setupLogging();
+        MockUtil.resetLogLevel();
         
         m_mockNetwork = new MockNetwork();
         m_mockNetwork.addNode(1, "Router");
@@ -346,6 +347,7 @@ public class PollablesTest extends TestCase {
      */
     protected void tearDown() throws Exception {
         super.tearDown();
+        assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
         m_db.drop();
     }
     
@@ -596,8 +598,87 @@ public class PollablesTest extends TestCase {
         
     }
     
-    public void testReparentInterface() {
-        //fail("Not yet implemented");
+    public void testReparentInterface()  {
+        InetAddress address = pDot1.getAddress();
+        pDot1.reparentTo(pNode2);
+        
+        assertNull(m_network.getInterface(1, address));
+        assertNotNull(m_network.getInterface(2, address));
+        assertEquals(2, pDot1.getNodeId());
+        assertSame(pNode2, pDot1.getNode());
+    }
+    
+    public void testReparentOutages() {
+        // create some outages in the database
+        mDot1.bringDown();
+        
+        pDot1Icmp.doPoll();
+        pNode1.processStatusChange(new Date());
+        
+        mDot1.bringUp();
+        
+        pDot1Icmp.doPoll();
+        pNode1.processStatusChange(new Date());
+        
+        final String ifOutageOnNode1 = "select * from outages where nodeId = 1 and ipAddr = '192.168.1.1'";
+        final String ifOutageOnNode2 = "select * from outages where nodeId = 2 and ipAddr = '192.168.1.1'";
+
+        assertEquals(2, m_db.countRows(ifOutageOnNode1));
+        assertEquals(0, m_db.countRows(ifOutageOnNode2));
+        
+        pDot1.reparentTo(pNode2);
+        
+        assertEquals(0, m_db.countRows(ifOutageOnNode1));
+        assertEquals(2, m_db.countRows(ifOutageOnNode2));
+
+    }
+    
+    public void testReparentStatusChanges() {
+        
+
+        //
+        // Plan to bring down both nodes except the reparented interface
+        // the node owning the interface should be up while the other is down
+        // after reparenting we should got the old owner go down while the other
+        // comes up.
+        //
+        anticipateDown(mNode2);
+        anticipateDown(mDot1);
+
+        // bring down both nodes but bring iface back up
+        mNode1.bringDown();
+        mNode2.bringDown();
+        mDot2.bringUp();
+
+        Date d = new Date();
+        pDot1Icmp.doPoll();
+        m_network.processStatusChange(new Date());
+        pDot2Icmp.doPoll();
+        m_network.processStatusChange(new Date());
+        pDot3Icmp.doPoll();
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+
+        m_db.reparentInterface(mDot2.getIpAddr(), mDot2.getNodeId(), mNode2.getNodeId());
+        mDot2.moveTo(mNode2);
+
+        resetAnticipated();
+        anticipateDown(mNode1);
+        anticipateUp(mNode2);
+        anticipateDown(mDot3);
+
+        pDot2.reparentTo(pNode2);
+        Date date = new Date();
+        pNode1.processStatusChange(date);
+        pNode2.processStatusChange(date);
+        
+        verifyAnticipated();
+
+    }
+    
+    public void testReparentCauseChanges() {
+        
     }
     
     public void testStatus() throws Exception {

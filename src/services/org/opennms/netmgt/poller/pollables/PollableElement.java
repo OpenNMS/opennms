@@ -57,7 +57,11 @@ abstract public class PollableElement {
         return m_parent;
     }
     
-    public void visit(PollableVisitor v) {
+    protected void setParent(PollableContainer newParent) {
+        m_parent = newParent;
+    }
+
+public void visit(PollableVisitor v) {
         visitThis(v);
     }
     

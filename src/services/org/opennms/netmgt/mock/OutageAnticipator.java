@@ -218,7 +218,22 @@ public class OutageAnticipator implements EventListener {
             return false;
         
         Set currentOutages = new HashSet(m_db.getOutages());
-        return m_expectedOutages.equals(currentOutages);
+        if (!m_expectedOutages.equals(currentOutages)) {
+            for (Iterator expectedIt = m_expectedOutages.iterator(); expectedIt.hasNext();) {
+                Outage expectedOutage = (Outage) expectedIt.next();
+                if (currentOutages.contains(expectedOutage)) {
+                    currentOutages.remove(expectedOutage);
+                } else {
+                    System.err.println("Expected outage "+expectedOutage.toDetailedString()+" not in current Set");
+                }
+            }
+            for (Iterator unexpectedId = currentOutages.iterator(); unexpectedId.hasNext();) {
+                Outage unexpecedOutage = (Outage) unexpectedId.next();
+                System.err.println("Unexpected outage "+unexpecedOutage.toDetailedString()+" in database");
+            }
+            return false;
+        }
+        return true;
     }
 
     /* (non-Javadoc)

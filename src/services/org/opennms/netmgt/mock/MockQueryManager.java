@@ -135,4 +135,10 @@ public class MockQueryManager implements QueryManager {
         // TODO Auto-generated method stub
 
     }
+    
+    
+    public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
+        // TODO Auto-generated method stub
+
+    }
 }

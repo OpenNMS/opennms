@@ -35,6 +35,7 @@ import java.net.InetAddress;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
@@ -93,21 +94,35 @@ public class MockPollContext implements PollContext {
     }
 
     public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date) {
-        return MockUtil.createEvent("Test", uei, nodeId, (address == null ? null : address.getHostAddress()), svcName);
+        String eventTime = EventConstants.formatToString(date);
+        Event e = MockUtil.createEvent("Test", uei, nodeId, (address == null ? null : address.getHostAddress()), svcName);
+        e.setCreationTime(eventTime);
+        e.setTime(eventTime);
+        return e;
     }
     public void openOutage(PollableService pSvc, PollEvent svcLostEvent) {
         MockService mSvc = m_mockNetwork.getService(pSvc.getNodeId(), pSvc.getIpAddr(), pSvc.getSvcName());
+        Timestamp eventTime = m_db.convertEventTimeToTimeStamp(EventConstants.formatToString(svcLostEvent.getDate()));
         MockUtil.println("Opening Outage for "+mSvc);
-        Timestamp eventTime = new Timestamp(svcLostEvent.getDate().getTime()/1000*1000);
         m_db.createOutage(mSvc, svcLostEvent.getEventId(), eventTime);
 
     }
     public void resolveOutage(PollableService pSvc, PollEvent svcRegainEvent) {
         MockService mSvc = m_mockNetwork.getService(pSvc.getNodeId(), pSvc.getIpAddr(), pSvc.getSvcName());
+        Timestamp eventTime = m_db.convertEventTimeToTimeStamp(EventConstants.formatToString(svcRegainEvent.getDate()));
         MockUtil.println("Resolving Outage for "+mSvc);
-        Timestamp eventTime = new Timestamp(svcRegainEvent.getDate().getTime()/1000*1000);
         m_db.resolveOutage(mSvc, svcRegainEvent.getEventId(), eventTime);
     }
+    
+    public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
+        Object[] values = {
+            new Integer(newNodeId),
+            new Integer(oldNodeId),
+            ipAddr,
+        };
+        m_db.update("update outages set nodeId = ? where nodeId = ? and ipaddr = ?", values);
+    }
+    
     public boolean isServiceUnresponsiveEnabled() {
         return m_serviceUnresponsiveEnabled;
     }

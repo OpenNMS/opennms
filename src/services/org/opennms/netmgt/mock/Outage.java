@@ -60,7 +60,7 @@ public class Outage {
     
     public void setRegainedEvent(int eventId, Timestamp eventTime) {
         m_regainedEventId = eventId;
-        m_lostEventTime = eventTime;
+        m_regainedEventTime = eventTime;
     }
     
     public boolean isForService(MockService svc) {
@@ -89,6 +89,21 @@ public class Outage {
                 (m_regainedEventId == outage.m_regainedEventId) &&
                 (m_regainedEventTime == null ? outage.m_regainedEventTime == null : m_regainedEventTime.equals(outage.m_regainedEventTime))
                 );
+    }
+
+    /**
+     * @return
+     */
+    public String toDetailedString() {
+        return "Outage[" +
+                m_nodeId + ":" +
+                m_ipAddr + ":" +
+                m_serviceId + ":" +
+                m_lostEventId + ":" +
+                m_lostEventTime + ":" +
+                m_regainedEventId + ":" +
+                m_regainedEventTime + 
+                "]";
     }
     
     

@@ -427,7 +427,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
         
         if (e.getCreationTime() == null) 
             e.setCreationTime(e.getTime());
-
+        
         Object[] values = {
                 eventId,
                 e.getSource(),

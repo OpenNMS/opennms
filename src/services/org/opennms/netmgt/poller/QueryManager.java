@@ -102,4 +102,11 @@ public interface QueryManager {
      * @param time
      */
     public void resolveOutage(int nodeId, String ipAddr, int serviceId, int dbid, String time);
+
+    /**
+     * @param ipAddr
+     * @param oldNodeId
+     * @param newNodeId
+     */
+    public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId);
 }

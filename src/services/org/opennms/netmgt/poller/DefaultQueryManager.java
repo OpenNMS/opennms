@@ -509,4 +509,21 @@ public class DefaultQueryManager implements QueryManager {
             ThreadCategory.getInstance(getClass()).fatal(" Error resolving outage for "+nodeId+":"+ipAddr+":"+serviceId, e);
         }
     }
+    
+    public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
+        try {
+            String sql = "update outages set nodeId = ? where nodeId = ? and ipaddr = ?";
+            
+            Object[] values = {
+                    new Integer(newNodeId),
+                    new Integer(oldNodeId),
+                    ipAddr,
+                };
+            Updater updater = new Updater(m_dbConnectionFactory, sql);
+            updater.execute(values);
+        } catch (Exception e) {
+            ThreadCategory.getInstance(getClass()).fatal(" Error reparenting outage for "+oldNodeId+":"+ipAddr+" to "+newNodeId, e);
+        }
+        
+    }
 }
