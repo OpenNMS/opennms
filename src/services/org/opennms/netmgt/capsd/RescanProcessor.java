@@ -768,11 +768,13 @@ final class RescanProcessor
 		if (log.isDebugEnabled())
 			log.debug("updateInterface: interface =" + ifaddr.getHostAddress() + " ifIndex = " + ifIndex);
                 
-		DbIpInterfaceEntry dbIpIfEntry = null; 
-                if (ifIndex == -1)
-		        dbIpIfEntry = DbIpInterfaceEntry.get(dbc, node.getNodeId(), ifaddr);
-                else
-		        dbIpIfEntry = DbIpInterfaceEntry.get(dbc, node.getNodeId(), ifaddr, ifIndex);
+		DbIpInterfaceEntry dbIpIfEntry = DbIpInterfaceEntry.get(dbc, node.getNodeId(), ifaddr);
+                if (ifIndex != -1)
+                {
+		        DbIpInterfaceEntry ifEntry = DbIpInterfaceEntry.get(dbc, node.getNodeId(), ifaddr, ifIndex);
+                        if ( ifEntry != null)
+                                dbIpIfEntry = ifEntry;
+                }
                         
 		if (dbIpIfEntry == null)
 		{
