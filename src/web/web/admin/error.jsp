@@ -49,9 +49,9 @@
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = java.net.URLEncoder.encode("<a href='admin/index.jsp'>Admin</a>"); %>
-<% String breadcrumb2 = java.net.URLEncoder.encode("<a href='admin/pollerConfig/index.jsp'>Configure Pollers</a>"); %>
-<% String breadcrumb3 = java.net.URLEncoder.encode("Error Page"); %>
+<% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("admin/index.jsp") + "'>Admin</a>"; %>
+<% String breadcrumb2 = "<a href='" + java.net.URLEncoder.encode("admin/pollerConfig/index.jsp") + "'>Configure Pollers</a>"; %>
+<% String breadcrumb3 = "Error Page"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="User Configuration" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />

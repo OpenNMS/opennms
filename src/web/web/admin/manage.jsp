@@ -124,8 +124,8 @@
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = java.net.URLEncoder.encode("<a href='admin/index.jsp'>Admin</a>"); %>
-<% String breadcrumb2 = java.net.URLEncoder.encode("Manage/Unmanage Interfaces"); %>
+<% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("admin/index.jsp") + "'>Admin</a>"; %>
+<% String breadcrumb2 = "Manage/Unmanage Interfaces"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Manage/Unmanage Interfaces and Services" />
   <jsp:param name="location" value="admin" />

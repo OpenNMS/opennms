@@ -156,9 +156,9 @@
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = java.net.URLEncoder.encode("<a href='admin/index.jsp'> Admin </a>"); %>
-<% String breadcrumb2 = java.net.URLEncoder.encode("<a href='admin/eventconf/list.jsp'> Event Configuration </a>"); %>
-<% String breadcrumb3 = java.net.URLEncoder.encode("Modify Event"); %>
+<% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("admin/index.jsp") + "'> Admin </a>"; %>
+<% String breadcrumb2 = "<a href='" + java.net.URLEncoder.encode("admin/eventconf/list.jsp") + "'> Event Configuration </a>"; %>
+<% String breadcrumb3 = "Modify Event"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Modify Event" />
   <jsp:param name="location" value="admin" />

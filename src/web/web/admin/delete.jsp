@@ -97,8 +97,8 @@
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = java.net.URLEncoder.encode("<a href='admin/index.jsp'>Admin</a>"); %>
-<% String breadcrumb2 = java.net.URLEncoder.encode("Delete Nodes"); %>
+<% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("admin/index.jsp") + "'>Admin</a>"; %>
+<% String breadcrumb2 = "Delete Nodes"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Delete Nodes" />
   <jsp:param name="location" value="admin" />

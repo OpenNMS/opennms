@@ -81,7 +81,7 @@
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = java.net.URLEncoder.encode("Admin"); %>
+<% String breadcrumb1 = "Admin"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Admin" />
   <jsp:param name="location" value="admin" />

@@ -56,10 +56,10 @@
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = java.net.URLEncoder.encode("<a href='admin/index.jsp'>Admin</a>"); %>
-<% String breadcrumb2 = java.net.URLEncoder.encode("<a href='admin/notification/index.jsp'>Configure Notifications</a>"); %>
-<% String breadcrumb3 = java.net.URLEncoder.encode("<a href='admin/notification/destinationPaths.jsp'>Destination Paths</a>"); %>
-<% String breadcrumb4 = java.net.URLEncoder.encode("Group Intervals"); %>
+<% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("admin/index.jsp") + "'>Admin</a>"; %>
+<% String breadcrumb2 = "<a href='" + java.net.URLEncoder.encode("admin/notification/index.jsp") + "'>Configure Notifications</a>"; %>
+<% String breadcrumb3 = "<a href='" + java.net.URLEncoder.encode("admin/notification/destinationPaths.jsp") + "'>Destination Paths</a>"; %>
+<% String breadcrumb4 = "Group Intervals"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Group Intervals" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
