@@ -167,7 +167,7 @@ sh ./build.sh $COMPILER_FLAG %{builddefines} -Droot.installprefix=$RPM_BUILD_ROO
 %endif
 sh ./build.sh $COMPILER_FLAG %{builddefines} -Droot.installprefix=$RPM_BUILD_ROOT $EXTRA_TARGETS install 2>&1 | tee -a %{_tmppath}/build.output
 
-grep -q "BUILD FAILED" %{_tmppath}/build.output && exit 1
+grep "BUILD FAILED" %{_tmppath}/build.output >/dev/null 2>&1 && exit 1
 
 mkdir -p $RPM_BUILD_ROOT%{instprefix}
 mkdir -p $RPM_BUILD_ROOT%{instprefix}/etc
@@ -180,7 +180,7 @@ cat > $RPM_BUILD_ROOT%{profiledir}/%{name}.sh << END
 #!/bin/bash
 
 OPENNMS_HOME=%{instprefix}
-if ! echo "\$PATH" | grep -q "\$OPENNMS_HOME/bin"; then
+if ! echo "\$PATH" | grep "\$OPENNMS_HOME/bin" >/dev/null 2>&1; then
 	PATH="\$PATH:\$OPENNMS_HOME/bin"
 fi
 
