@@ -362,6 +362,16 @@ public class OutageEditorWebTest extends WebTestCase {
         assertEquals(url, link.getURLString());
     }
     
+    public void assertCellLink(WebTable table, int row, int col, String[] text) {
+        assertEquals(text.length, table.getTableCell(row, col).getLinks().length);
+
+      for (int i = 0; i < text.length; i++) {
+        WebLink link = table.getTableCell(row, col).getLinks()[i];
+        assertNotNull(link);
+        assertEquals(text[i], link.getText());
+      }
+    }
+    
     public void assertCell(WebTable table, int row, int col, String contents, int colspan) {
         if (contents == null) {
             assertNull(table.getTableCell(row, col));

@@ -41,7 +41,7 @@
 %>
 
 <!-- Header -->
-<table width="100%" border="0" cellspacing="0" cellpadding="2" background="images/logo-background.gif">
+<table width="100%" border="0" cellspacing="0" cellpadding="2" id="header" background="images/logo-background.gif">
   <tr> 
     <td WIDTH="30%">
       <a href="index.jsp"><img src="images/logo.gif" hspace="0" vspace="0" border="0" alt="OpenNMS Web Console Home"></a>
@@ -70,7 +70,7 @@
   </tr>
   <tr bgcolor="white">
     <td COLSPAN="3" ALIGN="center" >
-      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" id="sub-header">
         <tr>
           <td align="left">      
             <font SIZE="-1" FACE="arial">

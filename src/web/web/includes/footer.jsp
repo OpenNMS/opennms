@@ -17,7 +17,7 @@
 %>
 
 <!-- Footer -->
-<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<table width="100%" border="0" cellspacing="0" cellpadding="2" id="footer">
   <tr>
     <td class="footer" ALIGN="center">
       <font SIZE="-1" FACE="arial">
