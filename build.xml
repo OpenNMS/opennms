@@ -1326,6 +1326,8 @@ OpenNMS as part of the post-install.
      <pathelement location="${dev.lib.dir}/junit.jar"/>
      <pathelement location="${packaged.lib.dir}/hsqldb.jar"/>
      <pathelement location="${packaged.lib.dir}/SNMP4J.jar"/>
+     <pathelement location="${dev.lib.dir}/jwebunit-1.2.jar"/>
+    <pathelement location="${dev.lib.dir}/httpunit.jar"/>
      <pathelement location="${build.classes.dir}"/>
    </classpath>
   </javac>
