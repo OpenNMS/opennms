@@ -31,39 +31,76 @@
 //
 package org.opennms.netmgt.outage;
 
-import org.opennms.netmgt.config.OutageManagerConfig;
-import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.opennms.netmgt.mock.MockUtil;
+import java.util.Date;
 
 import junit.framework.TestCase;
+
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.OutageManagerConfig;
+import org.opennms.netmgt.mock.MockDatabase;
+import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.netmgt.mock.MockService;
+import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.xml.event.Event;
 
 public class OutageTest extends TestCase {
 
     private OutageManager m_outageMgr;
+    private MockNetwork m_network;
+    private MockDatabase m_db;
     private MockEventIpcManager m_eventMgr;
     
     private class MockOutageConfig implements OutageManagerConfig {
         
+        private String m_getNextOutageID;
         public boolean deletePropagation() {
             return true;
         }
         public String getGetNextOutageID() {
-            return "SELECT nextval('outageNxtId')";
+            return m_getNextOutageID;
         }
         public int getWriters() {
             return 1;
+        }
+        /**
+         * @param nextOutageIdStatement
+         */
+        public void setGetNextOutageID(String nextOutageIdStatement) {
+            m_getNextOutageID = nextOutageIdStatement;
         }
     }
     
     protected void setUp() throws Exception {
         MockUtil.logToConsole();
-        System.getProperties().put("opennms.home", "/sw/var/opennms/etc");
+        
+        m_network = new MockNetwork();
+        m_network.setCriticalService("ICMP");
+        m_network.addNode(1, "Router");
+        m_network.addInterface("192.168.1.1");
+        m_network.addService("ICMP");
+        m_network.addService("SMTP");
+        m_network.addInterface("192.168.1.2");
+        m_network.addService("ICMP");
+        m_network.addService("SMTP");
+        m_network.addNode(2, "Server");
+        m_network.addInterface("192.168.1.3");
+        m_network.addService("ICMP");
+        m_network.addService("HTTP");
+        m_network.addInterface("192.168.1.2");
+        
+        m_db = new MockDatabase();
+        m_db.populate(m_network);
         
         m_eventMgr = new MockEventIpcManager();
         
+        MockOutageConfig config = new MockOutageConfig();
+        config.setGetNextOutageID(m_db.getNextOutageIdStatement());
+        
         m_outageMgr = new OutageManager();
         m_outageMgr.setEventMgr(m_eventMgr);
-        m_outageMgr.setOutageMgrConfig(new MockOutageConfig());
+        m_outageMgr.setOutageMgrConfig(config);
+        m_outageMgr.setDbConnectionFactory(m_db);
         m_outageMgr.init();
         m_outageMgr.start();
         
@@ -73,12 +110,17 @@ public class OutageTest extends TestCase {
         m_outageMgr.stop();
     }
     
-    public void testCreate() {
+    public void testNodeLostService() {
+        MockService svc = m_network.getService(1, "192.168.1.1", "SMTP");
+        Event e = MockUtil.createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName());
+        e.setDbid(1);
+        e.setTime((new Date()).toString());
+        m_eventMgr.sendEventToListeners(e);
+        
+        assertEquals(1, m_db.countRows("select * from outages"));
         
     }
-
-    // nodeLostService: EventConstants.NODE_LOST_SERVICE_EVENT_UEI
-
+    
     // interfaceDown: EventConstants.INTERFACE_DOWN_EVENT_UEI
 
     // nodeDown: EventConstants.NODE_DOWN_EVENT_UEI

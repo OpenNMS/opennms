@@ -83,7 +83,7 @@ import org.xml.sax.InputSource;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class DatabaseConnectionFactory {
+public final class DatabaseConnectionFactory implements DbConnectionFactory {
     /**
      * The maximum age before a connection is closed
      */

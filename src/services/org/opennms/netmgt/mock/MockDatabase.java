@@ -33,15 +33,19 @@ package org.opennms.netmgt.mock;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Date;
+
+import org.opennms.netmgt.config.DbConnectionFactory;
 
 /**
  * In memory database comparable to the postgres database that can be used for unit
  * testing.  Can be populated from a MockNetwork
  * @author brozow
  */
-public class MockDatabase {
+public class MockDatabase implements DbConnectionFactory {
 
 
     public MockDatabase() {
@@ -161,10 +165,16 @@ public class MockDatabase {
                    "constraint fk_serviceID2 foreign key (serviceID) references service (serviceID) ON DELETE CASCADE" +
         ")");
         
+        update("create sequence outageNxtId start with 1");
+        update("create table outageId (outageId integer)");
+        update("insert into outageId (outageId) values (0)");
+        
     }
     
     public void drop() {
         // order matters here because of referential integrity constraints
+        update("drop table outageId");
+        update("drop sequence outageNxtId");
         update("drop table outages if exists");
         update("drop table events if exists");
         update("drop table ifServices if exists");
@@ -239,6 +249,51 @@ public class MockDatabase {
         querier.execute(svcName);
         return querier.getCount() > 0;
     }
+    
+    public String getNextOutageIdStatement() {
+        return "select next value for outageNxtId from outageId;";
+    }
+    
+    public Integer getNextOutageId() {
+        class SingleResultQuerier extends Querier {
+            SingleResultQuerier(MockDatabase db, String sql) {
+                super(db, sql);
+            }
+            
+            Object m_result;
+            
+            Object getResult() { return m_result; }
+            
+            public void processRow(ResultSet rs) throws SQLException {
+                m_result = rs.getObject(1);
+            }
+            
+        };
+        SingleResultQuerier querier = new SingleResultQuerier(this, getNextOutageIdStatement());
+        querier.execute();
+        return (Integer)querier.getResult();
+        
+    }
+
+    public void createOutage(MockService svc, Date lost, Date regained) {
+        
+        
+        Object[] values = {
+                getNextOutageId(), // outageID
+                null,           // svcLostEventId
+                null,           // svcRegainedEventId
+                new Integer(svc.getNodeId()), // nodeId
+                svc.getIpAddr(),                // ipAddr
+                new Integer(svc.getId()),       // serviceID
+                new java.sql.Date(lost.getTime()), // ifLostService
+                null,                              // ifRegainedService
+               };
+        
+        update("insert into outages (outageId, svcLostEventId, svcRegainedEventId, nodeId, ipAddr, serviceId, ifLostService, ifRegainedService) values (?, ?, ?, ?, ?, ?, ?, ?)", values);
+        
+    }
+    
+    
 
     
 }

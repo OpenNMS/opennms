@@ -40,6 +40,7 @@ import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.OutageManagerConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -55,9 +56,13 @@ public class Outaged implements OutagedMBean {
         EventIpcManager eventMgr = EventIpcManagerFactory.getInstance().getManager();
         getOutageManager().setEventMgr(eventMgr);
         
+        
         try {
             OutageManagerConfigFactory.reload();
             getOutageManager().setOutageMgrConfig(OutageManagerConfigFactory.getInstance());
+
+            DatabaseConnectionFactory.init();
+
         } catch (MarshalException ex) {
             log.error("Failed to load outage configuration", ex);
             throw new UndeclaredThrowableException(ex);
@@ -67,9 +72,13 @@ public class Outaged implements OutagedMBean {
         } catch (IOException ex) {
             log.error("Failed to load outage configuration", ex);
             throw new UndeclaredThrowableException(ex);
+        } catch (ClassNotFoundException ex) {
+            log.error("Failed to load database connection factory configuration", ex);
+            throw new UndeclaredThrowableException(ex);
         }
         
-
+        
+        getOutageManager().setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
         getOutageManager().init();
     }
 

@@ -38,8 +38,8 @@
 
 package org.opennms.netmgt.outage;
 
-import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -49,12 +49,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.config.OutageManagerConfig;
 import org.opennms.netmgt.eventd.EventIpcManager;
 
@@ -108,6 +106,8 @@ public final class OutageManager implements PausableFiber {
     private int m_status;
 
     private OutageManagerConfig m_outageMgrConfig;
+    
+    private DbConnectionFactory m_dbConnFactory;
 
     /**
      * Build the servicename to serviceid map - this map is used so as to avoid
@@ -224,29 +224,16 @@ public final class OutageManager implements PausableFiber {
         //
         java.sql.Connection conn = null;
         try {
-            DatabaseConnectionFactory.init();
-            conn = DatabaseConnectionFactory.getInstance().getConnection();
+            conn = getConnection();
 
             // close open outages for unmanaged entities
             closeOutages(conn);
 
             // build the service table map
             buildServiceTableMap(conn);
-        } catch (IOException ie) {
-            log.fatal("IOException getting database connection", ie);
-            throw new UndeclaredThrowableException(ie);
-        } catch (MarshalException me) {
-            log.fatal("Marshall Exception getting database connection", me);
-            throw new UndeclaredThrowableException(me);
-        } catch (ValidationException ve) {
-            log.fatal("Validation Exception getting database connection", ve);
-            throw new UndeclaredThrowableException(ve);
         } catch (SQLException sqlE) {
             log.fatal("Error closing outages for unmanaged services and interfaces or building servicename to serviceid mapping", sqlE);
             throw new UndeclaredThrowableException(sqlE);
-        } catch (ClassNotFoundException cnfE) {
-            log.fatal("Failed to load database driver", cnfE);
-            throw new UndeclaredThrowableException(cnfE);
         } finally {
             if (conn != null) {
                 try {
@@ -266,6 +253,14 @@ public final class OutageManager implements PausableFiber {
             log.debug("Created event receiver");
 
         log.info("OutageManager ready to accept events");
+    }
+
+    Connection getConnection() throws SQLException {
+        return m_dbConnFactory.getConnection();
+    }
+    
+    public void setDbConnectionFactory(DbConnectionFactory dbConnFactory) {
+        m_dbConnFactory = dbConnFactory;
     }
 
     public void setOutageMgrConfig(OutageManagerConfig config) {

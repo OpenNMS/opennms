@@ -51,8 +51,6 @@ import java.util.Enumeration;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import org.opennms.netmgt.config.OutageManagerConfigFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -189,7 +187,7 @@ public final class OutageWriter implements Runnable {
 
         // ask OutageManager
         //
-        long id = OutageManager.getInstance().getServiceID(name);
+        long id = m_outageMgr.getServiceID(name);
         if (id != -1)
             return id;
 
@@ -198,7 +196,7 @@ public final class OutageWriter implements Runnable {
         //
         Connection dbConn = null;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = getConnection();
 
             // SQL statement to get service id for a servicename from the
             // service table
@@ -228,7 +226,7 @@ public final class OutageWriter implements Runnable {
         // Record the new find
         //
         if (id != -1)
-            OutageManager.getInstance().addServiceMapping(name, id);
+            m_outageMgr.addServiceMapping(name, id);
 
         //
         // return the id to the caller
@@ -314,7 +312,7 @@ public final class OutageWriter implements Runnable {
         Category log = ThreadCategory.getInstance(OutageWriter.class);
 
         if (eventID == -1 || nodeID == -1 || ipAddr == null || serviceID == -1) {
-            log.warn(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI + " ignored - info incomplete - eventid/nodeid/ip/svc: " + eventID + "/" + nodeID + "/" + ipAddr + "/" + serviceID);
+            log.warn(EventConstants.NODE_LOST_SERVICE_EVENT_UEI + " ignored - info incomplete - eventid/nodeid/ip/svc: " + eventID + "/" + nodeID + "/" + ipAddr + "/" + serviceID);
             return;
         }
 
@@ -322,7 +320,7 @@ public final class OutageWriter implements Runnable {
         Connection dbConn = null;
 
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = getConnection();
             // check that there is no 'open' entry already
             if (openOutageExists(dbConn, nodeID, ipAddr, serviceID)) {
                 log.warn("\'" + EventConstants.NODE_LOST_SERVICE_EVENT_UEI + "\' for " + nodeID + "/" + ipAddr + "/" + serviceID + " ignored - table already  has an open record ");
@@ -497,7 +495,7 @@ public final class OutageWriter implements Runnable {
 
         Connection dbConn = null;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = getConnection();
 
             // Set the database commit mode
             try {
@@ -672,7 +670,7 @@ public final class OutageWriter implements Runnable {
 
         Connection dbConn = null;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = getConnection();
 
             // Set the database commit mode
             try {
@@ -849,7 +847,7 @@ public final class OutageWriter implements Runnable {
 
         Connection dbConn = null;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = getConnection();
 
             int count = 0;
 
@@ -933,7 +931,7 @@ public final class OutageWriter implements Runnable {
 
         Connection dbConn = null;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = getConnection();
 
             if (openOutageExists(dbConn, nodeID, ipAddr)) {
                 // Set the database commit mode
@@ -1014,7 +1012,7 @@ public final class OutageWriter implements Runnable {
 
         Connection dbConn = null;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = getConnection();
 
             if (openOutageExists(dbConn, nodeID, ipAddr, serviceID)) {
                 // Set the database commit mode
@@ -1152,7 +1150,7 @@ public final class OutageWriter implements Runnable {
 
         Connection dbConn = null;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = getConnection();
 
             // Set the database commit mode
             try {
@@ -1205,6 +1203,10 @@ public final class OutageWriter implements Runnable {
                 log.warn("Exception closing JDBC connection", e);
             }
         }
+    }
+
+    private Connection getConnection() throws SQLException {
+        return m_outageMgr.getConnection();
     }
 
     /**

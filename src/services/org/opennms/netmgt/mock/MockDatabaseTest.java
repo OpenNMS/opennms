@@ -31,9 +31,9 @@
 //
 package org.opennms.netmgt.mock;
 
-import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 
 import junit.framework.TestCase;
 
@@ -76,14 +76,6 @@ public class MockDatabaseTest extends TestCase {
         super.tearDown();
         
         m_db.drop();
-    }
-    
-    public void testCreate() {
-        File ddl = new File("etc"+File.separator+"create.sql");
-        assertTrue(ddl.exists());
-        
-        
-        
     }
     
     public void testNodeQuery() {
@@ -140,6 +132,25 @@ public class MockDatabaseTest extends TestCase {
         assertEquals(0, m_db.countRows("select * from node where nodeid = '1'"));
         assertEquals(0, m_db.countRows("select * from ipInterface where nodeid = '1'"));
         assertEquals(0, m_db.countRows("select * from ifServices where nodeid = '1'"));
+    }
+    
+    public void testOutage() {
+        final MockService svc = m_network.getService(1, "192.168.1.1", "ICMP");
+        m_db.createOutage(svc, new Date(), null);
+        m_db.createOutage(svc, new Date(), null);
+        Querier querier = new Querier(m_db, "select * from outages") {
+            public void processRow(ResultSet rs) throws SQLException {
+                int nodeId = rs.getInt("nodeId");
+                String ipAddr = rs.getString("ipAddr");
+                int serviceId = rs.getInt("serviceId");
+                assertEquals(nodeId, svc.getNodeId());
+                assertEquals(ipAddr, svc.getIpAddr());
+                assertEquals(serviceId, svc.getId());
+            }
+        };
+        querier.execute();
+        assertEquals(2, querier.getCount());
+        
     }
     
 
