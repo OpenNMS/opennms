@@ -414,7 +414,7 @@ public class NetworkElementFactory extends Object {
 
         try {
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM IPINTERFACE ORDER BY IPHOSTNAME, NODEID, inet(IPADDR)");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM IPINTERFACE ORDER BY IPHOSTNAME, NODEID, IPADDR");
 
             intfs = rs2Interfaces(rs);
 
