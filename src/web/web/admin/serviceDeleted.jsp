@@ -12,8 +12,7 @@
 //
 // Modifications:
 //
-// 2003 Feb 07: Fixed URLEncoder issues.
-// 2002 Nov 26: Fixed breadcrumbs issue.
+// 2004 Oct 5: Created File
 // 
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -86,111 +85,34 @@
   <link rel="stylesheet" type="text/css" href="includes/styles.css" />
 </head>
        
-<% if (request.isUserInRole("OpenNMS Administrator")) { %>
-
-<script language="Javascript" type="text/javascript" >
-function doDelete() {
-     if (confirm("Are you sure you want to proceed? This action will permanently delete this service and cannot be undone."))
-     {
-         document.forms["delete"].submit();
-     }
-     return false;
-}
-</script>
-
-<% } %>
-
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
 <% String breadcrumb1 = "<a href='element/index.jsp"  + "'>Search</a>"; %>
 <% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
 <% String breadcrumb3 = "<a href='element/interface.jsp?node=" + nodeId + "&intf=" + ipAddr  + "'>Interface</a>"; %>
-<% String breadcrumb4 = "Service"; %>
+<% String breadcrumb4 = "<a href='element/service?node=" + nodeId + "&intf=" + ipAddr  + "&service=" + serviceId + "'>Service</a>"; %>
+<% String breadcrumb5 = "Service Deleted"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Service" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
+  <jsp:param name="breadcrumb" value="<%=breadcrumb5%>" />
 </jsp:include>
 
 <br>
 
 <!-- Body -->
+<br>
+
 <table width="100%" border="0" cellspacing="0" cellpadding="2" >
   <tr>
     <td>&nbsp;</td>
-
-    <td width="100%" valign="top" >
-      <h2><%=service_db.getServiceName()%> service on <%=service_db.getIpAddress()%></h2>
-
-         <% if (request.isUserInRole("OpenNMS Administrator")) { %>
-         <form method="POST" name="delete" action="admin/deleteService">
-         <input type="hidden" name="node" value="<%=nodeId%>">
-         <input type="hidden" name="intf" value="<%=ipAddr%>">
-         <input type="hidden" name="service" value="<%=serviceId%>">
-         <% } %>
-      <p>
-         <a href="<%=eventUrl%>">View Events</a>
-         
-         <% if (request.isUserInRole("OpenNMS Administrator")) { %>
-         &nbsp;&nbsp;&nbsp;<a href="admin/deleteService" onClick="return doDelete()">Delete</a>
-         <% } %>
-      </p>
- 
-         <% if (request.isUserInRole("OpenNMS Administrator")) { %>
-         </form>
-         <% } %>
-      <table width="100%" border="0" cellspacing="0" cellpadding="2" >
-        <tr>
-          <td valign="top" width="48%">
-            <!-- general info box -->
-            <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-              <tr bgcolor="#999999">
-                <td colspan="2" ><b>General</b></td> 
-              </tr>
-              <tr>
-                <td>Node</td> 
-                <td><a href="element/node.jsp?node=<%=service_db.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(service_db.getNodeId())%></a></td>
-              </tr>
-              <tr>
-                <td>Interface</td> 
-                <td><a href="element/interface.jsp?node=<%=service_db.getNodeId()%>&intf=<%=service_db.getIpAddress()%>"><%=service_db.getIpAddress()%></a></td>
-              </tr>              
-              <tr> 
-                <td>Polling Status</td>
-                <td><%=ElementUtil.getServiceStatusString(service_db)%></td>
-              </tr>
-            </table>
-            <br>
-          
-            <!-- Availability box -->
-            <jsp:include page="/includes/serviceAvailability-box.jsp" flush="false" />
-            
-          </td>
-
-          <td>&nbsp;</td>
-          
-          <td valign="top" width="48%">
-            <!-- events list box -->
-            <% String eventHeader = "<a href='" + eventUrl + "'>Recent Events</a>"; %>
-            <% String moreEventsUrl = eventUrl; %>
-            <jsp:include page="/includes/eventlist.jsp" flush="false" >
-              <jsp:param name="node" value="<%=nodeId%>" />
-              <jsp:param name="ipAddr" value="<%=ipAddr%>" />
-              <jsp:param name="service" value="<%=serviceId%>" />              
-              <jsp:param name="throttle" value="5" />
-              <jsp:param name="header" value="<%=eventHeader%>" />
-              <jsp:param name="moreUrl" value="<%=moreEventsUrl%>" />
-            </jsp:include>            
-            <br>
-      
-            <!-- Recent outages box -->
-            <jsp:include page="/includes/serviceOutages-box.jsp" flush="false" />
-            <br>          
-          </td>
-         </tr>
-       </table>    
+    
+    <td>
+        <h3>Finished Deleting <%=service_db.getServiceName()%> Service on <%=ipAddr%>.</h3>
+        <p>OpenNMS should not need to be restarted, but it may take a moment for the Categories to be updated.</p>
     </td>
     
     <td>&nbsp;</td>
@@ -198,9 +120,8 @@ function doDelete() {
 </table>
 
 <br>
-
 <jsp:include page="/includes/footer.jsp" flush="false" />
 
-</body>
+</body> 	
 </html>
 

@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -59,22 +60,20 @@ public class DeleteInterfaceServlet extends HttpServlet {
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {
-        response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
+        // TODO send deleteInterfaceEvent
         
-        out.println("<html>");
-        out.println("<head><title>DeleteInterfaceServlet</title></head>");
-        out.println("<body>");
-        out.println("<table>");
-        out.println("<tr><th>Parameter Name</th><th>Parameter Value</th></tr>");
-        Enumeration e = request.getParameterNames();
-        while (e.hasMoreElements()) {
-            String parmName = (String) e.nextElement();
-            out.println("<tr><td>"+parmName+"</td><td>"+request.getParameter(parmName)+"</td></tr>");
-        }
-        out.println("</table>");
-        out.println("</body>");
-        out.println("</html>");
+//        response.setContentType("text/plain");
+//        PrintWriter out = response.getWriter();
+//        Enumeration e = request.getParameterNames();
+//        while (e.hasMoreElements()) {
+//            String parmName = (String) e.nextElement();
+//            out.println(parmName+"\t:\t"+request.getParameter(parmName));
+//        }
+        
+        // forward the request for proper display
+        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/interfaceDeleted.jsp");
+        dispatcher.forward( request, response );
+
     }
     
     private void sendEvent(Event event) throws ServletException 

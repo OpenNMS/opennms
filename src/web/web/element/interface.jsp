@@ -136,8 +136,6 @@
 
     String eventUrl = "event/list?filter=node%3D" + nodeId + "&filter=interface%3D" + ipAddr;
     
-    String deleteUrl = "admin/deleteInterface?node="+nodeId+"&intf="+ipAddr;
-    
     String telnetIp = null;
     Service telnetService = NetworkElementFactory.getService(nodeId, ipAddr, this.telnetServiceId);
     
@@ -197,7 +195,7 @@ function doDelete() {
         <% if (request.isUserInRole("OpenNMS Administrator")) { %>
 
       <form method="POST" name="delete" action="admin/deleteInterface">
-      <input type="hidden" name="nodeId" value="<%=nodeId%>">
+      <input type="hidden" name="node" value="<%=nodeId%>">
       <input type="hidden" name="intf" value="<%=ipAddr%>">
       <% } %>
       <p>
