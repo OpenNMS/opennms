@@ -601,10 +601,13 @@ public class PollablesTest extends TestCase {
         assertTime(4500);
         assertNotDeleted(pDot3Http);
         
+        m_anticipator.anticipateEvent(MockUtil.createServiceEvent("Test", EventConstants.DELETE_SERVICE_EVENT_UEI, mDot3Http));
+        
         m_scheduler.next();
         
         assertTime(5000);
-        assertDeleted(pDot3Http);
+        
+        verifyAnticipated();
         
         
     }
