@@ -282,7 +282,7 @@ create table snmpInterface (
 	snmpIfSpeed		integer,
 	snmpIfAdminStatus	integer,
 	snmpIfOperStatus	integer,
-	snmpIfAlias		varchar(32)	);
+	snmpIfAlias		varchar(256)	);
 
 create index snmpinterface_nodeid_ifindex_idx on snmpinterface(nodeID, snmpIfIndex);
 create index snmpinterface_nodeid_idx on snmpinterface(nodeID);

@@ -1,4 +1,8 @@
-1.1.6 to 1.2.0
+1.2.0 to 1.2.1
+----------------------------------------------------------------------
+- Changed snmpIfAlias column size to 256. Bug 1127
+
+1.1.5 to 1.2.0
 ----------------------------------------------------------------------
 - Added new SystemDef for Cisco PIX. Thx Ted. Bug 1047.
 - Removed deleted nodes from the list of nodes available for
