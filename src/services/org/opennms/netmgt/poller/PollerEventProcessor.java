@@ -265,8 +265,8 @@ final class PollerEventProcessor implements EventListener {
 
         // Retrieve old and new PollableNode objects from the Poller's pollable
         // node map.
-        PollableNode oldPNode = null;
-        PollableNode newPNode = null;
+        PollerNode oldPNode = null;
+        PollerNode newPNode = null;
         try {
             oldPNode = getPoller().findNode(Integer.parseInt(oldNodeIdStr));
             newPNode = getPoller().findNode(Integer.parseInt(newNodeIdStr));
@@ -294,7 +294,7 @@ final class PollerEventProcessor implements EventListener {
             // Obtain lock on old nodeId...wait indefinitely
             log.debug("interfaceReparentedHandler: requesting node lock for old nodeId " + oldPNode.getNodeId());
             ownOldLock = oldPNode.getNodeLock(NodeLocker.WAIT_FOREVER);
-            PollableInterface pIf = oldPNode.findInterface(event.getInterface());
+            PollerInterface pIf = oldPNode.findInterface(event.getInterface());
             log.debug("interfaceReparentedHandler: old node lock obtained, removing interface...");
             oldPNode.removeInterface(pIf);
 
@@ -343,21 +343,21 @@ final class PollerEventProcessor implements EventListener {
         String intfc = event.getInterface();
         String svc = event.getService();
 
-        final PollableNode pNode = getPoller().findNode(nodeId);
+        final PollerNode pNode = getPoller().findNode(nodeId);
         if (pNode == null) // Sanity check
         {
             log.error("Nodeid " + nodeId + " does not exist in pollable node map, unable to remove service from pollable services list.");
             return;
         }
 
-        PollableInterface pInterface = pNode.findInterface(event.getInterface());
+        PollerInterface pInterface = pNode.findInterface(event.getInterface());
         if (pInterface == null) // Sanity check
         {
             log.error("Interface " + intfc + "on node " + nodeId + " does not exist in pollable node map, unable to remove service from pollable services list.");
             return;
         }
 
-        final PollableService pService = pInterface.findService(event.getService());
+        final PollerService pService = pInterface.findService(event.getService());
         if (pService == null) // Sanity check
         {
             log.error("Service " + svc + "on Interface " + intfc + "on node " + nodeId + " does not exist in pollable node map, unable to remove service from pollable services list.");
@@ -418,7 +418,7 @@ final class PollerEventProcessor implements EventListener {
             }
         }
 
-        final PollableNode pNode = getPoller().findNode(nodeId);
+        final PollerNode pNode = getPoller().findNode(nodeId);
         if (pNode == null) // Sanity check
         {
             log.error("Nodeid " + nodeId + " does not exist in pollable node map, unable to delete node.");
@@ -452,7 +452,7 @@ final class PollerEventProcessor implements EventListener {
         locker.lockAndProcess();
     }
 
-    private void deleteNode(PollableNode pNode) {
+    private void deleteNode(PollerNode pNode) {
         Category log = ThreadCategory.getInstance(getClass());
         int nodeId = pNode.getNodeId();
         // Remove the node from the Poller's node map
@@ -462,13 +462,13 @@ final class PollerEventProcessor implements EventListener {
         // all services on each interface.
         Iterator iter = pNode.getInterfaces().iterator();
         while (iter.hasNext()) {
-            PollableInterface pIf = (PollableInterface) iter.next();
+            PollerInterface pIf = (PollerInterface) iter.next();
 
             // Iterate over the interface's services and mark
             // them for deletion.
             Iterator svc_iter = pIf.getServices().iterator();
             while (svc_iter.hasNext()) {
-                PollableService pSvc = (PollableService) svc_iter.next();
+                PollerService pSvc = (PollerService) svc_iter.next();
                 pSvc.markAsDeleted();
 
                 // Now remove the service from the pollable services
@@ -533,7 +533,7 @@ final class PollerEventProcessor implements EventListener {
             }
         }
 
-        PollableNode pNode = getPoller().findNode(nodeId);
+        PollerNode pNode = getPoller().findNode(nodeId);
         if (pNode == null) // Sanity check
         {
             log.error("Nodeid " + nodeId + " does not exist in pollable node map, unable to delete interface " + event.getInterface());
@@ -561,7 +561,7 @@ final class PollerEventProcessor implements EventListener {
 
                 // Retrieve the PollableInterface object corresponding to
                 // the interface address specified in the event
-                PollableInterface pIf = pNode.findInterface(event.getInterface());
+                PollerInterface pIf = pNode.findInterface(event.getInterface());
                 if (pIf == null) {
                     if (log.isDebugEnabled())
                         log.debug("interfaceDeletedHandler: interface " + event.getInterface() + " not in interface map for " + nodeId);
@@ -583,7 +583,7 @@ final class PollerEventProcessor implements EventListener {
                 // to be safe...
                 Iterator svc_iter = pIf.getServices().iterator();
                 while (svc_iter.hasNext()) {
-                    PollableService pSvc = (PollableService) svc_iter.next();
+                    PollerService pSvc = (PollerService) svc_iter.next();
                     pSvc.markAsDeleted();
 
                     // Now remove the service from the pollable services list
@@ -605,12 +605,12 @@ final class PollerEventProcessor implements EventListener {
                     log.debug("Interface deletion completed, dumping node info for nodeid " + pNode.getNodeId() + ", status=" + pNode.getStatus());
                     Iterator k = pNode.getInterfaces().iterator();
                     while (k.hasNext()) {
-                        PollableInterface tmpIf = (PollableInterface) k.next();
+                        PollerInterface tmpIf = (PollerInterface) k.next();
                         log.debug("		interface=" + tmpIf.getAddress().getHostAddress() + " status=" + tmpIf.getStatus());
 
                         Iterator s = tmpIf.getServices().iterator();
                         while (s.hasNext()) {
-                            PollableService tmpSvc = (PollableService) s.next();
+                            PollerService tmpSvc = (PollerService) s.next();
                             log.debug("			service=" + tmpSvc.getServiceName() + " status=" + tmpSvc.getStatus());
                         }
                     }
@@ -668,7 +668,7 @@ final class PollerEventProcessor implements EventListener {
         String ipAddr = event.getInterface();
         String service = event.getService();
 
-        PollableNode pNode = getPoller().findNode(nodeId);
+        PollerNode pNode = getPoller().findNode(nodeId);
         if (pNode == null) // Sanity check
         {
             log.error("Nodeid " + nodeId + " does not exist in pollable node map, " + "unable to delete service " + event.getService());
@@ -692,7 +692,7 @@ final class PollerEventProcessor implements EventListener {
 
                 // Retrieve the PollableInterface object corresponding to
                 // the interface address specified in the event
-                PollableInterface pIf = pNode.findInterface(ipAddr);
+                PollerInterface pIf = pNode.findInterface(ipAddr);
                 if (pIf == null) {
                     if (log.isDebugEnabled())
                         log.debug("serviceDeletedHandler: interface " + ipAddr + " not in interface map for " + nodeId);
@@ -704,7 +704,7 @@ final class PollerEventProcessor implements EventListener {
                 //
                 Iterator svc_iter = pIf.getServices().iterator();
                 while (svc_iter.hasNext()) {
-                    PollableService pSvc = (PollableService) svc_iter.next();
+                    PollerService pSvc = (PollerService) svc_iter.next();
                     if (pSvc.getServiceName().equals(service)) {
                         pSvc.markAsDeleted();
 

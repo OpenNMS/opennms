@@ -66,7 +66,7 @@ import org.opennms.netmgt.scheduler.Scheduler;
  * @author <A HREF="mailto:justis@opennms.org">Justis Peters </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
- * @see PollableService
+ * @see PollerService
  * @see Scheduler
  */
 final class ScheduleProxy implements ReadyRunnable {

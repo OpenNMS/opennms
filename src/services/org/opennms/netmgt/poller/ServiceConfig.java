@@ -125,7 +125,7 @@ public class ServiceConfig {
         return m_poller;
     }
 
-    boolean scheduledOutage(PollableService svc) {
+    boolean scheduledOutage(PollerService svc) {
         boolean outageFound = false;
     
         PollOutagesConfig outageFactory = getPollOutages();

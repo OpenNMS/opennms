@@ -36,7 +36,7 @@ import org.opennms.core.utils.ThreadCategory;
 
 public abstract class NodeLocker {
 
-    private PollableNode m_node;
+    private PollerNode m_node;
 
     private String m_caller;
 
@@ -47,7 +47,7 @@ public abstract class NodeLocker {
      */
     static final int WAIT_FOREVER = 0;
 
-    public NodeLocker(PollableNode node, String caller) {
+    public NodeLocker(PollerNode node, String caller) {
         m_node = node;
         m_caller = caller;
     }

@@ -32,40 +32,17 @@
 package org.opennms.netmgt.poller;
 
 /**
- * Represents a PollableVisitor 
- *
  * @author brozow
  */
-public interface PollableVisitor {
+public interface PollerVisitor {
+    public void visitElement(PollerElement element);
+    
+    public void visitContainer(PollerContainer container);
 
-    /**
-     * @param service
-     */
-    void visitService(PollableService service);
+    public void visitNode(PollerNode node);
 
-    /**
-     * @param interface1
-     */
-    void visitInterface(PollableInterface interface1);
+    public void visitInterface(PollerInterface iface);
 
-    /**
-     * @param node
-     */
-    void visitNode(PollableNode node);
-
-    /**
-     * @param network
-     */
-    void visitNetwork(PollableNetwork network);
-
-    /**
-     * @param container
-     */
-    void visitContainer(PollableContainer container);
-
-    /**
-     * @param element
-     */
-    void visitElement(PollableElement element);
+    public void visitService(PollerService service);
 
 }

@@ -32,240 +32,75 @@
 package org.opennms.netmgt.poller;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.xml.event.Event;
+
 
 /**
- * Represents a collection of nodes each with interfaces and services
+ * Represents a PollableNetwork 
+ *
+ * @author brozow
  */
-public class PollableNetwork extends PollableAggregate {
+public class PollableNetwork extends PollableContainer {
+    
+    private PollContext m_context;
 
-    private Poller m_poller;
-
-    /**
-     * Map of 'PollableNode' objects keyed by nodeId
-     */
-    private Map m_pollableNodes;
-
-    private List m_pollableServices;
-
-    public PollableNetwork(Poller poller) {
-        super(PollStatus.STATUS_UP);
-        m_poller = poller;
-        m_pollableNodes = Collections.synchronizedMap(new HashMap());
-        m_pollableServices = Collections.synchronizedList(new ArrayList());
-    }
-
-    /**
-     * @param pNode
-     * @param poller
-     */
-    public void addNode(PollableNode pNode) {
-        m_pollableNodes.put(new Integer(pNode.getNodeId()), pNode);
-        Category log = ThreadCategory.getInstance(getClass());
-        log.debug("PollableNetwork.addNode: adding pollable node with id: " + pNode.getNodeId() + " new size: " + m_pollableNodes.size());
-    }
-
-    /**
-     * @param nodeId
-     * @param poller
-     * @return
-     */
-    public PollableNode findNode(int nodeId) {
-        Integer key = new Integer(nodeId);
-        if (m_pollableNodes.containsKey(key)) {
-            return (PollableNode) m_pollableNodes.get(key);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * @param nodeId
-     * @param poller
-     */
-    public void removeNode(int nodeId) {
-        m_pollableNodes.remove(new Integer(nodeId));
-    }
-
-    public void visit(PollableVisitor v) {
-        Iterator j = m_pollableNodes.values().iterator();
-        while (j.hasNext()) {
-            PollableNode pNode = (PollableNode) j.next();
-            visitNode(pNode, v);
-        }
-
-    }
-
-    private void visitNode(PollableNode pNode, PollableVisitor v) {
-        v.visitNode(pNode);
-        Iterator k = pNode.getInterfaces().iterator();
-        while (k.hasNext()) {
-            PollableInterface pIf = (PollableInterface) k.next();
-            v.visitInterface(pIf);
-            Iterator s = pIf.getServices().iterator();
-            while (s.hasNext()) {
-                PollableService pSvc = (PollableService) s.next();
-                v.visitService(pSvc);
-            }
-        }
+    public PollableNetwork(PollContext context) {
+        super(null);
+        m_context = context;
     }
     
-    public Poller getPoller() {
-        return m_poller;
+    public PollContext getContext() {
+        return m_context;
     }
 
-    class DumpVisitor implements PollableVisitor {
+    public PollableNode createNode(int nodeId) {
+        PollableNode node = new PollableNode(this, nodeId);
+        addMember(node);
+        return node;
+    }
+    
+    public PollableNode getNode(int nodeId) {
+        return (PollableNode)getMember(new Integer(nodeId));
+    }
+
+    public int getNodeCount() {
+        return getMemberCount();
+    }
+    
+    public PollableInterface createInterface(int nodeId, InetAddress addr) {
+        PollableNode node = getNode(nodeId);
+        if (node == null)
+            node = createNode(nodeId);
+        return node.createInterface(addr);
+    }
+
+    public PollableInterface getInterface(int nodeId, InetAddress addr) {
+        PollableNode node = getNode(nodeId);
+        return (node == null ? null : node.getInterface(addr));
+    }
+
+    public PollableService createService(int nodeId, InetAddress addr, String svcName) {
+        PollableNode node = getNode(nodeId);
+        if (node == null)
+            node = createNode(nodeId);
+        return node.createService(addr, svcName);
         
-        private Category m_log;
+    }
 
-        public DumpVisitor(Category log) {
-            m_log = log;
-        }
-        public void visitNode(PollableNode pNode) {
-            m_log.debug(" nodeid=" + pNode.getNodeId() + " status=" + pNode.getStatus());
-        }
+    public PollableService getService(int nodeId, InetAddress addr, String svcName) {
+        PollableNode node = getNode(nodeId);
+        return (node == null ? null : node.getService(addr, svcName));
+    }
 
-        public void visitInterface(PollableInterface pIf) {
-            m_log.debug("     interface=" + pIf.getAddress().getHostAddress() + " status=" + pIf.getStatus());
-        }
-
-        public void visitService(PollableService pSvc) {
-            m_log.debug("         service=" + pSvc.getServiceName() + " status=" + pSvc.getStatus());
-        }
-    };
-
-    /**
-     * @param poller
-     */
-    public void dumpNetwork() {
-        final Category log = ThreadCategory.getInstance(getClass());
-
-        DumpVisitor dumper = new DumpVisitor(log);
-        visit(dumper);
-
+    protected Object createMemberKey(PollableElement member) {
+        PollableNode node = (PollableNode)member;
+        return new Integer(node.getNodeId());
     }
     
-    public void dumpNode(PollableNode node) {
-        DumpVisitor dumper = new DumpVisitor(ThreadCategory.getInstance(getClass()));
-        visitNode(node, dumper);
+    protected void visitThis(PollableVisitor v) {
+        super.visitThis(v);
+        v.visitNetwork(this);
     }
 
-    public PollableService createPollableService(int nodeId, String ipAddr, ServiceConfig svcConfig, PollStatus lastKnownStatus, Date svcLostDate) throws InterruptedException, UnknownHostException {
-        Category log = ThreadCategory.getInstance();
-        PollableService pSvc;
-        PollableNode pNode = null;
-        boolean ownLock = false;
-        try {
-            PollableInterface pInterface = null;
-            boolean nodeCreated = false;
-            boolean interfaceCreated = false;
-
-            // Does the node already exist in the poller's
-            // pollable node map?
-            //
-            pNode = findNode(nodeId);
-            if (pNode == null) {
-                // Nope...so we need to create it
-                pNode = new PollableNode(nodeId, m_poller);
-                nodeCreated = true;
-            } 
-            
-            // Obtain node lock
-            //
-            ownLock = pNode.getNodeLock(NodeLocker.WAIT_FOREVER);
-            
-
-            // Does the interface exist in the pollable
-            // node?
-            //
-            pInterface = pNode.findInterface(ipAddr);
-            if (pInterface == null) {
-                // Create the PollableInterface
-                pInterface = new PollableInterface(pNode, InetAddress.getByName(ipAddr));
-                interfaceCreated = true;
-            }
-
-            // Create a new PollableService representing
-            // this node, interface,
-            // service and package pairing
-            //
-            pSvc = new PollableService(pInterface, svcConfig, lastKnownStatus, svcLostDate);
-
-            // Add the service to the PollableInterface
-            // object
-            //
-            // WARNING: The PollableInterface stores
-            // services in a map
-            // keyed by service name, therefore, only the
-            // LAST
-            // PollableService aded to the interface for a
-            // particular service will be represented in the
-            // map. THIS IS BY DESIGN.
-            //
-            // NOTE: addService() calls recalculateStatus()
-            // on the interface
-            log.debug("createPollableService: adding pollable service to service list of interface: " + ipAddr);
-            pInterface.addService(pSvc);
-
-            if (interfaceCreated) {
-                // Add the interface to the node
-                //
-                // NOTE: addInterface() calls
-                // recalculateStatus() on the node
-                if (log.isDebugEnabled())
-                    log.debug("createPollableService: adding new pollable interface " + ipAddr + " to pollable node " + nodeId);
-                pNode.addInterface(pInterface);
-            } else {
-                // Recalculate node status
-                //
-                pNode.recalculateStatus();
-            }
-
-            if (nodeCreated) {
-                // Add the node to the node map
-                //
-                if (log.isDebugEnabled())
-                    log.debug("createPollableService: adding new pollable node: " + nodeId);
-                addNode(pNode);
-            }
-
-            // Add new service to the pollable services
-            // list.
-            //
-            m_pollableServices.add(pSvc);
-
-        } finally {
-            if (ownLock) {
-                try {
-                    pNode.releaseNodeLock();
-                } catch (InterruptedException iE) {
-                    log.error("createPollableService: Failed to release node lock on nodeid " + pNode.getNodeId() + ", thread interrupted.");
-                }
-            }
-
-        }
-        return pSvc;
-    }
-
-    /**
-     * @return
-     */
-    public List getPollableServices() {
-        return m_pollableServices;
-    }
-    
-    public Event createUpEvent(Date d) { return null; }
-    public Event createDownEvent(Date d) { return null; }
 
 }

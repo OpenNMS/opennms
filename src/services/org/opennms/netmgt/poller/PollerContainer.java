@@ -43,7 +43,7 @@ import java.util.Map;
  * a node containing interfaces
  * @author brozow
  */
-abstract public class PollableAggregate extends PollableElement {
+abstract public class PollerContainer extends PollerElement {
 
     /**
      * Map of 'PollableService' objects keyed by service name
@@ -53,7 +53,7 @@ abstract public class PollableAggregate extends PollableElement {
     /**
      * @param status
      */
-    public PollableAggregate(PollStatus status) {
+    public PollerContainer(PollStatus status) {
         super(status);
         m_members = Collections.synchronizedMap(new HashMap());
     }
@@ -61,16 +61,16 @@ abstract public class PollableAggregate extends PollableElement {
     protected void generateMemberEvents(Date date) {
         Iterator it = m_members.values().iterator();
         while (it.hasNext()) {
-            PollableElement member = (PollableElement) it.next();
+            PollerElement member = (PollerElement) it.next();
             member.generateEvents(date);
         }
     }
     
-    private void generateLingeringMemberEvents(Date date) {
+    private void generateLingeringMemberEvents(Date date, int cause) {
         Iterator it = m_members.values().iterator();
         while (it.hasNext()) {
-            PollableElement member = (PollableElement) it.next();
-            member.generateLingeringDownEvents(date);
+            PollerElement member = (PollerElement) it.next();
+            member.generateLingeringDownEvents(date, cause);
         }
     }
 
@@ -79,27 +79,53 @@ abstract public class PollableAggregate extends PollableElement {
      */
     public void generateEvents(Date date) {
         if (statusChanged() && getStatus() == PollStatus.STATUS_DOWN) {
-            sendEvent(createDownEvent(date));
+            int cause = sendEvent(createDownEvent(date));
+            propagateCause(cause);
             resetStatusChanged();
         } else if (statusChanged() && getStatus() == PollStatus.STATUS_UP) {
             sendEvent(createUpEvent(date));
+            int cause = getCause();
+            setCause(-1);
+            System.err.println("Processing items with cause "+cause);
+            generateLingeringMemberEvents(date, cause);
+
             resetStatusChanged();
-    
-            generateLingeringMemberEvents(date);
+
         } else if (getStatus() == PollStatus.STATUS_UP) {
             generateMemberEvents(date);
         }
     }
 
+
+    /**
+     * @param dbid
+     */
+    private void propagateCause(final int cause) {
+        PollerVisitor causePropagator = new PollerVisitorAdaptor() {
+            public void visitElement(PollerElement elem) {
+                if (elem.getCause() < 0)
+                    elem.setCause(cause);
+            }
+        };
+        this.visit(causePropagator);
+    }
+
     /**
      * @param date
      */
-    public void generateLingeringDownEvents(Date date) {
-        if (getStatus() == PollStatus.STATUS_DOWN) {
-            sendEvent(createDownEvent(date));
+    public void generateLingeringDownEvents(Date date, int originalCause) {
+        if (getStatus() == PollStatus.STATUS_DOWN && getCause() == originalCause) {
+            int newCause = sendEvent(createDownEvent(date));
+            propagateCause(newCause);
             resetStatusChanged();
+        } else if (getStatus() == PollStatus.STATUS_UP && getCause() == originalCause) {
+            setCause(-1);
+            generateLingeringMemberEvents(date, originalCause);
         } else if (getStatus() == PollStatus.STATUS_UP) {
-            generateLingeringMemberEvents(date);
+            sendEvent(createUpEvent(date));
+            int newCause = getCause();
+            setCause(-1);
+            generateLingeringMemberEvents(date, newCause);
         }
     }
 
@@ -107,15 +133,15 @@ abstract public class PollableAggregate extends PollableElement {
         m_members.remove(key);
     }
 
-    protected PollableElement findMember(String key) {
-        return (PollableElement)m_members.get(key);
+    protected PollerElement findMember(String key) {
+        return (PollerElement)m_members.get(key);
     }
 
     protected void deleteMembers() {
         m_members.clear();
     }
 
-    protected void addMember(String key, PollableElement member) {
+    protected void addMember(String key, PollerElement member) {
         m_members.put(key, member);
     }
 
@@ -130,8 +156,24 @@ abstract public class PollableAggregate extends PollableElement {
         // status changed flag
         Iterator it = getMembers().iterator();
         while (it.hasNext()) {
-            PollableElement member = (PollableElement) it.next();
+            PollerElement member = (PollerElement) it.next();
             member.resetStatusChanged();
+        }
+    }
+    
+    public void visit(PollerVisitor v) {
+        super.visit(v);
+        v.visitContainer(this);
+    }
+
+    /**
+     * 
+     */
+    public void visitMembers(PollerVisitor v) {
+        Iterator it = getMembers().iterator();
+        while (it.hasNext()) {
+            PollerElement member = (PollerElement)it.next();
+            member.visit(v);
         }
     }
 

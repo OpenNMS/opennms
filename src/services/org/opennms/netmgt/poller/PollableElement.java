@@ -31,100 +31,94 @@
 //
 package org.opennms.netmgt.poller;
 
-import java.util.Date;
-
-import org.opennms.netmgt.xml.event.Event;
-
 /**
- * Represents a network element in the Poller
- * @author brozow
+ * Represents a PollableElement 
  *
+ * @author brozow
  */
 abstract public class PollableElement {
+    
+    private PollableContainer m_parent;
+    private PollStatus m_status = PollStatus.STATUS_UNKNOWN;
+    private boolean m_statusChanged = false;
+    private long m_statusChangeTime = 0L;
 
-    /**
-     * last known/current status of the node
-     */
-    private PollStatus m_status;
-    /**
-     * Indicates if the service changed status as the result of most recent
-     * poll.
-     * 
-     * Set by poll() method.
-     */
-    private boolean m_statusChanged;
-    /**
-     * When the last status change occured.
-     * 
-     * Set by the poll() method.
-     */
-    private long m_statusChangeTime;
 
-    public PollableElement(PollStatus status) {
-        m_status = status;
-        m_statusChanged = false;
-        m_statusChangeTime = 0L;
+    protected PollableElement(PollableContainer parent) {
+        m_parent = parent;
+    }
+
+    protected PollableContainer getParent() {
+        return m_parent;
     }
     
-    abstract Poller getPoller();
-
-    /**
-     * @return Returns the status.
-     */
+    public void visit(PollableVisitor v) {
+        visitThis(v);
+    }
+    
+    protected void visitThis(PollableVisitor v) {
+        v.visitElement(this);
+    }
+    
     public PollStatus getStatus() {
         return m_status;
     }
-
-    /**
-     * @param status The status to set.
-     */
-    protected void setStatus(PollStatus status) {
+    private void setStatus(PollStatus status) {
         m_status = status;
     }
-
-    public void setStatusChanged() {
-        setStatusChanged(true);
-    }
-
-    public void resetStatusChanged() {
-        setStatusChanged(false);
-    }
-
-    public boolean statusChanged() {
+    public boolean isStatusChanged() {
         return m_statusChanged;
     }
-
-    protected void setStatusChanged(boolean statusChangedFlag) {
-        m_statusChanged = statusChangedFlag;
+    private void setStatusChanged(boolean statusChanged) {
+        m_statusChanged = statusChanged;
     }
-    
-    public int sendEvent(Event e) {
-        getPoller().getEventManager().sendNow(e);
-        return e.getDbid();
-    }
-    
-    abstract public Event createDownEvent(Date date);
-    
-    abstract public Event createUpEvent(Date date);
-
-    abstract protected void generateEvents(Date date);
-    
-    abstract protected void generateLingeringDownEvents(Date date);
-
     public long getStatusChangeTime() {
         return m_statusChangeTime;
     }
-
-    public void setStatusChangeTime(long statusChangeTime) {
+    private void setStatusChangeTime(long statusChangeTime) {
         m_statusChangeTime = statusChangeTime;
     }
-
-    protected void updateStatus(PollStatus newStatus) {
+    public void updateStatus(PollStatus newStatus) {
         if (getStatus() != newStatus) {
             setStatus(newStatus);
             setStatusChanged(true);
             setStatusChangeTime(System.currentTimeMillis());
         }
     }
+    public void resetStatusChanged() {
+        setStatusChanged(false);
+    }
+    public void recalculateStatus() {
+        // do nothing for just an element
+    }
 
+    /**
+     * @param service
+     * @return
+     */
+    public PollStatus doPoll(PollableElement elem) {
+        if (getParent() == null)
+            return poll(elem);
+        else
+            return getParent().doPoll(elem);
+    }
+
+    /**
+     * 
+     */
+    abstract public PollStatus poll();
+
+    protected PollStatus poll(PollableElement elem) {
+        if (elem != this)
+            throw new IllegalArgumentException("Invalid parameter to poll on "+this+": "+elem);
+        
+        return poll();
+    }
+
+    /**
+     * @return
+     */
+    public PollableElement selectPollElement() {
+        return this;
+    }
 }

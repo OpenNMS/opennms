@@ -49,7 +49,7 @@ import org.opennms.netmgt.scheduler.Scheduler;
  */
 public class Schedule implements ReadyRunnable {
 
-    PollableService m_svc;
+    PollerService m_svc;
     
     /**
      * The last time the service was scheduled for a poll.
@@ -79,7 +79,7 @@ public class Schedule implements ReadyRunnable {
 
 
 
-    public Schedule(PollableService svc, ServiceConfig config) {
+    public Schedule(PollerService svc, ServiceConfig config) {
         m_svc = svc;
         m_svcConfig = config;
         m_scheduler = m_svcConfig.getPoller().getScheduler();
@@ -200,10 +200,7 @@ public class Schedule implements ReadyRunnable {
                         when = -1;
                         matched = true;
                     }
-                    // FIXME: the below is a subtle bug... should be downSince
-                    // not m_statusChangeTime it is masked by the fact we go thru to 
-                    // loop more than once and reset the values
-                    else if (dt.hasEnd() && dt.getEnd() > m_svc.getStatusChangeTime()) {
+                    else if (dt.hasEnd() && dt.getEnd() > downSince) {
                         // in this interval
                         //
                         when = dt.getInterval();

@@ -32,40 +32,22 @@
 package org.opennms.netmgt.poller;
 
 /**
- * Represents a PollableVisitor 
+ * Represents a PollContext 
  *
  * @author brozow
  */
-public interface PollableVisitor {
+public interface PollContext {
+    
+    public String getCriticalServiceName();
 
     /**
-     * @param service
+     * @return
      */
-    void visitService(PollableService service);
+    public boolean isNodeProcessingEnabled();
 
     /**
-     * @param interface1
+     * @return
      */
-    void visitInterface(PollableInterface interface1);
-
-    /**
-     * @param node
-     */
-    void visitNode(PollableNode node);
-
-    /**
-     * @param network
-     */
-    void visitNetwork(PollableNetwork network);
-
-    /**
-     * @param container
-     */
-    void visitContainer(PollableContainer container);
-
-    /**
-     * @param element
-     */
-    void visitElement(PollableElement element);
+    public boolean isPollingAllIfCritServiceUndefined();
 
 }

@@ -32,40 +32,31 @@
 package org.opennms.netmgt.poller;
 
 /**
- * Represents a PollableVisitor 
- *
  * @author brozow
+ *
+ * TODO To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Style - Code Templates
  */
-public interface PollableVisitor {
+public class PollerVisitorAdaptor implements PollerVisitor {
 
-    /**
-     * @param service
-     */
-    void visitService(PollableService service);
+    public void visitContainer(PollerContainer container) {
+        // TODO Auto-generated method stub
 
-    /**
-     * @param interface1
-     */
-    void visitInterface(PollableInterface interface1);
+    }
+    public void visitElement(PollerElement element) {
+        // TODO Auto-generated method stub
 
-    /**
-     * @param node
-     */
-    void visitNode(PollableNode node);
+    }
+    public void visitInterface(PollerInterface iface) {
+        // TODO Auto-generated method stub
 
-    /**
-     * @param network
-     */
-    void visitNetwork(PollableNetwork network);
+    }
+    public void visitNode(PollerNode node) {
+        // TODO Auto-generated method stub
 
-    /**
-     * @param container
-     */
-    void visitContainer(PollableContainer container);
+    }
+    public void visitService(PollerService service) {
+        // TODO Auto-generated method stub
 
-    /**
-     * @param element
-     */
-    void visitElement(PollableElement element);
-
+    }
 }

@@ -84,7 +84,7 @@ public final class Poller implements PausableFiber {
 
     private PollerEventProcessor m_receiver;
 
-    private PollableNetwork m_network = new PollableNetwork(this);
+    private PollerNetwork m_network = new PollerNetwork(this);
 
     /**
      * Map of all available 'ServiceMonitor' objects indexed by service name
@@ -277,7 +277,7 @@ public final class Poller implements PausableFiber {
         return m_network.getPollableServices();
     }
 
-    public PollableNode findNode(int nodeId) {
+    public PollerNode findNode(int nodeId) {
         return m_network.findNode(nodeId);
     }
 
@@ -285,7 +285,7 @@ public final class Poller implements PausableFiber {
         m_network.removeNode(nodeId);
     }
     
-    public PollableNetwork getNetwork() {
+    public PollerNetwork getNetwork() {
         return m_network;
     }
 
@@ -372,7 +372,7 @@ public final class Poller implements PausableFiber {
         //
         try {
             ServiceConfig svcConfig = new ServiceConfig(this, pkg, svcName);
-            PollableService pSvc = m_network.createPollableService(nodeId, ipAddr, svcConfig, lastKnownStatus, svcLostDate);
+            PollerService pSvc = m_network.createPollableService(nodeId, ipAddr, svcConfig, lastKnownStatus, svcLostDate);
             
             // Initialize the service monitor with the pollable service
             //
@@ -493,7 +493,7 @@ public final class Poller implements PausableFiber {
     }
 
     public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, java.util.Date date) {
-        Category log = ThreadCategory.getInstance(PollableNode.class);
+        Category log = ThreadCategory.getInstance(PollerNode.class);
     
         if (log.isDebugEnabled())
             log.debug("createEvent: uei = " + uei + " nodeid = " + nodeId);
