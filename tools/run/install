@@ -1,4 +1,0 @@
-#!/bin/sh -
-
-exec @install.bin.dir@/runjava -r -- \
-     -Xmx256m -jar @install.dir@/lib/opennms_install.jar "$@"

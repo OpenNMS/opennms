@@ -1,8 +1,0 @@
-#!/bin/sh
-
-cat <<END
-
-Installation is complete.  Don't forget to run install.pl
-to create your database!
-
-END
