@@ -41,6 +41,7 @@ import org.opennms.netmgt.ping.Packet;
 import org.opennms.netmgt.ping.ReplyReceiver;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.protocols.icmp.IcmpSocket;
+import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * This class provides Capsd with the ability to check for ICMP support
@@ -355,8 +356,8 @@ public final class IcmpPlugin
 
 		if(qualifiers != null)
 		{
-			retries = getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
-			timeout = getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
+			retries = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
+			timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
 		}
 
 		return isPingable(address, retries, timeout);

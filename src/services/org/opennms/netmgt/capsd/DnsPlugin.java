@@ -38,7 +38,7 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
+import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.protocols.dns.DNSAddressRequest;
 
 /**
@@ -217,10 +217,10 @@ public final class DnsPlugin
 		String lookup = DEFAULT_LOOKUP;
 		if(qualifiers != null)
 		{
-			port    = getKeyedInteger(qualifiers, "port", DEFAULT_PORT);
-			timeout = getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
-			retries = getKeyedInteger(qualifiers, "retries", DEFAULT_RETRY);
-			lookup = getKeyedString(qualifiers, "lookup", DEFAULT_LOOKUP);
+			port    = ParameterMap.getKeyedInteger(qualifiers, "port", DEFAULT_PORT);
+			timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
+			retries = ParameterMap.getKeyedInteger(qualifiers, "retries", DEFAULT_RETRY);
+			lookup = ParameterMap.getKeyedString(qualifiers, "lookup", DEFAULT_LOOKUP);
 		} 
 	
 		boolean result = isServer(address, port, retries, timeout, lookup);

@@ -87,12 +87,12 @@ public final class IfTable
 	 */
 	private Signaler	m_signal;
 
-        /**
+	/**
 	 * <P>Used to generate the proper command for fetching the
 	 * SNMP data from the agent (via GETBULK for version 2 or
 	 * GETNEXT for version 1.</P>
 	 */
-        private int             m_version;
+	private int             m_version;
 
 	/** 
 	 * <P>The request id associated with the GetNext PDU generated
@@ -101,17 +101,17 @@ public final class IfTable
 	 */
 	private int 		m_ifNumberRequestId;
 	
-        /**
+	/**
 	 * <P>This will be the OID where the information should cut 
 	 * off from the return packet from the GETBULK command.</P>
 	 */
-        private SnmpObjectId 	m_stopAt = null;
+	private SnmpObjectId 	m_stopAt = null;
 
        /**
 	*<P>Used for storing the ifNumber variable from the MIB, 
 	*the number of interfaces a device possesses.</P>
 	*/
-        private int 		m_ifNumber;
+	private int 		m_ifNumber;
        
        /**
 	*<P>Used as a temporary storage space for all the data
@@ -121,7 +121,7 @@ public final class IfTable
 	*one map per interface containing all the necessary MIB
 	*values.</P>
 	*/
-        //private SnmpVarBind[] m_tempStorage = new SnmpVarBind[20000];
+	//private SnmpVarBind[] m_tempStorage = new SnmpVarBind[20000];
 	private SnmpVarBind[] m_tempStorage = null;
 
        /**
@@ -265,7 +265,8 @@ public final class IfTable
 		Category log = ThreadCategory.getInstance(getClass());
 		
 		if(log.isDebugEnabled())
-			log.debug("snmpReceivedPdu: got SNMP response, current version: " + m_version);
+			log.debug("snmpReceivedPdu: got SNMP response, current version: " + ((m_version==SnmpSMI.SNMPV1)?"SNMPv1":"SNMPv2"));
+			
 		// handle the command.
 		//
 		if (command != SnmpPduPacket.RESPONSE)
@@ -283,20 +284,23 @@ public final class IfTable
 			} 
 			else
 			{
-			    	// Is this the response to our request to retrieve ifNumber?
-			    	// If so, begin gathering all the MIB data for the device
+				// Is this the response to our request to retrieve ifNumber?
+				// If so, begin gathering all the MIB data for the device
 				//
-			    	if (pdu.getRequestId() ==  m_ifNumberRequestId) 
-			    	{
-					// Check for v2 error in varbind
+				if (pdu.getRequestId() ==  m_ifNumberRequestId) 
+				{
 					SnmpVarBind vb = pdu.getVarBindAt(0);
-					if (log.isDebugEnabled())
-						log.debug("snmpReceivedPdu: checking for v2 error in response pdu varbind");
-					if (vb.getValue() instanceof org.opennms.protocols.snmp.SnmpV2Error)
+					if (m_version == SnmpSMI.SNMPV2)
 					{
-						m_error = true;
+						// Check for v2 error in varbind
 						if (log.isDebugEnabled())
-							log.debug("snmpReceivedPDU: varbind: " + vb.getName() + "  error: '" + vb.getValue() + "'");								
+							log.debug("snmpReceivedPdu: checking for v2 error in response pdu varbind");
+						if (vb.getValue() instanceof org.opennms.protocols.snmp.SnmpV2Error)
+						{
+							m_error = true;
+							if (log.isDebugEnabled())
+								log.debug("snmpReceivedPDU: varbind: " + vb.getName() + "  error: '" + vb.getValue() + "'");								
+						}
 					}
 						
 					if (!m_error)
@@ -320,9 +324,9 @@ public final class IfTable
 						session.send(nxt, this);
 						doNotify = false;
 					}
-			    	}
-			    	else if (m_version == SnmpSMI.SNMPV2) // Handle SNMPv2 GetBulk responses...
-			    	{
+				}
+				else if (m_version == SnmpSMI.SNMPV2) // Handle SNMPv2 GetBulk responses...
+				{
 					if (log.isDebugEnabled())
 						log.debug("snmpReceivedPdu: got SNMPv2 GetBulk response...");
 					
@@ -343,7 +347,7 @@ public final class IfTable
 							break;
 						}
 						
-				    		m_tempStorage[m_responses] = vb;
+						m_tempStorage[m_responses] = vb;
 						m_responses++;
 					}
 					
@@ -362,29 +366,29 @@ public final class IfTable
 						if (maxReps > 0 && m_stopAt.compare(pdu.getVarBindAt(numVarBinds-1).getName()) > 0) 
 						{
 							SnmpObjectId id = new SnmpObjectId(pdu.getVarBindAt(numVarBinds-1).getName());
-				    			SnmpVarBind[] newvblist = {new SnmpVarBind(id)};
-				    			SnmpPduPacket nxt = new SnmpPduBulk(0, maxReps, newvblist);
+							SnmpVarBind[] newvblist = {new SnmpVarBind(id)};
+							SnmpPduPacket nxt = new SnmpPduBulk(0, maxReps, newvblist);
 							nxt.setRequestId(nxt.nextSequence());
 							if (log.isDebugEnabled())
 								log.debug("smnpReceivedPDU: Starting new GETBULK packet at OID = " + id.toString() + ", with request ID: " + nxt.getRequestId());
-				    			session.send(nxt, this);
-				    			doNotify = false;
+							session.send(nxt, this);
+							doNotify = false;
 						}
 						else 
 						{
 							if (log.isDebugEnabled())
 								log.debug("smnpReceivedPDU: All SNMPv2 data received, processing...");
 							
-				    			//all the data has been retrieved from the MIB, so now
-				    			//we must enter it into our maps.  Each map will hold all
-				    			//the MIB variable values per interface.
+							//all the data has been retrieved from the MIB, so now
+							//we must enter it into our maps.  Each map will hold all
+							//the MIB variable values per interface.
 							//
-				    			//get the next possible index value from the temporary storage
-				    			//array, since the first variable is the ifIndex value.  After
-				    			//scan through the entire temporary array, comparing the
-				    			//index of each OID to the index stored as 'ifIndex'.
-				    			for (int x = 0; x < m_ifNumber; x++) 
-				    			{
+							//get the next possible index value from the temporary storage
+							//array, since the first variable is the ifIndex value.  After
+							//scan through the entire temporary array, comparing the
+							//index of each OID to the index stored as 'ifIndex'.
+							for (int x = 0; x < m_ifNumber; x++) 
+							{
 								SnmpVarBind[] templist = new SnmpVarBind[22];
 								SnmpInt32 ifIndex = (SnmpInt32)m_tempStorage[x].getValue();
 						
@@ -393,7 +397,7 @@ public final class IfTable
 								
 								for (int j = 0; j < m_responses && tempcount<22; j++) 
 								{
-					    				// Extract the "instance" id from the current SnmpVarBind's object id
+									// Extract the "instance" id from the current SnmpVarBind's object id
 									//
 									String from_oid = m_tempStorage[j].getName().toString();
 									SnmpObjectId id = new SnmpObjectId(from_oid);
@@ -408,7 +412,7 @@ public final class IfTable
 										//if the indexes match, store it within templist
 										if (check.intValue() == ifIndex.getValue()) 
 										{
-						    					templist[tempcount++] = m_tempStorage[j];
+											templist[tempcount++] = m_tempStorage[j];
 										}
 									}
 									catch (NumberFormatException nfE)
@@ -423,19 +427,19 @@ public final class IfTable
 								SnmpVarBind[] vblist = new SnmpVarBind[tempcount];
 								for (int a = 0; a < tempcount; a++) 
 								{
-					    				vblist[a] = templist[a];    
+									vblist[a] = templist[a];    
 								}
 						
 								//create new IfTableEntry with all variables for a 
 								//particular index.
 								IfTableEntry ent = new IfTableEntry(vblist);
 								m_entries.add(ent);
-				    			} // end for()
+							} // end for()
 						}
 					} // end if (!m_error)
-			    	} // end if SNMPv2
-			    	else if (m_version == SnmpSMI.SNMPV1) // Handle SNMPv1 GetNext responses
-			    	{
+				} // end if SNMPv2
+				else if (m_version == SnmpSMI.SNMPV1) // Handle SNMPv1 GetNext responses
+				{
 					if(log.isDebugEnabled())
 						log.debug("snmpReceivedPdu: got SNMPv1 GetNext response...");
 					
@@ -443,21 +447,21 @@ public final class IfTable
 					//store info and generate packets for gathering data.
 					if (m_responses < m_ifNumber) 
 					{
-				    		SnmpVarBind[] vblist = pdu.toVarBindArray();
-				    		IfTableEntry ent = new IfTableEntry(vblist);
-				    		m_entries.add(ent);
+						SnmpVarBind[] vblist = pdu.toVarBindArray();
+						IfTableEntry ent = new IfTableEntry(vblist);
+						m_entries.add(ent);
 				    
-					    	SnmpPduRequest nxt = new SnmpPduRequest(SnmpPduPacket.GETNEXT);
-					    	for(int x = 0; x < pdu.getLength(); x++)
+						SnmpPduRequest nxt = new SnmpPduRequest(SnmpPduPacket.GETNEXT);
+						for(int x = 0; x < pdu.getLength(); x++)
 						{
-						    	nxt.addVarBind(new SnmpVarBind(pdu.getVarBindAt(x).getName()));
+							nxt.addVarBind(new SnmpVarBind(pdu.getVarBindAt(x).getName()));
 						}
-					    	nxt.setRequestId(nxt.nextSequence());
-					    	session.send(nxt, this);
-					    	doNotify = false;
-					    	m_responses++;
+						nxt.setRequestId(nxt.nextSequence());
+						session.send(nxt, this);
+						doNotify = false;
+						m_responses++;
 					}
-			    	} // end if (m_version == SnmpSMI.SNMPV1)
+				} // end if (m_version == SnmpSMI.SNMPV1)
 
 			} // end if (errStatus != SnmpPduPacket.ErrNoError)
 

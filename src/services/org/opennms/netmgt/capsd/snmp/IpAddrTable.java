@@ -211,7 +211,7 @@ public class IpAddrTable
 		Category log = ThreadCategory.getInstance(getClass());
 
 		if(log.isDebugEnabled())
-			log.debug("snmpReceivedPdu: got SNMP response, current version: " + m_version);
+			log.debug("snmpReceivedPdu: got SNMP response, current version: " + ((m_version==SnmpSMI.SNMPV1)?"SNMPv1":"SNMPv2"));
 
 		if(command != SnmpPduPacket.RESPONSE)
 		{

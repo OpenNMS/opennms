@@ -395,7 +395,7 @@ final class IfSmbCollector
 			/* return.  Will be doing additional testing to try and figure out
 			/* what the problem is but for now will be commenting this code out.
 			/* THe only thing we lose is potentially the OS of the remote box
-			/*
+			/*/
 			
 			// Try to enumerate all the shares on the 
 			// remote target.
@@ -445,7 +445,7 @@ final class IfSmbCollector
 				if (log.isDebugEnabled())
 					log.debug("IfSmbCollector: unable to list SMB shares, reason: " + e.getMessage());
 			}
-			---------------------------------------------------------------------*/
+			/*---------------------------------------------------------------------*/
 			
 		} // end if(addr != null)
 

@@ -35,6 +35,35 @@
                 <threshold type="high" ds-name="cimPctHddUsed1"  ds-type="node" value="99" rearm="80" trigger="1"/>
                 <threshold type="high" ds-name="cimPctHddUsed2"  ds-type="node" value="99" rearm="80" trigger="1"/>
                 <threshold type="high" ds-name="cim5MinCpuUtilPct"  ds-type="node" value="90" rearm="50" trigger="3"/>
+        </group>
 
+	<group name="icmp-latency"
+                rrdRepository = "@root.install.share@/rrd/icmp/">
+                <threshold type="high" ds-name="response-time"  ds-type="if" value="75" rearm="25" trigger="3"/>
+        </group>
+
+        <group name="http-latency"
+                rrdRepository = "@root.install.share@/rrd/http/">
+                <threshold type="high" ds-name="response-time"  ds-type="if" value="100" rearm="50" trigger="3"/>
+        </group>
+
+        <group name="http-8000-latency"
+                rrdRepository = "@root.install.share@/rrd/http-8000/">
+                <threshold type="high" ds-name="response-time"  ds-type="if" value="100" rearm="50" trigger="3"/>
+        </group>
+
+        <group name="http-8080-latency"
+                rrdRepository = "@root.install.share@/rrd/http-8080/">
+                <threshold type="high" ds-name="response-time"  ds-type="if" value="100" rearm="50" trigger="3"/>
+        </group>
+
+        <group name="dns-latency"
+                rrdRepository = "@root.install.share@/rrd/dns/">
+                <threshold type="high" ds-name="response-time"  ds-type="if" value="100" rearm="50" trigger="3"/>
+        </group>
+
+        <group name="dhcp-latency"
+                rrdRepository = "@root.install.share@/rrd/dhcp/">
+                <threshold type="high" ds-name="response-time"  ds-type="if" value="500" rearm="100" trigger="3"/>
         </group>
 </thresholding-config>

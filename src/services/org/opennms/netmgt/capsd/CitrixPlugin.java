@@ -45,11 +45,12 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
+import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * <P>This class is designed to be used by the capabilities
  * daemon to test for the existance of an Citrix server on 
- * remote interfaces. The class implements the CapsdPlugin
+ * remote interfaces. The class implements the Plugin
  * interface that allows it to be used along with other
  * plugins by the daemon.</P>
  *
@@ -81,7 +82,7 @@ public final class CitrixPlugin
 	 * Default timeout (in milliseconds) for Citrix requests.
 	 */
 	private final static int	DEFAULT_TIMEOUT	= 5000; // in milliseconds
-        
+	
 	/**
 	 * <P>Test to see if the passed host-port pair is the 
 	 * endpoint for an Citrix server. If there is an Citrix server
@@ -100,11 +101,11 @@ public final class CitrixPlugin
 		// get a log to send errors
 		//
 		Category log = ThreadCategory.getInstance(getClass());
-                
-                //don't let the user set the timeout to 0, an infinite loop will occur if the server is down
-                if (timeout==0)
-                        timeout=10;
-                
+		
+		//don't let the user set the timeout to 0, an infinite loop will occur if the server is down
+		if (timeout==0)
+			timeout=10;
+		
 		boolean isAServer = false;
 		for (int attempts=0; attempts <= retries && !isAServer; attempts++)
 		{
@@ -119,22 +120,21 @@ public final class CitrixPlugin
 				// Allocate a line reader
 				//
 				BufferedReader reader = new BufferedReader(new InputStreamReader(portal.getInputStream()));
-                                StringBuffer buffer = new StringBuffer();
+				StringBuffer buffer = new StringBuffer();
 				while(!isAServer)
-                                {
-                                        buffer.append((char)reader.read());
-                                        if (buffer.toString().indexOf("ICA")>-1)
-                                        {
-                                                isAServer=true;
-                                        }
-                                }
-                        }
-                        catch(ConnectException cE)
+				{
+					buffer.append((char)reader.read());
+					if (buffer.toString().indexOf("ICA")>-1)
+					{
+						isAServer=true;
+					}
+				}
+			}
+			catch(ConnectException cE)
 			{
 				// Connection refused!!  No need to perform retries.
 				//
-				cE.fillInStackTrace();
-				log.debug("CitrixPlugin: connection refused by host " + host.getHostAddress(), cE);
+				log.debug("CitrixPlugin: connection refused to " + host.getHostAddress() + ":" + port);
 				isAServer = false;
 				break;
 			}
@@ -229,9 +229,9 @@ public final class CitrixPlugin
 
 		if(qualifiers != null)
 		{
-			retries = getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
-			timeout = getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
-			port    = getKeyedInteger(qualifiers, "port", DEFAULT_PORT);
+			retries = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
+			timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
+			port    = ParameterMap.getKeyedInteger(qualifiers, "port", DEFAULT_PORT);
 		}
 
 		boolean result = isServer(address, port, retries, timeout);

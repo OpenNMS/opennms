@@ -45,11 +45,12 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
+import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * <P>This class is designed to be used by the capabilities
  * daemon to test for the existance of an IIOP on a Domino server on 
- * remote interfaces. The class implements the CapsdPlugin
+ * remote interfaces. The class implements the Plugin
  * interface that allows it to be used along with other
  * plugins by the daemon.</P>
  *
@@ -76,16 +77,16 @@ public final class DominoIIOPPlugin
 	 */
 	private final static int	DEFAULT_TIMEOUT	= 5000; // in milliseconds
 	
-        /** 
+	/** 
 	 * Default port.
 	 */
 	private static final int DEFAULT_PORT = 63148;
-        
-        /**
-         * Default port of where to find the IOR via HTTP
-         */
-        private static final int DEFAULT_IORPORT = 80;
-        
+	
+	/**
+	 * Default port of where to find the IOR via HTTP
+	 */
+	private static final int DEFAULT_IORPORT = 80;
+	
 	/**
 	 * <P>Test to see if the passed host-port pair is the 
 	 * endpoint for a Domino IIOP server. If there is a IIOP server
@@ -110,19 +111,19 @@ public final class DominoIIOPPlugin
 		for (int attempts=0; attempts <= retries && !isAServer; attempts++)
 		{
 			// Lets first try to the the IOR via HTTP, if we can't get that then any other process that can
-                        // do it the right way won't be able to connect anyway
-                        //
-                        try {
-                                String IOR = retrieveIORText(host.getHostAddress(), iorPort);
-                        } catch (Exception e)
-                        {
-                                if(log.isDebugEnabled())
-                                        log.debug("DominoIIOPMonitor: failed to get the corba IOR from " + host.getHostAddress(), e);
-                                isAServer = false;
-                                break;
-                        }
-                        
-                        Socket  portal    = null;
+			// do it the right way won't be able to connect anyway
+			//
+			try {
+				String IOR = retrieveIORText(host.getHostAddress(), iorPort);
+			} catch (Exception e)
+			{
+				if(log.isDebugEnabled())
+					log.debug("DominoIIOPMonitor: failed to get the corba IOR from " + host.getHostAddress(), e);
+				isAServer = false;
+				break;
+			}
+			
+			Socket  portal    = null;
 			try
 			{
 				//
@@ -131,14 +132,13 @@ public final class DominoIIOPPlugin
 				portal = new Socket(host, port);
 				portal.setSoTimeout(timeout);
 				
-                                isAServer = true;
+				isAServer = true;
 			}
 			catch(ConnectException e)
 			{
 				// Connection refused!!  No need to perform retries.
 				//
-				e.fillInStackTrace();
-				log.debug("DominoIIOPMonitor: Connection to host " + host.getHostAddress() + " on port " + port + " was refused", e);
+				log.debug("DominoIIOPMonitor: Connection refused to " + host.getHostAddress() + ":" + port);
 				isAServer = false;
 				break;
 			}
@@ -185,45 +185,45 @@ public final class DominoIIOPPlugin
 		//
 		return isAServer;
 	}
-        
-        /**
-         * Method used to retrieve the IOR string from the Domino server.
-         * @param host, the host name which has the IOR
-         * @param port, the port to find the IOR via HTTP
-         */
-        private String retrieveIORText(String host, int port)
-                throws IOException
-        {
-               String IOR = "";
-               java.net.URL u = new java.net.URL("http://" + host + ":" + port + "/diiop_ior.txt");
-               java.io.InputStream is = u.openStream();
-               java.io.BufferedReader dis = new java.io.BufferedReader(new java.io.InputStreamReader(is));
-               boolean done = false;
-               while (!done)
-               {
-                       String line = dis.readLine();
-                       if (line == null)
-                       {
-                               // end of stream
-                               done = true;
-                       }
-                       else
-                       {
-                               IOR += line;
-                               if (IOR.startsWith("IOR:"))
-                               {
-                                       // the IOR does not span a line, so we're done
-                                       done = true;
-                               }
-                       }
-               }
-               dis.close();
-               
-               if (!IOR.startsWith("IOR:"))
-                       throw new IOException("Invalid IOR: " + IOR);
-               
-               return IOR;
-        }
+	
+	/**
+	 * Method used to retrieve the IOR string from the Domino server.
+	 * @param host, the host name which has the IOR
+	 * @param port, the port to find the IOR via HTTP
+	 */
+	private String retrieveIORText(String host, int port)
+		throws IOException
+	{
+	       String IOR = "";
+	       java.net.URL u = new java.net.URL("http://" + host + ":" + port + "/diiop_ior.txt");
+	       java.io.InputStream is = u.openStream();
+	       java.io.BufferedReader dis = new java.io.BufferedReader(new java.io.InputStreamReader(is));
+	       boolean done = false;
+	       while (!done)
+	       {
+		       String line = dis.readLine();
+		       if (line == null)
+		       {
+			       // end of stream
+			       done = true;
+		       }
+		       else
+		       {
+			       IOR += line;
+			       if (IOR.startsWith("IOR:"))
+			       {
+				       // the IOR does not span a line, so we're done
+				       done = true;
+			       }
+		       }
+	       }
+	       dis.close();
+	       
+	       if (!IOR.startsWith("IOR:"))
+		       throw new IOException("Invalid IOR: " + IOR);
+	       
+	       return IOR;
+	}
 
 	/**
 	 * Returns the name of the protocol that this plugin
@@ -274,22 +274,22 @@ public final class DominoIIOPPlugin
 		int retries = DEFAULT_RETRY;
 		int timeout = DEFAULT_TIMEOUT;
 		int port    = DEFAULT_PORT;
-                int iorPort = DEFAULT_IORPORT;
+		int iorPort = DEFAULT_IORPORT;
 
-                if(qualifiers != null)
+		if(qualifiers != null)
 		{
-			retries = getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
-			timeout = getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
-			port    = getKeyedInteger(qualifiers, "port", DEFAULT_PORT);
-                        iorPort = getKeyedInteger(qualifiers, "ior-port", DEFAULT_IORPORT);
+			retries = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
+			timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
+			port    = ParameterMap.getKeyedInteger(qualifiers, "port", DEFAULT_PORT);
+			iorPort = ParameterMap.getKeyedInteger(qualifiers, "ior-port", DEFAULT_IORPORT);
 		}
 
 		
 		try
 		{
-		        boolean result = isServer(address, port, retries, timeout, iorPort);
+			boolean result = isServer(address, port, retries, timeout, iorPort);
 			
-                        return result;
+			return result;
 		}
 		catch(Exception e)
 		{

@@ -45,6 +45,7 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.utils.SnmpResponseHandler;
 
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * This class is used to test passed address for
@@ -168,24 +169,24 @@ public final class SnmpPlugin
 				// "port" parm
 				//
 				if(qualifiers.get("port") != null)
-			 	{
-					int port = getKeyedInteger(qualifiers, "port", peer.getPort());
+				{
+					int port = ParameterMap.getKeyedInteger(qualifiers, "port", peer.getPort());
 					peer.setPort(port);
 				}
 				
 				// "timeout" parm
 				//
 				if(qualifiers.get("timeout") != null)
-			 	{
-					int timeout = getKeyedInteger(qualifiers, "timeout", peer.getTimeout());
+				{
+					int timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", peer.getTimeout());
 					peer.setTimeout(timeout);
 				}
 			    
 				// "retry" parm
 				//
 				if(qualifiers.get("retry") != null)
-			 	{
-					int retry = getKeyedInteger(qualifiers, "retry", peer.getRetries());
+				{
+					int retry = ParameterMap.getKeyedInteger(qualifiers, "retry", peer.getRetries());
 					peer.setRetries(retry);
 				}
 				
@@ -210,17 +211,17 @@ public final class SnmpPlugin
 			
 			session = new SnmpSession(peer);
 
-			String oid = getKeyedString(qualifiers, "vbname", DEFAULT_OID);
+			String oid = ParameterMap.getKeyedString(qualifiers, "vbname", DEFAULT_OID);
 
 			SnmpResponseHandler handler = new SnmpResponseHandler();
 			
 			SnmpPduPacket out = null;
 			if (peer.getParameters().getVersion() == SnmpSMI.SNMPV1)
 				out = new SnmpPduRequest(SnmpPduPacket.GETNEXT,
-							       	new SnmpVarBind[] { new SnmpVarBind(oid) });
+								new SnmpVarBind[] { new SnmpVarBind(oid) });
 			else if (peer.getParameters().getVersion() == SnmpSMI.SNMPV2)
 				out = new SnmpPduBulk(1,     	// nonRepeaters
-				 		0, 		// maxRepetitions	
+						0, 		// maxRepetitions	
 						new SnmpVarBind[] { new SnmpVarBind(oid) });  
 			
 			synchronized(handler)

@@ -34,6 +34,8 @@ import org.opennms.netmgt.dhcpd.Dhcpd;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
+import org.opennms.netmgt.utils.ParameterMap;
+
 /**
  * <P>This class is designed to be used by the service poller
  * framework to test the availability of the DHCP service on 
@@ -52,7 +54,7 @@ import org.opennms.core.utils.ThreadCategory;
  *
  */
 final class DhcpMonitor
-	extends IPv4Monitor
+	extends IPv4LatencyMonitor
 {
 	/** 
 	 * Default retries.
@@ -89,8 +91,13 @@ final class DhcpMonitor
 
 		// Retries
 		//
-		int retry = getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-		int timeout = getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+		int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+		String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
+		if (rrdPath == null)
+		{
+			log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
+		}
 
 		// Get interface address from NetworkInterface
 		//
@@ -100,17 +107,34 @@ final class DhcpMonitor
 			log.debug("DhcpMonitor.poll: address: " + ipv4Addr + " timeout: " + timeout + " retry: " + retry);
 		
 		int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
-			try
+		long responseTime = -1;
+		try
+		{
+			// Dhcpd.isServer() returns the response time in milliseconds
+			// if the remote box is a DHCP server or -1 if the remote
+			// box is NOT a DHCP server.
+			// 
+			responseTime = Dhcpd.isServer(ipv4Addr, (long)timeout, retry);
+			if (responseTime >= 0)
 			{
-				if(Dhcpd.isServer(ipv4Addr, (long)timeout, retry))
-					serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
+				serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
 			}
-			catch(IOException ioE)
-			{
-				ioE.fillInStackTrace();
-				log.warn("DhcpMonitor.poll: An I/O exception occured during DHCP discovery", ioE);
+		}
+		catch(IOException ioE)
+		{
+			ioE.fillInStackTrace();
+			log.warn("DhcpMonitor.poll: An I/O exception occured during DHCP discovery", ioE);
 		}
 
+		// Store response time if available
+		//
+		if (serviceStatus == ServiceMonitor.SERVICE_AVAILABLE)
+		{
+			// Store response time in RRD
+			if (responseTime >= 0 && rrdPath != null)
+				this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, DS_NAME, responseTime);
+		}
+		
 		//
 		// return the status of the service
 		//

@@ -45,11 +45,12 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
+import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * <P>This class is designed to be used by the capabilities
  * daemon to test for the existance of an TCP server on 
- * remote interfaces. The class implements the CapsdPlugin
+ * remote interfaces. The class implements the Plugin
  * interface that allows it to be used along with other
  * plugins by the daemon.</P>
  *
@@ -148,8 +149,7 @@ public final class TcpPlugin
 			{
 				// Connection refused!!  No need to perform retries.
 				//
-				e.fillInStackTrace();
-				log.debug("TcpPlugin: Connection to host " + host.getHostAddress() + " on port " + port + " was refused", e);
+				log.debug("TcpPlugin: Connection refused to " + host.getHostAddress() + ":" + port);
 				isAServer = false;
 				break;
 			}
@@ -252,11 +252,11 @@ public final class TcpPlugin
 
 		if(qualifiers != null)
 		{
-			retries = getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
-			timeout = getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
-			port    = getKeyedInteger(qualifiers, "port", -1);
-			banner  = getKeyedString(qualifiers, "banner", null);
-			match   = getKeyedString(qualifiers, "match", null);
+			retries = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
+			timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
+			port    = ParameterMap.getKeyedInteger(qualifiers, "port", -1);
+			banner  = ParameterMap.getKeyedString(qualifiers, "banner", null);
+			match   = ParameterMap.getKeyedString(qualifiers, "match", null);
 		}
 
 		// verify the port
