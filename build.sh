@@ -50,7 +50,7 @@ fi
 # see tools/infrastructure/build_classpath.sh for syntax
 CLASSPATH=`build_classpath cp:$CLASSPATH_OVERRIDE dir:$TOOL_CLASSES \
 	dir:$BUILD_CLASSES dir:$SABLECC_CLASSES \
-	dir:$PREFIX/lib jar:ant141 jar:ant141-optional \
+	jardir:$PREFIX/devlib dir:$PREFIX/lib \
 	jar:xerces201 jar:xalan231 jar:regexp120 jar:jdhcp jar:castor-0.9.3.9 \
 	jar:castor-0.9.3.9-xml jar:jcifs jar:log4j jar:postgresql \
 	jar:jdbc2_0-stdext jar:sablecc-2.17.2 jar:sablecc-anttask-1.1.0 \
