@@ -1,5 +1,8 @@
 1.2.0 to 1.2.1
 ----------------------------------------------------------------------
+- Added display of ifAlias in an event or notification.  It uses the nodeid
+  and the ipaddr to find it.  Use %ifalias% to see this in the event or 
+  notification.  Bug 1140
 - Added the ability to collect strings via SNMP and use them
   to label performance reports. Bug 1115. Thx Craig.
 - Fix the opennms init script so that it works properly with chkconfig.

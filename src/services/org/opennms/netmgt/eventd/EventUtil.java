@@ -121,6 +121,11 @@ public final class EventUtil {
 	static final String TAG_INTERFACE_RESOLVE = "interfaceresolve";
 
 	/**
+	 * The reverse DNS lookup of the interface
+	 */
+	static final String TAG_IFALIAS = "ifalias";
+	
+	/**
 	 * The event snmp id xml tag
 	 */
 	static final String TAG_SNMP_ID = "id";
@@ -446,6 +451,21 @@ public final class EventUtil {
 				retParmVal = inet.getHostName();
 			} catch (java.net.UnknownHostException e) {
 			}
+		} else if (parm.equals(TAG_IFALIAS)) {
+			String ifAlias = null;
+			if (event.getNodeid() > 0
+					&& event.getInterface() != null) {
+				try {
+					ifAlias = getIfAlias(event.getNodeid(), event.getInterface());
+				} catch (SQLException sqlE) {
+					// do nothing
+					ThreadCategory.getInstance(EventUtil.class).info("ifAlias Unavailable for " + event.getNodeid() + ":" + event.getInterface(), sqlE);
+				}
+			}
+			if (ifAlias != null)
+				retParmVal = ifAlias;
+			else
+				retParmVal = event.getInterface();
 		} else if (parm.equals(TAG_SNMPHOST)) {
 			retParmVal = event.getSnmphost();
 		} else if (parm.equals(TAG_SERVICE)) {
@@ -670,6 +690,11 @@ public final class EventUtil {
 		return (retParmVal == null ? null : retParmVal.trim());
 	}
 
+	private static DateFormat ThreadCategory(Class class1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	/**
 	 * Expand the value if it has parms in one of the following formats -
 	 * %element% values are expanded to have the value of the element where
@@ -793,4 +818,58 @@ public final class EventUtil {
 		return nodeLabel;
 	}
 
+	/**
+	 * Retrieve ifAlias from the snmpinterface table of the database given a particular
+	 * nodeId and ipAddr.
+	 *
+	 * @param nodeId
+	 *            Node identifier
+	 * @param ipAddr
+	 *            Interface IP address
+	 *
+	 * @return ifAlias Retreived ifAlias
+	 *
+	 * @throws SQLException
+	 *             if database error encountered
+	 */
+	private static String getIfAlias(long nodeId, String ipaddr) throws SQLException {
+		
+		String ifAlias = null;
+		java.sql.Connection dbConn = null;
+		Statement stmt = null;
+		try {
+			// Get database connection from the factory
+			dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+			
+			// Issue query and extract ifAlias from result set
+			stmt = dbConn.createStatement();
+			ResultSet rs = stmt
+			.executeQuery("SELECT snmpifalias FROM snmpinterface WHERE nodeid="
+					+ nodeId + " and ipaddr='" + ipaddr + "'");
+			// Assumes only one response.  It will pick the first hit
+			if (rs.next()) {
+				ifAlias = (String) rs.getString("snmpifalias");
+			}
+		} finally {
+			// Close the statement
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (Exception e) {
+					// do nothing
+				}
+			}
+			
+			// Close the database connection
+			if (dbConn != null) {
+				try {
+					dbConn.close();
+				} catch (Throwable t) {
+					// do nothing
+				}
+			}
+		}
+		
+		return ifAlias;
+	}	
 }
