@@ -369,7 +369,7 @@ public class OutageEditorWebTest extends WebTestCase {
         
         String[] footerCell = { "List Nodes", "Search", "Outages", "Events", "Notification", "Assets", "Reports", "Help" };
         assertCellLink(table, 0, 0, footerCell);
-        assertCell(table, 1, 0, "OpenNMS Copyright © 2002-2005 The OpenNMS Group, Inc. OpenNMS¨ is a registered trademark of The OpenNMS Group, Inc.");
+        assertCell(table, 1, 0, "OpenNMS Copyright \u00a9 2002-2005 The OpenNMS Group, Inc. OpenNMS\u00ae is a registered trademark of The OpenNMS Group, Inc.");
     }
     
     private String computeImgSrc(Outage outage) {
