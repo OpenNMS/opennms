@@ -110,7 +110,7 @@ printHelp() {
 #
 javaCheck() {
     ret="`$JP -version 2>&1 | grep '^java version' | sed 's/^java version \"//;s/\".*//'`"
-    if echo "$ret" | egrep '^1\.[45]\.' > /dev/null; then
+    if echo "$ret" | egrep '^1\.[4-9]\.' > /dev/null; then
 	return 0
     else
 	return 1
