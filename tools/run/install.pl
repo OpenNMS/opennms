@@ -630,9 +630,9 @@ unless ($NOINSERT) {
 
 if ($TOMCAT) {
 
-	for my $dir ('/var/tomcat4', '/sw/var/tomcat4', '/usr/local/tomcat4') {
+	for my $dir ('/var/tomcat4/conf', '/sw/var/tomcat4/conf', '/usr/local/tomcat4/conf', '/etc/tomcat4') {
 
-		my $serverxml = $dir . '/conf/server.xml';
+		my $serverxml = $dir . '/server.xml';
 	
 		if (-f $serverxml) {
 			my $server_in;
