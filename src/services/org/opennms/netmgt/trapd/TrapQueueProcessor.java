@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2005 Jan 11: Added a check to insure V2 traps had TIMTICKS varbind.
 // 2003 Aug 21: Modifications to support ScriptD.
 // 2003 Feb 28: Small fix for null terminated strings in traps.
 // 2003 Jan 31: Cleaned up some unused imports.
@@ -70,6 +71,7 @@ import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpOpaque;
 import org.opennms.protocols.snmp.SnmpPduPacket;
 import org.opennms.protocols.snmp.SnmpPduTrap;
+import org.opennms.protocols.snmp.SnmpSMI;
 import org.opennms.protocols.snmp.SnmpSyntax;
 import org.opennms.protocols.snmp.SnmpTimeTicks;
 
@@ -294,12 +296,12 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
             String varBindName0 = pdu.getVarBindAt(0).getName().toString();
             String varBindName1 = pdu.getVarBindAt(1).getName().toString();
             if (varBindName0.equals(EXTREME_SNMP_SYSUPTIME_OID)) {
-                log.warn("V2 trap from " + trapInterface + " has been corrected due to the sysUptime.0 varbind not having been sent with a trailing 0.\n\tVarbinds received are : " + varBindName0 + " and " + varBindName1);
+                log.info("V2 trap from " + trapInterface + " has been corrected due to the sysUptime.0 varbind not having been sent with a trailing 0.\n\tVarbinds received are : " + varBindName0 + " and " + varBindName1);
                 varBindName0 = SNMP_SYSUPTIME_OID;
             }
 
             if ((!(varBindName0.equals(SNMP_SYSUPTIME_OID))) || (!(varBindName1.equals(SNMP_TRAP_OID)))) {
-                log.warn("V2 trap from " + trapInterface + " IGNORED due to not having the required varbinds.\n\tThe first varbind must be sysUpTime.0 and the second snmpTrapOID.0\n\tVarbinds received are : " + varBindName0 + " and " + varBindName1);
+                log.info("V2 trap from " + trapInterface + " IGNORED due to not having the required varbinds.\n\tThe first varbind must be sysUpTime.0 and the second snmpTrapOID.0\n\tVarbinds received are : " + varBindName0 + " and " + varBindName1);
                 return;
             }
 
@@ -309,8 +311,24 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
                 log.debug("V2 trap first varbind value: " + pdu.getVarBindAt(0).getValue().toString());
 
             // time-stamp
-            SnmpTimeTicks sysUpTime = (SnmpTimeTicks) pdu.getVarBindAt(SNMP_SYSUPTIME_OID_INDEX).getValue();
-            snmpInfo.setTimeStamp(sysUpTime.getValue());
+	    long timeVal;
+            switch (pdu.getVarBindAt(SNMP_SYSUPTIME_OID_INDEX).getValue().typeId()) {
+            case SnmpSMI.SMI_TIMETICKS:
+            	timeVal = ((SnmpTimeTicks) pdu.getVarBindAt(SNMP_SYSUPTIME_OID_INDEX).getValue()).getValue();
+            	if (log.isDebugEnabled())
+                	log.debug("V2 trap first varbind value is of type TIMETICKS (correct)");
+                break;
+            case SnmpSMI.SMI_INTEGER:
+            	timeVal = ((SnmpInt32) pdu.getVarBindAt(SNMP_SYSUPTIME_OID_INDEX).getValue()).getValue();
+            	if (log.isDebugEnabled())
+                	log.debug("V2 trap first varbind value is of type INTEGER, casting to TIMETICKS");
+                break;
+            default:
+                log.info("V2 trap does not have the required first varbind as TIMETICKS - cannot process trap");
+                return;
+            }
+
+            snmpInfo.setTimeStamp(timeVal);
 
             // Get the value for the snmpTrapOID
             SnmpObjectId snmpTrapOid = (SnmpObjectId) pdu.getVarBindAt(SNMP_TRAP_OID_INDEX).getValue();
