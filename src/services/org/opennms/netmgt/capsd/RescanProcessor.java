@@ -2743,7 +2743,7 @@ final class RescanProcessor implements Runnable {
 
         // Get primary snmp interface from database
         try {
-             oldPrimarySnmpInterface = dbNodeEntry.getPrimarySnmpInterface(dbInterfaces);
+             oldPrimarySnmpInterface = DbNodeEntry.getPrimarySnmpInterface(dbInterfaces);
         }
         catch (NullPointerException npE) {
             log.error("RescanProcessor: Null pointer when retrieving primary snmp interface from DB for node " + m_scheduledNode.getNodeId(), npE);
