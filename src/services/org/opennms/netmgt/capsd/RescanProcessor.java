@@ -764,7 +764,16 @@ final class RescanProcessor
 		
 		// Attempt to load IP Interface entry from the database
 		//
-		DbIpInterfaceEntry dbIpIfEntry = DbIpInterfaceEntry.get(dbc, node.getNodeId(), ifaddr);
+                int ifIndex = snmpc.getIfIndex(ifaddr);
+		if (log.isDebugEnabled())
+			log.debug("updateInterface: interface =" + ifaddr.getHostAddress() + " ifIndex = " + ifIndex);
+                
+		DbIpInterfaceEntry dbIpIfEntry = null; 
+                if (ifIndex == -1)
+		        dbIpIfEntry = DbIpInterfaceEntry.get(dbc, node.getNodeId(), ifaddr);
+                else
+		        dbIpIfEntry = DbIpInterfaceEntry.get(dbc, node.getNodeId(), ifaddr, ifIndex);
+                        
 		if (dbIpIfEntry == null)
 		{
 			//
@@ -794,7 +803,7 @@ final class RescanProcessor
 			if (!ifaddr.getHostAddress().equals("0.0.0.0") && 
 				!ifaddr.getHostAddress().startsWith("127.")) 
 			{
-				oldNodeId = cFactory.getInterfaceDbNodeId(dbc, ifaddr);
+				oldNodeId = cFactory.getInterfaceDbNodeId(dbc, ifaddr, ifIndex);
 			}
 			else
 			{
@@ -829,7 +838,7 @@ final class RescanProcessor
 						for (int i=0; i<tmpIfArray.length; i++)
 						{
 							InetAddress addr = tmpIfArray[i].getIfAddress();
-							int ifIndex = tmpIfArray[i].getIfIndex();
+							int index = tmpIfArray[i].getIfIndex();
 							
 							// Skip non-IP or loopback interfaces
 							if (!addr.getHostAddress().equals("0.0.0.0") && 
@@ -841,7 +850,7 @@ final class RescanProcessor
 							if (log.isDebugEnabled())
 								log.debug("updateInterface: reparenting interface " + tmpIfArray[i].getIfAddress().getHostAddress() + " under node " + node.getNodeId());
 								
-							reparentInterface(dbc, addr, ifIndex, node.getNodeId(), oldNodeId);
+							reparentInterface(dbc, addr, index, node.getNodeId(), oldNodeId);
 							
 							// Create interfaceReparented event
 							createInterfaceReparentedEvent(node, oldNodeId, addr);
@@ -892,17 +901,17 @@ final class RescanProcessor
                                                                         + " under nodeid " + node.getNodeId());
                 						
                 					// Get ifindex for this address
-                					int ifIndex = -1;
+                					int index = -1;
                 					if (snmpc != null && !snmpc.failed() && snmpc.hasIpAddrTable())
                 					{
-                						ifIndex = IpAddrTable.getIfIndex(snmpc.getIpAddrTable().getEntries(), 
+                						index = IpAddrTable.getIfIndex(snmpc.getIpAddrTable().getEntries(), 
                                                                                                  ifaddr.getHostAddress());
                 					}
                 					if (log.isDebugEnabled())
                 						log.debug("updateInterface: interface " + ifaddr.getHostAddress() 
-                                                                        + " has ifIndex " + ifIndex);
+                                                                        + " has ifIndex " + index);
                 					
-                					reparentInterface(dbc, ifaddr, ifIndex, node.getNodeId(), oldNodeId);
+                					reparentInterface(dbc, ifaddr, index, node.getNodeId(), oldNodeId);
                 					
                 					// Create interfaceReparented event
                 					createInterfaceReparentedEvent(node, oldNodeId, ifaddr);
@@ -1074,7 +1083,7 @@ final class RescanProcessor
 		int ifType = -1;
 		if (snmpc != null && !snmpc.failed())
 		{	
-			int ifIndex = snmpc.getIfIndex(ifaddr);
+			//int ifIndex = snmpc.getIfIndex(ifaddr);
 			if(ifIndex != -1)
 			{
 				currIpIfEntry.setIfIndex(ifIndex);
@@ -1249,9 +1258,9 @@ final class RescanProcessor
 				ifSvcEntry.setSource(DbIfServiceEntry.SOURCE_PLUGIN);
 				ifSvcEntry.setNotify(DbIfServiceEntry.NOTIFY_ON);
 				
-				int ifIndex = dbIpIfEntry.getIfIndex();
-				if (ifIndex > 0)
-					ifSvcEntry.setIfIndex(ifIndex);
+				int index = dbIpIfEntry.getIfIndex();
+				if (index > 0)
+					ifSvcEntry.setIfIndex(index);
 		
 				ifSvcEntry.store();
 				

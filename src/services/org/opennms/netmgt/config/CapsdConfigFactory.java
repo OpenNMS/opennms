@@ -1723,18 +1723,23 @@ public final class CapsdConfigFactory
 	/**
 	 * 
 	 */
-	public int getInterfaceDbNodeId(Connection dbConn, InetAddress ifAddress)
+	public int getInterfaceDbNodeId(Connection dbConn, InetAddress ifAddress, int ifIndex)
 		throws SQLException
 	{
 		Category log = ThreadCategory.getInstance(CapsdConfigFactory.class);
 		
-		log.debug("getInterfaceDbNodeId: attempting to lookup interface " + ifAddress.getHostAddress() + " in the database.");
+		log.debug("getInterfaceDbNodeId: attempting to lookup interface " + ifAddress.getHostAddress() 
+                        + "/ifindex: " + ifIndex + " in the database.");
 		
 		// Set connection as read-only
 		//
 		//dbConn.setReadOnly(true);
 	
-		PreparedStatement s = dbConn.prepareStatement(RETRIEVE_IPADDR_NODEID_SQL);
+                StringBuffer qs = new StringBuffer(RETRIEVE_IPADDR_NODEID_SQL);
+                if (ifIndex != -1)
+                        qs.append(" AND ifindex=?");
+                
+		PreparedStatement s = dbConn.prepareStatement(qs.toString());
 		s.setString(1, ifAddress.getHostAddress());
 		
 		ResultSet rs = s.executeQuery();
