@@ -67,7 +67,7 @@
 							that is found to support SNMP. On some HP switches, this
 							would fail due to a limitation on the SNMP maximum packet size.
 							All non-essential ifTable elements were removed from the request
-							which appears to resolve the problem.
+							that appears to resolve the problem.
                                                 </para>
                                         </formalpara>
                                 </listitem>
@@ -93,8 +93,55 @@
                                 </listitem>
                         </itemizedlist>
                 </para>
-
-	<sect1 id="chap2sect2" label="2.2.">
+	</sect1>
+        <sect1 id="chap2sect2" label="2.2.">
+                <title>Changes in OpenNMS 1.0.1 and Above</title>
+                <para>
+                        The following changes occurred between 1.0.0 and 1.0.1:
+                        <itemizedlist>
+                                <listitem>
+                                        <formalpara>
+                                                <title>Added a "contrib" Directory</title>
+                                                <para>
+							The "contrib" directory now contains code, such as nifty
+							utilities, that exists outside of the main OpenNMS source
+							but may prove useful. One such example is Tomas Carlsson's
+							"mib2opennms" program. These programs are not supported.
+                                                </para>
+                                        </formalpara>
+                                </listitem>
+                                <listitem>
+                                        <formalpara>
+                                                <title>Removed Duplicate Entries in <filename>capsd-configuration.xml</filename></title>
+                                                <para>
+							Both LDAP and Citrix protocol plug-ins were listed twice. This
+							would slow down the capabilities scan considerably.	
+                                                </para>
+                                        </formalpara>
+                                </listitem>
+                                <listitem>
+                                        <formalpara>
+                                                <title>Updated Data Collection and Graphing</title>
+                                                <para>
+							Added new entries to <filename>datacollection-config.xml</filename>
+							and <filename>snmp-graph.properties</filename>.
+                                                </para>
+                                        </formalpara>
+                                </listitem>
+                                <listitem>
+                                        <formalpara>
+                                                <title>Bugfixes</title>
+                                                <para>
+                                                        Many bugfixes, including allowing Threshold events to generate
+							notifications, AdminStatus and OperStatus values causing
+							exceptions, and rescans with certain devices.
+                                                </para>
+                                        </formalpara>
+                                </listitem>
+                        </itemizedlist>
+                </para>
+        </sect1>
+	<sect1 id="chap2sect2" label="2.3.">
 		<title>Changes in OpenNMS 1.0.0 and Above</title>
 		<para>
 			The following major changes occurred between 0.9.9 and 1.0.0:

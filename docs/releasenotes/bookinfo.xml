@@ -12,7 +12,7 @@
 			<firstname>Tarus</firstname>
 		</author>
 	</authorgroup> 
-	<pubdate>2001</pubdate>
+	<pubdate>2002</pubdate>
 	<pubsnumber>Revision: @opennms.version@</pubsnumber>
 	<!-- 
 	<legalnotice>
@@ -24,10 +24,6 @@
 	</legalnotice>
 	-->
 	<copyright>
-		<year>1999</year>
-		<year>2000</year>
-		<year>2001</year>
-		<holder>Oculan Corp.</holder>
 		<year>2002</year>
 		<holder>Sortova Consulting Group, Inc.</holder>
 	</copyright>
