@@ -68,8 +68,15 @@ public class Schedule {
                 return;
             }
             
-            if (!m_interval.scheduledSuspension())
-                Schedule.this.run();
+            if (!m_interval.scheduledSuspension()) {
+                try {
+                    Schedule.this.run();
+                } catch (PostponeNecessary e) {
+                    m_timer.schedule(this, 10000);
+                    return;
+                }
+            }
+                
 
             // if it is expired by the current run then don't reschedule
             if (isExpired()) {

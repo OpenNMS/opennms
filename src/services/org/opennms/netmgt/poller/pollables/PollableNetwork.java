@@ -184,4 +184,12 @@ public class PollableNetwork extends PollableContainer {
         };
         forEachMember(iter);
     }
+    public PollableElement getLockRoot() {
+        return this;
+    }
+    
+    public void obtainTreeLock(long timeout) {
+    }
+    public void releaseTreeLock() {
+    }
 }

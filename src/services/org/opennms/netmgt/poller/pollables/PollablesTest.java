@@ -109,6 +109,8 @@ public class PollablesTest extends TestCase {
     private MockScheduler m_scheduler;
     private MockTimer m_timer;
     
+    private int m_lockCount = 0;
+    
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(PollablesTest.class);
@@ -146,6 +148,8 @@ public class PollablesTest extends TestCase {
         
         MockUtil.setupLogging();
         MockUtil.resetLogLevel();
+        
+        m_lockCount = 0;
         
         m_mockNetwork = new MockNetwork();
         m_mockNetwork.addNode(1, "Router");
@@ -1905,6 +1909,78 @@ public class PollablesTest extends TestCase {
         m_network.processStatusChange(new Date());
         
         verifyAnticipated();
+    }
+    
+    
+    public void testLock() throws Exception {
+        final Runnable r = new Runnable() {
+            public void run() {
+                m_lockCount++;
+                assertEquals(1, m_lockCount);
+                try { Thread.sleep(3000); } catch (InterruptedException e) {}
+                m_lockCount--;
+                assertEquals(0, m_lockCount);
+            }
+        };
+        
+        final Runnable locker = new Runnable() {
+            public void run() {
+                pNode1.withTreeLock(r);
+            }
+        };
+        
+        Thread[] threads = new Thread[5];
+        for(int i = 0; i < 5; i++) {
+            threads[i] = new Thread(locker);
+            threads[i].start();
+        }
+        
+        for(int i = 0; i < 5; i++) {
+            threads[i].join();
+        }
+        
+    }
+    
+    public void testLockTimeout() throws Exception {
+        final Runnable r = new Runnable() {
+            public void run() {
+                m_lockCount++;
+                assertEquals(1, m_lockCount);
+                try { Thread.sleep(5000); } catch (InterruptedException e) {}
+                m_lockCount--;
+                assertEquals(0, m_lockCount);
+            }
+        };
+        
+        final Runnable locker = new Runnable() {
+            public void run() {
+                pNode1.withTreeLock(r);
+            }
+        };
+        
+        final Runnable lockerWithTimeout = new Runnable() {
+            public void run() {
+                try {
+                    pNode1.withTreeLock(r, 500);
+                    fail("Expected LockUnavailable");
+                } catch (LockUnavailable e) {
+                    MockUtil.println("Received expected exception "+e);
+                }
+            }
+        };
+        
+        Thread[] threads = new Thread[5];
+        threads[0] = new Thread(locker);
+        threads[0].start();
+        for(int i = 1; i < 5; i++) {
+            threads[i] = new Thread(lockerWithTimeout);
+            threads[i].start();
+        }
+        
+        for(int i = 0; i < 5; i++) {
+            threads[i].join();
+        }
+        
     }
 
     /**

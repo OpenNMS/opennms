@@ -113,22 +113,33 @@ abstract public class PollableElement {
             return getParent().doPoll(elem);
     }
     
-    public Object getTreeLock() {
+    public PollableElement getLockRoot() {
         PollableContainer parent = getParent();
-        return (parent == null ? this : parent.getTreeLock());
+        return (parent == null ? this : parent.getLockRoot());
+    }
+    
+    public void obtainTreeLock(long timeout) {
+        getLockRoot().obtainTreeLock(timeout);
+    }
+    
+    public void releaseTreeLock() {
+        getLockRoot().releaseTreeLock();
     }
 
     public void withTreeLock(Runnable r) {
-        Category log = ThreadCategory.getInstance(getClass());
-        Object lock = getTreeLock();
-        log.debug("Trying to obtain lock "+lock);
-        synchronized (lock) {
-            log.debug("Obtained lock "+lock);
+        withTreeLock(r, 0);
+    }
+    
+    public void withTreeLock(Runnable r, long timeout) {
+        try {
+            Category log = ThreadCategory.getInstance(getClass());
+            PollableElement lock = getLockRoot();
+            obtainTreeLock(timeout);
             r.run();
-            log.debug("Releasing lock "+lock);
+        } finally {
+            releaseTreeLock();
         }
     }
-
 
     /**
      * 

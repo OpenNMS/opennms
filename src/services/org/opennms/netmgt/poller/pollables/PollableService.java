@@ -35,9 +35,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.poller.monitors.IPv4NetworkInterface;
 import org.opennms.netmgt.poller.monitors.NetworkInterface;
+import org.opennms.netmgt.scheduler.PostponeNecessary;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -263,13 +266,18 @@ public class PollableService extends PollableElement implements Runnable {
                     getNode().processStatusChange(new Date());
                 }
             };
-            withTreeLock(r);
+            try {
+                withTreeLock(r, 500);
+            } catch (LockUnavailable e) {
+                ThreadCategory.getInstance(getClass()).info("Postponing poll for "+this+" because "+e);
+                throw new PostponeNecessary("LockUnavailable postpone poll");
+            }
         }
         else {
             doPoll();
             processStatusChange(new Date());
         }
-
+        
     }
 
     public void delete() {

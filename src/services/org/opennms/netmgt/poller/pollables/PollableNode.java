@@ -34,6 +34,8 @@ package org.opennms.netmgt.poller.pollables;
 import java.net.InetAddress;
 import java.util.Date;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -44,7 +46,62 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class PollableNode extends PollableContainer {
 
+    /**
+     * Represents a Lock 
+     *
+     * @author brozow
+     */
+    public class Lock {
+        Thread m_owner = null;
+        int m_obtainCount = 0;
+        
+        public synchronized void obtain() {
+            Category log = ThreadCategory.getInstance(getClass());
+            
+            if (m_owner != Thread.currentThread()) {
+                log.debug("Trying to obtain lock for "+PollableNode.this);
+                while (m_owner != null) {
+                    try { wait();} catch (InterruptedException e) { throw new ThreadInterrupted("Lock for "+PollableNode.this+" is unavailable", e);}
+                }
+                m_owner = Thread.currentThread();
+                log.debug("Obtained lock for "+PollableNode.this);
+            }
+            m_obtainCount++;
+        }
+        
+        public synchronized void obtain(long timeout) {
+            Category log = ThreadCategory.getInstance(getClass());
+            
+            if (m_owner != Thread.currentThread()) {
+                log.debug("Trying to obtain lock for "+PollableNode.this);
+                long now = System.currentTimeMillis();
+                long endTime = (timeout == 0 ? Long.MAX_VALUE : now+timeout);
+                while (m_owner != null) {
+                    try { wait(endTime-now);} catch (InterruptedException e) { throw new ThreadInterrupted("Lock for "+PollableNode.this+" is unavailable", e);}
+                    now = System.currentTimeMillis();
+                    if (now >= endTime)
+                        throw new LockUnavailable("Unable to obtain lock for "+PollableNode.this+" before timeout");
+                }
+                m_owner = Thread.currentThread();
+                log.debug("Obtained lock for "+PollableNode.this);
+            }
+            m_obtainCount++;
+        }
+        
+        public synchronized void release() {
+            if (m_owner == Thread.currentThread()) {
+                m_obtainCount--;
+                if (m_obtainCount == 0) {
+                    ThreadCategory.getInstance(getClass()).debug("Releasing lock for "+PollableNode.this);
+                    m_owner = null;
+                    notifyAll();
+                }
+            }
+        }
+
+    }
     private int m_nodeId;
+    private Lock m_lock = new Lock();
 
     public PollableNode(PollableNetwork network, int nodeId) {
         super(network);
@@ -131,10 +188,21 @@ public class PollableNode extends PollableContainer {
     
     public String toString() { return String.valueOf(getNodeId()); }
 
-    public Object getTreeLock() {
+    public PollableElement getLockRoot() {
         return this;
     }
-
+    
+    public void obtainTreeLock(long timeout) {
+        if (timeout == 0)
+            m_lock.obtain();
+        else
+            m_lock.obtain(timeout);
+    }
+    
+    public void releaseTreeLock() {
+        m_lock.release();
+    }
+    
     public PollStatus doPoll(final PollableElement elem) {
         final PollStatus retVal[] = new PollStatus[1];
         Runnable r = new Runnable() {
