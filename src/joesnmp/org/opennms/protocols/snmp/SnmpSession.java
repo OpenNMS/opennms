@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
+// Copyright (C) 2002-2003 Sortova Consulting Group, Inc.  All rights reserved.
 // Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -193,7 +193,7 @@ public class SnmpSession extends Object
 			// now find the request and
 			// inform
 			//
-			boolean isExpired = true;
+			boolean isExpired = false;
 			SnmpRequest req   = null;
 			synchronized(m_requests)
 			{
@@ -205,12 +205,17 @@ public class SnmpSession extends Object
 				if(req != null)
 					isExpired = req.m_expired;
 			}
-			
-			if(req != null && isExpired == false)
+		
+	
+			if(isExpired == false)
 			{
 				int cmd = -1;
-				if(req.m_pdu instanceof SnmpPduPacket)
+				if(req != null && req.m_pdu instanceof SnmpPduPacket)
 					cmd = ((SnmpPduPacket)req.m_pdu).getCommand();
+                                else {
+					cmd= pdu.getCommand();
+ 					pdu.setPeer(new SnmpPeer(agent,port));
+				}
 
 				switch(cmd)
 				{
@@ -244,11 +249,14 @@ public class SnmpSession extends Object
 					default:
 						throw new SnmpPduEncodingException("Invalid PDU Type for session received");
 				}
-
-				req.m_expired = true; // mark it as expired
-				req.m_handler.snmpReceivedPdu(req.m_session,
-						      	      ((SnmpPduRequest)pdu).getCommand(),
-						      	      (SnmpPduRequest)pdu);
+				if (req != null) {
+					req.m_expired = true; // mark it as expired
+					req.m_handler.snmpReceivedPdu(req.m_session,
+							      	      ((SnmpPduRequest)pdu).getCommand(),
+							      	      (SnmpPduRequest)pdu);
+				} else {
+					m_defHandler.snmpReceivedPdu(null,cmd,pdu);
+				}
 			}
 		}
 
@@ -656,7 +664,10 @@ public class SnmpSession extends Object
 			// transmit the datagram
 			//
 			ByteArrayInfo msg = encode(pdu);
-			m_portal.send(m_peer, msg.array(), msg.size());
+                        if (pdu.getPeer() == null)
+				m_portal.send(m_peer, msg.array(), msg.size());
+			else
+				m_portal.send(pdu.getPeer(), msg.array(), msg.size());
 		}
 		else if(trap != null)
 		{
@@ -725,7 +736,7 @@ public class SnmpSession extends Object
 		m_encoder  = peer.getParameters().getEncoder();
 		m_portal   = new SnmpPortal(new SessionHandler(), 
 					    m_encoder,
-					    0);
+					    peer.getServerPort());
 
 		m_threadException= false;
 		m_why		= null;
@@ -918,7 +929,7 @@ public class SnmpSession extends Object
 		}
 
 		SnmpRequest req = new SnmpRequest(this, pdu, handler);
-		if(pdu.getCommand() != SnmpPduPacket.V2TRAP) // traps don't get responses!
+		if(pdu.getCommand() != SnmpPduPacket.V2TRAP || pdu.getPeer() == null ) // traps and responses don't get answers!
 			addRequest(req);
 
 		req.run();

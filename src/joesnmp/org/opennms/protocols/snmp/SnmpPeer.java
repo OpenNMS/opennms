@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
+// Copyright (C) 2002-2003 Sortova Consulting Group, Inc.  All rights reserved.
 // Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -66,6 +66,12 @@ public class SnmpPeer extends Object
 	 * is usually 161, but it can change.
 	 */
 	private int		m_port;		// the remote port
+
+	/**
+	 * The local port of the agent. By default this 
+	 * is usually 0 when acting as manager, 161 as agent
+	 */
+	private int		m_serverport=0;	// the local server port
 
 	/**
 	 * The number of time to resend the datagram
@@ -208,6 +214,27 @@ public class SnmpPeer extends Object
 	public void setPort(int port)
 	{
 		m_port = port;
+	}
+
+	/**
+	 * Returns the local agent's port for communications
+	 *
+	 * @return The local agent's port
+	 */
+	public int getServerPort()
+	{
+		return m_serverport;
+	}
+
+	/**
+	 * Used to set the local communication port
+	 *
+	 * @param port The local communication port
+	 *
+	 */
+	public void setServerPort(int port)
+	{
+		m_serverport = port;
 	}
 
 	/**

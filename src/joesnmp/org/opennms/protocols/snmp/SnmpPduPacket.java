@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
+// Copyright (C) 2002-2003 Sortova Consulting Group, Inc.  All rights reserved.
 // Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -142,6 +142,11 @@ public abstract class SnmpPduPacket extends Object
 	 * The request id for this specific packet.
 	 */
 	private int		m_requestId;		// from pdu
+
+	/**
+	 * The peer of this packet, if we are agent
+	 */
+	private SnmpPeer	m_peer = null;		
 
 	/**
 	 * The list of variables for this particular
@@ -464,6 +469,29 @@ public abstract class SnmpPduPacket extends Object
 	}
 
 	/**
+	 * Sets the Peer for the Packet
+	 * 
+	 * @param peer The peer of this packet 
+	 *
+	 */
+	public void setPeer(SnmpPeer peer)
+	{
+		m_peer = peer;
+	}
+
+	/**
+	 * Returns the current peer for this
+	 * packet.
+	 *
+	 * @return The peer or null, if its a own request
+	 *
+	 */
+	public SnmpPeer getPeer()
+	{
+		return m_peer;
+	}
+
+	/**
 	 * Sets the protocol data unit's sequence identifer
 	 * 
 	 * @param reqid The new request id
@@ -474,6 +502,7 @@ public abstract class SnmpPduPacket extends Object
 		m_requestId = reqid;
 	}
 
+	/**
 	/**
 	 * Returns the number of variables in the data unit.
 	 *
