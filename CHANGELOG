@@ -1,5 +1,7 @@
 1.2.0 to 1.2.1
 ----------------------------------------------------------------------
+- Reset TreeMap in last month top 20 outage calculations
+  before accumulating outages for each service. Bug 945.
 - Move the column constraints in create.sql to be at the end of table
   definitions, instead of immediately after the constrained column and
   update the installer to allow this.  Unit tests included.  Bug 1159.
