@@ -1279,6 +1279,14 @@
     <exception-type>org.opennms.web.vulnerability.VulnerabilityIdNotFoundException</exception-type>
     <location>/errors/vulnerabilityidnotfound.jsp</location>
   </error-page>  
+  <error-page>
+    <exception-type>java.net.ConnectException</exception-type>
+    <location>/errors/connectexception.jsp</location>
+  </error-page>  
+  <error-page>
+    <exception-type>java.lang.Exception</exception-type>
+    <location>/errors/unknownexception.jsp</location>
+  </error-page>  
   
 
   <!-- Note: The order of these security-constraints is significant! -->

@@ -46,6 +46,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -152,7 +153,13 @@ public final class TcpEventProxy implements EventProxy {
         public Connection(InetAddress target, int port) throws IOException {
             // get a socket and set the timeout
             //
-            m_sock = new Socket(target, port);
+	    try {
+                m_sock = new Socket(target, port);
+            } catch (ConnectException e) {
+	 	ConnectException n = new ConnectException("Could not connect to event daemon at " + target + " on port " + Integer.toString(port) + ": " + e.getMessage());
+		n.initCause(e);
+	        throw n;
+            }
             m_sock.setSoTimeout(500);
 
             m_writer = new OutputStreamWriter(new BufferedOutputStream(m_sock.getOutputStream()));
