@@ -261,7 +261,8 @@ public class PollableService extends PollableElement implements Runnable {
      */
     public void run() {
         Category log = ThreadCategory.getInstance(PollableService.class);
-        log.debug("Start Scheudled Poll of service "+this);
+        long startDate = System.currentTimeMillis();
+        log.debug("Start Scheduled Poll of service "+this);
         if (getContext().isNodeProcessingEnabled()) {
             Runnable r = new Runnable() {
                 public void run() {
@@ -280,7 +281,8 @@ public class PollableService extends PollableElement implements Runnable {
             doPoll();
             processStatusChange(new Date());
         }
-        log.debug("Finish Scheduled Poll of service "+this);
+        if (log.isDebugEnabled())
+            log.debug("Finish Scheduled Poll of service "+this+", started at "+new Date(startDate));
         
     }
 
