@@ -71,7 +71,7 @@ if(deleteName!=null) {
 </jsp:include>
 
 
-<table border="1" cellpadding="5">
+<table id="outages" border="1" cellpadding="5">
 <tr><th colspan="4">&nbsp;</th><th colspan="4">Affects...</th></tr>
 <tr><th>Name</th><th>Type</th><th>Nodes/Interfaces</th><th>Times</th><th>Notifications</th><th>Polling</th><th>Thresholds</th><th>Data collection</th></tr>
 

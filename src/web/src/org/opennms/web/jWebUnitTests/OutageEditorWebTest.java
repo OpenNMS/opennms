@@ -31,17 +31,27 @@
 //
 package org.opennms.web.jWebUnitTests;
 
-import java.io.File;
+import java.io.FileReader;
 import java.io.StringBufferInputStream;
+import java.util.ArrayList;
+import java.util.List;
 
+import net.sourceforge.jwebunit.ExpectedCell;
+import net.sourceforge.jwebunit.ExpectedRow;
+import net.sourceforge.jwebunit.ExpectedTable;
+import net.sourceforge.jwebunit.WebTestCase;
+
+import org.exolab.castor.xml.Unmarshaller;
+import org.opennms.netmgt.config.common.BasicSchedule;
+import org.opennms.netmgt.config.common.Time;
+import org.opennms.netmgt.config.poller.Outage;
+import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockUtil;
 
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
-
-import net.sourceforge.jwebunit.WebTestCase;
 
 public class OutageEditorWebTest extends WebTestCase {
 
@@ -216,6 +226,7 @@ public class OutageEditorWebTest extends WebTestCase {
             "";
     private MockNetwork m_network;
     private MockDatabase m_db;
+    private Outages m_outages;
     
 
     protected void setUp() throws Exception {
@@ -262,6 +273,9 @@ public class OutageEditorWebTest extends WebTestCase {
            
            m_db = new MockDatabase();
            m_db.populate(m_network);
+
+           m_outages = (Outages)Unmarshaller.unmarshal(Outages.class, new FileReader("../../etc/poll-outages.xml"));
+           
 }
 
     protected void tearDown() throws Exception {
@@ -270,12 +284,110 @@ public class OutageEditorWebTest extends WebTestCase {
         MockUtil.println("------------ End Test "+getName()+" --------------------------");
     }
     
-    public void testOutageList() {
+    public void testOutageList() throws Exception {
         beginAt("/admin/sched-outages/index.jsp");
         assertTitleEquals("Scheduled Outage administration");
+        
+        ExpectedTable expectedTable = new ExpectedTable();
+        List affects = new ArrayList();
+        affects.add(new ExpectedCell("", 4));
+        affects.add(new ExpectedCell("Affects...", 4));
+        affects.add(new ExpectedCell("", 2));
+        
+        appendRow(expectedTable, affects);
+        
+        List header = new ArrayList();
+        header.add(new ExpectedCell("Name"));
+        header.add(new ExpectedCell("Type"));
+        header.add(new ExpectedCell("Nodes/Interfaces"));
+        header.add(new ExpectedCell("Times"));
+        header.add(new ExpectedCell("Notifications"));
+        header.add(new ExpectedCell("Polling"));
+        header.add(new ExpectedCell("Thresholds"));
+        header.add(new ExpectedCell("Data collection"));
+        header.add(new ExpectedCell("", 2));
+        appendRow(expectedTable, header);
+        
+        Outage[] outages = m_outages.getOutage();
+        for (int i = 0; i < outages.length; i++) {
+            Outage outage = outages[i];
+            List cells = new ArrayList();
+            cells.add(new ExpectedCell(outage.getName()));
+            cells.add(new ExpectedCell(outage.getType()));
+            cells.add(new ExpectedCell(""));
+            cells.add(new ExpectedCell(getTimeSpanString(outage)));
+            cells.add(new ExpectedCell(""));
+            cells.add(new ExpectedCell(""));
+            cells.add(new ExpectedCell(""));
+            cells.add(new ExpectedCell(""));
+            cells.add(new ExpectedCell("Edit"));
+            cells.add(new ExpectedCell("Delete"));
+            appendRow(expectedTable, cells);
+            
+        }
+        assertTableEquals("outages", expectedTable);
         submit();
         assertTitleEquals("Scheduled Outage administration");
         assertTextPresent("Edit Outages");
+    }
+    
+    // TODO: Add checks for interfaces and nodes
+    // TODO: check that images correctly map to notifications, poling.. etc
+    // TODO: test the form
+    // TODO: test the edit link and resulting edit page
+    // TODO: ensure that created outages add to the file correctly
+    // TODO: ensure that new outages added to index page
+    // TODO: test that you can't create the same outage twice?
+    // TODO: test the delete link
+    // TODO: verify header and footer
+    // TODO: verify security/authorization
+
+    private void appendRow(ExpectedTable expectedTable, List cells) {
+        ExpectedRow row = new ExpectedRow((ExpectedCell[]) cells.toArray(new ExpectedCell[cells.size()]));
+        expectedTable.appendRow(row);
+    }
+
+    private String getTimeSpanString(BasicSchedule sched) {
+        StringBuffer buf = new StringBuffer();
+        Time[] times = sched.getTime();
+        for(int i = 0; i < times.length; i++) {
+            if (i != 0) {
+                buf.append('\n');
+            }
+            Time time = times[i];
+            if (time.getDay() != null) {
+                buf.append(getDayString(time.getDay()));
+                buf.append(' ');
+            }
+            buf.append(time.getBegins());
+            buf.append(" -");
+            if ("specific".equals(sched.getType())) {
+                buf.append('\n');
+            }
+            buf.append(' ');
+            buf.append(time.getEnds());
+        }
+        return buf.toString();
+    }
+
+    private Object getDayString(String day) {
+        if ("sunday".equals(day)) {
+            return "Sun";
+        } else if ("monday".equals(day)) {
+            return "Mon";
+        } else if ("tuesday".equals(day)) {
+            return "Tue";
+        } else if ("wednesday".equals(day)) {
+            return "Wed";
+        } else if ("thursday".equals(day)) {
+            return "Thu";
+        } else if ("friday".equals(day)) {
+            return "Fri";
+        } else if ("saturday".equals(day)) {
+            return "Sat";
+        } else {
+            return day;
+        }
     }
 
 }
