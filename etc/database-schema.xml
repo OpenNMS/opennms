@@ -48,8 +48,9 @@
 		<column name="snmpIfOperStatus"/>
 	</table>
 	
-	<table name="services" visable="false">
-		<column name="serviceId"/>
+	<table name="service" visable="false">
+		<join column="serviceID" table="ifServices" table-column="serviceID" />
+		<column name="serviceID" visable="false" />
 		<column name="serviceName"/>
 	</table>
 
