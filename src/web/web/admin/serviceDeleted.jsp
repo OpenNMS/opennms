@@ -90,7 +90,7 @@
 <% String breadcrumb1 = "<a href='element/index.jsp"  + "'>Search</a>"; %>
 <% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
 <% String breadcrumb3 = "<a href='element/interface.jsp?node=" + nodeId + "&intf=" + ipAddr  + "'>Interface</a>"; %>
-<% String breadcrumb4 = "<a href='element/service?node=" + nodeId + "&intf=" + ipAddr  + "&service=" + serviceId + "'>Service</a>"; %>
+<% String breadcrumb4 = "<a href='element/service.jsp?node=" + nodeId + "&intf=" + ipAddr  + "&service=" + serviceId + "'>Service</a>"; %>
 <% String breadcrumb5 = "Service Deleted"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Service" />

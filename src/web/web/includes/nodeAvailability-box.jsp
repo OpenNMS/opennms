@@ -88,7 +88,7 @@
     }
 
     //get the child interfaces
-    Interface[] intfs = NetworkElementFactory.getInterfacesOnNode( nodeId );
+    Interface[] intfs = NetworkElementFactory.getActiveInterfacesOnNode( nodeId );
     if( intfs == null ) { 
         intfs = new Interface[0]; 
     }
@@ -208,7 +208,7 @@
 
     
     public Interface[] getInterfaces(int nodeId) throws java.sql.SQLException {
-        Interface[] intfs = NetworkElementFactory.getInterfacesOnNode(nodeId);
+        Interface[] intfs = NetworkElementFactory.getActiveInterfacesOnNode(nodeId);
         
         if( intfs != null ) {
             Arrays.sort(intfs, this.interfaceComparator); 

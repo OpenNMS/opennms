@@ -1037,4 +1037,47 @@ public class EventUtils {
         return newEvent;
     }
 
+    /**
+     * Constructs a deleteService event for the given nodeId, ipAddress, serivcename triple.
+     * 
+     * @param source
+     *            the source for the event
+     * @param nodeId
+     *            the nodeId of the node that service resides on
+     * @param ipAddr
+     *            the ipAddress of the interface the service resides on
+     * @param service
+     *            the service that is being deleted
+     * @param txNo
+     *            the transaction number to use for processing this event
+     * @return an Event representing a deleteInterface event for the given nodeId, ipaddr
+     */
+    public static Event createDeleteServiceEvent(String source, long nodeId, String ipAddr, String service, long txNo) {
+        Event newEvent = new Event();
+        newEvent.setUei(EventConstants.DELETE_SERVICE_EVENT_UEI);
+        newEvent.setSource(source);
+        newEvent.setInterface(ipAddr);
+        newEvent.setNodeid(nodeId);
+        newEvent.setService(service);
+        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+
+        // Add appropriate parms
+        Parms eventParms = new Parms();
+        Parm eventParm = null;
+        Value parmValue = null;
+
+        eventParm = new Parm();
+        eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
+        parmValue = new Value();
+        parmValue.setContent(String.valueOf(txNo));
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+
+        // Add Parms to the event
+        newEvent.setParms(eventParms);
+
+        return newEvent;
+    }
+
+
 }

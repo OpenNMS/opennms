@@ -390,12 +390,35 @@ public class NetworkElementFactory extends Object
     }
 
 
-    public static Interface[] getInterfacesOnNode( int nodeId ) throws SQLException {
+    public static Interface[] getAllInterfacesOnNode( int nodeId ) throws SQLException {
         Interface[] intfs = null;
         Connection conn = Vault.getDbConnection();
 
         try {
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM IPINTERFACE WHERE NODEID = ?");
+            stmt.setInt( 1, nodeId );
+            ResultSet rs = stmt.executeQuery();
+    
+            intfs = rs2Interfaces( rs );
+          
+            rs.close();
+            stmt.close();
+
+            augmentInterfacesWithSnmpData( intfs, conn ); 
+        }
+        finally {
+            Vault.releaseDbConnection( conn );
+        }
+
+        return intfs;
+    }
+
+    public static Interface[] getActiveInterfacesOnNode( int nodeId ) throws SQLException {
+        Interface[] intfs = null;
+        Connection conn = Vault.getDbConnection();
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM IPINTERFACE WHERE NODEID = ? AND ISMANAGED != 'D'");
             stmt.setInt( 1, nodeId );
             ResultSet rs = stmt.executeQuery();
     

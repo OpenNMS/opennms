@@ -109,7 +109,7 @@
     }
 
     //get the child interfaces
-    Interface[] intfs = NetworkElementFactory.getInterfacesOnNode( nodeId );
+    Interface[] intfs = NetworkElementFactory.getActiveInterfacesOnNode( nodeId );
     if( intfs == null ) { 
         intfs = new Interface[0]; 
     }

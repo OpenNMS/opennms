@@ -34,6 +34,7 @@
 package org.opennms.web.admin.nodeManagement;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -41,9 +42,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.web.element.NetworkElementFactory;
+import org.opennms.web.element.Service;
 
 /**
  * @author brozow
@@ -58,14 +62,58 @@ public class DeleteServiceServlet extends HttpServlet {
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {
-        // TODO send delete service event
+        try {
+            
+            checkParameters(request);
+            
+            int nodeId = Integer.parseInt(request.getParameter("node"));
+            String ipAddr = request.getParameter("intf");
+            String ifIndexString = request.getParameter("ifIndex");
+            int ifIndex = (ifIndexString == null || "".equals(ifIndexString)) ? -1 : Integer.parseInt(ifIndexString);
+            int serviceId = Integer.parseInt(request.getParameter("service"));
+            
+            Service service_db = NetworkElementFactory.getService( nodeId, ipAddr, serviceId );
+            
+            if( service_db == null ) {
+                //handle this WAY better, very awful
+                throw new ServletException( "No such service in database" );
+            }
+            
+            
+            Event e = EventUtils.createDeleteServiceEvent("OpenNMS.WebUI", nodeId, ipAddr, service_db.getServiceName(), -1L);
+            sendEvent(e);
+            
+            
+            //forward the request for proper display
+            RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/serviceDeleted.jsp");
+            dispatcher.forward( request, response );
+        }
+        catch (SQLException e) {
+            throw new ServletException("Error communicating with database", e);
+        }
         
-        //forward the request for proper display
-        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/serviceDeleted.jsp");
-        dispatcher.forward( request, response );
-
     }
     
+    public void checkParameters(HttpServletRequest request) {
+        String nodeIdString = request.getParameter( "node" );
+        String ipAddr = request.getParameter( "intf" );
+        String ifindexString = request.getParameter( "ifindex" );
+        String serviceId = request.getParameter("service");
+        
+        if( nodeIdString == null ) {
+            throw new org.opennms.web.MissingParameterException( "node", new String[] { "node", "intf", "service", "ifindex?"} );
+        }
+
+        if( ipAddr == null ) {
+            throw new org.opennms.web.MissingParameterException( "intf", new String[] { "node", "intf", "service", "ifindex?" } );
+        }
+        
+        if (serviceId == null) {
+            throw new org.opennms.web.MissingParameterException( "service", new String[] { "node", "intf", "service", "ifindex?" } );
+        }
+
+    }
+   
     private void sendEvent(Event event) throws ServletException 
     {
         try

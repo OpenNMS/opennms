@@ -950,7 +950,7 @@ final class BroadcastEventProcessor implements EventListener {
      *             if any exception occurs communicating with the database
      */
     private List doDeleteService(Connection dbConn, String source, long nodeid, String ipAddr, String service, long txNo) throws SQLException {
-
+        Category log = ThreadCategory.getInstance(getClass());
         List eventsToSend = new LinkedList();
 
         if (isPropagationEnabled()) {
@@ -960,15 +960,19 @@ final class BroadcastEventProcessor implements EventListener {
             if (otherSvcsOnIfCnt == 0 && countServicesOnOtherInterfaces(dbConn, nodeid, ipAddr) == 0) {
                 // no services on this interface or any other interface on this node so delete
                 // node
-                eventsToSend.add(doDeleteNode(dbConn, source, nodeid, txNo));
+                log.debug("Propagating service delete to node "+nodeid);
+                eventsToSend.addAll(doDeleteNode(dbConn, source, nodeid, txNo));
             } else if (otherSvcsOnIfCnt == 0) {
                 // no services on this interface so delete interface
-                eventsToSend.add(doDeleteInterface(dbConn, source, nodeid, ipAddr, txNo));
+                log.debug("Propagting service delete to interface "+nodeid+"/"+ipAddr);
+                eventsToSend.addAll(doDeleteInterface(dbConn, source, nodeid, ipAddr, txNo));
             } else {
+                log.debug("No need to Propagate service delete "+nodeid+"/"+ipAddr+"/"+service);
                 // otherwise just mark the service as deleted and send a serviceDeleted event
                 eventsToSend.addAll(markServiceDeleted(dbConn, source, nodeid, ipAddr, service, txNo));
             }
         } else {
+            log.debug("Propagation disabled:  deleting only service "+nodeid+"/"+ipAddr+"/"+service);
             // otherwise just mark the service as deleted and send a serviceDeleted event
             eventsToSend.addAll(markServiceDeleted(dbConn, source, nodeid, ipAddr, service, txNo));
         }

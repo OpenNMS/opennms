@@ -98,7 +98,7 @@
       <ul>
       <% for( int i=0; i < lastIn1stColumn; i++ ) { %>
         <li><a href="element/node.jsp?node=<%=nodes[i].getNodeId()%>"><%=nodes[i].getLabel()%></a>
-        <% Interface[] interfaces = NetworkElementFactory.getInterfacesOnNode(nodes[i].getNodeId()); %>
+        <% Interface[] interfaces = NetworkElementFactory.getActiveInterfacesOnNode(nodes[i].getNodeId()); %>
         <ul>
           <% for( int j=0; j < interfaces.length; j++ ) { %>
             <% if( !"0.0.0.0".equals(interfaces[j].getIpAddress() )) { 
@@ -117,7 +117,7 @@
       <ul>
       <% for( int i=lastIn1stColumn; i < nodes.length; i++ ) { %>
         <li><a href="element/node.jsp?node=<%=nodes[i].getNodeId()%>"><%=nodes[i].getLabel()%></a>
-        <% Interface[] interfaces = NetworkElementFactory.getInterfacesOnNode(nodes[i].getNodeId()); %>
+        <% Interface[] interfaces = NetworkElementFactory.getActiveInterfacesOnNode(nodes[i].getNodeId()); %>
         <ul>
           <% for( int j=0; j < interfaces.length; j++ ) { %>
             <% if( !"0.0.0.0".equals(interfaces[j].getIpAddress() )) { 

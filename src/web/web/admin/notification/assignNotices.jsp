@@ -154,7 +154,7 @@
     {
         int nodeID = ((Integer)allNodes.get(i)).intValue();
         
-        Interface interfaces[] = NetworkElementFactory.getInterfacesOnNode(nodeID);
+        Interface interfaces[] = NetworkElementFactory.getActiveInterfacesOnNode(nodeID);
         for (int intCount = 0; intCount < interfaces.length; intCount++)
         {
 	      		if (!interfaces[intCount].getIpAddress().equals("0.0.0.0"))

@@ -34,8 +34,6 @@
 package org.opennms.web.admin.nodeManagement;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Enumeration;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -43,6 +41,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
@@ -60,15 +59,17 @@ public class DeleteInterfaceServlet extends HttpServlet {
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {
-        // TODO send deleteInterfaceEvent
+        checkParameters(request);
         
-//        response.setContentType("text/plain");
-//        PrintWriter out = response.getWriter();
-//        Enumeration e = request.getParameterNames();
-//        while (e.hasMoreElements()) {
-//            String parmName = (String) e.nextElement();
-//            out.println(parmName+"\t:\t"+request.getParameter(parmName));
-//        }
+        long nodeId = Long.parseLong(request.getParameter("node"));
+        String ipAddr = request.getParameter("intf");
+        String ifIndexString = request.getParameter("ifIndex");
+        int ifIndex = (ifIndexString == null || "".equals(ifIndexString)) ? -1 : Integer.parseInt(ifIndexString);
+
+        // TODO provide a way to delete an interface that has a non-unique ipAddr
+        
+        Event e = EventUtils.createDeleteInterfaceEvent("OpenNMS.WebUI", nodeId, ipAddr, -1L);
+        sendEvent(e);
         
         // forward the request for proper display
         RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/interfaceDeleted.jsp");
@@ -88,5 +89,20 @@ public class DeleteInterfaceServlet extends HttpServlet {
             throw new ServletException("Could not send event " + event.getUei(), e);
         }
     }
+    
+    public void checkParameters(HttpServletRequest request) {
+        String nodeIdString = request.getParameter( "node" );
+        String ipAddr = request.getParameter( "intf" );
+        String ifindexString = request.getParameter( "ifindex" );
+        
+        if( nodeIdString == null ) {
+            throw new org.opennms.web.MissingParameterException( "node", new String[] { "node", "intf", "ifindex?"} );
+        }
 
+        if( ipAddr == null ) {
+            throw new org.opennms.web.MissingParameterException( "intf", new String[] { "node", "intf", "ifindex?" } );
+        }
+
+    }
+    
 }
