@@ -785,7 +785,7 @@ unless ($NOSO) {
 
 	if (not $RPM) {
 
-		for my $dir ($ENV{OPENNMS_HOME} . "/lib", '/usr/lib/opennms', '/usr/lib/pgsql/opennms', '/usr/lib/postgresql/lib/opennms') {
+		for my $dir ($ENV{OPENNMS_HOME} . "/lib", '/usr/lib/opennms', '/usr/lib/pgsql/opennms', '/usr/lib/postgresql/lib/opennms', '/usr/lib/postgresql') {
 			if (-d $dir and -f "$dir/iplike.$SOEXT") {
 				print "$dir\n";
 				$PG_LIBDIR = $dir;
