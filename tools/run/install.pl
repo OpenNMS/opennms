@@ -632,7 +632,7 @@ if ($TOMCAT) {
 
 	for my $dir ('/var/tomcat4', '/sw/var/tomcat4', '/usr/local/tomcat4') {
 
-		my $serverxml = $dir . '/server.xml';
+		my $serverxml = $dir . '/conf/server.xml';
 	
 		if (-f $serverxml) {
 			my $server_in;
