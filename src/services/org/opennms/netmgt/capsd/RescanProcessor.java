@@ -2416,6 +2416,13 @@ final class RescanProcessor
                 for (int i=0; i < dbInterfaces.length; i++)
                 {
                         InetAddress ipaddr = dbInterfaces[i].getIfAddress();
+  			// Skip non-IP or loopback interfaces
+       			if (ipaddr.getHostAddress().equals("0.0.0.0") && 
+       				ipaddr.getHostAddress().startsWith("127.")) 
+       			{
+       				continue;
+       			}
+                        
                         Iterator iter = ipAddrList.iterator();
                         boolean found = false;
                         while (iter.hasNext())
