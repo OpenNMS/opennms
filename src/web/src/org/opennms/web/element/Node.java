@@ -113,22 +113,22 @@ public class Node
 
         public String getNodeSysName()
         {
-                return m_nodeSysName;
+                return htmlify(m_nodeSysName);
         }
 
         public String getNodeSysDescr()
         {
-                return m_nodeSysDescr;
+                return htmlify(m_nodeSysDescr);
         }
 
         public String getNodeSysLocn()
         {
-                return m_nodeSysLocn;
+                return htmlify(m_nodeSysLocn);
         }
 
         public String getNodeSysContact()
         {
-                return m_nodeSysContact;
+                return htmlify(m_nodeSysContact);
         }
 
         public char getNodeType()
@@ -138,7 +138,7 @@ public class Node
 
         public String getOperatingSystem()
         {
-                return m_operatingSystem;
+                return htmlify(m_operatingSystem);
         }
 
         public String toString()
@@ -155,5 +155,9 @@ public class Node
                 str.append("Node Sys Type = " + m_nodeType + "\n" );
                 str.append("Operating System = " + m_operatingSystem + "\n" );
                 return str.toString();
+        }
+        
+        private String htmlify(String input) {
+            return (input == null ? null : input.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
         }
 }
