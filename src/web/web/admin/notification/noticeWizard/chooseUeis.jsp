@@ -39,7 +39,7 @@
 
 -->
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.admin.notification.noticeWizard.*,org.opennms.netmgt.config.*,org.opennms.netmgt.config.notifications.*,org.opennms.core.utils.BundleLists,org.opennms.netmgt.ConfigFileConstants,java.io.*" %>
+<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.admin.notification.noticeWizard.*,org.opennms.netmgt.config.*,org.opennms.netmgt.config.notifications.*,org.opennms.core.utils.BundleLists,org.opennms.netmgt.ConfigFileConstants,java.io.*,org.opennms.netmgt.xml.eventconf.Event" %>
 
 <%!
     public void init() throws ServletException {
