@@ -223,7 +223,8 @@ public class PollableService extends PollableElement implements Runnable {
                 newStatus = PollStatus.STATUS_UP;
         }
         
-        if (getStatus() != newStatus) {
+        PollStatus currentStatus = getStatus();
+        if (currentStatus != newStatus) {
             m_oldStatus = getStatus();
             setStatusChangeTime(m_pollConfig.getCurrentTime());
         }
@@ -231,7 +232,7 @@ public class PollableService extends PollableElement implements Runnable {
         
         super.updateStatus(newStatus);
         
-        if (m_oldStatus != newStatus) {
+        if (currentStatus != newStatus) {
             getSchedule().adjustSchedule();
         }
     }
