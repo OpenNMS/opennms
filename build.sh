@@ -26,7 +26,7 @@ fi
 cd $PREFIX
 
 # load libraries
-for script in pid_process arg_process build_classpath check_tools \
+for script in pid_process arg_process build_classpath \
 	compiler_setup find_jarfile handle_properties java_lint version_compare; do
 	source $PREFIX/tools/infrastructure/${script}.sh
 done

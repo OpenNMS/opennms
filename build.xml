@@ -96,10 +96,10 @@ your distribution.
   <property name="install.logs" value="${root.installprefix}${root.install.logs}"/>
   <property name="install.pid" value="${root.installprefix}${root.install.pid}"/>
   <condition property="opennms.release.string" value="0.${DSTAMP}.${opennms.release}">
-    <istrue property="${opennms.snapshot}"/>
+    <istrue value="${opennms.snapshot}"/>
   </condition>
   <condition property="opennms.release.string" value="${opennms.release}">
-    <isfalse property="${opennms.snapshot}"/>
+    <isfalse value="${opennms.snapshot}"/>
   </condition>
   <property name="opennms.version.string" value="${opennms.version}-${opennms.release.string}"/>
 
@@ -114,16 +114,16 @@ your distribution.
 
   <condition property="rpm.tainted" value="true">
    <or>
-    <istrue property="${wasrpm}"/>
-    <istrue property="${isrpm}"/>
+    <istrue value="${wasrpm}"/>
+    <istrue value="${isrpm}"/>
    </or>
   </condition>
 
   <condition property="filter.overwrite" value="true">
-    <istrue poperty="${rpm.tainted}"/>
+    <istrue value="${rpm.tainted}"/>
   </condition>
   <condition property="filter.overwrite" value="false">
-    <isfalse poperty="${rpm.tainted}"/>
+    <isfalse value="${rpm.tainted}"/>
   </condition>
 
   <!-- set filters -->
