@@ -558,16 +558,11 @@ OpenNMS as part of the post-install.
 
  <!-- token translation targets -->
 
- <target name="copy.bin" depends="init,compile.native.spoof">
+ <target name="copy.bin" depends="init">
   <mkdir dir="${root.build}/bin"/>
   <copy todir="${root.build}/bin" filtering="yes" overwrite="${filter.overwrite}">
    <fileset dir="${root.source}/tools/run"/>
    <fileset dir="${root.source}/tools/contrib"/>
-  </copy>
-  <copy todir="${root.build}/bin" filtering="no" overwrite="${filter.overwrite}">
-   <fileset dir="${root.build}/spoof">
-    <exclude name="*.o"/>
-   </fileset>
   </copy>
  </target>
 
@@ -902,10 +897,9 @@ OpenNMS as part of the post-install.
 
  <!-- native build -->
 
- <target name="compile.native" depends="init,compile.native.spoof,compile.native.postgresql,compile.native.jicmp,compile.native.jrrd"/>
+ <target name="compile.native" depends="init,compile.native.postgresql,compile.native.jicmp,compile.native.jrrd"/>
 
  <target name="compile.native.osx.check">
-  <mkdir dir="${root.build}/spoof" />
   <condition property="isOSX">
    <and>
     <os family="mac" />
@@ -914,23 +908,11 @@ OpenNMS as part of the post-install.
   </condition>
  </target>
 
- <target name="compile.native.spoof" depends="init,compile.native.osx.check" unless="isOSX">
-  <apply executable="${compile.cc}" dir="${root.source}/tools/spoof" failonerror="true"
-	dest="${root.build}/spoof">
-   <arg line="${compile.cflags} -DZERO_LENGTH_PACKET=1 -D${compile.platform.define} -c -o"/>
-   <targetfile/>
-   <srcfile/>
-   <fileset dir="${root.source}/tools/spoof" includes="*.c"/>
-   <mapper type="glob" from="*.c" to="*.o"/>
-  </apply>
-  <apply executable="${compile.cc}" dir="${root.source}/tools/spoof" failonerror="true"
-	dest="${root.build}/spoof">
-   <arg line="${compile.cflags} -D${compile.platform.define} -o"/>
-   <targetfile/>
-   <srcfile/>
-   <fileset dir="${root.build}/spoof" includes="*.o"/>
-   <mapper type="glob" from="*.o" to="*"/>
-  </apply>
+ <target name="compile.native.solaris.check">
+  <if value="${os.name}" match="SunOS">
+   <thenProperty name="network.libs" value="-lsocket -lnsl"/>
+   <elseProperty name="network.libs" value=""/>
+  </if>
  </target>
 
  <target name="compile.native.postgresql" depends="init">
