@@ -59,22 +59,6 @@
                                 <mibObj oid=".1.3.6.1.4.1.318.1.1.1.4.2.4" instance="0" alias="apccurrent"    type="gauge32"/>
                                 <mibObj oid=".1.3.6.1.4.1.318.1.1.1.3.2.1" instance="0" alias="apcinvac"    type="gauge32"/>
                         </group>
-			<group 	name = "cisco-router" ifType = "ignore">
-				<mibObj oid=".1.3.6.1.4.1.9.2.1.58" instance="0" alias="avgBusy5"    type="integer"/>
-				<mibObj oid=".1.3.6.1.4.1.9.2.1.8"  instance="0" alias="freeMem"     type="gauge"/>
-				<mibObj oid=".1.3.6.1.4.1.9.2.1.46" instance="0" alias="bufferFail"  type="counter"/>
-				<mibObj oid=".1.3.6.1.4.1.9.2.1.47" instance="0" alias="bufferNoMem" type="counter"/>
-			</group>
-                        <group  name = "cisco-router-if-stats" ifType = "all">
-                                <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.7" instance="ifIndex" alias="locIfInPktsSec" type="integer"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.9" instance="ifIndex" alias="locIfOutPktsSec" type="integer"/>
-                        </group>
-			<group name = "cisco-router-env" ifType = "ignore">
-				<mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="1" alias="tempin" type="gauge32"/>
-				<mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="2" alias="tempout1" type="gauge32"/>
-				<mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="3" alias="tempout2" type="gauge32"/>
-				<mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="4" alias="tempout3" type="gauge32"/>
-			</group>
 			<group 	name = "bay-router" ifType = "ignore">
 				<mibObj oid=".1.3.6.1.4.1.18.3.3.2.5.1.1.9"  instance="0" alias="wfkernelTasksTotal"  type="gauge"/>
 				<mibObj oid=".1.3.6.1.4.1.18.3.3.2.5.1.1.10" instance="0" alias="wfkernelTasksInQue"  type="counter"/>
@@ -90,6 +74,27 @@
 				<mibObj oid=".1.3.6.1.4.1.2620.1.1.5" instance="0" alias="pktsRejected" type="integer" />
 				<mibObj oid=".1.3.6.1.4.1.2620.1.1.6" instance="0" alias="pktsDropped" type="integer" />
 				<mibObj oid=".1.3.6.1.4.1.2620.1.1.7" instance="0" alias="pktsLogged" type="integer" />
+			</group>
+			<group 	name = "cisco-router" ifType = "ignore">
+				<mibObj oid=".1.3.6.1.4.1.9.2.1.58" instance="0" alias="avgBusy5"    type="integer"/>
+				<mibObj oid=".1.3.6.1.4.1.9.2.1.8"  instance="0" alias="freeMem"     type="gauge"/>
+				<mibObj oid=".1.3.6.1.4.1.9.2.1.46" instance="0" alias="bufferFail"  type="counter"/>
+				<mibObj oid=".1.3.6.1.4.1.9.2.1.47" instance="0" alias="bufferNoMem" type="counter"/>
+			</group>
+                        <group  name = "cisco-router-if-stats" ifType = "all">
+                                <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.7" instance="ifIndex" alias="locIfInPktsSec" type="integer"/>
+                                <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.9" instance="ifIndex" alias="locIfOutPktsSec" type="integer"/>
+				<mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.26" instance="ifIndex" alias="locIfInQueueDrops" type="gauge"/>
+				<mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.27" instance="ifIndex" alias="locIfOutQueueDrops" type="gauge"/>
+                        </group>
+			<group name = "cisco-router-env" ifType = "ignore">
+				<mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="1" alias="tempin" type="gauge32"/>
+				<mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="2" alias="tempout1" type="gauge32"/>
+				<mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="3" alias="tempout2" type="gauge32"/>
+				<mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="4" alias="tempout3" type="gauge32"/>
+				<mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.5" instance="1" alias="cpmCPUTotal5min" type="integer"/>
+				<mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.2.1.5.40" instance="6" alias="cfwConnCurrInUse" type="integer"/>
+				<mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.2.1.5.40" instance="7" alias="cfwConnMaxUsed" type="integer"/>
 			</group>
 			<group name = "compaq-insight-manager-stats" ifType = "ignore">
 				 <mibObj oid="1.3.6.1.4.1.232.11.2.4.1.1.5"    instance="0" alias="cimPctHddUsed1"  type="integer" />
@@ -118,6 +123,23 @@
                         </group>
 			<group 	name = "extreme-sys" ifType = "ignore">
 				<mibObj oid=".1.3.6.1.4.1.1916.1.1.1.8" instance="0" alias="xtrmCurrentTemp" type="integer"/>
+			</group>
+			<group  name = "foundry-sys" ifType = "ignore">
+				<mibObj oid=".1.3.6.1.4.1.1991.1.1.1.1.18" instance="0" alias="sbChAcTemperature" type="gauge"/>
+				<mibObj oid=".1.3.6.1.4.1.1991.1.1.2.1.52" instance="0" alias="snAgGbCpu1MinAvg" type="gauge"/>
+				<mibObj oid=".1.3.6.1.4.1.1991.1.1.2.1.53" instance="0" alias="snAgGblDynMemUtil" type="gauge"/>
+			</group>
+			<group  name = "hp-procurve" ifType = "ignore">
+				<mibObj oid=".1.3.6.1.4.1.11.2.14.11.5.1.9.6.1" instance="0" alias="hpSwitchCpuStat" type="gauge"/>
+				<mibObj oid=".1.3.6.1.4.1.11.2.14.11.5.1.1.1.1.1.1.2" instance="1" alias="hpMsgBufCorrupt" type="gauge"/>
+				<mibObj oid=".1.3.6.1.4.1.11.2.14.11.5.1.1.1.1.1.1.3" instance="1" alias="hpMsgBufFree" type="gauge"/>
+				<mibObj oid=".1.3.6.1.4.1.11.2.14.11.5.1.1.1.1.1.1.4" instance="1" alias="hpMsgBufInit" type="gauge"/>
+				<mibObj oid=".1.3.6.1.4.1.11.2.14.11.5.1.1.1.1.1.1.5" instance="1" alias="hpMsgBufMin" type="gauge"/>
+				<mibObj oid=".1.3.6.1.4.1.11.2.14.11.5.1.1.1.1.1.1.6" instance="1" alias="hpMsgBufMiss" type="gauge"/>
+				<mibObj oid=".1.3.6.1.4.1.11.2.14.11.5.1.1.1.1.1.1.7" instance="1" alias="hpMsgBufSize" type="integer"/>
+				<mibObj oid=".1.3.6.1.4.1.11.2.14.11.5.1.1.2.1.1.1.4" instance="1" alias="hpSwitchAllocMem" type="gauge"/>
+				<mibObj oid=".1.3.6.1.4.1.11.2.14.11.5.1.1.2.1.1.1.5" instance="1" alias="hpSwitchTotalMem" type="integer"/>
+				<mibObj oid=".1.3.6.1.4.1.11.2.14.11.5.1.1.2.1.1.1.6" instance="1" alias="hpSwitchFreeMem" type="gauge"/>
 			</group>
 			<group 	name = "hpux" ifType = "ignore">
 				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.2" instance="0" alias="hpuxNumberOfUsers" type="gauge"/>
@@ -323,6 +345,13 @@
 					<includeGroup>windows-host</includeGroup>
 				</collect>
 			</systemDef>
+
+			<systemDef name = "Foundry Networks">
+				<sysoidMask>.1.3.6.1.4.1.1991.1.</sysoidMask>
+				<collect>
+					<includeGroup>foundry-sys</includeGroup>
+				</collect>
+			</systemDef>
 			
 			<systemDef name = "Extreme Networks">
 				<sysoidMask>.1.3.6.1.4.1.1916.2.</sysoidMask>
@@ -339,6 +368,13 @@
                                         <includeGroup>printer-usage</includeGroup>
                                 </collect>
                         </systemDef>
+
+			<systemDef name = "HpProCurve">
+				<sysoidMask>.1.3.6.1.4.1.11.2.3.7.11</sysoidMask>
+				<collect>
+					<includeGroup>hp-procurve</includeGroup>
+				</collect>
+			</systemDef>
 
 			<systemDef name = "HP-UX">
 				<sysoidMask>.1.3.6.1.4.1.11.2.3.2.</sysoidMask>
