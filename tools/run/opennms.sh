@@ -284,7 +284,7 @@ doStart(){
 
     if [ $START_TIMEOUT -eq 0 ]; then
 	# don't wait for OpenNMS to startup
-	echo "(not waiting for startup) \c"
+	echo -n "(not waiting for startup) "
 	return 0
     fi
 
@@ -546,7 +546,7 @@ fi
 
 case "$COMMAND" in
     start|spawn)
-	echo "Starting OpenNMS: \c"
+	echo -n "Starting OpenNMS: "
 
 	if [ -f /etc/SuSE-release ]; then
 	    doStart
@@ -575,7 +575,7 @@ case "$COMMAND" in
 	;;
 
     stop)
-	echo "Stopping OpenNMS: \c"
+	echo -n "Stopping OpenNMS: "
 	if [ -f /etc/SuSE-release ]; then
 	    doStop
 
@@ -622,7 +622,7 @@ case "$COMMAND" in
 
     status)
 	if [ -f /etc/SuSE-release ]; then
-	    echo "Checking for OpenNMS: \c"
+	    echo -n "Checking for OpenNMS: "
 	    if [ $VERBOSE -gt 0 ]; then
 		echo ""
 	    fi
