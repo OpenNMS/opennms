@@ -1,177 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter>
-  <title>Platform-Specific OpenNMS Installation Notes</title>
+  <title>Installing OpenNMS</title>
+
+  <note>
+    <para>You need to be root when you execute the commands in this
+    chapter.</para>
+  </note>
+
+  <para>Follow the instructions in either the fresh install section or the
+  upgrade section, and then continue to the section on running the installer.
+  If you have any errors during the installation process, please see the
+  troubleshooting section of this guide.</para>
 
   <section>
-    <title>Debian</title>
+    <title>Performing a Fresh Install</title>
 
-    <para>OpenNMS is supported on Debian, and can be installed using apt.
-    However, due to licensing issues, we cannot distribute a version of Sun's
-    Java SDK, so some extra steps are required.</para>
-
-    <section>
-      <title>Woody</title>
-
-      <para>Add the following to /etc/apt/sources.list and update, (i.e.
-      "apt-get update"):</para>
-
-      <para><programlisting>deb http://debian.opennms.org/ debian/opennms stable</programlisting></para>
-
-      <para>Then obtain and install a suitable version of java.</para>
-
-      <para>Because of licensing issues, a suitable java sdk cannot be
-      distributed with OpenNMS so you will have to obtain and install one
-      yourself prior to installing OpenNMS. You have several options
-      here:</para>
-
-      <orderedlist>
-        <listitem>
-          <para>Use the sun-jdk1.4-installer package and build script to
-          download the j2sdk from Sun and build your own j2sdk1.4 package,
-          (recommended).</para>
-
-          <para>Building and installing a j2sdk1.4 package:</para>
-
-          <itemizedlist>
-            <listitem>
-              <para>The java-common package is a dependency for the j2sdk1.4
-              package you will be creating, and since it will be installed by
-              dpkg, APT will not be there to pull it in so install it
-              first.</para>
-
-              <para><programlisting><computeroutput># </computeroutput><command>apt-get install java-common</command></programlisting></para>
-            </listitem>
-
-            <listitem>
-              <para>Next, install the sun-jdk1.4-installer package</para>
-
-              <para><programlisting><computeroutput># </computeroutput><command>apt-get install sun-jdk1.4-installer</command></programlisting></para>
-            </listitem>
-
-            <listitem>
-              <para>Download the 1.4.2 SDK from Sun, get the non-RPM binary
-              package</para>
-            </listitem>
-
-            <listitem>
-              <para>Then run the following command to build the
-              package:</para>
-
-              <para><programlisting><computeroutput># </computeroutput><command>build-sun-jdk14 ./j2sdk-1_4_2_05-linux-i586.bin</command></programlisting></para>
-
-              <para>where <filename>j2sdk-1_4_2_05-linux-i586.bin</filename>
-              is the binary file you downloaded from Sun.</para>
-            </listitem>
-
-            <listitem>
-              <para>And finally install the package:</para>
-
-              <para><programlisting><computeroutput># </computeroutput><command>dpkg -i j2sdk-1_4_2_05-linux-i586.deb</command></programlisting></para>
-
-              <para>where <filename>j2sdk-1_4_2_05-linux-i586.deb</filename>
-              is the Debian package that was just created by
-              <filename>build-sun-jdk14</filename>.</para>
-            </listitem>
-          </itemizedlist>
-        </listitem>
-
-        <listitem>
-          <para>Obtain and install and your own version and meet the OpenNMS
-          packages dependencies by installing the java-virtual-machine meta
-          package.</para>
-
-          <para><programlisting><computeroutput># </computeroutput><command>apt-get install java-virtual-machine</command></programlisting></para>
-        </listitem>
-      </orderedlist>
-
-      <para>Then, install OpenNMS:</para>
-
-      <para><programlisting><computeroutput># </computeroutput><command>apt-get install opennms</command></programlisting></para>
-
-      <para>Optionally install the documentation and/or contrib
-      packages</para>
-
-      <para><programlisting><computeroutput># </computeroutput><command>apt-get install opennms-doc opennms-contrib</command></programlisting></para>
-    </section>
+    <para>Follow the instructions in this section appropriate for your
+    operating system if you are performing a fresh install. If you are
+    upgrading an existing installation of OpenNMS, see the next
+    section.</para>
 
     <section>
-      <title>Sid</title>
+      <title>Installing on Debian Linux</title>
 
-      <para>Add the following to <filename>/etc/apt/sources.list</filename>
-      and update, (i.e. "<code>apt-get update</code>"):</para>
-
-      <para><programlisting>deb http://debian.opennms.org/ debian/opennms unstable</programlisting></para>
-
-      <para>Then obtain and install a suitable version of java.</para>
-
-      <para>Because of licensing issues, a suitable java sdk cannot be
-      distributed with OpenNMS so you will have to obtain and install one
-      yourself prior to installing OpenNMS. You have several options
-      here:</para>
-
-      <orderedlist>
-        <listitem>
-          <para>Use the <code>sun-jdk1.4-installer</code> package and build
-          script to download the <code>j2sdk</code> from Sun and build your
-          own <code>j2sdk1.4</code> package
-          (<emphasis>recommended</emphasis>).</para>
-
-          <para>Building and installing a j2sdk1.4 package:</para>
-
-          <itemizedlist>
-            <listitem>
-              <para>The <code>java-common</code> package is a dependency for
-              the <code>j2sdk1.4</code> package you will be creating, and
-              since it will be installed by dpkg, APT will not be there to
-              pull it in so install it first:</para>
-
-              <para><programlisting><computeroutput># </computeroutput><command>apt-get install java-common</command></programlisting></para>
-            </listitem>
-
-            <listitem>
-              <para>Next, install the <code>sun-jdk1.4-installer</code>
-              package:</para>
-
-              <para><programlisting><computeroutput># </computeroutput><command>apt-get install sun-jdk1.4-installer</command></programlisting></para>
-            </listitem>
-
-            <listitem>
-              <para>Download the 1.4.2 SDK from Sun. Get the non-RPM binary
-              package.</para>
-            </listitem>
-
-            <listitem>
-              <para>Then run the following command to build the
-              package:</para>
-
-              <para><programlisting><computeroutput># </computeroutput><command>build-sun-jdk14 ./j2sdk-1_4_2_05-linux-i586.bin</command></programlisting></para>
-
-              <para>where <filename>j2sdk-1_4_2_05-linux-i586.bin</filename>
-              is the binary file you downloaded from Sun.</para>
-            </listitem>
-
-            <listitem>
-              <para>And finally install the package:</para>
-
-              <para><programlisting><computeroutput># </computeroutput><command>dpkg -i j2sdk-1_4_2_05-linux-i586.deb</command></programlisting></para>
-
-              <para>where <filename>j2sdk-1_4_2_05-linux-i586.deb</filename>
-              is the Debian package that was just created by
-              <filename>build-sun-jdk14</filename>.</para>
-            </listitem>
-          </itemizedlist>
-        </listitem>
-
-        <listitem>
-          <para>Obtain and install and your own version and meet the OpenNMS
-          packages dependencies by installing the
-          <code>java-virtual-machine</code> meta-package.</para>
-
-          <para><programlisting><computeroutput># </computeroutput><command>apt-get install java-virtual-machine</command></programlisting></para>
-        </listitem>
-      </orderedlist>
-
-      <para>Then, install OpenNMS:</para>
+      <para>Assuming that you have setup the apt repository in the
+      prerequisities section, do this:</para>
 
       <para><programlisting><computeroutput># </computeroutput><command>apt-get install opennms</command></programlisting></para>
 
@@ -180,216 +33,229 @@
 
       <para><programlisting><computeroutput># </computeroutput><command>apt-get install opennms-doc opennms-contrib</command></programlisting></para>
 
-      <para>Note: Recent versions of the Tomcat package in Sid, (unstable),
-      use jikes as the compiler instead of the javac from your toolkit. Open
-      up <filename>/etc/tomcat4/web.xml</filename> in your favorite editor and
-      comment out the "<filename>compiler init param</filename>"
-      section.</para>
+      <para>You can also download the appropriate packages for your version of
+      Debian from the OpenNMS <ulink
+      url="http://sourceforge.net/project/showfiles.php?group_id=4141">Files</ulink>
+      section on SourceForge.</para>
+    </section>
+
+    <section>
+      <title>Installing on RPM-based Linux Distributions</title>
+
+      <para>Download the appropriate packages for your Linux distribution from
+      the OpenNMS <ulink
+      url="http://sourceforge.net/project/showfiles.php?group_id=4141">Files</ulink>
+      section on SourceForge.</para>
+
+      <para><programlisting><computeroutput># </computeroutput><command>rpm -i opennms-@product.version@-@product.release@_&lt;distribution&gt;.&lt;platform&gt;.rpm
+</command><computeroutput># </computeroutput><command>rpm -i opennms-webapp-@product.version@-@product.release@_&lt;distribution&gt;.&lt;platform&gt;.rpm
+</command><computeroutput># </computeroutput><command>rpm -i opennms-docs-@product.version@-@product.release@_&lt;distribution&gt;.&lt;platform&gt;.rpm</command></programlisting></para>
+    </section>
+
+    <section>
+      <title>Installing on Solaris</title>
+
+      <para>Download the appropriate package for your Linux distribution from
+      the OpenNMS <ulink
+      url="http://sourceforge.net/project/showfiles.php?group_id=4141">Files</ulink>
+      section on SourceForge.</para>
+
+      <para><programlisting><computeroutput># </computeroutput><command>cd /usr/local
+</command><computeroutput># </computeroutput><command>gzip -d opennms-@product.version@-@product.release@-sol&lt;version&gt;-sparc-local.gz
+</command><computeroutput># </computeroutput><command>pkgadd -d `pwd`/opennms-@product.version@-@product.release@-sol&lt;version&gt;-sparc-local</command></programlisting></para>
+    </section>
+
+    <section>
+      <title>Installing on Mac OS X</title>
+
+      <para>XXX write me</para>
+    </section>
+
+    <section>
+      <title>Installing from Source</title>
+
+      <para>Before you try to install from source, visit the chapter on
+      "Building from Source," to first download and compile from
+      source.</para>
+
+      <note>
+        <para>this will install into <filename>dist</filename> in the same
+        directory as the <filename>build.xml</filename> file unless you
+        changed <filename>install.dir</filename> as mentioned in the "Building
+        from Source" chapter.</para>
+      </note>
+
+      <para>Execute this command to install:</para>
+
+      <para><programlisting><computeroutput># </computeroutput><command>sh build.sh install</command></programlisting></para>
     </section>
   </section>
 
   <section>
-    <title>Fedora</title>
+    <title>Upgrading an Existing Installation</title>
 
-    <para>OpenNMS is supported on Fedora. Note that <filename>yum</filename>
-    and <filename>apt</filename> for RPM repositories will be available
-    soon.</para>
+    <para>XXX this section could use some more love, too.</para>
+
+    <para>Upgrades from a previous version of OpenNMS to a current one usually
+    just involve installing a new package for your particular
+    distribution.</para>
+
+    <para>For RPM-based distributions, this is pretty simple using the
+    "<computeroutput>rpm -Uvh [package name]</computeroutput>" command.</para>
+
+    <para>In addition, the OpenNMS installer may attempt to make changes to
+    the database. Follow the instructions later in this chapter for executing
+    the installer. The changes should go smoothly, but as with the best laid
+    plans things may go wrong. Make a backup of your PostgreSQL database per
+    the details below before upgrading in case there are problems.</para>
 
     <section>
-      <title>Fedora Core 1</title>
+      <title>Basic Locations for OpenNMS Data</title>
 
-      <para>There are no special requirements for OpenNMS on this distribution
-      of Linux, except for those configuration issues mentioned in the
-      previous section.</para>
+      <para>OpenNMS stores data in a number of locations:</para>
+
+      <glosslist>
+        <glossentry>
+          <glossterm><filename>$OPENNMS_HOME/etc/</filename></glossterm>
+
+          <glossdef>
+            <para>OpenNMS configuration files. If the default structure of a
+            file in <filename>$OPENNMS_HOME/etc</filename> has changed between
+            versions, RPM will create a
+            "<filename><filename>.rpmnew</filename></filename>" version of
+            that file. You will need to look at the changes between your file
+            and the new one and merge them manually, at the moment. The
+            command "<code>diff -u &lt;old file&gt; &lt;new file&gt; |
+            less</code>" can assist you in seeing what has changed.</para>
+          </glossdef>
+        </glossentry>
+
+        <glossentry>
+          <glossterm><filename>$OPENNMS_HOME/share/rrd/</filename></glossterm>
+
+          <glossdef>
+            <para>RRD data files that store response time data and performance
+            data collected from SNMP. The installer should not touch the RRD
+            files in <filename>$OPENNMS_HOME/share/rrd.</filename> Unless you
+            are moving from RRDTool to jRobin, you should not have to worry
+            about them.</para>
+          </glossdef>
+        </glossentry>
+
+        <glossentry>
+          <glossterm><filename>$OPENNMS_HOME/webapps/opennms/</filename></glossterm>
+
+          <glossdef>
+            <para>The OpenNMS web application. While data is not stored here,
+            some users may customize the web interface and these
+            customizations should be saved before upgrading OpenNMS.</para>
+          </glossdef>
+        </glossentry>
+
+        <glossentry>
+          <glossterm><filename>$PGDATA/</filename></glossterm>
+
+          <glossdef>
+            <para>Data about nodes, services, events, notifications, etc., are
+            stored in the <code>opennms</code> table in PostgreSQL.</para>
+          </glossdef>
+        </glossentry>
+      </glosslist>
     </section>
 
     <section>
-      <title>Fedora Core 2</title>
+      <title>Before Upgrading - Make a Backup!</title>
 
-      <para>The Tomcat4 package that ships with Fedora Core 2 does not appear
-      to reliably run, even when the OpenNMS web app is not installed. For
-      now, we suggest using the tomcat4 packages on the <ulink
-      url="ftp://ftp.opennms.org/pub/dependencies/tomcat4/">OpenNMS FTP
-      site</ulink>. You'll want to install both packages,
-      <filename>tomcat4-4.1.18-full.1jpp.noarch.rpm</filename> and
-      <filename>tomcat4-webapps-4.1.18-full.1jpp.noarch.rpm</filename>.</para>
+      <para>Things can go wrong on upgrades, so it is always a good idea to
+      make a backup of important information before attempting the
+      upgrade.</para>
 
-      <para>There is a bug in some kernels that can cause Java processes, and
-      even the entire kernel to hang. It is documented in <ulink
-      url="https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=121902">Red
-      Hat bug #121902</ulink>. You should make sure you are running at least a
-      2.6.6-422 kernel.</para>
-    </section>
-  </section>
+      <para>For OpenNMS, you should do two things:</para>
 
-  <section>
-    <title>Mandrake</title>
+      <orderedlist>
+        <listitem>
+          <para>Copy the contents of the
+          <filename>$OPENNMS_HOME/etc</filename> directory to a safe location.
+          Should an issue arise with any new files, you will want to be able
+          to recover your original</para>
+        </listitem>
 
-    <para>OpenNMS is supported on Mandrake. Note that
-    <filename>urpmi</filename> repositories will be available soon.</para>
+        <listitem>
+          <para>Make a backup of the postgres database. Using the
+          <filename>pg_dumpall </filename>command you can dump the entire
+          contents of the database to a file:</para>
 
-    <section>
-      <title>Mandrake 8</title>
+          <para><programlisting><computeroutput># </computeroutput><command>pg_dumpall &gt; old_data</command></programlisting></para>
 
-      <para>There are no special requirements for OpenNMS on this distribution
-      of Linux, except for those configuration issues mentioned in the
-      previous section.</para>
-    </section>
+          <para>will copy all of the data to a file called
+          <filename>old_data</filename>. You will want to run this as the
+          "postgres" user:</para>
 
-    <section>
-      <title>Mandrake 9</title>
+          <para><programlisting><computeroutput># </computeroutput><command>sudo -u postgres pg_dumpall &gt; old_data</command></programlisting></para>
 
-      <para>There are no special requirements for OpenNMS on this distribution
-      of Linux, except for those configuration issues mentioned in the
-      previous section.</para>
-    </section>
+          <para>To restore, run the command:</para>
 
-    <section>
-      <title>Mandrake 10</title>
+          <para><programlisting><computeroutput># </computeroutput><command>sudo -u postgres psql -U postgres -f old_data template1</command></programlisting></para>
+        </listitem>
 
-      <para>There are no special requirements for OpenNMS on this distribution
-      of Linux, except for those configuration issues mentioned in the
-      previous section.</para>
-    </section>
-  </section>
+        <listitem>
+          <para>If you have made changes to the web application, you will want
+          to save a copy of your changes, as well.</para>
+        </listitem>
+      </orderedlist>
 
-  <section>
-    <title>Red Hat</title>
-
-    <para>The following section refer to the supported versions of Red Hat
-    Linux. Note that <filename>yum</filename> and <filename>apt</filename> for
-    RPM repositories will be available soon.</para>
-
-    <section>
-      <title>Red Hat Linux 7</title>
-
-      <para>There are no special requirements for OpenNMS on this distribution
-      of Linux, except for those configuration issues mentioned in the
-      previous section. To use version 1.1. or later, you will need to install
-      version 7.2 of Postgres (which was available in Red Hat Linux
-      7.3).</para>
-    </section>
-
-    <section>
-      <title>Red Hat Linux 8</title>
-
-      <para>OpenNMS is currently supported on Red Hat Linux 8, but version
-      1.2.0 will be the last version to support this operating system.</para>
-    </section>
-
-    <section>
-      <title>Red Hat Linux 9</title>
-
-      <para>There are no special requirements for OpenNMS on this distribution
-      of Linux, except for those configuration issues mentioned in the
-      previous section. Note that there was an issue with the RPM database
-      "hanging" that might affect OpenNMS installation on a new system.</para>
-    </section>
-
-    <section>
-      <title>Red Hat Enterprise Linux 3</title>
-
-      <para>There are no special requirements for OpenNMS on this distribution
-      of Linux, except for those configuration issues mentioned in the
-      previous section.</para>
-    </section>
-  </section>
-
-  <section>
-    <title>Solaris</title>
-
-    <para>OpenNMS is supported on Solaris, both on SPARC and x86.</para>
-
-    <para>However, there are some extra steps required for a trouble free
-    install on Solaris.</para>
-
-    <para>As with all OpenNMS installations, you need a Java SDK. In addtion,
-    the PostgreSQL, Tomcat4 and RRDtool packages can be harder to find.</para>
-
-    <para>A good source for open-source packages is <ulink
-    url="http://www.sunfreeware.com">SunFreeware</ulink>. Most of the packages
-    there install in <filename>/usr/local</filename>, so we've adopted that
-    convention for the packages we create. We have also included some packages
-    on our FTP site in the <filename>/pub/dependencies</filename>
-    directory.</para>
-
-    <section>
-      <title>Environment Variables</title>
-
-      <para>You will want to set up the following environment
-      variables:</para>
-
-      <programlisting><computeroutput># </computeroutput><command><computeroutput>JAVA_HOME=/usr/java/j2sdk1.4.2_02</computeroutput></command><remark><command><computeroutput>  </computeroutput></command>(or whatever your Java home dir is)</remark>
-<computeroutput># </computeroutput><command>LD_LIBRARY_PATH=/usr/local/lib:/usr/local/ssl/lib/:/usr/local/pgsql/lib:/usr/local/opennms/lib:/usr/local/pgsql/include/server/lib:/usr/local/pgsql/include/internal/lib
-</command><computeroutput># </computeroutput><command>POSTGRES_LIB=/usr/local/pgsql/lib
-</command><computeroutput># <command>PERL5LIB=/usr/local/lib/perl5</command><computeroutput>
-# </computeroutput><command>export JAVA_HOME LD_LIBRARY_PATH POSTGRES_LIB PERL5LIB</command></computeroutput></programlisting>
-    </section>
-
-    <section>
-      <title>Creating the Database</title>
-
-      <para>You will need to create an <code>opennms</code> database.</para>
-
-      <para>As the <code>postgres</code> user, go to the
-      <filename>/usr/local/pgsql/bin</filename> directory, and run the
-      following command:</para>
-
-      <para><programlisting><computeroutput># </computeroutput><command>./initdb -D /usr/local/pgsql/data -E ""</command></programlisting></para>
-
-      <para>This will create the database. Following the instructions in the
-      section above, modify the <filename>pg_hba.conf</filename> and
-      <filename>postgresql.conf</filename> files.</para>
-
-      <para>Then you'll need to start the database:</para>
-
-      <para><programlisting><computeroutput># </computeroutput><command>./pg_ctl -D /usr/local/pgsql/data start</command></programlisting></para>
-
-      <para>Now you are finished as the <code>postgres</code> user.</para>
-
-      <para>As root, initialize the OpenNMS database:</para>
-
-      <para><programlisting><computeroutput># </computeroutput><command>/usr/local/opennms/bin/install -disU</command></programlisting></para>
-    </section>
-
-    <section>
-      <title>Startup</title>
-
-      <para>Now you are ready to start OpenNMS. After modifying the files in
-      /usr/local/opennms/etc (particularly the discovery configuration file),
-      run:</para>
-
-      <para><programlisting><computeroutput># </computeroutput><command><command>/usr/local/opennms/bin/opennms.sh start</command></command></programlisting></para>
-
-      <para>and then start Tomcat4 (restart it if it is already
-      running):</para>
-
-      <para><programlisting><computeroutput># </computeroutput><command>/usr/local/tomcat/bin/startup.sh</command></programlisting></para>
-
-      <para><emphasis role="bold">Note: </emphasis>The shell you start this in
-      will behave like a console, and you may get some JMX messages
-      like:</para>
-
-      <para><programlisting>DEBUG: pq_recvbuf: unexpected EOF on client connection</programlisting></para>
-
-      <para>Just ignore them.</para>
+      <para>As mentioned earlier, there should be no need to backup the RRD
+      files during an upgrade.</para>
     </section>
   </section>
 
   <section>
-    <title>SuSE</title>
+    <title>Run the Installer</title>
 
-    <para>OpenNMS is now supported on SuSE.</para>
+    <para>No matter which installation method above you choose, and whether
+    you are performing a fresh install or an upgrade, you still need to run
+    the installer. This tool will setup the <code>opennms</code> database
+    within PostgreSQL and also install the OpenNMS web application ("webapp"
+    or the "webUI") into Tomcat.</para>
 
     <section>
-      <title>SuSE Linux Pro 9</title>
+      <title>Configure Java for OpenNMS</title>
 
-      <para>SuSE 9 ships with Tomcat 5, which will not work with OpenNMS. You
-      will need to install Tomcat 4 from an older release of SuSE. The Tomcat
-      4 packages for SuSE 8.1 seem to work just fine. They are available on
-      <ulink
-      url="ftp://ftp.suse.com/pub/projects/apache/jakarta-tomcat/8.1-i386/">SuSE's
-      FTP site</ulink>.</para>
+      <para>Before you execute the installer, OpenNMS needs to be configured
+      to use an appropriate Java Runtime Environment (JRE). The OpenNMS tool
+      <filename>runjava</filename> is used to set this up, and it can either
+      search for a suitable JRE or you can tell it exactly which JRE to
+      use.</para>
+
+      <section>
+        <title>Search for a JRE (suggested)</title>
+
+        <para>Execute <filename>runjava</filename> with the "<code>-s</code>"
+        option to search for a JRE:</para>
+
+        <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/runjava -s</command></programlisting>
+      </section>
+
+      <section>
+        <title>Configure a specific JRE</title>
+
+        <para>Execute runjava with the "-S &lt;path to JRE&gt;" option to
+        specify the exact JRE you want OpenNMS to use:</para>
+
+        <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/runjava -S &lt;path to JRE&gt;</command></programlisting>
+      </section>
+    </section>
+
+    <section>
+      <title>Run the Installer to Setup the PostgreSQL Database</title>
+
+      <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/install -disU</command></programlisting>
+    </section>
+
+    <section>
+      <title>Run the Installer to Setup the Web Application</title>
+
+      <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/install -y -w $CATALINA_HOME/webapps -W $CATALINA_HOME/server/lib</command></programlisting>
     </section>
   </section>
 </chapter>

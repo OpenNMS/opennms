@@ -6,7 +6,8 @@
     <title>Common Installation Issues</title>
 
     <para>The following section contains advice for overcoming common
-    installation issues. If your issue is not addressed below, please </para>
+    installation issues. If your issue is not addressed below, please see the
+    section on where to get help.</para>
 
     <section>
       <title>Dependency Problems</title>
@@ -25,16 +26,64 @@
     </section>
 
     <section>
-      <title>The OpenNMS Application Won't Start</title>
+      <title>Error: "Started OpenNMS, but it has not finished starting
+      up"</title>
 
-      <para>If the OpenNMS is installed, and the packages were not forced in
-      using options like "<code>--nodeps</code>", the application should run
-      just fine. If not, OpenNMS has a robust logging facility. Change to the
-      logs directory (usually <filename>/var/log/opennms</filename>) and
-      search the logs, using <filename>grep</filename> or your tool of choice,
-      for words like <code>FATAL</code> and <code>ERROR</code> (the two
-      highest log severities). Those events should give you clues as to why
-      OpenNMS is not working.</para>
+      <para>This can happen for a a number of reasons. You can run
+      "<code>opennms -v status</code>" a few times after getting this error to
+      see if OpenNMS eventually starts itself completely and if not, to see
+      which daemons never start up completely. Hare are some of the likely
+      causes of this problem:</para>
+
+      <orderedlist>
+        <listitem>
+          <para>OpenNMS takes a while to startup. This can happen on larger
+          installations and when this happens "<code>opennms -v status</code>"
+          will eventually show that all services have started up. By default,
+          the startup script will try 10 times to see if OpenNMS has started
+          and will wait 5 seconds between each try. You can increase the
+          number of times by creating
+          <filename>$OPENNMS_HOME/etc/opennms.conf</filename> and adding a
+          line like "<code>START_TIMEOUT=20</code>" to double the number of
+          times it tests. You can set the value to <code>0</code> to have the
+          startup script not wait for OpenNMS to start.</para>
+        </listitem>
+
+        <listitem>
+          <para>Database is not running. If only about half or less of the
+          daemons are shown as running. You can check for this condition by
+          looking for <code>FATAL</code> errors in the log files. You'll see
+          something like "<code>Error accessing database</code>" in the
+          logs.</para>
+        </listitem>
+
+        <listitem>
+          <para>Dhcpd doesn't start. See the item in the next section.</para>
+        </listitem>
+
+        <listitem>
+          <para>JNI library problem. OpenNMS uses a few native C libraries
+          that are accessed using JNI (Java Native Interface). Normally they
+          just work, except users have started seeing problems when running
+          Linux in native AMD64 mode where they end up using a 32-bit (x86)
+          version of Java and a 64-bit (AMD64) version of the JNI libraries,
+          or vice-versa. If you have this problem, you might want to try
+          switching your version of Java from 32-bit to 64-bit or in the other
+          direction.</para>
+        </listitem>
+
+        <listitem>
+          <para>Other. If the OpenNMS is installed, and the packages were not
+          forced in using options like "<code>--nodeps</code>", the
+          application should run just fine. If not, OpenNMS has a robust
+          logging facility. Change to the logs directory (usually
+          <filename>/var/log/opennms</filename>) and search the logs, using
+          <filename>grep</filename> or your tool of choice, for words like
+          <code>FATAL</code> and <code>ERROR</code> (the two highest log
+          severities). Those events should give you clues as to why OpenNMS is
+          not working.</para>
+        </listitem>
+      </orderedlist>
     </section>
 
     <section>
@@ -43,7 +92,7 @@
       <para>The OpenNMS DHCP poller will fail to start most operating systems
       (Linux, in particular) if you are running a DHCP client on the OpenNMS
       server. You'll see this by running "<code>opennms -v status</code>" and
-      seeing everything in the <code>RUNNING</code> state, except for
+      seeing everything in the <code>running</code> state, except for
       <code>Dhcpd</code>. The solution is to edit
       <filename>$OPENNMS_HOME/etc/service-configuration.xml</filename> and
       comment-out the "<code>&lt;service&gt;...&lt;/service&gt;</code>" stanza
@@ -59,6 +108,12 @@
                 &lt;invoke at="stop" pass="0" method="stop"/&gt;
         &lt;/service&gt;
         --&gt;</programlisting>
+
+      <para>We discourage the running of OpenNMS on a server that is a DHCP
+      client, both because OpenNMS may not be able to monitor DHCP servers on
+      the network, and it is important that the monitoring server have a
+      static IP address for receiving traps and to be reliant on as few
+      network services as possible.</para>
     </section>
 
     <section>
@@ -164,19 +219,19 @@
     </section>
 
     <section>
-      <title>"runjava: Could not find an appropriate JRE"</title>
+      <title>Error: "runjava: Could not find an appropriate JRE"</title>
 
       <para>The <code><filename>runjava</filename></code> program is used to
       locate a suitable JRE for OpenNMS at install time that will be used for
       the installer and also for running OpenNMS after installation. See the
       section earlier in this manual on installing Java for OpenNMS. If you
-      insatalled Java in a location that <code>runjava</code> cannot find, you
+      installed Java in a location that <code>runjava</code> cannot find, you
       can use its "<code>-f</code>" option to specify the JRE you want OpenNMS
       to use.</para>
     </section>
 
     <section>
-      <title>"The database server's error messages are not in English
+      <title>Error: "The database server's error messages are not in English
       ..."</title>
 
       <para>You either need to set "<code>lc_messages = 'C'</code>" in your
@@ -202,7 +257,8 @@
     </section>
 
     <section>
-      <title>"Column X in new table has NOT NULL constraint ..."</title>
+      <title>Error: "Column X in new table has NOT NULL constraint
+      ..."</title>
 
       <para>This is a warning that the installer might not update tables
       successfully. Make sure that your database is backed up, and run the
@@ -217,7 +273,7 @@
     </section>
 
     <section>
-      <title>"One or more backup tables from a previous install still
+      <title>Error: "One or more backup tables from a previous install still
       exists"</title>
 
       <para>When the installer runs to upgrade the OpenNMS database from a
@@ -274,8 +330,8 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
     </section>
 
     <section>
-      <title>"Table X contains N rows (out of M) that violate new constraint
-      Y"</title>
+      <title>Error: "Table X contains N rows (out of M) that violate new
+      constraint Y"</title>
 
       <para>Over time OpenNMS extends its database schema to improve
       functionality. This error can happen because of the way certain
@@ -433,9 +489,9 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
 
       <para>If you are using OpenNMS in a production environment, or are
       considering it, you might be interested in commercial support. The
-      <ulink url="http://www.opennms.com/opennms_about.html">OpenNMS
-      Group</ulink> maintains the OpenNMS project, and we also offer support,
-      training, consulting services and custom development.</para>
+      <ulink url="http://www.opennms.com/about/">OpenNMS Group</ulink>
+      maintains the OpenNMS project, and we also offer support, training,
+      consulting services and custom development.</para>
     </section>
   </section>
 </chapter>
