@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<notification-commands>
+    <header>
+        <ver>.9</ver>
+        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
+        <mstation>master.nmanage.com</mstation>
+    </header>
+    <command binary="false">
+        <name>javaPagerEmail</name>
+        <execute>org.opennms.netmgt.notifd.JavaMailNotificationStrategy</execute>
+        <comment>class for sending pager email notifications</comment>
+        <argument streamed="false">
+            <switch>-subject</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-pemail</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tm</switch>
+        </argument>
+    </command>
+    <command binary="false">
+        <name>javaEmail</name>
+        <execute>org.opennms.netmgt.notifd.JavaMailNotificationStrategy</execute>
+        <comment>class for sending email notifications</comment>
+        <argument streamed="false">
+            <switch>-subject</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-email</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tm</switch>
+        </argument>
+    </command>
+	<command binary="true">
+		<name>syslog</name>
+		<execute>/usr/bin/logger</execute>
+		<comment>syslog to local0.warning</comment>
+		<argument streamed="false">
+			<substitution>-p</substitution>
+		</argument>
+		<argument streamed="false">
+			<substitution>local0.warning</substitution>
+		</argument>
+		<argument streamed="false">
+			<substitution>-t</substitution>
+		</argument>
+		<argument streamed="false">
+			<substitution>opennms</substitution>
+		</argument>
+		<argument streamed="true">
+			<switch>-tm</switch>
+		</argument>
+	</command>
+    <command binary="true">
+        <name>textPage</name>
+        <execute>/usr/bin/qpage</execute>
+        <comment>text paging program</comment>
+        <argument streamed="false">
+            <switch>-p</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-t</switch>
+        </argument>
+    </command>
+    <command binary="true">
+        <name>numericPage</name>
+        <execute>/usr/bin/qpage</execute>
+        <comment>numeric paging program</comment>
+        <argument streamed="false">
+            <substitution>-p</substitution>
+            <switch>-d</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-nm</switch>
+        </argument>
+    </command>
+    <command binary="true">
+        <name>email</name>
+        <execute>/bin/mail</execute>
+        <comment>for sending email notifications</comment>
+        <argument streamed="false">
+            <substitution>-s</substitution>
+            <switch>-subject</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-email</switch>
+        </argument>
+        <argument streamed="true">
+            <switch>-tm</switch>
+        </argument>
+    </command>
+    <command binary="true">
+        <name>pagerEmail</name>
+        <execute>/bin/mail</execute>
+        <comment>for sending pager email notifications</comment>
+        <argument streamed="false">
+            <substitution>-s</substitution>
+            <switch>-subject</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-pemail</switch>
+        </argument>
+        <argument streamed="true">
+            <switch>-tm</switch>
+        </argument>
+    </command>
+</notification-commands>

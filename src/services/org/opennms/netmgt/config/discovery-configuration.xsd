@@ -1,0 +1,126 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/discovery">
+
+	<element name="discovery-configuration">
+		<complexType>
+			<!--- the addresses to be polled.
+			      NOTE: specifics/URLs override excludes - i.e. if an address is in an
+				    exclude range but also either a specific address or specified in
+				    an URL, it will be polled
+			-->
+			<sequence>
+				<!-- The following definitions are used to create the capsd and poller config files
+				     in addition to the discovery configuration. If the definitions are changed then
+				     the web UI will need to be changed.  -->
+	     
+	 			<!--- the specific addresses to be polled -->
+				<element ref="specific" minOccurs="0" maxOccurs="unbounded"/>
+
+				<!--- the range of addresses to be polled -->
+				<element ref="include-range" minOccurs="0" maxOccurs="unbounded"/>
+
+				<!--- the range of addresses to be excluded from the polling -->
+				<element ref="exclude-range" minOccurs="0" maxOccurs="unbounded"/>
+
+				<!--- a file URL holding specific addresses to be polled -->
+				<element ref="include-url" minOccurs="0" maxOccurs="unbounded"/>
+			</sequence>
+
+			<!--- the number of threads to be used for discovery -->
+			<attribute name="threads" type="positiveInteger" use="required"/>
+
+			<!--- the total number of ping packets sent per second from OpenNMS for discovery -->
+			<attribute name="packets-per-second" type="positiveInteger" use="required"/>
+
+			<!--- the initial pause(in milliseconds) after discovery starts up before
+			      actual pinging is started
+			-->
+			<attribute name="initial-sleep-time" type="long" use="required"/>
+
+			<!--- the pause(in milliseconds) between passes - i.e. once the discovery process
+			      completes a sweep of all the specified addresses, it sleeps for this
+			      duration before starting another sweep
+			-->
+			<attribute name="restart-sleep-time" type="long" use="required"/>
+
+			<!--- the (default) number of times a ping is retried for an address
+			      (if there is no response)
+			-->
+			<attribute name="retries" type="int" use="optional"/>
+
+			<!--- the (default) timeout on each poll -->
+			<attribute name="timeout" type="long" use="optional"/>
+		</complexType>
+	</element>
+
+	<!--- a specific addresses to be polled -->
+	<element name="specific">
+		<complexType>
+		<simpleContent>
+			<extension base="string">
+				<!--- retries to be attempted for this address if different from the default -->
+				<attribute name="retries" type="int" use="optional"/>
+
+				<!--- timeout for a poll of this address if different from the default -->
+				<attribute name="timeout" type="long" use="optional"/>
+			</extension>
+		</simpleContent>
+		</complexType>
+	</element>
+
+	<!--- a range of addresses to be polled - if the starting address is greater than
+	      the ending address, they are simply swapped
+	-->
+	<element name="include-range">
+		<complexType>
+			<sequence>
+				<!--- starting address of the range -->
+				<element name="begin" type="string" minOccurs="1" maxOccurs="1"/>
+
+				<!--- ending address of the range -->
+				<element name="end" type="string" minOccurs="1" maxOccurs="1"/>
+			</sequence>
+
+			<!--- retries to be attempted for this range if different from the default -->
+			<attribute name="retries" type="int" use="optional"/>
+
+			<!--- timeout for polling this range if different from the default -->
+			<attribute name="timeout" type="long" use="optional"/>
+		</complexType>
+	</element>
+
+	<!--- the range of addresses to be excluded from the polling -->
+	<element name="exclude-range">
+		<complexType>
+			<sequence>
+				<!--- starting address of the range -->
+				<element name="begin" type="string" minOccurs="1" maxOccurs="1"/>
+
+				<!--- ending address of the range -->
+				<element name="end" type="string" minOccurs="1" maxOccurs="1"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<!--- a file URL holding specific addresses to be polled. Each line in the URL file can be one of-
+	     <IP><space>#<comments>
+	     or
+	     <IP>
+	     or
+	     #<comments>
+	     Lines starting with a '#' are ignored and so are characters after a '<space>#' in a line.
+	-->
+	<element name="include-url">
+		<complexType>
+		<simpleContent>
+			<extension base="string">
+				<!--- retries to be attempted for addresses in the URL if different from the default -->
+				<attribute name="retries" type="int" use="optional"/>
+
+				<!--- timeout for a poll of addresses in the URL if different from the default -->
+				<attribute name="timeout" type="long" use="optional"/>
+			</extension>
+		</simpleContent>
+		</complexType>
+	</element>
+</schema>
