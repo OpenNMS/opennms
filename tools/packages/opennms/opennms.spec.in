@@ -31,7 +31,7 @@
 %if "%{platform}" == "linux-i386-centos-3"
 %define	initdir		/etc
 %define psql_service	rhdb
-%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, compat-libstdc++
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_centos3
 %define platform_match	true
@@ -40,7 +40,7 @@
 %if "%{platform}" == "linux-i386-fedora-1"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, compat-libstdc++
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_fc1
 %define platform_match	true
@@ -49,7 +49,7 @@
 %if "%{platform}" == "linux-i386-fedora-2"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, compat-libstdc++
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_fc2
 %define platform_match	true
@@ -58,7 +58,7 @@
 %if "%{platform}" == "linux-i386-fedora-3"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4, xorg-x11-deprecated-libs
+%define requires	postgresql-server >= 7.2, compat-libstdc++, xorg-x11-deprecated-libs
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_fc3
 %define platform_match	true
@@ -67,7 +67,7 @@
 %if "%{platform}" == "linux-i386-mandrake-7"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk7
 %define platform_match	true
@@ -76,7 +76,7 @@
 %if "%{platform}" == "linux-i386-mandrake-8"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, libstdc++2.10, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, libstdc++2.10
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk8
 %define platform_match	true
@@ -85,7 +85,7 @@
 %if "%{platform}" == "linux-i386-mandrake-90"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2, libstdc++2.10, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2, libstdc++2.10
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk90
 %define platform_match	true
@@ -94,7 +94,7 @@
 %if "%{platform}" == "linux-i386-mandrake-92"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2, libstdc++2.10, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2, libstdc++2.10
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk92
 %define platform_match	true
@@ -103,7 +103,7 @@
 %if "%{platform}" == "linux-i386-mandrake-10"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2, libstdc++2.10, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2, libstdc++2.10
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk10
 %define platform_match	true
@@ -112,7 +112,7 @@
 %if "%{platform}" == "linux-i386-redhat-7"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires        postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
+%define requires        postgresql-server >= 7.2, compat-libstdc++
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_rhl7
 %define platform_match	true
@@ -121,7 +121,7 @@
 %if "%{platform}" == "linux-i386-redhat-8"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, compat-libstdc++
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_rhl8
 %define platform_match	true
@@ -130,7 +130,7 @@
 %if "%{platform}" == "linux-i386-redhat-9"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, compat-libstdc++
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_rhl9
 %define platform_match	true
@@ -139,7 +139,7 @@
 %if "%{platform}" == "linux-i386-rhel-3"
 %define	initdir		/etc
 %define psql_service	rhdb
-%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, compat-libstdc++
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_rhel3
 %define platform_match	true
@@ -148,7 +148,7 @@
 %if "%{platform}" == "linux-i386-suse-7"
 %define	initdir		/etc/rc.d
 %define psql_service	postgres
-%define requires        postgres >= 7.2, java2 >= 1.4
+%define requires        postgres >= 7.2
 %define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %define release_pkg     %{release}_suse7
 %define platform_match	true
@@ -157,7 +157,7 @@
 %if "%{platform}" == "linux-i386-suse-8"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql >= 7.2, postgresql-server >= 7.2, java2 >= 1.4
+%define requires	postgresql >= 7.2, postgresql-server >= 7.2
 %define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %define release_pkg     %{release}_suse8
 %define platform_match	true
@@ -166,7 +166,7 @@
 %if "%{platform}" == "linux-i386-suse-9"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql >= 7.2, postgresql-server >= 7.2, java2 >= 1.4
+%define requires	postgresql >= 7.2, postgresql-server >= 7.2
 %define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %define release_pkg     %{release}_suse9
 %define platform_match	true
@@ -206,7 +206,7 @@ BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
 AutoReqProv:		no
 
-Requires:		rrdtool, curl, %{requires}
+Requires:		rrdtool, curl, java-devel-sun >= 1.4.2, %{requires}
 
 %description
 OpenNMS is a network management package.
