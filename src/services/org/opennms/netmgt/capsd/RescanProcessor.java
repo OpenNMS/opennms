@@ -1017,6 +1017,8 @@ final class RescanProcessor
 			currIpIfEntry.setManagedState(DbIpInterfaceEntry.STATE_UNMANAGED);
 		else
 		{
+                        PollerConfigFactory.getInstance().rebuildPackageIpListMap();
+
 			boolean ipToBePolled = false;
 			ipPkg = pollerCfgFactory.getFirstPackageMatch(ifaddr.getHostAddress());
 			if (ipPkg != null)

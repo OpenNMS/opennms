@@ -20,6 +20,8 @@
 %{!?buildtests:%define buildtests @rpm.buildtests@}
 %{!?platform:%define platform @rpm.platform@}
 
+%define debug_package %{nil}
+
 %if "%{buildtests}" == "true"
 %define buildtests	1
 %endif
@@ -71,55 +73,69 @@ BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 AutoReqProv:		no
 
 # grr, we depend on XFree86-libs because j2sdk package deps are broken!
-Requires:		rrdtool, perl-DBD-Pg, j2sdk >= 1.4, metamail, XFree86-libs
+Requires:		rrdtool, perl-DBD-Pg, j2sdk >= 1.4, XFree86-libs
 
 %if "%{platform}" == "linux-i386-suse-7"
 %define	initdir		/etc/rc.d
 %define	psql		/usr/bin/psql
 %define psql_service	postgres
-Requires:		postgres >= 7.1
+Requires:		postgres >= 7.2
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-7"
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
-Requires:		postgresql-server >= 7.1
+Requires:		postgresql-server >= 7.2
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-8"
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
-Requires:		postgresql-server >= 7.1, libstdc++2.10
+Requires:		postgresql-server >= 7.2, libstdc++2.10
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-9"
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
-Requires:		postgresql-server >= 7.1, libstdc++2.10
+Requires:		postgresql-server >= 7.2, libstdc++2.10
 %endif
 
 %if "%{platform}" == "linux-i386-redhat-6"
 %define	initdir		/etc/rc.d
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
-Requires:		postgresql-server >= 7.1
+Requires:		postgresql-server >= 7.2
 %endif
 
 %if "%{platform}" == "linux-i386-redhat-7"
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
-Requires:		postgresql-server >= 7.1, compat-libstdc++
+Requires:		postgresql-server >= 7.2, compat-libstdc++
 %endif
 
 %if "%{platform}" == "linux-i386-redhat-8"
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
-Requires:		postgresql-server >= 7.1, compat-libstdc++
+Requires:		postgresql-server >= 7.2, compat-libstdc++
+%endif
+
+%if "%{platform}" == "linux-i386-redhat-9"
+%define	initdir		/etc
+%define	psql		/usr/bin/psql
+%define psql_service	postgresql
+Requires:		postgresql-server >= 7.2, compat-libstdc++
+%endif
+
+%if "%{platform}" == "linux-i386-fedora-1"
+%define	initdir		/etc
+%define	psql		/usr/bin/psql
+%define psql_service	postgresql
+Requires:		postgresql-server >= 7.2, compat-libstdc++
 %endif
 
 %define builddefines -Droot.install=%{instprefix} -Droot.install.sbindir=/usr/local/sbin -Droot.install.contrib=%{instprefix}/contrib -Droot.install.initdir=%{initdir}/init.d -Droot.install.servlets=%{tomcatdir}/webapps/%{name} -Droot.install.share=%{sharedir} -Droot.install.rrdtool=%{rrdlibdir} -Droot.install.postgresql=%{pglibdir} -Droot.install.logs=%{logdir} -Droot.install.pid=%{pidfile} -Dfilter.overwrite="yes" -Disrpm="true"
@@ -141,7 +157,7 @@ for OpenNMS.
 %package webapp
 Summary:	Web interface servlet for the OpenNMS network management platform
 Group:		Applications/System
-Requires:	tomcat4 >= 4.1.18, rrdtool, %{name} = %{version}-%{release}
+Prereq:	tomcat4 >= 4.1.18, rrdtool, %{name} = 1:%{version}-%{release}
 
 %description webapp
 The web UI for OpenNMS.
@@ -359,11 +375,11 @@ fi
 * Fri Nov 16 2001 Ben Reed <ben@opennms.org>
 - Updated symlinks to point to tomcat 4.0.1 dirs
 
-* Wed Oct 31 2001 Brian Weaver <weave@opennms.org>
+* Wed Oct 31 2001 Brian Weaver <weave@oculan.com>
 - Added more dependencies since the webapp package was being
   installed BEFORE tomcat which just doesn't work.
 
-* Tue Oct 30 2001 Brian Weaver <weave@opennms.org>
+* Tue Oct 30 2001 Brian Weaver <weave@oculan.com>
 - Changed support from OpenJMS to JBossMQ
 
 * Wed Oct 24 2001 Ben Reed <ben@opennms.org>
@@ -371,7 +387,7 @@ fi
   server.xml, if one exists in
   webapps/%{name}/WEB-INF/server.xml
 
-* Tue Oct 09 2001 Brian Weaver <weave@opennms.org>
+* Tue Oct 09 2001 Brian Weaver <weave@oculan.com>
 - Removed the OpenJMS jar code after build so that
   it is not installed. This will force the client
   to use the OpenJMS jar files from /usr/share/java

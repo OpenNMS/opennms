@@ -656,18 +656,6 @@ public final class Collectd
 				continue;
 			}
 			
-			// Is the interface in the package?
-			//
-			if (!cCfgFactory.interfaceInPackage(ipAddress, pkg))
-			{
-				if (log.isDebugEnabled())
-					log.debug("scheduleInterface: address/service: " + 
-							ipAddress + "/" + svcName + 
-							" not scheduled, interface does not belong to package: " + 
-							pkg.getName());
-				continue;
-			}
-			
 			if (existing == false)
 			{
 				// It is possible that both a nodeGainedService and a primarySnmpInterfaceChanged

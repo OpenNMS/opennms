@@ -144,11 +144,12 @@ final class HttpMonitor
 		// Extract the ip address
 		//
 		InetAddress ipv4Addr = (InetAddress)iface.getAddress();
+		String strIpv4Addr = ipv4Addr.getHostAddress();
 	
 		// Following a successful poll 'currentPort' will contain the port on 
 		// the remote host that was successfully queried
 		//
-		final String cmd = "GET " + url + " HTTP/1.0\r\n\r\n";
+		final String cmd = "GET " + url + " HTTP/1.0\r\nHost: " + strIpv4Addr + "\r\n\r\n";
 
 		// Cycle through the port list
 		//
@@ -226,7 +227,11 @@ final class HttpMonitor
 						{
 							serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;	
 						}
-						else if(!bStrictResponse && rVal > 99 && rVal < 500)
+						else if(!bStrictResponse && rVal > 99 && rVal < 500 && (url.equals(DEFAULT_URL)))
+						{
+							serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
+						}
+						else if(!bStrictResponse && rVal > 99 && rVal < 400)
 						{
 							serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
 						}

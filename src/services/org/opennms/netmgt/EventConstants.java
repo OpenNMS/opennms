@@ -148,12 +148,57 @@ public class EventConstants
 	 */
 	public final static String DISC_PAUSE_EVENT_UEI = "uei.opennms.org/internal/capsd/discPause";
 
-	/**
+        /**
 	 * The discovery resume event UEI
 	 */
 	public final static String DISC_RESUME_EVENT_UEI = "uei.opennms.org/internal/capsd/discResume";
 
-	/**
+        /**
+	 * The update server event UEI
+	 */
+	public final static String	UPDATE_SERVER_EVENT_UEI = "uei.opennms.org/internal/capsd/updateServer";
+	
+        /**
+	 * The update service event UEI
+	 */
+	public final static String	UPDATE_SERVICE_EVENT_UEI = "uei.opennms.org/internal/capsd/updateService";
+        
+        /**
+	 * The add node event UEI
+	 */
+	public final static String	ADD_NODE_EVENT_UEI = "uei.opennms.org/internal/capsd/addNode";
+	
+        /**
+	 * The delete node event UEI
+	 */
+	public final static String	DELETE_NODE_EVENT_UEI = "uei.opennms.org/internal/capsd/deleteNode";
+        
+        /**
+	 * The add interface event UEI
+	 */
+	public final static String	ADD_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/capsd/addInterface";
+        
+        /**
+	 * The add interface event UEI
+	 */
+	public final static String	DELETE_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/capsd/deleteInterface";
+	
+        /**
+	 * The change service event UEI
+	 */
+	public final static String	CHANGE_SERVICE_EVENT_UEI = "uei.opennms.org/internal/capsd/changeService";
+	
+        /**
+	 * The restart polling node event UEI
+	 */
+	public final static String	RESTART_POLLING_INTERFACE_EVENT_UEI = "uei.opennms.org/nodes/restartPollingInterface";
+	
+        /**
+	 * The change service event UEI
+	 */
+	public final static String	XMLRPC_NOTIFICATION_EVENT_UEI = "uei.opennms.org/internal/capsd/xmlrpcNotification";
+        
+        /**
 	 * The node added event UEI
 	 */
 	public final static String	NODE_ADDED_EVENT_UEI = "uei.opennms.org/nodes/nodeAdded";
@@ -403,7 +448,12 @@ public class EventConstants
 	 */
 	public final static String PARM_INTERFACE = "interface";
 	
-	/**
+        /**
+	 * The action sent as a parm of an event
+	 */
+	public final static String PARM_ACTION = "action";
+        
+        /**
 	 * The DPName sent as a parm of an event
 	 */
 	public final static String PARM_DPNAME = "dpName";
@@ -517,9 +567,37 @@ public class EventConstants
 	 */
 	public final static String PARM_SERVICE_STATUS = "serviceStatus";
 
-	//
+        /**
+         * The external transaction number of an event to process.
+         */
+        public final static String PARM_TRANSACTION_NO = "txno";
+
+        /**
+         * The uei of a source event to report to external xmlrpc server.
+         */
+        public final static String PARM_SOURCE_EVENT_UEI = "sourceUei";
+	
+        /**
+         * The message to explain a source event.
+         */
+        public final static String PARM_SOURCE_EVENT_MESSAGE = "eventMessage";
+        
+        /**
+         * The status to indicate which kind of external xmlrpc command to invoke.
+         */
+        public final static String PARM_SOURCE_EVENT_STATUS = "eventStatus";
+        
+        //
 	// End event parms
 	//
+
+        /**
+         * Status code used to indicate which external xmlrpc command to
+         * invoke to report the occurrence of selected events.
+         */
+        public final static int XMLRPC_NOTIFY_RECEIVED = 0;
+        public final static int XMLRPC_NOTIFY_SUCCESS  = 1;
+        public final static int XMLRPC_NOTIFY_FAILURE  = 2;
 
 	/**
 	 * <P>An utility method to parse a string into a 'Date' instance.

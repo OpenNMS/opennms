@@ -49,6 +49,7 @@ import org.opennms.netmgt.xml.event.Parm;
 /**
  * <P>The PollableNode class...</P>
  * 
+ * @author <A HREF="mailto:jamesz@blast.com">James Zuo</A>
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
  * @author <A HREF="mailto:mike@opennms.org">Mike Davidson</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
@@ -721,9 +722,9 @@ public class PollableNode
 						// If critical service defined and interface supports the 
 						// critical service (regardless of package) then poll the 
 						// interface passing it the critical service
-					if (criticalSvc != null && pInterface.supportsService(criticalSvc))
+					        if (criticalSvc != null && pInterface.supportsService(criticalSvc))
 						{
-						PollableService criticalNif = pInterface.getService(criticalSvc);
+						        PollableService criticalNif = pInterface.getService(criticalSvc);
 							pIf.poll(criticalNif);
 						}
 						else
@@ -773,15 +774,16 @@ public class PollableNode
 						if (pIf == pInterface)
 							continue;
 							
-					log.debug("poll: (node outage) testing interface " + pIf.getAddress().getHostAddress());
+					        log.debug("poll: (node outage) testing interface " 
+                                                        + pIf.getAddress().getHostAddress());
 					
 						// If critical service defined and interface supports the 
 						// critical service (regardless of package) then poll the 
 						// interface passing it the critical service
 						int tmpStatus = Pollable.STATUS_UNKNOWN;
-					if (criticalSvc != null && pInterface.supportsService(criticalSvc))
+					        if (criticalSvc != null && pInterface.supportsService(criticalSvc))
 						{
-						PollableService criticalNif = pIf.getService(criticalSvc);
+						        PollableService criticalNif = pIf.getService(criticalSvc);
 							tmpStatus = pIf.poll(criticalNif);
 						}
 						else
@@ -791,16 +793,16 @@ public class PollableNode
 							// simply retrieve any (.i.e, the first) service supported
 							// by the interface and poll the interface passing it 
 							// that service
-						Iterator s = pIf.getServices().iterator();
+						        Iterator s = pIf.getServices().iterator();
 							PollableService firstSvc = (PollableService)s.next();
 							tmpStatus = pIf.poll(firstSvc);
 						}
 						
 						if (tmpStatus == Pollable.STATUS_UP)
-					{
+					        {
 							allInterfacesDown = false;
-						log.debug("poll: (node outage) not a node outage - at least one interface is up");
-					}
+						        log.debug("poll: (node outage) not a node outage - at least one interface is up");
+					        }
 					}
 				}
 				

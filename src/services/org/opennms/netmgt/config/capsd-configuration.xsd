@@ -50,6 +50,17 @@
 					</restriction>
 				</simpleType>
 			</attribute>
+			
+			<!-- Flag which indicates if an external XMLRPC server has to be notified with
+                             any event process errors
+                        -->
+			<attribute name="xmlrpc" type="string" use="optional" default="false">
+				<simpleType>
+					<restriction base="string">
+						<pattern value="(true|false)"/>
+					</restriction>
+				</simpleType>
+			</attribute>
 		</complexType>
 	</element>
 

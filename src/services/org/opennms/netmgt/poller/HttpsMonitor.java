@@ -145,7 +145,7 @@ final class HttpsMonitor
 
 		// Set to true if "response" property has a valid return code specified.
 		//  By default response will be deemed valid if the return code 
-		//  falls in the range:   100 < rc < 500
+		//  falls in the range:   100 < rc < 400
 		//  This is based on the following information from RFC 1945 (HTTP 1.0)
 		// 		HTTP 1.0 GET return codes:
 		//		 	1xx: Informational - Not used, future use
@@ -257,7 +257,23 @@ final class HttpsMonitor
                                         			}
 							}
 						}
-						else if(!bStrictResponse && rVal > 99 && rVal < 500)
+                                                else if(!bStrictResponse && rVal > 99 && rVal < 500 && (url.equals(DEFAULT_URL)))
+                                                {
+                                                        serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
+                                                        // Store response time in RRD
+                                                        if (responseTime >= 0 && rrdPath != null)
+                                                        {
+                                                                try
+                                                                {
+                                                                        this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime, pkg);
+                                                                }
+                                                                catch(RuntimeException rex)
+                                                                {
+                                                                        log.debug("There was a problem writing the RRD:" + rex);
+                                                                }
+                                                        }
+                                                }
+						else if(!bStrictResponse && rVal > 99 && rVal < 400)
 						{
 							serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
                                         		// Store response time in RRD

@@ -186,28 +186,6 @@ public final class Poller
 			throw new UndeclaredThrowableException(ex);
 		}
 		
-		// Initialize the Capsd configuration factory 
-		// Necessary for testing if an interface is managed/unmanaged
-		//
-		try
-		{
-			CapsdConfigFactory.reload();
-		}
-		catch(MarshalException ex)
-		{
-			log.error("Failed to load Capsd configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(ValidationException ex)
-		{
-			log.error("Failed to load Capsd configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(IOException ex)
-		{
-			log.error("Failed to load Capsd configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
 		
 		// Initialize the Capsd configuration factory 
 		// Necessary for testing if an interface is managed/unmanaged

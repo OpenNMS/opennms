@@ -9,6 +9,17 @@
 			      - to make the access database independant
 			-->
   			<attribute name="getNextOutageID" type="string" use="required"/>
+                        
+                        <!--- Flag which indicates if a delete service event should propagate to
+			      - a delete interface or delete node event if approciate
+			-->
+  			<attribute name="deletePropagation" type="string" use="optional" default="true">
+                                <simpleType>
+                                        <restriction base="string">
+                                                <pattern value="(true|false)"/>
+                                        </restriction>
+                                </simpleType>
+                        </attribute>
 		</complexType>
 	</element>
 </schema>

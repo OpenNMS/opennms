@@ -1,3 +1,50 @@
+opennms (2:1.1.1-12RS) stable; urgency=low
+
+  * More debugging done to HttpMonitor
+
+ -- Eric Evans <eevans@rackspace.com>  Mon, 26 Jan 2004 15:01:05 -0600
+
+opennms (2:1.1.1-11RS) stable; urgency=low
+
+  * Fixed an upstream bug caused by a malformed SQL query in
+    org/opennms/netmgt/capsd/BroadcastEventProcessor.java
+
+ -- Eric Evans <eevans@rackspace.com>  Mon, 26 Jan 2004 13:49:15 -0600
+
+opennms (2:1.1.1-10RS) stable; urgency=low
+
+  * Upstream change to HttpMonitor.java to include the optional, (optional
+    for HTTP/1.0), "Host: " directive using the iface inet address. This 
+    will hopefully satisfy all of the IIS servers that were never told 
+    that this was "optional".
+
+ -- Eric Evans <eevans@rackspace.com>  Mon, 26 Jan 2004 11:48:05 -0600
+
+opennms (2:1.1.1-9RS) stable; urgency=low
+
+  * Upstream bugfixes to the new speedup code
+
+ -- Eric Evans <eevans@rackspace.com>  Web, 14 Jan 2004 16:48:00 -0600
+
+opennms (2:1.1.1-8RS) stable; urgency=low
+
+  * Upstream changes to correct several minor issues with xmlrpcserver
+  * Upstream changes to speed up initialization, (poller, capsd, scheduling).
+
+ -- Eric Evans <eevans@rackspace.com>  Web, 07 Jan 2004 11:52:00 -0600
+
+opennms (1.1.1-7RS) stable; urgency=low
+
+  * Building for production environment
+
+ -- Eric Evans <eevans@rackspace.com>  Fri, 30 Oct 2003 15:51:00 -0600
+
+opennms (1.1.1-6RS) unstable; urgency=low
+
+  * For building off of RACKSPACE_BRANCH in CVS
+
+ -- Eric Evans <eevans@rackspace.com>  Fri, 15 Aug 2003 13:52:00 -0600
+
 opennms (1.1.1-5) unstable; urgency=low
 
   * The "Tax Man Cometh" release!

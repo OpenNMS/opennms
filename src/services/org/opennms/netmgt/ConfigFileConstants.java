@@ -144,7 +144,12 @@ public final class ConfigFileConstants
 	 */
 	public static final int VULNSCAND_CONFIG_FILE_NAME;
 	
-	//
+	/**
+	 * The opennms xmlrpcd config file
+	 */
+	public static final int XMLRPCD_CONFIG_FILE_NAME;
+	
+        //
 	// End services config files
 	//
 
@@ -252,7 +257,12 @@ public final class ConfigFileConstants
 	 */
 	public static final int KSC_REPORT_FILE_NAME;
 
-	//
+	/**
+	 * The opennms server config file
+	 */
+	public static final int OPENNMS_SERVER_CONFIG_FILE_NAME;
+	
+        //
 	// End other config files
 	//
 
@@ -375,10 +385,13 @@ public final class ConfigFileConstants
 		WEBUI_COLORS_FILE_NAME                  = 45;
 
 		KSC_REPORT_FILE_NAME			= 46;
-		
+
+                OPENNMS_SERVER_CONFIG_FILE_NAME         = 47;
+                XMLRPCD_CONFIG_FILE_NAME                = 48;
+                
 		// Allocate and build the mapping of identifiers to names
 		//
-		FILE_ID_TO_NAME = new String[47];
+		FILE_ID_TO_NAME = new String[49];
 
 		FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] 		= "opennms-database.xml";
 		FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME]		= "opennms-jms.xml";
@@ -440,6 +453,8 @@ public final class ConfigFileConstants
 		FILE_ID_TO_NAME[WEBUI_COLORS_FILE_NAME]         = "webui-colors.xml";
 
 		FILE_ID_TO_NAME[KSC_REPORT_FILE_NAME]         	= "ksc-performance-reports.xml";
+		FILE_ID_TO_NAME[OPENNMS_SERVER_CONFIG_FILE_NAME]= "opennms-server.xml";
+		FILE_ID_TO_NAME[XMLRPCD_CONFIG_FILE_NAME]       = "xmlrpcd-configuration.xml";
 	}
 
 	/**

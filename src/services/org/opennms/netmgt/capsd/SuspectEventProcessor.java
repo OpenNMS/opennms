@@ -74,6 +74,7 @@ import org.opennms.netmgt.config.capsd.*;
  * The constructor takes a string which is the IP address of the interface 
  * to be scanned.  
  *
+ * @author <a href="mailto:jamesz@blast.com">James Zuo</a>
  * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
  * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
@@ -85,7 +86,12 @@ final class SuspectEventProcessor
 	 * SQL statement to retrieve the node identifier for a given IP address
 	 */
 	private static String 	SQL_RETRIEVE_INTERFACE_NODEID_PREFIX = "SELECT nodeId FROM ipinterface WHERE ";
-	
+
+        /**
+         * SQL statement to retrieve the ipaddresses for a given node ID
+         */
+        private final static String SQL_RETRIEVE_IPINTERFACES_ON_NODEID = "SELECT ipaddr FROM ipinterface WHERE nodeid = ?";
+
 	private final static String 	SELECT_METHOD_MIN = "min";
 	private final static String 	SELECT_METHOD_MAX = "max";
 	
@@ -162,6 +168,8 @@ final class SuspectEventProcessor
 		// Loop through the interface table entries and see if any already exist
 		// in the database.
 		Iterator iter = ifTable.getEntries().iterator();
+                List ipaddrsOfNewNode = new ArrayList();
+                List ipaddrsOfOldNode = new ArrayList();
 
 		while(iter.hasNext())
 		{
@@ -202,20 +210,22 @@ final class SuspectEventProcessor
 				InetAddress ipAddress = (InetAddress)aiter.next();
 				
 				// 
-			// Skip interface if no IP address or if IP address is "0.0.0.0"
-			// or if this interface is of type loopback
+			        // Skip interface if no IP address or if IP address is "0.0.0.0"
+			        // or if this interface is of type loopback
 				if (ipAddress == null || 
 					ipAddress.getHostAddress().equals("0.0.0.0") ||
 					ipAddress.getHostAddress().startsWith("127."))
-				continue;
+				        continue;
 				
-			if (firstAddress)
-			{
-					sqlBuffer.append("ipaddr='").append(ipAddress.getHostAddress()).append("'");
-				firstAddress = false;
-			}
-			else
+			        if (firstAddress)
+			        {
+				       	sqlBuffer.append("ipaddr='").append(ipAddress.getHostAddress()).append("'");
+				        firstAddress = false;
+			        }
+			        else
 					sqlBuffer.append(" OR ipaddr='").append(ipAddress.getHostAddress()).append("'");
+                                        
+                                ipaddrsOfNewNode.add(ipAddress.getHostAddress());
 			}
 		} // end while
 		
@@ -241,7 +251,7 @@ final class SuspectEventProcessor
 			{
 				nodeID = rs.getInt(1);
 				if (log.isDebugEnabled())
-					log.debug("getExistingNodeEntry: target " + collector.getTarget().getHostAddress() + " belongs under nodeId " + nodeID);
+					log.debug("getExistingNodeEntry: target " + collector.getTarget().getHostAddress() + nodeID);
 				rs = null;
 			}
 		}
@@ -261,14 +271,46 @@ final class SuspectEventProcessor
 			}
 		}
 			
-		if (nodeID != -1)
+		if (nodeID == -1)
+			return null;
+                
+		try
 		{
+                        stmt = dbc.prepareStatement(SQL_RETRIEVE_IPINTERFACES_ON_NODEID);
+			stmt.setInt(1, nodeID);
+                        
+                        ResultSet rs = stmt.executeQuery();
+			while (rs.next())
+			{
+				String ipaddr = rs.getString(1);
+                                if (!ipaddr.equals("0.0.0.0"))
+                                        ipaddrsOfOldNode.add(ipaddr);
+			}
+		}
+		catch(SQLException sqlE)
+		{
+			throw sqlE;
+		}
+		finally
+		{
+			try
+			{
+				stmt.close(); // automatically closes the result set as well
+			}
+			catch (Exception e)
+			{
+				// Ignore
+			}
+		}
+                
+                if (ipaddrsOfNewNode.containsAll(ipaddrsOfOldNode))
+                {
 			if (log.isDebugEnabled())
 				log.debug("getExistingNodeEntry: found one of the addrs under existing node: " + nodeID);
 			return DbNodeEntry.get(nodeID);
-		}
-		else
-			return null;
+                }
+                else
+                        return null;
 	}
 	
 	/**
@@ -461,6 +503,11 @@ final class SuspectEventProcessor
 			org.opennms.netmgt.config.poller.Package ipPkg = null;
 			if (!addrUnmanaged)
 			{
+                                // The newly discoveried IP addr is not in the Package IPList 
+                                // Mapping yet, so rebuild the list.
+                                //
+                                PollerConfigFactory.getInstance().rebuildPackageIpListMap();
+                                
 				boolean ipToBePolled = false;
 				ipPkg = pollerCfgFactory.getFirstPackageMatch(ifaddr.getHostAddress());
 				if (ipPkg != null)
@@ -519,7 +566,12 @@ final class SuspectEventProcessor
 			org.opennms.netmgt.config.poller.Package ipPkg = null;
 			if (!addrUnmanaged)
 			{
-				boolean ipToBePolled = false;
+                                // The newly discoveried IP addr is not in the Package IPList 
+                                // Mapping yet, so rebuild the list.
+                                //
+                                PollerConfigFactory.getInstance().rebuildPackageIpListMap();
+				
+                                boolean ipToBePolled = false;
 				ipPkg = pollerCfgFactory.getFirstPackageMatch(ifaddr.getHostAddress());
 				if (ipPkg != null)
 					ipToBePolled = true;
@@ -636,6 +688,11 @@ final class SuspectEventProcessor
 				org.opennms.netmgt.config.poller.Package xipPkg = null;
 				if (!xaddrUnmanaged)
 				{
+                                        // The newly discoveried IP addr is not in the Package IPList 
+                                        // Mapping yet, so rebuild the list.
+                                        //
+                                        PollerConfigFactory.getInstance().rebuildPackageIpListMap();
+                                        
 					boolean xipToBePolled = false;
 					xipPkg = pollerCfgFactory.getFirstPackageMatch(xifaddr.getHostAddress());
 					if (xipPkg != null)
