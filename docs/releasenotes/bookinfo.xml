@@ -7,6 +7,10 @@
 			<surname>Reed</surname>
 			<firstname>Ben</firstname>
 		</author>
+		<author>
+			<surname>Balog</surname>
+			<firstname>Tarus</firstname>
+		</author>
 	</authorgroup> 
 	<pubdate>2001</pubdate>
 	<pubsnumber>Revision: @opennms.version@</pubsnumber>
@@ -14,8 +18,8 @@
 	<legalnotice>
 		<para>All rights reserved. No part of the contents of this book may be reproduced
       in any form or by any other means without the written permission of the publisher.</para>
-		<para>Oculan and the Oculan logo are trademarks of the Oculan Corporation. Any
-      use of these trademarks without the written permission of Oculan Corp. is
+		<para>OpenNMS and the OpenNMS logo are trademarks of Sortova Consulting Group, Inc. Any
+      use of these trademarks without the written permission of Sortova Consulting is
       prohibited. </para>
 	</legalnotice>
 	-->
@@ -24,8 +28,10 @@
 		<year>2000</year>
 		<year>2001</year>
 		<holder>Oculan Corp.</holder>
+		<year>2002</year>
+		<holder>Sortova Consulting Group, Inc.</holder>
 	</copyright>
-	<corpname>OpenNMS.org</corpname>
+	<corpname>The OpenNMS Project</corpname>
 	<keywordset>
 		<keyword>OpenNMS</keyword>
 		<keyword>readme</keyword>

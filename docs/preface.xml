@@ -10,6 +10,7 @@
 		</para>
 	</formalpara>
 	<itemizedlist>
+		<listitem> <para>Copyright (c) 2002 Sortova Consulting Group, Inc. All rights reserved.</para> </listitem>
 		<listitem> <para>Copyright (c) 1999-2001 Oculan Corp. All rights reserved.</para> </listitem>
 		<listitem> <para>Copyright (c) 1996-2001 PostgresSQL, Inc.</para> </listitem>
 		<listitem> <para>Copyright (c) 1994 Regents of California, Inc.</para> </listitem>
@@ -41,5 +42,6 @@
 		<listitem> <para><ulink url="http://www.sun.com/">Sun</ulink> - home of JAVA</para> </listitem>
 		<listitem> <para><ulink url="http://www.w3.org/">W3C Organization</ulink> - home of XSLFO and XML</para> </listitem>
 		<listitem> <para><ulink url="http://www.postgresql.org/">PostgreSQL</ulink> - home of PostgreSQL</para> </listitem>
+		<listitem> <para><ulink url="http://www.sortova.com/">Sortova Consulting Group</ulink> - Commercial Services for OpenNMS</para> </listitem>
 	</itemizedlist>
 </preface>
