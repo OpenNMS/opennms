@@ -49,7 +49,7 @@
     {
         var fer_sure = confirm("Do you really want to cancel configuration changes?");
         if (fer_sure==true) {
-            window.location="KSC/index.jsp";
+            window.location="index.jsp";
         }
     }
     
