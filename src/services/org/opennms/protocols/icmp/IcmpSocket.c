@@ -162,12 +162,7 @@ typedef struct icmphdr icmphdr_t;
  * Macros for doing byte swapping
  */
 
-/* just turn and look away, you don't want to see this */
-#if defined(__BIG_ENDIAN__) && defined(__ppc__)
-# undef LITTLE_ENDIAN
-#endif
-
-#if defined(__LITTLE_ENDIAN) || defined(_LITTLE_ENDIAN) || defined(LITTLE_ENDIAN)
+#if defined(__LITTLE_ENDIAN) || defined(_LITTLE_ENDIAN) || defined(__LITTLE_ENDIAN__)
 # ifndef ntohll
 #  if defined(__DARWIN__)
 #   define ntohll(_x_) NXSwapBigLongLongToHost(_x_)
@@ -182,7 +177,7 @@ typedef struct icmphdr icmphdr_t;
 #   define htonll(_x_) __bswap_64(_x_)
 #  endif
 # endif
-#elif  defined(__BIG_ENDIAN) || defined(_BIG_ENDIAN) || defined(BIG_ENDIAN)
+#elif  defined(__BIG_ENDIAN) || defined(_BIG_ENDIAN) || defined(__BIG_ENDIAN__)
 # ifndef ntohll
 #  define ntohll(_x_) _x_
 # endif
