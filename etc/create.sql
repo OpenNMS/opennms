@@ -105,7 +105,7 @@ create index serviceMap_ipaddr_idx on serviceMap(ipAddr);
 --########################################################################
 
 create table distPoller (
-	dpName			varchar(12) not null,
+	dpName			varchar(12),
 				constraint pk_dpName primary key (dpName),
 	dpIP			varchar(16) not null,
 	dpComment		varchar(256),
@@ -154,7 +154,7 @@ create table distPoller (
 --########################################################################
 
 create table node (
-	nodeID		integer not null,
+	nodeID		integer,
 			constraint pk_nodeID primary key (nodeID),
 	dpName		varchar(12),
 			constraint fk_dpName foreign key (dpName) references distPoller,
@@ -296,7 +296,7 @@ create index snmpinterface_ipaddr_idx on snmpinterface(ipaddr);
 --########################################################################
 
 create table service (
-	serviceID		integer not null,
+	serviceID		integer,
 				constraint pk_serviceID primary key (serviceID),
 	serviceName		varchar(32) not null );
 
@@ -445,7 +445,7 @@ create index ifservices_nodeid_serviceid_idx on ifservices(nodeID, serviceID);
 --##################################################################
 
 create table events (
-	eventID			integer not null,
+	eventID			integer,
 				constraint pk_eventID primary key (eventID),
 	eventUei		varchar(256) not null,
 	nodeID			integer,
@@ -515,7 +515,7 @@ create index events_acktime_idx on events(eventAckTime);
 
 create table outages (
 
-	outageID		integer not null,
+	outageID		integer,
 				constraint pk_outageID primary key (outageID),
 	svcLostEventID		integer,
 				constraint fk_eventID1 foreign key (svcLostEventID) references events (eventID) ON DELETE CASCADE,
@@ -568,7 +568,7 @@ create index outages_regainedservice_idx on outages(ifRegainedService);
 --########################################################################
 
 create table vulnerabilities (
-	vulnerabilityID		integer not null,
+	vulnerabilityID		integer,
 				constraint pk_vulnerabilityID primary key (vulnerabilityID),
 	nodeID			integer,
 	ipAddr			varchar(16),
@@ -667,7 +667,7 @@ create unique index vulnplugins_pluginid_pluginsubid_idx on vulnPlugins(pluginID
 create table notifications (
        textMsg      varchar(4000) not null,
        numericMsg   varchar(256),
-       notifyID	    integer not null,
+       notifyID	    integer,
        			constraint pk_notifyID primary key (notifyID),
        pageTime     timestamp without time zone,
        respondTime  timestamp without time zone,
@@ -846,3 +846,4 @@ create sequence vulnNxtId minvalue 1;
 --# the 'distPoller' table.
 --##################################################################
 insert into distPoller (dpName, dpIP, dpComment, dpDiscLimit, dpLastNodePull, dpLastEventPull, dpLastPackagePush, dpAdminState, dpRunState) values ('localhost', '127.0.0.1', 'This is the default poller.', 0.10, null, null, null, 1, 1);
+
