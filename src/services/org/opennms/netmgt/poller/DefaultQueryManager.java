@@ -474,7 +474,7 @@ public class DefaultQueryManager implements QueryManager {
     
     public void openOutage(String outageIdSQL, int nodeId, String ipAddr, int serviceId, int dbId, String time) {
         try {
-            ThreadCategory.getInstance(getClass()).debug("opening outage for "+nodeId+":"+ipAddr+":"+serviceId);
+            ThreadCategory.getInstance(getClass()).debug("opening outage for "+nodeId+":"+ipAddr+":"+serviceId+" with cause "+dbId+":"+time);
 
             String sql = "insert into outages (outageId, svcLostEventId, nodeId, ipAddr, serviceId, ifLostService) values (" +
             "("+outageIdSQL+"), " +
@@ -496,9 +496,9 @@ public class DefaultQueryManager implements QueryManager {
     
     public void resolveOutage(int nodeId, String ipAddr, int serviceId, int dbId, String time) {
         try {
-            ThreadCategory.getInstance(getClass()).debug("resolving outage for "+nodeId+":"+ipAddr+":"+serviceId);
+            ThreadCategory.getInstance(getClass()).debug("resolving outage for "+nodeId+":"+ipAddr+":"+serviceId+" with resolution "+dbId+":"+time);
 
-            String sql = "update outages set svcRegainedEventId=?, ifRegainedService=? where nodeId = ? and ipAddr = ? and serviceId = ?";
+            String sql = "update outages set svcRegainedEventId=?, ifRegainedService=? where nodeId = ? and ipAddr = ? and serviceId = ? and ifRegainedService is null";
             
             Object values[] = {
                     new Integer(dbId),

@@ -236,6 +236,26 @@ public class PollContextTest extends TestCase {
         m_pollContext.resolveOutage(m_pSvc, pollUpEvent);
                                    
         verifyOutages();
+
+        // doing this a second time to ensure the database doesn't hose the outages
+        // this was added to detect an actual bug
+        
+        Event downEvent2 = m_mSvc.createDownEvent();
+        m_outageAnticipator.anticipateOutageOpened(m_mSvc, downEvent2);
+        PollEvent pollDownEvent2 = m_pollContext.sendEvent(downEvent2);
+        m_pollContext.openOutage(m_pSvc, pollDownEvent2);
+                                                  
+        verifyOutages();
+        
+        m_outageAnticipator.reset();
+        Event upEvent2 = m_mSvc.createUpEvent();
+        m_outageAnticipator.anticipateOutageClosed(m_mSvc, upEvent2);
+        PollEvent pollUpEvent2 = m_pollContext.sendEvent(upEvent2);
+        m_pollContext.resolveOutage(m_pSvc, pollUpEvent2);
+                                   
+        verifyOutages();
+        
+        
     }
 
     /**
