@@ -692,6 +692,11 @@
     <servlet-name>snmpManageNodes</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.SnmpManageNodesServlet</servlet-class>
   </servlet>
+  <servlet>
+    <!-- servlet for configuring SNMP parameters -->
+    <servlet-name>snmpConfig</servlet-name>
+    <servlet-class>org.opennms.web.admin.nodeManagement.SnmpConfigServlet</servlet-class>
+  </servlet>
   
   <!-- servlets for editing the poller configuration files -->
   <servlet>
@@ -1209,6 +1214,10 @@
   <servlet-mapping>
     <servlet-name>snmpManageNodes</servlet-name>
     <url-pattern>/admin/changeCollectStatus</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>snmpConfig</servlet-name>
+    <url-pattern>/admin/snmpConfig</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>pollerConfig</servlet-name>

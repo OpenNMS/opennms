@@ -413,6 +413,22 @@
 		<severity>Major</severity>
 	</event>
 	<event>
+		<uei>uei.opennms.org/internal/configureSNMP</uei>
+		<event-label>OpenNMS-defined internal event: configureSNMP</event-label>
+		<descr>
+			&lt;p&gt;SNMP definition for IP address
+                        %parm[firstIPAddress]%-%parm[lastIPAddress]% has been
+                        updated with community string
+                        &quot;%parm[communityString]%&quot;&lt;/p&gt;
+		</descr>
+		<logmsg dest='logonly'>
+			&lt;p&gt;SNMP community string
+                        &quot;%parm[communityString]%&quot; has been defined
+                        for IP %parm[firstIPAddress]%-%parm[lastIPAddress]%.&lt;/p&gt;
+		</logmsg>
+		<severity>Major</severity>
+	</event>
+	<event>
 		<uei>uei.opennms.org/internal/restartSCM</uei>
 		<event-label>OpenNMS-defined internal event: restartSCM</event-label>
 		<descr>

@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2005 Mar 08: Added configure SNMP UEI and parms
 // 2004 Dec 21: Added the snmp conflicts with db UEI
 // 2004 Oct 07: Added code to support RTC rescan on asset update
 // 2004 Jan 06: Added the suspend polling service event UEI, and the
@@ -370,6 +371,11 @@ public class EventConstants {
     public final static String REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI = "uei.opennms.org/nodes/reinitializePrimarySnmpInterface";
 
     /**
+     * The configure SNMP event.
+     */
+    public final static String CONFIGURE_SNMP_EVENT_UEI = "uei.opennms.org/internal/configureSNMP";
+
+    /**
      * Collection failed
      */
     public final static String DATA_COLLECTION_FAILED_EVENT_UEI = "uei.opennms.org/nodes/dataCollectionFailed";
@@ -589,6 +595,23 @@ public class EventConstants {
      * when sent as an event parm.
      */
     public final static String PARM_NEW_PRIMARY_SNMP_ADDRESS = "newPrimarySnmpAddress";
+
+    /**
+     * The first IP address in a range of IP addresses when sent as an event
+     * parm.
+     */
+    public final static String PARM_FIRST_IP_ADDRESS = "firstIPAddress";
+
+    /**
+     * The last IP address in a range of IP addresses when sent as an event
+     * parm.
+     */
+    public final static String PARM_LAST_IP_ADDRESS = "lastIPAddress";
+
+    /**
+     * The SNMP community string when sent as an event parm.
+     */
+    public final static String PARM_COMMUNITY_STRING = "communityString";
 
     /**
      * Service monitor qualifier when sent as an event parm

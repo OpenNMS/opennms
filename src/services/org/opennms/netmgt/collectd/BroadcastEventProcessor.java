@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2005 Mar 08: Added configure SNMP handler
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -51,6 +52,7 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CollectdConfigFactory;
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -58,6 +60,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
+import org.opennms.protocols.ip.IPv4Address;
 
 /**
  * 
@@ -147,6 +150,9 @@ final class BroadcastEventProcessor implements EventListener {
 	// outageConfigurationChanged
 	ueiList.add(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI);
 
+        // configureSNMP
+        ueiList.add(EventConstants.CONFIGURE_SNMP_EVENT_UEI);
+
         EventIpcManagerFactory.getInstance().getManager().addEventListener(this, ueiList);
     }
 
@@ -206,7 +212,7 @@ final class BroadcastEventProcessor implements EventListener {
 		}
 		Collectd.getInstance().refreshServicePackages();
 	}
-	else if(!event.hasNodeid())
+	else if(!event.hasNodeid() && !event.getUei().equals(EventConstants.CONFIGURE_SNMP_EVENT_UEI)) 
 	{
 		// For all other events, if the event doesn't have a nodeId it can't be processed.
 		log.info("no database node id found, discarding event");
@@ -265,6 +271,8 @@ final class BroadcastEventProcessor implements EventListener {
             } else {
                 serviceDeletedHandler(event);
             }
+        } else if (event.getUei().equals(EventConstants.CONFIGURE_SNMP_EVENT_UEI)) {
+            configureSNMPHandler(event);
         }
 
     } // end onEvent()
@@ -719,6 +727,95 @@ final class BroadcastEventProcessor implements EventListener {
 
         if (log.isDebugEnabled())
             log.debug("serviceDeletedHandler: processing of serviceDeleted event for " + nodeId + "/" + ipAddr + "/" + svcName + " completed.");
+    }
+
+    /**
+     * This method is responsible for handling configureSNMP events.
+     *
+     * @param event The event to process.
+     */
+    private void configureSNMPHandler(Event event) {
+        Category log = ThreadCategory.getInstance(getClass());
+
+        if (log.isDebugEnabled())
+            log.debug("configureSNMPHandler: processing configure SNMP event...");
+
+        // Extract the IP adddress range and SNMP community string from the
+        // event parms.
+        //
+        String firstIPAddress = null;
+        String lastIPAddress = null;
+        String communityString = null;
+        Parms parms = event.getParms();
+        if (parms != null) {
+            String parmName = null;
+            Value parmValue = null;
+            String parmContent = null;
+
+            Enumeration parmEnum = parms.enumerateParm();
+            while (parmEnum.hasMoreElements()) {
+                Parm parm = (Parm) parmEnum.nextElement();
+                parmName = parm.getParmName();
+                parmValue = parm.getValue();
+                if (parmValue == null)
+                    continue;
+                else
+                    parmContent = parmValue.getContent();
+
+                // First IP Address
+                if (parmName.equals(EventConstants.PARM_FIRST_IP_ADDRESS)) {
+                    firstIPAddress = parmContent;
+                }
+
+                // Last IP Address (optional parameter)
+                else if (parmName.equals(EventConstants.PARM_LAST_IP_ADDRESS)) {
+                    lastIPAddress = parmContent;
+                }
+
+                // SNMP community string
+                else if (parmName.equals(EventConstants.PARM_COMMUNITY_STRING)) {
+                    communityString = parmContent;
+                }
+            }
+        }
+
+        if (firstIPAddress != null && !firstIPAddress.equals("")) {
+            int begin = new IPv4Address(firstIPAddress).getAddress();
+            int end = begin;
+            if (lastIPAddress != null && !lastIPAddress.equals("")) {
+                end = new IPv4Address(lastIPAddress).getAddress();
+                if (end < begin)
+                    end = begin;
+            }
+
+            SnmpPeerFactory factory = SnmpPeerFactory.getInstance();
+
+            for (int address = begin; address <= end; address++) {
+                try {
+                    InetAddress ip =
+                        InetAddress.getByAddress(new IPv4Address(address).getAddressBytes());
+
+                    factory.define(ip, communityString);
+                }
+                catch (Exception e) {
+                    log.warn("configureSNMPHandler: Failed to process IP address "
+                             + IPv4Address.addressToString(address)
+                             + ": " + e.getMessage(), e);
+                }
+            }
+
+            try {
+                SnmpPeerFactory.saveCurrent();
+            }
+            catch (Exception e) {
+                log.warn("configureSNMPHandler: Failed to store SNMP configuration"
+                         + ": " + e.getMessage(), e);
+            }
+        }
+
+        if (log.isDebugEnabled())
+            log.debug("configureSNMPHandler: processing configure SNMP event for IP "
+                      + firstIPAddress + "-" + lastIPAddress + " completed.");
     }
 
     private void scheduleForCollection(Event event) {
