@@ -13,6 +13,7 @@
         <event-file>@root.install@/etc/events/ADIC-v2.events.xml</event-file>
         <event-file>@root.install@/etc/events/APC.events.xml</event-file>
         <event-file>@root.install@/etc/events/BackupExec.events.xml</event-file>
+        <event-file>@root.install@/etc/events/BEA.events.xml</event-file>
         <event-file>@root.install@/etc/events/Brocade.events.xml</event-file>
         <event-file>@root.install@/etc/events/CIM.events.xml</event-file>
         <event-file>@root.install@/etc/events/Cisco.events.xml</event-file>
