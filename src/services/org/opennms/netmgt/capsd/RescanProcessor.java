@@ -760,6 +760,7 @@ final class RescanProcessor
 		
 		DbNodeEntry duplicateNodeEntry = null;
 		boolean deleteDuplicateNodeFlag = false;
+		boolean newIpIfEntry = false;
 		
 		// Attempt to load IP Interface entry from the database
 		//
@@ -865,6 +866,12 @@ final class RescanProcessor
                                                 if (isInIpAddrTable(ifaddr, duplicateNodeEntry))
                                                 {
                                                         addDuplicateInterface(node, ifaddr, protocols, snmpc);
+		                                        // Attempt to load IP Interface entry from the database
+		                                        // since dbIpIfEntry is used later in the following 
+                                                        // program.
+                                                        //
+		                                        dbIpIfEntry = DbIpInterfaceEntry.get(dbc, node.getNodeId(), ifaddr);
+			                                newIpIfEntry = true;
                                                 }
                                                 else
                                                 {
@@ -999,7 +1006,6 @@ final class RescanProcessor
 		// This is ok because this method, updateInterface() should be called 
 		// for each sub-interface retrieved via SNMP...and these interfaces no
 		// longer need to be reparented so they will be updated as normal.
-		boolean newIpIfEntry = false;
 		if (reparentFlag)
 		{
 			// Interface was reparented, now we can load its interface entry
@@ -1616,7 +1622,6 @@ final class RescanProcessor
 			}
 
 			ipIfEntry.store();
-	                createNodeGainedInterfaceEvent(ipIfEntry);
                         createDuplicateIpAddressEvent(ipIfEntry);
 
 			// Add supported protocols
@@ -1712,9 +1717,6 @@ final class RescanProcessor
 			if(ifIndex != -1)
 				ifSvcEntry.setIfIndex(ifIndex);
 			ifSvcEntry.store();
-                        
-			// Generate nodeGainedService event
-			createNodeGainedServiceEvent(node, ipIfEntry, p.getProtocolName());
 		}
 	}
 	
