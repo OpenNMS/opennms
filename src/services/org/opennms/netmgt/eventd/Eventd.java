@@ -416,5 +416,13 @@ public final class Eventd implements PausableFiber, org.opennms.netmgt.eventd.ad
     public void setEventIpcManager(EventIpcManager manager) {
         m_eventIpcManager = manager;
     }
+
+    /**
+     * @return Returns the dbConnectionFactory.
+     */
+    public DbConnectionFactory getDbConnectionFactory() {
+        return m_dbConnectionFactory;
+    }
+    
     
 }

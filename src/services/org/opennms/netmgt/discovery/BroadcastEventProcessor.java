@@ -76,14 +76,14 @@ final class BroadcastEventProcessor implements EventListener {
         ueiList.add(EventConstants.INTERFACE_DELETED_EVENT_UEI);
 
         EventIpcManagerFactory.init();
-        EventIpcManagerFactory.getInstance().getManager().addEventListener(this, ueiList);
+        EventIpcManagerFactory.getInstance().getIpcManager().addEventListener(this, ueiList);
     }
 
     /**
      * Unsubscribe from eventd
      */
     public void close() {
-        EventIpcManagerFactory.getInstance().getManager().removeEventListener(this);
+        EventIpcManagerFactory.getInstance().getIpcManager().removeEventListener(this);
     }
 
     /**

@@ -39,21 +39,19 @@
 
 package org.opennms.netmgt.eventd;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Category;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.EventdConfigFactory;
+import org.opennms.netmgt.config.DbConnectionFactory;
+import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
@@ -66,6 +64,9 @@ import org.opennms.netmgt.xml.event.Log;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public class EventIpcManagerDefaultImpl implements EventIpcManager {
+    
+    private static EventdConfigManager m_eventdConfigMgr;
+    
     /**
      * Hashtable of list of event listeners keyed by event UEI
      */
@@ -92,6 +93,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
     private String m_getNextEventIdStr;
 
     private String m_getNextAlarmIdStr;
+
+    private DbConnectionFactory m_dbConnectionFactory;
 
     /**
      * A thread dedicated to each listener. The events meant for each listener
@@ -200,45 +203,28 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
      * Constructor
      */
     public EventIpcManagerDefaultImpl() {
+        init();
+    }
+
+    public EventIpcManagerDefaultImpl(EventdConfigManager configMgr) {
+        m_eventdConfigMgr = configMgr;
+        init();
+    }
+
+    public void init() {
         m_ueiListeners = new HashMap();
         m_listeners = new ArrayList();
-
         m_listenerThreads = new HashMap();
 
-        // load the eventd configuration and get the number of threads that
-        // should process the events
-        EventdConfigFactory eFactory = null;
-        try {
-            EventdConfigFactory.reload();
-            eFactory = EventdConfigFactory.getInstance();
-//            eFactory.reload();
-        } catch (MarshalException ex) {
-            Category log = ThreadCategory.getInstance(this.getClass());
-            log.error("Failed to load eventd configuration", ex);
-            throw new UndeclaredEventException(ex);
-        } catch (ValidationException ex) {
-            Category log = ThreadCategory.getInstance(this.getClass());
-            log.error("Failed to load eventd configuration", ex);
-            throw new UndeclaredEventException(ex);
-        } catch (IOException ex) {
-            Category log = ThreadCategory.getInstance(this.getClass());
-            log.error("Failed to load eventd configuration", ex);
-            throw new UndeclaredEventException(ex);
-        }
-
         // get number of threads
-        int numReceivers = eFactory.getReceivers();
-
+        int numReceivers = m_eventdConfigMgr.getReceivers();
         // create handler pool
         m_eventHandlerPool = new RunnableConsumerThreadPool("EventHandlerPool", 0.6f, 1.0f, numReceivers);
-
         // start pool
         m_eventHandlerPool.start();
-
         // database sequence query string
-        m_getNextEventIdStr = eFactory.getGetNextEventID();
-        m_getNextAlarmIdStr = eFactory.getGetNextAlarmID();
-
+        m_getNextEventIdStr = m_eventdConfigMgr.getGetNextEventID();
+        m_getNextAlarmIdStr = m_eventdConfigMgr.getGetNextAlarmID();
     }
 
     /**
@@ -264,7 +250,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         // create a new event handler for the events and queue it to the
         // eventhandler thread pool
         try {
-            m_eventHandlerPool.getRunQueue().add(new EventHandler(eventLog, m_getNextEventIdStr, m_getNextAlarmIdStr));
+            m_eventHandlerPool.getRunQueue().add(new EventHandler(m_dbConnectionFactory, eventLog, m_getNextEventIdStr, m_getNextAlarmIdStr));
         } catch (InterruptedException iE) {
             Category log = ThreadCategory.getInstance(this.getClass());
             log.warn("Unable to queue event log to the event handler pool queue", iE);
@@ -528,4 +514,25 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         }
 
     }
+
+    /**
+     * @return Returns the eventdConfigMgr.
+     */
+    public EventdConfigManager getEventdConfigMgr() {
+        return m_eventdConfigMgr;
+    }
+    
+
+    /**
+     * @param eventdConfigMgr The eventdConfigMgr to set.
+     */
+    public void setEventdConfigMgr(EventdConfigManager eventdConfigMgr) {
+        m_eventdConfigMgr = eventdConfigMgr;
+    }
+
+    public void setDbConnectionFactory(DbConnectionFactory instance) {
+        m_dbConnectionFactory = instance;
+        
+    }
+    
 }

@@ -39,6 +39,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.opennms.netmgt.config.DbConnectionFactory;
+import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
@@ -192,6 +194,21 @@ public class MockEventIpcManager implements EventIpcManager {
             MockUtil.println("Waiting for event processing: m_pendingEvents = "+m_pendingEvents);
             try { wait(); } catch (InterruptedException e) {}
         }
+    }
+
+    public EventdConfigManager getEventdConfigMgr() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void setEventdConfigMgr(EventdConfigManager eventdConfigMgr) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setDbConnectionFactory(DbConnectionFactory instance) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

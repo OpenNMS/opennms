@@ -74,7 +74,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         // subscribe for all events
         EventIpcManagerFactory.init();
-        EventIpcManagerFactory.getInstance().getManager().addEventListener(this);
+        EventIpcManagerFactory.getIpcManager().addEventListener(this);
 
     }
 
@@ -82,7 +82,7 @@ final class BroadcastEventProcessor implements EventListener {
      * Unsubscribe from eventd
      */
     public synchronized void close() {
-        EventIpcManagerFactory.getInstance().getManager().removeEventListener(this);
+        EventIpcManagerFactory.getIpcManager().removeEventListener(this);
     }
 
     /**

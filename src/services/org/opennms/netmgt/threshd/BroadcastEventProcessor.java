@@ -140,7 +140,7 @@ final class BroadcastEventProcessor implements EventListener {
         // serviceDeleted
         ueiList.add(EventConstants.SERVICE_DELETED_EVENT_UEI);
 
-        EventIpcManagerFactory.getInstance().getManager().addEventListener(this, ueiList);
+        EventIpcManagerFactory.getInstance().getIpcManager().addEventListener(this, ueiList);
     }
 
     /**
@@ -152,7 +152,7 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     synchronized void close() {
-        EventIpcManagerFactory.getInstance().getManager().removeEventListener(this);
+        EventIpcManagerFactory.getInstance().getIpcManager().removeEventListener(this);
     }
 
     /**

@@ -796,7 +796,7 @@ public final class ReparentViaSmb {
 
         // Send event to Eventd
         try {
-            EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
+            EventIpcManagerFactory.getInstance().getIpcManager().sendNow(newEvent);
 
         } catch (Throwable t) {
             log.warn("run: unexpected throwable exception caught during send to middleware", t);

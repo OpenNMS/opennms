@@ -35,6 +35,7 @@ drop table outages cascade;
 drop table ifServices cascade;
 drop table snmpInterface cascade;
 drop table ipInterface cascade;
+drop table alarms cascade;
 drop table node cascade;
 drop table service cascade;
 drop table distPoller cascade;
@@ -46,6 +47,7 @@ drop table serviceMap cascade;
 drop sequence nodeNxtId;
 drop sequence serviceNxtId;
 drop sequence eventsNxtId;
+drop sequence alarmsNxtId;
 drop sequence outageNxtId;
 drop sequence notifyNxtId;
 drop sequence vulnNxtId;
@@ -753,7 +755,7 @@ create table alarms (
 	eventUei				VARCHAR(256) NOT NULL,
 	dpName				VARCHAR(12) NOT NULL,
 	nodeID				INTEGER, CONSTRAINT fk_nodeIDak FOREIGN KEY (nodeID) REFERENCES node ON DELETE CASCADE,
-	serviceID			INTEGER NOT NULL,
+	serviceID			INTEGER NOT NULL fk_serviceID FOREIGN KEY (serviceID) REFERENCES service ON DELETE CASCADE,
 	reductionKey			VARCHAR(256),
 	counter              INTEGER NOT NULL,
 	severity				INTEGER NOT NULL,
@@ -894,9 +896,9 @@ create sequence serviceNxtId minvalue 1;
 --# install: eventsNxtId eventID events
 create sequence eventsNxtId minvalue 1;
 
---# Sequence for the serial column in the alarms table
+--# Sequence for the alarmId column in the alarms table
 --#          sequence,   column, table
---# install: alarmsNxtId serial alarms
+--# install: alarmsNxtId alarmId alarms
 create sequence alarmsNxtId minvalue 1;
 
 --# Sequence for the outageID column in the outages table

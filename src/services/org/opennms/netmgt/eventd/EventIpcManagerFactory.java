@@ -53,7 +53,7 @@ public class EventIpcManagerFactory {
     /**
      * The default EventIpcManager
      */
-    protected EventIpcManagerDefaultImpl m_defIpcManager;
+    protected static EventIpcManager m_defIpcManager;
 
     /**
      * Private constructor
@@ -94,11 +94,11 @@ public class EventIpcManagerFactory {
     /**
      * Returns an implementation of the default EventIpcManager class
      */
-    public EventIpcManagerDefaultImpl getManager() {
+    public static EventIpcManager getIpcManager() {
         return m_defIpcManager;
     }
 
-    public void setManager(EventIpcManagerDefaultImpl manager) {
+    public static void setIpcManager(EventIpcManager manager) {
         m_defIpcManager = manager;
     }
 

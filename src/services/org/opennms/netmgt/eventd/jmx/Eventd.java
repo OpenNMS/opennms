@@ -47,6 +47,7 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.EventdConfigFactory;
 import org.opennms.netmgt.eventd.EventConfigurationManager;
+import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
 
@@ -102,7 +103,10 @@ public class Eventd implements EventdMBean {
         
         e.setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
         e.setConfigManager(EventdConfigFactory.getInstance());
-        e.setEventIpcManager(EventIpcManagerFactory.getInstance().getManager());
+        EventIpcManager ipcMgr = EventIpcManagerFactory.getIpcManager();
+        ipcMgr.setEventdConfigMgr(EventdConfigFactory.getInstance());
+        ipcMgr.setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
+        e.setEventIpcManager(ipcMgr);
         e.init();
         
     }

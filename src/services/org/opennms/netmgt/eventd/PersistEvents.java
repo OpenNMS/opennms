@@ -33,8 +33,6 @@
 
 package org.opennms.netmgt.eventd;
 
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -46,11 +44,9 @@ import java.util.Enumeration;
 import java.util.List;
 
 import org.apache.log4j.Category;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.eventd.db.AutoAction;
 import org.opennms.netmgt.eventd.db.Constants;
 import org.opennms.netmgt.eventd.db.OperatorAction;
@@ -594,27 +590,12 @@ class PersistEvents {
 
     /**
      * Constructor
+     * @param connectionFactory 
+     * @param getNextEventIdStr
      */
-    public PersistEvents(String getNextEventIdStr) throws SQLException {
+    public PersistEvents(DbConnectionFactory connectionFactory, String getNextEventIdStr) throws SQLException {
         // Get a database connection
-        //
-        m_dbConn = null;
-        try {
-            DatabaseConnectionFactory.init();
-            m_dbConn = DatabaseConnectionFactory.getInstance().getConnection();
-        } catch (MarshalException me) {
-            ThreadCategory.getInstance(EventWriter.class).fatal("Marshall Exception getting database connection", me);
-            throw new UndeclaredThrowableException(me);
-        } catch (ValidationException ve) {
-            ThreadCategory.getInstance(EventWriter.class).fatal("Validation Exception getting database connection", ve);
-            throw new UndeclaredThrowableException(ve);
-        } catch (ClassNotFoundException cnfE) {
-            ThreadCategory.getInstance(EventWriter.class).fatal("Driver Class Not Found Exception getting database connection", cnfE);
-            throw new UndeclaredThrowableException(cnfE);
-        } catch (IOException ioE) {
-            ThreadCategory.getInstance(EventWriter.class).fatal("IO Exception getting database connection", ioE);
-            throw new UndeclaredThrowableException(ioE);
-        }
+        m_dbConn = connectionFactory.getConnection();
 
         //
         // prepare the SQL statement

@@ -38,6 +38,7 @@ import java.sql.SQLException;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
 
@@ -57,9 +58,10 @@ final class AlarmWriter extends PersistEvents {
 
     /**
      * Constructor
+     * @param connectionFactory 
      */
-    public AlarmWriter(String getNextEventIdStr) throws SQLException {
-        super(getNextEventIdStr);
+    public AlarmWriter(DbConnectionFactory connectionFactory, String getNextAlarmIdStr) throws SQLException {
+        super(connectionFactory, getNextAlarmIdStr);
     }
 
     /**
@@ -71,7 +73,40 @@ final class AlarmWriter extends PersistEvents {
      *            the actual event to be inserted
      */
     public void persistAlarm(Header eventHeader, Event event) throws SQLException {
-        //TODO: create an insert/update method that inserts new alarms
-        //and updates exiting alarms.
+        if (event != null) {
+            Category log = ThreadCategory.getInstance(EventWriter.class);
+
+            // Check value of <logmsg> attribute 'dest', if set to
+            // "donotpersist" then simply return, the uei is not to be
+            // persisted to the database
+            String logdest = event.getLogmsg().getDest();
+            if (logdest.equals("donotpersist")) {
+                log.debug("AlarmWriter: uei '" + event.getUei() + "' marked as 'doNotPersist'.");
+                return;
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("AlarmWriter dbRun for : " + event.getUei() + " nodeid: " + event.getNodeid() + " ipaddr: " + event.getInterface() + " serviceid: " + event.getService());
+                }
+            }
+
+            try {
+                add(eventHeader, event);
+
+                // commit
+                m_dbConn.commit();
+            } catch (SQLException e) {
+                log.warn("Error inserting event into the datastore", e);
+                try {
+                    m_dbConn.rollback();
+                } catch (Exception e2) {
+                    log.warn("Rollback of transaction failed!", e2);
+                }
+
+                throw e;
+            }
+
+            if (log.isDebugEnabled())
+                log.debug("AlarmWriter finished for : " + event.getUei());
+        }
     }
 }

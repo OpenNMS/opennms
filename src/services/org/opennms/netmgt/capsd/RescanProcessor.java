@@ -2914,7 +2914,7 @@ final class RescanProcessor implements Runnable {
             Iterator iter = m_eventList.iterator();
             while (iter.hasNext()) {
                 try {
-                    EventIpcManagerFactory.getInstance().getManager().sendNow((Event) iter.next());
+                    EventIpcManagerFactory.getInstance().getIpcManager().sendNow((Event) iter.next());
 
                 } catch (Throwable t) {
                     log.warn("run: unexpected throwable exception caught during send to middleware", t);

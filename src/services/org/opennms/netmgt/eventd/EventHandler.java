@@ -39,6 +39,7 @@ import java.util.Enumeration;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
@@ -68,16 +69,20 @@ final class EventHandler implements Runnable {
 
     private String m_getNextAlarmIdStr;
 
+    private DbConnectionFactory m_dbConnectionFactory;
+
     /**
      * Constructor for the eventhandler
+     * @param connectionFactory 
      * 
      * @param eventLog
      *            events to be processed
      * @param getNextEventId
      *            the sql statement to get next event id from sequence
      */
-    public EventHandler(Log eventLog, String getNextEventId, String getNextAlarmIdStr) {
+    public EventHandler(DbConnectionFactory connectionFactory, Log eventLog, String getNextEventId, String getNextAlarmIdStr) {
         m_eventLog = eventLog;
+        m_dbConnectionFactory = connectionFactory;
 
         m_getNextEventIdStr = getNextEventId;
         m_getNextAlarmIdStr = getNextAlarmIdStr;
@@ -109,8 +114,8 @@ final class EventHandler implements Runnable {
         EventWriter eventWriter = null;
         AlarmWriter alarmWriter = null;
         try {
-            eventWriter = new EventWriter(m_getNextEventIdStr);
-            alarmWriter = new AlarmWriter(m_getNextAlarmIdStr);
+            eventWriter = new EventWriter(m_dbConnectionFactory, m_getNextEventIdStr);
+            alarmWriter = new AlarmWriter(m_dbConnectionFactory, m_getNextAlarmIdStr);
         } catch (Throwable t) {
             log.warn("Exception creating EventWriter", t);
             log.warn("Event(s) CANNOT be inserted into the database");
@@ -155,7 +160,7 @@ final class EventHandler implements Runnable {
 //                alarmWriter.persistAlarm(m_eventLog.getHeader(), event);
 
                 // send event to interested listeners
-                EventIpcManagerFactory.getInstance().getManager().broadcastNow(event);
+                EventIpcManagerFactory.getIpcManager().broadcastNow(event);
 
             } catch (SQLException sqle) {
                 log.warn("Unable to add event to database", sqle);

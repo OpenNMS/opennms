@@ -31,26 +31,24 @@
 
 package org.opennms.netmgt.eventd;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-
 import junit.framework.TestCase;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventConfigManager;
-import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Logmsg;
 public class EventdTest extends TestCase {
     
     private static String MOCK_EVENT_CONFIG = "<EventdConfiguration\n" + 
             "   TCPPort=\"5817\"\n" + 
             "   UDPPort=\"5817\"\n" + 
             "   receivers=\"5\"\n" + 
-            "   getNextEventID=\"SELECT nextval(\'eventsNxtId\')\"\n" + 
-            "   getNextAlarmID=\"SELECT nextval(\'alarmsNxtId\')\"\n" + 
+            "   getNextEventID=\"SELECT max(\'eventId\') from events\"\n" + 
+            "   getNextAlarmID=\"SELECT max(\'alarmId\') from alarms\"\n" + 
             "   socketSoTimeoutRequired=\"yes\"\n" + 
             "   socketSoTimeoutPeriod=\"3000\">\n" + 
             "</EventdConfiguration>";
@@ -1122,7 +1120,12 @@ public class EventdTest extends TestCase {
             "</events>\n" + 
             "";
     
-    private MockDatabase m_db;
+    private static MockDatabase m_db;
+    private static MockNetwork m_network;
+    private static Eventd m_eventd;
+    private static EventIpcManager m_eventdIpcMgr;
+
+    private static EventdConfigManager m_eventdConfigMgr;
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(EventdTest.class);
@@ -1130,33 +1133,80 @@ public class EventdTest extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
+        
+        MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
         MockUtil.setupLogging();
         MockUtil.resetLogLevel();
+        
+        m_network = new MockNetwork();
+        m_network.setCriticalService("ICMP");
+        m_network.addNode(1, "Router");
+        m_network.addInterface("192.168.1.1");
+        m_network.addService("ICMP");
+        m_network.addService("SMTP");
+        m_network.addInterface("192.168.1.2");
+        m_network.addService("ICMP");
+        m_network.addService("SMTP");
+        m_network.addNode(2, "Server");
+        m_network.addInterface("192.168.1.3");
+        m_network.addService("ICMP");
+        m_network.addService("HTTP");
+        m_network.addNode(3, "Firewall");
+        m_network.addInterface("192.168.1.4");
+        m_network.addService("SMTP");
+        m_network.addService("HTTP");
+        m_network.addInterface("192.168.1.5");
+        m_network.addService("SMTP");
+        m_network.addService("HTTP");
+        
+        m_db = new MockDatabase();
+        m_db.populate(m_network);
+
+        m_eventd = new Eventd();
+        m_eventdConfigMgr = new MockEventConfigManager(MOCK_EVENT_CONFIG);
+        m_eventd.setConfigManager(m_eventdConfigMgr);
+        m_eventd.setDbConnectionFactory(m_db);
+
+        m_eventd.init();
+//        m_eventMgr = new MockEventIpcManager();
+        m_eventdIpcMgr = new EventIpcManagerDefaultImpl(m_eventdConfigMgr);
+        EventIpcManagerFactory.setIpcManager(m_eventdIpcMgr);
+        m_eventdIpcMgr.setDbConnectionFactory(m_db);
+//        m_eventdIpcMgr.setEventdConfigMgr(m_eventdConfigMgr);
+        m_eventd.setEventIpcManager(m_eventdIpcMgr);
+        m_eventd.start();
     }
 
     protected void tearDown() throws Exception {
         super.tearDown();
+        m_eventd.stop();
         assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
     }
-    
-    public void testEventd() throws MarshalException, ValidationException, IOException {
         
-        m_db = new MockDatabase();
+    public void testPersistEvent() throws Exception {
         
-        Eventd e = new Eventd();
-        e.setConfigManager(new MockEventConfigManager(MOCK_EVENT_CONFIG));
-        e.setDbConnectionFactory(m_db);
+        MockUtil.setupLogging(true);
         
-        // load configuration(eventconf)
-        //
-        Reader rdr = new StringReader(MOCK_EVENT_CONF);
-        EventConfigurationManager.loadConfiguration(rdr);
+        assertEquals(0, m_db.countRows("select * from events"));
         
-        e.init();
-        e.setEventIpcManager(new MockEventIpcManager());
-        e.start();
-        e.stop();
+        MockNode node = m_network.getNode(1);
+        Event e = MockUtil.createNodeDownEvent("Test", node);
+        Logmsg logmsg = new Logmsg();
+        logmsg.setDest("logndisplay");
+        logmsg.setContent("testing");
+        e.setLogmsg(logmsg);
+        m_eventd.processEvent(e);
+        sleep(1000);
+        assertEquals(1, m_db.countRows("select * from events"));
         
     }
+
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+        }
+    }
+
 
 }

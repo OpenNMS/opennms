@@ -36,6 +36,8 @@ package org.opennms.netmgt.eventd;
 
 import java.util.List;
 
+import org.opennms.netmgt.config.DbConnectionFactory;
+import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 
@@ -92,4 +94,11 @@ public interface EventIpcManager {
      * listener is no more interested in
      */
     public void removeEventListener(EventListener listener, String uei);
+    
+    public EventdConfigManager getEventdConfigMgr();
+    
+    public void setEventdConfigMgr(EventdConfigManager eventdConfigMgr);
+
+    public void setDbConnectionFactory(DbConnectionFactory instance);
+    
 }

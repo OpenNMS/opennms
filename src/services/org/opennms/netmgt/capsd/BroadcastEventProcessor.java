@@ -323,7 +323,7 @@ final class BroadcastEventProcessor implements EventListener {
      * Unsubscribe from eventd
      */
     public void close() {
-        EventIpcManagerFactory.getInstance().getManager().removeEventListener(this);
+        EventIpcManagerFactory.getInstance().getIpcManager().removeEventListener(this);
     }
 
     /**
@@ -558,7 +558,7 @@ final class BroadcastEventProcessor implements EventListener {
         ueiList.add(EventConstants.DUP_NODE_DELETED_EVENT_UEI);
 
         EventIpcManagerFactory.init();
-        EventIpcManagerFactory.getInstance().getManager().addEventListener(this, ueiList);
+        EventIpcManagerFactory.getInstance().getIpcManager().addEventListener(this, ueiList);
     }
 
     /**
