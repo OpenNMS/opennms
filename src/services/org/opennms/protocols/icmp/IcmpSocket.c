@@ -3,7 +3,7 @@
 
  OpenNMS(R) is Copyright (C) 2002-2003 Blast Internet Services, Inc.  All rights reserved.
  OpenNMS(R) is a derivative work, containing both original code, included code and modified
- code that was published under the GNU General Public License. Copyrights for modified 
+ code that was published under the GNU General Public License. Copyrights for modified
  and included code are below.
 
  OpenNMS(R) is a registered trademark of Blast Internet Services, Inc.
@@ -51,7 +51,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#if defined(__DARWIN__) || defined(__SOLARIS__)
+#if defined(__DARWIN__) || defined(__SOLARIS__) || defined (__FreeBSD__)
 #include <netinet/in_systm.h>
 #endif
 #include <netinet/in.h>
@@ -61,6 +61,11 @@
 #include <errno.h>
 
 #if defined(__SOLARIS__)
+#include "byteswap.h"
+#endif
+
+#if defined(__FreeBSD__)
+#include <sys/time.h>
 #include "byteswap.h"
 #endif
 
@@ -78,6 +83,10 @@ typedef struct ip iphdr_t;
 typedef struct icmp icmphdr_t;
 #define ihl ip_hl
 #elif defined(__SOLARIS__)
+typedef struct ip iphdr_t;
+typedef struct icmp icmphdr_t;
+#define ihl ip_hl
+#elif defined(__FreeBSD__)
 typedef struct ip iphdr_t;
 typedef struct icmp icmphdr_t;
 #define ihl ip_hl
@@ -187,12 +196,14 @@ typedef struct icmphdr icmphdr_t;
  * Macros for doing byte swapping
  */
 
-#if defined(__LITTLE_ENDIAN) || defined(_LITTLE_ENDIAN) || defined(__LITTLE_ENDIAN__)
+#if defined(__LITTLE_ENDIAN) || defined(LITTLE_ENDIAN) || defined(_LITTLE_ENDIAN) || defined(__LITTLE_ENDIAN__)
 # ifndef ntohll
 #  if defined(__DARWIN__)
 #   define ntohll(_x_) NXSwapBigLongLongToHost(_x_)
 #  elif defined(__SOLARIS__)
 #   define ntohll(_x_) __bswap_64(_x_)
+#  elif defined(__FreeBSD__)
+#   define  ntohll(_x_) __bswap_64(_x_)
 #  else
 #   define ntohll(_x_) __bswap_64(_x_)
 #  endif
@@ -202,6 +213,8 @@ typedef struct icmphdr icmphdr_t;
 #   define htonll(_x_) NXSwapHostLongLongToBig(_x_)
 #  elif defined(__SOLARIS__)
 #   define htonll(_x_) __bswap_64(_x_)
+#  elif defined(__FreeBSD__)
+#   define  htonll(_x_) __bswap_64(_x_)
 #  else
 #   define htonll(_x_) __bswap_64(_x_)
 #  endif
@@ -678,7 +691,7 @@ Java_org_opennms_protocols_icmp_IcmpSocket_receive (JNIEnv *env, jobject instanc
 	 *
 	 * Don't forget to check for a buffer overflow!
 	 */
-#if defined(__SOLARIS__) || defined(__DARWIN__)
+#if defined(__SOLARIS__) || defined(__DARWIN__) || defined(__FreeBSD__)
 	if(iRC >= (OPENNMS_TAG_OFFSET + OPENNMS_TAG_LEN)
 	   && icmpHdr->icmp_type == 0
 	   && memcmp((char *)icmpHdr + OPENNMS_TAG_OFFSET, OPENNMS_TAG, OPENNMS_TAG_LEN) == 0)
@@ -934,7 +947,7 @@ Java_org_opennms_protocols_icmp_IcmpSocket_send (JNIEnv *env, jobject instance, 
 	 * Don't forget to check for a potential buffer
 	 * overflow!
 	 */
-#if defined(__SOLARIS__) || defined(__DARWIN__)
+#if defined(__SOLARIS__) || defined(__DARWIN__) || defined(__FreeBSD__)
 	if(bufferLen >= (OPENNMS_TAG_OFFSET + OPENNMS_TAG_LEN)
 	   && ((icmphdr_t *)outBuffer)->icmp_type == 0x08
 	   && memcmp((char *)outBuffer + OPENNMS_TAG_OFFSET, OPENNMS_TAG, OPENNMS_TAG_LEN) == 0)
@@ -954,7 +967,7 @@ Java_org_opennms_protocols_icmp_IcmpSocket_send (JNIEnv *env, jobject instance, 
 		memcpy((char *)outBuffer + SENTTIME_OFFSET, (char *)&now, TIME_LENGTH);
 
 		/* recompute the checksum */
-#if defined(__SOLARIS__) || defined(__DARWIN__)
+#if defined(__SOLARIS__) || defined(__DARWIN__) || defined(__FreeBSD__)
 		((icmphdr_t *)outBuffer)->icmp_cksum = 0;
 		((icmphdr_t *)outBuffer)->icmp_cksum = checksum((unsigned short *)outBuffer, bufferLen);
 #else
