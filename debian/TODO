@@ -1,6 +1,9 @@
 - Move away from the ugly hacking of users pg_hba.conf file. Possibly use
   debconf to prompt for more reasonable settings.
 
+- Move away from ugly hacking of users server.xml file. Possibly use 
+  debconf to prompt the user and give them a choice.
+
 - Institute a permissions scheme that will allow Tomcat to run as user
   tomcat4
 

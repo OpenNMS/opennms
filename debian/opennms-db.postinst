@@ -40,15 +40,11 @@ case "$1" in
 	# Restart the db to get the new user access rules
 	invoke-rc.d postgresql restart
 
-	# Make sure there is a "root" user in Postgres
-	# Not used anymore-- use postgres to do our work
-	#su - postgres -c "/usr/lib/postgresql/bin/createuser -a -d root" || :
-
 	# Official OpenNMS install script -- only run if upgrading from an
 	# older major/minor version (not an older minor release) or a fresh
 	# install.  Don't use -t since we do tomcat4 install in the webapp pkg.
 	if dpkg --compare-versions ${2:-0} lt $VERSION; then
-		/usr/share/opennms-db/install.pl -r -q \
+		/usr/share/opennms/bin/install.pl -r -q \
 			-l $PG_DIR -U $PG_USER -u opennms -p opennms \
 			-d opennms /etc/opennms/create.sql
 	fi

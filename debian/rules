@@ -116,11 +116,8 @@ install: build
 		$(ONMSDB)/usr/share/lintian/overrides/opennms-db
 	mv $(TMP)/usr/share/opennms/etc/*.sql \
 		$(ONMSDB)/etc/opennms/
-	cp $(TMP)/usr/share/opennms/bin/install.pl \
-		$(ONMSDB)/usr/share/opennms-db/
 	chgrp nogroup $(ONMSDB)/etc/opennms
 	chmod 2775 $(ONMSDB)/etc/opennms
-	chmod 755 $(ONMSDB)/usr/share/opennms-db/install.pl
 	chmod 644 $(ONMSDB)/etc/opennms/*.sql
 
 	##
@@ -281,7 +278,7 @@ binary-arch: build install
 #	dh_fixperms	# this is a little scary for my tastes right now
 	dh_makeshlibs -n
 	dh_installdeb
-	dh_perl debian/opennms-common/usr/share/opennms/bin debian/opennms-contrib/usr/share/opennms/contrib debian/opennms-db/usr/share/opennms-db
+	dh_perl debian/opennms-common/usr/share/opennms/bin debian/opennms-contrib/usr/share/opennms/contrib
 	-dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
