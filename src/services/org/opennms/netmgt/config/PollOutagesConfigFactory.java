@@ -41,6 +41,7 @@ package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -149,5 +150,15 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
             throw new IllegalStateException("The factory has not been initialized");
 
         return m_singleton;
+    }
+    
+    protected void saveXML(String xmlString) throws IOException, MarshalException, ValidationException {
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME);
+
+        FileWriter fileWriter = new FileWriter(cfgFile);
+        fileWriter.write(xmlString);
+        fileWriter.flush();
+        fileWriter.close();
+        reload();
     }
 }

@@ -69,6 +69,7 @@ import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableNode;
 import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.poller.pollables.PollableServiceConfig;
+import org.opennms.netmgt.poller.pollables.PollableVisitor;
 import org.opennms.netmgt.poller.pollables.PollableVisitorAdaptor;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -651,6 +652,15 @@ public final class Poller implements PausableFiber {
         }
     
         return newEvent;
+    }
+
+    public void refreshServicePackages() {
+	PollableVisitor visitor = new PollableVisitorAdaptor() {
+		public void visitService(PollableService service) {
+			service.refreshPackage();
+		}
+	};
+	m_network.visit(visitor);
     }
 
 }

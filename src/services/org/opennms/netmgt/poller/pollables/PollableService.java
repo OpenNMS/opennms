@@ -38,6 +38,7 @@ import java.util.Date;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.poller.monitors.IPv4NetworkInterface;
 import org.opennms.netmgt.poller.monitors.NetworkInterface;
 import org.opennms.netmgt.scheduler.PostponeNecessary;
@@ -53,7 +54,7 @@ import org.opennms.netmgt.xml.event.Event;
 public class PollableService extends PollableElement implements ReadyRunnable {
 
     private String m_svcName;
-    private PollConfig m_pollConfig;
+    private PollableServiceConfig m_pollConfig;
     private IPv4NetworkInterface m_netInterface;
     private boolean m_unresponsive;
     private boolean m_unresponsiveEventPending;
@@ -116,7 +117,7 @@ public class PollableService extends PollableElement implements ReadyRunnable {
     /**
      * @param pollConfig
      */
-    public void setPollConfig(PollConfig pollConfig) {
+    public void setPollConfig(PollableServiceConfig pollConfig) {
         m_pollConfig = pollConfig;
     }
 
@@ -316,5 +317,16 @@ public class PollableService extends PollableElement implements ReadyRunnable {
      */
     public void sendDeleteEvent() {
         getContext().sendEvent(getContext().createEvent(EventConstants.DELETE_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), new Date()));
+    }
+
+    /**
+    * Uses the existing package name to try and re-obtain the package from the poller config factory.
+    * Should be called when the poller config has been reloaded.
+    */
+    public void refreshPackage() {
+	org.opennms.netmgt.config.poller.Package refreshedPackage=PollerConfigFactory.getInstance().getPackage(m_pollConfig.getPackageName());
+	if(refreshedPackage!=null) {
+		this.m_pollConfig.setPackage(refreshedPackage);
+	}
     }
 }

@@ -47,6 +47,7 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import org.apache.log4j.Category;
+import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CollectdConfigFactory;
@@ -143,6 +144,9 @@ final class BroadcastEventProcessor implements EventListener {
         // serviceDeleted
         ueiList.add(EventConstants.SERVICE_DELETED_EVENT_UEI);
 
+	// outageConfigurationChanged
+	ueiList.add(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI);
+
         EventIpcManagerFactory.getInstance().getManager().addEventListener(this, ueiList);
     }
 
@@ -191,9 +195,21 @@ final class BroadcastEventProcessor implements EventListener {
             log.debug("received event, uei = " + event.getUei());
         }
 
-        // If the event doesn't have a nodeId it can't be processed.
-        if (!event.hasNodeid()) {
-            log.info("no database node id found, discarding event");
+	if(event.getUei().equals(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
+		log.warn("Reloading Collectd config factory");
+		//Reload the collectd configuration
+		try {
+			CollectdConfigFactory.reload();
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("Failed to reload CollectdConfigFactory because "+e.getMessage());
+		}
+		Collectd.getInstance().refreshServicePackages();
+	}
+	else if(!event.hasNodeid())
+	{
+		// For all other events, if the event doesn't have a nodeId it can't be processed.
+		log.info("no database node id found, discarding event");
         } else if (event.getUei().equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
             //

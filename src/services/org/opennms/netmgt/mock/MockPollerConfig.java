@@ -32,6 +32,7 @@
 
 package org.opennms.netmgt.mock;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
@@ -41,6 +42,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Downtime;
@@ -368,6 +371,11 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
             }
         };
         network.visit(populator);
+    }
+
+    protected void saveXML(String xmlString) throws IOException, MarshalException, ValidationException {
+        // TODO Auto-generated method stub
+        
     }
 
 }

@@ -75,6 +75,14 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         monitor.initialize(m_service.getNetInterface());
     }
 
+    public void setPackage(Package newPackage) {
+	this.m_pkg=newPackage;
+    }
+
+    public String getPackageName() {
+	return this.m_pkg.getName();
+    }
+
     /**
      * @param pkg
      * @return

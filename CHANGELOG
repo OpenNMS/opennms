@@ -1,5 +1,6 @@
 1.2.0 to 1.2.1
 ----------------------------------------------------------------------
+- Add Poll outage editor contributed by Craig Miskell.
 - Fixed an issue with Unresponsive services being considered up
   even with unresponsiveness set to false. Bug 1151.
 - Added a focus to the add interface page. Bug 1148. Thx Craig.

@@ -444,6 +444,11 @@ public class EventConstants {
      */
     public final static String ASSET_INFO_CHANGED_EVENT_UEI = "uei.opennms.org/nodes/assetInfoChanged";
 
+	/**
+        * The scheduled-outages configuration was changed by the user via the web UI (or manually, for that matter)
+        */
+       public final static String SCHEDOUTAGES_CHANGED_EVENT_UEI = "uei.opennms.org/internal/schedOutagesChanged";
+
     //
     // end eventUEIs
     //
