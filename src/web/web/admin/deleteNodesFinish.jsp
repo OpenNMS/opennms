@@ -26,9 +26,7 @@
     
     <td>
         <h3>Finished Deleting Nodes.</h3>
-        <p>OpenNMS will need to be restarted for the changes to take affect.
-	   This is so the cached data that includes the deleted nodes can
-	   be updated.</p>
+        <p>OpenNMS should not need to be restarted, but it may take a moment for the Categories to be updated.</p>
     </td>
     
     <td>&nbsp;</td>

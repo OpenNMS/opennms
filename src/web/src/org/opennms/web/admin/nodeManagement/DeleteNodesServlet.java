@@ -57,6 +57,23 @@ public class DeleteNodesServlet extends HttpServlet
                         try
                         {
                                 connection.setAutoCommit(false);
+
+				for ( int s = 0; s < nodeList.size(); s++)
+				{
+					int nodeid = Integer.parseInt((String)nodeList.get(s));
+					StringBuffer squery = new StringBuffer("SELECT ifservices.ipaddr, service.servicename FROM ifservices, service WHERE nodeID = ");
+					squery.append((String)nodeList.get(s));
+					squery.append(" AND ifservices.serviceid=service.serviceid");
+					Statement supdate = connection.createStatement();
+					ResultSet rs = supdate.executeQuery(squery.toString());
+					while (rs.next())
+					{
+						String iface = rs.getString(1);
+						String svcname = rs.getString(2);
+						sendServiceDeletedEvent(nodeid, iface, svcname);
+					}
+				}							
+
                                 for (int j = 0; j < nodeList.size(); j++)
 					{
                                         this.log("DEBUG: Starting Delete of Node Number: " + nodeList.get(j));
@@ -109,6 +126,9 @@ public class DeleteNodesServlet extends HttpServlet
                 			update9.executeUpdate(query9.toString());
                 			update9.close();
 
+					int currNodeId = Integer.parseInt((String)nodeList.get(j));
+					sendNodeDeletedEvent(currNodeId);
+
                                         this.log("DEBUG: End of Delete of Node Number: " + nodeList.get(j));
 
                         		} //end j loop
@@ -132,6 +152,48 @@ public class DeleteNodesServlet extends HttpServlet
                 dispatcher.forward( request, response );
 
         }
+
+        private void sendNodeDeletedEvent(int node)
+                throws ServletException
+        {
+                Event nodeDeleted = new Event();
+                nodeDeleted.setUei("http://uei.opennms.org/products/bluebird/nodes/nodeDeleted");
+                nodeDeleted.setSource("web ui");
+                nodeDeleted.setNodeid(node);
+                nodeDeleted.setTime(EventConstants.formatToString(new java.util.Date()));
+
+                sendEvent(nodeDeleted);
+        }
+
+        private void sendServiceDeletedEvent(int node, String iface, String svcname)
+                throws ServletException
+        {
+                Event serviceDeleted = new Event();
+                serviceDeleted.setUei("http://uei.opennms.org/products/bluebird/nodes/deleteService");
+                serviceDeleted.setSource("web ui");
+                serviceDeleted.setNodeid(node);
+                serviceDeleted.setInterface(iface);
+                serviceDeleted.setService(svcname);
+                serviceDeleted.setTime(EventConstants.formatToString(new java.util.Date()));
+
+                sendEvent(serviceDeleted);
+        }
+
+        private void sendEvent(Event event)
+                throws ServletException
+        {
+                try
+                {
+                        EventProxy eventProxy = new TcpEventProxy();
+                                eventProxy.send(event);
+                }
+                catch(Exception e)
+                {
+                        throw new ServletException("Could not send event " + event.getUei(), e);
+                }
+        }
+
+
 
 	private java.util.List getList(String array[])
 	{
