@@ -511,8 +511,8 @@ OpenNMS as part of the post-install.
   </echo>
   <copy todir="${install}/lib">
    <fileset dir="${root.build}/jars" includes="*.jar" />
-   <fileset dir="${root.build}/jicmp" includes="*.${compile.jniext}.*"/>
-   <fileset dir="${root.build}/jrrd" includes="*.${compile.jniext}.*"/>
+   <fileset dir="${root.build}/jicmp" includes="*${compile.jniext}*"/>
+   <fileset dir="${root.build}/jrrd" includes="*${compile.jniext}*"/>
    <fileset dir="${root.build}/postgresql" includes="*.${compile.soext}.*"/>
    <fileset dir="${root.source}/lib">
     <patternset refid="lib.jars" />
@@ -537,10 +537,10 @@ OpenNMS as part of the post-install.
   <chmod perm="0755">
    <fileset dir="${install}/lib/scripts"/>
   </chmod>
-  <exec executable="ln" dir="${install}/lib"><arg line="-sf libjicmp.${compile.jniext}.${opennms.version} libjicmp.${compile.jniext}"/></exec>
-  <exec executable="ln" dir="${install}/lib"><arg line="-sf libjicmp.${compile.jniext}.${opennms.version} libjicmp.${compile.jniext}.${opennms.version.major}"/></exec>
-  <exec executable="ln" dir="${install}/lib"><arg line="-sf libjrrd.${compile.jniext}.${opennms.version} libjrrd.${compile.jniext}"/></exec>
-  <exec executable="ln" dir="${install}/lib"><arg line="-sf libjrrd.${compile.jniext}.${opennms.version} libjrrd.${compile.jniext}.${opennms.version.major}"/></exec>
+  <exec executable="ln" dir="${install}/lib"><arg line="-sf libjicmp.${compile.jniext} libjicmp.${compile.jniext}.${opennms.version}"/></exec>
+  <exec executable="ln" dir="${install}/lib"><arg line="-sf libjicmp.${compile.jniext} libjicmp.${compile.jniext}.${opennms.version.major}"/></exec>
+  <exec executable="ln" dir="${install}/lib"><arg line="-sf libjrrd.${compile.jniext} libjrrd.${compile.jniext}.${opennms.version}"/></exec>
+  <exec executable="ln" dir="${install}/lib"><arg line="-sf libjrrd.${compile.jniext} libjrrd.${compile.jniext}.${opennms.version.major}"/></exec>
   <exec executable="ln" dir="${install}/lib"><arg line="-sf iplike.${compile.soext}.${opennms.version} iplike.${compile.soext}"/></exec>
   <exec executable="ln" dir="${install}/lib"><arg line="-sf iplike.${compile.soext}.${opennms.version} iplike.${compile.soext}.${opennms.version.major}"/></exec>
  </target>
@@ -958,11 +958,11 @@ OpenNMS as part of the post-install.
 
   <!-- generate .so files -->
   <apply executable="${compile.cc}" dir="${root.build}/jicmp" failonerror="true" dest="${root.build}/jicmp">
-   <arg line="-bundle -framework JavaVM -I${java.framework}/include -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jicmp -I. -D${compile.platform.define} -o"/>
+   <arg line="-dynamiclib -framework JavaVM -I${java.framework}/include -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jicmp -I. -D${compile.platform.define} -o"/>
    <targetfile/>
    <srcfile/>
    <fileset dir="${root.build}/jicmp" includes="*.c"/>
-   <mapper type="glob" from="IcmpSocket.c" to="libjicmp.${compile.jniext}.${opennms.version}"/>
+   <mapper type="glob" from="IcmpSocket.c" to="libjicmp.${compile.jniext}"/>
   </apply>
  </target>
 
@@ -984,7 +984,7 @@ OpenNMS as part of the post-install.
    <targetfile/>
    <srcfile/>
    <fileset dir="${root.build}/jicmp" includes="*.o"/>
-   <mapper type="glob" from="IcmpSocket.o" to="libjicmp.${compile.jniext}.${opennms.version}"/>
+   <mapper type="glob" from="IcmpSocket.o" to="libjicmp.${compile.jniext}"/>
   </apply>
  </target>
 
@@ -1004,11 +1004,11 @@ OpenNMS as part of the post-install.
    <fileset dir="${root.source}/src/services/org/opennms/netmgt/rrd" includes="*.c"/>
   </copy>
   <apply executable="${compile.cc}" dir="${root.build}/jrrd" failonerror="true" dest="${root.build}/jrrd">
-   <arg line="-bundle -framework JavaVM -I${java.framework}/include -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jrrd -I${compile.rrdtool.include} -I. -L${compile.rrdtool.lib} -D${compile.platform.define} -lrrd -o"/>
+   <arg line="-dynamiclib -framework JavaVM -I${java.framework}/include -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jrrd -I${compile.rrdtool.include} -I. -L${compile.rrdtool.lib} -D${compile.platform.define} -lrrd -o"/>
    <targetfile/>
    <srcfile/>
    <fileset dir="${root.build}/jrrd" includes="*.c"/>
-   <mapper type="glob" from="rrd_jinterface.c" to="libjrrd.${compile.jniext}.${opennms.version}"/>
+   <mapper type="glob" from="rrd_jinterface.c" to="libjrrd.${compile.jniext}"/>
   </apply>
  </target>
 
@@ -1030,7 +1030,7 @@ OpenNMS as part of the post-install.
    <targetfile/>
    <srcfile/>
    <fileset dir="${root.build}/jrrd" includes="*.o"/>
-   <mapper type="glob" from="rrd_jinterface.o" to="libjrrd.${compile.jniext}.${opennms.version}"/>
+   <mapper type="glob" from="rrd_jinterface.o" to="libjrrd.${compile.jniext}"/>
   </apply>
  </target>
 
@@ -1086,8 +1086,6 @@ OpenNMS as part of the post-install.
     <patternset refid="not.services"/>
     <patternset refid="not.web"/>        
    </fileset>
-   <fileset dir="${root.build}/opennms/xmlfiles"/>
-   <fileset dir="${root.build}/opennms/configfiles"/>
   </jar>
  </target>
 

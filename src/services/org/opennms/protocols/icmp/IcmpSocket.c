@@ -39,6 +39,10 @@
 #include <netdb.h>
 #include <errno.h>
 
+#if defined(__DARWIN__)
+#include <sys/time.h>
+#endif
+
 #include <jni.h>
 #include <jni_md.h>
 
@@ -156,21 +160,29 @@ typedef struct icmphdr icmphdr_t;
 /**
  * Macros for doing byte swapping
  */
-#if defined(__LITTLE_ENDIAN) || defined(_LITTLE_ENDIAN)
+#if defined(__LITTLE_ENDIAN) || defined(_LITTLE_ENDIAN) || defined(LITTLE_ENDIAN)
 # ifndef ntohll
-#  define ntohll(_x_) __bswap_64(_x_)
+#  if defined(__DARWIN__)
+#   define ntohll(_x_) ntohl(_x_)
+#  else
+#   define ntohll(_x_) __bswap_64(_x_)
+#  endif
 # endif
 # ifndef htonll
-#  define htonll(_x_) __bswap_64(_x_)
+#  if defined(__DARWIN__)
+#   define htonll(_x_) htonl(_x_)
+#  else
+#   define htonll(_x_) __bswap_64(_x_)
+#  endif
 # endif
-#elif  defined(__BIG_ENDIAN) || defined(_BIG_ENDIAN) 
+#elif  defined(__BIG_ENDIAN) || defined(_BIG_ENDIAN) || defined(BIG_ENDIAN)
 # ifndef ntohll
 #  define ntohll(_x_) _x_
 # endif
 # ifndef htonll
 #  define htonll(_x_) _x_
 # endif
-#else /* No Endien selected */
+#else /* No Endian selected */
 # error A byte order must be selected
 #endif 
 
@@ -635,7 +647,7 @@ Java_org_opennms_protocols_icmp_IcmpSocket_receive (JNIEnv *env, jobject instanc
 	 *
 	 * Don't forget to check for a buffer overflow!
 	 */
-#if defined(__SOLARIS__)
+#if defined(__SOLARIS__) || defined(__DARWIN__)
 	if(iRC >= (OPENNMS_TAG_OFFSET + OPENNMS_TAG_LEN)
 	   && icmpHdr->icmp_type == 0
 	   && memcmp((char *)icmpHdr + OPENNMS_TAG_OFFSET, OPENNMS_TAG, OPENNMS_TAG_LEN) == 0)
@@ -891,7 +903,7 @@ Java_org_opennms_protocols_icmp_IcmpSocket_send (JNIEnv *env, jobject instance, 
 	 * Don't forget to check for a potential buffer
 	 * overflow!
 	 */
-#if defined(__SOLARIS__)
+#if defined(__SOLARIS__) || defined(__DARWIN__)
 	if(bufferLen >= (OPENNMS_TAG_OFFSET + OPENNMS_TAG_LEN)
 	   && ((icmphdr_t *)outBuffer)->icmp_type == 0x08
 	   && memcmp((char *)outBuffer + OPENNMS_TAG_OFFSET, OPENNMS_TAG, OPENNMS_TAG_LEN) == 0)
@@ -911,7 +923,7 @@ Java_org_opennms_protocols_icmp_IcmpSocket_send (JNIEnv *env, jobject instance, 
 		memcpy((char *)outBuffer + SENTTIME_OFFSET, (char *)&now, TIME_LENGTH);
 
 		/* recompute the checksum */
-#if defined(__SOLARIS__)
+#if defined(__SOLARIS__) || defined(__DARWIN__)
 		((icmphdr_t *)outBuffer)->icmp_cksum = 0;
 		((icmphdr_t *)outBuffer)->icmp_cksum = checksum((unsigned short *)outBuffer, bufferLen);
 #else

@@ -47,7 +47,7 @@
 #define FALSE 0
 #define TRUE 1
 
-#undef DEBUG /* Enable/Disable debugging */
+#define DEBUG /* Enable/Disable debugging */
 
 /*---------------------------------------------------------------------------
   *
