@@ -202,7 +202,10 @@
           files of OpenNMS. This can be done one of two ways. The first option
           is making Tomcat run as root and the second is making the OpenNMS
           configuration files readable and writable by the user Tomcat runs
-          as.</para>
+          as. The first option, although not preferable from a security
+          standpoint, is easier to setup and is the suggested method. Plans
+          are in place to make OpenNMS so it easily runs as a non-root
+          user--see enhancement bug 1150.</para>
         </listitem>
       </orderedlist>
 
@@ -307,7 +310,7 @@ TOMCAT_USER="tomcat"
           <filename>capsd-configuration.xml</filename>. Run the
           commands:</para>
 
-          <para><programlisting><computeroutput># </computeroutput><command>chgrp -R [group name] $OPENNMS_HOME/etc
+          <para><programlisting><computeroutput># </computeroutput><command>chgrp -R tomcat4 /var/log/opennms
 </command><computeroutput># </computeroutput><command>chmod -R g+w $OPENNMS_HOME/etc</command></programlisting></para>
 
           <para>where <varname>$OPENNMS_HOME/etc</varname> is the OpenNMS
@@ -321,11 +324,11 @@ TOMCAT_USER="tomcat"
           OpenNMS "<filename>etc</filename>" directory (find an instance of
           "File"). Run the commands:</para>
 
-          <para><programlisting><computeroutput># </computeroutput><command>chgrp -R $OPENNMS_HOME/logs
-</command><computeroutput># </computeroutput><command>chmod -R g+w $OPENNMS_HOME/logs</command></programlisting></para>
+          <para><programlisting><computeroutput># </computeroutput><command>chgrp -R tomcat4 /var/log/opennms
+</command><computeroutput># </computeroutput><command>chmod -R g+w /var/log/opennms</command></programlisting></para>
 
-          <para>where <varname>$OPENNMS_HOME/logs</varname> is the OpenNMS
-          "<filename>logs</filename>" directory.</para>
+          <para>where <varname>/var/log/opennms</varname> is the OpenNMS logs
+          directory.</para>
         </listitem>
       </orderedlist>
 
@@ -460,9 +463,9 @@ TOMCAT_USER="tomcat"
       system does not support IPv6):</para>
 
       <para><programlisting># TYPE DATABASE USER IP-ADDRESS IP-MASK METHOD
-local all all
-trust host all all 127.0.0.1 255.255.255.255
-trust host all all ::1 ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff trust</programlisting></para>
+local all all trust
+host all all 127.0.0.1 255.255.255.255 trust
+host all all ::1 ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff trust</programlisting></para>
 
       <para>Make sure that no other lines are uncommented in this file.</para>
 
