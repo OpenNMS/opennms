@@ -123,6 +123,9 @@ public class Column {
 
     public void addConstraint(Constraint constraint) {
 	m_constraints.add(constraint);
+	if (constraint.getType() == Constraint.PRIMARY_KEY) {
+	    setNotNull(true);
+	}
     }
 
     public String getName() {
