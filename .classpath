@@ -55,7 +55,7 @@
 	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
 	<classpathentry kind="lib" path="devlib/xmlParserAPIs.jar"/>
 	<classpathentry kind="lib" path="devlib/Tidy.jar"/>
-	<classpathentry sourcepath="/Users/brozow/distributions/httpunit-1.6/src" kind="lib" path="devlib/httpunit.jar"/>
+	<classpathentry kind="lib" path="devlib/httpunit.jar"/>
 	<classpathentry kind="lib" path="devlib/js.jar"/>
 	<classpathentry kind="lib" path="devlib/jwebunit-1.2.jar"/>
 	<classpathentry kind="lib" path="devlib/nekohtml.jar"/>
