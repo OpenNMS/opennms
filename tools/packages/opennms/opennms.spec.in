@@ -21,22 +21,22 @@
 
 %define debug_package %{nil}
 
-%if "%{platform}" == "linux-i386-suse-7"
-%define	initdir		/etc/rc.d
-%define	psql		/usr/bin/psql
-%define psql_service	postgres
-%define tomcat_service	tomcat
-%define requires        postgres >= 7.2
-%define webapp_requires tomcat >= 4.1.18
-%endif
-
-%if "%{platform}" == "linux-i386-suse-9"
+%if "%{platform}" == "linux-i386-fedora-1"
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
-%define tomcat_service	tomcat
-%define requires	postgresql >= 7.2, postgresql-server >= 7.2
-%define webapp_requires tomcat >= 4.1.18
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2, compat-libstdc++
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-fedora-2"
+%define	initdir		/etc
+%define	psql		/usr/bin/psql
+%define psql_service	postgresql
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2, compat-libstdc++
+%define webapp_requires tomcat4 >= 4.1.18
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-7"
@@ -102,13 +102,33 @@
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
-%if "%{platform}" == "linux-i386-fedora-1"
+%if "%{platform}" == "linux-i386-suse-7"
+%define	initdir		/etc/rc.d
+%define	psql		/usr/bin/psql
+%define psql_service	postgres
+%define tomcat_service	tomcat
+%define requires        postgres >= 7.2
+%define webapp_requires tomcat >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-suse-8"
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
-%define tomcat_service	tomcat4
-%define requires	postgresql-server >= 7.2, compat-libstdc++
-%define webapp_requires tomcat4 >= 4.1.18
+%define tomcat_service	tomcat
+%define tomcatdir	/opt/jakarta/tomcat
+%define requires	postgresql >= 7.2, postgresql-server >= 7.2
+%define webapp_requires tomcat >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-suse-9"
+%define	initdir		/etc
+%define	psql		/usr/bin/psql
+%define psql_service	postgresql
+%define tomcat_service	tomcat
+%define tomcatdir	/opt/jakarta/tomcat
+%define requires	postgresql >= 7.2, postgresql-server >= 7.2
+%define webapp_requires tomcat >= 4.1.18
 %endif
 
 %if "%{buildtests}" == "true"
@@ -144,12 +164,7 @@ AutoReqProv:		no
 Requires:		rrdtool
 Requires:               %{requires}
 
-%if "%{platform}" == "linux-i386-suse-9"
-Requires:		java2 >= 1.4
-%else
-# grr, we depend on XFree86-libs because j2sdk package deps are broken!
-Requires:		j2sdk >= 1.4, XFree86-libs
-%endif
+Requires:		java2 >= 1.4.2
 
 %description
 OpenNMS is a network management package.
