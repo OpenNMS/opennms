@@ -44,9 +44,11 @@ import java.net.InetAddress;
 import java.net.NoRouteToHostException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.log4j.Category;
@@ -110,6 +112,8 @@ final class IfCollector implements Runnable {
      * Boolean flag which indicates if SNMP collection is to be done.
      */
     private boolean m_doSnmpCollection;
+
+    private Set m_previouslyProbed;
 
     /**
      * This class is used to encapsulate the supported protocol information
@@ -178,6 +182,7 @@ final class IfCollector implements Runnable {
 
         CapsdConfigFactory.ProtocolInfo[] plugins = CapsdConfigFactory.getInstance().getProtocolSpecification(target);
 
+        
         // First run the plugins to find out all the capabilities
         // for the interface
         //
@@ -241,6 +246,11 @@ final class IfCollector implements Runnable {
      * 
      */
     IfCollector(InetAddress addr, boolean doSnmpCollection) {
+        this(addr, doSnmpCollection, new HashSet());
+
+    }
+    
+    IfCollector(InetAddress addr, boolean doSnmpCollection, Set previouslyProbed) {
         m_target = addr;
         m_doSnmpCollection = doSnmpCollection;
         m_smbCollector = null;
@@ -248,6 +258,7 @@ final class IfCollector implements Runnable {
         m_protocols = new ArrayList(8);
         m_subTargets = null;
         m_nonIpInterfaces = null;
+        m_previouslyProbed = previouslyProbed;
     }
 
     /**
@@ -344,6 +355,7 @@ final class IfCollector implements Runnable {
         boolean hasExchange = false;
 
         probe(m_target, m_protocols);
+        m_previouslyProbed.add(m_target);
 
         // First run the plugins to find out all the capabilities
         // for the interface
@@ -439,7 +451,7 @@ final class IfCollector implements Runnable {
                             // if the target failed to convert or if it
                             // is equal to the current target then skip it
                             //
-                            if (subtarget == null || subtarget.equals(m_target))
+                            if (subtarget == null || subtarget.equals(m_target) || m_previouslyProbed.contains(subtarget))
                                 continue;
 
                             // now find the ifType
@@ -480,6 +492,7 @@ final class IfCollector implements Runnable {
                                 log.debug("ifCollector.run: probing subtarget " + subtarget.getHostAddress());
                             }
                             probe(subtarget, probelist);
+                            m_previouslyProbed.add(subtarget);
 
                             if (log.isDebugEnabled()) {
                                 log.debug("ifCollector.run: adding subtarget " + subtarget.getHostAddress() + " # supported protocols: " + probelist.size());
@@ -526,7 +539,8 @@ final class IfCollector implements Runnable {
                             log.debug("ifCollector.run: probing subtarget " + subtarget.getHostAddress());
                         }
                         probe(subtarget, probelist);
-
+                        m_previouslyProbed.add(subtarget);
+                        
                         if (log.isDebugEnabled()) {
                             log.debug("ifCollector.run: adding subtarget " + subtarget.getHostAddress() + " # supported protocols: " + probelist.size());
                             log.debug("----------------------------------------------------------------------------------------");

@@ -72,10 +72,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -2643,9 +2645,6 @@ final class RescanProcessor implements Runnable {
                     continue;
                 }
 
-                if (log.isDebugEnabled())
-                    log.debug("areDbInterfacesInSnmpCollection: ipaddress in db: " + ipaddr.getHostAddress() + " ipaddress in ipAddrTable: " + addr.getHostAddress());
-
                 if (ipaddr.getHostAddress().equals(addr.getHostAddress())) {
                     found = true;
                     if (log.isDebugEnabled())
@@ -2692,11 +2691,12 @@ final class RescanProcessor implements Runnable {
         boolean gotSnmpc = false;
         Map collectorMap = new HashMap();
         Map nonSnmpCollectorMap = new HashMap();
+        Set probedAddrs = new HashSet();
 
-        boolean gotSnmpCollection = scanPrimarySnmpInterface(log, dbInterfaces, collectorMap);
+        boolean gotSnmpCollection = scanPrimarySnmpInterface(log, dbInterfaces, collectorMap, probedAddrs);
 
         if(!gotSnmpCollection) {
-
+            
             // Run collector for each retrieved interface and add result
             // to a collector map.
             for (int i = 0; i < dbInterfaces.length; i++) {
@@ -2711,7 +2711,7 @@ final class RescanProcessor implements Runnable {
                 if (log.isDebugEnabled())
                     log.debug("running collection for " + ifaddr.getHostAddress());
 
-                IfCollector collector = new IfCollector(ifaddr, true);
+                IfCollector collector = new IfCollector(ifaddr, true, probedAddrs);
                 collector.run();
 
                 IfSnmpCollector snmpc = collector.getSnmpCollector();
@@ -2736,7 +2736,7 @@ final class RescanProcessor implements Runnable {
                         prevAddrList = IpAddrTable.getIpAddresses(ipAddTable.getEntries());
                         prevSnmpc = snmpc;
                         if (log.isDebugEnabled()) {
-                            log.debug("SNMP data collected via " + ifaddr.getHostAddress() + " does not agree with database. Tentatively adding to" + " the collectorMap and continuing");
+                            log.debug("SNMP data collected via " + ifaddr.getHostAddress() + " does not agree with database. Tentatively adding to the collectorMap and continuing");
                             Iterator h = prevAddrList.iterator();
                             while(h.hasNext()) {
                                 log.debug("IP address in list = " +h.next());
@@ -2909,7 +2909,7 @@ final class RescanProcessor implements Runnable {
             log.debug("Rescan for node w/ nodeid " + m_scheduledNode.getNodeId() + " completed.");
     } // end run
 
-    private boolean scanPrimarySnmpInterface(Category log, DbIpInterfaceEntry[] dbInterfaces, Map collectorMap) {
+    private boolean scanPrimarySnmpInterface(Category log, DbIpInterfaceEntry[] dbInterfaces, Map collectorMap, Set probedAddrs) {
         boolean gotSnmpCollection = false;
         DbIpInterfaceEntry oldPrimarySnmpInterface = null;
 
@@ -2922,7 +2922,7 @@ final class RescanProcessor implements Runnable {
             InetAddress ifaddr = oldPrimarySnmpInterface.getIfAddress();
             if (log.isDebugEnabled())
                 log.debug("running collection for DB primary snmp interface " + ifaddr.getHostAddress());
-            IfCollector collector = new IfCollector(ifaddr, true);
+            IfCollector collector = new IfCollector(ifaddr, true, probedAddrs);
             collector.run();
             IfSnmpCollector snmpc = collector.getSnmpCollector();
             if (snmpc == null) {
