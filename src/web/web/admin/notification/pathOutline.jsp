@@ -185,6 +185,7 @@
         <input type="text" name="name" value="<%=newPath.getName()%>"/>
       <% } %>
       <br>
+      Initial Delay: <%=buildDelaySelect(intervals, "initialDelay", newPath.getInitialDelay())%>
       <% for (int i = 0; i < targetLinks.size(); i++) { %>
         <tr><td>
         <table width="15%" bgcolor="#999999" cellspacing="2" cellpadding="2" border="1">
@@ -200,7 +201,7 @@
               <br>
               <% if (i > 0) { %>  
                 Delay:
-                <%=buildDelaySelect(intervals, i-1, newPath)%><br>
+                <%=buildDelaySelect(intervals, "escalate"+(i-1)+"Delay", newPath.getEscalate(i-1).getDelay())%><br>
               <% } %>
               <%=buildTargetList(i, newPath, "escalate"+i)%>  
               </td>
@@ -245,16 +246,14 @@
 </html>
 
 <%!
-    public String buildDelaySelect(String[] intervals, int index, Path path)
+    public String buildDelaySelect(String[] intervals, String name, String currValue)
     {
-          StringBuffer buffer = new StringBuffer("<select NAME=\"escalate" + index  + "Delay\">");
+          StringBuffer buffer = new StringBuffer("<select NAME=\"" + name  + "\">");
           String selectedOption = "0m";
-          
-          Escalate escalate = path.getEscalate(index);
-          
+                    
           for (int i = 0; i < intervals.length; i++)
           {
-             if (intervals[i].equals(escalate.getDelay()))
+             if (intervals[i].equals(currValue))
              {
                  buffer.append("<option selected VALUE=\"" + intervals[i] + "\">").append(intervals[i]).append("</option>");
              }
