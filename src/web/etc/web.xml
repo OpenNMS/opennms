@@ -65,6 +65,17 @@
     </init-param>
   </filter>
 
+  <filter>
+    <filter-name>AddRefreshHeader-120</filter-name>
+    <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
+    <filter-class>org.opennms.web.AddRefreshHeaderFilter</filter-class>
+    <init-param>
+      <param-name>seconds</param-name>
+      <param-value>120</param-value>
+      <description>This parameter specifies how often to refresh the page.</description>
+    </init-param>
+  </filter>
+
   <filter-mapping>
     <filter-name>AddRefreshHeader-300</filter-name>
     <url-pattern>/index.jsp</url-pattern>
@@ -88,6 +99,10 @@
   <filter-mapping>
     <filter-name>AddRefreshHeader-300</filter-name>
     <url-pattern>/outage/current.jsp</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-120</filter-name>
+    <url-pattern>/event/list</url-pattern>
   </filter-mapping>
 
   <listener>
@@ -116,6 +131,27 @@
       <param-value>etc/snmp-adhoc-graph.properties</param-value>
     </init-param>
   </servlet>  
+
+  <servlet>
+    <!-- This servlet creates the graph images using RRDTool. -->
+    <servlet-name>rtGraph</servlet-name>
+    <servlet-class>org.opennms.web.graph.RRDGraphServlet</servlet-class>
+    <init-param>
+      <param-name>rrd-properties</param-name>
+      <param-value>etc/response-graph.properties</param-value>
+    </init-param>
+  </servlet>
+
+  <servlet>
+    <!-- This servlet creates ad hoc graph images using RRDTool. -->
+    <servlet-name>rtAdHocGraph</servlet-name>
+    <servlet-class>org.opennms.web.graph.RRDAdHocGraphServlet</servlet-class>
+    <init-param>
+      <param-name>rrd-properties</param-name>
+      <param-value>etc/response-adhoc-graph.properties</param-value>
+    </init-param>
+  </servlet>
+
   
   <servlet>
     <!-- This servlet dumps out XML using RRDTool. -->
@@ -148,6 +184,39 @@
       <description>Redirect to this sibling URL when more than one RRD matches a node.</description>      
     </init-param>
   </servlet>  
+
+  <servlet>
+    <!-- This servlet dumps out XML using RRDTool. -->
+    <servlet-name>rt-rrddump</servlet-name>
+    <servlet-class>org.opennms.web.response.RRDDumpServlet</servlet-class>
+    <init-param>
+      <param-name>rt-rrd-directory</param-name>
+      <param-value>@root.install.share@/rrd/snmp/</param-value>
+    </init-param>
+    <init-param>
+      <param-name>rt-rrd-dump-command</param-name>
+      <param-value>@install.rrdtool.bin@ dump</param-value>
+    </init-param>
+  </servlet>
+  <servlet>
+    <!-- This servlet creates a text file with one line for each RRD filename. -->
+    <servlet-name>rt-rrdlist</servlet-name>
+    <servlet-class>org.opennms.web.response.RRDListServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>rt-addPerfReportsToUrl</servlet-name>
+    <servlet-class>org.opennms.web.response.AddReportsToUrlServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>rt-addIntfToPerfUrl</servlet-name>
+    <servlet-class>org.opennms.web.response.AddInterfaceToURLServlet</servlet-class>
+    <init-param>
+      <param-name>rt-chooseInterfaceUrl</param-name>
+      <param-value>chooseinterface.jsp</param-value>
+      <description>Redirect to this sibling URL when more than one RRD matches a node.</description>
+    </init-param>
+  </servlet>
+
     
   <servlet>
     <!-- This servlet creates availability reports. -->
@@ -259,8 +328,13 @@
       <description>Redirect to this sibling URL after changing the parameter set.</description>
     </init-param>    
   </servlet>
+  <servlet>
+    <servlet-name>filterVulnerability</servlet-name>
+    <servlet-class>org.opennms.web.vulnerability.VulnerabilityFilterServlet</servlet-class>
+  </servlet>  
   
-   <servlet>
+  
+  <servlet>
     <servlet-name>queryNotice</servlet-name>
     <servlet-class>org.opennms.web.notification.NoticeQueryServlet</servlet-class>
   </servlet>
@@ -546,6 +620,21 @@
   </servlet>
 
   <servlet>
+    <!-- servlet for grabbing node information -->
+    <servlet-name>deleteSelNodes</servlet-name>
+    <servlet-class>org.opennms.web.admin.nodeManagement.DeleteNodesServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for grabbing node information -->
+    <servlet-name>deleteNodes</servlet-name>
+    <servlet-class>org.opennms.web.admin.nodeManagement.DeleteGetNodesServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for grabbing SNMP node information -->
+    <servlet-name>snmpGetNodes</servlet-name>
+    <servlet-class>org.opennms.web.admin.nodeManagement.SnmpGetNodesServlet</servlet-class>
+  </servlet>
+  <servlet>
     <!-- servlet for grabbing node, interface and service information -->
     <servlet-name>getNodes</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.GetNodesServlet</servlet-class>
@@ -554,6 +643,11 @@
     <!-- servlet for managing and unmanaging interfaces and services -->
     <servlet-name>manageNodes</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.ManageNodesServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for managing and unmanaging interfaces and services -->
+    <servlet-name>snmpManageNodes</servlet-name>
+    <servlet-class>org.opennms.web.admin.nodeManagement.SnmpManageNodesServlet</servlet-class>
   </servlet>
   
   <!-- servlets for editing the poller configuration files -->
@@ -621,23 +715,23 @@
     <servlet-name>filterOutage</servlet-name>
     <servlet-class>org.opennms.web.outage.OutageFilterServlet</servlet-class>
   </servlet>
-  
+
   <servlet>
-    <!-- this servlet generates PNG images from SVG input -->
+    <!-- This servlet generates PNG images from SVG input -->
     <servlet-name>SVGServlet</servlet-name>
     <servlet-class>org.opennms.web.map.SVGServlet</servlet-class>
   </servlet>
-  
+
   <servlet>
-    <!-- this servlet generates PNG images from SVG input -->
+    <!-- This servlet generates PNG images from SVG input -->
     <servlet-name>SVGTranscoder</servlet-name>
     <servlet-class>org.opennms.web.map.SVGTranscoder</servlet-class>
   </servlet>
-  
+
   <servlet>
-    <!-- this servlet is used to set NodeParentID -->
+    <!-- This servlet is used to set NodeParentID -->
     <servlet-name>modifyParent</servlet-name>
-    <servlet-class>org.opennms.web.map.ModifyParentServlet</servlet-class>
+    <servlet-class>org.opennms.web.map.modifyParentServlet</servlet-class>
   </servlet>
   
   <!-- python servlet for testing purposes - ->
@@ -696,6 +790,46 @@
     <servlet-name>addIntfToPerfUrl</servlet-name>
     <url-pattern>/performance/addIntfFromNode</url-pattern>
   </servlet-mapping>  
+
+  <servlet-mapping>
+    <servlet-name>rt-rrddump</servlet-name>
+    <url-pattern>/response/dump</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>rt-rrddump</servlet-name>
+    <url-pattern>/response/raw</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>rt-rrdlist</servlet-name>
+    <url-pattern>/response/list</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>rt-addPerfReportsToUrl</servlet-name>
+    <url-pattern>/response/addReportsToUrl</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>rt-addIntfToPerfUrl</servlet-name>
+    <url-pattern>/response/addIntfFromNode</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>rtGraph</servlet-name>
+    <url-pattern>/response/graph.png</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>rtGraph</servlet-name>
+    <url-pattern>/response/graph</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>rtAdHocGraph</servlet-name>
+    <url-pattern>/response/adhocGraph.png</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>rtAdHocGraph</servlet-name>
+    <url-pattern>/response/adhocGraph</url-pattern>
+  </servlet-mapping>
+
   <servlet-mapping>
     <servlet-name>availabilityXml</servlet-name>
     <url-pattern>/availability/availabilityRaw</url-pattern>
@@ -715,11 +849,15 @@
   <servlet-mapping>
     <servlet-name>filterEvent</servlet-name>
     <url-pattern>/event/list</url-pattern>
-  </servlet-mapping>  
+  </servlet-mapping>    
   <servlet-mapping>
     <servlet-name>queryEvent</servlet-name>
     <url-pattern>/event/query</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>filterVulnerability</servlet-name>
+    <url-pattern>/vulnerability/list</url-pattern>
+  </servlet-mapping>    
   <servlet-mapping>
     <servlet-name>acknowledgeNotice</servlet-name>
     <url-pattern>/notification/acknowledge</url-pattern>
@@ -982,12 +1120,28 @@
   </servlet-mapping>
   
   <servlet-mapping>
+    <servlet-name>deleteSelNodes</servlet-name>
+    <url-pattern>/admin/deleteSelNodes</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>deleteNodes</servlet-name>
+    <url-pattern>/admin/deleteNodes</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>snmpGetNodes</servlet-name>
+    <url-pattern>/admin/snmpGetNodes</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
     <servlet-name>getNodes</servlet-name>
     <url-pattern>/admin/getNodes</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>manageNodes</servlet-name>
     <url-pattern>/admin/manageNodes</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>snmpManageNodes</servlet-name>
+    <url-pattern>/admin/changeCollectStatus</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>pollerConfig</servlet-name>
@@ -1034,17 +1188,14 @@
     <servlet-name>SVGServlet</servlet-name>
     <url-pattern>/map/SVGServlet</url-pattern>
   </servlet-mapping>
-
   <servlet-mapping>
     <servlet-name>SVGTranscoder</servlet-name>
     <url-pattern>/map/SVGTranscoder</url-pattern>
   </servlet-mapping>
-
   <servlet-mapping>
     <servlet-name>modifyParent</servlet-name>
     <url-pattern>/map/modifyParent</url-pattern>
   </servlet-mapping>
-
 
   <error-page>
     <exception-type>org.opennms.web.category.CategoryNotFoundException</exception-type>
@@ -1066,6 +1217,10 @@
     <exception-type>java.lang.SecurityException</exception-type>
     <location>/errors/sealingviolation.jsp</location>
   </error-page>
+  <error-page>
+    <exception-type>org.opennms.web.vulnerability.VulnerabilityIdNotFoundException</exception-type>
+    <location>/errors/vulnerabilityidnotfound.jsp</location>
+  </error-page>  
   
 
   <!-- Note: The order of these security-constraints is significant! -->
@@ -1101,4 +1256,26 @@
     <auth-method>BASIC</auth-method>
     <realm-name>OpenNMS Web Console</realm-name>
   </login-config>
+
+  <security-role>
+    <description>
+      OpenNMS Administrator
+    </description>
+    <role-name>OpenNMS Administrator</role-name>
+  </security-role>
+
+  <security-role>
+    <description>
+      OpenNMS RTC Daemon
+    </description>
+    <role-name>OpenNMS RTC Daemon</role-name>
+  </security-role>
+
+  <security-role>
+    <description>
+      OpenNMS User
+    </description>
+    <role-name>OpenNMS User</role-name>
+  </security-role>
+
 </web-app>
