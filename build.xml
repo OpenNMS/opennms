@@ -724,8 +724,10 @@ your distribution.
  <!-- CLEAN targets -->
  <target name="clean" depends="prep, clean.dist">
    <delete dir="${build.dir}"/>
+   <delete dir="${install.dir}"/>
  </target>
-
+	
+ 
  <!-- archive/package targets -->
  <target name="rpm" depends="prep, rpm.check, all, test, rpm.prepare"
 	 description="Build an RPM package">
