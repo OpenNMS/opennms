@@ -1,0 +1,344 @@
+-- MIB created 7/06/100 16:29:40, by
+--   SMIC (the next generation) version 1.6.29, November 22, 1994.
+
+CISCO-SMI DEFINITIONS ::= BEGIN
+
+-- From file: "CISCO-SMI.my"
+
+IMPORTS
+    enterprises
+            FROM SNMPv2-SMI-v1;
+
+cisco OBJECT IDENTIFIER ::= { enterprises 9 }
+-- MODULE-IDENTITY
+--  LastUpdated
+--    200001110000Z
+--  OrgName
+--    Cisco Systems, Inc.
+--  ContactInfo
+--     Cisco Systems
+--     Customer Service
+--    
+--    Postal: 170 West Tasman Drive
+--     San Jose, CA  95134
+--     USA
+--    
+--       Tel: +1 800 553-NETS
+--    
+--    E-mail: cs-snmp@cisco.com
+--  Descr
+--    The Structure of Management Information for the
+--    Cisco enterprise.
+--  RevDate
+--    200001110000Z
+--  RevDescr
+--    Added ciscoPolicy, ciscoPolicyAuto, ciscoPIB, and
+--                  ciscoPibToMib.
+--  RevDate
+--    9704090000Z
+--  RevDescr
+--    Added ciscoPartnerProducts to generate sysObjectID
+--    for partner platforms
+--  RevDate
+--    9505160000Z
+--  RevDescr
+--    New oid assignments for Cisco REPEATER MIB and others.
+--  RevDate
+--    9404262000Z
+--  RevDescr
+--    Initial version of this MIB module.
+
+ciscoPartyProxy OBJECT IDENTIFIER ::= { ciscoProxy 1 }
+ciscoContextProxy OBJECT IDENTIFIER ::= { ciscoProxy 2 }
+
+ciscoProducts OBJECT IDENTIFIER ::= { cisco 1 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    ciscoProducts is the root OBJECT IDENTIFIER from
+--    which sysObjectID values are assigned.  Actual
+--    values are defined in CISCO-PRODUCTS-MIB.
+
+local OBJECT IDENTIFIER ::= { cisco 2 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    Subtree beneath which pre-10.2 MIBS were built.
+
+temporary OBJECT IDENTIFIER ::= { cisco 3 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    Subtree beneath which pre-10.2 experiments were
+--    placed.
+
+pakmon OBJECT IDENTIFIER ::= { cisco 4 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    reserved for pakmon
+
+workgroup OBJECT IDENTIFIER ::= { cisco 5 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    subtree reserved for use by the Workgroup Business Unit
+
+otherEnterprises OBJECT IDENTIFIER ::= { cisco 6 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    otherEnterprises provides a root object identifier
+--    from which mibs produced by other companies may be
+--    placed.  mibs produced by other enterprises are
+--    typicially implemented with the object identifiers
+--    as defined in the mib, but if the mib is deemed to
+--    be uncontrolled, we may reroot the mib at this
+--    subtree in order to have a controlled version.
+
+ciscoAgentCapability OBJECT IDENTIFIER ::= { cisco 7 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    ciscoAgentCapability provides a root object identifier
+--    from which AGENT-CAPABILITIES values may be assigned.
+
+ciscoConfig OBJECT IDENTIFIER ::= { cisco 8 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    ciscoConfig is the main subtree for configuration mibs.
+
+ciscoMgmt OBJECT IDENTIFIER ::= { cisco 9 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    ciscoMgmt is the main subtree for new mib development.
+
+ciscoExperiment OBJECT IDENTIFIER ::= { cisco 10 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    ciscoExperiment provides a root object identifier
+--    from which experimental mibs may be temporarily
+--    based.  mibs are typicially based here if they
+--    fall in one of two categories
+--    1) are IETF work-in-process mibs which have not
+--    been assigned a permanent object identifier by
+--    the IANA.
+--    2) are cisco work-in-process which has not been
+--    assigned a permanent object identifier by the
+--    cisco assigned number authority, typicially because
+--    the mib is not ready for deployment.
+--    
+--    NOTE WELL:  support for mibs in the ciscoExperiment
+--    subtree will be deleted when a permanent object
+--    identifier assignment is made.
+
+ciscoAdmin OBJECT IDENTIFIER ::= { cisco 11 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    ciscoAdmin is reserved for administratively assigned
+--    OBJECT IDENTIFIERS, i.e. those not associated with MIB
+--    objects
+
+ciscoModules OBJECT IDENTIFIER ::= { cisco 12 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    ciscoModules provides a root object identifier
+--    from which MODULE-IDENTITY values may be assigned.
+
+lightstream OBJECT IDENTIFIER ::= { cisco 13 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    subtree reserved for use by Lightstream
+
+ciscoworks OBJECT IDENTIFIER ::= { cisco 14 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    ciscoworks provides a root object identifier beneath
+--    which mibs applicable to the CiscoWorks family of network
+--    management products are defined.
+
+newport OBJECT IDENTIFIER ::= { cisco 15 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    subtree reserved for use by the former Newport Systems
+--    Solutions, now a portion of the Access Business Unit.
+
+ciscoPartnerProducts OBJECT IDENTIFIER ::= { cisco 16 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    ciscoPartnerProducts is the root OBJECT IDENTIFIER from
+--    which partner sysObjectID values may be assigned. Such 
+--    sysObjectID values are composed of the ciscoPartnerProducts
+--    prefix, followed by a single identifier that is unique for 
+--    each partner, followed by the value of sysObjectID of the
+--    Cisco product from which partner product is derived.  Note
+--    that the chassisPartner MIB object defines the value of the
+--    identifier assigned to each partner.
+
+ciscoPolicy OBJECT IDENTIFIER ::= { cisco 17 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    ciscoPolicy is the root of the Cisco-assigned OID
+--    subtree for use with Policy Management.
+
+ciscoPIB OBJECT IDENTIFIER ::= { ciscoPolicy 2 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    ciscoPIB is the root of the Cisco-assigned OID
+--     subtree for assignment to PIB (Policy Information
+--     Base) modules.
+
+ciscoPolicyAuto OBJECT IDENTIFIER ::= { cisco 18 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    ciscoPolicyAuto is the root of the Cisco-assigned
+--    OID subtree for OIDs which are automatically assigned
+--    for use in Policy Management.
+
+ciscoPibToMib OBJECT IDENTIFIER ::= { ciscoPolicyAuto 2 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    ciscoPibToMib is the root of the Cisco-assigned
+--    OID subtree for MIBs which are algorithmically
+--    generated/translated from Cisco PIBs with OIDs
+--    assigned under the ciscoPIB subtree.
+--    These generated MIBs allow management
+--    entities (other the current Policy Server) to
+--    read the downloaded policy.  By convention, for PIB
+--    'ciscoPIB.x', the generated MIB shall have the
+--    name 'ciscoPibToMib.x'.
+
+ciscoProxy OBJECT IDENTIFIER ::= { ciscoAdmin 1 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    ciscoProxy OBJECT IDENTIFIERS are used to uniquely name
+--    party mib records created to proxy for SNMPv1.
+
+ciscoRptrGroupObjectID OBJECT IDENTIFIER ::= { ciscoAdmin 2 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    ciscoRptrGroupObjectID OBJECT IDENTIFIERS are used to
+--    uniquely identify groups of repeater ports for use by the
+--    SNMP-REPEATER-MIB (RFC 1516) rptrGroupObjectID object.
+
+ciscoUnknownRptrGroup OBJECT IDENTIFIER ::= { ciscoRptrGroupObjectID 1 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    The identity of an unknown repeater port group.
+
+cisco2505RptrGroup OBJECT IDENTIFIER ::= { ciscoRptrGroupObjectID 2 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    The authoritative identity of the Cisco 2505 repeater
+--    port group.
+
+cisco2507RptrGroup OBJECT IDENTIFIER ::= { ciscoRptrGroupObjectID 3 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    The authoritative identity of the Cisco 2507 repeater
+--    port group.
+
+cisco2516RptrGroup OBJECT IDENTIFIER ::= { ciscoRptrGroupObjectID 4 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    The authoritative identity of the Cisco 2516 repeater
+--    port group.
+
+ciscoWsx5020RptrGroup OBJECT IDENTIFIER ::= { ciscoRptrGroupObjectID 5 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    The authoritative identity of the wsx5020 repeater
+--    port group.
+
+ciscoChipSets OBJECT IDENTIFIER ::= { ciscoAdmin 3 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    Numerous media-specific MIBS have an object, defined as
+--    an OBJECT IDENTIFIER, which is the identity of the chipset
+--    realizing the interface.  Cisco-specific chipsets have their 
+--    OBJECT IDENTIFIERS assigned under this subtree.
+
+ciscoChipSetSaint1 OBJECT IDENTIFIER ::= { ciscoChipSets 1 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    The identity of the Rev 1 SAINT ethernet chipset
+--    manufactured for cisco by LSI Logic.
+
+ciscoChipSetSaint2 OBJECT IDENTIFIER ::= { ciscoChipSets 2 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    The identity of the Rev 2 SAINT ethernet chipset
+--    manufactured for cisco by LSI Logic.
+
+ciscoChipSetSaint3 OBJECT IDENTIFIER ::= { ciscoChipSets 3 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    The identity of the Rev 3 SAINT ethernet chipset
+--    manufactured for cisco by Plessey.
+
+ciscoChipSetSaint4 OBJECT IDENTIFIER ::= { ciscoChipSets 4 }
+-- OBJECT-IDENTITY
+--  Status
+--    mandatory
+--  Descr
+--    The identity of the Rev 4 SAINT ethernet chipset
+--    manufactured for cisco by Mitsubishi.
+
+
+END
+

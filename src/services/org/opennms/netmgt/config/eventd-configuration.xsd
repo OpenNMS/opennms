@@ -1,0 +1,27 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/eventd">
+	<element name="EventdConfiguration">
+ 		<complexType>
+			<!--- the port on which eventd listens for TCP connections -->
+  			<attribute name="TCPPort" type="positiveInteger" use="required"/>
+
+			<!--- the port on which eventd listens for UDP data -->
+  			<attribute name="UDPPort" type="positiveInteger" use="required"/>
+
+			<!--- the max number of threads reading and processing the events -->
+  			<attribute name="receivers" type="positiveInteger" use="required"/>
+
+			<!--- the query to get next value of the 'nodeNxtId' database sequence - to make the access database independant -->
+  			<attribute name="getNextEventID" type="string" use="required"/>
+
+			<!--- the next two attributes are related to socket communication. In Linux,
+			      the close() system call is not preemptive. Setting the 'socketSoTimeoutRequired'
+			      to 'yes', causes the 'socketSoTimeoutPeriod' to be set on sockets to mimic
+			      non-blocking socket I/O
+			-->
+  			<attribute name="socketSoTimeoutRequired" type="string" use="required"/>
+  			<attribute name="socketSoTimeoutPeriod" type="positiveInteger" use="optional"/>
+ 		</complexType>
+	</element>
+</schema>
+

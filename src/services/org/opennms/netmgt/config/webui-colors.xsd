@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/webui-colors">
+
+	<!--- The colors used in the categories box of the WebUI -->
+	<element name="category-colors">
+		<complexType>
+			<sequence>
+				<!-- The color used for a normal status -->
+				<element name="green" type="string" minOccurs="1" maxOccurs="1"/>
+
+				<!-- The color used for a warning status -->
+				<element name="yellow" type="string" minOccurs="1" maxOccurs="1"/>
+
+				<!-- The color used for an abnormal status -->
+				<element name="red" type="string" minOccurs="1" maxOccurs="1"/>
+			</sequence>
+		</complexType>
+	</element>
+
+</schema>

@@ -1,0 +1,33 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/rtc">
+	<element name="RTCConfiguration">
+ 		<complexType>
+			<!--- the max number of threads reading the events and updating the data -->
+			<attribute name="updaters" type="positiveInteger" use="required"/>
+
+			<!--- the max number of threads sending data to the ui -->
+			<attribute name="senders" type="positiveInteger" use="required"/>
+
+			<!--- the window for which the availability is to be calculated
+			      can be specified as a combination of hours/minutes/seconds for eg. 10h20m5s
+			-->
+			<attribute name="rollingWindow" type="string" use="required"/>
+
+			<!--- the number of events received before a timer goes off - prompts a data send -->
+			<attribute name="maxEventsBeforeResend" type="integer" use="required"/>
+
+			<!-- the low threshold timer interval -->
+			<attribute name="lowThresholdInterval" type="string" use="required"/>
+
+			<!-- the high threshold timer interval -->
+			<attribute name="highThresholdInterval" type="string" use="required"/>
+
+			<!-- the user threshold timer interval used to send data when no events are coming in -->
+			<attribute name="userRefreshInterval" type="string" use="required"/>
+
+			<!-- number of times a URL post is tried with errors before automatically unsubscribing the URL, a negative value means URL is not unsubscribed until an 'unsubscribe' is got -->
+			<attribute name="errorsBeforeUrlUnsubscribe" type="integer" use="required"/>
+ 		</complexType>
+	</element>
+</schema>
+

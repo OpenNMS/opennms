@@ -1,0 +1,37 @@
+Once the packages are installed, you will need to do the following:
+
+Set some environment variables:
+
+export JAVA_HOME=/usr/java/j2sdk1.4.0_02 (or whatever your Java home dir is)
+
+export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/ssl/lib/:/usr/local/pgsql/lib:/usr/local/opennms/lib:/usr/local/pgsql/include/server/lib:/usr/local/pgsql/include/internal/lib
+
+export POSTGRES_LIB=/usr/local/pgsql/lib
+
+export PERL5LIB=/usr/local/lib/perl5
+
+Create a database:
+
+sudo -u postgres ./initdb -D /usr/local/pgsql/data -E ""
+
+Next, start up Postgres:
+
+sudo -u postgres ./pg_ctl -D /usr/local/pgsql/data/ start (or run it as the postgres user if you don't use sudo)
+
+Then, set up the database structure:
+
+/usr/local/opennms/bin/install.pl -q /usr/local/opennms/etc/create.sql
+
+Once this completes successfully, you are ready to start OpenNMS:
+
+/usr/local/opennms/bin/opennms.sh start
+
+and then tomcat:
+
+/usr/local/tomcat/bin/startup.sh
+
+Note: The shell you start this in will behave like a console, and you may get some JMX messages like:
+
+DEBUG:  pq_recvbuf: unexpected EOF on client connection
+
+Just ignore them.

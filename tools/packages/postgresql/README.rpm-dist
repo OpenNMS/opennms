@@ -1,0 +1,437 @@
+README.rpm-dist
+-----------------------------------------------------------------------------
+Version 3.6, for PostgreSQL 7.1.3
+Lamar Owen <lamar.owen@wgcr.org> 
+-----------------------------------------------------------------------------
+
+Contents:
+ 0.)	Quickie -i note.
+ 1.)	Introduction, QuickStart, and credits
+ 2.)	PostgreSQL RPM packages and rationale
+ 3.)	Upgrading from an older version of PostgreSQL without losing data.
+ 4.)	Regression Testing
+ 5.)	Starting postmaster automatically on startup
+ 6.)	Grand Unified Configuration(GUC) File.
+ 7.)	Rebuilding the source RPM.
+ 8.)	Contrib files.
+ 9.)	Logging set up
+10.)	Further Information Resource
+
+QUICKIE '-i' NOTE
+-----------------------------------------------------------------------------
+The postmaster '-i' option is NOT used by default in the initscript shipped
+with these RPMs.  Please do NOT modify the initscript to add the '-i' back
+in -- it will get overwritten on the next package upgrade.  Rather, see the
+section below on the Grand Unified Configuration file, which includes the
+recommended way to get '-i' functionality back.
+
+INTRODUCTION
+-----------------------------------------------------------------------------
+This document exists to explain the layout of the RPM's for PostgreSQL, to 
+explain how to migrate from an older version, and to explain WHY it can be
+so difficult to upgrade PostgreSQL.
+
+This document is written to be applicable to version 7.1.2 of PostgreSQL, 
+which is the current version of the RPM's as of this writing.
+
+Official PostgreSQL Global Development Group RPM's will from version 7.1.2
+on carry a 'PGDG' after the release number.  Other RPMset's as distributed
+with Linux distributions may have a different release number and initials.
+
+It is preferable for the distribution-specific set to be the one used, as
+the PGDG set is intentionally generic.  So, if your distro has a set of RPMs,
+use them in preference.  If you want to stay up-to-date on the PostgreSQL
+core itself, use the PGDG generic set -- but understand that it is a 
+GENERIC set.
+
+These RPMs are designed to be LSB-compliant -- if you find this not to be the
+case, please let me know by way of the pgsql-ports@postgresql.org mailing
+list.
+
+QUICKSTART
+-----------------------------------------------------------------------------
+If this is an upgrade, please go to section 3, UPGRADING.
+If this is a fresh installation, simply start the postmaster using:
+ /etc/rc.d/init.d/postgresql start  (on RedHat and TurboLinux)
+
+On SuSE, please see the file 'README.linux' in this directory.
+
+The file /var/lib/pgsql/.bash_profile is now packaged to help with the 
+setting of environment variables. You may edit this file, and it won't be
+overwritten during an upgrade.  However, enhancements and bugfixes may be added
+to this file, so be sure to check .bash_profile.rpmnew after upgrading.
+
+The user 'postgres' is created during installation of the server subpackage.
+This user by default is UID and GID 26. The user has the default shell set to
+bash, and the home directory set to /var/lib/pgsql.  This user also has no
+default password -- in order to be able to su to from a non-root account
+or login as 'postgres' you will need to set a password using passwd.
+
+CREDITS
+-----------------------------------------------------------------------------
+Thomas Lockhart
+Uncle George
+Ryan Kirkpatrick
+Trond Eivind Glomsrød
+Mark Knox
+Mike Mascari
+Nicolas Huillard
+Karl DeBisschop
+Roger Luethi
+Jeff Johnson
+Reinhard Max
+
+
+POSTGRESQL RPM PACKAGES AND RATIONALE.
+-----------------------------------------------------------------------------
+On RedHat Linux, prior to version 6.5, PostgreSQL was packaged in RPM form in
+three (or four) packages:
+
+postgresql:		The server and documentation
+postgresql-clients:	The client libraries, the cli, and the tcl interface
+postgresql-devel:	Development libraries (for the client-side)
+postgresql-data:	A sample database -- not shipped with the 6.4 RPMS.
+
+However, it was decided that a different split would be more appropriate for
+users.  The 7.0 splitup allows more flexibility in installation, as well as
+making the new clients into their own packages.  The new packages are:
+
+postgresql:		Some clients and libraries, and documentation
+postgresql-server:	Server executables and data files
+postgresql-devel:	Client-side development libraries
+postgresql-tcl:		TCL/TK client libraries and the pgaccess client
+postgresql-perl:	PERL client module
+postgresql-python:	The PygreSQL client library
+postgresql-odbc:	Linux ODBC client (not required to use ODBC from Win95)
+postgresql-jdbc:	JAR of the JDBC client
+postgresql-test:	The regression tests and associated files.
+
+For version 7.0.x, another package is being shipped, and one package has been
+trimmed:
+postgresql-tk:		Tk client and pgaccess.
+postgresql-tcl:		Tcl client and PL ONLY.
+
+For version 7.1, more packages are being shipped:
+postgresql-libs:	client shared libraries.
+postgresql-docs:	extra documentation,such as the SGML doc sources.
+postgresql-contrib:	The contrib source tree, as well as selected binaries.
+
+For SuSE Linux <= 7.0, the packages are named differently, but with the same
+functionality.  Here is a mapping:
+SuSE:			RedHat:
+-----			-----------------
+postgres		postgresql
+pg_serv			postgresql-server
+pg_devel		postgresql-devel
+pg_tcl			postgresql-tcl
+pg_perl			postgresql-perl
+pg_pyth			postgresql-python
+pg_odbc			postgresql-odbc
+pg_jdbc			postgresql-jdbc
+pg_test			postgresql-test
+
+There are other changes to the SuSE packages to make them conform to the
+SuSE packaging standards.  SuSE Linux has been shipping their own packages.
+
+While the repackaging will initially cause some confusion, it makes it
+possible  to set up a RedHat linux machine to be only a client -- the server
+is no longer required.  The clients were split out -- after all, a person who
+needs the perl client may very well not need the tcl client, etc.  And, the
+regression tests were added to give some confidence of the suitability of
+PostgreSQL, as well as the stability of the server machine.  Additionally,
+the regression tests can be used to help find hardware errors.
+
+RPM FILE LOCATIONS.
+-----------------------------------------------------------------------------
+In compliance with the Linux FHS, the PostgreSQL RPM's install files in a manner
+not consistent with most of the PostgreSQL documentation.  According to the
+standard PostgreSQL documentation, PostgreSQL is installed under the directory
+/usr/local/pgsql, with executables, source, and data existing in various 
+subdirectories.
+
+Different distributions have different ideas of some of these file locations.
+In particular, the documentation directory can be /usr/doc, /usr/doc/packages,
+/usr/share/doc, /usr/share/doc/packages, or some other similar path.  The
+RedHat 7 locations are listed below. On SuSE <7.1, substitute 'postgres' for 
+'postgresql' below, and 'pg_tk' for 'postgresql-tk' below.
+
+However, the RPM's install the files like this:
+Executables:		/usr/bin
+Libaries:		/usr/lib
+Documentation:		/usr/share/doc/postgresql-x.y.z
+Contrib:		/usr/share/doc/postgresql-x.y.z/contrib
+Source:			not installed
+Data:			/var/lib/pgsql/data
+Backup area:		/var/lib/pgsql/backup
+Templates:		/usr/share/pgsql
+Procedural Languages:	/usr/lib/pgsql
+TK client docs:		/usr/share/doc/postgresql-tk-x.y.z
+Development Headers:	/usr/include/pgsql
+Other shared data:	/usr/share/pgsql
+Regression tests:	/usr/lib/pgsql/test/regress  (in the -test package)
+Documentation SGML:	/usr/share/doc/postgresql-docs-x.y.z
+
+The above list references the Red Hat 7.x structure.  These locations may 
+change for other distributions.  Use of 'rpm -ql' for each package is
+recommended as the 'Official' location source.
+
+While it may seem gratuitous to place these files in different locations, the
+FHS requires it -- distributions should not ever touch /usr/local.  It may
+also seem like more work to keep track of where everything is -- but, that's
+the beauty of RPM -- you don't have to keep track of the files, RPM does it
+for you.
+
+UPGRADING.
+-----------------------------------------------------------------------------
+CAUTION: While a semi-automatic upgrade process has been implemented, it is
+STRONGLY recommended that a full dump of your database (using pg_dumpall) is
+performed BEFORE upgrading the RPMs!  If you have already done the upgrade
+with the RPM, and want to return to your previous version to do the dump,
+find the old RPM's and use 'rpm -U --oldpackage' to downgrade.
+
+NOTE: moving your existing data from /var/lib/pgsql to /var/lib/pgsql/data is
+not currently automatic -- you will need to do this yourself at this release!
+This change occurred between 6.5.3 and 7.0, so upgrading from priot to 7.0 to
+7.0 or later might be difficult.  The rh-dump script is provided to ease this,
+see below.
+
+The single biggest problem with upgrading PostgreSQL RPM's has been the lack 
+of a reasonably automated upgrade process.  PostgreSQL has the property of 
+the binary on-disk database format changing between major versions (like 
+between 6.3 and 6.4).  However, a change from 6.5 to 6.5.3 does not change 
+the on-disk format.
+
+This property (feature, misfeature, bug, whatever) has been a known property of
+PostgreSQL since before it was called PostgreSQL -- it has always been this
+way.  However, the means by which an upgrade is performed is not readily 
+performed in a fully automated fashion, as a "dump-initdb-restore" cycle has
+to be performed. This doesn't appear to be too difficult -- however, dumping
+the old database requires the old executables -- and, if you've already done
+an rpm -U postgresql* (or upgraded from an older version of RedHat and didn't
+specifically exclude the postgresql rpms), you no longer have the older 
+executables to dump your data. And your data is useless (until you reinstall
+the old version, that is). All RPM's prior to late releases of version 6.5.
+1 have this upgrade issue.
+
+The newest RPM's for PostgreSQL attempt to make your job in upgrading a little
+easier.  First, during the installation of the new RPM's, a copy is made of
+all the executable files and libraries necessary to make a backup of your data.
+Second, the initialization script in the new postgresql-server package detects
+the version of any database found -- if the version is old, then the startup
+of the new version is aborted.  However, if no database is found, a new one 
+is made.
+
+One thing must be remembered -- due to the restructuring of the PostgreSQL
+RPM's, you will have to manually select the postgresql-server package if you
+want the server -- it is not installed by default in an upgrade. You can either
+select it during the upgrade/install, or you can mount your RedHat CD and 
+install manually with rpm -i.
+
+To facilitate upgrading, the postgresql-dump utility has been provided.  Look
+at the man page for postgresql-dump to see its usage.  All executables to
+restore the immediately prior version of the PostgreSQL database are placed in
+the directory /usr/lib/pgsql/backup, and are accessed by the postgresql-dump
+script.  The directory /usr/lib/pgsql/backup is owned by the postgres user -- 
+you can use this directory to hold dump files and preserve directories.
+
+The basic sequence is:
+(as user postgres):
+postgresql-dump -t /var/lib/pgsql/backup/db.bak -p /var/lib/pgsql/backup/old -d
+(you can abort the ASCII dump with 'Q', as it uses more) Then, (as user root):
+
+***** NOTE ***** ***** NOTE *****
+
+The above script is broken. Use "rh-pgdump.sh targetfile" instead, remove the
+old databases (/var/lib/pgsql/base) (or safer - move them somewhere else first),
+start the database and follow the insert procedure described below.
+
+***** NOTE ***** ***** NOTE *****
+
+service postgresql start
+
+(which will automatically create a new database structure) And finally,
+
+(as user postgres):
+psql -e template1 </var/lib/pgsql/backup/db.bak
+
+Once you are satisfied that the data has been restored properly, you may remove
+the dump file (/var/lib/pgsql/backup/db.bak) and the preserve directory 
+(/var/lib/pgsql/backup/old).
+
+EXPLANATION OF STEPS:
+-------------------------------------------------------------------------------
+postgresql-dump: dumps the old database structure out, using the postmaster and 
+the backend saved during the rpm upgrade. This step MUST be done as user 
+postgres.
+
+/etc/rc.d/init.d/postgresql start: initializes the new database structure that
+the data from your old version will be restored into, does some sanity 
+checking, and starts the postmaster.  Due to the nature of some of the tasks, 
+this step must be done as root.
+
+psql -e: restores the old database into the new structure created by the 
+previous step.
+
+NOTE:
+-------------------------------------------------------------------------------
+If you have added tables, indices, or basically anything to the template1 
+database which is the default administrative database this script will NOT 
+upgrade your database. As a matter of fact you will lose your data included 
+in the template1 database. Please look at www.postgresql.org for information 
+on upgrading the template1 database. This is a known bug in the PostgreSQL
+pg_dump and pg_dumpall utilities.
+
+REGRESSION TESTING
+-------------------------------------------------------------------------------
+One of the features of the newer RPM sets is the capability to perform the 
+regression tests.  These tests stress your database installation and produce
+results that give you assurances that the installation is complete, and that
+your database machine is up to the task.
+
+To run the regression tests under the RPM installation, make sure that
+postmaster has been started (if not, su to root and execute the
+'/etc/rc.d/init.d/postgresql start' init script), cd to
+/usr/lib/pgsql/test/regress, su to postgres, and execute the command line:
+time ./pg_regress.sh --schedule=parallel_schedule
+This command line will start the regression tests and will both show the
+results to the screen and store the results in the file regress.out.
+It will also give you a crude benchmark of how fast your machine performs.
+
+If tests fail, please see the file regression.diffs in that directory.  If
+you need help interpreting that file, contact the pgsql-ports list on
+postgresql.org.
+
+There are some tests that will almost always fail with RedHat Linux 5.x and 6.x
+installations.  The geometry, float8, and on occassion the random test will 
+fail.  These failures are normal for RedHat 5.2 and 6.1.  For RedHat 6.1 with
+certain i18n settings, there will be other tests fail.
+
+For 7.1RC1, all 76 tests passed on RedHat 6.2 and RedHat 7.0. This
+was accomplished by fiddling with the locale settings.  In version 7.1.2 this
+capability was removed -- you need to set your locale to 'C' before executing
+the first postmaster startup, or many more regression tests will fail.
+
+For interpretation of the regression tests, see the PostgreSQL documentation.
+
+STARTING POSTMASTER AUTOMATICALLY AT SYSTEM STARTUP
+-------------------------------------------------------------------------------
+RedHat Linux uses the System V Init package.  A startup script for PostgreSQL
+is provided in the server package, as /etc/rc.d/init.d/postgresql.  To start
+the postmaster, with sanity checking, as root, run
+/etc/rc.d/init.d/postgresql start
+to shut postmaster down,
+/etc/rc.d/init.d/postgresql stop
+There are other parameters to this script -- /etc/rc.d/init.d/postgresql for a
+listing.
+
+To get this script to run at system startup or any time the system switches into
+runlevels 4, 5, or 6, run 'chkconfig --add postgresql', and the proper symlinks 
+will be created.  Check the chkconfig man page for more information.
+
+This same script also works for TurboLinux, and any other distribution similar
+enough to RedHat.  SuSE Linux uses a different approach, using a different
+location and a different script, found at either /sbin/init.d/postgres or
+/usr/sbin/rcpostgres.  Please see the SuSE 'README.linux' for more information.
+
+SuSE has maintained their own RPMset for some time -- their documentation
+supercedes any found in this file.
+
+GRAND UNIFIED CONFIGURATION (GUC) FILE
+-------------------------------------------------------------------------------
+The PostgreSQL server has many tunable parameters -- the file 
+/var/lib/pgsql/data/postgresql.conf is the master configuration file for the
+whole system.  
+
+The RPM ships with the default file -- you will need to tune the
+parameters for your installation.  In particular, you might want to allow
+TCP/IP socket connections -- in order to allow these, you will need to edit
+the postgresql.conf file.  The line in question contains the string 
+'tcpip_socket' --want to both uncomment the line and set the parameter to true
+in order to get the TCP/IP socket to open.  
+
+This is the same behavior the -i command line switch provides.  It is 
+preferable to use the postgresql.conf file, however, as future versions
+of the RPMset will allow multiple postmaster instances -- and that will only
+be possible thanks to the decoupling of settings out to each datadir.
+
+REBUILDING FROM SOURCE RPM
+-------------------------------------------------------------------------------
+If your distribution is not supported by the binary RPM's from PostgreSQL.org, 
+you will need to rebuild from the source RPM.  Download the .src.rpm for this
+release.  You will need to be root to rebuild, unless you have already set up
+a non-root build environment.
+
+Install the source RPM with rpm -i, then CD to the rpm building area (on RedHat
+this is /usr/src/redhat by default).  You will have to have a full development
+environment to rebuild the full RPM set.
+
+This release of the RPMset includes the ability to conditionally build 
+sets of packages.  The parameters, their defaults, and the meanings are:
+
+perl		1	#build the postgresql-perl package.
+tcl		1	#build the postgresql-tcl package.
+tkpkg		1	#build the postgresql-tk package.  
+odbc		1	#build the postgresql-odbc package.
+jdbc		1	#build the postgresql-jdbc package.
+test		1	#build the postgresql-test package.
+python		1	#build the postgresql-python package.
+pltcl		1	#build the postgresql-pltcl package.
+forceplperl	0	#don't force a build of pl/perl over libperl.a
+plperl		0	#don't build the postgresql-plperl package.
+ssl		1	#use OpenSSL support.
+kerberos	1	#use Kerberos 5 support.
+enable_mb	1	#enable multibyte encodings.
+pgaccess	1	#build the pgaccess client, part of postgresql-tk.
+newintarray	0	#substitute a newer intarray contrib.
+
+To use these defines, invoke a rebuild like this:
+rpm --rebuild --define 'perl 0' --define 'tcl 0' --define 'tkpkg 0'\
+	--define 'test 0' --define 'newintarray 1' --define 'kerberos 0' \
+	postgresql-7.1.3-1PGDG.src.rpm
+This line would disable the perl, tcl, tk, and test subpackages, enable the
+newer intarray code, and disable kerberos support.
+
+More of these conditionals will be added in the future.
+
+
+CONTRIB FILES
+-------------------------------------------------------------------------------
+The contents of the contrib tree are packaged into the -contrib subpackage
+and are compiled and placed into /usr/lib/pgsql/contrib with no further
+processing.  Please see each directory under contrib for details on how to
+install and use.
+
+LOGGING SET UP
+-------------------------------------------------------------------------------
+To get rollable syslog set up, see the documentation for the file
+postgresql.conf, by default in the directory /var/lib/pgsql/data, as relates to
+the syslog options.  Then, add a line to /etc/syslog.conf, using the man page
+for syslog.conf as a source. Example:
+If postgresql.conf has the following lines for the syslog settings:
+syslog = 1 # range 0-2
+syslog_facility = 'LOCAL0'
+syslog_ident = 'postgres'
+
+Then you need to add the line to /etc/syslog.conf:
+local0.*			/var/log/postgresql 
+
+Then set up an entry in /etc/logrotate.d to roll postgresql the way you want it
+rolled.
+
+MORE INFORMATION
+-------------------------------------------------------------------------------
+You can get more information at http://www.postgresql.org
+
+Please help make this packaging better -- let me know if you find problems, or
+better ways of doing things.  You can reach me by e-mail at
+pgsql-ports@postgresql.org -- please include an [RPM] string in the subject, as
+I use automatic mail folder processing to put mail in the right place.
+
+SuSE information is available at SuSE's website and information contacts.
+-----------------------------------------------------------------------------
+
+
+
+
+
+
