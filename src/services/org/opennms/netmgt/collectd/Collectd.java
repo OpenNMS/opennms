@@ -10,8 +10,10 @@
 //
 // Modifications:
 //
+// 2004 Feb 12: Rebuild the package to ip list mapping while a new discoveried interface
+//              to be scheduled.
 // 2003 Jan 31: Cleaned up some unused imports.
-//
+// 
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -658,12 +660,19 @@ public final class Collectd
 			//
 			if (!cCfgFactory.interfaceInPackage(ipAddress, pkg))
 			{
-				if (log.isDebugEnabled())
-					log.debug("scheduleInterface: address/service: " + 
+                                // The interface might be a newly added one, rebuild the package
+                                // to ipList mapping and again to verify if the interface is in 
+                                // the package
+                                cCfgFactory.rebuildPackageIpListMap();
+			        if (!cCfgFactory.interfaceInPackage(ipAddress, pkg))
+			        {
+				        if (log.isDebugEnabled())
+					        log.debug("scheduleInterface: address/service: " + 
 							ipAddress + "/" + svcName + 
 							" not scheduled, interface does not belong to package: " + 
 							pkg.getName());
-				continue;
+				        continue;
+                                }
 			}
 			
 			if (existing == false)

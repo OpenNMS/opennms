@@ -60,6 +60,13 @@ import org.opennms.netmgt.utils.IPSorter;
 import org.opennms.netmgt.config.collectd.*;
 import org.opennms.netmgt.config.server.*;
 
+ /**
+ * @author <a href="mailto:jamesz@blast.com">James Zuo</a>
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ */
+
 /**
  * <p>This is the singleton class used to load the configuration for
  * the OpenNMS Collection Daemon from the collectd-configuration.xml.</p>
@@ -70,11 +77,6 @@ import org.opennms.netmgt.config.server.*;
  * <p><strong>Note:</strong>Users of this class should make sure the 
  * <em>init()</em> is called before calling any other method to ensure
  * the config is loaded before accessing other convenience methods</p>
- *
- * @author <a href="mailto:jamesz@blast.com">James Zuo</a>
- * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 public final class CollectdConfigFactory
 {
@@ -203,7 +205,19 @@ public final class CollectdConfigFactory
                         }
 		}
         }
-
+        
+        /**
+         * <p>This method is used to rebuild the package agaist iplist mapping when needed.
+         * When a node gained service event occurs, collectd has to determine which package 
+         * the ip/service combination is in, but if the interface is a newly added one, the 
+         * package iplist should be rebuilt so that collectd could know which package this
+         * ip/service pair is in. </p>
+         */
+        public synchronized void rebuildPackageIpListMap()
+        {
+                createPackageIpListMap();
+        }
+        
 	/**
 	 * Private constructor
 	 *

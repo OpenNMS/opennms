@@ -194,6 +194,18 @@ public final class ThreshdConfigFactory
 		}
         }
 
+        /**
+         * <p>This nethod is used to rebuild the package agaist iplist mapping when needed.
+         * When a node gained service event occurs, threshd has to determine which package
+         * the ip/service combination is in, but if the interface is a newly added one, the
+         * package iplist should be rebuilt so that threshd could know which package this
+         * ip/service pair is in. </p>
+         */
+        public synchronized void rebuildPackageIpListMap()
+        {
+                createPackageIpListMap();
+        }
+        
 	/**
 	 * Private constructor
 	 *
