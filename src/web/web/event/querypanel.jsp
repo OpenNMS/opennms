@@ -42,7 +42,22 @@
     Calendar now = Calendar.getInstance();
 %>
 
-<form action="event/query" method="GET">
+<SCRIPT LANGUAGE="JavaScript" type="text/javascript">
+<!--
+function Blank_TextField_Validator()
+{
+  if(document.event_search.msgmatchany.value == "")
+     {
+     alert("Please Enter in Event Search Text");
+     document.event_search.msgmatchany.focus();
+     return false;
+     }
+  return true;
+}
+-->
+</SCRIPT>
+
+<form name="event_search" action="event/query" method="GET" onsubmit="return Blank_TextField_Validator()">
   <table border="0" cellpadding="2" cellspacing="0">
     <tr>
       <td>Event Text:</td>
