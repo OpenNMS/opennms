@@ -116,7 +116,7 @@ public class SnmpManageNodesServlet extends HttpServlet
 		for (int k = 0; k < allInterfaces.size(); k++)
 		{
 			SnmpManagedInterface testInterface = (SnmpManagedInterface)allInterfaces.get(k);
-			if (testInterface.getNodeid() == currNodeId && testInterface.getStatus().equals("P"))
+			if (testInterface.getNodeid() == currNodeId && "P".equals(testInterface.getStatus()))
 				primeInt = testInterface.getAddress();
 		} 
 	
