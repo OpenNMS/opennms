@@ -66,6 +66,7 @@ import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.NotifdConfigManager;
 import org.opennms.netmgt.config.NotificationManager;
+import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.destinationPaths.Escalate;
 import org.opennms.netmgt.config.destinationPaths.Path;
 import org.opennms.netmgt.config.destinationPaths.Target;
@@ -88,7 +89,7 @@ import org.opennms.netmgt.xml.event.Logmsg;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class BroadcastEventProcessor implements EventListener {
+public final class BroadcastEventProcessor implements EventListener {
     /**
      */
     private Map m_noticeQueues;
@@ -216,16 +217,15 @@ final class BroadcastEventProcessor implements EventListener {
         for (Iterator it = notifIDs.iterator(); it.hasNext();) {
             int notifId = ((Integer) it.next()).intValue();
             final Map parmMap = rebuildParameterMap(notifId, resolutionPrefix);
-            
+
             String queueID = getNotificationManager().getQueueForNotification(notifId);
-            
-            
+
             final Map userNotifitcations = new HashMap();
             RowProcessor acknowledgeNotification = new RowProcessor() {
                 public void processRow(ResultSet rs) throws SQLException {
                     String userID = rs.getString("userID");
                     String cmd = rs.getString("media");
-                    List cmdList = (List)userNotifitcations.get(userID);
+                    List cmdList = (List) userNotifitcations.get(userID);
                     if (cmdList == null) {
                         cmdList = new ArrayList();
                         userNotifitcations.put(userID, cmdList);
@@ -234,14 +234,14 @@ final class BroadcastEventProcessor implements EventListener {
                 }
             };
             getNotificationManager().forEachUserNotification(notifId, acknowledgeNotification);
-            
+
             for (Iterator userIt = userNotifitcations.keySet().iterator(); userIt.hasNext();) {
                 String userID = (String) userIt.next();
-                List cmdList = (List)userNotifitcations.get(userID);
+                List cmdList = (List) userNotifitcations.get(userID);
                 String[] cmds = (String[]) cmdList.toArray(new String[cmdList.size()]);
                 sendResolvedNotificationsToUser(queueID, userID, cmds, parmMap);
             }
-            
+
         }
     }
 
@@ -249,16 +249,16 @@ final class BroadcastEventProcessor implements EventListener {
         int noticeId = -1;
         NoticeQueue noticeQueue = (NoticeQueue) m_noticeQueues.get(queueID);
         long now = System.currentTimeMillis();
-        
+
         if (m_notifd.getUserManager().hasUser(targetName)) {
             NotificationTask newTask = makeUserTask(now, params, noticeId, targetName, commands, null);
-            
+
             if (newTask != null) {
                 noticeQueue.put(new Long(now), newTask);
             }
         } else if (targetName.indexOf("@") > -1) {
             NotificationTask newTask = makeEmailTask(now, params, noticeId, targetName, commands, null);
-            
+
             if (newTask != null) {
                 noticeQueue.put(new Long(now), newTask);
             }
@@ -267,7 +267,6 @@ final class BroadcastEventProcessor implements EventListener {
             log.warn("Unrecognized target '" + targetName + "' contained in destinationPaths.xml. Please check the configuration.");
         }
 
-        
     }
 
     /**
@@ -322,6 +321,31 @@ final class BroadcastEventProcessor implements EventListener {
     }
 
     /**
+     * Returns true if an auto acknowledgment exists for the specificed event,
+     * such that the arrival of some second, different event will auto
+     * acknowledge the event passed as an argument. E.g. if there is an auto ack
+     * set up to acknowledge a nodeDown when a nodeUp is received, passing
+     * nodeDown to this method will return true. Should this method be in
+     * NotifdConfigFactory?
+     */
+    private boolean autoAckExistsForEvent(String eventUei) {
+        try {
+            Collection ueis = getConfigManager().getConfiguration().getAutoAcknowledgeCollection();
+            Iterator i = ueis.iterator();
+            while (i.hasNext()) {
+                AutoAcknowledge curAck = (AutoAcknowledge) i.next();
+                if (curAck.getAcknowledge().equals(eventUei)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            ThreadCategory.getInstance(getClass()).error("Unable to find if an auto acknowledge exists for event " + eventUei + " due to exception.", e);
+            return false;
+        }
+    }
+
+    /**
      */
     private void scheduleNoticesForEvent(Event event) {
 
@@ -348,6 +372,8 @@ final class BroadcastEventProcessor implements EventListener {
                     return;
                 }
 
+                long nodeid = event.getNodeid();
+                String ipaddr = event.getInterface();
                 if (notifications != null) {
                     for (int i = 0; i < notifications.length; i++) {
 
@@ -377,10 +403,10 @@ final class BroadcastEventProcessor implements EventListener {
                         try {
                             path = m_notifd.getDestinationPathManager().getPath(notification.getDestinationPath());
                             if (path == null) {
-                                log.warn("Unknown destination path " + notification.getDestinationPath() + ". Please check the <destinationPath> tag for the notification " + notification.getName() + " in the notification.xml file.");
-                                
-                                //changing posted by Wiktor Wodecki
-                                //return;
+                                log.warn("Unknown destination path " + notification.getDestinationPath() + ". Please check the <destinationPath> tag for the notification " + notification.getName() + " in the notifications.xml file.");
+
+                                // changing posted by Wiktor Wodecki
+                                // return;
                                 continue;
                             }
                         } catch (Exception e) {
@@ -412,6 +438,28 @@ final class BroadcastEventProcessor implements EventListener {
                         }
 
                         long startTime = System.currentTimeMillis() + TimeConverter.convertToMillis(initialDelay);
+                        // Find the first outage which applies at this time
+
+                        String scheduledOutageName = scheduledOutage(nodeid, ipaddr);
+                        if (scheduledOutageName != null) {
+                            // This event occured during a scheduled outage.
+                            // Must decide what to do
+                            if (autoAckExistsForEvent(event.getUei())) {
+                                // Defer starttime till the given outage ends -
+                                // if the auto ack catches the other event
+                                // before then,
+                                // then the page will not be sent
+                                Calendar endOfOutage = m_notifd.getPollOutagesConfigManager().getEndOfOutage(scheduledOutageName);
+                                startTime = endOfOutage.getTime().getTime();
+                            } else {
+                                // No auto-ack exists - there's no point
+                                // delaying the page, so just drop it (but leave
+                                // the database entry)
+                                continue; // with the next notification (for
+                                            // loop)
+                            }
+                        }
+
                         List targetSiblings = new ArrayList();
 
                         try {
@@ -424,7 +472,7 @@ final class BroadcastEventProcessor implements EventListener {
 
                     }
                 } else {
-                    log.debug("Event doesn't match a notice: " + event.getUei() + " : " + event.getNodeid() + " : " + event.getInterface() + " : " + event.getService());
+                    log.debug("Event doesn't match a notice: " + event.getUei() + " : " + nodeid + " : " + ipaddr + " : " + event.getService());
                 }
             }
         } else {
@@ -738,7 +786,7 @@ final class BroadcastEventProcessor implements EventListener {
             task = new NotificationTask(m_notifd, sendTime, parameters, siblings);
 
             User user = new User();
-            user.setUserId("email-address");
+            user.setUserId(address);
             Contact contact = new Contact();
             contact.setType("email");
             // contact.setType("javaEmail");
@@ -777,5 +825,51 @@ final class BroadcastEventProcessor implements EventListener {
 
     }
 
+    /**
+     * Checks the package information for the pollable service and determines if
+     * any of the calendar outages associated with the package apply to the
+     * current time and the service's interface. If an outage applies it's name
+     * is returned...otherwise null is returned.
+     * 
+     * @return null if no outage found (indicating a notification may be sent)
+     *         or the outage name, if an applicable outage is found (indicating
+     *         notification should not be sent).
+     * @throws IOException
+     * @throws ValidationException
+     * @throws MarshalException
+     */
+    public String scheduledOutage(long nodeId, String theInterface) {
+        Category log = ThreadCategory.getInstance(getClass());
+        try {
+
+            PollOutagesConfigManager outageFactory = m_notifd.getPollOutagesConfigManager();
+
+            // Iterate over the outage names
+            // For each outage...if the outage contains a calendar entry which
+            // applies to the current time and the outage applies to this
+            // interface then break and return true. Otherwise process the
+            // next outage.
+            //
+            Iterator iter = getConfigManager().getConfiguration().getOutageCalendarCollection().iterator();
+            while (iter.hasNext()) {
+                String outageName = (String) iter.next();
+
+                // Does the outage apply to the current time?
+                if (outageFactory.isCurTimeInOutage(outageName)) {
+                    // Does the outage apply to this interface or node?
+
+                    if ((outageFactory.isNodeIdInOutage(nodeId, outageName)) || (outageFactory.isInterfaceInOutage(theInterface, outageName)) || (outageFactory.isInterfaceInOutage("match-any", outageName))) {
+                        if (log.isDebugEnabled())
+                            log.debug("scheduledOutage: configured outage '" + outageName + "' applies, notification for interface " + theInterface + " on node " + nodeId + " will not be sent");
+                        return outageName;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error determining current outages", e);
+        }
+
+        return null;
+    }
 
 } // end class

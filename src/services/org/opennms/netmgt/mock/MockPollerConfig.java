@@ -32,7 +32,9 @@
 
 package org.opennms.netmgt.mock;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -40,25 +42,26 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
 
-import org.opennms.netmgt.config.PollOutagesConfig;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.Interface;
 import org.opennms.netmgt.config.poller.Outage;
+import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.config.poller.Time;
 import org.opennms.netmgt.poller.monitors.ServiceMonitor;
 
-public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
+public class MockPollerConfig extends PollOutagesConfigManager implements PollerConfig {
 
     private String m_criticalSvcName;
 
     private Package m_currentPkg = new Package();
 
     private boolean m_outageProcessingEnabled = false;
-
-    private List m_outages = new ArrayList();
 
     private Vector m_pkgs = new Vector();
 
@@ -73,6 +76,11 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
     private boolean m_serviceUnresponsiveEnabled = false;
 
     private String m_nextOutageIdSql;
+    
+    public MockPollerConfig() {
+        setConfig(new Outages());
+        createDayOfWeekMapping();
+    }
 
     public void addDowntime(long interval, long begin, long end, boolean delete) {
         Downtime downtime = new Downtime();
@@ -94,12 +102,14 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
         outage.addInterface(iface);
 
         Time time = new Time();
-        time.setBegins(String.valueOf(begin));
-        time.setEnds(String.valueOf(end));
+        Date beginDate = new Date(begin);
+        Date endDate = new Date(end);
+        time.setBegins(new SimpleDateFormat(PollOutagesConfigManager.FORMAT1).format(beginDate));
+        time.setEnds(new SimpleDateFormat(PollOutagesConfigManager.FORMAT1).format(endDate));
 
         outage.addTime(time);
 
-        m_outages.add(outage);
+        getConfig().addOutage(outage);
 
         pkg.addOutageCalendar(outageName);
 
@@ -108,6 +118,33 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
     public void addScheduledOutage(String outageName, long begin, long end, String ipAddr) {
         addScheduledOutage(m_currentPkg, outageName, begin, end, ipAddr);
     }
+    
+    public void addScheduledOutage(Package pkg, String outageName, String dayOfWeek, String beginTime, String endTime, String ipAddr) {
+        Outage outage = new Outage();
+        outage.setName(outageName);
+        outage.setType("weekly");
+
+        Interface iface = new Interface();
+        iface.setAddress(ipAddr);
+
+        outage.addInterface(iface);
+
+        Time time = new Time();
+        time.setDay(dayOfWeek);
+        time.setBegins(beginTime);
+        time.setEnds(endTime);
+       
+        outage.addTime(time);
+
+        getConfig().addOutage(outage);
+
+        pkg.addOutageCalendar(outageName);
+    }
+    
+    public void addScheduledOutage(String outageName, String dayOfWeek, String beginTime, String endTime, String ipAddr) {
+        addScheduledOutage(m_currentPkg, outageName, dayOfWeek, beginTime, endTime, ipAddr);
+    }
+
     
     public void addService(String name, ServiceMonitor monitor) {
         addService(name, m_defaultPollInterval, monitor);
@@ -150,7 +187,7 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
     }
 
     private Outage findOutage(String name) {
-        Iterator it = m_outages.iterator();
+        Iterator it = getConfig().getOutageCollection().iterator();
         while (it.hasNext()) {
             Outage outage = (Outage) it.next();
             if (outage.getName().equals(name)) {
@@ -230,44 +267,6 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
             String ipAddr = (String)en.nextElement();
             if (ipAddr.equals(iface))
                 return true;
-        }
-        return false;
-    }
-
-    public boolean isTimeInOutage(long time, String outName) {
-        Outage outage = findOutage(outName);
-        if (outage == null)
-            return false;
-
-        Iterator it = outage.getTimeCollection().iterator();
-        while (it.hasNext()) {
-            Time interval = (Time) it.next();
-            long begin = Long.parseLong(interval.getBegins());
-            long end = Long.parseLong(interval.getEnds());
-
-            if (begin <= time && time <= end) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-    
-    public boolean isCurTimeInOutage(String outName) {
-        return isTimeInOutage(System.currentTimeMillis(), outName);
-    }
-
-    public boolean isInterfaceInOutage(String ipAddr, String outName) {
-        Outage outage = findOutage(outName);
-        if (outage == null)
-            return false;
-
-        Iterator it = outage.getInterfaceCollection().iterator();
-        while (it.hasNext()) {
-            Interface iface = (Interface) it.next();
-            if (iface.getAddress().equals(ipAddr)) {
-                return true;
-            }
         }
         return false;
     }
@@ -372,6 +371,16 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
             }
         };
         network.visit(populator);
+    }
+
+    protected void saveXML(String xmlString) throws IOException, MarshalException, ValidationException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void update() throws IOException, MarshalException, ValidationException {
+        // TODO Auto-generated method stub
+        
     }
 
 }

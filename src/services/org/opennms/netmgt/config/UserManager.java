@@ -324,6 +324,36 @@ public abstract class UserManager {
     }
 
     /**
+     * Get an XMPP address by name
+     * 
+     * @param userid
+     *            the userid of the user to return
+     * @return String the XMPP address
+     */
+
+    public String getXMPPAddress(String userid) throws IOException, MarshalException, ValidationException {
+
+        update();
+        
+        User user = (User) m_users.get(userid);
+        if (user == null)
+            return "";
+        String value = "";
+        Enumeration contacts = user.enumerateContact();
+        while (contacts != null && contacts.hasMoreElements()) {
+            Contact contact = (Contact) contacts.nextElement();
+            if (contact != null) {
+            	if (contact.getType().equals("xmppAddress")) {
+            		value = contact.getInfo();
+            		break;
+            	}
+            }
+        }
+        return value;
+
+    }
+
+    /**
      * Get a numeric service provider
      * 
      * @param userid

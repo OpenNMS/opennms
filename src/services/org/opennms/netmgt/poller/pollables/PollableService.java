@@ -116,7 +116,7 @@ public class PollableService extends PollableElement implements ReadyRunnable {
     /**
      * @param pollConfig
      */
-    public void setPollConfig(PollConfig pollConfig) {
+    public void setPollConfig(PollableServiceConfig pollConfig) {
         m_pollConfig = pollConfig;
     }
 
@@ -221,7 +221,7 @@ public class PollableService extends PollableElement implements ReadyRunnable {
         
         if (!getContext().isServiceUnresponsiveEnabled()) {
             if (newStatus == PollStatus.STATUS_UNRESPONSIVE)
-                newStatus = PollStatus.STATUS_UP;
+                newStatus = PollStatus.STATUS_DOWN;
         }
         
         PollStatus currentStatus = getStatus();
@@ -317,4 +317,9 @@ public class PollableService extends PollableElement implements ReadyRunnable {
     public void sendDeleteEvent() {
         getContext().sendEvent(getContext().createEvent(EventConstants.DELETE_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), new Date()));
     }
+
+    public void refreshConfig() {
+        m_pollConfig.refresh();
+    }
+
 }

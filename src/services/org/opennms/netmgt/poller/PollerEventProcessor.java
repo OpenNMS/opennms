@@ -157,6 +157,9 @@ final class PollerEventProcessor implements EventListener {
 
         // resumePollingService
         ueiList.add(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI);
+	
+	// scheduled outage configuration change
+	ueiList.add(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI);
 
         // Subscribe to eventd
         getEventManager().addEventListener(this, ueiList);
@@ -552,8 +555,13 @@ final class PollerEventProcessor implements EventListener {
             log.debug("PollerEventProcessor: received event, uei = " + event.getUei());
         }
 
-        // If the event doesn't have a nodeId it can't be processed.
-        if (!event.hasNodeid()) {
+	if(event.getUei().equals(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
+		log.info("Reloading poller config factory and polloutages config factory");
+        
+		scheduledOutagesChangeHandler(log);
+	} else if(!event.hasNodeid()) {
+	    // For all other events, if the event doesn't have a nodeId it can't be processed.
+
             log.info("PollerEventProcessor: no database node id found, discarding event");
         } else if (event.getUei().equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
@@ -613,6 +621,17 @@ final class PollerEventProcessor implements EventListener {
         } // end single event proces
 
     } // end onEvent()
+
+    private void scheduledOutagesChangeHandler(Category log) {
+        try {
+            getPollerConfig().update();
+            getPoller().getPollOutagesConfig().update();
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("Failed to reload PollerConfigFactory because "+e.getMessage(), e);
+		}
+        getPoller().refreshServicePackages();
+    }
 
     /**
      * Return an id for this event listener

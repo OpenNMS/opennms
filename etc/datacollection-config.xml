@@ -2,7 +2,7 @@
 <datacollection-config
 	rrdRepository = "@install.share.dir@/rrd/snmp/">
 	<snmp-collection name="default"
-		maxVarsPerPdu = "50"
+		maxVarsPerPdu = "10"
 		snmpStorageFlag = "select">
 		<rrd step = "300">
 			<rra>RRA:AVERAGE:0.5:1:8928</rra>
@@ -21,7 +21,6 @@
 				<mibObj oid=".1.3.6.1.2.1.2.2.1.16" instance="ifIndex" alias="ifOutOctets"   type="counter"/>
                                 <mibObj oid=".1.3.6.1.2.1.2.2.1.18" instance="ifIndex" alias="ifOutNUcastPkts" type="counter"/>
                                 <mibObj oid=".1.3.6.1.2.1.2.2.1.19" instance="ifIndex" alias="ifOutDiscards"   type="counter"/>
-				<mibObj oid=".1.3.6.1.2.1.2.2.1.19" instance="ifIndex" alias="ifOutDiscards" type="counter"/>
 				<mibObj oid=".1.3.6.1.2.1.2.2.1.20" instance="ifIndex" alias="ifOutErrors"   type="counter"/>
 			</group>
 			<group 	name = "mib2-host-resources-storage" ifType = "ignore">
@@ -48,20 +47,26 @@
                                 <mibObj oid="1.3.6.1.2.1.43.10.2.1.4.1"    instance="1" alias="lifeCount" type="Gauge" />
                                 <mibObj oid="1.3.6.1.2.1.43.10.2.1.5.1"    instance="1" alias="powerOnCount" type="Gauge" />
                         </group>
-			<group name = "windows-host" ifType = "ignore">
-				<mibObj oid=".1.3.6.1.2.1.25.3.3.1.2" instance="1" alias="cpuPercentBusy" type="integer" />
-				<!-- Drive information is from the hrStorage table. -->
-				<!-- I'm cheating and assuming that the second and third -->
-				<!-- entries refer to Drive_C and Drive_D -->
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="2" alias="unitsDriveC" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="2" alias="sizeDriveC" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="2" alias="usedDriveC" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="3" alias="unitsDriveD" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="3" alias="sizeDriveD" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="3" alias="usedDriveD" type="integer" />
-				<!-- Memory in KBytes -->
-				<mibObj oid=".1.3.6.1.2.1.25.2.2" instance="0" alias="memorySize" type="integer" />
-			</group>
+                        <group name = "windows-host" ifType = "ignore">
+                                <mibObj oid=".1.3.6.1.2.1.25.3.3.1.2" instance="1" alias="cpuPercentBusy" type="integer" />
+                                <!-- Drive information is from the hrStorage table. -->
+                                <!-- I'm cheating and assuming that the second and third -->
+                                <!-- entries refer to Drive_C and Drive_D -->
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.3" instance="2" alias="hrDescDisk2"  type="string"/>
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="2" alias="hrUnitsDisk2" type="integer" />
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="2" alias="hrSizeDisk2" type="integer" />
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="2" alias="hrUsedDisk2" type="integer" />
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.3" instance="3" alias="hrDescDisk3"  type="string"/>
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="3" alias="hrUnitsDisk3" type="integer" />
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="3" alias="hrSizeDisk3" type="integer" />
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="3" alias="hrUsedDisk3" type="integer" />
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.3" instance="4" alias="hrDescDisk4"  type="string"/>
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="4" alias="hrUnitsDisk4" type="integer" />
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="4" alias="hrSizeDisk4" type="integer" />
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="4" alias="hrUsedDisk4" type="integer" />
+                                <!-- Memory in KBytes -->
+                                <mibObj oid=".1.3.6.1.2.1.25.2.2" instance="0" alias="memorySize" type="integer" />
+                        </group>
 
 			<!-- APC mibs -->
                         <group  name = "APC" ifType = "ignore">
@@ -359,14 +364,34 @@
                         </group>
 
 			<!-- Net-SNMP MIBs -->
-                        <group  name = "net-snmp-root-disk" ifType = "ignore">
-                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="1" alias="ns-disk-root-tot"    type="gauge"/>
-                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="1" alias="ns-disk-root-avail"    type="gauge"/>
-                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="1" alias="ns-disk-root-used"    type="gauge"/>
-                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="1" alias="ns-disk-root-pct"    type="gauge"/>
+                        <group  name = "net-snmp-disk" ifType = "ignore">
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="1" alias="ns-disk-1-name"    type="string"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="1" alias="ns-disk-1-tot"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="1" alias="ns-disk-1-avail"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="1" alias="ns-disk-1-used"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="1" alias="ns-disk-1-pct"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="2" alias="ns-disk-2-name"    type="string"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="2" alias="ns-disk-2-tot"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="2" alias="ns-disk-2-avail"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="2" alias="ns-disk-2-used"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="2" alias="ns-disk-2-pct"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="3" alias="ns-disk-3-name"    type="string"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="3" alias="ns-disk-3-tot"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="3" alias="ns-disk-3-avail"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="3" alias="ns-disk-3-used"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="3" alias="ns-disk-3-pct"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="4" alias="ns-disk-4-name"    type="string"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="4" alias="ns-disk-4-tot"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="4" alias="ns-disk-4-avail"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="4" alias="ns-disk-4-used"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="4" alias="ns-disk-4-pct"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="5" alias="ns-disk-5-name"    type="string"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="5" alias="ns-disk-5-tot"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="5" alias="ns-disk-5-avail"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="5" alias="ns-disk-5-used"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="5" alias="ns-disk-5-pct"    type="gauge"/>
                         </group>
-			<!-- The above group assumes that the first disk directive in
-			     the snmpd.conf file is for root -->
+
 			<group name="ucd-loadavg" ifType="ignore">
 				<mibObj oid=".1.3.6.1.4.1.2021.10.1.5" instance="1" alias="loadavg1" type="integer" /> 
 				<mibObj oid=".1.3.6.1.4.1.2021.10.1.5" instance="2" alias="loadavg5" type="integer" /> 
@@ -636,7 +661,7 @@
 					<includeGroup>mib2-host-resources-storage</includeGroup> 
 					<includeGroup>mib2-host-resources-system</includeGroup> 
 					<includeGroup>mib2-host-resources-memory</includeGroup> 
-					<includeGroup>net-snmp-root-disk</includeGroup> 
+					<includeGroup>net-snmp-disk</includeGroup> 
 					<includeGroup>ucd-loadavg</includeGroup> 
 					<includeGroup>ucd-memory</includeGroup> 
 					<includeGroup>ucd-sysstat</includeGroup> 
@@ -649,7 +674,7 @@
 					<includeGroup>mib2-host-resources-storage</includeGroup> 
 					<includeGroup>mib2-host-resources-system</includeGroup> 
 					<includeGroup>mib2-host-resources-memory</includeGroup> 
-					<includeGroup>net-snmp-root-disk</includeGroup> 
+					<includeGroup>net-snmp-disk</includeGroup> 
 					<includeGroup>ucd-loadavg</includeGroup> 
 					<includeGroup>ucd-memory</includeGroup> 
 					<includeGroup>ucd-sysstat</includeGroup> 

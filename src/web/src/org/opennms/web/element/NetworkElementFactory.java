@@ -604,7 +604,7 @@ public class NetworkElementFactory extends Object {
 
             element = rs.getTimestamp("nodeCreateTime");
             if (element != null)
-                node.m_nodeCreateTime = EventConstants.formatToString(new Date(((Timestamp) element).getTime()));
+                node.m_nodeCreateTime = EventConstants.formatToUIString(new Date(((Timestamp) element).getTime()));
 
             element = new Integer(rs.getInt("nodeParentID"));
             if (element != null) {
@@ -682,7 +682,7 @@ public class NetworkElementFactory extends Object {
 
             element = rs.getTimestamp("ipLastCapsdPoll");
             if (element != null)
-                intf.m_ipLastCapsdPoll = EventConstants.formatToString(new Date(((Timestamp) element).getTime()));
+                intf.m_ipLastCapsdPoll = EventConstants.formatToUIString(new Date(((Timestamp) element).getTime()));
 
             vector.addElement(intf);
         }
@@ -743,6 +743,20 @@ public class NetworkElementFactory extends Object {
 
                 rs.close();
                 pstmt.close();
+
+                PreparedStatement pstmt2 = conn.prepareStatement("SELECT issnmpprimary FROM ipinterface WHERE nodeid=? AND ifindex=?");
+                pstmt2.setInt(1, intfs[i].getNodeId());
+                pstmt2.setInt(2, intfs[i].getIfIndex());
+
+                ResultSet rs2 = pstmt2.executeQuery();
+
+                if (rs2.next()) {
+                    Object issnmpprimary = new String(rs2.getString("issnmpprimary"));
+                    intfs[i].m_isSnmpPrimary = (String) issnmpprimary;
+		}
+
+                rs2.close();
+                pstmt2.close();
             }
         }
     }
@@ -765,7 +779,7 @@ public class NetworkElementFactory extends Object {
 
             element = rs.getTimestamp("lastgood");
             if (element != null)
-                service.m_lastGood = EventConstants.formatToString(new Date(((Timestamp) element).getTime()));
+                service.m_lastGood = EventConstants.formatToUIString(new Date(((Timestamp) element).getTime()));
 
             element = new Integer(rs.getInt("serviceid"));
             service.m_serviceId = ((Integer) element).intValue();
@@ -775,7 +789,7 @@ public class NetworkElementFactory extends Object {
 
             element = rs.getTimestamp("lastfail");
             if (element != null)
-                service.m_lastFail = EventConstants.formatToString(new Date(((Timestamp) element).getTime()));
+                service.m_lastFail = EventConstants.formatToUIString(new Date(((Timestamp) element).getTime()));
 
             element = rs.getString("notify");
             service.m_notify = (String) element;

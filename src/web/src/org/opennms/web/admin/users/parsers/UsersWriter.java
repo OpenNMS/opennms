@@ -105,6 +105,10 @@ public class UsersWriter extends XMLWriter {
                     addDataElement(curUserElement, "pemail", info.getPagerEmail());
                 }
 
+                if (!info.getXMPPAddress().equals("")) {
+                	addDataElement(curUserElement, "xmppAddress", info.getXMPPAddress());
+                }
+                
                 if (!info.getNumericalService().equals("") || !info.getNumericalPin().equals("")) {
                     Element numElement = addEmptyElement(curUserElement, "numericService");
 

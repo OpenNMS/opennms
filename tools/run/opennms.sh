@@ -1,12 +1,10 @@
 #!/bin/sh -
 #
-#  $Id$
-#
-#  For info on the "BEGIN INIT INFO" section, see:
-#      http://www.suse.de/~mmj/Package-Conventions/
-#
-#  For info on the "chkconfig:" section, see:
-#      http://www.sensi.org/~alec/unix/redhat/sysvinit.html
+# chkconfig: 345 99 01
+# description: Starts and stops the OpenNMS network management \
+#              poller and backend processes
+# processname: opennms
+# pidfile: @install.pid.file@
 #
 ### BEGIN INIT INFO
 # Provides:          opennms
@@ -20,11 +18,13 @@
 # Description:       OpenNMS daemon for network monitoring
 ### END INIT INFO
 #
-# chkconfig: 345 99 01
-# description: Starts and stops the OpenNMS network management \
-#              poller and backend processes
-# processname: opennms
-# pidfile: @install.pid.file@
+#  $Id$
+#
+#  For info on the "chkconfig:" section, see:
+#      http://www.sensi.org/~alec/unix/redhat/sysvinit.html
+#
+#  For info on the "BEGIN INIT INFO" section, see:
+#      http://www.suse.de/~mmj/Package-Conventions/
 #
 
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####

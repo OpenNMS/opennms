@@ -753,4 +753,12 @@ public final class Threshd implements PausableFiber {
     public void setSchedulingCompleted(boolean schedulingCompleted) {
         m_schedulingCompleted = schedulingCompleted;
     }
+
+    public void refreshServicePackages() {
+	Iterator serviceIterator=m_thresholdableServices.iterator();
+	while(serviceIterator.hasNext()) {
+		ThresholdableService thisService=(ThresholdableService)serviceIterator.next();
+		thisService.refreshPackage();
+	}
+    }
 }

@@ -130,6 +130,12 @@
 				<!-- The script information for this event -->
 				<element ref="this:script" minOccurs="0" maxOccurs="unbounded"/>
 
+				<!-- The ifIndex to which this event is pertinent -->
+				<element name="ifIndex" type="string" minOccurs="0" maxOccurs="1"/>
+								
+				<!-- The ifAlias to which this event is pertinent -->
+				<element name="ifAlias" type="string" minOccurs="0" maxOccurs="1"/>
+
 				<!-- The text to be displayed on a 'mouseOver' event when this event is
      				     displayed in the event browser
 				-->

@@ -41,7 +41,7 @@
 
 -->
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*,org.opennms.web.event.*,org.opennms.web.performance.*,org.opennms.netmgt.utils.IfLabel,org.opennms.web.response.*" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.netmgt.config.PollerConfigFactory,org.opennms.web.element.*,java.util.*,org.opennms.web.event.*,org.opennms.web.performance.*,org.opennms.netmgt.utils.IfLabel,org.opennms.web.response.*" %>
 
 <%!
     protected int telnetServiceId;
@@ -149,6 +149,9 @@
     if( httpService != null  ) {
         httpIp = ipAddr;
     }
+    PollerConfigFactory.init();
+    PollerConfigFactory pollerCfgFactory = PollerConfigFactory.getInstance();
+    pollerCfgFactory.rebuildPackageIpListMap();
 
 %>
 
@@ -232,6 +235,10 @@ function doDelete() {
          <% } %>
          
         &nbsp;&nbsp;&nbsp;<a href="element/rescan.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Rescan</a>      
+
+        <% if (request.isUserInRole("OpenNMS Administrator") && hasSNMPData(intf_db) && "P".equals(intf_db.getIsSnmpPrimary())) { %>
+         &nbsp;&nbsp;&nbsp;<a href="admin/updateSnmp.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Update SNMP</a>
+         <% } %>
       </p>
 
       <% if (request.isUserInRole("OpenNMS Administrator")) { %>
@@ -253,9 +260,26 @@ function doDelete() {
                 <td>Polling Status</td>
                 <td><%=ElementUtil.getInterfaceStatusString(intf_db)%></td>
               </tr>
+              <% if(ElementUtil.getInterfaceStatusString(intf_db).equals("Managed") && request.isUserInRole("OpenNMS Administrator")) {
+                  List inPkgs = pollerCfgFactory.getAllPackageMatches(ipAddr);
+                  Iterator pkgiter = inPkgs.iterator();
+                  while (pkgiter.hasNext()) { %>
+                      <tr>
+                          <td>Polling Package</td>
+                          <td><%= (String) pkgiter.next()%></td>
+                      </tr>
+                  <% } %>
+              <% } %>
               <tr>
                 <td>Interface Index</td> 
-                <td><%=intf_db.getIfIndex()%></td>
+                <td>
+                  <% int ifIndex = intf_db.getIfIndex(); %>
+                  <% if( ifIndex > 0 ) {  %>
+                    <%=ifIndex%>
+                  <% } else { %>
+                    &nbsp;
+                  <% } %>
+                </td>
               </tr>
               <tr> 
                 <td>Last Service Scan</td>

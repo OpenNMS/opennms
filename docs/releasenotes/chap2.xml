@@ -11,14 +11,392 @@
   release. Release 1.1.4 was a major step toward that next stable release, and
   version 1.1.5 continues that progress.</para>
 
-  <sect1>
+  <section>
+    <title>Changes in OpenNMS 1.2.1</title>
+
+    <section>
+      <title>New Features</title>
+
+      <bridgehead>XMPP Support</bridgehead>
+
+      <para>Chris Abernethy contributed some code to allow notifications using
+      the XMPP instant messaging protocol. This is most commonly associated
+      with the Jabber open-source messaging project.</para>
+
+      <para>Edit the <filename>xmpp-configuration.properties</filename> file
+      to include the username and password of the user you want to use as the
+      originator of the notice. Also include the server you wish to connect to
+      in order to send the notice.</para>
+
+      <para>Finally, add an XMPP Address to each user that should receive the
+      notification, such as "myname@jabber.org".</para>
+
+      <para>If your destination path command includes xmppMessage, then the
+      notification text will be sent via XMPP to the user's XMPP address.
+      Note: be sure that the user has allowed messages from the OpenNMS XMPP
+      user. When I first tested this, I was blocking all messages from people
+      not on my "buddy" list and I never received the notice.</para>
+
+      <para>This was enhancement bug 1168.</para>
+
+      <bridgehead>Support for Labels in SNMP Performance Reports</bridgehead>
+
+      <para>Craig Miskell contributed some code that allows for text strings
+      to be collected via SNMP and used to label SNMP Performance
+      reports.</para>
+
+      <para>For example, the Net-SNMP agents allows one to collect on disk
+      statistics:</para>
+
+      <programlisting>disk /
+disk /boot
+disk /opt/distros</programlisting>
+
+      <para>This will create a table where the first row is disk space on
+      root, the second row is the disk space on /boot, etc.</para>
+
+      <para>The problem is that this configuration:</para>
+
+      <programlisting>disk /boot
+disk /
+disk /opt/distros</programlisting>
+
+      <para>Is also valid, but the /boot parition is now index one, and / is
+      index two.</para>
+
+      <para>Previously, one had to be a little saavy about how to configure
+      the order of disk volumes, but now the disk label can just be collected
+      and displayed.</para>
+
+      <para>For example, we currently collect on the first instance of the
+      Net-SNMP disk table, and just assume it's root:</para>
+
+      <programlisting>&lt;group  name = "net-snmp-root-disk" ifType = "ignore"&gt;
+        &lt;mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="1" alias="ns-disk-root-tot"    type="gauge"/&gt;
+        &lt;mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="1" alias="ns-disk-root-avail"    type="gauge"/&gt;
+        &lt;mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="1" alias="ns-disk-root-used"    type="gauge"/&gt;
+        &lt;mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="1" alias="ns-disk-root-pct"    type="gauge"/&gt;
+&lt;/group&gt;</programlisting>
+
+      <para>To use this feature, we convert it to something more generic, disk
+      1 instead of root:</para>
+
+      <programlisting>&lt;mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="1" alias="ns-disk-1-name"    type="string"/&gt;
+&lt;mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="1" alias="ns-disk-1-tot"    type="gauge"/&gt;
+&lt;mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="1" alias="ns-disk-1-avail"    type="gauge"/&gt;
+&lt;mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="1" alias="ns-disk-1-used"    type="gauge"/&gt;
+&lt;mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="1" alias="ns-disk-1-pct"    type="gauge"/&gt;</programlisting>
+
+      <para>Note the new first line. The ".2" OID in this table is the disk
+      label, which we now collect. It gets stored in a file called
+      <filename>$OPENNMS_HOME/share/rrd/snmp/$NODEID/strings.properties</filename>,
+      where the <varname>$NODEID</varname> is the node number of the device
+      being collected.</para>
+
+      <para>A sample string.properties file looks like this:</para>
+
+      <programlisting>#Wed Mar 16 17:46:25 EST 2005
+ns-disk-3-name=/opt/distros
+ns-disk-2-name=/boot
+ns-disk-1-name=/</programlisting>
+
+      <para>Once the <filename>datacollection-config.xml </filename>file is
+      changed, and OpenNMS is restarted, collectd will begin storing the
+      collected strings.</para>
+
+      <para>So, how are they used? To display them in reports, edit the
+      <filename>snmp-graph.properties</filename> file. Everything in this file
+      that is in "curly braces" is something that OpenNMS supplied to RRDTool
+      (or jRobin).</para>
+
+      <programlisting>report.netsnmp.disk1percent.name=Percentage Disk Space on 1
+report.netsnmp.disk1percent.columns=ns-disk-1-pct
+report.netsnmp.disk1percent.type=node
+report.netsnmp.disk1percent.propertiesValues=ns-disk-1-name
+report.netsnmp.disk1percent.command=--title="Percentage Disk Space on {ns-disk-1-name}" \
+ DEF:dpercent={rrd1}:ns-disk-1-pct:AVERAGE \
+ LINE2:dpercent#0000ff:"% Disk Space Used" \
+ GPRINT:dpercent:AVERAGE:"Avg  \\: %8.2lf %s" \
+ GPRINT:dpercent:MIN:"Min  \\: %8.2lf %s" \
+ GPRINT:dpercent:MAX:"Max  \\: %8.2lf %s\n"</programlisting>
+
+      <para>Note the new "properitesValues" line. This line will look for the
+      value(s) listed in the appropriate
+      <filename>strings.properties</filename> file, such as
+      <varname>ns-disk-1-name</varname>. Then putting that value in curly
+      braces, as in {ns-disk-1-name} will cause OpenNMS to replace it with the
+      proper value.</para>
+
+      <para>By default, OpenNMS now collects on the first 5 disks defined by
+      Net-SNMP and disks 2 through 4 as defined by the host-resources MIB.
+      Please feel free to improve on this configurations, and post your diff
+      as an enchancement bug on <ulink
+      url="http://bugzilla.opennms.org">http://bugzilla.opennms.org</ulink>
+      for inclusion in a future release.</para>
+
+      <para>Some caveats: Currently this only works for node level
+      information. Also, the labels can't be used in notifications or events,
+      so if you get a highThreshold alert on disk usage, you won't be able to
+      tell exactly which disk (but it should be easy to look up).</para>
+
+      <para>Many thanks to Craig for this work.</para>
+
+      <bridgehead>New DHCP Poller</bridgehead>
+
+      <para>Bill Ayres (OGP) has improved the DHCP poller. The new default
+      <filename>dhcp-configuration.xml</filename> file now looks like
+      this:</para>
+
+      <programlisting>&lt;DhcpdConfiguration
+        port="5818"
+        macAddress="00:06:0D:BE:9C:B2"
+        myIpAddress="127.0.0.1"
+        extendedMode="false"
+        requestIpAddress="127.0.0.1"&gt;
+&lt;/DhcpdConfiguration&gt;</programlisting>
+
+      <para>The <varname>port</varname> and <varname>macAddress</varname>
+      options were there before, but now you can add
+      <varname>myIpAddress</varname>, <varname>extendedMode</varname> and a
+      <varname>requestIpAddress</varname>.</para>
+
+      <para>With the default configuration, the DHCP poller should act as
+      before (although on my test network it now correctly sees that my
+      Airport Express does not have a DHCP server on it that is accessible
+      from the "wired" side). This is "broadcast" mode.</para>
+
+      <para>The following describes each of the new variables:</para>
+
+      <para><emphasis>myIpAddress</emphasis>: This parameter will usually be
+      set to the ip address of the OpenNMS server, which puts the DHCP poller
+      in "relay" mode as opposed to "broadcast" mode. In "relay" mode, the
+      DHCP server being polled will unicast its responses directly back to the
+      specified ip address rather than broadcasting its responses. This allows
+      DHCP servers to be polled even though they are not on the same subnet as
+      the OpenNMS server, and without the aid of an external relay.</para>
+
+      <para>usage: myIpAddress="10.11.12.13" or myIpAddress="broadcast"
+      (default)</para>
+
+      <para><emphasis>extendedMode</emphasis>: When extendedMode is false, the
+      DHCP poller will send a DISCOVER and expect an OFFER in return. When
+      extendedMode is true, the DHCP poller will first send a DISCOVER. If no
+      valid response is received it will send an INFORM. If no valid response
+      is received it will then send a REQUEST. OFFER, ACK, and NAK are all
+      considered valid responses in extendedMode.</para>
+
+      <para>usage: extendedMode="true" or extendedMode="false"
+      (default)</para>
+
+      <para><emphasis>requestIpAddress</emphasis>: This parameter only applies
+      to REQUEST queries sent to the DHCP service when extendedMode is true.
+      If an ip address is specified, that ip address will be requested in the
+      query. If "targetHost" is specified, the DHCP server's own ip address
+      will be requested. Since a well-managed server will probably not respond
+      to a request for its own ip, this parameter can also be set to
+      "targetSubnet". This is similar to "targetHost" except the DHCP server's
+      ip address is incremented or decremented by 1 to obtain an ip address
+      that is on the same subnet. (The resulting address will not be on the
+      same subnet if the DHCP server's subnet is a /32 or /31. Otherwise, the
+      algorithm used should be reliable.)</para>
+
+      <para>usage: requestIpAddress="10.77.88.99" or
+      requestIpAddress="targetHost" or requestIpAddress="targetSubnet"
+      (default)</para>
+
+      <para><emphasis role="bold">Caution on usage:</emphasis> If in extended
+      mode, the time required to complete the poll for an unresponsive node is
+      increased by a factor of 3. Thus it is a good idea to limit the number
+      of retries to a small number.</para>
+
+      <para>Thanks to Bill for his hard work on this.</para>
+
+      <bridgehead>GUI for <filename>snmp-config.xml</filename> </bridgehead>
+
+      <para>Gerald Turner has written a useful admin GUI for managing the
+      <filename>snmp-config.xml</filename> file. It allows you to add specific
+      IP addresses and IP address ranges and associate them with community
+      strings.</para>
+
+      <para>For example, if you have the following default
+      <filename>snmp-config.xml</filename> file:</para>
+
+      <programlisting>&lt;snmp-config retry="3" timeout="800" read-community="public" write-community="private"&gt;
+
+&lt;/snmp-config&gt;</programlisting>
+
+      <para>this will use the default community string of "public" for SNMP
+      requests. Using the GUI, one can add a range that, say, uses
+      "public2":</para>
+
+      <programlisting>&lt;snmp-config retry="3" timeout="800" read-community="public" write-community="private"&gt;
+    &lt;definition read-community="public2"&gt;
+        &lt;range begin="192.168.0.1" end="192.168.0.254"/&gt;
+    &lt;/definition&gt;
+&lt;/snmp-config&gt;</programlisting>
+
+      <para>You can also add specific IP addresses, say this one for
+      "public3":</para>
+
+      <programlisting>&lt;snmp-config retry="3" timeout="800" read-community="public" write-community="private"&gt;
+    &lt;definition read-community="public2"&gt;
+        &lt;range begin="192.168.0.1" end="192.168.0.254"/&gt;
+    &lt;/definition&gt;
+    &lt;definition read-community="public3"&gt;
+        &lt;specific&gt;192.168.1.1&lt;/specific&gt;
+    &lt;/definition&gt;
+&lt;/snmp-config&gt;</programlisting>
+
+      <para>This feature will automatically do things like split ranges. For
+      example, add "public4" as the string for 192.168.0.50:</para>
+
+      <programlisting>&lt;snmp-config retry="3" timeout="800" read-community="public" write-community="private"&gt;
+    &lt;definition read-community="public2"&gt;
+        &lt;range begin="192.168.0.1" end="192.168.0.49"/&gt;
+        &lt;range begin="192.168.0.51" end="192.168.0.254"/&gt;
+    &lt;/definition&gt;
+    &lt;definition read-community="public3"&gt;
+        &lt;specific&gt;192.168.1.1&lt;/specific&gt;
+    &lt;/definition&gt;
+    &lt;definition read-community="public4"&gt;
+        &lt;specific&gt;192.168.0.50&lt;/specific&gt;
+    &lt;/definition&gt;
+&lt;/snmp-config&gt;</programlisting>
+
+      <para>There is a caveat. If you add a specific entry like 192.168.1.1
+      above, and then go back and add a range that includes that specific IP,
+      the range will overwrite the specific entry, as in this example for
+      "public5":</para>
+
+      <programlisting>&lt;snmp-config retry="3" timeout="800" read-community="public" write-community="private"&gt;
+    &lt;definition read-community="public2"&gt;
+        &lt;range begin="192.168.0.1" end="192.168.0.49"/&gt;
+        &lt;range begin="192.168.0.51" end="192.168.0.254"/&gt;
+    &lt;/definition&gt;
+    &lt;definition read-community="public4"&gt;
+        &lt;specific&gt;192.168.0.50&lt;/specific&gt;
+    &lt;/definition&gt;
+    &lt;definition read-community="public5"&gt;
+        &lt;range begin="192.168.1.1" end="192.168.1.254"/&gt;
+    &lt;/definition&gt;
+&lt;/snmp-config&gt;</programlisting>
+
+      <para>This feature was designed to help manage this file before
+      discovery It will not update the community string for an SNMP agent that
+      is already being collectd. In the case that the community string for a
+      device changes, and this results in a data collection failure event, it
+      is possible to change the community string to the correct one without
+      restarting OpenNMS. Use this GUI to make sure the community string is
+      correctly in the <filename>snmp-config.xml</filename> file, and then go
+      to the device's node page. Click the link that says "Update SNMP" and
+      collection should resume.</para>
+
+      <para>This was bug 1167, and I'm leaving it open as an enhancement
+      because there is one thing left I'd like to see. I'd like to see the
+      current contents of the <filename>snmp-config.xml</filename> file
+      displayed on this page as well. It is hoped that it will be available
+      for the next release.</para>
+
+      <para>Hats of to Gerald for this work. </para>
+
+      <bridgehead>Other Features</bridgehead>
+
+      <para>There were a number of smaller features included in this
+      release:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Added the RESOLVED tag to the body as well as the subject of
+          notifications.</para>
+        </listitem>
+
+        <listitem>
+          <para>Added a Linksys event to stop connection traps from Linksys
+          gear.</para>
+        </listitem>
+
+        <listitem>
+          <para>Added a "focus" to the Add Interface admin page so that it is
+          no longer required to select the field before typing the IP
+          address.</para>
+        </listitem>
+
+        <listitem>
+          <para>Greatly improved the execution speed of "Configure SNMP Data
+          Collection per Interface" in the Admin webUI.</para>
+        </listitem>
+
+        <listitem>
+          <para>Added the ability to display the ifAlias in events or
+          notifications using %ifalias%.</para>
+        </listitem>
+
+        <listitem>
+          <para>Improved the error message when entering an invalid Outage ID
+          in a search.</para>
+        </listitem>
+
+        <listitem>
+          <para>Numerous small improvements to the node page in the web
+          UI.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Bug Fixes</title>
+
+      <para>The following is a list of bug fixes included in this
+      release:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>There was an issue with SNMP version 2 data collection on
+          large devices (i.e. lots of interfaces) where the ifIndex values
+          weren't contiguous. This has been corrected. Bug 1141.</para>
+        </listitem>
+
+        <listitem>
+          <para>Applied the patch to help with 30 second outages. Bug
+          1180.</para>
+        </listitem>
+
+        <listitem>
+          <para>Many people reported issues with 1.2.0 errors with the new
+          ifAlias field. It was too small to hold the entire string associated
+          with some interfaces, so the size of this field has been increased
+          to 256.</para>
+        </listitem>
+
+        <listitem>
+          <para>Fixed an issue with the service unresponsive behavior being
+          active even when not configured. Bug 1151.</para>
+        </listitem>
+
+        <listitem>
+          <para>Corrected a problem with Top 20 availability reports including
+          the wrong services. Bug 945.</para>
+        </listitem>
+
+        <listitem>
+          <para>The correct time is now shown in notifications, versus GMT.
+          Bug 1114.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>In addition, DJ Gregor (OGP) has done a number of improvements to
+      the build system.</para>
+    </section>
+  </section>
+
+  <section>
     <title>Changes in OpenNMS 1.2.0</title>
 
     <para>The only changes between 1.1.5 and 1.2.0 are some bug fixes and the
     addition of a few more datacollection values and reports.</para>
-  </sect1>
+  </section>
 
-  <sect1>
+  <section>
     <title>Changes in OpenNMS 1.1.5</title>
 
     <para>The current development goal of the OpenNMS team is to get a new,
@@ -132,7 +510,7 @@
     The resolution-prefix can be changed to suit non-English languages or user
     preference.</para>
 
-    <para>A New RADIUS Poller</para>
+    <bridgehead>A New RADIUS Poller</bridgehead>
 
     <para>Jonathan Sartin (OGP) has written a new poller to poll RADIUS
     servers. The relavent configuration in capsd is:</para>
@@ -277,9 +655,9 @@
 
     <para>There are other small fixes and improvements too numerous to list.
     Please feel free to check out CVS and the CHANGELOG for more.</para>
-  </sect1>
+  </section>
 
-  <sect1>
+  <section>
     <title>Changes in OpenNMS 1.1.4</title>
 
     <para>Longtime users of OpenNMS will be pleasantly surprised at the speed
@@ -653,9 +1031,9 @@
     </itemizedlist>
 
     <para></para>
-  </sect1>
+  </section>
 
-  <sect1>
+  <section>
     <title>Changes in OpenNMS 1.1.3 and above</title>
 
     <para>A tremendous amount of work has been done "under the covers" to
@@ -891,9 +1269,9 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
 
     <para>We have lots of bug fixes. I am really tired. Check out the <ulink
     url="http://cvs.sourceforge.net/viewcvs.py/opennms/opennms/CHANGELOG?rev=1.97&amp;view=auto">CHANGELOG</ulink>.</para>
-  </sect1>
+  </section>
 
-  <sect1 id="chap2sect1">
+  <section id="chap2sect1">
     <title>Changes in OpenNMS 1.1.2 and Above</title>
 
     <para>The following features were added in 1.1.2:</para>
@@ -1434,9 +1812,9 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
         events</para>
       </listitem>
     </itemizedlist>
-  </sect1>
+  </section>
 
-  <sect1 id="chap2sect2">
+  <section id="chap2sect2">
     <title>Changes in OpenNMS 1.1.1 and Above</title>
 
     <para>The following features were added in 1.1.1:</para>
@@ -1503,9 +1881,9 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
 
     <para>For a variety of reasons, OpenNMS 1.1.1 and beyond will require
     Tomcat4 version 4.1.18 or higher.</para>
-  </sect1>
+  </section>
 
-  <sect1 id="chap2sect3">
+  <section id="chap2sect3">
     <title>Changes in OpenNMS 1.1.0 and Above</title>
 
     <para>There were many changes to OpenNMS between 1.0 and 1.1. Here are a
@@ -1788,9 +2166,9 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
     <para>Many bugfixes, including allowing Threshold events to generate
     notifications, AdminStatus and OperStatus values causing exceptions, and
     rescans with certain devices.</para>
-  </sect1>
+  </section>
 
-  <sect1 id="chap2sect4">
+  <section id="chap2sect4">
     <title>Changes in OpenNMS 1.0.0 and Above</title>
 
     <para>The following major changes occurred between 0.9.9 and 1.0.0:</para>
@@ -1812,5 +2190,5 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
 
     <para>Many small bugfixes, including the "Calculating..." problem if RTC
     has not come up yet when tomcat starts.</para>
-  </sect1>
+  </section>
 </chapter>

@@ -7,7 +7,8 @@
 		<complexType>
 			<sequence>
 				<element ref="this:auto-acknowledge" minOccurs="0" maxOccurs="unbounded"/>
-                 <element ref="this:queue" minOccurs="1" maxOccurs="unbounded"/>
+                                <element ref="this:queue" minOccurs="1" maxOccurs="unbounded"/>
+				<element name="this:outage-calendar" type="string" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
                         <attribute name="status" type="string" use="required"/>
 			<attribute name="pages-sent" type="string" use="required"/>

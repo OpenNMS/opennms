@@ -12,6 +12,8 @@
 //
 // Modifications:
 //
+// 2004 Nov 18: Added "Acknowledge Notices" and "Select All" buttons at the top of the table
+//              So it isn't necessary to scroll all the way to the bottom. Bill Ayres.
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 2002 Nov 10: Removed "http://" from UEIs and references to bluebird.
@@ -222,6 +224,16 @@
         <form action="notification/acknowledge" method="POST" name="acknowledge_form">
           <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
           <%=org.opennms.web.Util.makeHiddenTags(request)%>
+
+      <tr>
+        <td colspan="5">
+        <% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
+          <input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/>
+          <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
+          <input TYPE="reset" />
+        <% } %>
+      </tr>
+      <tr><td> &nbsp;</td></tr>
           
       <% for( int i=0; i < notices.length; i++ ) { %>
         <% if( i%5 == 0 ) { %>

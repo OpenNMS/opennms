@@ -226,17 +226,18 @@
 			
 			<!-- SNMP data type
 			
-				 SNMP supported types: counter, gauge, timeticks, integer, octetstring
+				 SNMP supported types: counter, gauge, timeticks, integer, octetstring, string
 				 The SNMP type is mapped to one of two RRD supported data types
-				 COUNTER or GAUGE.  The mapping is as follows:
+				 COUNTER or GAUGE, or the string.properties file.  The mapping is as follows:
 				 
 					SNMP counter -> RRD COUNTER
 					SNMP gauge, timeticks, integer, octetstring -> RRD GAUGE
+					SNMP string -> String properties file
 			-->
 			<attribute name="type" use="required">
 				<simpleType>
 					<restriction base="string">
-						<pattern value="^([Cc](ounter|OUNTER)(32|64)?|[Gg](auge|UAGE)(32|64)?|[Tt](ime|IME)[Tt](icks|ICKS)|[Ii](nteger|NTEGER)(32|64)?|[Oo](ctet|CTET)[Ss](tring|TRING))$"/>
+						<pattern value="^([Cc](ounter|OUNTER)(32|64)?|[Gg](auge|UAGE)(32|64)?|[Tt](ime|IME)[Tt](icks|ICKS)|[Ii](nteger|NTEGER)(32|64)?|[Oo](ctet|CTET)[Ss](tring|TRING))|[Ss](tring|TRING)$"/>
 					</restriction>
 				</simpleType>
 			</attribute>

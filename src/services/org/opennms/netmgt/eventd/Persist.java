@@ -584,6 +584,13 @@ class Persist {
         // eventParms
         set(m_insStmt, 11, (event.getParms() != null) ? Parameter.format(event.getParms()) : null);
 
+        // grab the ifIndex out of the parms if it is defined   
+        if (event.getIfIndex() != null) {
+            if (event.getParms() != null) {
+                Parameter.format(event.getParms());
+	    }
+	}
+
         // eventCreateTime
         java.sql.Timestamp eventCreateTime = new java.sql.Timestamp((new java.util.Date()).getTime());
         m_insStmt.setTimestamp(12, eventCreateTime);

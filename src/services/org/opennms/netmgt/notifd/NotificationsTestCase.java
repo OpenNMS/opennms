@@ -145,7 +145,7 @@ public class NotificationsTestCase extends TestCase {
                 "        <uei>uei.opennms.org/nodes/interfaceDown</uei>\n" + 
                 "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
                 "        <destinationPath>Escalate</destinationPath>\n" + 
-                "        <text-message>All services are down on interface %interface%.</text-message>\n" + 
+                "        <text-message>All services are down on interface %interface%, %ifalias%.</text-message>\n" + 
                 "        <subject>interface %interface% down.</subject>\n" + 
                 "        <numeric-message>222-%noticeid%</numeric-message>\n" + 
                 "    </notification>\n" + 
@@ -197,6 +197,15 @@ public class NotificationsTestCase extends TestCase {
                 "            <vbvalue>loadavg5</vbvalue>\n" + 
                 "        </varbind>\n" + 
                 "    </notification>" +
+                "    <notification name=\"nodeTimeTest\" status=\"on\">\n" + 
+                "        <uei>uei.opennms.org/tests/nodeTimeTest</uei>\n" + 
+	        "        <description>test for properly formatted timestamp in notifications</description\n" +
+                "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+                "        <destinationPath>NoEscalate</destinationPath>\n" + 
+                "        <text-message>Timestamp: %time%.</text-message>\n" + 
+                "        <subject>time %time%.</subject>\n" + 
+                "        <numeric-message>333-%noticeid%</numeric-message>\n" + 
+                "    </notification>\n" + 
                 "    <notification name=\"Roled Based Test Event\" status=\"on\">\n" + 
                 "        <uei>uei.opennms.org/test/roleTestEvent</uei>\n" + 
                 "        <description>Test for notification of roles</description>\n" + 
@@ -402,7 +411,7 @@ public class NotificationsTestCase extends TestCase {
         m_notifd.start();
         
         Date downDate = new Date();
-        anticipateNotificationsForGroup("node 2 down.", "InitialGroup", downDate, 0);
+        anticipateNotificationsForGroup("node 2 down.", "All services are down on node 2.", "InitialGroup", downDate, 0);
     
         //bring node down now
         m_eventMgr.sendEventToListeners(m_network.getNode(2).createDownEvent(downDate));
@@ -418,6 +427,7 @@ public class NotificationsTestCase extends TestCase {
 
     private MockDatabase createDatabase(MockNetwork network) {
         MockDatabase db = new MockDatabase();
+	DatabaseConnectionFactory.setInstance(db);
         db.populate(network);
         return db;
     }
@@ -427,13 +437,16 @@ public class NotificationsTestCase extends TestCase {
         network.setCriticalService("ICMP");
         network.addNode(1, "Router");
         network.addInterface("192.168.1.1");
+	network.setIfAlias("dot1 interface alias");
         network.addService("ICMP");
         network.addService("SMTP");
         network.addInterface("192.168.1.2");
+	network.setIfAlias("dot2 interface alias");
         network.addService("ICMP");
         network.addService("SMTP");
         network.addNode(2, "Server");
         network.addInterface("192.168.1.3");
+	network.setIfAlias("dot3 interface alias");
         network.addService("ICMP");
         network.addService("HTTP");
         return network;
@@ -461,26 +474,26 @@ public class NotificationsTestCase extends TestCase {
         // this is only here to ensure that we don't get an error when running AllTests
     }
 
-    protected long anticipateNotificationsForGroup(String subject, String groupName, Date startTime, long interval) throws Exception {
-        return anticipateNotificationsForGroup(subject, groupName, startTime.getTime(), interval);
+    protected long anticipateNotificationsForGroup(String subject, String textMsg, String groupName, Date startTime, long interval) throws Exception {
+        return anticipateNotificationsForGroup(subject, textMsg, groupName, startTime.getTime(), interval);
     }
 
-    protected long anticipateNotificationsForGroup(String subject, String groupName, long startTime, long interval) throws Exception {
+    protected long anticipateNotificationsForGroup(String subject, String textMsg, String groupName, long startTime, long interval) throws Exception {
         Group group = m_groupManager.getGroup(groupName);
         String[] users = group.getUser();
-        return anticipateNotificationsForUsers(users, subject, startTime, interval);
+        return anticipateNotificationsForUsers(users, subject, textMsg, startTime, interval);
     }
     
-    protected long anticipateNotificationsForRole(String subject, String groupName, Date startTime, long interval) throws Exception {
-        return anticipateNotificationsForRole(subject, groupName, startTime.getTime(), interval);
+    protected long anticipateNotificationsForRole(String subject, String textMsg, String groupName, Date startTime, long interval) throws Exception {
+        return anticipateNotificationsForRole(subject, textMsg, groupName, startTime.getTime(), interval);
     }
 
-    protected long anticipateNotificationsForRole(String subject, String roleName, long startTime, long interval) throws MarshalException, ValidationException, IOException {
+    protected long anticipateNotificationsForRole(String subject, String textMsg, String roleName, long startTime, long interval) throws MarshalException, ValidationException, IOException {
         String[] users = m_userManager.getUsersScheduledForRole(roleName, new Date(startTime));
-        return anticipateNotificationsForUsers(users, subject, startTime, interval);
+        return anticipateNotificationsForUsers(users, subject, textMsg, startTime, interval);
     }
 
-    protected long anticipateNotificationsForUsers(String[] users, String subject, long startTime, long interval) throws IOException, MarshalException, ValidationException {
+    protected long anticipateNotificationsForUsers(String[] users, String subject, String textMsg, long startTime, long interval) throws IOException, MarshalException, ValidationException {
         long expectedTime = startTime;
         for (int i = 0; i < users.length; i++) {
             User user = m_userManager.getUser(users[i]);
@@ -488,7 +501,7 @@ public class NotificationsTestCase extends TestCase {
             for (int j = 0; j < contacts.length; j++) {
                 Contact contact = contacts[j];
                 if ("email".equals(contact.getType())) {
-                    m_anticipator.anticipateNotification(createMockNotification(expectedTime, subject, contact.getInfo()));
+                    m_anticipator.anticipateNotification(createMockNotification(expectedTime, subject, textMsg, contact.getInfo()));
                 }
             }
             expectedTime += interval;
@@ -535,28 +548,7 @@ public class NotificationsTestCase extends TestCase {
     }
 
     protected void verifyAnticipated(long lastNotifyTime, long waitTime, long sleepTime) {
-        long totalWaitTime = Math.max(0, lastNotifyTime + waitTime - System.currentTimeMillis());
-        
-        Collection missingNotifications = m_anticipator.waitForAnticipated(totalWaitTime);
-        printNotifications("Missing notifications", missingNotifications);
-        assertEquals("Expected notifications not forthcoming.", 0, missingNotifications.size());
-        // make sure that we didn't start before we should have
-        long now = System.currentTimeMillis();
-        MockUtil.println("Expected notifications no sooner than "+lastNotifyTime+", currentTime is "+now);
-        assertTrue("Anticipated notifications received before expected start time", now > lastNotifyTime);
-        sleep(sleepTime);
-        printNotifications("Unexpected notifications", m_anticipator.getUnanticipated());
-        assertEquals("Unexpected notifications forthcoming.", 0, m_anticipator.getUnanticipated().size());
-    }
-
-    /**
-     * @param missingNotifications
-     */
-    protected void printNotifications(String prefix, Collection missingNotifications) {
-        for (Iterator it = missingNotifications.iterator(); it.hasNext();) {
-            MockNotification notification = (MockNotification) it.next();
-            MockUtil.println(prefix+": "+notification);
-        }
+	m_anticipator.verifyAnticipated(lastNotifytime, waitTime, sleepTime);
     }
 
     protected void sleep(long millis) {
@@ -566,11 +558,12 @@ public class NotificationsTestCase extends TestCase {
         }
     }
 
-    protected  MockNotification createMockNotification(long expectedTime, String subject, String email) {
+    protected  MockNotification createMockNotification(long expectedTime, String subject, String textMsg, String email) {
         MockNotification notification;
         notification = new MockNotification();
         notification.setExpectedTime(expectedTime);
         notification.setSubject(subject);
+	notification.setTextMsg(textMsg);
         notification.setEmail(email);
         return notification;
     }

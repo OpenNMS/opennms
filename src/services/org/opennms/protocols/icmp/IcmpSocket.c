@@ -10,6 +10,7 @@
 
  Modifications:
 
+ 2004 Oct 27: Handle Darwin 10.2 gracefully.
  2003 Sep 07: More Darwin tweaks.
  2003 Apr 26: Fixes byteswap issues on Solaris x86.
  2003 Mar 25: Used unt64_t instead of unsigned long long.
@@ -50,9 +51,14 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#include <stdint.h>
 #include <sys/socket.h>
 #if defined(__DARWIN__) || defined(__SOLARIS__) || defined (__FreeBSD__)
-#include <netinet/in_systm.h>
+# include <netinet/in_systm.h>
+# include <AvailabilityMacros.h>
+# ifndef MAC_OS_X_VERSION_10_3
+#  define socklen_t int
+# endif
 #endif
 #include <netinet/in.h>
 #include <netinet/ip.h>
