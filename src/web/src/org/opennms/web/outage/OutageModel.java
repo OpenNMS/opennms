@@ -385,6 +385,47 @@ public class OutageModel extends Object
         return summaries;
     } 
 
+    /**
+     * Return a list of IP addresses, the number of services down on each
+     * IP address, and the longest time a service has been down for each
+     * IP address.  The list will be sorted in ascending order from the
+     * service down longest to the service down shortest. This is a clone
+     * of getCurrentOutageSummaries for Harrah's (special consideration).
+     */ 
+    public OutageSummary[] getCurrentSDSOutageSummaries() throws SQLException {
+        OutageSummary[] summaries = new OutageSummary[0];        
+        Connection conn = Vault.getDbConnection();
+
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("select distinct outages.nodeid, max(outages.iflostservice) as timeDown, node.nodelabel from outages, node where ifregainedservice is null and node.nodeid=outages.nodeid and assets.nodeid=node.nodeid and assets.displaycategory != 'SDS-A-Side' and assets.displaycategory != 'SDS-B-Side' group by outages.nodeid, node.nodelabel order by timeDown desc;");
+
+            ArrayList list = new ArrayList();
+            
+            while( rs.next() ) {
+                int nodeId = rs.getInt( "nodeID" );
+                Timestamp timeDownTS = rs.getTimestamp( "timeDown" );
+                long timeDown = timeDownTS.getTime();
+                Date downDate = new Date(timeDown);
+                String nodeLabel = rs.getString( "nodelabel" );
+                
+                list.add( new OutageSummary( nodeId, nodeLabel, downDate ));
+            }
+            
+            rs.close();
+            stmt.close();
+    
+            summaries = (OutageSummary[])list.toArray( new OutageSummary[list.size()] );
+        }
+        finally {
+            Vault.releaseDbConnection( conn );
+        }
+
+        return summaries;
+    } 
+
+
+
 
     protected static Outage[] rs2Outages( ResultSet rs ) throws SQLException {
         return rs2Outages(rs, true);
