@@ -1,7 +1,7 @@
 <!--
 
 //
-// Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
+// Copyright (C) 2002-2003 Sortova Consulting Group, Inc.  All rights reserved.
 // Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -119,7 +119,7 @@
   </tr>
   <tr> 
     <td align="center" >
-      <font  SIZE="-2">Copyright &copy; 2002 <a href="http://www.sortova.com">Sortova Consulting Group, Inc.</a>. Parts Copyright &copy; 1999-2002 <a href="http://www.oculan.com">Oculan Corp.</a>. OpenNMS is a trademark of <a href="http://www.sortova.com">Sortova Consulting Group, Inc.</a>.</font>
+      <font  SIZE="-2">Copyright &copy; 2002-2003 <a href="http://www.sortova.com">Sortova Consulting Group, Inc.</a>. Parts Copyright &copy; 1999-2002 <a href="http://www.oculan.com">Oculan Corp.</a>. OpenNMS is a trademark of <a href="http://www.sortova.com">Sortova Consulting Group, Inc.</a>.</font>
     </td>
   </tr>
 </table>
