@@ -182,7 +182,7 @@
         <% } %>
 
         <% if(hasSNMPData(intf_db)) { %>
-          <% String ifLabel = IfLabel.getIfLabel(nodeId, ipAddr); %>
+          <% String ifLabel = IfLabel.getIfLabelfromIfIndex(nodeId, ipAddr, ifindexString); %>
         
           <% if(this.perfModel.isQueryableInterface(nodeId, ifLabel)) { %>
             &nbsp;&nbsp;&nbsp;<a href="performance/addReportsToUrl?node=<%=nodeId%>&intf=<%=ifLabel%>&relativetime=lastday">SNMP Performance</a>
