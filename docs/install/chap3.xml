@@ -112,7 +112,7 @@
 					<programlisting>
 	export OPENNMS_HOME=@root.install@
 	export JAVA_HOME=/usr/java/j2sdk-1.4.0
-	export TOMCAT_HOME=/vat/tomcat4
+	export TOMCAT_HOME=/var/tomcat4
 					</programlisting>
 				</para>
 			</listitem>

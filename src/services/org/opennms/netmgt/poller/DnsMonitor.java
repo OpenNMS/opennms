@@ -113,10 +113,17 @@ final class DnsMonitor
 		int port  = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
 		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
 		String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
+                String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
+
 		if (rrdPath == null)
 		{
 			log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
 		}
+                if (dsName == null)
+                {
+                        dsName = DS_NAME;
+                }
+
 
 		// Host to lookup?
 		//
@@ -213,7 +220,7 @@ final class DnsMonitor
 		{
 			// Store response time in RRD
 			if (responseTime >= 0 && rrdPath != null)
-				this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, DS_NAME, responseTime);
+				this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime);
 		}
 		
 		// 

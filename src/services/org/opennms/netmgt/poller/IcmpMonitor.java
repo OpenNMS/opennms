@@ -283,10 +283,16 @@ final class IcmpMonitor
 		int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
 		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
 		String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
+                String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
+
 		if (rrdPath == null)
 		{
 			log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
 		}
+                if (dsName == null)
+                {
+                        dsName = DS_NAME;
+                }
 		
 		// Find an appropritate thread id
 		//
@@ -355,7 +361,7 @@ final class IcmpMonitor
 				
 				// Store round-trip-time in RRD database
 				if (rtt >= 0 && rrdPath != null)
-					this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, DS_NAME, rtt);
+					this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, rtt);
 			}
 		}
 		

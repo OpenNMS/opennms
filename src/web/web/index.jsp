@@ -48,6 +48,11 @@
       <jsp:include page="/includes/performance-box.jsp" flush="false" />
 
         <br>
+      
+      <!-- Performance box -->    
+      <jsp:include page="/includes/response-box.jsp" flush="false" />
+
+        <br>
         <!-- security box -->    
       <%--
         Commenting out the security box include until it is functional

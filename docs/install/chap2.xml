@@ -39,7 +39,7 @@
 			<programlisting>
   /etc/init.d/postgresql start
 			</programlisting>
-			Then, edit the /var/lib/pgqsl/data/postgresql.conf and add the following lines:
+			Then, edit the /var/lib/pgsql/data/postgresql.conf and add the following lines:
 			<programlisting>
   tcpip_socket = true
   max_connections = 256

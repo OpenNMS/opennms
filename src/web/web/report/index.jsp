@@ -28,7 +28,10 @@
             <p><a href="performance/index.jsp">Performance Reports</a></p>
 
             <!-- Availability Report -->
-            <p><a href="availability/index.jsp">Availability Report</a></p>
+            <p><a href="availability/index.jsp">Availability Reports</a></p>
+
+            <!-- Response Time Report -->
+            <p><a href="response/index.jsp">Response Time Reports</a></p>
             <!-- more reports will follow -->
         </td>
         
@@ -42,11 +45,16 @@
                 your network.  
             </p>
     
-            <p>The <b>Availability Report</b> provides graphical or numeric
+            <p><b>Availability Reports</b> provide graphical or numeric
                 view of your service level metrics for the current
                 month-to-date, previous month, and last twelve months by categories.
                 The graphical PDF report is generated automatically on Sundays at 12:00 
                 AM and is emailed to the <i>Reporting</i> group.
+            </p>
+            
+            <p><b>Response Time Reports</b> provide a way to easily 
+                visualize the response time data collected from managed nodes throughout
+                your network.  
             </p>
             
          </td>

@@ -116,6 +116,27 @@
       <param-value>etc/snmp-adhoc-graph.properties</param-value>
     </init-param>
   </servlet>  
+
+  <servlet>
+    <!-- This servlet creates the graph images using RRDTool. -->
+    <servlet-name>rtGraph</servlet-name>
+    <servlet-class>org.opennms.web.graph.RRDGraphServlet</servlet-class>
+    <init-param>
+      <param-name>rrd-properties</param-name>
+      <param-value>etc/response-graph.properties</param-value>
+    </init-param>
+  </servlet>
+
+  <servlet>
+    <!-- This servlet creates ad hoc graph images using RRDTool. -->
+    <servlet-name>rtAdHocGraph</servlet-name>
+    <servlet-class>org.opennms.web.graph.RRDAdHocGraphServlet</servlet-class>
+    <init-param>
+      <param-name>rrd-properties</param-name>
+      <param-value>etc/response-adhoc-graph.properties</param-value>
+    </init-param>
+  </servlet>
+
   
   <servlet>
     <!-- This servlet dumps out XML using RRDTool. -->
@@ -148,6 +169,39 @@
       <description>Redirect to this sibling URL when more than one RRD matches a node.</description>      
     </init-param>
   </servlet>  
+
+  <servlet>
+    <!-- This servlet dumps out XML using RRDTool. -->
+    <servlet-name>rt-rrddump</servlet-name>
+    <servlet-class>org.opennms.web.response.RRDDumpServlet</servlet-class>
+    <init-param>
+      <param-name>rt-rrd-directory</param-name>
+      <param-value>@root.install.share@/rrd/snmp/</param-value>
+    </init-param>
+    <init-param>
+      <param-name>rt-rrd-dump-command</param-name>
+      <param-value>@install.rrdtool.bin@ dump</param-value>
+    </init-param>
+  </servlet>
+  <servlet>
+    <!-- This servlet creates a text file with one line for each RRD filename. -->
+    <servlet-name>rt-rrdlist</servlet-name>
+    <servlet-class>org.opennms.web.response.RRDListServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>rt-addPerfReportsToUrl</servlet-name>
+    <servlet-class>org.opennms.web.response.AddReportsToUrlServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>rt-addIntfToPerfUrl</servlet-name>
+    <servlet-class>org.opennms.web.response.AddInterfaceToURLServlet</servlet-class>
+    <init-param>
+      <param-name>rt-chooseInterfaceUrl</param-name>
+      <param-value>chooseinterface.jsp</param-value>
+      <description>Redirect to this sibling URL when more than one RRD matches a node.</description>
+    </init-param>
+  </servlet>
+
     
   <servlet>
     <!-- This servlet creates availability reports. -->
@@ -703,6 +757,46 @@
     <servlet-name>addIntfToPerfUrl</servlet-name>
     <url-pattern>/performance/addIntfFromNode</url-pattern>
   </servlet-mapping>  
+
+  <servlet-mapping>
+    <servlet-name>rt-rrddump</servlet-name>
+    <url-pattern>/response/dump</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>rt-rrddump</servlet-name>
+    <url-pattern>/response/raw</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>rt-rrdlist</servlet-name>
+    <url-pattern>/response/list</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>rt-addPerfReportsToUrl</servlet-name>
+    <url-pattern>/response/addReportsToUrl</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>rt-addIntfToPerfUrl</servlet-name>
+    <url-pattern>/response/addIntfFromNode</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>rtGraph</servlet-name>
+    <url-pattern>/response/graph.png</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>rtGraph</servlet-name>
+    <url-pattern>/response/graph</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>rtAdHocGraph</servlet-name>
+    <url-pattern>/response/adhocGraph.png</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>rtAdHocGraph</servlet-name>
+    <url-pattern>/response/adhocGraph</url-pattern>
+  </servlet-mapping>
+
   <servlet-mapping>
     <servlet-name>availabilityXml</servlet-name>
     <url-pattern>/availability/availabilityRaw</url-pattern>
