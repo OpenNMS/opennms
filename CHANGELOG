@@ -1,5 +1,9 @@
 1.1.4 to 1.1.5
 ----------------------------------------------------------------------
+- Added a number of new graphs for Net-SNMP collections.
+  Thx Robert and Ray.
+- Totally reworked and reordered datacollection-config.xml and
+  snmp-graph.properties to make them easier to manage.
 - Removed mib2-interfaces from SystemDefs to prevent double-polling.
 - Added the event UEI to the event detail.
 - Added a test for the Dell OpenManage service, and if available,
