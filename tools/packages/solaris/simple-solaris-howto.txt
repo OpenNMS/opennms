@@ -11,26 +11,26 @@ to make packages on solaris:
 
 ./build.sh docs
 
-2b: Run:
+2a: Run:
 
 cp -pr work/docs /tmp/opennms/usr/local/opennms/
 
-2. go into your directory and walk down to /usr/local (install things in
+2b. go into your directory and walk down to /usr/local (install things in
    /usr/local just to fit with sunfreeware)
 
 3. in the opennms package, don't forget to make jar symlinks for tomcat
    *before* you run the prototype generator
 
-   # cd /tmp/opennms/usr/local/
-   # mkdir -p tomcat/server/lib
-   # cd tomcat/server/lib
-   # ln -s ../../../opennms/lib/castor*.jar .
-   # ln -s ../../../opennms/lib/log4j*.jar .
-   # ln -s ../../../opennms/lib/opennms_*.jar .
-   # cd ../..
-   # mkdir webapps
-   # cd webapps
-   # cp ../../opennms/webapps/opennms.xml .
+ cd /tmp/opennms/usr/local/
+ mkdir -p tomcat/server/lib
+ cd tomcat/server/lib
+ ln -s ../../../opennms/lib/castor*.jar .
+ ln -s ../../../opennms/lib/log4j*.jar .
+ ln -s ../../../opennms/lib/opennms_*.jar .
+ cd ../..
+ mkdir webapps
+ cd webapps
+ cp ../../opennms/webapps/opennms.xml .
 
 4. put the packaging files from the package dir here in that directory
    (so, for opennms you'd copy the pkginfo and postinstall scripts to
@@ -41,19 +41,15 @@ cp -pr work/docs /tmp/opennms/usr/local/opennms/
 
 5. generate the file list from /usr/local/
 
-   # cd /usr/local
+   # cd /tmp/opennms/usr/local
    # find . -print | pkgproto > prototype
 
 6. add the following line to the prototype file:
 
    i pkginfo=./pkginfo
-
-7. if there's pre/postinstall scripts, do the same for them:
-
-   i preinstall=./preinstall
    i postinstall=./postinstall
 
-7a. Edit the prototype file, go to the bottom and remove the references 
+7. Edit the prototype file, go to the bottom and remove the references 
     to postinstall, pkginfo and prototype.
 
 8. fix permissions -- it's best to change your username stuff to "bin bin"
