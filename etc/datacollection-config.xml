@@ -3,7 +3,7 @@
 	rrdRepository = "@root.install.share@/rrd/snmp/">
 	<snmp-collection name="default"
 		maxVarsPerPdu = "50"
-		snmpStorageFlag = "all">
+		snmpStorageFlag = "select">
 		<rrd step = "300">
 			<rra>RRA:AVERAGE:0.5:1:8928</rra>
 			<rra>RRA:AVERAGE:0.5:12:8784</rra>
