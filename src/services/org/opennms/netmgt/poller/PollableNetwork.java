@@ -32,6 +32,10 @@
 package org.opennms.netmgt.poller;
 
 import java.net.InetAddress;
+import java.util.Date;
+
+import org.opennms.netmgt.xml.event.Event;
+
 
 
 
@@ -102,5 +106,20 @@ public class PollableNetwork extends PollableContainer {
         v.visitNetwork(this);
     }
 
+
+    public PollStatus pollRemainingMembers(PollableElement member) {
+        return getMemberStatus();
+    }
+
+    public Event createDownEvent(Date date) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    
+    public Event createUpEvent(Date date) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

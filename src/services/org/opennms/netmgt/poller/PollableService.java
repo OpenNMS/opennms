@@ -33,6 +33,10 @@ package org.opennms.netmgt.poller;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Date;
+
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * Represents a PollableService 
@@ -137,4 +141,14 @@ public class PollableService extends PollableElement {
         else
             return poll();
     }
+    
+    public Event createDownEvent(Date date) {
+        return getContext().createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date);
+    }
+    
+    
+    public Event createUpEvent(Date date) {
+        return getContext().createEvent(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date);
+    }
+
 }

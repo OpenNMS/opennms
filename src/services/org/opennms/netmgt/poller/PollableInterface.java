@@ -32,6 +32,10 @@
 package org.opennms.netmgt.poller;
 
 import java.net.InetAddress;
+import java.util.Date;
+
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * Represents a PollableInterface 
@@ -136,9 +140,17 @@ public class PollableInterface extends PollableContainer {
         if (getContext().isPollingAllIfCritServiceUndefined())
             return super.pollRemainingMembers(member);
         else {
-            recalculateStatus();
-            return getStatus();
+            return getMemberStatus();
         }
             
     }
+    public Event createDownEvent(Date date) {
+        return getContext().createEvent(EventConstants.INTERFACE_DOWN_EVENT_UEI, getNodeId(), getAddress(), null, date);
+    }
+    
+    
+    public Event createUpEvent(Date date) {
+        return getContext().createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, getNodeId(), getAddress(), null, date);
+    }
+
 }

@@ -33,20 +33,26 @@ package org.opennms.netmgt.poller;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Date;
 import java.util.Properties;
 
 import junit.framework.TestCase;
 
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockElement;
+import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockMonitor;
 import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * Represents a PollablesTest 
@@ -59,6 +65,30 @@ public class PollablesTest extends TestCase {
     private MockPollContext m_pollContext;
     private MockNetwork m_mockNetwork;
     private MockDatabase m_db;
+    private EventAnticipator m_anticipator;
+    private MockEventIpcManager m_eventMgr;
+    private MockNode mNode1;
+    private MockInterface mDot1;
+    private MockInterface mDot2;
+    private MockNode mNode2;
+    private MockService mDot1Smtp;
+    private MockService mDot1Icmp;
+    private MockService mDot2Smtp;
+    private MockService mDot2Icmp;
+    private MockInterface mDot3;
+    private MockService mDot3Http;
+    private MockService mDot3Icmp;
+    private PollableNode pNode1;
+    private PollableInterface pDot1;
+    private PollableService pDot1Smtp;
+    private PollableService pDot1Icmp;
+    private PollableInterface pDot2;
+    private PollableService pDot2Smtp;
+    private PollableService pDot2Icmp;
+    private PollableNode pNode2;
+    private PollableInterface pDot3;
+    private PollableService pDot3Http;
+    private PollableService pDot3Icmp;
     
 
     public static void main(String[] args) {
@@ -83,10 +113,11 @@ public class PollablesTest extends TestCase {
             return PollStatus.getPollStatus(m_monitor.poll(svc.getNetInterface(), m_properties, m_package));
         }
     }
-    private class MockPollContext implements PollContext {
+    private static class MockPollContext implements PollContext {
         private String m_critSvcName;
         private boolean m_nodeProcessingEnabled;
         private boolean m_pollingAllIfCritServiceUndefined;
+        private EventIpcManager m_eventMgr;
 
         public String getCriticalServiceName() {
             return m_critSvcName;
@@ -108,6 +139,17 @@ public class PollablesTest extends TestCase {
         public void setPollingAllIfCritServiceUndefined(boolean pollingAllIfCritServiceUndefined) {
             m_pollingAllIfCritServiceUndefined = pollingAllIfCritServiceUndefined;
         }
+        public Event sendEvent(Event event) {
+            m_eventMgr.sendNow(event);
+            return event;
+        }
+        public void sentEventMgr(EventIpcManager eventMgr) {
+            m_eventMgr = eventMgr;
+        }
+        
+        public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date) {
+            return MockUtil.createEvent("Test", uei, nodeId, (address == null ? null : address.getHostAddress()), svcName);
+        }
     }
     
     /*
@@ -118,6 +160,9 @@ public class PollablesTest extends TestCase {
         
         m_pollContext = new MockPollContext();
         m_pollContext.setCriticalServiceName("ICMP");
+        m_pollContext.setNodeProcessingEnabled(true);
+        m_pollContext.setPollingAllIfCritServiceUndefined(true);
+
         
         m_mockNetwork = new MockNetwork();
         m_mockNetwork.addNode(1, "Router");
@@ -142,6 +187,14 @@ public class PollablesTest extends TestCase {
         m_db = new MockDatabase();
         m_db.populate(m_mockNetwork);
         
+        m_anticipator = new EventAnticipator();
+        
+        m_eventMgr = new MockEventIpcManager();
+        m_eventMgr.setEventWriter(m_db);
+        m_eventMgr.setEventAnticipator(m_anticipator);
+        
+        m_pollContext.sentEventMgr(m_eventMgr);
+
         m_network = new PollableNetwork(m_pollContext);
         m_network.createService(1, InetAddress.getByName("192.168.1.1"), "ICMP");
         m_network.createService(1, InetAddress.getByName("192.168.1.1"), "SMTP");
@@ -165,6 +218,33 @@ public class PollablesTest extends TestCase {
         };
         m_network.visit(upper);
         m_network.resetStatusChanged();
+        
+        mNode1 = m_mockNetwork.getNode(1);
+        mDot1 = mNode1.getInterface("192.168.1.1");
+        mDot1Smtp = mDot1.getService("SMTP");
+        mDot1Icmp = mDot1.getService("ICMP");
+        mDot2 = mNode1.getInterface("192.168.1.2");
+        mDot2Smtp = mDot2.getService("SMTP");
+        mDot2Icmp = mDot2.getService("ICMP");
+        
+        mNode2 = m_mockNetwork.getNode(2);
+        mDot3 = mNode2.getInterface("192.168.1.3");
+        mDot3Http = mDot3.getService("HTTP");
+        mDot3Icmp = mDot3.getService("ICMP");
+        
+        pNode1 = m_network.getNode(1);
+        pDot1 = pNode1.getInterface(InetAddress.getByName("192.168.1.1"));
+        pDot1Smtp = pDot1.getService("SMTP");
+        pDot1Icmp = pDot1.getService("ICMP");
+        pDot2 = pNode1.getInterface(InetAddress.getByName("192.168.1.2"));
+        pDot2Smtp = pDot2.getService("SMTP");
+        pDot2Icmp = pDot2.getService("ICMP");
+        
+        pNode2 = m_network.getNode(2);
+        pDot3 = pNode2.getInterface(InetAddress.getByName("192.168.1.3"));
+        pDot3Http = pDot3.getService("HTTP");
+        pDot3Icmp = pDot3.getService("ICMP");
+        
     }
 
     /*
@@ -290,8 +370,7 @@ public class PollablesTest extends TestCase {
         };
         m_network.visit(statusChangedChecker);
         
-        final PollableService svc = m_network.getService(1, InetAddress.getByName("192.168.1.1"), "ICMP");
-        svc.updateStatus(PollStatus.STATUS_UP);
+        pDot1Icmp.updateStatus(PollStatus.STATUS_UP);
         m_network.recalculateStatus();
         
         PollableVisitor upChecker = new PollableVisitorAdaptor() {
@@ -299,19 +378,19 @@ public class PollablesTest extends TestCase {
                 assertUp(network);
             }
             public void visitNode(PollableNode node) {
-                if (node == svc.getNode())
+                if (node == pDot1Icmp.getNode())
                     assertUp(node);
                 else
                     assertDown(node);
             }
             public void visitInterface(PollableInterface iface) {
-                if (iface == svc.getInterface())
+                if (iface == pDot1Icmp.getInterface())
                     assertUp(iface);
                 else
                     assertDown(iface);
             }
             public void visitService(PollableService s) {
-                if (s == svc)
+                if (s == pDot1Icmp)
                     assertUp(s);
                 else
                     assertDown(s);
@@ -323,479 +402,506 @@ public class PollablesTest extends TestCase {
     public void testInterfaceStatus() throws Exception {
         
         
-        PollableService svc = m_network.getService(1, InetAddress.getByName("192.168.1.2"), "SMTP");
-        svc.updateStatus(PollStatus.STATUS_DOWN);
+        pDot2Smtp.updateStatus(PollStatus.STATUS_DOWN);
         m_network.recalculateStatus();
         
-        assertDown(svc);
-        assertUp(svc.getInterface());
+        assertDown(pDot2Smtp);
+        assertUp(pDot2Smtp.getInterface());
         
-        svc.updateStatus(PollStatus.STATUS_UP);
+        pDot2Smtp.updateStatus(PollStatus.STATUS_UP);
         m_network.recalculateStatus();
         
-        assertUp(svc);
-        assertUp(svc.getInterface());
+        assertUp(pDot2Smtp);
+        assertUp(pDot2Smtp.getInterface());
         
-        PollableService icmp = m_network.getService(1, InetAddress.getByName("192.168.1.2"), "ICMP");
-        icmp.updateStatus(PollStatus.STATUS_DOWN);
+        pDot2Icmp.updateStatus(PollStatus.STATUS_DOWN);
         m_network.recalculateStatus();
         
-        assertDown(icmp);
-        assertDown(icmp.getInterface());
+        assertDown(pDot2Icmp);
+        assertDown(pDot2Icmp.getInterface());
+        
+    }
+
+    public void testFindMemberWithDescendent() throws Exception {
+
+        assertSame(pNode1, m_network.findMemberWithDescendent(pDot1Icmp));
+        assertSame(pDot1, pNode1.findMemberWithDescendent(pDot1Icmp));
+        assertSame(pDot1Icmp, pDot1.findMemberWithDescendent(pDot1Icmp));
+        
+        // pDot1Icmp is not a descendent of pNode2
+        assertNull(pNode2.findMemberWithDescendent(pDot1Icmp));
+        
         
     }
     
+
     public void testPollUnresponsive() throws Exception {
-        PollableInterface iface = m_network.getInterface(1, InetAddress.getByName("192.168.1.1"));
-        PollableService smtpSvc = iface.getService("SMTP");
-        PollableService icmpSvc = iface.getService("ICMP");
-        smtpSvc.updateStatus(PollStatus.STATUS_UNRESPONSIVE);
-        icmpSvc.updateStatus(PollStatus.STATUS_UNRESPONSIVE);
+
+        pDot1Smtp.updateStatus(PollStatus.STATUS_UNRESPONSIVE);
+        pDot1Icmp.updateStatus(PollStatus.STATUS_UNRESPONSIVE);
         m_network.recalculateStatus();
         
-        assertUp(iface);
+        assertUp(pDot1);
         
     }
     
     public void testPollService() throws Exception {
-        int nodeId = 1;
-        String ipAddr = "192.168.1.1";
-        String svcName = "SMTP";
-        PollableService pSvc = m_network.getService(nodeId, InetAddress.getByName(ipAddr), svcName);
-        MockService mSvc = m_mockNetwork.getService(nodeId, ipAddr, svcName);
+
+        PollableService pSvc = pDot1Smtp;
+        MockService mSvc = mDot1Smtp;
         
         pSvc.doPoll();
-        assertEquals(PollStatus.STATUS_UP, pSvc.getStatus());
-        assertEquals(false, pSvc.isStatusChanged());
+        assertUp(pSvc);
+        assertUnchanged(pSvc);
         
         mSvc.bringDown();
         
         pSvc.doPoll();
-        assertEquals(PollStatus.STATUS_DOWN, pSvc.getStatus());
-        assertEquals(true, pSvc.isStatusChanged());
+        assertDown(pSvc);
+        assertChanged(pSvc);
         pSvc.resetStatusChanged();
         
         mSvc.bringUp();
         
         pSvc.doPoll();
-        assertEquals(PollStatus.STATUS_UP, pSvc.getStatus());
-        assertEquals(true, pSvc.isStatusChanged());
+        assertUp(pSvc);
+        assertChanged(pSvc);
         pSvc.recalculateStatus();
     }
     
     public void testPollAllUp() throws Exception {
-        m_pollContext.setNodeProcessingEnabled(true);
-        m_pollContext.setPollingAllIfCritServiceUndefined(true);
 
-        int nodeId = 1;
-        String ipAddr = "192.168.1.1";
-        String svcName = "ICMP";
-        
-        MockService mSvc = m_mockNetwork.getService(nodeId, ipAddr, svcName);
-        PollableInterface iface = m_network.getInterface(nodeId, InetAddress.getByName(ipAddr));
-        PollableService pSvc = iface.getService(svcName);
-        
-        
-        pSvc.doPoll();
-        assertUp(pSvc);
-        assertUp(iface);
-        assertEquals(false, pSvc.isStatusChanged());
-        assertEquals(false, iface.isStatusChanged());
+        pDot1Icmp.doPoll();
+        assertUp(pDot1Icmp);
+        assertUp(pDot1);
+        assertUnchanged(pDot1Icmp);
+        assertUnchanged(pDot1);
 
-        assertEquals(1, mSvc.getPollCount());
-        mSvc.resetPollCount();
-        
-        assertPollCountsZero(m_mockNetwork);
+        assertPoll(mDot1Icmp);
+        assertNoPoll(m_mockNetwork);
         
     }
     
     public void testPollIfUpNonCritSvcDown() throws Exception {
-        m_pollContext.setNodeProcessingEnabled(true);
-        m_pollContext.setPollingAllIfCritServiceUndefined(true);
 
-        int nodeId = 1;
-        String ipAddr = "192.168.1.1";
-        String svcName = "SMTP";
-        MockService mSvc = m_mockNetwork.getService(nodeId, ipAddr, svcName);
-        MockService mCritSvc = m_mockNetwork.getService(nodeId, ipAddr, "ICMP");
-        PollableInterface iface = m_network.getInterface(nodeId, InetAddress.getByName(ipAddr));
-        PollableService pSvc = iface.getService(svcName);
+        mDot1Smtp.bringDown();
+        
+        pDot1Smtp.doPoll();
+        assertDown(pDot1Smtp);
+        assertUp(pDot1);
+        assertChanged(pDot1Smtp);
+        assertUnchanged(pDot1);
 
-        mSvc.bringDown();
-        
-        pSvc.doPoll();
-        assertDown(pSvc);
-        assertUp(iface);
-        assertEquals(true, pSvc.isStatusChanged());
-        assertEquals(false, iface.isStatusChanged());
-
-        assertEquals(1, mSvc.getPollCount());
-        mSvc.resetPollCount();
-        
-        assertEquals(1, mCritSvc.getPollCount());
-        mCritSvc.resetPollCount();
-        
-        assertPollCountsZero(m_mockNetwork);
+        assertPoll(mDot1Smtp);
+        assertPoll(mDot1Icmp);
+        assertNoPoll(m_mockNetwork);
         
         
     }
     
     public void testPollIfUpCritSvcDownPoll() throws Exception {
-        m_pollContext.setNodeProcessingEnabled(true);
-        m_pollContext.setPollingAllIfCritServiceUndefined(true);
 
-        int nodeId = 1;
-        String ipAddr = "192.168.1.1";
-        MockService mSvc = m_mockNetwork.getService(nodeId, ipAddr, "SMTP");
-        MockService mCritSvc = m_mockNetwork.getService(nodeId, ipAddr, "ICMP");
-        PollableInterface iface = m_network.getInterface(nodeId, InetAddress.getByName(ipAddr));
-        PollableService pSvc = iface.getService("SMTP");
-        PollableService pCritSvc = iface.getService("ICMP");
+        mDot1Icmp.bringDown();
         
-        mCritSvc.bringDown();
+        pDot1Icmp.doPoll();
         
-        pCritSvc.doPoll();
-        
-        assertDown(pCritSvc);
-        assertDown(iface);
-        assertEquals(true, pCritSvc.isStatusChanged());
-        assertEquals(true, iface.isStatusChanged());
+        assertDown(pDot1Icmp);
+        assertDown(pDot1);
+        assertChanged(pDot1Icmp);
+        assertChanged(pDot1);
 
-        assertEquals(1, mCritSvc.getPollCount());
-        mCritSvc.resetPollCount();
-        
-        MockService otherIfCritSvc = m_mockNetwork.getService(1, "192.168.1.2", "ICMP");
-        assertEquals(1, otherIfCritSvc.getPollCount());
-        otherIfCritSvc.resetPollCount();
-        
-        assertPollCountsZero(m_mockNetwork);
+        assertPoll(mDot1Icmp);
+        assertPoll(mDot2Icmp);
+        assertNoPoll(m_mockNetwork);
 
     }
     
     
     public void testPollIfDownNonCritSvcUp() throws Exception {
-        m_pollContext.setNodeProcessingEnabled(true);
-        m_pollContext.setPollingAllIfCritServiceUndefined(true);
 
-        int nodeId = 1;
-        String ipAddr = "192.168.1.1";
-        MockInterface mockIface = m_mockNetwork.getInterface(nodeId, ipAddr);
-        MockService mSvc = m_mockNetwork.getService(nodeId, ipAddr, "SMTP");
-        MockService mCritSvc = m_mockNetwork.getService(nodeId, ipAddr, "ICMP");
-        PollableInterface iface = m_network.getInterface(nodeId, InetAddress.getByName(ipAddr));
-        PollableService pSvc = iface.getService("SMTP");
-        PollableService pCritSvc = iface.getService("ICMP");
-        
-        mockIface.bringDown();
+        mDot1.bringDown();
 
-        iface.updateStatus(PollStatus.STATUS_DOWN);
-        pCritSvc.updateStatus(PollStatus.STATUS_DOWN);
+        pDot1.updateStatus(PollStatus.STATUS_DOWN);
+        pDot1Icmp.updateStatus(PollStatus.STATUS_DOWN);
         
         m_network.recalculateStatus();
         m_network.resetStatusChanged();
 
-        assertDown(pCritSvc);
-        assertDown(iface);
+        assertDown(pDot1Icmp);
+        assertDown(pDot1);
         
         
-        mSvc.bringUp();
+        mDot1Smtp.bringUp();
         
-        pSvc.doPoll();
+        pDot1Smtp.doPoll();
         
-        assertDown(pCritSvc);
-        assertDown(iface);
-        assertEquals(false, pCritSvc.isStatusChanged());
-        assertEquals(false, iface.isStatusChanged());
+        assertDown(pDot1Icmp);
+        assertDown(pDot1);
+        assertUnchanged(pDot1Icmp);
+        assertUnchanged(pDot1);
 
-        // this is not the critical service so I expect nothing to be polled
-        assertPollCountsZero(m_mockNetwork);
+        assertNoPoll(m_mockNetwork);
 
     }
 
     public void testPollIfDownCritSvcUp() throws Exception {
-        m_pollContext.setNodeProcessingEnabled(true);
-        m_pollContext.setPollingAllIfCritServiceUndefined(true);
 
-        int nodeId = 1;
-        String ipAddr = "192.168.1.1";
-        MockInterface mockIface = m_mockNetwork.getInterface(nodeId, ipAddr);
-        MockService mSvc = m_mockNetwork.getService(nodeId, ipAddr, "SMTP");
-        MockService mCritSvc = m_mockNetwork.getService(nodeId, ipAddr, "ICMP");
-        PollableInterface iface = m_network.getInterface(nodeId, InetAddress.getByName(ipAddr));
-        PollableService pSvc = iface.getService("SMTP");
-        PollableService pCritSvc = iface.getService("ICMP");
-        
-        mockIface.bringDown();
+        mDot1.bringDown();
 
-        iface.updateStatus(PollStatus.STATUS_DOWN);
-        pCritSvc.updateStatus(PollStatus.STATUS_DOWN);
+        pDot1.updateStatus(PollStatus.STATUS_DOWN);
+        pDot1Icmp.updateStatus(PollStatus.STATUS_DOWN);
         
         m_network.recalculateStatus();
         m_network.resetStatusChanged();
 
-        assertDown(pCritSvc);
-        assertDown(iface);
+        assertDown(pDot1Icmp);
+        assertDown(pDot1);
         
+        mDot1Icmp.bringUp();
         
-        mCritSvc.bringUp();
+        pDot1Icmp.doPoll();
         
-        pCritSvc.doPoll();
+        assertDown(pDot1Smtp);
+        assertUp(pDot1Icmp);
+        assertUp(pDot1);
         
-        assertDown(pSvc);
-        assertUp(pCritSvc);
-        assertUp(iface);
+        assertChanged(pDot1Icmp);
+        assertChanged(pDot1);
         
-        assertEquals(true, pCritSvc.isStatusChanged());
-        assertEquals(true, iface.isStatusChanged());
-        
-        assertEquals(1, mSvc.getPollCount());
-        mSvc.resetPollCount();
-        
-        assertEquals(1, mCritSvc.getPollCount());
-        mCritSvc.resetPollCount();
-
-        // this is not the critical service so I expect nothing to be polled
-        assertPollCountsZero(m_mockNetwork);
+        assertPoll(mDot1Smtp);
+        assertPoll(mDot1Icmp);
+        assertNoPoll(m_mockNetwork);
 
     }
 
     public void testPollIfUpCritSvcUndefSvcDown() throws Exception {
         m_pollContext.setCriticalServiceName(null);
-        m_pollContext.setNodeProcessingEnabled(true);
-        m_pollContext.setPollingAllIfCritServiceUndefined(true);
 
-        int nodeId = 1;
-        String ipAddr = "192.168.1.1";
-        MockInterface mockIface = m_mockNetwork.getInterface(nodeId, ipAddr);
-        MockService mSvc = m_mockNetwork.getService(nodeId, ipAddr, "SMTP");
-        MockService mCritSvc = m_mockNetwork.getService(nodeId, ipAddr, "ICMP");
-        PollableInterface iface = m_network.getInterface(nodeId, InetAddress.getByName(ipAddr));
-        PollableService pSvc = iface.getService("SMTP");
-        PollableService pCritSvc = iface.getService("ICMP");
+        mDot1Smtp.bringDown();
         
+        pDot1Smtp.doPoll();
         
-        mSvc.bringDown();
-        
-        pSvc.doPoll();
-        
-        assertDown(pSvc);
-        assertUp(iface);
-        assertEquals(true, pSvc.isStatusChanged());
-        assertEquals(false, iface.isStatusChanged());
+        assertDown(pDot1Smtp);
+        assertUp(pDot1);
+        assertChanged(pDot1Smtp);
+        assertUnchanged(pDot1);
 
-        assertEquals(1, mSvc.getPollCount());
-        mSvc.resetPollCount();
-        
-        assertEquals(1, mCritSvc.getPollCount());
-        mCritSvc.resetPollCount();
-        
-        // this is not the critical service so I expect nothing to be polled
-        assertPollCountsZero(m_mockNetwork);
+        assertPoll(mDot1Smtp);
+        assertPoll(mDot1Icmp);
+        assertNoPoll(m_mockNetwork);
 
     }
 
     public void testPollIfDownCritSvcUndefSvcDown() throws Exception {
         m_pollContext.setCriticalServiceName(null);
-        m_pollContext.setNodeProcessingEnabled(true);
-        m_pollContext.setPollingAllIfCritServiceUndefined(true);
 
-        int nodeId = 1;
-        String ipAddr = "192.168.1.1";
-        MockInterface mockIface = m_mockNetwork.getInterface(nodeId, ipAddr);
-        MockService mSvc = m_mockNetwork.getService(nodeId, ipAddr, "SMTP");
-        MockService mCritSvc = m_mockNetwork.getService(nodeId, ipAddr, "ICMP");
-        PollableInterface iface = m_network.getInterface(nodeId, InetAddress.getByName(ipAddr));
-        PollableService pSvc = iface.getService("SMTP");
-        PollableService pCritSvc = iface.getService("ICMP");
-        
-        mockIface.bringDown();
+        mDot1.bringDown();
 
-        iface.updateStatus(PollStatus.STATUS_DOWN);
-        pCritSvc.updateStatus(PollStatus.STATUS_DOWN);
-        pSvc.updateStatus(PollStatus.STATUS_DOWN);
+        pDot1.updateStatus(PollStatus.STATUS_DOWN);
+        pDot1Icmp.updateStatus(PollStatus.STATUS_DOWN);
+        pDot1Smtp.updateStatus(PollStatus.STATUS_DOWN);
         
         m_network.recalculateStatus();
         m_network.resetStatusChanged();
 
-        assertDown(pSvc);
-        assertDown(pCritSvc);
-        assertDown(iface);
+        assertDown(pDot1Smtp);
+        assertDown(pDot1Icmp);
+        assertDown(pDot1);
         
-        mSvc.bringUp();
+        mDot1Smtp.bringUp();
         
-        pSvc.doPoll();
+        pDot1Smtp.doPoll();
         
-        assertUp(pSvc);
-        assertDown(pCritSvc);
-        assertUp(iface);
-        assertEquals(true, pSvc.isStatusChanged());
-        assertEquals(false, pCritSvc.isStatusChanged());
-        assertEquals(true, iface.isStatusChanged());
+        assertUp(pDot1Smtp);
+        assertDown(pDot1Icmp);
+        assertUp(pDot1);
+        assertChanged(pDot1Smtp);
+        assertUnchanged(pDot1Icmp);
+        assertChanged(pDot1);
 
-        assertEquals(1, mSvc.getPollCount());
-        mSvc.resetPollCount();
-        
-        assertEquals(1, mCritSvc.getPollCount());
-        mCritSvc.resetPollCount();
-        
-        // this is not the critical service so I expect nothing to be polled
-        assertPollCountsZero(m_mockNetwork);
+        assertPoll(mDot1Smtp);
+        assertPoll(mDot1Icmp);
+        assertNoPoll(m_mockNetwork);
 
     }
 
     public void testPollIfUpCritSvcUndefSvcDownNoPoll() throws Exception {
         m_pollContext.setCriticalServiceName(null);
-        m_pollContext.setNodeProcessingEnabled(true);
         m_pollContext.setPollingAllIfCritServiceUndefined(false);
 
-        int nodeId = 1;
-        String ipAddr = "192.168.1.1";
-        MockInterface mockIface = m_mockNetwork.getInterface(nodeId, ipAddr);
-        MockService mSvc = m_mockNetwork.getService(nodeId, ipAddr, "SMTP");
-        MockService mCritSvc = m_mockNetwork.getService(nodeId, ipAddr, "ICMP");
-        PollableInterface iface = m_network.getInterface(nodeId, InetAddress.getByName(ipAddr));
-        PollableService pSvc = iface.getService("SMTP");
-        PollableService pCritSvc = iface.getService("ICMP");
+        mDot1Smtp.bringDown();
         
+        pDot1Smtp.doPoll();
         
-        mSvc.bringDown();
-        
-        pSvc.doPoll();
-        
-        assertDown(pSvc);
-        assertUp(iface);
-        assertEquals(true, pSvc.isStatusChanged());
-        assertEquals(false, iface.isStatusChanged());
+        assertDown(pDot1Smtp);
+        assertUp(pDot1);
+        assertChanged(pDot1Smtp);
+        assertUnchanged(pDot1);
 
-        assertEquals(1, mSvc.getPollCount());
-        mSvc.resetPollCount();
-        
-        // this is not the critical service so I expect nothing to be polled
-        assertPollCountsZero(m_mockNetwork);
+        assertPoll(mDot1Smtp);
+        assertNoPoll(m_mockNetwork);
 
     }
 
     public void testPollIfDownCritSvcUndefSvcDownNoPoll() throws Exception {
         m_pollContext.setCriticalServiceName(null);
-        m_pollContext.setNodeProcessingEnabled(true);
         m_pollContext.setPollingAllIfCritServiceUndefined(false);
 
-        int nodeId = 1;
-        String ipAddr = "192.168.1.1";
-        MockInterface mockIface = m_mockNetwork.getInterface(nodeId, ipAddr);
-        MockService mSvc = m_mockNetwork.getService(nodeId, ipAddr, "SMTP");
-        MockService mCritSvc = m_mockNetwork.getService(nodeId, ipAddr, "ICMP");
-        PollableInterface iface = m_network.getInterface(nodeId, InetAddress.getByName(ipAddr));
-        PollableService pSvc = iface.getService("SMTP");
-        PollableService pCritSvc = iface.getService("ICMP");
-        
-        mockIface.bringDown();
+        mDot1.bringDown();
 
-        iface.updateStatus(PollStatus.STATUS_DOWN);
-        pCritSvc.updateStatus(PollStatus.STATUS_DOWN);
-        pSvc.updateStatus(PollStatus.STATUS_DOWN);
+        pDot1.updateStatus(PollStatus.STATUS_DOWN);
+        pDot1Icmp.updateStatus(PollStatus.STATUS_DOWN);
+        pDot1Smtp.updateStatus(PollStatus.STATUS_DOWN);
         
         m_network.recalculateStatus();
         m_network.resetStatusChanged();
 
-        assertDown(pSvc);
-        assertDown(pCritSvc);
-        assertDown(iface);
+        assertDown(pDot1Smtp);
+        assertDown(pDot1Icmp);
+        assertDown(pDot1);
+        
+        mDot1Smtp.bringUp();
+        
+        pDot1Smtp.doPoll();
+        
+        assertUp(pDot1Smtp);
+        assertDown(pDot1Icmp);
+        assertUp(pDot1);
+        assertChanged(pDot1Smtp);
+        assertUnchanged(pDot1Icmp);
+        assertChanged(pDot1);
+
+        assertPoll(mDot1Smtp);
+        assertNoPoll(m_mockNetwork);
+
+    }
+    
+    public void testPollNode() throws Exception {
+        mNode1.bringDown();
+        
+        pDot1Smtp.doPoll();
+        assertDown(pDot1Smtp);
+        assertDown(pDot1Icmp);
+        assertDown(pDot2Icmp);
+        assertDown(pNode1);
+        
+        assertPoll(mDot1Smtp);
+        assertPoll(mDot1Icmp);
+        assertPoll(mDot2Icmp);
+        assertNoPoll(m_mockNetwork);
+        
+    }
+    
+    public void testServiceEvent() throws Exception {
+        MockService mSvc = mDot1Smtp;
+        PollableService pSvc = pDot1Smtp;
+        
+        anticipateDown(mSvc);
+
+        mSvc.bringDown();
+        
+        pSvc.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        anticipateUp(mSvc);
         
         mSvc.bringUp();
         
         pSvc.doPoll();
         
-        assertUp(pSvc);
-        assertDown(pCritSvc);
-        assertUp(iface);
-        assertEquals(true, pSvc.isStatusChanged());
-        assertEquals(false, pCritSvc.isStatusChanged());
-        assertEquals(true, iface.isStatusChanged());
-
-        assertEquals(1, mSvc.getPollCount());
-        mSvc.resetPollCount();
+        m_network.processStatusChange(new Date());
         
-        // this is not the critical service so I expect nothing to be polled
-        assertPollCountsZero(m_mockNetwork);
+        verifyAnticipated();
+        
+    }
+
+    public void testInterfaceEvent() throws Exception {
+        anticipateDown(mDot1);
+
+        mDot1.bringDown();
+        
+        pDot1Smtp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        anticipateUp(mDot1);
+        
+        mDot1.bringUp();
+        
+        pDot1Icmp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+    }
+    
+    public void testNodeEvent() throws Exception {
+        anticipateDown(mNode1);
+
+        mNode1.bringDown();
+        
+        pDot1Smtp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        anticipateUp(mNode1);
+        
+        mNode1.bringUp();
+        
+        pDot1Icmp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+    }
+    
+    public void testLingeringSvcDownOnIfUp() throws Exception {
+        anticipateDown(mDot1);
+
+        mDot1.bringDown();
+        
+        pDot1Smtp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        anticipateUp(mDot1);
+        anticipateDown(mDot1Smtp);
+        
+        mDot1.bringUp();
+        mDot1Smtp.bringDown();
+        
+        pDot1Icmp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+
+    }
+
+    public void testLingeringSvcDownOnNodeUp() throws Exception {
+        anticipateDown(mNode1);
+
+        mNode1.bringDown();
+        
+        pDot1Smtp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        anticipateUp(mNode1);
+        anticipateDown(mDot1);
+        
+        mNode1.bringUp();
+        mDot1Icmp.bringDown();
+        
+        pDot2Icmp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+
+    }
+    
+    public void xtestIndependentOutageEvents() throws Exception {
+        anticipateDown(mDot1Smtp);
+        
+        mDot1Smtp.bringDown();
+        
+        pDot1Smtp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+
+        verifyAnticipated();
+        
+        anticipateDown(mNode1);
+
+        mNode1.bringDown();
+        
+        pDot1Icmp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        anticipateUp(mNode1);
+        anticipateUp(mDot1Smtp);
+        
+        mNode1.bringUp();
+        
+        pDot1Icmp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+
 
     }
 
     /**
+     * 
+     */
+    private void verifyAnticipated() {
+        MockUtil.printEvents("Missing Anticipated Events: ", m_anticipator.getAnticipatedEvents());
+        assertTrue("Expected events not forthcoming", m_anticipator.getAnticipatedEvents().isEmpty());
+        MockUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
+        assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
+
+    }
+
+    /**
+     * @param svc
+     */
+    private void anticipateUp(MockElement element) {
+        Event event = element.createUpEvent();
+        m_anticipator.anticipateEvent(event);
+    }
+
+    /**
+     * @param svc
+     */
+    private void anticipateDown(MockElement element) {
+        Event event = element.createDownEvent();
+        m_anticipator.anticipateEvent(event);
+    }
+
+    private void assertPoll(MockService svc) {
+        assertEquals(1, svc.getPollCount());
+        svc.resetPollCount();
+    }
+
+
+    /**
      * @param network
      */
-    private void assertPollCountsZero(MockElement elem) {
+    private void assertNoPoll(MockElement elem) {
         MockVisitor zeroAsserter = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
                 assertEquals("Unexpected poll count for "+svc, 0, svc.getPollCount());
-                svc.resetPollCount();
             }
         };
         elem.visit(zeroAsserter);
     }
 
-    public void testPollInterface() throws Exception {
-        m_pollContext.setNodeProcessingEnabled(true);
-        m_pollContext.setPollingAllIfCritServiceUndefined(true);
-
-        int nodeId = 1;
-        String ipAddr = "192.168.1.1";
-        String svcName = "ICMP";
-        PollableService pSvc = m_network.getService(nodeId, InetAddress.getByName(ipAddr), svcName);
-        PollableInterface iface = pSvc.getInterface();
-        
-        MockService mSvc = m_mockNetwork.getService(nodeId, ipAddr, svcName);
-        MockService mSmtpSvc = m_mockNetwork.getService(nodeId, ipAddr, "SMTP");
-        
-//        MockUtil.println("--- Bring SMTP Down ----");
-//        mSmtpSvc.bringDown();
-        
-        MockUtil.println("---- Poll ICMP Up ----");
-        pSvc.doPoll();
-        assertUp(pSvc);
-        assertUp(iface);
-        assertEquals(false, pSvc.isStatusChanged());
-        assertEquals(false, iface.isStatusChanged());
-        
-        mSvc.bringDown();
-
-        MockUtil.println("---- Poll ICMP Down ----");
-        pSvc.doPoll();
-        assertDown(pSvc);
-        assertDown(iface);
-        assertEquals(true, pSvc.isStatusChanged());
-        assertEquals(true, iface.isStatusChanged());
-        m_network.resetStatusChanged();
-        
-        mSvc.bringUp();
-        
-        MockUtil.println("---- Poll ICMP Up ----");
-        pSvc.doPoll();
-        assertUp(pSvc);
-        assertUp(iface);
-        assertEquals(true, pSvc.isStatusChanged());
-        assertEquals(true, iface.isStatusChanged());
-        m_network.resetStatusChanged();
-
+    private void assertChanged(PollableElement elem) {
+        assertEquals(true, elem.isStatusChanged());
     }
-    
-    public void testFindMemberWithDescendent() throws Exception {
-        int nodeId = 1;
-        String ipAddr = "192.168.1.1";
-        String svcName = "ICMP";
-        PollableService pSvc = m_network.getService(nodeId, InetAddress.getByName(ipAddr), svcName);
-        PollableInterface iface = pSvc.getInterface();
-        PollableNode node = pSvc.getNode();
-        
-        assertSame(node, m_network.findMemberWithDescendent(pSvc));
-        assertSame(iface, node.findMemberWithDescendent(pSvc));
-        assertSame(pSvc, iface.findMemberWithDescendent(pSvc));
-        
-        assertNull(m_network.getNode(2).findMemberWithDescendent(pSvc));
-        
-        
+
+    private void assertUnchanged(PollableElement elem) {
+        assertEquals(false, elem.isStatusChanged());
     }
-    
+
     private void assertUp(PollableElement elem) {
         assertEquals(PollStatus.STATUS_UP, elem.getStatus());
     }

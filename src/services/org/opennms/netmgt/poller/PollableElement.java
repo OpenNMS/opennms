@@ -31,6 +31,10 @@
 //
 package org.opennms.netmgt.poller;
 
+import java.util.Date;
+
+import org.opennms.netmgt.xml.event.Event;
+
 /**
  * Represents a PollableElement 
  *
@@ -42,6 +46,7 @@ abstract public class PollableElement {
     private PollStatus m_status = PollStatus.STATUS_UNKNOWN;
     private boolean m_statusChanged = false;
     private long m_statusChangeTime = 0L;
+    private PollOutage m_outage = null;
 
 
     protected PollableElement(PollableContainer parent) {
@@ -91,6 +96,8 @@ abstract public class PollableElement {
     public void recalculateStatus() {
         // do nothing for just an element
     }
+    
+    public abstract PollContext getContext();
 
     /**
      * @param service
@@ -121,4 +128,62 @@ abstract public class PollableElement {
     public PollableElement selectPollElement() {
         return this;
     }
+
+    /**
+     * @param date
+     * @return
+     */
+    public abstract Event createDownEvent(Date date);
+
+    /**
+     * @param date
+     * @return
+     */
+    public abstract Event createUpEvent(Date date);
+
+    /**
+     * @param e
+     */
+    protected void createOutage(Event e, Date date) {
+        m_outage = new PollOutage(e, date);
+        resetStatusChanged();
+    }
+
+    /**
+     * @param e
+     */
+    protected void resolveOutage(Event e, Date date) {
+        m_outage.resolve(e, date);
+        resetStatusChanged();
+    }
+    
+    /**
+     * @param date
+     * 
+     */
+    public void processStatusChange(Date date) {
+        if (getStatus().isDown() && isStatusChanged()) {
+            processGoingDown(date);
+        } else if (getStatus().isUp() && isStatusChanged()) {
+            processComingUp(date);
+        }
+    }
+
+    protected void processComingUp(Date date) {
+        resolveOutage(getContext().sendEvent(createUpEvent(date)), date);
+    }
+
+    protected void processGoingDown(Date date) {
+        createOutage(getContext().sendEvent(createDownEvent(date)), date);
+    }
+
+    /**
+     * @param date
+     */
+    public void processLingeringStatusChanges(Date date) {
+        if (getStatus().isDown())
+            createOutage(getContext().sendEvent(createDownEvent(date)), date);
+        
+    }
+
 }

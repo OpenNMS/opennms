@@ -31,44 +31,39 @@
 //
 package org.opennms.netmgt.poller;
 
-import java.net.InetAddress;
 import java.util.Date;
 
 import org.opennms.netmgt.xml.event.Event;
 
 /**
- * Represents a PollContext 
+ * Represents a PollOutage 
  *
  * @author brozow
  */
-public interface PollContext {
+public class PollOutage {
     
-    public String getCriticalServiceName();
+    Event m_lostEvent;
+    Date m_lostDate;
+    Event m_regainEvent;
+    Date m_regainDate;
 
     /**
-     * @return
-     */
-    public boolean isNodeProcessingEnabled();
-
-    /**
-     * @return
-     */
-    public boolean isPollingAllIfCritServiceUndefined();
-
-    /**
-     * @param event the event to send
-     * @return the same event
-     */
-    public Event sendEvent(Event event);
-
-    /**
-     * @param uei
-     * @param nodeId
-     * @param address
-     * @param svcName
+     * @param e
      * @param date
-     * @return
      */
-    public Event createEvent(String node_lost_service_event_uei, int nodeId, InetAddress address, String svcName, Date date);
+    public PollOutage(Event lostEvent, Date lostDate) {
+        m_lostEvent = lostEvent;
+        m_lostDate = lostDate;
+    }
+
+    /**
+     * @param e
+     * @param date
+     */
+    public void resolve(Event regainEvent, Date regainDate) {
+        m_regainEvent = regainEvent;
+        m_regainDate = regainDate;
+    }
+
 
 }

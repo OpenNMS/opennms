@@ -33,6 +33,7 @@ package org.opennms.netmgt.poller;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -44,7 +45,7 @@ import java.util.Map;
  */
 abstract public class PollableContainer extends PollableElement {
 
-    Map m_members = new HashMap();
+    private Map m_members = new HashMap();
 
     public PollableContainer(PollableContainer parent) {
         super(parent);
@@ -177,6 +178,18 @@ abstract public class PollableContainer extends PollableElement {
         return (PollStatus)iter.getResult();
     }
     
+    public PollStatus getMemberStatus() {
+        SimpleIter iter = new SimpleIter(PollStatus.STATUS_DOWN) {
+            public void forEachElement(PollableElement elem) {
+                if (elem.getStatus().isUp())
+                    setResult(PollStatus.STATUS_UP);
+            }
+            
+        };
+        forEachMember(iter);
+        return (PollStatus)iter.getResult();
+    }
+    
     public PollStatus poll() {
         PollableElement leaf = selectPollElement();
         if (leaf == null) return PollStatus.STATUS_UP;
@@ -193,5 +206,51 @@ abstract public class PollableContainer extends PollableElement {
         PollableElement member = (PollableElement)getMembers().iterator().next();
         return member.selectPollElement();
             
+    }
+    public void processStatusChange(Date date) {
+        if (isStatusChanged()) {
+            super.processStatusChange(date);
+        } else if (getStatus().isUp()) {
+            processMemberStatusChanges(date);
+        }
+        
+    }
+
+    public void processMemberStatusChanges(final Date date) {
+        Iter iter = new Iter() {
+            public void forEachElement(PollableElement elem) {
+                elem.processStatusChange(date);
+            }
+            
+        };
+        forEachMember(iter);
+    }
+    
+    
+    protected void processComingUp(Date date) {
+        super.processComingUp(date);
+        processMemberLingeringStatusChanges(date);
+    }
+    /**
+     * @param date
+     */
+    private void processMemberLingeringStatusChanges(final Date date) {
+        Iter iter = new Iter() {
+            public void forEachElement(PollableElement elem) {
+                elem.processLingeringStatusChanges(date);
+            }
+            
+        };
+        forEachMember(iter);
+        
+    }
+
+    protected void processGoingDown(Date date) {
+        super.processGoingDown(date);
+    }
+    public void processLingeringStatusChanges(Date date) {
+        super.processLingeringStatusChanges(date);
+        if (getStatus().isUp())
+            processMemberLingeringStatusChanges(date);
     }
 }

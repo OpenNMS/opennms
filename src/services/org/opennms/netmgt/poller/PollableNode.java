@@ -32,6 +32,10 @@
 package org.opennms.netmgt.poller;
 
 import java.net.InetAddress;
+import java.util.Date;
+
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * Represents a PollableNode 
@@ -101,4 +105,13 @@ public class PollableNode extends PollableContainer {
         super.visitThis(v);
         v.visitNode(this);
     }
+    
+    public Event createDownEvent(Date date) {
+        return getContext().createEvent(EventConstants.NODE_DOWN_EVENT_UEI, getNodeId(), null, null, date);
+    }
+    
+    public Event createUpEvent(Date date) {
+        return getContext().createEvent(EventConstants.NODE_UP_EVENT_UEI, getNodeId(), null, null, date);
+    }
+
 }
