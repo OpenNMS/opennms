@@ -275,7 +275,7 @@ public class OutageTest extends TestCase {
         
         m_eventMgr.sendEventToListeners(lostService);
         
-        sleep(200);
+        sleep(1000);
         
         assertTrue(lostService.hasDbid());
         
@@ -286,7 +286,7 @@ public class OutageTest extends TestCase {
         
         m_eventMgr.sendEventToListeners(regainService);
         
-        sleep(200);
+        sleep(1000);
         
         assertTrue(regainService.hasDbid());
         verifyAnticipated();
