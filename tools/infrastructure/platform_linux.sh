@@ -20,17 +20,25 @@ if [ `uname` = 'Linux' ]; then
 
 	elif [ -e /etc/redhat-release ] ; then
 
-		relnum=`cat /etc/redhat-release | awk '{print $5}'`
-		major=`echo $relnum | cut -d'.' -f1`
-		minor=`echo $relnum | cut -d'.' -f2`
+		fedtest=`cat /etc/redhat-release | awk '{print $1}'`
 
-		if [ $major -eq 7 ]; then
-			LD_ASSUME_KERNEL="2.2.5" export LD_ASSUME_KERNEL
-			ulimit -s 2048 >/dev/null 2>&1
+		if [ $fedtest != 'Fedora' ]; then
+
+			relnum=`cat /etc/redhat-release | awk '{print $5}'`
+			major=`echo $relnum | cut -d'.' -f1`
+			minor=`echo $relnum | cut -d'.' -f2`
+
+			if [ $major -eq 7 ]; then
+				LD_ASSUME_KERNEL="2.2.5" export LD_ASSUME_KERNEL
+				ulimit -s 2048 >/dev/null 2>&1
+			fi
+
+			unset relnum
+			unset major
+			unset minor
+
 		fi
-
-		unset relnum
-		unset major
-		unset minor
+		
+		unset fedtest
 	fi
 fi

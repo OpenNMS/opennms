@@ -73,7 +73,7 @@ BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 AutoReqProv:		no
 
 # grr, we depend on XFree86-libs because j2sdk package deps are broken!
-Requires:		rrdtool, perl-DBD-Pg, j2sdk >= 1.4, metamail, XFree86-libs
+Requires:		rrdtool, perl-DBD-Pg, j2sdk >= 1.4, XFree86-libs
 
 %if "%{platform}" == "linux-i386-suse-7"
 %define	initdir		/etc/rc.d
@@ -131,6 +131,13 @@ Requires:		postgresql-server >= 7.2, compat-libstdc++
 Requires:		postgresql-server >= 7.2, compat-libstdc++
 %endif
 
+%if "%{platform}" == "linux-i386-fedora-1"
+%define	initdir		/etc
+%define	psql		/usr/bin/psql
+%define psql_service	postgresql
+Requires:		postgresql-server >= 7.2, compat-libstdc++
+%endif
+
 %define builddefines -Droot.install=%{instprefix} -Droot.install.sbindir=/usr/local/sbin -Droot.install.contrib=%{instprefix}/contrib -Droot.install.initdir=%{initdir}/init.d -Droot.install.servlets=%{tomcatdir}/webapps/%{name} -Droot.install.share=%{sharedir} -Droot.install.rrdtool=%{rrdlibdir} -Droot.install.postgresql=%{pglibdir} -Droot.install.logs=%{logdir} -Droot.install.pid=%{pidfile} -Dfilter.overwrite="yes" -Disrpm="true"
 
 %description
@@ -150,7 +157,7 @@ for OpenNMS.
 %package webapp
 Summary:	Web interface servlet for the OpenNMS network management platform
 Group:		Applications/System
-Requires:	tomcat4 >= 4.1.18, rrdtool, %{name} = %{version}-%{release}
+Prereq:	tomcat4 >= 4.1.18, rrdtool, %{name} = 1:%{version}-%{release}
 
 %description webapp
 The web UI for OpenNMS.
