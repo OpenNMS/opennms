@@ -307,7 +307,7 @@ ${print.headertext}
   </copy>
   <touch file="${root.rpm}/SOURCES/${ant.project.name}-source-${opennms.version.string}.tar.gz"/>
   <echo message="building RPM for OpenNMS version ${opennms.version.string}..."/>
-  <exec dir="${root.rpm}" executable="rpm" failonerror="true">
+  <exec dir="${root.rpm}" executable="rpmbuild" failonerror="true">
    <arg value="-bb"/>
    <arg value="${root.rpm}/SPECS/opennms.spec"/>
    <arg value="--define"/>
@@ -360,7 +360,7 @@ ${print.headertext}
    <mapper type="flatten"/>
   </copy>
   <echo message="building RPM for OpenNMS version ${opennms.version.string}..."/>
-  <exec dir="${root.rpm}" executable="rpm" failonerror="true">
+  <exec dir="${root.rpm}" executable="rpmbuild" failonerror="true">
    <arg value="-ba"/>
    <arg value="${root.rpm}/SPECS/opennms.spec"/>
    <arg value="--define"/>
