@@ -30,7 +30,7 @@
     improves performance for us in two ways. One is that it frees up the data
     collection threads to get back to the work of data collection right away.
     As a side benefit it also frees up the polling threads that output RRD
-    data related to latency. This makes the data much more accurate. </para>
+    data related to latency. This makes the data much more accurate.</para>
 
     <para>The second way that the queuing system provides performance
     improvements is by queuing collected data up on a per file basis. Since
@@ -49,9 +49,9 @@
     reason we give files with non-zero data points priority over files that
     have only zero data points. This way your systems that have only zero
     ifErrors or ifDiscards, for example, will not hold up writing of the data
-    for systems that have positive ifErrors and ifDiscards.  Please see
-    <filename>$OPENNMS_HOME/etc/rrd-configuration.properties</filename>
-    for configurations details.</para>
+    for systems that have positive ifErrors and ifDiscards. Please see
+    <filename>$OPENNMS_HOME/etc/rrd-configuration.properties</filename> for
+    configurations details.</para>
 
     <para>Thanks to Rackspace and Eric Evans for providing equipment to help
     us implement this and to General Electric's John Lee and Neeraj Malve for
@@ -84,8 +84,8 @@
     team..</para>
 
     <para>The last benefit of JRobin is that is helps us to reach our goal of
-    a 100% Pure Java version of OpenNMS that can work write 'of the box'
-    for new users.</para>
+    a 100% Pure Java version of OpenNMS that can work write 'of the box' for
+    new users.</para>
 
     <para>Thanks go to the JRobin team for providing this excellent RRD
     implementation. Thanks also to Rackspace for providing the equipment to
@@ -147,7 +147,8 @@
     deletes we have added cascading delete constraints to the database. With
     these if you do a 'DELETE FROM nodes WHERE nodeid=11', for example. You
     delete all the related information, its interfaces, the services on those
-    interfaces, the outages related to the node, the events, etc., etc..</para>
+    interfaces, the outages related to the node, the events, etc.,
+    etc..</para>
 
     <bridgehead>Database Connection 'Leak' Found</bridgehead>
 
@@ -279,11 +280,41 @@
     work on improving the OpenNMS build and install code. Thanks to DJ's
     efforts the installer has improved greatly and is now written completely
     in Java removing (along with the JavaMail feature and Dave Hustace)
-    OpenNMS's dependency on Perl. </para>
+    OpenNMS's dependency on Perl.</para>
 
-    <para>That said, we do expect some issues with this, as the installer
-    does do a lot of database checks and conversions, and some users have
-    large databases.</para>
+    <para>That said, we do expect some issues with this, as the installer does
+    do a lot of database checks and conversions, and some users have large
+    databases.</para>
+
+    <bridgehead>Using A Parameter for Notifications</bridgehead>
+
+    <para>Some notifications, like one based on a highThresholdExceeded event,
+    would benefit from being able to key off of not only the event UEI, but a
+    value within the event itself.</para>
+
+    <para>With 1.1.4, the ability has been added to key of the parameter name
+    and to match it with a particular value.</para>
+
+    <programlisting>    &lt;notification name="HighThreshold" status="on"&gt;
+        &lt;uei&gt;uei.opennms.org/threshold/highThresholdExceeded&lt;/uei&gt;
+        &lt;description&gt;A high threshold event&lt;/description&gt;
+        &lt;rule&gt;(IPADDR IPLIKE *.*.*.*)&lt;/rule&gt;
+        &lt;destinationPath&gt;Email-Admin&lt;/destinationPath&gt;
+        &lt;text-message&gt;A high threshold was reached on data source %parm[#1]% with %parm[#2]% and %parm[#3]% and %parm[#4]%.&lt;/text-message&gt;
+        &lt;subject&gt;Notice #%noticeid%&lt;/subject&gt;
+        &lt;varbind&gt;
+            &lt;vbname&gt;ds&lt;/vbname&gt;
+            &lt;vbvalue&gt;cpu&lt;/vbvalue&gt;
+        &lt;/varbind&gt;
+    &lt;/notification&gt;</programlisting>
+
+    <para>This will cause the notification to match if it is a high threshold
+    event involving the data source name of "cpu" only.</para>
+
+    <para>Note that you must use the name of the parameter, and you can only
+    use one. There is a TODO to add the ability to use more than one parameter
+    for the match and to use a particular parameter number instead of just the
+    name.</para>
 
     <bridgehead>Other Improvements/Changes/Bug Fixes</bridgehead>
 
@@ -318,44 +349,43 @@
       <listitem>
         <para>Michael Huot added some code that causes the webUI to turn to
         light blue, similar to "Calculating ..." when the webUI loses
-        connectivity with OpenNMS.  Code has also been added so the webUI
-	will attempt to reconnect to OpenNMS when this happens.  This should
-	remove the dependency on needing to restart Tomcat after restarting
-	OpenNMS.</para>
+        connectivity with OpenNMS. Code has also been added so the webUI will
+        attempt to reconnect to OpenNMS when this happens. This should remove
+        the dependency on needing to restart Tomcat after restarting
+        OpenNMS.</para>
       </listitem>
 
       <listitem>
-	<para>RPM dependencies have been fixed (bug #906).  A packaging
-	error caused previous releases to only include a subset of
-	package dependencies.  Some dependencies have also been fixed for
-	Mandrake distributions (bug #933).</para>
+        <para>RPM dependencies have been fixed (bug #906). A packaging error
+        caused previous releases to only include a subset of package
+        dependencies. Some dependencies have also been fixed for Mandrake
+        distributions (bug #933).</para>
       </listitem>
 
       <listitem>
-	<para>A generalized solution has been implemented for choosing
-	a proper Java Runtime Environment at runtime.  See
-	<filename>$OPENNMS_HOME/bin/runjava -h</filename> for details.</para>
+        <para>A generalized solution has been implemented for choosing a
+        proper Java Runtime Environment at runtime. See
+        <filename>$OPENNMS_HOME/bin/runjava -h</filename> for details.</para>
       </listitem>
 
       <listitem>
-	<para>The OpenNMS startup script was rewritten to be more
-	cross-platform friendly and uses the JRE chosen by
-	<filename>runjava</filename>.</para>
+        <para>The OpenNMS startup script was rewritten to be more
+        cross-platform friendly and uses the JRE chosen by
+        <filename>runjava</filename>.</para>
       </listitem>
 
       <listitem>
-	<para>Upgraded to the latest PostgreSQL JDBC driver,
-	<filename>pg74.215.jdbc3.jar</filename>.</para>
+        <para>Upgraded to the latest PostgreSQL JDBC driver,
+        <filename>pg74.215.jdbc3.jar</filename>.</para>
       </listitem>
 
       <listitem>
-	<para>WebUI to OpenNMS communication has been changed to use
-	a separate connection for each request, instead of a single
-	connection that persists until Tomcat is restarted (or the
-	webapp is reloaded).  This eliminates exceptions that are
-	thrown when certain administrative actions are performed
-	(e.g.: adding a new node through the webUI) if OpenNMS is
-	restarted without restarting Tomcat.  See bug #897.</para>
+        <para>WebUI to OpenNMS communication has been changed to use a
+        separate connection for each request, instead of a single connection
+        that persists until Tomcat is restarted (or the webapp is reloaded).
+        This eliminates exceptions that are thrown when certain administrative
+        actions are performed (e.g.: adding a new node through the webUI) if
+        OpenNMS is restarted without restarting Tomcat. See bug #897.</para>
       </listitem>
     </itemizedlist>
 
@@ -391,9 +421,9 @@
     responds.</para>
 
     <para>Since this feature was mainly written to support inactive or
-    unreachable interfaces that were discovered by SNMP, this behavior
-    should not present a problem, although it does have the added benefit of
-    being able to monitor highly available IP addresses.</para>
+    unreachable interfaces that were discovered by SNMP, this behavior should
+    not present a problem, although it does have the added benefit of being
+    able to monitor highly available IP addresses.</para>
 
     <para>For example, if your website lives at 10.1.1.1, which lives on two
     devices, as long as an HTTP request to 10.1.1.1 is answered (by either
@@ -434,7 +464,7 @@
     </itemizedlist>
 
     <para>Note that there is no "hard coded" meaning to these categories, you
-    could use "poller" for "threshold" etc..  They are just labeled for
+    could use "poller" for "threshold" etc.. They are just labeled for
     convenience.</para>
 
     <para>How would you use them? Well, you would need to modify the
@@ -706,8 +736,8 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
         &lt;parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/&gt;
     &lt;/service&gt;</programlisting>
 
-    <para>One more thing in the poller-configuration file, you will need to add
-    &lt;monitor&gt; tags at the bottom:</para>
+    <para>One more thing in the poller-configuration file, you will need to
+    add &lt;monitor&gt; tags at the bottom:</para>
 
     <programlisting>  &lt;monitor service="Sybase-JDBC" class-name="org.opennms.netmgt.poller.JDBCMonitor"/&gt;
   &lt;monitor service="MySQL-JDBC" class-name="org.opennms.netmgt.poller.JDBCMonitor"/&gt;
@@ -755,13 +785,14 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
     be logged if it is missing.</para>
 
     <para>These programs use the exec method from Java's Runtime class. Exec
-    is known to have pitfalls. (See <ulink url="http://www.javaworld.com/javaworld/jw-12-2000/jw-1229-traps.html">When Runtime.exec()
-    won't</ulink>) Also, exec does not have a built-in timeout feature. In
-    deciding what to do about these shortcomings, Bill discovered that Scott
-    McCrory has already done it with his ExecRunner class. ExecRunner and
-    StreamGobbler are at
-    <ulink url="http://sourceforge.net/">SourceForge</ulink> as part of
-    <ulink url="http://spumoni.sourceforge.net/">Spumoni</ulink>.</para>
+    is known to have pitfalls. (See <ulink
+    url="http://www.javaworld.com/javaworld/jw-12-2000/jw-1229-traps.html">When
+    Runtime.exec() won't</ulink>) Also, exec does not have a built-in timeout
+    feature. In deciding what to do about these shortcomings, Bill discovered
+    that Scott McCrory has already done it with his ExecRunner class.
+    ExecRunner and StreamGobbler are at <ulink
+    url="http://sourceforge.net/">SourceForge</ulink> as part of <ulink
+    url="http://spumoni.sourceforge.net/">Spumoni</ulink>.</para>
 
     <para>One more word about the timeout. ExecRunner expects the timeout in
     integer seconds, not milliseconds, and a value of zero means wait
@@ -772,8 +803,8 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
     2 seconds, 3000 thru 3999 -&gt; 3 seconds, etc..</para>
 
     <para>Included in contrib is a simple perl test script,
-    <filename>gptest.pl</filename>, that is handy for testing, since it is easy
-    to edit and change its behaviour.</para>
+    <filename>gptest.pl</filename>, that is handy for testing, since it is
+    easy to edit and change its behaviour.</para>
 
     <para>To implement Gp, add the following entries, substituting your
     information as needed.</para>
@@ -816,11 +847,11 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
 
     <para>The scripting language, as I understand it, is <ulink
     url="http://www.beanshell.org/">beanshell</ulink>. As Jim writes:
-    <quote>You will notice that
-    BeanShell is a lot like Java, but with some relaxed syntax. For example
-    you do not have to define types for your variables, and attributes for
-    which there are simple get methods can be accessed as properties (i.e. you
-    can say event.uei or event.getUei() interchangably.) </quote></para>
+    <quote>You will notice that BeanShell is a lot like Java, but with some
+    relaxed syntax. For example you do not have to define types for your
+    variables, and attributes for which there are simple get methods can be
+    accessed as properties (i.e. you can say event.uei or event.getUei()
+    interchangably.) </quote></para>
 
     <para>There are 4 types of scripts that can be run: start-script,
     reload-script, stop-script, and event-script. When ScriptD starts it will
@@ -983,9 +1014,9 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
     cannot be automated, and the manual process of generating maps takes more
     time than they are worth.</para>
 
-    <para>That said, my opinions do not mean much in this project (grin) and if
-    someone is willing to put in some work and write solid code I am more than
-    willing to accept it. Thus, Derek Glidden decided to go and write a
+    <para>That said, my opinions do not mean much in this project (grin) and
+    if someone is willing to put in some work and write solid code I am more
+    than willing to accept it. Thus, Derek Glidden decided to go and write a
     mapping system for OpenNMS.</para>
 
     <para>This will display the nodes as icons, and the current availability

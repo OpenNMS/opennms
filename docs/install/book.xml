@@ -7,7 +7,8 @@
 <!ENTITY __chapter2__dwwe0ple SYSTEM "chapter2.xml">
 <!ENTITY __chapter3__dx0bh6rf SYSTEM "chapter3.xml">
 <!ENTITY __chapter4 SYSTEM "chapter4.xml">
-<!ENTITY __chapter5__dx0bi2a3 SYSTEM "chapter5.xml">
+<!ENTITY __chapter5 SYSTEM "chapter5.xml">
+<!ENTITY __chapter6 SYSTEM "chapter6.xml">
 ]>
 <book>
   <title><trademark class="registered">OpenNMS</trademark>
@@ -44,5 +45,7 @@
 
   &__chapter4;
 
-  &__chapter5__dx0bi2a3;
+  &__chapter5;
+
+  &__chapter6;
 </book>

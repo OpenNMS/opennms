@@ -1,5 +1,9 @@
 1.1.3 to 1.1.4
 ----------------------------------------------------------------------
+- Updated the release notes and install guide.
+- Lots of performance enhancements for collectd
+- Added a Java based mailer to remove the need for /bin/mail and
+  perl.
 - Added data collection and graphs for SNMP Informant.
 - When the asset information for a node is modified, OpenNMS
   will now update RTC to include any changes.
