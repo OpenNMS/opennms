@@ -2030,6 +2030,7 @@ public class Installer {
 	    m_out.println("    - performing select: " + dbcmd);
 	}
 	select = m_dbconnection.prepareStatement(dbcmd);
+    select.setFetchSize(s_fetch_size);
 	// error =		      "Unable to prepare select from temp";
 
 	dbcmd = "INSERT INTO " + table + " (" + join(", ", columns) +
