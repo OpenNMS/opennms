@@ -14,8 +14,8 @@
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
 <%
-   String breadcrumb1 = java.net.URLEncoder.encode("<a href='map/index.jsp'>Map</a>");
-   String breadcrumb2 = java.net.URLEncoder.encode("Set Parent-Child Relationships");
+   String breadcrumb1 = "<a href='map/index.jsp'>Map</a>";
+   String breadcrumb2 = "Set Parent-Child Relationships";
 %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Set Parents" />
