@@ -35,16 +35,12 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.config.eventd.EventdConfiguration;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -54,19 +50,18 @@ import org.opennms.netmgt.config.eventd.EventdConfiguration;
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
  * 
+ * Modified: 03/11/2005
+ * @author David Hustace <a href="mailto:david@opennms.org" David Hustace </a>
+ * <strong>Note: Refactored and moved all non-static references
+ *   to a base class moving away from singleton.
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class EventdConfigFactory {
+public final class EventdConfigFactory extends EventdConfigManager {
     /**
      * The singleton instance of this factory
      */
     private static EventdConfigFactory m_singleton = null;
-
-    /**
-     * The config class loaded from the config file
-     */
-    private EventdConfiguration m_config;
 
     /**
      * This member is set to true if the configuration file has been loaded.
@@ -84,10 +79,8 @@ public final class EventdConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private EventdConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
-
-        m_config = (EventdConfiguration) Unmarshaller.unmarshal(EventdConfiguration.class, new InputStreamReader(cfgIn));
-        cfgIn.close();
+        
+        super(new FileReader(configFile));
 
     }
 
@@ -146,68 +139,5 @@ public final class EventdConfigFactory {
             throw new IllegalStateException("The factory has not been initialized");
 
         return m_singleton;
-    }
-
-    /**
-     * Return the port on which eventd listens for TCP connections.
-     * 
-     * @return the port on which eventd listens for TCP connections
-     */
-    public synchronized int getTCPPort() {
-        return m_config.getTCPPort();
-    }
-
-    /**
-     * Return the port on which eventd listens for UDP data.
-     * 
-     * @return the port on which eventd listens for UDP data
-     */
-    public synchronized int getUDPPort() {
-        return m_config.getUDPPort();
-    }
-
-    /**
-     * Return the number of event receivers to be started.
-     * 
-     * @return the number of event receivers to be started
-     */
-    public synchronized int getReceivers() {
-        return m_config.getReceivers();
-    }
-
-    /**
-     * Return string indicating if timeout is to be set on the socket.
-     * 
-     * @return string indicating if timeout is to be set on the socket
-     */
-    public synchronized String getSocketSoTimeoutRequired() {
-        return m_config.getSocketSoTimeoutRequired();
-    }
-
-    /**
-     * Return timeout to be set on the socket.
-     * 
-     * @return timeout is to be set on the socket
-     */
-    public synchronized int getSocketSoTimeoutPeriod() {
-        return m_config.getSocketSoTimeoutPeriod();
-    }
-
-    /**
-     * Return flag indicating if timeout to be set on the socket is specified.
-     * 
-     * @return flag indicating if timeout to be set on the socket is specified <
-     */
-    public synchronized boolean hasSocketSoTimeoutPeriod() {
-        return m_config.hasSocketSoTimeoutPeriod();
-    }
-
-    /**
-     * Return the SQL statemet to get the next event ID.
-     * 
-     * @return the SQL statemet to get the next event ID
-     */
-    public synchronized String getGetNextEventID() {
-        return m_config.getGetNextEventID();
     }
 }

@@ -34,77 +34,44 @@
 
 package org.opennms.netmgt.eventd;
 
+import java.sql.SQLException;
+
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Header;
+
 /**
+ * AlarmWriter writes events classified as alarms to the database.
+ * Alarms are deduplicated using:
+ * Uei, dpname, nodeid, serviceid, reductionKey
  * 
+ * The reductionKey is a string attribute created by the user
+ * for a UEI defined in eventConf.  Can be a literal or more likely
+ * a tokenized string such as %interface%. 
+ *  
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class EventIpcManagerFactory {
-    /**
-     * The singleton instance of this factory
-     */
-    private static EventIpcManagerFactory m_singleton = null;
+final class AlarmWriter extends PersistEvents {
 
     /**
-     * This member is set to true if init() has been called
+     * Constructor
      */
-    private static boolean m_loaded = false;
-
-    /**
-     * The default EventIpcManager
-     */
-    protected EventIpcManagerDefaultImpl m_defIpcManager;
-
-    /**
-     * Private constructor
-     */
-    private EventIpcManagerFactory() {
-        m_defIpcManager = new EventIpcManagerDefaultImpl();
+    public AlarmWriter(String getNextEventIdStr) throws SQLException {
+        super(getNextEventIdStr);
     }
 
     /**
-     * Create the singleton instance of this factory
-     */
-    public static synchronized void init() {
-        if (m_loaded) {
-            // init already called - return
-            return;
-        }
-
-        m_singleton = new EventIpcManagerFactory();
-
-        m_loaded = true;
-    }
-
-    /**
-     * Return the singleton instance of this factory.
+     * The method that inserts the event into the database
      * 
-     * @return The current factory instance.
-     * 
-     * @throws java.lang.IllegalStateException
-     *             Thrown if the factory has not yet been initialized.
+     * @param eventHeader
+     *            the event header
+     * @param event
+     *            the actual event to be inserted
      */
-    public static synchronized EventIpcManagerFactory getInstance() {
-        if (!m_loaded)
-            throw new IllegalStateException("The factory has not been initialized");
-
-        return m_singleton;
+    public void persistAlarm(Header eventHeader, Event event) throws SQLException {
+        //TODO: create an insert/update method that inserts new alarms
+        //and updates exiting alarms.
     }
-
-    /**
-     * Returns an implementation of the default EventIpcManager class
-     */
-    public EventIpcManagerDefaultImpl getManager() {
-        return m_defIpcManager;
-    }
-
-    public void setManager(EventIpcManagerDefaultImpl manager) {
-        m_defIpcManager = manager;
-    }
-
-    //
-    // Will eventually have methods to get instances of managers to
-    // communicate across VMs
-    //
-
 }

@@ -91,6 +91,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
      */
     private String m_getNextEventIdStr;
 
+    private String m_getNextAlarmIdStr;
+
     /**
      * A thread dedicated to each listener. The events meant for each listener
      * is added to a dedicated queue when the 'sendNow()' is called. The
@@ -209,6 +211,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         try {
             EventdConfigFactory.reload();
             eFactory = EventdConfigFactory.getInstance();
+//            eFactory.reload();
         } catch (MarshalException ex) {
             Category log = ThreadCategory.getInstance(this.getClass());
             log.error("Failed to load eventd configuration", ex);
@@ -234,6 +237,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
 
         // database sequence query string
         m_getNextEventIdStr = eFactory.getGetNextEventID();
+        m_getNextAlarmIdStr = eFactory.getGetNextAlarmID();
 
     }
 
@@ -260,7 +264,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
         // create a new event handler for the events and queue it to the
         // eventhandler thread pool
         try {
-            m_eventHandlerPool.getRunQueue().add(new EventHandler(eventLog, m_getNextEventIdStr));
+            m_eventHandlerPool.getRunQueue().add(new EventHandler(eventLog, m_getNextEventIdStr, m_getNextAlarmIdStr));
         } catch (InterruptedException iE) {
             Category log = ThreadCategory.getInstance(this.getClass());
             log.warn("Unable to queue event log to the event handler pool queue", iE);

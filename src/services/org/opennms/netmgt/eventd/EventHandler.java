@@ -66,6 +66,8 @@ final class EventHandler implements Runnable {
      */
     private String m_getNextEventIdStr;
 
+    private String m_getNextAlarmIdStr;
+
     /**
      * Constructor for the eventhandler
      * 
@@ -74,10 +76,11 @@ final class EventHandler implements Runnable {
      * @param getNextEventId
      *            the sql statement to get next event id from sequence
      */
-    public EventHandler(Log eventLog, String getNextEventId) {
+    public EventHandler(Log eventLog, String getNextEventId, String getNextAlarmIdStr) {
         m_eventLog = eventLog;
 
         m_getNextEventIdStr = getNextEventId;
+        m_getNextAlarmIdStr = getNextAlarmIdStr;
     }
 
     /**
@@ -104,8 +107,10 @@ final class EventHandler implements Runnable {
 
         // create an EventWriter
         EventWriter eventWriter = null;
+        AlarmWriter alarmWriter = null;
         try {
             eventWriter = new EventWriter(m_getNextEventIdStr);
+            alarmWriter = new AlarmWriter(m_getNextAlarmIdStr);
         } catch (Throwable t) {
             log.warn("Exception creating EventWriter", t);
             log.warn("Event(s) CANNOT be inserted into the database");
@@ -147,6 +152,7 @@ final class EventHandler implements Runnable {
 
                 // add to database
                 eventWriter.persistEvent(m_eventLog.getHeader(), event);
+//                alarmWriter.persistAlarm(m_eventLog.getHeader(), event);
 
                 // send event to interested listeners
                 EventIpcManagerFactory.getInstance().getManager().broadcastNow(event);

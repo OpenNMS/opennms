@@ -118,7 +118,7 @@
 				<element ref="autoacknowledge" minOccurs="0" maxOccurs="1"/>
 
 				<!-- A logical group with which to associate this event -->
-				<element name="loggroup" type="string" minOcccurs="0" maxOccurs="unbounded"/>
+				<element name="loggroup" type="string" minOccurs="0" maxOccurs="unbounded"/>
 
 				<!-- The trouble ticket info -->
 				<element ref="tticket" minOccurs="0" maxOccurs="1"/>
@@ -133,6 +133,10 @@
      				     displayed in the event browser
 				-->
 				<element name="mouseovertext" type="string" minOccurs="0" maxOccurs="1"/>
+				
+				<!-- The alarm reduction key-->
+				<element name="reductionKey" type="string" minOccurs="0" maxOccurs="1"/>
+				
 			</sequence>
 			<attribute name="uuid" type="string" use="optional"/>
 		</complexType>

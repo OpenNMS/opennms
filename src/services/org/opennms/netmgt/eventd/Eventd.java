@@ -39,8 +39,6 @@
 
 package org.opennms.netmgt.eventd;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
@@ -53,13 +51,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import org.opennms.netmgt.config.EventdConfigFactory;
+import org.opennms.netmgt.config.DbConnectionFactory;
+import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
 import org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver;
 import org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver;
@@ -100,6 +95,7 @@ import org.opennms.netmgt.xml.event.EventReceipt;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public final class Eventd implements PausableFiber, org.opennms.netmgt.eventd.adaptors.EventHandler {
+    private static EventIpcManager m_eventIpcManager;
     /**
      * The log4j category used to log debug messsages and statements.
      */
@@ -137,6 +133,10 @@ public final class Eventd implements PausableFiber, org.opennms.netmgt.eventd.ad
      * The current status of this fiber
      */
     private int m_status;
+
+    private EventdConfigManager m_eFactory;
+
+    private DbConnectionFactory m_dbConnectionFactory;
 
     static {
         // map of service names to service identifer
@@ -206,31 +206,11 @@ public final class Eventd implements PausableFiber, org.opennms.netmgt.eventd.ad
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance();
 
-        // load the eventd configuration
-        EventdConfigFactory eFactory = null;
-        try {
-            EventdConfigFactory.reload();
-            eFactory = EventdConfigFactory.getInstance();
-        } catch (FileNotFoundException ex) {
-            log.error("Failed to load eventd configuration. File Not Found:", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (MarshalException ex) {
-            log.error("Failed to load eventd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            log.error("Failed to load eventd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            log.error("Failed to load eventd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-
         // Get a database connection and create the service table map
         //
         java.sql.Connection tempConn = null;
         try {
-            DatabaseConnectionFactory.init();
-            tempConn = DatabaseConnectionFactory.getInstance().getConnection();
+            tempConn = m_dbConnectionFactory.getConnection();
 
             // create the service table map
             //
@@ -245,19 +225,19 @@ public final class Eventd implements PausableFiber, org.opennms.netmgt.eventd.ad
 
             rset.close();
             stmt.close();
-        } catch (IOException ie) {
+/*        } catch (IOException ie) {
             log.fatal("IOException getting database connection", ie);
-            throw new UndeclaredThrowableException(ie);
+           throw new UndeclaredThrowableException(ie);
         } catch (MarshalException me) {
             log.fatal("Marshall Exception getting database connection", me);
             throw new UndeclaredThrowableException(me);
         } catch (ValidationException ve) {
             log.fatal("Validation Exception getting database connection", ve);
-            throw new UndeclaredThrowableException(ve);
+            throw new UndeclaredThrowableException(ve); */
         } catch (SQLException sqlE) {
             throw new UndeclaredThrowableException(sqlE);
-        } catch (ClassNotFoundException cnfE) {
-            throw new UndeclaredThrowableException(cnfE);
+/*        } catch (ClassNotFoundException cnfE) {
+            throw new UndeclaredThrowableException(cnfE); */
         } finally {
             try {
                 if (tempConn != null)
@@ -267,22 +247,6 @@ public final class Eventd implements PausableFiber, org.opennms.netmgt.eventd.ad
             }
         }
 
-        // load configuration(eventconf)
-        //
-        try {
-            File configFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
-            EventConfigurationManager.loadConfiguration(configFile.getPath());
-        } catch (MarshalException ex) {
-            log.error("Failed to load eventd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            log.error("Failed to load eventd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            log.error("Failed to load events configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-
         //
         // Create all the threads
         //
@@ -290,9 +254,9 @@ public final class Eventd implements PausableFiber, org.opennms.netmgt.eventd.ad
         m_tcpReceiver = null;
         m_udpReceiver = null;
         try {
-            String timeoutReq = eFactory.getSocketSoTimeoutRequired();
-            m_tcpReceiver = new TcpEventReceiver(eFactory.getTCPPort());
-            m_udpReceiver = new UdpEventReceiver(eFactory.getUDPPort());
+            String timeoutReq = m_eFactory.getSocketSoTimeoutRequired();
+            m_tcpReceiver = new TcpEventReceiver(m_eFactory.getTCPPort());
+            m_udpReceiver = new UdpEventReceiver(m_eFactory.getUDPPort());
 
             m_tcpReceiver.addEventHandler(this);
             m_udpReceiver.addEventHandler(this);
@@ -302,14 +266,7 @@ public final class Eventd implements PausableFiber, org.opennms.netmgt.eventd.ad
             throw new UndeclaredThrowableException(e);
         }
 
-        //
-        // Start all the threads
-        //
 
-        if (log.isDebugEnabled())
-            log.debug("EventIpcManagerFactory init");
-
-        EventIpcManagerFactory.init();
     }
 
     /**
@@ -431,11 +388,33 @@ public final class Eventd implements PausableFiber, org.opennms.netmgt.eventd.ad
     }
 
     public boolean processEvent(Event event) {
-        EventIpcManagerFactory.getInstance().getManager().sendNow(event);
+        m_eventIpcManager.sendNow(event);
         return true;
     }
 
     public void receiptSent(EventReceipt event) {
         // do nothing
     }
+
+    public void setConfigManager(EventdConfigManager configManager) {
+        
+        m_eFactory = configManager;
+        
+    }
+    
+    /**
+     * @param dbConnectionFactory
+     */
+    public void setDbConnectionFactory(DbConnectionFactory dbConnectionFactory) {
+        m_dbConnectionFactory = dbConnectionFactory;    
+    }
+
+    public EventIpcManager getEventIpcManager() {
+        return m_eventIpcManager;
+    }
+    
+    public void setEventIpcManager(EventIpcManager manager) {
+        m_eventIpcManager = manager;
+    }
+    
 }

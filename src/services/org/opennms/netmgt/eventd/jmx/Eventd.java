@@ -34,9 +34,77 @@
 
 package org.opennms.netmgt.eventd.jmx;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
+
+import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.EventdConfigFactory;
+import org.opennms.netmgt.eventd.EventConfigurationManager;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+
+
 public class Eventd implements EventdMBean {
+    /**
+     * The log4j category used to log debug messsages and statements.
+     */
+    public static final String LOG4J_CATEGORY = "OpenNMS.Eventd";
+
     public void init() {
-        org.opennms.netmgt.eventd.Eventd.getInstance().init();
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        Category log = ThreadCategory.getInstance();
+
+        org.opennms.netmgt.eventd.Eventd e = org.opennms.netmgt.eventd.Eventd.getInstance();
+
+        try {
+            EventdConfigFactory.reload();
+            DatabaseConnectionFactory.init();
+            EventIpcManagerFactory.init();
+            
+        } catch (FileNotFoundException ex) {
+            log.error("Failed to load eventd configuration. File Not Found:", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (MarshalException ex) {
+            log.error("Failed to load eventd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (ValidationException ex) {
+            log.error("Failed to load eventd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (IOException ex) {
+            log.error("Failed to load eventd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (ClassNotFoundException ex) {
+            log.error("Failed to init database connection factory", ex);
+            ex.printStackTrace();
+        }
+
+        // load configuration(eventconf)
+        //
+        try {
+            File configFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
+            EventConfigurationManager.loadConfiguration(configFile.getPath());
+        } catch (MarshalException ex) {
+            log.error("Failed to load eventd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (ValidationException ex) {
+            log.error("Failed to load eventd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (IOException ex) {
+            log.error("Failed to load events configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
+        
+        e.setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
+        e.setConfigManager(EventdConfigFactory.getInstance());
+        e.setEventIpcManager(EventIpcManagerFactory.getInstance().getManager());
+        e.init();
+        
     }
 
     public void start() {

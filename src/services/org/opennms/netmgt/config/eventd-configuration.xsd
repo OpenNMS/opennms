@@ -13,6 +13,9 @@
 
 			<!--- the query to get next value of the 'nodeNxtId' database sequence - to make the access database independant -->
   			<attribute name="getNextEventID" type="string" use="required"/>
+  			
+  			<!-- query to get the next sequence for the alarms table serial number -->
+  			<attribute name="getNextAlarmID" type="string" use="required"/>
 
 			<!--- the next two attributes are related to socket communication. In Linux,
 			      the close() system call is not preemptive. Setting the 'socketSoTimeoutRequired'
