@@ -865,13 +865,18 @@ final class RescanProcessor
         				{
                                                 if (isInIpAddrTable(ifaddr, duplicateNodeEntry))
                                                 {
-                                                        addDuplicateInterface(node, ifaddr, protocols, snmpc);
+                                                        dbIpIfEntry = addDuplicateInterface(node, ifaddr, protocols, snmpc);
 		                                        // Attempt to load IP Interface entry from the database
 		                                        // since dbIpIfEntry is used later in the following 
                                                         // program.
                                                         //
-		                                        dbIpIfEntry = DbIpInterfaceEntry.get(dbc, node.getNodeId(), ifaddr);
-			                                newIpIfEntry = true;
+			                                if (dbIpIfEntry != null)
+                                                        {
+                                                                newIpIfEntry = true;
+                					        if (log.isDebugEnabled())
+                						        log.debug("updateInterface: interface " + ifaddr.getHostAddress() 
+                                                                        + " is added to node: " + node.getNodeId());
+                                                        }
                                                 }
                                                 else
                                                 {
@@ -1539,7 +1544,7 @@ final class RescanProcessor
 	 * 
 	 * @throws SQLException if there is a problem updating the ipInterface table.
 	 */
-	private void addDuplicateInterface( DbNodeEntry node,
+	private DbIpInterfaceEntry addDuplicateInterface( DbNodeEntry node,
 				   InetAddress ifaddr,
                                    List protocols,
 				   IfSnmpCollector snmpc)
@@ -1634,8 +1639,9 @@ final class RescanProcessor
 						addrUnmanaged, 
 						ifIndex, 
 						ipPkg);
-
-                }			
+                        return ipIfEntry;
+                }
+                return null;
 	}
 
 
