@@ -129,6 +129,9 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
 
     public long getInterval() {
         
+        if (m_service.isDeleted())
+            return -1;
+        
         long when = m_configService.getInterval();
 
         if (m_service.getStatus().isDown()) {
@@ -160,8 +163,9 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
             }
         }
         
-        if (when < 0)
-            m_service.delete();
+        if (when < 0) {
+            m_service.sendDeleteEvent();
+        }
         
         return when;
     }

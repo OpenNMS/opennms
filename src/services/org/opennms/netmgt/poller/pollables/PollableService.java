@@ -305,4 +305,11 @@ public class PollableService extends PollableElement implements Runnable {
         
         m_schedule.schedule();
     }
+
+    /**
+     * 
+     */
+    public void sendDeleteEvent() {
+        getContext().sendEvent(getContext().createEvent(EventConstants.DELETE_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), new Date()));
+    }
 }
