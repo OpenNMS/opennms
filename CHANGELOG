@@ -1,8 +1,14 @@
 1.2.X to 1.3.0
 ----------------------------------------------------------------------
+- Use RPM "virtual packages" for the Java dependency.  Bug 1144.  Thanks
+  Ted Kaczmarek <tedkaz@optonline.net>.
+- Add "jsp.compile" target (and other associated targets) that compile
+  JSP files into Java source code and compile the resulting code into
+  Java classes.  Useful for testing if a change to a JSP caused anything
+  to break.  Will also allow us to unit test them in the future.
 - Moved servlet.jar from lib to devlib.  We shouldn't be distributing
   this with binary builds.  Bug 1146. 
-- Include group dutySchedules from Bill Ayres. Buf 1147.
+- Include group dutySchedules from Bill Ayres. Bug 1147.
 - De-singletonized Eventd for jUnit test framework
 - Added support the new notion of Alarms vs. Events
 
