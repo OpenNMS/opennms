@@ -645,11 +645,21 @@ public class NotifdTest extends TestCase {
         m_eventMgr.sendEventToListeners(upEvent);
         verifyAnticipated(endTime, 500, 5000);
         
+    }
+    
+    public void testRebuildParameterMap() throws Exception {
+        MockInterface iface = m_network.getInterface(1, "192.168.1.1");
+
+        Date downDate = new Date();
+        long finishedDowns = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "InitialGroup", downDate, 0);
+
+        //bring node down now
+        Event event = iface.createDownEvent(downDate);
+        m_eventMgr.sendEventToListeners(event);
+
+        sleep(1000);
         
     }
-
-
-
     
     private long anticipateNotificationsForGroup(String subject, String groupName, Date startTime, long interval) throws Exception {
         return anticipateNotificationsForGroup(subject, groupName, startTime.getTime(), interval);

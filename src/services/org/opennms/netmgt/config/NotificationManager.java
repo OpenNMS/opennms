@@ -523,7 +523,7 @@ public abstract class NotificationManager {
         Connection connection = null;
         try {
             connection = getConnection();
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO notifications (textmsg, numericmsg, notifyid, pagetime, nodeid, interfaceid, serviceid, eventid, eventuei) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO notifications (textmsg, numericmsg, notifyid, pagetime, nodeid, interfaceid, serviceid, eventid, eventuei, subject) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
             // notifications textMsg field
             statement.setString(1, (String) params.get(NotificationManager.PARAM_TEXT_MSG));
@@ -566,6 +566,9 @@ public abstract class NotificationManager {
             statement.setInt(8, Integer.parseInt(eventID));
     
             statement.setString(9, (String) params.get("eventUEI"));
+            
+            // notifications textMsg field
+            statement.setString(1, (String) params.get(NotificationManager.PARAM_SUBJECT));
     
             statement.executeUpdate();
             statement.close();

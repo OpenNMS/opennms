@@ -181,6 +181,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
         
         update("create table notifications (" + 
                 "       textMsg      varchar(4000) not null," + 
+                "       subject      varchar(256)," +
                 "       numericMsg   varchar(256)," + 
                 "       notifyID        integer," + 
                 "       pageTime     timestamp," + 

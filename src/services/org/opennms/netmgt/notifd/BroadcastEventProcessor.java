@@ -191,7 +191,7 @@ final class BroadcastEventProcessor implements EventListener {
                         ThreadCategory.getInstance(getClass()).debug("Acknowledging event " + curAck.getAcknowledge() + " " + event.getNodeid() + ":" + event.getInterface() + ":" + event.getService());
                         Collection notifIDs = getNotificationManager().acknowledgeNotice(event, curAck.getAcknowledge(), curAck.getMatch());
                         if (curAck.getNotify()) {
-                            sendResolvedNotifications(notifIDs, curAck);
+                            sendResolvedNotifications(notifIDs, event, curAck.getAcknowledge(), curAck.getMatch());
                         }
                     } catch (SQLException e) {
                         ThreadCategory.getInstance(getClass()).error("Failed to auto acknowledge notice.", e);
@@ -204,12 +204,7 @@ final class BroadcastEventProcessor implements EventListener {
         }
     }
 
-    /**
-     * @param notifIDs
-     * @param curAck
-     */
-    private void sendResolvedNotifications(Collection notifIDs, AutoAcknowledge curAck) {
-        // TODO Auto-generated method stub
+    private void sendResolvedNotifications(Collection notifIDs, Event event, String acknowledge, String[] match) {
         
     }
 

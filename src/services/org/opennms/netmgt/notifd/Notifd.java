@@ -207,6 +207,10 @@ public final class Notifd implements PausableFiber {
     public void setNotificationManager(NotificationManager notificationManager) {
         m_notificationManager = notificationManager;
     }
+    
+    public BroadcastEventProcessor getBroadcaseEventProcessor() {
+        return m_eventReader;
+    }
 
     /**
      * Starts the <em>Notifd</em> service. The process of starting the service

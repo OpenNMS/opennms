@@ -664,6 +664,7 @@ create unique index vulnplugins_plugin_idx on vulnPlugins(pluginID, pluginSubID)
 
 create table notifications (
        textMsg      varchar(4000) not null,
+       subject      varchar(256),
        numericMsg   varchar(256),
        notifyID	    integer,
        			constraint pk_notifyID primary key (notifyID),
