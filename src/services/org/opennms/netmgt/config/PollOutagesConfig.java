@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2004-2005 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -32,6 +32,7 @@
 
 package org.opennms.netmgt.config;
 
+
 /**
  * @author brozow
  * 
@@ -61,5 +62,18 @@ public interface PollOutagesConfig {
      * @return true if current time is in outage
      */
     public abstract boolean isCurTimeInOutage(String outName);
+    
+    /**
+     * Return if time is part of specified outage.
+     * 
+     * @param time
+     *            the time in millis to look up
+     * @param outName
+     *            the outage name
+     * 
+     * @return true if time is in outage
+     */
+    public abstract boolean isTimeInOutage(long time, String outName);
+    
 
 }

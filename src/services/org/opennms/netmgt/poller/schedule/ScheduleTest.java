@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2004-2005 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -46,7 +46,7 @@ public class ScheduleTest extends TestCase {
 
     private MockSchedulable m_schedulable;
     private MockInterval m_interval;
-    private MockScheduler m_timer;
+    private MockScheduler m_scheduler;
     private Schedule m_sched;
 
     public static void main(String[] args) {
@@ -83,9 +83,9 @@ public class ScheduleTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         m_schedulable = new MockSchedulable();
-        m_interval = new MockInterval(1000L);
-        m_timer = new MockScheduler();
-        m_sched = new Schedule(m_schedulable, m_interval, m_timer);        
+        m_scheduler = new MockScheduler();
+        m_interval = new MockInterval(m_scheduler, 1000L);
+        m_sched = new Schedule(m_schedulable, m_interval, m_scheduler);        
     }
 
     /*
@@ -100,11 +100,11 @@ public class ScheduleTest extends TestCase {
         
         assertRunAndScheduled(0, 0, 0, 1);
 
-        m_timer.next();
+        m_scheduler.next();
 
         assertRunAndScheduled(0, 1000, 1, 1);
 
-        m_timer.next();
+        m_scheduler.next();
         
         assertRunAndScheduled(1000, 1000, 2, 1);
     }
@@ -115,28 +115,28 @@ public class ScheduleTest extends TestCase {
         
         assertRunAndScheduled(0, 0, 0, 1);
         
-        m_timer.next();
+        m_scheduler.next();
         
         m_interval.setInterval(900);
         m_sched.adjustSchedule();
         
         assertRunAndScheduled(0, 900, 1, 2);
         
-        m_timer.next();
+        m_scheduler.next();
         
         assertRunAndScheduled(900, 900, 2, 2);
 
         // jump to the expired entry
-        m_timer.next();
+        m_scheduler.next();
         
         // note that we don't increase the run count
         assertRunAndScheduled(1000, 800, 2, 1);
         
-        m_timer.next();
+        m_scheduler.next();
 
         assertRunAndScheduled(1800, 900, 3, 1);
         
-        m_timer.next();
+        m_scheduler.next();
         
         assertRunAndScheduled(2700, 900, 4, 1);
         
@@ -144,11 +144,11 @@ public class ScheduleTest extends TestCase {
         m_sched.adjustSchedule();
         
         // jump to the expired entry
-        m_timer.next();
+        m_scheduler.next();
         
         assertRunAndScheduled(3600, 100, 4, 1);
         
-        m_timer.next();
+        m_scheduler.next();
 
         assertRunAndScheduled(3700, 1000, 5, 1);
         
@@ -159,18 +159,18 @@ public class ScheduleTest extends TestCase {
         
         assertRunAndScheduled(0, 0, 0, 1);
 
-        m_timer.next();
+        m_scheduler.next();
 
         assertRunAndScheduled(0, 1000, 1, 1);
 
-        m_timer.next();
+        m_scheduler.next();
         
         assertRunAndScheduled(1000, 1000, 2, 1);
         
         m_sched.unschedule();
         
         // jump to the expired entry
-        m_timer.next();
+        m_scheduler.next();
         
         assertRunAndScheduled(2000, -1, 2, 0);
     }
@@ -182,25 +182,23 @@ public class ScheduleTest extends TestCase {
         
         assertRunAndScheduled(0, 0, 0, 1);
 
-        m_timer.next();
+        m_scheduler.next();
 
         assertRunAndScheduled(0, 1000, 1, 1);
 
-        m_timer.next();
+        m_scheduler.next();
         
         assertRunAndScheduled(1000, 1000, 2, 1);
+
+        // this is the suspended entry
+        m_scheduler.next();
         
-        // this entry should be suspened
-        m_timer.next();
+        // assert that the entry has not run
+        assertRunAndScheduled(2000, 1000, 2, 1);
         
-        // next one when the suspension is lifted
-        // and no current run
-        assertRunAndScheduled(2000, 500, 2, 1);
+        m_scheduler.next();
         
-        // now the one that after the suspension
-        m_timer.next();
-        
-        assertRunAndScheduled(2500, 1000, 3, 1);
+        assertRunAndScheduled(3000, 1000, 3, 1);
     }
     
     public void testAdjustScheduleWithinRun() {
@@ -210,21 +208,21 @@ public class ScheduleTest extends TestCase {
         
         assertRunAndScheduled(0, 0, 0, 1);
 
-        m_timer.next();
+        m_scheduler.next();
 
         assertRunAndScheduled(0, 1000, 1, 1);
 
-        m_timer.next();
+        m_scheduler.next();
         
         assertRunAndScheduled(1000, 1000, 2, 1);
     }
     
     private void assertRunAndScheduled(long currentTime, long interval, int count, int entryCount) {
         assertEquals(count, m_schedulable.getRunCount());
-        assertEquals(currentTime, m_timer.getCurrentTime());
-        assertEquals(entryCount, m_timer.getEntryCount());
+        assertEquals(currentTime, m_scheduler.getCurrentTime());
+        assertEquals(entryCount, m_scheduler.getEntryCount());
         if (entryCount > 0)
-            assertNotNull(m_timer.getEntries().get(new Long(currentTime+interval)));
+            assertNotNull(m_scheduler.getEntries().get(new Long(currentTime+interval)));
         
     }
 

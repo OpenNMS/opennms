@@ -389,6 +389,26 @@ public final class PollOutagesConfigFactory implements PollOutagesConfig {
     /**
      * Return if time is part of specified outage.
      * 
+     * @param time
+     *            the time in millis to look up
+     * @param outName
+     *            the outage name
+     * 
+     * @return true if time is in outage
+     */
+    public synchronized boolean isTimeInOutage(long time, String outName) {
+        Outage out = getOutage(outName);
+        if (out == null)
+            return false;
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(time);
+        return isTimeInOutage(cal, out);
+    }
+
+    /**
+     * Return if time is part of specified outage.
+     * 
      * @param cal
      *            the calendar to lookup
      * @param out

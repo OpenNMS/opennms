@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2004-2005 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -54,6 +54,8 @@ import org.opennms.netmgt.poller.QueryManager;
 import org.opennms.netmgt.poller.monitors.IPv4NetworkInterface;
 import org.opennms.netmgt.poller.monitors.ServiceMonitor;
 import org.opennms.netmgt.xml.event.Event;
+
+import com.sun.rsasign.s;
 
 /**
  * Test the MockNetwork and related classes
@@ -535,6 +537,8 @@ public class MockNetworkTest extends TestCase {
 
         m_pollerConfig.addScheduledOutage("outage1", now - tenMinutes, now + tenMinutes, "192.168.1.1");
         m_pollerConfig.addScheduledOutage("outage2", now - tenMinutes, now, "192.168.1.2");
+        
+        try { Thread.sleep(500); } catch (InterruptedException e) {}
 
         Package pkg = m_pollerConfig.getPackage("TestPackage");
         assertNotNull(pkg);

@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2004-2005 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -38,6 +38,7 @@ import java.util.Date;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.poller.monitors.IPv4NetworkInterface;
 import org.opennms.netmgt.poller.monitors.NetworkInterface;
+import org.opennms.netmgt.poller.schedule.Schedule;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -45,7 +46,7 @@ import org.opennms.netmgt.xml.event.Event;
  *
  * @author brozow
  */
-public class PollableService extends PollableElement {
+public class PollableService extends PollableElement implements Runnable {
 
     private String m_svcName;
     private PollConfig m_pollConfig;
@@ -53,6 +54,9 @@ public class PollableService extends PollableElement {
     private boolean m_unresponsive;
     private boolean m_unresponsiveEventPending;
     private PollStatus m_oldStatus;
+    private Schedule m_schedule;
+    private long m_statusChangeTime = 0L;
+
 
     /**
      * @param svcName
@@ -118,7 +122,7 @@ public class PollableService extends PollableElement {
      * 
      */
     public PollStatus poll() {
-        PollStatus newStatus = m_pollConfig.poll(this);
+        PollStatus newStatus = m_pollConfig.poll();
         updateStatus(newStatus);
         return getStatus();
     }
@@ -215,9 +219,42 @@ public class PollableService extends PollableElement {
                 newStatus = PollStatus.STATUS_UP;
         }
         
-        if (getStatus() != newStatus)
+        if (getStatus() != newStatus) {
             m_oldStatus = getStatus();
+            setStatusChangeTime(m_pollConfig.getCurrentTime());
+        }
+            
         
         super.updateStatus(newStatus);
+        
+        if (m_oldStatus != newStatus) {
+            getSchedule().adjustSchedule();
+        }
+    }
+
+    /**
+     * @param schedule
+     */
+    public void setSchedule(Schedule schedule) {
+        m_schedule = schedule;
+    }
+    
+    public Schedule getSchedule() {
+        return m_schedule;
+    }
+    
+    public long getStatusChangeTime() {
+        return m_statusChangeTime;
+    }
+    private void setStatusChangeTime(long statusChangeTime) {
+        m_statusChangeTime = statusChangeTime;
+    }
+
+
+    /* (non-Javadoc)
+     * @see java.lang.Runnable#run()
+     */
+    public void run() {
+        doPoll();
     }
 }

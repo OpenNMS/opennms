@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2004-2005 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -34,6 +34,7 @@ package org.opennms.netmgt.poller.pollables;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Properties;
 
 import junit.framework.TestCase;
@@ -47,12 +48,16 @@ import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockMonitor;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
+import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.poller.mock.MockPollContext;
+import org.opennms.netmgt.poller.mock.MockScheduler;
+import org.opennms.netmgt.poller.mock.MockTimer;
+import org.opennms.netmgt.poller.schedule.Schedule;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -91,6 +96,10 @@ public class PollablesTest extends TestCase {
     private PollableService pDot3Http;
     private PollableService pDot3Icmp;
     private OutageAnticipator m_outageAnticipator;
+    private MockPollerConfig m_pollerConfig;
+    
+    private MockScheduler m_scheduler;
+    private MockTimer m_timer;
     
 
     public static void main(String[] args) {
@@ -98,21 +107,25 @@ public class PollablesTest extends TestCase {
     }
 
     private class MockPollConfig implements PollConfig {
-        String m_svcName;
+        PollableService m_service;
         MockMonitor m_monitor;
         Properties m_properties = new Properties();
         Package m_package;
         
-        public MockPollConfig(MockNetwork network, String svcName) {
-            m_svcName = svcName;
-            m_monitor = new MockMonitor(network, svcName);
+        public MockPollConfig(MockNetwork network, PollableService service) {
+            m_service = service;
+            m_monitor = new MockMonitor(network, m_service.getSvcName());
             m_package = new Package();
             m_package.setName("Fake");
         }
 
-        public PollStatus poll(PollableService svc) {
-            assertEquals(m_svcName, svc.getSvcName());
-            return PollStatus.getPollStatus(m_monitor.poll(svc.getNetInterface(), m_properties, m_package));
+        public PollStatus poll() {
+            return PollStatus.getPollStatus(m_monitor.poll(m_service.getNetInterface(), m_properties, m_package));
+        }
+        
+        
+        public long getCurrentTime() {
+            return System.currentTimeMillis();
         }
     }
     /*
@@ -121,11 +134,6 @@ public class PollablesTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
-        m_pollContext = new MockPollContext();
-        m_pollContext.setCriticalServiceName("ICMP");
-        m_pollContext.setNodeProcessingEnabled(true);
-        m_pollContext.setPollingAllIfCritServiceUndefined(true);
-        m_pollContext.setServiceUnresponsiveEnabled(true);
 
         
         m_mockNetwork = new MockNetwork();
@@ -151,7 +159,6 @@ public class PollablesTest extends TestCase {
         m_db = new MockDatabase();
         m_db.populate(m_mockNetwork);
         
-        m_pollContext.setDatabase(m_db);
         
         m_anticipator = new EventAnticipator();
         m_outageAnticipator = new OutageAnticipator(m_db);
@@ -162,9 +169,29 @@ public class PollablesTest extends TestCase {
         m_eventMgr.setEventAnticipator(m_anticipator);
         m_eventMgr.addEventListener(m_outageAnticipator);
         
+        m_pollContext = new MockPollContext();
+        m_pollContext.setDatabase(m_db);
+        m_pollContext.setCriticalServiceName("ICMP");
+        m_pollContext.setNodeProcessingEnabled(true);
+        m_pollContext.setPollingAllIfCritServiceUndefined(true);
+        m_pollContext.setServiceUnresponsiveEnabled(true);
         m_pollContext.setEventMgr(m_eventMgr);
         m_pollContext.setMockNetwork(m_mockNetwork);
-
+        
+        m_pollerConfig = new MockPollerConfig();
+        m_pollerConfig.setNodeOutageProcessingEnabled(true);
+        m_pollerConfig.setCriticalService("ICMP");
+        m_pollerConfig.addPackage("TestPackage");
+        m_pollerConfig.addDowntime(100L, 0L, 500L, false);
+        m_pollerConfig.addDowntime(200L, 500L, 1500L, false);
+        m_pollerConfig.addDowntime(500L, 1500L, -1L, true);
+        m_pollerConfig.setDefaultPollInterval(1000L);
+        m_pollerConfig.populatePackage(m_mockNetwork);
+        m_pollerConfig.addPackage("TestPkg2");
+        m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
+        m_pollerConfig.setDefaultPollInterval(2000L);
+        m_pollerConfig.addService(m_mockNetwork.getService(2, "192.168.1.3", "HTTP"));
+        
         m_network = new PollableNetwork(m_pollContext);
         m_network.createService(1, InetAddress.getByName("192.168.1.1"), "ICMP");
         m_network.createService(1, InetAddress.getByName("192.168.1.1"), "SMTP");
@@ -177,17 +204,45 @@ public class PollablesTest extends TestCase {
         m_network.createService(3, InetAddress.getByName("192.168.1.5"), "SMTP");
         m_network.createService(3, InetAddress.getByName("192.168.1.5"), "HTTP");
         
+        m_timer = new MockTimer();
+        m_scheduler = new MockScheduler(m_timer);
+        PollableVisitor setConfigs = new PollableVisitorAdaptor() {
+            public void visitService(PollableService svc) {
+                Package pkg = findPackageForService(svc);
+                PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollerConfig, pkg, m_timer);
+                Schedule schedule = new Schedule(svc, pollConfig, m_scheduler);
+                svc.setPollConfig(pollConfig);
+                svc.setSchedule(schedule);
+                //schedule.schedule();
+            }
+            private Package findPackageForService(PollableService svc) {
+                Enumeration en = m_pollerConfig.enumeratePackage();
+                Package lastPkg = null;
+                while (en.hasMoreElements()) {
+                    Package pkg = (Package)en.nextElement();
+                    if (pollableServiceInPackage(svc, pkg))
+                        lastPkg = pkg;
+                }
+                return lastPkg;
+                
+            }
+            private boolean pollableServiceInPackage(PollableService svc, Package pkg) {
+                return (m_pollerConfig.serviceInPackageAndEnabled(svc.getSvcName(), pkg)
+                        && m_pollerConfig.interfaceInPackage(svc.getIpAddr(), pkg));
+            }
+
+        };
+        m_network.visit(setConfigs);
+        
         PollableVisitor upper = new PollableVisitorAdaptor() {
             public void visitElement(PollableElement e) {
                 e.updateStatus(PollStatus.STATUS_UP);  
             }
-            public void visitService(PollableService svc) {
-                MockPollConfig pollConfig = new MockPollConfig(m_mockNetwork, svc.getSvcName());
-                svc.setPollConfig(pollConfig);
-            }
         };
         m_network.visit(upper);
         m_network.resetStatusChanged();
+        
+        // set members to make the tests easier
         
         mNode1 = m_mockNetwork.getNode(1);
         mDot1 = mNode1.getInterface("192.168.1.1");
@@ -329,7 +384,6 @@ public class PollablesTest extends TestCase {
             public void visitElement(PollableElement e) {
                 assertEquals(PollStatus.STATUS_DOWN, e.getStatus());
                 assertEquals(true, e.isStatusChanged());
-                assertFalse(0L == e.getStatusChangeTime());
             }
         };
         m_network.visit(downChecker);
@@ -1053,7 +1107,271 @@ public class PollablesTest extends TestCase {
         verifyAnticipated();
     }
     
+    public void testDowntimeInterval() {
+        // HERE ARE the calls to setup the downtime model
+//        m_pollerConfig.addDowntime(100L, 0L, 500L, false);
+//        m_pollerConfig.addDowntime(200L, 500L, 1500L, false);
+//        m_pollerConfig.addDowntime(500L, 1500L, -1L, true);
+
+        Package pkg = m_pollerConfig.getPackage("TestPackage");
+        PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig, pkg, m_timer);
+        
+        m_timer.setCurrentTime(1000L);
+        pDot1Smtp.updateStatus(PollStatus.STATUS_DOWN);
+        assertEquals(1000, pDot1Smtp.getStatusChangeTime());
+        assertDown(pDot1Smtp);
+        pDot1.resetStatusChanged();
+        
+        assertEquals(100L, pollConfig.getInterval());
+
+        m_timer.setCurrentTime(1234L);
+        
+        assertEquals(100L, pollConfig.getInterval());
+        
+        m_timer.setCurrentTime(1500L);
+        
+        assertEquals(200L, pollConfig.getInterval());
+
+        m_timer.setCurrentTime(1700L);
+        
+        assertEquals(200L, pollConfig.getInterval());
+        
+        m_timer.setCurrentTime(2500L);
+        
+        assertEquals(-1L, pollConfig.getInterval());
+        //assertTrue(pDot1Smtp.isDeleted());
+        
+
+        
+    }
     
+    public void testSchedule() {
+        pDot1Smtp.getSchedule().schedule();
+        
+        m_scheduler.next();
+        
+        assertPoll(mDot1Smtp);
+        assertTime(0);
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+        
+        mDot1Smtp.bringDown();
+
+        m_scheduler.next();
+        
+        assertPoll(mDot1Smtp);
+        assertTime(1000);
+        assertDown(pDot1Smtp);
+        assertChanged(pDot1Smtp);
+        pDot1Smtp.resetStatusChanged();
+        
+        // test scheduling for downTime model
+        
+        for(int downFor = 100; downFor < 500; downFor += 100) {
+            m_scheduler.next();
+            assertPoll(mDot1Smtp);
+            assertTime(1000+downFor);
+        }
+        
+        for(int downFor = 500; downFor < 1500; downFor += 200) {
+            m_scheduler.next();
+            assertPoll(mDot1Smtp);
+            assertTime(1000+downFor);
+        }   
+        
+        
+        mDot1Smtp.bringUp();
+        
+        m_scheduler.next();
+        
+        assertPoll(mDot1Smtp);
+        assertUp(pDot1Smtp);
+        assertChanged(pDot1Smtp);
+        pDot1Smtp.recalculateStatus();
+
+        
+    }
+    
+    public void testScheduleAdjust() {
+        // change SMTP so it is only polled every 10 secs rather than 1 sec
+        m_pollerConfig.setPollInterval(m_pollerConfig.getPackage("TestPackage"), "SMTP", 10000L);
+        
+        pDot1Icmp.getSchedule().schedule();
+        pDot1Smtp.getSchedule().schedule();
+        
+        // get the immediate polls out of the way
+        m_scheduler.next();
+        m_scheduler.next();
+        
+        assertTime(0);
+        assertPoll(mDot1Icmp);
+        assertPoll(mDot1Smtp);
+        assertUp(pDot1Smtp);
+        assertUp(pDot1Icmp);
+        assertUnchanged(pDot1Smtp);
+        assertUnchanged(pDot1Icmp);
+        
+        // not we should come to the poll for icmp
+        m_scheduler.next();
+        
+        // icmp should be polled but not smtp and they both should be up
+        assertTime(1000);
+        assertPoll(mDot1Icmp);
+        assertNoPoll(mDot1Smtp);
+        assertUp(pDot1Smtp);
+        assertUp(pDot1Icmp);
+        assertUnchanged(pDot1Smtp);
+        assertUnchanged(pDot1Icmp);
+        
+        // now bring down both services
+        mDot1.bringDown();
+        
+        // we come to the next icmp poll still not time to poll smtp
+        m_scheduler.next();
+        
+        // no need to poll smtp because icmp reports itself down
+        assertTime(2000);
+        assertPoll(mDot1Icmp);
+        assertNoPoll(mDot1Smtp);
+        assertUp(pDot1Smtp);  // TODO:  i wonder if this matters... its really down (the outage does get created)
+        assertDown(pDot1Icmp);
+        assertUnchanged(pDot1Smtp);
+        assertChanged(pDot1Icmp);
+        
+        // now we bring icmp back up but not smtp.  it is still not time for a scheduled smtp poll
+        mDot1Icmp.bringUp();
+        
+        // we come to the next icmp poll in only 100ms according to the downtime model
+        m_scheduler.next();
+        
+        // since icmp came up we do an unscheduled poll of smtp and find its down
+        assertTime(2100);
+        assertPoll(mDot1Icmp);
+        assertPoll(mDot1Smtp);
+        assertDown(pDot1Smtp);
+        assertUp(pDot1Icmp);
+        assertChanged(pDot1Smtp);
+        assertChanged(pDot1Icmp);
+        
+        // since smtp is now down, the schedule for smtp should be adjusted according
+        // to the downtime model so we expect the next poll for it in only 100ms
+        m_scheduler.next();
+        
+        // this time we should poll only smtp and find it still down
+        assertTime(2200);
+        assertNoPoll(mDot1Icmp);
+        assertPoll(mDot1Smtp);
+        assertDown(pDot1Smtp);
+        assertUp(pDot1Icmp);
+        assertUnchanged(pDot1Smtp);
+        assertUnchanged(pDot1Icmp);
+        
+        mDot1Smtp.bringUp();
+        
+        // another downtime model poll of smtp
+        m_scheduler.next();
+
+        assertTime(2300);
+        assertNoPoll(mDot1Icmp);
+        assertPoll(mDot1Smtp);
+        assertUp(pDot1Smtp);
+        assertUp(pDot1Icmp);
+        assertChanged(pDot1Smtp);
+        assertUnchanged(pDot1Icmp);
+        
+        // now the next one should be the next scheduled icmp poll
+        m_scheduler.next();
+        
+        assertTime(3100);
+        assertPoll(mDot1Icmp);
+        assertNoPoll(mDot1Smtp);
+        assertUp(pDot1Smtp);
+        assertUp(pDot1Icmp);
+        assertUnchanged(pDot1Smtp);
+        assertUnchanged(pDot1Icmp);
+        
+        
+    }
+    
+    public void testComputeScheduledOutageTime() {
+        Package pkg = m_pollerConfig.getPackage("TestPackage");
+        m_pollerConfig.addScheduledOutage(pkg, "first", 3000, 5000, "192.168.1.1");
+        PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig, pkg, m_timer);
+        
+        m_timer.setCurrentTime(2000L);
+        
+        assertFalse(pollConfig.scheduledSuspension());
+        
+        m_timer.setCurrentTime(4000L);
+        
+        assertTrue(pollConfig.scheduledSuspension());
+        
+        
+    }
+    
+    public void testScheduledOutage() {
+        m_pollerConfig.addScheduledOutage(m_pollerConfig.getPackage("TestPackage"), "first", 3000, 5000, "192.168.1.1");
+
+        pDot1Smtp.getSchedule().schedule();
+        
+        m_scheduler.next();
+        
+        assertPoll(mDot1Smtp);
+        assertTime(0);
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+        
+        m_scheduler.next();
+        
+        assertPoll(mDot1Smtp);
+        assertTime(1000);
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+
+        m_scheduler.next();
+        
+        assertPoll(mDot1Smtp);
+        assertTime(2000);
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+
+        m_scheduler.next();
+        
+        assertNoPoll(mDot1Smtp);
+        assertTime(3000);
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+
+        m_scheduler.next();
+        
+        assertNoPoll(mDot1Smtp);
+        assertTime(4000);
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+
+        m_scheduler.next();
+        
+        assertNoPoll(mDot1Smtp);
+        assertTime(5000);
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+
+        m_scheduler.next();
+        
+        assertPoll(mDot1Smtp);
+        assertTime(6000);
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+    }
+    
+    
+
+    /**
+     * @param i
+     */
+    private void assertTime(long time) {
+        assertEquals("Unexpected time", time, m_scheduler.getCurrentTime());
+    }
 
     /**
      * 

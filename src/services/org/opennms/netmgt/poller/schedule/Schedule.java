@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2004-2005 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -44,6 +44,7 @@ public class Schedule {
     private ScheduleTimer m_timer;
     private int m_currentExpirationCode;
     private long m_currentInterval;
+    private boolean m_scheduled = false;
     
     class ScheduleEntry implements Runnable {
         private int m_expirationCode;
@@ -62,20 +63,19 @@ public class Schedule {
         public void run() {
             if (isExpired()) return;
             
-            if (m_interval.scheduledSuspension(m_timer.getCurrentTime()) <= 0)
+            if (!m_interval.scheduledSuspension())
                 Schedule.this.run();
 
             // if it is expired by the current run then don't reschedule
             if (isExpired()) return;
             
-            long suspensionInterval = m_interval.scheduledSuspension(m_timer.getCurrentTime());
-            if (suspensionInterval > 0) {
-                m_timer.schedule(this, suspensionInterval);
-            } else {
-                m_timer.schedule(this, m_interval.getInterval());
-            }
+            long interval = m_interval.getInterval();
+            if (interval >= 0 && m_scheduled)
+                m_timer.schedule(this, interval);
 
         }
+        
+        public String toString() { return "ScheduleEntry for "+m_schedulable; }
     }
 
     /**
@@ -95,11 +95,13 @@ public class Schedule {
      * 
      */
     public void schedule() {
+        m_scheduled = true;
         schedule(0);
     }
 
     private void schedule(long interval) {
-        m_timer.schedule(new ScheduleEntry(++m_currentExpirationCode), interval);
+        if (interval >= 0 && m_scheduled)
+            m_timer.schedule(new ScheduleEntry(++m_currentExpirationCode), interval);
     }
 
     /**
@@ -120,6 +122,7 @@ public class Schedule {
      * 
      */
     public void unschedule() {
+        m_scheduled = false;
         m_currentExpirationCode++;
     }
 

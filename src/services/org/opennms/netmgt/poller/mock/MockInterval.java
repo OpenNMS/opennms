@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2004-2005 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -36,17 +36,20 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.opennms.netmgt.poller.schedule.ScheduleInterval;
+import org.opennms.netmgt.poller.schedule.Timer;
 
 
 public class MockInterval implements ScheduleInterval {
     
+    private Timer m_timer;
     private long m_interval;
     private List m_suspensions = new LinkedList();
     
     /**
      * @param l
      */
-    public MockInterval(long interval) {
+    public MockInterval(Timer timer, long interval) {
+        m_timer = timer;
         m_interval = interval;
     }
     
@@ -76,12 +79,12 @@ public class MockInterval implements ScheduleInterval {
         m_suspensions.add(new Suspension(start, end));
     }
     
-    public long scheduledSuspension(long currentTime) {
+    public boolean scheduledSuspension() {
         for (Iterator it = m_suspensions.iterator(); it.hasNext();) {
             Suspension suspension = (Suspension) it.next();
-            if (suspension.contains(currentTime))
-                return suspension.m_end - currentTime;
+            if (suspension.contains(m_timer.getCurrentTime()))
+                return (suspension.m_end - m_timer.getCurrentTime()) > 0;
         }
-        return 0;
+        return false;
     }
 }

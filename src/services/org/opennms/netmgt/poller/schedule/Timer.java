@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2004-2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -29,23 +29,14 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.poller.pollables;
-
-import org.opennms.netmgt.poller.schedule.Timer;
-
+package org.opennms.netmgt.poller.schedule;
 
 /**
- * Represents a PollConfig 
+ * Represents a Timer 
  *
  * @author brozow
  */
-public interface PollConfig extends Timer {
-    
-    public PollStatus poll();
-
-    /**
-     * @return
-     */
-    public long getCurrentTime(); 
+public interface Timer {
+    public long getCurrentTime();
 
 }

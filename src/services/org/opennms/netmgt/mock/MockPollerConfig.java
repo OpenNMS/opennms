@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2004-2005 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -234,24 +234,27 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
         return false;
     }
 
-    public boolean isCurTimeInOutage(String outName) {
+    public boolean isTimeInOutage(long time, String outName) {
         Outage outage = findOutage(outName);
         if (outage == null)
             return false;
 
-        long now = System.currentTimeMillis();
         Iterator it = outage.getTimeCollection().iterator();
         while (it.hasNext()) {
-            Time time = (Time) it.next();
-            long begin = Long.parseLong(time.getBegins());
-            long end = Long.parseLong(time.getEnds());
+            Time interval = (Time) it.next();
+            long begin = Long.parseLong(interval.getBegins());
+            long end = Long.parseLong(interval.getEnds());
 
-            if (begin < now && now < end) {
+            if (begin <= time && time <= end) {
                 return true;
             }
         }
 
         return false;
+    }
+    
+    public boolean isCurTimeInOutage(String outName) {
+        return isTimeInOutage(System.currentTimeMillis(), outName);
     }
 
     public boolean isInterfaceInOutage(String ipAddr, String outName) {
@@ -343,9 +346,13 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
     }
 
     public void setPollInterval(String svcName, long interval) {
-        Service svc = findService(m_currentPkg, svcName);
+        setPollInterval(m_currentPkg, svcName, interval);
+    }
+
+    public void setPollInterval(Package pkg, String svcName, long interval) {
+        Service svc = findService(pkg, svcName);
         if (svc == null)
-            throw new IllegalArgumentException("No service named: "+svcName);
+            throw new IllegalArgumentException("No service named: "+svcName+" in package "+pkg);
             
         svc.setInterval(interval);
     }

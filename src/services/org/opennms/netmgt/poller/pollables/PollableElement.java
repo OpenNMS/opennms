@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2004-2005 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -45,7 +45,6 @@ abstract public class PollableElement {
     private PollableContainer m_parent;
     private PollStatus m_status = PollStatus.STATUS_UNKNOWN;
     private boolean m_statusChanged = false;
-    private long m_statusChangeTime = 0L;
     private PollEvent m_cause;
 
 
@@ -77,17 +76,10 @@ abstract public class PollableElement {
     private void setStatusChanged(boolean statusChanged) {
         m_statusChanged = statusChanged;
     }
-    public long getStatusChangeTime() {
-        return m_statusChangeTime;
-    }
-    private void setStatusChangeTime(long statusChangeTime) {
-        m_statusChangeTime = statusChangeTime;
-    }
     public void updateStatus(PollStatus newStatus) {
         if (getStatus() != newStatus) {
             setStatus(newStatus);
             setStatusChanged(true);
-            setStatusChangeTime(System.currentTimeMillis());
         }
     }
     public void resetStatusChanged() {
