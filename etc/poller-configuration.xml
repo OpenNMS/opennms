@@ -56,6 +56,11 @@
                         <parameter key="ports" value="80"/>
                         <parameter key="url" value="/"/>
                 </service>
+		<service name="HTTP-MGMT" interval="300000" user-defined="false" status="on">
+                        <parameter key="timeout" value="3000"/>
+                        <parameter key="ports" value="280"/>
+                        <parameter key="url" value="/"/>
+                </service>
                 <service name="HTTP-8080" interval="300000" user-defined="false" status="on">
                         <parameter key="timeout" value="3000"/>
                         <parameter key="ports" value="8080"/>
@@ -133,6 +138,7 @@
         <monitor service="Citrix" 	class-name="org.opennms.netmgt.poller.CitrixMonitor"/>
         <monitor service="LDAP" 	class-name="org.opennms.netmgt.poller.LdapMonitor"/>
 	<monitor service="HTTP" 	class-name="org.opennms.netmgt.poller.HttpMonitor"/>
+	<monitor service="HTTP-MGMT" 	class-name="org.opennms.netmgt.poller.HttpMonitor"/>
 	<monitor service="HTTP-8080"    class-name="org.opennms.netmgt.poller.HttpMonitor"/>
         <monitor service="HTTP-8000"    class-name="org.opennms.netmgt.poller.HttpMonitor"/>
         <monitor service="HTTPS" 	class-name="org.opennms.netmgt.poller.HttpsMonitor"/>
