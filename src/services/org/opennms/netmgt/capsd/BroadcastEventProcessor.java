@@ -42,6 +42,7 @@ package org.opennms.netmgt.capsd;
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -59,6 +60,8 @@ import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.utils.XmlrpcUtil;
+import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -251,6 +254,11 @@ final class BroadcastEventProcessor
          */
          private static String SQL_COUNT_INTERFACES_ON_NODE = "SELECT count(ipaddr) FROM ipinterface WHERE nodeid = (SELECT nodeid FROM node WHERE nodelabel = ?) ";
          
+        /**
+         * SQL statement used to count all the interface on a node
+         */
+         private static String SQL_FIND_SERVICES_ON_NODE = "SELECT ifservices.ipaddr, service.servicename FROM ifservices, service WHERE nodeID = ?";
+
         /**
 	 * The location where suspectInterface events are enqueued
 	 * for processing.
@@ -852,6 +860,19 @@ final class BroadcastEventProcessor
 		
 			if (log.isDebugEnabled())
 				log.debug("deleteNodeHandler: Starting delete of nodeid: " + nodeid);
+
+			// We need to send a serviceDeletedEvent before we blow away the database so that
+			// RTC can update the categories.
+
+			stmt = dbConn.prepareStatement(SQL_FIND_SERVICES_ON_NODE);
+			stmt.setInt(1, nodeid);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next())
+			{
+				String iface = rs.getString(1);
+				String svcname = rs.getString(2);
+				sendServiceDeletedEvent(nodeid, iface, svcname);
+			}
                 
 	                // Deleting all the userNotified info associated with the nodeid
 			stmt = dbConn.prepareStatement(SQL_DELETE_USERSNOTIFIED_ON_NODE);
@@ -1021,7 +1042,37 @@ final class BroadcastEventProcessor
                         }
                 }
         }                
-        
+
+	// This method creates a service deleted event
+
+        private void sendServiceDeletedEvent(int node, String iface, String svcname)
+        {
+                Event serviceDeleted = new Event();
+                serviceDeleted.setUei("uei.opennms.org/nodes/deleteService");
+                serviceDeleted.setSource("web ui");
+                serviceDeleted.setNodeid(node);
+                serviceDeleted.setInterface(iface);
+                serviceDeleted.setService(svcname);
+                serviceDeleted.setTime(EventConstants.formatToString(new java.util.Date()));
+
+                sendEvent(serviceDeleted);
+        }
+
+	// This utility sends events
+
+        private void sendEvent(Event event)
+        {
+		Category log = ThreadCategory.getInstance(getClass());
+                try
+                {
+                        EventProxy eventProxy = new TcpEventProxy();
+                                eventProxy.send(event);
+                }
+                catch(Exception e)
+                {
+                        log.warn("Could not send event " + event.getUei(), e);
+                }
+        }
         
 	/**
 	 * Process the event,  add the specified interface into database. If the associated 
