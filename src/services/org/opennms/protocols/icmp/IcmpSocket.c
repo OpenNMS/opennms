@@ -156,14 +156,14 @@ typedef struct icmphdr icmphdr_t;
 /**
  * Macros for doing byte swapping
  */
-#ifdef __LITTLE_ENDIAN
+#if defined(__LITTLE_ENDIAN) || defined(_LITTLE_ENDIAN)
 # ifndef ntohll
 #  define ntohll(_x_) __bswap_64(_x_)
 # endif
 # ifndef htonll
 #  define htonll(_x_) __bswap_64(_x_)
 # endif
-#elif  __BIG_ENDIAN 
+#elif  defined(__BIG_ENDIAN) || defined(_BIG_ENDIAN) 
 # ifndef ntohll
 #  define ntohll(_x_) _x_
 # endif
@@ -635,9 +635,16 @@ Java_org_opennms_protocols_icmp_IcmpSocket_receive (JNIEnv *env, jobject instanc
 	 *
 	 * Don't forget to check for a buffer overflow!
 	 */
+#if defined(__SOLARIS__)
+	if(iRC >= (OPENNMS_TAG_OFFSET + OPENNMS_TAG_LEN)
+	   && icmpHdr->icmp_type == 0
+	   && memcmp((char *)icmpHdr + OPENNMS_TAG_OFFSET, OPENNMS_TAG, OPENNMS_TAG_LEN) == 0)
+#else
+
 	if(iRC >= (OPENNMS_TAG_OFFSET + OPENNMS_TAG_LEN)
 	   && icmpHdr->type == 0
 	   && memcmp((char *)icmpHdr + OPENNMS_TAG_OFFSET, OPENNMS_TAG, OPENNMS_TAG_LEN) == 0)
+#endif
 	{
 		unsigned long long now;
 		unsigned long long sent;
@@ -884,9 +891,15 @@ Java_org_opennms_protocols_icmp_IcmpSocket_send (JNIEnv *env, jobject instance, 
 	 * Don't forget to check for a potential buffer
 	 * overflow!
 	 */
+#if defined(__SOLARIS__)
+	if(bufferLen >= (OPENNMS_TAG_OFFSET + OPENNMS_TAG_LEN)
+	   && ((icmphdr_t *)outBuffer)->icmp_type == 0x08
+	   && memcmp((char *)outBuffer + OPENNMS_TAG_OFFSET, OPENNMS_TAG, OPENNMS_TAG_LEN) == 0)
+#else
 	if(bufferLen >= (OPENNMS_TAG_OFFSET + OPENNMS_TAG_LEN)
 	   && ((icmphdr_t *)outBuffer)->type == 0x08
 	   && memcmp((char *)outBuffer + OPENNMS_TAG_OFFSET, OPENNMS_TAG, OPENNMS_TAG_LEN) == 0)
+#endif
 	{
 		unsigned long long now = 0;
 
@@ -898,8 +911,13 @@ Java_org_opennms_protocols_icmp_IcmpSocket_send (JNIEnv *env, jobject instance, 
 		memcpy((char *)outBuffer + SENTTIME_OFFSET, (char *)&now, TIME_LENGTH);
 
 		/* recompute the checksum */
+#if defined(__SOLARIS__)
+		((icmphdr_t *)outBuffer)->icmp_cksum = 0;
+		((icmphdr_t *)outBuffer)->icmp_cksum = checksum((unsigned short *)outBuffer, bufferLen);
+#else
 		((icmphdr_t *)outBuffer)->checksum = 0;
 		((icmphdr_t *)outBuffer)->checksum = checksum((unsigned short *)outBuffer, bufferLen);
+#endif
 	}
 
 	/**
