@@ -8,7 +8,7 @@
   that gained the service will be rescanned to see if the new service
   modifies the filter for a particular category. Bug 683
 - When a service is deleted from a node, the node will not be deleted
-  from all categories. Bug 796
+  from all categories. Bug 796 and 775
 - When new services are discovered via a rescan, they were not being
   polled until OpenNMS was restarted. This is now fixed.
 - Fixed a Delete Nodes issues with RTC - Bug 797
