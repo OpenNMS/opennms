@@ -56,7 +56,7 @@ CLASSPATH=`build_classpath cp:$CLASSPATH_OVERRIDE dir:$TOOL_CLASSES \
 	jar:jdbc2_0-stdext jar:sablecc-2.17.2 jar:sablecc-anttask-1.1.0 \
 	jar:servlet jar:catalina jar:fop0203 jar:bsf220 jar:batik100 \
 	jar:jimi100 jar:ldap jar:batik jar:avalon-framework-4.0 jar:logkit-1.0 \
-	jar:jasper-compiler jar:mx4j jar:mx4j-tools` \
+	jar:jasper-compiler jar:mx4j jar:mx4j-tools "cp:$CLASSPATH"` \
 	export CLASSPATH
 PATH="$JAVA_HOME/bin:$PATH" export PATH
 
