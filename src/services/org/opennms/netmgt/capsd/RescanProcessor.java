@@ -754,7 +754,8 @@ final class RescanProcessor
 		{
 			log.debug("updateInterface: updating interface " + ifaddr.getHostAddress() + "(targetIf=" 
                                 + target.getHostAddress() + ")");
-                        log.debug("updateInterface: the snmp collection passed in is collected via" + snmpc.getTarget());
+                        log.debug("updateInterface: the snmp collection passed in is collected via" 
+                                + snmpc.getTarget().getHostAddress());
 		}
 				
 		boolean isAlias = false;
