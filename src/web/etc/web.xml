@@ -1280,8 +1280,8 @@
     <location>/errors/vulnerabilityidnotfound.jsp</location>
   </error-page>  
   <error-page>
-    <exception-type>java.net.ConnectException</exception-type>
-    <location>/errors/connectexception.jsp</location>
+    <exception-type>org.opennms.netmgt.utils.EventProxyException</exception-type>
+    <location>/errors/eventproxyexception.jsp</location>
   </error-page>  
   <error-page>
     <exception-type>java.lang.Exception</exception-type>
