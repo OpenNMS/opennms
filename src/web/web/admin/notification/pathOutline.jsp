@@ -54,7 +54,7 @@
 %>
 
 <%
-    String intervals[] = {"0m", "5m", "10m", "15m", "30m", "1h", "2h", "3h", "6h", "12h", "1d"};
+    String intervals[] = {"0m", "1m", "2m", "5m", "10m", "15m", "30m", "1h", "2h", "3h", "6h", "12h", "1d"};
     HttpSession user = request.getSession(true);
     Path newPath = (Path)user.getAttribute("newPath");
     List targetLinks = new ArrayList();

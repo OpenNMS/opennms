@@ -80,6 +80,13 @@
           </td>
           <td align="right">
           <font SIZE="-1" FACE="arial">
+            <%-- Node List --%>
+            <%  if( "element".equals( location ) ) { %>
+                  List Nodes&nbsp;|&nbsp;
+            <%  } else { %>
+                  <a href="element/nodelist.jsp">List Nodes</a>&nbsp;|&nbsp;
+            <%  } %>
+
             <%-- Element Search --%>
             <%  if( "element".equals( location ) ) { %>
                   Search&nbsp;|&nbsp;

@@ -21,6 +21,13 @@
   <tr>
     <td class="footer" ALIGN="center">
       <font SIZE="-1" FACE="arial">
+        <%-- Node List --%>
+        <%  if( "element".equals( location ) ) { %>
+              List Nodes&nbsp;|&nbsp;
+        <%  } else { %>
+              <a href="element/nodelist.jsp">List Nodes</a>&nbsp;|&nbsp;
+        <%  } %>
+
         <%-- Elements Search --%>
         <%  if( "element".equals( location ) ) { %>
               Search&nbsp;|&nbsp;

@@ -79,7 +79,7 @@ public class OutageModel extends Object
 
         try {
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("select outages.nodeId, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId, outages.iflostservice, outages.svclosteventid, notifications.notifyId, notifications.answeredBy from outages left outer join notifications on (outages.svclosteventid=notifications.eventid), node, ipinterface, service where ifregainedservice is null and node.nodeid=outages.nodeid and ipinterface.ipaddr=outages.ipaddr and outages.serviceid=service.serviceid order by nodelabel, ipaddr, serviceName");
+            ResultSet rs = stmt.executeQuery("select distinct outages.nodeId, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId, outages.iflostservice, outages.svclosteventid, notifications.notifyId, notifications.answeredBy from outages left outer join notifications on (outages.svclosteventid=notifications.eventid), node, ipinterface, service where ifregainedservice is null and node.nodeid=outages.nodeid and ipinterface.ipaddr=outages.ipaddr and outages.serviceid=service.serviceid order by nodelabel, ipaddr, serviceName");
     
             outages = rs2Outages(rs, false, true);
             
@@ -100,7 +100,7 @@ public class OutageModel extends Object
 
         try {
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("select count(iflostservice) from outages where ifregainedservice is null;");
+            ResultSet rs = stmt.executeQuery("select distinct count(iflostservice) from outages where ifregainedservice is null;");
     
             if(rs.next()) {
                 count = rs.getInt("count");
@@ -122,7 +122,7 @@ public class OutageModel extends Object
         Connection conn = Vault.getDbConnection();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId from outages, node, ipinterface, service where outages.nodeid=? and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr and ifregainedservice is null order by iflostservice desc");
+            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId from outages, node, ipinterface, service where outages.nodeid=? and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr and ifregainedservice is null order by iflostservice desc");
             stmt.setInt(1, nodeId);
             ResultSet rs = stmt.executeQuery();
     
@@ -144,7 +144,7 @@ public class OutageModel extends Object
         Connection conn = Vault.getDbConnection();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId from outages, node, ipinterface, service where outages.nodeid=? and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr and ifregainedservice is not null order by iflostservice desc");
+            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId from outages, node, ipinterface, service where outages.nodeid=? and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr and ifregainedservice is not null order by iflostservice desc");
             stmt.setInt(1, nodeId);
             ResultSet rs = stmt.executeQuery();
     
@@ -169,7 +169,7 @@ public class OutageModel extends Object
         Connection conn = Vault.getDbConnection();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId from outages, node, ipinterface, service where outages.nodeid=? and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr order by iflostservice desc");
+            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId from outages, node, ipinterface, service where outages.nodeid=? and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr order by iflostservice desc");
             stmt.setInt(1, nodeId);
             ResultSet rs = stmt.executeQuery();
     
@@ -204,7 +204,7 @@ public class OutageModel extends Object
         long timeLong = time.getTime();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId from outages, node, ipinterface, service where outages.nodeid=? and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr and (ifregainedservice >= ? or ifregainedservice is null) order by iflostservice desc");
+            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId from outages, node, ipinterface, service where outages.nodeid=? and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr and (ifregainedservice >= ? or ifregainedservice is null) order by iflostservice desc");
             stmt.setInt(1, nodeId);
             stmt.setTimestamp( 2, new Timestamp(timeLong));
             ResultSet rs = stmt.executeQuery();
@@ -227,7 +227,7 @@ public class OutageModel extends Object
         Connection conn = Vault.getDbConnection();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId from outages, node, ipinterface, service where outages.nodeid=? and outages.ipaddr=? and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr order by iflostservice desc");
+            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId from outages, node, ipinterface, service where outages.nodeid=? and outages.ipaddr=? and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr order by iflostservice desc");
             stmt.setInt(1, nodeId);
             stmt.setString(2, ipInterface);
             ResultSet rs = stmt.executeQuery();
@@ -264,7 +264,7 @@ public class OutageModel extends Object
         long timeLong = time.getTime();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId from outages, node, ipinterface, service where outages.nodeid=? and outages.ipaddr=? and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr and (ifregainedservice >= ? or ifregainedservice is null) order by iflostservice desc");
+            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId from outages, node, ipinterface, service where outages.nodeid=? and outages.ipaddr=? and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr and (ifregainedservice >= ? or ifregainedservice is null) order by iflostservice desc");
             stmt.setInt(1, nodeId);
             stmt.setString(2, ipAddr);
             stmt.setTimestamp(3, new Timestamp(timeLong));
@@ -288,7 +288,7 @@ public class OutageModel extends Object
         Connection conn = Vault.getDbConnection();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId from outages, node, ipinterface, service where outages.nodeid=? and outages.ipaddr=? and outages.serviceid=? and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr order by iflostservice desc");
+            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId from outages, node, ipinterface, service where outages.nodeid=? and outages.ipaddr=? and outages.serviceid=? and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr order by iflostservice desc");
             stmt.setInt(1, nodeId);
             stmt.setString(2, ipInterface);
             stmt.setInt(3, serviceId);
@@ -327,7 +327,7 @@ public class OutageModel extends Object
         long timeLong = time.getTime();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId from outages, node, ipinterface, service where outages.nodeid=? and outages.ipaddr=? and outages.serviceid=? and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr and (ifregainedservice >= ? or ifregainedservice is null) order by iflostservice desc");
+            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId from outages, node, ipinterface, service where outages.nodeid=? and outages.ipaddr=? and outages.serviceid=? and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr and (ifregainedservice >= ? or ifregainedservice is null) order by iflostservice desc");
             stmt.setInt(1, nodeId);
             stmt.setString(2, ipAddr);
             stmt.setInt(3, serviceId);
@@ -359,7 +359,7 @@ public class OutageModel extends Object
 
         try {
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("select outages.nodeid, max(outages.iflostservice) as timeDown, node.nodelabel from outages, node where ifregainedservice is null and node.nodeid=outages.nodeid group by outages.nodeid, node.nodelabel order by timeDown desc;");
+            ResultSet rs = stmt.executeQuery("select distinct outages.nodeid, max(outages.iflostservice) as timeDown, node.nodelabel from outages, node where ifregainedservice is null and node.nodeid=outages.nodeid group by outages.nodeid, node.nodelabel order by timeDown desc;");
 
             ArrayList list = new ArrayList();
             
