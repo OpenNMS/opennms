@@ -74,6 +74,7 @@
   <if isFile="${user.home}/.${ant.project.name}-global.properties">
    <thenProperty name="opennms-global.exists" value="true"/>
   </if>
+  <filter token="root.install.perl" value="${root.install.perl}"/>
   <filter token="root.source" value="${root.source}"/>
   <filter token="root.build" value="${root.build}"/>
   <filter token="root.install" value="${root.install}"/>
@@ -462,7 +463,7 @@ ${print.headertext}
 
  <target name="install.usr.bin" depends="init" if="isrpm">
   <mkdir dir="${root.installprefix}/usr/bin"/>
-  <echo file="${root.installprefix}/usr/bin/${ant.project.name}">#!/bin/sh
+  <echo file="${root.installprefix}/usr/bin/${ant.project.name}">#!/bin/bash
 
 ${root.install}/bin/opennms.sh $$@
   </echo>
@@ -927,7 +928,7 @@ OpenNMS as part of the post-install.
   </apply>
   <apply executable="${compile.ld}" dir="${root.build}/postgresql" failonerror="true"
 	dest="${root.build}/postgresql">
-   <arg line="${compile.ld.dynamic} ${compile.ld.shared} -L${compile.postgresql.lib} -o"/>
+   <arg line="${compile.ld.dynamic} ${compile.ld.shared} -L${compile.postgresql.lib} -R${compile.rrdtool.lib} -o"/>
    <targetfile/>
    <srcfile/>
    <arg line="${compile.otherlibs}"/>
@@ -1017,7 +1018,7 @@ OpenNMS as part of the post-install.
 
   <!-- generate .so files -->
   <apply executable="${compile.ld}" dir="${root.build}/jrrd" failonerror="true" dest="${root.build}/jrrd">
-   <arg line="${compile.ld.dynamic} ${compile.ld.shared} -L${compile.rrdtool.lib} -lrrd -o"/>
+   <arg line="${compile.ld.dynamic} ${compile.ld.shared} -L${compile.rrdtool.lib} -R{compile.rrdtool.lib} -lrrd -o"/>
    <targetfile/>
    <srcfile/>
    <fileset dir="${root.build}/jrrd" includes="*.o"/>

@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!@root.install.perl@ -w
 
 $|++;
 
