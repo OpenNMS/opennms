@@ -54,10 +54,10 @@ import org.opennms.netmgt.utils.ExecRunner;
  * <P>This class is designed to be used by the capabilities
  * daemon to test for the existance of a generic service
  * by calling an external script or program. The  external
- * script or program will be passed th IP address of the
- * interface to be polled, the timeout in seconds,
- * followed by any optional arguments as specified in the
- * capsd configuration.</P>
+ * script or program will be passed two options: --hostname,
+ * the IP address of the host to be tested, and --timeout,
+ * the timeout in seconds. Additional options or arguments
+ * can be specified in the capsd configuration.</P>
  *
  * @author <A HREF="mailto:mike@opennms.org">Mike</A>
  * @author <A HREF="mailto:weave@opennms.org">Weaver</A>
@@ -124,9 +124,9 @@ public final class GpPlugin
 				ExecRunner er = new ExecRunner();
 				er.setMaxRunTimeSecs(timeout);
 				if (args == null)
-					exitStatus = er.exec(script + " " + host.getHostAddress() + " " +timeout);
+					exitStatus = er.exec(script + " --hostname " + host.getHostAddress() + " --timeout " +timeout);
 				else
-					exitStatus = er.exec(script + " " + host.getHostAddress() + " " +timeout + " " + args);
+					exitStatus = er.exec(script + " --hostname " + host.getHostAddress() + " --timeout " +timeout + " " + args);
 				if (exitStatus != 0)
 				{
 					log.debug(script + " failed with exit code " + exitStatus);

@@ -48,11 +48,11 @@ import org.opennms.netmgt.utils.ExecRunner;
 /**
  * <P>This class is designed to be used by the service poller
  * framework to test the availability of a generic service
- * by calling an external script or program. The  external
- * script or program will be passed th IP address of the
- * interface to be polled, the timeout in seconds, 
- * followed by any optional arguments as specified in the
- * poller configuration.</P>
+ * by calling an external script or program. The external
+ * script or program will be passed two options: --hostname,
+ * the IP address of the host to be polled, and --timeout,
+ * the timeout in seconds. Additional options or arguments
+ * can be specified in the poller configuration.</P>
  *
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
  * @author <A HREF="mike@opennms.org">Mike</A>
@@ -167,9 +167,9 @@ final class GpMonitor
 				ExecRunner er = new ExecRunner();
 				er.setMaxRunTimeSecs(timeout);
 				if (args == null)
-					exitStatus = er.exec(script + " " + ipv4Addr.getHostAddress() + " " +timeout);
+					exitStatus = er.exec(script + " --hostname " + ipv4Addr.getHostAddress() + " --timeout " +timeout);
 				else
-					exitStatus = er.exec(script + " " + ipv4Addr.getHostAddress() + " " +timeout + " " + args);
+					exitStatus = er.exec(script + " --hostname " + ipv4Addr.getHostAddress() + " --timeout " +timeout + " " + args);
 				if (exitStatus != 0)
 				{
 					log.debug(script + " failed with exit code " + exitStatus);
