@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh -
 
 # workaround for buggy libc's
 ulimit -s 2048
@@ -35,4 +35,4 @@ if [ $VERBOSE -gt 0 ]; then
     set -x
 fi
 
-exec java -Dant.home=devlib -mx256m -jar devlib/ant-launcher.jar "$@"
+exec java -mx256m -jar devlib/ant-launcher.jar "$@"
