@@ -1,5 +1,9 @@
 1.2.0 to 1.2.1
 ----------------------------------------------------------------------
+- Have build.sh prefer the JRE at $JAVA_HOME/bin/java if JAVA_HOME is set.
+  Bug 1154.  Thanks Chris Abernethy <opennms@obado.net>.
+- Clean up the text of the <fail> tasks in build.xml so they are more clear.
+  Bug 1155.  Thanks Chris Abernethy <opennms@obado.net>.
 - Add Poll outage editor contributed by Craig Miskell.
 - Fixed an issue with Unresponsive services being considered up
   even with unresponsiveness set to false. Bug 1151.
