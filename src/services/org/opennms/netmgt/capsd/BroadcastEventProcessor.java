@@ -684,7 +684,7 @@ final class BroadcastEventProcessor
 			log.debug("createAndSendNodeAddedEvent:  nodeId  " + nodeEntry.getNodeId());
         
                 Event newEvent = new Event();
-                newEvent.setUei(EventConstants.NODE_DELETED_EVENT_UEI);
+                newEvent.setUei(EventConstants.NODE_ADDED_EVENT_UEI);
                 newEvent.setSource("OpenNMS.Capsd");
                 newEvent.setNodeid(nodeEntry.getNodeId());
                 newEvent.setHost(Capsd.getLocalHostAddress());
