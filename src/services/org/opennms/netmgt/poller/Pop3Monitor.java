@@ -75,7 +75,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final class Pop3Monitor extends IPv4LatencyMonitor {
+final public class Pop3Monitor extends IPv4LatencyMonitor {
 
     /**
      * Default POP3 port.

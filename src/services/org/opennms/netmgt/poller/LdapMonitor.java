@@ -71,7 +71,7 @@ import com.novell.ldap.LDAPSocketFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final class LdapMonitor extends IPv4Monitor {
+final public class LdapMonitor extends IPv4Monitor {
 
     /**
      * Default retries.

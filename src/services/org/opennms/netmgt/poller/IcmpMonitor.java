@@ -71,7 +71,7 @@ import org.opennms.protocols.icmp.IcmpSocket;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final class IcmpMonitor extends IPv4LatencyMonitor {
+final public class IcmpMonitor extends IPv4LatencyMonitor {
     /**
      * Default retries.
      */

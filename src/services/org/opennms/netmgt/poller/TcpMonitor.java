@@ -74,7 +74,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final class TcpMonitor extends IPv4LatencyMonitor {
+final public class TcpMonitor extends IPv4LatencyMonitor {
 
     /**
      * Default port.

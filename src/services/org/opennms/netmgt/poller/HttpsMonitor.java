@@ -78,7 +78,7 @@ import org.opennms.netmgt.utils.RelaxedX509TrustManager;
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
  * 
  */
-final class HttpsMonitor extends IPv4LatencyMonitor {
+final public class HttpsMonitor extends IPv4LatencyMonitor {
 
     /**
      * Default HTTPS ports.

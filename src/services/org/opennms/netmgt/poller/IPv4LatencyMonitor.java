@@ -64,7 +64,7 @@ import org.opennms.netmgt.rrd.RrdUtils;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */
-abstract class IPv4LatencyMonitor implements ServiceMonitor {
+abstract public class IPv4LatencyMonitor implements ServiceMonitor {
     /**
      * RRD data source name which doubles as the RRD file name.
      */

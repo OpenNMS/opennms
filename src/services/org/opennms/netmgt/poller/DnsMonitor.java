@@ -70,7 +70,7 @@ import org.opennms.protocols.dns.DNSAddressRequest;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final class DnsMonitor extends IPv4LatencyMonitor {
+final public class DnsMonitor extends IPv4LatencyMonitor {
     /**
      * Default DNS port.
      */

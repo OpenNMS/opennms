@@ -61,7 +61,7 @@ import org.opennms.protocols.ntp.NtpMessage;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final class NtpMonitor extends IPv4LatencyMonitor {
+final public class NtpMonitor extends IPv4LatencyMonitor {
     /**
      * Default NTP port.
      */

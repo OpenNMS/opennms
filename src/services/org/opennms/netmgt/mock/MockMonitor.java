@@ -40,7 +40,7 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.ServiceMonitor;
 
-class MockMonitor implements ServiceMonitor {
+public class MockMonitor implements ServiceMonitor {
 
     private MockNetwork m_network;
 

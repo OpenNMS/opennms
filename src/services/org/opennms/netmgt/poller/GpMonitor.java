@@ -62,7 +62,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="mailto:ayres@net.orst.edu">Bill Ayres </A>
  * 
  */
-final class GpMonitor extends IPv4LatencyMonitor {
+final public class GpMonitor extends IPv4LatencyMonitor {
     /**
      * Default retries.
      */

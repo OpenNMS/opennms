@@ -73,7 +73,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final class DominoIIOPMonitor extends IPv4Monitor {
+final public class DominoIIOPMonitor extends IPv4Monitor {
 
     /**
      * Default port.

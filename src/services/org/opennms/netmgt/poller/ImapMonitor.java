@@ -76,7 +76,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @version CVS 1.1.1.1
  * 
  */
-final class ImapMonitor extends IPv4LatencyMonitor {
+final public class ImapMonitor extends IPv4LatencyMonitor {
 
     /**
      * Default IMAP port.

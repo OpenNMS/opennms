@@ -72,7 +72,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * 
  * 
  */
-final class CitrixMonitor extends IPv4LatencyMonitor {
+final public class CitrixMonitor extends IPv4LatencyMonitor {
 
     /**
      * Default FTP port.

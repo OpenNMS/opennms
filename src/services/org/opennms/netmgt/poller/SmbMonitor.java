@@ -62,7 +62,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final class SmbMonitor extends IPv4Monitor {
+final public class SmbMonitor extends IPv4Monitor {
     /**
      * Default retries.
      */

@@ -74,7 +74,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * 
  * 
  */
-final class FtpMonitor extends IPv4LatencyMonitor {
+final public class FtpMonitor extends IPv4LatencyMonitor {
 
     /**
      * Default FTP port.

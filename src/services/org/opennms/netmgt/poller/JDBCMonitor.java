@@ -68,7 +68,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  *         Added retry logic, input validations to poller.
  * @since 0.1
  */
-final class JDBCMonitor extends IPv4LatencyMonitor {
+final public class JDBCMonitor extends IPv4LatencyMonitor {
     /**
      * Number of miliseconds to wait before timing out a database login using
      * JDBC Hint: 1 minute is 6000 miliseconds.

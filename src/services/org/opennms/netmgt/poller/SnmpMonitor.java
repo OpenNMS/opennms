@@ -82,7 +82,7 @@ import org.opennms.protocols.snmp.SnmpVarBind;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-public final class SnmpMonitor extends IPv4Monitor {
+final public class SnmpMonitor extends IPv4Monitor {
     /**
      * Name of monitored service.
      */

@@ -56,7 +56,7 @@ import org.opennms.netmgt.config.PollerConfig;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */
-abstract class IPv4Monitor implements ServiceMonitor {
+abstract public class IPv4Monitor implements ServiceMonitor {
     /**
      * <P>
      * This method is called after the framework creates an instance of the

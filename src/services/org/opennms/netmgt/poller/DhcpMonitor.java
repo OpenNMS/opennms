@@ -64,7 +64,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final class DhcpMonitor extends IPv4LatencyMonitor {
+final public class DhcpMonitor extends IPv4LatencyMonitor {
     /**
      * Default retries.
      */
