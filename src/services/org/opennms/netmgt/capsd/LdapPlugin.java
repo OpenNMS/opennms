@@ -233,7 +233,7 @@ public final class LdapPlugin extends AbstractPlugin {
     public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
         int retries = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
         int timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
-        int[] ports = ParameterMap.getKeyedIntegerArray(qualifiers, "ports", DEFAULT_PORTS);
+        int[] ports = ParameterMap.getKeyedIntegerArray(qualifiers, "port", DEFAULT_PORTS);
 
         for (int i = 0; i < ports.length; i++) {
             if (isServer(address, ports[i], retries, timeout)) {

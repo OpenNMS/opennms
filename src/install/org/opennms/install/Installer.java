@@ -42,8 +42,7 @@ import java.util.regex.Pattern;
  */
 
 public class Installer {
-    String m_version = "0.7";
-    String m_revision = "1";
+    static final String s_version = "$Id$";
 
     boolean m_rpm = false; // XXX only prints out a diagnostic message
 
@@ -52,6 +51,7 @@ public class Installer {
     boolean m_update_database = false;
     boolean m_do_inserts = false;
     boolean m_update_iplike = false;
+    boolean m_update_unicode = false;
     boolean m_install_webapp = false;
 
     boolean m_force = false;
@@ -62,6 +62,7 @@ public class Installer {
     String m_pg_url = null;
     String m_pg_user = "postgres";
     String m_pg_pass = "";
+    String m_pg_bindir = null;
     String m_user = null;
     String m_pass = null;
     String m_database = null;
@@ -92,11 +93,13 @@ public class Installer {
     LinkedList m_sql_l = new LinkedList();
     String m_sql;
 
+    PrintStream m_out = System.out;
+
     Properties m_properties = null;
     Connection m_dbconnection;
     Map m_dbtypes = null;
 
-    String m_required_options = "At least one of -d, -i, -s, -y, -S, " +
+    String m_required_options = "At least one of -d, -i, -s, -U, -y, -S, " +
 	"or -T is required.";
 
     public void install(String[] argv) throws Exception {
@@ -104,10 +107,10 @@ public class Installer {
 	loadProperties();
 	parseArguments(argv);
 
-
 	if (!m_update_database &&
 	    !m_do_inserts &&
 	    !m_update_iplike &&
+	    !m_update_unicode &&
 	    m_tomcat_conf == null &&
 	    m_server_xml == null &&
 	    !m_install_webapp) {
@@ -118,7 +121,8 @@ public class Installer {
 	checkJava();
 	// XXX Check Tomcat version?
 
-	if (m_update_database || m_update_iplike) {
+	if (m_update_database || m_update_iplike || m_update_unicode ||
+	    m_do_inserts) {
 	    databaseConnect("template1");
 	    databaseCheckVersion();
 	}
@@ -140,7 +144,8 @@ public class Installer {
 	    }
 	}
 
-	if (m_update_database || m_update_iplike) {
+	if (m_update_database || m_update_iplike || m_update_unicode ||
+	    m_do_inserts) {
 	    databaseDisconnect();
 	    
 	    databaseConnect(m_database);
@@ -155,8 +160,13 @@ public class Installer {
 	    // createFunctions(m_functions); // Unused, not in create.sql
 	    
 	    fixData();
+	}
+	  
+	if (m_do_inserts) {
 	    insertData();
+	}
 
+	if (m_update_unicode) {
 	    checkUnicode();
 	}
 
@@ -185,22 +195,25 @@ public class Installer {
 	    addStoredProcedures();
 	}
 
-	if (m_update_database || m_update_iplike) {
+	if (m_update_database || m_update_iplike || m_update_unicode ||
+	    m_do_inserts) {
 	    databaseDisconnect();
 	}
+
+	System.out.println();
+	System.out.println("Installer completed successfully!");
     }
 
     public void printHeader() {
-	System.out.println("===============================================" +
+	m_out.println("===============================================" +
 			   "===============================");
-	System.out.println("OpenNMS Installer Version " + m_version +
-			   " (Revision " + m_revision +")");
-	System.out.println("===============================================" +
+	m_out.println("OpenNMS Installer Version " + s_version);
+	m_out.println("===============================================" +
 			   "===============================");
-	System.out.println("");
-	System.out.println("Configures PostgreSQL tables, users, and other " +
+	m_out.println("");
+	m_out.println("Configures PostgreSQL tables, users, and other " +
 			   "miscellaneous settings.");
-	System.out.println("");
+	m_out.println("");
     }
 
     public void loadProperties() throws Exception {
@@ -219,6 +232,7 @@ public class Installer {
 	m_pass = fetchProperty("install.database.password");
 	m_pg_driver = fetchProperty("install.database.driver");
 	m_pg_url = fetchProperty("install.database.url");
+	m_pg_bindir = fetchProperty("install.database.bindir");
 	m_sql_dir = fetchProperty("install.etc.dir");
 	m_install_servletdir = fetchProperty("install.servlet.dir");
 	m_tomcat_serverlibs = fetchProperty("install.tomcat.serverlibs");
@@ -277,6 +291,10 @@ public class Installer {
 
 		    case 's':
 			m_update_iplike = true;
+			break;
+
+		    case 'U':
+			m_update_unicode = true;
 			break;
 
 		    case 'u':
@@ -361,14 +379,14 @@ public class Installer {
     }
 
     public void printDiagnostics() {
-	System.out.println("* using '" + m_user + "' as the PostgreSQL " +
+	m_out.println("* using '" + m_user + "' as the PostgreSQL " +
 			   "user for OpenNMS");
-	System.out.println("* using '" + m_pass + "' as the PostgreSQL " +
+	m_out.println("* using '" + m_pass + "' as the PostgreSQL " +
 			   "password for OpenNMS");
-	System.out.println("* using '" + m_database + "' as the PostgreSQL " +
+	m_out.println("* using '" + m_database + "' as the PostgreSQL " +
 			   "database name for OpenNMS");
 	if (m_rpm) {
-	    System.out.println("* I am being called from an RPM install");
+	    m_out.println("* I am being called from an RPM install");
 	}
     }
 
@@ -489,7 +507,7 @@ public class Installer {
 	    }
 
 	    // XXX should do something here to we can catch what we can't parse
-	    // System.out.println("unmatched line: " + line);
+	    // m_out.println("unmatched line: " + line);
 
 	    m_sql_l.add(line);
 	}
@@ -586,7 +604,7 @@ public class Installer {
 	Statement st = m_dbconnection.createStatement();
 	ResultSet rs;
 
-	System.out.println("- creating sequences... ");
+	m_out.println("- creating sequences... ");
 
 	Iterator i = m_sequences.iterator();
 	while (i.hasNext()) {
@@ -605,7 +623,7 @@ public class Installer {
 	    int minvalue = 1;
 	    boolean remove;
 
-	    System.out.print("  - checking \"" + sequence +
+	    m_out.print("  - checking \"" + sequence +
 			       "\" minimum value... ");
 
 	    try {
@@ -621,9 +639,9 @@ public class Installer {
 		}
 	    }
 
-	    System.out.println(Integer.toString(minvalue));
+	    m_out.println(Integer.toString(minvalue));
 	    
-	    System.out.print("  - removing sequence \"" + sequence + "\"... ");
+	    m_out.print("  - removing sequence \"" + sequence + "\"... ");
 
 	    rs = st.executeQuery("SELECT relname FROM pg_class " +
 				 "WHERE relname = '" +
@@ -632,19 +650,19 @@ public class Installer {
 	    remove = rs.next();
 	    if (remove) {
 		st.execute("DROP SEQUENCE " + sequence);
-		System.out.println("REMOVED");
+		m_out.println("REMOVED");
 	    } else {
-		System.out.println("CLEAN");
+		m_out.println("CLEAN");
 	    }
 
-	    System.out.print("  - creating sequence \"" + sequence + "\"... ");
+	    m_out.print("  - creating sequence \"" + sequence + "\"... ");
 	    st.execute("CREATE SEQUENCE " + sequence + " minvalue " +
 		       minvalue);
 	    st.execute("GRANT ALL on " + sequence + " TO " + m_user);
-	    System.out.println("OK");
+	    m_out.println("OK");
 	}
 
-	System.out.println("- creating sequences... DONE");
+	m_out.println("- creating sequences... DONE");
     }
 
     public void createTables() throws Exception {
@@ -652,7 +670,7 @@ public class Installer {
 	ResultSet rs;
 	Iterator i = m_tables.iterator();
 
-	System.out.println("- creating tables...");
+	m_out.println("- creating tables...");
        
 	while (i.hasNext()) {
 	    String table = (String) i.next();
@@ -669,24 +687,24 @@ public class Installer {
 
 		remove = rs.next();
 
-		System.out.print("  - removing old table... ");
+		m_out.print("  - removing old table... ");
 		if (remove) {
 		    st.execute("DROP TABLE " + table + m_cascade);
-		    System.out.println("REMOVED");
+		    m_out.println("REMOVED");
 		} else {
-		    System.out.println("CLEAN");
+		    m_out.println("CLEAN");
 		}
 
-		System.out.print("  - creating table \"" + table + "\"... ");
+		m_out.print("  - creating table \"" + table + "\"... ");
 		st.execute("CREATE TABLE " + table + " (" + create + ")");
-		System.out.println("CREATED");
+		m_out.println("CREATED");
 
-		System.out.print("  - giving \"" + m_user +
+		m_out.print("  - giving \"" + m_user +
 				 "\" permissions on \"" + table + "\"... ");
 		st.execute("GRANT ALL ON " + table + " TO " + m_user);
-		System.out.println("GRANTED");
+		m_out.println("GRANTED");
 	    } else {
-		System.out.print("  - checking table \"" + table + "\"... ");
+		m_out.print("  - checking table \"" + table + "\"... ");
 
 		table = table.toLowerCase();
 
@@ -694,14 +712,14 @@ public class Installer {
 		List oldColumns = getTableColumnsFromDB(table);
 
 		if (newColumns.equals(oldColumns)) {
-		    System.out.println("UPTODATE");
+		    m_out.println("UPTODATE");
 		} else {
 		    if (oldColumns.size() == 0) {
 			String create = getTableFromSQL(table);
 			st.execute("CREATE TABLE " + table +
 				   " (" + create + ")");
 			st.execute("GRANT ALL ON " + table + " TO " + m_user);
-			System.out.println("CREATED");
+			m_out.println("CREATED");
 		    } else {
 			changeTable(table, oldColumns, newColumns);
 		    }
@@ -709,21 +727,21 @@ public class Installer {
 	    }
 	}
 
-	System.out.println("- creating tables... DONE");
+	m_out.println("- creating tables... DONE");
     }
 
     public void createIndexes() throws Exception {
 	Statement st = m_dbconnection.createStatement();
 	ResultSet rs;
 
-	System.out.println("- creating indexes...");
+	m_out.println("- creating indexes...");
 
 	Iterator i = m_indexes.iterator();
 	while (i.hasNext()) {
 	    String index = (String) i.next();
 	    boolean exists;
 
-	    System.out.print("  - creating index \"" + index + "\"... ");
+	    m_out.print("  - creating index \"" + index + "\"... ");
 
 	    rs = st.executeQuery("SELECT relname FROM pg_class " +
 				 "WHERE relname = '" +
@@ -732,14 +750,14 @@ public class Installer {
 	    exists = rs.next();
 
 	    if (exists) {
-		System.out.println("EXISTS");
+		m_out.println("EXISTS");
 	    } else {
 		st.execute(getIndexFromSQL(index));
-		System.out.println("OK");
+		m_out.println("OK");
 	    }
 	}
 
-	System.out.println("- creating indexes... DONE");
+	m_out.println("- creating indexes... DONE");
     }
 
     public Map getTypesFromDB() throws SQLException {
@@ -784,21 +802,21 @@ public class Installer {
 		// XXX this doesn't check to see if the function exists
 		//     before it drops it, so it will fail and throw an
 		//     exception if the function doesn't exist.
-		System.out.print("- removing function \"" + function +
+		m_out.print("- removing function \"" + function +
 				 "\" if it exists... ");
 		String dropSql = "DROP FUNCTION \"" + function + "\" (" +
 		    columns + ");";
 		st.execute(dropSql);
-		System.out.println("REMOVED");
+		m_out.println("REMOVED");
 	    }
 
 	    // XXX this doesn't check to see if the function exists before
 	    //     it tries to create it, so it will fail and throw an
 	    //     exception if the function does exist.
-	    System.out.print("- creating function \"" + function +
+	    m_out.print("- creating function \"" + function +
 			     "\"... ");
 	    st.execute("CREATE FUNCTION \"" + function + "\" " + functionSql);
-	    System.out.println("OK");
+	    m_out.println("OK");
 	}
     }
 
@@ -814,11 +832,11 @@ public class Installer {
 	    // XXX this doesn't check to see if the language exists before
 	    //     it tries to create it, so it will fail and throw an
 	    //     exception if the language does already exist.
-	    System.out.print("- creating language reference \"" + language +
+	    m_out.print("- creating language reference \"" + language +
 			     "\"... ");
 	    st.execute("CREATE TRUSTED PROCEDURAL LANGUAGE '" +
 		       language + "' " + languageSql);
-	    System.out.println("OK");
+	    m_out.println("OK");
 	}
     }
     */
@@ -840,15 +858,11 @@ public class Installer {
 	Statement st = m_dbconnection.createStatement();
 	ResultSet rs;
 
-	if (!m_do_inserts) {
-	    return;
-	}
-
 	for (Iterator i = m_inserts.keySet().iterator(); i.hasNext(); ) {
 	    String table = (String) i.next();
 	    boolean exists = false;
 
-	    System.out.print("- inserting initial table data for \"" +
+	    m_out.print("- inserting initial table data for \"" +
 			       table + "\"... ");
 
 	    for (Iterator j = ((LinkedList) m_inserts.get(table)).iterator();
@@ -865,78 +879,137 @@ public class Installer {
 	    }
 
 	    if (exists) {
-		System.out.println("EXISTS");
+		m_out.println("EXISTS");
 	    } else {
-		System.out.println("OK");
+		m_out.println("OK");
 	    }
 	}
     }
 
-    // XXX Should this all be in Java, instead of calling
-    //      convert_db_to_unicode.sh?
-    /* 
-       XXX This doesn't work reliably.  Here are two errors:
-
-    - dumping data to /tmp/pg_dump-opennms... ok
-    - dropping old database... failed
-    Exception in thread "main" java.lang.Exception: convert_db_to_unicode.sh returned non-zero exit value: 20
-        at org.opennms.install.Installer.checkUnicode(Installer.java:917)
-        at org.opennms.install.Installer.install(Installer.java:165)
-        at org.opennms.install.Installer.main(Installer.java:1985)
-
-    - dumping data to /tmp/pg_dump-opennms... ok
-    - dropping old database... ok
-    - creating new unicode database... failed
-    Exception in thread "main" java.lang.Exception: convert_db_to_unicode.sh returned non-zero exit value: 30
-        at org.opennms.install.Installer.checkUnicode(Installer.java:917)
-        at org.opennms.install.Installer.install(Installer.java:165)
-        at org.opennms.install.Installer.main(Installer.java:1985)
-
-    ... and their errors in /tmp/unicode-convert.log:
-
-	Sun Jul 11 03:16:26 EDT 2004 dumping data to /tmp/pg_dump-opennms
-	Sun Jul 11 03:16:26 EDT 2004 dropping old database
-	dropdb: database removal failed: ERROR:  database "opennms" is being accessed by other users
-
-	Sun Jul 11 03:18:14 EDT 2004 dumping data to /tmp/pg_dump-opennms
-	Sun Jul 11 03:18:15 EDT 2004 dropping old database
-	DROP DATABASE
-	Sun Jul 11 03:18:15 EDT 2004 creating new unicode database
-	createdb: database creation failed: ERROR:  source database "template1" is being accessed by other users
-     */
     public void checkUnicode() throws Exception {
 	Statement st = m_dbconnection.createStatement();
 	ResultSet rs;
 
-	System.out.print("- checking if database \"" + m_database +
+	m_out.print("- checking if database \"" + m_database +
 			 "\" is unicode... ");
 	
 	rs = st.executeQuery("SELECT encoding FROM pg_database WHERE " +
 			     "datname='" + m_database.toLowerCase() + "'");
 	rs.next();
 	if (rs.getInt(1) == 5 || rs.getInt(1) == 6) {
-	    System.out.println("ALREADY UNICODE");
+	    m_out.println("ALREADY UNICODE");
 	    return;
 	}
 
-	System.out.println("NOT UNICODE, CONVERTING");
+	m_out.println("NOT UNICODE, CONVERTING");
 
 	databaseDisconnect();
 
-	String[] cmd = {
-	    m_opennms_home + "/bin/convert_db_to_unicode.sh", 
-	    m_pg_user,
-	    m_user,
-	    m_database,
-	    m_sql_dir + File.separator + "create.sql"
-	};
+	String dumpFile = "/tmp/pg_dump-" + m_database;
+	String logFile = "/tmp/unicode-convert.log";
+	PrintStream log = new PrintStream(new FileOutputStream(logFile, true));
+	ProcessExec e = new ProcessExec(log, log);
 
-	ProcessExec e = new ProcessExec();
 	int exitVal;
-	if ((exitVal = e.exec(cmd)) != 0) {
-	    throw new Exception("convert_db_to_unicode.sh returned " +
-				"non-zero exit value: " + exitVal);
+
+	log.println("------------------------------------------------------" +
+		    "------------------------");
+
+	m_out.print("  - dumping data to " + dumpFile + "... ");
+	String[] cmd1 = {
+	    m_pg_bindir + File.separator + "pg_dump",
+	    "-U",
+	    m_pg_user,
+	    "-a",
+	    "-D",
+	    m_database,
+	    "-f",
+	    dumpFile
+	};
+	if ((exitVal = e.exec(cmd1)) != 0) {
+	    throw new Exception("Dumping database returned non-zero exit " +
+				"value " + exitVal + " while executing " +
+				"command '" + join(" ", cmd1) + "', check " +
+				logFile);
 	}
+	m_out.println("OK");
+
+	m_out.print("  - waiting 3s for PostgreSQL to notice " +
+			 "that pg_dump has disconnected.");
+	Thread.sleep(1000);
+	m_out.print(".");
+	Thread.sleep(1000);
+	m_out.print(".");
+	Thread.sleep(1000);
+	m_out.println(" OK");
+
+	m_out.print("  - dropping old database... ");
+	String[] cmd2 = {
+	    m_pg_bindir + File.separator + "dropdb",
+	    "-U",
+	    m_pg_user,
+	    m_database
+	};
+	if ((exitVal = e.exec(cmd2)) != 0) {
+	    throw new Exception("Dropping database returned non-zero exit " +
+				"value " + exitVal + " while executing " +
+				"command '" + join(" ", cmd2) + "', check " +
+				logFile);
+	}
+	m_out.println("OK");
+
+	m_out.print("  - creating new unicode database... ");
+	String[] cmd3 = {
+	    m_pg_bindir + File.separator + "createdb",
+	    "-U",
+	    m_pg_user,
+	    "-E",
+	    "UNICODE",
+	    m_database
+	};
+	if ((exitVal = e.exec(cmd3)) != 0) {
+	    throw new Exception("Creating database returned non-zero exit " +
+				"value " + exitVal + " while executing " +
+				"command '" + join(" ", cmd3) + "', check " +
+				logFile);
+	}
+	m_out.println("OK");
+
+	m_out.print("  - recreating tables... ");
+	String[] cmd4 = {
+	    m_pg_bindir + File.separator + "psql",
+	    "-U",
+	    m_user,
+	    "-f",
+	    m_sql_dir + File.separator + "create.sql",
+	    m_database
+	};
+	if ((exitVal = e.exec(cmd4)) != 0) {
+	    throw new Exception("Recreating tables returned non-zero exit " +
+				"value " + exitVal + " while executing " +
+				"command '" + join(" ", cmd4) + "', check " +
+				logFile);
+	}
+	m_out.println("OK");
+
+	m_out.print("  - restoring data... ");
+	String[] cmd5 = {
+	    m_pg_bindir + File.separator + "psql",
+	    "-U",
+	    m_user,
+	    "-f",
+	    dumpFile,
+	    m_database
+	};
+	if ((exitVal = e.exec(cmd5)) != 0) {
+	    throw new Exception("Restoring data returned non-zero exit " +
+				"value " + exitVal + " while executing " +
+				"command '" + join(" ", cmd5) + "', check " +
+				logFile);
+	}
+	m_out.println("OK");
+
+	log.close();
 
 	databaseConnect(m_database);
     }
@@ -993,7 +1066,7 @@ public class Installer {
 	}
     }
 
-    public static void verifyFileExists(boolean isDir,
+    public void verifyFileExists(boolean isDir,
 					String file,
 					String description,
 					String option)
@@ -1008,7 +1081,7 @@ public class Installer {
 					    " to specify this file.");
 	}
 
-	System.out.print("- using " + description + "... ");
+	m_out.print("- using " + description + "... ");
 
 	f = new File(file);
 
@@ -1036,14 +1109,14 @@ public class Installer {
 	    }
 	}
 
-	System.out.println(f.getAbsolutePath());
+	m_out.println(f.getAbsolutePath());
     }
 
     public void addStoredProcedures() throws Exception {
 	Statement st = m_dbconnection.createStatement();
 	ResultSet rs;
 
-	System.out.print("- adding stored procedures... ");
+	m_out.print("- adding stored procedures... ");
 
 	FileFilter sqlFilter = new FileFilter() {
 		public boolean accept(File pathname) {
@@ -1059,7 +1132,7 @@ public class Installer {
 	    StringBuffer create = new StringBuffer();
 	    String line;
 	    
-	    System.out.print("\n  - " + list[i].getName() + "... ");
+	    m_out.print("\n  - " + list[i].getName() + "... ");
 	    
 	    BufferedReader r = new BufferedReader(new FileReader(list[i]));
 	    while ((line = r.readLine()) != null) {
@@ -1102,16 +1175,16 @@ public class Installer {
 		    st.execute("DROP FUNCTION " +
 			       function + "(" + columns + ")");
 		    st.execute(create.toString());
-		    System.out.print("OK (dropped and re-added)");
+		    m_out.print("OK (dropped and re-added)");
 		} else {
-		    System.out.print("EXISTS");
+		    m_out.print("EXISTS");
 		}
 	    } else {
 		st.execute(create.toString());
-		System.out.print("OK");
+		m_out.print("OK");
 	    }
 	}
-	System.out.println("");
+	m_out.println("");
     }
 
     public boolean functionExists(String function, String columns,
@@ -1154,7 +1227,7 @@ public class Installer {
     public void installWebApp() throws Exception {
 	String[] jars = m_tomcat_serverlibs.split(File.pathSeparator);
 
-	System.out.println("- Install OpenNMS webapp... ");
+	m_out.println("- Install OpenNMS webapp... ");
 
 	installLink(m_install_servletdir,
 		    m_webappdir + File.separator + "opennms",
@@ -1170,7 +1243,7 @@ public class Installer {
 	    installLink(source, destination, "jar file " + jars[i], false);
 	}
 
-	System.out.println("- Installing OpenNMS webapp... DONE");
+	m_out.println("- Installing OpenNMS webapp... DONE");
     }
 
     public void installLink(String source, String destination, 
@@ -1179,11 +1252,11 @@ public class Installer {
 
 	File f;
 	String[] cmd;
-	ProcessExec e = new ProcessExec();
+	ProcessExec e = new ProcessExec(m_out, m_out);
 	int exists;
 
 	if (new File(destination).exists()) {
-	    System.out.print("  - " + destination + " exists, removing... ");
+	    m_out.print("  - " + destination + " exists, removing... ");
 	    if (recursive) {
 		cmd = new String[3];
 		cmd[0] = "rm";
@@ -1207,10 +1280,10 @@ public class Installer {
 				    destination);
 	    }
 
-	    System.out.println("REMOVED");
+	    m_out.println("REMOVED");
 	}
 	
-	System.out.print("  - creating link to " + destination + "... ");
+	m_out.print("  - creating link to " + destination + "... ");
 
 	cmd = new String[4];
 	cmd[0] = "ln";
@@ -1224,7 +1297,7 @@ public class Installer {
 				source + " into " + destination);
 	}
 
-	System.out.println("DONE");
+	m_out.println("DONE");
     }
 
     public void updateTomcatConf() throws Exception {
@@ -1237,7 +1310,7 @@ public class Installer {
 	// XXX should we have the option to automatically try to determine
 	//     the tomcat user and chown the OpenNMS files to that user?
 
-	System.out.print("- setting tomcat4 user to 'root'... ");
+	m_out.print("- setting tomcat4 user to 'root'... ");
 
 	BufferedReader r = new BufferedReader(new FileReader(f));
 	StringBuffer b = new StringBuffer();
@@ -1262,13 +1335,13 @@ public class Installer {
 	w.print(b.toString());
 	w.close();
 
-	System.out.println("done");
+	m_out.println("done");
     }
 
     public void updateServerXml() throws Exception {
 	File f = new File(m_server_xml);
 
-	System.out.print("- checking Tomcat 4 for OpenNMS web UI... ");
+	m_out.print("- checking Tomcat 4 for OpenNMS web UI... ");
 
 	BufferedReader r = new BufferedReader(new FileReader(f));
 	StringBuffer b = new StringBuffer();
@@ -1288,9 +1361,9 @@ public class Installer {
 	if (m.find()) {
 	    m = Pattern.compile("(?s)homeDir").matcher(server_in);
 	    if (m.find()) {
-		System.out.println("FOUND");
+		m_out.println("FOUND");
 	    } else {
-		System.out.println("UPDATING");
+		m_out.println("UPDATING");
 		server_in = server_in.replaceAll("(?s)userFile\\s*=\\s*\".*?\"\\s*", "homeDir=" + m_opennms_home + "\" ");
 		server_in = server_in.replaceAll("(?s)<Logger className=\"org.apache.catalina.logger.FileLogger\" prefix=\"localhost_opennms_log.\" suffix=\".txt\" timestamp=\"true\"/>", "<Logger className=\"org.opennms.web.log.Log4JLogger\" homeDir=\"" + m_opennms_home + "\" />");
 
@@ -1303,10 +1376,10 @@ public class Installer {
 		w.print(server_in);
 		w.close();
 
-		System.out.println("DONE");
+		m_out.println("DONE");
 	    }
 	} else {
-	    System.out.println("UPDATING");
+	    m_out.println("UPDATING");
 
 	    String add = "\n" +
 		"        <Context path=\"/opennms\" docBase=\"opennms\" debug=\"0\" reloadable=\"true\">\n" +
@@ -1325,7 +1398,7 @@ public class Installer {
 	    w.print(server_in);
 	    w.close();
 
-	    System.out.println("DONE");
+	    m_out.println("DONE");
 	}
     }
 
@@ -1333,17 +1406,13 @@ public class Installer {
 	Statement st = m_dbconnection.createStatement();
 	ResultSet rs;
 
-	if (!m_update_iplike) {
-	    return;
-	}
-
-	System.out.print("- checking for stale iplike references... ");
+	m_out.print("- checking for stale iplike references... ");
 	try {
 	    st.execute("DROP FUNCTION iplike(text,text)");
-	    System.out.println("REMOVED");
+	    m_out.println("REMOVED");
 	} catch (SQLException e) {
 	    if (e.toString().indexOf("does not exist") != -1) {
-		System.out.println("CLEAN");
+		m_out.println("CLEAN");
 	    } else {
 		throw new SQLException(e.toString());
 	    }
@@ -1352,42 +1421,42 @@ public class Installer {
 	// XXX This error is generated from Postgres if eventtime(text)
 	//     does not exist:
 	//        ERROR:  function eventtime(text) does not exist
-	System.out.print("- checking for stale eventtime.so references... ");
+	m_out.print("- checking for stale eventtime.so references... ");
 	try {
 	    st.execute("DROP FUNCTION eventtime(text)");
-	    System.out.println("REMOVED");
+	    m_out.println("REMOVED");
 	} catch (SQLException e) {
 	    if (e.toString().indexOf("does not exist") != -1) {
-		System.out.println("CLEAN");
+		m_out.println("CLEAN");
 	    } else {
 		throw new SQLException(e.toString());
 	    }
 	}
 
-	System.out.print("- adding iplike database function... ");
+	m_out.print("- adding iplike database function... ");
 	st.execute("CREATE FUNCTION iplike(text,text) RETURNS bool " +
 		   "AS '" + m_pg_iplike +
 		   "' LANGUAGE 'c' WITH(isstrict)");
-	System.out.println("OK");
+	m_out.println("OK");
     }
 
     public void updatePlPgsql() throws Exception {
 	Statement st = m_dbconnection.createStatement();
 	ResultSet rs;
 
-	System.out.print("- adding PL/pgSQL call handler... ");
+	m_out.print("- adding PL/pgSQL call handler... ");
 	rs = st.executeQuery("SELECT oid from pg_proc WHERE " +
 			     "proname='plpgsql_call_handler' AND " +
 			     "proargtypes = ''");
 	if (rs.next()) {
-	    System.out.println("EXISTS");
+	    m_out.println("EXISTS");
 	} else {
 	    st.execute("CREATE FUNCTION plpgsql_call_handler () " +
 		       "RETURNS OPAQUE AS '$libdir/plpgsql.so' LANGUAGE 'c'");
-	    System.out.println("OK");
+	    m_out.println("OK");
 	}
 
-	System.out.print("- adding PL/pgSQL language module... ");
+	m_out.print("- adding PL/pgSQL language module... ");
 	rs = st.executeQuery("SELECT pg_language.oid FROM " +
 			     "pg_language, pg_proc WHERE " +
 			     "pg_proc.proname='plpgsql_call_handler' AND " +
@@ -1395,11 +1464,11 @@ public class Installer {
 			     "pg_proc.oid = pg_language.lanplcallfoid AND " +
 			     "pg_language.lanname = 'plpgsql'");
 	if (rs.next()) {
-	    System.out.println("EXISTS");
+	    m_out.println("EXISTS");
 	} else {
 	    st.execute("CREATE TRUSTED PROCEDURAL LANGUAGE 'plpgsql' " +
 		       "HANDLER plpgsql_call_handler LANCOMPILER 'PL/pgSQL'");
-	    System.out.println("OK");
+	    m_out.println("OK");
 	}
     }
 
@@ -1634,8 +1703,8 @@ public class Installer {
 	}
 	m_changed.add(table);
 
-	System.out.println("SCHEMA DOES NOT MATCH");
-	System.out.println("  - differences:");
+	m_out.println("SCHEMA DOES NOT MATCH");
+	m_out.println("  - differences:");
 
 	// XXX This doesn't check for old column rows that don't exist
 	//     in newColumns.
@@ -1645,7 +1714,7 @@ public class Installer {
 					  newColumn.getName());
 
 	    if (oldColumn == null || !newColumn.equals(oldColumn)) {
-		System.out.println("    - column \"" + newColumn.getName() +
+		m_out.println("    - column \"" + newColumn.getName() +
 				   "\" is different");
 	    }
 
@@ -1707,7 +1776,7 @@ public class Installer {
 		    columnChange.setUpgradeTimestamp(true);
 		}
 	    } else {
-		System.out.println("    * WARNING: column \"" +
+		m_out.println("    * WARNING: column \"" +
 				   oldColumn.getName() + "\" exists in the " +
 				   "database but is not in the new schema.  " +
 				   "NOT REMOVING COLUMN");
@@ -1726,9 +1795,9 @@ public class Installer {
 
 	    st.execute("GRANT ALL ON " + table + " TO " + m_user);
 
-	    System.out.print("  - optimizing table " + table + "... ");
+	    m_out.print("  - optimizing table " + table + "... ");
 	    st.execute("VACUUM ANALYZE " + table);
-	    System.out.println("DONE");
+	    m_out.println("DONE");
 	} catch (Exception e) {
 	    try {
 		st.execute("DROP TABLE " + table + m_cascade);
@@ -1747,7 +1816,7 @@ public class Installer {
 	// completed copying it, so it's outside of the try/catch block above.
 	st.execute("DROP TABLE " + oldTable);
 
-	System.out.println("  - completed updating table... ");
+	m_out.println("  - completed updating table... ");
     }
 
     public void transformData(String table, String oldTable,
@@ -1777,7 +1846,7 @@ public class Installer {
 	/* Pull everything in from the old table and filter it to update
 	   the data to any new formats. */
 
-	System.out.print("  - transforming data into the new table...\r");
+	m_out.print("  - transforming data into the new table...\r");
 
 	if (table.equals("events")) {
 	    st.execute("INSERT INTO events (eventid, eventuei, eventtime, " +
@@ -1803,7 +1872,7 @@ public class Installer {
 	String dbcmd = "SELECT " + join(", ", oldColumnNames) + " FROM " +
 	    oldTable + order;
 	if (m_debug) {
-	    System.out.println("  - performing select: " + dbcmd);
+	    m_out.println("  - performing select: " + dbcmd);
 	}
 	select = m_dbconnection.prepareStatement(dbcmd);
 	// error =		      "Unable to prepare select from temp";
@@ -1811,7 +1880,7 @@ public class Installer {
 	dbcmd = "INSERT INTO " + table + " (" + join(", ", columns) +
 	    ") values (" + join(", ", questionMarks) + ")";
 	if (m_debug) {
-	    System.out.println("  - performing insert: " + dbcmd);
+	    m_out.println("  - performing insert: " + dbcmd);
 	}
 	insert = m_dbconnection.prepareStatement(dbcmd);
 	// error = 	      "Unable to prepare insert into " + table);
@@ -1842,7 +1911,7 @@ public class Installer {
 		    }
 		} else {
 		    if (m_debug) {
-			System.out.println("    - don't know what to do " +
+			m_out.println("    - don't know what to do " +
 					   "for \"" +
 					   name + "\", prepared column " +
 					   change.getPrepareIndex() +
@@ -1857,7 +1926,7 @@ public class Installer {
 		if (obj == null && change.isNullReplace()) {
 		    obj = change.getNullReplace();
 		    if (m_debug) {
-			System.out.println("    - " + name +
+			m_out.println("    - " + name +
 					   " was NULL but is a " +
 					   "requires NULL replacement -- " +
 					   "replacing with '" + obj + "'");
@@ -1868,25 +1937,25 @@ public class Installer {
 		    if (change.isUpgradeTimestamp() &&
 			!obj.getClass().equals(java.sql.Timestamp.class)) {
 			if (m_debug) {
-			    System.out.println("    - " + name +
+			    m_out.println("    - " + name +
 					       " is an old-style timestamp");
 			}
 			String newObj =
 			    dateFormatter.format(dateParser.parse((String)
 								  obj));
 			if (m_debug) {
-			    System.out.println("    - " +
+			    m_out.println("    - " +
 					       obj + " -> " + newObj);
 			}
 
 			obj = newObj;
 		    }
 		    if (m_debug) {
-			System.out.println("    - " + name + " = " + obj);
+			m_out.println("    - " + name + " = " + obj);
 		    }
 		} else {
 		    if (m_debug) {
-			System.out.println("    - " + name + " = undefined");
+			m_out.println("    - " + name + " = undefined");
 		    }
 		}
 
@@ -1913,7 +1982,7 @@ public class Installer {
 	    current_row++;
 
 	    if ((current_row % 20) == 0) {
-		System.out.print("  - transforming data into the new " +
+		m_out.print("  - transforming data into the new " +
 				 "table... " +
 				 (int)Math.floor((current_row * 100) / num_rows) +
 				 "%  [" + spin[(current_row / 20) % spin.length] + "]\r");
@@ -1923,52 +1992,53 @@ public class Installer {
 	m_dbconnection.commit();
 	m_dbconnection.setAutoCommit(true);
 
-	System.out.println("  - transforming data into the new table... " +
+	m_out.println("  - transforming data into the new table... " +
 			   "DONE           ");
     }
 
     public void printHelp() {
-	System.out.println("usage:");
-	System.out.println("  java -jar opennms_install.jar -h");
-	System.out.println("  java -jar opennms_install.jar " +
-			   "[-r] [-x] [-c] [-d] [-i] [-s] [-y]");
-	System.out.println("                                " +
+	m_out.println("usage:");
+	m_out.println("  java -jar opennms_install.jar -h");
+	m_out.println("  java -jar opennms_install.jar " +
+			   "[-r] [-x] [-c] [-d] [-i] [-s] [-U] [-y]");
+	m_out.println("                                " +
 			   "[-u <PostgreSQL admin user>]");
-	System.out.println("                                " +
+	m_out.println("                                " +
 			   "[-p <PostgreSQL admin password>]");
-	System.out.println("                                " +
+	m_out.println("                                " +
 			   "[-S <tomcat server.xml file>]");
-	System.out.println("                                " +
+	m_out.println("                                " +
 			   "[-T <tomcat4.conf>]");
-	System.out.println("                                " +
+	m_out.println("                                " +
 			   "[-w <tomcat webapps directory>");
-	System.out.println("                                " +
+	m_out.println("                                " +
 			   "[-W <tomcat server/lib directory>]");
-	System.out.println("");
-	System.out.println(m_required_options);
-	System.out.println("");
-	System.out.println("   -h    this help");
-	System.out.println("");
-	System.out.println("   -d    perform database actions");
-	System.out.println("   -i    insert data into the database");
-	System.out.println("   -s    update iplike postgres function");
-	System.out.println("   -y    install web application (see -w and -W)");
-	System.out.println("");
-	System.out.println("   -u    username of the PostgreSQL " +
+	m_out.println("");
+	m_out.println(m_required_options);
+	m_out.println("");
+	m_out.println("   -h    this help");
+	m_out.println("");
+	m_out.println("   -d    perform database actions");
+	m_out.println("   -i    insert data into the database");
+	m_out.println("   -s    update iplike postgres function");
+	m_out.println("   -U    upgrade database to unicode, if needed");
+	m_out.println("   -y    install web application (see -w and -W)");
+	m_out.println("");
+	m_out.println("   -u    username of the PostgreSQL " +
 			   "administrator (default: \"" + m_pg_user + "\")");
-	System.out.println("   -p    password of the PostgreSQL " +
+	m_out.println("   -p    password of the PostgreSQL " +
 			   "administrator (default: \"" + m_pg_pass + "\")");
-	System.out.println("   -c    drop and recreate tables that already " +
+	m_out.println("   -c    drop and recreate tables that already " +
 			   "exist");
-	System.out.println("");
-	System.out.println("   -S    location of tomcat's server.xml");
-	System.out.println("   -T    location of tomcat.conf");
-	System.out.println("   -w    location of tomcat's webapps directory");
-	System.out.println("   -W    location of tomcat's server/lib " +
+	m_out.println("");
+	m_out.println("   -S    location of tomcat's server.xml");
+	m_out.println("   -T    location of tomcat.conf");
+	m_out.println("   -w    location of tomcat's webapps directory");
+	m_out.println("   -W    location of tomcat's server/lib " +
 			   "directory");
-	System.out.println("");
-	System.out.println("   -r    run as an RPM install (does nothing)");
-	System.out.println("   -x    turn on debugging for database data " +
+	m_out.println("");
+	m_out.println("   -r    run as an RPM install (does nothing)");
+	m_out.println("   -x    turn on debugging for database data " +
 			   "transformation");
 
 	System.exit(0);

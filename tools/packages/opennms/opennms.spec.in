@@ -23,10 +23,9 @@
 
 %if "%{platform}" == "linux-i386-centos-3"
 %define	initdir		/etc
-%define	psql		/usr/bin/psql
 %define psql_service	rhdb
 %define tomcat_service	tomcat4
-%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail
+%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
@@ -35,118 +34,106 @@
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
 %define tomcat_service	tomcat4
-%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail
+%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
 %if "%{platform}" == "linux-i386-fedora-2"
 %define	initdir		/etc
-%define	psql		/usr/bin/psql
 %define psql_service	postgresql
 %define tomcat_service	tomcat4
-%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail
+%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-7"
 %define	initdir		/etc
-%define	psql		/usr/bin/psql
 %define psql_service	postgresql
 %define tomcat_service	tomcat4
-%define requires	postgresql-server >= 7.2, metamail
+%define requires	postgresql-server >= 7.2, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-8"
 %define	initdir		/etc
-%define	psql		/usr/bin/psql
 %define psql_service	postgresql
 %define tomcat_service	tomcat4
-%define requires	postgresql-server >= 7.2, libstdc++2.10, metamail
+%define requires	postgresql-server >= 7.2, libstdc++2.10, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-9"
 %define	initdir		/etc
-%define	psql		/usr/bin/psql
 %define psql_service	postgresql
 %define tomcat_service	tomcat4
-%define requires	postgresql-server >= 7.2, libstdc++2.10, metamail
+%define requires	postgresql-server >= 7.2, libstdc++2.10, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-10"
 %define	initdir		/etc
-%define	psql		/usr/bin/psql
 %define psql_service	postgresql
 %define tomcat_service	tomcat4
-%define requires	postgresql-server >= 7.2, libstdc++2.10, metamail
+%define requires	postgresql-server >= 7.2, libstdc++2.10, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
 %if "%{platform}" == "linux-i386-redhat-7"
 %define	initdir		/etc
-%define	psql		/usr/bin/psql
 %define psql_service	postgresql
 %define tomcat_service	tomcat4
-%define requires        postgresql-server >= 7.2, compat-libstdc++, metamail
+%define requires        postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
 %if "%{platform}" == "linux-i386-redhat-8"
 %define	initdir		/etc
-%define	psql		/usr/bin/psql
 %define psql_service	postgresql
 %define tomcat_service	tomcat4
-%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail
+%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
 %if "%{platform}" == "linux-i386-redhat-9"
 %define	initdir		/etc
-%define	psql		/usr/bin/psql
 %define psql_service	postgresql
 %define tomcat_service	tomcat4
-%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail
+%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
 %if "%{platform}" == "linux-i386-rhel-3"
 %define	initdir		/etc
-%define	psql		/usr/bin/psql
 %define psql_service	rhdb
 %define tomcat_service	tomcat4
-%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail
+%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
 %if "%{platform}" == "linux-i386-suse-7"
 %define	initdir		/etc/rc.d
-%define	psql		/usr/bin/psql
 %define psql_service	postgres
 %define tomcat_service	tomcat
-%define requires        postgres >= 7.2, metamail
-%define webapp_requires tomcat >= 4.1.18
+%define requires        postgres >= 7.2, metamail, java2 >= 1.4.2
+%define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %endif
 
 %if "%{platform}" == "linux-i386-suse-8"
 %define	initdir		/etc
-%define	psql		/usr/bin/psql
 %define psql_service	postgresql
 %define tomcat_service	tomcat
 %define tomcatdir	/opt/jakarta/tomcat
-%define requires	postgresql >= 7.2, postgresql-server >= 7.2, metamail
-%define webapp_requires tomcat >= 4.1.18
+%define requires	postgresql >= 7.2, postgresql-server >= 7.2, metamail, java2 >= 1.4.2
+%define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %endif
 
 %if "%{platform}" == "linux-i386-suse-9"
 %define	initdir		/etc
-%define	psql		/usr/bin/psql
 %define psql_service	postgresql
 %define tomcat_service	tomcat
 %define tomcatdir	/opt/jakarta/tomcat
-%define requires	postgresql >= 7.2, postgresql-server >= 7.2, metamail
-%define webapp_requires tomcat >= 4.1.18
+%define requires	postgresql >= 7.2, postgresql-server >= 7.2, metamail, java2 >= 1.4.2
+%define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %endif
 
 %if "%{buildtests}" == "true"
@@ -181,8 +168,6 @@ AutoReqProv:		no
 
 Requires:		rrdtool
 Requires:               %{requires}
-
-Requires:		java2 >= 1.4.2
 
 %description
 OpenNMS is a network management package.
@@ -363,10 +348,14 @@ if [ `ls %{instprefix}/etc/*.sql.rpmnew 2>/dev/null | wc -l` -gt 0 ]; then
 	done
 fi
 
-set -x
+$JAVA_HOME/bin/java -jar %{instprefix}/lib/opennms_install.jar -disU -r \
+    >> %{logdir}/install.log
+ret=$?
+if [ $ret -ne 0 ]; then
+    echo "Error running installer, see previous error message and" >&2
+    echo "%{logdir}/install.log for details." >&2
+fi
 
-#%{instprefix}/bin/install.pl -t -L %{logdir}/install.log -r -q -l %{pglibdir} -u %{dbuser} -p %{dbpass} -U postgres -d %{dbname} %{instprefix}/etc/create.sql
-$JAVA_HOME/bin/java -jar %{instprefix}/lib/opennms_install.jar -dis
 
 # add the OpenNMS init
 

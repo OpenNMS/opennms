@@ -11,13 +11,18 @@
 		<property key="timeout" value="2000"/>
 		<property key="retry" value="2"/>
 	</protocol-plugin>
+        <protocol-plugin protocol="NTP" class-name="org.opennms.netmgt.capsd.NtpPlugin" scan="on" user-defined="false">
+		<property key="port" value="123"/>
+		<property key="timeout" value="3000"/>
+		<property key="retry" value="2"/>	
+	</protocol-plugin>
         <protocol-plugin protocol="NotesHTTP" class-name="org.opennms.netmgt.capsd.NotesHttpPlugin" scan="on" user-defined="false">
-		<property key="ports" value="80,8080"/>
+		<property key="port" value="80,8080"/>
 		<property key="timeout" value="3000"/>
 		<property key="retry" value="2"/>
 	</protocol-plugin>
         <protocol-plugin protocol="DominoIIOP" class-name="org.opennms.netmgt.capsd.DominoIIOPPlugin" scan="on" user-defined="false">
-		<property key="ports" value="63148"/>
+		<property key="port" value="63148"/>
                 <property key="ior-port" value="80"/>
 		<property key="timeout" value="3000"/>
 		<property key="retry" value="2"/>
@@ -38,27 +43,27 @@
 	</protocol-plugin>
 	<protocol-plugin protocol="SMB"  class-name="org.opennms.netmgt.capsd.SmbPlugin" scan="on" user-defined="false"/>
 	<protocol-plugin protocol="HTTP" class-name="org.opennms.netmgt.capsd.HttpPlugin" scan="on" user-defined="false">
-		<property key="ports" value="80"/>
+		<property key="port" value="80"/>
 		<property key="timeout" value="3000"/>
 		<property key="retry" value="2"/>
 	</protocol-plugin>
 	<protocol-plugin protocol="HTTP-MGMT" class-name="org.opennms.netmgt.capsd.HttpPlugin" scan="on" user-defined="false">
-                <property key="ports" value="280"/>
+                <property key="port" value="280"/>
                 <property key="timeout" value="3000"/>
                 <property key="retry" value="2"/>
         </protocol-plugin>
 	<protocol-plugin protocol="HTTP-8080" class-name="org.opennms.netmgt.capsd.HttpPlugin" scan="on" user-defined="false">
-                <property key="ports" value="8080"/>
+                <property key="port" value="8080"/>
                 <property key="timeout" value="3000"/>
                 <property key="retry" value="2"/>
         </protocol-plugin>
         <protocol-plugin protocol="HTTP-8000" class-name="org.opennms.netmgt.capsd.HttpPlugin" scan="on" user-defined="false">
-                <property key="ports" value="8000"/>
+                <property key="port" value="8000"/>
                 <property key="timeout" value="3000"/>
                 <property key="retry" value="2"/>
         </protocol-plugin>
         <protocol-plugin protocol="HTTPS" class-name="org.opennms.netmgt.capsd.HttpsPlugin" scan="on" user-defined="false">
-		<property key="ports" value="443"/>
+		<property key="port" value="443"/>
 		<property key="timeout" value="5000"/>
 		<property key="retry" value="2"/>
 	</protocol-plugin>

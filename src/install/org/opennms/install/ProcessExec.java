@@ -7,17 +7,20 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 public class ProcessExec {
+    PrintStream m_out = null;
+    PrintStream m_err = null;
 
-    public ProcessExec() {
+    public ProcessExec(PrintStream out, PrintStream err) {
+	m_out = out;
+	m_err = err;
     }
 
     public int exec(String[] cmd) throws IOException, InterruptedException {
 	Process p = Runtime.getRuntime().exec(cmd);
 
-	PrintInputStream out = new PrintInputStream(p.getInputStream(),
-						    System.out);
-	PrintInputStream err = new PrintInputStream(p.getErrorStream(),
-						    System.err);
+	p.getOutputStream().close();
+	PrintInputStream out = new PrintInputStream(p.getInputStream(), m_out);
+	PrintInputStream err = new PrintInputStream(p.getErrorStream(), m_err);
 
 	Thread t1 = new Thread(out);
 	Thread t2 = new Thread(err);
@@ -44,20 +47,22 @@ public class ProcessExec {
 
 	public void run() {
 	    try {
-		runCatch();
+		BufferedReader in =
+		    new BufferedReader(new InputStreamReader(m_inputStream));
+		String line;
+
+		while ((line = in.readLine()) != null) {
+		    m_printStream.println(line);
+		}
+	
+		m_inputStream.close();
 	    } catch (IOException e) {
 		e.printStackTrace();
+		try {
+		    m_inputStream.close();
+		} catch (IOException e2) { } // do nothing
 	    }
 	}
 
-	private void runCatch() throws IOException {
-	    BufferedReader in =
-		new BufferedReader(new InputStreamReader(m_inputStream));
-	    String line;
-
-	    while ((line = in.readLine()) != null) {
-		m_printStream.println(line);
-	    }
-	}
     }
 }

@@ -119,6 +119,8 @@ your distribution.
   <!-- XXX why is compatible=7.1 being used? -->
   <property name="install.database.url"
 	    value="jdbc:postgresql://localhost:5432/"/>
+  <property name="install.database.bindir"
+	    value="/usr/bin"/>
   <property name="install.rrdtool.bin" value="${build.rrdtool.bin}"/>
   <property name="install.perl.bin" value="/usr/bin/perl"/>
 
@@ -310,6 +312,8 @@ your distribution.
     <filter token="ant.project.name" value="${ant.project.name}"/>
     <filter token="build.soext" value="${build.soext}"/>
     <filter token="root.source" value="${basedir}"/>
+    <filter token="install.database.bindir"
+	    value="${install.database.bindir}"/>
     <filter token="install.database.driver"
 	    value="${install.database.driver}"/>
     <filter token="install.database.name" value="${install.database.name}"/>
@@ -1608,7 +1612,9 @@ OpenNMS as part of the post-install.
 
  <!-- COMPILE targets -->
  
- <target name="compile" depends="compile.check,java.compile,jicmp.compile,jrrd.compile,postgresql.compile" description="compile all code"/>
+ <target name="compile" depends="compile.check, java.compile, jicmp.compile,
+				 jrrd.compile, postgresql.compile"
+	 description="compile all code"/>
 
  <target name="java.compile" depends="prep,sources">
   <mkdir dir="${build.classes.dir}"/>
