@@ -31,10 +31,10 @@
 //
 package org.opennms.netmgt.mock;
 
+import junit.framework.TestCase;
+
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-import junit.framework.TestCase;
 
 /**
  * @author brozow
