@@ -18,10 +18,12 @@ use vars qw(
 	$PG_USER
 	$PG_PASS
 	$PG_LIBDIR
+	$PG_VERSION
 
 	$USER
 	$PASS
 
+	$CASCADE
 	$DATABASE
 	$SQL_FILE
 
@@ -55,6 +57,7 @@ use DBI;
 
 $OPENNMS_HOME	= '@root.install@';
 $SOEXT		= '@compile.soext@';
+$TOMCAT		= 1;
 $VERBOSE	= 1;
 $LOG		= 0;
 $LOG_FILE	= '/tmp/opennms-install.log';
@@ -115,7 +118,7 @@ while (1) {
 			$NOINSERT = 1 if ($arg eq "i");
 			$RPM			= 1 if ($arg eq "r");
 			$NOSO		 = 1 if ($arg eq "s");
-			$TOMCAT	 = 1 if ($arg eq "t");
+			$TOMCAT	 = 0 if ($arg eq "t");
 			$DEBUG		= 1 if ($arg eq "x");
 			$DODROPS	= 1 if ($arg eq "z");
 
@@ -254,6 +257,17 @@ before running this install script!
 $DBI::errstr
 
 END
+
+	my $verquery = $template->prepare('select version()') or die "couldn't prepare version from the database: " . $template->errstr;
+	$verquery->execute() or die "couldn't execute version from database: " . $verquery->errstr;
+	if ($verquery->rows) {
+		my ($version) = $verquery->fetchrow_array();
+		($PG_VERSION) = $version =~ /PostgreSQL (\d+\.\d+)/;
+	}
+
+	if ($PG_VERSION >= 7.3) {
+		$CASCADE = " CASCADE";
+	}
 
 	# dbi will return an OK even if the user exists, so we
 	# always do a create, and let it silently fail if they do
@@ -412,7 +426,7 @@ for my $table (@TABLES) {
 
 		eval {
 			stderr_off();
-			$database->do("DROP TABLE $table") and print "DROPPED ";
+			$database->do("DROP TABLE $table $CASCADE") and print "DROPPED ";
 			stderr_on();
 		};
 		undef $@;
@@ -630,10 +644,34 @@ unless ($NOINSERT) {
 
 if ($TOMCAT) {
 
+	for my $dir ('/etc/tomcat4/conf', '/etc/tomcat4') {
+		my $tomcatconf = $dir . '/tomcat.conf';
+
+		if (-f $tomcatconf) {
+			my $conf_in;
+			if (open(FILEIN, $tomcatconf)) {
+				print "- setting tomcat4 user to 'root'... ";
+				while (<FILEIN>) {
+					if (/TOMCAT_USER/) {
+						$conf_in .= "TOMCAT_USER=\"root\"\n";
+					} else {
+						$conf_in .= $_;
+					}
+				}
+				close (FILEIN);
+				print "done\n";
+
+			} else {
+				warn "unable to open $tomcatconf: $!\n";
+			}
+		}
+
+	}
+
 	for my $dir ('/var/tomcat4/conf', '/sw/var/tomcat4/conf', '/usr/local/tomcat4/conf', '/etc/tomcat4') {
 
-		my $serverxml = $dir . '/server.xml';
-	
+		my $serverxml  = $dir . '/server.xml';
+
 		if (-f $serverxml) {
 			my $server_in;
 	
@@ -1611,7 +1649,7 @@ sub change_table {
 	my $revert_table = sub {
 		my $errormessage = shift;
 		stderr_on();
-		$database->do("DROP TABLE $table");
+		$database->do("DROP TABLE $table $CASCADE");
 		$database->do("CREATE TABLE $table AS SELECT " . join(', ', @db_names) . " FROM temp");
 		die "FAILED: $errormessage";
 	};
@@ -1643,14 +1681,14 @@ sub change_table {
 	}
 
 	# This line throws a harmless error if the table doesn't exist (normally it shouldn't between upgrades)
-	$database->do('DROP TABLE temp');
+	$database->do("DROP TABLE temp $CASCADE");
 
 	print "  - creating temporary table... ";
 	$text = "CREATE TABLE temp AS SELECT " . join(', ', @db_names) . " FROM $table";
 	$database->do($text) or die "FAILED: unable to create temporary table $table (as 'temp'): " . $database->errstr;
 	print "done\n";
 
-	$database->do("DROP TABLE $table");
+	$database->do("DROP TABLE $table $CASCADE");
 
 	print "  - creating new '$table' table... ";
 	$text = "CREATE TABLE $table (" . get_table_from_sql($table, 1) . ")";
@@ -1741,7 +1779,7 @@ sub change_table {
 	print "  - transforming data into the new table... done     \n";
 
 	print "  - dropping temporary table... ";
-	$text = "DROP TABLE temp";
+	$text = "DROP TABLE temp $CASCADE";
 	$database->do($text) or die "FAILED: " . $database->errstr;
 	print "done\n";
 
@@ -1801,7 +1839,7 @@ sub change_column {
 	}
 
 	$database->do("CREATE TABLE temp AS SELECT $columns FROM $table") or die "unable to create temporary table: " . $database->errstr;
-	$database->do("DROP TABLE $table") or die "unable to drop old table: " . $database->errstr;
+	$database->do("DROP TABLE $table $CASCADE") or die "unable to drop old table: " . $database->errstr;
 	my $new     = get_table_from_sql($table);
 	my $newtext;
 	for my $col (@{$tabledata}) {
@@ -1812,7 +1850,7 @@ sub change_column {
 	$database->do("CREATE TABLE $table ($newtext)") or die "unable to create new table: " . $database->errstr;
 	$database->do("GRANT ALL ON $table TO $USER") or die(scalar $database->errstr);
 	$database->do("INSERT INTO $table ($columns) SELECT $columns FROM temp") or die "unable to fill new table: " . $database->errstr;
-	$database->do("DROP TABLE temp") or die "unable to drop temporary table: " . $database->errstr;
+	$database->do("DROP TABLE temp $CASCADE") or die "unable to drop temporary table: " . $database->errstr;
 
 	return 1;
 }
