@@ -1,4 +1,4 @@
-#!@root.install.perl@ -w
+#!@install.perl.bin@ -w
 use strict;
 
 my $xml_data_file = shift(@ARGV) or die "no file given!\n";

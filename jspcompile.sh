@@ -32,8 +32,8 @@ else
 fi
 
 # load libraries
-for script in pid_process arg_process build_classpath check_tools \
-	compiler_setup find_jarfile handle_properties java_lint version_compare; do
+for script in pid_process arg_process \
+	find_jarfile handle_properties java_lint version_compare; do
 	source $PREFIX/tools/infrastructure/${script}.sh
 done
 
@@ -47,16 +47,16 @@ BUILD_CLASSES="`get_property 'root.build'`/opennms/classes"
 SABLECC_CLASSES="`get_property 'root.build'`/sablecc"
 
 # see tools/infrastructure/build_classpath.sh for syntax
-CLASSPATH=`build_classpath cp:$CLASSPATH_OVERRIDE dir:$TOOL_CLASSES \
-	dir:$BUILD_CLASSES dir:$SABLECC_CLASSES \
-	dir:$PREFIX/lib jar:ant141 jar:ant141-optional jar:ldap \
-	jar:xerces14 jar:xalan122 jar:regexp120 jar:jdhcp jar:castor-0.9.3.9 \
-	jar:castor-0.9.3.9-xml jar:jcifs jar:jms102a jar:log4j jar:postgresql \
-	jar:jdbc2_0-stdext jar:sablecc-2.17.2 jar:sablecc-anttask-1.1.0 \
-	jar:servlet jar:catalina jar:fop0150 jar:bsf220 jar:batik100 \
-	jar:jimi100 jar:ldap jar:jsse jar:jcert jar:jnet \
-	jardir:/var/tomcat4/lib "cp:$CLASSPATH"` \
-	export CLASSPATH
+#CLASSPATH=`build_classpath cp:$CLASSPATH_OVERRIDE dir:$TOOL_CLASSES \
+#	dir:$BUILD_CLASSES dir:$SABLECC_CLASSES \
+#	dir:$PREFIX/lib jar:ant141 jar:ant141-optional jar:ldap \
+#	jar:xerces14 jar:xalan122 jar:regexp120 jar:jdhcp jar:castor-0.9.3.9 \
+#	jar:castor-0.9.3.9-xml jar:jcifs jar:jms102a jar:log4j jar:postgresql \
+#	jar:jdbc2_0-stdext jar:sablecc-2.17.2 jar:sablecc-anttask-1.1.0 \
+#	jar:servlet jar:catalina jar:fop0150 jar:bsf220 jar:batik100 \
+#	jar:jimi100 jar:ldap jar:jsse jar:jcert jar:jnet \
+#	jardir:/var/tomcat4/lib "cp:$CLASSPATH"` \
+#	export CLASSPATH
 PATH="$JAVA_HOME/bin:$PATH" export PATH
 
 JAVA_OUTPUT_DIR="$1"; shift

@@ -1,26 +1,115 @@
 %{!?version:%define version @product.version@}
-%{!?release:%define release @opennms.release@}
-%{!?instprefix:%define instprefix @rpm.install@}
-%{!?packagedir:%define packagedir @ant.project.name@-@product.version@-@opennms.release@}
+%{!?release:%define release @product.release.stamp@}
+%{!?instprefix:%define instprefix @rpm.install.dir@}
+%{!?packagedir:%define packagedir @ant.project.name@-@product.version@-@product.release@}
 %{!?dbuser:%define dbuser @rpm.database.user@}
 %{!?dbpass:%define dbpass @rpm.database.password@}
 %{!?dbname:%define dbname @rpm.database.name@}
 %{!?profiledir:%define profiledir /etc/profile.d}
 %{!?sharedir:%define sharedir /var/opennms}
-%{!?rrdlibdir:%define rrdlibdir %instprefix/lib}
 %{!?logdir:%define logdir /var/log/opennms}
 %{!?pidfile:%define pidfile /var/run/opennms.pid}
 %{!?tomcatdir:%define tomcatdir /var/tomcat4}
 %{!?pglibdir:%define pglibdir %instprefix/lib}
+%{!?tomcatserverlibs:%define tomcatserverlibs @install.tomcat.serverlibs@}
 
 # build type modifiers
 %{!?standalone:%define standalone 1}
-%{!?snapshot:%define snapshot 1}
 %{!?builddocs:%define builddocs 1}
 %{!?buildtests:%define buildtests @rpm.buildtests@}
 %{!?platform:%define platform @rpm.platform@}
 
 %define debug_package %{nil}
+
+%if "%{platform}" == "linux-i386-suse-7"
+%define	initdir		/etc/rc.d
+%define	psql		/usr/bin/psql
+%define psql_service	postgres
+%define tomcat_service	tomcat
+%define requires        postgres >= 7.2
+%define webapp_requires tomcat >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-suse-9"
+%define	initdir		/etc
+%define	psql		/usr/bin/psql
+%define psql_service	postgresql
+%define tomcat_service	tomcat
+%define requires	postgresql >= 7.2, postgresql-server >= 7.2
+%define webapp_requires tomcat >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-mandrake-7"
+%define	initdir		/etc
+%define	psql		/usr/bin/psql
+%define psql_service	postgresql
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-mandrake-8"
+%define	initdir		/etc
+%define	psql		/usr/bin/psql
+%define psql_service	postgresql
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2, libstdc++2.10
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-mandrake-9"
+%define	initdir		/etc
+%define	psql		/usr/bin/psql
+%define psql_service	postgresql
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2, libstdc++2.10
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-redhat-6"
+%define	initdir		/etc/rc.d
+%define	psql		/usr/bin/psql
+%define psql_service	postgresql
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-redhat-7"
+%define	initdir		/etc
+%define	psql		/usr/bin/psql
+%define psql_service	postgresql
+%define tomcat_service	tomcat4
+%define requires        postgresql-server >= 7.2, compat-libstdc++
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-redhat-8"
+%define	initdir		/etc
+%define	psql		/usr/bin/psql
+%define psql_service	postgresql
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2, compat-libstdc++
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-redhat-9"
+%define	initdir		/etc
+%define	psql		/usr/bin/psql
+%define psql_service	postgresql
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2, compat-libstdc++
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-fedora-1"
+%define	initdir		/etc
+%define	psql		/usr/bin/psql
+%define psql_service	postgresql
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2, compat-libstdc++
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
 
 %if "%{buildtests}" == "true"
 %define buildtests	1
@@ -38,26 +127,6 @@
 %define buildtests	0
 %endif
 
-%if "%{snapshot}" == "true"
-%define snapshot	1
-%endif
-
-%if "%{snapshot}" == "yes"
-%define snapshot	1
-%endif
-
-%if "%{snapshot}" == "false"
-%define snapshot	0
-%endif
-
-%if "%{snapshot}" == "no"
-%define snapshot	0
-%endif
-
-%if %{snapshot}
-%define release		@opennms.release.string@
-%endif
-
 Name:			@ant.project.name@
 Summary:		Enterprise-level network management platform
 Serial:			1
@@ -72,73 +141,15 @@ BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
 AutoReqProv:		no
 
+Requires:		rrdtool
+Requires:               %{requires}
+
+%if "%{platform}" == "linux-i386-suse-9"
+Requires:		java2 >= 1.4
+%else
 # grr, we depend on XFree86-libs because j2sdk package deps are broken!
-Requires:		rrdtool, perl-DBD-Pg, j2sdk >= 1.4, XFree86-libs
-
-%if "%{platform}" == "linux-i386-suse-7"
-%define	initdir		/etc/rc.d
-%define	psql		/usr/bin/psql
-%define psql_service	postgres
-Requires:		postgres >= 7.2
+Requires:		j2sdk >= 1.4, XFree86-libs
 %endif
-
-%if "%{platform}" == "linux-i386-mandrake-7"
-%define	initdir		/etc
-%define	psql		/usr/bin/psql
-%define psql_service	postgresql
-Requires:		postgresql-server >= 7.2
-%endif
-
-%if "%{platform}" == "linux-i386-mandrake-8"
-%define	initdir		/etc
-%define	psql		/usr/bin/psql
-%define psql_service	postgresql
-Requires:		postgresql-server >= 7.2, libstdc++2.10
-%endif
-
-%if "%{platform}" == "linux-i386-mandrake-9"
-%define	initdir		/etc
-%define	psql		/usr/bin/psql
-%define psql_service	postgresql
-Requires:		postgresql-server >= 7.2, libstdc++2.10
-%endif
-
-%if "%{platform}" == "linux-i386-redhat-6"
-%define	initdir		/etc/rc.d
-%define	psql		/usr/bin/psql
-%define psql_service	postgresql
-Requires:		postgresql-server >= 7.2
-%endif
-
-%if "%{platform}" == "linux-i386-redhat-7"
-%define	initdir		/etc
-%define	psql		/usr/bin/psql
-%define psql_service	postgresql
-Requires:		postgresql-server >= 7.2, compat-libstdc++
-%endif
-
-%if "%{platform}" == "linux-i386-redhat-8"
-%define	initdir		/etc
-%define	psql		/usr/bin/psql
-%define psql_service	postgresql
-Requires:		postgresql-server >= 7.2, compat-libstdc++
-%endif
-
-%if "%{platform}" == "linux-i386-redhat-9"
-%define	initdir		/etc
-%define	psql		/usr/bin/psql
-%define psql_service	postgresql
-Requires:		postgresql-server >= 7.2, compat-libstdc++
-%endif
-
-%if "%{platform}" == "linux-i386-fedora-1"
-%define	initdir		/etc
-%define	psql		/usr/bin/psql
-%define psql_service	postgresql
-Requires:		postgresql-server >= 7.2, compat-libstdc++
-%endif
-
-%define builddefines -Droot.install=%{instprefix} -Droot.install.sbindir=/usr/local/sbin -Droot.install.contrib=%{instprefix}/contrib -Droot.install.initdir=%{initdir}/init.d -Droot.install.servlets=%{tomcatdir}/webapps/%{name} -Droot.install.share=%{sharedir} -Droot.install.rrdtool=%{rrdlibdir} -Droot.install.postgresql=%{pglibdir} -Droot.install.logs=%{logdir} -Droot.install.pid=%{pidfile} -Dfilter.overwrite="yes" -Disrpm="true"
 
 %description
 OpenNMS is a network management package.
@@ -157,7 +168,8 @@ for OpenNMS.
 %package webapp
 Summary:	Web interface servlet for the OpenNMS network management platform
 Group:		Applications/System
-Prereq:	tomcat4 >= 4.1.18, rrdtool, %{name} = 1:%{version}-%{release}
+Requires:	rrdtool, %{name} = 1:%{version}-%{release}
+Requires:       %{webapp_requires}
 
 %description webapp
 The web UI for OpenNMS.
@@ -188,23 +200,34 @@ rm -rf $RPM_BUILD_ROOT
 
 %install
 
-if [ %{buildtests} = "1" ]; then
+if [ x"%{buildtests}" = x"1" ]; then
 	EXTRA_TARGETS="$EXTRA_TARGETS test"
+fi
+if [ x"%{builddocs}" = x"1" ]; then
+	EXTRA_TARGETS="$EXTRA_TARGETS docs"
 fi
 
 echo "=== RUNNING INSTALL ==="
-echo > %{_tmppath}/build.output
-%if "%builddocs" == "1"
-sh ./build.sh $COMPILER_FLAG %{builddefines} -Droot.installprefix=$RPM_BUILD_ROOT docs 2>&1 | tee -a %{_tmppath}/build.output
-%endif
-sh ./build.sh $COMPILER_FLAG %{builddefines} -Droot.installprefix=$RPM_BUILD_ROOT $EXTRA_TARGETS install 2>&1 | tee -a %{_tmppath}/build.output
-
-grep "BUILD FAILED" %{_tmppath}/build.output >/dev/null 2>&1 && exit 1
+sh ./build.sh $COMPILER_FLAG -Dinstall.prefix=$RPM_BUILD_ROOT \
+    -Dinstall.dir=%{instprefix} -Dinstall.init.dir=%{initdir}/init.d \
+    -Dinstall.servlet.dir=%{tomcatdir}/webapps/%{name} \
+    -Dinstall.share.dir=%{sharedir} -Dinstall.postgresql.dir=%{pglibdir} \
+    -Dinstall.logs.dir=%{logdir} -Dinstall.pid.file=%{pidfile} \
+    -Dfilter.overwrite="yes" -Disrpm="true" \
+    $EXTRA_TARGETS install || exit $?
 
 mkdir -p $RPM_BUILD_ROOT%{instprefix}
 mkdir -p $RPM_BUILD_ROOT%{instprefix}/etc
 mkdir -p $RPM_BUILD_ROOT%{instprefix}/contrib
 
+mkdir -p $RPM_BUILD_ROOT%{_bindir}
+cat > $RPM_BUILD_ROOT%{_bindir}/opennms <<EOF
+#!/bin/sh -
+
+exec %{instprefix}/bin/opennms.sh "$@"
+EOF
+
+### XXX is this needed?  (Most of) the current scripts don't use OPENNMS_HOME.
 ### /etc/profile.d
 
 mkdir -p $RPM_BUILD_ROOT%{profiledir}
@@ -224,7 +247,7 @@ END
 ### /usr/share/doc/%{name}-%{version}
 
 mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-cp -a work/docs/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
+cp -pr work/docs/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/docs
 ln -sf %{_docdir}/%{name}-%{version} $RPM_BUILD_ROOT%{instprefix}/docs
 cp CHANGELOG README* $RPM_BUILD_ROOT%{instprefix}/etc/
@@ -237,23 +260,22 @@ rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README.build
 ln -sf %{logdir} $RPM_BUILD_ROOT%{instprefix}/logs
 ln -sf %{sharedir} $RPM_BUILD_ROOT%{instprefix}/share
 
-### /var/tomcat4
+### ${tomcatdir}
 
 mkdir -p $RPM_BUILD_ROOT%{tomcatdir}/server/lib
-for jar in \
-	castor-0.9.3.9.jar \
-	log4j.jar \
-	opennms_common.jar \
-	opennms_core.jar \
-	opennms_services.jar \
-	opennms_web.jar \
-; do
-	ln -sf %{instprefix}/lib/$jar $RPM_BUILD_ROOT%{tomcatdir}/server/lib/$jar
+jars="`echo \"%{tomcatserverlibs}\" | sed 's/:/ /g'`"
+for jar in $jars; do
+	ln -sf %{instprefix}/lib/$jar \
+	    $RPM_BUILD_ROOT%{tomcatdir}/server/lib/$jar
 done
 
-pushd $RPM_BUILD_ROOT;
-find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | sort > %{_tmppath}/files.etc;
-find $RPM_BUILD_ROOT%{tomcatdir}/webapps/%{name} ! -type d | sed -e "s,^$RPM_BUILD_ROOT,," | grep -v '/WEB-INF/web.xml' | sort > %{_tmppath}/files.webapp;
+pushd $RPM_BUILD_ROOT
+find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
+    sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
+    sort > %{_tmppath}/files.etc
+find $RPM_BUILD_ROOT%{tomcatdir}/webapps/%{name} ! -type d | \
+    sed -e "s,^$RPM_BUILD_ROOT,," | grep -v '/WEB-INF/web.xml' | \
+    sort > %{_tmppath}/files.webapp
 popd
 
 %clean
@@ -307,7 +329,11 @@ if [ `ls %{instprefix}/etc/*.sql.rpmnew 2>/dev/null | wc -l` -gt 0 ]; then
 		mv $i ${i%%%%.rpmnew}
 	done
 fi
-%{instprefix}/bin/install.pl -t -L %{logdir}/install.log -r -q -l %{pglibdir} -u %{dbuser} -p %{dbpass} -U postgres -d %{dbname} %{instprefix}/etc/create.sql
+
+set -x
+
+#%{instprefix}/bin/install.pl -t -L %{logdir}/install.log -r -q -l %{pglibdir} -u %{dbuser} -p %{dbpass} -U postgres -d %{dbname} %{instprefix}/etc/create.sql
+$JAVA_HOME/bin/java -jar %{instprefix}/lib/opennms_install.jar -dis
 
 # add the OpenNMS init
 
@@ -354,21 +380,19 @@ if [ $1 = 0 ]; then
 fi
 
 %pre webapp
-if [ -f /var/lock/subsys/tomcat4 ]; then
-	%{initdir}/init.d/tomcat4 stop >/dev/null 2>&1
+if [ -f /var/lock/subsys/${tomcat_service} ]; then
+	%{initdir}/init.d/${tomcat_service} stop >/dev/null 2>&1
 	echo > /tmp/tomcat.restart
 fi
 rm -rf %{tomcatdir}/work/* >/dev/null 2>&1 || :
 
 %post webapp
 
-if [ -f %{tomcatdir}/webapps/%{name}/WEB-INF/server.xml ]; then
-	cp -f %{tomcatdir}/webapps/%{name}/WEB-INF/server.xml %{tomcatdir}/conf/server.xml
-fi
+$JAVA_HOME/bin/java -jar %{instprefix}/lib/opennms_install.jar -S %{tomcatdir}/conf/server.xml
 
 if [ -f /tmp/tomcat.restart ]; then
 	rm -rf /tmp/tomcat.restart || :
-	%{initdir}/init.d/tomcat4 start >/dev/null 2>&1 || :
+	%{initdir}/init.d/${tomcat_service} start >/dev/null 2>&1 || :
 fi
 
 %changelog

@@ -46,9 +46,9 @@ else
         fi
 fi
 
-OPENNMS_HOME="@root.install@"
-OPENNMS_PIDFILE="@root.install.pid@"
-OPENNMS_INITDIR="@root.install.initdir@"
+OPENNMS_HOME="@install.dir@"
+OPENNMS_PIDFILE="@install.pid.file@"
+OPENNMS_INITDIR="@install.init.dir@"
 START_TIMEOUT="180" # number of seconds before timing out on startupp
  
 pushd "$OPENNMS_HOME" >/dev/null 2>&1
@@ -62,14 +62,9 @@ fi
 
 # load libraries
 for script in pid_process arg_process build_classpath \
-	compiler_setup find_jarfile handle_properties java_lint \
+	find_jarfile handle_properties java_lint \
 	ld_path version_compare; do
 	source $OPENNMS_HOME/lib/scripts/${script}.sh
-done
-
-# load platform-independent settings
-for file in "$OPENNMS_HOME/lib/scripts/platform_*.sh"; do
-	source $file
 done
 
 # define needed for grep to find opennms easily
@@ -110,7 +105,7 @@ SERVICE=$2
 [ "$SERVICE" = "all" ] && SERVICE=""
 
 # where to redirect "start" output
-REDIRECT="@root.install.logs@/output.log"
+REDIRECT="@install.logs.dir@/output.log"
 
 ###############################################################################
 # Run opennms.sh with the "-t" option to enable the Java Platform Debugging
@@ -164,17 +159,17 @@ fi
 get_url () {
 	[ -n "$1" ] || return 1
 	URL="$1"
-	HTTP=`which curl 2>/dev/null | grep -v -E 'no such|no curl'`
+	HTTP=`which curl 2>/dev/null | egrep -v 'no such|no curl'`
 	if [ -n "$HTTP" ]; then
 		$HTTP -o - -s "$URL" | $OPENNMS_HOME/bin/parse-status.pl
 		return 0
 	fi
-	HTTP=`which wget 2>/dev/null | grep -v -E 'no such|no wget'`
+	HTTP=`which wget 2>/dev/null | egrep -v 'no such|no wget'`
 	if [ -n "$HTTP" ]; then
 		$HTTP --quiet -O - "$URL" | $OPENNMS_HOME/bin/parse-status.pl
 		return 0
 	fi
-	HTTP=`which lynx 2>/dev/null | grep -v -E 'no such|no lynx'`
+	HTTP=`which lynx 2>/dev/null | egrep -v 'no such|no lynx'`
 	if [ -n "$HTTP" ]; then
 		$HTTP -dump "$URL" | $OPENNMS_HOME/bin/parse-status.pl
 		return 0
@@ -192,7 +187,7 @@ case "$COMMAND" in
 				echo "OpenNMS is partially running."
 				echo "If you have just attempted starting OpenNMS, please try again in a few"
 				echo "moments, otherwise, at least one service probably had issues starting."
-				echo "Check your logs in @root.install.logs@ for errors."
+				echo "Check your logs in @install.logs.dir@ for errors."
 				exit 1
 			fi
 		else

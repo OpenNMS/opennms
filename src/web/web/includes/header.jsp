@@ -36,7 +36,7 @@
     java.util.Date now = new java.util.Date(); 
     String date = dateFormatter.format( now );
     String time = timeFormatter.format( now );
-    File file = new File("@root.install@/etc/map.enable");
+    File file = new File("@install.etc.dir@/map.enable");
 
 %>
 

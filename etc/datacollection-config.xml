@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <datacollection-config
-	rrdRepository = "@root.install.share@/rrd/snmp/">
+	rrdRepository = "@install.share.dir@/rrd/snmp/">
 	<snmp-collection name="default"
 		maxVarsPerPdu = "50"
 		snmpStorageFlag = "select">
