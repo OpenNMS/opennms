@@ -674,12 +674,20 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
     /*
      * (non-Javadoc)
      * 
-     * @see RrdStrategy#initialize()
+     * @see org.opennms.netmgt.rrd.RrdStrategy#initialize()
      */
     public void initialize() throws Exception {
         m_delegate.initialize();
     }
+    
+    
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.rrd.RrdStrategy#graphicsInitialize()
+     */
+    public void graphicsInitialize() throws Exception {
+        m_delegate.graphicsInitialize();
+    }
     /*
      * (non-Javadoc)
      * 

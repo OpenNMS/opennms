@@ -68,14 +68,27 @@ import org.opennms.web.Util;
  */
 class JniRrdStrategy implements RrdStrategy {
     
+    boolean initialized = false;
+    boolean graphicsInitialized = false;
+    
     /**
      * The 'closes' the rrd file.  This is where the actual work of writing the RRD
      * files takes place.  The passed in rrd is actually an rrd command string containing
      * updates.  This method executes this command. 
      */
     public void closeFile(Object rrd) throws Exception {
+        checkState("closeFile");
         String[] results = Interface.launch(rrd.toString());
         if (results[0] != null) { throw new Exception(results[0]); }
+    }
+
+    /**
+     * Ensures that the initialize method has been called.
+     * @param methodName the name of the method we are called from
+     * @throws IllegalState exception of intialize has not been called.
+     */
+    private void checkState(String methodName) {
+        if (!initialized) throw new IllegalStateException("the "+methodName+" method cannot be called before initialize");
     }
 
     /**
@@ -85,6 +98,8 @@ class JniRrdStrategy implements RrdStrategy {
      */
     public Object createDefinition(String creator, String directory, String dsName, int step, String dsType, int dsHeartbeat, String dsMin,
             String dsMax, List rraList) throws Exception {
+        
+        checkState("createDefinition");
         
         File f = new File(directory);
         f.mkdirs();
@@ -115,6 +130,7 @@ class JniRrdStrategy implements RrdStrategy {
      * just the create command string it just executes it.
      */
     public void createFile(Object rrdDef) throws Exception {
+        checkState("createFile");
         Interface.launch((String) rrdDef);
     }
 
@@ -124,6 +140,7 @@ class JniRrdStrategy implements RrdStrategy {
      * command to update the file.
      */
     public Object openFile(String fileName) throws Exception {
+        checkState("openFile");
         return new StringBuffer("update " + fileName);
     }
 
@@ -136,6 +153,7 @@ class JniRrdStrategy implements RrdStrategy {
      * method. 
      */
     public void updateFile(Object rrd, String data) throws Exception {
+        checkState("updateFile");
         StringBuffer cmd = (StringBuffer)rrd;
         cmd.append(' ');
         cmd.append(data);
@@ -146,12 +164,22 @@ class JniRrdStrategy implements RrdStrategy {
      */
     public void initialize() throws Exception {
         Interface.init();
+        initialized = true;
     }
+    
+   
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.rrd.RrdStrategy#graphicsInitialize()
+     */
+    public void graphicsInitialize() throws Exception {
+        // nothing to do here
+    }
     /**
      * Fetches the last value directly from the rrd file using the JNI Interface.
      */
     public Double fetchLastValue(String rrdFile, int interval) throws NumberFormatException, RrdException {
+        checkState("fetchLastValue");
         // Log4j category
         //
         Category log = ThreadCategory.getInstance(getClass());

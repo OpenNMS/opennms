@@ -57,6 +57,12 @@ interface RrdStrategy {
     void initialize() throws Exception;
     
     /**
+     * This Initializes the graphics subsystem only.  This is used by the web application
+     * to avoid the need for the JNI infrastructure in the webapp.
+     */
+    void graphicsInitialize() throws Exception;
+    
+    /**
      * Create a round robin database definition from the supplied parameters.  This
      * definition is used in the createFile call to create the actual file.
      * 

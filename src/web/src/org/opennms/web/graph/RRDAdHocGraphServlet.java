@@ -32,16 +32,11 @@
 
 package org.opennms.web.graph;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.util.Properties;
 
@@ -105,7 +100,7 @@ public class RRDAdHocGraphServlet extends HttpServlet
             this.properties = new Properties();
             this.properties.load( new FileInputStream( propertiesFilename ));
             
-            RrdUtils.initialize();
+            RrdUtils.graphicsInitialize();
         }
         catch( FileNotFoundException e ) {
             throw new ServletException( "Could not find configuration file", e );

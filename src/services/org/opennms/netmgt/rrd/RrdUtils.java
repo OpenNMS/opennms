@@ -73,9 +73,8 @@ public class RrdUtils {
 
     private static RrdStrategy m_rrdStrategy = null;
     private static RrdStrategy getStrategy() throws RrdException {
-        if (m_rrdStrategy == null) {
-            initialize();
-        }
+        if (m_rrdStrategy == null)
+            throw new IllegalStateException("RrdUtils not initiailzed");
         return m_rrdStrategy;
     }
 
@@ -86,17 +85,39 @@ public class RrdUtils {
      */
     public static void initialize() throws RrdException {
         try {
-            if (m_rrdStrategy == null) {
-                RrdStrategy rrdStategy = (USE_JNI ? (RrdStrategy)new JniRrdStrategy() : (RrdStrategy)new JRobinRrdStrategy());
-                if (USE_QUEUE) {
-                    rrdStategy = new QueuingRrdStrategy(rrdStategy);
-                }
-                m_rrdStrategy = rrdStategy;
-                m_rrdStrategy.initialize();
-            }
+            createStrategy();
+            m_rrdStrategy.initialize();
         } catch (Exception e) {
             throw new org.opennms.netmgt.rrd.RrdException("An error occured initializing the Rrd subsytem", e);
             
+        }
+    }
+
+    
+    /**
+     * 
+     *
+     */
+    public static void graphicsInitialize() throws RrdException {
+        try {
+            createStrategy();
+            m_rrdStrategy.graphicsInitialize();
+        } catch (Exception e) {
+            throw new org.opennms.netmgt.rrd.RrdException("An error occured initializing the Rrd subsytem", e);
+            
+        }
+    }
+    
+    /**
+     * Create the appropriate RrdStrategy object based on the configuration
+     */
+    private static void createStrategy() {
+        if (m_rrdStrategy == null) {
+            RrdStrategy rrdStategy = (USE_JNI ? (RrdStrategy)new JniRrdStrategy() : (RrdStrategy)new JRobinRrdStrategy());
+            if (USE_QUEUE) {
+                rrdStategy = new QueuingRrdStrategy(rrdStategy);
+            }
+            m_rrdStrategy = rrdStategy;
         }
     }
 

@@ -134,6 +134,12 @@ public class JRobinRrdStrategy implements RrdStrategy {
         RrdDb.setDefaultFactory("FILE");
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.rrd.RrdStrategy#graphicsInitialize()
+     */
+    public void graphicsInitialize() throws Exception {
+        initialize();
+    }
     /**
      * Fetch the last value from the JRobin RrdDb file.
      */

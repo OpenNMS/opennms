@@ -118,7 +118,7 @@ public class RRDGraphServlet extends HttpServlet
             String propertiesFilename = Vault.getHomeDir() + this.getServletConfig().getInitParameter("rrd-properties");
             properties.load( new FileInputStream( propertiesFilename ));
 
-            RrdUtils.initialize();
+            RrdUtils.graphicsInitialize(); 
             
         }
         catch( FileNotFoundException e ) {
