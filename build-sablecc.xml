@@ -1,0 +1,208 @@
+<?xml version="1.0"?>
+ 
+<!--=================================================================
+
+   $Id$
+
+==================================================================== -->
+ 
+<project name="opennms" default="sablecc.filter.sources.generate" basedir=".">
+  <description>
+Build file for OpenNMS' sablecc-generated Java files.
+  </description>
+
+ <!-- Generates Sablecc java files if necessary -->
+ <target name="sablecc.filter.sources.generate"
+	 depends="sablecc.filter.sources.uptodate"
+	 unless="sablecc.filter.sources.uptodate">
+  <sablecc src="${services.source.dir}/${sablecc.filter.dir}/"
+	   outputdirectory="${build.sablecc.source.dir}"
+	   includes="filter.grammar"/>
+ </target>
+
+<!--
+    Alternative to explicitly specifying all files in the targetfileset
+ <target name="sablecc.filter.sources.uptodate" depends="prep">
+   <mkdir dir="${build.sablecc.source.dir}"/>
+   <dependset>
+     <srcfileset
+       file="${services.source.dir}/${sablecc.filter.dir}/filter.grammer"/>
+     <targetfileset dir="${build.sablecc.source.dir}">
+       <include name="**/*.java"/>
+       <include name="**/*.dat"/>
+     </targetfileset>
+   </dependset>
+   <condition property="sablecc.filter.sources.uptodate">
+     <and>
+       <available file="${build.sablecc.source.dir}/${sablecc.filter.dir}/lexer/lexer.dat" type="file"/>
+       <available file="${build.sablecc.source.dir}/${sablecc.filter.dir}/parser/parser.dat" type="file"/>
+     </and>
+   </condition>
+ </target>
+-->
+
+ <!-- Removes any old Sablecc java files and flags if they are up to date -->
+ <target name="sablecc.filter.sources.uptodate" if="prep.done">
+  <mkdir dir="${build.sablecc.source.dir}"/>
+  <dependset>
+   <srcfilelist dir="${services.source.dir}/org/opennms/netmgt/filter"
+    files="filter.grammar"/>
+   <targetfileset dir="${build.sablecc.source.dir}">
+    <include name="org/opennms/netmgt/filter/analysis/Analysis.java"/>
+    <include name="org/opennms/netmgt/filter/analysis/AnalysisAdapter.java"/>
+    <include name="org/opennms/netmgt/filter/analysis/DepthFirstAdapter.java"/>
+    <include name="org/opennms/netmgt/filter/analysis/ReversedDepthFirstAdapter.java"/>
+    <include name="org/opennms/netmgt/filter/lexer/lexer.dat"/>
+    <include name="org/opennms/netmgt/filter/lexer/LexerException.java"/>
+    <include name="org/opennms/netmgt/filter/lexer/Lexer.java"/>
+    <include name="org/opennms/netmgt/filter/lexer/Lexer.java"/>
+    <include name="org/opennms/netmgt/filter/node/AAndRule.java"/>
+    <include name="org/opennms/netmgt/filter/node/ACompareExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/AExprParensExpr.java"/>
+    <include name="org/opennms/netmgt/filter/node/AExprPartExpr.java"/>
+    <include name="org/opennms/netmgt/filter/node/AGtrThanEqualExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/AGtrThanExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/AIdentExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/AIntegerCompareRight.java"/>
+    <include name="org/opennms/netmgt/filter/node/AIntegerOctet.java"/>
+    <include name="org/opennms/netmgt/filter/node/AIpaddrIpIdent.java"/>
+    <include name="org/opennms/netmgt/filter/node/AIplikeExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/ALessThanEqualExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/ALessThanExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/ALikeExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/ANotEqualExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/ANotExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/AOctetListOctet.java"/>
+    <include name="org/opennms/netmgt/filter/node/AOctetRangeListOctet.java"/>
+    <include name="org/opennms/netmgt/filter/node/AOctetRangeOctet.java"/>
+    <include name="org/opennms/netmgt/filter/node/AOrRule.java"/>
+    <include name="org/opennms/netmgt/filter/node/ARuleExprRule.java"/>
+    <include name="org/opennms/netmgt/filter/node/AStarOctet.java"/>
+    <include name="org/opennms/netmgt/filter/node/AStringCompareRight.java"/>
+    <include name="org/opennms/netmgt/filter/node/Cast.java"/>
+    <include name="org/opennms/netmgt/filter/node/EOF.java"/>
+    <include name="org/opennms/netmgt/filter/node/NoCast.java"/>
+    <include name="org/opennms/netmgt/filter/node/NodeCast.java"/>
+    <include name="org/opennms/netmgt/filter/node/Node.java"/>
+    <include name="org/opennms/netmgt/filter/node/PCompareRight.java"/>
+    <include name="org/opennms/netmgt/filter/node/PExpr.java"/>
+    <include name="org/opennms/netmgt/filter/node/PExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/PIpIdent.java"/>
+    <include name="org/opennms/netmgt/filter/node/POctet.java"/>
+    <include name="org/opennms/netmgt/filter/node/PRule.java"/>
+    <include name="org/opennms/netmgt/filter/node/Start.java"/>
+    <include name="org/opennms/netmgt/filter/node/Switchable.java"/>
+    <include name="org/opennms/netmgt/filter/node/Switch.java"/>
+    <include name="org/opennms/netmgt/filter/node/TAnd.java"/>
+    <include name="org/opennms/netmgt/filter/node/TBlank.java"/>
+    <include name="org/opennms/netmgt/filter/node/TCompare.java"/>
+    <include name="org/opennms/netmgt/filter/node/TDot.java"/>
+    <include name="org/opennms/netmgt/filter/node/TGtrThan.java"/>
+    <include name="org/opennms/netmgt/filter/node/TGtrThanEqual.java"/>
+    <include name="org/opennms/netmgt/filter/node/TIdent.java"/>
+    <include name="org/opennms/netmgt/filter/node/TInteger.java"/>
+    <include name="org/opennms/netmgt/filter/node/TIplike.java"/>
+    <include name="org/opennms/netmgt/filter/node/TLessThanEqual.java"/>
+    <include name="org/opennms/netmgt/filter/node/TLessThan.java"/>
+    <include name="org/opennms/netmgt/filter/node/TLike.java"/>
+    <include name="org/opennms/netmgt/filter/node/TLparen.java"/>
+    <include name="org/opennms/netmgt/filter/node/TNotEqual.java"/>
+    <include name="org/opennms/netmgt/filter/node/TNot.java"/>
+    <include name="org/opennms/netmgt/filter/node/TOctetList.java"/>
+    <include name="org/opennms/netmgt/filter/node/TOctetRange.java"/>
+    <include name="org/opennms/netmgt/filter/node/TOctetRangeList.java"/>
+    <include name="org/opennms/netmgt/filter/node/Token.java"/>
+    <include name="org/opennms/netmgt/filter/node/TOr.java"/>
+    <include name="org/opennms/netmgt/filter/node/TQuotedString.java"/>
+    <include name="org/opennms/netmgt/filter/node/TRparen.java"/>
+    <include name="org/opennms/netmgt/filter/node/TSemi.java"/>
+    <include name="org/opennms/netmgt/filter/node/TStar.java"/>
+    <include name="org/opennms/netmgt/filter/node/TypedLinkedList.java"/>
+    <include name="org/opennms/netmgt/filter/parser/parser.dat"/>
+    <include name="org/opennms/netmgt/filter/parser/ParserException.java"/>
+    <include name="org/opennms/netmgt/filter/parser/Parser.java"/>
+    <include name="org/opennms/netmgt/filter/parser/State.java"/>
+    <include name="org/opennms/netmgt/filter/parser/TokenIndex.java"/>
+   </targetfileset>
+  </dependset>
+  <condition property="sablecc.filter.sources.uptodate">
+   <and>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/analysis/Analysis.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/analysis/AnalysisAdapter.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/analysis/DepthFirstAdapter.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/analysis/ReversedDepthFirstAdapter.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/lexer/lexer.dat" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/lexer/LexerException.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/lexer/Lexer.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/lexer/Lexer.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AAndRule.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/ACompareExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AExprParensExpr.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AExprPartExpr.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AGtrThanEqualExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AIdentExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AIntegerCompareRight.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AIntegerOctet.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AIpaddrIpIdent.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AIplikeExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/ALessThanEqualExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/ALessThanExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/ALikeExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/ANotEqualExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/ANotExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AOctetListOctet.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AOctetRangeListOctet.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AOctetRangeOctet.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AOrRule.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/ARuleExprRule.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AStarOctet.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AStringCompareRight.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/Cast.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/EOF.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/NoCast.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/NodeCast.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/Node.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/PCompareRight.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/PExpr.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/PExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/PIpIdent.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/POctet.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/PRule.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/Start.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/Switchable.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/Switch.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TAnd.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TBlank.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TCompare.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TDot.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TGtrThan.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TGtrThanEqual.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TIdent.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TInteger.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TIplike.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TLessThanEqual.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TLessThan.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TLike.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TLparen.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TNotEqual.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TNot.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TOctetList.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TOctetRange.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TOctetRangeList.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/Token.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TOr.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TQuotedString.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TRparen.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TSemi.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TStar.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TypedLinkedList.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/parser/parser.dat" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/parser/ParserException.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/parser/Parser.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/parser/State.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/parser/TokenIndex.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/parser/TokenIndex.java" type="file"/>
+   </and>
+  </condition>
+ </target>
+</project>
