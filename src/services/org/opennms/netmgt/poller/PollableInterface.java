@@ -145,6 +145,8 @@ public class PollableInterface
 	
 	public synchronized void removeService(PollableService service)
 	{
+                ServiceMonitor sm = Poller.getInstance().getServiceMonitor(service.getServiceName());
+                sm.release(service);
 		m_services.remove(service.getServiceName());
 		this.recalculateStatus();
 	}

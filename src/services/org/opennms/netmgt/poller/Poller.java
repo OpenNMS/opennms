@@ -467,6 +467,12 @@ public final class Poller
 		m_scheduler.stop();
 		m_receiver.close();
 
+                Iterator iter = m_svcMonitors.values().iterator();
+                while (iter.hasNext())
+                {
+                        ServiceMonitor sm = (ServiceMonitor)iter.next();
+                        sm.release();
+                }
 		m_scheduler = null;
 		m_status    = STOPPED;
 		Category log = ThreadCategory.getInstance();
