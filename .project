@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>opennms-head</name>
+	<name>opennms</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -16,11 +16,6 @@
 		</buildCommand>
 		<buildCommand>
 			<name>org.eclipse.jdt.core.javabuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-		<buildCommand>
-			<name>com.ibm.sse.model.structuredbuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
