@@ -714,7 +714,7 @@
                         High threshold rearmed for %service% datasource %parm[ds]% on interface
                         %interface%, parms: %parm[all]%
                 </logmsg>
-                <severity>Normal</severity>
+                <severity>Cleared</severity>
         </event>
         <event>
                 <uei>uei.opennms.org/threshold/lowThresholdRearmed</uei>
@@ -737,7 +737,7 @@
                         Low threshold rearmed for %service% datasource %parm[ds]% on interface
                         %interface%, parms: %parm[all]%
                 </logmsg>
-                <severity>Normal</severity>
+                <severity>Cleared</severity>
         </event>
 	<event>
 		<uei>uei.opennms.org/nodes/thresholdingFailed</uei>
