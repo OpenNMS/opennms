@@ -191,7 +191,6 @@ public class PollableService extends PollableElement {
     public String toString() { return getInterface()+":"+getSvcName(); }
 
     public void processStatusChange(Date date) {
-        System.err.println("oldStatus = "+m_oldStatus+" newsStatus = "+getStatus());
         if (getContext().isServiceUnresponsiveEnabled()) {
             if (isStatusChanged() && getStatus() == PollStatus.STATUS_UNRESPONSIVE) {
                 getContext().sendEvent(createUnresponsiveEvent(date));
