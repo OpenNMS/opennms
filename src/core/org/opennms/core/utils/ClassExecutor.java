@@ -33,6 +33,7 @@
 package org.opennms.core.utils;
 
 import java.util.List;
+
 import org.apache.log4j.Category;
 import org.opennms.netmgt.notifd.NotificationStrategy;
 

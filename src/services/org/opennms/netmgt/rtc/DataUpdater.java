@@ -38,16 +38,14 @@
 
 package org.opennms.netmgt.rtc;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Enumeration;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.sql.SQLException;
-
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;

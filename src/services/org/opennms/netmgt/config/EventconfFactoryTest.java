@@ -11,9 +11,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.opennms.netmgt.xml.eventconf.Event;
-
 import junit.framework.TestCase;
+
+import org.opennms.netmgt.xml.eventconf.Event;
 
 /**
  * @author brozow

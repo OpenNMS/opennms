@@ -45,8 +45,6 @@ package org.opennms.netmgt.rtc;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.lang.Long;
-import java.lang.String;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

@@ -37,9 +37,7 @@
 package org.opennms.web;
 
 import java.lang.reflect.UndeclaredThrowableException;
-
 import java.net.ConnectException;
-
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;

@@ -44,12 +44,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.web.MissingParameterException;
-
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.web.MissingParameterException;
 
 
 public class ModifyAssetServlet extends HttpServlet

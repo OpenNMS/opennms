@@ -45,7 +45,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.*;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
