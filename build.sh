@@ -113,18 +113,18 @@ RETVAL=$?
 if [ "$RETVAL" -gt "0" ]; then
 	if [ "$VERBOSE" = "1" ]; then
 		echo "*** $RETVAL new tool files -- rebuilding ***"
-		echo $JAVA_HOME/bin/java -Droot.source="$PREFIX" -Djava.home="$JAVA_HOME" -cp "$CLASSPATH" \
+		echo $JAVA_HOME/bin/java -Droot.source="$PREFIX" -cp "$CLASSPATH" \
 			-mx256m org.apache.tools.ant.Main $DEFINES -buildfile tools/build.xml $TOOL_ARGS compile.tools
 	fi
-	$JAVA_HOME/bin/java $DEFINES -Droot.source="$PREFIX" -Djava.home="$JAVA_HOME" -cp "$CLASSPATH" \
+	$JAVA_HOME/bin/java $DEFINES -Droot.source="$PREFIX" -cp "$CLASSPATH" \
 		-mx256m org.apache.tools.ant.Main -buildfile tools/build.xml $TOOL_ARGS compile.tools
 fi
 
 if [ "$VERBOSE" = "1" ]; then
 	DEFINES="$DEFINES -verbose"
-	echo $JAVA_HOME/bin/java $DEFINES -Droot.source="$PREFIX" -Djava.home="$JAVA_HOME" -cp "$CLASSPATH" \
+	echo $JAVA_HOME/bin/java $DEFINES -Droot.source="$PREFIX" -cp "$CLASSPATH" \
 		-mx256m org.apache.tools.ant.Main "$@"
 fi
 
-$JAVA_HOME/bin/java $DEFINES -Droot.source="$PREFIX" -Djava.home="$JAVA_HOME" -cp "$CLASSPATH" \
+$JAVA_HOME/bin/java $DEFINES -Droot.source="$PREFIX" -cp "$CLASSPATH" \
 	-mx256m org.apache.tools.ant.Main "$@"
