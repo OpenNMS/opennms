@@ -30,7 +30,7 @@ cp -pr work/docs /tmp/opennms/usr/local/opennms/
    # cd ../..
    # mkdir webapps
    # cd webapps
-   # cp ../../opennms/webapps/opennms.xml .
+   # ln -s ../../opennms/webapps/opennms.xml .
 
 4. put the packaging files from the package dir here in that directory
    (so, for opennms you'd copy the pkginfo and postinstall scripts to
@@ -41,7 +41,6 @@ cp -pr work/docs /tmp/opennms/usr/local/opennms/
 
 5. generate the file list from /usr/local/
 
-   # cd /usr/local
    # find . -print | pkgproto > prototype
 
 6. add the following line to the prototype file:
@@ -50,7 +49,6 @@ cp -pr work/docs /tmp/opennms/usr/local/opennms/
 
 7. if there's pre/postinstall scripts, do the same for them:
 
-   i preinstall=./preinstall
    i postinstall=./postinstall
 
 7a. Edit the prototype file, go to the bottom and remove the references 
@@ -67,4 +65,4 @@ cp -pr work/docs /tmp/opennms/usr/local/opennms/
 10. generate a package file from the system archive
 
    # cd /var/spool/pkg
-   # pkgtrans -s `pwd` /tmp/opennms-1.0.3-sol8-sparc-local
+   # pkgtrans -s `pwd` /tmp/opennms-1.3.0-1-sol8-sparc-local
