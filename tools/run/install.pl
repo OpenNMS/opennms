@@ -785,7 +785,7 @@ unless ($NOSO) {
 
 	if (not $RPM) {
 
-		for my $dir ($ENV{OPENNMS_HOME} . "/lib", '/usr/lib/opennms', '/usr/lib/pgsql/opennms') {
+		for my $dir ($ENV{OPENNMS_HOME} . "/lib", '/usr/lib/opennms', '/usr/lib/pgsql/opennms', '/usr/lib/postgresql/lib/opennms') {
 			if (-d $dir and -f "$dir/iplike.$SOEXT") {
 				print "$dir\n";
 				$PG_LIBDIR = $dir;
@@ -864,7 +864,7 @@ unless ($NOSO) {
 	my $plpgsql_failed = 0;
 	my $plpgsql_sofile;
 	print "- adding PL/pgSQL call handler... ";
-	for my $dir ('/usr/lib', '/usr/local/lib', '/sw/lib/postgresql', '/usr/local/pgsql/lib') {
+	for my $dir ('/usr/lib', '/usr/local/lib', '/sw/lib/postgresql', '/usr/local/pgsql/lib', '/usr/lib/postgresql/lib') {
 		for ($SOEXT, 'so') {
 			if (-d "$dir") {
 				if (-f "$dir/pgsql/plpgsql.$_") {
