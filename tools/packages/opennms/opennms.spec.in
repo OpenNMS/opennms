@@ -323,6 +323,17 @@ pushd $RPM_BUILD_ROOT
 find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
     sort > %{_tmppath}/files.etc
+find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
+    sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+    sort >> %{_tmppath}/files.etc
+
+find $RPM_BUILD_ROOT%{webappsdir} ! -type d | \
+    sed -e "s,^$RPM_BUILD_ROOT,," | \
+    grep -v '/WEB-INF/web\.xml$' | \
+    sort > %{_tmppath}/files.webapp
+find $RPM_BUILD_ROOT%{webappsdir} -type d | \
+    sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+    sort >> %{_tmppath}/files.webapp
 popd
 
 %clean
@@ -338,8 +349,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root)	%{profiledir}/%{name}.sh
 %attr(755,root,root)	%{_bindir}/*
 %attr(755,root,root)	%{instprefix}/bin
-%dir			%{instprefix}/etc
-			%{instprefix}/contrib
+%dir			%{instprefix}/contrib
 %if "%builddocs" == "1"
 %attr(755,root,root)	%{instprefix}/docs
 %endif
@@ -355,9 +365,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_docdir}/%{name}-%{version}
 %endif
 
-%files webapp
+%files webapp -f %{_tmppath}/files.webapp
 %defattr(644 root root 755)
-%{webappsdir}
 %config %{servletdir}/WEB-INF/web.xml
 
 
