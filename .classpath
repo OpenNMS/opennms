@@ -4,7 +4,7 @@
 	<classpathentry excluding="**/classlist|org/opennms/install/MANIFEST.MF|org/opennms/install/installer.properties" kind="src" path="src/install"/>
 	<classpathentry excluding="**/classlist" kind="src" path="src/joesnmp"/>
 	<classpathentry excluding="**/classlist" kind="src" path="src/report"/>
-	<classpathentry excluding="**/classlist" kind="src" path="src/services"/>
+	<classpathentry excluding="**/Growl*.java|**/classlist" kind="src" path="src/services"/>
 	<classpathentry excluding="**/classlist" kind="src" path="src/web/src"/>
 	<classpathentry kind="src" path="work/castor"/>
 	<classpathentry kind="src" path="work/sablecc"/>
@@ -55,7 +55,7 @@
 	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
 	<classpathentry kind="lib" path="devlib/xmlParserAPIs.jar"/>
 	<classpathentry kind="lib" path="devlib/Tidy.jar"/>
-	<classpathentry kind="lib" path="devlib/httpunit.jar"/>
+	<classpathentry sourcepath="/Users/brozow/distributions/httpunit-1.6/src" kind="lib" path="devlib/httpunit.jar"/>
 	<classpathentry kind="lib" path="devlib/js.jar"/>
 	<classpathentry kind="lib" path="devlib/jwebunit-1.2.jar"/>
 	<classpathentry kind="lib" path="devlib/nekohtml.jar"/>
