@@ -364,14 +364,6 @@
     <para>OpenNMS is now supported on SuSE.</para>
 
     <section>
-      <title>SuSE Linux Enterprise Server 8</title>
-
-      <para>There are no special requirements for OpenNMS on this distribution
-      of Linux, except for those configuration issues mentioned in the
-      previous section.</para>
-    </section>
-
-    <section>
       <title>SuSE Linux Pro 9</title>
 
       <para>There are no special requirements for OpenNMS on this distribution
