@@ -575,15 +575,16 @@ public class IpAddrTable implements SnmpHandler {
             if (ndx != null) {
                 // extract the addresses
                 //
-                List ipAddresses = getIpAddresses(ipAddrEntries, ndx.getValue());
-                if (ipAddresses != null) {
+                SnmpIPAddress ifAddr = (SnmpIPAddress) entry.get(IpAddrTableEntry.IP_ADDR_ENT_ADDR);
+                if (ifAddr != null) {
                     try {
-                        addresses.addAll(ipAddresses);
-                    } catch (IndexOutOfBoundsException ie) {
+                        addresses.add(ifAddr.convertToIpAddress());
+                    } catch (SnmpBadConversionException e) {
                         Category log = ThreadCategory.getInstance(IpAddrTable.class);
-                        log.error("Failed to add ipaddresses of ifIndex: " + ndx.getValue() + " to the address list of the ipAddTable.", ie);
+                        log.error("Failed to convert snmp collected address: " + ifAddr, e);
                     }
                 }
+
             }
         }
         return addresses;
