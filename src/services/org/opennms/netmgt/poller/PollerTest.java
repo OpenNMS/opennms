@@ -732,4 +732,8 @@ public class PollerTest extends TestCase {
     
     // TODO: test over lapping poll outages
 
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(PollerTest.class);
+    }
+
 }

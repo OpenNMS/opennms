@@ -80,6 +80,8 @@ your distribution.
 
   <!-- test results directory -->
   <property name="test.xml.dir" value="${build.dir}/test-results" />
+  <property name="mock.logLevel" value="WARN" />
+  <property name="mock.debug" value="false" />
 
   <!-- docs source directory -->
   <property name="docs.source.dir" value="${basedir}/docs"/>
@@ -1250,8 +1252,8 @@ OpenNMS as part of the post-install.
             <exclude name="**/AllTest.java" /> 
          </fileset>
      </batchtest>
-     <sysproperty key="mock.logLevel" value="WARN" />
-     <sysproperty key="mock.debug" value="false" />
+     <sysproperty key="mock.logLevel" value="${mock.logLevel}" />
+     <sysproperty key="mock.debug" value="${mock.debug}" />
   </junit>
   <condition property="continue.build">
     <or>
@@ -1262,6 +1264,25 @@ OpenNMS as part of the post-install.
   <fail unless="continue.build" >
      Unit Tests Failed.  Check the Test Results in ${test.xml.dir}.  To build anyway run the build with -DignoreFailedTests=true
   </fail>
+</target>
+
+<target name="runTest" depends="prep, java.compile, junit.compile" description="Run all the unit tests">
+  <fail unless="test.class">
+    You need to define test.class to indicate which test to run.
+  </fail>
+  <junit>
+     <classpath>
+       <path refid="libraries.java.path"/>
+       <pathelement location="${dev.lib.dir}/junit.jar"/>
+       <pathelement location="${packaged.lib.dir}/hsqldb.jar"/>
+       <pathelement location="${build.classes.dir}" />
+       <pathelement location="${build.tests.dir}" />
+     </classpath>
+     <formatter type="plain" usefile="false" />
+     <test name="${test.class}"/>
+     <sysproperty key="mock.logLevel" value="${mock.logLevel}" />
+     <sysproperty key="mock.debug" value="${mock.debug}" />
+  </junit>
 </target>
 
  <!-- JAR targets -->
