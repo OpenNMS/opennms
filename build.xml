@@ -356,7 +356,7 @@ your distribution.
     <classpath>
       <pathelement location="${dev.lib.dir}/jasper/jasper-compiler.jar"/>
       <pathelement location="${dev.lib.dir}/jasper/jasper-runtime.jar"/>
-      <pathelement location="${packaged.lib.dir}/servlet.jar"/>
+      <pathelement location="${dev.lib.dir}/servlet.jar"/>
     </classpath> 
   </taskdef> 
 
@@ -364,7 +364,11 @@ your distribution.
 
   <!-- In the properties file referenced above, the For task is commented
        out in the 1.02b jar file, so I need to have this taskdef -->
-  <taskdef name="for" classname="net.sf.antcontrib.logic.For"/>
+  <taskdef name="for" classname="net.sf.antcontrib.logic.For">
+    <classpath>
+      <pathelement location="${dev.lib.dir}/ant-contrib.jar"/>
+    </classpath> 
+  </taskdef>
 
   <!-- PREP target -->
   <target name="prep" depends="platform.check, java.check" unless="prep.done">
@@ -1118,6 +1122,7 @@ OpenNMS as part of the post-install.
    </src>
    <include name="**/*.java"/>
    <exclude name="**/*Test.java"/>
+   <exclude name="**/*TestCase.java"/>
    <exclude name="**/mock/*.java"/>
   </javac>
   <copy todir="${build.classes.dir}">
@@ -1279,7 +1284,8 @@ OpenNMS as part of the post-install.
    <src>
     <path refid="sources.java.path"/>
    </src>
-   <include name="**/*Test.java"/>
+    <include name="**/*Test.java"/>
+    <include name="**/*TestCase.java"/>
    <include name="**/mock/*.java"/>
    <classpath>
      <path refid="libraries.java.path"/>
