@@ -143,11 +143,9 @@ final class TrapdIPMgr
 	 */
 	static synchronized String getNodeId(String addr)
 	{
-		Object m_nodeid = m_knownips.get(addr);
-		if (m_nodeid == null)
-			return null;
-		else
-			return m_knownips.get(addr).toString();
+        if (addr == null)
+            return null;
+        return (String)m_knownips.get(addr);
 	}
 
 	/**
@@ -161,10 +159,10 @@ final class TrapdIPMgr
 	 */
 	static synchronized String setNodeId(String addr, String nodeid)
 	{
-                if (addr == null || nodeid == null)
-                        return null;
-                else
-			return m_knownips.put(addr, nodeid).toString();
+	    if (addr == null || nodeid == null)
+	        return null;
+	    else
+	        return (String)m_knownips.put(addr, nodeid);
 	}
 
 	/**
@@ -177,10 +175,9 @@ final class TrapdIPMgr
 	 */
 	static String removeNodeId(String addr)
 	{
-                if (m_knownips.get(addr) == null)
-                        return null;
-                else
-			return m_knownips.remove(addr).toString();
+        if (addr == null)
+            return null;
+	    return (String)m_knownips.remove(addr);
 	}
 	
 } // end TrapdIPMgr
