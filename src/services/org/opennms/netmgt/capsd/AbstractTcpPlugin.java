@@ -165,9 +165,6 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
         return isAServer;
     }
 
-    /**
-     * @param socket
-     */
     protected void closeSocket(Socket socket, ConnectionConfig config) {
         try {
             if (socket != null) socket.close();
@@ -176,26 +173,12 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
         }
     }
 
-    /**
-     * @param socket
-     * @param isAServer
-     * @return @throws
-     *         IOException
-     */
     protected abstract boolean checkProtocol(Socket socket, ConnectionConfig config) throws Exception;
 
-    /**
-     *  
-     */
     protected ConnectionConfig createConnectionConfig(InetAddress address, int port) {
         return new ConnectionConfig(address, port);
     }
 
-    /**
-     * @param object
-     * @param address
-     * @return
-     */
     protected List getConnectionConfigList(Map qualifiers, InetAddress address) {
         if (m_defaultPort == -1) throw new IllegalStateException("m_defaultPort == -1");
 
@@ -203,12 +186,6 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
         return Collections.singletonList(createConnectionConfig(address, port));
     }
 
-    /**
-     * @param qualifiers
-     * @param string
-     * @param timeout
-     * @return
-     */
     final protected int getKeyedInteger(Map qualifiers, String key, int defaultVal) {
         if (qualifiers == null)
             return defaultVal;
@@ -288,25 +265,15 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
 
     }
 
-    /**
-     * @param config
-     */
     protected void populateConnectionConfig(ConnectionConfig config, Map qualifiers) {
         config.setTimeout(getKeyedInteger(qualifiers, "timeout", m_defaultTimeout));
         config.setRetry(getKeyedInteger(qualifiers, "retry", m_defaultRetry));
     }
 
-    /**
-     * @param config
-     * @return
-     */
     protected boolean preconnectCheck(ConnectionConfig config) {
         return true;
     }
 
-    /**
-     * @param config
-     */
     protected void saveConfig(Map qualifiers, ConnectionConfig config) {
         saveKeyedInteger(qualifiers, "port", config.getPort());
     }
@@ -323,14 +290,6 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
         m_pluginName = pluginName;
     }
 
-    /**
-     * @param socket
-     * @param config
-     * @return @throws
-     *         NoSuchAlgorithmException
-     * @throws KeyManagementException
-     * @throws IOException
-     */
     protected Socket wrapSocket(Socket socket, ConnectionConfig config) throws Exception {
         return socket;
     }

@@ -155,11 +155,6 @@ class StressTest {
         return update;
     }
 
-    /**
-     * @param fileNum
-     * @param update
-     * @return
-     */
     private static String makeZeroUpdate(int fileNum, String update) {
         try {
             int colon = update.indexOf(':');

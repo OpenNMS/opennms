@@ -132,8 +132,11 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
         super(PROTOCOL_NAME, DEFAULT_PORT, DEFAULT_TIMEOUT, DEFAULT_RETRY);
     }
 
-    /**
-     * @return
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.opennms.netmgt.capsd.AbstractTcpPlugin#createProtocol(java.net.Socket,
+     *      org.opennms.netmgt.capsd.ConnectonConfig)
      */
     protected boolean checkProtocol(Socket socket, ConnectionConfig config) {
         return true;
@@ -159,12 +162,6 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
 
     }
 
-    /**
-     * @param host
-     * @param iorPort
-     * @param log
-     * @return
-     */
     protected boolean preconnectCheck(ConnectionConfig tcpConfig) {
         // get a log to send errors
         //
