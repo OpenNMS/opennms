@@ -41,9 +41,9 @@ else
         fi
 fi
 
-OPENNMS_HOME="/opt/OpenNMS"
-OPENNMS_PIDFILE="/var/run/opennms.pid"
-OPENNMS_INITDIR="/etc/init.d"
+OPENNMS_HOME="@root.install@"
+OPENNMS_PIDFILE="@root.install.pid@"
+OPENNMS_INITDIR="@root.install.initdir@"
 START_TIMEOUT="180" # number of seconds before timing out on startupp
  
 pushd "$OPENNMS_HOME" >/dev/null 2>&1
@@ -105,7 +105,7 @@ SERVICE=$2
 [ "$SERVICE" = "all" ] && SERVICE=""
 
 # where to redirect "start" output
-REDIRECT=/var/log/opennms/output.log
+REDIRECT="@root.install.logs/output.log"
 
 ###############################################################################
 # Run opennms.sh with the "-t" option to enable the Java Platform Debugging
@@ -187,7 +187,7 @@ case "$COMMAND" in
 				echo "OpenNMS is partially running."
 				echo "If you have just attempted starting OpenNMS, please try again in a few"
 				echo "moments, otherwise, at least one service probably had issues starting."
-				echo "Check your logs in /var/log/opennms for errors."
+				echo "Check your logs in @root.install.logs@ for errors."
 				exit 1
 			fi
 		else
@@ -252,7 +252,7 @@ case "$COMMAND" in
 			exit 0
 		else 
 			echo `date`": OpenNMS is not running... Restarting"
-			`/opt/OpenNMS/bin/opennms.sh start`
+			`$OPENNMS_HOME/bin/opennms.sh start`
 			if [ -d "$OPENNMS_INITDIR" ] && [ -x "$OPENNMS_INITDIR/tomcat4" ]; then
 				$OPENNMS_INITDIR/tomcat4 restart
 			fi
