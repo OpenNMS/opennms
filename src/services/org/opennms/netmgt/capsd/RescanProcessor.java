@@ -111,9 +111,12 @@ final class RescanProcessor
 	final static String 	SQL_DB_REPARENT_IP_INTERFACE_DELETE	= "DELETE FROM ipinterface "
                                                                         + "WHERE nodeID=? AND ipaddr=?";
 	final static String 	SQL_DB_REPARENT_IP_INTERFACE	= "UPDATE ipinterface SET nodeID=? WHERE nodeID=? AND ipaddr=? AND isManaged!='D'";
-	final static String 	SQL_DB_REPARENT_SNMP_IF_LOOKUP	= "SELECT ipaddr FROM snmpinterface WHERE nodeID=? AND snmpifindex=?";
-	final static String 	SQL_DB_REPARENT_SNMP_IF_DELETE	= "DELETE FROM snmpinterface WHERE nodeID=? AND snmpifindex=?";
-	final static String 	SQL_DB_REPARENT_SNMP_INTERFACE	= "UPDATE snmpinterface SET nodeID=? WHERE nodeID=? AND snmpifindex=?";
+	final static String 	SQL_DB_REPARENT_SNMP_IF_LOOKUP	= "SELECT ipaddr FROM snmpinterface "
+                                                                + "WHERE nodeID=? AND ipaddr=? AND snmpifindex=?";
+	final static String 	SQL_DB_REPARENT_SNMP_IF_DELETE	= "DELETE FROM snmpinterface "
+                                                                + "WHERE nodeID=? AND ipaddr = ? AND snmpifindex=?";
+	final static String 	SQL_DB_REPARENT_SNMP_INTERFACE	= "UPDATE snmpinterface SET nodeID=? "
+                                                                + "WHERE nodeID=? AND ipaddr=? AND snmpifindex=?";
 	final static String 	SQL_DB_REPARENT_IF_SERVICES_LOOKUP	= "SELECT serviceid FROM ifservices "
                                                                         + "WHERE nodeID=? AND ipaddr=? AND ifindex = ? "
                                                                         + "AND status!='D'";
@@ -1774,7 +1777,8 @@ final class RescanProcessor
 				// Look for matching nodeid/ifindex for the entry to be reparented
 				boolean alreadyExists = false;
 				snmpIfLookupStmt.setInt(1, newNodeId);
-				snmpIfLookupStmt.setInt(2, ifIndex);
+				snmpIfLookupStmt.setString(2, ipaddr);
+				snmpIfLookupStmt.setInt(3, ifIndex);
 				rs = snmpIfLookupStmt.executeQuery();
 				if (rs.next())
 				{
@@ -1785,7 +1789,8 @@ final class RescanProcessor
 					alreadyExists = true;
 					
 					snmpIfDeleteStmt.setInt(1, oldNodeId);
-					snmpIfDeleteStmt.setInt(2, ifIndex);
+					snmpIfDeleteStmt.setString(2, ipaddr);
+					snmpIfDeleteStmt.setInt(3, ifIndex);
 					
 					snmpIfDeleteStmt.executeUpdate();
 				}
@@ -1800,7 +1805,8 @@ final class RescanProcessor
 					
 					snmpInterfaceStmt.setInt(1, newNodeId);
 					snmpInterfaceStmt.setInt(2, oldNodeId);
-					snmpInterfaceStmt.setInt(3, ifIndex);
+					snmpInterfaceStmt.setString(3, ipaddr);
+					snmpInterfaceStmt.setInt(4, ifIndex);
 							
 					// execute and log
 					snmpInterfaceStmt.executeUpdate();
