@@ -32,9 +32,11 @@ On recent versions of Mac OS X, these settings are now in:
 
   /etc/rc
 
-You should do something similar to the limits above (multiply by 4 and reboot)
-for OpenNMS to run properly.  Your mileage may vary, you may need to raise
-them higher, depending on how large your network is.
+You should probably do something similar to the limits above (multiply by 4
+and reboot) for OpenNMS to run properly, although it seems to work out of the
+box on a reasonably full class-C network with recent Fink packages.  Your
+mileage may vary, you may need to raise them higher, depending on how large
+your network is.
 
 ------------------------------------------------------------------------------
 PostgreSQL Limits -- All Platforms
@@ -48,13 +50,18 @@ make sure that the following values are set:
   max_connections = 192
   shared_buffers  = 384
 
+Again, on a reasonably small network, the defaults from Fink seem to work
+alright now.
+
 ------------------------------------------------------------------------------
 Database Setup -- All Platforms
 ------------------------------------------------------------------------------
 
-Then you can run the java installer to configure the database, like so:
+Make sure PostgreSQL is started before you install.  If it isn't, you will
+have to start it ("sudo @PREFIX@/bin/pgsql.sh start") and try again.  To run
+the installer manually, run:
 
-  sudo java -Xmx256m -jar @PREFIX@/var/opennms/lib/opennms_install.jar -disU
+  sudo @PREFIX@/var/opennms/bin/install -r -disU
 
 ------------------------------------------------------------------------------
 Startup
@@ -62,9 +69,9 @@ Startup
 
 Now you're ready to start everything up!  Check the configuration files
 in @PREFIX@/var/opennms/etc and set them up for your network (as per the
-quick start guide at http://www.opennms.org/users/docs/) and run:
+quick start guide at http://sourceforge.net/docman/?group_id=4141) and run:
 
   sudo @PREFIX@/bin/pgsql.sh start
-  sudo @PREFIX@/var/opennms/bin/opennms.sh start
-  sudo -u tomcat @PREFIX@/bin/tomcat4 start
+  sudo @PREFIX@/bin/opennms start
+  sudo @PREFIX@/bin/tomcat4 start
 
