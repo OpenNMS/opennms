@@ -85,21 +85,21 @@ import org.jrobin.core.Util;
  * 
  * System properites effecting the operation:
  * 
- * org.opennms.rrd.writethreads: (default 2)
+ * org.opennms.rrd.queuing.writethreads: (default 2)
  *   The number of rrd write threads that process the queue
  * 
- * org.opennms.rrd.queueCreates: (default true)
+ * org.opennms.rrd.queuing.queueCreates: (default true)
  *   indicates whether rrd file creates should be queued or processed synchronously
  * 
- * org.opennms.rrd.maxInsigUpdateSeconds: (default 0)
+ * org.opennms.rrd.queuing.maxInsigUpdateSeconds: (default 0)
  *    the number of seconds over which all files with significant updates only should
  *    be promoted onto the significant less.  This is to ensure they don't stay
  *    unprocessed forever.  Zero means not promotion.
  * 
- * org.opennms.rrd.modulus: (default 10000)
+ * org.opennms.rrd.queuing.modulus: (default 10000)
  *    the number of updates the get enqueued between statistics output
  * 
- * org.opennms.rrd.category: (default "UNCATEGORIZED")
+ * org.opennms.rrd.queuing.category: (default "UNCATEGORIZED")
  *    the log category to place the statistics output in
  * 
  * 
@@ -120,15 +120,15 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
     static final int CREATE = 1;
 
-    static final int WRITE_THREADS = Integer.getInteger("org.opennms.rrd.writethreads", 2).intValue();
+    static final int WRITE_THREADS = RrdConfig.getProperty("org.opennms.rrd.queuing.writethreads", 2);
 
-    private static final boolean QUEUE_CREATES = "true".equals(System.getProperty("org.opennms.rrd.queuecreates", "true"));
+    private static final boolean QUEUE_CREATES = RrdConfig.getProperty("org.opennms.rrd.queuing.queuecreates", true);
 
-    private static final long MODULUS = Long.getLong("org.opennms.rrd.modulus", 10000L).longValue();
+    private static final long MODULUS = RrdConfig.getProperty("org.opennms.rrd.queuing.modulus", 10000L);
 
-    private static final String LOG4J_CATEGORY = System.getProperty("org.opennms.rrd.category", "UNCATEGORIZED");
+    private static final String LOG4J_CATEGORY = RrdConfig.getProperty("org.opennms.rrd.queuing.category", "UNCATEGORIZED");
 
-    private static final double MAX_INSIG_UPDATE_SECONDS = Long.getLong("org.opennms.rrd.maxInsigUpdateSeconds", 0L).longValue();;
+    private static final long MAX_INSIG_UPDATE_SECONDS = RrdConfig.getProperty("org.opennms.rrd.queuing.maxInsigUpdateSeconds", 0L);
 
     LinkedList filesWithSignificantWork = new LinkedList();
 

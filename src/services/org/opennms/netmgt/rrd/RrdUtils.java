@@ -68,8 +68,8 @@ import org.opennms.core.utils.ThreadCategory;
  */
 public class RrdUtils {
     
-    private static final boolean USE_QUEUE = "true".equals(System.getProperty("org.opennms.rrd.usequeue", "true"));
-    private static final boolean USE_JNI = "true".equals(System.getProperty("org.opennms.rrd.usejni", "true"));
+    private static final boolean USE_QUEUE = RrdConfig.getProperty("org.opennms.rrd.usequeue", true);
+    private static final boolean USE_JNI = RrdConfig.getProperty("org.opennms.rrd.usejni", false);
 
     private static RrdStrategy m_rrdStrategy = null;
     private static RrdStrategy getStrategy() throws RrdException {
