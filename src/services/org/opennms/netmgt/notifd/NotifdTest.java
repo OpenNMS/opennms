@@ -36,8 +36,10 @@ package org.opennms.netmgt.notifd;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.notifd.mock.MockGroupManager;
 import org.opennms.netmgt.notifd.mock.MockNotifdConfigManager;
 import org.opennms.netmgt.notifd.mock.MockNotificationManager;
+import org.opennms.netmgt.notifd.mock.MockUserManager;
 
 import junit.framework.TestCase;
 /**
@@ -51,6 +53,8 @@ public class NotifdTest extends TestCase {
     private Notifd m_notifd;
     private MockEventIpcManager m_eventMgr;
     private MockNotifdConfigManager m_notifdConfig;
+    private MockGroupManager m_groupManager;
+    private MockUserManager m_userManager;
     private static final String m_configString = "<?xml version=\"1.0\"?>\n" + 
             "<notifd-configuration \n" + 
             "        status=\"off\"\n" + 
@@ -264,6 +268,9 @@ public class NotifdTest extends TestCase {
             "</notifications>\n" + 
             "";
     
+    public static final String GROUP_MANAGER = "";
+    public static final String USER_MANAGER = "";
+    
     private NotificationManager m_notificationManager;
 
     /*
@@ -276,11 +283,15 @@ public class NotifdTest extends TestCase {
         MockUtil.resetLogLevel();
         
         m_eventMgr = new MockEventIpcManager();
+        m_groupManager = new MockGroupManager(GROUP_MANAGER);
+        m_userManager = new MockUserManager(m_groupManager, USER_MANAGER);
         
         m_notifd = new Notifd();
         m_notifdConfig = new MockNotifdConfigManager(m_configString);
         m_notifd.setEventManager(m_eventMgr);
         m_notifd.setConfigManager(m_notifdConfig);
+        m_notifd.setGroupManager(m_groupManager);
+        m_notifd.setUserManager(m_userManager);
         
         m_notificationManager = new MockNotificationManager(m_notifdConfig, NOTIFICATION_MANAGER);
         m_notifd.setNotificationManager(m_notificationManager);
