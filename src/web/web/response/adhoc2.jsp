@@ -82,7 +82,7 @@
     }
 
 
-    File[] rrds = rrdPath.listFiles(GraphUtil.RRD_FILENAME_FILTER);
+    File[] rrds = rrdPath.listFiles(org.opennms.netmgt.utils.RrdFileConstants.RRD_FILENAME_FILTER);
 
     if(rrds == null) {
         this.log("Invalid rrd directory: " + rrdPath);
@@ -147,7 +147,7 @@
             <select name="ds" size="6">
                 <% for(int i=0; i < rrds.length; i++ ) { %>
                   <% String rrdName = rrds[i].getName(); %>
-                  <% String dsName  = rrdName.substring(0, rrdName.length() - GraphUtil.RRD_SUFFIX.length()); %>
+                  <% String dsName  = rrdName.substring(0, rrdName.length() - org.opennms.netmgt.utils.RrdFileConstants.RRD_SUFFIX.length()); %>
                   <option <%=(dsindex==0 && i==0) ? "selected" : ""%>>
                     <%=dsName%>
               </option>

@@ -405,7 +405,7 @@
             }
             
             buffer.append(columns[i]);
-            buffer.append(GraphUtil.RRD_SUFFIX);            
+            buffer.append(org.opennms.netmgt.utils.RrdFileConstants.RRD_SUFFIX);            
 
             rrds[i] = buffer.toString();
         }   
