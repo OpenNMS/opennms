@@ -368,7 +368,7 @@ public final class Poller implements PausableFiber {
                         svcNode.recalculateStatus();
                         svcNode.resetStatusChanged();
                     } else {
-                        log.error("Attempt to schedule service "+nodeId+"/"+ipAddr+"/"+svcName+" found no active service");
+                        log.warn("Attempt to schedule service "+nodeId+"/"+ipAddr+"/"+svcName+" found no active service");
                     }
                 }
             };

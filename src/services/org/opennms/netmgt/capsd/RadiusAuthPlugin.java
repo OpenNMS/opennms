@@ -143,7 +143,7 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
         try {
             rc = new RadiusClient(host.getCanonicalHostName(), authport ,acctport, secret, timeout);
         } catch(RadiusException rex) {
-            log.error(getClass().getName() + ": Radius Exception: " + rex.getMessage());
+            log.info(getClass().getName() + ": Radius Exception: " + rex.getMessage());
             return isRadiusServer;
         } catch(InvalidParameterException ivpex) {
             log.error(getClass().getName() + ": Radius parameter exception: " + ivpex.getMessage());
@@ -177,7 +177,7 @@ public final class RadiusAuthPlugin extends AbstractPlugin {
             } catch (InvalidParameterException ivpex){
                 log.error(getClass().getName() + ": Invalid Radius Parameter: " + ivpex);
             } catch (RadiusException radex){
-                log.error(getClass().getName() + ": Radius Exception : " + radex);
+                log.info(getClass().getName() + ": Radius Exception : " + radex);
             }
 	}
 
