@@ -144,8 +144,11 @@ final class EventHandler
 					log.debug( "  parms {");
 					for(int x = 0; x < parms.length; x++)
 					{
-						log.debug( "    (" + parms[x].getParmName().trim()
-							+ ", " + parms[x].getValue().getContent().trim() + ")");
+						if ((parms[x].getParmName().trim() != null) && (parms[x].getValue().getContent().trim() != null))
+						{
+							log.debug( "    (" + parms[x].getParmName().trim()
+								+ ", " + parms[x].getValue().getContent().trim() + ")");
+						}
 					}
 					log.debug( "  }");
 				}

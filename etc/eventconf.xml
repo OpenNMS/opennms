@@ -616,10 +616,10 @@
 		<uei>uei.opennms.org/nodes/nodeDeleted</uei>
 		<event-label>OpenNMS-defined node event: nodeDeleted</event-label>
 		<descr>
-			&lt;p&gt;Node %nodeid% was deleted due to excessive
-			downtime.&lt;/p&gt; &lt;p&gt;OpenNMS will delete any node
-			that is down for seven (7) consecutive days. Nodes are
-			considered "down" if there are no interfaces that have
+			&lt;p&gt;Node %nodeid% was deleted.&lt;/p&gt; 
+			&lt;p&gt;OpenNMS will delete any node
+			that is down for seven (7) consecutive days, or via operator action. 
+			Nodes are considered "down" if there are no interfaces that have
 			pollable services associated with them.&lt;/p&gt;
 			&lt;p&gt;If a node becomes active again
 			&lt;i&gt;after&lt;/i&gt; it has been deleted, it will be
@@ -631,7 +631,7 @@
 		<logmsg dest='logndisplay'>
 			Node &lt;a
 			href="element/node.jsp?node=%nodeid%"&gt;%nodeid%&lt;/a&gt;
-			was deleted due to excessive downtime.
+			was deleted.
 		</logmsg>
 		<severity>Minor</severity>
 	</event>

@@ -132,7 +132,7 @@ final class BroadcastEventProcessor
         /**
          * SQL statement used to delete a node from the database with a specified nodelabel.
          */
-        private static String SQL_DELETE_NODE = "DELETE FROM node WHERE nodelabel = ?";
+        private static String SQL_DELETE_NODEID = "DELETE FROM node WHERE nodeid = ?";
 
         /**
          * SQL statement used to delete all usersNotified from the database with 
@@ -755,7 +755,13 @@ final class BroadcastEventProcessor
 		String nodeLabel = null;
                 long txNo = -1L;
                 
+		String transaction = null;
 		Parms parms = event.getParms();
+		int nodeid = (int)event.getNodeid();
+
+		if (nodeid < 1)
+			nodeid = -1;
+
 		if (parms != null)
 		{
 			String parmName = null;
@@ -780,20 +786,23 @@ final class BroadcastEventProcessor
 				}
 				else if (parmName.equals(EventConstants.PARM_TRANSACTION_NO))
                                 {
-                                        String temp = parmContent;
+                                        transaction = parmContent;
 		                        if (log.isDebugEnabled())
 			                        log.debug("deleteNodeHandler:  parmName: " + parmName
                                                         + " /parmContent: " + parmContent);
-                                        try
-                                        {
-                                                txNo = Long.valueOf(temp).longValue();
-                                        }
-                                        catch (NumberFormatException nfe)
-                                        {
-                                                log.warn("deleteNodeHandler: Parameter " + EventConstants.PARM_TRANSACTION_NO 
-                                                        + " cannot be non-numberic", nfe);
-                                                txNo = -1L;
-                                        }
+					if (!transaction.equals("webUI"))
+					{
+                                        	try
+                                        	{
+                                                	txNo = Long.valueOf(transaction).longValue();
+                                        	}
+                                        	catch (NumberFormatException nfe)
+                                        	{
+                                                	log.warn("deleteNodeHandler: Parameter " + EventConstants.PARM_TRANSACTION_NO 
+                                                      	 	 + " cannot be non-numeric", nfe);
+                                                	txNo = -1L;
+                                        	}
+                                	}
                                 }
 						
 			}
@@ -803,7 +812,7 @@ final class BroadcastEventProcessor
                 if (m_xmlrpc)
                         invalidParameters = invalidParameters || (txNo == -1L);
                         
-		if (invalidParameters)
+		if ((invalidParameters) && (!transaction.equals("webUI")))
                 {
 		        if (log.isDebugEnabled())
 		                log.debug("deleteNodeHandler:  Invalid parameters." );
@@ -829,25 +838,28 @@ final class BroadcastEventProcessor
 		        
                         // First, verify if the node exists in database, and retrieve
                         // nodeid if exists.
-			stmt = dbConn.prepareStatement(SQL_QUERY_NODE_EXIST);
-	
-			stmt.setString(1, nodeLabel);
-                        int nodeid = -1;
-                        
-			ResultSet rs = stmt.executeQuery();
-			while(rs.next())
+
+			if (nodeid == -1)
 			{
-                                nodeid = rs.getInt(1);
-                        }
+				stmt = dbConn.prepareStatement(SQL_QUERY_NODE_EXIST);
+	
+				stmt.setString(1, nodeLabel);
+                        
+				ResultSet rs = stmt.executeQuery();
+				while(rs.next())
+				{
+                                	nodeid = rs.getInt(1);
+                        	}
 		        
-                        if (nodeid == -1)  // Sanity check
-		        {
-			        log.error("DeleteNode: There is no node with node label: " + nodeLabel + " exists in the database.");
-                                int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                        "Node does not exist in the database", status, "OpenNMS.Capsd");
-			        return;
-		        }
+                        	if (nodeid == -1)  // Sanity check
+		        	{
+			        	log.error("DeleteNode: There is no node with node label: " + nodeLabel + " exists in the database.");
+                                	int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
+                                	XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
+                                        	"Node does not exist in the database", status, "OpenNMS.Capsd");
+			        	return;
+		        	}
+			}
 		
 			if (log.isDebugEnabled())
 				log.debug("deleteNodeHandler: Starting delete of nodeid: " + nodeid);
@@ -912,8 +924,8 @@ final class BroadcastEventProcessor
 				log.debug("deleteNodeHandler: deleted all assets on  nodeid: " + nodeid);
                         
                         // Deleting the node from the database 
-			stmt = dbConn.prepareStatement(SQL_DELETE_NODE);
-			stmt.setString(1, nodeLabel);
+			stmt = dbConn.prepareStatement(SQL_DELETE_NODEID);
+			stmt.setInt(1, nodeid);
 			stmt.executeUpdate();
 			if (log.isDebugEnabled())
 				log.debug("deleteNodeHandler: deleted the node with node label: " + nodeLabel);
@@ -997,7 +1009,8 @@ final class BroadcastEventProcessor
                 eventParms.addParm(eventParm);
                 
                 // Add Parms to the event
-                newEvent.setParms(eventParms);
+		if ((nodeLabel != null) && (((new Long(txNo)).toString()) != null))
+                	newEvent.setParms(eventParms);
 
                 // Send event to Eventd
                 try
