@@ -60,7 +60,7 @@ public class NotificationModel extends Object
     private final String OUTSTANDING      = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid FROM NOTIFICATIONS WHERE respondTime is NULL";
     private final String OUTSTANDING_COUNT = "SELECT COUNT(*) AS TOTAL FROM NOTIFICATIONS WHERE respondTime is NULL";
     private final String USER_OUTSTANDING = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid FROM NOTIFICATIONS WHERE (respondTime is NULL) AND notifications.notifyid in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid=?)";
-    private final String USER_OUTSTANDING_COUNT = "SELECT COUNT(*) AS TOTAL FROM NOTIFICATIONS WHERE (respondTime is NULL) AND AND userID LIKE ?";
+    private final String USER_OUTSTANDING_COUNT = "SELECT COUNT(*) AS TOTAL FROM NOTIFICATIONS WHERE (respondTime is NULL) AND notifications.notifyid in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid=?)";
 
     /**
      * Static Log4j logging category
