@@ -201,7 +201,7 @@
                         </td>
               
                         <td align="left">
-                            <img src="snmp/performance/graph.png?report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
+                            <img src="snmp/performance/graph.png?props=<%=nodeId%>/strings.properties&report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
                         </td>
                     </tr>
                 <% }  //end for loop %> 

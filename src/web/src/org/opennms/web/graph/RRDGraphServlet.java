@@ -254,7 +254,7 @@ public class RRDGraphServlet extends HttpServlet {
 	String[] propertiesValues = graph.getPropertiesValues();
 	if (propertiesValues != null || propertiesValues.length > 0) {
 		for (int i = 0; i < propertiesValues.length; i++) {
-			String value = externalProperties.getProperty(propertiesValues[i]);
+			String value = (externalProperties.getProperty(propertiesValues[i]) == null ? "Unknown" : externalProperties.getProperty(propertiesValues[i]));
 			if (value == null) {
 				throw new MissingParameterException(propertiesValues[i]);
 			} else {
