@@ -1,4 +1,4 @@
 <OutageConfiguration
-	writers="2"
+	writers="1"
 	getNextOutageID="SELECT nextval('outageNxtId')">
 </OutageConfiguration>
