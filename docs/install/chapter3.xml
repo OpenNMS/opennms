@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter>
+  <title>Platform-Specific OpenNMS Installation Notes</title>
+
+  <section>
+    <title>Debian</title>
+
+    <para>OpenNMS is supported on Debian, and can be installed using apt.
+    However, due to licensing issues, we cannot distribute a version of Sun's
+    Java SDK, so some extra steps are required.</para>
+
+    <section>
+      <title>Woody</title>
+
+      <para>Add the following to /etc/apt/sources.list and update, (i.e.
+      "apt-get update"):</para>
+
+      <para><computeroutput>deb http://debian.opennms.org/ debian/opennms
+      stable</computeroutput></para>
+
+      <para>Then obtain and install a suitable version of java.</para>
+
+      <para>Because of licensing issues, a suitable java sdk cannot be
+      distributed with OpenNMS so you will have to obtain and install one
+      yourself prior to installing OpenNMS. You have several options
+      here:</para>
+
+      <orderedlist>
+        <listitem>
+          <para>Use the sun-jdk1.4-installer package and build script to
+          download the j2sdk from Sun and build your own j2sdk1.4 package,
+          (recommended).</para>
+
+          <para>Building and installing a j2sdk1.4 package:</para>
+
+          <itemizedlist>
+            <listitem>
+              <para> The java-common package is a dependency for the j2sdk1.4
+              package you will be creating, and since it will be installed by
+              dpkg, APT will not be there to pull it in so install it
+              first.</para>
+
+              <para><computeroutput>[root@host /root]# apt-get install
+              java-common</computeroutput></para>
+            </listitem>
+
+            <listitem>
+              <para>Next, install the sun-jdk1.4-installer package and follow
+              the instructions printed on your screen.</para>
+
+              <para><computeroutput>[root@host /root]# apt-get install
+              sun-jdk1.4-installer</computeroutput></para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+
+        <listitem>
+          <para>Obtain and install and your own version and meet the OpenNMS
+          packages dependencies by installing the java-virtual-machine meta
+          package. </para>
+
+          <para><computeroutput>[root@host /root]# apt-get install
+          java-virtual-machine</computeroutput></para>
+        </listitem>
+      </orderedlist>
+
+      <para>Then, install OpenNMS:</para>
+
+      <para><computeroutput>[root@host /root]# apt-get install
+      opennms</computeroutput> Optionally install the documentation and/or
+      contrib packages</para>
+
+      <para><computeroutput>[root@host /root]# apt-get install opennms-doc
+      opennms-contrib</computeroutput></para>
+    </section>
+
+    <section>
+      <title>Sid</title>
+
+      <para>Add the following to /etc/apt/sources.list and update, (i.e.
+      "apt-get update"):</para>
+
+      <para><computeroutput>deb http://debian.opennms.org/ debian/opennms
+      unstable</computeroutput></para>
+
+      <para>Then obtain and install a suitable version of java.</para>
+
+      <para>Because of licensing issues, a suitable java sdk cannot be
+      distributed with OpenNMS so you will have to obtain and install one
+      yourself prior to installing OpenNMS. You have several options
+      here:</para>
+
+      <orderedlist>
+        <listitem>
+          <para>Use the sun-jdk1.4-installer package and build script to
+          download the j2sdk from Sun and build your own j2sdk1.4 package,
+          (recommended).</para>
+
+          <para>Building and installing a j2sdk1.4 package:</para>
+
+          <itemizedlist>
+            <listitem>
+              <para>The java-common package is a dependency for the j2sdk1.4
+              package you will be creating, and since it will be installed by
+              dpkg, APT will not be there to pull it in so install it
+              first.</para>
+
+              <para><computeroutput>[root@host /root]# apt-get install
+              java-common</computeroutput></para>
+            </listitem>
+
+            <listitem>
+              <para>Next, install the sun-jdk1.4-installer package and follow
+              the instructions printed on your screen.</para>
+
+              <para><computeroutput>[root@host /root]# apt-get install
+              sun-jdk1.4-installer</computeroutput></para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+
+        <listitem>
+          <para>Obtain and install and your own version and meet the OpenNMS
+          packages dependencies by installing the java-virtual-machine meta
+          package.</para>
+
+          <para><computeroutput>[root@host /root]# apt-get install
+          java-virtual-machine</computeroutput></para>
+        </listitem>
+      </orderedlist>
+
+      <para>Then, install OpenNMS:</para>
+
+      <para><computeroutput>[root@host /root]# apt-get install
+      opennms</computeroutput> Optionally install the documentation and/or
+      contrib packages</para>
+
+      <para><computeroutput>[root@host /root]# apt-get install opennms-doc
+      opennms-contrib</computeroutput></para>
+
+      <para>Note: Recent versions of the Tomcat package in Sid, (unstable),
+      use jikes as the compiler instead of the javac from your toolkit. Open
+      up <filename>/etc/tomcat4/web.xml</filename> in your favorite editor and
+      comment out the <filename>compiler init param</filename> section.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Fedora</title>
+
+    <para>OpenNMS is supported on Fedora. Note that <filename>yum</filename>
+    and <filename>apt</filename> for RPM repositories will be available
+    soon.</para>
+
+    <section>
+      <title>Fedora Core 1</title>
+
+      <para>There are no special requirements for OpenNMS on this distribution
+      of Linux, except for those configuration issues mentioned in the
+      previous section.</para>
+    </section>
+
+    <section>
+      <title>Fedora Core 2</title>
+
+      <para>There are no special requirements for OpenNMS on this distribution
+      of Linux, except for those configuration issues mentioned in the
+      previous section.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Mandrake</title>
+
+    <para>OpenNMS is supported on Mandrake. Note that
+    <filename>urpmi</filename> repositories will be available soon.</para>
+
+    <section>
+      <title>Mandrake 8</title>
+
+      <para>There are no special requirements for OpenNMS on this distribution
+      of Linux, except for those configuration issues mentioned in the
+      previous section.</para>
+    </section>
+
+    <section>
+      <title>Mandrake 9</title>
+
+      <para>There are no special requirements for OpenNMS on this distribution
+      of Linux, except for those configuration issues mentioned in the
+      previous section.</para>
+    </section>
+
+    <section>
+      <title>Mandrake 10</title>
+
+      <para>There are no special requirements for OpenNMS on this distribution
+      of Linux, except for those configuration issues mentioned in the
+      previous section.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Red Hat</title>
+
+    <para>The following section refer to the supported versions of Red Hat
+    Linux. Note that <filename>yum</filename> and <filename>apt</filename> for
+    RPM repositories will be available soon.</para>
+
+    <section>
+      <title>Red Hat Linux 7</title>
+
+      <para>There are no special requirements for OpenNMS on this distribution
+      of Linux, except for those configuration issues mentioned in the
+      previous section. To use version 1.1. or later, you will need to install
+      version 7.2 of Postgres (which was available in Red Hat Linux
+      7.3).</para>
+    </section>
+
+    <section>
+      <title>Red Hat Linux 8</title>
+
+      <para>OpenNMS is currently supported on Red Hat Linux 8, but version
+      1.2.0 will be the last version to support this operating system.</para>
+    </section>
+
+    <section>
+      <title>Red Hat Linux 9</title>
+
+      <para>There are no special requirements for OpenNMS on this distribution
+      of Linux, except for those configuration issues mentioned in the
+      previous section. Note that there was an issue with the RPM database
+      "hanging" that might affect OpenNMS installation on a new system.</para>
+    </section>
+
+    <section>
+      <title>Red Hat Enterprise Linux 3</title>
+
+      <para>There are no special requirements for OpenNMS on this distribution
+      of Linux, except for those configuration issues mentioned in the
+      previous section.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>SuSE</title>
+
+    <para>OpenNMS is now supported on SuSE.</para>
+
+    <section>
+      <title>SuSE Linux Enterprise Server 8</title>
+
+      <para>There are no special requirements for OpenNMS on this distribution
+      of Linux, except for those configuration issues mentioned in the
+      previous section.</para>
+    </section>
+
+    <section>
+      <title>SuSE Linux Pro 9</title>
+
+      <para>There are no special requirements for OpenNMS on this distribution
+      of Linux, except for those configuration issues mentioned in the
+      previous section.</para>
+    </section>
+  </section>
+</chapter>

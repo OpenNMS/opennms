@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter>
+  <title>Troubleshooting an OpenNMS Installation</title>
+
+  <section>
+    <title>Common Installation Issues</title>
+
+    <para>The following section contains advice for overcoming common
+    installation issues.</para>
+
+    <section>
+      <title>Dependency Problems</title>
+
+      <para>To assist with code management, the easiest way to install OpenNMS
+      is via packages. Every effort has been made to insure that the packages
+      OpenNMS depends on are required before the OpenNMS package can be
+      installed. You should be able to find those packages on the distribution
+      CDs that came with your system. For some of the more obscure packages,
+      like <filename>metamail</filename>, you can visit the OpenNMS <ulink
+      url="ftp://ftp.opennms.org">FTP</ulink> site and check in the
+      <filename>/pub/dependencies</filename> directory. In addition, sites
+      like <ulink url="http://distro.ibiblio.org/">Ibiblio</ulink> and <ulink
+      url="http://www.freshrpms.net">FreshRPMs</ulink> are also good
+      sources.</para>
+    </section>
+
+    <section>
+      <title>The OpenNMS Application Won't Start</title>
+
+      <para>If the OpenNMS is installed, and the packages were not forced in
+      using options like "--nodeps", the application should run just fine. If
+      not, OpenNMS has a robust logging facility. Change to the logs directory
+      (usually <filename>/var/log/opennms</filename>) and search the logs,
+      using <filename>grep</filename> or your tool of choice, for words like
+      FATAL and ERROR (the two highest log severities). Those events should
+      give you clues as to why OpenNMS is not working.</para>
+    </section>
+
+    <section>
+      <title>The OpenNMS Web Application Will Not Start, or You Can't Log
+      In</title>
+
+      <para>There are actually two main applications in the OpenNMS product:
+      the application itself and the web-based User Interface (webUI). The
+      webUI is implemented via Tomcat, and it is possible for Tomcat to be
+      running and the OpenNMS application to be stopped and vice versa.</para>
+
+      <para>If you can't get to the OpenNMS interface
+      (<filename>http://[opennms server]:8080/opennms</filename> or
+      <filename>http://[opennms server]:8180/opennms</filename> on Debian -
+      where [opennms server] is the name of the OpenNMS machine) make sure
+      that Tomcat is running, and if necessary restart it. You should also be
+      able to access the main Tomcat page by leaving of the
+      "<filename>/opennms</filename>".</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Where to Get Help</title>
+
+    <para>OpenNMS is a community supported project. Please keep that in mind
+    when seeking help on the program, as no one gets paid to work on the
+    project (unless it is through a commercial support contract).</para>
+
+    <section>
+      <title>The OpenNMS Web Site</title>
+
+      <para>The main OpenNMS <ulink url="http://www.opennms.org">site</ulink>
+      is a Wiki. As a community project, there is a lot of good advice and
+      information available there.</para>
+    </section>
+
+    <section>
+      <title>The OpenNMS Mailing Lists</title>
+
+      <para>OpenNMS maintains a number of active mailing lists on
+      Sourceforge:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>opennms-announce: A low traffic, moderated mailing list for
+          OpenNMS announcements. All posts to this list are duplicated on the
+          opennms-discuss list.</para>
+        </listitem>
+
+        <listitem>
+          <para>opennms-cvs: This is a fairly high traffic list of all updates
+          to the CVS repositories on SourceForge. Moderated. Only CVS updates
+          are posted here (no discussion).</para>
+        </listitem>
+
+        <listitem>
+          <para>opennms-devel: This list is for code development
+          discussion.</para>
+        </listitem>
+
+        <listitem>
+          <para>opennms-discuss: This is the main OpenNMS discuss list. Pretty
+          much anything goes here. It's pretty friendly. </para>
+        </listitem>
+
+        <listitem>
+          <para>opennms-install: This is a great list for new users to
+          OpenNMS. The main focus is installation issues (cleared up by this
+          great documentation, right?) but most "newbie" questions are welcome
+          here.</para>
+        </listitem>
+
+        <listitem>
+          <para>opennms-maps: Whether or not to use maps in network management
+          is as divisive an issue as abortion or gun control (grin). OpenNMS
+          does have a small contributed map system, which still needs a lot of
+          work. We can talk about it here.</para>
+        </listitem>
+
+        <listitem>
+          <para>opennms-ug-tokyo: We have a small users group in Tokyo, Japan.
+          This list is for meeting announcements or help in Japanese.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Commercial Support</title>
+
+      <para>If you are using OpenNMS in a production environment, or are
+      considering it, you might be interested in commercial support. <ulink
+      url="http://www.blast.com/opennms_about.html">Blast Internet
+      Services</ulink> maintains the OpenNMS project, and we also offer
+      support, training, consulting services and custom development. </para>
+    </section>
+  </section>
+</chapter>
