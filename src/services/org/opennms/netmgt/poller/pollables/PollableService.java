@@ -257,10 +257,13 @@ public class PollableService extends PollableElement implements Runnable {
      */
     public void run() {
         if (getContext().isNodeProcessingEnabled()) {
-            synchronized (getTreeLock()) {
-                doPoll();
-                getNode().processStatusChange(new Date());
-            }
+            Runnable r = new Runnable() {
+                public void run() {
+                    doPoll();
+                    getNode().processStatusChange(new Date());
+                }
+            };
+            withTreeLock(r);
         }
         else {
             doPoll();
@@ -270,9 +273,12 @@ public class PollableService extends PollableElement implements Runnable {
     }
 
     public void delete() {
-        synchronized (getTreeLock()) {
-            super.delete();
-            m_schedule.unschedule();
-        }
+        Runnable r = new Runnable() {
+            public void run() {
+                PollableService.super.delete();
+                m_schedule.unschedule();
+            }
+        };
+        withTreeLock(r);
     }
 }

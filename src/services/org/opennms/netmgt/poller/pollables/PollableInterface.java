@@ -79,12 +79,19 @@ public class PollableInterface extends PollableContainer {
         return getNode().getNodeId();
     }
 
-    public PollableService createService(String svcName) {
-        synchronized (getTreeLock()) {
-            PollableService svc = new PollableService(this, svcName);
-            addMember(svc);
-            return svc;
-        }
+    public PollableService createService(final String svcName) {
+        
+        final PollableService[] retVal = new PollableService[1];
+        Runnable r = new Runnable() {
+            public void run() {
+                PollableService svc = new PollableService(PollableInterface.this, svcName);
+                addMember(svc);
+                retVal[0] = svc;
+            }
+        };
+        withTreeLock(r);
+        return retVal[0];
+        
     }
 
     public PollableService getService(String svcName) {
@@ -167,19 +174,18 @@ public class PollableInterface extends PollableContainer {
         if (oldNode.equals(newNode)) return;
         
         // always lock the nodes in nodeId order so deadlock is not possible
-        Object firstLock = (oldNode.getNodeId() <= newNode.getNodeId() ? oldNode.getTreeLock() : newNode.getTreeLock());
-        Object secondLock = (oldNode.getNodeId() <= newNode.getNodeId() ? newNode.getTreeLock() : oldNode.getTreeLock());
+        final PollableNode firstNode = (oldNode.getNodeId() <= newNode.getNodeId() ? oldNode : newNode);
+        final PollableNode secondNode = (oldNode.getNodeId() <= newNode.getNodeId() ? newNode : oldNode);
         
-        synchronized(firstLock) {
-            synchronized(secondLock) {
-                
+        final Runnable reparent = new Runnable() {
+            public void run() {
                 oldNode.resetStatusChanged();
                 newNode.resetStatusChanged();
                 
                 
                 getContext().reparentOutages(getIpAddr(), getNodeId(), newNode.getNodeId());
-                oldNode.removeMember(this);
-                newNode.addMember(this);
+                oldNode.removeMember(PollableInterface.this);
+                newNode.addMember(PollableInterface.this);
                 setNode(newNode);
                 
                 if (getCause() == null || getCause().equals(oldNode.getCause())) {
@@ -208,7 +214,16 @@ public class PollableInterface extends PollableContainer {
                 newNode.processStatusChange(date);
 
             }
-        }
+        };
+        
+        Runnable lockSecondNodeAndRun = new Runnable() {
+            public void run() {
+                secondNode.withTreeLock(reparent);
+            }
+        };
+        
+        firstNode.withTreeLock(lockSecondNodeAndRun);
+        
     }
 
 

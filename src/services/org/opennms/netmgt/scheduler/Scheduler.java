@@ -309,7 +309,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
                 runnable.run();
             }
             
-            public String toString() { return runnable.toString(); }
+            public String toString() { return runnable.toString()+" (ready in "+Math.max(0, timeToRun-getCurrentTime())+"ms)"; }
         };
         schedule(timeKeeper, interval);
     }

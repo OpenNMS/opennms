@@ -94,16 +94,20 @@ abstract public class PollableContainer extends PollableElement {
         if (m_members.size() == 0)
             this.delete();
     }
-
+    
     public void delete() {
-        synchronized (getTreeLock()) {
-            Collection members = getMembers();
-            for (Iterator it = members.iterator(); it.hasNext();) {
-                PollableElement member = (PollableElement) it.next();
-                member.delete();
+        Runnable r = new Runnable() {
+            public void run() {
+                Collection members = getMembers();
+                for (Iterator it = members.iterator(); it.hasNext();) {
+                    PollableElement member = (PollableElement) it.next();
+                    member.delete();
+                }
+                PollableContainer.super.delete();
             }
-            super.delete();
-        }
+        };
+        withTreeLock(r);
+        
     }
     
     public void visit(PollableVisitor v) {
@@ -147,29 +151,35 @@ abstract public class PollableContainer extends PollableElement {
     }
     
     public void recalculateStatus() {
-        synchronized (getTreeLock()) {
-            SimpleIter iter = new SimpleIter(PollStatus.STATUS_DOWN) {
-                public void forEachElement(PollableElement elem) {
-                    elem.recalculateStatus();
-                    if (elem.getStatus().isUp())
-                        setResult(PollStatus.STATUS_UP);
-                }
-            };
-            forEachMember(iter);
-            updateStatus((PollStatus)iter.getResult());
-        }
+        Runnable r = new Runnable() {
+            public void run() {
+                SimpleIter iter = new SimpleIter(PollStatus.STATUS_DOWN) {
+                    public void forEachElement(PollableElement elem) {
+                        elem.recalculateStatus();
+                        if (elem.getStatus().isUp())
+                            setResult(PollStatus.STATUS_UP);
+                    }
+                };
+                forEachMember(iter);
+                updateStatus((PollStatus)iter.getResult());
+            }
+        };
+        withTreeLock(r);
     }
     
     public void resetStatusChanged() {
-        synchronized (getTreeLock()) {
-            super.resetStatusChanged();
-            Iter iter = new Iter() {
-                public void forEachElement(PollableElement elem) {
-                    elem.resetStatusChanged();
-                }
-            };
-            forEachMember(iter);
-        }
+        Runnable r = new Runnable() {
+            public void run() {
+                PollableContainer.super.resetStatusChanged();
+                Iter iter = new Iter() {
+                    public void forEachElement(PollableElement elem) {
+                        elem.resetStatusChanged();
+                    }
+                };
+                forEachMember(iter);
+            }
+        };
+        withTreeLock(r);
     }
     
     PollableElement findMemberWithDescendent(PollableElement elem) {
@@ -181,15 +191,20 @@ abstract public class PollableContainer extends PollableElement {
     }
 
 
-    protected PollStatus poll(PollableElement elem) {
-        synchronized (elem.getTreeLock()) {
-            PollableElement member = findMemberWithDescendent(elem);
-            PollStatus memberStatus = member.poll(elem);
-            if (memberStatus.isUp() != getStatus().isUp() && member.isStatusChanged()) {
-                updateStatus(pollRemainingMembers(member));
+    protected PollStatus poll(final PollableElement elem) {
+        final PollStatus retVal[] = new PollStatus[1];
+        Runnable r = new Runnable() {
+            public void run() {
+                PollableElement member = findMemberWithDescendent(elem);
+                PollStatus memberStatus = member.poll(elem);
+                if (memberStatus.isUp() != getStatus().isUp() && member.isStatusChanged()) {
+                    updateStatus(pollRemainingMembers(member));
+                }
+                retVal[0] = getStatus();
             }
-            return getStatus();
-        }
+        };
+        elem.withTreeLock(r);
+        return retVal[0];
     }
 
     /**
@@ -239,14 +254,17 @@ abstract public class PollableContainer extends PollableElement {
             
     }
 
-    public void processStatusChange(Date date) {
-        synchronized (getTreeLock()) {
-            if (isStatusChanged()) {
-                super.processStatusChange(date);
-            } else if (getStatus().isUp()) {
-                processMemberStatusChanges(date);
+    public void processStatusChange(final Date date) {
+        Runnable r = new Runnable() {
+            public void run() {
+                if (isStatusChanged()) {
+                    PollableContainer.super.processStatusChange(date);
+                } else if (getStatus().isUp()) {
+                    processMemberStatusChanges(date);
+                }
             }
-        }
+        };
+        withTreeLock(r);
         
     }
 

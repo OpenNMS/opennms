@@ -83,7 +83,7 @@ public class Schedule {
 
         }
         
-        public String toString() { return "ScheduleEntry for "+m_schedulable+" expirationCode ="+m_expirationCode; }
+        public String toString() { return "ScheduleEntry[expCode="+m_expirationCode+"] for "+m_schedulable; }
     }
 
     /**

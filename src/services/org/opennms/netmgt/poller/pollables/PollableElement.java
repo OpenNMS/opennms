@@ -33,6 +33,7 @@ package org.opennms.netmgt.poller.pollables;
 
 import java.util.Date;
 
+import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -116,6 +117,18 @@ abstract public class PollableElement {
         PollableContainer parent = getParent();
         return (parent == null ? this : parent.getTreeLock());
     }
+
+    public void withTreeLock(Runnable r) {
+        Category log = ThreadCategory.getInstance(getClass());
+        Object lock = getTreeLock();
+        log.debug("Trying to obtain lock "+lock);
+        synchronized (lock) {
+            log.debug("Obtained lock "+lock);
+            r.run();
+            log.debug("Releasing lock "+lock);
+        }
+    }
+
 
     /**
      * 
@@ -215,13 +228,16 @@ abstract public class PollableElement {
         return m_deleted;
     }
     public void delete() {
-        synchronized (getTreeLock()) {
-            m_deleted = true;
-            if (m_parent != null) {
-                getParent().deleteMember(this);
-                getParent().recalculateStatus();
+        Runnable r = new Runnable() {
+            public void run() {
+                m_deleted = true;
+                if (m_parent != null) {
+                    getParent().deleteMember(PollableElement.this);
+                    getParent().recalculateStatus();
+                }
             }
-        }
+        };
+        withTreeLock(r);
     }
 
     protected void processLingeringCauses(PollEvent resolvedCause, PollEvent resolution) {

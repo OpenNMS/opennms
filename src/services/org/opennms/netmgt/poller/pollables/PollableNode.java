@@ -55,12 +55,17 @@ public class PollableNode extends PollableContainer {
         return m_nodeId;
     }
     
-    public PollableInterface createInterface(InetAddress addr) {
-        synchronized(getTreeLock()) {
-            PollableInterface iface =  new PollableInterface(this, addr);
-            addMember(iface);
-            return iface;
-        }
+    public PollableInterface createInterface(final InetAddress addr) {
+        final PollableInterface[] retVal = new PollableInterface[1];
+        Runnable r = new Runnable() {
+            public void run() {
+                PollableInterface iface =  new PollableInterface(PollableNode.this, addr);
+                addMember(iface);
+                retVal[0] = iface;
+            }
+        };
+        withTreeLock(r);
+        return retVal[0];
     }
 
     public PollableInterface getInterface(InetAddress addr) {
@@ -85,13 +90,19 @@ public class PollableNode extends PollableContainer {
      * @param svcName
      * @return
      */
-    public PollableService createService(InetAddress addr, String svcName) {
-        synchronized(getTreeLock()) {
-            PollableInterface iface = getInterface(addr);
-            if (iface == null)
-                iface = createInterface(addr);
-            return iface.createService(svcName);
-        }
+    public PollableService createService(final InetAddress addr, final String svcName) {
+        final PollableService retVal[] = new PollableService[1];
+        
+        Runnable r = new Runnable() {
+            public void run() {
+                PollableInterface iface = getInterface(addr);
+                if (iface == null)
+                    iface = createInterface(addr);
+                retVal[0] = iface.createService(svcName);
+            }
+        };
+        withTreeLock(r);
+        return retVal[0];
     }
 
     /**
@@ -124,10 +135,15 @@ public class PollableNode extends PollableContainer {
         return this;
     }
 
-    public PollStatus doPoll(PollableElement elem) {
-        synchronized (getTreeLock()) {
-            resetStatusChanged();
-            return poll(elem);
-        }
+    public PollStatus doPoll(final PollableElement elem) {
+        final PollStatus retVal[] = new PollStatus[1];
+        Runnable r = new Runnable() {
+            public void run() {
+                resetStatusChanged();
+                retVal[0] =  poll(elem);
+            }
+        };
+        withTreeLock(r);
+        return retVal[0];
     }
 }
