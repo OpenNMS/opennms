@@ -130,11 +130,42 @@ public class OutageAnticipator implements EventListener {
         }
         list.add(outage);
     }
+    
+    protected void removeFromOutageList(Map outageMap, Event outageEvent, Outage outage) {
+        EventWrapper w = new EventWrapper(outageEvent);
+        List list = (List)outageMap.get(w);
+        if (list == null) return;
+        list.remove(outage);
+        
+    }
+
+
+    
+    public void deanticipateOutageClosed(MockElement element, final Event regainService) {
+        MockVisitor outageCounter = new MockVisitorAdapter() {
+            public void visitService(MockService svc) {
+                if (anticipatesClose(svc)) {
+                    // descrease the open ones.. leave the total the same
+                    m_expectedOpenCount++;
+                    
+                    Collection openOutages = m_db.getOpenOutages(svc);
+                    for (Iterator it = openOutages.iterator(); it.hasNext();) {
+                        Outage outage = (Outage) it.next();
+                        MockUtil.println("Deanticipating outage closed: "+outage);
+
+                        removeFromOutageList(m_pendingCloses, regainService, outage);
+                    }
+                }
+            }
+        };
+        element.visit(outageCounter);
+        
+    }
 
     public void anticipateOutageClosed(MockElement element, final Event regainService) {
         MockVisitor outageCounter = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
-                if (m_db.hasOpenOutage(svc) || anticipatesOpen(svc)) {
+                if ((m_db.hasOpenOutage(svc) || anticipatesOpen(svc)) && !anticipatesClose(svc)) {
                     // descrease the open ones.. leave the total the same
                     m_expectedOpenCount--;
                     
