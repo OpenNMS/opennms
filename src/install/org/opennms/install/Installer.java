@@ -1543,23 +1543,15 @@ public class Installer {
 		"SELECT " +
 		"        a.attname, " +
 		"        format_type(a.atttypid, a.atttypmod), " +
-		"        a.attnotnull, " +
-		"        c.contype " +
+		"        a.attnotnull " +
 		"FROM " +
-		"        pg_constraint c RIGHT JOIN " +
-		"                (pg_attribute a JOIN pg_type t ON " +
-		"                        a.atttypid = t.oid) " +
-		"                ON c.conrelid = a.attrelid AND " +
-		"		   a.attnum = ANY(c.conkey) AND " +
-		"		   c.contype = 'p' " +
-		"		    " +
-		"		 " +
+		"        pg_attribute a " +
 		"WHERE " +
 		"        a.attrelid = " +
 		"                (SELECT oid FROM pg_class WHERE relname = '" +
 	                         table + "') AND " +
 		"        a.attnum > 0 AND " +
-		"        a.attisdropped = false  " +
+		"        a.attisdropped = false " +
 		"ORDER BY " +
 		"        a.attnum;";
 
@@ -1571,10 +1563,13 @@ public class Installer {
 	    c.parseColumnType(rs.getString(2));
 	    c.setNotNull(rs.getBoolean(3));
 
-	    String constraintType = rs.getString(4);
 	    r.add(c);
 	}
 
+	// XXX the [1] on conkey and confkey is a hack and assumes that
+	//     we have at most one constrained column and at most one
+	//     referenced foreign column (which is correct with the current
+	//     database layout.
 	query =
 		"SELECT " +
 		"       c.conname, " +
@@ -1587,9 +1582,9 @@ public class Installer {
 		"	  (pg_attribute b RIGHT JOIN " +
 		"	    (pg_constraint c JOIN pg_attribute a " +
 		"	      ON c.conrelid = a.attrelid AND " +
-		"	         a.attnum = ANY(c.conkey)) " +
+		"	         a.attnum = c.conkey[1]) " +
 		"	    ON c.confrelid = b.attrelid AND " +
-		"	       b.attnum = ANY(c.confkey)) " +
+		"	       b.attnum = c.confkey[1]) " +
 		"	  ON b.attrelid = d.oid " +
 		"WHERE " +
 		"	a.attrelid = " +
