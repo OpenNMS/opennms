@@ -44,25 +44,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.config.poller.Interface;
-import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Outages;
-import org.opennms.netmgt.config.poller.Time;
 
 /**
  * This is the singleton class used to load the configuration for the poller
@@ -75,100 +62,16 @@ import org.opennms.netmgt.config.poller.Time;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class PollOutagesConfigFactory implements PollOutagesConfig {
+public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
     /**
      * The singleton instance of this factory
      */
     private static PollOutagesConfigFactory m_singleton = null;
 
     /**
-     * The config class loaded from the config file
-     */
-    private Outages m_config;
-
-    /**
      * This member is set to true if the configuration file has been loaded.
      */
     private static boolean m_loaded = false;
-
-    /**
-     * The day of the week values to name mapping
-     */
-    private static Map m_dayOfWeekMap;
-
-    private static String FORMAT1 = "dd-MMM-yyyy HH:mm:ss";
-
-    private static String FORMAT2 = "HH:mm:ss";
-
-    /**
-     * Create the day of week mapping
-     */
-    private static void createDayOfWeekMapping() {
-        m_dayOfWeekMap = new HashMap();
-        m_dayOfWeekMap.put("sunday", new Integer(Calendar.SUNDAY));
-        m_dayOfWeekMap.put("monday", new Integer(Calendar.MONDAY));
-        m_dayOfWeekMap.put("tuesday", new Integer(Calendar.TUESDAY));
-        m_dayOfWeekMap.put("wednesday", new Integer(Calendar.WEDNESDAY));
-        m_dayOfWeekMap.put("thursday", new Integer(Calendar.THURSDAY));
-        m_dayOfWeekMap.put("friday", new Integer(Calendar.FRIDAY));
-        m_dayOfWeekMap.put("saturday", new Integer(Calendar.SATURDAY));
-    }
-
-    /**
-     * Set the time in outCal from timeStr. 'timeStr'is in either the
-     * 'dd-MMM-yyyy HH:mm:ss' or the 'HH:mm:ss' formats
-     * 
-     * @param outCal
-     *            the calendar in which time is to be set
-     * @param timeStr
-     *            the time string
-     */
-    private void setOutCalTime(Calendar outCal, String timeStr) {
-        if (timeStr.length() == FORMAT1.length()) {
-            SimpleDateFormat format = new SimpleDateFormat(FORMAT1);
-
-            // parse the date string passed
-            Date tempDate = null;
-            try {
-                tempDate = format.parse(timeStr);
-            } catch (ParseException pE) {
-                tempDate = null;
-            }
-            if (tempDate == null)
-                return;
-
-            Calendar tempCal = new GregorianCalendar();
-            tempCal.setTime(tempDate);
-
-            // set outCal
-            outCal.set(Calendar.YEAR, tempCal.get(Calendar.YEAR));
-            outCal.set(Calendar.MONTH, tempCal.get(Calendar.MONTH));
-            outCal.set(Calendar.DAY_OF_MONTH, tempCal.get(Calendar.DAY_OF_MONTH));
-            outCal.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
-            outCal.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
-            outCal.set(Calendar.SECOND, tempCal.get(Calendar.SECOND));
-        } else if (timeStr.length() == FORMAT2.length()) {
-            SimpleDateFormat format = new SimpleDateFormat(FORMAT2);
-
-            // parse the date string passed
-            Date tempDate = null;
-            try {
-                tempDate = format.parse(timeStr);
-            } catch (ParseException pE) {
-                tempDate = null;
-            }
-            if (tempDate == null)
-                return;
-
-            Calendar tempCal = new GregorianCalendar();
-            tempCal.setTime(tempDate);
-
-            // set outCal
-            outCal.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
-            outCal.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
-            outCal.set(Calendar.SECOND, tempCal.get(Calendar.SECOND));
-        }
-    }
 
     /**
      * Private constructor
@@ -180,10 +83,10 @@ public final class PollOutagesConfigFactory implements PollOutagesConfig {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
-    private PollOutagesConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
+    PollOutagesConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
         InputStream cfgIn = new FileInputStream(configFile);
 
-        m_config = (Outages) Unmarshaller.unmarshal(Outages.class, new InputStreamReader(cfgIn));
+        setConfig((Outages) Unmarshaller.unmarshal(Outages.class, new InputStreamReader(cfgIn)));
         cfgIn.close();
 
     }
@@ -246,278 +149,5 @@ public final class PollOutagesConfigFactory implements PollOutagesConfig {
             throw new IllegalStateException("The factory has not been initialized");
 
         return m_singleton;
-    }
-
-    /**
-     * Return the outages configured.
-     * 
-     * @return the outages configured
-     */
-    public synchronized Outage[] getOutages() {
-        return m_config.getOutage();
-    }
-
-    /**
-     * Return the specified outage.
-     * 
-     * @param name
-     *            the outage that is to be looked up
-     * 
-     * @return the specified outage, null if not found
-     */
-    public synchronized Outage getOutage(String name) {
-        Enumeration e = m_config.enumerateOutage();
-        while (e.hasMoreElements()) {
-            Outage out = (Outage) e.nextElement();
-            if (out.getName().equals(name)) {
-                return out;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Return the type for specified outage.
-     * 
-     * @param name
-     *            the outage that is to be looked up
-     * 
-     * @return the type for the specified outage, null if not found
-     */
-    public synchronized String getOutageType(String name) {
-        Outage out = getOutage(name);
-        if (out == null)
-            return null;
-        else
-            return out.getType();
-    }
-
-    /**
-     * Return the outage times for specified outage.
-     * 
-     * @param name
-     *            the outage that is to be looked up
-     * 
-     * @return the outage times for the specified outage, null if not found
-     */
-    public synchronized Time[] getOutageTimes(String name) {
-        Outage out = getOutage(name);
-        if (out == null)
-            return null;
-        else
-            return out.getTime();
-    }
-
-    /**
-     * Return the interfaces for specified outage.
-     * 
-     * @param name
-     *            the outage that is to be looked up
-     * 
-     * @return the interfaces for the specified outage, null if not found
-     */
-    public synchronized Interface[] getInterfaces(String name) {
-        Outage out = getOutage(name);
-        if (out == null)
-            return null;
-        else
-            return out.getInterface();
-    }
-
-    /**
-     * Return if interfaces is part of specified outage.
-     * 
-     * @param linterface
-     *            the interface to be looked up
-     * @param outName
-     *            the outage name
-     * 
-     * @return the interface is part of the specified outage
-     */
-    public synchronized boolean isInterfaceInOutage(String linterface, String outName) {
-        Outage out = getOutage(outName);
-        if (out == null)
-            return false;
-
-        return isInterfaceInOutage(linterface, out);
-    }
-
-    /**
-     * Return if interfaces is part of specified outage.
-     * 
-     * @param linterface
-     *            the interface to be looked up
-     * @param out
-     *            the outage
-     * 
-     * @return the interface is part of the specified outage
-     */
-    public synchronized boolean isInterfaceInOutage(String linterface, Outage out) {
-        if (out == null)
-            return false;
-
-        Enumeration e = out.enumerateInterface();
-        while (e.hasMoreElements()) {
-            Interface ointerface = (Interface) e.nextElement();
-            if (ointerface.getAddress().equals(linterface)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Return if time is part of specified outage.
-     * 
-     * @param cal
-     *            the calendar to lookup
-     * @param outName
-     *            the outage name
-     * 
-     * @return true if time is in outage
-     */
-    public synchronized boolean isTimeInOutage(Calendar cal, String outName) {
-        Outage out = getOutage(outName);
-        if (out == null)
-            return false;
-
-        return isTimeInOutage(cal, out);
-    }
-
-    /**
-     * Return if time is part of specified outage.
-     * 
-     * @param time
-     *            the time in millis to look up
-     * @param outName
-     *            the outage name
-     * 
-     * @return true if time is in outage
-     */
-    public synchronized boolean isTimeInOutage(long time, String outName) {
-        Outage out = getOutage(outName);
-        if (out == null)
-            return false;
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(time);
-        return isTimeInOutage(cal, out);
-    }
-
-    /**
-     * Return if time is part of specified outage.
-     * 
-     * @param cal
-     *            the calendar to lookup
-     * @param out
-     *            the outage
-     * 
-     * @return true if time is in outage
-     */
-    public synchronized boolean isTimeInOutage(Calendar cal, Outage out) {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        if (log.isDebugEnabled())
-            log.debug("isTimeInOutage: checking for time '" + cal.getTime() + "' in outage '" + out.getName() + "'");
-
-        if (out == null)
-            return false;
-
-        long curCalTime = cal.getTime().getTime();
-
-        // check if day is part of outage
-        boolean inOutage = false;
-
-        // flag indicating that day(which is optional) was not specified in the
-        // time
-
-        Enumeration e = out.enumerateTime();
-        while (e.hasMoreElements() && !inOutage) {
-            Calendar outCalBegin = new GregorianCalendar();
-            Calendar outCalEnd = new GregorianCalendar();
-
-            Time oTime = (Time) e.nextElement();
-
-            String oTimeDay = oTime.getDay();
-            String begins = oTime.getBegins();
-            String ends = oTime.getEnds();
-
-            if (oTimeDay != null) {
-                // see if outage time was specified as sunday/monday..
-                Integer dayInMap = (Integer) m_dayOfWeekMap.get(oTimeDay);
-                if (dayInMap != null) {
-                    // check if value specified matches current date
-                    if (cal.get(Calendar.DAY_OF_WEEK) == dayInMap.intValue())
-                        inOutage = true;
-
-                    outCalBegin.set(Calendar.DAY_OF_WEEK, dayInMap.intValue());
-                    outCalEnd.set(Calendar.DAY_OF_WEEK, dayInMap.intValue());
-                }
-                // else see if outage time was specified as day of month
-                else {
-                    int intOTimeDay = (new Integer(oTimeDay)).intValue();
-
-                    if (cal.get(Calendar.DAY_OF_MONTH) == intOTimeDay)
-                        inOutage = true;
-
-                    outCalBegin.set(Calendar.DAY_OF_MONTH, intOTimeDay);
-                    outCalEnd.set(Calendar.DAY_OF_MONTH, intOTimeDay);
-                }
-            }
-
-            // if time of day was specified and did not match, continue
-            if (oTimeDay != null && !inOutage)
-                continue;
-
-            // set time in out calendars
-            setOutCalTime(outCalBegin, begins);
-            setOutCalTime(outCalEnd, ends);
-
-            // check if calendar passed is in the out cal range
-            if (log.isDebugEnabled())
-                log.debug("isTimeInOutage: checking begin/end time...\n current: " + cal.getTime() + "\n begin: " + outCalBegin.getTime() + "\n end: " + outCalEnd.getTime());
-            long outCalBeginTime = outCalBegin.getTime().getTime();
-            long outCalEndTime = outCalEnd.getTime().getTime();
-
-            if (curCalTime >= outCalBeginTime && curCalTime <= outCalEndTime)
-                inOutage = true;
-            else
-                inOutage = false;
-        }
-
-        return inOutage;
-
-    }
-
-    /**
-     * Return if current time is part of specified outage.
-     * 
-     * @param outName
-     *            the outage name
-     * 
-     * @return true if current time is in outage
-     */
-    public synchronized boolean isCurTimeInOutage(String outName) {
-        // get current time
-        Calendar cal = new GregorianCalendar();
-
-        return isTimeInOutage(cal, outName);
-    }
-
-    /**
-     * Return if current time is part of specified outage.
-     * 
-     * @param out
-     *            the outage
-     * 
-     * @return true if current time is in outage
-     */
-    public synchronized boolean isCurTimeInOutage(Outage out) {
-        // get current time
-        Calendar cal = new GregorianCalendar();
-
-        return isTimeInOutage(cal, out);
     }
 }
