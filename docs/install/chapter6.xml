@@ -272,6 +272,51 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
       you will have to decide which table of data you want to keep or merge
       them. This is left as a (not so simple) exercise for the reader.</para>
     </section>
+
+    <section>
+      <title>"Table X contains N rows (out of M) that violate new constraint
+      Y"</title>
+
+      <para>Over time OpenNMS extends its database schema to improve
+      functionality. This error can happen because of the way certain
+      administrative functions in older versions of OpenNMS functioned or if
+      the database was modified outside of OpenNMS (the latter is common for
+      larger sites). Over time OpenNMS has introduced additional foreign key
+      constraints on its database. These are used to ensure internal database
+      consistency when data in two tables are tied together by a shared key.
+      For example, each event can have a pointer to the node that it is
+      related to; there is a foreign key constraint that requires that an
+      event <emphasis>must not</emphasis> point at a node that does not
+      exist.</para>
+
+      <para>Starting with 1.1.5, when we upgrade the database schema, we first
+      check for rows that violate any new foreign key constraints that might
+      be added. There are three options to to fix these errors:</para>
+
+      <orderedlist>
+        <listitem>
+          <para>Remove the offending rows. This is suggested if the number of
+          rows that violate the constraint is small in comparison to the total
+          number of rows in the affected table and if you don't need the data.
+          Use "<code>$OPENNMS_HOME/bin/install -C &lt;constraint&gt;
+          -X</code>" to delete the offending rows.</para>
+        </listitem>
+
+        <listitem>
+          <para>Mark the key in the offending rows to NULL. This is suggested
+          if you need to keep the data around or are not yet sure about what
+          to do with it. Use "<code>$OPENNMS_HOME/bin/install -C
+          &lt;constraint&gt;</code>" to mark the key column to NULL in the
+          offending rows.</para>
+        </listitem>
+
+        <listitem>
+          <para>Fix the key in the offending rows. This is for advanced users
+          and requires a good amount of effort. This is left as an exercise
+          for the reader.</para>
+        </listitem>
+      </orderedlist>
+    </section>
   </section>
 
   <section>

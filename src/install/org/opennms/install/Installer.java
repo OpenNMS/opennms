@@ -10,7 +10,8 @@
 //
 // The code in this file is Copyright (C) 2004 DJ Gregor.
 //
-// Based on install.pl which was Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Based on install.pl which was Copyright (C) 1999-2001 Oculan Corp.  All
+// rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -93,6 +94,8 @@ public class Installer {
 
     boolean m_install_webapp = false;
 
+    boolean m_fix_constraint = false;
+
     boolean m_force = false;
 
     boolean m_debug = false;
@@ -133,11 +136,15 @@ public class Installer {
 
     String m_tomcat_serverlibs = null;
 
-    HashMap m_seqmapping = new HashMap();
+    String m_fix_constraint_name = null;
 
-    LinkedList m_tables = new LinkedList();
+    boolean m_fix_constraint_remove_rows = false;
 
-    LinkedList m_sequences = new LinkedList();
+    HashMap m_seqmapping = null;
+
+    LinkedList m_tables = null;
+
+    LinkedList m_sequences = null;
 
     // LinkedList m_cfunctions = new LinkedList(); // Unused, not in create.sql
     // LinkedList m_functions = new LinkedList(); // Unused, not in create.sql
@@ -166,14 +173,14 @@ public class Installer {
 
     Map m_dbtypes = null;
 
-    String m_required_options = "At least one of -d, -i, -s, -U, -y, " + "or -T is required.";
+    String m_required_options = "At least one of -d, -i, -s, -U, -y, " + "-C, or -T is required.";
 
     public void install(String[] argv) throws Exception {
         printHeader();
         loadProperties();
         parseArguments(argv);
 
-        if (!m_update_database && !m_do_inserts && !m_update_iplike && !m_update_unicode && m_tomcat_conf == null && !m_install_webapp) {
+        if (!m_update_database && !m_do_inserts && !m_update_iplike && !m_update_unicode && m_tomcat_conf == null && !m_install_webapp && !m_fix_constraint) {
             throw new Exception("Nothing to do.\n" + m_required_options + "\nUse '-h' for help.");
         }
             
@@ -181,7 +188,7 @@ public class Installer {
         // checkJava();
         // XXX Check Tomcat version?
 
-        if (m_update_database || m_update_iplike || m_update_unicode || m_do_inserts) {
+        if (m_update_database || m_update_iplike || m_update_unicode || m_do_inserts || m_fix_constraint) {
             databaseConnect("template1");
             databaseCheckVersion();
             databaseCheckLanguage();
@@ -191,9 +198,11 @@ public class Installer {
 
         verifyFilesAndDirectories();
 
-        if (m_update_database) {
+        if (m_update_database || m_fix_constraint) {
             readTables();
+	}
 
+	if (m_update_database) {
             // XXX Check and optionally modify pg_hba.conf
 
             if (!databaseUserExists()) {
@@ -204,14 +213,19 @@ public class Installer {
             }
         }
 
-        if (m_update_database || m_update_iplike || m_update_unicode || m_do_inserts) {
+        if (m_update_database || m_update_iplike || m_update_unicode || m_do_inserts || m_fix_constraint) {
             databaseDisconnect();
             
             databaseConnect(m_database);
         }
 
+	if (m_fix_constraint) {
+	    fixConstraint();
+	}
+
         if (m_update_database) {
 	    checkOldTables();
+	    checkConstraints();
             createTables();
             createSequences();
             createIndexes();
@@ -333,6 +347,12 @@ public class Installer {
                         m_force = true;
                         break;
 
+		    case 'C':
+                        i++;
+			m_fix_constraint = true;
+			m_fix_constraint_name = getNextArg(argv, i, 'C');
+			break;
+
                     case 'd':
                         m_update_database = true;
                         break;
@@ -341,17 +361,8 @@ public class Installer {
                         m_do_inserts = true;
                         break;
 
-                    case 's':
-                        m_update_iplike = true;
-                        break;
-
-                    case 'U':
-                        m_update_unicode = true;
-                        break;
-
-                    case 'u':
-                        i++;
-                        m_pg_user = getNextArg(argv, i, 'u');
+                    case 'N':
+                        m_ignore_notnull = true;
                         break;
 
                     case 'p':
@@ -359,13 +370,30 @@ public class Installer {
                         m_pg_pass = getNextArg(argv, i, 'p');
                         break;
 
-                    case 'y':
-                        m_install_webapp = true;
+                    case 'r':
+                        m_rpm = true;
+                        break;
+
+                    case 'R':
+                        m_no_revert = true;
+                        break;
+
+                    case 's':
+                        m_update_iplike = true;
                         break;
 
                     case 'T':
                         i++;
                         m_tomcat_conf = getNextArg(argv, i, 'T');
+                        break;
+
+                    case 'u':
+                        i++;
+                        m_pg_user = getNextArg(argv, i, 'u');
+                        break;
+
+                    case 'U':
+                        m_update_unicode = true;
                         break;
 
                     case 'w':
@@ -382,16 +410,12 @@ public class Installer {
                         m_debug = true;
                         break;
 
-                    case 'r':
-                        m_rpm = true;
+                    case 'X':
+                        m_fix_constraint_remove_rows = true;
                         break;
 
-                    case 'N':
-                        m_ignore_notnull = true;
-                        break;
-
-                    case 'R':
-                        m_no_revert = true;
+                    case 'y':
+                        m_install_webapp = true;
                         break;
 
                     default:
@@ -413,20 +437,10 @@ public class Installer {
             throw new Exception("no argument provided for '" + letter + "' option");
         }
         if (argv[i].charAt(0) == '-') {
-            throw new Exception("argument to '" + letter + "' option looks " + "like another option (begins with a dash)");
+            throw new Exception("argument to '" + letter + "' option looks " + "like another option (begins with a dash): \"" + argv[i] + "\"");
         }
         return argv[i];
     }
-
-    // Mac OS X: http://developer.apple.com/technotes/tn2002/tn2110.html
-    // Don't bother checking. Leave the check up to "runjava".
-    /*
-     * public void checkJava() throws Exception { String javaVersion =
-     * System.getProperty("java.version"); if (!javaVersion.startsWith("1.4")) {
-     * throw new Exception("Need a Java version of 1.4 or higher. " + "You have " +
-     * javaVersion); } // XXX if we only run properly on Sun Java at this time,
-     * should // XXX we check for that? Check for specific release verisions? }
-     */
 
     public void printDiagnostics() {
         m_out.println("* using '" + m_user + "' as the PostgreSQL " + "user for OpenNMS");
@@ -440,6 +454,10 @@ public class Installer {
     public void readTables() throws Exception {
         BufferedReader r = new BufferedReader(new FileReader(m_create_sql));
         String line;
+
+	m_tables = new LinkedList();
+	m_seqmapping = new HashMap();
+	m_sequences = new LinkedList();
 
         Pattern seqmappingPattern = Pattern.compile("\\s*--#\\s+install:\\s*" + "(\\S+)\\s+(\\S+)\\s+" + "(\\S+)\\s*.*");
         Pattern createPattern = Pattern.compile("(?i)\\s*create\\b.*");
@@ -682,6 +700,165 @@ public class Installer {
 			    "You either need to remove them or rename them " +
 			    "so they do not contain the string '_old_'.  " +
 			    "Backup tables: \n\t" + oldTableList);
+    }
+
+    public String[][] getForeignKeyConstraints() throws Exception {
+	LinkedList constraints = new LinkedList();
+
+	/*
+	 * Iterate over each constraint on every column in every table and
+	 * build a list of foreign key constraints with the details that
+	 * we care about.
+	 */
+        Iterator i = m_tables.iterator();
+        while (i.hasNext()) {
+            String table = ((String) i.next()).toLowerCase();
+	    List newColumns = getTableColumnsFromSQL(table);
+	    Iterator j = newColumns.iterator();
+	    while (j.hasNext()) {
+		Column column = (Column) j.next();
+		Iterator k = column.getConstraintIterator();
+		while (k.hasNext()) {
+		    Constraint constraint = (Constraint) k.next();
+		    if (constraint.getType() == Constraint.FOREIGN_KEY) {
+			String[] c = new String[5];
+			c[0] = constraint.getName();
+			c[1] = table;
+			c[2] = column.getName();
+			c[3] = constraint.getForeignTable();
+			c[4] = constraint.getForeignColumn();
+			constraints.add(c);
+		    }
+		}
+	    }
+	}
+
+	return (String [][]) constraints.toArray(new String[0][0]);
+    }
+
+    public void checkConstraints() throws Exception {
+	String[][] constraints = getForeignKeyConstraints();
+
+        m_out.print("- checking for rows that violate constraints... ");
+
+	Statement st = m_dbconnection.createStatement();
+	for (int a = 0; a < constraints.length; a++) {
+	    String name = constraints[a][0];
+	    String table = constraints[a][1];
+	    String column = constraints[a][2];
+	    String ftable = constraints[a][3];
+	    String fcolumn = constraints[a][4];
+
+	    if (!tableExists(table) || !tableColumnExists(table, column)) {
+		// The constrained table or column does not exist
+		continue;
+	    }
+
+	    String query = "SELECT count(" + table + "." + column + ") FROM " +
+		table + " " +
+		getForeignConstraintWhere(table, column, ftable, fcolumn);
+
+	    ResultSet rs = st.executeQuery(query);
+
+	    rs.next();
+	    int count = rs.getInt(1);
+	    rs.close();
+
+	    if (count != 0) {
+		rs = st.executeQuery("SELECT count(*) FROM " + table);
+		rs.next();
+		int total = rs.getInt(1);
+		rs.close();
+		st.close();
+
+		throw new Exception("Table " + table +
+				    " contains " + count + " rows " +
+				    "(out of " + total +
+				    ") that violate new constraint " +
+				    name + ".  " +
+				    "See the install guide for details " +
+				    "on how to correct this problem.");
+	    }
+	}
+	st.close();
+
+	m_out.println("NONE");
+    }
+
+    public String getForeignConstraintWhere(String table, String column,
+					    String ftable, String fcolumn)
+	throws Exception {
+	if (tableExists(ftable) && tableColumnExists(ftable, fcolumn)) {
+	    return "WHERE NOT EXISTS (SELECT " + ftable +
+		"." + fcolumn + " FROM " + ftable + " WHERE " +
+		ftable + "." + fcolumn + " = " + table + "." +
+		column + ") AND " + table + "." + column +
+		" IS NOT NULL";
+	} else {
+	    return "WHERE " + table + "." + column + " IS NOT NULL";
+	}
+    }
+
+    public void fixConstraint() throws Exception {
+	String[][] constraints = getForeignKeyConstraints();
+	String[] constraint = null;
+
+        m_out.print("- fixing rows that violate constraint " +
+		    m_fix_constraint_name + "... ");
+
+	for (int a = 0; a < constraints.length; a++) {
+	    if (m_fix_constraint_name.equals(constraints[a][0])) {
+		constraint = constraints[a];
+		break;
+	    }
+	}
+
+	if (constraint == null) {
+	    throw new Exception("Did not find constraint " +
+				m_fix_constraint_name + " in the database.");
+	}
+
+	String name = constraint[0];
+	String table = constraint[1];
+	String column = constraint[2];
+	String ftable = constraint[3];
+	String fcolumn = constraint[4];
+
+
+	if (!tableExists(table)) {
+	    throw new Exception("Constraint " + m_fix_constraint_name +
+				" is on table " + table + ", but table does " +
+				"not exist (so fixing this constraint does " +
+				"nothing).");
+	}
+
+	if (!tableColumnExists(table, column)) {
+	    throw new Exception("Constraint " + m_fix_constraint_name +
+				" is on column " + column + " of table " +
+				table + ", but column does " +
+				"not exist (so fixing this constraint does " +
+				"nothing).");
+	}
+
+
+	String where = getForeignConstraintWhere(table, column,
+						 ftable, fcolumn);
+	 
+	String query;
+	String change_text;
+
+	if (m_fix_constraint_remove_rows) {
+	    query = "DELETE FROM " + table + " " + where;
+	    change_text = "DELETED";
+	} else {
+	    query = "UPDATE " + table + " SET " + column + " = NULL " + where;
+	    change_text = "UPDATED";
+	}
+
+	Statement st = m_dbconnection.createStatement();
+	int num = st.executeUpdate(query);
+
+	m_out.println(change_text + " " + num + (num == 1 ? " ROW" : " ROWS"));
     }
 
     public boolean databaseUserExists() throws SQLException {
@@ -1142,10 +1319,6 @@ public class Installer {
             }
             r.close();
 
-            // XXX install.pl has code to drop the functions, however I think
-            // it is buggy and it would have ever droopped a function.
-            // The supposed buggy code is not implemented here.
-
             Matcher m = Pattern.compile("(?is)\\bCREATE FUNCTION\\s+" + "(\\w+)\\s*\\((.+?)\\)\\s+" + "RETURNS\\s+(\\S+)\\s+AS\\s+" + "(.+? language ['\"]?\\w+['\"]?);").matcher(create.toString());
 
             if (!m.find()) {
@@ -1483,6 +1656,11 @@ public class Installer {
 
         rs = st.executeQuery("SELECT DISTINCT tablename FROM pg_tables " + "WHERE lower(tablename) = '" + table.toLowerCase() + "'");
         return rs.next();
+    }
+
+    public boolean tableColumnExists(String table, String column)
+	throws Exception {
+	return (findColumn(getTableColumnsFromDB(table), column) != null);
     }
 
     public List getTableColumnsFromDB(String table) throws Exception {
@@ -1910,13 +2088,16 @@ public class Installer {
 
     public void printHelp() {
         m_out.println("usage:");
-        m_out.println("  java -jar opennms_install.jar -h");
-        m_out.println("  java -jar opennms_install.jar " + "[-r] [-x] [-N] [-R] [-c] [-d] [-i] [-s] [-U] [-y]");
+        m_out.println("      $OPENNMS_HOME/bin/install -h");
+        m_out.println("      $OPENNMS_HOME/bin/install " +
+		      "[-r] [-x] [-N] [-R] [-c] [-d] [-i] [-s] [-U]");
+	m_out.println("                                [-y] [-X]");
         m_out.println("                                " + "[-u <PostgreSQL admin user>]");
         m_out.println("                                " + "[-p <PostgreSQL admin password>]");
         m_out.println("                                " + "[-T <tomcat4.conf>]");
         m_out.println("                                " + "[-w <tomcat webapps directory>");
         m_out.println("                                " + "[-W <tomcat server/lib directory>]");
+        m_out.println("                                " + "[-C <constraint>]");
         m_out.println("");
         m_out.println(m_required_options);
         m_out.println("");
@@ -1942,6 +2123,11 @@ public class Installer {
         m_out.println("         useful after a table is reverted by a " + "previous run of the installer");
         m_out.println("   -R    do not revert a table to the original if " + "an error occurs when");
         m_out.println("         transforming data -- only used for debugging");
+        m_out.println("   -C    fix rows that violate the specified " +
+		      "constraint -- sets key column in");
+	m_out.println("         affected rows to NULL by default");
+        m_out.println("   -X    drop rows that violate constraint instead of marking key column in");
+	m_out.println("         affected rows to NULL (used with \"-C\")");
 
         System.exit(0);
     }
