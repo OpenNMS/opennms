@@ -13,9 +13,9 @@
 			on the size of the monitored network). Use 1.4.0-02 (which
 			can be found on the archive section of the Sun Java page).
 			For more info, see the FAQ entry:
-			&gt;a href="http://faq.opennms.org/faq/fom-serve/cache/129.html"&lt;
+			&lt;a href="http://faq.opennms.org/faq/fom-serve/cache/129.html"&gt;
 			http://faq.opennms.org/faq/fom-serve/cache/129.html
-			&gt;/a&lt;			
+			&lt;/a&gt;			
 		</para>
 	</sect1>
 </chapter>
