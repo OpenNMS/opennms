@@ -57,32 +57,47 @@ tell(){
 # Give the user some basic help.
 #
 printHelp() {
-    echo "$basename: usage:"
-    echo "    $basename -r <java options>"
-    echo "    $basename [-q] [-n] -s | -f <JRE> | -c | -h"
+#    while getopts cf:hnqrsS: c
+    echo "usage: $basename [-f] [-n] [-q]"
+    echo "       {-s | -S <JRE path> | -c | -r <java options> | -h}"
     echo ""
-    echo "The first usage option (\"-r\") will verify that the configured"
-    echo "Java Runtime Environment (JRE) is appropriate for use with OpenNMS"
-    echo "and will exec that JRE with <java options>."
+    echo "Exactly one of the following options is required:"
     echo ""
-    echo "The second usage option will attempt to find and configure a JRE"
-    echo "for use with OpenNMS (\"-s\"), force the configuration of a specific"
-    echo "JRE (\"-f <JRE>\"), verify that the configured JRE is appropriate"
-    echo "for use with OpenNMS (\"-c\"), or print this help text (\"-h\")."
+    echo "  -r <java options>"
+    echo "      Exec the configured Java Runtime Environment (JRE) with"
+    echo "      with <java options>."
     echo ""
-    echo "In the second usage option, you can pass \"-q\" to be quiet and"
-    echo "only print errors.  Dry run mode can be enabled with \"-n\", which"
-    echo "won't modify the stored java.conf file (good for testing)."
+    echo "  -s  Search for a suitable JRE and configure it, if found."
+    echo ""
+    echo "  -S <JRE path>"
+    echo "      Store the JRE at <JRE path> as the configured JRE."
+    echo ""
+    echo "  -c  Check that the configured JRE is appropriate."
+    echo ""
+    echo "  -h  Print this help information."
+    echo ""
+    echo "Optional options:"
+    echo ""
+    echo "  -f  Force mode.  Ignores the JRE version check.  This option"
+    echo "      only makes sense with the -r and -S options."
+    echo ""
+    echo "  -n  Dry run mode.  Don't change the configured JRE (-s or -S"
+    echo "      options) or execute a JRE (-r option)."
+    echo ""
+    echo "  -q  Quiet mode.  Be fairly quiet."
     echo ""
     echo "The \"-s\" option chooses a JRE based on these factors:"
-    echo "    1) If the JAVA_HOME environment variable is set and points at"
-    echo "       an appropriate JRE, it \$JAVA_HOME/bin/java will be used."
-    echo "    2) If \"which java\" returns an appropriate JRE, it will be used."
-    echo "    3) Lastly, a few directories are searched to find an"
-    echo "       appropriate JRE: \"$searchdirs\"."
+    echo ""
+    echo "  1) If the JAVA_HOME environment variable is set and points at"
+    echo "     an appropriate JRE, it \$JAVA_HOME/bin/java will be used."
+    echo ""
+    echo "  2) If \"which java\" returns an appropriate JRE, it will be used."
+    echo ""
+    echo "  3) Lastly, a few directories are searched to find an"
+    echo "     appropriate JRE: \"$searchdirs\"."
     echo ""
     echo "If none of the above options work or if they don't find the JRE"
-    echo "you want OpenNMS to use, use \"-f <JRE>\" to specify the JRE you"
+    echo "you want OpenNMS to use, use \"-S <JRE>\" to specify the JRE you"
     echo "want OpenNMS to use."
 }
 
@@ -211,8 +226,8 @@ javaFind() {
     findJava && return 0
 
     warn "Could not find an appropriate JRE."
-    warn "You can force a particular JRE by using"
-    warn "\"$basename -f <JRE>\"."
+    warn "You can set a particular JRE by using"
+    warn "\"$basename -S <JRE>\"."
 
     return 1
 }
@@ -262,10 +277,21 @@ checkConfiguredJava() {
 # execs it with the command-line arguments passed to us.
 #
 runJava() {
-    checkConfiguredJava || return 1
+    checkConfiguredJava
+    if [ $? -ne 0 ]; then
+	if [ $force -gt 0 ]; then
+	    warn "Ignoring Java warning due to '-f' option being used"
+	else
+	    return 1
+	fi
+    fi
 
-    add_ld_path
-    exec "$JP" "$@"
+    if [ $dryrun -eq 0 ]; then
+	add_ld_path
+	exec "$JP" "$@"
+    else
+	echo "Dry run mode is set.  Would have executed: $JP $*"
+    fi
 }
 
 #
@@ -312,21 +338,26 @@ setupJava() {
 }
 
 #
-# Function: forceJava()
+# Function: setJava()
 # Calls javaFind and if successful, stores the location of the JRE in
 # $java_conf.
 #
-forceJava() {
-    tell "checking forced JRE: \"$JP\"..."
+setJava() {
+    tell "checking specified JRE: \"$JP\"..."
     if [ ! -x "$JP" ]; then
-	die "forced JRE \"$JP\" does not exist or is not executable"
+	die "specified JRE \"$JP\" does not exist or is not executable"
     fi
     if javaCheck; then
-	tell "forced JRE is good."
+	tell "specified JRE is good."
 	saveJava
 	return $?
     else
-	die "forced JRE \"$JP\" is not an appropriate JRE"
+	if [ $force -gt 0 ]; then
+	    warn "JRE is not an appropriate version"
+	    warn "Ignoring Java warning due to '-f' option being used"
+	else
+	    die "specified JRE \"$JP\" is not an appropriate JRE"
+	fi
     fi
 }
 
@@ -350,12 +381,13 @@ parseArgsAndDoStuff() {
     exclusive=0
     
     check=0
-    force=""
+    force=0
     quiet=0
     run=0
     search=0
+    location=""
     
-    while getopts cf:hnqrs c
+    while getopts cf:hnqrsS: c
     do
       case $c in
           c)
@@ -364,9 +396,8 @@ parseArgsAndDoStuff() {
     	  ;;
     
           f)
-    	  force="$OPTARG"
-    	  exclusive=`expr $exclusive + 1`
-    	  ;;
+	  force=1
+          ;;
     
           h)
     	  printHelp
@@ -388,6 +419,11 @@ parseArgsAndDoStuff() {
     
           s)
     	  search=1
+    	  exclusive=`expr $exclusive + 1`
+    	  ;;
+
+          S)
+    	  location="$OPTARG"
     	  exclusive=`expr $exclusive + 1`
     	  ;;
     
@@ -419,9 +455,9 @@ parseArgsAndDoStuff() {
         exit $?
     fi
     
-    if [ x"$force" != x"" ]; then
-        JP="$force"
-        forceJava
+    if [ x"$location" != x"" ]; then
+        JP="$location"
+        setJava
         exit $?
     fi
     
