@@ -568,9 +568,7 @@ public class NotificationFactory
                         
 			ResultSet rs = statement.executeQuery();
                         
-			rs.next();
-                        
-			if (rs!=null && rs.getString("notify")!= null)
+			if (rs.next() && rs.getString("notify")!= null)
 			{
 				notify = rs.getString("notify");
 				if (notify==null)
