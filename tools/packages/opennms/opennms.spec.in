@@ -171,6 +171,7 @@ grep -q "BUILD FAILED" %{_tmppath}/build.output && exit 1
 
 mkdir -p $RPM_BUILD_ROOT%{instprefix}
 mkdir -p $RPM_BUILD_ROOT%{instprefix}/etc
+mkdir -p $RPM_BUILD_ROOT%{instprefix}/contrib
 
 ### /etc/profile.d
 
@@ -238,6 +239,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root)	%{_bindir}/*
 %attr(755,root,root)	%{instprefix}/bin
 %dir			%{instprefix}/etc
+%{instprefix}/contrib
 %if "%builddocs" == "1"
 %attr(755,root,root)	%{instprefix}/docs
 %endif
