@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2005 Jan 18: Changed the default report to "mib2.bits".
 // 2003 Apr 24: Changed the default report to "bits".
 //
 // This program is free software; you can redistribute it and/or modify
@@ -272,7 +273,7 @@ public class KSC_PerformanceReportFactory {
     public static Graph getNewGraph() {
         Graph new_graph = new Graph();
         new_graph.setTitle("");
-        new_graph.setGraphtype("bits");
+        new_graph.setGraphtype("mib2.bits");
         new_graph.setTimespan("7_day");
         return new_graph;
     }
