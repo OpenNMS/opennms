@@ -109,7 +109,7 @@ public class ManageNodeServlet extends HttpServlet
 		
 		if (userSession != null)
 		{
-		  	allNodes = (java.util.List)userSession.getAttribute("interfaces.nodemanagment");
+		  	allNodes = (java.util.List)userSession.getAttribute("interfaces.nodemanagement");
 		}
 		
 		//the list of all interfaces marked as managed
