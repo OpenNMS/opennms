@@ -89,6 +89,7 @@ public class Installer {
     boolean m_force = false;
 
     boolean m_debug = false;
+    boolean m_ignore_notnull = false;
 
     String m_pg_driver = null;
     String m_pg_url = null;
@@ -370,6 +371,10 @@ public class Installer {
 
 		    case 'r':
 			m_rpm = true;
+			break;
+
+		    case 'N':
+			m_ignore_notnull = true;
 			break;
 
 		    default:
@@ -1885,20 +1890,30 @@ public class Installer {
 			   table.equals("notifications")) {
 		    columnChange.setNullReplace(new Integer(0));
 		} else if (oldColumn == null) {
-		    throw new Exception("Column " + newColumn.getName() +
-					" in new table has NOT NULL " +
-					"constraint, however this column " +
-					"did not exist before and there is " +
-					"no null replacement for this " +
-					"column");
+		    String message = "Column " + newColumn.getName() +
+			" in new table has NOT NULL " +
+			"constraint, however this column " +
+			"did not exist before and there is " +
+			"no null replacement for this " +
+			"column";
+		    if (m_ignore_notnull) {
+			m_out.println(message + ".  Ignoring due to '-N'");
+		    } else {
+			throw new Exception(message);
+		    }
 		} else if (!oldColumn.isNotNull()) {
-		    throw new Exception("Column " + newColumn.getName() +
-					" in new table has NOT NULL " +
-					"constraint, however this column " +
-					"did not have the NOT NULL " +
-					"constraint before and there is " +
-					"no null replacement for this " +
-					"column");
+		    String message = "Column " + newColumn.getName() +
+			" in new table has NOT NULL " +
+			"constraint, however this column " +
+			"did not have the NOT NULL " +
+			"constraint before and there is " +
+			"no null replacement for this " +
+			"column";
+		    if (m_ignore_notnull) {
+			m_out.println(message + ".  Ignoring due to '-N'");
+		    } else {
+			throw new Exception(message);
+		    }
 		}
 	    }
 	}
@@ -2168,19 +2183,19 @@ public class Installer {
 	m_out.println("usage:");
 	m_out.println("  java -jar opennms_install.jar -h");
 	m_out.println("  java -jar opennms_install.jar " +
-			   "[-r] [-x] [-c] [-d] [-i] [-s] [-U] [-y]");
+		      "[-r] [-x] [-N] [-c] [-d] [-i] [-s] [-U] [-y]");
 	m_out.println("                                " +
-			   "[-u <PostgreSQL admin user>]");
+		      "[-u <PostgreSQL admin user>]");
 	m_out.println("                                " +
-			   "[-p <PostgreSQL admin password>]");
+		      "[-p <PostgreSQL admin password>]");
 	m_out.println("                                " +
-			   "[-S <tomcat server.xml file>]");
+		      "[-S <tomcat server.xml file>]");
 	m_out.println("                                " +
-			   "[-T <tomcat4.conf>]");
+		      "[-T <tomcat4.conf>]");
 	m_out.println("                                " +
-			   "[-w <tomcat webapps directory>");
+		      "[-w <tomcat webapps directory>");
 	m_out.println("                                " +
-			   "[-W <tomcat server/lib directory>]");
+		      "[-W <tomcat server/lib directory>]");
 	m_out.println("");
 	m_out.println(m_required_options);
 	m_out.println("");
@@ -2193,21 +2208,25 @@ public class Installer {
 	m_out.println("   -y    install web application (see -w and -W)");
 	m_out.println("");
 	m_out.println("   -u    username of the PostgreSQL " +
-			   "administrator (default: \"" + m_pg_user + "\")");
+		      "administrator (default: \"" + m_pg_user + "\")");
 	m_out.println("   -p    password of the PostgreSQL " +
-			   "administrator (default: \"" + m_pg_pass + "\")");
+		      "administrator (default: \"" + m_pg_pass + "\")");
 	m_out.println("   -c    drop and recreate tables that already " +
-			   "exist");
+		      "exist");
 	m_out.println("");
 	m_out.println("   -S    location of tomcat's server.xml");
 	m_out.println("   -T    location of tomcat.conf");
 	m_out.println("   -w    location of tomcat's webapps directory");
 	m_out.println("   -W    location of tomcat's server/lib " +
-			   "directory");
+		      "directory");
 	m_out.println("");
 	m_out.println("   -r    run as an RPM install (does nothing)");
 	m_out.println("   -x    turn on debugging for database data " +
-			   "transformation");
+		      "transformation");
+	m_out.println("   -N    ignore NOT NULL constraint checks when " +
+		      "transforming data");
+	m_out.println("         useful after a table is reverted by a " +
+		      "previous run of the installer");
 
 	System.exit(0);
     }
