@@ -500,6 +500,12 @@ public class SQLTranslation
 		m_where.append("( (ifservices.serviceID = service.serviceID AND ipInterface.ipAddr = ifServices.ipAddr) AND ");
 	}
 
+        public void addNodeIDToSelect()
+        {
+                m_selectList.add("ipinterface.nodeid");
+        }
+
+
     	public void outStart(Start node)
 	{
 		//finish the where clause by putting in the join clauses to 
