@@ -49,6 +49,7 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -327,14 +328,18 @@ final class BroadcastEventProcessor implements EventListener {
      * 
      */
     private void nodeGainedServiceHandler(Event event) {
+        Category log = ThreadCategory.getInstance(getClass());
         // Currently only support SNMP data collection.
         //
-        if (!event.getService().equals("SNMP"))
+        if (!event.getService().equals("SNMP")) {
+            if (log.isDebugEnabled())
+                log.debug("nodeGainedServiceHandler: Datacollection not scheduled for service "+event.getService() +", currently only supporting SNMP service for collection.");
             return;
+        }
 
         // Schedule the interface
         //
-        Collectd.getInstance().scheduleInterface((int) event.getNodeid(), event.getInterface(), event.getService(), false);
+        scheduleForCollection(event);
     }
 
     /**
@@ -438,7 +443,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         // Now we can schedule the new service...
         //
-        Collectd.getInstance().scheduleInterface((int) event.getNodeid(), event.getInterface(), event.getService(), false);
+        scheduleForCollection(event);
 
         if (log.isDebugEnabled())
             log.debug("primarySnmpInterfaceChangedHandler: processing of primarySnmpInterfaceChanged event for nodeid " + event.getNodeid() + " completed.");
@@ -697,4 +702,13 @@ final class BroadcastEventProcessor implements EventListener {
         if (log.isDebugEnabled())
             log.debug("serviceDeletedHandler: processing of serviceDeleted event for " + nodeId + "/" + ipAddr + "/" + svcName + " completed.");
     }
+
+    private void scheduleForCollection(Event event) {
+        //This moved to here from the scheduleInterface() for better behavior during initialization
+        CollectdConfigFactory cCfgFactory = CollectdConfigFactory.getInstance();
+        cCfgFactory.rebuildPackageIpListMap();
+
+        Collectd.getInstance().scheduleInterface((int) event.getNodeid(), event.getInterface(), event.getService(), false);
+    }
+
 } // end class

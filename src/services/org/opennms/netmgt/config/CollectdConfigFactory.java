@@ -65,6 +65,7 @@ import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.filter.Filter;
 import org.opennms.netmgt.utils.IPSorter;
 import org.opennms.netmgt.utils.IpListFromUrl;
+import org.opennms.netmgt.config.collectd.Package;
 
 /**
  * @author <a href="mailto:jamesz@opennms.com">James Zuo</a>
@@ -159,11 +160,13 @@ public final class CollectdConfigFactory {
     private void createPackageIpListMap() {
         Category log = ThreadCategory.getInstance(this.getClass());
 
-        m_pkgIpMap = new HashMap();
+        // Multiple threads maybe asking for the m_pkgIpMap field so create
+        // with temp map then assign when finished.
+        Map pkgIpMap = new HashMap();
 
         Enumeration pkgEnum = m_config.enumeratePackage();
         while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.collectd.Package pkg = (org.opennms.netmgt.config.collectd.Package) pkgEnum.nextElement();
+            Package pkg = (Package) pkgEnum.nextElement();
 
             //
             // Get a list of ipaddress per package agaist the filter rules from
@@ -186,7 +189,7 @@ public final class CollectdConfigFactory {
 
                 List ipList = filter.getIPList(filterRules.toString());
                 if (ipList.size() > 0) {
-                    m_pkgIpMap.put(pkg, ipList);
+                    pkgIpMap.put(pkg, ipList);
                 }
             } catch (Throwable t) {
                 if (log.isEnabledFor(Priority.ERROR)) {
@@ -194,6 +197,8 @@ public final class CollectdConfigFactory {
                 }
             }
         }
+        
+        m_pkgIpMap = pkgIpMap;
     }
 
     /**
@@ -352,19 +357,10 @@ public final class CollectdConfigFactory {
      * @return True if the interface is included in the package, false
      *         otherwise.
      */
-    public synchronized boolean interfaceInPackage(String iface, org.opennms.netmgt.config.collectd.Package pkg) {
+    public synchronized boolean interfaceInPackage(String iface, Package pkg) {
         Category log = ThreadCategory.getInstance(this.getClass());
 
-        boolean filterPassed = false;
-
-        // get list of IPs in this package
-        java.util.List ipList = (java.util.List) m_pkgIpMap.get(pkg);
-        if (ipList != null && ipList.size() > 0) {
-            filterPassed = ipList.contains(iface);
-        }
-
-        if (log.isDebugEnabled())
-            log.debug("interfaceInPackage: Interface " + iface + " passed filter for package " + pkg.getName() + "?: " + filterPassed);
+        boolean filterPassed = interfaceInFilter(iface, pkg, log);
 
         if (!filterPassed)
             return false;
@@ -373,53 +369,19 @@ public final class CollectdConfigFactory {
         // Ensure that the interface is in the specific list or
         // that it is in the include range and is not excluded
         //
-        boolean has_specific = false;
-        boolean has_range_include = false;
-        boolean has_range_exclude = false;
 
         long addr = IPSorter.convertToLong(iface);
         Enumeration eincs = pkg.enumerateIncludeRange();
-        while (!has_range_include && eincs.hasMoreElements()) {
-            IncludeRange rng = (IncludeRange) eincs.nextElement();
-            long start = IPSorter.convertToLong(rng.getBegin());
-            if (addr > start) {
-                long end = IPSorter.convertToLong(rng.getEnd());
-                if (addr <= end) {
-                    has_range_include = true;
-                }
-            } else if (addr == start) {
-                has_range_include = true;
-            }
-        }
 
-        Enumeration espec = pkg.enumerateSpecific();
-        while (!has_specific && espec.hasMoreElements()) {
-            long speca = IPSorter.convertToLong(espec.nextElement().toString());
-            if (speca == addr)
-                has_specific = true;
-        }
+        boolean has_range_include = hasIncludeRange(addr, eincs);
+        boolean has_specific = hasSpecific(pkg, addr);
 
-        Enumeration eurl = pkg.enumerateIncludeUrl();
-        while (!has_specific && eurl.hasMoreElements()) {
-            has_specific = interfaceInUrl(iface, (String) eurl.nextElement());
-        }
-
-        Enumeration eex = pkg.enumerateExcludeRange();
-        while (!has_range_exclude && !has_specific && eex.hasMoreElements()) {
-            ExcludeRange rng = (ExcludeRange) eex.nextElement();
-            long start = IPSorter.convertToLong(rng.getBegin());
-            if (addr > start) {
-                long end = IPSorter.convertToLong(rng.getEnd());
-                if (addr <= end) {
-                    has_range_exclude = true;
-                }
-            } else if (addr == start) {
-                has_range_exclude = true;
-            }
-        }
+        has_specific = hasSpecificUrl(iface, pkg, has_specific);
+        boolean has_range_exclude = hasExcludeRange(pkg, addr, has_specific);
 
         return has_specific || (has_range_include && !has_range_exclude);
     }
+
 
     /**
      * Returns true if the service is part of the package and the status of the
@@ -585,5 +547,76 @@ public final class CollectdConfigFactory {
             return newPrimary;
         else
             return oldPrimary;
+    }
+
+
+private boolean hasExcludeRange(Package pkg, long addr, boolean has_specific) {
+    boolean has_range_exclude = false;
+    Enumeration eex = pkg.enumerateExcludeRange();
+    while (!has_range_exclude && !has_specific && eex.hasMoreElements()) {
+        ExcludeRange rng = (ExcludeRange) eex.nextElement();
+        long start = IPSorter.convertToLong(rng.getBegin());
+        if (addr > start) {
+            long end = IPSorter.convertToLong(rng.getEnd());
+            if (addr <= end) {
+                has_range_exclude = true;
+            }
+        } else if (addr == start) {
+            has_range_exclude = true;
+        }
+    }
+    return has_range_exclude;
+}
+
+private boolean hasSpecificUrl(String iface, Package pkg, boolean has_specific) {
+    Enumeration eurl = pkg.enumerateIncludeUrl();
+    while (!has_specific && eurl.hasMoreElements()) {
+        has_specific = interfaceInUrl(iface, (String) eurl.nextElement());
+    }
+    return has_specific;
+}
+
+private boolean hasSpecific(Package pkg, long addr) {
+    boolean has_specific = false;
+    Enumeration espec = pkg.enumerateSpecific();
+    while (!has_specific && espec.hasMoreElements()) {
+        long speca = IPSorter.convertToLong(espec.nextElement().toString());
+        if (speca == addr)
+            has_specific = true;
+    }
+    return has_specific;
+}
+
+private boolean hasIncludeRange(long addr, Enumeration eincs) {
+    boolean has_range_include = false;
+    while (!has_range_include && eincs.hasMoreElements()) {
+        IncludeRange rng = (IncludeRange) eincs.nextElement();
+        long start = IPSorter.convertToLong(rng.getBegin());
+        if (addr > start) {
+            long end = IPSorter.convertToLong(rng.getEnd());
+            if (addr <= end) {
+                has_range_include = true;
+            }
+        } else if (addr == start) {
+            has_range_include = true;
+        }
+    }
+    return has_range_include;
+}
+
+    private boolean interfaceInFilter(String iface, Package pkg, Category log) {
+        boolean filterPassed = false;
+
+        // get list of IPs in this package
+        java.util.List ipList = (java.util.List) m_pkgIpMap.get(pkg);
+        if (ipList != null && ipList.size() > 0) {
+            filterPassed = ipList.contains(iface);
+        }
+
+        if (log.isDebugEnabled())
+            log.debug("interfaceInPackage: Interface " + iface
+                    + " passed filter for package " + pkg.getName() + "?: "
+                    + filterPassed);
+        return filterPassed;
     }
 }

@@ -68,6 +68,7 @@ import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.config.collectd.Package;
 
 public final class Collectd implements PausableFiber {
     /**
@@ -150,41 +151,8 @@ public final class Collectd implements PausableFiber {
         if (log.isDebugEnabled())
             log.debug("init: Initializing collection daemon");
 
-        // Load collectd configuration file
-        //
-        try {
-            CollectdConfigFactory.reload();
-        } catch (MarshalException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("init: Failed to load collectd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("init: Failed to load collectd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("init: Failed to load collectd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-
-        // Load up the configuration for the scheduled outages.
-        //
-        try {
-            PollOutagesConfigFactory.reload();
-        } catch (MarshalException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("init: Failed to load poll-outage configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("init: Failed to load poll-outage configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("init: Failed to load poll-outage configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
+        loadConfigFactory(log);
+        loadscheduledOutagesConfigFactory(log);
 
         if (log.isDebugEnabled())
             log.debug("init: Loading collectors");
@@ -194,33 +162,74 @@ public final class Collectd implements PausableFiber {
         CollectdConfigFactory cCfgFactory = CollectdConfigFactory.getInstance();
         CollectdConfiguration config = cCfgFactory.getConfiguration();
 
-        // Load up an instance of each collector from the config
-        // so that the event processor will have them for
-        // new incomming events to create collectable service objects.
+        instantiateCollectors(log, config);
+        buildServiceIdMap(log);
+        createScheduler(log, config);
+        ReadyRunnable interfaceScheduler = buildSchedule(log);
+        m_scheduler.schedule(interfaceScheduler, 0);
+        createEventProcessor(log);
+
+    }
+
+    private void createEventProcessor(final Category log) {
+        // Create an event receiver. The receiver will
+        // receive events, process them, creates network
+        // interfaces, and schedulers them.
         //
-        Enumeration eiter = config.enumerateCollector();
-        while (eiter.hasMoreElements()) {
-            Collector collector = (Collector) eiter.nextElement();
-            try {
-                if (log.isDebugEnabled()) {
-                    log.debug("init: Loading collector " + collector.getService() + ", classname " + collector.getClassName());
-                }
-                Class cc = Class.forName(collector.getClassName());
-                ServiceCollector sc = (ServiceCollector) cc.newInstance();
+        try {
+            if (log.isDebugEnabled())
+                log.debug("init: Creating event broadcast event processor");
 
-                // Attempt to initialize the service collector
-                //
-                Map properties = null; // properties not currently used
-                sc.initialize(properties);
+            m_receiver = new BroadcastEventProcessor(m_collectableServices);
+        } catch (Throwable t) {
+            if (log.isEnabledFor(Priority.FATAL))
+                log.fatal("init: Failed to initialized the broadcast event receiver", t);
 
-                m_svcCollectors.put(collector.getService(), sc);
-            } catch (Throwable t) {
-                if (log.isEnabledFor(Priority.WARN)) {
-                    log.warn("init: Failed to load collector " + collector.getClassName() + " for service " + collector.getService(), t);
-                }
-            }
+            throw new UndeclaredThrowableException(t);
         }
+    }
 
+    private ReadyRunnable buildSchedule(final Category log) {
+        // Schedule existing interfaces for data collection
+
+        ReadyRunnable interfaceScheduler = new ReadyRunnable() {
+
+            public boolean isReady() {
+                return true;
+            }
+
+            public void run() {
+                //
+                try {
+                    scheduleExistingInterfaces();
+                } catch (SQLException sqlE) {
+                    if (log.isEnabledFor(Priority.ERROR))
+                        log.error("start: Failed to schedule existing interfaces", sqlE);
+                } finally {
+                    setSchedulingCompleted(true);
+                }
+
+            }
+        };
+        return interfaceScheduler;
+    }
+
+    private void createScheduler(final Category log, CollectdConfiguration config) {
+        // Create a scheduler
+        //
+        try {
+            if (log.isDebugEnabled())
+                log.debug("init: Creating collectd scheduler");
+
+            m_scheduler = new Scheduler("Collectd", config.getThreads());
+        } catch (RuntimeException e) {
+            if (log.isEnabledFor(Priority.FATAL))
+                log.fatal("init: Failed to create collectd scheduler", e);
+            throw e;
+        }
+    }
+
+    private void buildServiceIdMap(final Category log) {
         // Make sure we can connect to the database and load
         // the services table so we can easily convert from
         // service name to service id
@@ -283,58 +292,74 @@ public final class Collectd implements PausableFiber {
                 }
             }
         }
+    }
 
-        // Create a scheduler
+    private void instantiateCollectors(final Category log, CollectdConfiguration config) {
+        // Load up an instance of each collector from the config
+        // so that the event processor will have them for
+        // new incomming events to create collectable service objects.
         //
-        try {
-            if (log.isDebugEnabled())
-                log.debug("init: Creating collectd scheduler");
-
-            m_scheduler = new Scheduler("Collectd", config.getThreads());
-        } catch (RuntimeException e) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("init: Failed to create collectd scheduler", e);
-            throw e;
-        }
-
-        // Schedule existing interfaces for data collection
-
-        ReadyRunnable interfaceScheduler = new ReadyRunnable() {
-
-            public boolean isReady() {
-                return true;
-            }
-
-            public void run() {
-                //
-                try {
-                    scheduleExistingInterfaces();
-                } catch (SQLException sqlE) {
-                    if (log.isEnabledFor(Priority.ERROR))
-                        log.error("start: Failed to schedule existing interfaces", sqlE);
-                } finally {
-                    setSchedulingCompleted(true);
+        Enumeration eiter = config.enumerateCollector();
+        while (eiter.hasMoreElements()) {
+            Collector collector = (Collector) eiter.nextElement();
+            try {
+                if (log.isDebugEnabled()) {
+                    log.debug("init: Loading collector " + collector.getService() + ", classname " + collector.getClassName());
                 }
+                Class cc = Class.forName(collector.getClassName());
+                ServiceCollector sc = (ServiceCollector) cc.newInstance();
 
+                // Attempt to initialize the service collector
+                //
+                Map properties = null; // properties not currently used
+                sc.initialize(properties);
+
+                m_svcCollectors.put(collector.getService(), sc);
+            } catch (Throwable t) {
+                if (log.isEnabledFor(Priority.WARN)) {
+                    log.warn("init: Failed to load collector " + collector.getClassName() + " for service " + collector.getService(), t);
+                }
             }
-        };
+        }
+    }
 
-        m_scheduler.schedule(interfaceScheduler, 0);
-
-        // Create an event receiver. The receiver will
-        // receive events, process them, creates network
-        // interfaces, and schedulers them.
+    private void loadscheduledOutagesConfigFactory(final Category log) {
+        // Load up the configuration for the scheduled outages.
         //
         try {
-            if (log.isDebugEnabled())
-                log.debug("init: Creating event broadcast event processor");
-
-            m_receiver = new BroadcastEventProcessor(m_collectableServices);
-        } catch (Throwable t) {
+            PollOutagesConfigFactory.reload();
+        } catch (MarshalException ex) {
             if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("init: Failed to initialized the broadcast event receiver", t);
+                log.fatal("init: Failed to load poll-outage configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (ValidationException ex) {
+            if (log.isEnabledFor(Priority.FATAL))
+                log.fatal("init: Failed to load poll-outage configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (IOException ex) {
+            if (log.isEnabledFor(Priority.FATAL))
+                log.fatal("init: Failed to load poll-outage configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
+    }
 
-            throw new UndeclaredThrowableException(t);
+    private void loadConfigFactory(final Category log) {
+        // Load collectd configuration file
+        //
+        try {
+            CollectdConfigFactory.reload();
+        } catch (MarshalException ex) {
+            if (log.isEnabledFor(Priority.FATAL))
+                log.fatal("init: Failed to load collectd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (ValidationException ex) {
+            if (log.isEnabledFor(Priority.FATAL))
+                log.fatal("init: Failed to load collectd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (IOException ex) {
+            if (log.isEnabledFor(Priority.FATAL))
+                log.fatal("init: Failed to load collectd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
         }
     }
 
@@ -479,7 +504,6 @@ public final class Collectd implements PausableFiber {
         PreparedStatement stmt = null;
         try {
             dbConn = DatabaseConnectionFactory.getInstance().getConnection();
-
             stmt = dbConn.prepareStatement(SQL_RETRIEVE_INTERFACES);
 
             // Loop through loaded collectors and schedule for each one present
@@ -491,15 +515,12 @@ public final class Collectd implements PausableFiber {
                 ServiceCollector collector = (ServiceCollector) m_svcCollectors.get(svcName);
 
                 if (log.isDebugEnabled())
-                    log.debug("scheduleExistingInterfaces: Scheduling existing interfaces for collector: " + svcName);
+                    log.debug("scheduleExistingInterfaces: dbConn = " + dbConn + ", svcName = " + svcName);
 
                 // Retrieve list of interfaces from the database which
                 // support the service collected by this collector
                 //
                 try {
-                    if (log.isDebugEnabled())
-                        log.debug("scheduleExistingInterfaces: dbConn = " + dbConn + ", svcName = " + svcName);
-
                     stmt.setString(1, svcName); // Service name
                     ResultSet rs = stmt.executeQuery();
 
@@ -567,7 +588,7 @@ public final class Collectd implements PausableFiber {
         // schedule it for collection
         //
         while (epkgs.hasMoreElements()) {
-            org.opennms.netmgt.config.collectd.Package pkg = (org.opennms.netmgt.config.collectd.Package) epkgs.nextElement();
+            Package pkg = (Package) epkgs.nextElement();
 
             // Make certain the the current service is in the package
             // and enabled!
@@ -581,15 +602,9 @@ public final class Collectd implements PausableFiber {
             // Is the interface in the package?
             //
             if (!cCfgFactory.interfaceInPackage(ipAddress, pkg)) {
-                // The interface might be a newly added one, rebuild the package
-                // to ipList mapping and again to verify if the interface is in
-                // the package
-                cCfgFactory.rebuildPackageIpListMap();
-                if (!cCfgFactory.interfaceInPackage(ipAddress, pkg)) {
-                    if (log.isDebugEnabled())
-                        log.debug("scheduleInterface: address/service: " + ipAddress + "/" + svcName + " not scheduled, interface does not belong to package: " + pkg.getName());
-                    continue;
-                }
+                if (log.isDebugEnabled())
+                    log.debug("scheduleInterface: address/service: " + ipAddress + "/" + svcName + " not scheduled, interface does not belong to package: " + pkg.getName());
+                continue;
             }
 
             if (existing == false) {
