@@ -1,5 +1,6 @@
 1.1.0 to 1.1.1
 ----------------------------------------------------------------------
+- Added trap definitions for ADIC devices. Thx Robert M.
 - Added Key SNMP Custom (KSC) Performance report builder, under 
   the Reports section of the GUI. Thx Dave M.
 - fixed JNI calling on MacOSX 10.2 (jnilibs now build as 2-level
