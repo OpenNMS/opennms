@@ -26,7 +26,7 @@ public class ManagedInterface
          */
         protected String status;
         
-        /**
+	/**
          *
          */
         protected int nodeid;

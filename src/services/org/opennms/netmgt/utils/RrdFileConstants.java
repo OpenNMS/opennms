@@ -22,13 +22,13 @@ public class RrdFileConstants extends Object
 	public static final FilenameFilter RRD_FILENAME_FILTER = new FilenameFilter() {
 		public boolean accept(File file, String name) {
 			return name.endsWith(RRD_SUFFIX);
-        	}
+		}
 	}; 
 	
 	/** Convenience filter that matches directories with RRD files in them. */
 	public static final FileFilter INTERFACE_DIRECTORY_FILTER = new FileFilter() {
 		public boolean accept(File file) {
-                    return isValidRRDInterfaceDir(file);
+		    return isValidRRDInterfaceDir(file);
 		}
 	};    
 	
@@ -85,7 +85,25 @@ public class RrdFileConstants extends Object
 		
 	    return false;
 	}
+	
+	/** 
+	 * Determines if the provided File object represents a valid
+	 * RRD latency directory.
+	 */
+	public static final boolean isValidRRDLatencyDir(File file) {
+	    if(!file.isDirectory()) {
+		return false;              
+	    }
 	    
+	    //if the directory contains RRDs, then it is queryable
+	    File[] nodeRRDs = file.listFiles(RRD_FILENAME_FILTER);
+	    if(nodeRRDs != null && nodeRRDs.length > 0) {
+		return true;
+	    }	      
+	    
+	    return false;
+	}
+	
 	/**
 	 * Checks an RRD filename to make sure it is of the proper length
 	 * and does not contain any unexpected charaters.  

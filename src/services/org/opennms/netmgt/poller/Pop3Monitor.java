@@ -41,6 +41,7 @@ import java.util.StringTokenizer;
 import org.apache.log4j.Priority;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * <P>This class is designed to be used by the service poller
@@ -103,9 +104,9 @@ final class Pop3Monitor
 		//
 		Category log = ThreadCategory.getInstance(getClass());
 
-		int retry   = getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-		int port    = getKeyedInteger(parameters, "port", DEFAULT_PORT);
-		int timeout = getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT) + 1;
+		int retry   = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+		int port    = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
+		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT) + 1;
 
 		InetAddress ipv4Addr = (InetAddress)iface.getAddress();
 

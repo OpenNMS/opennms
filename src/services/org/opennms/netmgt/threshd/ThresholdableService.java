@@ -207,7 +207,7 @@ final class ThresholdableService
 				}
 
 				// Add configured service 'interval' attribute as
-				// a property as well.  Needed by the SnmpThresholder
+				// a property as well.  Needed by the ServiceThresholder
 				// check() method in order to generate the
 				// correct rrdtool fetch command.
 				m.put("interval", Integer.toString((int)m_service.getInterval()));

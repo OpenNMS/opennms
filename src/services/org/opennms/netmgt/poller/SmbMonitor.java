@@ -37,6 +37,7 @@ import jcifs.netbios.NbtAddress;
 import org.apache.log4j.Priority;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * <P>This class is designed to be used by the service poller
@@ -89,8 +90,8 @@ final class SmbMonitor
 
 		// get parameters
 		//
-		int retry   = getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-		int timeout = getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+		int retry   = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
 
 		// Extract the address
 		//
