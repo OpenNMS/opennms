@@ -196,24 +196,81 @@ public class NotificationFactory
 		
 		return notif;
 	}
+
+	// Compare the event with the passed notification
+	// and return true if the interface and service match.
 	
 	private boolean nodeInterfaceServiceValid(Notification notif, Event event)
 	{
 		boolean result = false;
-		
+
 		Connection connection = null;
 		try
 		{
+
+			// Get the Interface and Service from the Event
+
+			long eventNode = event.getNodeid();
+			String eventIf = (String)event.getInterface();
+			String eventSrv = (String)event.getService();
+
+                        if (eventNode == 0 && eventIf == null && eventSrv == null)
+                        {
+                                return true;
+                        }
+
+                        // ThreadCategory.getInstance(getClass()).debug("Notification Event Interface: " + eventIf + " Service: " + eventSrv);
+
+			// Get the Notification Rule
+
 			Filter filter = new Filter(notif.getRule());
+
+			// Select the Interfaces and Services that match the rule
 			
-			String sql = filter.getSQLStatement(event.getNodeid(), event.getInterface(), event.getService());
+			String sql = filter.getInterfaceWithServiceStatement();
+
+                        // ThreadCategory.getInstance(getClass()).debug("getSQL Returned SQL for Notification: " + notif.getName() + ": " + sql);
 			
 			connection = DatabaseConnectionFactory.getInstance().getConnection();
 			Statement stmt = connection.createStatement();
 			ResultSet rows = stmt.executeQuery(sql);
 			
-			result = rows.last();
+			// Loop through the rows returned from the SQL query and return true if they match event
+			
+                        while (rows.next())
+                        {
+				String notifIf = rows.getString(1);
+				String notifSrv = rows.getString(2);
+                                long notifNode = rows.getLong(3);
 
+                       		// ThreadCategory.getInstance(getClass()).debug("Notification Notif Interface: " + notifIf + " Service: " + notifSrv);
+						
+                                // if there is no If with the event, there can be no service, thus check only if the node matches
+				if (eventIf == null)
+				{
+                                        if (eventNode == notifNode)
+                                        {
+                                                result = true;
+                                                break;
+                                        }
+				}
+                                // If there is no Srv with the event, check and see if the If matches
+				else if (eventSrv == null)
+				{
+					if(eventIf.equals(notifIf))
+					{
+						result = true;
+						break;
+					}
+				}
+                                // Otherwise, insure that both the Srv and If match
+				else if (eventSrv.equals(notifSrv) && eventIf.equals(notifIf))
+				{
+					result = true;
+					break;
+				}
+			}
+									 
 			try
 			{
 				rows.close();
@@ -343,7 +400,7 @@ public class NotificationFactory
 		try
 		{
 			connection = DatabaseConnectionFactory.getInstance().getConnection();
-			StringBuffer sql = new StringBuffer("SELECT notifyid FROM notifications WHERE eventuei=? ");
+			StringBuffer sql = new StringBuffer("SELECT notifyid FROM notifications WHERE eventuei=? AND respondTime is null ");
                         
                         for (int i = 0; i < matchList.length; i++)
                         {

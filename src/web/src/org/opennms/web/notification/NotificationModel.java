@@ -55,10 +55,10 @@ public class NotificationModel extends Object
     private final String SENT_TO          = "SELECT userid, notifytime, media, contactinfo FROM usersnotified WHERE notifyid=?";
     private final String INSERT_NOTIFY    = "INSERT INTO NOTIFICATIONS (notifyid, textmsg, numericmsg, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid) VALUES (NEXTVAL('notifyNxtId'), ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     //private final String UPDATE_NOTIFY    = "UPDATE NOTIFICATIONS SET " + REPLYTIME + "  = ? , " + ANS_BY + " = ? WHERE " + NOTIFY + " = ? ";
-    private final String OUTSTANDING      = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid FROM NOTIFICATIONS WHERE respondTime = NULL";
-    private final String OUTSTANDING_COUNT = "SELECT COUNT(*) AS TOTAL FROM NOTIFICATIONS WHERE respondTime=NULL";
-    private final String USER_OUTSTANDING = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid FROM NOTIFICATIONS WHERE (respondTime = NULL) AND notifications.notifyid in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid=?)";
-    private final String USER_OUTSTANDING_COUNT = "SELECT COUNT(*) AS TOTAL FROM NOTIFICATIONS WHERE (respondTime=NULL) AND AND userID LIKE ?";
+    private final String OUTSTANDING      = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid FROM NOTIFICATIONS WHERE respondTime is NULL";
+    private final String OUTSTANDING_COUNT = "SELECT COUNT(*) AS TOTAL FROM NOTIFICATIONS WHERE respondTime is NULL";
+    private final String USER_OUTSTANDING = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid FROM NOTIFICATIONS WHERE (respondTime is NULL) AND notifications.notifyid in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid=?)";
+    private final String USER_OUTSTANDING_COUNT = "SELECT COUNT(*) AS TOTAL FROM NOTIFICATIONS WHERE (respondTime is NULL) AND AND userID LIKE ?";
 
     /**
      * Static Log4j logging category

@@ -81,6 +81,10 @@
         {
             alert("Please give this path a name.");
         }
+        else if (trimmed.indexOf(" ") != -1)
+        {
+            alert("Please do not use spaces in path names.");
+        }
         else if (document.outline.escalate0.options.length==0)
         {
             alert("Please give this path some initial targets.");

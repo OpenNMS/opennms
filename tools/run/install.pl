@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!@root.install.perl@ -w
 
 $|++;
 
@@ -286,7 +286,7 @@ filename expansion and RPM's handling of upgrades or
 installs on multiple files.  Please see the FAQ entry on
 the opennms site at:
 
-  http://www.opennms.org/cgi-bin/fom?file=39
+  http://faq.opennms.org/faq/fom-serve/cache/39.html
 
 END
   }
@@ -748,71 +748,73 @@ unless ($NOINSERT) {
 
 unless ($NOTOMCAT) {
 
-  if (-f $serverxml) {
-    my    $server_in;
-
-    print "- checking Tomcat 4 for OpenNMS web UI... ";
-    if (open(FILEIN, $serverxml)) {
-      $server_in .= $_ while (<FILEIN>);
-      close (FILEIN);
-
-      if (grep(/opennms/gsi, $server_in)) {
-        if (not grep(/homeDir/gs, $server_in)) {
+  for my $dir ('/var/tomcat4/conf', '/usr/local/tomcat/conf') {
+    $serverxml = $dir . '/server.xml';
+    if (-f $serverxml) {
+      my    $server_in;
+  
+      print "- checking Tomcat 4 for OpenNMS web UI... ";
+      if (open(FILEIN, $serverxml)) {
+        $server_in .= $_ while (<FILEIN>);
+        close (FILEIN);
+  
+        if (grep(/opennms/gsi, $server_in)) {
+          if (not grep(/homeDir/gs, $server_in)) {
+            print "UPDATING:\n";
+            if (open(FILEOUT, ">$serverxml")) {
+              $server_in =~ s#userFile\s*=\s*\".*?\"\s*#homeDir="${OPENNMS_HOME}" #gs;
+              $server_in =~ s#<Logger className="org.apache.catalina.logger.FileLogger" prefix="localhost_opennms_log." suffix=".txt" timestamp="true"/>#<Logger className="org.opennms.web.log.Log4JLogger" homeDir="${OPENNMS_HOME}" />#gs;
+              
+              print FILEOUT $server_in;
+              if (close(FILEOUT)) {
+                print "DONE\n";
+              }
+            } else {
+              $ERRORS++;
+              print "FAILED\n";
+            }
+          } else {
+            print "FOUND\n";
+          }
+        } else {
           print "UPDATING:\n";
+  
+          print "- adding OpenNMS web UI context to server.xml... ";
+  
           if (open(FILEOUT, ">$serverxml")) {
-            $server_in =~ s#userFile\s*=\s*\".*?\"\s*#homeDir="${OPENNMS_HOME}" #gs;
-            $server_in =~ s#<Logger className="org.apache.catalina.logger.FileLogger" prefix="localhost_opennms_log." suffix=".txt" timestamp="true"/>#<Logger className="org.opennms.web.log.Log4JLogger" homeDir="${OPENNMS_HOME}" />#gs;
-            
-            print FILEOUT $server_in;
+            for my $line (split(/\r?\n/, $server_in)) {
+              if ($line =~ m#</host>#gsi) {
+                print FILEOUT <<END;
+  
+          <Context path="/opennms" docBase="opennms" debug="0" reloadable="true">
+           <Logger className="org.opennms.web.log.Log4JLogger" homeDir="${OPENNMS_HOME}"/>
+           <Realm className="org.opennms.web.authenticate.OpenNMSTomcatRealm" homeDir="${OPENNMS_HOME}"/>
+          </Context>
+  
+END
+              }
+  
+              print FILEOUT $line, "\n";
+            }
             if (close(FILEOUT)) {
               print "DONE\n";
+            } else {
+              $ERRORS++;
+              print "FAILED\n";
             }
           } else {
             $ERRORS++;
             print "FAILED\n";
           }
-        } else {
-          print "FOUND\n";
         }
+  
       } else {
-        print "UPDATING:\n";
-
-        print "- adding OpenNMS web UI context to server.xml... ";
-
-        if (open(FILEOUT, ">$serverxml")) {
-          for my $line (split(/\r?\n/, $server_in)) {
-            if ($line =~ m#</host>#gsi) {
-              print FILEOUT <<END;
-
-        <Context path="/opennms" docBase="opennms" debug="0" reloadable="true">
-         <Logger className="org.opennms.web.log.Log4JLogger" homeDir="${OPENNMS_HOME}"/>
-         <Realm className="org.opennms.web.authenticate.OpenNMSTomcatRealm" homeDir="${OPENNMS_HOME}"/>
-        </Context>
-
-END
-            }
-
-            print FILEOUT $line, "\n";
-          }
-          if (close(FILEOUT)) {
-            print "DONE\n";
-          } else {
-            $ERRORS++;
-            print "FAILED\n";
-          }
-        } else {
-          $ERRORS++;
-          print "FAILED\n";
-        }
+        $ERRORS++;
+        print "FAILED\n";
       }
-
     } else {
-      $ERRORS++;
-      print "FAILED\n";
+      print "*** $serverxml not found ***\n";
     }
-  } else {
-    print "*** $serverxml not found ***\n";
-  }
 
 }
 
@@ -941,7 +943,7 @@ unless ($NOSO) {
   my $plpgsql_failed = 0;
   my $plpgsql_sofile;
   print "- adding PL/pgSQL call handler... ";
-  for my $dir ('/usr/lib', '/usr/local/lib', '/sw/lib') {
+  for my $dir ('/usr/lib', '/usr/local/lib', '/sw/lib', '/usr/local/pgsql/lib') {
     for ($SOEXT, 'so') {
       if (-d "$dir") {
         if (-f "$dir/pgsql/plpgsql.$_") {

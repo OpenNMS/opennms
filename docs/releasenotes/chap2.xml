@@ -6,7 +6,142 @@
 		Besides bugfixes, there are a large number of UI, as well as behind-the-scene, changes in
 		OpenNMS 1.0.0 and above.
 	</para>
-	<sect1 id="chap2sect1" label="2.1.">
+        <sect1 id="chap2sect1" label="2.1.">
+                <title>Changes in OpenNMS 1.0.2 and Above</title>
+                <para>
+                        The following bug fixes and configuration additions occurred between 1.0.0 and 1.0.2:
+                        <itemizedlist>
+                                <listitem>
+                                        <formalpara>
+                                                <title>Corrected Event Configuration Functionality</title>
+                                                <para>
+                                                        The SNMP Generic Traps, numbers 0 through 5, were
+							hard-coded into OpenNMS. Thus if you wanted to
+							treat linkDown events from one system differently
+							than another, you had to do so via an external script.
+							This has been corrected. Also, the order in which
+							the events are listed in eventconf.xml is now strictly
+							enforced. Bug 666
+                                                </para>
+                                        </formalpara>
+                                </listitem>
+                                <listitem>
+                                        <formalpara>
+                                                <title>Added Over 2750 Event Definitions</title>
+                                                <para>
+                                                        The eventconf.xml file has been greatly expanded to
+                                                        include event definitions for SNMP traps from
+                                                        3Com, APC, Brocade, Compaq Insight Manager, Cisco
+                                                        Fore, HP, Intel, Microsoft, Novell, Oracle, SonicWall
+                                                        and Xerox devices.
+                                                </para>
+                                        </formalpara>
+                                </listitem>
+                                <listitem>
+                                        <formalpara>
+                                                <title>Notification Filtering Now Works Correctly</title>
+                                                <para>
+							The ability to build rules to filter notifications
+							is one of the more useful features of notifications,
+							but it didn't work. This has been corrected, and in
+							the process, filtering node-level events via IP address
+							was implemented. Bug 664.
+                                                </para>
+                                        </formalpara>
+                                </listitem>
+                                <listitem>
+                                        <formalpara>
+                                                <title>Fixed Service Deletion in Downtime Model</title>
+                                                <para>
+							The poller downtime model allows for a service to be
+							deleted if it has been down for a certain amount of
+							time. This did not work correctly and has been fixed.
+                                                </para>
+                                        </formalpara>
+                                </listitem>
+                                <listitem>
+                                        <formalpara>
+                                                <title>Reduced the Amount of Data Initially Collected from the ifTable</title>
+                                                <para>
+                                                        During discovery, the ifTable is collected from each device
+							that is found to support SNMP. On some HP switches, this
+							would fail due to a limitation on the SNMP maximum packet size.
+							All non-essential ifTable elements were removed from the request
+							that appears to resolve the problem.
+                                                </para>
+                                        </formalpara>
+                                </listitem>
+                                <listitem>
+                                        <formalpara>
+                                                <title>Removed Spaces in Notification Path Names</title>
+                                                <para>
+                                                        Spaces in Notification Path names have been known to
+							cause problems. The Web UI was modified to disallow
+							spaces in path names. Bug 657.
+                                                </para>
+                                        </formalpara>
+                                </listitem>
+                                <listitem>
+                                        <formalpara>
+                                                <title>Fixed the AM/PM Ordering on Performance Report UI.</title>
+                                                <para>
+							In the Custom Performance Report Web UI, 11 PM was
+							followed by 12 PM, when it should have been 12 AM. This
+							has been corrected. Bug 515.
+                                                </para>
+                                        </formalpara>
+                                </listitem>
+                        </itemizedlist>
+                </para>
+	</sect1>
+        <sect1 id="chap2sect2" label="2.2.">
+                <title>Changes in OpenNMS 1.0.1 and Above</title>
+                <para>
+                        The following changes occurred between 1.0.0 and 1.0.1:
+                        <itemizedlist>
+                                <listitem>
+                                        <formalpara>
+                                                <title>Added a "contrib" Directory</title>
+                                                <para>
+							The "contrib" directory now contains code, such as nifty
+							utilities, that exists outside of the main OpenNMS source
+							but may prove useful. One such example is Tomas Carlsson's
+							"mib2opennms" program. These programs are not supported.
+                                                </para>
+                                        </formalpara>
+                                </listitem>
+                                <listitem>
+                                        <formalpara>
+                                                <title>Removed Duplicate Entries in <filename>capsd-configuration.xml</filename></title>
+                                                <para>
+							Both LDAP and Citrix protocol plug-ins were listed twice. This
+							would slow down the capabilities scan considerably.	
+                                                </para>
+                                        </formalpara>
+                                </listitem>
+                                <listitem>
+                                        <formalpara>
+                                                <title>Updated Data Collection and Graphing</title>
+                                                <para>
+							Added new entries to <filename>datacollection-config.xml</filename>
+							and <filename>snmp-graph.properties</filename>.
+                                                </para>
+                                        </formalpara>
+                                </listitem>
+                                <listitem>
+                                        <formalpara>
+                                                <title>Bugfixes</title>
+                                                <para>
+                                                        Many bugfixes, including allowing Threshold events to generate
+							notifications, AdminStatus and OperStatus values causing
+							exceptions, and rescans with certain devices.
+                                                </para>
+                                        </formalpara>
+                                </listitem>
+                        </itemizedlist>
+                </para>
+        </sect1>
+	<sect1 id="chap2sect2" label="2.3.">
 		<title>Changes in OpenNMS 1.0.0 and Above</title>
 		<para>
 			The following major changes occurred between 0.9.9 and 1.0.0:

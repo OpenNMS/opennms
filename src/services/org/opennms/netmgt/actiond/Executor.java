@@ -502,6 +502,16 @@ final class Executor
 						log.debug("Getting ready to execute \'" + cmd + "\'");
 
 					Process px = Runtime.getRuntime().exec(execArgs);
+					// Added by Nick Wesselman to attempt to workaround
+					// 1.4.1 JDK bug http://developer.java.sun.com/developer/bugParade/bugs/4763384.html
+					try
+					{
+						Thread.sleep(1);
+					}
+					catch(InterruptedException e) 
+					{
+						// log?
+					}
 					m_processes.add(new DatedProc(cmd, px));
 				}
 				catch(IOException ex)

@@ -571,7 +571,9 @@ final class PollableService
 		Parms parms = null;
 		
 		// Qualifier parm (if available)
-		String qualifier = (String)properties.get("qualifier");
+		String qualifier = null;
+		if (properties != null)
+			qualifier = (String)properties.get("qualifier");
 		if(qualifier != null && qualifier.length() > 0)
 		{
 			if (parms == null)

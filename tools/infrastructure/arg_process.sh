@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 VERSION_BUILD_ARG_PROCESS='1.1.1.1'
 PACKAGES="$PACKAGES ARG_PROCESS"
@@ -39,7 +39,7 @@ check_arg () {
 	esac
 }
  
-if echo "$1" | grep -q -- - 2>/dev/null; then
+if echo "$1" | grep -- - >/dev/null 2>&1; then
 	for ARG
 	do
 		if check_arg "$ARG"; then

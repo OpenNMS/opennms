@@ -137,6 +137,24 @@
       
       <br>
       
+      <table width="100%" border="1" cellspacing="0" cellpadding="2" bgcolor="#cccccc" bordercolor="black">        <tr bgcolor="#999999">
+          <td align="left" valign="top">Operator Instructions</td>
+        </tr>
+	
+        <tr>
+          <td align="left" valign="top"> 
+	    <%if (event.getOperatorInstruction()==null) { %>
+              No instructions available
+            <% } else { %>
+              <%=event.getOperatorInstruction()%>
+            <% } %>
+	  </td>
+        </tr>
+      </table>
+      
+      <br>
+
+      
       <FORM METHOD="POST" NAME="acknowlegde" ACTION="event/acknowledge">
         <input type="hidden" name="action" value="<%=action%>" />
         <input type="hidden" name="event" value="<%=event.getId()%>"/>

@@ -1,2 +1,8 @@
-var/tomcat4/webapps/opennms
-opt/OpenNMS
+etc/opennms
+usr/bin
+usr/lib
+usr/lib/postgresql/lib/opennms
+usr/share/java/webapps/opennms
+usr/share/opennms
+usr/share/tomcat4/server/lib
+var/lib/opennms

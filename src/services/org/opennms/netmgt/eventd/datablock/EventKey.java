@@ -43,7 +43,7 @@ import java.io.Serializable;
  * @author 	<A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
  * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
  */
-public class EventKey extends Hashtable implements Serializable, Comparable
+public class EventKey extends LinkedHashMap implements Serializable, Comparable
 {
 	/**
 	 * The UEI xml tag

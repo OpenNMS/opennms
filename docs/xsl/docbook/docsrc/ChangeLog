@@ -1,0 +1,41 @@
+2001-09-29  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* extensions.xml: Improved instructions for using Saxon/Xalan extensions
+
+2001-08-13  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* documentation.xml: Added link to profiling documentation
+
+2001-08-06  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* xsl2jref.xsl: Documentation and documentation generation tweaks
+
+2001-08-01  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* xsl2jref.xsl: Expand the sf.net reference to sourceforge.net because of DNS problems
+
+2001-07-31  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* documentation.xml: Added stylesheet for profiling together with documentation.
+
+2001-07-09  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* xsl2jref.xsl: Fixed doctype for jrefentry DTD
+
+2001-06-20  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* copyright.xml, reference.xml: Fixed FPI
+
+2001-05-13  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* xsl2jref.xsl: Include param.xsl for chunker
+
+2001-04-03  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* Makefile, jrefhtml.xsl, xsl2jref.xsl: Documentation fixes
+
+2001-04-02  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* Makefile, copyright.xml, documentation.xml, extensions.xml, jrefhtml.xsl, legalnotice.xml, publishing.xml, reference.xml, template-example.xml, template-example.xsl, templates.xml, warranty.xml, xsl2jref.xsl: 
+	New file.
+

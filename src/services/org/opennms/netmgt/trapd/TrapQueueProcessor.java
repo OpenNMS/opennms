@@ -65,6 +65,12 @@ class TrapQueueProcessor
 	private static final String SNMP_SYSUPTIME_OID=".1.3.6.1.2.1.1.3.0";
 
 	/**
+	 * The sysUpTimeOID, which should be the first varbind in a V2 trap, 
+	 * but in the case of Extreme Networks only mostly 
+	 */
+	private static final String EXTREME_SNMP_SYSUPTIME_OID=".1.3.6.1.2.1.1.3";
+
+	/**
 	 * The snmpTrapOID, which should be the second varbind in a V2 trap
 	 */
 	private static final String SNMP_TRAP_OID=".1.3.6.1.6.3.1.1.4.1.0";
@@ -227,11 +233,18 @@ class TrapQueueProcessor
 		{
 			//
 			// The first varbind has the sysUpTime
+			// Modify the sysUpTime varbind to add the trailing 0 if it is missing
 			// The second varbind has the snmpTrapOID
 			// Confirm that these two are present
 			//
 			String varBindName0 = pdu.getVarBindAt(0).getName().toString();
 			String varBindName1 = pdu.getVarBindAt(1).getName().toString();
+			if (varBindName0.equals(EXTREME_SNMP_SYSUPTIME_OID))
+			{
+				log.warn("V2 trap from " + trapInterface + " has been corrected due to the sysUptime.0 varbind not having been sent with a trailing 0.\n\tVarbinds received are : " + varBindName0 + " and " + varBindName1);
+				varBindName0 = SNMP_SYSUPTIME_OID;
+			}
+
 			if ( (!(varBindName0.equals(SNMP_SYSUPTIME_OID))) ||
 			     (!(varBindName1.equals(SNMP_TRAP_OID)))      )
 			{
@@ -588,7 +601,7 @@ class TrapQueueProcessor
 				for(int x = 0; x < data.length; x++)
 				{
 					byte b = data[x];
-					if((b < 32 && b != 10 && b != 13) ||  b == 127)
+					if((b < 32 && b != 9 && b != 10 && b != 13) ||  b == 127)
 					{
 						asHex = true;
 						break;

@@ -24,7 +24,7 @@
         </group>
         <group>
             <name>Reporting</name>
-            <comments>The management group</comments>
+            <comments>The reporting group</comments>
         </group>
 	<group>
 	    <name>Admin</name>

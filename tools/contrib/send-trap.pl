@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!@root.install.perl@
 #
 # a quick hack of a script to send traps
 # by Ben Reed (ben@opennms.org)

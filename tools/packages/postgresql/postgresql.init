@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # postgresql	This is the init script for starting up the PostgreSQL
 #		server
 #

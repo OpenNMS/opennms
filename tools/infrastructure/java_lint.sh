@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 VERSION_BUILD_JAVA_LINT='1.3'
 PACKAGES="$PACKAGES JAVA_LINT"
@@ -27,7 +27,9 @@ java_lint () {
 
 	if [ -z "$JAVA_HOME" ]; then
 
-		for jdk in /Library/Java/Home /usr/java/jdk1.4* /usr/java/j2sdk1.4* /opt/IBMJava2-13 /usr/java/jdk1.3.1_* /usr/java/jdk1.3.1* /usr/java/j2sdk1.3.1* /usr/lib/j2sdk1.3*; do
+		# prefer the Apple JDK, then the newest 1.4 sun JDK, then whatever's left
+		JAVADIR=`ls -1 /usr/java 2>/dev/null | grep 1.4 | sort | tail -1`
+		for jdk in /Library/Java/Home $JAVADIR /usr/java/jdk1.4* /usr/java/j2sdk1.4*; do
 			if [ -x "$jdk/bin/java" ]; then
 				export JAVA_HOME="$jdk";
 				break
@@ -108,7 +110,7 @@ check_java_version () {
 	[ -z "$1" ] && return 1
 
 	if [ -x "$1/bin/java" ]; then
-		if $1/bin/java -version 2>&1 | grep -q "cannot open shared object file"; then
+		if $1/bin/java -version 2>&1 | grep "cannot open shared object file" >/dev/null 2>&1; then
 			cat <<END_SOERROR
 
 Error!  You have the JDK 1.4.0 installed but you are
@@ -137,7 +139,7 @@ is_hotspot_vm () {
 	_rc=1
 	HOTSPOT=false
 	if [ -n "$1" -a -x "$1/bin/java" ] ; then
-		if $1/bin/java -version 2>&1 | grep -q -i HotSpot 2>&1; then
+		if $1/bin/java -version 2>&1 | grep -i HotSpot >/dev/null 2>&1; then
 			if [ "`uname`" != "Darwin" ]; then
 				HOTSPOT=true
 				_rc=0

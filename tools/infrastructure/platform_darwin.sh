@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 VERSION_BUILD_PLATFORM_SUN='$Revision$'
 PACKAGES="$PACKAGES PLATFORM_DARWIN"

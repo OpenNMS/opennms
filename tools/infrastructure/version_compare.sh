@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 VERSION_BUILD_VERSION_COMPARE='1.2'
 PACKAGES="$PACKAGES VERSION_COMPARE"
@@ -15,7 +15,7 @@ format_version () {
 	local RELEASE_STRING=''
 	local VERSION_STRING=`echo $1 | sed -e 's#\.##g' | sed -e 's#-.*$##g'`
 	VERSION_STRING=`echo "${VERSION_STRING}000" | sed -e 's/^\(...\).*$/\1/'`
-	if echo "$1" | grep -q -- -; then
+	if echo "$1" | grep -- - >/dev/null 2>&1; then
 		RELEASE_STRING=`echo $1 | sed -e 's#^.*\-##g' | sed -e 's#[[:alpha:]]*$##'`
 	else
 		RELEASE_STRING=1
