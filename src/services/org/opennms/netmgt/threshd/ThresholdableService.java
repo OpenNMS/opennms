@@ -149,8 +149,8 @@ final class ThresholdableService extends IPv4NetworkInterface implements ReadyRu
      * 
      */
     ThresholdableService(int dbNodeId, InetAddress address, String svcName, org.opennms.netmgt.config.threshd.Package pkg) {
+        super(address);
         m_nodeId = dbNodeId;
-        m_address = address; // IPv4NetworkInterface address
         m_package = pkg;
         m_status = ServiceThresholder.THRESHOLDING_SUCCEEDED;
 

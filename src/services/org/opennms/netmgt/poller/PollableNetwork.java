@@ -101,20 +101,44 @@ public class PollableNetwork {
         Iterator j = m_pollableNodes.values().iterator();
         while (j.hasNext()) {
             PollableNode pNode = (PollableNode) j.next();
-            v.visitNode(pNode);
-            Iterator k = pNode.getInterfaces().iterator();
-            while (k.hasNext()) {
-                PollableInterface pIf = (PollableInterface) k.next();
-                v.visitInterface(pIf);
-                Iterator s = pIf.getServices().iterator();
-                while (s.hasNext()) {
-                    PollableService pSvc = (PollableService) s.next();
-                    v.visitService(pSvc);
-                }
-            }
+            visitNode(pNode, v);
         }
 
     }
+
+    private void visitNode(PollableNode pNode, PollableVisitor v) {
+        v.visitNode(pNode);
+        Iterator k = pNode.getInterfaces().iterator();
+        while (k.hasNext()) {
+            PollableInterface pIf = (PollableInterface) k.next();
+            v.visitInterface(pIf);
+            Iterator s = pIf.getServices().iterator();
+            while (s.hasNext()) {
+                PollableService pSvc = (PollableService) s.next();
+                v.visitService(pSvc);
+            }
+        }
+    }
+
+    class DumpVisitor implements PollableVisitor {
+        
+        private Category m_log;
+
+        public DumpVisitor(Category log) {
+            m_log = log;
+        }
+        public void visitNode(PollableNode pNode) {
+            m_log.debug(" nodeid=" + pNode.getNodeId() + " status=" + Pollable.statusType[pNode.getStatus()]);
+        }
+
+        public void visitInterface(PollableInterface pIf) {
+            m_log.debug("     interface=" + pIf.getAddress().getHostAddress() + " status=" + Pollable.statusType[pIf.getStatus()]);
+        }
+
+        public void visitService(PollableService pSvc) {
+            m_log.debug("         service=" + pSvc.getServiceName() + " status=" + Pollable.statusType[pSvc.getStatus()]);
+        }
+    };
 
     /**
      * @param poller
@@ -122,21 +146,14 @@ public class PollableNetwork {
     public void dumpNetwork() {
         final Category log = ThreadCategory.getInstance(getClass());
 
-        PollableVisitor dumper = new PollableVisitor() {
-            public void visitNode(PollableNode pNode) {
-                log.debug(" nodeid=" + pNode.getNodeId() + " status=" + Pollable.statusType[pNode.getStatus()]);
-            }
-
-            public void visitInterface(PollableInterface pIf) {
-                log.debug("     interface=" + pIf.getAddress().getHostAddress() + " status=" + Pollable.statusType[pIf.getStatus()]);
-            }
-
-            public void visitService(PollableService pSvc) {
-                log.debug("         service=" + pSvc.getServiceName() + " status=" + Pollable.statusType[pSvc.getStatus()]);
-            }
-        };
+        DumpVisitor dumper = new DumpVisitor(log);
         visit(dumper);
 
+    }
+    
+    public void dumpNode(PollableNode node) {
+        DumpVisitor dumper = new DumpVisitor(ThreadCategory.getInstance(getClass()));
+        visitNode(node, dumper);
     }
 
     public PollableService createPollableService(int nodeId, String ipAddr, String svcName, Package pkg, int lastKnownStatus, Date svcLostDate) throws InterruptedException, UnknownHostException {
@@ -157,11 +174,12 @@ public class PollableNetwork {
                 // Nope...so we need to create it
                 pNode = new PollableNode(nodeId, m_poller);
                 nodeCreated = true;
-            } else {
-                // Obtain node lock
-                //
-                ownLock = pNode.getNodeLock(Poller.WAIT_FOREVER);
-            }
+            } 
+            
+            // Obtain node lock
+            //
+            ownLock = pNode.getNodeLock(NodeLocker.WAIT_FOREVER);
+            
 
             // Does the interface exist in the pollable
             // node?

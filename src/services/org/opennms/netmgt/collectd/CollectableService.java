@@ -153,8 +153,8 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
      * 
      */
     CollectableService(int dbNodeId, InetAddress address, String svcName, org.opennms.netmgt.config.collectd.Package pkg) {
+        super(address);
         m_nodeId = dbNodeId;
-        m_address = address; // IPv4NetworkInterface address
         m_package = pkg;
         m_status = ServiceCollector.COLLECTION_SUCCEEDED;
 

@@ -69,16 +69,11 @@ import org.opennms.netmgt.xml.event.Value;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-public class PollableNode {
+public class PollableNode extends PollableElement {
     /**
      * nodeId
      */
     private int m_nodeId;
-
-    /**
-     * last known/current status of the node
-     */
-    private int m_status;
 
     /**
      * Set by poll() method.
@@ -107,13 +102,17 @@ public class PollableNode {
      * Constructor.
      */
     public PollableNode(int nodeId, Poller poller) {
-        m_nodeId = nodeId;
+        super(Pollable.STATUS_UNKNOWN);
         m_poller = poller;
+
+        m_nodeId = nodeId;
+        m_interfaces = Collections.synchronizedMap(new HashMap());
+
         m_lock = new Object();
         m_isLocked = false;
-        m_interfaces = Collections.synchronizedMap(new HashMap());
+
         m_statusChangedFlag = false;
-        m_status = Pollable.STATUS_UNKNOWN;
+
         m_isDeleted = false;
     }
 
@@ -128,9 +127,9 @@ public class PollableNode {
     public synchronized void addInterface(PollableInterface pInterface) {
         m_interfaces.put(pInterface.getAddress().getHostAddress(), pInterface);
 
-        int oldStatus = m_status;
+        int oldStatus = getStatus();
         this.recalculateStatus();
-        int newStatus = m_status;
+        int newStatus = getStatus();
         if (oldStatus != newStatus)
             m_statusChangedFlag = true;
     }
@@ -145,16 +144,12 @@ public class PollableNode {
 
     public synchronized void removeInterface(PollableInterface pInterface) {
         m_interfaces.remove(pInterface.getAddress().getHostAddress());
-        int oldStatus = m_status;
+        int oldStatus = getStatus();
         this.recalculateStatus();
-        int newStatus = m_status;
+        int newStatus = getStatus();
         if (oldStatus != newStatus)
             m_statusChangedFlag = true;
         
-    }
-
-    public int getStatus() {
-        return m_status;
     }
 
     public boolean statusChanged() {
@@ -215,10 +210,10 @@ public class PollableNode {
         else
             status = Pollable.STATUS_UP;
 
-        m_status = status;
+        setStatus(status);
 
         if (log.isDebugEnabled())
-            log.debug("recalculateStatus: completed, nodeId=" + m_nodeId + " status=" + Pollable.statusType[m_status]);
+            log.debug("recalculateStatus: completed, nodeId=" + m_nodeId + " status=" + Pollable.statusType[getStatus()]);
 
     }
 
@@ -266,12 +261,12 @@ public class PollableNode {
         // for the time on all generated events
         java.util.Date date = new java.util.Date();
 
-        if (m_statusChangedFlag && m_status == Pollable.STATUS_DOWN) {
+        if (m_statusChangedFlag && getStatus() == Pollable.STATUS_DOWN) {
             // create nodeDown event and add it to the event list
             events.addEvent(createEvent(EventConstants.NODE_DOWN_EVENT_UEI, null, null, date));
 
             resetStatusChanged();
-        } else if (m_statusChangedFlag && m_status == Pollable.STATUS_UP) {
+        } else if (m_statusChangedFlag && getStatus() == Pollable.STATUS_UP) {
             // send nodeUp event
             events.addEvent(createEvent(EventConstants.NODE_UP_EVENT_UEI, null, null, date));
             resetStatusChanged();
@@ -301,7 +296,7 @@ public class PollableNode {
                     }
                 }
             }
-        } else if (m_status == Pollable.STATUS_UP) {
+        } else if (getStatus() == Pollable.STATUS_UP) {
             // iterate over the node's interfaces
             // if status of interface changed to DOWN
             // generate interfaceDown event
@@ -486,7 +481,7 @@ public class PollableNode {
         Category log = ThreadCategory.getInstance(getClass());
 
         if (log.isDebugEnabled())
-            log.debug("poll: polling nodeid " + m_nodeId + " status=" + Pollable.statusType[m_status]);
+            log.debug("poll: polling nodeid " + m_nodeId + " status=" + Pollable.statusType[getStatus()]);
 
         m_statusChangedFlag = false;
 
@@ -500,7 +495,7 @@ public class PollableNode {
 
         // Polling logic if node is currently DOWN
         //
-        if (m_status == Pollable.STATUS_DOWN) {
+        if (getStatus() == Pollable.STATUS_DOWN) {
             // Poll the service via the PollableInterface object
             ifStatus = pInterface.poll(pSvc);
 
@@ -524,7 +519,7 @@ public class PollableNode {
                         // the
                         // interface passing it the critical service
                         if (criticalSvc != null && pIf.supportsService(criticalSvc)) {
-                            PollableService criticalNif = pIf.getService(criticalSvc);
+                            PollableService criticalNif = pIf.findService(criticalSvc);
                             pIf.poll(criticalNif);
                         } else {
                             // No critical service defined or interface doesn't
@@ -542,13 +537,13 @@ public class PollableNode {
                 }
 
                 // Mark node as UP
-                m_status = Pollable.STATUS_UP;
+                setStatus(Pollable.STATUS_UP);
                 m_statusChangedFlag = true;
             }
         }
         // Polling logic if node is currently UP
         //
-        else if (m_status == Pollable.STATUS_UP) {
+        else if (getStatus() == Pollable.STATUS_UP) {
             // Poll the service via the PollableInterface object
             ifStatus = pInterface.poll(pSvc);
 
@@ -579,7 +574,7 @@ public class PollableNode {
                         // interface passing it the critical service
                         int tmpStatus = Pollable.STATUS_UNKNOWN;
                         if (criticalSvc != null && pIf.supportsService(criticalSvc)) {
-                            PollableService criticalNif = pIf.getService(criticalSvc);
+                            PollableService criticalNif = pIf.findService(criticalSvc);
                             tmpStatus = pIf.poll(criticalNif);
                         } else {
                             // No critical service defined or interface doesn't
@@ -603,7 +598,7 @@ public class PollableNode {
 
                 // If all interfaces are now DOWN then mark node DOWN
                 if (allInterfacesDown) {
-                    m_status = Pollable.STATUS_DOWN;
+                    setStatus(Pollable.STATUS_DOWN);
                     m_statusChangedFlag = true;
                 }
             }
@@ -615,9 +610,9 @@ public class PollableNode {
         generateEvents();
 
         if (log.isDebugEnabled())
-            log.debug("poll: poll of nodeid " + m_nodeId + " completed, status=" + Pollable.statusType[m_status]);
+            log.debug("poll: poll of nodeid " + m_nodeId + " completed, status=" + Pollable.statusType[getStatus()]);
 
-        return m_status;
+        return getStatus();
     }
 
     /**

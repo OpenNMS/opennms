@@ -62,7 +62,7 @@ import java.util.Map;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-public abstract class IPv4NetworkInterface implements NetworkInterface {
+public class IPv4NetworkInterface implements NetworkInterface {
     /**
      * The map of attributes for this interface.
      */
@@ -72,6 +72,10 @@ public abstract class IPv4NetworkInterface implements NetworkInterface {
      * Interface address
      */
     protected InetAddress m_address;
+    
+    public IPv4NetworkInterface(InetAddress address) {
+        m_address = address;
+    }
 
     /**
      * <P>

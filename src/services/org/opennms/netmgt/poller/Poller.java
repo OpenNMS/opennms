@@ -63,13 +63,6 @@ import org.opennms.netmgt.scheduler.Scheduler;
 public final class Poller implements PausableFiber {
     final static String LOG4J_CATEGORY = "OpenNMS.Pollers";
 
-    /**
-     * Integer constant for passing in to PollableNode.getNodeLock() method in
-     * order to indicate that the method should block until node lock is
-     * available.
-     */
-    public static int WAIT_FOREVER = 0;
-
     private final static Poller m_singleton = new Poller();
 
     /**
@@ -276,12 +269,16 @@ public final class Poller implements PausableFiber {
         return m_network.getPollableServices();
     }
 
-    public PollableNode getNode(int nodeId) {
+    public PollableNode findNode(int nodeId) {
         return m_network.findNode(nodeId);
     }
 
     public void removeNode(int nodeId) {
         m_network.removeNode(nodeId);
+    }
+    
+    public PollableNetwork getNetwork() {
+        return m_network;
     }
 
     private void scheduleExistingInterfaces() throws SQLException {
@@ -378,11 +375,12 @@ public final class Poller implements PausableFiber {
                 // Initialize the service monitor with the pollable service
                 //
                 ServiceMonitor monitor = getServiceMonitor(svcName);
-                monitor.initialize(pSvc);
+                pSvc.initializeMonitor(monitor);
 
                 // Schedule the service
                 //
-                m_scheduler.schedule(pSvc, pSvc.recalculateInterval());
+                Schedule schedule = pSvc.getSchedule();
+                schedule.schedulePoll(pSvc.recalculateInterval());
 
             } catch (UnknownHostException ex) {
                 log.error("scheduleService: Failed to schedule interface " + ipAddr + " for service monitor " + svcName + ", illegal address", ex);

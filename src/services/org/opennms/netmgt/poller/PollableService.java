@@ -45,26 +45,18 @@ package org.opennms.netmgt.poller;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.config.poller.Parameter;
-import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
-import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -80,26 +72,11 @@ import org.opennms.netmgt.xml.event.Value;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final class PollableService extends IPv4NetworkInterface implements Pollable, ReadyRunnable {
+final class PollableService extends PollableElement implements Pollable, ReadyRunnable {
     /**
      * interface that this service belongs to
      */
     private PollableInterface m_pInterface;
-
-    /**
-     * The service inforamtion for this interface.
-     */
-    private final Service m_service;
-
-    /**
-     * The package for this polling interface.
-     */
-    private final org.opennms.netmgt.config.poller.Package m_package;
-
-    /**
-     * Last known/current status.
-     */
-    private int m_status;
 
     /**
      * Flag which indicates if previous poll returned
@@ -135,50 +112,19 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
     private final ServiceMonitor m_monitor;
 
     /**
-     * The scheduler for the poller
-     */
-    private final Scheduler m_scheduler;
-
-    /**
      * List of all scheduled PollableService objects
      */
     private final List m_pollableServices;
-
-    /**
-     * Set to true when service is first constructed which will cause the
-     * recalculateInterval() method to return 0 resulting in an immediate poll.
-     */
-    private boolean m_pollImmediate;
 
     /**
      * The last time the service was polled...whether due to a scheduled poll or
      * node outage processing.
      */
     private long m_lastPoll;
-
-    /**
-     * The last time the service was scheduled for a poll.
-     */
-    private long m_lastScheduledPoll;
-
-    /**
-     * This was the interval to use when the node was last rescheduled. This
-     * must be used or it could block a queue! (i.e. its ready time gets longer
-     * while the elements behind it are ready to go!)
-     */
-    private long m_lastInterval;
-
-    /**
-     * The key used to lookup the service properties that are passed to the
-     * monitor.
-     */
-    private final String m_svcPropKey;
-
-    /**
-     * The map of service parameters. These parameters are mapped by the
-     * composite key <em>(package name, service name)</em>.
-     */
-    private static Map SVC_PROP_MAP = Collections.synchronizedMap(new TreeMap());
+    
+    private Schedule m_schedule;
+    
+    private IPv4NetworkInterface m_netInterface;
 
     /**
      * Constructs a new instance of a pollable service object that is polled
@@ -194,65 +140,29 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
      * 
      */
     PollableService(PollableInterface pInterface, String svcName, Package pkg, int status, Date svcLostDate) {
+        super(status);
         m_pInterface = pInterface;
-        m_address = pInterface.getAddress(); // IPv4NetworkInterface address
-        m_package = pkg;
-        m_status = status;
+        m_netInterface = new IPv4NetworkInterface(pInterface.getAddress());
         m_deletionFlag = false;
 
         m_monitor = getPoller().getServiceMonitor(svcName);
-        m_scheduler = getPoller().getScheduler();
         m_pollableServices = getPoller().getPollableServiceList();
 
-        m_pollImmediate = true; // set for immediate poll
-        m_lastScheduledPoll = 0L;
+        ServiceConfig svcConfig = new ServiceConfig(pkg, svcName, getPoller().getPollOutagesConfig());
+        m_schedule = new Schedule(this, getPoller().getScheduler(), svcConfig);
         m_lastPoll = 0L;
-        m_lastInterval = 0L;
 
         // Set status change values.
-        m_statusChangeTime = 0L;
+        setStatusChangeTime(0L);
         m_statusChangedFlag = false;
-        if (m_status == ServiceMonitor.SERVICE_UNAVAILABLE) {
+        if (getStatus() == ServiceMonitor.SERVICE_UNAVAILABLE) {
             if (svcLostDate == null)
                 throw new IllegalArgumentException("The svcLostDate parm cannot be null if status is UNAVAILABLE!");
 
-            m_statusChangeTime = svcLostDate.getTime();
+            setStatusChangeTime(svcLostDate.getTime());
         }
         m_unresponsiveFlag = false;
 
-        // find the service matching the name
-        //
-        Service svc = null;
-        Enumeration esvc = m_package.enumerateService();
-        while (esvc.hasMoreElements()) {
-            Service s = (Service) esvc.nextElement();
-            if (s.getName().equalsIgnoreCase(svcName)) {
-                svc = s;
-                break;
-            }
-        }
-        if (svc == null)
-            throw new RuntimeException("Service name not part of package!");
-
-        // save reference to the service
-        m_service = svc;
-
-        // add property list for this service/package combination if
-        // it doesn't already exist in the service property map
-        //
-        m_svcPropKey = m_package.getName() + "." + m_service.getName();
-        synchronized (SVC_PROP_MAP) {
-            if (!SVC_PROP_MAP.containsKey(m_svcPropKey)) {
-                Map m = Collections.synchronizedMap(new TreeMap());
-                Enumeration ep = m_service.enumerateParameter();
-                while (ep.hasMoreElements()) {
-                    Parameter p = (Parameter) ep.nextElement();
-                    m.put(p.getKey(), p.getValue());
-                }
-
-                SVC_PROP_MAP.put(m_svcPropKey, m);
-            }
-        }
     }
 
     public PollableInterface getInterface() {
@@ -263,7 +173,7 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
      * Returns the service name
      */
     public String getServiceName() {
-        return m_service.getName();
+        return getSvcConfig().getServiceName();
     }
 
     /**
@@ -280,14 +190,10 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
         m_statusChangedFlag = false;
     }
 
-    public int getStatus() {
-        return m_status;
-    }
-
-    public void setStatus(int status) {
-        if (m_status != status) {
-            m_status = status;
-            m_statusChangeTime = System.currentTimeMillis();
+    public void updateStatus(int status) {
+        if (getStatus() != status) {
+            setStatus(status);
+            setStatusChangeTime(System.currentTimeMillis());
         }
     }
 
@@ -304,7 +210,7 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
     }
 
     public long getLastScheduleInterval() {
-        return m_lastInterval;
+        return m_schedule.getLastInterval();
     }
 
     /**
@@ -315,14 +221,7 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
     }
 
     public String getPackageName() {
-        return m_package.getName();
-    }
-
-    /**
-     * Returns the package associated with this service.
-     */
-    public org.opennms.netmgt.config.poller.Package getPackage() {
-        return m_package;
+        return getSvcConfig().getPackageName();
     }
 
     /**
@@ -336,86 +235,26 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
      *             downtime model.
      */
     public boolean isReady() {
-        long when = m_lastInterval;
-        boolean ready = false;
-
-        if (when < 1) {
-            ready = true;
-        } else {
-            ready = ((when - (System.currentTimeMillis() - m_lastScheduledPoll)) < 1);
-        }
-
-        return ready;
+        return m_schedule.isReady();
     }
 
-    /**
-     * Reschedules the service at the specified interval (in milliseconds).
-     */
-    void reschedule(long interval) {
-        // Update m_lastInterval
-        // 
-        // NOTE: Never want to reschedule at less than 1 milliscond interval
+    void deleteService() {
+        // Generate 'deleteService' event
+        sendEvent(EventConstants.DELETE_SERVICE_EVENT_UEI, null);
+
+        // Delete this pollable service from the service updates
+        // map maintained by the Scheduler and mark any
+        // equivalent pollable services (scheduled via other packages)
+        // as deleted. The services marked as deleted will subsequently
+        // be removed the next time the sheduler pops them from the
+        // interval queues for polling.
         //
-        if (interval <= 0)
-            m_lastInterval = m_service.getInterval();
-        else
-            m_lastInterval = interval;
+        this.cleanupScheduledServices();
 
-        // Reschedule the service
-        m_scheduler.schedule(this, interval);
-    }
-
-    /**
-     * This method is called to reschedule the service for polling.
-     * 
-     * NOTE: Scheduler calls reschedule() with reUseInterval parm set to true in
-     * the event that a scheduled outage is in effect when a service is popped
-     * from the interval queue for polling.
-     * 
-     * @param reUseInterval
-     *            Flag which controls how the interval at which to reschedule
-     *            the interface is determined. If true, value of m_lastInterval
-     *            is used. Otherwise recalculateInterval() is called to
-     *            recalculate the interval.
-     */
-    void reschedule(boolean reUseInterval) {
-        // Determine interval at which to reschedule the interface
-        // 
-        long interval = 0L;
-
-        if (reUseInterval) {
-            interval = m_lastInterval;
-        } else {
-            // Recalculate polling interval
-            // 
-            // NOTE: interval of -1 indicates interface/service
-            // pair has exceeded the downtime model and
-            // is to be deleted.
-            interval = recalculateInterval();
-
-            if (interval < 0) {
-                // Generate 'deleteService' event
-                sendEvent(EventConstants.DELETE_SERVICE_EVENT_UEI, null);
-
-                // Delete this pollable service from the service updates
-                // map maintained by the Scheduler and mark any
-                // equivalent pollable services (scheduled via other packages)
-                // as deleted. The services marked as deleted will subsequently
-                // be removed the next time the sheduler pops them from the
-                // interval queues for polling.
-                //
-                this.cleanupScheduledServices();
-
-                // remove this service from the interfaces' service list
-                // so it is no longer polled via node outage processing
-                //
-                m_pInterface.removeService(this);
-
-                return; // Return without rescheduling
-            } // end delete event
-        }
-
-        this.reschedule(interval);
+        // remove this service from the interfaces' service list
+        // so it is no longer polled via node outage processing
+        //
+        m_pInterface.removeService(this);
     }
 
     /**
@@ -429,68 +268,7 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
      *             downtime model.
      */
     long recalculateInterval() {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        // If poll immediate flag is set the service hasn't
-        // been polled yet. Return 0 to cause an immediate
-        // poll of the interface.
-        if (m_pollImmediate) {
-            return 0;
-        }
-
-        long when = m_service.getInterval();
-        long downSince = 0;
-        if (m_status == ServiceMonitor.SERVICE_UNAVAILABLE)
-            downSince = System.currentTimeMillis() - m_statusChangeTime;
-
-        if (log.isDebugEnabled())
-            log.debug("recalculateInterval for " + m_pInterface.getAddress().getHostAddress() + "/" + m_service.getName() + " : " + " status= " + Pollable.statusType[m_status] + " downSince= " + downSince);
-
-        switch (m_status) {
-        case ServiceMonitor.SERVICE_AVAILABLE:
-            break;
-
-        case ServiceMonitor.SERVICE_UNAVAILABLE:
-            boolean matched = false;
-            Enumeration edowntime = m_package.enumerateDowntime();
-            while (edowntime.hasMoreElements()) {
-                Downtime dt = (Downtime) edowntime.nextElement();
-                if (dt.getBegin() <= downSince) {
-                    if (dt.getDelete() != null && (dt.getDelete().equals("yes") || dt.getDelete().equals("true"))) {
-                        when = -1;
-                        matched = true;
-                    }
-                    // FIXME: the below is a subtle bug... should be downSince
-                    // not m_statusChangeTime it is masked by the fact we go thru to 
-                    // loop more than once and reset the values
-                    else if (dt.hasEnd() && dt.getEnd() > m_statusChangeTime) {
-                        // in this interval
-                        //
-                        when = dt.getInterval();
-                        matched = true;
-                    } else // no end
-                    {
-                        when = dt.getInterval();
-                        matched = true;
-                    }
-                }
-            }
-            if (!matched) {
-                log.warn("recalculateInterval: Could not locate downtime model, throwing runtime exception");
-                throw new RuntimeException("Downtime model is invalid, cannot schedule interface " + m_pInterface.getAddress().getHostAddress() + ", service = " + m_service.getName());
-            }
-
-            break;
-
-        default:
-            log.warn("recalculateInterval: invalid status found, downtime model lookup failed. throwing runtime exception");
-            throw new RuntimeException("Invalid Polling Status for interface " + m_pInterface.getAddress().getHostAddress() + ", service = " + m_service.getName() + ", status = " + m_status);
-
-        } // end switch()
-
-        if (log.isDebugEnabled())
-            log.debug("recalculateInterval: new scheduling interval for " + m_pInterface.getAddress().getHostAddress() + "/" + m_service.getName() + " = " + when);
-        return when;
+        return m_schedule.recalculateInterval();
     }
 
     /**
@@ -502,7 +280,7 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
         event.setUei(uei);
         event.setNodeid((long) m_pInterface.getNode().getNodeId());
         event.setInterface(m_pInterface.getAddress().getHostAddress());
-        event.setService(m_service.getName());
+        event.setService(getServiceName());
         event.setSource("OpenNMS.Poller");
         try {
             event.setHost(InetAddress.getLocalHost().getHostAddress());
@@ -603,7 +381,7 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
         try {
             getEventManager().sendNow(event);
             if (log.isDebugEnabled()) {
-                log.debug("Sent event " + uei + " for " + m_pInterface.getNode().getNodeId() + "/" + m_pInterface.getAddress().getHostAddress() + "/" + m_service.getName());
+                log.debug("Sent event " + uei + " for " + m_pInterface.getNode().getNodeId() + "/" + m_pInterface.getAddress().getHostAddress() + "/" + getServiceName());
             }
         } catch (Throwable t) {
             log.error("Failed to send the event " + uei + " for interface " + m_pInterface.getAddress().getHostAddress(), t);
@@ -633,7 +411,7 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
         if (aService instanceof PollableService) {
             PollableService temp = (PollableService) aService;
 
-            if (this.m_pInterface.getNode().getNodeId() == temp.m_pInterface.getNode().getNodeId() && this.m_address.equals(temp.m_address) && this.m_service.getName().equals(temp.m_service.getName())) {
+            if (this.m_pInterface.getNode().getNodeId() == temp.m_pInterface.getNode().getNodeId() && this.getAddress().equals(temp.getAddress()) && this.getServiceName().equals(temp.getServiceName())) {
                 isEqual = true;
             }
         }
@@ -656,7 +434,7 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
         // Go ahead and remove 'this' service from the list.
         m_pollableServices.remove(this);
         if (log.isDebugEnabled())
-            log.debug("cleanupScheduledServices: deleted " + m_address.getHostAddress() + ":" + m_service.getName() + ":" + m_package.getName());
+            log.debug("cleanupScheduledServices: deleted " + this + ":" + getPackageName());
 
         // Next interate over the pollable service list and mark any pollable
         // service
@@ -665,13 +443,13 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
         synchronized (m_pollableServices) {
             Iterator iter = m_pollableServices.iterator();
             if (log.isDebugEnabled())
-                log.debug("cleanupScheduledServices: iterating over serviceUpdatesMap(numEntries=" + m_pollableServices.size() + ") looking for " + m_address.getHostAddress() + ":" + m_service.getName());
+                log.debug("cleanupScheduledServices: iterating over serviceUpdatesMap(numEntries=" + m_pollableServices.size() + ") looking for " + this);
 
             while (iter.hasNext()) {
                 PollableService temp = (PollableService) iter.next();
 
                 if (log.isDebugEnabled())
-                    log.debug("cleanupScheduledServices: comparing " + ((InetAddress) temp.getAddress()).getHostAddress() + ":" + temp.getServiceName());
+                    log.debug("cleanupScheduledServices: comparing " + this);
 
                 // If the two objects are equal but not identical (in other
                 // words they refer to two different objects with the same
@@ -682,58 +460,10 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
                     // Now set the deleted flag
                     temp.markAsDeleted();
                     if (log.isDebugEnabled())
-                        log.debug("cleanupScheduledServices: marking " + ((InetAddress) temp.getAddress()).getHostAddress() + ":" + temp.getServiceName() + ":" + temp.getPackageName() + " as deleted.");
+                        log.debug("cleanupScheduledServices: marking " + this + ":" + temp.getPackageName() + " as deleted.");
                 }
             }
         }
-    }
-
-    /**
-     * Checks the package information for the pollable service and determines if
-     * any of the calendar outages associated with the package apply to the
-     * current time and the service's interface. If an outage applies true is
-     * returned...otherwise false is returned.
-     * 
-     * @return false if no outage found (indicating a poll may be performed) or
-     *         true if applicable outage is found (indicating poll should be
-     *         skipped).
-     */
-    private boolean scheduledOutage() {
-        boolean outageFound = false;
-
-        PollOutagesConfig outageFactory = getPollOutagesConfig();
-
-        // Iterate over the outage names defined in the interface's package.
-        // For each outage...if the outage contains a calendar entry which
-        // applies to the current time and the outage applies to this
-        // interface then break and return true. Otherwise process the
-        // next outage.
-        // 
-        Iterator iter = m_package.getOutageCalendarCollection().iterator();
-        while (iter.hasNext()) {
-            String outageName = (String) iter.next();
-
-            // Does the outage apply to the current time?
-            if (outageFactory.isCurTimeInOutage(outageName)) {
-                // Does the outage apply to this interface?
-
-                if ((outageFactory.isInterfaceInOutage(m_address.getHostAddress(), outageName)) || (outageFactory.isInterfaceInOutage("match-any", outageName))) {
-                    if (ThreadCategory.getInstance(getClass()).isDebugEnabled())
-                        ThreadCategory.getInstance(getClass()).debug("scheduledOutage: configured outage '" + outageName + "' applies, interface " + m_address.getHostAddress() + " will not be polled for " + m_service.getName());
-                    outageFound = true;
-                    break;
-                }
-            }
-        }
-
-        return outageFound;
-    }
-
-    /**
-     * @return
-     */
-    private PollOutagesConfig getPollOutagesConfig() {
-        return getPoller().getPollOutagesConfig();
     }
 
     /**
@@ -745,21 +475,7 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
      * 
      */
     public void run() {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        try {
-            this.doRun(true);
-        } catch (LockUnavailableException e) {
-            // failed to acquire lock, just reschedule on 10 second queue
-            if (log.isDebugEnabled())
-                log.debug("Lock unavailable, rescheduling on 10 sec queue, reason: " + e.getMessage());
-            this.reschedule(10000);
-        } catch (InterruptedException e) {
-            // The thread was interrupted; reschedule on 10 second queue
-            if (log.isDebugEnabled())
-                log.debug(e);
-            this.reschedule(10000);
-        }
+        m_schedule.run();
     }
 
     /**
@@ -800,14 +516,19 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
      *             If the thread was interrtuped while waiting for a node lock.
      * 
      */
-    private void doRun(boolean allowedToRescheduleMyself) throws LockUnavailableException, InterruptedException {
+    void doRun(boolean allowedToRescheduleMyself) throws LockUnavailableException, InterruptedException {
+        // Update last scheduled poll time if allowedToRescheduleMyself
+        // flag is true
+        if (allowedToRescheduleMyself)
+            m_schedule.setLastScheduledPoll(System.currentTimeMillis());
+
         Category log = ThreadCategory.getInstance(getClass());
 
         // Is the service marked for deletion? If so simply return.
         //
         if (this.isDeleted()) {
             if (log.isDebugEnabled()) {
-                log.debug("PollableService doRun: Skipping service marked as deleted on " + m_pInterface.getAddress().getHostAddress() + ", service = " + m_service.getName() + ", status = " + m_status);
+                log.debug("PollableService doRun: Skipping service marked as deleted on " + m_pInterface.getAddress().getHostAddress() + ", service = " + getServiceName() + ", status = " + getStatus());
             }
             return;
         }
@@ -815,18 +536,15 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
         // NodeId
         int nodeId = m_pInterface.getNode().getNodeId();
 
-        // Update last scheduled poll time if allowedToRescheduleMyself
-        // flag is true
-        if (allowedToRescheduleMyself)
-            m_lastScheduledPoll = System.currentTimeMillis();
 
         // Check scheduled outages to see if any apply indicating
         // that the poll should be skipped
         //
-        if (scheduledOutage()) {
+        if (getSvcConfig().scheduledOutage(this)) {
             // Outage applied...reschedule the service and return
-            if (allowedToRescheduleMyself)
-                this.reschedule(true);
+            if (allowedToRescheduleMyself) {
+                m_schedule.reschedule(true);
+            }
 
             return;
         }
@@ -836,7 +554,7 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
             // Lookup PollableNode object using nodeId as index
             //
             // TODO: We alrady have the pollable node via the pollable interface
-            PollableNode pNode = getPoller().getNode(nodeId);
+            PollableNode pNode = getPoller().findNode(nodeId);
 
             /*
              * Acquire lock to 'PollableNode'
@@ -864,12 +582,12 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
                     // Make sure the node hasn't been deleted.
                     if (!pNode.isDeleted()) {
                         if (log.isDebugEnabled())
-                            log.debug("run: calling poll() for " + nodeId + "/" + m_pInterface.getAddress().getHostAddress() + "/" + m_service.getName());
+                            log.debug("run: calling poll() for " + nodeId + "/" + m_pInterface.getAddress().getHostAddress() + "/" + getServiceName());
 
                         pNode.poll(this);
 
                         if (log.isDebugEnabled())
-                            log.debug("run: call to poll() finished for " + nodeId + "/" + m_pInterface.getAddress().getHostAddress() + "/" + m_service.getName());
+                            log.debug("run: call to poll() finished for " + nodeId + "/" + m_pInterface.getAddress().getHostAddress() + "/" + getServiceName());
                     }
                 } finally {
                     if (log.isDebugEnabled())
@@ -884,13 +602,14 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
         } else {
             // Node outage processing disabled so simply poll the service
             if (log.isDebugEnabled())
-                log.debug("run: node outage processing disabled, polling: " + m_pInterface.getAddress().getHostAddress() + "/" + m_service.getName());
+                log.debug("run: node outage processing disabled, polling: " + m_pInterface.getAddress().getHostAddress() + "/" + getServiceName());
             this.poll();
         }
 
         // reschedule the service for polling
-        if (allowedToRescheduleMyself)
-            this.reschedule(false);
+        if (allowedToRescheduleMyself) {
+            m_schedule.reschedule(false);
+        }
 
         return;
     }
@@ -919,24 +638,22 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
 
         m_lastPoll = System.currentTimeMillis();
         m_statusChangedFlag = false;
-        InetAddress addr = (InetAddress) m_pInterface.getAddress();
-
         if (log.isDebugEnabled())
-            log.debug("poll: starting new poll for " + addr.getHostAddress() + "/" + m_service.getName() + "/" + m_package.getName());
+            log.debug("poll: starting new poll for " + this + ":" + getPackageName());
 
         // Poll the interface/service pair via the service monitor
         //
         int status = ServiceMonitor.SERVICE_UNAVAILABLE;
-        Map propertiesMap = (Map) SVC_PROP_MAP.get(m_svcPropKey);
+        Map propertiesMap = getSvcConfig().getPropertyMap();
         try {
-            status = m_monitor.poll(this, propertiesMap, m_package);
+            status = m_monitor.poll(m_netInterface, propertiesMap, getSvcConfig().getPackage());
             if (log.isDebugEnabled())
-                log.debug("poll: polled for " + addr.getHostAddress() + "/" + m_service.getName() + "/" + m_package.getName()+" with result: " + Pollable.statusType[status]);
+                log.debug("poll: polled for " + this + ":" + getPackageName()+" with result: " + Pollable.statusType[status]);
         } catch (NetworkInterfaceNotSupportedException ex) {
-            log.error("poll: Interface " + addr.getHostAddress() + " Not Supported!", ex);
+            log.error("poll: Interface " + getAddress().getHostAddress() + " Not Supported!", ex);
             return status;
         } catch (Throwable t) {
-            log.error("poll: An undeclared throwable was caught polling interface " + addr.getHostAddress(), t);
+            log.error("poll: An undeclared throwable was caught polling interface " + getAddress().getHostAddress(), t);
         }
 
         // serviceUnresponsive behavior disabled?
@@ -987,11 +704,11 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
 
         // Any change in status?
         //
-        if (status != m_status) {
+        if (status != getStatus()) {
             // get the time of the status change
             //
             m_statusChangedFlag = true;
-            m_statusChangeTime = System.currentTimeMillis();
+            setStatusChangeTime(System.currentTimeMillis());
 
             // Is node outage processing disabled?
             if (!getPollerConfig().nodeOutageProcessingEnabled()) {
@@ -1017,17 +734,61 @@ final class PollableService extends IPv4NetworkInterface implements Pollable, Re
             }
         }
 
-        // Set the new status
-        m_status = status;
+        // Set status
+        setStatus(status);
 
-        // Reset poll immediate flag
-        m_pollImmediate = false;
+        m_schedule.setPollImmediate(false);
 
         // Reschedule the interface
         // 
         // NOTE: rescheduling now handled by PollableService.run()
         // reschedule(false);
 
-        return m_status;
+        return getStatus();
     }
+
+    /**
+     * @return Returns the address.
+     */
+    public InetAddress getAddress() {
+        return m_pInterface.getAddress();
+    }
+
+    /**
+     * @param sm
+     */
+    public void releaseMonitor(ServiceMonitor sm) {
+        sm.release(m_netInterface);
+    }
+
+    /**
+     * @param monitor
+     */
+    public void initializeMonitor(ServiceMonitor monitor) {
+        monitor.initialize(m_netInterface);
+    }
+
+    /**
+     * @return
+     */
+    public Schedule getSchedule() {
+        return m_schedule;
+    }
+
+    public void setStatusChangeTime(long statusChangeTime) {
+        m_statusChangeTime = statusChangeTime;
+    }
+
+    public long getStatusChangeTime() {
+        return m_statusChangeTime;
+    }
+
+    public String toString() {
+        return getAddress().getHostAddress() + ":" + getServiceName();
+    }
+
+    ServiceConfig getSvcConfig() {
+        return m_schedule.getServiceConfig();
+    }
+
 }

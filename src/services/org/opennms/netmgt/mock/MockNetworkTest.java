@@ -127,7 +127,7 @@ public class MockNetworkTest extends TestCase {
 
     static class MockNetworkInterface extends IPv4NetworkInterface {
         public MockNetworkInterface(String addr) throws UnknownHostException {
-            m_address = InetAddress.getByName(addr);
+            super(InetAddress.getByName(addr));
         }
 
     }

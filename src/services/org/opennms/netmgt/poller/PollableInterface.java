@@ -59,7 +59,7 @@ import org.opennms.netmgt.scheduler.Scheduler;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-public class PollableInterface implements Pollable {
+public class PollableInterface extends PollableElement implements Pollable {
     /**
      * node that this interface belongs to
      */
@@ -69,11 +69,6 @@ public class PollableInterface implements Pollable {
      * IP address of this interface
      */
     private InetAddress m_address;
-
-    /**
-     * Last known/current status
-     */
-    private int m_status;
 
     /**
      * Map of 'PollableService' objects keyed by service name
@@ -99,13 +94,13 @@ public class PollableInterface implements Pollable {
      * Constructor.
      */
     public PollableInterface(PollableNode node, InetAddress address) {
+        super(Pollable.STATUS_UNKNOWN);
         m_node = node;
         m_address = address;
         m_services = Collections.synchronizedMap(new HashMap());
         m_scheduler = getPoller().getScheduler();
         m_pollableServices = getPoller().getPollableServiceList();
         m_statusChangedFlag = false;
-        m_status = Pollable.STATUS_UNKNOWN;
     }
 
     /**
@@ -126,7 +121,7 @@ public class PollableInterface implements Pollable {
         return m_services.values();
     }
 
-    public PollableService getService(String svcName) {
+    public PollableService findService(String svcName) {
         // Sanity check
         if (svcName == null)
             return null;
@@ -152,7 +147,7 @@ public class PollableInterface implements Pollable {
 
     public synchronized void removeService(PollableService service) {
         ServiceMonitor sm = getPoller().getServiceMonitor(service.getServiceName());
-        sm.release(service);
+        service.releaseMonitor(sm);
         m_services.remove(service.getServiceName());
         this.recalculateStatus();
     }
@@ -176,10 +171,6 @@ public class PollableInterface implements Pollable {
             return true;
         else
             return false;
-    }
-
-    public int getStatus() {
-        return m_status;
     }
 
     public boolean statusChanged() {
@@ -218,7 +209,7 @@ public class PollableInterface implements Pollable {
         // service status...
         //
         if (criticalSvcName != null && this.supportsService(criticalSvcName)) {
-            PollableService criticalSvc = getService(criticalSvcName);
+            PollableService criticalSvc = findService(criticalSvcName);
             if (criticalSvc.getStatus() == Pollable.STATUS_UP)
                 status = Pollable.STATUS_UP;
             else
@@ -245,10 +236,10 @@ public class PollableInterface implements Pollable {
                 status = Pollable.STATUS_UP;
         }
 
-        m_status = status;
+        setStatus(status);
 
         if (log.isDebugEnabled())
-            log.debug("recalculateStatus: completed, interface=" + m_address.getHostAddress() + " status=" + Pollable.statusType[m_status]);
+            log.debug("recalculateStatus: completed, interface=" + m_address.getHostAddress() + " status=" + Pollable.statusType[getStatus()]);
     }
 
     /**
@@ -269,7 +260,7 @@ public class PollableInterface implements Pollable {
         // Get configured critical service
         String criticalSvcName = getPollerConfig().getCriticalService();
         if (log.isDebugEnabled())
-            log.debug("poll: polling interface " + m_address.getHostAddress() + " status=" + Pollable.statusType[m_status] + " (criticalSvc= " + criticalSvcName + ")");
+            log.debug("poll: polling interface " + m_address.getHostAddress() + " status=" + Pollable.statusType[getStatus()] + " (criticalSvc= " + criticalSvcName + ")");
 
         // If no critical service defined then retrieve the
         // value of the 'pollAllIfNoCriticalServiceDefined' flag
@@ -286,7 +277,7 @@ public class PollableInterface implements Pollable {
         // we only poll the critical service (provided that the interface
         // actually supports the critical service).
         //
-        if (m_status == Pollable.STATUS_DOWN) {
+        if (getStatus() == Pollable.STATUS_DOWN) {
             // Critical service defined and supported by interface
             if (criticalSvcName != null && this.supportsService(criticalSvcName)) {
                 PollableService criticalSvc = null;
@@ -302,7 +293,7 @@ public class PollableInterface implements Pollable {
                     // (since it only takes the critical service being DOWN
                     // for the entire interface to be seen as DOWN) so go
                     // ahead and set the status on this service to DOWN.
-                    pSvc.setStatus(Pollable.STATUS_DOWN);
+                    pSvc.updateStatus(Pollable.STATUS_DOWN);
 
                     /*
                      * -------------------------------------------- Commenting
@@ -338,7 +329,7 @@ public class PollableInterface implements Pollable {
                     // Mark interface as up and poll all remaining
                     // services on this interface
                     //
-                    m_status = Pollable.STATUS_UP;
+                    setStatus(Pollable.STATUS_UP);
                     m_statusChangedFlag = true;
 
                     Iterator iter = m_services.values().iterator();
@@ -401,7 +392,7 @@ public class PollableInterface implements Pollable {
                 svcStatus = pSvc.poll();
                 if (svcStatus == Pollable.STATUS_UP && pSvc.statusChanged()) {
                     // Mark interface as up
-                    m_status = Pollable.STATUS_UP;
+                    setStatus(Pollable.STATUS_UP);
                     m_statusChangedFlag = true;
 
                     // Check flag which controls whether all services
@@ -423,14 +414,14 @@ public class PollableInterface implements Pollable {
         }
         // Polling logic if interface is currently UP
         //
-        else if (m_status == Pollable.STATUS_UP) {
+        else if (getStatus() == Pollable.STATUS_UP) {
             // Issue poll
             svcStatus = pSvc.poll();
             if (svcStatus == Pollable.STATUS_DOWN && pSvc.statusChanged()) {
                 // If this is the only service supported by
                 // the interface mark it as down
                 if (m_services.size() == 1) {
-                    m_status = Pollable.STATUS_DOWN;
+                    setStatus(Pollable.STATUS_DOWN);
                     m_statusChangedFlag = true;
                 }
                 // else if Critical service defined and supported by interface
@@ -440,7 +431,7 @@ public class PollableInterface implements Pollable {
                     // and poll it.
                     if (log.isDebugEnabled())
                         log.debug("poll: status changed to DOWN, now polling critical svc...");
-                    PollableService criticalSvc = this.getService(criticalSvcName);
+                    PollableService criticalSvc = this.findService(criticalSvcName);
 
                     // If the service we just polled WAS in fact the critical
                     // service
@@ -455,7 +446,7 @@ public class PollableInterface implements Pollable {
                     if (criticalSvcStatus == Pollable.STATUS_DOWN) {
                         if (log.isDebugEnabled())
                             log.debug("poll: critical svc DOWN, interface is down!");
-                        m_status = Pollable.STATUS_DOWN;
+                        setStatus(Pollable.STATUS_DOWN);
                         m_statusChangedFlag = true;
                     } else {
                         if (log.isDebugEnabled())
@@ -484,7 +475,7 @@ public class PollableInterface implements Pollable {
                         }
 
                         if (allSvcDown) {
-                            m_status = Pollable.STATUS_DOWN;
+                            setStatus(Pollable.STATUS_DOWN);
                             m_statusChangedFlag = true;
                         }
                     }
@@ -493,8 +484,8 @@ public class PollableInterface implements Pollable {
         }
 
         if (log.isDebugEnabled())
-            log.debug("poll: poll of interface " + m_address.getHostAddress() + " completed, status= " + Pollable.statusType[m_status]);
-        return m_status;
+            log.debug("poll: poll of interface " + m_address.getHostAddress() + " completed, status= " + Pollable.statusType[getStatus()]);
+        return getStatus();
     }
 
     /**
@@ -517,4 +508,5 @@ public class PollableInterface implements Pollable {
     public void setNode(PollableNode newPNode) {
         m_node = newPNode;
     }
+
 }

@@ -430,7 +430,7 @@ public class PollerTest extends TestCase {
         
         verifyAnticipated(2000);
         
-        sleep(5000);
+        sleep(2000);
         
         resetAnticipated();
         anticipateUp(element);
@@ -439,7 +439,7 @@ public class PollerTest extends TestCase {
         element.bringUp();
         MockUtil.println("Finished bringing up element: "+element);
         
-        verifyAnticipated(2000);
+        verifyAnticipated(8000);
     }
 
 
@@ -650,7 +650,7 @@ public class PollerTest extends TestCase {
 
     private void verifyAnticipated(long millis) {
         // make sure the down events are received
-        assertEquals("Expected events not forthcoming", 0, m_anticipator.waitForAnticipated(millis).size());
+        assertTrue("Expected events not forthcoming", m_anticipator.waitForAnticipated(millis).isEmpty());
         sleep(2000);
         MockUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
         assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());

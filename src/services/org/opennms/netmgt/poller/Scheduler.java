@@ -258,12 +258,7 @@ final class Scheduler implements Runnable, PausableFiber {
         Category log = ThreadCategory.getInstance(getClass());
 
         if (log.isDebugEnabled()) {
-            if (runnable instanceof PollableService) {
-                PollableService svc = (PollableService) runnable;
-                log.debug("schedule: adding ready runnable for " + svc.getInterface().getAddress().getHostAddress() + "/" + svc.getServiceName() + "/" + svc.getPackageName() + " at interval " + interval);
-            } else {
-                log.debug("schedule: Adding ready runnable at interval " + interval);
-            }
+            log.debug("schedule: adding ready runnable for " + runnable + " at interval " + interval);
         }
 
         Long key = new Long(interval);
@@ -468,12 +463,7 @@ final class Scheduler implements Runnable, PausableFiber {
                             readyRun = (ReadyRunnable) in.peek();
                             if (readyRun != null && readyRun.isReady()) {
                                 if (log.isDebugEnabled()) {
-                                    if (readyRun instanceof PollableService) {
-                                        PollableService svc = (PollableService) readyRun;
-                                        log.debug("run found ready runnable for " + svc.getInterface().getAddress().getHostAddress() + "/" + svc.getServiceName() + "/" + svc.getPackageName());
-                                    } else {
-                                        log.debug("run: found ready runnable");
-                                    }
+                                    log.debug("run found ready runnable for " + readyRun);
                                 }
 
                                 // Pop the interface/readyRunnable from the
