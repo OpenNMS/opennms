@@ -157,7 +157,7 @@ public final class OutageEventCache extends java.util.LinkedList
 									continue;
 								}
 								
-								if (serviceRegainedTime.after(serviceLostTime))
+								if (serviceRegainedTime.after(serviceLostTime) || serviceRegainedTime.equals(serviceLostTime))
 								{
 									if (log.isDebugEnabled())
 										log.debug("findCacheMatch: Cache Hit! - Outage will be cleared");
@@ -205,7 +205,7 @@ public final class OutageEventCache extends java.util.LinkedList
 									continue;
 								}
 								
-								if (serviceRegainedTime.after(serviceLostTime))
+								if (serviceRegainedTime.after(serviceLostTime) || serviceRegainedTime.equals(serviceLostTime))
 								{
 									if (log.isDebugEnabled())
 										log.debug("findCacheMatch: Cache Hit! - Outage will be cleared");
@@ -252,7 +252,7 @@ public final class OutageEventCache extends java.util.LinkedList
 									continue;
 								}
 								
-								if (serviceRegainedTime.after(serviceLostTime))
+								if (serviceRegainedTime.after(serviceLostTime) || serviceRegainedTime.equals(serviceLostTime))
 								{
 									if (log.isDebugEnabled())
 										log.debug("findCacheMatch: Cache Hit! - Outage will be cleared");
