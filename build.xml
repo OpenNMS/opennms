@@ -637,7 +637,7 @@ your distribution.
    <arg value="--define"/>
    <arg value="_tmppath ${build.rpm.dir}/tmp"/>
    <arg value="--define"/>
-   <arg value="snapshot ${opennms.snapshot}"/>
+   <arg value="snapshot ${product.snapshot}"/>
    <arg value="--define"/>
    <arg value="date ${DSTAMP}"/>
    <arg value="--define"/>

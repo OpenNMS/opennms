@@ -265,7 +265,7 @@ sh ./build.sh $COMPILER_FLAG -Dinstall.prefix=$RPM_BUILD_ROOT \
     -Dinstall.share.dir=%{sharedir} -Dinstall.postgresql.dir=%{pglibdir} \
     -Dinstall.postgresql.service=%{psql_service} \
     -Dinstall.logs.dir=%{logdir} -Dinstall.pid.file=%{pidfile} \
-    -Dfilter.overwrite="yes" -Disrpm="true" \
+    -Dfilter.overwrite="yes" -Disrpm="true" -Dproduct.snapshot=%{snapshot} \
     $EXTRA_TARGETS install || exit $?
 echo "=== INSTALL COMPLETED ==="
 
