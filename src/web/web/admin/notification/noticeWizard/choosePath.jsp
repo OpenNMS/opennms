@@ -187,9 +187,10 @@
                 <td>%nodelabel% = may be IP address or empty</td>
                 <td>%interface% = IP address, may be empty</td>
                 <td>%service% = service name, may be empty</td>
-                <td>%eventid% = event ID, may be empty</td>
                 <td>&nbsp;</td>                                                    
               </tr>
+              <tr>
+				<td>%eventid% = event ID, may be empty</td>
             </table>
           </td>
          </tr>
