@@ -346,6 +346,8 @@ final class SuspectEventProcessor
 			                log.debug("getDuplicateIpaddress: get duplicate ip address: " + ipaddr);
                                 break;
                         }
+                        else
+                                ipaddr = null;
                 }
                 return ipaddr;
         }
