@@ -267,7 +267,7 @@ final class IcmpMonitor
 	 * 	should be supressed.
 	 *
 	 */
-	public int poll(NetworkInterface iface, Map parameters) 
+	public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) 
 	{
 		// Get interface address from NetworkInterface
 		//
@@ -359,7 +359,7 @@ final class IcmpMonitor
 
                                 // Store round-trip-time in RRD database
                                 if (rtt >= 0 && rrdPath != null)
-                                        this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, rtt);
+                                        this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, rtt, pkg);
 
 			}
 		}

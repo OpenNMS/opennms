@@ -10,6 +10,12 @@
 		<specific>0.0.0.0</specific>
 		<include-range begin="1.1.1.1" end="254.254.254.254"/>
 		<include-url>file:@root.install@/etc/include</include-url>
+                <rrd step = "300">
+                        <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                        <rra>RRA:AVERAGE:0.5:12:4464</rra>
+                        <rra>RRA:MIN:0.5:12:4464</rra>
+                        <rra>RRA:MAX:0.5:12:4464</rra>
+                </rrd>
 		<service name="DominoIIOP" interval="300000" user-defined="false" status="on">
                         <parameter key="retry" value="3"/>
 			<parameter key="timeout" value="3000"/>
@@ -42,6 +48,8 @@
 		<service name="SMTP" interval="300000" user-defined="false" status="on">
 			<parameter key="timeout" value="3000"/>
 			<parameter key="port" value="25"/>
+			<parameter key="rrd-repository" value="@root.install.share@/rrd/response"/>
+			<parameter key="ds-name" value="smtp"/>
 		</service>
 		<service name="FTP" interval="300000" user-defined="false" status="on">
 			<parameter key="timeout" value="3000"/>
@@ -120,6 +128,8 @@
 			<parameter key="banner" value="SSH"/>
 			<parameter key="port" value="22"/>
 			<parameter key="timeout" value="3000"/>
+			<parameter key="rrd-repository" value="@root.install.share@/rrd/response"/>
+			<parameter key="ds-name" value="ssh"/>
 		</service>
 		<service name="DHCP" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="3"/>
@@ -134,6 +144,8 @@
 		<service name="POP3" interval="300000" user-defined="false" status="on">
 			<parameter key="port" value="110"/>
 			<parameter key="timeout" value="3000"/>
+			<parameter key="rrd-repository" value="@root.install.share@/rrd/response"/>
+			<parameter key="ds-name" value="pop3"/>
 		</service>
 
 		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>

@@ -113,7 +113,7 @@ final class HttpsMonitor
 	 * 	should be supressed.
 	 *
 	 */
-	public int poll(NetworkInterface iface, Map parameters) 
+	public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) 
 	{
 		//
 		// Get interface address from NetworkInterface
@@ -246,14 +246,14 @@ final class HttpsMonitor
 							serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;	
                                         		// Store response time in RRD
                                   	   	 	if (responseTime >= 0 && rrdPath != null)
-                                                		this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime);
+                                                		this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime, pkg);
 						}
 						else if(!bStrictResponse && rVal > 99 && rVal < 500)
 						{
 							serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
                                         		// Store response time in RRD
                                   	   	 	if (responseTime >= 0 && rrdPath != null)
-                                                		this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime);
+                                                		this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime, pkg);
 						}
 						else
 						{

@@ -195,6 +195,6 @@ public interface ServiceMonitor
 	 * @see #SERVICE_AVAILABLE
 	 * @see #SERVICE_UNAVAILABLE
 	 */
-	public int poll(NetworkInterface iface, Map parameters);
+	public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg);
 }
 

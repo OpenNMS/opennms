@@ -99,7 +99,7 @@ final class TcpMonitor
 	 * @throws java.lang.RuntimeException Thrown if the interface experiences errors
 	 * 	during the poll.
 	 */
-	public int poll(NetworkInterface iface, Map parameters) 
+	public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) 
 	{
 		//
 		// Process parameters
@@ -201,7 +201,7 @@ final class TcpMonitor
 					serviceStatus = SERVICE_AVAILABLE;
                         		// Store response time in RRD
                         		if (responseTime >= 0 && rrdPath != null)
-                                		this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime);
+                                		this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime, pkg);
 				}
 				else 
 					serviceStatus = SERVICE_UNAVAILABLE;

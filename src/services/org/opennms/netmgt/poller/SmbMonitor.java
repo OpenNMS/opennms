@@ -80,7 +80,7 @@ final class SmbMonitor
 	 * 	should be supressed.
 	 *
 	 */
-	public int poll(NetworkInterface iface, Map parameters) 
+	public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) 
 	{
 		// Get interface address from NetworkInterface
 		//

@@ -121,6 +121,9 @@
 				-->
 				<element name="include-url" type="string" minOccurs="0" maxOccurs="unbounded"/>
 
+                                <!-- RRD parms for response time data -->
+                                <element ref="rrd" minOccurs="1" maxOccurs="1"/>
+
 				<!--- services to be polled for addresses belonging to this package -->
 				<element ref="service" minOccurs="1" maxOccurs="unbounded"/>
 
@@ -247,6 +250,25 @@
 			<attribute name="value" type="string" use="required"/>
 		</complexType>
 	</element>
+
+        <!-- RRD parms -->
+        <element name="rrd">
+                <complexType>
+                        <sequence>
+                                <!-- Round Robin Archive definitions -->
+                                <element name="rra" type="string" minOccurs="1" maxOccurs="unbounded">
+                                        <simpleType>
+                                                <restriction base="string">
+                                                        <pattern value="^RRA:(AVERAGE|MIN|MAX|LAST):.*$"/>
+                                                </restriction>
+                                        </simpleType>
+                                </element>
+                        </sequence>
+
+                        <!-- step size for the RRD -->
+                        <attribute name="step" type="integer" use="required"/>
+                </complexType>
+        </element>
 
 </schema>
 

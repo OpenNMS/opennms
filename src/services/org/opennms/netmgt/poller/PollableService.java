@@ -1004,7 +1004,7 @@ final class PollableService
 		Map propertiesMap = (Map)SVC_PROP_MAP.get(m_svcPropKey);
 		try
 		{
-			status = m_monitor.poll(this, propertiesMap);
+			status = m_monitor.poll(this, propertiesMap, m_package);
 		}
 		catch(NetworkInterfaceNotSupportedException ex)
 		{

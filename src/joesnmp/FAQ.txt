@@ -237,8 +237,8 @@ doesn't work as advertised?
 	
 	Constructive criticism, patches, new code, bugs and the like
 	can be sent to <weave@opennms.org>. If you wish	to contribute,
-	register at the OpenNMS web site (http://www.opennms.org) or
-	drop a line to Shane O'Donnell <shaneo@opennms.org>.
+	visit the OpenNMS web site (http://www.opennms.org) or
+	drop a line to Tarus Balog <tarus@opennms.org>.
 	
 	All patches or enhancements to the core code MUST be released
 	under the LGPL or it will not be accepted for inclusion on the

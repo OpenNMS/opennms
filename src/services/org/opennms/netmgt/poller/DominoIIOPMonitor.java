@@ -104,7 +104,7 @@ final class DominoIIOPMonitor
 	 * @throws java.lang.RuntimeException Thrown if the interface experiences errors
 	 * 	during the poll.
 	 */
-	public int poll(NetworkInterface iface, Map parameters) 
+	public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) 
 	{
 		//
 		// Process parameters

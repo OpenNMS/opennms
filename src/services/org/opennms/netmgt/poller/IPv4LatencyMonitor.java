@@ -31,12 +31,16 @@ import java.lang.*;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.io.*;
 import java.net.InetAddress;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.Interface;
+
+import org.opennms.netmgt.config.PollerConfigFactory;
 
 /**
  * <p>This class provides a basic implementation for most of the interface
@@ -191,7 +195,7 @@ abstract class IPv4LatencyMonitor
 	 * 
 	 * @return true if RRD file successfully created, false otherwise
 	 */
-	public boolean createRRD(Interface rrdJniInterface, String repository, InetAddress addr, String dsName)
+	public boolean createRRD(Interface rrdJniInterface, String repository, InetAddress addr, String dsName, org.opennms.netmgt.config.poller.Package pkg)
 	{
 		Category log = ThreadCategory.getInstance(this.getClass());
 		
@@ -216,17 +220,26 @@ abstract class IPv4LatencyMonitor
 		}
 		else
 		{
+                        // Build RRA portion of RRD create command
+                        //
+                        String cmdRRA = new String();
+                        List rraList = PollerConfigFactory.getInstance().getRRAList(pkg);
+                        Iterator j = rraList.iterator();
+                        while (j.hasNext())
+                        {
+                                String rra = (String)j.next();
+                                cmdRRA = cmdRRA.concat(" " + rra);
+                        }
+
 			// Build RRD create command
 			// 
 			// Step size: 	5 minutes
 			// RRAs:    	1 week of 5 minute average data
 			//              6 months worth of hourly min, max, average data
-			String cmd = "create " + fullPath + " --step 300 " +
-				"DS:" + dsName + ":GAUGE:600:U:U " + 
-				"RRA:AVERAGE:0.5:1:2016 " +
-				"RRA:AVERAGE:0.5:12:4464 " + 
-				"RRA:MIN:0.5:12:4464 " +
-				"RRA:MAX:0.5:12:4464";
+			String cmd = "create " + fullPath + " --step " +
+				PollerConfigFactory.getInstance().getStep(pkg) +
+				" DS:" + dsName + ":GAUGE:600:U:U " + 
+				cmdRRA;
 			
 			if (log.isDebugEnabled())
 				log.debug("createRRD: issuing RRD create command: " + cmd);
@@ -271,12 +284,12 @@ abstract class IPv4LatencyMonitor
 	 * 
 	 * @return true if RRD file successfully created, false otherwise
 	 */
-	public void updateRRD(Interface rrdJniInterface, String repository, InetAddress addr, String dsName, long value)
+	public void updateRRD(Interface rrdJniInterface, String repository, InetAddress addr, String dsName, long value, org.opennms.netmgt.config.poller.Package pkg)
 	{
 		Category log = ThreadCategory.getInstance(this.getClass());
 		
 		// Create RRD if it doesn't already exist
-		createRRD(rrdJniInterface, repository, addr, dsName);
+		createRRD(rrdJniInterface, repository, addr, dsName, pkg);
 		
 		// Build complete path
 		String fullPath = repository + File.separator + addr.getHostAddress() + File.separator + dsName + ".rrd";

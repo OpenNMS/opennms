@@ -1,8 +1,11 @@
 1.1.0 to 1.1.1
 ----------------------------------------------------------------------
-- Added non-blocking I/O to HTTPS service
+- Added the ability to define RRAs for response time data per
+  poller package. Bug 680
+- Fixed a style sheet issue in the WebUI. Bug 568
+- Added non-blocking I/O to HTTPS service.
 - Added Response Time collection to the following Monitors:
-  Citrix, FTP, HTTPS, IMAP, POP3, SMTP and TCP.
+  Citrix, FTP, HTTPS, IMAP, POP3, SMTP and TCP. Bug 693
 - Allowed for the default action of generating a newSuspect event
   when a trap is received from an unknown IP address to be turned
   off.

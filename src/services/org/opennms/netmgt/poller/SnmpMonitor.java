@@ -199,7 +199,7 @@ public final class SnmpMonitor
 	 *
 	 * @exception RuntimeException	Thrown for any uncrecoverable errors.
 	 */
-	public int poll(NetworkInterface iface, Map parameters) 
+	public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) 
 	{
 		// Log4j category
 		//

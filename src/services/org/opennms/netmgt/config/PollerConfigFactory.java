@@ -610,4 +610,28 @@ public final class PollerConfigFactory
 		
 		return false;
 	}
+        /**
+         * Retrieves configured RRD step size.
+         *
+         * @param cName Name of the data collection
+         *
+         * @return RRD step size for the specified collection
+         */
+        public int getStep(org.opennms.netmgt.config.poller.Package pkg)
+        {
+                return pkg.getRrd().getStep();
+        }
+
+        /**
+         * Retrieves configured list of RoundRobin Archive statements.
+         *
+         * @param cName Name of the data collection
+         *
+         * @return list of RRA strings.
+         */
+        public List getRRAList(org.opennms.netmgt.config.poller.Package pkg)
+        {
+                return (List)pkg.getRrd().getRraCollection();
+
+        }
 }

@@ -121,7 +121,7 @@ final class LdapMonitor
 	 * @throws java.lang.RuntimeException Thrown if the interface experiences errors
 	 * 	during the poll.
 	 */
-	public int poll(NetworkInterface iface, Map parameters) 
+	public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) 
 	{
 		Category log = ThreadCategory.getInstance(getClass());
 		int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;

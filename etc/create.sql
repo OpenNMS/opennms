@@ -1,48 +1,27 @@
---#    create.sql -- SQL to build the initial tables for the OpenNMS Project
---#    Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+--# create.sql -- SQL to build the initial tables for the OpenNMS Project
 --#
---#    This library is free software; you can redistribute it and/or
---#    modify it under the terms of the GNU General Public
---#    License as published by the Free Software Foundation; either
---#    version 2.1 of the License, or (at your option) any later version.
+--# Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
+--# Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 --#
---#    This library is distributed in the hope that it will be useful,
---#    but WITHOUT ANY WARRANTY; without even the implied warranty of
---#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
---#    General Public License for more details.
+--# This program is free software; you can redistribute it and/or modify
+--# it under the terms of the GNU General Public License as published by
+--# the Free Software Foundation; either version 2 of the License, or
+--# (at your option) any later version.
 --#
---#    You should have received a copy of the GNU General Public
---#    License along with this library; if not, write to the Free Software
---#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+--# This program is distributed in the hope that it will be useful,
+--# but WITHOUT ANY WARRANTY; without even the implied warranty of
+--# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--# GNU General Public License for more details.
 --#
---#    You can contact Oculan Corp. at:
---#     
---#    email:  shaneo@opennms.org
---#    snail mail:  Oculan Corporation
---#                 4901 Waters Edge Ste 101
---#                 Raleigh, NC 27606
+--# You should have received a copy of the GNU General Public License
+--# along with this program; if not, write to the Free Software
+--# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 --#
---######################################################################    
---#
---#  OpenNMS Database Schema (1.1.1.1)
---#  Written by:  Shane O'Donnell & Brian Weaver, OpenNMS
---# 
---######################################################################    
---#
---#  This schema reflects the necessary SQL to build the underlying
---#  datbase for the OpenNMS project (http://www.opennms.org).  It 
---#  is being version controlled in CVS, and additional information
---#  is available at the URL above.
---#
---#  Note that ANSI SQL was adopted for an initial attempt at database
---#  independence.  This has caused some oddities in data type 
---#  definitions, but you get the gist.  Additional discussion and
---#  documentation is available at http://www.opennms.org
---#
---######################################################################    
+--# For more information contact:
+--#      OpenNMS Licensing       <license@opennms.org>
+--#      http://www.opennms.org/
+--#      http://www.sortova.com/
 
---# DROP all the tables (IN THIS ORDER! due to interdependencies) in the
---# case that this is a re-build.
 
 drop table assets;
 drop table snmpInterface;
