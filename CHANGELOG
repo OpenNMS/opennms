@@ -1,5 +1,8 @@
 1.1.1 to 1.1.2
 ----------------------------------------------------------------------
+- Added the ability to define a null filter (speeds things up)
+- Added new Cisco and UCD-SNMP reports (Thx Tony and Stuart)
+- Added RFC2325 to datacollection-config.xml
 - Changed the count for notifications to reflect just those for the
   user logged in.
 - Added security roles to web.xml. Bug 715. Thx DJ

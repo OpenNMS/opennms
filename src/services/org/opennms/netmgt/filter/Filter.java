@@ -157,10 +157,13 @@ public class Filter
 	public boolean isValid(String addr, String rule)
 		throws FilterParseException
 	{
-		//see if the ip address is contained in the list that the
-		//rule returns
-		//
-		return getIPList(rule).contains(addr);
+		if (rule.length() == 0)
+			return true;
+		else
+			//see if the ip address is contained in the list that the
+			//rule returns
+			//
+			return getIPList(rule).contains(addr);
 	}
 	
         public Map getIPServiceMap(String rule)
