@@ -1,3 +1,7 @@
+1.1.1 to 1.1.2
+----------------------------------------------------------------------
+- Fixed a small bug with RRAs. Bug 707. Thx Volker
+
 1.1.0 to 1.1.1
 ----------------------------------------------------------------------
 - Slightly improved the output of mib2opennms. Thx John and Rick

@@ -192,6 +192,8 @@ int buildArgList(char* command, char **argv) {
 #ifdef DEBUG
 			printf("hit null, creating token.\n");
 #endif
+			// terminate buffer
+			buffer[x] = '\0';
 			
 			/// allocate storage for new token string
 			token = (char *)malloc(strlen(buffer)+1);
