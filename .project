@@ -10,9 +10,7 @@
 			<arguments>
 				<dictionary>
 					<key>LaunchConfigHandle</key>
-					<value>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;launchConfiguration local=&quot;false&quot; path=&quot;/opennms/.externalToolBuilders/GenerateSource.launch&quot;/&gt;
-</value>
+					<value>GenerateSource.launch</value>
 				</dictionary>
 			</arguments>
 		</buildCommand>
