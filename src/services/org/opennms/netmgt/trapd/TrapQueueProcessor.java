@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
+// Copyright (C) 2002-2003 Sortova Consulting Group, Inc.  All rights reserved.
 // Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
 //
 package org.opennms.netmgt.trapd;
 
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 import java.net.InetAddress;
@@ -55,6 +56,7 @@ import org.opennms.netmgt.xml.event.*;
  * @author 	<A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
  * @author 	<A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
  * @author 	<A HREF="mailto:mike@opennms.org">Mike Davidson</A> 
+ * @author 	<A HREF="mailto:tarus@opennms.org">Tarus Balog</A> 
  * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
  *
  */
@@ -113,11 +115,6 @@ class TrapQueueProcessor
 	private FifoQueue	m_backlogQ;
 
 	/**
-	 * The list of known IPs
-	 */
-	private List		m_knownIps;
-
-	/**
 	 * The name of the local host.
 	 */
 	private String 		m_localAddr;
@@ -132,6 +129,13 @@ class TrapQueueProcessor
 	 * method on behalf of the fiber.
 	 */
 	private Thread		m_worker;
+	
+	/**
+	 * Whether or not a newSuspect event should be
+	 * generated with a trap from an unknown IP address
+	 */
+	private boolean		m_newSuspect;
+ 
 
 	/**
 	 * Create the standard traps list - used in v2 processing
@@ -221,6 +225,14 @@ class TrapQueueProcessor
 		event.setSnmphost(trapInterface);
 		event.setInterface(trapInterface);
 		event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
+
+		String ipNodeId = TrapdIPMgr.getNodeId(trapInterface);
+
+		if (ipNodeId != null)
+			{
+			int intNodeId = Integer.parseInt(ipNodeId);
+			event.setNodeid((long)intNodeId);
+			}
 
 		if(log.isDebugEnabled())
 			log.debug("V2 trap - trapInterface: " + trapInterface);
@@ -470,9 +482,8 @@ class TrapQueueProcessor
 		if(log.isDebugEnabled())
 			log.debug("V2 Trap successfully converted and sent to eventd");
 		
-		if (!m_knownIps.contains(trapInterface))
+		if (TrapdIPMgr.getNodeId(trapInterface) == null && m_newSuspect)
 		{
-			m_knownIps.add(trapInterface);
 			sendNewSuspectEvent(trapInterface);
 
 			if(log.isDebugEnabled())
@@ -503,6 +514,14 @@ class TrapQueueProcessor
 		event.setInterface(trapInterface);
 		event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
 		
+		String ipNodeId = TrapdIPMgr.getNodeId(trapInterface);
+
+		if (ipNodeId != null)
+			{
+			int intNodeId = Integer.parseInt(ipNodeId);
+			event.setNodeid((long)intNodeId);
+			}
+
 		if(log.isDebugEnabled())
 			log.debug("V1 trap - trapInterface: " + trapInterface);
 		
@@ -653,9 +672,8 @@ class TrapQueueProcessor
 		if(log.isDebugEnabled())
 				log.debug("V1 Trap successfully converted and sent to eventd");
 		
-		if (!m_knownIps.contains(trapInterface))
+		if (TrapdIPMgr.getNodeId(trapInterface) == null && m_newSuspect)
 		{
-			m_knownIps.add(trapInterface);
 			sendNewSuspectEvent(trapInterface);
 
 			if(log.isDebugEnabled())
@@ -750,11 +768,10 @@ class TrapQueueProcessor
 	/**
 	 * The constructor
 	 */
-	TrapQueueProcessor(FifoQueue backlog, List knownips)
+	TrapQueueProcessor(FifoQueue backlog, boolean newSuspect)
 	{
 		m_backlogQ= backlog;
-		m_knownIps = knownips;
-
+		m_newSuspect = newSuspect;
 		try
 		{
 			m_localAddr = InetAddress.getLocalHost().getHostName();

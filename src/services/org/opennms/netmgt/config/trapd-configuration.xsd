@@ -6,6 +6,8 @@
 		<complexType>
 			<!--- the port on which traps are listened to, default value is 162 -->
 			<attribute name="snmp-trap-port" type="positiveInteger" use="required"/>
+			<!--- whether traps from unknown devices should generate newSuspect events -->
+			<attribute name="new-suspect-on-trap" type="boolean" use="required"/>
 		</complexType>
 	</element>
 </schema>

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
+// Copyright (C) 2002-2003 Sortova Consulting Group, Inc.  All rights reserved.
 // Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -47,6 +47,7 @@ import org.opennms.netmgt.ConfigFileConstants;
  * the config is loaded before accessing other convenience methods</p>
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
+ * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
 public final class TrapdConfigFactory
@@ -163,6 +164,17 @@ public final class TrapdConfigFactory
 	public synchronized int getSnmpTrapPort()
 	{
 		return m_config.getSnmpTrapPort();
+	}
+
+	/**
+	 * <p>Return whether or not a newSuspect event should be sent
+	 * when a trap is received from an unknown IP address.</p>
+	 *
+	 * @return whether to generate newSuspect events on traps.
+	 */
+	public synchronized boolean getNewSuspectOnTrap()
+	{
+		return m_config.getNewSuspectOnTrap();
 	}
 
 }

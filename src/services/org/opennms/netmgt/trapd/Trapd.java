@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
+// Copyright (C) 2002-2003 Sortova Consulting Group, Inc.  All rights reserved.
 // Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -46,6 +46,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -83,6 +85,7 @@ import org.opennms.netmgt.config.TrapdConfigFactory;
  * @author 	<A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
  * @author 	<A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
  * @author 	<A HREF="mailto:mike@opennms.org">Mike Davidson</A>
+ * @author 	<A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
  * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
  *
  */
@@ -98,7 +101,7 @@ public class Trapd
 	/**
 	 * SQL to get already kown IPs
 	 */
-	private static final String	GET_KNOWN_IPS = "SELECT ipAddr FROM ipInterface where ismanaged != 'D'";
+	private static final String	GET_KNOWN_IPS = "SELECT ipAddr, nodeId FROM ipInterface";
 	
 	/**
 	 * The singlton instance.
@@ -128,12 +131,18 @@ public class Trapd
 	/**
 	 * The list of known IPs
 	 */
-	private List			m_knownIps;
+	private Map			m_knownIps;
 	
 	/**
 	 * The queue processing thread
 	 */
 	private TrapQueueProcessor	m_processor;
+
+        /**
+         * The class instance used to recieve new events from
+         * for the system.
+         */
+        private BroadcastEventProcessor m_eventReader;
 
 	/**
 	 * V2 Trap information object for processing
@@ -271,98 +280,6 @@ public class Trapd
 	}
 	
 	/**
-	 * Convenience method for retrieving the list of known IP addresses
-	 * from the database.
-	 */
-	private ArrayList getKnownIpList()
-		throws SQLException
-	{
-		ArrayList knownIps = new ArrayList();
-
-		java.sql.Connection conn = null;
-		try
-		{
-			DatabaseConnectionFactory.reload();
-			conn = DatabaseConnectionFactory.getInstance().getConnection();
-			//conn.setReadOnly(true);
-
-			//get the list of known ip addresses
-			Statement stmt = conn.createStatement();
-
-			// The first column should be the ip address.
-			ResultSet rs = stmt.executeQuery(GET_KNOWN_IPS);
-
-			// construct known nodes vector
-			while(rs.next())
-			{
-				String ipAddr = rs.getString(1);
-				knownIps.add(ipAddr);
-			}
-
-			try
-			{
-				rs.close();
-			}
-			catch(SQLException sqlE)
-			{
-				Category log = ThreadCategory.getInstance(getClass());
-
-				log.warn("An error occured closing the result set, ignoring", sqlE);
-			}
-
-			try
-			{
-				stmt.close();
-			}
-			catch(SQLException sqlE)
-			{
-				Category log = ThreadCategory.getInstance(getClass());
-
-				log.warn("An error occured closing the statement, ignoring", sqlE);
-			}
-		}
-		catch (IOException ie)
-		{
-			Category log = ThreadCategory.getInstance(getClass());
-			log.fatal("IOException getting database connection", ie);
-			throw new UndeclaredThrowableException(ie);
-		}
-		catch (MarshalException me)
-		{
-			Category log = ThreadCategory.getInstance(getClass());
-			log.fatal("Marshall Exception getting database connection", me);
-			throw new UndeclaredThrowableException(me);
-		}
-		catch (ValidationException ve)
-		{
-			Category log = ThreadCategory.getInstance(getClass());
-			log.fatal("Validation Exception getting database connection", ve);
-			throw new UndeclaredThrowableException(ve);
-		}
-		catch (ClassNotFoundException e)
-		{
-			Category log = ThreadCategory.getInstance(getClass());
-			log.fatal("Failed to find database driver", e);
-			throw new UndeclaredThrowableException(e);
-		}
-		finally
-		{
-			try
-			{
-				if(conn != null)
-					conn.close();
-			}
-			catch(SQLException sqlE)
-			{
-				Category log = ThreadCategory.getInstance(getClass());
-				log.warn("An error occured releasing the database connection, ignoring", sqlE);
-			}
-		}
-
-		return knownIps;
-	}
-
-	/**
 	 * <P>Constructs a new Trapd object that receives and forwards
 	 * trap messages via JSDT. The session is initialized with the
 	 * default client name of <EM>OpenNMS.trapd</EM>. The trap session
@@ -476,21 +393,25 @@ public class Trapd
 				log.debug("start: Getting the already known IPs");
 
 			// clear out the known nodes
-			m_knownIps = getKnownIpList();
+			TrapdIPMgr.dataSourceSync();
+
+			// Get the newSuspectOnTrap flag
+			boolean m_newSuspect = tFactory.getNewSuspectOnTrap();
+
+			// set up the trap processor
+			m_backlogQ  = new FifoQueueImpl();
+			m_processor = new TrapQueueProcessor(m_backlogQ, m_newSuspect);
 
 			if(log.isDebugEnabled())
 				log.debug("start: Creating the trap queue processor");
 
-			// set up the trap processor
-			m_backlogQ  = new FifoQueueImpl();
-			m_processor = new TrapQueueProcessor(m_backlogQ, m_knownIps);
+			// Initialize the trapd session
+			int port = tFactory.getSnmpTrapPort();
+			m_trapSession = new SnmpTrapSession(this, port);
 
 			if(log.isDebugEnabled())
 				log.debug("start: Creating the trap session");
 
-			// Initialize the trapd session
-			int port = tFactory.getSnmpTrapPort();
-			m_trapSession = new SnmpTrapSession(this, port);
 		}
 		catch( SocketException e ) 
 		{
@@ -517,6 +438,16 @@ public class Trapd
 			log.error("Failed to load known IP address list", e);
 			throw new UndeclaredThrowableException(e);
 		}
+
+                try
+                {
+                        m_eventReader = new BroadcastEventProcessor();
+                }
+                catch(Exception ex)
+                {
+                        ThreadCategory.getInstance().error("Failed to create event reader", ex);
+                        throw new UndeclaredThrowableException(ex);
+                }
 
 	}
     
