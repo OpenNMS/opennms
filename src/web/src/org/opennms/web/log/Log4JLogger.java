@@ -170,7 +170,7 @@ public class Log4JLogger implements Logger
     
     /** Required parameter so we can find the Log4J config file. */    
     public void setHomeDir( String homeDir ) {
-        PropertyConfigurator.resetConfiguration();
+        org.apache.log4j.LogManager.resetConfiguration();
         PropertyConfigurator.configure( homeDir + Log4JLogger.propFilename );
         this.logger = Category.getInstance("OpenNMS.WEB");        
     }

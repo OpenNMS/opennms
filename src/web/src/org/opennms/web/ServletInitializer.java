@@ -123,7 +123,7 @@ public class ServletInitializer extends Object
                 Vault.setHomeDir( homeDir );
 
                 //initialize Log4J for use inside the webapp                
-                PropertyConfigurator.resetConfiguration();
+                org.apache.log4j.LogManager.resetConfiguration();
                 PropertyConfigurator.configure( homeDir + Log4JLogger.propFilename );
 
                 //get the database parameters from the bluebird properties
