@@ -7,6 +7,17 @@
   <para>Here is the list of known issues in this release of OpenNMS.</para>
 
   <sect1>
+    <title>Invalid Symbolic Link on Some Distros</title>
+
+    <para>On Mandrake 10, and perhaps others, the symbolic link created in
+    <filename>/etc/init.d</filename> for opennms doesn't seem to work. Do the
+    following:</para>
+
+    <para><programlisting># rm /etc/init.d/opennms
+# ln -s /opt/OpenNMS/bin/opennms.sh /etc/init.d/opennms</programlisting></para>
+  </sect1>
+
+  <sect1>
     <title>The Installer is No Longer Automatic as of 1.1.5</title>
 
     <para>I expect this to be the biggest question on the discussion lists. As
