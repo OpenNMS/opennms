@@ -1,5 +1,6 @@
 1.2.X to 1.3.0
 ----------------------------------------------------------------------
+- Add enhanced oncall-schedules to users.xsd and UserManager
 - Modify java code and build to use new castor-0.9.6 rather than the older version. 
   New version depends on commons-logging.jar. 
 - Added commons-logging.jar to build in lib.

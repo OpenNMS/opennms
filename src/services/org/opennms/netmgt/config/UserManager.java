@@ -57,7 +57,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.config.users.Header;
-import org.opennms.netmgt.config.users.Role;
+import org.opennms.netmgt.config.users.OncallSchedule;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.users.Users;
@@ -628,11 +628,11 @@ public abstract class UserManager {
 
         if (roleid == null) throw new NullPointerException("roleid is null");
         
-        Collection roles = user.getRoleCollection();
+        Collection schedules = user.getOncallScheduleCollection();
         
-        for(Iterator it = roles.iterator(); it.hasNext();) {
-            Role role = (Role)it.next();
-            if (roleid.equals(role.getRoleId())) {
+        for(Iterator it = schedules.iterator(); it.hasNext();) {
+            OncallSchedule sched = (OncallSchedule)it.next();
+            if (roleid.equals(sched.getName())) {
                 return true;
             }
         }
@@ -643,14 +643,14 @@ public abstract class UserManager {
     public boolean isUserScheduledForRole(User user, String roleid, Date time) throws FileNotFoundException, MarshalException, ValidationException, IOException {
         update();
 
-        Collection roles = user.getRoleCollection();
+        Collection schedules = user.getOncallScheduleCollection();
         
-        for(Iterator it = roles.iterator(); it.hasNext();) {
-            Role role = (Role)it.next();
-            if (roleid.equals(role.getRoleId())) {
-                DutySchedule dutySchedule = new DutySchedule(role.getSchedule());
-                if (dutySchedule.isInSchedule(time))
+        for(Iterator it = schedules.iterator(); it.hasNext();) {
+            OncallSchedule sched = (OncallSchedule)it.next();
+            if (roleid.equals(sched.getName())) {
+                if (BasicScheduleUtils.isTimeInSchedule(time, sched)) {
                     return true;
+                }
             }
         }
         

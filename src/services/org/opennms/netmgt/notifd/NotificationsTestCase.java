@@ -60,7 +60,6 @@ import org.opennms.netmgt.notifd.mock.MockNotificationManager;
 import org.opennms.netmgt.notifd.mock.MockNotificationStrategy;
 import org.opennms.netmgt.notifd.mock.MockUserManager;
 import org.opennms.netmgt.notifd.mock.NotificationAnticipator;
-import org.opennms.netmgt.config.users.Role;
 
 import junit.framework.TestCase;
 
@@ -262,11 +261,24 @@ public class NotificationsTestCase extends TestCase {
                 "       <user>\n" + 
                 "           <user-id>brozow</user-id>\n" + 
                 "           <full-name>Mathew Brozowski</full-name>\n" + 
-                "           <role role-id=\"onDuty\" schedule=\"MoTuWeThFrSaSu600-700\"/> \n"+
                 "           <user-comments>Test User</user-comments>\n" +
                 "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
                 "           <contact type=\"email\" info=\"brozow@opennms.org\"/>\n" + 
-                "           <role role-id=\"oncall\" schedule=\"MoWeFrSu0900-1700\" />" +
+                "           <oncall-schedule name=\"oncall\" type=\"weekly\">" +
+                "               <time day=\"sunday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+                "               <time day=\"monday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+                "               <time day=\"wednesday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+                "               <time day=\"friday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+                "           </oncall-schedule>" +
+                "           <oncall-schedule name=\"onDuty\" type=\"weekly\">" +
+                "               <time day=\"sunday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
+                "               <time day=\"monday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
+                "               <time day=\"tuesday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
+                "               <time day=\"wednesday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
+                "               <time day=\"thursday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
+                "               <time day=\"friday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
+                "               <time day=\"saturday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
+                "           </oncall-schedule>" +
                 "       </user>\n" + 
                 "       <user>\n" + 
                 "           <user-id>admin</user-id>\n" + 
@@ -274,13 +286,16 @@ public class NotificationsTestCase extends TestCase {
                 "           <user-comments>Default administrator, do not delete</user-comments>\n" +
                 "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
                 "           <contact type=\"email\" info=\"admin@opennms.org\"/>\n" + 
-                "           <role role-id=\"oncall\" schedule=\"TuThSa0900-1700\" />" +
-                "           <role role-id=\"oncall\" schedule=\"Su0000-2400\" />" +
+                "           <oncall-schedule name=\"oncall\" type=\"weekly\">" +
+                "               <time day=\"sunday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
+                "               <time day=\"tuesday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+                "               <time day=\"thursday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+                "               <time day=\"saturday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+                "           </oncall-schedule>" +
                 "       </user>\n" + 
                 "       <user>\n" + 
                 "           <user-id>upUser</user-id>\n" + 
                 "           <full-name>User that receives up notifications</full-name>\n" + 
-//                "           <role role-id=\"oncall\" schedule=\"MoTuWeThFrSaSu600-700\"/> \n"+
                 "           <user-comments>Default administrator, do not delete</user-comments>\n" +
                 "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
                 "           <contact type=\"email\" info=\"up@opennms.org\"/>\n" + 
@@ -288,15 +303,28 @@ public class NotificationsTestCase extends TestCase {
                 "       <user>\n" + 
                 "           <user-id>david</user-id>\n" + 
                 "           <full-name>David Hustace</full-name>\n" +
-                "           <role role-id=\"oncall\" schedule=\"MoTuWeThFrSaSu600-700\"/> \n"+
                 "           <user-comments>A cool dude!</user-comments>\n" + 
                 "           <password>18126E7BD3F84B3F3E4DF094DEF5B7DE</password>\n" + 
                 "           <contact type=\"email\" info=\"david@opennms.org\"/>\n" + 
                 "           <contact type=\"numericPage\" info=\"6789\" serviceProvider=\"ATT\"/>\n" + 
                 "           <contact type=\"textPage\" info=\"9876\" serviceProvider=\"Sprint\"/>\n" + 
-                "           <duty-schedule>MoTuWeThFrSaSu800-2300</duty-schedule>\n" + 
-                "           <role role-id=\"oncall\" schedule=\"MoTuWeThFrSaSu0000-0900\" />" +
-                "           <role role-id=\"oncall\" schedule=\"MoTuWeThFrSaSu1700-2359\" />" +
+//                "           <duty-schedule>MoTuWeThFrSaSu800-2300</duty-schedule>\n" + 
+                "           <oncall-schedule name=\"oncall\" type=\"weekly\">" +
+                "               <time day=\"sunday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+                "               <time day=\"sunday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+                "               <time day=\"monday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+                "               <time day=\"monday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+                "               <time day=\"tuesday\"   begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+                "               <time day=\"tuesday\"   begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+                "               <time day=\"wednesday\" begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+                "               <time day=\"wednesday\" begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+                "               <time day=\"thursday\"  begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+                "               <time day=\"thursday\"  begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+                "               <time day=\"friday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+                "               <time day=\"friday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+                "               <time day=\"saturday\"  begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+                "               <time day=\"saturday\"  begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+                "           </oncall-schedule>" +
                 "       </user>\n" + 
                 "   </users>\n" + 
                 "</userinfo>\n" + 
@@ -411,15 +439,15 @@ public class NotificationsTestCase extends TestCase {
         m_notifd.init();
         m_notifd.start();
         
-        Date downDate = new Date();
-        anticipateNotificationsForGroup("node 2 down.", "All services are down on node 2.", "InitialGroup", downDate, 0);
-    
-        //bring node down now
-        m_eventMgr.sendEventToListeners(m_network.getNode(2).createDownEvent(downDate));
-    
-        m_anticipator.waitForAnticipated(2000);
-        
-        m_anticipator.reset();
+//        Date downDate = new Date();
+//        anticipateNotificationsForGroup("node 2 down.", "All services are down on node 2.", "InitialGroup", downDate, 0);
+//    
+//        //bring node down now
+//        m_eventMgr.sendEventToListeners(m_network.getNode(2).createDownEvent(downDate));
+//    
+//        m_anticipator.waitForAnticipated(2000);
+//        
+//        m_anticipator.reset();
     
         MockUtil.println("################ Finish Setup for "+getName()+" ################");
 
@@ -517,29 +545,6 @@ public class NotificationsTestCase extends TestCase {
         
     }
     
-    protected Collection getUsersInRole(String roleId) throws Exception {
-
-        Map users = m_userManager.getUsers();
-        Collection userNames = m_userManager.getUserNames();
-        for (Iterator it = userNames.iterator(); it.hasNext();) {
-            User user = (User) m_userManager.getUser((String) it.next());
-            Collection roles = user.getRoleCollection();
-            boolean hasRole = false;
-            for(Iterator it2 = roles.iterator(); it2.hasNext();) {
-                Role role = (Role) it2.next();
-                if (roleId.equals(role.getRoleId())) {
-                    hasRole = true;
-                }
-            }
-
-            if(!hasRole) {
-                it.remove();
-            }
-        }
-        return userNames;
-        
-    }
-
     private void verifyAnticipated(int waitTime) {
         verifyAnticipated(0, waitTime);
     }

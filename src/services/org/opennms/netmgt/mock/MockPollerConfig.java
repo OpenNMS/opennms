@@ -44,6 +44,7 @@ import java.util.Vector;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.config.BasicScheduleUtils;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Downtime;
@@ -79,7 +80,6 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     
     public MockPollerConfig() {
         setConfig(new Outages());
-        createDayOfWeekMapping();
     }
 
     public void addDowntime(long interval, long begin, long end, boolean delete) {
@@ -104,8 +104,8 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         Time time = new Time();
         Date beginDate = new Date(begin);
         Date endDate = new Date(end);
-        time.setBegins(new SimpleDateFormat(PollOutagesConfigManager.FORMAT1).format(beginDate));
-        time.setEnds(new SimpleDateFormat(PollOutagesConfigManager.FORMAT1).format(endDate));
+        time.setBegins(new SimpleDateFormat(BasicScheduleUtils.FORMAT1).format(beginDate));
+        time.setEnds(new SimpleDateFormat(BasicScheduleUtils.FORMAT1).format(endDate));
 
         outage.addTime(time);
 

@@ -53,5 +53,6 @@
 	<classpathentry kind="lib" path="lib/smackx.jar"/>
 	<classpathentry kind="lib" path="lib/castor-0.9.6.jar"/>
 	<classpathentry kind="lib" path="lib/SNMP4J.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
 	<classpathentry kind="output" path="work/opennms/classes"/>
 </classpath>

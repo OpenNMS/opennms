@@ -116,9 +116,6 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
 
         m_singleton = new PollOutagesConfigFactory(cfgFile.getPath());
 
-        // create day of week mapping
-        createDayOfWeekMapping();
-
         m_loaded = true;
     }
 

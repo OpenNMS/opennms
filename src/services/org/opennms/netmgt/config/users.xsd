@@ -41,23 +41,23 @@
 			<sequence>
 				<element name="user-id" type="string" minOccurs="1" maxOccurs="1"/>
 				<element name="full-name" type="string" minOccurs="0" maxOccurs="1"/>
-				<element ref="this:role" minOccurs="0" maxOccurs="unbounded"/>
 				<element name="user-comments" type="string" minOccurs="0" maxOccurs="1"/>
 				<element name="password" type="string" minOccurs="1" maxOccurs="1"/>
 				<element ref="this:contact" minOccurs="0" maxOccurs="unbounded"/>
 				<element name="duty-schedule" type="string" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:oncall-schedule" minOccurs="0" maxOccurs="unbounded" />
 			</sequence>
 		</complexType>
 	</element>
 	
-	<element name="role">
+	<element name="oncall-schedule">
 		<complexType>
-				<sequence>
-					<element name="call-schedule" type="typ:basicSchedule" minOccurs="0" maxOccurs="1" />
-				</sequence>
-				<attribute name="role-id" use="required" type="string"/>
-				<attribute name="schedule" use="required" type="string"/>
-		</complexType>
+		  <complexContent>
+		    <extension base="typ:basicSchedule">
+<!--                <attribute name="role" use="required" type="string"/> -->
+			</extension>
+			</complexContent>
+		</complexType>		
 	</element>
 	
 	<element name="contact">
