@@ -729,6 +729,7 @@ your distribution.
    <fail unless="rpm.platform">
      You must set the rpm.platform property to one of the platforms listed in
      tools/packages/opennms/opennms.spec.in.  See README.build for details.
+   </fail>
  </target>
 
  <!-- DIST targets -->
@@ -1301,6 +1302,7 @@ OpenNMS as part of the post-install.
   <fail unless="test.class">
     You need to define the test.class property to indicate which test
     to run.  See README.build for details.
+  </fail>
   <junit errorProperty="test.failed" failureProperty="test.failed">
      <classpath>
        <path refid="libraries.java.path"/>
