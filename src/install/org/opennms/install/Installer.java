@@ -2140,7 +2140,7 @@ public class Installer {
 	    current_row++;
 
 	    if ((current_row % 20) == 0) {
-		m_out.print("    - transforming data into the new " +
+		System.err.print("    - transforming data into the new " +
 				 "table... " +
 				 (int)Math.floor((current_row * 100) / num_rows) +
 				 "%  [" + spin[(current_row / 20) % spin.length] + "]\r");
