@@ -47,4 +47,4 @@ if [ $VERBOSE -gt 0 ]; then
     set -x
 fi
 
-exec java -mx256m -jar devlib/ant-launcher.jar "$@"
+exec java -mx256m -Dant.home=devlib/ant -jar devlib/ant/lib/ant-launcher.jar "$@"

@@ -19,9 +19,8 @@ OpenNMS is a network monitoring system implemented in Java.
 For more information consult the README file included in
 your distribution.
   </description>
-
 	
-  <!-- overrride with site-specific settings (first proprety set wins) -->
+  <!-- overrride with site-specific settings (first property set wins) -->
   <property file="build.properties"/>
  
   <!-- versioning options -->
@@ -176,7 +175,7 @@ your distribution.
   <path id="libraries.java.path">
     <pathelement path="${packaged.lib.dir}/log4j.jar"/>
     <pathelement path="${packaged.lib.dir}/regexp120.jar"/>
-    <pathelement path="${packaged.lib.dir}/servlet.jar"/>
+    <pathelement path="${dev.lib.dir}/servlet.jar"/>
     <pathelement path="${packaged.lib.dir}/ldap.jar"/>
     <pathelement path="${packaged.lib.dir}/catalina.jar"/>
     <pathelement path="${packaged.lib.dir}/castor-0.9.3.9.jar"/>
@@ -257,7 +256,6 @@ your distribution.
     <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_web.jar"/>
     <pathelement location="${dev.lib.dir}/jasper/jasper-compiler.jar"/>
     <pathelement location="${dev.lib.dir}/jasper/jasper-runtime.jar"/>
-    <pathelement location="${packaged.lib.dir}/servlet.jar"/>
   </path>  
   
   <!-- Files in ${packaged.lib.dir} that are copied into ${install.dir}/lib.
@@ -328,6 +326,7 @@ your distribution.
     <classpath>
       <pathelement location="${dev.lib.dir}/castorAntTask.jar" />
       <pathelement location="${dev.lib.dir}/castor-0.9.3.9.jar" />
+        <pathelement location="${dev.lib.dir}/xercesImpl.jar" />
     </classpath>
   </taskdef>
 
@@ -360,7 +359,11 @@ your distribution.
     </classpath> 
   </taskdef> 
 
-  <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+    <classpath>
+      <pathelement location="${dev.lib.dir}/ant-contrib.jar"/>
+    </classpath> 
+  </taskdef>
 
   <!-- In the properties file referenced above, the For task is commented
        out in the 1.02b jar file, so I need to have this taskdef -->
@@ -652,7 +655,7 @@ your distribution.
  
  <!-- USAGE targets -->
  <target name="usage" description="How to use this build file">
-  <java fork="true" dir="${basedir}" jar="${dev.lib.dir}/ant-launcher.jar">
+  <java fork="true" dir="${basedir}" jar="${ant.library.dir}/ant-launcher.jar">
     <arg value="-projecthelp"/>
   </java>
  </target>
@@ -1100,7 +1103,7 @@ OpenNMS as part of the post-install.
  </target>
 
  <target name="castor.sources.generate" depends="prep">
-   <ant antfile="build-castor.xml"/>
+   <ant antfile="build-castor.xml" inheritRefs="true" />
  </target>
 
  <!-- COMPILE targets -->

@@ -37,7 +37,9 @@ Build file for OpenNMS' castor-generated Java files.
  
    <target name="clean.imports" if="build.clean.imports">
     <echo>Cleaning imports for generated sources... </echo>
-     <cleanimports srcdir="${build.castor.source.dir}" />
+     <cleanimports srcdir="${build.castor.source.dir}">
+		 <classpath refid="libraries.java.path"/>
+ 	</cleanimports>
    </target>   
 
  <!-- this doesn't work... not sure if I can easily get something like this
