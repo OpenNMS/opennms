@@ -35,21 +35,17 @@
 		<property key="timeout" value="2000"/>
 		<property key="retry" value="3"/>
 	</protocol-plugin>
-	<protocol-plugin protocol="LDAP" class-name="org.opennms.netmgt.capsd.LdapPlugin" scan="on" user-defined="false">
-		<property key="version" value="3"/>
-		<property key="timeout" value="3000"/>
-		<property key="retry" value="3"/>
-	</protocol-plugin>
-	<protocol-plugin protocol="Citrix" class-name="org.opennms.netmgt.capsd.CitrixPlugin" scan="on" user-defined="false">
-		<property key="timeout" value="3000"/>
-		<property key="retry" value="3"/>
-	</protocol-plugin>
 	<protocol-plugin protocol="SMB"  class-name="org.opennms.netmgt.capsd.SmbPlugin" scan="on" user-defined="false"/>
 	<protocol-plugin protocol="HTTP" class-name="org.opennms.netmgt.capsd.HttpPlugin" scan="on" user-defined="false">
 		<property key="ports" value="80"/>
 		<property key="timeout" value="3000"/>
 		<property key="retry" value="2"/>
 	</protocol-plugin>
+	<protocol-plugin protocol="HTTP-MGMT" class-name="org.opennms.netmgt.capsd.HttpPlugin" scan="on" user-defined="false">
+                <property key="ports" value="280"/>
+                <property key="timeout" value="3000"/>
+                <property key="retry" value="2"/>
+        </protocol-plugin>
 	<protocol-plugin protocol="HTTP-8080" class-name="org.opennms.netmgt.capsd.HttpPlugin" scan="on" user-defined="false">
                 <property key="ports" value="8080"/>
                 <property key="timeout" value="3000"/>

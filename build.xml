@@ -33,6 +33,7 @@
   <property name="install" value="${root.installprefix}${root.install}"/>
   <property name="install.initdir" value="${root.installprefix}${root.install.initdir}"/>
   <property name="install.sbindir" value="${root.installprefix}${root.install.sbindir}"/>
+  <property name="install.contrib" value="${root.installprefix}${root.install.contrib}"/>
   <property name="install.rrdtool" value="${root.installprefix}${root.install.rrdtool}"/>
   <property name="install.share" value="${root.installprefix}${root.install.share}"/>
   <property name="install.rrdtool" value="${root.installprefix}${root.install.rrdtool}"/>
@@ -78,6 +79,7 @@
   <filter token="root.install" value="${root.install}"/>
   <filter token="root.install.initdir" value="${root.install.initdir}"/>
   <filter token="root.install.sbindir" value="${root.install.sbindir}"/>
+  <filter token="root.install.contrib" value="${root.install.contrib}"/>
   <filter token="root.install.servlets" value="${root.install.servlets}"/>
   <filter token="root.install.share" value="${root.install.share}"/>
   <filter token="root.install.rrdtool" value="${root.install.rrdtool}"/>
@@ -89,6 +91,7 @@
   <filter token="relative.install" value="${relative.install}"/>
   <filter token="relative.install.initdir" value="${relative.install.initdir}"/>
   <filter token="relative.install.sbindir" value="${relative.install.sbindir}"/>
+  <filter token="relative.install.contrib" value="${relative.install.contrib}"/>
   <filter token="relative.install.servlets" value="${relative.install.servlets}"/>
   <filter token="relative.install.share" value="${relative.install.share}"/>
   <filter token="relative.install.rrdtool" value="${relative.install.rrdtool}"/>
@@ -186,7 +189,7 @@ ${print.headertext}
  </target>
 
  <target name="install"
-	depends="install.lib,install.servlet,install.init,install.etc,install.usr.bin,install.bin,install.logs,install.share"
+	depends="install.lib,install.servlet,install.init,install.etc,install.usr.bin,install.bin,install.logs,install.share,install.contrib"
 	description="build &quot;all&quot;, and install it in ${install}"/>
  <target name="all" depends="compile,jar" description="build everything (except documentation)"/>
  
@@ -485,6 +488,12 @@ ${root.install}/bin/opennms.sh $$@
   </copy>
  </target>
 
+ <target name="install.contrib" depends="init,copy.contrib">
+  <copy todir="${install.contrib}">
+   <fileset dir="${root.build}/contrib"/>
+  </copy>
+ </target>
+
  <target name="install.lib" depends="init,compile.native,jar">
   <mkdir dir="${install}/lib"/>
   <mkdir dir="${install}/lib/updates"/>
@@ -578,6 +587,15 @@ OpenNMS as part of the post-install.
     <include name="**/*.gif"/>
     <include name="**/*.jpg"/>
     <include name="**/*.png"/>
+   </fileset>
+  </copy>
+ </target>
+
+ <target name="copy.contrib" depends="init">
+  <mkdir dir="${root.build}/contrib"/>
+  <copy todir="${root.build}/contrib" filtering="no" overwrite="yes">
+   <fileset dir="${root.source}/contrib">
+    <include name="**/*"/>
    </fileset>
   </copy>
  </target>

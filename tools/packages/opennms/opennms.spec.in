@@ -106,11 +106,11 @@ Requires:		postgresql-server >= 7.1
 Requires:		postgresql-server >= 7.1, compat-libstdc++
 %endif
 
-%define builddefines -Droot.install=%{instprefix} -Droot.install.sbindir=/usr/local/sbin -Droot.install.initdir=%{initdir}/init.d -Droot.install.servlets=%{tomcatdir}/webapps/%{name} -Droot.install.share=%{sharedir} -Droot.install.rrdtool=%{rrdlibdir} -Droot.install.postgresql=%{pglibdir} -Droot.install.logs=%{logdir} -Droot.install.pid=%{pidfile} -Dfilter.overwrite="yes" -Disrpm="true"
+%define builddefines -Droot.install=%{instprefix} -Droot.install.sbindir=/usr/local/sbin -Droot.install.contrib=%{instprefix}/contrib -Droot.install.initdir=%{initdir}/init.d -Droot.install.servlets=%{tomcatdir}/webapps/%{name} -Droot.install.share=%{sharedir} -Droot.install.rrdtool=%{rrdlibdir} -Droot.install.postgresql=%{pglibdir} -Droot.install.logs=%{logdir} -Droot.install.pid=%{pidfile} -Dfilter.overwrite="yes" -Disrpm="true"
 
 %description
 OpenNMS is a network management package.
-This the 0.9 incredibly unstable series.
+This is the 1.0 stable tree.
 
 %if "%builddocs" == "1"
 %package docs
@@ -171,6 +171,7 @@ grep -q "BUILD FAILED" %{_tmppath}/build.output && exit 1
 
 mkdir -p $RPM_BUILD_ROOT%{instprefix}
 mkdir -p $RPM_BUILD_ROOT%{instprefix}/etc
+mkdir -p $RPM_BUILD_ROOT%{instprefix}/contrib
 
 ### /etc/profile.d
 
@@ -238,6 +239,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root)	%{_bindir}/*
 %attr(755,root,root)	%{instprefix}/bin
 %dir			%{instprefix}/etc
+			%{instprefix}/contrib
 %if "%builddocs" == "1"
 %attr(755,root,root)	%{instprefix}/docs
 %endif
