@@ -36,6 +36,7 @@
                                 <element name="subject" type="string" minOccurs="0" maxOccurs="1"/>
                                 <element name="numeric-message" type="string" minOccurs="0" maxOccurs="1"/>
                                 <element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+                                <element ref="varbind" minOccurs="0" maxOccurs="1"/>
 			</sequence>
 			<attribute name="name" type="string" use="required"/>
                         <attribute name="status" type="string" use="required"/>
@@ -49,5 +50,19 @@
                         <attribute name="value" type="string" use="required"/>
                 </complexType>
         </element>
+
+        <!-- The varbind element -->
+        <element name="varbind">
+                <complexType>
+                        <sequence>
+                                <!-- The varbind element number -->
+                                <element name="vbname" type="string" minOccurs="1" maxOccurs="1"/>
+
+                                <!-- The varbind element value -->
+                                <element name="vbvalue" type="string" minOccurs="1" maxOccurs="1"/>
+                        </sequence>
+                </complexType>
+        </element>
+
 
 </schema>

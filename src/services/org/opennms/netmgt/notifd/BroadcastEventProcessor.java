@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2004 Aug 26: Added the ability to trigger notifications on an event and a parameter.
 // 2003 Sep 30: Added a change to support SNMP Thresholding notices.
 // 2003 Jan 31: Cleaned up some unused imports.
 // 2002 Nov 09: Added code to allow an event to match more than one notice.
@@ -46,6 +47,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -81,6 +83,10 @@ import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
+
 
 /**
  *
@@ -323,6 +329,14 @@ final class BroadcastEventProcessor
                                         for (int i = 0; i < notifications.length; i++) {
                                             
                                                 Notification notification = notifications[i];
+
+						boolean parmsmatched = matchNotificationParameters(event, notification);
+
+						if (!parmsmatched)
+						{
+                                                	log.debug("Event " + event.getUei() + " did not match parameters for notice " + notification.getName());
+							return;
+						}
                                     
                                                 log.debug("Event " + event.getUei() + " matched notice " + notification.getName());
 
@@ -754,4 +768,70 @@ final class BroadcastEventProcessor
 	{
 		return "Notifd:BroadcastEventProcessor";
 	}
+
+        /**
+         * See if the event parameters match the variables in the notification.
+         *
+	 * The purpose of this method is to match parameters, such as those in
+	 * a threshold event, with parameters configured for a notification,
+	 * such as ds-name.
+         *
+         * @param event 	The event to process.
+         * @param notification  The notification to process.
+         *
+         */
+
+	// TODO This change only works for one parameter, need to expand it to many.
+
+        private boolean matchNotificationParameters(Event event, Notification notification)
+        {
+                Category log = ThreadCategory.getInstance(getClass());
+                                       
+		boolean parmmatch = false;
+                Parms parms = event.getParms();
+                if (parms != null && notification.getVarbind() != null && notification.getVarbind().getVbname() != null)
+                {
+                        String parmName = null;
+                        Value parmValue = null;
+                        String parmContent = null;
+                        String notfValue = null;
+                        String notfName = notification.getVarbind().getVbname();
+
+			if (notification.getVarbind().getVbvalue() != null)
+			{ 
+                        	notfValue = notification.getVarbind().getVbvalue();
+			}
+			else if (log.isDebugEnabled())
+			{
+                	        log.debug("BroadcastEventProcessor:matchNotificationParameters:  Null value for varbind, assuming true.");
+				parmmatch = true;
+			}
+				
+                
+                        Enumeration parmEnum = parms.enumerateParm();
+                        while(parmEnum.hasMoreElements())
+                        {
+                                Parm parm = (Parm)parmEnum.nextElement();
+                                parmName  = parm.getParmName();
+                                parmValue = parm.getValue();
+                                if (parmValue == null)
+                                        continue;
+                                else
+                                        parmContent = parmValue.getContent();
+        
+                                if (parmName.equals(notfName) && parmContent.equals(notfValue))
+                                {
+                                        parmmatch = true;
+                                }
+                                       
+                        }
+                }
+		else if (notification.getVarbind() == null || notification.getVarbind().getVbname() == null)
+		{
+			parmmatch = true;
+		}
+
+		return parmmatch;
+	}
+
 } // end class

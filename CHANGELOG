@@ -1,5 +1,7 @@
 1.1.3 to 1.1.4
 ----------------------------------------------------------------------
+- Added the ability to sort on parameters as well as events for
+  notifications.
 - Added some new standard performance reports. Thx Ted.
 
 
