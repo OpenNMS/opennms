@@ -86,7 +86,7 @@
           <td><script language="javascript"> document.write( new Date().toString()) </script></td>
         </tr>
         <tr>
-          <td>Java Version</td>
+          <td>Java Version:</td>
           <td><%=System.getProperty( "java.version" )%> <%=System.getProperty( "java.vendor" )%></td>
         </tr>  
         <tr>
