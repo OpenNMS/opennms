@@ -15,6 +15,7 @@
                         <attribute name="outstanding-notices-sql" type="string" use="required"/>
                         <attribute name="acknowledge-id-sql" type="string" use="required"/>
                         <attribute name="acknowledge-update-sql" type="string" use="required"/>
+                        <attribute name="match-all" type="boolean" use="required"/>
                 </complexType>
 	</element>
 

@@ -154,6 +154,20 @@ public class NotifdConfigFactory
 	}
 	
 	/**
+	 *
+	 */
+	public static boolean getNotificationMatch()
+                throws IOException, MarshalException, ValidationException
+	{
+		if (!initialized)
+			return false;
+		
+                updateFromFile();
+                
+		return configuration.getMatchAll();
+	}
+	
+	/**
 	 * Gets a nicely formatted string for the Web UI to display
 	 * @return On, Off, or Unknown depending on status
 	 */

@@ -176,12 +176,17 @@ public class NotificationFactory
 		return false;
 	}
 	
-	public Notification getNotifForEvent(Event event)
+	public Notification[] getNotifForEvent(Event event)
                 throws IOException, MarshalException, ValidationException
 	{
 		updateFromFile();
                 
-		Notification notif = null;
+                ArrayList notifList = new ArrayList();
+		Notification[] notif = null;
+		// boolean matchAll = NotifdConfigFactory.getInstance().getConfiguration().getNextNotifId()
+		boolean matchAll = NotifdConfigFactory.getNotificationMatch();
+                // ThreadCategory.getInstance(getClass()).debug("Notification Event Match All =  " + matchAll);
+
 		
 		for (Enumeration e = m_notifications.enumerateNotification(); e.hasMoreElements();)
 		{
@@ -189,11 +194,15 @@ public class NotificationFactory
 			
 			if (curNotif.getStatus().equals("on") && event.getUei().equals(curNotif.getUei()) && nodeInterfaceServiceValid(curNotif, event))
 			{
-				notif = curNotif;
-				break;
+				notifList.add(curNotif);
+				if (!matchAll)
+					break;
 			}
 		}
 		
+                if (!notifList.isEmpty()) {
+                    notif = (Notification[])notifList.toArray(new Notification[0]);
+                }
 		return notif;
 	}
 
@@ -399,7 +408,6 @@ public class NotificationFactory
                                 sql.append("AND ").append(matchList[i]).append("=? ");
                         }
                         
-                        ThreadCategory.getInstance(NotificationFactory.class.getName()).debug("Acknowledge notice query: " + sql.toString());
                         PreparedStatement statement = connection.prepareStatement(sql.toString());
                         statement.setString(1, uei);
 			
@@ -425,23 +433,21 @@ public class NotificationFactory
                         
 			//count how many rows were returned, if there is even one then the page
 			//has been responded too.
-			int count = 0;
-			while (results.next())
-			{
-				count++;
-			}
                         
-			if (count > 0)
+			if (results != null)
 			{
-				int notifID = results.getInt(1);
-				PreparedStatement update = connection.prepareStatement(NotifdConfigFactory.getInstance().getConfiguration().getAcknowledgeUpdateSql());
+				while (results.next())
+				{
+					int notifID = results.getInt(1);
+					PreparedStatement update = connection.prepareStatement(NotifdConfigFactory.getInstance().getConfiguration().getAcknowledgeUpdateSql());
                                 
-				update.setString(1, "auto-acknowledged");
-				update.setTimestamp(2, new Timestamp((new Date()).getTime()));
-				update.setInt(3, notifID);
+					update.setString(1, "auto-acknowledged");
+					update.setTimestamp(2, new Timestamp((new Date()).getTime()));
+					update.setInt(3, notifID);
                                 
-				update.executeUpdate();
-				update.close();
+					update.executeUpdate();
+					update.close();
+				}
 			}
                         
 			statement.close();

@@ -1,5 +1,9 @@
 1.0.0 to 1.1.0
 ----------------------------------------------------------------------
+- Added the ability to match an event to more than one notification.
+  Added the boolean "match-all" to the notifd configuration to
+  control this (default is false or off). Thx Nick Wesselman for
+  most of the code for this.
 - Fixed a small bug with wildcards in eventconf.xml
 - Added a "clear" attribute to the acknowledge tag for notifications,
   so now the "up" can be ack'd along with the "down". Bug 544

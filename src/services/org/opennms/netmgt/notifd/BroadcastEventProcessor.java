@@ -291,95 +291,101 @@ final class BroadcastEventProcessor
 			//check to see if notices are turned on for the interface/service in the event
                         if (continueWithNotice(event))
                         {
-                                Notification notification = null;
+                                Notification[] notifications = null;
                                 
                                 try {
-                                        notification = NotificationFactory.getInstance().getNotifForEvent(event);
+                                        notifications = NotificationFactory.getInstance().getNotifForEvent(event);
                                 } catch (Exception e)
                                 {
                                         log.error("Couldn't get notification mapping for event " + event.getUei() + ", not scheduling notice.", e);
                                         return;
                                 }
                                 
-                                if (notification != null)
+                                if (notifications != null)
                                 {
-                                        log.debug("Event " + event.getUei() + " matched notice " + notification.getName());
-                                        
-                                        int noticeId = 0;
-                                        
-                                        try {
-                                                noticeId = NotificationFactory.getInstance().getNoticeId();
-                                        } catch (Exception e)
-                                        {
-                                                log.error("Failed to get a unique id # for notification, exiting this notification", e);
-                                                return;
-                                        }
-                                        
-                                        Map paramMap = buildParameterMap(notification, event, noticeId);
-                                        String queueID = (notification.getNoticeQueue()!=null ? notification.getNoticeQueue() : "default");
-                                        
-                                        log.debug("destination : " + notification.getDestinationPath());
-                                        log.debug("text message: " + (String)paramMap.get(NotificationFactory.PARAM_TEXT_MSG));
-                                        log.debug("num message : " + (String)paramMap.get(NotificationFactory.PARAM_NUM_MSG));
-                                        log.debug("subject     : " + (String)paramMap.get(NotificationFactory.PARAM_SUBJECT));
-                                        log.debug("node        : " + (String)paramMap.get(NotificationFactory.PARAM_NODE));
-                                        log.debug("interface   : " + (String)paramMap.get(NotificationFactory.PARAM_INTERFACE));
-                                        log.debug("service     : " + (String)paramMap.get(NotificationFactory.PARAM_SERVICE));
-                                        
-                                        //get the target and escalation information
-                                        Path path = null;
-                                        try {
-                                                path = DestinationPathFactory.getInstance().getPath(notification.getDestinationPath());
-                                                if (path == null)
+                                        for (int i = 0; i < notifications.length; i++) {
+                                            
+                                                Notification notification = notifications[i];
+                                    
+                                                log.debug("Event " + event.getUei() + " matched notice " + notification.getName());
+
+                                                int noticeId = 0;
+
+                                                try {
+                                                        noticeId = NotificationFactory.getInstance().getNoticeId();
+                                                } catch (Exception e)
                                                 {
-                                                        log.warn("Unknown destination path " + notification.getDestinationPath() + 
-			        	                         ". Please check the <destinationPath> tag for the notification " + 
-                                                                 notification.getName() + " in the notification.xml file.");
+                                                        log.error("Failed to get a unique id # for notification, exiting this notification", e);
                                                         return;
                                                 }
-                                        } catch (Exception e)
-                                        {
-                                                log.error("Could not get destination path for " + notification.getDestinationPath() + ", please check the destinationPath.xml for errors.", e);
-                                                return;
-                                        }
-                                        Target[] targets = path.getTarget();
-                                        Escalate[] escalations = path.getEscalate();
-                                        
-                                        //now check to see if any users are to receive the notification, if none then generate an event a exit
-                                        try {
-                                                if (getUserCount(targets, escalations)==0)
+
+                                                Map paramMap = buildParameterMap(notification, event, noticeId);
+                                                String queueID = (notification.getNoticeQueue()!=null ? notification.getNoticeQueue() : "default");
+
+                                                log.debug("destination : " + notification.getDestinationPath());
+                                                log.debug("text message: " + (String)paramMap.get(NotificationFactory.PARAM_TEXT_MSG));
+                                                log.debug("num message : " + (String)paramMap.get(NotificationFactory.PARAM_NUM_MSG));
+                                                log.debug("subject     : " + (String)paramMap.get(NotificationFactory.PARAM_SUBJECT));
+                                                log.debug("node        : " + (String)paramMap.get(NotificationFactory.PARAM_NODE));
+                                                log.debug("interface   : " + (String)paramMap.get(NotificationFactory.PARAM_INTERFACE));
+                                                log.debug("service     : " + (String)paramMap.get(NotificationFactory.PARAM_SERVICE));
+
+                                                //get the target and escalation information
+                                                Path path = null;
+                                                try {
+                                                        path = DestinationPathFactory.getInstance().getPath(notification.getDestinationPath());
+                                                        if (path == null)
+                                                        {
+                                                                log.warn("Unknown destination path " + notification.getDestinationPath() + 
+                                                                         ". Please check the <destinationPath> tag for the notification " + 
+                                                                         notification.getName() + " in the notification.xml file.");
+                                                                return;
+                                                        }
+                                                } catch (Exception e)
                                                 {
-                                                        log.warn("The path " + notification.getDestinationPath() + " assigned to notification " + notification.getName() + " has no targets or escalations specified, not sending notice.");
-                                                        sendNotifEvent(EventConstants.NOTIFICATION_WITHOUT_USERS,
-                                                                       "The path " + notification.getDestinationPath() + " assigned to notification " + notification.getName() + " has no targets or escalations specified.",
-                                                                       "The message of the notification is as follows: " + (String)paramMap.get(NotificationFactory.PARAM_TEXT_MSG));
+                                                        log.error("Could not get destination path for " + notification.getDestinationPath() + ", please check the destinationPath.xml for errors.", e);
                                                         return;
                                                 }
-                                        }catch (Exception e)
-                                        {
-                                                log.error("Failed to get count of users in destination path " + notification.getDestinationPath() + ", exiting notification.", e);
-                                                return;
-                                        }
-                                        
-                                        try { 
-                                                NotificationFactory.insertNotice(noticeId, paramMap);
-                                        } catch(SQLException e)
-                                        {
-                                                log.error("Failed to enter notification into database, exiting this notification", e);
-                                                return;
-                                        }
-                                        
-                                        long startTime = System.currentTimeMillis();
-                                        List targetSiblings = new ArrayList();
-                                        
-                                        try {
-                                                NoticeQueue noticeQueue = (NoticeQueue)m_noticeQueues.get(queueID);
-                                                processTargets(targets, targetSiblings, noticeQueue, startTime, paramMap, noticeId);
-                                                processEscalations(escalations, targetSiblings, noticeQueue, startTime, paramMap, noticeId);
-                                        }
-                                        catch (Exception e)
-                                        {
-                                                log.error("notice not scheduled due to error: ", e);
+                                                Target[] targets = path.getTarget();
+                                                Escalate[] escalations = path.getEscalate();
+
+                                                //now check to see if any users are to receive the notification, if none then generate an event a exit
+                                                try {
+                                                        if (getUserCount(targets, escalations)==0)
+                                                        {
+                                                                log.warn("The path " + notification.getDestinationPath() + " assigned to notification " + notification.getName() + " has no targets or escalations specified, not sending notice.");
+                                                                sendNotifEvent(EventConstants.NOTIFICATION_WITHOUT_USERS,
+                                                                               "The path " + notification.getDestinationPath() + " assigned to notification " + notification.getName() + " has no targets or escalations specified.",
+                                                                               "The message of the notification is as follows: " + (String)paramMap.get(NotificationFactory.PARAM_TEXT_MSG));
+                                                                return;
+                                                        }
+                                                }catch (Exception e)
+                                                {
+                                                        log.error("Failed to get count of users in destination path " + notification.getDestinationPath() + ", exiting notification.", e);
+                                                        return;
+                                                }
+
+                                                try { 
+                                                        NotificationFactory.insertNotice(noticeId, paramMap);
+                                                } catch(SQLException e)
+                                                {
+                                                        log.error("Failed to enter notification into database, exiting this notification", e);
+                                                        return;
+                                                }
+
+                                                long startTime = System.currentTimeMillis();
+                                                List targetSiblings = new ArrayList();
+
+                                                try {
+                                                        NoticeQueue noticeQueue = (NoticeQueue)m_noticeQueues.get(queueID);
+                                                        processTargets(targets, targetSiblings, noticeQueue, startTime, paramMap, noticeId);
+                                                        processEscalations(escalations, targetSiblings, noticeQueue, startTime, paramMap, noticeId);
+                                                }
+                                                catch (Exception e)
+                                                {
+                                                        log.error("notice not scheduled due to error: ", e);
+                                                }
+                                                
                                         }
                                	}
                                 else
