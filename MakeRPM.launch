@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launchConfiguration type="org.eclipse.ant.AntLaunchConfigurationType">
+<stringAttribute key="process_factory_id" value="org.eclipse.ant.ui.remoteAntProcessFactory"/>
+<booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.eclipse.ant.internal.ui.antsupport.InternalAntRunner"/>
+<booleanAttribute key="editedByExternalToolsMainTab" value="true"/>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.ui.externaltools.launchGroup"/>
+</listAttribute>
+<intAttribute key="org.eclipse.ui.externaltoolsATTR_SORT_TARGETS" value="1"/>
+<booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
+<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="/Users/brozow/workspaces/jrobin-merge/opennms"/>
+<stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.ant.ui.AntClasspathProvider"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_ANT_TARGETS" value="rpm,"/>
+<booleanAttribute key="org.eclipse.ui.externaltools.ATTR_HIDE_INTERNAL_TARGETS" value="true"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_INSTALL_TYPE_ID" value="org.eclipse.jdt.internal.launching.macosx.MacOSXType"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="opennms"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_INSTALL_NAME" value="JVM 1.4.2 (MacOS X Default)"/>
+<listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;4&quot; path=&quot;1&quot; containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/JVM 1.4.2 (MacOS X Default)&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry id=&quot;org.eclipse.ant.ui.classpathentry.antHome&quot;&gt;&#10;&lt;memento default=&quot;true&quot;/&gt;&#10;&lt;/runtimeClasspathEntry&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry id=&quot;org.eclipse.ant.ui.classpathentry.extraClasspathEntries&quot;&gt;&#10;&lt;memento/&gt;&#10;&lt;/runtimeClasspathEntry&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/xml-apis.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/xercesImpl.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/sablecc-anttask-1.1.0.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/sablecc-2.17.2.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/cpptasks.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/castorAntTask.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/castor-0.9.3.9.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-xslp.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-xalan2.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-xalan1.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-weblogic.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-vaj.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-trax.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-swing.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-stylebook.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-starteam.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-nodeps.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-netrexx.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-launcher.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-junit.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-jsch.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-jmf.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-jdepend.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-javamail.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-jakarta-regexp.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-jakarta-oro.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-jakarta-log4j.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-jakarta-bcel.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-jai.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-icontract.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-commons-net.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-commons-logging.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-apache-resolver.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-apache-bsf.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant-antlr.jar&quot;/&gt;&#10;"/>
+<listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;2&quot; path=&quot;3&quot; internalArchive=&quot;/opennms/devlib/ant.jar&quot;/&gt;&#10;"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.debug.core.ATTR_REFRESH_SCOPE" value="${workspace}"/>
+<booleanAttribute key="org.eclipse.ui.externaltools.ATTR_CAPTURE_OUTPUT" value="false"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="${workspace_loc:/opennms/build.xml}"/>
+</launchConfiguration>

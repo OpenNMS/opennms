@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+<!ENTITY __chapter1__dwwdzyh8 SYSTEM "chapter1.xml">
+<!ENTITY __chapter2__dwwe0ple SYSTEM "chapter2.xml">
+<!ENTITY __chapter3__dx0bh6rf SYSTEM "chapter3.xml">
+<!ENTITY __chapter4__dx0bi2a3 SYSTEM "chapter4.xml">
+]>
+<book>
+  <title>OpenNMS<superscript>®</superscript> Installation Guide</title>
+
+  <bookinfo>
+    <date>23 July 2004</date>
+
+    <subtitle>Instructions on Installing the OpenNMS Network Management
+    Application</subtitle>
+
+    <edition>Version 1.1.3-1</edition>
+
+    <authorgroup>
+      <corpauthor>OpenNMS Development Team</corpauthor>
+
+      <author>
+        <surname>Tarus Balog</surname>
+
+        <email>tarus@opennms.org</email>
+      </author>
+    </authorgroup>
+
+    <copyright>
+      <year>Copyright © 2004 Blast Internet Services, Inc.</year>
+    </copyright>
+
+    <legalnotice>
+      <para>Permission is granted to copy, distribute and/or modify this
+      document under the terms of the GNU Free Documentation License, Version
+      1.1 or any later version published by the Free Software Foundation; with
+      no Invariant Sections, with no Front-Cover Texts and with no Back-Cover
+      Texts. A copy of the license is available at <ulink
+      url="http://www.gnu.org/copyleft/fdl.html">http://www.gnu.org/copyleft/fdl.html</ulink></para>
+    </legalnotice>
+  </bookinfo>
+
+  <preface>
+    <title>Preface</title>
+
+    <para>OpenNMS is the creation of numerous people and organizations,
+    operating under the umbrella of the OpenNMS project. The original code
+    base was developed and published under the GPL by the Oculan Corporation
+    until 2002, when the project administration was passed on to Tarus
+    Balog.</para>
+
+    <para>The current corporate sponsor of OpenNMS is Blast Internet Services,
+    which also owns the OpenNMS trademark.</para>
+
+    <para>The OpenNMS Project strives to remain independent, and includes
+    contributions from people outside of Blast. Please visit the OpenNMS
+    website for more information.</para>
+
+    <para>OpenNMS is a derivative work, containing both original code,
+    included code and modified code that was published under the GNU General
+    Public License. Please see the source for detailed copyright notices, but
+    some notable copyright owners are listed below:</para>
+
+    <para><itemizedlist>
+        <listitem>
+          <para>Copyright © 2002-2004 <ulink url="http://www.blast.com">Blast
+          Internet Services</ulink>, Inc.</para>
+        </listitem>
+
+        <listitem>
+          <para>Original code base for OpenNMS version 1.0.0 © 1999-2001
+          <ulink url="http://www.oculan.com">Oculan
+          Corporation</ulink>.</para>
+        </listitem>
+
+        <listitem>
+          <para>Mapping code Copyright © 2003 <ulink
+          url="http://www.nksi.com">Networked Knowledge Systems,
+          Inc</ulink>.</para>
+        </listitem>
+
+        <listitem>
+          <para>ScriptD code Copyright © 2003 <ulink
+          url="http://www.tavve.com">Tavve Software Company</ulink>.</para>
+        </listitem>
+      </itemizedlist>Please send any omissions or corrections to this document
+    to <ulink url="mailto:tarus@opennms.org">Tarus Balog</ulink></para>
+  </preface>
+
+  &__chapter1__dwwdzyh8;
+
+  &__chapter2__dwwe0ple;
+
+  &__chapter3__dx0bh6rf;
+
+  &__chapter4__dx0bi2a3;
+</book>

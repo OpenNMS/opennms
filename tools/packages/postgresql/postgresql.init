@@ -1,0 +1,233 @@
+#! /bin/bash
+# postgresql	This is the init script for starting up the PostgreSQL
+#		server
+#
+# chkconfig: - 85 15
+# description: Starts and stops the PostgreSQL backend daemon that handles \
+#	       all database requests.
+# processname: postmaster
+# pidfile: /var/run/postmaster.pid
+
+# Version 6.5.3-2 Lamar Owen
+# Added code to determine if PGDATA exists, whether it is current version
+#     or not, and initdb if no PGDATA (initdb will not overwrite a database).
+
+# Version 7.0 Lamar Owen
+# Added logging code
+# Changed PGDATA.
+#
+
+# Version 7.0.2 Trond Eivind Glomsrød <teg@redhat.com>
+# use functions, add conditional restart
+          
+# Version 7.0.3 Lamar Owen <lamar@postgresql.org>
+# Check for the existence of functions before blindly using them 
+# in particular -- check for success () and failure () before using.
+# More Cross-distribution support -- PGVERSION variable, and docdir checks.
+
+# Version 7.1 Release Candidate Lamar Owen <lamar@postgresql.org>
+# initdb parameters have changed.
+
+# Version 7.1.2 Trond Eivind Glomsrød <teg@redhat.com>
+# Specify shell for su
+# Handle stop better - kill unwanted output, make it wait until the database is ready
+# Handle locales slightly differently - always using "C" isn't a valid option 
+# Kill output from database initialization 
+# Mark messages for translation
+
+# Version 7.1.2-2.PGDG Lamar Owen <lamar.owen@wgcr.org>
+# sync up.
+# Karl's fixes for some quoting issues.
+
+# PGVERSION is:
+PGVERSION=7.1.2
+
+# Source function library.
+INITD=/etc/rc.d/init.d
+. $INITD/functions
+
+# Get function listing for cross-distribution logic.
+TYPESET=`typeset -f|grep "declare"`
+
+# Get config.
+. /etc/sysconfig/network
+
+# Check that networking is up.
+# Pretty much need it for postmaster.
+[ "${NETWORKING}" = "no" ] && exit 0
+
+[ -f /usr/bin/postmaster ] || exit 0
+
+
+start(){
+	PSQL_START=$"Starting postgresql service: "
+	
+	# Check for older PGDATA location.
+	if [ -f /var/lib/pgsql/PG_VERSION ] && [ -d /var/lib/pgsql/base/template1 ]
+	then
+		export PGDATA=/var/lib/pgsql
+	else
+		export PGDATA=/var/lib/pgsql/data
+	fi
+
+	# Check for the PGDATA structure
+	if [ -f $PGDATA/PG_VERSION ] && [ -d $PGDATA/base ]
+	then
+	# Check version of existing PGDATA
+
+		if [ `cat $PGDATA/PG_VERSION` != '7.1' ]
+		then
+			SYSDOCDIR="(Your System's documentation directory)"
+			if [ -d /usr/doc/postgresql-$PGVERSION ]
+			then
+				SYSDOCDIR=/usr/doc
+			fi
+			if [ -d /usr/share/doc/postgresql-$PGVERSION ]
+			then
+				SYSDOCDIR=/usr/share/doc
+			fi
+			if [ -d /usr/doc/packages/postgresql-$PGVERSION ]
+			then
+				SYSDOCDIR=/usr/doc/packages
+			fi
+			if [ -d /usr/share/doc/packages/postgresql-$PGVERSION ]
+			then
+				SYSDOCDIR=/usr/share/doc/packages
+			fi
+			echo
+			echo $"An old version of the database format was found.\nYou need to upgrade the data format before using PostgreSQL.\nSee $SYSDOCDIR/postgresql-$PGVERSION/README.rpm-dist for more information."
+			exit 1
+#                       This doesn't seem to do anything useful...
+#		else
+#			if echo "$TYPESET"|grep "declare -f success ()" >/dev/null
+#			then
+#				success "$PSQL_CHECK"
+#			else
+#				echo "  [ OK ]"
+#			fi
+#			echo
+		fi
+
+	# No existing PGDATA! Initdb it.
+
+	else
+	        echo -n $"Initializing database: "
+                if [ ! -d $PGDATA ]
+		then
+			mkdir -p $PGDATA
+			chown postgres.postgres $PGDATA
+		fi
+		# Make sure the locale from the initdb is preserved for later startups...
+		[ -f /etc/sysconfig/i18n ] && cp /etc/sysconfig/i18n $PGDATA/../initdb.i18n
+		# Just in case no locale was set, use en_US
+		[ ! -f /etc/sysconfig/i18n ] && echo "LANG=en_US" > $PGDATA/../initdb.i18n 
+		# Is expanded this early to be used in the command su runs
+		echo "export LANG LC_ALL LC_CTYPE LC_COLLATE LC_NUMERIC LC_CTYPE LC_TIME" >> $PGDATA/../initdb.i18n
+		# Initialize the database
+		su -l postgres -s /bin/bash -c "/usr/bin/initdb --pgdata=/var/lib/pgsql/data > /dev/null 2>&1" < /dev/null
+		[ -f $PGDATA/PG_VERSION ] && echo_success
+		[ ! -f $PGDATA/PG_VERSION ] && echo_failure
+		echo
+ 	fi
+
+	# Check for postmaster already running...
+	pid=`pidof -s postmaster`
+	if [ $pid ]
+	then
+		echo $"Postmaster already running."
+	else
+		#all systems go -- remove any stale lock files
+		rm -f /tmp/.s.PGSQL.* > /dev/null
+		rm -f $PGDATA/postmaster.pid >/dev/null
+		echo -n "$PSQL_START"
+		su -l postgres -s /bin/bash -c "/usr/bin/pg_ctl  -D $PGDATA -p /usr/bin/postmaster start  > /dev/null 2>&1" < /dev/null
+ 		sleep 1
+ 		pid=`pidof -s postmaster`
+ 		if [ $pid ]
+		then
+			if echo "$TYPESET"|grep "declare -f success ()" >/dev/null
+			then
+				success "$PSQL_START"
+			else
+				echo "  [ OK ]"
+			fi
+			touch /var/lock/subsys/postgresql
+			echo $pid > /var/run/postmaster.pid
+			echo
+		else
+			if echo "$TYPESET"|grep "declare -f failure ()" >/dev/null
+			then
+				failure "$PSQL_START"
+			else
+				echo " [ FAILED ]"
+			fi
+			echo
+		fi
+	fi
+}
+
+stop(){
+	# Check for postmaster already running... exit if this happens
+	pid=`pidof -s postmaster`
+	if [ "$pid" == "" ]; then
+	    rm -f /var/run/postmaster.pid
+	    rm -f /var/lock/subsys/postgresql
+	    exit 0;
+	fi
+	echo -n $"Stopping postgresql service: "
+	# Check for older PGDATA location.
+	if [ -f /var/lib/pgsql/PG_VERSION ] && [ -d /var/lib/pgsql/base/template1 ]
+	then
+		export PGDATA=/var/lib/pgsql
+	else
+		export PGDATA=/var/lib/pgsql/data
+	fi
+	su -l postgres -s /bin/bash -c "/usr/bin/pg_ctl stop -D $PGDATA -s -m fast" > /dev/null 2>&1
+        ret=$? # This will always be 0, as the return code doesn't propagate... Fix that some day.
+        if [ $ret -eq 0 ]; then
+	    echo_success
+        else
+            echo_failure
+        fi
+	echo
+	rm -f /var/run/postmaster.pid
+	rm -f /var/lock/subsys/postgresql
+}
+
+restart(){
+    stop
+    start
+}
+
+condrestart(){
+    [ -e /var/lock/subsys/postgresql ] && restart || :
+}
+
+
+# This script is slightly unusual in that the name of the daemon (postmaster)
+# is not the same as the name of the subsystem (postgresql)
+
+# See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  status)
+	status postmaster
+	;;
+  restart)
+	restart
+	;;
+  condrestart)
+	condrestart
+	;;
+  *)
+	echo $"Usage: $0 {start|stop|status|restart|condrestart}"
+	exit 1
+esac
+
+exit 0
+

@@ -1,0 +1,3808 @@
+<events>
+<!-- Start of auto generated data from MIB: IBM-Director-Alert-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.146.200</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/trapText1</uei>
+	<event-label>IBM: IBM-Director-Alert-MIB defined trap event: trapText1</event-label>
+	<descr>
+&lt;p&gt;Converted Tivoli Director Event&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapSenderName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapManagedObjectName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	trapCategory&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM: Director Trap Received: %parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<!-- End of auto generated data from MIB: IBM-Director-Alert-MIB -->
+<!-- Start of auto generated data from MIB: IBM-SERVERAID-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>201</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidNoControllers</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidNoControllers</event-label>
+	<descr>
+&lt;p&gt;Informational: No controllers were found in this system.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidNoControllers trap received 
+			ibmServeRaidTrapServerName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>202</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidControllerFail</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidControllerFail</event-label>
+	<descr>
+&lt;p&gt;Error: Commands not responding on Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidControllerFail trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapController=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>203</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidDeadBattery</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidDeadBattery</event-label>
+	<descr>
+&lt;p&gt;Error: The battery-backup cache device on Controller %d needs a new battery.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidDeadBattery trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapController=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>204</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidDeadBatteryCache</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidDeadBatteryCache</event-label>
+	<descr>
+&lt;p&gt;Error: The battery-backup cache device on Controller %d is defective %d&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapErrorCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidDeadBatteryCache trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapController=%parm[#2]% 
+			ibmServeRaidTrapErrorCode=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>205</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidPollingFail</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidPollingFail</event-label>
+	<descr>
+&lt;p&gt;Error: Background polling commands not responding on Controller %d %d&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapErrorCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidPollingFail trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapController=%parm[#2]% 
+			ibmServeRaidTrapErrorCode=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>206</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidConfigFail</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidConfigFail</event-label>
+	<descr>
+&lt;p&gt;Error: Cannot read controller configuration.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidConfigFail trap received 
+			ibmServeRaidTrapServerName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>207</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidControllerAdded</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidControllerAdded</event-label>
+	<descr>
+&lt;p&gt;Informational: Controller %d has been added to the system.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidControllerAdded trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapController=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>208</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidControllerReplaced</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidControllerReplaced</event-label>
+	<descr>
+&lt;p&gt;Informational: Controller %d has been replaced in the system.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidControllerReplaced trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapController=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>209</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidControllerFailover</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidControllerFailover</event-label>
+	<descr>
+&lt;p&gt;Informational: Controller %d failover detected. Passive controller is now active.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidControllerFailover trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapController=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>210</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidControllerVersionMismatch</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidControllerVersionMismatch</event-label>
+	<descr>
+&lt;p&gt;Warning: Controller %d version mismatch detected. The BIOS, Firmware, and Driver are not a matched set and are not compatible.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidControllerVersionMismatch trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapController=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>301</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidLogicalDriveCritical</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidLogicalDriveCritical</event-label>
+	<descr>
+&lt;p&gt;Warning: Logical Drive %d is Critical on Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidLogicalDriveCritical trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>302</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidLogicalDriveBlocked</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidLogicalDriveBlocked</event-label>
+	<descr>
+&lt;p&gt;Error: Logical Drive %d is Blocked on Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidLogicalDriveBlocked trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>303</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidLogicalDriveOffLine</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidLogicalDriveOffLine</event-label>
+	<descr>
+&lt;p&gt;Error: Logical Drive %d is Offline on Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidLogicalDriveOffLine trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>304</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidRebuildDetected</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidRebuildDetected</event-label>
+	<descr>
+&lt;p&gt;Informational: Rebuilding Logical Drive %d on Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidRebuildDetected trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>305</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidRebuildComplete</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidRebuildComplete</event-label>
+	<descr>
+&lt;p&gt;Informational: Rebuild complete on Logical Drive %d of Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidRebuildComplete trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>306</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidRebuildFail</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidRebuildFail</event-label>
+	<descr>
+&lt;p&gt;Error: Rebuild failed on Logical Drive %d of Controller %d %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapErrorCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidRebuildFail trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]% 
+			ibmServeRaidTrapErrorCode=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>307</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidSyncDetected</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidSyncDetected</event-label>
+	<descr>
+&lt;p&gt;Informational: Synchronizing Logical Drive %d on Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidSyncDetected trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>308</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidSyncComplete</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidSyncComplete</event-label>
+	<descr>
+&lt;p&gt;Informational: Synchronization complete on Logical Drive %d of Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidSyncComplete trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>309</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidSyncFail</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidSyncFail</event-label>
+	<descr>
+&lt;p&gt;Error: Synchronization failed on Logical Drive %d of Controller %d %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapErrorCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidSyncFail trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]% 
+			ibmServeRaidTrapErrorCode=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>310</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidMigrationDetected</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidMigrationDetected</event-label>
+	<descr>
+&lt;p&gt;Informational: Migrating Logical Drive %d on Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidMigrationDetected trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>311</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidMigrationComplete</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidMigrationComplete</event-label>
+	<descr>
+&lt;p&gt;Informational: Migration complete on Logical Drive %d of Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidMigrationComplete trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>312</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidMigrationFail</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidMigrationFail</event-label>
+	<descr>
+&lt;p&gt;Error: Migration failed on Logical Drive %d of Controller %d %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapErrorCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidMigrationFail trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]% 
+			ibmServeRaidTrapErrorCode=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>313</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidCompressionDetected</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidCompressionDetected</event-label>
+	<descr>
+&lt;p&gt;Informational: Compressing Logical Drive %d on Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidCompressionDetected trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>314</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidCompressionComplete</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidCompressionComplete</event-label>
+	<descr>
+&lt;p&gt;Informational: Compression complete on Logical Drive %d of Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidCompressionComplete trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>315</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidcompressionFail</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidcompressionFail</event-label>
+	<descr>
+&lt;p&gt;Error: Compression failed on Logical Drive %d of Controller %d %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapErrorCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidcompressionFail trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]% 
+			ibmServeRaidTrapErrorCode=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>316</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidDecompressionDetected</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidDecompressionDetected</event-label>
+	<descr>
+&lt;p&gt;Informational: Decompressing Logical Drive %d on Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidDecompressionDetected trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>317</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidDecompressionComplete</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidDecompressionComplete</event-label>
+	<descr>
+&lt;p&gt;Informational: Decompression complete on Logical Drive %d of Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidDecompressionComplete trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>318</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidDecompressionFail</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidDecompressionFail</event-label>
+	<descr>
+&lt;p&gt;Error: Decompression failed on Logical Drive %d of Controller %d %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapErrorCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidDecompressionFail trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]% 
+			ibmServeRaidTrapErrorCode=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>319</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidFlashCopyDetected</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidFlashCopyDetected</event-label>
+	<descr>
+&lt;p&gt;Informational: FlashCopying Logical Drive %d on Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidFlashCopyDetected trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>320</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidFlashCopyComplete</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidFlashCopyComplete</event-label>
+	<descr>
+&lt;p&gt;Informational: FlashCopy complete on Logical Drive %d of Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidFlashCopyComplete trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>321</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidFlashCopyFail</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidFlashCopyFail</event-label>
+	<descr>
+&lt;p&gt;Error: FlashCopy failed on Logical Drive %d of Controller %d %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapErrorCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidFlashCopyFail trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]% 
+			ibmServeRaidTrapErrorCode=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>322</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidArrayRebuildDetected</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidArrayRebuildDetected</event-label>
+	<descr>
+&lt;p&gt;Informational: Rebuilding Array %d on Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapArray&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidArrayRebuildDetected trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapArray=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>323</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidArrayRebuildComplete</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidArrayRebuildComplete</event-label>
+	<descr>
+&lt;p&gt;Informational: Rebuild complete on Array %d of Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapArray&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidArrayRebuildComplete trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapArray=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>324</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidArrayRebuildFail</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidArrayRebuildFail</event-label>
+	<descr>
+&lt;p&gt;Error: Rebuild failed on Array %d of Controller %d %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapArray&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapErrorCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidArrayRebuildFail trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapArray=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]% 
+			ibmServeRaidTrapErrorCode=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>325</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidArraySyncDetected</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidArraySyncDetected</event-label>
+	<descr>
+&lt;p&gt;Informational: Synchronizing Array %d on Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapArray&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidArraySyncDetected trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapArray=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>326</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidArraySyncComplete</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidArraySyncComplete</event-label>
+	<descr>
+&lt;p&gt;Informational: Synchronization complete on Array %d of Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapArray&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidArraySyncComplete trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapArray=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>327</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidArraySyncFail</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidArraySyncFail</event-label>
+	<descr>
+&lt;p&gt;Error: Synchronization failed on Array %d of Controller %d %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapArray&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapErrorCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidArraySyncFail trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapArray=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]% 
+			ibmServeRaidTrapErrorCode=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>328</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidArrayFlashCopyDetected</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidArrayFlashCopyDetected</event-label>
+	<descr>
+&lt;p&gt;Informational: FlashCopying Array %d on Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapArray&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidArrayFlashCopyDetected trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapArray=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>329</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidArrayFlashCopyComplete</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidArrayFlashCopyComplete</event-label>
+	<descr>
+&lt;p&gt;Informational: FlashCopy complete on Array %d of Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapArray&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidArrayFlashCopyComplete trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapArray=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>330</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidArrayFlashCopyFail</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidArrayFlashCopyFail</event-label>
+	<descr>
+&lt;p&gt;Error: FlashCopy failed on Array %d of Controller %d %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapArray&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapErrorCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidArrayFlashCopyFail trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapArray=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]% 
+			ibmServeRaidTrapErrorCode=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>331</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidLogicalDriveUnblocked</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidLogicalDriveUnblocked</event-label>
+	<descr>
+&lt;p&gt;Informational: Logical Drive %d is unblocked on Controller %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapLogicalDrive&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidLogicalDriveUnblocked trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapLogicalDrive=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>401</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidDefunctDrive</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidDefunctDrive</event-label>
+	<descr>
+&lt;p&gt;Error: Defunct drive on Controller %d, Channel %d, SCSI ID %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapScsiId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidDefunctDrive trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapController=%parm[#2]% 
+			ibmServeRaidTrapChannel=%parm[#3]% 
+			ibmServeRaidTrapScsiId=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>402</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidPfaDrive</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidPfaDrive</event-label>
+	<descr>
+&lt;p&gt;Warning: PFA drive on Controller %d, Channel %d, SCSI ID %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapScsiId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidPfaDrive trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapController=%parm[#2]% 
+			ibmServeRaidTrapChannel=%parm[#3]% 
+			ibmServeRaidTrapScsiId=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>403</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidDefunctReplaced</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidDefunctReplaced</event-label>
+	<descr>
+&lt;p&gt;Informational: A drive is set to Hot-Spare on Controller %d, Channel %d, SCSI ID %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapScsiId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidDefunctReplaced trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapController=%parm[#2]% 
+			ibmServeRaidTrapChannel=%parm[#3]% 
+			ibmServeRaidTrapScsiId=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>404</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidDefunctDriveFru</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidDefunctDriveFru</event-label>
+	<descr>
+&lt;p&gt;Error: Defunct drive (FRU Part # %d} on controller %d, channel %d, SCSI ID %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapFru&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapScsiId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidDefunctDriveFru trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapFru=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]% 
+			ibmServeRaidTrapChannel=%parm[#4]% 
+			ibmServeRaidTrapScsiId=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>405</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidPfaDriveFru</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidPfaDriveFru</event-label>
+	<descr>
+&lt;p&gt;Warning: PFA drive (FRU Part # %d) on Controller %d, Channel %d, SCSI ID %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapFru&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapScsiId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidPfaDriveFru trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapFru=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]% 
+			ibmServeRaidTrapChannel=%parm[#4]% 
+			ibmServeRaidTrapScsiId=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>406</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidUnsupportedDrive</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidUnsupportedDrive</event-label>
+	<descr>
+&lt;p&gt;Warning: Unsupported physical drive found on Controller %d, Channel %d, SCSI ID %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapScsiId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidUnsupportedDrive trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapController=%parm[#2]% 
+			ibmServeRaidTrapChannel=%parm[#3]% 
+			ibmServeRaidTrapScsiId=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>501</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidEnclosureOK</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidEnclosureOK</event-label>
+	<descr>
+&lt;p&gt;Informational: Enclosure device responding on Controller %d, Channel %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidEnclosureOK trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapController=%parm[#2]% 
+			ibmServeRaidTrapChannel=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>502</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidEnclosureFail</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidEnclosureFail</event-label>
+	<descr>
+&lt;p&gt;Error: Enclosure device not responding on Controller %d, Channel %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidEnclosureFail trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapController=%parm[#2]% 
+			ibmServeRaidTrapChannel=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>503</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidFanOk</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidFanOk</event-label>
+	<descr>
+&lt;p&gt;Informational: Enclosure fan %d on Controller %d, Channel %d is now operational.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapFan&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidFanOk trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapFan=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]% 
+			ibmServeRaidTrapChannel=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>504</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidFanFail</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidFanFail</event-label>
+	<descr>
+&lt;p&gt;Error: Enclosure fan %d on Controller %d, Channel %d is malfunctioning.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapFan&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidFanFail trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapFan=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]% 
+			ibmServeRaidTrapChannel=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>505</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidFanInstalled</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidFanInstalled</event-label>
+	<descr>
+&lt;p&gt;Informational: Enclosure fan %d on Controller %d, Channel %d has been installed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapFan&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidFanInstalled trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapFan=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]% 
+			ibmServeRaidTrapChannel=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>506</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidFanRemoved</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidFanRemoved</event-label>
+	<descr>
+&lt;p&gt;Warning: Enclosure fan %d on Controller %d, Channel %d has been removed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapFan&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidFanRemoved trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapFan=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]% 
+			ibmServeRaidTrapChannel=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>507</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidTempOk</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidTempOk</event-label>
+	<descr>
+&lt;p&gt;Error: Enclosure temperature is in normal range on Controller %d, Channel %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidTempOk trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapController=%parm[#2]% 
+			ibmServeRaidTrapChannel=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>508</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidTempFail</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidTempFail</event-label>
+	<descr>
+&lt;p&gt;Error: Enclosure temperature is out of normal range on Controller %d, Channel %d.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidTempFail trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapController=%parm[#2]% 
+			ibmServeRaidTrapChannel=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>509</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidPowerSupplyOk</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidPowerSupplyOk</event-label>
+	<descr>
+&lt;p&gt;Informational: Enclosure power supply %d on Controller %d, Channel %d is now operational.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapPowerSupply&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidPowerSupplyOk trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapPowerSupply=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]% 
+			ibmServeRaidTrapChannel=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>510</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidPowerSupplyFail</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidPowerSupplyFail</event-label>
+	<descr>
+&lt;p&gt;Error: Enclosure power supply %d on Controller %d, Channel %d is malfunctioning.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapPowerSupply&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidPowerSupplyFail trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapPowerSupply=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]% 
+			ibmServeRaidTrapChannel=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>511</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidPowerSupplyInstalled</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidPowerSupplyInstalled</event-label>
+	<descr>
+&lt;p&gt;Informational: Enclosure power supply %d on Controller %d, Channel %d has been installed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapPowerSupply&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidPowerSupplyInstalled trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapPowerSupply=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]% 
+			ibmServeRaidTrapChannel=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>512</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidPowerSupplyRemoved</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidPowerSupplyRemoved</event-label>
+	<descr>
+&lt;p&gt;Warning: Enclosure power supply %d on Controller %d, Channel %d has been removed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapPowerSupply&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapController&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapChannel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidPowerSupplyRemoved trap received 
+			ibmServeRaidTrapServerName=%parm[#1]% 
+			ibmServeRaidTrapPowerSupply=%parm[#2]% 
+			ibmServeRaidTrapController=%parm[#3]% 
+			ibmServeRaidTrapChannel=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.167.2</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>601</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/ibmServeRaidTestTrap</uei>
+	<event-label>IBM-SERVERAID-MIB defined trap event: ibmServeRaidTestTrap</event-label>
+	<descr>
+&lt;p&gt;Informational: This is a test trap.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ibmServeRaidTrapServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM ServeRaid: ibmServeRaidTestTrap trap received 
+			ibmServeRaidTrapServerName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<!-- End of auto generated data from MIB: IBM-SERVERAID-MIB -->
+<!-- Start of auto generated data from MIB: UMSEVENT-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGGenericEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGGenericEvent</event-label>
+	<descr>
+&lt;p&gt;Placeholder event&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGGenericEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGGenericEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGGenericEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGGenericEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGGenericEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGGenericEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGGenericEvent trap received 
+			iBMPSGGenericEventIdentifier=%parm[#1]% 
+			iBMPSGGenericEventSourceObjectPath=%parm[#2]% 
+			iBMPSGGenericEventTargetObjectPath=%parm[#3]% 
+			iBMPSGGenericEventdescription=%parm[#4]% 
+			iBMPSGGenericEventSeverity=%parm[#5]% 
+			iBMPSGGenericEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGTemperatureEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGTemperatureEvent</event-label>
+	<descr>
+&lt;p&gt;This event is sent when the state of a system's temperature sensor changes
+with respect to a manufacturer-defined and/or user-defined threshold.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGTemperatureEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGTemperatureEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGTemperatureEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGTemperatureEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGTemperatureEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGTemperatureEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGTemperatureEvent trap received 
+			iBMPSGTemperatureEventIdentifier=%parm[#1]% 
+			iBMPSGTemperatureEventSourceObjectPath=%parm[#2]% 
+			iBMPSGTemperatureEventTargetObjectPath=%parm[#3]% 
+			iBMPSGTemperatureEventSeverity=%parm[#4]% 
+			iBMPSGTemperatureEventdescription=%parm[#5]% 
+			iBMPSGTemperatureEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGVoltageEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGVoltageEvent</event-label>
+	<descr>
+&lt;p&gt;This event is sent when the state of a system's voltage sensor changes
+with respect to a manufacturer-defined threshold.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGVoltageEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGVoltageEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGVoltageEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGVoltageEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGVoltageEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGVoltageEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGVoltageEvent trap received 
+			iBMPSGVoltageEventIdentifier=%parm[#1]% 
+			iBMPSGVoltageEventSourceObjectPath=%parm[#2]% 
+			iBMPSGVoltageEventTargetObjectPath=%parm[#3]% 
+			iBMPSGVoltageEventSeverity=%parm[#4]% 
+			iBMPSGVoltageEventdescription=%parm[#5]% 
+			iBMPSGVoltageEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGChassisEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGChassisEvent</event-label>
+	<descr>
+&lt;p&gt;This event is sent when the state of a system's chassis has changed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGChassisEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGChassisEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGChassisEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGChassisEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGChassisEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGChassisEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGChassisEvent trap received 
+			iBMPSGChassisEventIdentifier=%parm[#1]% 
+			iBMPSGChassisEventSourceObjectPath=%parm[#2]% 
+			iBMPSGChassisEventTargetObjectPath=%parm[#3]% 
+			iBMPSGChassisEventSeverity=%parm[#4]% 
+			iBMPSGChassisEventdescription=%parm[#5]% 
+			iBMPSGChassisEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGFanEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGFanEvent</event-label>
+	<descr>
+&lt;p&gt;This event is sent when state of a system's fan has changed with respect to
+manufacturer-defined rpm values.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGFanEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGFanEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGFanEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGFanEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGFanEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGFanEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGFanEvent trap received 
+			iBMPSGFanEventIdentifier=%parm[#1]% 
+			iBMPSGFanEventSourceObjectPath=%parm[#2]% 
+			iBMPSGFanEventTargetObjectPath=%parm[#3]% 
+			iBMPSGFanEventSeverity=%parm[#4]% 
+			iBMPSGFanEventdescription=%parm[#5]% 
+			iBMPSGFanEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGProcessorEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGProcessorEvent</event-label>
+	<descr>
+&lt;p&gt;Unused.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGProcessorEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGProcessorEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGProcessorEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGProcessorEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGProcessorEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGProcessorEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGProcessorEvent trap received 
+			iBMPSGProcessorEventIdentifier=%parm[#1]% 
+			iBMPSGProcessorEventSourceObjectPath=%parm[#2]% 
+			iBMPSGProcessorEventTargetObjectPath=%parm[#3]% 
+			iBMPSGProcessorEventSeverity=%parm[#4]% 
+			iBMPSGProcessorEventdescription=%parm[#5]% 
+			iBMPSGProcessorEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGStorageEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGStorageEvent</event-label>
+	<descr>
+&lt;p&gt;On systems with no Remote Supervisor Adapter, this event is sent when the 
+state of a system's hard file space has changed with respect to user-defined 
+levels of percentage hard file space remaining.
+On systems with a Remote Supervisor Adapter, this event is sent when the
+system has experienced a DASD controller failure.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGStorageEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGStorageEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGStorageEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGStorageEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGStorageEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGStorageEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGStorageEvent trap received 
+			iBMPSGStorageEventIdentifier=%parm[#1]% 
+			iBMPSGStorageEventSourceObjectPath=%parm[#2]% 
+			iBMPSGStorageEventTargetObjectPath=%parm[#3]% 
+			iBMPSGStorageEventSeverity=%parm[#4]% 
+			iBMPSGStorageEventdescription=%parm[#5]% 
+			iBMPSGStorageEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGAssetEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGAssetEvent</event-label>
+	<descr>
+&lt;p&gt;Unused.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGAssetEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGAssetEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGAssetEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGAssetEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGAssetEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGAssetEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGAssetEvent trap received 
+			iBMPSGAssetEventIdentifier=%parm[#1]% 
+			iBMPSGAssetEventSourceObjectPath=%parm[#2]% 
+			iBMPSGAssetEventTargetObjectPath=%parm[#3]% 
+			iBMPSGAssetEventSeverity=%parm[#4]% 
+			iBMPSGAssetEventdescription=%parm[#5]% 
+			iBMPSGAssetEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGSMARTEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGSMARTEvent</event-label>
+	<descr>
+&lt;p&gt;This event is sent when the state of an IDE or SCSI hard drive that complies with the
+Self-Monitoring, Analysis, and Reporting Technology changes with respect to
+its availability.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGSMARTEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGSMARTEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGSMARTEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGSMARTEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGSMARTEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGSMARTEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGSMARTEvent trap received 
+			iBMPSGSMARTEventIdentifier=%parm[#1]% 
+			iBMPSGSMARTEventSourceObjectPath=%parm[#2]% 
+			iBMPSGSMARTEventTargetObjectPath=%parm[#3]% 
+			iBMPSGSMARTEventSeverity=%parm[#4]% 
+			iBMPSGSMARTEventdescription=%parm[#5]% 
+			iBMPSGSMARTEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGPOSTEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGPOSTEvent</event-label>
+	<descr>
+&lt;p&gt;Unused.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGPOSTEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGPOSTEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGPOSTEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGPOSTEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGPOSTEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGPOSTEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGPOSTEvent trap received 
+			iBMPSGPOSTEventIdentifier=%parm[#1]% 
+			iBMPSGPOSTEventSourceObjectPath=%parm[#2]% 
+			iBMPSGPOSTEventTargetObjectPath=%parm[#3]% 
+			iBMPSGPOSTEventSeverity=%parm[#4]% 
+			iBMPSGPOSTEventdescription=%parm[#5]% 
+			iBMPSGPOSTEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGConfigurationChangeEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGConfigurationChangeEvent</event-label>
+	<descr>
+&lt;p&gt;Unused.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGConfigurationChangeEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGConfigurationChangeEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGConfigurationChangeEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGConfigurationChangeEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGConfigurationChangeEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGConfigurationChangeEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGConfigurationChangeEvent trap received 
+			iBMPSGConfigurationChangeEventIdentifier=%parm[#1]% 
+			iBMPSGConfigurationChangeEventSourceObjectPath=%parm[#2]% 
+			iBMPSGConfigurationChangeEventTargetObjectPath=%parm[#3]% 
+			iBMPSGConfigurationChangeEventSeverity=%parm[#4]% 
+			iBMPSGConfigurationChangeEventdescription=%parm[#5]% 
+			iBMPSGConfigurationChangeEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGLANLeashEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGLANLeashEvent</event-label>
+	<descr>
+&lt;p&gt;This event is sent when the state of a system's LAN connectivity changes with
+respect to the physical connection between its AlertOnLAN-capable NIC and the LAN.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGLANLeashEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGLANLeashEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGLANLeashEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGLANLeashEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGLANLeashEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGLANLeashEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGLANLeashEvent trap received 
+			iBMPSGLANLeashEventIdentifier=%parm[#1]% 
+			iBMPSGLANLeashEventSourceObjectPath=%parm[#2]% 
+			iBMPSGLANLeashEventTargetObjectPath=%parm[#3]% 
+			iBMPSGLANLeashEventSeverity=%parm[#4]% 
+			iBMPSGLANLeashEventdescription=%parm[#5]% 
+			iBMPSGLANLeashEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGLeaseExpirationEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGLeaseExpirationEvent</event-label>
+	<descr>
+&lt;p&gt;This event is sent when a system's Lease Expiration date has been reached
+with respect to the value configured for the date in the Asset ID tool.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGLeaseExpirationEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGLeaseExpirationEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGLeaseExpirationEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGLeaseExpirationEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGLeaseExpirationEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGLeaseExpirationEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGLeaseExpirationEvent trap received 
+			iBMPSGLeaseExpirationEventIdentifier=%parm[#1]% 
+			iBMPSGLeaseExpirationEventSourceObjectPath=%parm[#2]% 
+			iBMPSGLeaseExpirationEventTargetObjectPath=%parm[#3]% 
+			iBMPSGLeaseExpirationEventSeverity=%parm[#4]% 
+			iBMPSGLeaseExpirationEventdescription=%parm[#5]% 
+			iBMPSGLeaseExpirationEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGWarrantyExpirationEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGWarrantyExpirationEvent</event-label>
+	<descr>
+&lt;p&gt;This event is sent when a system's Warranty Expiration date has been reached
+with respect to the value configured for the date in the Asset ID tool.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGWarrantyExpirationEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGWarrantyExpirationEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGWarrantyExpirationEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGWarrantyExpirationEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGWarrantyExpirationEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGWarrantyExpirationEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGWarrantyExpirationEvent trap received 
+			iBMPSGWarrantyExpirationEventIdentifier=%parm[#1]% 
+			iBMPSGWarrantyExpirationEventSourceObjectPath=%parm[#2]% 
+			iBMPSGWarrantyExpirationEventTargetObjectPath=%parm[#3]% 
+			iBMPSGWarrantyExpirationEventSeverity=%parm[#4]% 
+			iBMPSGWarrantyExpirationEventdescription=%parm[#5]% 
+			iBMPSGWarrantyExpirationEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>15</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGRedundantNetworkAdapterEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGRedundantNetworkAdapterEvent</event-label>
+	<descr>
+&lt;p&gt;This event is sent when the state of a system's NIC changes state with
+respect to redundancy, but due to a limitation of the capabilities of
+the NIC, a determination could not be made between a switchover and
+a switchback.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRedundantNetworkAdapterEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRedundantNetworkAdapterEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRedundantNetworkAdapterEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRedundantNetworkAdapterEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRedundantNetworkAdapterEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRedundantNetworkAdapterEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGRedundantNetworkAdapterEvent trap received 
+			iBMPSGRedundantNetworkAdapterEventIdentifier=%parm[#1]% 
+			iBMPSGRedundantNetworkAdapterEventSourceObjectPath=%parm[#2]% 
+			iBMPSGRedundantNetworkAdapterEventTargetObjectPath=%parm[#3]% 
+			iBMPSGRedundantNetworkAdapterEventSeverity=%parm[#4]% 
+			iBMPSGRedundantNetworkAdapterEventdescription=%parm[#5]% 
+			iBMPSGRedundantNetworkAdapterEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>16</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGRedundantNetworkAdapterSwitchoverEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGRedundantNetworkAdapterSwitchoverEvent</event-label>
+	<descr>
+&lt;p&gt;This event is sent when the active NIC in a system changes by failing over
+to a redundant NIC.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRedundantNetworkAdapterSwitchoverEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRedundantNetworkAdapterSwitchoverEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRedundantNetworkAdapterSwitchoverEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRedundantNetworkAdapterSwitchoverEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRedundantNetworkAdapterSwitchoverEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRedundantNetworkAdapterSwitchoverEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGRedundantNetworkAdapterSwitchoverEvent trap received 
+			iBMPSGRedundantNetworkAdapterSwitchoverEventIdentifier=%parm[#1]% 
+			iBMPSGRedundantNetworkAdapterSwitchoverEventSourceObjectPath=%parm[#2]% 
+			iBMPSGRedundantNetworkAdapterSwitchoverEventTargetObjectPath=%parm[#3]% 
+			iBMPSGRedundantNetworkAdapterSwitchoverEventSeverity=%parm[#4]% 
+			iBMPSGRedundantNetworkAdapterSwitchoverEventdescription=%parm[#5]% 
+			iBMPSGRedundantNetworkAdapterSwitchoverEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>17</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGRedundantNetworkAdapterSwitchbackEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGRedundantNetworkAdapterSwitchbackEvent</event-label>
+	<descr>
+&lt;p&gt;This event is sent when the active NIC in a system changes due
+to a recovery from a redundant NIC.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRedundantNetworkAdapterSwitchbackEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRedundantNetworkAdapterSwitchbackEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRedundantNetworkAdapterSwitchbackEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRedundantNetworkAdapterSwitchbackEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRedundantNetworkAdapterSwitchbackEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRedundantNetworkAdapterSwitchbackEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGRedundantNetworkAdapterSwitchbackEvent trap received 
+			iBMPSGRedundantNetworkAdapterSwitchbackEventIdentifier=%parm[#1]% 
+			iBMPSGRedundantNetworkAdapterSwitchbackEventSourceObjectPath=%parm[#2]% 
+			iBMPSGRedundantNetworkAdapterSwitchbackEventTargetObjectPath=%parm[#3]% 
+			iBMPSGRedundantNetworkAdapterSwitchbackEventSeverity=%parm[#4]% 
+			iBMPSGRedundantNetworkAdapterSwitchbackEventdescription=%parm[#5]% 
+			iBMPSGRedundantNetworkAdapterSwitchbackEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>18</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGProcessorPFEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGProcessorPFEvent</event-label>
+	<descr>
+&lt;p&gt;This event is sent when a system's processor changes state with respect to availability.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGProcessorPFEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGProcessorPFEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGProcessorPFEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGProcessorPFEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGProcessorPFEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGProcessorPFEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGProcessorPFEvent trap received 
+			iBMPSGProcessorPFEventIdentifier=%parm[#1]% 
+			iBMPSGProcessorPFEventSourceObjectPath=%parm[#2]% 
+			iBMPSGProcessorPFEventTargetObjectPath=%parm[#3]% 
+			iBMPSGProcessorPFEventSeverity=%parm[#4]% 
+			iBMPSGProcessorPFEventdescription=%parm[#5]% 
+			iBMPSGProcessorPFEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>19</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGMemoryPFEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGMemoryPFEvent</event-label>
+	<descr>
+&lt;p&gt;This event is sent when a system's DIMM changes state with respect to availability.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGMemoryPFEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGMemoryPFEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGMemoryPFEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGMemoryPFEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGMemoryPFEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGMemoryPFEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGMemoryPFEvent trap received 
+			iBMPSGMemoryPFEventIdentifier=%parm[#1]% 
+			iBMPSGMemoryPFEventSourceObjectPath=%parm[#2]% 
+			iBMPSGMemoryPFEventTargetObjectPath=%parm[#3]% 
+			iBMPSGMemoryPFEventSeverity=%parm[#4]% 
+			iBMPSGMemoryPFEventdescription=%parm[#5]% 
+			iBMPSGMemoryPFEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>22</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGPFAEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGPFAEvent</event-label>
+	<descr>
+&lt;p&gt;This event is sent when the Remote Supervisor Adapter detects that
+a system is about to fail.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGPFAEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGPFAEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGPFAEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGPFAEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGPFAEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGPFAEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGPFAEvent trap received 
+			iBMPSGPFAEventIdentifier=%parm[#1]% 
+			iBMPSGPFAEventSourceObjectPath=%parm[#2]% 
+			iBMPSGPFAEventTargetObjectPath=%parm[#3]% 
+			iBMPSGPFAEventSeverity=%parm[#4]% 
+			iBMPSGPFAEventdescription=%parm[#5]% 
+			iBMPSGPFAEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>23</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGPowerSupplyEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGPowerSupplyEvent</event-label>
+	<descr>
+&lt;p&gt;This event is sent when the Remote Supervisor Adapter detects that the
+state of a system's power supply changes with respect to availability.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGPowerSupplyEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGPowerSupplyEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGPowerSupplyEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGPowerSupplyEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGPowerSupplyEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGPowerSupplyEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGPowerSupplyEvent trap received 
+			iBMPSGPowerSupplyEventIdentifier=%parm[#1]% 
+			iBMPSGPowerSupplyEventSourceObjectPath=%parm[#2]% 
+			iBMPSGPowerSupplyEventTargetObjectPath=%parm[#3]% 
+			iBMPSGPowerSupplyEventSeverity=%parm[#4]% 
+			iBMPSGPowerSupplyEventdescription=%parm[#5]% 
+			iBMPSGPowerSupplyEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>24</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGErrorLogEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGErrorLogEvent</event-label>
+	<descr>
+&lt;p&gt;This event is sent when the Remote Supervisor Adapter detects that its error
+log is 75% full and/or 100% full.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGErrorLogEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGErrorLogEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGErrorLogEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGErrorLogEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGErrorLogEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGErrorLogEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGErrorLogEvent trap received 
+			iBMPSGErrorLogEventIdentifier=%parm[#1]% 
+			iBMPSGErrorLogEventSourceObjectPath=%parm[#2]% 
+			iBMPSGErrorLogEventTargetObjectPath=%parm[#3]% 
+			iBMPSGErrorLogEventSeverity=%parm[#4]% 
+			iBMPSGErrorLogEventdescription=%parm[#5]% 
+			iBMPSGErrorLogEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.2.6.159</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>25</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/iBMPSGRemoteLoginEvent</uei>
+	<event-label>UMSEVENT-MIB defined trap event: iBMPSGRemoteLoginEvent</event-label>
+	<descr>
+&lt;p&gt;This event is sent when the state of the Remote Supervisor Adapter changes
+with respect to security because a user has logged into it.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRemoteLoginEventIdentifier&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRemoteLoginEventSourceObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRemoteLoginEventTargetObjectPath&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRemoteLoginEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRemoteLoginEventdescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	iBMPSGRemoteLoginEventTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			IBM UMS Event: iBMPSGRemoteLoginEvent trap received 
+			iBMPSGRemoteLoginEventIdentifier=%parm[#1]% 
+			iBMPSGRemoteLoginEventSourceObjectPath=%parm[#2]% 
+			iBMPSGRemoteLoginEventTargetObjectPath=%parm[#3]% 
+			iBMPSGRemoteLoginEventSeverity=%parm[#4]% 
+			iBMPSGRemoteLoginEventdescription=%parm[#5]% 
+			iBMPSGRemoteLoginEventTimeStamp=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<!-- End of auto generated data from MIB: UMSEVENT-MIB -->
+</events>

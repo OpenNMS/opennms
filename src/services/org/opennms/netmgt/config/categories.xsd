@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/categories">
+
+	<element name="catinfo">
+		<complexType>
+			<sequence>
+				<!--- the header -->
+				<element ref="header" minOccurs="1" maxOccurs="1"/>
+
+				<!--- the category groups -->
+				<element ref="categorygroup" minOccurs="1" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="header">
+		<complexType>
+			<sequence>
+				<element name="rev" type="string" minOccurs="1" maxOccurs="1"/>
+
+				<!-- creation time in the 'dow mon dd hh:mm:ss zzz yyyy' format -->
+				<element name="created" type="string" minOccurs="1" maxOccurs="1"/>
+
+				<element name="mstation" type="string" minOccurs="1" maxOccurs="1"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<!--- a category group containing various categories -->
+	<element name="categorygroup">
+		<complexType>
+			<sequence>
+				<!--- the name of the category group -->
+				<element name="name" type="string" minOccurs="1" maxOccurs="1"/>
+
+				<!--- a comment describing the category group -->
+				<element name="comment" type="string" minOccurs="1" maxOccurs="1"/>
+
+				<!--- the common attributes that apply to all categories in the group --> 
+				<element ref="common" minOccurs="1" maxOccurs="1"/>
+
+				<!--- the categories belonging to this category group -->
+				<element ref="categories" minOccurs="0" maxOccurs="1"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<!--- the common attributes that apply to all categories in a group --> 
+	<element name="common">
+		<complexType>
+			<sequence>
+				<!--- the common rule that will be applied to all categories in this 
+				      group in addition to the category's rule -->
+				<element name="rule" type="string" minOccurs="1" maxOccurs="1"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<!--- the categories belonging to a category group -->
+	<element name="categories">
+		<complexType>
+			<sequence>
+				<!--- a category -->
+				<element ref="category" minOccurs="1" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<!--- a category -->
+	<element name="category">
+		<complexType>
+			<sequence>
+				<!--- the category label
+				      NOTE: category labels will need to be unique across category groups
+				-->
+				<element name="label" type="string" minOccurs="1" maxOccurs="1"/>
+
+				<!--- the comment describing the category -->
+				<element name="comment" type="string" minOccurs="0" maxOccurs="1"/>
+
+				<!--- the normal threshold value for the category.
+
+				      the UI displays the category in green if the overall availability
+				      for the category is equal to or greater than this value
+				-->
+				<element name="normal" type="double" minOccurs="1" maxOccurs="1"/>
+
+				<!--- the warning threshold value for the category.
+
+				      the UI displays the category in yellow if the overall
+				      availability for the category is equal to or greater than
+				      this value but less than the normal threashold.
+
+				      if availability is less than this value, category is displayed
+				      in red
+				-->
+				<element name="warning" type="double" minOccurs="1" maxOccurs="1"/>
+
+				<!--- a service relevant to this category.
+
+				      For a nodeid/ip/service tuple to be added to a category, it 
+				      will need to pass the rule(categorygroup rule & category rule)
+				      AND
+				      the service will need to be in the category service list.
+
+				      If there are no services defined, all tuples that pass the rule
+				      are added to the category
+				-->
+				<element name="service" type="string" minOccurs="0" maxOccurs="unbounded"/>
+				<!--- the category rule -->
+				<element name="rule" type="string" minOccurs="1" maxOccurs="1"/>
+			</sequence>
+		</complexType>
+	</element>
+
+</schema>

@@ -1,0 +1,1382 @@
+<events>
+<!-- Start of INTEL Events -->
+<!-- Start of auto generated data from MIB: INTEL-GEN-MIB -->
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.6.3</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>1</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/snmpAuthViolation</uei>
+ <event-label>INTEL-GEN-MIB defined trap event: snmpAuthViolation</event-label>
+ <descr>&lt;p&gt;This trap is sent when a device attempting to access the device fails 
+ to pass the snmpAuthTable for any of the supported protocols. 
+ If it is the SNMP protocol that is violated then the device must also 
+ send the 'Authentication failure' trap defined in MIB-2.
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ snmpAccessIP&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ snmpAccessTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ snmpAccessProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ snmp(1) telnet(2) http(3) tftp(4) ftp(5)
+ &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ snmpAccessType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ noAccess(1) readOnly(2) writeOnly(3) readWrite(4) readOnlySecureSNMPObjects(5) 
+ readWriteSecureSNMPObjects(6)
+ &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Snmp Authentication Violation.&lt;/p&gt;</logmsg>
+ <severity>Warning</severity>
+</event>
+
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.7.2</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>1</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/chassisInserted</uei>
+ <event-label>INTEL-GEN-MIB defined trap event: chassisInserted</event-label>
+ <descr>&lt;p&gt;This trap is sent when a chassis is inserted in the
+ the stack.
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ chassisIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Chassis Inserted.&lt;/p&gt;</logmsg>
+ <severity>Normal</severity>
+</event>
+
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.7.2</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>2</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/chassisRemoved</uei>
+ <event-label>INTEL-GEN-MIB defined trap event: chassisRemoved</event-label>
+ <descr>&lt;p&gt;This trap is sent when a chassis is removed from
+ the stack.
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ chassisIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Chassis Removed.&lt;/p&gt;</logmsg>
+ <severity>Warning</severity>
+</event>
+
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.7.3</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>1</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/moduleInserted</uei>
+ <event-label>INTEL-GEN-MIB defined trap event: moduleInserted</event-label>
+ <descr>&lt;p&gt;This trap is sent when a module is inserted in
+ the chassis.
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ moduleChassisIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ moduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Module Inserted into Chassis.&lt;/p&gt;</logmsg>
+ <severity>Normal</severity>
+</event>
+
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.7.3</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>2</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/moduleRemoved</uei>
+ <event-label>INTEL-GEN-MIB defined trap event: moduleRemoved</event-label>
+ <descr>&lt;p&gt;This trap is sent when a module is removed from
+ the chassis.
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ moduleChassisIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ moduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Module Removed from Chassis.&lt;/p&gt;</logmsg>
+ <severity>Warning</severity>
+</event>
+
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.7.4</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>1</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/mediaModuleInserted</uei>
+ <event-label>INTEL-GEN-MIB defined trap event: mediaModuleInserted</event-label>
+ <descr>&lt;p&gt;This trap is sent when a media module is inserted in
+ the chassis/module.
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ moduleChassisIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ moduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ mediaModuleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Media Module Inserted.&lt;/p&gt;</logmsg>
+ <severity>Normal</severity>
+</event>
+
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.7.4</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>2</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/mediaModuleRemoved</uei>
+ <event-label>INTEL-GEN-MIB defined trap event: mediaModuleRemoved</event-label>
+ <descr>&lt;p&gt;This trap is sent when a media module is removed from
+ the chassis/module.
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ moduleChassisIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ moduleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ mediaModuleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Media Module Removed.&lt;/p&gt;</logmsg>
+ <severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: INTEL-GEN-MIB -->
+<!-- Start of auto generated data from MIB: INTEL-S500-MIB -->
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.6.10</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>1</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/s500PermVioEvent</uei>
+ <event-label>INTEL-S500-MIB defined trap event: s500PermVioEvent</event-label>
+ <descr>&lt;p&gt;This trap is sent when there has been a permanent entry&lt;br&gt;
+ violation. A MAC address has been detected at a&lt;br&gt;
+ port, other than the port where it has been configured as a&lt;br&gt;
+ permanent entry.&lt;br&gt;
+ The variable portIfIndex indicates the port where the&lt;br&gt;
+ MAC incorrectly has been detected.&lt;br&gt;
+ The problem can be solved by re-configuring the MAC's&lt;br&gt;
+ permanent entry, or by physically moving the MAC to the&lt;br&gt;
+ port it has been configured for.
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ portConfChassisIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ portConfModuleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ portConfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Permanent Entry Violation.&lt;/p&gt;</logmsg>
+ <severity>Warning</severity>
+</event>
+
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.6.10</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>2</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/s500AdaptiveForwEvent</uei>
+ <event-label>INTEL-S500-MIB defined trap event: s500AdaptiveForwEvent</event-label>
+ <descr>&lt;p&gt;This trap is sent when a port automatically is&lt;br&gt;
+ changing forwarding mode. This will only happen when&lt;br&gt;
+ the port has been configured to Adaptive mode.&lt;br&gt;
+ The syntax is (Portnumber, New mode, Old mode)
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ portConfChassisIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ portConfModuleIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ portConfIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ portConfSwitchMode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ cutThrough(1) adaptiveCutThrough(2) fragmentFree(3) adaptiveFragmentFree(4) storeAndForward(5) 
+ adaptiveStoreAndForward(6) notAvailable(99)
+ &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ portConfSwitchMode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ cutThrough(1) adaptiveCutThrough(2) fragmentFree(3) adaptiveFragmentFree(4) storeAndForward(5) 
+ adaptiveStoreAndForward(6) notAvailable(99)
+ &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Forwarding Mode Changed.&lt;/p&gt;</logmsg>
+ <severity>Normal</severity>
+</event>
+
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.6.10</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>3</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/s500TemperatureEvent</uei>
+ <event-label>INTEL-S500-MIB defined trap event: s500TemperatureEvent</event-label>
+ <descr>&lt;p&gt;This trap indicates that the temperature of the&lt;br&gt;
+ chassis has changed
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ temperatureLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;normal(1) high(2) critical(3)
+ &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Temperature Status Change.&lt;/p&gt;</logmsg>
+ <severity>Major</severity>
+</event>
+
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.6.10</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>specific</mename>
+   <mevalue>4</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/traps/intel/s500RedundantPowerSupplyEvent</uei>
+ <event-label>INTEL-S500-MIB defined trap event: s500RedundantPowerSupplyEvent</event-label>
+ <descr>&lt;p&gt;This trap indicates that the status of the redundant&lt;br&gt;
+ power supply has changed
+ &lt;/p&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ redundantPowerSupplyStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
+ &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ notPresent(1) present(2) active(3)
+ &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
+ <logmsg dest='logndisplay'>&lt;p&gt;Intel Event: Redundant Power Supply Status Change.&lt;/p&gt;</logmsg>
+ <severity>Minor</severity>
+</event>
+<!-- End of auto generated data from MIB: INTEL-S500-MIB -->
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.343.%</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/vendor/intel/traps/EnterpriseDefault</uei>
+ <event-label>OpenNMS-defined trap event: Intel EnterpriseDefault</event-label>
+ <descr>
+ &lt;p&gt;This is the default event format used when an
+ enterprise specific event (trap) is received from a Intel device for which no
+ format has been configured (i.e. no event definition
+ exists).&lt;/p&gt;
+ </descr>
+ <logmsg dest='logndisplay'>
+ Received unformatted enterprise event (enterprise:%id% generic:%generic%
+ specific:%specific%). %parm[##]%
+ args: %parm[all]%
+ </logmsg>
+ <severity>Indeterminate</severity>
+</event>
+<!-- Start of auto generated data from MIB: PET-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3183.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>93952</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/pET_Temperature</uei>
+	<event-label>PET-MIB defined trap event: pET_Temperature</event-label>
+	<descr>
+&lt;p&gt;Temperature Out of Specification&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: pET_Temperature trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3183.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>159488</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/pET_Voltage</uei>
+	<event-label>PET-MIB defined trap event: pET_Voltage</event-label>
+	<descr>
+&lt;p&gt;Voltage Out of Specification&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: pET_Voltage trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3183.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>290560</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/pET_Fan</uei>
+	<event-label>PET-MIB defined trap event: pET_Fan</event-label>
+	<descr>
+&lt;p&gt;Fan Out of Specification&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: pET_Fan trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3183.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>356096</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/pET_CoverTamper</uei>
+	<event-label>PET-MIB defined trap event: pET_CoverTamper</event-label>
+	<descr>
+&lt;p&gt;Cover Tamper&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: pET_CoverTamper trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3183.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>356099</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/pET_ProcessorMissing</uei>
+	<event-label>PET-MIB defined trap event: pET_ProcessorMissing</event-label>
+	<descr>
+&lt;p&gt;Processor Missing&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: pET_ProcessorMissing trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3183.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>356100</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/pET_LANLeash</uei>
+	<event-label>PET-MIB defined trap event: pET_LANLeash</event-label>
+	<descr>
+&lt;p&gt;LAN Leash Tamper&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: pET_LANLeash trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3183.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>356101</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/pET_Undock</uei>
+	<event-label>PET-MIB defined trap event: pET_Undock</event-label>
+	<descr>
+&lt;p&gt;Surprised Undock event&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: pET_Undock trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3183.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>487169</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/pET_ProcessorTemperature</uei>
+	<event-label>PET-MIB defined trap event: pET_ProcessorTemperature</event-label>
+	<descr>
+&lt;p&gt;Processor Over Temperature&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: pET_ProcessorTemperature trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3183.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>552706</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/pET_Voltage_Fan_Temperature</uei>
+	<event-label>PET-MIB defined trap event: pET_Voltage_Fan_Temperature</event-label>
+	<descr>
+&lt;p&gt;Voltage/Fan/Temperature Out of Specification&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: pET_Voltage_Fan_Temperature trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3183.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>683778</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/pET_Fan_Temperature</uei>
+	<event-label>PET-MIB defined trap event: pET_Fan_Temperature</event-label>
+	<descr>
+&lt;p&gt;Fan/Temperature Out of Specification&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: pET_Fan_Temperature trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3183.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1011456</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/pET_P_O_S_T</uei>
+	<event-label>PET-MIB defined trap event: pET_P_O_S_T</event-label>
+	<descr>
+&lt;p&gt;P.O.S.T.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: pET_P_O_S_T trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3183.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1076994</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/pET_EventClear</uei>
+	<event-label>PET-MIB defined trap event: pET_EventClear</event-label>
+	<descr>
+&lt;p&gt;Event clear&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: pET_EventClear trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3183.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1142534</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/pET_Watchdog</uei>
+	<event-label>PET-MIB defined trap event: pET_Watchdog</event-label>
+	<descr>
+&lt;p&gt;Watchdog Event&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: pET_Watchdog trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3183.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2277391</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/pET_AlertOnLAN</uei>
+	<event-label>PET-MIB defined trap event: pET_AlertOnLAN</event-label>
+	<descr>
+&lt;p&gt;Alert on LAN 2 Event has occured&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: pET_AlertOnLAN trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.3183.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2584320</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/pET_PresenceHeartbeat</uei>
+	<event-label>PET-MIB defined trap event: pET_PresenceHeartbeat</event-label>
+	<descr>
+&lt;p&gt;Presence Heartbeat Expired&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: pET_PresenceHeartbeat trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<!-- End of auto generated data from MIB: PET-MIB -->
+<!-- Start of auto generated data from MIB: AOLAN-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>0</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/presenceHeartbeat</uei>
+	<event-label>AOLAN-MIB defined trap event: presenceHeartbeat</event-label>
+	<descr>
+&lt;p&gt;Presence Heartbeat Expired&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: presenceHeartbeat trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/coverTamper</uei>
+	<event-label>AOLAN-MIB defined trap event: coverTamper</event-label>
+	<descr>
+&lt;p&gt;Cover Tamper&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: coverTamper trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/voltage_Fan_Temperature</uei>
+	<event-label>AOLAN-MIB defined trap event: voltage_Fan_Temperature</event-label>
+	<descr>
+&lt;p&gt;Voltage/Fan/Temperature Out of Specification&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: voltage_Fan_Temperature trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/lANLeash</uei>
+	<event-label>AOLAN-MIB defined trap event: lANLeash</event-label>
+	<descr>
+&lt;p&gt;LAN Leash Tamper&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: lANLeash trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/temperature</uei>
+	<event-label>AOLAN-MIB defined trap event: temperature</event-label>
+	<descr>
+&lt;p&gt;Temperature Out of Specification&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: temperature trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/processorMissing</uei>
+	<event-label>AOLAN-MIB defined trap event: processorMissing</event-label>
+	<descr>
+&lt;p&gt;Processor Missing&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: processorMissing trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/processorTemperature</uei>
+	<event-label>AOLAN-MIB defined trap event: processorTemperature</event-label>
+	<descr>
+&lt;p&gt;Processor Over Temperature&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: processorTemperature trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/watchdog</uei>
+	<event-label>AOLAN-MIB defined trap event: watchdog</event-label>
+	<descr>
+&lt;p&gt;Watchdog Event&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: watchdog trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/p_O_S_T</uei>
+	<event-label>AOLAN-MIB defined trap event: p_O_S_T</event-label>
+	<descr>
+&lt;p&gt;P.O.S.T.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: p_O_S_T trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/unknownEvent</uei>
+	<event-label>AOLAN-MIB defined trap event: unknownEvent</event-label>
+	<descr>
+&lt;p&gt;Unknown Event&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: unknownEvent trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/processor_0_Missing</uei>
+	<event-label>AOLAN-MIB defined trap event: processor_0_Missing</event-label>
+	<descr>
+&lt;p&gt;Processor 0 Missing&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: processor_0_Missing trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/processor_1_Missing</uei>
+	<event-label>AOLAN-MIB defined trap event: processor_1_Missing</event-label>
+	<descr>
+&lt;p&gt;Processor 1 Missing&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: processor_1_Missing trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/voltage_Fan</uei>
+	<event-label>AOLAN-MIB defined trap event: voltage_Fan</event-label>
+	<descr>
+&lt;p&gt;Voltage/Fan Out of Specification&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: voltage_Fan trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/voltage</uei>
+	<event-label>AOLAN-MIB defined trap event: voltage</event-label>
+	<descr>
+&lt;p&gt;Voltage Out of Specification&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: voltage trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/fan</uei>
+	<event-label>AOLAN-MIB defined trap event: fan</event-label>
+	<descr>
+&lt;p&gt;Fan Out of Specification&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: fan trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>15</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/fan_Temperature</uei>
+	<event-label>AOLAN-MIB defined trap event: fan_Temperature</event-label>
+	<descr>
+&lt;p&gt;Fan/Temperature Out of Specification&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: fan_Temperature trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>16</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/voltage_Temperature</uei>
+	<event-label>AOLAN-MIB defined trap event: voltage_Temperature</event-label>
+	<descr>
+&lt;p&gt;Voltage/Temperature Out of Specification&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: voltage_Temperature trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>17</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/undock</uei>
+	<event-label>AOLAN-MIB defined trap event: undock</event-label>
+	<descr>
+&lt;p&gt;Surprised Undock event&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: undock trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>18</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/eventClear</uei>
+	<event-label>AOLAN-MIB defined trap event: eventClear</event-label>
+	<descr>
+&lt;p&gt;Event clear&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: eventClear trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>19</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/clientAdded</uei>
+	<event-label>AOLAN-MIB defined trap event: clientAdded</event-label>
+	<descr>
+&lt;p&gt;Client added&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: clientAdded trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.343.2.8.1.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>20</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Intel/clientDeleted</uei>
+	<event-label>AOLAN-MIB defined trap event: clientDeleted</event-label>
+	<descr>
+&lt;p&gt;Client deleted&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	systemName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Intel: clientDeleted trap received 
+			systemName=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<!-- End of auto generated data from MIB: AOLAN-MIB -->
+<!-- End of INTEL Events -->
+</events>

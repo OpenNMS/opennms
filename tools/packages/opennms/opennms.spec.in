@@ -1,0 +1,474 @@
+%{!?version:%define version @product.version@}
+%{!?release:%define release @product.release.stamp@}
+%{!?instprefix:%define instprefix @rpm.install.dir@}
+%{!?packagedir:%define packagedir @ant.project.name@-@product.version@-@product.release@}
+%{!?dbuser:%define dbuser @rpm.database.user@}
+%{!?dbpass:%define dbpass @rpm.database.password@}
+%{!?dbname:%define dbname @rpm.database.name@}
+%{!?profiledir:%define profiledir /etc/profile.d}
+%{!?sharedir:%define sharedir /var/opennms}
+%{!?logdir:%define logdir /var/log/opennms}
+%{!?pidfile:%define pidfile /var/run/opennms.pid}
+%{!?tomcatdir:%define tomcatdir /var/tomcat4}
+%{!?pglibdir:%define pglibdir %instprefix/lib}
+%{!?tomcatserverlibs:%define tomcatserverlibs @install.tomcat.serverlibs@}
+
+# build type modifiers
+%{!?standalone:%define standalone 1}
+%{!?builddocs:%define builddocs 1}
+%{!?buildtests:%define buildtests @rpm.buildtests@}
+%{!?platform:%define platform @rpm.platform@}
+
+%define debug_package %{nil}
+
+%if "%{platform}" == "linux-i386-centos-3"
+%define	initdir		/etc
+%define psql_service	rhdb
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-fedora-1"
+%define	initdir		/etc
+%define	psql		/usr/bin/psql
+%define psql_service	postgresql
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-fedora-2"
+%define	initdir		/etc
+%define psql_service	postgresql
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-mandrake-7"
+%define	initdir		/etc
+%define psql_service	postgresql
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2, metamail, j2sdk >= 1.4.2
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-mandrake-8"
+%define	initdir		/etc
+%define psql_service	postgresql
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2, libstdc++2.10, metamail, j2sdk >= 1.4.2
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-mandrake-9"
+%define	initdir		/etc
+%define psql_service	postgresql
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2, libstdc++2.10, metamail, j2sdk >= 1.4.2
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-mandrake-10"
+%define	initdir		/etc
+%define psql_service	postgresql
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2, libstdc++2.10, metamail, j2sdk >= 1.4.2
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-redhat-7"
+%define	initdir		/etc
+%define psql_service	postgresql
+%define tomcat_service	tomcat4
+%define requires        postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-redhat-8"
+%define	initdir		/etc
+%define psql_service	postgresql
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-redhat-9"
+%define	initdir		/etc
+%define psql_service	postgresql
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-rhel-3"
+%define	initdir		/etc
+%define psql_service	rhdb
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-suse-7"
+%define	initdir		/etc/rc.d
+%define psql_service	postgres
+%define tomcat_service	tomcat
+%define requires        postgres >= 7.2, metamail, java2 >= 1.4.2
+%define webapp_requires tomcat >= 4.1.18, tomcat < 5
+%endif
+
+%if "%{platform}" == "linux-i386-suse-8"
+%define	initdir		/etc
+%define psql_service	postgresql
+%define tomcat_service	tomcat
+%define tomcatdir	/opt/jakarta/tomcat
+%define requires	postgresql >= 7.2, postgresql-server >= 7.2, metamail, java2 >= 1.4.2
+%define webapp_requires tomcat >= 4.1.18, tomcat < 5
+%endif
+
+%if "%{platform}" == "linux-i386-suse-9"
+%define	initdir		/etc
+%define psql_service	postgresql
+%define tomcat_service	tomcat
+%define tomcatdir	/opt/jakarta/tomcat
+%define requires	postgresql >= 7.2, postgresql-server >= 7.2, metamail, java2 >= 1.4.2
+%define webapp_requires tomcat >= 4.1.18, tomcat < 5
+%endif
+
+%if "%{buildtests}" == "true"
+%define buildtests	1
+%endif
+
+%if "%{buildtests}" == "yes"
+%define buildtests	1
+%endif
+
+%if "%{buildtests}" == "false"
+%define buildtests	0
+%endif
+
+%if "%{buildtests}" == "no"
+%define buildtests	0
+%endif
+
+Name:			@ant.project.name@
+Summary:		Enterprise-level network management platform
+Serial:			1
+Release:		%release
+Version:		%version
+Copyright:		LGPL/GPL
+Group:			Applications/System
+
+Source:			%{name}-source-%{version}-%{release}.tar.gz
+URL:			ftp://opennms.org/pub/releases/OpenNMS/
+BuildRoot:		%{_tmppath}/%{name}-%{version}-root
+
+AutoReqProv:		no
+
+Requires:		rrdtool
+Requires:               %{requires}
+
+%description
+OpenNMS is a network management package.
+This is the 1.0 stable tree.
+
+%if "%builddocs" == "1"
+%package docs
+Summary:	Documentation for the OpenNMS network management platform
+Group:		Applications/System
+
+%description docs
+This package contains the API and user documentation
+for OpenNMS.
+%endif
+
+%package webapp
+Summary:	Web interface servlet for the OpenNMS network management platform
+Group:		Applications/System
+Requires:	rrdtool, %{name} = 1:%{version}-%{release}
+Requires:       %{webapp_requires}
+
+%description webapp
+The web UI for OpenNMS.
+
+%prep
+
+%if %{standalone}
+tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{release}.tar.gz -C $RPM_BUILD_DIR
+%define setupdir %{packagedir}/source
+%else
+%define setupdir @root.source@
+%endif
+
+%setup -D -T -n %setupdir
+
+##############################################################################
+# building
+##############################################################################
+
+%build
+rm -rf $RPM_BUILD_ROOT
+
+# nothing necessary
+
+##############################################################################
+# installation
+##############################################################################
+
+%install
+
+if [ x"%{buildtests}" = x"1" ]; then
+	EXTRA_TARGETS="$EXTRA_TARGETS test"
+fi
+if [ x"%{builddocs}" = x"1" ]; then
+	EXTRA_TARGETS="$EXTRA_TARGETS docs"
+fi
+
+echo "=== RUNNING INSTALL ==="
+sh ./build.sh $COMPILER_FLAG -Dinstall.prefix=$RPM_BUILD_ROOT \
+    -Dinstall.dir=%{instprefix} -Dinstall.init.dir=%{initdir}/init.d \
+    -Dinstall.servlet.dir=%{tomcatdir}/webapps/%{name} \
+    -Dinstall.share.dir=%{sharedir} -Dinstall.postgresql.dir=%{pglibdir} \
+    -Dinstall.logs.dir=%{logdir} -Dinstall.pid.file=%{pidfile} \
+    -Dfilter.overwrite="yes" -Disrpm="true" \
+    $EXTRA_TARGETS install || exit $?
+
+mkdir -p $RPM_BUILD_ROOT%{instprefix}
+mkdir -p $RPM_BUILD_ROOT%{instprefix}/etc
+mkdir -p $RPM_BUILD_ROOT%{instprefix}/contrib
+
+mkdir -p $RPM_BUILD_ROOT%{_bindir}
+cat > $RPM_BUILD_ROOT%{_bindir}/opennms <<EOF
+#!/bin/sh -
+
+exec %{instprefix}/bin/opennms.sh "$@"
+EOF
+
+### XXX is this needed?  (Most of) the current scripts don't use OPENNMS_HOME.
+### /etc/profile.d
+
+mkdir -p $RPM_BUILD_ROOT%{profiledir}
+cat > $RPM_BUILD_ROOT%{profiledir}/%{name}.sh << END
+#!/bin/bash
+
+OPENNMS_HOME=%{instprefix}
+if ! echo "\$PATH" | grep "\$OPENNMS_HOME/bin" >/dev/null 2>&1; then
+	PATH="\$PATH:\$OPENNMS_HOME/bin"
+fi
+
+export OPENNMS_HOME PATH
+
+END
+
+%if "%builddocs" == "1"
+### /usr/share/doc/%{name}-%{version}
+
+mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
+cp -pr work/docs/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
+rm -rf $RPM_BUILD_ROOT%{instprefix}/docs
+ln -sf %{_docdir}/%{name}-%{version} $RPM_BUILD_ROOT%{instprefix}/docs
+cp CHANGELOG README* $RPM_BUILD_ROOT%{instprefix}/etc/
+rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README
+rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README.build
+%endif
+
+### symlinks for system dirs to %{instprefix}
+
+ln -sf %{logdir} $RPM_BUILD_ROOT%{instprefix}/logs
+ln -sf %{sharedir} $RPM_BUILD_ROOT%{instprefix}/share
+
+### ${tomcatdir}
+
+mkdir -p $RPM_BUILD_ROOT%{tomcatdir}/server/lib
+jars="`echo \"%{tomcatserverlibs}\" | sed 's/:/ /g'`"
+for jar in $jars; do
+	ln -sf %{instprefix}/lib/$jar \
+	    $RPM_BUILD_ROOT%{tomcatdir}/server/lib/$jar
+done
+
+pushd $RPM_BUILD_ROOT
+find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
+    sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
+    sort > %{_tmppath}/files.etc
+find $RPM_BUILD_ROOT%{tomcatdir}/webapps/%{name} ! -type d | \
+    sed -e "s,^$RPM_BUILD_ROOT,," | grep -v '/WEB-INF/web.xml' | \
+    sort > %{_tmppath}/files.webapp
+popd
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+##############################################################################
+# file setup
+##############################################################################
+
+%files -f %{_tmppath}/files.etc
+%defattr(664 root root 775)
+%attr(755,root,root)	%{initdir}/init.d/*
+%attr(755,root,root)	%{profiledir}/%{name}.sh
+%attr(755,root,root)	%{_bindir}/*
+%attr(755,root,root)	%{instprefix}/bin
+%dir			%{instprefix}/etc
+			%{instprefix}/contrib
+%if "%builddocs" == "1"
+%attr(755,root,root)	%{instprefix}/docs
+%endif
+%attr(755,root,root)	%{instprefix}/lib
+			%{instprefix}/logs
+			%{instprefix}/share
+			%{sharedir}
+			%{logdir}
+
+%if "%builddocs" == "1"
+%files docs
+%defattr(644 root root 755)
+%{_docdir}/%{name}-%{version}
+%endif
+
+%files webapp -f %{_tmppath}/files.webapp
+%defattr(644 root root 755)
+%{tomcatdir}/server
+%config %{tomcatdir}/webapps/%{name}/WEB-INF/web.xml
+
+%post
+
+. %{profiledir}/%{name}.sh
+
+"%{initdir}/init.d/%{psql_service}" stop
+"%{initdir}/init.d/%{psql_service}" start
+
+# run the post-install script
+
+echo -e "- running the post-install..."
+
+if [ `ls %{instprefix}/etc/*.sql.rpmnew 2>/dev/null | wc -l` -gt 0 ]; then
+	for i in %{instprefix}/etc/*.sql.rpmnew; do
+		mv $i ${i%%%%.rpmnew}
+	done
+fi
+
+$JAVA_HOME/bin/java -jar %{instprefix}/lib/opennms_install.jar -disU -r \
+    >> %{logdir}/install.log
+ret=$?
+if [ $ret -ne 0 ]; then
+    echo "Error running installer, see previous error message and" >&2
+    echo "%{logdir}/install.log for details." >&2
+fi
+
+
+# add the OpenNMS init
+
+echo -e "- adding OpenNMS init... \c"
+
+if [ -x /sbin/chkconfig ]; then
+	/sbin/chkconfig --add opennms
+else
+	if [ -x `which chkconfig 2>&1` ]; then
+		`which chkconfig` --add opennms
+	fi
+fi
+
+echo "done"
+
+echo -e "- checking for old update files..."
+
+JAR_UPDATES=`find %{instprefix}/lib/updates -name \*.jar   -exec rm -rf {} \; -print 2>/dev/null | wc -l`
+CLASS_UPDATES=`find %{instprefix}/lib/updates -name \*.class -exec rm -rf {} \; -print 2>/dev/null | wc -l`
+let TOTAL_UPDATES=`expr $JAR_UPDATES + $CLASS_UPDATES`
+if [ "$TOTAL_UPDATES" -gt 0 ]; then
+	echo "FOUND"
+	echo ""
+	echo "WARNING: $TOTAL_UPDATES old update files were found in your"
+	echo "%{instprefix}/lib/updates directory.  They have been deleted"
+	echo "because they should now be out of date."
+	echo ""
+else
+	echo "done"
+fi
+
+%preun
+if [ $1 = 0 ]; then
+	if [ -f /var/lock/subsys/opennms ]; then
+		%{initdir}/init.d/opennms stop
+	fi
+	if [ -x /sbin/chkconfig ]; then
+		/sbin/chkconfig --del opennms
+	else
+		if [ -x `which chkconfig 2>&1` ]; then
+			`which chkconfig` --del opennms
+		fi
+	fi
+fi
+
+%pre webapp
+if [ -f /var/lock/subsys/${tomcat_service} ]; then
+	%{initdir}/init.d/${tomcat_service} stop >/dev/null 2>&1
+	echo > /tmp/tomcat.restart
+fi
+rm -rf %{tomcatdir}/work/* >/dev/null 2>&1 || :
+
+%post webapp
+
+$JAVA_HOME/bin/java -jar %{instprefix}/lib/opennms_install.jar -S %{tomcatdir}/conf/server.xml
+
+if [ -f /tmp/tomcat.restart ]; then
+	rm -rf /tmp/tomcat.restart || :
+	%{initdir}/init.d/${tomcat_service} start >/dev/null 2>&1 || :
+fi
+
+%changelog
+* Fri Nov 16 2001 Ben Reed <ben@opennms.org>
+- Updated symlinks to point to tomcat 4.0.1 dirs
+
+* Wed Oct 31 2001 Brian Weaver <weave@oculan.com>
+- Added more dependencies since the webapp package was being
+  installed BEFORE tomcat which just doesn't work.
+
+* Tue Oct 30 2001 Brian Weaver <weave@oculan.com>
+- Changed support from OpenJMS to JBossMQ
+
+* Wed Oct 24 2001 Ben Reed <ben@opennms.org>
+- changed things around so server.xml clobbers tomcat's
+  server.xml, if one exists in
+  webapps/%{name}/WEB-INF/server.xml
+
+* Tue Oct 09 2001 Brian Weaver <weave@oculan.com>
+- Removed the OpenJMS jar code after build so that
+  it is not installed. This will force the client
+  to use the OpenJMS jar files from /usr/share/java
+  to ensure that the client/server are communicating
+  correctly.
+
+* Tue Oct 02 2001 Benjamin Reed <ben@opennms.org>
+- added /var/tomcat4 to add some opennms jars
+
+* Tue Oct 02 2001 Benjamin Reed <ben@opennms.org>
+- init in temporarily gone until the new startup stuff is
+  worked out
+
+* Tue Oct 02 2001 Benjamin Reed <ben@opennms.org>
+- postun gone, move much of pre into build-time, fix
+  for doc and log link errors
+
+* Sun Sep 30 2001 Benjamin Reed <ben@opennms.org>
+- changed to handle generating a proper .src.rpm that can
+  be built standalone
+
+* Tue Sep 11 2001 Benjamin Reed <ben@opennms.org>
+- Ported the RPM to the experimental build.
+
+* Mon Apr 16 2001 Benjamin Reed <ben@opennms.org>
+- Added a /usr/bin/opennms that calls the opennms script
+  in %{instprefix} for convenience
+
+* Tue Apr 04 2001 Benjamin Reed <ben@opennms.org>
+- Rearranged to work with the new build system.
+
+* Mon Nov 27 2000 Benjamin Reed <ben@opennms.org>
+- Work on actually doing something other than copying files
+- Addition of distribution-specific conditionals
+
+* Wed Nov 8 2000 Benjamin Reed <ben@opennms.org>
+- Initial RPM
+
