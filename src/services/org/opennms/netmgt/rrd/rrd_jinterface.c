@@ -54,7 +54,7 @@
 
 #include "rrd.h"
 #pragma export on
-#include <rrd_jinterface.h>
+#include "rrd_jinterface.h"
 #pragma export reset
 #if !defined(__SOLARIS__) && !defined(__APPLE_CC__) && !defined(__bsdi__) && !defined(__FreeBSD__)
 #include "getopt.h"

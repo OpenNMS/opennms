@@ -24,7 +24,7 @@ fi
 cd $PREFIX
 
 # load libraries
-for script in pid_process arg_process build_classpath \
+for script in pid_process arg_process \
 	compiler_setup find_jarfile handle_properties java_lint version_compare; do
 	source $PREFIX/tools/infrastructure/${script}.sh
 done
@@ -34,28 +34,6 @@ for file in $PREFIX/tools/infrastructure/platform_*.sh; do
 	source $file
 done
 
-TOOL_CLASSES="`PROPERTY_OVERRIDE="$PREFIX/tools/build.properties" get_property opennms.tools.classes`"
-BUILD_CLASSES="`get_property 'root.build'`/classes/opennms"
-SABLECC_CLASSES="`get_property 'root.build'`/classes/sablecc"
-
-if [ "$QUIET" != "1" ]; then
-	echo "------------------------------------------------------------------------------"
-	echo "OpenNMS Build"
-	echo "------------------------------------------------------------------------------"
-	echo ""
-fi
-
-# see tools/infrastructure/build_classpath.sh for syntax
-CLASSPATH=`build_classpath cp:$CLASSPATH_OVERRIDE dir:$TOOL_CLASSES \
-	dir:$BUILD_CLASSES dir:$SABLECC_CLASSES \
-	dir:$PREFIX/lib \
-	jar:xerces201 jar:xalan231 jar:regexp120 jar:jdhcp \
-	jar:jcifs jar:log4j jar:postgresql \
-	jar:jdbc2_0-stdext \
-	jar:servlet jar:catalina jar:fop0203 jar:bsf220 jar:batik100 \
-	jar:jimi100 jar:ldap jar:batik jar:avalon-framework-4.0 jar:logkit-1.0 \
-	jar:jasper-compiler jar:mx4j jar:mx4j-tools jar:xmlrpc-1.2-b1 "cp:$CLASSPATH"` \
-	export CLASSPATH
 PATH="$JAVA_HOME/bin:$PATH" export PATH
 
 # parse the root.* properties and create relative versions if necessary
@@ -75,7 +53,6 @@ if [ "$VERBOSE" = "1" ]; then
 	echo "------------------------------------------------------------------------------"
 	echo "BUILD \$PREFIX: $PREFIX"
 	echo "\$JAVA_HOME:    $JAVA_HOME"
-	echo "\$CLASSPATH:    $CLASSPATH"
 	echo "\$PATH:	 $PATH"
 	echo "\$DEFINES:      $DEFINES"
 	echo ""
@@ -85,9 +62,9 @@ fi
 
 if [ "$VERBOSE" = "1" ]; then
 	DEFINES="$DEFINES -verbose"
-	echo $JAVA_HOME/bin/java $DEFINES -Dant.home=devlib -Droot.source="$PREFIX" -Djava.home="$JAVA_HOME" -cp "devlib/ant-launcher.jar:$CLASSPATH" \
+	echo $JAVA_HOME/bin/java $DEFINES -Dant.home=devlib -Droot.source="$PREFIX" -Djava.home="$JAVA_HOME" -cp "devlib/ant-launcher.jar" \
 		-mx256m org.apache.tools.ant.launch.Launcher "$@"
 fi
 
-$JAVA_HOME/bin/java $DEFINES -Dant.home=devlib -Droot.source="$PREFIX" -Djava.home="$JAVA_HOME" -cp "devlib/ant-launcher.jar:$CLASSPATH" \
+$JAVA_HOME/bin/java $DEFINES -Dant.home=devlib -Droot.source="$PREFIX" -Djava.home="$JAVA_HOME" -cp "devlib/ant-launcher.jar" \
 	-mx256m org.apache.tools.ant.launch.Launcher "$@"
