@@ -338,7 +338,7 @@ create table ifServices (
 	ipAddr			varchar(16) not null,
 	ifIndex			integer,
 	serviceID		integer,
-				constraint fk_serviceID1 foreigh key (serviceID) references service ON DELETE CASCADE,
+				constraint fk_serviceID1 foreign key (serviceID) references service ON DELETE CASCADE,
 	lastGood		timestamp without time zone,
 	lastFail		timestamp without time zone,
 	qualifier		char(16),
@@ -629,8 +629,15 @@ create table vulnPlugins (
         family                  varchar(32),
         version                 varchar(32),
         cveEntry                varchar(14),
-        md5                     varchar(32) 
-        CONSTRAINT pk_vulnplugins PRIMARY KEY (pluginID, pluginSubID));
+        md5                     varchar(32)
+);
+
+
+create unique index vulnplugins_pluginid_pluginsubid_idx on vulnPlugins(pluginID, pluginSubID);
+
+--#  This constraint not understood installer
+--#        CONSTRAINT pk_vulnplugins PRIMARY KEY (pluginID,pluginSubID));
+--#
         
 
 --########################################################################
@@ -696,12 +703,17 @@ create index notifications_answeredby_idx on notifications(answeredBy);
 create table usersNotified (
         userID          varchar(256) not null,
         notifyID        integer,
-			constraint fk_notifID2 foreign key (nodifyID) references notifications (notifyID) ON DELETE CASCADE,
+			constraint fk_notifID2 foreign key (notifyID) references notifications (notifyID) ON DELETE CASCADE,
         notifyTime      timestamp without time zone,
         media           varchar(32),
-        contactinfo     varchar(64),
-        CONSTRAINT pk_usersNotified PRIMARY KEY (userID, notifyID) );
+        contactinfo     varchar(64)
+);
 
+create unique index userid_notifyid_idx on usersNotified(userID, notifyID);
+
+--# This constraint not understood by installer
+--#        CONSTRAINT pk_usersNotified PRIMARY KEY (userID,notifyID) );
+--#
 --########################################################################
 --# asset table - Contains inventory and other user-entered information
 --#                     for nodes

@@ -42,6 +42,7 @@ public class Constraint {
     public static final int FOREIGN_KEY = 2;
 
     private String m_name;
+    private boolean m_trigger;
     private int m_type;
     private String m_column;
     private String m_ftable;
@@ -72,6 +73,14 @@ public class Constraint {
 
     public void setName(String name) {
 	m_name = name.toLowerCase();
+    }
+    
+    public boolean getTrigger() {
+    	return m_trigger;
+    }
+    
+    public void setTrigger(boolean trigger) {
+    	m_trigger = trigger;
     }
 
     public int getType() {
@@ -132,6 +141,10 @@ public class Constraint {
 	    b.append(m_fcolumn);
 	    b.append(")");
 	}
+	
+	if (m_trigger) {
+		b.append(" on delete cascade");
+	}
 
 	return b.toString();
     }
@@ -152,7 +165,8 @@ public class Constraint {
 	m = Pattern.compile("(?i)constraint (\\S+) " +
 			    "foreign key \\((\\S+)\\) " +
 			    "references (\\S+)" +
-			    "(?: \\((\\S+)\\))?").matcher(constraint);
+			    "(?: \\((\\S+)\\))?" +
+				"(\\s+on\\s+delete\\s+cascade)?").matcher(constraint);
 	if (m.matches()) {
 	    setName(m.group(1));
 	    setType(FOREIGN_KEY);
@@ -162,6 +176,12 @@ public class Constraint {
 		setForeignColumn(m.group(2));
 	    } else {
 		setForeignColumn(m.group(4));
+	    }
+	    if (m.group(5) == null) {
+		setTrigger(false);
+	    }
+	    else {
+		setTrigger(true);
 	    }
 	    return;
 	}
@@ -211,6 +231,8 @@ public class Constraint {
 	    !m_fcolumn.equals(other.getForeignColumn())) {
 	    return false;
 	}
+	if (m_trigger != other.m_trigger)
+	    return false;
 
 	return true;
     }
