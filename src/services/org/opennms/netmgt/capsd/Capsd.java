@@ -350,8 +350,8 @@ public class Capsd implements PausableFiber
 		// Create the suspect event and rescan thread pools
 		//
 		m_suspectRunner = new RunnableConsumerThreadPool("Capsd Suspect Pool", 
-								 0.6f, 
-								 1.0f, 
+								 0.0f, 
+								 0.0f, 
 								 CapsdConfigFactory.getInstance().getMaxSuspectThreadPoolSize());
 		
 		m_rescanRunner = new RunnableConsumerThreadPool("Capsd Rescan Pool", 

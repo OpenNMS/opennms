@@ -226,7 +226,7 @@ final class Scheduler
 	{
 		m_name = FIBER_NAME + maxSize;
 		m_status = START_PENDING;
-		m_runner = new RunnableConsumerThreadPool(FIBER_NAME + " Pool", 0.6f, 1.0f, maxSize);
+		m_runner = new RunnableConsumerThreadPool(FIBER_NAME + " Pool", 0.0f, 0.0f, maxSize);
 		m_queues = Collections.synchronizedMap(new TreeMap());
 		m_scheduled = 0;
 		m_worker = null;
