@@ -278,7 +278,7 @@ public final class IfTableEntry
 	{
 		SnmpPduPacket pdu = new SnmpPduRequest(SnmpPduRequest.GETNEXT);
 
-		pdu.setRequestId(pdu.nextSequence());
+		pdu.setRequestId(SnmpPduPacket.nextSequence());
 		for(int x = 0; x < ms_elemList.length; x++)
 		{
 			SnmpObjectId   oid = new SnmpObjectId(ms_elemList[x].getOid());
@@ -306,7 +306,7 @@ public final class IfTableEntry
 		SnmpPduPacket pdu = new SnmpPduBulk();
 
 		((SnmpPduBulk)pdu).setMaxRepititions(numInterfaces * ms_elemList.length);
-		pdu.setRequestId(pdu.nextSequence());
+		pdu.setRequestId(SnmpPduPacket.nextSequence());
 
 		SnmpObjectId oid = new SnmpObjectId(TABLE_OID);
 		pdu.addVarBind(new SnmpVarBind(oid));
@@ -345,7 +345,7 @@ public final class IfTableEntry
 		SnmpPduRequest pdu = new SnmpPduRequest(SnmpPduRequest.GETNEXT);
 		SnmpObjectId oid   = new SnmpObjectId(".1.3.6.1.2.1.2.1");
 		pdu.addVarBind(new SnmpVarBind(oid));
-		pdu.setRequestId(pdu.nextSequence());
+		pdu.setRequestId(SnmpPduPacket.nextSequence());
 
 		return pdu;
 	}

@@ -300,7 +300,7 @@ public class SnmpNodeCollector implements SnmpHandler
 			pdu = new SnmpPduRequest(SnmpPduPacket.GET);
 		}
 		
-		pdu.setRequestId(pdu.nextSequence());
+		pdu.setRequestId(SnmpPduPacket.nextSequence());
 		
 		// Generate new SnmpVarBind object.  Add each oid from the
 		// object list until max var count is reached or there are no

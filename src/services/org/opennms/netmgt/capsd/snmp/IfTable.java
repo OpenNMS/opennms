@@ -398,7 +398,7 @@ public final class IfTable
 							SnmpObjectId id = new SnmpObjectId(pdu.getVarBindAt(numVarBinds-1).getName());
 							SnmpVarBind[] newvblist = {new SnmpVarBind(id)};
 							SnmpPduPacket nxt = new SnmpPduBulk(0, maxReps, newvblist);
-							nxt.setRequestId(nxt.nextSequence());
+							nxt.setRequestId(SnmpPduPacket.nextSequence());
 							if (log.isDebugEnabled())
 								log.debug("smnpReceivedPDU: Starting new GETBULK packet at OID = " + id.toString() + ", with request ID: " + nxt.getRequestId());
 							session.send(nxt, this);
@@ -486,7 +486,7 @@ public final class IfTable
 						{
 							nxt.addVarBind(new SnmpVarBind(pdu.getVarBindAt(x).getName()));
 						}
-						nxt.setRequestId(nxt.nextSequence());
+						nxt.setRequestId(SnmpPduPacket.nextSequence());
 						session.send(nxt, this);
 						doNotify = false;
 						m_responses++;

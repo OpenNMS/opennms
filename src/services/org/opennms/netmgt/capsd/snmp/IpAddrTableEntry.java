@@ -258,14 +258,14 @@ public final class IpAddrTableEntry
 		{
 			pdu = new SnmpPduBulk();
 			((SnmpPduBulk)pdu).setMaxRepititions(10);
-			pdu.setRequestId(pdu.nextSequence());
+			pdu.setRequestId(SnmpPduPacket.nextSequence());
 			SnmpObjectId   oid = new SnmpObjectId(TABLE_OID);
 			pdu.addVarBind(new SnmpVarBind(oid));
 		}
 		else 
 		{
 			pdu = new SnmpPduRequest(SnmpPduPacket.GETNEXT);
-			pdu.setRequestId(pdu.nextSequence());
+			pdu.setRequestId(SnmpPduPacket.nextSequence());
 			for(int x = 0; x < ms_elemList.length; x++)
 			{
 				SnmpObjectId   oid = new SnmpObjectId(ms_elemList[x].getOid());

@@ -292,7 +292,7 @@ public class IpAddrTable
 							SnmpVarBind[] newvblist = { new SnmpVarBind(id) };
 
 							SnmpPduPacket nxt = new SnmpPduBulk(0, 10, newvblist);
-							nxt.setRequestId(nxt.nextSequence());
+							nxt.setRequestId(SnmpPduPacket.nextSequence());
 							session.send(nxt, this);
 							doNotify = false;
 						}				
@@ -356,7 +356,7 @@ public class IpAddrTable
 							nxt.addVarBind(new SnmpVarBind(pdu.getVarBindAt(x).getName()));
 						}
 					
-						nxt.setRequestId(nxt.nextSequence());
+						nxt.setRequestId(SnmpPduPacket.nextSequence());
 						session.send(nxt, this);
 						doNotify = false;
 					}

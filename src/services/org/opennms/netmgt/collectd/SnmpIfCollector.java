@@ -412,7 +412,7 @@ public class SnmpIfCollector implements SnmpHandler
 		if (log.isDebugEnabled())
 			log.debug("getNextSnmpV1Pdu: ifindex: " + index + " oidListIndex=" + m_oidListIndex + " objCount=" + m_objList.size());
 		
-		pdu.setRequestId(pdu.nextSequence());
+		pdu.setRequestId(SnmpPduPacket.nextSequence());
 		
 		// Generate new SnmpVarBind object.  Add each oid from the
 		// object list until max var count is reached or there are no
@@ -540,7 +540,7 @@ public class SnmpIfCollector implements SnmpHandler
 		if (log.isDebugEnabled())
 			log.debug("getNextSnmpV2Pdu: starting_ifindex: " + index);
 		
-		pdu.setRequestId(pdu.nextSequence());
+		pdu.setRequestId(SnmpPduPacket.nextSequence());
 		
 		// Use next oid from object list to create SnmpVarBind object
 		// and add it to the pdu.

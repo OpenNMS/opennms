@@ -243,7 +243,7 @@ public final class SystemGroup extends java.util.TreeMap
 		
 		m_signal = signaler;
 		SnmpPduPacket pdu = getPdu();
-		pdu.setRequestId(pdu.nextSequence());
+		pdu.setRequestId(SnmpPduPacket.nextSequence());
 		session.send(pdu, this);
 	}
 
