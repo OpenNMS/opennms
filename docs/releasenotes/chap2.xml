@@ -184,7 +184,7 @@
     <para>Installing a fresh copy of OpenNMS will now use the Java Mail API by
     default. Upgrade installs will create two new files that the user will
     have to merge into their existing configurations:
-    d<filename>estinationPaths.xml.rpmnew</filename> and
+    <filename>destinationPaths.xml.rpmnew</filename> and
     <filename>notficationCommands.xml.rpmnew</filename>.</para>
 
     <para>The <filename>javamail-configuration.properties</filename> file

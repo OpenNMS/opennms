@@ -169,6 +169,22 @@ END
 	return 6    # From LSB: 6 - program is not configured
     fi
 
+    if [ `find $OPENNMS_HOME $TOMCATDIR -name \*.dpkg-dist | wc -l` -gt 0 ]; then
+	cat <<END
+
+WARNING!  You have files that end in .dpkg-dist in your
+OPENNMS_HOME ($OPENNMS_HOME) directory.
+
+The format of the original files may have changed since
+you modified them before installing a new version.
+Please double-check that your configuration files are
+up-to-date and delete any leftover .dpkg-dist files or
+OpenNMS will not start.
+
+END
+	return 6    # From LSB: 6 - program is not configured
+    fi
+
     if [ `find $OPENNMS_HOME $TOMCATDIR -name \*.rpmsave | wc -l` -gt 0 ]; then
 	cat <<END
 
