@@ -211,9 +211,13 @@
     <section>
       <title>Fedora Core 2</title>
 
-      <para>There are no special requirements for OpenNMS on this distribution
-      of Linux, except for those configuration issues mentioned in the
-      previous section.</para>
+      <para>The Tomcat4 package that ships with Fedora Core 2 does not appear
+      to reliably run, even when the OpenNMS web app is not installed.  For
+      now, we suggest using the tomcat4 packages on the
+      <ulink url="ftp://ftp.opennms.org/pub/dependencies/tomcat4/">OpenNMS
+      FTP site</ulink>.  You'll want to install both packages,
+      <filename>tomcat4-4.1.18-full.1jpp.noarch.rpm</filename> and 
+      <filename>tomcat4-webapps-4.1.18-full.1jpp.noarch.rpm</filename>.</para>
     </section>
   </section>
 
