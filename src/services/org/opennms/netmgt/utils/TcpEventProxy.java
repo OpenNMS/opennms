@@ -81,19 +81,19 @@ public final class TcpEventProxy implements EventProxy {
 	}
     }
 
-    public TcpEventProxy() throws IOException {
+    public TcpEventProxy() {
 	this(s_default_host, s_default_port);
     }
 
-    public TcpEventProxy(int port) throws IOException {
+    public TcpEventProxy(int port) {
 	this(s_default_host, port);
     }
 
-    public TcpEventProxy(InetAddress target) throws IOException {
+    public TcpEventProxy(InetAddress target) {
 	this(target, s_default_port);
     }
 
-    public TcpEventProxy(InetAddress target, int port) throws IOException {
+    public TcpEventProxy(InetAddress target, int port) {
 	m_port = port;
 	m_target = target;
     }
@@ -103,20 +103,16 @@ public final class TcpEventProxy implements EventProxy {
      *
      * @param event the event to be sent out
      *
-     * @exception java.lang.RuntimeException thrown if the send fails
-     *                                        for any reason
+     * @exception UndeclaredThrowableException thrown if the send fails
+     *                                         for any reason
      */
-    public void send(Event event) {
-	try {
-	    Log elog = new Log();
-	    Events events = new Events();
-	    events.addEvent(event);
-	    elog.setEvents(events);
+    public void send(Event event) throws UndeclaredThrowableException{
+	Log elog = new Log();
+	Events events = new Events();
+	events.addEvent(event);
+	elog.setEvents(events);
 	    
-	    send(elog);
-	} catch(Throwable t) {
-	    throw new UndeclaredThrowableException(t);
-	}
+	send(elog);
     }
 
     /**
@@ -125,17 +121,17 @@ public final class TcpEventProxy implements EventProxy {
      *
      * @param eventLog the events to be sent out
      *
-     * @exception java.lang.RuntimeException thrown if the send fails
-     *                                       for any reason
+     * @exception UndeclaredThrowableException thrown if the send fails
+     *                                         for any reason
      */
-    public void send(Log eventLog) {
+    public void send(Log eventLog) throws UndeclaredThrowableException {
 	try {
 	    Connection connection = new Connection(m_target, m_port);
 	    Writer writer = connection.getWriter();
 	    Marshaller.marshal(eventLog, writer);
 	    writer.flush();
 	    connection.close();
-	} catch(Throwable t) {
+	} catch (Throwable t) {
 	    throw new UndeclaredThrowableException(t);
 	}
     }

@@ -34,6 +34,8 @@ package org.opennms.web.category;
 
 import java.io.IOException;
 
+import java.lang.reflect.UndeclaredThrowableException;
+
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -72,7 +74,8 @@ public class RTCPostSubscriber extends Object {
 
     public static void sendSubscribeEvent(EventProxy proxy, String url,
 					  String username, String password,
-					  String categoryName) {
+					  String categoryName)
+	throws IllegalArgumentException, UndeclaredThrowableException {
         if (proxy == null || url == null || username == null ||
 	    password == null || categoryName == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
@@ -126,7 +129,8 @@ public class RTCPostSubscriber extends Object {
     }
 
 
-    public static void sendUnsubscribeEvent(EventProxy proxy, String url) {
+    public static void sendUnsubscribeEvent(EventProxy proxy, String url) 
+	throws IllegalArgumentException, UndeclaredThrowableException {
         if (proxy == null || url == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -155,7 +159,8 @@ public class RTCPostSubscriber extends Object {
 
 
 
-    public String subscribe(String categoryName) {
+    public String subscribe(String categoryName)
+	throws IllegalArgumentException, UndeclaredThrowableException {
         if (categoryName == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -168,7 +173,8 @@ public class RTCPostSubscriber extends Object {
     }
 
 
-    public void unsubscribe() {
+    public void unsubscribe()
+	throws IllegalArgumentException, UndeclaredThrowableException {
         sendUnsubscribeEvent(m_proxy, m_url);
     }
         
@@ -200,7 +206,8 @@ public class RTCPostSubscriber extends Object {
     
     
     public static void subscribeAll(String viewName)
-	throws IOException, MarshalException, ValidationException {
+	throws IOException, MarshalException, ValidationException,
+	       UndeclaredThrowableException {
         if (viewName == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -222,15 +229,10 @@ public class RTCPostSubscriber extends Object {
                 String[] categories = section.getCategory(); 
         
                 for (int j=0; j < categories.length; j++) {
-                    try {
-                        subscriber.subscribe(categories[j]);
-                        log.info("Sent subscription event to RTC for " +
-				 "category: " + categories[j]);
-                    } catch (Exception e) {
-                        log.error("Could not send POST subscription event " + 
-				  "to RTC for category: " + categories[j], e);
-                    }
-                }
+		    subscriber.subscribe(categories[j]);
+		    log.info("Sent subscription event to RTC for " +
+			     "category: " + categories[j]);
+		}
             }        
                         
             // Close the subscription JMS connection.

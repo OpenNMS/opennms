@@ -34,6 +34,8 @@
 
 package org.opennms.netmgt.utils;
 
+import java.lang.reflect.UndeclaredThrowableException;
+
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 
@@ -47,23 +49,24 @@ import org.opennms.netmgt.xml.event.Log;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */
-public interface EventProxy 
-{
-	/**
-	 * This method is called to send the event out
-	 *
-	 * @param event		the event to be sent out
-	 *
-	 * @exception java.lang.RuntimeException thrown if the send fails for any reason
-	 */
-	public void send(Event event);
+public interface EventProxy {
+    /**
+     * This method is called to send the event out
+     *
+     * @param event		the event to be sent out
+     *
+     * @exception UndeclaredThrowableException thrown if the send fails
+     *                                         for any reason
+     */
+    public void send(Event event) throws UndeclaredThrowableException;
 
-	/**
-	 * This method is called to send an event log containing multiple events out
-	 *
-	 * @param eventLog	the events to be sent out
-	 *
-	 * @exception java.lang.RuntimeException thrown if the send fails for any reason
-	 */
-	public void send(Log eventLog);
+    /**
+     * This method is called to send an event log containing multiple events out
+     *
+     * @param eventLog	the events to be sent out
+     *
+     * @exception UndeclaredThrowableException thrown if the send fails
+     *                                         for any reason
+     */
+    public void send(Log eventLog) throws UndeclaredThrowableException;
 }

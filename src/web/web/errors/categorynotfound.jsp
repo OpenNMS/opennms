@@ -68,15 +68,6 @@
         throw new ServletException( "This error page does not handle this exception type.", exception );
     }    
     
-    try {
-        //try to resubscribe
-        RTCPostSubscriber subscriber = new RTCPostSubscriber();
-        subscriber.subscribe(cnfe.getCategory());
-        this.log( "Sent subscription event to RTC for " + cnfe.getCategory() );
-    }
-    catch( Exception e ) {
-        this.log( "Could not send POST subscription event to RTC", e );
-    }
 %>
 
 <!-- Body -->

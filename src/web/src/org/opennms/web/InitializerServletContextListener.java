@@ -1,10 +1,14 @@
 //
+//  $Id$
+//
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
+// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All
+// rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code,
+// included code and modified code that was published under the GNU
+// General Public License. Copyrights for modified and included code
+// are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
@@ -32,11 +36,20 @@
 
 package org.opennms.web;
 
+import java.lang.reflect.UndeclaredThrowableException;
+
+import java.net.ConnectException;
+
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 
+import org.opennms.web.category.CategoryList;
 import org.opennms.web.category.RTCPostSubscriber;
 
 
@@ -44,51 +57,111 @@ import org.opennms.web.category.RTCPostSubscriber;
  * Initializes our internal servlet systems at servlet container startup, and
  * destroys any pool resources at servlet container shutdown.
  *
- * This listener is specified in the web.xml to listen to <code>ServletContext</code>
- * lifecyle events.  On startup it calls ServletInitializer.init
- * and initializes the UserFactory, GroupFactory.
+ * This listener is specified in the web.xml to listen to
+ * <code>ServletContext</code> lifecyle events.  On startup it calls
+ * ServletInitializer.init and initializes the UserFactory, GroupFactory.
  * On shutdown it calls ServletInitializer.destroy.
  *         
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
-public class InitializerServletContextListener extends Object implements ServletContextListener
-{
-    public void contextInitialized( ServletContextEvent event ) {
+public class InitializerServletContextListener
+    implements ServletContextListener {
+
+    private Timer rtcCheckTimer = null;
+
+    public void contextInitialized(ServletContextEvent event) {
         ServletContext context = event.getServletContext();
         
         try {
-            //initialize the scarce resource policies (db connections) and common configuration 
-            ServletInitializer.init( context );
-            context.log( "[InitializerServletContextListener] Initialized servlet systems successfully" );
-        }
-        catch( ServletException e ) {
-            context.log( "[InitializerServletContextListener] Error while initializing servlet systems", e ); 
-        }
-        catch( Exception e ) {
-            context.log( "[InitializerServletContextListener] Error while initializing user, group, or view factory", e ); 
+            // Initialize the scarce resource policies (db connections) and
+	    // common configuration.
+            ServletInitializer.init(context);
+
+            context.log("[InitializerServletContextListener] Initialized " +
+			 "servlet systems successfully");
+        } catch (ServletException e) {
+            context.log("[InitializerServletContextListener] Error while " +
+			 "initializing servlet systems", e); 
+        } catch (Exception e) {
+            context.log("[InitializerServletContextListener] Error while " + 
+			 "initializing user, group, or view factory", e); 
         }                
         
-        try {
-            RTCPostSubscriber.subscribeAll("WebConsoleView");
-            context.log( "[InitializerServletContextListener] Initialized RTC POST subscription event sent successfully" );
-        }
-        catch( Exception e ) {
-            context.log( "[InitializerServletContextListener] Error subscribing to RTC POSTs", e ); 
-        }        
+	try {
+	    rtcCheckTimer = new Timer();
+	    rtcCheckTimer.schedule(new RTCPostSubscriberTimerTask(context),
+				   new Date(),
+				   130000);
+	} catch (ServletException e) {
+	    context.log("[InitializerServletContextListener] Error while " +
+			"initializing RTC check timer", e);
+	}
     }
 
+    public void contextDestroyed(ServletContextEvent event) {
+        ServletContext context = event.getServletContext();
 
-    public void contextDestroyed( ServletContextEvent event ) {
         try {            
-            //let the scarce resource policies release any shared resouces (db connections)  
-            ServletInitializer.destroy( event.getServletContext() );
+            // Let the scarce resource policies release any shared
+	    // resouces (db connections).
+            ServletInitializer.destroy(event.getServletContext());
 
-            //report success
-            event.getServletContext().log( "[InitializerServletContextListener] Destroyed servlet systems successfully" );
+            // Report success.
+            context.log("[InitializerServletContextListener] Destroyed " +
+			"servlet systems successfully");
         }
-        catch( ServletException e ) {
-            event.getServletContext().log( "[InitializerServletContextListener] Error while destroying servlet systems", e ); 
+        catch (ServletException e) {
+            context.log("[InitializerServletContextListener] Error while " +
+			"destroying servlet systems", e);
         }
+
+	if (rtcCheckTimer != null) {
+	    rtcCheckTimer.cancel();
+	    rtcCheckTimer = null;
+	}
+    }
+
+    public class RTCPostSubscriberTimerTask extends TimerTask {
+	private ServletContext m_context;
+	private CategoryList m_categorylist;
+
+	public RTCPostSubscriberTimerTask(ServletContext context)
+	    throws ServletException {
+	    m_context = context;
+	    m_categorylist = new CategoryList(m_context);
+	}
+
+	public void run() {
+	    try {
+		if (!m_categorylist.opennmsDisconnected()) {
+		    return;
+		}
+	    } catch (Exception e) {
+		m_context.log("[RTCPostSubscriberTimerTask] Error checking " +
+			      "if OpenNMS is disconnected", e);
+		return;
+	    }
+		
+	    m_context.log("[RTCPostSubscriberTimerTask] OpenNMS is " +
+			  "disconnected -- attempting RTC POST subscription");
+
+	    try {
+		RTCPostSubscriber.subscribeAll("WebConsoleView");
+		m_context.log("[RTCPostSubscriberTimerTask] RTC POST " +
+			      "subscription event sent successfully");
+	    } catch (Exception e) {
+		if (UndeclaredThrowableException.class.isInstance(e) &&
+		    e.getCause() != null &&
+		    ConnectException.class.isInstance(e.getCause())) {
+		    m_context.log("[RTCPostSubscriberTimerTask] RTC POST " +
+				  "failed due to ConnectException: " +
+				  e.getCause().toString());
+		} else {
+		    m_context.log("[RTCPostSubscriberTimerTask] Error " +
+				  "subscribing to RTC POSTs", e);
+		}
+	    }        
+	}
     }
 }

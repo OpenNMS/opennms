@@ -1,10 +1,12 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
+// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All
+// rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code,
+// included code and modified code that was published under the GNU
+// General Public License. Copyrights for modified and included code
+// are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
@@ -32,8 +34,13 @@
 
 package org.opennms.web.category;
 
+import java.io.IOException;
+
 import java.util.Date;
 import java.util.Enumeration;
+
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 
 
 /**
@@ -48,13 +55,15 @@ import java.util.Enumeration;
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
-public class Category extends Object 
-{
+public class Category {
     /** The category definition (from the categories.xml file). */
-    protected org.opennms.netmgt.config.categories.Category categoryDef;
+    protected org.opennms.netmgt.config.categories.Category m_categoryDef;
     
-    /** An update from the RTC about the service level availability for this category. */ 
-    protected org.opennms.netmgt.xml.rtc.Category rtcCategory;
+    /**
+     * An update from the RTC about the service level availability for this
+     * category.
+     */ 
+    protected org.opennms.netmgt.xml.rtc.Category m_rtcCategory;
     
     /** 
      * The last time this category was updated.  Note that with the current 
@@ -62,53 +71,77 @@ public class Category extends Object
      * not change because a new instance of this class is created for each
      * RTC update.
      */
-    protected Date lastUpdated;
+    protected Date m_lastUpdated;
     
     /** 
      * A cached value of the total number of services on nodes belonging 
      * to this category.
      */
-    protected Long serviceCount;
+    protected Long m_serviceCount;
     
     /** 
      * A cached value of the total number of services on nodes belonging 
      * to this category that are currently down.
      */    
-    protected Long serviceDownCount;
+    protected Long m_serviceDownCount;
 
     
+    /**
+     * A cached value of the ratio of services that are up on notes beloging
+     * to this category to all nodes belonging in this category.
+     */    
+    protected Double m_servicePercentage;
+    
+    /**
+     * Create an empty category with nothing other than a name.  This
+     * represents a category with no RTC data.
+     */
+    protected Category(String categoryName) {
+	m_categoryDef =
+	    new org.opennms.netmgt.config.categories.Category();
+	m_categoryDef.setLabel(categoryName);
+    }
+
     /**
      * Create a new instance to wrapper information from the categories.xml
      * file (that defines a category) and information from the RTC (that gives
      * current service level availability).
      */
-    protected Category( org.opennms.netmgt.config.categories.Category categoryDef, org.opennms.netmgt.xml.rtc.Category rtcCategory, Date lastUpdated ) {
-        if( categoryDef == null || rtcCategory == null || lastUpdated == null ) {
+    protected Category(org.opennms.netmgt.config.categories.Category
+		       categoryDef,
+		       org.opennms.netmgt.xml.rtc.Category rtcCategory,
+		       Date lastUpdated) {
+        if (categoryDef == null || rtcCategory == null ||
+	    lastUpdated == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
             
-        if( categoryDef.getLabel() == null || !categoryDef.getLabel().equals(rtcCategory.getCatlabel()) ) {
-            throw new IllegalArgumentException("Cannot take category definition and rtc category value whose names do not match.");
+        if (categoryDef.getLabel() == null ||
+	    !categoryDef.getLabel().equals(rtcCategory.getCatlabel())) {
+            throw new IllegalArgumentException("Cannot take category " +
+					       "definition and rtc category " +
+					       "value whose names do not " +
+					       "match.");
         }
         
-        this.categoryDef = categoryDef;
-        this.rtcCategory = rtcCategory;        
-        this.lastUpdated = lastUpdated;
+        m_categoryDef = categoryDef;
+        m_rtcCategory = rtcCategory;        
+        m_lastUpdated = lastUpdated;
         
-        this.serviceCount = null;
-        this.serviceDownCount = null;
+        m_serviceCount = null;
+        m_serviceDownCount = null;
     }
  
     
     /** Return the unique name for this category. */
     public String getName() {
-        return this.categoryDef.getLabel();
+        return m_categoryDef.getLabel();
     }
     
     
     /** Return the value considered to be the minimum "normal" value. */ 
     public double getNormalThreshold() {
-        return this.categoryDef.getNormal();
+        return m_categoryDef.getNormal();
     }
 
 
@@ -118,25 +151,29 @@ public class Category extends Object
      * category's value will be considered unacceptable.
      */
     public double getWarningThreshold() {
-        return this.categoryDef.getWarning();
+        return m_categoryDef.getWarning();
     }
     
     
     /** Return a description explaining this category. */
     public String getComment() {
-        return this.categoryDef.getComment();
+        return m_categoryDef.getComment();
     }
 
 
     /** Return the date and time this category was last updated by the RTC. */ 
     public Date getLastUpdated() {
-        return this.lastUpdated;
+        return m_lastUpdated;
     }
 
 
     /** Return the current service level availability for this category. */
     public double getValue() {
-        return this.rtcCategory.getCatvalue();
+	if (m_rtcCategory == null) {
+	    return 0.0;
+	} else {
+	    return m_rtcCategory.getCatvalue();
+	}
     }
     
     
@@ -149,35 +186,117 @@ public class Category extends Object
      * of this class.
      */
     org.opennms.netmgt.xml.rtc.Category getRtcCategory() {
-        return this.rtcCategory;
+        return m_rtcCategory;
     }
     
     
     /** Return the number of services contained within this category. */
     public long getServiceCount() {
-        if( this.serviceCount == null ) {
-            long[] counts = getServiceCounts(this.rtcCategory);
+        if (m_serviceCount == null) {
+	    if (m_rtcCategory == null) {
+		m_serviceCount = new Long(0);
+		m_serviceDownCount = new Long(0);
+		m_servicePercentage = new Double(0);
+	    } else {
+		long[] counts = getServiceCounts(m_rtcCategory);
             
-            this.serviceCount = new Long(counts[0]);
-            this.serviceDownCount = new Long(counts[1]);
+		m_serviceCount = new Long(counts[0]);
+		m_serviceDownCount = new Long(counts[1]);
+
+		if (m_serviceCount.longValue() == 0) {
+		    m_servicePercentage = new Double(100.0);
+		} else {
+		    m_servicePercentage =
+			new Double(
+				   ((double)(m_serviceCount.longValue() -
+					     m_serviceDownCount.longValue()))/
+				   (double)m_serviceCount.longValue()*100.0);
+		}
+	    }
         }        
         
-        return this.serviceCount.longValue();
+        return m_serviceCount.longValue();
     }
 
 
-    /** Return the number of services that are currently down with this category. */
+    /**
+     * Return the number of services that are currently down with this
+     * category.
+     */
     public long getServiceDownCount() {
-        if( this.serviceCount == null ) {
-            long[] counts = getServiceCounts(this.rtcCategory);
-            
-            this.serviceCount = new Long(counts[0]);
-            this.serviceDownCount = new Long(counts[1]);
-        }        
+        if (m_serviceDownCount == null) {
+	    // This will initialize m_serviceDownCount
+	    getServiceCount();
+	}
         
-        return this.serviceDownCount.longValue();
+        return m_serviceDownCount.longValue();
     }
 
+
+    /**
+     * Return a percentage of the ratio of services that are up to all
+     * services in this category.
+     */
+    public double getServicePercentage() {
+        if (m_servicePercentage == null) {
+	    // This will initialize m_servicePercentage
+	    getServiceCount();
+	}
+        
+        return m_servicePercentage.doubleValue();
+    }
+
+
+    /** Returns the outage background color for this category. */
+    public String getOutageColor()
+	throws IOException, MarshalException, ValidationException {
+	if (m_lastUpdated == null) {
+	    return "lightblue";
+	} else {
+	    return CategoryUtil.getCategoryColor(this, getServicePercentage());
+	}
+    }
+
+
+    /** Returns the availability background color for this category. */
+    public String getAvailColor()
+	throws IOException, MarshalException, ValidationException {
+	if (m_lastUpdated == null) {
+	    return "lightblue";
+	} else {
+	    return CategoryUtil.getCategoryColor(this);
+	}
+    }
+
+
+    /** Returns the outage text for this category ("X of Y" nodes down). */
+    public String getOutageText() {
+	if (m_lastUpdated == null) {
+	    return "Calculating...";
+	} else {
+	    return getServiceDownCount() + " of " + getServiceCount();
+	}
+    }
+
+
+    /** Returns the availability text for this category ("XXX.XX%"). */
+    public String getAvailText() {
+	if (m_lastUpdated == null) {
+	    return "Calculating...";
+	} else {
+	    return CategoryUtil.valueFormat.format(getValue()) + "%";
+	}
+    }
+
+
+    /** Returns the category comment if there is one, otherwise, its name. */
+    public String getTitle() {
+	if (getComment() != null) {
+	    return getComment();
+	} else {
+	    return getName();
+	}
+    }
 
     /**
      * Returns an enumeration of the Castor-generated Node objects tied to
@@ -186,11 +305,12 @@ public class Category extends Object
      * <p>Note, LJK Dec 5,2001: I'm not really happy about exposing the Castor
      * objects this way.  We do it all over the place, but I've already started
      * hiding them in this particular case (the rtceui.xsd objects).  I'm not
-     * very pleased with this half approach.  I'd rather hide them completely or
-     * not at all, but I don't want to introduce a new pass-through object.</p>
+     * very pleased with this half approach.  I'd rather hide them completely
+     * or not at all, but I don't want to introduce a new pass-through
+     * object.</p>
      */
     public Enumeration enumerateNode() {
-        return this.rtcCategory.enumerateNode();
+        return m_rtcCategory.enumerateNode();
     }
 
     
@@ -198,8 +318,9 @@ public class Category extends Object
      * Convenience method to count the number of services under a category
      * and the number of those services that are currently down.
      */
-    protected static long[] getServiceCounts(org.opennms.netmgt.xml.rtc.Category category) {
-        if( category == null ) {
+    protected static long[]
+	getServiceCounts(org.opennms.netmgt.xml.rtc.Category category) {
+        if (category == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
@@ -208,8 +329,9 @@ public class Category extends Object
         
         Enumeration nodeEnum = category.enumerateNode();
         
-        while( nodeEnum.hasMoreElements() ) {
-            org.opennms.netmgt.xml.rtc.Node node = (org.opennms.netmgt.xml.rtc.Node)nodeEnum.nextElement();            
+        while (nodeEnum.hasMoreElements()) {
+            org.opennms.netmgt.xml.rtc.Node node =
+		(org.opennms.netmgt.xml.rtc.Node)nodeEnum.nextElement();
 
             count += node.getNodesvccount();
             downCount += node.getNodesvcdowncount();
@@ -217,5 +339,4 @@ public class Category extends Object
 
         return new long[] { count, downCount };        
     }
-    
 }
