@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2004 Nov 22: Fixed problem with notifications for threshold events on non-IP interfaces.
 // 2003 Aug 01: Created a proper JOIN for notifications. Bug #752
 // 2003 Jan 31: Added an ORDER BY clause. Bug #648
 // 2003 Jan 08: Allow notification where nodeid, interfaceid and/or serviceid are null.

@@ -1,5 +1,7 @@
 1.1.4 to 1.1.5
 ----------------------------------------------------------------------
+- Added a fix for notifications with an IP address of 0.0.0.0. 
+  Bug 1016. Thx Bill.
 - Added a null pointer fix for categories. Bug 1015. Thx Bill.
 - Added an event for Snort traps. Thx Deven
 - Added Netbotz events.

@@ -205,7 +205,7 @@ public abstract class NotificationManager {
     
                 // if there is no If with the event, there can be no service,
                 // thus check only if the node matches
-                if (eventIf == null) {
+                if (eventIf == null || eventIf.equals("0.0.0.0")) {
                     if (eventNode == notifNode) {
                         result = true;
                         break;

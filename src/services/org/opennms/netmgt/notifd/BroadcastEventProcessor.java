@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2004 Nov 22: Fixed problem with notifications for threshold events on non-IP interfaces.
 // 2004 Aug 26: Added the ability to trigger notifications on an event and a parameter.
 // 2003 Sep 30: Added a change to support SNMP Thresholding notices.
 // 2003 Jan 31: Cleaned up some unused imports.
@@ -237,7 +238,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         // can't check the database if any of these are null, so let the notice
         // continue
-        if (nodeID == null || ipAddr == null || service == null) {
+        if (nodeID == null || ipAddr == null || service == null || ipAddr.equals("0.0.0.0")) {
             ThreadCategory.getInstance(getClass()).debug("nodeID=" + nodeID + " ipAddr=" + ipAddr + " service=" + service + ". Not checking DB, allowing notice to continue.");
             return true;
         }
