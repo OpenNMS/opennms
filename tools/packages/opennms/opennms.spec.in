@@ -79,49 +79,56 @@ Requires:		rrdtool, perl-DBD-Pg, j2sdk >= 1.4, metamail, XFree86-libs
 %define	initdir		/etc/rc.d
 %define	psql		/usr/bin/psql
 %define psql_service	postgres
-Requires:		postgres >= 7.1
+Requires:		postgres >= 7.2
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-7"
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
-Requires:		postgresql-server >= 7.1
+Requires:		postgresql-server >= 7.2
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-8"
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
-Requires:		postgresql-server >= 7.1, libstdc++2.10
+Requires:		postgresql-server >= 7.2, libstdc++2.10
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-9"
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
-Requires:		postgresql-server >= 7.1, libstdc++2.10
+Requires:		postgresql-server >= 7.2, libstdc++2.10
 %endif
 
 %if "%{platform}" == "linux-i386-redhat-6"
 %define	initdir		/etc/rc.d
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
-Requires:		postgresql-server >= 7.1
+Requires:		postgresql-server >= 7.2
 %endif
 
 %if "%{platform}" == "linux-i386-redhat-7"
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
-Requires:		postgresql-server >= 7.1, compat-libstdc++
+Requires:		postgresql-server >= 7.2, compat-libstdc++
 %endif
 
 %if "%{platform}" == "linux-i386-redhat-8"
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
-Requires:		postgresql-server >= 7.1, compat-libstdc++
+Requires:		postgresql-server >= 7.2, compat-libstdc++
+%endif
+
+%if "%{platform}" == "linux-i386-redhat-9"
+%define	initdir		/etc
+%define	psql		/usr/bin/psql
+%define psql_service	postgresql
+Requires:		postgresql-server >= 7.2, compat-libstdc++
 %endif
 
 %define builddefines -Droot.install=%{instprefix} -Droot.install.sbindir=/usr/local/sbin -Droot.install.contrib=%{instprefix}/contrib -Droot.install.initdir=%{initdir}/init.d -Droot.install.servlets=%{tomcatdir}/webapps/%{name} -Droot.install.share=%{sharedir} -Droot.install.rrdtool=%{rrdlibdir} -Droot.install.postgresql=%{pglibdir} -Droot.install.logs=%{logdir} -Droot.install.pid=%{pidfile} -Dfilter.overwrite="yes" -Disrpm="true"
