@@ -401,6 +401,7 @@ public class Filter
 	{
 		SQLTranslation translation = new SQLTranslation(m_parseTree);
 		translation.addServiceToSelect();
+                translation.addNodeIDToSelect();
 		return translation.getStatement();
 	}
 	

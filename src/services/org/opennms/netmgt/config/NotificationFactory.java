@@ -210,6 +210,7 @@ public class NotificationFactory
 
 			// Get the Interface and Service from the Event
 
+			long eventNode = event.getNodeid();
 			String eventIf = (String)event.getInterface();
 			String eventSrv = (String)event.getService();
 
@@ -235,19 +236,26 @@ public class NotificationFactory
                         {
 				String notifIf = rows.getString(1);
 				String notifSrv = rows.getString(2);
+                                long notifNode = rows.getLong(3);
 
                        		// ThreadCategory.getInstance(getClass()).debug("Notification Notif Interface: " + notifIf + " Service: " + notifSrv);
 						
+                                // if there is no If with the event, there can be no service, thus check only if the node matches
 				if (eventIf == null)
 				{
-					result = true;
-					break;
+                                        if (eventNode == notifNode)
+                                        {
+                                                result = true;
+                                                break;
+                                        }
 				}
+                                // If there is no Srv with the event, check and see if the If matches
 				else if (eventSrv == null && eventIf.equals(notifIf))
 				{
 					result = true;
 					break;
 				}
+                                // Otherwise, insure that both the Srv and If match
 				else if (eventSrv.equals(notifSrv) && eventIf.equals(notifIf))
 				{
 					result = true;
