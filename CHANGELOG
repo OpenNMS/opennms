@@ -1,5 +1,6 @@
 1.1.4 to 1.1.5
 ----------------------------------------------------------------------
+- Added the event UEI to the event detail.
 - Added a test for the Dell OpenManage service, and if available,
   an OpenManage link will appear on the webUI node page.
 - Removed the cisco.pixcpu report as a duplicate of avgBsy5. Thx Alex

@@ -139,12 +139,11 @@
           <td><%=event.getAcknowledgeTime()!=null ? org.opennms.netmgt.EventConstants.formatToUIString(event.getAcknowledgeTime()) : "&nbsp"%></td>
         </tr>
         <tr>
-          <td colspan="2">&nbsp;</td>
           <td bgcolor="#999999"><b>Service</b></td>
           <td>
             <% if( event.getServiceName() != null ) { %>
               <% if( event.getIpAddress() != null && event.getNodeId() > 0 ) { %>
-                <a href="element/service.jsp?node=<%=event.getNodeId()%>&intf=<%=event.getIpAddress()%>&service=<%=event.getServiceId()%>"><%=event.getServiceName()%></a>              
+                <a href="element/service.jsp?node=<%=event.getNodeId()%>&intf=<%=event.getIpAddress()%>&service=<%=event.getServiceId()%>"><%=event.getServiceName()%></a>
               <% } else { %>
                 <%=event.getServiceName()%>
               <% } %>
@@ -152,7 +151,14 @@
               &nbsp;
             <% } %>
           </td>
-          <td colspan="2">&nbsp;</td>
+          </tr> 
+          <tr>
+          	<td bgcolor="#999999"><b>UEI</b></td>
+          	<% if( event.getUei() != null ) { %>
+          	      <td><%=event.getUei()%></td>
+          	<% } else {%>
+                	&nbsp;
+          	<% } %>
         </tr>
       </table>
 
