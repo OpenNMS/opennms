@@ -5,8 +5,8 @@ all              = [0 .. 0xffff];
 letter           = ['a' .. 'z'] | ['A' .. 'Z'];
 number           = ['0' .. '9'];
 white_space      = (' ' | 9 | 10 | 13)*;
-name_part        = letter (letter | number)*;
-name             = name_part ( '_' name_part)*;
+name_part        = (letter | number)*;
+name             = letter name_part ( '_' name_part)*;
 list             = (number* ',')* number*;
 range            = number* '-' number*;
 service_ident    = 'is' (name | (letter* '-' number*) );
@@ -35,7 +35,7 @@ star             = '*';
 octet_list       = list;
 octet_range      = range;
 octet_range_list = range ',' list;
-	 
+	
 Ignored Tokens
 blank;
 
