@@ -24,7 +24,7 @@
 %if "%{platform}" == "linux-i386-centos-3"
 %define	initdir		/etc
 %define psql_service	rhdb
-%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
+%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_centos3
 %endif
@@ -33,7 +33,7 @@
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
+%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_fc1
 %endif
@@ -41,7 +41,7 @@
 %if "%{platform}" == "linux-i386-fedora-2"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
+%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_fc2
 %endif
@@ -49,7 +49,7 @@
 %if "%{platform}" == "linux-i386-mandrake-7"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, metamail, j2sdk >= 1.4.2
+%define requires	postgresql-server >= 7.2, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk7
 %endif
@@ -57,7 +57,7 @@
 %if "%{platform}" == "linux-i386-mandrake-8"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, libstdc++2.10, metamail, j2sdk >= 1.4.2
+%define requires	postgresql-server >= 7.2, libstdc++2.10, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk8
 %endif
@@ -65,7 +65,7 @@
 %if "%{platform}" == "linux-i386-mandrake-90"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2, libstdc++2.10, metamail, j2sdk >= 1.4.2
+%define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2, libstdc++2.10, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk90
 %endif
@@ -73,7 +73,7 @@
 %if "%{platform}" == "linux-i386-mandrake-92"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2, libstdc++2.10, metamail, j2sdk >= 1.4.2
+%define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2, libstdc++2.10, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk92
 %endif
@@ -81,7 +81,7 @@
 %if "%{platform}" == "linux-i386-mandrake-10"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2, libstdc++2.10, metamail, j2sdk >= 1.4.2
+%define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2, libstdc++2.10, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk10
 %endif
@@ -89,7 +89,7 @@
 %if "%{platform}" == "linux-i386-redhat-7"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires        postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
+%define requires        postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_rhl7
 %endif
@@ -97,7 +97,7 @@
 %if "%{platform}" == "linux-i386-redhat-8"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
+%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_rhl8
 %endif
@@ -105,7 +105,7 @@
 %if "%{platform}" == "linux-i386-redhat-9"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
+%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_rhl9
 %endif
@@ -113,7 +113,7 @@
 %if "%{platform}" == "linux-i386-rhel-3"
 %define	initdir		/etc
 %define psql_service	rhdb
-%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
+%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_rhel3
 %endif
@@ -121,7 +121,7 @@
 %if "%{platform}" == "linux-i386-suse-7"
 %define	initdir		/etc/rc.d
 %define psql_service	postgres
-%define requires        postgres >= 7.2, metamail, java2 >= 1.4.2
+%define requires        postgres >= 7.2, java2 >= 1.4.2
 %define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %define release_pkg     %{release}_suse7
 %endif
@@ -130,7 +130,7 @@
 %define	initdir		/etc
 %define psql_service	postgresql
 %define tomcatdir	/opt/jakarta/tomcat
-%define requires	postgresql >= 7.2, postgresql-server >= 7.2, metamail, java2 >= 1.4.2
+%define requires	postgresql >= 7.2, postgresql-server >= 7.2, java2 >= 1.4.2
 %define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %define release_pkg     %{release}_suse8
 %endif
@@ -139,10 +139,13 @@
 %define	initdir		/etc
 %define psql_service	postgresql
 %define tomcatdir	/opt/jakarta/tomcat
-%define requires	postgresql >= 7.2, postgresql-server >= 7.2, metamail, java2 >= 1.4.2
+%define requires	postgresql >= 7.2, postgresql-server >= 7.2, java2 >= 1.4.2
 %define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %define release_pkg     %{release}_suse9
 %endif
+
+%define webappsdir	%{tomcatdir}/webapps
+%define servletdir	%{instprefix}/webapps/%{name}
 
 %if "%{buildtests}" == "true"
 %define buildtests	1
@@ -234,7 +237,8 @@ fi
 echo "=== RUNNING INSTALL ==="
 sh ./build.sh $COMPILER_FLAG -Dinstall.prefix=$RPM_BUILD_ROOT \
     -Dinstall.dir=%{instprefix} -Dinstall.init.dir=%{initdir}/init.d \
-    -Dinstall.servlet.dir=%{tomcatdir}/webapps/%{name} \
+    -Dinstall.webapps.dir=%{webappsdir} \
+    -Dinstall.servlet.dir=%{servletdir} \
     -Dinstall.share.dir=%{sharedir} -Dinstall.postgresql.dir=%{pglibdir} \
     -Dinstall.postgresql.service=%{psql_service} \
     -Dinstall.logs.dir=%{logdir} -Dinstall.pid.file=%{pidfile} \
@@ -295,11 +299,15 @@ for jar in $jars; do
 	    $RPM_BUILD_ROOT%{tomcatdir}/server/lib/$jar
 done
 
+mkdir -p $RPM_BUILD_ROOT%{servletdir}/WEB-INF/classes
+ln -sf %{instprefix}/etc/log4j.properties $RPM_BUILD_ROOT%{servletdir}/WEB-INF/classes
+
 pushd $RPM_BUILD_ROOT
 find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
     sort > %{_tmppath}/files.etc
-find $RPM_BUILD_ROOT%{tomcatdir}/webapps/%{name} ! -type d | \
+
+(find $RPM_BUILD_ROOT%{webappsdir} ! -type d ; find $RPM_BUILD_ROOT%{servletdir} ! -type d ) | \
     sed -e "s,^$RPM_BUILD_ROOT,," | grep -v '/WEB-INF/web.xml' | \
     sort > %{_tmppath}/files.webapp
 popd
@@ -337,7 +345,7 @@ rm -rf $RPM_BUILD_ROOT
 %files webapp -f %{_tmppath}/files.webapp
 %defattr(644 root root 755)
 %{tomcatdir}/server
-%config %{tomcatdir}/webapps/%{name}/WEB-INF/web.xml
+%config %{servletdir}/WEB-INF/web.xml
 
 %post
 
@@ -438,15 +446,12 @@ echo "done"
 %post webapp
 
 echo -e "- executing the installer for the webapp... \c"
-%{instprefix}/bin/install -r -S %{tomcatdir}/conf/server.xml \
-    >> %{logdir}/install.log 2>&1
-if [ $? -ne 0 ]; then
-    echo "Error running installer, see %{logdir}/install.log for details." >&2
-    exit 1
-fi
 echo "done"
 
 %changelog
+* Tue Sep 28 2004 Matt Brozowski <brozow@opennms.org>
+- Modified to use opennms.xml rather than changes to server.xml
+
 * Fri Nov 16 2001 Ben Reed <ben@opennms.org>
 - Updated symlinks to point to tomcat 4.0.1 dirs
 

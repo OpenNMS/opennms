@@ -1,5 +1,5 @@
 
-<Context path="/opennms" docBase="opennms"
+<Context path="/opennms" docBase="@install.servlet.dir@"
         debug="0" reloadable="true">
 
   <Logger className="org.opennms.web.log.Log4JLogger" homeDir="@install.dir@" />
