@@ -75,7 +75,6 @@
 #endif
 
 #include <jni.h>
-#include <jni_md.h>
 
 #if defined(__DARWIN__)
 typedef int32_t socklen_t;

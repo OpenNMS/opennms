@@ -60,8 +60,8 @@ fi
 if [ "$VERBOSE" = "1" ]; then
 	DEFINES="$DEFINES -verbose"
 	echo $JAVA_HOME/bin/java $DEFINES -Dant.home=devlib -Droot.source="$PREFIX" -cp "devlib/ant-launcher.jar" \
-		-mx256m org.apache.tools.ant.launch.Launcher "$@"
+		-mx256m org.apache.tools.ant.launch.Launcher $ANT_OPTS "$@"
 fi
 
 $JAVA_HOME/bin/java $DEFINES -Dant.home=devlib -Droot.source="$PREFIX" -cp "devlib/ant-launcher.jar" \
-	-mx256m org.apache.tools.ant.launch.Launcher "$@"
+	-mx256m org.apache.tools.ant.launch.Launcher $ANT_OPTS "$@"

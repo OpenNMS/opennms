@@ -34,7 +34,6 @@ your distribution.
  <property name="build.jicmp.dir" value="${build.dir}/jicmp"/>
  <property name="build.jrrd.dir" value="${build.dir}/jrrd"/>
  <property name="build.postgresql.dir" value="${build.dir}/postgresql"/>
- <property name="build.java.include.dir" value="/usr/lib/jvm/java-1.4.2-sun-1.4.2.03/include/linux"/>
  <property name="build.postgresql.include.dir" value="/usr/include/pgsql"/>
  <property name="build.postgresql.lib.dir" value="/usr/lib/pgsql"/>
 
@@ -143,6 +142,9 @@ your distribution.
   <!-- set filters -->
   <filter filtersfile="${root.source}/build.properties" />
   <filter token="install.log.dir" value="${root.install.logs}"/>
+  <filter token="opennms.version" value="${product.version}"/>
+  <filter token="opennms.release" value="${product.release}"/>
+  <filter token="opennms.snapshot" value="${product.snapshot}"/>
   <filter token="opennms.version.string" value="${opennms.version.string}"/>
   <filter token="opennms.release.string" value="${opennms.release.string}"/>
   <filter token="root.install.perl" value="${root.install.perl}"/>
@@ -1292,7 +1294,6 @@ OpenNMS as part of the post-install.
       </compiler>
       <linker name="gcc"/>
       <fileset dir="${build.jicmp.dir}" includes="IcmpSocket.c"/>
-      <includepath path="${build.java.include.dir}"/>
     </cc>
   </target>
 
@@ -1313,7 +1314,6 @@ OpenNMS as part of the post-install.
       </compiler>
       <linker name="gcc"/>
       <fileset dir="${build.jrrd.dir}" includes="rrd_jinterface.c"/>
-      <includepath path="${build.java.include.dir}"/>
     </cc>
   </target>
 
