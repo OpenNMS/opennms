@@ -398,6 +398,11 @@ else
 	echo "done"
 fi
 
+echo ""
+echo " *** Installation complete.  You must still run the installer and"
+echo " *** make a few other changes before you start OpenNMS.  See the"
+echo " *** install guide and release notes for details."
+
 %changelog
 * Thu Jan 20 2005 DJ Gregor <dj@opennms.org>
 - Remove much of the automatic bits that were performed at
