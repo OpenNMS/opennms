@@ -1,8 +1,0 @@
-2001-08-09  Norman Walsh <nwalsh@users.sourceforge.net>
-
-	* Makefile: Use saxon and docbook.xsl
-
-2001-07-31  Jirka Kosek <kosek@users.sourceforge.net>
-
-	* .cvsignore, Makefile: New file.
-
