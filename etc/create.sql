@@ -669,7 +669,7 @@ create table usersNotified (
         notifyID        integer not null,
         notifyTime      timestamp,
         media           varchar(32),
-        contactinfo     varchar(32)
+        contactinfo     varchar(64)
         );
 
 --########################################################################
