@@ -42,16 +42,19 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class PollOutage {
     
-    Event m_lostEvent;
-    Date m_lostDate;
-    Event m_regainEvent;
-    Date m_regainDate;
+    private Event m_lostEvent;
+    private Date m_lostDate;
+    private Event m_regainEvent;
+    private Date m_regainDate;
+    private PollableElement m_element;
 
     /**
+     * @param element
      * @param e
      * @param date
      */
-    public PollOutage(Event lostEvent, Date lostDate) {
+    public PollOutage(PollableElement element, Event lostEvent, Date lostDate) {
+        m_element = element;
         m_lostEvent = lostEvent;
         m_lostDate = lostDate;
     }
@@ -65,5 +68,42 @@ public class PollOutage {
         m_regainDate = regainDate;
     }
 
+    /**
+     * 
+     */
+    public void open() {
+        
+    }
 
+
+    public PollableElement getElement() {
+        return m_element;
+    }
+    public void setElement(PollableElement element) {
+        m_element = element;
+    }
+    public Date getLostDate() {
+        return m_lostDate;
+    }
+    public void setLostDate(Date lostDate) {
+        m_lostDate = lostDate;
+    }
+    public Event getLostEvent() {
+        return m_lostEvent;
+    }
+    public void setLostEvent(Event lostEvent) {
+        m_lostEvent = lostEvent;
+    }
+    public Date getRegainDate() {
+        return m_regainDate;
+    }
+    public void setRegainDate(Date regainDate) {
+        m_regainDate = regainDate;
+    }
+    public Event getRegainEvent() {
+        return m_regainEvent;
+    }
+    public void setRegainEvent(Event regainEvent) {
+        m_regainEvent = regainEvent;
+    }
 }

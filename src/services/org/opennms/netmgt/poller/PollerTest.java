@@ -212,7 +212,6 @@ public class PollerTest extends TestCase {
     }
 
     private void resetAnticipated() {
-        // expect node lost service for HTTP
         m_anticipator.reset();
         m_outageAnticipator.reset();
     }

@@ -145,7 +145,6 @@ abstract public class PollableElement {
      * @param e
      */
     protected void createOutage(Event e, Date date) {
-        m_outage = new PollOutage(e, date);
         resetStatusChanged();
     }
 
@@ -153,7 +152,6 @@ abstract public class PollableElement {
      * @param e
      */
     protected void resolveOutage(Event e, Date date) {
-        m_outage.resolve(e, date);
         resetStatusChanged();
     }
     
@@ -184,6 +182,14 @@ abstract public class PollableElement {
         if (getStatus().isDown())
             createOutage(getContext().sendEvent(createDownEvent(date)), date);
         
+    }
+
+    protected void setOutage(PollOutage outage) {
+        m_outage = outage;
+    }
+
+    protected PollOutage getOutage() {
+        return m_outage;
     }
 
 }

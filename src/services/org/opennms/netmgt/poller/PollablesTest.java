@@ -39,7 +39,6 @@ import java.util.Properties;
 import junit.framework.TestCase;
 
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockElement;
@@ -52,6 +51,7 @@ import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
+import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -89,6 +89,7 @@ public class PollablesTest extends TestCase {
     private PollableInterface pDot3;
     private PollableService pDot3Http;
     private PollableService pDot3Icmp;
+    private OutageAnticipator m_outageAnticipator;
     
 
     public static void main(String[] args) {
@@ -113,11 +114,10 @@ public class PollablesTest extends TestCase {
             return PollStatus.getPollStatus(m_monitor.poll(svc.getNetInterface(), m_properties, m_package));
         }
     }
-    private static class MockPollContext implements PollContext {
+    private class MockPollContext implements PollContext {
         private String m_critSvcName;
         private boolean m_nodeProcessingEnabled;
         private boolean m_pollingAllIfCritServiceUndefined;
-        private EventIpcManager m_eventMgr;
 
         public String getCriticalServiceName() {
             return m_critSvcName;
@@ -143,12 +143,20 @@ public class PollablesTest extends TestCase {
             m_eventMgr.sendNow(event);
             return event;
         }
-        public void sentEventMgr(EventIpcManager eventMgr) {
-            m_eventMgr = eventMgr;
-        }
-        
+
         public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date) {
             return MockUtil.createEvent("Test", uei, nodeId, (address == null ? null : address.getHostAddress()), svcName);
+        }
+        public void openOutage(PollableService pSvc, Event svcLostEvent) {
+            MockService mSvc = m_mockNetwork.getService(pSvc.getNodeId(), pSvc.getIpAddr(), pSvc.getSvcName());
+            MockUtil.println("Opening Outage for "+mSvc);
+            m_db.createOutage(mSvc, svcLostEvent);
+
+        }
+        public void resolveOutage(PollableService pSvc, Event svcRegainEvent) {
+            MockService mSvc = m_mockNetwork.getService(pSvc.getNodeId(), pSvc.getIpAddr(), pSvc.getSvcName());
+            MockUtil.println("Resolving Outage for "+mSvc);
+            m_db.resolveOutage(mSvc, svcRegainEvent);
         }
     }
     
@@ -188,12 +196,13 @@ public class PollablesTest extends TestCase {
         m_db.populate(m_mockNetwork);
         
         m_anticipator = new EventAnticipator();
+        m_outageAnticipator = new OutageAnticipator(m_db);
+
         
         m_eventMgr = new MockEventIpcManager();
         m_eventMgr.setEventWriter(m_db);
         m_eventMgr.setEventAnticipator(m_anticipator);
-        
-        m_pollContext.sentEventMgr(m_eventMgr);
+        m_eventMgr.addEventListener(m_outageAnticipator);
 
         m_network = new PollableNetwork(m_pollContext);
         m_network.createService(1, InetAddress.getByName("192.168.1.1"), "ICMP");
@@ -252,6 +261,7 @@ public class PollablesTest extends TestCase {
      */
     protected void tearDown() throws Exception {
         super.tearDown();
+        m_db.drop();
     }
     
     public void testCreateNode() {
@@ -786,6 +796,16 @@ public class PollablesTest extends TestCase {
         m_network.processStatusChange(new Date());
         
         verifyAnticipated();
+        
+        anticipateUp(mDot1Smtp);
+        
+        mDot1Smtp.bringUp();
+        
+        pDot1Smtp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
 
     }
 
@@ -811,10 +831,69 @@ public class PollablesTest extends TestCase {
         m_network.processStatusChange(new Date());
         
         verifyAnticipated();
+        
+        anticipateUp(mDot1);
+        anticipateDown(mDot1Smtp);
+        
+        mDot1.bringUp();
+        mDot1Smtp.bringDown();
+        
+        pDot1Icmp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
 
     }
     
-    public void xtestIndependentOutageEvents() throws Exception {
+    public void testSvcOutage() {
+        
+        anticipateDown(mDot1Smtp);
+        
+        mDot1Smtp.bringDown();
+        
+        pDot1Smtp.doPoll();
+        
+        pDot1Smtp.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        anticipateUp(mDot1Smtp);
+
+        mDot1Smtp.bringUp();
+        
+        pDot1Smtp.doPoll();
+
+        pDot1Smtp.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+    }
+    
+    public void testIfOutage() {
+        anticipateDown(mDot1);
+        
+        mDot1.bringDown();
+        
+        pDot1Smtp.doPoll();
+        
+        pDot1.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        anticipateUp(mDot1);
+        
+        mDot1.bringUp();
+        
+        pDot1Icmp.doPoll();
+        
+        pDot1.processStatusChange(new Date());
+        
+        verifyAnticipated();
+    }
+    
+    // TODO: make this work
+    public void xxtestIndependentOutageEvents() throws Exception {
         anticipateDown(mDot1Smtp);
         
         mDot1Smtp.bringDown();
@@ -835,8 +914,8 @@ public class PollablesTest extends TestCase {
         
         verifyAnticipated();
         
-        anticipateUp(mNode1);
         anticipateUp(mDot1Smtp);
+        anticipateUp(mNode1);
         
         mNode1.bringUp();
         
@@ -858,6 +937,19 @@ public class PollablesTest extends TestCase {
         MockUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
         assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
 
+        assertEquals("Wrong number of outages opened", m_outageAnticipator.getExpectedOpens(), m_outageAnticipator.getActualOpens());
+        assertEquals("Wrong number of outages in outage table", m_outageAnticipator.getExpectedOutages(), m_outageAnticipator.getActualOutages());
+        assertTrue("Created outages don't match the expected outages", m_outageAnticipator.checkAnticipated());
+        
+        resetAnticipated();
+    }
+
+    /**
+     * 
+     */
+    private void resetAnticipated() {
+        m_anticipator.reset();
+        m_outageAnticipator.reset();
     }
 
     /**
@@ -866,6 +958,7 @@ public class PollablesTest extends TestCase {
     private void anticipateUp(MockElement element) {
         Event event = element.createUpEvent();
         m_anticipator.anticipateEvent(event);
+        m_outageAnticipator.anticipateOutageClosed(element, event);
     }
 
     /**
@@ -874,6 +967,7 @@ public class PollablesTest extends TestCase {
     private void anticipateDown(MockElement element) {
         Event event = element.createDownEvent();
         m_anticipator.anticipateEvent(event);
+        m_outageAnticipator.anticipateOutageOpened(element, event);
     }
 
     private void assertPoll(MockService svc) {

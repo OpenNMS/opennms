@@ -378,6 +378,22 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
         
     }
     
+    public void resolveOutage(MockService svc, Event svcRegainEvent) {
+        
+        
+        Object[] values = {
+                new Integer(svcRegainEvent.getDbid()),           // svcLostEventId
+                convertEventTimeToTimeStamp(svcRegainEvent.getTime()), // ifLostService
+                new Integer(svc.getNodeId()), // nodeId
+                svc.getIpAddr(),                // ipAddr
+                new Integer(svc.getId()),       // serviceID
+               };
+        
+        update("UPDATE outages set svcRegainedEventID=?, ifRegainedService=? where (nodeid = ? AND ipAddr = ? AND serviceID = ? and (ifRegainedService IS NULL))", values);
+    }
+    
+
+    
     public Timestamp convertEventTimeToTimeStamp(String time) {
         try {
             Date date = EventConstants.parseToDate(time);

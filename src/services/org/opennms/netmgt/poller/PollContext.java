@@ -71,4 +71,14 @@ public interface PollContext {
      */
     public Event createEvent(String node_lost_service_event_uei, int nodeId, InetAddress address, String svcName, Date date);
 
+    /**
+     * @param outage
+     */
+    public void openOutage(PollableService pSvc, Event svcLostEvent);
+
+    /**
+     * @param outage
+     */
+    public void resolveOutage(PollableService pSvc, Event svcRegainEvent);
+
 }

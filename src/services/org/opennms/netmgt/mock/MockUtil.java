@@ -250,6 +250,5 @@ public class MockUtil {
         if (MockUtil.printEnabled())
             System.err.println(string);
     }
-    
 
 }

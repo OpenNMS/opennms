@@ -38,6 +38,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.opennms.netmgt.xml.event.Event;
+
 /**
  * Represents a PollableContainer 
  *
@@ -252,5 +254,26 @@ abstract public class PollableContainer extends PollableElement {
         super.processLingeringStatusChanges(date);
         if (getStatus().isUp())
             processMemberLingeringStatusChanges(date);
+    }
+ 
+    protected void createOutage(final Event e, final Date date) {
+        Iter iter = new Iter() {
+            public void forEachElement(PollableElement member) {
+                member.createOutage(e, date);
+            }
+            
+        };
+        forEachMember(iter);
+        super.createOutage(e, date);
+    }
+    protected void resolveOutage(final Event e, final Date date) {
+        Iter iter = new Iter() {
+            public void forEachElement(PollableElement member) {
+                member.resolveOutage(e, date);
+            }
+            
+        };
+        forEachMember(iter);
+        super.resolveOutage(e, date);
     }
 }
