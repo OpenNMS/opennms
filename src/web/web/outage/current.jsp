@@ -60,7 +60,7 @@
 
 <% String breadcrumb1 = "<a href='outage/index.jsp'>Outages</a>"; %>
 <% String breadcrumb2 = "Current By Node"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
   <jsp:param name="title" value="Current Outages" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
@@ -195,7 +195,7 @@
 
 <br>
 
-<jsp:include page="/includes/footer.jsp" flush="false" >
+<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" >
   <jsp:param name="location" value="outages" />
 </jsp:include>
 

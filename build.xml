@@ -1305,14 +1305,6 @@ OpenNMS as part of the post-install.
 	  verbose="${compiler.verbose}"
 	  deprecation="${compiler.deprecation}">
      <src path="${build.dir}/jsp-source"/>
-     <include name="**/*.java"/>
-     <exclude name="KSC/include_init1_jsp.java"/>
-     <exclude name="KSC/include_init2_jsp.java"/>
-     <exclude name="KSC/include_nodereport_jsp.java"/>
-     <exclude name="KSC/include_rrd_jsp.java"/>
-     <exclude name="admin/eventconf/**"/>
-     <exclude name="admin/notification/assignNotices_jsp.java"/>
-     <exclude name="errors/errorpage_jsp.java"/>
      <classpath>
        <path refid="jsp.compile.path"/>
      </classpath>

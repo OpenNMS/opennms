@@ -243,7 +243,7 @@ String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>";
 String breadcrumb2 = "Configure Pollers";
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
   <jsp:param name="title" value="Add New Custom Poller" />
   <jsp:param name="location" value="Poller Config" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
@@ -301,7 +301,7 @@ String breadcrumb2 = "Configure Pollers";
 </table>
 </form>
 <br />
-<jsp:include page="/includes/footer.jsp" flush="true" >
+<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="true" >
   <jsp:param name="location" value="Poller Config" />
 </jsp:include>
 </body>

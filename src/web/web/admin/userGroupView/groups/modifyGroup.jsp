@@ -226,7 +226,7 @@
 <% String breadcrumb2 = "<a href='admin/userGroupView/index.jsp'>Users and Groups</a>"; %>
 <% String breadcrumb3 = "<a href='admin/userGroupView/groups/list.jsp'>Group List</a>"; %>
 <% String breadcrumb4 = "Modify Group"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
   <jsp:param name="title" value="Modify Group" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
@@ -400,7 +400,7 @@
   
 <br>
 
-<jsp:include page="/includes/footer.jsp" flush="false" >
+<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" >
 </jsp:include>
 
 <script language="JavaScript">

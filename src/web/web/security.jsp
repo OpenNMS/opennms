@@ -44,7 +44,7 @@
 </head>
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
   <jsp:param name="title" value="Security" />
   <jsp:param name="location" value="security" />
 </jsp:include>
@@ -55,7 +55,7 @@
                                      
 <br>
 
-<jsp:include page="/includes/footer.jsp" flush="false" >
+<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" >
   <jsp:param name="location" value="security" />
 </jsp:include>
 

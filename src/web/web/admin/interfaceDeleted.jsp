@@ -78,7 +78,7 @@
 <% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
 <% String breadcrumb3 = "<a href='element/interface.jsp?node=" + nodeId + "&intf=" + ipAddr  + "'>Interface</a>"; %>
 <% String breadcrumb4 = "Interface Deleted"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
   <jsp:param name="title" value="Interface Deleted" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
@@ -105,7 +105,7 @@
 </table>
 
 <br>
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" />
 
 </body>
 </html>

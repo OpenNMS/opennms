@@ -71,7 +71,7 @@
    request.getSession().setAttribute("docgen", docgen);
 %>
 <% if(fullscreen.equals("n")) { %>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
   <jsp:param name="title" value="Display Map" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
@@ -107,7 +107,7 @@
 <br />
 
 <% if(fullscreen.equals("n")) { %>
-    <jsp:include page="/includes/footer.jsp" flush="false" />
+    <jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" />
 <% } %>
 
   </body>

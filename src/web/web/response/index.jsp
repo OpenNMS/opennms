@@ -127,7 +127,7 @@
 
 <% String breadcrumb1 = "<a href='report/index.jsp'>Reports</a>"; %>
 <% String breadcrumb2 = "Response Time"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
   <jsp:param name="title" value="Response Time" />
   <jsp:param name="location" value="response" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
@@ -197,7 +197,7 @@
 
 <br>
 
-<jsp:include page="/includes/footer.jsp" flush="false" >
+<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" >
   <jsp:param name="location" value="response" />
 </jsp:include>
 

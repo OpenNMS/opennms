@@ -50,7 +50,7 @@
 <body marginwidth="0" marginheight="0" leftmargin="0" rightmargin="0" topmargin="0">
 
 <% String breadcrumb1 = "Outages"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
   <jsp:param name="title" value="Outages" />
   <jsp:param name="location" value="outages" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />  
@@ -97,7 +97,7 @@
                                      
 <br />
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" />
 
 </body>
 </html>

@@ -38,8 +38,8 @@
 
 <%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.*,org.opennms.web.performance.*,org.opennms.netmgt.config.kscReports.*,org.opennms.netmgt.config.KSC_PerformanceReportFactory" %>
 
-<%@ include file="include_init2.jsp" %>
-<%@ include file="include_nodereport.jsp" %>
+<%@ include file="/WEB-INF/jspf/KSC/init2.jspf" %>
+<%@ include file="/WEB-INF/jspf/KSC/nodereport.jspf" %>
 
 <%
     // Get Form Variables

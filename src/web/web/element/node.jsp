@@ -200,7 +200,7 @@
 
 <% String breadcrumb1 = "<a href='element/index.jsp'>Search</a>"; %>
 <% String breadcrumb2 = "Node"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
   <jsp:param name="title" value="Node" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
@@ -273,7 +273,7 @@
             <br>
             
             <!-- Availability box -->
-            <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
+            <jsp:include page="/WEB-INF/jspf/nodeAvailability-box.jspf" flush="false" />
             <br>
             
             <!-- node desktop information box -->
@@ -347,7 +347,7 @@
             <% String eventHeader = "<a href='event/list?filter=" + URLEncoder.encode("node=" + nodeId) + "'>Recent Events</a>"; %>
             <% String moreEventsUrl = "event/list?filter=" + URLEncoder.encode("node=" + nodeId); %>
 
-            <jsp:include page="/includes/eventlist.jsp" flush="false" >
+            <jsp:include page="/WEB-INF/jspf/eventlist.jspf" flush="false" >
               <jsp:param name="node" value="<%=nodeId%>" />
               <jsp:param name="throttle" value="5" />
               <jsp:param name="header" value="<%=eventHeader%>" />
@@ -356,7 +356,7 @@
             <br>
             
             <!-- Recent outages box -->
-            <jsp:include page="/includes/nodeOutages-box.jsp" flush="false" />
+            <jsp:include page="/WEB-INF/jspf/nodeOutages-box.jspf" flush="false" />
          </td>
        </tr>
      </table>
@@ -367,7 +367,7 @@
 
 <br>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" />
 
 </body>
 </html>

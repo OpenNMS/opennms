@@ -39,8 +39,8 @@
 <%@page language="java" contentType="text/html" session="true" import="java.util.*,java.io.*,org.opennms.web.performance.*,org.opennms.web.*,org.opennms.web.graph.*,java.io.File,org.opennms.netmgt.config.kscReports.*,org.opennms.netmgt.config.KSC_PerformanceReportFactory,org.opennms.web.element.NetworkElementFactory" %>
 
 
-<%@ include file="include_init2.jsp" %>
-<%@ include file="include_rrd.jsp" %>
+<%@ include file="/WEB-INF/jspf/KSC/init2.jspf" %>
+<%@ include file="/WEB-INF/jspf/KSC/rrd.jspf" %>
 
 <%
     //required parameter node
@@ -115,7 +115,7 @@
 
 <% String breadcrumb1 = "<a href='report/index.jsp'>Reports</a>"; %>
 <% String breadcrumb2 = "KSC Reports"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
   <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
   <jsp:param name="location" value="KSC Reports" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
@@ -286,7 +286,7 @@
                                          
 <br>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" />
 
 </body>
 </html>

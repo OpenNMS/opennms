@@ -38,7 +38,7 @@
 
 <%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.Util,org.opennms.web.performance.*,org.opennms.netmgt.config.kscReports.*,org.opennms.netmgt.config.KSC_PerformanceReportFactory" %>
 
-<%@ include file="include_init2.jsp" %>
+<%@ include file="/WEB-INF/jspf/KSC/init2.jspf" %>
 
 <%
     PerformanceModel.QueryableNode[] nodes = this.model.getQueryableNodes();
@@ -150,7 +150,7 @@
 
 <% String breadcrumb1 = "<a href='report/index.jsp'>Reports</a>"; %>
 <% String breadcrumb2 = "KSC and Node Reports"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
   <jsp:param name="title" value="Key SNMP Customized Performance Reports and Node Reports" />
   <jsp:param name="location" value="KSC and Node Reports" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
@@ -221,7 +221,7 @@
 
 </table>
 <br>
-<jsp:include page="/includes/footer.jsp" flush="false" >
+<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" >
   <jsp:param name="location" value="KSC and Node Reports" />
 </jsp:include>
 

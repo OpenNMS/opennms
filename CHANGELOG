@@ -1,8 +1,19 @@
 1.2.X to 1.3.0
 ----------------------------------------------------------------------
+- Remove the excludes for the compilation of JSP code from Java source to
+  class files.  Anything ending in '.jsp' is now compiled.  The following
+  two cleanups below made this possible.
+- Reorganize the filesystem layout of the webapp to fit the Sun JSP code
+  conventions.  Nothing in the actual files was changed, except for
+  pathnames that pointed at files which ave moved.  Reference:
+  http://java.sun.com/developer/technicalArticles/javaserverpages/\
+	code_convention/
+- Remove the eventconf editor from the webapp as it didn't compile.
+  Opened up enhancement bug #1212 suggesting that this be resurrected
+  and fixed at some point.
 - Add enhanced oncall-schedules to users.xsd and UserManager
-- Modify java code and build to use new castor-0.9.6 rather than the older version. 
-  New version depends on commons-logging.jar. 
+- Modify java code and build to use new castor-0.9.6 rather than the older
+  version.  New version depends on commons-logging.jar. 
 - Added commons-logging.jar to build in lib.
 - Chage the build to castorbuilder.properties is passed correctly.  properties
   target of task fails to properly set it.

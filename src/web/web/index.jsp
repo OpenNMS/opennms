@@ -48,7 +48,7 @@
 </head>
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
   <jsp:param name="title" value="Web Console" />
 </jsp:include>
 
@@ -62,7 +62,7 @@
     <!-- Column 1 of Body -->  
     <td width="25%" valign="top" >
       <!-- Services down box -->
-      <jsp:include page="/includes/servicesdown-box.jsp" flush="false" />
+      <jsp:include page="/WEB-INF/jspf/servicesdown-box.jspf" flush="false" />
     </td>
     
     <td>&nbsp;</td>
@@ -70,7 +70,7 @@
     <!-- Middle Column -->
     <td valign="top">
       <!-- category box(es) -->    
-      <jsp:include page="/includes/categories-box.jsp" flush="false" />                
+      <jsp:include page="/WEB-INF/jspf/categories-box.jspf" flush="false" />                
 
       <!--desktop query box -->  
     </td>
@@ -80,29 +80,29 @@
     <!-- Column 3 of Body -->  
     <td width="25%" valign="top" >
       <!-- notification box -->    
-      <jsp:include page="/includes/notification-box.jsp" flush="false" />    
+      <jsp:include page="/WEB-INF/jspf/notification-box.jspf" flush="false" />    
             
       <br>
       
       <!-- Performance box -->    
-      <jsp:include page="/includes/performance-box.jsp" flush="false" />
+      <jsp:include page="/WEB-INF/jspf/performance-box.jspf" flush="false" />
 
         <br>
       
       <!-- Response Time box -->    
-      <jsp:include page="/includes/response-box.jsp" flush="false" />
+      <jsp:include page="/WEB-INF/jspf/response-box.jspf" flush="false" />
 
         <br>
       
       <!-- KSC Reports box -->    
-      <jsp:include page="/includes/ksc-box.jsp" flush="false" />
+      <jsp:include page="/WEB-INF/jspf/ksc-box.jspf" flush="false" />
 
         <br>
 
         <!-- security box -->    
       <%--
         Commenting out the security box include until it is functional
-        <jsp:include page="/includes/security-box.jsp" flush="false" />
+        <jsp:include page="/WEB-INF/jspf/security-box.jspf" flush="false" />
       --%>
     </td>
     
@@ -111,7 +111,7 @@
 </table>
 <br>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" />
 
 </body>
 </html>

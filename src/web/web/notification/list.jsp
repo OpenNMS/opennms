@@ -105,7 +105,7 @@
 
 <% String breadcrumb1 = "<a href='notification/index.jsp'>Notification</a>"; %>
 <% String breadcrumb2 = "List"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
   <jsp:param name="title" value="Notifications Listing" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
@@ -182,7 +182,7 @@
 </table>
 <br>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" />
 
 </body>
 </html>

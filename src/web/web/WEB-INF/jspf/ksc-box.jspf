@@ -49,7 +49,7 @@
 
 <%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.Util,org.opennms.web.performance.*,org.opennms.netmgt.config.kscReports.*,org.opennms.netmgt.config.KSC_PerformanceReportFactory" %>
 
-<%@ include file="../KSC/include_init2.jsp" %>
+<%@ include file="/WEB-INF/jspf/KSC/init2.jspf" %>
 
 <%
     PerformanceModel.QueryableNode[] nodes = this.model.getQueryableNodes();

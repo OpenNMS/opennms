@@ -88,7 +88,7 @@
 
 <% String breadcrumb1 = "<a href='outage/index.jsp' title='Outages System Page'>Outages</a>"; %>
 <% String breadcrumb2 = "List"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
   <jsp:param name="title" value="Outage List" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
@@ -115,7 +115,7 @@
           
             <% if( outageCount > 0 ) { %>
               <% String baseUrl = OutageUtil.makeLink(request, parms); %>
-              <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
+              <jsp:include page="/WEB-INF/jspf/resultsIndex.jspf" flush="false" >
                 <jsp:param name="count"    value="<%=outageCount%>" />
                 <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
                 <jsp:param name="limit"    value="<%=parms.limit%>"      />
@@ -254,8 +254,8 @@
 
 <br>
 
-<jsp:include page="/includes/bookmark.jsp" flush="false" />
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/WEB-INF/jspf/bookmark.jspf" flush="false" />
+<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" />
 
 </body>
 </html>

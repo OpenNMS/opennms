@@ -109,7 +109,7 @@
 
 <% String breadcrumb1 = "<a href='rtc/index.jsp'>SLM</a>"; %>
 <% String breadcrumb2 = "Category"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
   <jsp:param name="title" value="Category Service Level Monitoring" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
@@ -175,7 +175,7 @@
 </table>
 <br>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" />
 
 </body>
 </html>
