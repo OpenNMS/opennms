@@ -31,67 +31,20 @@
 //
 package org.opennms.netmgt.poller;
 
-import org.opennms.netmgt.xml.event.Event;
-
 /**
- * Represents a network element in the Poller
+ * Represents an aggregate network element such as an interface containing svcs or
+ * a node containing interfaces
  * @author brozow
- *
  */
-abstract public class PollableElement {
+abstract public class PollableAggregate extends PollableElement {
 
     /**
-     * last known/current status of the node
+     * @param status
      */
-    private PollStatus m_status;
-    /**
-     * Indicates if the service changed status as the result of most recent
-     * poll.
-     * 
-     * Set by poll() method.
-     */
-    private boolean m_statusChanged;
-
-    /**
-     * @return Returns the status.
-     */
-    public PollStatus getStatus() {
-        return m_status;
+    public PollableAggregate(PollStatus status) {
+        super(status);
     }
 
-    /**
-     * @param status The status to set.
-     */
-    protected void setStatus(PollStatus status) {
-        m_status = status;
-    }
-
-    public PollableElement(PollStatus status) {
-        m_status = status;
-        m_statusChanged = false;
-    }
-    
     abstract Poller getPoller();
-
-    public void setStatusChanged() {
-        setStatusChanged(true);
-    }
-
-    public void resetStatusChanged() {
-        setStatusChanged(false);
-    }
-
-    public boolean statusChanged() {
-        return m_statusChanged;
-    }
-
-    public int sendEvent(Event e) {
-        getPoller().getEventManager().sendNow(e);
-        return e.getDbid();
-    }
-
-    protected void setStatusChanged(boolean statusChangedFlag) {
-        m_statusChanged = statusChangedFlag;
-    }
 
 }

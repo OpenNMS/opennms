@@ -53,8 +53,6 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -81,14 +79,6 @@ final class PollableService extends PollableElement {
      * SnmpMonitor.SERVICE_UNRESPONSIVE.
      */
     private boolean m_unresponsive;
-
-    /**
-     * Indicates if the service changed status as the result of most recent
-     * poll.
-     * 
-     * Set by poll() method.
-     */
-    private boolean m_statusChangedFlag;
 
     /**
      * When the last status change occured.
@@ -126,7 +116,7 @@ final class PollableService extends PollableElement {
      *            The package with the polling information
      * 
      */
-    PollableService(PollableInterface pInterface, String svcName, Package pkg, PollStatus status, Date svcLostDate) {
+    PollableService(PollableInterface pInterface, ServiceConfig svcConfig, PollStatus status, Date svcLostDate) {
         super(status);
         m_pInterface = pInterface;
         m_netInterface = new IPv4NetworkInterface(pInterface.getAddress());
@@ -134,13 +124,12 @@ final class PollableService extends PollableElement {
 
         m_pollableServices = getPoller().getPollableServiceList();
 
-        ServiceConfig svcConfig = new ServiceConfig(getPoller(), pkg, svcName);
         m_schedule = new Schedule(this, svcConfig);
         m_schedule.setLastPoll(0L);
 
         // Set status change values.
         setStatusChangeTime(0L);
-        resetStatusChanged();
+
         if (getStatus() == PollStatus.STATUS_DOWN) {
             if (svcLostDate == null)
                 throw new IllegalArgumentException("The svcLostDate parm cannot be null if status is UNAVAILABLE!");
@@ -156,24 +145,6 @@ final class PollableService extends PollableElement {
      */
     public String getServiceName() {
         return m_schedule.getServiceName();
-    }
-
-    /**
-     * Returns true if status of service changed as a result of the last poll.
-     * 
-     * WARNING: value of m_statusChangedFlag is only reliable immediately
-     * following a call to poll()
-     */
-    public boolean statusChanged() {
-        return m_statusChangedFlag;
-    }
-
-    public void resetStatusChanged() {
-        m_statusChangedFlag = false;
-    }
-    
-    public void setStatusChanged() {
-        m_statusChangedFlag = true;
     }
 
     public void updateStatus(PollStatus status) {
@@ -322,7 +293,7 @@ final class PollableService extends PollableElement {
         // Send the event
         //
         try {
-            getEventManager().sendNow(event);
+            sendEvent(event);
             if (log.isDebugEnabled()) {
                 log.debug("Sent event " + uei + " for " + this);
             }
@@ -333,13 +304,6 @@ final class PollableService extends PollableElement {
 
     public InetAddress getAddress() {
         return getInterface().getAddress();
-    }
-
-    /**
-     * @return
-     */
-    private EventIpcManager getEventManager() {
-        return getPoller().getEventManager();
     }
 
     /**
@@ -643,6 +607,29 @@ final class PollableService extends PollableElement {
         }
         
         
+    }
+
+    /**
+     * 
+     */
+    public void schedule() {
+        m_schedule.schedulePoll();
+    }
+
+    /**
+     * @param date
+     * @return
+     */
+    public Event createDownEvent(Date date) {
+        return getPoller().createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getServiceName(), date);
+    }
+
+    /**
+     * @param date
+     * @return
+     */
+    public Event createUpEvent(Date date) {
+        return getPoller().createEvent(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getServiceName(), date);
     }
 
 }

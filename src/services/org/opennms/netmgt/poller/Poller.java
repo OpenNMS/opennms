@@ -39,6 +39,7 @@
 package org.opennms.netmgt.poller;
 
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.Date;
@@ -53,15 +54,20 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
 
 public final class Poller implements PausableFiber {
-    final static String LOG4J_CATEGORY = "OpenNMS.Pollers";
+    final static String LOG4J_CATEGORY = "OpenNMS.Poller";
 
     private final static Poller m_singleton = new Poller();
 
@@ -96,6 +102,8 @@ public final class Poller implements PausableFiber {
     private boolean m_initialized = false;
 
     private DbConnectionFactory m_dbConnectionFactory;
+
+    public static final String EVENT_SOURCE = "OpenNMS.Poller";
 
     public Poller() {
         m_scheduler = null;
@@ -332,60 +340,59 @@ public final class Poller implements PausableFiber {
     public void scheduleService(int nodeId, String ipAddr, String svcName) {
         Category log = ThreadCategory.getInstance();
 
-        // Compare interface/service pair against each poller
-        // package
-        // For each match, create new PollableService object and
-        // schedule it for polling.
-        //
+        /*
+         * Find the last package configured for this service and schedule it
+         */
+        Package pkg = null;
         Enumeration epkgs = getPollerConfig().enumeratePackage();
         while (epkgs.hasMoreElements()) {
-            Package pkg = (org.opennms.netmgt.config.poller.Package) epkgs.nextElement();
+            Package spkg = (org.opennms.netmgt.config.poller.Package) epkgs.nextElement();
 
             // Make certain the the current service and ipaddress are in the
             // package and enabled!
             //
-            if (!packageIncludesIfAndSvc(pkg, ipAddr, svcName))
-                continue;
+            if (packageIncludesIfAndSvc(spkg, ipAddr, svcName))
+                pkg = spkg;
+        }
 
+        if (pkg == null) return;
+
+        //
+        // getServiceLostDate() method will return the date
+        // a service was lost if the service was last known to be
+        // unavailable or will return null if the service was last known to
+        // be available...based on outage information on the 'outages'
+        // table.
+        Date svcLostDate = getQueryMgr().getServiceLostDate(nodeId, ipAddr, svcName, getServiceIdByName(svcName));
+        PollStatus lastKnownStatus = (svcLostDate == null ? PollStatus.STATUS_UP : PollStatus.STATUS_DOWN);
+        
+        // Criteria checks have all been padded...update
+        // Node Outage
+        // Hierarchy and create new service for polling
+        //
+        try {
+            ServiceConfig svcConfig = new ServiceConfig(this, pkg, svcName);
+            PollableService pSvc = m_network.createPollableService(nodeId, ipAddr, svcConfig, lastKnownStatus, svcLostDate);
+            
+            // Initialize the service monitor with the pollable service
             //
-            // getServiceLostDate() method will return the date
-            // a service was lost if the service was last known to be
-            // unavailable or will return null if the service was last known to
-            // be available...based on outage information on the 'outages'
-            // table.
-            Date svcLostDate = getQueryMgr().getServiceLostDate(nodeId, ipAddr, svcName, getServiceIdByName(svcName));
-            PollStatus lastKnownStatus = (svcLostDate == null ? PollStatus.STATUS_UP : PollStatus.STATUS_DOWN);
-
-            // Criteria checks have all been padded...update
-            // Node Outage
-            // Hierarchy and create new service for polling
+            ServiceMonitor monitor = getServiceMonitor(svcName);
+            pSvc.initializeMonitor(monitor);
+            
+            // Schedule the service
             //
-            try {
-                PollableService pSvc = m_network.createPollableService(nodeId, ipAddr, svcName, pkg, lastKnownStatus, svcLostDate);
-
-                // Initialize the service monitor with the pollable service
-                //
-                ServiceMonitor monitor = getServiceMonitor(svcName);
-                pSvc.initializeMonitor(monitor);
-
-                // Schedule the service
-                //
-                Schedule schedule = pSvc.getSchedule();
-                schedule.schedulePoll();
-                
-                // schedule = pSvc.createSchedule(new ServiceConfig(pkg, svcName));
-
-            } catch (UnknownHostException ex) {
-                log.error("scheduleService: Failed to schedule interface " + ipAddr + " for service monitor " + svcName + ", illegal address", ex);
-            } catch (InterruptedException ie) {
-                log.error("scheduleService: Failed to schedule interface " + ipAddr + " for service monitor " + svcName + ", thread interrupted", ie);
-            } catch (RuntimeException rE) {
-                log.warn("scheduleService: Unable to schedule " + ipAddr + " for service monitor " + svcName + ", reason: " + rE.getMessage());
-            } catch (Throwable t) {
-                log.error("scheduleService: Uncaught exception, failed to schedule interface " + ipAddr + " for service monitor " + svcName, t);
-            }
-        } // end while more packages exist
-
+            pSvc.schedule();
+            
+        } catch (UnknownHostException ex) {
+            log.error("scheduleService: Failed to schedule interface " + ipAddr + " for service monitor " + svcName + ", illegal address", ex);
+        } catch (InterruptedException ie) {
+            log.error("scheduleService: Failed to schedule interface " + ipAddr + " for service monitor " + svcName + ", thread interrupted", ie);
+        } catch (RuntimeException rE) {
+            log.warn("scheduleService: Unable to schedule " + ipAddr + " for service monitor " + svcName + ", reason: " + rE.getMessage());
+        } catch (Throwable t) {
+            log.error("scheduleService: Uncaught exception, failed to schedule interface " + ipAddr + " for service monitor " + svcName, t);
+        }
+        
     }
 
     public boolean packageIncludesIfAndSvc(Package pkg, String ipAddr, String svcName) {
@@ -483,6 +490,69 @@ public final class Poller implements PausableFiber {
      */
     public void setDbConnectionFactory(DbConnectionFactory dbConnectionFactory) {
         m_dbConnectionFactory = dbConnectionFactory;
+    }
+
+    public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, java.util.Date date) {
+        Category log = ThreadCategory.getInstance(PollableNode.class);
+    
+        if (log.isDebugEnabled())
+            log.debug("createEvent: uei = " + uei + " nodeid = " + nodeId);
+    
+        // create the event to be sent
+        Event newEvent = new Event();
+        newEvent.setUei(uei);
+        newEvent.setSource(Poller.EVENT_SOURCE);
+        newEvent.setNodeid((long) nodeId);
+        if (address != null)
+            newEvent.setInterface(address.getHostAddress());
+    
+        if (svcName != null)
+            newEvent.setService(svcName);
+    
+        try {
+            newEvent.setHost(InetAddress.getLocalHost().getHostName());
+        } catch (UnknownHostException uhE) {
+            newEvent.setHost("unresolved.host");
+            log.warn("Failed to resolve local hostname", uhE);
+        }
+    
+        // Set event time
+        newEvent.setTime(EventConstants.formatToString(date));
+    
+        // For node level events (nodeUp/nodeDown) retrieve the
+        // node's nodeLabel value and add it as a parm
+        if (uei.equals(EventConstants.NODE_UP_EVENT_UEI) || uei.equals(EventConstants.NODE_DOWN_EVENT_UEI)) {
+            String nodeLabel = null;
+            try {
+                nodeLabel = getQueryMgr().getNodeLabel(nodeId);
+            } catch (SQLException sqlE) {
+                // Log a warning
+                log.warn("Failed to retrieve node label for nodeid " + nodeId, sqlE);
+            }
+    
+            if (nodeLabel == null) {
+                // This should never happen but if it does just
+                // use nodeId for the nodeLabel so that the
+                // event description has something to display.
+                nodeLabel = String.valueOf(nodeId);
+            }
+    
+            // Add appropriate parms
+            Parms eventParms = new Parms();
+    
+            // Add nodelabel parm
+            Parm eventParm = new Parm();
+            eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
+            Value parmValue = new Value();
+            parmValue.setContent(nodeLabel);
+            eventParm.setValue(parmValue);
+            eventParms.addParm(eventParm);
+    
+            // Add Parms to the event
+            newEvent.setParms(eventParms);
+        }
+    
+        return newEvent;
     }
 
 }

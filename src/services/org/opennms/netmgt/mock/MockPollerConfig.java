@@ -78,7 +78,7 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
         m_currentPkg.addDowntime(downtime);
     }
 
-    public void addScheduledOutage(String outageName, long begin, long end, String ipAddr) {
+    public void addScheduledOutage(Package pkg, String outageName, long begin, long end, String ipAddr) {
         Outage outage = new Outage();
         outage.setName(outageName);
 
@@ -95,8 +95,12 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
 
         m_outages.add(outage);
 
-        m_currentPkg.addOutageCalendar(outageName);
+        pkg.addOutageCalendar(outageName);
 
+    }
+    
+    public void addScheduledOutage(String outageName, long begin, long end, String ipAddr) {
+        addScheduledOutage(m_currentPkg, outageName, begin, end, ipAddr);
     }
     
     public void addService(String name, ServiceMonitor monitor) {
@@ -108,11 +112,18 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
         service.setName(name);
         service.setInterval(interval);
         m_currentPkg.addService(service);
-        m_svcMonitors.put(name, monitor);
+        addServiceMonitor(name, monitor);
     }
     
+    private void addServiceMonitor(String name, ServiceMonitor monitor) {
+        if (!hasServiceMonitor(name))
+            m_svcMonitors.put(name, monitor);
+    }
+
     public void addService(MockService svc) {
         addService(svc.getName(), m_defaultPollInterval, new MockMonitor(svc.getNetwork(), svc.getName()));
+       m_currentPkg.addSpecific(svc.getIpAddr());
+        
     }
 
     public void clearDowntime() {
@@ -197,12 +208,18 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
      * @param svcName
      * @return
      */
-    public boolean hasService(String svcName) {
+    public boolean hasServiceMonitor(String svcName) {
         return getServiceMonitor(svcName) != null;
     }
 
     public boolean interfaceInPackage(String iface, Package pkg) {
-        return true;
+        Enumeration en = pkg.enumerateSpecific();
+        while (en.hasMoreElements()) {
+            String ipAddr = (String)en.nextElement();
+            if (ipAddr.equals(iface))
+                return true;
+        }
+        return false;
     }
 
     public boolean isCurTimeInOutage(String outName) {
@@ -270,8 +287,13 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
     }
 
     public boolean serviceInPackageAndEnabled(String svcName, Package pkg) {
-        // TODO Auto-generated method stub
-        return true;
+        Enumeration en = pkg.enumerateService();
+        while(en.hasMoreElements()) {
+            Service svc = (Service)en.nextElement();
+            if (svc.getName().equals(svcName))
+                return true;
+        }
+        return false;
     }
 
     public boolean serviceMonitored(String svcName) {
@@ -315,8 +337,7 @@ public class MockPollerConfig implements PollerConfig, PollOutagesConfig {
     public void populatePackage(final MockNetwork network) {
         MockVisitor populator = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
-                if (!hasService(svc.getName()))
-                    addService(svc.getName(), new MockMonitor(network, svc.getName()));
+                addService(svc);
             }
         };
         network.visit(populator);

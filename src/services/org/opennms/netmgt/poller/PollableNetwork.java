@@ -43,12 +43,11 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.poller.Package;
 
 /**
  * Represents a collection of nodes each with interfaces and services
  */
-public class PollableNetwork {
+public class PollableNetwork extends PollableAggregate {
 
     private Poller m_poller;
 
@@ -60,6 +59,7 @@ public class PollableNetwork {
     private List m_pollableServices;
 
     public PollableNetwork(Poller poller) {
+        super(PollStatus.STATUS_UP);
         m_poller = poller;
         m_pollableNodes = Collections.synchronizedMap(new HashMap());
         m_pollableServices = Collections.synchronizedList(new ArrayList());
@@ -119,6 +119,10 @@ public class PollableNetwork {
             }
         }
     }
+    
+    public Poller getPoller() {
+        return m_poller;
+    }
 
     class DumpVisitor implements PollableVisitor {
         
@@ -156,7 +160,7 @@ public class PollableNetwork {
         visitNode(node, dumper);
     }
 
-    public PollableService createPollableService(int nodeId, String ipAddr, String svcName, Package pkg, PollStatus lastKnownStatus, Date svcLostDate) throws InterruptedException, UnknownHostException {
+    public PollableService createPollableService(int nodeId, String ipAddr, ServiceConfig svcConfig, PollStatus lastKnownStatus, Date svcLostDate) throws InterruptedException, UnknownHostException {
         Category log = ThreadCategory.getInstance();
         PollableService pSvc;
         PollableNode pNode = null;
@@ -195,7 +199,7 @@ public class PollableNetwork {
             // this node, interface,
             // service and package pairing
             //
-            pSvc = new PollableService(pInterface, svcName, pkg, lastKnownStatus, svcLostDate);
+            pSvc = new PollableService(pInterface, svcConfig, lastKnownStatus, svcLostDate);
 
             // Add the service to the PollableInterface
             // object

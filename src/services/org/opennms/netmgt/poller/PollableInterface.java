@@ -40,6 +40,7 @@ package org.opennms.netmgt.poller;
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -47,8 +48,10 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * <P>
@@ -59,7 +62,7 @@ import org.opennms.netmgt.scheduler.Scheduler;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-public class PollableInterface extends PollableElement {
+public class PollableInterface extends PollableAggregate {
     /**
      * node that this interface belongs to
      */
@@ -74,11 +77,6 @@ public class PollableInterface extends PollableElement {
      * Map of 'PollableService' objects keyed by service name
      */
     private Map m_services;
-
-    /**
-     * Set by poll() method.
-     */
-    private boolean m_statusChangedFlag;
 
     /**
      * Reference to the poller scheduler
@@ -100,7 +98,6 @@ public class PollableInterface extends PollableElement {
         m_services = Collections.synchronizedMap(new HashMap());
         m_scheduler = getPoller().getScheduler();
         m_pollableServices = getPoller().getPollableServiceList();
-        m_statusChangedFlag = false;
     }
 
     /**
@@ -173,12 +170,8 @@ public class PollableInterface extends PollableElement {
             return false;
     }
 
-    public boolean statusChanged() {
-        return m_statusChangedFlag;
-    }
-
     public synchronized void resetStatusChanged() {
-        m_statusChangedFlag = false;
+        super.resetStatusChanged();
 
         // Iterate over service list and reset each services's
         // status changed flag
@@ -253,7 +246,7 @@ public class PollableInterface extends PollableElement {
     public synchronized PollStatus poll(PollableService pSvc) {
         Category log = ThreadCategory.getInstance(getClass());
 
-        m_statusChangedFlag = false;
+        setStatusChanged(false);
 
         PollStatus svcStatus = PollStatus.STATUS_UNKNOWN;
 
@@ -301,43 +294,16 @@ public class PollableInterface extends PollableElement {
                     // services on this interface
                     //
                     setStatus(PollStatus.STATUS_UP);
-                    m_statusChangedFlag = true;
+                    setStatusChanged(true);
 
-                    Iterator iter = m_services.values().iterator();
-                    while (iter.hasNext()) {
-                        PollableService svc = (PollableService) iter.next();
-
-                        // Skip critical service since already polled
-                        if (svc == criticalSvc)
-                            continue;
-
-                        // Poll the service
-                        PollStatus tmpStatus = svc.poll();
-
-                        // If status of non-critical service changes to UP
-                        // then create PollableServiceProxy object and
-                        // reschedule the proxy service at the
-                        // appropriate interval
-                        //
-                        // PollableServiceProxy is a lightweight object which
-                        // encapsulates the PollableService object and allows us
-                        // to reschedule the service to be polled at the
-                        // appropriate
-                        // interval until the scheduler schedules the
-                        // PollableService
-                        // object and it is updated with an interval based on
-                        // its new status.
-                        if (tmpStatus == PollStatus.STATUS_UP) {
-                            svc.adjustSchedule();
-                        }
-                    }
+                    pollRemainingServicesAdjustingSchedule(criticalSvc);
 
                     // Iterate over pollable services list, poll
                     // any remaining services which match this node/interface
                     // combination, and then reschedule them via the
                     // PollableServiceProxy.
                     synchronized (m_pollableServices) {
-                        iter = m_pollableServices.iterator();
+                        Iterator iter = m_pollableServices.iterator();
                         while (iter.hasNext()) {
                             PollableService tmp = (PollableService) iter.next();
                             InetAddress addr = (InetAddress) tmp.getAddress();
@@ -360,21 +326,13 @@ public class PollableInterface extends PollableElement {
                 if (svcStatus == PollStatus.STATUS_UP && pSvc.statusChanged()) {
                     // Mark interface as up
                     setStatus(PollStatus.STATUS_UP);
-                    m_statusChangedFlag = true;
+                    setStatusChanged(true);
 
                     // Check flag which controls whether all services
                     // are polled if no critical service is defined
                     if (pollAllServices) {
                         // Poll all remaining services on the interface
-                        Iterator iter = m_services.values().iterator();
-
-                        while (iter.hasNext()) {
-                            PollableService svc = (PollableService) iter.next();
-                            // Skip service that was just polled
-                            if (svc == pSvc)
-                                continue;
-                            svc.poll();
-                        }
+                        pollRemainingServices(pSvc);
                     }
                 }
             }
@@ -389,7 +347,7 @@ public class PollableInterface extends PollableElement {
                 // the interface mark it as down
                 if (m_services.size() == 1) {
                     setStatus(PollStatus.STATUS_DOWN);
-                    m_statusChangedFlag = true;
+                    setStatusChanged(true);
                 }
                 // else if Critical service defined and supported by interface
                 // (regardless of pkg)
@@ -409,7 +367,7 @@ public class PollableInterface extends PollableElement {
                         if (log.isDebugEnabled())
                             log.debug("poll: critical svc DOWN, interface is down!");
                         setStatus(PollStatus.STATUS_DOWN);
-                        m_statusChangedFlag = true;
+                        setStatusChanged(true);
                     } else {
                         if (log.isDebugEnabled())
                             log.debug("poll: critical svc UP, interface still up!");
@@ -422,23 +380,11 @@ public class PollableInterface extends PollableElement {
                     if (pollAllServices) {
                         // Poll all remaining services on the interface
                         // If all services are DOWN then mark the interface DOWN
-                        boolean allSvcDown = true;
-                        Iterator iter = m_services.values().iterator();
-
-                        while (iter.hasNext()) {
-                            PollableService tmpSvc = (PollableService) iter.next();
-                            // Skip service that was already polled
-                            if (tmpSvc == pSvc)
-                                continue;
-                            PollStatus tmpStatus = tmpSvc.poll();
-                            if (tmpStatus == PollStatus.STATUS_UP) {
-                                allSvcDown = false;
-                            }
-                        }
+                        boolean allSvcDown = pollRemainingServicesWithStatus(pSvc);
 
                         if (allSvcDown) {
                             setStatus(PollStatus.STATUS_DOWN);
-                            m_statusChangedFlag = true;
+                            setStatusChanged(true);
                         }
                     }
                 }
@@ -448,6 +394,64 @@ public class PollableInterface extends PollableElement {
         if (log.isDebugEnabled())
             log.debug("poll: poll of interface " + m_address.getHostAddress() + " completed, status= " + getStatus());
         return getStatus();
+    }
+
+    private void pollRemainingServicesAdjustingSchedule(PollableService pSvc) {
+        Iterator iter = m_services.values().iterator();
+        while (iter.hasNext()) {
+            PollableService svc = (PollableService) iter.next();
+
+            // Skip critical service since already polled
+            if (svc == pSvc)
+                continue;
+
+            // Poll the service
+            PollStatus tmpStatus = svc.poll();
+
+            // If status of non-critical service changes to UP
+            // then create PollableServiceProxy object and
+            // reschedule the proxy service at the
+            // appropriate interval
+            //
+            // PollableServiceProxy is a lightweight object which
+            // encapsulates the PollableService object and allows us
+            // to reschedule the service to be polled at the
+            // appropriate
+            // interval until the scheduler schedules the
+            // PollableService
+            // object and it is updated with an interval based on
+            // its new status.
+            if (tmpStatus == PollStatus.STATUS_UP) {
+                svc.adjustSchedule();
+            }
+        }
+    }
+
+    private boolean pollRemainingServicesWithStatus(PollableService pSvc) {
+        boolean allSvcDown = true;
+        Iterator iter = m_services.values().iterator();
+        while (iter.hasNext()) {
+            PollableService tmpSvc = (PollableService) iter.next();
+            // Skip service that was already polled
+            if (tmpSvc == pSvc)
+                continue;
+            PollStatus tmpStatus = tmpSvc.poll();
+            if (tmpStatus == PollStatus.STATUS_UP) {
+                allSvcDown = false;
+            }
+        }
+        return allSvcDown;
+    }
+
+    private void pollRemainingServices(PollableService pSvc) {
+        Iterator iter = m_services.values().iterator();
+        while (iter.hasNext()) {
+            PollableService svc = (PollableService) iter.next();
+            // Skip service that was just polled
+            if (svc == pSvc)
+                continue;
+            svc.poll();
+        }
     }
 
     /**
@@ -469,6 +473,30 @@ public class PollableInterface extends PollableElement {
      */
     public void setNode(PollableNode newPNode) {
         m_node = newPNode;
+    }
+
+    /**
+     * @return
+     */
+    public int getNodeId() {
+        return getNode().getNodeId();
+    }
+
+    /**
+     * @param date
+     * @param node
+     * @return
+     */
+    public Event createDownEvent(Date date) {
+        return getPoller().createEvent(EventConstants.INTERFACE_DOWN_EVENT_UEI, getNodeId(), getAddress(), null, date);
+    }
+
+    /**
+     * @param date
+     * @return
+     */
+    public Event createUpEvent(Date date) {
+        return getPoller().createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, getNodeId(), getAddress(), null, date);
     }
 
 }

@@ -33,9 +33,13 @@ package org.opennms.netmgt.mock;
 //
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
+import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -48,6 +52,8 @@ import org.opennms.netmgt.xml.event.Event;
 public class MockService extends MockElement {
 
     private int m_pollCount;
+    
+    private Set m_pollingPkgNames = new HashSet();
 
     private int m_pollStatus;
 
@@ -122,6 +128,10 @@ public class MockService extends MockElement {
     public int getPollCount() {
         return m_pollCount;
     }
+    
+    public Set getPollingPackages() {
+        return Collections.unmodifiableSet(m_pollingPkgNames);
+    }
 
     // test
     public int getPollStatus() {
@@ -129,9 +139,10 @@ public class MockService extends MockElement {
     }
 
     // test
-    public int poll() {
+    public int poll(Package pkg) {
         m_pollCount++;
-
+        m_pollingPkgNames.add(pkg.getName());
+        
         Iterator it = m_triggers.iterator();
         while (it.hasNext()) {
             PollAnticipator trigger = (PollAnticipator) it.next();

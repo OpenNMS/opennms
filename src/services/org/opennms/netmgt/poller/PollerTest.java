@@ -109,6 +109,10 @@ public class PollerTest extends TestCase {
         m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
         m_pollerConfig.setDefaultPollInterval(1000L);
         m_pollerConfig.populatePackage(m_network);
+        m_pollerConfig.addPackage("TestPkg2");
+        m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
+        m_pollerConfig.setDefaultPollInterval(2000L);
+        m_pollerConfig.addService(m_network.getService(2, "192.168.1.3", "HTTP"));
         
         m_anticipator = new EventAnticipator();
         m_outageAnticipator = new OutageAnticipator(m_db);
@@ -220,7 +224,7 @@ public class PollerTest extends TestCase {
 
         bringDownCritSvcs(node);
 
-        verifyAnticipated(2000);
+        verifyAnticipated(8000);
     }
     
     // what about scheduled outages?
@@ -228,13 +232,14 @@ public class PollerTest extends TestCase {
         long start = System.currentTimeMillis();
 
         MockInterface iface = m_network.getInterface(1, "192.168.1.2");
-        m_pollerConfig.addScheduledOutage("TestOutage", start, start + 5000, iface.getIpAddr());
-
+        m_pollerConfig.addScheduledOutage(m_pollerConfig.getPackage("TestPackage"), "TestOutage", start, start + 5000, iface.getIpAddr());
+        MockUtil.println("Begin Outage");
         startDaemons();
 
         long now = System.currentTimeMillis();
         sleep(3000 - (now - start));
 
+        MockUtil.println("End Outage");
         assertEquals(0, iface.getPollCount());
 
         sleep(5000);
@@ -244,27 +249,6 @@ public class PollerTest extends TestCase {
 
     }
     
-    // test to ensure we change poll schedule on down and up
-    public void xtestDowntimeModel() {
-        long start = System.currentTimeMillis();
-        
-        m_pollerConfig.clearDowntime();
-
-        MockService svc = m_network.getService(1, "192.168.1.2", "SMTP");
-
-        startDaemons();
-
-        long now = System.currentTimeMillis();
-        sleep(3000 - (now - start));
-
-        assertEquals(0, svc.getPollCount());
-
-        sleep(5000);
-
-        assertTrue(0 < svc.getPollCount());
-        
-    }
-
     // Test harness that tests any type of node, interface or element.
     private void testElementDeleted(MockElement element, Event deleteEvent) {
         m_pollerConfig.setNodeOutageProcessingEnabled(false);
@@ -449,7 +433,7 @@ public class PollerTest extends TestCase {
         element.bringDown();
         MockUtil.println("Finished bringing down element: "+element);
         
-        verifyAnticipated(2000);
+        verifyAnticipated(5000);
         
         sleep(2000);
         
@@ -490,6 +474,16 @@ public class PollerTest extends TestCase {
         // wait for the polls to occur while its up... 1 poll per second plus
         // overhead
         assertEquals(0, anticipator.waitForAnticipated(4000L).size());
+        
+        // ensure that the 192.168.1.3/HTTP service is only polled by TestPkg2
+        MockService svc = m_network.getService(2, "192.168.1.3", "HTTP");
+        assertEquals(1, svc.getPollingPackages().size());
+        assertEquals("TestPkg2", svc.getPollingPackages().iterator().next());
+        
+        // ensure that another service has the TestPackage package
+        MockService svc2 = m_network.getService(1, "192.168.1.2", "SMTP");
+        assertEquals(1, svc2.getPollingPackages().size());
+        assertEquals("TestPackage", svc2.getPollingPackages().iterator().next());
 
 
     }

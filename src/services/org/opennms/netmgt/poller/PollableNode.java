@@ -37,11 +37,9 @@
 
 package org.opennms.netmgt.poller;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -50,13 +48,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Events;
-import org.opennms.netmgt.xml.event.Log;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 
 /**
  * <P>
@@ -69,16 +61,11 @@ import org.opennms.netmgt.xml.event.Value;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-public class PollableNode extends PollableElement {
+public class PollableNode extends PollableAggregate {
     /**
      * nodeId
      */
     private int m_nodeId;
-
-    /**
-     * Set by poll() method.
-     */
-    private boolean m_statusChangedFlag;
 
     /**
      * Map of 'PollableInterface' objects keyed by IP address
@@ -93,8 +80,6 @@ public class PollableNode extends PollableElement {
     private boolean m_isLocked;
 
     private boolean m_isDeleted;
-
-    private static final String EVENT_SOURCE = "OpenNMS.Poller";
 
     private Poller m_poller;
 
@@ -111,7 +96,7 @@ public class PollableNode extends PollableElement {
         m_lock = new Object();
         m_isLocked = false;
 
-        m_statusChangedFlag = false;
+        setStatusChanged(false);
 
         m_isDeleted = false;
     }
@@ -131,7 +116,7 @@ public class PollableNode extends PollableElement {
         this.recalculateStatus();
         PollStatus newStatus = getStatus();
         if (oldStatus != newStatus)
-            m_statusChangedFlag = true;
+            setStatusChanged(true);
     }
 
     public synchronized void deleteAllInterfaces() {
@@ -148,16 +133,12 @@ public class PollableNode extends PollableElement {
         this.recalculateStatus();
         PollStatus newStatus = getStatus();
         if (oldStatus != newStatus)
-            m_statusChangedFlag = true;
+            setStatusChanged(true);
         
     }
 
-    public boolean statusChanged() {
-        return m_statusChangedFlag;
-    }
-
     public synchronized void resetStatusChanged() {
-        m_statusChangedFlag = false;
+        super.resetStatusChanged();
 
         // Iterate over interface list and reset each interface's
         // status changed flag
@@ -255,20 +236,15 @@ public class PollableNode extends PollableElement {
     public void generateEvents() {
         Category log = ThreadCategory.getInstance(getClass());
 
-        Events events = new Events();
-
         // Create date object which will serve as the source
         // for the time on all generated events
-        java.util.Date date = new java.util.Date();
+        Date date = new java.util.Date();
 
-        if (m_statusChangedFlag && getStatus() == PollStatus.STATUS_DOWN) {
-            // create nodeDown event and add it to the event list
-            events.addEvent(createEvent(EventConstants.NODE_DOWN_EVENT_UEI, null, null, date));
-
+        if (statusChanged() && getStatus() == PollStatus.STATUS_DOWN) {
+            sendEvent(createDownEvent(date));
             resetStatusChanged();
-        } else if (m_statusChangedFlag && getStatus() == PollStatus.STATUS_UP) {
-            // send nodeUp event
-            events.addEvent(createEvent(EventConstants.NODE_UP_EVENT_UEI, null, null, date));
+        } else if (statusChanged() && getStatus() == PollStatus.STATUS_UP) {
+            sendEvent(createUpEvent(date));
             resetStatusChanged();
 
             // iterate over the node's interfaces
@@ -283,192 +259,66 @@ public class PollableNode extends PollableElement {
             while (i.hasNext()) {
                 PollableInterface pIf = (PollableInterface) i.next();
                 if (pIf.getStatus() == PollStatus.STATUS_DOWN) {
-                    events.addEvent(createEvent(EventConstants.INTERFACE_DOWN_EVENT_UEI, pIf.getAddress(), null, date));
+                    sendEvent(pIf.createDownEvent(date));
                     pIf.resetStatusChanged();
                 } else if (pIf.getStatus() == PollStatus.STATUS_UP) {
-                    Iterator s = pIf.getServices().iterator();
-                    while (s.hasNext()) {
-                        PollableService pSvc = (PollableService) s.next();
-                        if (pSvc.getStatus() == PollStatus.STATUS_DOWN) {
-                            events.addEvent(createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, pIf.getAddress(), pSvc.getServiceName(), date));
-                            pSvc.resetStatusChanged();
-                        }
-                    }
+                    sendEventsForDownServices(pIf, date);
                 }
             }
         } else if (getStatus() == PollStatus.STATUS_UP) {
-            // iterate over the node's interfaces
-            // if status of interface changed to DOWN
-            // generate interfaceDown event
-            // else if status of interface changed to UP
-            // generate interfaceUp event
-            // iterate over interface's services
-            // if status of service is DOWN
-            // generate serviceDown event
-            // else
-            // iterate over interface's services
-            // if status of service changed to UP
-            // generate serviceUp event
-            // else if status of service changed to DOWN
-            // generate serviceDown event
             //
             Iterator i = m_interfaces.values().iterator();
             while (i.hasNext()) {
                 PollableInterface pIf = (PollableInterface) i.next();
                 if (pIf.statusChanged() && pIf.getStatus() == PollStatus.STATUS_DOWN) {
-                    events.addEvent(createEvent(EventConstants.INTERFACE_DOWN_EVENT_UEI, pIf.getAddress(), null, date));
+                    sendEvent(pIf.createDownEvent(date));
                     pIf.resetStatusChanged();
                 } else if (pIf.statusChanged() && pIf.getStatus() == PollStatus.STATUS_UP) {
-                    events.addEvent(createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, pIf.getAddress(), null, date));
+                    sendEvent(pIf.createUpEvent(date));
                     pIf.resetStatusChanged();
 
-                    Iterator s = pIf.getServices().iterator();
-                    while (s.hasNext()) {
-                        PollableService pSvc = (PollableService) s.next();
-                        if (pSvc.getStatus() == PollStatus.STATUS_DOWN) {
-                            events.addEvent(createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, pIf.getAddress(), pSvc.getServiceName(), date));
-                            pSvc.resetStatusChanged();
-                        }
-                    }
+                    sendEventsForDownServices(pIf, date);
                 } else {
-                    Iterator s = pIf.getServices().iterator();
-                    while (s.hasNext()) {
-                        PollableService pSvc = (PollableService) s.next();
-                        if (pSvc.statusChanged() && pSvc.getStatus() == PollStatus.STATUS_DOWN) {
-                            events.addEvent(createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, pIf.getAddress(), pSvc.getServiceName(), date));
-                            pSvc.resetStatusChanged();
-                        } else if (pSvc.statusChanged() && pSvc.getStatus() == PollStatus.STATUS_UP) {
-                            events.addEvent(createEvent(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, pIf.getAddress(), pSvc.getServiceName(), date));
-                            pSvc.resetStatusChanged();
-                        }
-                    }
+                    sendEventsForChangedServices(pIf, date);
                 }
             }
         }
 
-        // Send events to eventd
-        if (events.getEventCount() > 0) {
-            try {
-                Log eventLog = new Log();
-                eventLog.setEvents(events);
-                getEventManager().sendNow(eventLog);
-            } catch (RuntimeException e) {
-                log.error("generateEvents: Failed sending events to eventd...", e);
-            } catch (Throwable t) {
-                log.error("generateEvents: Failed sending events to eventd...", t);
+    }
+    
+    private Event createUpEvent(Date date) {
+        return getPoller().createEvent(EventConstants.NODE_UP_EVENT_UEI, m_nodeId, null, null, date);
+    }
+
+    private Event createDownEvent(Date date) {
+        return getPoller().createEvent(EventConstants.NODE_DOWN_EVENT_UEI, m_nodeId, null, null, date);
+    }
+
+    // Behavior A for services
+    private void sendEventsForChangedServices(PollableInterface pIf, Date date) {
+        Iterator s = pIf.getServices().iterator();
+        while (s.hasNext()) {
+            PollableService pSvc = (PollableService) s.next();
+            if (pSvc.statusChanged() && pSvc.getStatus() == PollStatus.STATUS_DOWN) {
+                sendEvent(pSvc.createDownEvent(date));
+                pSvc.resetStatusChanged();
+            } else if (pSvc.statusChanged() && pSvc.getStatus() == PollStatus.STATUS_UP) {
+                sendEvent(pSvc.createUpEvent(date));
+                pSvc.resetStatusChanged();
             }
         }
     }
 
-    /**
-     * @return
-     */
-    private EventIpcManager getEventManager() {
-        return getPoller().getEventManager();
-    }
-
-    private Event createEvent(String uei, InetAddress address, String svcName, java.util.Date date) {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        if (log.isDebugEnabled())
-            log.debug("createEvent: uei = " + uei + " nodeid = " + m_nodeId);
-
-        // create the event to be sent
-        Event newEvent = new Event();
-        newEvent.setUei(uei);
-        newEvent.setSource(EVENT_SOURCE);
-        newEvent.setNodeid((long) m_nodeId);
-        if (address != null)
-            newEvent.setInterface(address.getHostAddress());
-
-        if (svcName != null)
-            newEvent.setService(svcName);
-
-        try {
-            newEvent.setHost(InetAddress.getLocalHost().getHostName());
-        } catch (UnknownHostException uhE) {
-            newEvent.setHost("unresolved.host");
-            log.warn("Failed to resolve local hostname", uhE);
-        }
-
-        // Set event time
-        newEvent.setTime(EventConstants.formatToString(date));
-
-        // For node level events (nodeUp/nodeDown) retrieve the
-        // node's nodeLabel value and add it as a parm
-        if (uei.equals(EventConstants.NODE_UP_EVENT_UEI) || uei.equals(EventConstants.NODE_DOWN_EVENT_UEI)) {
-            String nodeLabel = null;
-            try {
-                nodeLabel = getPoller().getQueryMgr().getNodeLabel(m_nodeId);
-            } catch (SQLException sqlE) {
-                // Log a warning
-                log.warn("Failed to retrieve node label for nodeid " + m_nodeId, sqlE);
+    // Behavior B for services
+    private void sendEventsForDownServices(PollableInterface pIf, Date date) {
+        Iterator s = pIf.getServices().iterator();
+        while (s.hasNext()) {
+            PollableService pSvc = (PollableService) s.next();
+            if (pSvc.getStatus() == PollStatus.STATUS_DOWN) {
+                sendEvent(pSvc.createDownEvent(date));
+                pSvc.resetStatusChanged();
             }
-
-            if (nodeLabel == null) {
-                // This should never happen but if it does just
-                // use nodeId for the nodeLabel so that the
-                // event description has something to display.
-                nodeLabel = String.valueOf(m_nodeId);
-            }
-
-            // Add appropriate parms
-            Parms eventParms = new Parms();
-
-            // Add nodelabel parm
-            Parm eventParm = new Parm();
-            eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-            Value parmValue = new Value();
-            parmValue.setContent(nodeLabel);
-            eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
-
-            // Add Parms to the event
-            newEvent.setParms(eventParms);
         }
-
-        // The following code can be uncommented to add the nodelabel parm
-        // to Interface Up/Down events. This is deprecated with the addition of
-        // special tags in EventUtil.
-        // else if (uei.equals(EventConstants.INTERFACE_UP_EVENT_UEI) ||
-        // uei.equals(EventConstants.INTERFACE_DOWN_EVENT_UEI))
-        // {
-        // String nodeLabel = null;
-        // try
-        // {
-        // nodeLabel = getIntNodeLabel(address);
-        // }
-        // catch (SQLException sqlE)
-        // {
-        // // Log a warning
-        // log.warn("Failed to retrieve node label for nodeid " + address,
-        // sqlE);
-        // }
-
-        // if (nodeLabel == null)
-        // {
-        // // This should never happen but if it does just
-        // // use nodeId for the nodeLabel so that the
-        // // event description has something to display.
-        // nodeLabel = (String)address.getHostAddress();
-        // }
-
-        // // Add appropriate parms
-        // Parms eventParms = new Parms();
-
-        // // Add nodelabel parm
-        // Parm eventParm = new Parm();
-        // eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-        // Value parmValue = new Value();
-        // parmValue.setContent(nodeLabel);
-        // eventParm.setValue(parmValue);
-        // eventParms.addParm(eventParm);
-
-        // // Add Parms to the event
-        // newEvent.setParms(eventParms);
-        // }
-
-        return newEvent;
     }
 
     /**
@@ -483,10 +333,8 @@ public class PollableNode extends PollableElement {
         if (log.isDebugEnabled())
             log.debug("poll: polling nodeid " + m_nodeId + " status=" + getStatus());
 
-        m_statusChangedFlag = false;
+        setStatusChanged(false);
 
-        PollStatus currentStatus = getStatus();
-        
         // Retrieve PollableInterface object from the NIF
         PollableInterface pInterface = pSvc.getInterface();
         
@@ -494,7 +342,7 @@ public class PollableNode extends PollableElement {
         PollStatus ifStatus = pInterface.poll(pSvc);
         
         // If interface status changed and is different from the node status
-        if (ifStatus != currentStatus && pInterface.statusChanged()) {
+        if (ifStatus != getStatus() && pInterface.statusChanged()) {
         
             log.debug("poll: requested interface is "+ifStatus+"; testing remaining interfaces");
         
@@ -522,7 +370,7 @@ public class PollableNode extends PollableElement {
     public void updateStatus(PollStatus newStatus) {
         if (getStatus() != newStatus) {
             setStatus(newStatus);
-            m_statusChangedFlag = true;
+            setStatusChanged(true);
         }
     }
 
