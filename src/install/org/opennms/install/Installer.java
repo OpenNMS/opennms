@@ -1958,6 +1958,7 @@ public class Installer {
 		st.execute("CREATE TABLE " + table + " AS SELECT " +
 			   join(", ", oldColumnNames) +
 			   " FROM " + tmpTable);
+		st.execute("DROP TABLE " + tmpTable);
 	    } catch (SQLException se) {
 		throw new Exception("Got SQLException while trying to " +
 				    "revert table changes due to original " +
