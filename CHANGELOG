@@ -1,5 +1,7 @@
 1.2.0 to 1.2.1
 ----------------------------------------------------------------------
+- Added notification selection to top of page. Bug 1017. Thx Bill
+- Added nodeid to modify asset page. Bug 785
 - Added a new an improved DHCP poller. Bug 663. Thx Bill
 - Added a more descriptive error message when an invalid outage ID
   is entered in the webUI. Bug 498
