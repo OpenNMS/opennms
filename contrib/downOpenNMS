@@ -101,12 +101,12 @@ from
  (select nodeid, max(eventtime) as timedown
   from events
   where
-   eventuei = 'http://uei.opennms.org/nodes/nodeDown'
+   eventuei = 'uei.opennms.org/nodes/nodeDown'
   group by nodeid) as down
  natural left outer join 
  (select nodeid, max(eventtime) as timeup
   from events
-  where eventuei = 'http://uei.opennms.org/nodes/nodeUp' group by nodeid) as up
+  where eventuei = 'uei.opennms.org/nodes/nodeUp' group by nodeid) as up
  natural join node
 where
  timedown > timeup or timeup is null;
