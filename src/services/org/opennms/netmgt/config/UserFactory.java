@@ -87,14 +87,13 @@ public class UserFactory extends UserManager {
     }
 
     public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+
         if (!initialized) {
-            GroupFactory.init();
-            instance = new UserFactory();
-            instance.reload();
             
+            GroupFactory.init();
+            getInstance().reload();
+            initialized = true;
         }
-        // ViewFactory.init();
-        // viewFactory = ViewFactory.getInstance();
 
     }
 
@@ -105,8 +104,10 @@ public class UserFactory extends UserManager {
      * @return the single user factory instance
      */
     static synchronized public UserFactory getInstance() {
-        if (!initialized)
-            return null;
+
+        if (instance == null || !initialized) {
+            instance = new UserFactory();
+        }
 
         return instance;
     }

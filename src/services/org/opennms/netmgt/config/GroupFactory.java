@@ -79,10 +79,10 @@ public class GroupFactory extends GroupManager {
     }
 
     public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+
         if (!s_initialized) {
-            s_instance = new GroupFactory();
+            getInstance().reload();
             s_initialized = true;
-            reload();
         }
     }
 
@@ -93,8 +93,10 @@ public class GroupFactory extends GroupManager {
      * @return the single group factory instance
      */
     public static synchronized GroupFactory getInstance() {
-        if (!s_initialized)
-            return null;
+
+        if (s_instance == null || !s_initialized) {
+            s_instance = new GroupFactory();
+        }
 
         return s_instance;
     }
@@ -102,7 +104,7 @@ public class GroupFactory extends GroupManager {
     /**
      * Parses the groups.xml via the Castor classes
      */
-    public static synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         File confFile = ConfigFileConstants.getFile(ConfigFileConstants.GROUPS_CONF_FILE_NAME);
 
         getInstance().reloadFromFile(confFile);
