@@ -47,7 +47,7 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.PollerConfigFactory;
+import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.scheduler.Scheduler;
 
 /**
@@ -103,8 +103,8 @@ public class PollableInterface
 		m_node = node;
 		m_address = address;
 		m_services = Collections.synchronizedMap(new HashMap());
-		m_scheduler = Poller.getInstance().getScheduler();
-		m_pollableServices = Poller.getInstance().getPollableServiceList();
+		m_scheduler = getPoller().getScheduler();
+		m_pollableServices = getPoller().getPollableServiceList();
 		m_statusChangedFlag = false;
 		m_status = Pollable.STATUS_UNKNOWN;
 	}
@@ -160,7 +160,7 @@ public class PollableInterface
 	
 	public synchronized void removeService(PollableService service)
 	{
-                ServiceMonitor sm = Poller.getInstance().getServiceMonitor(service.getServiceName());
+                ServiceMonitor sm = getPoller().getServiceMonitor(service.getServiceName());
                 sm.release(service);
 		m_services.remove(service.getServiceName());
 		this.recalculateStatus();
@@ -227,7 +227,7 @@ public class PollableInterface
 		int status = Pollable.STATUS_UNKNOWN;
 		
 		// Get configured critical service
-		String criticalSvcName = PollerConfigFactory.getInstance().getCriticalService();
+		String criticalSvcName = getPollerConfig().getCriticalService();
 		
 		// If critical service defined and supported by this 
 		// interface then simply need to check the critical 
@@ -288,7 +288,7 @@ public class PollableInterface
 		int svcStatus = Pollable.STATUS_UNKNOWN;
 		
 		// Get configured critical service
-		String criticalSvcName = PollerConfigFactory.getInstance().getCriticalService();
+		String criticalSvcName = getPollerConfig().getCriticalService();
 		if (log.isDebugEnabled())
 			log.debug("poll: polling interface " + m_address.getHostAddress() + 
 					" status=" + Pollable.statusType[m_status] + 
@@ -299,7 +299,7 @@ public class PollableInterface
 		boolean pollAllServices = true;
 		if (criticalSvcName == null)
 		{
-			pollAllServices = PollerConfigFactory.getInstance().pollAllIfNoCriticalServiceDefined();
+			pollAllServices = getPollerConfig().pollAllIfNoCriticalServiceDefined();
 			if (log.isDebugEnabled())
 				log.debug("poll: pollAllServices (since no critical svc defined) flag: " + pollAllServices);
 		}
@@ -561,4 +561,18 @@ public class PollableInterface
 			log.debug("poll: poll of interface " + m_address.getHostAddress() + " completed, status= " + Pollable.statusType[m_status]);
 		return m_status;
 	}
+
+	/**
+	 * @return
+	 */
+	private PollerConfig getPollerConfig() {
+		return getPoller().getPollerConfig();
+	}
+    
+    /**
+     * 
+     */
+    Poller getPoller() {
+        return m_node.getPoller();
+    }
 }

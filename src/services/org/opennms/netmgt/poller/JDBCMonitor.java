@@ -51,6 +51,7 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.DBTools;
+import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
@@ -94,7 +95,7 @@ final class JDBCMonitor
    	* @param parameters Configuration parameters passed to the plugin
    	* @throws RuntimeException If there is any error that prevents the plugin from running
    	*/
-  	public void initialize(Map parameters) 
+  	public void initialize(PollerConfig pollerConfig, Map parameters) 
 	{
 	  	Category log = ThreadCategory.getInstance(getClass());
 	  	if (log.isDebugEnabled()) {

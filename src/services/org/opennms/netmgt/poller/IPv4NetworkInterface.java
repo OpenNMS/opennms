@@ -71,7 +71,7 @@ public abstract class IPv4NetworkInterface
 	/**
  	 * Interface address
 	 */
-	public InetAddress		m_address;
+	protected InetAddress		m_address;
 
 	/**
 	 * <P>Returns the interface type for the network interface.</P>

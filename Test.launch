@@ -2,7 +2,6 @@
 <launchConfiguration type="org.eclipse.ant.AntLaunchConfigurationType">
 <stringAttribute key="process_factory_id" value="org.eclipse.ant.ui.remoteAntProcessFactory"/>
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
-<booleanAttribute key="editedByExternalToolsMainTab" value="true"/>
 <listAttribute key="org.eclipse.debug.ui.favoriteGroups">
 <listEntry value="org.eclipse.ui.externaltools.launchGroup"/>
 </listAttribute>
@@ -12,6 +11,7 @@
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.ant.ui.AntClasspathProvider"/>
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_ANT_TARGETS" value="test,"/>
 <booleanAttribute key="org.eclipse.ui.externaltools.ATTR_HIDE_INTERNAL_TARGETS" value="true"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="-Dopennms.home=/sw/var/opennms -Dbuild.postgresql.include.dir=/sw/include/postgresql -Dbuild.rrdtool.include.dir=/sw/include -Dbuild.rrdtool.lib.dir=/sw/lib"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="opennms"/>
 <listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
 <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry type=&quot;4&quot; path=&quot;1&quot; containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/JVM 1.4.2 (MacOS X Default)&quot;/&gt;&#10;"/>

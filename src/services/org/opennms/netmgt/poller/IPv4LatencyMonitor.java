@@ -46,7 +46,7 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.PollerConfigFactory;
+import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 
@@ -70,6 +70,7 @@ abstract class IPv4LatencyMonitor
 	 * RRD data source name which doubles as the RRD file name.
 	 */
 	static String DS_NAME = "response-time";
+	private PollerConfig m_pollerConfig;
 	
 	/**
 	 * <P>This method is called after the framework creates an
@@ -90,12 +91,14 @@ abstract class IPv4LatencyMonitor
 	 * 	an unrecoverable error occurs that prevents the plug-in from functioning.
 	 *
 	 */
-	public void initialize(Map parameters) 
+	public void initialize(PollerConfig pollerConfig, Map parameters) 
 	{
 		// Log4j category
 		//
 		Category log = ThreadCategory.getInstance(getClass());
 		
+        m_pollerConfig = pollerConfig;
+        
         try {
             RrdUtils.initialize();
         }
@@ -191,16 +194,23 @@ abstract class IPv4LatencyMonitor
 	{
 		Category log = ThreadCategory.getInstance(this.getClass());
 	
-        List rraList = PollerConfigFactory.getInstance().getRRAList(pkg);
+        List rraList = getPollerConfig().getRRAList(pkg);
 
         // add interface address to RRD repository path
 		String path = repository + File.separator + addr.getHostAddress();
         
-		return RrdUtils.createRRD(addr.getHostAddress(), path, dsName, PollerConfigFactory.getInstance().getStep(pkg), "GAUGE", 600, "U", "U", rraList);
+		return RrdUtils.createRRD(addr.getHostAddress(), path, dsName, getPollerConfig().getStep(pkg), "GAUGE", 600, "U", "U", rraList);
         
 		
 	}
 	
+	/**
+	 * @return
+	 */
+	private PollerConfig getPollerConfig() {
+		return m_pollerConfig;
+	}
+
 	/**
 	 * Update an RRD database file with latency/response time data.
 	 * 

@@ -75,7 +75,7 @@ import org.opennms.netmgt.config.poller.Time;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
-public final class PollOutagesConfigFactory
+public final class PollOutagesConfigFactory implements PollOutagesConfig
 {
 	/**
 	 * The singleton instance of this factory
@@ -291,10 +291,10 @@ public final class PollOutagesConfigFactory
 	 */
 	public synchronized Outage getOutage(String name)
 	{
-		Enumeration enum = m_config.enumerateOutage();
-		while(enum.hasMoreElements())
+		Enumeration e = m_config.enumerateOutage();
+		while(e.hasMoreElements())
 		{
-			Outage out = (Outage)enum.nextElement();
+			Outage out = (Outage)e.nextElement();
 			if (out.getName().equals(name))
 			{
 				return out;
@@ -382,10 +382,10 @@ public final class PollOutagesConfigFactory
 		if (out == null)
 			return false;
 
-		Enumeration enum = out.enumerateInterface();
-		while(enum.hasMoreElements())
+		Enumeration e = out.enumerateInterface();
+		while(e.hasMoreElements())
 		{
-			Interface ointerface = (Interface)enum.nextElement();
+			Interface ointerface = (Interface)e.nextElement();
 			if (ointerface.getAddress().equals(linterface))
 			{
 				return true;
@@ -437,13 +437,13 @@ public final class PollOutagesConfigFactory
 
 		// flag indicating that day(which is optional) was not specified in the time
 
-		Enumeration enum = out.enumerateTime();
-		while(enum.hasMoreElements() && !inOutage)
+		Enumeration e = out.enumerateTime();
+		while(e.hasMoreElements() && !inOutage)
 		{
 			Calendar outCalBegin = new GregorianCalendar();
 			Calendar outCalEnd = new GregorianCalendar();
 
-			Time oTime = (Time)enum.nextElement();
+			Time oTime = (Time)e.nextElement();
 
 			String oTimeDay = oTime.getDay();
 			String begins = oTime.getBegins();

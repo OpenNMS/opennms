@@ -1167,8 +1167,8 @@ OpenNMS as part of the post-install.
 
  <!-- tests -->
 
- <target name="test.jsp" depends="install.jsp"
-	 description="compile the JSPs" unless="wasrpm">
+ <target name="test.jsp" depends="install"
+	 description="compile the JSPs" >
    <mkdir dir="${build.dir}/jsp-source"/>
    <mkdir dir="${build.dir}/jsp-classes"/>
    <jspc srcdir="${install.prefix}${install.servlet.dir}" destdir="${build.dir}/jsp-source"> 

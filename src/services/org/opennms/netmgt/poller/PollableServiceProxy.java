@@ -35,6 +35,7 @@ package org.opennms.netmgt.poller;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
+import org.opennms.netmgt.scheduler.Scheduler;
 
 /**
  * <P>A proxy to a PollableService which acts as a surrogate for rescheduling purposes.
@@ -133,7 +134,7 @@ final class PollableServiceProxy
             if (this._scheduledRuntime < this._service.getScheduledRuntime())
             {
                 log.debug("run: Proxy rescheduling itself at " + interval + " ms");
-                Poller.getInstance().getScheduler().schedule(this, interval);
+                getScheduler().schedule(this, interval);
             }
             else
             {
@@ -145,18 +146,25 @@ final class PollableServiceProxy
         catch (LockUnavailableException e)
         {
             log.debug("Lock unavailable; rescheduling at 10 seconds", e);
-            Poller.getInstance().getScheduler().schedule(this, 10000);
+            getScheduler().schedule(this, 10000);
         }
         catch (InterruptedException e)
         {
             log.debug("Thread Interrupted; rescheduling at 10 seconds", e);
-            Poller.getInstance().getScheduler().schedule(this, 10000);
+            getScheduler().schedule(this, 10000);
         }
 
         return;
     }    
     
     /**
+	 * @return
+	 */
+	private Scheduler getScheduler() {
+		return _service.getPoller().getScheduler();
+	}
+
+	/**
      * Returns the time (in milliseconds) at which this Proxy is
      * scheduled to run.
      */

@@ -44,10 +44,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
@@ -62,6 +64,7 @@ import org.opennms.netmgt.config.poller.Monitor;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.filter.Filter;
+import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.utils.IPSorter;
 import org.opennms.netmgt.utils.IpListFromUrl;
 
@@ -81,7 +84,7 @@ import org.opennms.netmgt.utils.IpListFromUrl;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
-public final class PollerConfigFactory
+public final class PollerConfigFactory implements PollerConfig
 {
 	/**
 	 * The singleton instance of this factory
@@ -110,6 +113,12 @@ public final class PollerConfigFactory
 	 * via filter rules, so as to avoid repetetive database access.
 	 */
 	private Map     			m_pkgIpMap;
+    
+    /**
+     * A mapp of service names to service monitors.  Constructed based on data
+     * in the configuration file.
+     */
+    private Map m_svcMonitors = Collections.synchronizedMap(new TreeMap());
         
         /** 
          * A boolean flag to indicate If a filter rule agaist the local 
@@ -177,6 +186,7 @@ public final class PollerConfigFactory
                 m_localServer = OpennmsServerConfigFactory.getInstance().getServerName();
                 
                 createPackageIpListMap();
+                createServiceMonitors();
 	}
 
 	/**
@@ -758,4 +768,76 @@ public final class PollerConfigFactory
                 return (List)pkg.getRrd().getRraCollection();
 
         }
+        
+        
+        public Enumeration enumeratePackage() {
+        	    return getConfiguration().enumeratePackage();
+        }
+        
+        public Enumeration enumerateMonitor() {
+            return getConfiguration().enumerateMonitor();
+        }
+        
+        public int getThreads() {
+            return getConfiguration().getThreads();
+        }
+
+        /**
+         * @param poller
+         * @return
+         */
+        private void createServiceMonitors() {
+            Category log = ThreadCategory.getInstance(getClass());
+            
+            // Load up an instance of each monitor from the config
+            // so that the event processor will have them for
+            // new incomming events to create pollable service objects.
+            //
+            log.debug("start: Loading monitors");
+
+            Enumeration eiter = enumerateMonitor();
+            while(eiter.hasMoreElements())
+            {
+                Monitor monitor = (Monitor)eiter.nextElement();
+                try
+                {
+                    if(log.isDebugEnabled())
+                    {
+                        log.debug("start: Loading monitor "
+                                + monitor.getService()
+                                + ", classname "
+                                + monitor.getClassName());
+                    }
+                    Class mc = Class.forName(monitor.getClassName());
+                    ServiceMonitor sm = (ServiceMonitor)mc.newInstance();
+                    
+                    // Attempt to initialize the service monitor
+                    //
+                    Map properties = null; // properties not currently used
+                    sm.initialize(this, properties);
+                    
+                    m_svcMonitors.put(monitor.getService(), sm);
+                }
+                catch(Throwable t)
+                {
+                    if(log.isEnabledFor(Priority.WARN))
+                    {
+                        log.warn("start: Failed to load monitor " + monitor.getClassName()
+                                + " for service " + monitor.getService(), t);
+                    }
+                }
+            }
+        }
+        
+        public Map getServiceMonitors() {
+            return m_svcMonitors;
+        }
+        
+        public ServiceMonitor getServiceMonitor(String svcName)
+        {
+            return (ServiceMonitor)getServiceMonitors().get(svcName);
+        }
+        
+
+
 }

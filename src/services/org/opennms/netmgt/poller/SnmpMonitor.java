@@ -53,6 +53,7 @@ import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.utils.SnmpResponseHandler;
@@ -135,7 +136,7 @@ public final class SnmpMonitor
 	 * the plug-in from functioning.
 	 *
 	 */
-	public void initialize(Map parameters) 
+	public void initialize(PollerConfig pollerConfig, Map parameters) 
 	{
 		// Log4j category
 		//

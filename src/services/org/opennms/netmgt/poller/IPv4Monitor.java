@@ -41,6 +41,8 @@ package org.opennms.netmgt.poller;
 import java.net.InetAddress;
 import java.util.Map;
 
+import org.opennms.netmgt.config.PollerConfig;
+
 /**
  * <p>This class provides a basic implementation for most of the interface
  * methods of the <code>ServiceMonitor</code> class. Since most pollers do not
@@ -75,7 +77,7 @@ abstract class IPv4Monitor
 	 * 	an unrecoverable error occurs that prevents the plug-in from functioning.
 	 *
 	 */
-	public void initialize(Map parameters) 
+	public void initialize(PollerConfig pollerConfig, Map parameters) 
 	{
 		return;
 	}

@@ -39,9 +39,7 @@ package org.opennms.netmgt.poller;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,9 +49,8 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import org.opennms.netmgt.config.PollerConfigFactory;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
@@ -101,13 +98,16 @@ public class PollableNode
 	private boolean m_isDeleted;
 	
 	private static final String EVENT_SOURCE = "OpenNMS.Poller";
+
+	private Poller m_poller;
 	
 	/** 
 	 * Constructor.
 	 */
-	public PollableNode(int nodeId)
+	public PollableNode(int nodeId, Poller poller)
 	{
 		m_nodeId = nodeId;
+		m_poller = poller;
 		m_lock = new Object();
 		m_isLocked = false;
 		m_interfaces = Collections.synchronizedMap(new HashMap());
@@ -137,7 +137,7 @@ public class PollableNode
 		m_interfaces.clear();
 	}
 	
-	public PollableInterface getInterface(String ipAddress)
+	public PollableInterface findInterface(String ipAddress)
 	{
 		return (PollableInterface)m_interfaces.get(ipAddress);
 	} 
@@ -421,7 +421,7 @@ public class PollableNode
 			{
 				Log eventLog = new Log();
 				eventLog.setEvents(events);
-				EventIpcManagerFactory.getInstance().getManager().sendNow(eventLog);
+				getEventManager().sendNow(eventLog);
 			}
 			catch(RuntimeException e)
 			{
@@ -434,7 +434,14 @@ public class PollableNode
 		}
 	}
 	
-	private Event createEvent(String 	uei, 
+	/**
+     * @return
+     */
+    private EventIpcManager getEventManager() {
+        return getPoller().getEventManager();
+    }
+
+    private Event createEvent(String 	uei, 
 				InetAddress 	address, 
 				String		svcName,
 				java.util.Date  date)
@@ -476,7 +483,7 @@ public class PollableNode
 			String nodeLabel = null;
 			try
 			{
-				nodeLabel = getNodeLabel(m_nodeId);
+				nodeLabel = getPoller().getQueryMgr().getNodeLabel(m_nodeId);
 			}
 			catch (SQLException sqlE)
 			{
@@ -551,141 +558,6 @@ public class PollableNode
 		return newEvent;
 	}
 	
-	/** 
-	 * Retrieve nodeLabel from the node table of the database
-	 * given a particular nodeId.
-	 *
-	 * @param nodeId	Node identifier
-	 * 
-	 * @return nodeLabel	Retreived nodeLabel
-	 * 
-	 * @throws SQLException if database error encountered
-	 */
-	private String getNodeLabel(int nodeId)
-		throws SQLException
-	{
-		Category log = ThreadCategory.getInstance(getClass());
-		
-		String nodeLabel = null;
-		java.sql.Connection dbConn = null;
-		Statement stmt = null;
-		try
-		{
-			// Get datbase connection from the factory
-			dbConn = DatabaseConnectionFactory.getInstance().getConnection();
-
-			// Issue query and extract nodeLabel from result set
-			stmt = dbConn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT nodelabel FROM node WHERE nodeid=" + String.valueOf(nodeId));
-			if (rs.next())
-			{
-				nodeLabel = (String)rs.getString("nodelabel");
-				if (log.isDebugEnabled())
-					log.debug("getNodeLabel: nodeid=" + nodeId + " nodelabel=" + nodeLabel);
-			}
-		}
-		finally
-		{
-			// Close the statement
-			if (stmt != null)
-			{
-				try
-				{
-					stmt.close();
-				}
-				catch (Exception e)
-				{
-					if(log.isDebugEnabled())
-						log.debug("getNodeLabel: an exception occured closing the SQL statement", e);
-				}
-			}
-
-			// Close the database connection
-			if(dbConn != null)
-			{
-				try
-				{
-					dbConn.close();
-				}
-				catch(Throwable t)
-				{
-					if(log.isDebugEnabled())
-						log.debug("getNodeLabel: an exception occured closing the SQL connection", t);
-				}
-			}
-		}
-		
-		return nodeLabel;
-	}
-
-        /**
-         * Retrieve nodeLabel from the node table of the database
-         * given a particular IP Address.
-         *
-         * @param ipaddr        Interface IP Address
-         *
-         * @return nodeLabel    Retreived nodeLabel
-         *
-         * @throws SQLException if database error encountered
-         */
-        private String getIntNodeLabel(InetAddress ipaddr)
-                throws SQLException
-        {
-                Category log = ThreadCategory.getInstance(getClass());
-
-                String nodeLabel = null;
-                java.sql.Connection dbConn = null;
-                Statement stmt = null;
-                try
-                {
-                        // Get datbase connection from the factory
-                        dbConn = DatabaseConnectionFactory.getInstance().getConnection();
-
-                        // Issue query and extract nodeLabel from result set
-                        stmt = dbConn.createStatement();
-			String sql = "SELECT node.nodelabel FROM node, ipinterface WHERE ipinterface.ipaddr='" + ipaddr.getHostAddress() + "' AND ipinterface.nodeid=node.nodeid";
-                        ResultSet rs = stmt.executeQuery(sql);
-                        if (rs.next())
-                        {
-                                nodeLabel = rs.getString(1);
-                                if (log.isDebugEnabled())
-                                        log.debug("getNodeLabel: ipaddr=" + ipaddr.getHostAddress() + " nodelabel=" + nodeLabel);
-                        }
-                }
-                finally
-                {
-                        // Close the statement
-                        if (stmt != null)
-                        {
-                                try
-                                {
-                                        stmt.close();
-                                }
-                                catch (Exception e)
-                                {
-                                        if(log.isDebugEnabled())
-                                                log.debug("getNodeLabel: an exception occured closing the SQL statement", e);
-                                }
-                        }
-
-                        // Close the database connection
-                        if(dbConn != null)
-                        {
-                                try
-                                {
-                                        dbConn.close();
-                                }
-                                catch(Throwable t)
-                                {
-                                        if(log.isDebugEnabled())
-                                                log.debug("getNodeLabel: an exception occured closing the SQL connection", t);
-                                }
-                        }
-                }
-
-                return nodeLabel;
-        }
-
 	/**  
 	 * Invokes a poll of the remote interface. 
 	 * 
@@ -708,7 +580,7 @@ public class PollableNode
 		int ifStatus = Pollable.STATUS_UNKNOWN;
 		
 		// Get critical service
-		String criticalSvc = PollerConfigFactory.getInstance().getCriticalService();
+		String criticalSvc = getPollerConfig().getCriticalService();
 		
 		// Polling logic if node is currently DOWN
 		//
@@ -840,4 +712,15 @@ public class PollableNode
 			
 		return m_status;
 	}
+
+	/**
+	 * @return
+	 */
+	Poller getPoller() {
+		return m_poller;
+	}
+    
+    private PollerConfig getPollerConfig() {
+        return getPoller().getPollerConfig();
+    }
 }

@@ -49,9 +49,9 @@ public interface Pollable
 	 * 	     of the ServiceMonitor.SERVICE_AVAILABLE, and
 	 *  	     ServiceMonitor.SERVICE_UNAVAILABLE, 
 	 */
-	public static final int		STATUS_UNKNOWN = 0;
-	public static final int 	STATUS_UP      = 1;
-	public static final int		STATUS_DOWN    = 2;
+	public static final int STATUS_UNKNOWN = ServiceMonitor.SERVICE_UNKNOWN;
+	public static final int STATUS_UP = ServiceMonitor.SERVICE_AVAILABLE;
+	public static final int STATUS_DOWN = ServiceMonitor.SERVICE_UNAVAILABLE;
 	
 	public static final String[]  statusType = {"Unknown", "Up", "Down"};
 	

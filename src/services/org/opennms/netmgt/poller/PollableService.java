@@ -56,12 +56,13 @@ import java.util.TreeMap;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.PollOutagesConfigFactory;
-import org.opennms.netmgt.config.PollerConfigFactory;
+import org.opennms.netmgt.config.PollOutagesConfig;
+import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Downtime;
+import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.utils.ParameterMap;
@@ -182,7 +183,7 @@ final class PollableService
 	 * mapped by the composite key <em>(package name, service name)</em>.
 	 */
 	private static Map		SVC_PROP_MAP = Collections.synchronizedMap(new TreeMap());
-	
+
 	/**
 	 * Constructs a new instance of a pollable service object that is 
 	 * polled using the passed monitor. The service is scheduled based
@@ -195,7 +196,7 @@ final class PollableService
 	 */
 	PollableService(	PollableInterface pInterface,
 				String		svcName,
-				org.opennms.netmgt.config.poller.Package pkg,
+				Package pkg,
 				int status,
 				Date svcLostDate)
 	{
@@ -204,10 +205,10 @@ final class PollableService
 		m_package	= pkg;
 		m_status	= status;
 		m_deletionFlag	= false;
-		
-		m_monitor	= Poller.getInstance().getServiceMonitor(svcName);
-		m_scheduler	= Poller.getInstance().getScheduler();
-		m_pollableServices = Poller.getInstance().getPollableServiceList();
+        
+		m_monitor	= getPoller().getServiceMonitor(svcName);
+		m_scheduler	= getPoller().getScheduler();
+		m_pollableServices = getPoller().getPollableServiceList();
 		
 		m_pollImmediate = true;  // set for immediate poll
 		m_lastScheduledPoll = 0L;
@@ -669,7 +670,7 @@ final class PollableService
 		//
 		try
 		{
-			EventIpcManagerFactory.getInstance().getManager().sendNow(event);
+			getEventManager().sendNow(event);
 			if (log.isDebugEnabled())	
 			{
 				log.debug("Sent event " + uei + " for " + 
@@ -686,6 +687,13 @@ final class PollableService
 	}
 	
 	/**
+     * @return
+     */
+    private EventIpcManager getEventManager() {
+        return getPoller().getEventManager();
+    }
+
+    /**
 	 * Tests if two PollableService objects refer to the same 
 	 * nodeid/interface/service tuple.  
 	 *
@@ -780,7 +788,7 @@ final class PollableService
 	{
 		boolean outageFound = false;
 		
-		PollOutagesConfigFactory outageFactory = PollOutagesConfigFactory.getInstance();
+		PollOutagesConfig outageFactory = getPollOutagesConfig();
 		
 		// Iterate over the outage names defined in the interface's package.
 		// For each outage...if the outage contains a calendar entry which 
@@ -818,6 +826,13 @@ final class PollableService
 	}
 	
 	/**
+     * @return
+     */
+    private PollOutagesConfig getPollOutagesConfig() {
+        return getPoller().getPollOutagesConfig();
+    }
+
+    /**
 	 * This is the main method of the class. An instance is normally
 	 * enqueued on the scheduler which checks its <code>isReady</code>
 	 * method to determine execution. If the instance is ready for 
@@ -913,7 +928,7 @@ final class PollableService
 		// Update last scheduled poll time if allowedToRescheduleMyself
 		// flag is true
 		if (allowedToRescheduleMyself)
-		m_lastScheduledPoll = System.currentTimeMillis();
+		    m_lastScheduledPoll = System.currentTimeMillis();
 		
 		// Check scheduled outages to see if any apply indicating
 		// that the poll should be skipped
@@ -928,11 +943,12 @@ final class PollableService
 		}
 		
 		// Is node outage processing enabled?
-		if (PollerConfigFactory.getInstance().nodeOutageProcessingEnabled())
+		if (getPollerConfig().nodeOutageProcessingEnabled())
 		{
 			// Lookup PollableNode object using nodeId as index
 			//
-			PollableNode pNode = Poller.getInstance().getNode(nodeId);
+            // TODO: We alrady have the pollable node via the pollable interface
+			PollableNode pNode = getPoller().getNode(nodeId);
 			
 			/*
 			 * Acquire lock to 'PollableNode'
@@ -1011,6 +1027,20 @@ final class PollableService
 	}	
 	
 	/**
+	 * @return
+	 */
+	Poller getPoller() {
+		return m_pInterface.getPoller();
+	}
+
+	/**
+	 * @return
+	 */
+	private PollerConfig getPollerConfig() {
+		return getPoller().getPollerConfig();
+	}
+
+	/**
 	 * <P>Invokes a poll of the service via the ServiceMonitor.</P>
 	 */
 	public int poll()
@@ -1045,7 +1075,7 @@ final class PollableService
 		
 		// serviceUnresponsive behavior disabled?
                 //
-                if (!PollerConfigFactory.getInstance().serviceUnresponsiveEnabled())
+                if (!getPollerConfig().serviceUnresponsiveEnabled())
                 {
                         // serviceUnresponsive behavior is disabled, a status
                         // of SERVICE_UNRESPONSIVE is treated as SERVICE_UNAVAILABLE
@@ -1105,17 +1135,12 @@ final class PollableService
 			m_statusChangeTime = System.currentTimeMillis();
 				
 			// Is node outage processing disabled? 
-			if (!PollerConfigFactory.getInstance().nodeOutageProcessingEnabled())
+			if (!getPollerConfig().nodeOutageProcessingEnabled())
 			{
 				// node outage processing disabled, go ahead and generate
 				// transition events.
 				if (log.isDebugEnabled())
 					log.debug("poll: node outage disabled, status change will trigger event.");
-	
-				// get the "qualifier" property from the properties map if it exists.
-				// This is mainly used by HTTP at the moment.
-				//
-				String qualifier = (String)propertiesMap.get("qualifier");
 	
 				// Send the appropriate event
 				//

@@ -38,6 +38,8 @@ package org.opennms.netmgt.poller;
 
 import java.util.Map;
 
+import org.opennms.netmgt.config.PollerConfig;
+
 /**
  * <p>This is the interface that must be implemented by each poller plugin
  * in the framework. This well defined interface allows the framework to
@@ -62,19 +64,23 @@ import java.util.Map;
  */
 public interface ServiceMonitor
 {
+    /**
+     * The constant the defines a status is unknown.  Used mostly internally
+     */
+    public static final int SERVICE_UNKNOWN = 0;
 	/**
 	 * <P>The constant that defines a service as being in a normal
 	 * state. If this is returned by the poll() method then the 
 	 * framework will re-schedule the service for its next poll using
 	 * the standard uptime interval</P>
 	 */
-	public static final int		SERVICE_AVAILABLE	= 1;
+	public static final int SERVICE_AVAILABLE = 1;
 	
 	/**
 	 * <P>The constant that defines a service that is not working
 	 * normally and should be scheduled using the downtime models.</P>
 	 */
-	public static final int		SERVICE_UNAVAILABLE	= 2;
+	public static final int SERVICE_UNAVAILABLE = 2;
 	
 	/** 
 	 * <P>The constant that defines a service that is up but is
@@ -82,7 +88,7 @@ public interface ServiceMonitor
 	 * issues and because of that has not responded within
 	 * the configured timeout period.</P>
 	 */
-	public static final int		SERVICE_UNRESPONSIVE 	= 3;
+	public static final int SERVICE_UNRESPONSIVE = 3;
 	
 	/**
 	 * <P>The status mask is used to mask off the bits that apply to 
@@ -90,7 +96,7 @@ public interface ServiceMonitor
 	 * return information are used to encode special processing 
 	 * instructions to the poller framework.</P>
 	 */
-	public static final int		SERVICE_STATUS_MASK	= 0xff;
+	public static final int SERVICE_STATUS_MASK = 0xff;
 	
 	/**
 	 * <P>This constants defines the mask that can be bitwise
@@ -101,7 +107,7 @@ public interface ServiceMonitor
 	 * bit is set then the framework should not generate a 
 	 * transitional event.</P>
 	 */
-	public static final int		SURPRESS_EVENT_MASK	= 0x100;
+	public static final int SURPRESS_EVENT_MASK = 0x100;
 	
 	/**
 	 * <P>This method is called after the framework creates an
@@ -122,7 +128,7 @@ public interface ServiceMonitor
 	 * 	an unrecoverable error occurs that prevents the plug-in from functioning.
 	 *
 	 */
-	public void initialize(Map parameters);
+	public void initialize(PollerConfig config, Map parameters);
 		
 	/**
 	 * <P>This method is called whenever the plug-in is being unloaded, normally
