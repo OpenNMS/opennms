@@ -1,5 +1,9 @@
 1.2.0 to 1.2.1
 ----------------------------------------------------------------------
+- Fixed an issue with Unresponsive services being considered up
+  even with unresponsiveness set to false. Bug 1151.
+- Added a focus to the add interface page. Bug 1148. Thx Craig.
+- Added a Linksys event to stop stupid connection traps.
 - Addressed issue with DHCP poller not closing connections. Bug 1101
   Thx Bill.
 - Added XMPP Notifications (Jabber) to OpenNMS. Bug 1168. Thanks Chris

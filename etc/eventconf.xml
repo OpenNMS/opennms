@@ -35,6 +35,7 @@
         <event-file>@install.etc.dir@/events/IBM.events.xml</event-file>
         <event-file>@install.etc.dir@/events/IEEE802dot11.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Intel.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Linksys.events.xml</event-file>
         <event-file>@install.etc.dir@/events/MGE-UPS.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Microsoft.events.xml</event-file>
 	<event-file>@install.etc.dir@/events/Mylex.events.xml</event-file>

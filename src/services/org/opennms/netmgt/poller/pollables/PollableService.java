@@ -221,7 +221,7 @@ public class PollableService extends PollableElement implements ReadyRunnable {
         
         if (!getContext().isServiceUnresponsiveEnabled()) {
             if (newStatus == PollStatus.STATUS_UNRESPONSIVE)
-                newStatus = PollStatus.STATUS_UP;
+                newStatus = PollStatus.STATUS_DOWN;
         }
         
         PollStatus currentStatus = getStatus();
