@@ -1,9 +1,10 @@
 1.1.3 to 1.1.4
 ----------------------------------------------------------------------
-- Fixed mistake with "ports" in HttpPlugin. Bug 889.
+
 
 1.1.2 to 1.1.3
 ----------------------------------------------------------------------
+- Fixed mistake with "ports" in HttpPlugin. Bug 889.
 - Fixed issue with custom notification rules being erased. Bug 754
 - Fixed Asset Import issues. Thx Jonathan. Bug 700
 - Added support for centos3 (RHES 3) for rpm builds. Bug 801

@@ -80,7 +80,7 @@
       <para>Then, install OpenNMS:</para>
 
       <para><computeroutput>[root@host /root]# apt-get install
-      opennms</computeroutput> </para>
+      opennms</computeroutput></para>
 
       <para>Optionally install the documentation and/or contrib
       packages</para>
@@ -267,6 +267,94 @@
       <para>There are no special requirements for OpenNMS on this distribution
       of Linux, except for those configuration issues mentioned in the
       previous section.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Solaris</title>
+
+    <para>OpenNMS is supported on Solaris, both on SPARC and x86.</para>
+
+    <para>However, there are some extra steps required for a trouble free
+    install on Solaris.</para>
+
+    <para>As with all OpenNMS installations, you need a Java SDK. In addtion,
+    the PostgreSQL, Tomcat4 and RRDtool packages can be harder to find.</para>
+
+    <para>A good source for open-source packages is <ulink
+    url="http://www.sunfreeware.com">SunFreeware</ulink>. Most of the packages
+    there install in <filename>/usr/local</filename>, so we've adopted that
+    convention for the packages we create. We have also included some packages
+    on our FTP site in the <filename>/pub/dependencies</filename>
+    directory.</para>
+
+    <section>
+      <title>Environment Variables</title>
+
+      <para>You will want to set up the following environment
+      variables:</para>
+
+      <para><computeroutput>JAVA_HOME=/usr/java/j2sdk1.4.2_02
+      </computeroutput> (or whatever your Java home dir is)</para>
+
+      <para><computeroutput>LD_LIBRARY_PATH=/usr/local/lib:/usr/local/ssl/lib/:/usr/local/pgsql/lib:/usr/local/opennms/lib:/usr/local/pgsql/include/server/lib:/usr/local/pgsql/inclu</computeroutput>de/internal/lib</para>
+
+      <para><computeroutput>POSTGRES_LIB=/usr/local/pgsql/lib</computeroutput></para>
+
+      <para><computeroutput>PERL5LIB=/usr/local/lib/perl5</computeroutput></para>
+    </section>
+
+    <section>
+      <title>Creating the Database</title>
+
+      <para>You will need to create an opennms database.</para>
+
+      <para>As the postgres user, go to the /usr/local/pgsql/bin directory,
+      and run the following command:</para>
+
+      <para><computeroutput>./initdb -D /usr/local/pgsql/data -E
+      ""</computeroutput></para>
+
+      <para>This will create the database. Following the instructions in the
+      section above, modify the <filename>pg_hba.conf</filename> and
+      <filename>postgresql.conf</filename> files.</para>
+
+      <para>Then you'll need to start the database:</para>
+
+      <para><computeroutput>./pg_ctl -D /usr/local/pgsql/data/
+      start</computeroutput></para>
+
+      <para>Now you are finished as the postgres user.</para>
+
+      <para>As root, initialize the OpenNMS database:</para>
+
+      <para><computeroutput>java -jar
+      /usr/local/opennms/lib/opennms_install.jar -disU</computeroutput></para>
+    </section>
+
+    <section>
+      <title>Startup</title>
+
+      <para>Now you are ready to start OpenNMS. After modifying the files in
+      /usr/local/opennms/etc (particularly the discovery configuration file),
+      run:</para>
+
+      <para><computeroutput>/usr/local/opennms/bin/opennms.sh
+      start</computeroutput></para>
+
+      <para>and then start Tomcat4 (restart it if it is already
+      running):</para>
+
+      <para><computeroutput>/usr/local/tomcat/bin/startup.sh</computeroutput></para>
+
+      <para><emphasis role="bold">Note: </emphasis>The shell you start this in
+      will behave like a console, and you may get some JMX messages
+      like:</para>
+
+      <para><computeroutput>DEBUG: pq_recvbuf: unexpected EOF on client
+      connection</computeroutput></para>
+
+      <para>Just ignore them.</para>
     </section>
   </section>
 

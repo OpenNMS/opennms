@@ -2,46 +2,16 @@ to make packages on solaris:
 
 1. install everything into a destroot somewhere
    (for example, with postgresql, I did "make install DESTDIR=/tmp/pgsql")
+   
+   I use the command:
+
+   ./build.sh -Dproduct.release=2 -Dproduct.snapshot=false -Dinstall.prefix=/tmp/opennms/ -Dinstall.dir=/usr/local/opennms -Dbuild.rrdtool.include.dir=/usr/local/rrdtool/include/ -Dbuild.postgresql.include.dir=/usr/local/pgsql/include/server -Dbuild.rrdtool.lib.dir=/usr/local/rrdtool/lib/ -Dbuild.rrdtool.bin=/usr/local/rrdtool/bin/rrdtool install
 
 2. go into your directory and walk down to /usr/local (install things in
    /usr/local just to fit with sunfreeware)
 
-3. put the packaging files from the package dir here in that directory
-   (so, for opennms you'd copy the pkginfo and postinstall scripts to
-   /tmp/opennms/usr/local/ and then make /tmp/opennms/usr/local/etc and put
-   the profile in there)
-
-4. generate the file list from /usr/local/
-
-   # cd /usr/local
-   # find . -print | pkgproto > prototype
-
-5. add the following line to the prototype file:
-
-   i pkginfo=./pkginfo
-
-6. if there's pre/postinstall scripts, do the same for them:
-
-   i preinstall=./preinstall
-   i postinstall=./postinstall
-
-7. fix permissions -- it's best to change your username stuff to "bin bin"
-
-   # perl -pi -e 's,tarus staff,bin bin,' prototype
-
-8. put the package into the system package archive
-
-   # pkgmk -r `pwd`
-
-9. generate a package file from the system archive
-
-   # cd /var/spool/pkg
-   # pkgtrans -s `pwd` /tmp/opennms-1.0.3-sol8-sparc-local
-
-Some notes:
-
-- in the opennms package, don't forget to make jar symlinks for tomcat
-  *before* you run the prototype generator
+3. in the opennms package, don't forget to make jar symlinks for tomcat
+   *before* you run the prototype generator
 
    # cd /tmp/opennms/usr/local/
    # mkdir -p tomcat/server/lib
@@ -54,3 +24,34 @@ Some notes:
    # cd webapps
    # ln -s ../../opennms/webapps/opennms ./opennms
 
+4. put the packaging files from the package dir here in that directory
+   (so, for opennms you'd copy the pkginfo and postinstall scripts to
+   /tmp/opennms/usr/local/ and then make /tmp/opennms/usr/local/etc and put
+   the profile in there)
+
+5. generate the file list from /usr/local/
+
+   # cd /usr/local
+   # find . -print | pkgproto > prototype
+
+6. add the following line to the prototype file:
+
+   i pkginfo=./pkginfo
+
+7. if there's pre/postinstall scripts, do the same for them:
+
+   i preinstall=./preinstall
+   i postinstall=./postinstall
+
+8. fix permissions -- it's best to change your username stuff to "bin bin"
+
+   # perl -pi -e 's,tarus staff,bin bin,' prototype
+
+9. put the package into the system package archive
+
+   # pkgmk -r `pwd`
+
+10. generate a package file from the system archive
+
+   # cd /var/spool/pkg
+   # pkgtrans -s `pwd` /tmp/opennms-1.0.3-sol8-sparc-local
