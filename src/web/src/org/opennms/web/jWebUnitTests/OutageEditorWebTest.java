@@ -337,18 +337,27 @@ public class OutageEditorWebTest extends WebTestCase {
     public void testHeader() throws Exception {
         beginAt("/admin/index.jsp");
         
+        //Check that the header table is present
         assertTablePresent("header");
 
+        //Get the table
         WebTable headertable = getDialog().getWebTableBySummaryOrId("header");
         
 //        assertCellImage(headertable, 0, 0);
+        //First line 
         assertCell(headertable, 0, 1, "Admin");
 //        assertCell(table, 0, 2, "", 1);  //Date time stuff
         
+        //Second line had a table in it that spans the three columns, we call it sub-header
+        //Chect that the sub-header table is present
         assertTablePresent("sub-header");
+        
+        //Get the table
         WebTable subheadertable = getDialog().getWebTableBySummaryOrId("sub-header");
+        
         String[] headerCell = { "List Nodes", "Search", "Outages", "Events", "Notification", "Assets", "Reports", "Help" };
         assertCellLink(subheadertable, 0, 1, headerCell);
+        
     }
         
     public void testFooter() throws Exception {
@@ -358,7 +367,6 @@ public class OutageEditorWebTest extends WebTestCase {
 
         WebTable table = getDialog().getWebTableBySummaryOrId("footer");
         
-//        assertCell(table, 0, 0, "Admin");
         String[] footerCell = { "List Nodes", "Search", "Outages", "Events", "Notification", "Assets", "Reports", "Help" };
         assertCellLink(table, 0, 0, footerCell);
         assertCell(table, 1, 0, "OpenNMS Copyright © 2002-2005 The OpenNMS Group, Inc. OpenNMS® is a registered trademark of The OpenNMS Group, Inc.");
@@ -480,5 +488,5 @@ public class OutageEditorWebTest extends WebTestCase {
             return day;
         }
     }
-
+    
 }
