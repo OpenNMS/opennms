@@ -621,7 +621,7 @@ your distribution.
  	description="compile jsps and run junit tests"/>
 
  <!-- CLEAN targets -->
- <target name="clean" depends="prep">
+ <target name="clean" depends="prep, clean.dist">
    <delete dir="${build.dir}"/>
  </target>
 
@@ -1073,6 +1073,7 @@ OpenNMS as part of the post-install.
    </src>
    <include name="**/*.java"/>
    <exclude name="**/*Test.java"/>
+   <exclude name="**/mock/*.java"/>
   </javac>
   <copy todir="${build.classes.dir}">
    <fileset dir="${build.sablecc.source.dir}">
@@ -1220,15 +1221,18 @@ OpenNMS as part of the post-install.
     <path refid="sources.java.path"/>
    </src>
    <include name="**/*Test.java"/>
+   <include name="**/mock/*.java"/>
    <classpath>
      <path refid="libraries.java.path"/>
      <pathelement location="${dev.lib.dir}/junit.jar"/>
+     <pathelement location="${packaged.lib.dir}/hsqldb.jar"/>
    </classpath>
   </javac>
   <junit printsummary="withOutAndErr" filtertrace="off">
      <classpath>
        <path refid="libraries.java.path"/>
        <pathelement location="${dev.lib.dir}/junit.jar"/>
+       <pathelement location="${packaged.lib.dir}/hsqldb.jar"/>
        <pathelement location="${build.classes.dir}" />
        <pathelement location="${build.tests.dir}" />
      </classpath>
