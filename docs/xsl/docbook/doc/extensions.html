@@ -1,8 +1,18 @@
 <html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-   <title>Chapter 2. Saxon Extensions</title><link rel="stylesheet" href="reference.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V2"><link rel="home" href="index.html" title="DocBook XSL Stylesheet Documentation"><link rel="up" href="index.html" title="DocBook XSL Stylesheet Documentation"><link rel="previous" href="ch01s04.html" title="Customizing DocBook XSL stylesheets"><link rel="next" href="ch02s02.html" title="Using the Extensions"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 2. Saxon Extensions</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch01s04.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch02s02.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><h2 class="title"><a name="d0e893"></a>Chapter 2. Saxon Extensions</h2></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="extensions.html#d0e937">Installation</a></dt><dt><a href="ch02s02.html">Using the Extensions</a></dt></dl></div><p>Beginning with release 1.25, the DocBook XSL Stylesheets include
-a set of Java extensions for Saxon.</p><p>These extensions enable callouts, numbered program listings, and
-the direct inclusion of text:</p><div class="programlistingco"><pre class="programlisting">&nbsp;&nbsp;1 @rem = '--*-Perl-*--                                       <span class="co"><img src="images/callouts/1.png" alt="(1)"></span>
+   <title></title><link rel="stylesheet" href="reference.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.62.4"><link rel="home" href="index.html" title=""><link rel="up" href="index.html" title=""><link rel="previous" href="ch01s04.html" title=""><link rel="next" href="ch03.html" title=""></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center"></th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch01s04.html"></a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch03.html"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="d0e1011"></a></h2></div></div><div></div></div><div class="toc"><p><b></b></p><dl><dt><span class="section"><a href="extensions.html#d0e1076">Using the Extensions</a></span></dt></dl></div><p>The DocBook XSL Stylesheets distribution includes a set of
+    DocBook-specific XSLT extensions (currently implemented in Java)
+    for performing a variety of functions that would be impractical to
+    implement with standard XSLT only:
+    </p><div class="itemizedlist"><ul type="disc"><li><p>embed callouts in verbatim environments (program
+          listings, for example)</p></li><li><p>add line numbers to verbatim environments (program
+          listings, for example)</p></li><li><p>adjust the width of table columns in HTML output to
+          match specs in the CALS table source</p></li><li><p>directly include contents of a text file in rendered
+          output</p></li><li><p>determine the intrinsic size of an image</p></li></ul></div><p>
+  </p><p>The line numbers and callouts in the following example are
+  made possible through the use of the DocBook XSLT extension
+  functions.
+    </p><div class="example"><a name="d0e1036"></a><p class="title"><b></b></p><div class="programlistingco"><pre class="programlisting">&nbsp;&nbsp;1 @rem = '--*-Perl-*--                                       <span class="co"><img src="images/callouts/1.png" alt="(1)"></span>
 &nbsp;&nbsp;&nbsp; @echo off
 &nbsp;&nbsp;&nbsp; perl.exe %_batchname %$
 &nbsp;&nbsp;&nbsp; goto endofperl                                             <span class="co"><img src="images/callouts/2.png" alt="(2)"></span>
@@ -32,10 +42,44 @@ the direct inclusion of text:</p><div class="programlistingco"><pre class="progr
 &nbsp;&nbsp;&nbsp;     }
 &nbsp;&nbsp;&nbsp; }
 &nbsp;30 
-&nbsp;&nbsp;&nbsp; exit;</pre><div class="calloutlist"><a name="d0e912"></a><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><a name="d0e913"></a><img src="images/callouts/1.png" alt="1" border="0"></td><td valign="top" align="left"><p>The prologue handles embedding a Perl script in a DOS batch file.</p></td></tr><tr><td width="5%" valign="top" align="left"><a name="d0e916"></a><img src="images/callouts/2.png" alt="2" border="0"></td><td valign="top" align="left"><p>The <tt>goto</tt> statement, interpreted by the DOS batch
-file interpreter, skips over the body of the Perl script.</p></td></tr><tr><td width="5%" valign="top" align="left"><a name="d0e922"></a><img src="images/callouts/3.png" alt="3" border="0"></td><td valign="top" align="left"><p>The <tt>require</tt> statement sources in external program
-fragments.</p></td></tr><tr><td width="5%" valign="top" align="left"><a name="d0e928"></a><img src="images/callouts/4.png" alt="4" border="0"></td><td valign="top" align="left"><p>The <tt>use</tt> statement is similar, but has additional
+&nbsp;&nbsp;&nbsp; exit;</pre><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><img src="images/callouts/1.png" alt="1" border="0"></td><td valign="top" align="left"><p>The prologue handles embedding a Perl script in a DOS batch file.</p></td></tr><tr><td width="5%" valign="top" align="left"><img src="images/callouts/2.png" alt="2" border="0"></td><td valign="top" align="left"><p>The <tt class="literal">goto</tt> statement, interpreted by the DOS batch
+file interpreter, skips over the body of the Perl script.</p></td></tr><tr><td width="5%" valign="top" align="left"><img src="images/callouts/3.png" alt="3" border="0"></td><td valign="top" align="left"><p>The <tt class="literal">require</tt> statement sources in external program
+fragments.</p></td></tr><tr><td width="5%" valign="top" align="left"><img src="images/callouts/4.png" alt="4" border="0"></td><td valign="top" align="left"><p>The <tt class="literal">use</tt> statement is similar, but has additional
 utility.  It is a Perl5 function.  (Note that this callout area specifies
-both a line and a column.)</p></td></tr><tr><td width="5%" valign="top" align="left"><a name="d0e934"></a><img src="images/callouts/5.png" alt="5" border="0"></td><td valign="top" align="left"><p>This is a user subroutine call.</p></td></tr></table></div></div><div class="section"><a name="d0e937"></a><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="d0e937"></a>Installation</h2></div></div><p>The extensions are included in the distribution in
-<tt>extensions/nwalsh.jar</tt>. Just make sure that jar
-file is in your CLASSPATH when you run Saxon.</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch01s04.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch02s02.html">Next</a></td></tr><tr><td width="40%" align="left">Customizing DocBook XSL stylesheets&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right">&nbsp;Using the Extensions</td></tr></table></div></body></html>
+both a line and a column.)</p></td></tr><tr><td width="5%" valign="top" align="left"><img src="images/callouts/5.png" alt="5" border="0"></td><td valign="top" align="left"><p>This is a user subroutine call.</p></td></tr></table></div></div></div><p>
+</p><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e1076"></a></h2></div></div><div></div></div><p>The extensions are included in the DocBook XSL Stylesheets
+      distribution in the <tt class="filename">extensions</tt> directory.
+      </p><div class="procedure"><p>To use the extensions, you need to:</p><ol type="1"><li><p>Determine which extension jar file (in the <tt class="filename">extensions</tt> directory) corresponds most
+          closely to the Java XSLT engine you use.</p></li><li><p>Include the name of that jar file in your Java
+          <tt class="envar">CLASSPATH</tt>.</p></li><li><p>Set the correct <a href="html/" target="_top">XSLT extension
+            parameters</a> to enable the behavior you need. (For
+          compatibility with other processors, the extensions are
+          disabled by default.)</p></li></ol></div><p>
+      For example, if you're using Saxon 6.4.4, include the
+      <tt class="filename">extensions/saxon644.jar</tt> file in your Java
+      classpath. If you're using Xalan-Java 2, include the
+      <tt class="filename">extensions/xalan2.jar</tt> file in your
+      classpath.
+
+      </p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title"></h3><p>The DocBook XSLT extensions are not supported for
+          Xalan-Java 1 or for versions of Saxon prior to 6.4.3. And
+          because the only current implementation of the extensions is
+          written in Java, you can't yet use them with xsltproc (which
+          is a written in C) or with Xalan-C++.
+        </p></div><p>
+
+      At a minimum, you'll also need to set the value of the <a href="html/use.extensions.html" target="_top">use.extensions</a>
+      parameter to <tt class="literal">1</tt> (instead of the default
+      <tt class="literal">0</tt>).</p><div class="example"><a name="d0e1126"></a><p class="title"><b></b></p><p>To enable the extensions from the command line, you need to
+        pass the <i class="parameter"><tt>use.extensions</tt></i> parameter
+      to your XSLT engine. Here's an example of how to do that with Saxon:
+        </p><pre class="screen">
+  java com.icl.saxon.StyleSheet  <i class="replaceable"><tt>filename.xml</tt></i> <i class="replaceable"><tt>docbook/html/docbook.xsl \
+</tt></i>    use.extensions=1 &gt; <i class="replaceable"><tt>output.html</tt></i>
+</pre><p>
+      and here's an example of how to do it with Xalan:
+        </p><pre class="screen">
+  java org.apache.xalan.xslt.Process -IN <i class="replaceable"><tt>filename.xml</tt></i> -XSL <i class="replaceable"><tt>docbook/html/docbook.xsl</tt></i> \
+    -PARAM use.extensions 1 -OUT <i class="replaceable"><tt>output.html</tt></i>  
+</pre><p>
+      </p></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch01s04.html"></a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html"></a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="ch03.html"></a></td></tr><tr><td width="40%" align="left" valign="top">&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html"></a></td><td width="40%" align="right" valign="top">&nbsp;</td></tr></table></div></body></html>

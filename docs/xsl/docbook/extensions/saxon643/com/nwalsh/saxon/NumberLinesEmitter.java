@@ -14,6 +14,7 @@ import com.icl.saxon.expr.FragmentValue;
 /**
  * <p>Saxon extension to decorate a result tree fragment with line numbers.</p>
  *
+ * <p>$Id: NumberLinesEmitter.java,v 1.3 2003/08/27 14:24:59 nwalsh Exp $</p>
  *
  * <p>Copyright (C) 2000 Norman Walsh.</p>
  *
@@ -43,6 +44,7 @@ import com.icl.saxon.expr.FragmentValue;
  * @author Norman Walsh
  * <a href="mailto:ndw@nwalsh.com">ndw@nwalsh.com</a>
  *
+ * @version $Id: NumberLinesEmitter.java,v 1.3 2003/08/27 14:24:59 nwalsh Exp $
  *
  */
 public class NumberLinesEmitter extends CopyEmitter {
@@ -57,6 +59,12 @@ public class NumberLinesEmitter extends CopyEmitter {
 
   /** The FO namespace name. */
   protected static String foURI = "http://www.w3.org/1999/XSL/Format";
+
+  /** The XHTML namespace name. */
+  protected static String xhURI = "http://www.w3.org/1999/xhtml";
+
+  /** The first line number will be <code>startinglinenumber</code>. */
+  protected int startinglinenumber = 1;
 
   /** Every <code>modulus</code> line will be numbered. */
   protected int modulus = 5;
@@ -80,6 +88,7 @@ public class NumberLinesEmitter extends CopyEmitter {
    */
   public NumberLinesEmitter(Controller controller,
 			    NamePool namePool,
+			    int startingLineNumber,
 			    int modulus,
 			    int width,
 			    String separator,
@@ -89,6 +98,7 @@ public class NumberLinesEmitter extends CopyEmitter {
     firstElement = true;
 
     this.modulus = modulus;
+    this.startinglinenumber = startingLineNumber;
     this.width = width;
     this.separator = separator;
     this.foStylesheet = foStylesheet;
@@ -103,7 +113,8 @@ public class NumberLinesEmitter extends CopyEmitter {
 
     if (lineNumber == 0) {
       // The first line is always numbered
-      formatLineNumber(++lineNumber);
+      lineNumber = startinglinenumber;
+      formatLineNumber(lineNumber);
     }
 
     // Walk through the text node looking for newlines
@@ -262,15 +273,20 @@ public class NumberLinesEmitter extends CopyEmitter {
    * @return True if the element is the outer-most block, false otherwise.
    */
   protected boolean skipThisElement(int nameCode) {
+    // FIXME: This is such a gross hack...
     if (firstElement) {
       int thisFingerprint    = namePool.getFingerprint(nameCode);
       int foBlockFingerprint = namePool.getFingerprint(foURI, "block");
       int htmlPreFingerprint = namePool.getFingerprint("", "pre");
       int htmlDivFingerprint = namePool.getFingerprint("", "div");
+      int xhtmlPreFingerprint = namePool.getFingerprint(xhURI, "pre");
+      int xhtmlDivFingerprint = namePool.getFingerprint(xhURI, "div");
 
       if ((foStylesheet && thisFingerprint == foBlockFingerprint)
 	  || (!foStylesheet && (thisFingerprint == htmlPreFingerprint
-				|| thisFingerprint == htmlDivFingerprint))) {
+				|| thisFingerprint == htmlDivFingerprint
+				|| thisFingerprint == xhtmlPreFingerprint
+				|| thisFingerprint == xhtmlDivFingerprint))) {
 	// Don't push the outer-most wrapping div, pre, or fo:block
 	return true;
       }

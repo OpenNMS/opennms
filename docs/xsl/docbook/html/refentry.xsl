@@ -3,6 +3,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
+     $Id: refentry.xsl,v 1.16 2003/06/23 22:21:31 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -15,9 +16,19 @@
 
 <xsl:template match="reference">
   <div class="{name(.)}">
-    <xsl:call-template name="anchor"/>
+    <xsl:call-template name="language.attribute"/>
+    <xsl:call-template name="anchor">
+      <xsl:with-param name="conditional" select="0"/>
+    </xsl:call-template>
     <xsl:call-template name="reference.titlepage"/>
-    <xsl:if test="not(partintro) and $generate.reference.toc != '0'">
+
+    <xsl:variable name="toc.params">
+      <xsl:call-template name="find.path.params">
+        <xsl:with-param name="table" select="normalize-space($generate.toc)"/>
+      </xsl:call-template>
+    </xsl:variable>
+
+    <xsl:if test="not(partintro) and contains($toc.params, 'toc')">
       <xsl:call-template name="division.toc"/>
     </xsl:if>
     <xsl:apply-templates/>
@@ -35,10 +46,11 @@
 
 <!-- ==================================================================== -->
 
-<xsl:template match="refentry">
-  <xsl:variable name="refmeta" select=".//refmeta"/>
+<xsl:template name="refentry.title">
+  <xsl:param name="node" select="."/>
+  <xsl:variable name="refmeta" select="$node//refmeta"/>
   <xsl:variable name="refentrytitle" select="$refmeta//refentrytitle"/>
-  <xsl:variable name="refnamediv" select=".//refnamediv"/>
+  <xsl:variable name="refnamediv" select="$node//refnamediv"/>
   <xsl:variable name="refname" select="$refnamediv//refname"/>
   <xsl:variable name="title">
     <xsl:choose>
@@ -52,11 +64,23 @@
     </xsl:choose>
   </xsl:variable>
 
+  <h1 class="title">
+    <xsl:copy-of select="$title"/>
+  </h1>
+</xsl:template>
+
+<xsl:template match="refentry">
   <div class="{name(.)}">
-    <h1 class="title">
-      <xsl:call-template name="anchor"/>
-      <xsl:copy-of select="$title"/>
-    </h1>
+    <xsl:call-template name="language.attribute"/>
+    <xsl:if test="$refentry.separator != 0 and preceding-sibling::refentry">
+      <div class="refentry.separator">
+        <hr/>
+      </div>
+    </xsl:if>
+    <xsl:call-template name="anchor">
+      <xsl:with-param name="conditional" select="0"/>
+    </xsl:call-template>
+    <xsl:call-template name="refentry.titlepage"/>
     <xsl:apply-templates/>
     <xsl:call-template name="process.footnotes"/>
   </div>
@@ -89,13 +113,27 @@
 <xsl:template match="refnamediv">
   <div class="{name(.)}">
     <xsl:call-template name="anchor"/>
-    <xsl:if test="$refentry.generate.name != 0">
-      <h2>
-        <xsl:call-template name="gentext">
-          <xsl:with-param name="key" select="'RefName'"/>
-        </xsl:call-template>
-      </h2>
-    </xsl:if>
+    <xsl:choose>
+      <xsl:when test="$refentry.generate.name != 0">
+        <h2>
+          <xsl:call-template name="gentext">
+            <xsl:with-param name="key" select="'RefName'"/>
+          </xsl:call-template>
+        </h2>
+      </xsl:when>
+      <xsl:when test="$refentry.generate.title != 0">
+        <h2>
+          <xsl:choose>
+            <xsl:when test="../refmeta/refentrytitle">
+              <xsl:apply-templates select="../refmeta/refentrytitle"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:apply-templates select="refname[1]"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </h2>
+      </xsl:when>
+    </xsl:choose>
     <p>
       <xsl:apply-templates/>
     </p>
@@ -159,8 +197,34 @@
 <xsl:template match="refsynopsisdiv/title">
 </xsl:template>
 
-<xsl:template match="refsect1|refsect2|refsect3">
-  <xsl:call-template name="block.object"/>
+<xsl:template match="refsynopsisdiv/title" mode="titlepage.mode">
+  <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="refsection|refsect1|refsect2|refsect3">
+  <div class="{name(.)}">
+    <xsl:call-template name="language.attribute"/>
+    <xsl:call-template name="anchor">
+      <xsl:with-param name="conditional" select="0"/>
+    </xsl:call-template>
+    <xsl:apply-templates/>
+  </div>
+</xsl:template>
+
+<xsl:template match="refsection/title">
+  <!-- the ID is output in the block.object call for refsect1 -->
+  <xsl:variable name="level" select="count(ancestor-or-self::refsection)"/>
+  <xsl:variable name="hlevel">
+    <xsl:choose>
+      <xsl:when test="$level &gt; 5">6</xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$level+1"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:element name="h{$hlevel}">
+    <xsl:apply-templates/>
+  </xsl:element>
 </xsl:template>
 
 <xsl:template match="refsect1/title">

@@ -2,23 +2,34 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 version="1.0">
 
+<!-- ********************************************************************
+     $Id: changebars.xsl,v 1.11 2003/11/30 19:42:23 bobstayton Exp $
+     ********************************************************************
+
+     This file is part of the XSL DocBook Stylesheet distribution.
+     See ../README or http://nwalsh.com/docbook/xsl/ for copyright
+     and other information.
+
+     ******************************************************************** -->
+
+<!-- ==================================================================== -->
 <xsl:import href="docbook.xsl"/>
 
 <xsl:param name="show.revisionflag" select="'1'"/>
 
-<xsl:template name="user.head.content">
+<xsl:template name="system.head.content">
 <style type="text/css">
 <xsl:text>
-div.added    { background-color: yellow; }
+div.added    { background-color: #ffff99; }
 div.deleted  { text-decoration: line-through;
                background-color: #FF7F7F; }
-div.changed  { background-color: lime; }
+div.changed  { background-color: #99ff99; }
 div.off      {  }
 
-span.added   { background-color: yellow; }
+span.added   { background-color: #ffff99; }
 span.deleted { text-decoration: line-through;
                background-color: #FF7F7F; }
-span.changed { background-color: lime; }
+span.changed { background-color: #99ff99; }
 span.off     {  }
 </xsl:text>
 </style>
@@ -27,6 +38,8 @@ span.off     {  }
 <xsl:template match="*[@revisionflag]">
   <xsl:choose>
     <xsl:when test="local-name(.) = 'para'
+                    or local-name(.) = 'simpara'
+                    or local-name(.) = 'formalpara'
                     or local-name(.) = 'section'
                     or local-name(.) = 'sect1'
                     or local-name(.) = 'sect2'
@@ -62,6 +75,7 @@ span.off     {  }
       </span>
     </xsl:when>
     <xsl:when test="local-name(.) = 'listitem'
+                    or local-name(.) = 'entry'
                     or local-name(.) = 'title'">
       <!-- nop; these are handled directly in the stylesheet -->
       <xsl:apply-imports/>

@@ -1,3 +1,19 @@
+2002-11-17  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* build.xml: New file.
+
+2002-05-17  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* Makefile: Fix bugs in jar creation
+
+2002-03-21  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* Makefile: Abandon support for Saxon 6.4.2
+
+2001-11-15  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* Makefile: Support saxon 6.5
+
 2001-09-26  Norman Walsh <nwalsh@users.sourceforge.net>
 
 	* Makefile: Bug #465146: use  in extensions/Makefile

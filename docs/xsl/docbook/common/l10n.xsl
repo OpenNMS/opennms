@@ -5,6 +5,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
+     $Id: l10n.xsl,v 1.21 2003/07/08 02:29:24 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -17,24 +18,23 @@
 <xsl:param name="l10n.xml" select="document('../common/l10n.xml')"/>
 <xsl:param name="local.l10n.xml" select="document('')"/>
 
-<xsl:param name="l10n.gentext.language" select="''"/>
-<xsl:param name="l10n.gentext.default.language" select="'en'"/>
-<xsl:param name="l10n.gentext.use.xref.language" select="false()"/>
-
 <xsl:template name="l10n.language">
   <xsl:param name="target" select="."/>
   <xsl:param name="xref-context" select="false()"/>
 
-  <xsl:variable name="language">
+  <xsl:variable name="mc-language">
     <xsl:choose>
       <xsl:when test="$l10n.gentext.language != ''">
         <xsl:value-of select="$l10n.gentext.language"/>
       </xsl:when>
 
-      <xsl:when test="$xref-context or $l10n.gentext.use.xref.language">
+      <xsl:when test="$xref-context or $l10n.gentext.use.xref.language != 0">
+        <!-- can't do this one step: attributes are unordered! -->
+        <xsl:variable name="lang-scope"
+                      select="($target/ancestor-or-self::*[@lang]
+                               |$target/ancestor-or-self::*[@xml:lang])[last()]"/>
         <xsl:variable name="lang-attr"
-                      select="($target/ancestor-or-self::*/@lang
-                               |$target/ancestor-or-self::*/@xml:lang)[last()]"/>
+                      select="($lang-scope/@lang | $lang-scope/@xml:lang)[1]"/>
         <xsl:choose>
           <xsl:when test="string($lang-attr) = ''">
             <xsl:value-of select="$l10n.gentext.default.language"/>
@@ -46,9 +46,13 @@
       </xsl:when>
 
       <xsl:otherwise>
-        <xsl:variable name="lang-attr" 
-                      select="(ancestor-or-self::*/@lang
-                               |ancestor-or-self::*/@xml:lang)[last()]"/>
+        <!-- can't do this one step: attributes are unordered! -->
+        <xsl:variable name="lang-scope"
+                      select="($target/ancestor-or-self::*[@lang]
+                           |$target/ancestor-or-self::*[@xml:lang])[last()]"/>
+        <xsl:variable name="lang-attr"
+                      select="($lang-scope/@lang | $lang-scope/@xml:lang)[1]"/>
+
         <xsl:choose>
           <xsl:when test="string($lang-attr) = ''">
             <xsl:value-of select="$l10n.gentext.default.language"/>
@@ -60,6 +64,10 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
+
+  <xsl:variable name="language" select="translate($mc-language,
+                                        'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                                        'abcdefghijklmnopqrstuvwxyz')"/>
 
   <xsl:variable name="adjusted.language">
     <xsl:choose>
@@ -98,45 +106,40 @@
   </xsl:choose>
 </xsl:template>
 
-<xsl:template name="gentext.xref.text">
-  <xsl:param name="element.name" select="name(.)"/>
-  <xsl:param name="default"></xsl:param>
-  <xsl:param name="lang">
-    <xsl:call-template name="l10n.language"/>
-  </xsl:param>
+<xsl:template name="language.attribute">
+  <xsl:param name="node" select="."/>
 
-  <xsl:variable name="l10n.text">
+  <xsl:variable name="language">
     <xsl:choose>
-      <xsl:when test="$local.l10n.xml//l:i18n/l:l10n[@language=$lang]/l:xref[@element=$element.name]">
-        <xsl:value-of select="($local.l10n.xml/l:i18n/l:l10n[@language=$lang]/l:xref[@element=$element.name])[1]/@text"/>
+      <xsl:when test="$l10n.gentext.language != ''">
+        <xsl:value-of select="$l10n.gentext.language"/>
       </xsl:when>
+
       <xsl:otherwise>
-        <xsl:value-of select="($l10n.xml/l:i18n/l:l10n[@language=$lang]/l:xref[@element=$element.name])[1]/@text"/>
+        <!-- can't do this one step: attributes are unordered! -->
+        <xsl:variable name="lang-scope"
+                      select="($node/ancestor-or-self::*[@lang]
+                               |$node/ancestor-or-self::*[@xml:lang])[last()]"/>
+        <xsl:variable name="lang-attr"
+                      select="($lang-scope/@lang | $lang-scope/@xml:lang)[1]"/>
+
+        <xsl:choose>
+          <xsl:when test="string($lang-attr) = ''">
+            <xsl:value-of select="$l10n.gentext.default.language"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="$lang-attr"/>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
 
-  <xsl:choose>
-    <xsl:when test="$l10n.text=''">
-      <xsl:choose>
-        <xsl:when test="$default=''">
-          <xsl:message>
-            <xsl:text>No "</xsl:text>
-            <xsl:value-of select="$lang"/>
-            <xsl:text>" cross reference text for "</xsl:text>
-            <xsl:value-of select="$element.name"/>
-            <xsl:text>" exists and no default specified.</xsl:text>
-          </xsl:message>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="$default"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:when>
-    <xsl:otherwise>
-      <xsl:value-of select="$l10n.text"/>
-    </xsl:otherwise>
-  </xsl:choose>
+  <xsl:if test="$language != ''">
+    <xsl:attribute name="lang">
+      <xsl:value-of select="$language"/>
+    </xsl:attribute>
+  </xsl:if>
 </xsl:template>
 
 <xsl:template name="gentext">
@@ -151,17 +154,6 @@
   <xsl:variable name="l10n.gentext"
                 select="($l10n.xml/l:i18n/l:l10n[@language=$lang]/l:gentext[@key=$key])[1]"/>
 
-  <xsl:variable name="l10n.name">
-    <xsl:choose>
-      <xsl:when test="$local.l10n.gentext">
-        <xsl:value-of select="$local.l10n.gentext/@text"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:value-of select="$l10n.gentext/@text"/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:variable>
-
   <xsl:choose>
     <xsl:when test="count($local.l10n.gentext) &gt; 0">
       <xsl:value-of select="$local.l10n.gentext/@text"/>
@@ -175,7 +167,15 @@
         <xsl:value-of select="$lang"/>
         <xsl:text>" localization of "</xsl:text>
         <xsl:value-of select="$key"/>
-        <xsl:text>" exists; using "en".</xsl:text>
+        <xsl:text>" exists</xsl:text>
+	<xsl:choose>
+	  <xsl:when test="$lang = 'en'">
+	     <xsl:text>.</xsl:text>
+	  </xsl:when>
+	  <xsl:otherwise>
+	     <xsl:text>; using "en".</xsl:text>
+	  </xsl:otherwise>
+	</xsl:choose>
       </xsl:message>
 
       <xsl:value-of select="($l10n.xml/l:i18n/l:l10n[@language='en']/l:gentext[@key=$key])[1]/@text"/>
@@ -297,6 +297,10 @@
 <xsl:template name="gentext.template">
   <xsl:param name="context" select="'default'"/>
   <xsl:param name="name" select="'default'"/>
+  <xsl:param name="origname" select="$name"/>
+  <xsl:param name="purpose"/>
+  <xsl:param name="xrefstyle"/>
+  <xsl:param name="referrer"/>
   <xsl:param name="lang">
     <xsl:call-template name="l10n.language"/>
   </xsl:param>
@@ -334,30 +338,111 @@
   </xsl:if>
 
   <xsl:variable name="local.template.node"
-                select="$local.context.node/l:template[@name=$name][1]"/>
+                select="($local.context.node/l:template[@name=$name
+                                                        and @style
+                                                        and @style=$xrefstyle]
+                        |$local.context.node/l:template[@name=$name
+                                                        and not(@style)])[1]"/>
 
   <xsl:variable name="template.node"
-                select="$context.node/l:template[@name=$name][1]"/>
-
-  <xsl:if test="count($template.node) = 0
-                and count($local.template.node) = 0">
-    <xsl:message>
-      <xsl:text>No template named "</xsl:text>
-      <xsl:value-of select="$name"/>
-      <xsl:text>" exists in the context named "</xsl:text>
-      <xsl:value-of select="$context"/>
-      <xsl:text>" in the "</xsl:text>
-      <xsl:value-of select="$lang"/>
-      <xsl:text>" localization.</xsl:text>
-    </xsl:message>
-  </xsl:if>
+                select="($context.node/l:template[@name=$name
+                                                  and @style
+                                                  and @style=$xrefstyle]
+                        |$context.node/l:template[@name=$name
+                                                  and not(@style)])[1]"/>
 
   <xsl:choose>
-    <xsl:when test="$local.template.node">
+    <xsl:when test="$local.template.node/@text">
       <xsl:value-of select="$local.template.node/@text"/>
     </xsl:when>
-    <xsl:otherwise>
+    <xsl:when test="$template.node/@text">
       <xsl:value-of select="$template.node/@text"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:choose>
+        <xsl:when test="contains($name, '/')">
+          <xsl:call-template name="gentext.template">
+            <xsl:with-param name="context" select="$context"/>
+            <xsl:with-param name="name" select="substring-after($name, '/')"/>
+            <xsl:with-param name="origname" select="$origname"/>
+            <xsl:with-param name="purpose" select="$purpose"/>
+            <xsl:with-param name="xrefstyle" select="$xrefstyle"/>
+            <xsl:with-param name="referrer" select="$referrer"/>
+            <xsl:with-param name="lang" select="$lang"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:message>
+            <xsl:text>No template for "</xsl:text>
+            <xsl:value-of select="$origname"/>
+            <xsl:text>" (or any of its leaves) exists
+in the context named "</xsl:text>
+            <xsl:value-of select="$context"/>
+            <xsl:text>" in the "</xsl:text>
+            <xsl:value-of select="$lang"/>
+            <xsl:text>" localization.</xsl:text>
+          </xsl:message>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template name="gentext.template.exists">
+  <xsl:param name="context" select="'default'"/>
+  <xsl:param name="name" select="'default'"/>
+  <xsl:param name="origname" select="$name"/>
+  <xsl:param name="purpose"/>
+  <xsl:param name="xrefstyle"/>
+  <xsl:param name="referrer"/>
+  <xsl:param name="lang">
+    <xsl:call-template name="l10n.language"/>
+  </xsl:param>
+
+  <xsl:variable name="local.localization.node"
+                select="($local.l10n.xml//l:i18n/l:l10n[@language=$lang])[1]"/>
+
+  <xsl:variable name="localization.node"
+                select="($l10n.xml/l:i18n/l:l10n[@language=$lang])[1]"/>
+
+  <xsl:variable name="local.context.node"
+                select="$local.localization.node/l:context[@name=$context]"/>
+
+  <xsl:variable name="context.node"
+                select="$localization.node/l:context[@name=$context]"/>
+
+  <xsl:variable name="local.template.node"
+                select="($local.context.node/l:template[@name=$name
+                                                        and @style
+                                                        and @style=$xrefstyle]
+                        |$local.context.node/l:template[@name=$name
+                                                        and not(@style)])[1]"/>
+
+  <xsl:variable name="template.node"
+                select="($context.node/l:template[@name=$name
+                                                  and @style
+                                                  and @style=$xrefstyle]
+                        |$context.node/l:template[@name=$name
+                                                  and not(@style)])[1]"/>
+
+  <xsl:choose>
+    <xsl:when test="$local.template.node/@text">1</xsl:when>
+    <xsl:when test="$template.node/@text">1</xsl:when>
+    <xsl:otherwise>
+      <xsl:choose>
+        <xsl:when test="contains($name, '/')">
+          <xsl:call-template name="gentext.template.exists">
+            <xsl:with-param name="context" select="$context"/>
+            <xsl:with-param name="name" select="substring-after($name, '/')"/>
+            <xsl:with-param name="origname" select="$origname"/>
+            <xsl:with-param name="purpose" select="$purpose"/>
+            <xsl:with-param name="xrefstyle" select="$xrefstyle"/>
+            <xsl:with-param name="referrer" select="$referrer"/>
+            <xsl:with-param name="lang" select="$lang"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>0</xsl:otherwise>
+      </xsl:choose>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>

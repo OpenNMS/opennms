@@ -20,6 +20,7 @@ url="http://www.kosek.cz">http://www.kosek.cz</ulink>
 <holder>Ji&rcaron;&iacute; Kosek</holder>
 </copyright>
 <releaseinfo role="meta">
+$Id: profiling.xml,v 1.3 2002/03/14 14:19:38 nwalsh Exp $
 </releaseinfo>
 </articleinfo>
 
@@ -56,16 +57,16 @@ or user group. When generating final output version of document we
 must do profiling i.e. personalization for particular target audience.
 Only some parts of document are processed. DocBook has built in
 support for marking document parts &ndash; on almost every element you
-can use attributes <sgmltag class="attribute">os</sgmltag>, <sgmltag
+can use attributes like <sgmltag class="attribute">os</sgmltag>, <sgmltag
 class="attribute">userlevel</sgmltag> and <sgmltag
 class="attribute">arch</sgmltag>. We can store identifier of operating
 system, user group or hardware architecture here. You can also store
 profiling information into some general use attribute like <sgmltag
-class="attribute">role</sgmltag>. <xref
-linkend="ex:doc"/> shows how document with profile information might
-look.</para>
+class="attribute">role</sgmltag>. <xref linkend="ex.doc"/>
+shows how document with profiling information might
+look like.</para>
 
-<example id="ex:doc">
+<example id="ex.doc">
 <title>Sample DocBook document with profiling information</title>
 <programlisting><![CDATA[<?xml version='1.0' encoding='iso-8859-1'?>
 <!DOCTYPE chapter PUBLIC '-//OASIS//DTD DocBook XML V4.1.2//EN'
@@ -128,7 +129,9 @@ stage process &ndash; first you must filter source document and in
 second step you could apply normal stylesheets on result of filtering.
 This may be little bit inconvenient for many users, but whole task can
 be very easily automated by set of shell scripts or batch files or
-whatever else.</para>
+whatever else. Starting from version 1.50 of XSL stylesheets you can
+do profiling in one step together with normal stylesheet
+processing.</para>
 
 <figure>
 <title>Profiling stream</title>
@@ -144,14 +147,14 @@ and tools. I decided to use XSLT stylesheet. Writing necessary filter
 is very easy in XSLT and many users have XSLT processor already
 installed. Profiling stylesheet is part of standard XSL stylesheets
 distribution and can be found in file
-<filename>tools/profile.xsl</filename>.</para>
+<filename>profiling/profile.xsl</filename>.</para>
 </section>
 
 <section>
 <title>Usage</title>
 
 <para>If you want to generate Unix specific guide from our sample
-document (<xref linkend="ex:doc"/>) you can do it in the following
+document (<xref linkend="ex.doc"/>) you can do it in the following
 way. (We assume, that command <command>saxon</command> is able to run
 XSLT processor on your machine. You can use your preffered XSLT
 processor instead.)</para>
@@ -200,7 +203,7 @@ values. They are summarized in the following list.</para>
 
 <variablelist>
 <varlistentry>
-<term><parameter>os</parameter></term>
+<term><parameter>profile.os</parameter></term>
 <listitem>
 <para>This parameter is used for specifying operating system (<sgmltag
 class="attribute">os</sgmltag> attribute) for which you want get
@@ -208,7 +211,7 @@ profiled version of document.</para>
 </listitem>
 </varlistentry>
 <varlistentry>
-<term><parameter>ul</parameter></term>
+<term><parameter>profile.userlevel</parameter></term>
 <listitem>
 <para>This parameter is used for specifying user level (<sgmltag
 class="attribute">userlevel</sgmltag> attribute) for which you want get
@@ -216,7 +219,7 @@ profiled version of document.</para>
 </listitem>
 </varlistentry>
 <varlistentry>
-<term><parameter>arch</parameter></term>
+<term><parameter>profile.arch</parameter></term>
 <listitem>
 <para>This parameter is used for specifying hardware architecture (<sgmltag
 class="attribute">arch</sgmltag> attribute) for which you want get
@@ -224,7 +227,21 @@ profiled version of document.</para>
 </listitem>
 </varlistentry>
 <varlistentry>
-<term><parameter>attr</parameter></term>
+<term><parameter>profile.condition</parameter></term>
+<term><parameter>profile.conformance</parameter></term>
+<term><parameter>profile.revision</parameter></term>
+<term><parameter>profile.revisionflag</parameter></term>
+<term><parameter>profile.security</parameter></term>
+<term><parameter>profile.vendor</parameter></term>
+<term><parameter>profile.role</parameter></term>
+<term><parameter>profile.lang</parameter></term>
+<listitem>
+<para>These parameters can be used to specify target profile for
+corresponding attributes.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><parameter>profile.attribute</parameter></term>
 <listitem>
 <para>Name of attribute on which profiling should be based. It can be
 used if profiling information is stored in other attributes then
@@ -233,17 +250,17 @@ class="attribute">userlevel</sgmltag> and <sgmltag class="attribute">arch</sgmlt
 </listitem>
 </varlistentry>
 <varlistentry>
-<term><parameter>val</parameter></term>
+<term><parameter>profile.value</parameter></term>
 <listitem>
 <para>This parameter is used for specifying value for attribute
 selected by <parameter>attr</parameter> parameter.</para>
-<para>E.g. setting <literal>attr=os</literal> and
-<literal>val=unix</literal> is same as setting
+<para>E.g. setting <literal>profile.attribute=os</literal> and
+<literal>profile.value=unix</literal> is same as setting
 <literal>os=unix</literal>.</para>
 </listitem>
 </varlistentry>
 <varlistentry>
-<term><parameter>sep</parameter></term>
+<term><parameter>profile.separator</parameter></term>
 <listitem>
 <para>Separator for multiple target audience identifiers. Default is
 <literal>;</literal>.</para>
@@ -267,10 +284,30 @@ attributes in a single step as stylesheet can handle all parameters
 simultaneously. For example to get hypothetical guide for Windows
 beginners, you can run profiling like this:</para>
 
-<screen><command>saxon</command> <option>-o</option> xsample.xml sample.xml profile.xsl "os=win" "ul=beginner"</screen>
+<screen><command>saxon</command> <option>-o</option> xsample.xml sample.xml profile.xsl "profile.os=win" "profile.userlevel=beginner"</screen>
 
 <para>As you can see above described profiling process can be used to
 substitute SGML marked sections mechanism which is missing in XML.</para>
+
+</section>
+
+<section>
+<title>Single pass profiling</title>
+
+<para>If you are using XSL stylesheets version 1.50 and later with
+EXSLT enabled XSLT processor (Saxon, xsltproc, Xalan) you can do
+profiling and transformation to HTML or FO in a single step. To do this
+use stylesheet with prefix <filename>profile-</filename> instead of
+normal one (e.g. <filename>profile-docbook.xsl</filename>,
+<filename>profile-chunk.xsl</filename> or
+<filename>profile-htmlhelp.xsl</filename>). For example to get HTML
+version of profiled document use:</para>
+
+<screen><command>saxon</command> <option>-o</option> sample.html sample.xml .../html/profile-docbook.xsl "profile.os=win" "profile.userlevel=beginner"</screen>
+
+<para>No additional processing is necessary. If you want to use
+profiling with your customized stylesheets import profiling-able
+stylesheet instead of normal one.</para>
 
 </section>
 

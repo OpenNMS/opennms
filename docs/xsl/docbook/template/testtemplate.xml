@@ -1,38 +1,35 @@
 <t:templates xmlns:t="http://nwalsh.com/docbook/xsl/template/1.0"
              base-stylesheet="../html/docbook.xsl">
 
-<t:variable name="section.autonumber" select="true()"/>
-<t:variable name="html.stylesheet">docbook.css</t:variable>
-
-<t:titlepage element="article" side="recto">
-  <title predicate="[1]"/>
-  <subtitle predicate="[1]"/>
-  <corpauthor/>
-  <author/>
-  <authorgroup>
-    <t:or>
-      <corpauthor/>
-      <author/>
-      <editor/>
-    </t:or>
-  </authorgroup>
-  <editor/>
-  <releaseinfo/>
-  <copyright/>
-  <pubdate/>
-  <revision/>
-  <revhistory/>
-  <abstract/>
-</t:titlepage>
-
-<t:biblioentry>
-  <abbrev/>
-  <title/>
-  <t:or>
+<t:titlepage element="article" wrapper="div" class="titlepage">
+  <t:titlepage-content side="recto">
+    <title/>
+    <subtitle/>
+    <corpauthor/>
     <authorgroup/>
     <author/>
-  </t:or>
-  <biblioset/>
-</t:biblioentry>  
+    <othercredit/>
+    <releaseinfo/>
+    <copyright/>
+    <legalnotice/>
+    <pubdate/>
+    <revision/>
+    <revhistory/>
+    <abstract/>
+  </t:titlepage-content>
+
+  <t:titlepage-content side="verso">
+  </t:titlepage-content>
+
+  <t:titlepage-separator>
+    <hr/>
+  </t:titlepage-separator>
+
+  <t:titlepage-before side="recto">
+  </t:titlepage-before>
+
+  <t:titlepage-before side="verso">
+  </t:titlepage-before>
+</t:titlepage>
 
 </t:templates>

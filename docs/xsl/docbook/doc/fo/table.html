@@ -4,45 +4,57 @@
    
       <title>Formatting Object Table Reference</title>
       <link rel="stylesheet" href="../reference.css" type="text/css">
-      <meta name="generator" content="DocBook XSL Stylesheets V1">
+      <meta name="generator" content="DocBook XSL Stylesheets V1.65.0">
    </head>
    <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
-      <div class="reference">
-         <div class="titlepage">
+      <div class="reference" lang="en"><a name="d0e1"></a><div class="titlepage">
             <div>
-               <h1 class="title"><a name="d0e1"></a>Formatting Object Table Reference
-               </h1>
+               <div>
+                  <h1 class="title"><a name="d0e1"></a>Formatting Object Table Reference
+                  </h1>
+               </div>
+               <div>
+                  <div class="author">
+                     <h3 class="author"><span class="firstname">Norman</span> <span class="surname">Walsh</span></h3>
+                  </div>
+               </div>
+               <div>
+                  <p class="releaseinfo">
+                     $Id: table.xsl,v 1.33 2004/03/04 14:02:44 nwalsh Exp $
+                     
+                  </p>
+               </div>
+               <div>
+                  <p class="copyright"><a href="../copyright.html">Copyright</a> &copy; 19992000 by Norman Walsh. <a href="../warranty.html">No Warranty</a>.
+                  </p>
+               </div>
             </div>
-            <div>
-               <h3 class="author">Norman Walsh</h3>
-            </div>
-            <div>
-               <p class="releaseinfo">
-                  
-               </p>
-            </div>
-            <div>
-               <p class="copyright"><a href="../copyright.html">Copyright</a> &copy; 1999, 2000 by Norman Walsh. <a href="../warranty.html">No Warranty</a>.
-               </p>
-            </div>
+            <div></div>
             <hr>
          </div>
-         <div class="partintro">
-            <div></div>
-            <div class="section"><a name="d0e24"></a><div class="titlepage">
+         <div class="partintro" lang="en">
+            <div>
+               <div></div>
+               <div></div>
+            </div>
+            <div class="section" lang="en">
+               <div class="titlepage">
                   <div>
-                     <h2 class="title" style="clear: both"><a name="d0e24"></a>Introduction
-                     </h2>
+                     <div>
+                        <h2 class="title" style="clear: both"><a name="d0e24"></a>Introduction
+                        </h2>
+                     </div>
                   </div>
+                  <div></div>
                </div>
                <p>This is technical reference documentation for the DocBook XSL
                   Stylesheets; it documents (some of) the parameters, templates, and
                   other elements of the stylesheets.
                </p>
-               <p>This is not intended to be user documentation.
+               <p>This is not intended to be &#8220;<span class="quote">user</span>&#8221; documentation.
                   It is provided for developers writing customization layers for the
-                  stylesheets, and for anyone who's interested in how it
-                  works.
+                  stylesheets, and for anyone who's interested in &#8220;<span class="quote">how it
+                     works</span>&#8221;.
                </p>
                <p>Although I am trying to be thorough, this documentation is known
                   to be incomplete. Don't forget to read the source, too :-)
@@ -57,14 +69,18 @@
                </dl>
             </div>
          </div>
-         <hr>
-         <div class="refentry">
-            <h1 class="title"><a name="template.calc.column.width"></a>calc.column.width
-            </h1>
-            <div class="refnamediv"><a name="d0e40"></a><h2>Name</h2>calc.column.width &#8212; Calculate an XSL FO table column width specification from a
-               CALS table column width specification.
+         <div class="refentry" lang="en"><a name="template.calc.column.width"></a><div class="titlepage">
+               <div></div>
+               <div></div>
             </div>
-            <div class="refsynopsisdiv"><a name="d0e45"></a><h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template name="calc.column.width"&gt;
+            <div class="refnamediv">
+               <h2>Name</h2>
+               <p>calc.column.width &#8212; Calculate an XSL FO table column width specification from a
+                  CALS table column width specification.
+               </p>
+            </div>
+            <div class="refsynopsisdiv">
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template name="calc.column.width"&gt;
 &lt;xsl:param name="colwidth"&gt;1*&lt;/xsl:param&gt;
   ...
 &lt;/xsl:template&gt;</pre></div>
@@ -79,21 +95,21 @@
                
                
                <div class="itemizedlist">
-                  <ul>
+                  <ul type="disc">
                      <li>
-                        <p><a name="d0e54"></a><span class="emphasis"><i>99.99units</i></span>, a fixed length specifier.
+                        <p><span class="emphasis"><em>99.99units</em></span>, a fixed length specifier.
                         </p>
                      </li>
                      <li>
-                        <p><a name="d0e59"></a><span class="emphasis"><i>99.99</i></span>, a fixed length specifier without any units.
+                        <p><span class="emphasis"><em>99.99</em></span>, a fixed length specifier without any units.
                         </p>
                      </li>
                      <li>
-                        <p><a name="d0e64"></a><span class="emphasis"><i>99.99*</i></span>, a relative length specifier.
+                        <p><span class="emphasis"><em>99.99*</em></span>, a relative length specifier.
                         </p>
                      </li>
                      <li>
-                        <p><a name="d0e69"></a><span class="emphasis"><i>99.99*+99.99units</i></span>, a combination of both.
+                        <p><span class="emphasis"><em>99.99*+99.99units</em></span>, a combination of both.
                         </p>
                      </li>
                   </ul>
@@ -124,30 +140,24 @@
                
                
                <div class="itemizedlist">
-                  <ul>
+                  <ul type="disc">
                      <li>
-                        <p><a name="d0e85"></a>"36pt" becomes "36pt"
-                        </p>
+                        <p>"36pt" becomes "36pt"</p>
                      </li>
                      <li>
-                        <p><a name="d0e88"></a>"3pi" becomes "3pc"
-                        </p>
+                        <p>"3pi" becomes "3pc"</p>
                      </li>
                      <li>
-                        <p><a name="d0e91"></a>"36" becomes "36pt"
-                        </p>
+                        <p>"36" becomes "36pt"</p>
                      </li>
                      <li>
-                        <p><a name="d0e94"></a>"3*" becomes "proportional-column-width(3)"
-                        </p>
+                        <p>"3*" becomes "proportional-column-width(3)"</p>
                      </li>
                      <li>
-                        <p><a name="d0e97"></a>"3*+2pi" becomes "proportional-column-width(3)+2pc"
-                        </p>
+                        <p>"3*+2pi" becomes "proportional-column-width(3)+2pc"</p>
                      </li>
                      <li>
-                        <p><a name="d0e100"></a>"1*+2" becomes "proportional-column-width(1)+2pt"
-                        </p>
+                        <p>"1*+2" becomes "proportional-column-width(1)+2pt"</p>
                      </li>
                   </ul>
                </div>
@@ -159,10 +169,9 @@
                
                <div class="variablelist">
                   <dl>
-                     <dt><a name="d0e107"></a><span class="term">colwidth</span></dt>
+                     <dt><span class="term">colwidth</span></dt>
                      <dd>
-                        <p><a name="d0e110"></a>The CALS column width specification.
-                        </p>
+                        <p>The CALS column width specification.</p>
                      </dd>
                   </dl>
                </div>

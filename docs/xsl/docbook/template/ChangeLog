@@ -1,3 +1,15 @@
+2004-01-29  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* titlepage.xsl: Support 'info' everywhere
+
+2003-01-20  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* titlepage.xsl: SIGNIFICANT changes to the titlepage template setup. See RELEASE-NOTES.
+
+2002-01-28  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* testtemplate.xml: Bug #502952: testtemple.xml was incorrect
+
 2001-08-01  Norman Walsh <nwalsh@users.sourceforge.net>
 
 	* titlepage.xsl: Add t and param to the excluded result prefixes

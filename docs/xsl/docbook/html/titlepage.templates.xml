@@ -4,8 +4,8 @@
 
 <!-- ==================================================================== -->
 
-<t:titlepage element="article" wrapper="div" class="titlepage">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="article" t:wrapper="div" class="titlepage">
+  <t:titlepage-content t:side="recto">
     <title/>
     <subtitle/>
     <corpauthor/>
@@ -21,24 +21,24 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
     <hr/>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-<t:titlepage element="set" wrapper="div" class="titlepage">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="set" t:wrapper="div" class="titlepage">
+  <t:titlepage-content t:side="recto">
     <title/>
     <subtitle/>
     <corpauthor/>
@@ -54,24 +54,24 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
     <hr/>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-<t:titlepage element="book" wrapper="div" class="titlepage">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="book" t:wrapper="div" class="titlepage">
+  <t:titlepage-content t:side="recto">
     <title/>
     <subtitle/>
     <corpauthor/>
@@ -87,86 +87,24 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
     <hr/>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
-  </t:titlepage-before>
-</t:titlepage>
-
-<!-- ==================================================================== -->
-
-<t:titlepage element="part" wrapper="div" class="titlepage">
-  <t:titlepage-content side="recto">
-    <title/>
-    <subtitle/>
-    <corpauthor/>
-    <authorgroup/>
-    <author/>
-    <othercredit/>
-    <releaseinfo/>
-    <copyright/>
-    <legalnotice/>
-    <pubdate/>
-    <revision/>
-    <revhistory/>
-    <abstract/>
-  </t:titlepage-content>
-
-  <t:titlepage-content side="verso">
-  </t:titlepage-content>
-
-  <t:titlepage-separator>
-  </t:titlepage-separator>
-
-  <t:titlepage-before side="recto">
-  </t:titlepage-before>
-
-  <t:titlepage-before side="verso">
-  </t:titlepage-before>
-</t:titlepage>
-
-<t:titlepage element="partintro" wrapper="div">
-  <t:titlepage-content side="recto">
-    <title/>
-    <subtitle/>
-    <corpauthor/>
-    <authorgroup/>
-    <author/>
-    <othercredit/>
-    <releaseinfo/>
-    <copyright/>
-    <legalnotice/>
-    <pubdate/>
-    <revision/>
-    <revhistory/>
-    <abstract/>
-  </t:titlepage-content>
-
-  <t:titlepage-content side="verso">
-  </t:titlepage-content>
-
-  <t:titlepage-separator>
-  </t:titlepage-separator>
-
-  <t:titlepage-before side="recto">
-  </t:titlepage-before>
-
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-<t:titlepage element="reference" wrapper="div" class="titlepage">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="part" t:wrapper="div" class="titlepage">
+  <t:titlepage-content t:side="recto">
     <title/>
     <subtitle/>
     <corpauthor/>
@@ -182,48 +120,133 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
+  </t:titlepage-content>
+
+  <t:titlepage-separator>
+  </t:titlepage-separator>
+
+  <t:titlepage-before t:side="recto">
+  </t:titlepage-before>
+
+  <t:titlepage-before t:side="verso">
+  </t:titlepage-before>
+</t:titlepage>
+
+<t:titlepage t:element="partintro" t:wrapper="div">
+  <t:titlepage-content t:side="recto">
+    <title/>
+    <subtitle/>
+    <corpauthor/>
+    <authorgroup/>
+    <author/>
+    <othercredit/>
+    <releaseinfo/>
+    <copyright/>
+    <legalnotice/>
+    <pubdate/>
+    <revision/>
+    <revhistory/>
+    <abstract/>
+  </t:titlepage-content>
+
+  <t:titlepage-content t:side="verso">
+  </t:titlepage-content>
+
+  <t:titlepage-separator>
+  </t:titlepage-separator>
+
+  <t:titlepage-before t:side="recto">
+  </t:titlepage-before>
+
+  <t:titlepage-before t:side="verso">
+  </t:titlepage-before>
+</t:titlepage>
+
+<!-- ==================================================================== -->
+
+<t:titlepage t:element="reference" t:wrapper="div" class="titlepage">
+  <t:titlepage-content t:side="recto">
+    <title/>
+    <subtitle/>
+    <corpauthor/>
+    <authorgroup/>
+    <author/>
+    <othercredit/>
+    <releaseinfo/>
+    <copyright/>
+    <legalnotice/>
+    <pubdate/>
+    <revision/>
+    <revhistory/>
+    <abstract/>
+  </t:titlepage-content>
+
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
     <hr/>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-  <t:titlepage element="dedication" wrapper="div" class="titlepage">
-    <t:titlepage-content side="recto">
+<t:titlepage t:element="refentry" t:wrapper="div" class="titlepage">
+  <t:titlepage-content t:side="recto">
+<!-- uncomment this if you want refentry titlepages
+    <title t:force="1"
+	   t:named-template="refentry.title"
+	   param:node="ancestor-or-self::refentry[1]"/>
+-->
+  </t:titlepage-content>
+
+  <t:titlepage-content t:side="verso">
+  </t:titlepage-content>
+
+  <t:titlepage-separator/>
+
+  <t:titlepage-before t:side="recto">
+  </t:titlepage-before>
+
+  <t:titlepage-before t:side="verso">
+  </t:titlepage-before>
+</t:titlepage>
+
+<!-- ==================================================================== -->
+
+  <t:titlepage t:element="dedication" t:wrapper="div" class="titlepage">
+    <t:titlepage-content t:side="recto">
     <title
-	   force="1"
-	   named-template="component.title"
+	   t:force="1"
+	   t:named-template="component.title"
 	   param:node="ancestor-or-self::dedication[1]"/>
     <subtitle/>
     </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-<t:titlepage element="preface" wrapper="div" class="titlepage">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="preface" t:wrapper="div" class="titlepage">
+  <t:titlepage-content t:side="recto">
     <title/>
     <subtitle/>
     <corpauthor/>
@@ -239,23 +262,23 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-<t:titlepage element="chapter" wrapper="div" class="titlepage">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="chapter" t:wrapper="div" class="titlepage">
+  <t:titlepage-content t:side="recto">
     <title/>
     <subtitle/>
     <corpauthor/>
@@ -271,23 +294,23 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-<t:titlepage element="appendix" wrapper="div" class="titlepage">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="appendix" t:wrapper="div" class="titlepage">
+  <t:titlepage-content t:side="recto">
     <title/>
     <subtitle/>
     <corpauthor/>
@@ -303,23 +326,23 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-<t:titlepage element="section" wrapper="div" class="titlepage">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="section" t:wrapper="div" class="titlepage">
+  <t:titlepage-content t:side="recto">
     <title/>
     <subtitle/>
     <corpauthor/>
@@ -335,22 +358,22 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
     <xsl:if test="count(parent::*)='0'"><hr/></xsl:if>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
-<t:titlepage element="sect1" wrapper="div" class="titlepage">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="sect1" t:wrapper="div" class="titlepage">
+  <t:titlepage-content t:side="recto">
     <title/>
     <subtitle/>
     <corpauthor/>
@@ -366,22 +389,22 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
     <xsl:if test="count(parent::*)='0'"><hr/></xsl:if>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
-<t:titlepage element="sect2" wrapper="div" class="titlepage">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="sect2" t:wrapper="div" class="titlepage">
+  <t:titlepage-content t:side="recto">
     <title/>
     <subtitle/>
     <corpauthor/>
@@ -397,22 +420,22 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
     <xsl:if test="count(parent::*)='0'"><hr/></xsl:if>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
-<t:titlepage element="sect3" wrapper="div" class="titlepage">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="sect3" t:wrapper="div" class="titlepage">
+  <t:titlepage-content t:side="recto">
     <title/>
     <subtitle/>
     <corpauthor/>
@@ -428,22 +451,22 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
     <xsl:if test="count(parent::*)='0'"><hr/></xsl:if>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
-<t:titlepage element="sect4" wrapper="div" class="titlepage">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="sect4" t:wrapper="div" class="titlepage">
+  <t:titlepage-content t:side="recto">
     <title/>
     <subtitle/>
     <corpauthor/>
@@ -459,22 +482,22 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
     <xsl:if test="count(parent::*)='0'"><hr/></xsl:if>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
-<t:titlepage element="sect5" wrapper="div" class="titlepage">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="sect5" t:wrapper="div" class="titlepage">
+  <t:titlepage-content t:side="recto">
     <title/>
     <subtitle/>
     <corpauthor/>
@@ -490,22 +513,22 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
     <xsl:if test="count(parent::*)='0'"><hr/></xsl:if>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
-<t:titlepage element="simplesect" wrapper="div" class="titlepage">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="simplesect" t:wrapper="div" class="titlepage">
+  <t:titlepage-content t:side="recto">
     <title/>
     <subtitle/>
     <corpauthor/>
@@ -521,89 +544,113 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
     <xsl:if test="count(parent::*)='0'"><hr/></xsl:if>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-<t:titlepage element="bibliography" wrapper="div" class="titlepage">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="bibliography" t:wrapper="div" class="titlepage">
+  <t:titlepage-content t:side="recto">
     <title
-	   force="1"
-	   named-template="component.title"
+	   t:force="1"
+	   t:named-template="component.title"
 	   param:node="ancestor-or-self::bibliography[1]"/>
     <subtitle/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-<t:titlepage element="glossary" wrapper="div" class="titlepage">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="glossary" t:wrapper="div" class="titlepage">
+  <t:titlepage-content t:side="recto">
     <title
-	   force="1"
-	   named-template="component.title"
+	   t:force="1"
+	   t:named-template="component.title"
 	   param:node="ancestor-or-self::glossary[1]"/>
     <subtitle/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-<t:titlepage element="index" wrapper="div" class="titlepage">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="index" t:wrapper="div" class="titlepage">
+  <t:titlepage-content t:side="recto">
     <title
-	   force="1"
-	   named-template="component.title"
+	   t:force="1"
+	   t:named-template="component.title"
 	   param:node="ancestor-or-self::index[1]"/>
     <subtitle/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
+  </t:titlepage-before>
+</t:titlepage>
+
+<!-- ==================================================================== -->
+
+<t:titlepage t:element="setindex" t:wrapper="div" class="titlepage">
+  <t:titlepage-content t:side="recto">
+    <title
+	   t:force="1"
+	   t:named-template="component.title"
+	   param:node="ancestor-or-self::setindex[1]"/>
+    <subtitle/>
+  </t:titlepage-content>
+
+  <t:titlepage-content t:side="verso">
+  </t:titlepage-content>
+
+  <t:titlepage-separator>
+  </t:titlepage-separator>
+
+  <t:titlepage-before t:side="recto">
+  </t:titlepage-before>
+
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 

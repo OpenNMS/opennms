@@ -3,6 +3,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
+     $Id: index.xsl,v 1.14 2004/02/13 21:03:22 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -13,7 +14,7 @@
 
 <!-- ==================================================================== -->
 
-<xsl:template match="index|setindex">
+<xsl:template match="index">
   <!-- some implementations use completely empty index tags to indicate -->
   <!-- where an automatically generated index should be inserted. so -->
   <!-- if the index is completely empty, skip it. Unless generate.index -->
@@ -22,15 +23,55 @@
 
   <xsl:if test="count(*)>0 or $generate.index != '0'">
     <div class="{name(.)}">
-      <xsl:call-template name="anchor"/>
+      <xsl:if test="$generate.id.attributes != 0">
+        <xsl:attribute name="id">
+          <xsl:call-template name="object.id"/>
+        </xsl:attribute>
+      </xsl:if>
+
       <xsl:call-template name="index.titlepage"/>
       <xsl:apply-templates/>
 
       <xsl:if test="count(indexentry) = 0 and count(indexdiv) = 0">
-        <xsl:call-template name="generate-index"/>
+        <xsl:call-template name="generate-index">
+          <xsl:with-param name="scope" select="(ancestor::book|/)[last()]"/>
+        </xsl:call-template>
       </xsl:if>
 
-      <xsl:call-template name="process.footnotes"/>
+      <xsl:if test="not(parent::article)">
+        <xsl:call-template name="process.footnotes"/>
+      </xsl:if>
+    </div>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template match="setindex">
+  <!-- some implementations use completely empty index tags to indicate -->
+  <!-- where an automatically generated index should be inserted. so -->
+  <!-- if the index is completely empty, skip it. Unless generate.index -->
+  <!-- is non-zero, in which case, this is where the automatically -->
+  <!-- generated index should go. -->
+
+  <xsl:if test="count(*)>0 or $generate.index != '0'">
+    <div class="{name(.)}">
+      <xsl:if test="$generate.id.attributes != 0">
+        <xsl:attribute name="id">
+          <xsl:call-template name="object.id"/>
+        </xsl:attribute>
+      </xsl:if>
+
+      <xsl:call-template name="setindex.titlepage"/>
+      <xsl:apply-templates/>
+
+      <xsl:if test="count(indexentry) = 0 and count(indexdiv) = 0">
+        <xsl:call-template name="generate-index">
+          <xsl:with-param name="scope" select="/"/>
+        </xsl:call-template>
+      </xsl:if>
+
+      <xsl:if test="not(parent::article)">
+        <xsl:call-template name="process.footnotes"/>
+      </xsl:if>
     </div>
   </xsl:if>
 </xsl:template>
@@ -39,32 +80,22 @@
 <xsl:template match="index/subtitle"></xsl:template>
 <xsl:template match="index/titleabbrev"></xsl:template>
 
-<xsl:template match="index/title" mode="component.title.mode">
-  <h2 class="title">
-    <xsl:apply-templates/>
-  </h2>
-</xsl:template>
-
-<xsl:template match="index/subtitle" mode="component.title.mode">
-  <h3>
-    <i><xsl:apply-templates/></i>
-  </h3>
-</xsl:template>
-
 <!-- ==================================================================== -->
 
 <xsl:template match="indexdiv">
   <div class="{name(.)}">
+    <xsl:if test="$generate.id.attributes != 0">
+      <xsl:attribute name="id">
+        <xsl:call-template name="object.id"/>
+      </xsl:attribute>
+    </xsl:if>
+
     <xsl:call-template name="anchor"/>
-    <xsl:apply-templates mode="not-indexentrys"/>
+    <xsl:apply-templates select="*[not(self::indexentry)]"/>
     <dl>
       <xsl:apply-templates select="indexentry"/>
     </dl>
   </div>
-</xsl:template>
-
-<xsl:template match="indexentry" mode="not-indexentrys">
-  <!-- suppress -->
 </xsl:template>
 
 <xsl:template match="indexdiv/title">
@@ -160,10 +191,6 @@
   <dt>
     <xsl:apply-templates/>
   </dt>
-</xsl:template>
-
-<xsl:template name="generate-index">
-  <!-- nop: use autoidx.xsl to get automatic indexing -->
 </xsl:template>
 
 </xsl:stylesheet>

@@ -10,6 +10,7 @@
   encoding="ISO-8859-1"/>
 
 <!-- ********************************************************************
+     $Id: jrefhtml.xsl,v 1.3 2001/11/28 13:47:55 nwalsh Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -23,7 +24,6 @@
 <xsl:param name="part.autolabel" select="0"/>
 
 <xsl:template match="refentry">
-  <hr/>
   <xsl:apply-imports/>
 </xsl:template>
 

@@ -7,6 +7,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
+     $Id: callout.xsl,v 1.11 2003/08/07 17:04:43 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -20,7 +21,6 @@
 
 <xsl:template match="programlistingco|screenco">
   <xsl:variable name="verbatim" select="programlisting|screen"/>
-  <xsl:variable name="vendor" select="system-property('xsl:vendor')"/>
 
   <xsl:choose>
     <xsl:when test="$use.extensions != '0'
@@ -33,16 +33,15 @@
 
       <xsl:variable name="rtf-with-callouts">
         <xsl:choose>
-          <xsl:when test="contains($vendor, 'SAXON ')">
+          <xsl:when test="function-available('sverb:insertCallouts')">
             <xsl:copy-of select="sverb:insertCallouts(areaspec,$rtf)"/>
           </xsl:when>
-          <xsl:when test="contains($vendor, 'Apache Software Foundation')">
+          <xsl:when test="function-available('xverb:insertCallouts')">
             <xsl:copy-of select="xverb:insertCallouts(areaspec,$rtf)"/>
           </xsl:when>
           <xsl:otherwise>
             <xsl:message terminate="yes">
-              <xsl:text>Don't know how to do callouts with </xsl:text>
-              <xsl:value-of select="$vendor"/>
+              <xsl:text>No insertCallouts function is available.</xsl:text>
             </xsl:message>
           </xsl:otherwise>
         </xsl:choose>
@@ -87,15 +86,64 @@
   <xsl:number count="area|areaset" format="1"/>
 </xsl:template>
 
-<xsl:template match="co">
-  <xsl:call-template name="anchor"/>
-  <xsl:apply-templates select="." mode="callout-bug"/>
+<xsl:template match="co" name="co">
+  <!-- Support a single linkend in HTML -->
+  <xsl:variable name="targets" select="key('id', @linkends)"/>
+  <xsl:variable name="target" select="$targets[1]"/>
+  <xsl:choose>
+    <xsl:when test="$target">
+      <a>
+        <xsl:if test="@id">
+          <xsl:attribute name="name">
+            <xsl:value-of select="@id"/>
+          </xsl:attribute>
+        </xsl:if>
+        <xsl:attribute name="href">
+          <xsl:call-template name="href.target">
+            <xsl:with-param name="object" select="$target"/>
+          </xsl:call-template>
+        </xsl:attribute>
+        <xsl:apply-templates select="." mode="callout-bug"/>
+      </a>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:call-template name="anchor"/>
+      <xsl:apply-templates select="." mode="callout-bug"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template match="coref">
+  <!-- tricky; this relies on the fact that we can process the "co" that's -->
+  <!-- "over there" as if it were "right here" -->
+
+  <xsl:variable name="co" select="key('id', @linkend)"/>
+  <xsl:choose>
+    <xsl:when test="not($co)">
+      <xsl:message>
+        <xsl:text>Error: coref link is broken: </xsl:text>
+        <xsl:value-of select="@linkend"/>
+      </xsl:message>
+    </xsl:when>
+    <xsl:when test="local-name($co) != 'co'">
+      <xsl:message>
+        <xsl:text>Error: coref doesn't point to a co: </xsl:text>
+        <xsl:value-of select="@linkend"/>
+      </xsl:message>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:apply-templates select="$co"/>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <xsl:template match="co" mode="callout-bug">
   <xsl:call-template name="callout-bug">
     <xsl:with-param name="conum">
-      <xsl:number count="co" format="1"/>
+      <xsl:number count="co"
+                  level="any"
+                  from="programlisting|screen|literallayout|synopsis"
+                  format="1"/>
     </xsl:with-param>
   </xsl:call-template>
 </xsl:template>

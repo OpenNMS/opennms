@@ -1,9 +1,11 @@
 <?xml version='1.0'?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format"
+                xmlns:axf="http://www.antennahouse.com/names/XSL/Extensions"
                 version='1.0'>
 
 <!-- ********************************************************************
+     $Id: component.xsl,v 1.26 2004/02/06 05:31:08 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -16,47 +18,64 @@
 
 <xsl:template name="component.title">
   <xsl:param name="node" select="."/>
+  <xsl:param name="pagewide" select="0"/>
   <xsl:variable name="id">
     <xsl:call-template name="object.id">
       <xsl:with-param name="object" select="$node"/>
     </xsl:call-template>
   </xsl:variable>
   <xsl:variable name="title">
-    <xsl:apply-templates select="$node" mode="object.title.markup"/>
+    <xsl:apply-templates select="$node" mode="object.title.markup">
+      <xsl:with-param name="allow-anchors" select="1"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+  <xsl:variable name="titleabbrev">
+    <xsl:apply-templates select="$node" mode="titleabbrev.markup"/>
   </xsl:variable>
 
   <xsl:if test="$passivetex.extensions != 0">
     <fotex:bookmark xmlns:fotex="http://www.tug.org/fotex"
                     fotex-bookmark-level="2"
                     fotex-bookmark-label="{$id}">
-      <xsl:value-of select="$title"/>
+      <xsl:value-of select="$titleabbrev"/>
     </fotex:bookmark>
   </xsl:if>
 
   <fo:block keep-with-next.within-column="always"
+            space-before.optimum="{$body.font.master}pt"
+            space-before.minimum="{$body.font.master * 0.8}pt"
+            space-before.maximum="{$body.font.master * 1.2}pt"
             hyphenate="false">
+    <xsl:if test="$pagewide != 0">
+      <!-- Doesn't work to use 'all' here since not a child of fo:flow -->
+      <xsl:attribute name="span">inherit</xsl:attribute>
+    </xsl:if>
+    <xsl:attribute name="hyphenation-character">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-character'"/>
+      </xsl:call-template>
+    </xsl:attribute>
+    <xsl:attribute name="hyphenation-push-character-count">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-push-character-count'"/>
+      </xsl:call-template>
+    </xsl:attribute>
+    <xsl:attribute name="hyphenation-remain-character-count">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-remain-character-count'"/>
+      </xsl:call-template>
+    </xsl:attribute>
+    <xsl:if test="$axf.extensions != 0">
+      <xsl:attribute name="axf:outline-level">
+        <xsl:value-of select="count($node/ancestor::*)"/>
+      </xsl:attribute>
+      <xsl:attribute name="axf:outline-expand">false</xsl:attribute>
+      <xsl:attribute name="axf:outline-title">
+        <xsl:value-of select="$title"/>
+      </xsl:attribute>
+    </xsl:if>
     <xsl:copy-of select="$title"/>
   </fo:block>
-</xsl:template>
-
-<xsl:template name="component.subtitle">
-  <xsl:param name="node" select="."/>
-  <xsl:variable name="subtitle">
-    <xsl:apply-templates select="$node" mode="subtitle.markup"/>
-  </xsl:variable>
-
-  <xsl:if test="$subtitle != ''">
-    <fo:block font-size="16pt"
-              font-weight="bold"
-              font-style="italic"
-              keep-with-next.within-column="always"
-              hyphenate="false">
-      <xsl:copy-of select="$subtitle"/>
-    </fo:block>
-  </xsl:if>
-</xsl:template>
-
-<xsl:template name="component.separator">
 </xsl:template>
 
 <!-- ==================================================================== -->
@@ -65,30 +84,68 @@
   <xsl:variable name="id">
     <xsl:call-template name="object.id"/>
   </xsl:variable>
-  <xsl:variable name="master-name">
+
+  <xsl:variable name="master-reference">
     <xsl:call-template name="select.pagemaster"/>
   </xsl:variable>
 
-  <fo:page-sequence id="{$id}"
-                    hyphenate="{$hyphenate}"
-                    format="i"
-                    master-name="{$master-name}">
+  <fo:page-sequence hyphenate="{$hyphenate}"
+                    master-reference="{$master-reference}">
     <xsl:attribute name="language">
       <xsl:call-template name="l10n.language"/>
     </xsl:attribute>
-    <xsl:if test="$double.sided != 0">
-      <xsl:attribute name="force-page-count">end-on-even</xsl:attribute>
+    <xsl:attribute name="format">
+      <xsl:call-template name="page.number.format"/>
+    </xsl:attribute>
+    <xsl:choose>
+      <xsl:when test="not(preceding::chapter
+                          or preceding::preface
+                          or preceding::appendix
+                          or preceding::article
+                          or preceding::dedication
+                          or parent::part
+                          or parent::reference)">
+        <!-- if there is a preceding component or we're in a part, the -->
+        <!-- page numbering will already be adjusted -->
+        <xsl:attribute name="initial-page-number">1</xsl:attribute>
+      </xsl:when>
+      <xsl:when test="$double.sided != 0">
+        <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
+      </xsl:when>
+    </xsl:choose>
+
+    <xsl:if test="$double.sided = 0">
+      <xsl:attribute name="force-page-count">no-force</xsl:attribute>
     </xsl:if>
 
+    <xsl:attribute name="hyphenation-character">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-character'"/>
+      </xsl:call-template>
+    </xsl:attribute>
+    <xsl:attribute name="hyphenation-push-character-count">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-push-character-count'"/>
+      </xsl:call-template>
+    </xsl:attribute>
+    <xsl:attribute name="hyphenation-remain-character-count">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-remain-character-count'"/>
+      </xsl:call-template>
+    </xsl:attribute>
+
     <xsl:apply-templates select="." mode="running.head.mode">
-      <xsl:with-param name="master-name" select="$master-name"/>
+      <xsl:with-param name="master-reference" select="$master-reference"/>
     </xsl:apply-templates>
+
     <xsl:apply-templates select="." mode="running.foot.mode">
-      <xsl:with-param name="master-name" select="$master-name"/>
+      <xsl:with-param name="master-reference" select="$master-reference"/>
     </xsl:apply-templates>
 
     <fo:flow flow-name="xsl-region-body">
-      <xsl:call-template name="dedication.titlepage"/>
+      <fo:block id="{$id}">
+        <xsl:call-template name="dedication.titlepage"/>
+      </fo:block>
       <xsl:apply-templates/>
     </fo:flow>
   </fo:page-sequence>
@@ -106,30 +163,55 @@
   <xsl:variable name="id">
     <xsl:call-template name="object.id"/>
   </xsl:variable>
-  <xsl:variable name="master-name">
+
+  <xsl:variable name="master-reference">
     <xsl:call-template name="select.pagemaster"/>
   </xsl:variable>
 
-  <fo:page-sequence id="{$id}"
-                    hyphenate="{$hyphenate}"
-                    format="i"
-                    master-name="{$master-name}">
+  <fo:page-sequence hyphenate="{$hyphenate}"
+                    master-reference="{$master-reference}">
     <xsl:attribute name="language">
       <xsl:call-template name="l10n.language"/>
     </xsl:attribute>
-    <xsl:if test="$double.sided != 0">
-      <xsl:attribute name="force-page-count">end-on-even</xsl:attribute>
-    </xsl:if>
+    <xsl:attribute name="format">
+      <xsl:call-template name="page.number.format"/>
+    </xsl:attribute>
+    <xsl:choose>
+      <xsl:when test="$double.sided != 0">
+        <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:attribute name="force-page-count">no-force</xsl:attribute>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:attribute name="hyphenation-character">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-character'"/>
+      </xsl:call-template>
+    </xsl:attribute>
+    <xsl:attribute name="hyphenation-push-character-count">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-push-character-count'"/>
+      </xsl:call-template>
+    </xsl:attribute>
+    <xsl:attribute name="hyphenation-remain-character-count">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-remain-character-count'"/>
+      </xsl:call-template>
+    </xsl:attribute>
 
     <xsl:apply-templates select="." mode="running.head.mode">
-      <xsl:with-param name="master-name" select="$master-name"/>
+      <xsl:with-param name="master-reference" select="$master-reference"/>
     </xsl:apply-templates>
+
     <xsl:apply-templates select="." mode="running.foot.mode">
-      <xsl:with-param name="master-name" select="$master-name"/>
+      <xsl:with-param name="master-reference" select="$master-reference"/>
     </xsl:apply-templates>
 
     <fo:flow flow-name="xsl-region-body">
-      <xsl:call-template name="colophon.titlepage"/>
+      <fo:block id="{$id}">
+        <xsl:call-template name="colophon.titlepage"/>
+      </fo:block>
       <xsl:apply-templates/>
     </fo:flow>
   </fo:page-sequence>
@@ -145,77 +227,155 @@
   <xsl:variable name="id">
     <xsl:call-template name="object.id"/>
   </xsl:variable>
-  <xsl:variable name="master-name">
+
+  <xsl:variable name="master-reference">
     <xsl:call-template name="select.pagemaster"/>
   </xsl:variable>
 
-  <fo:page-sequence id="{$id}"
-                    hyphenate="{$hyphenate}"
-                    format="i"
-                    master-name="{$master-name}">
+  <fo:page-sequence hyphenate="{$hyphenate}"
+                    master-reference="{$master-reference}">
     <xsl:attribute name="language">
       <xsl:call-template name="l10n.language"/>
     </xsl:attribute>
-    <xsl:if test="$double.sided != 0">
-      <xsl:attribute name="force-page-count">end-on-even</xsl:attribute>
-    </xsl:if>
+    <xsl:attribute name="format">
+      <xsl:call-template name="page.number.format"/>
+    </xsl:attribute>
+
+    <!-- Page numbering for a preface doesn't restart; it continues from the ToC -->
+    <xsl:choose>
+      <xsl:when test="$double.sided != 0">
+        <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:attribute name="force-page-count">no-force</xsl:attribute>
+      </xsl:otherwise>
+    </xsl:choose>
+
+    <xsl:attribute name="hyphenation-character">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-character'"/>
+      </xsl:call-template>
+    </xsl:attribute>
+    <xsl:attribute name="hyphenation-push-character-count">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-push-character-count'"/>
+      </xsl:call-template>
+    </xsl:attribute>
+    <xsl:attribute name="hyphenation-remain-character-count">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-remain-character-count'"/>
+      </xsl:call-template>
+    </xsl:attribute>
 
     <xsl:apply-templates select="." mode="running.head.mode">
-      <xsl:with-param name="master-name" select="$master-name"/>
+      <xsl:with-param name="master-reference" select="$master-reference"/>
     </xsl:apply-templates>
+
     <xsl:apply-templates select="." mode="running.foot.mode">
-      <xsl:with-param name="master-name" select="$master-name"/>
+      <xsl:with-param name="master-reference" select="$master-reference"/>
     </xsl:apply-templates>
 
     <fo:flow flow-name="xsl-region-body">
-      <xsl:call-template name="component.separator"/>
-      <xsl:call-template name="preface.titlepage"/>
-      <xsl:if test="$generate.component.toc">
+      <fo:block id="{$id}">
+        <xsl:call-template name="preface.titlepage"/>
+      </fo:block>
+
+      <xsl:variable name="toc.params">
+        <xsl:call-template name="find.path.params">
+          <xsl:with-param name="table" select="normalize-space($generate.toc)"/>
+        </xsl:call-template>
+      </xsl:variable>
+      <xsl:if test="contains($toc.params, 'toc')">
         <xsl:call-template name="component.toc"/>
+        <xsl:call-template name="component.toc.separator"/>
       </xsl:if>
+
       <xsl:apply-templates/>
     </fo:flow>
   </fo:page-sequence>
 </xsl:template>
 
-<xsl:template match="preface/docinfo"></xsl:template>
+<xsl:template match="preface/docinfo|prefaceinfo"></xsl:template>
 <xsl:template match="preface/title"></xsl:template>
 <xsl:template match="preface/titleabbrev"></xsl:template>
 <xsl:template match="preface/subtitle"></xsl:template>
+
+<!-- ==================================================================== -->
 
 <xsl:template match="chapter">
   <xsl:variable name="id">
     <xsl:call-template name="object.id"/>
   </xsl:variable>
-  <xsl:variable name="master-name">
+
+  <xsl:variable name="master-reference">
     <xsl:call-template name="select.pagemaster"/>
   </xsl:variable>
 
-  <fo:page-sequence id="{$id}"
-                    hyphenate="{$hyphenate}"
-                    master-name="{$master-name}">
+  <fo:page-sequence hyphenate="{$hyphenate}"
+                    master-reference="{$master-reference}">
     <xsl:attribute name="language">
       <xsl:call-template name="l10n.language"/>
     </xsl:attribute>
-    <xsl:if test="not(preceding::chapter)">
-      <xsl:attribute name="initial-page-number">1</xsl:attribute>
-    </xsl:if>
-    <xsl:if test="$double.sided != 0">
-      <xsl:attribute name="force-page-count">end-on-even</xsl:attribute>
+    <xsl:attribute name="format">
+      <xsl:call-template name="page.number.format"/>
+    </xsl:attribute>
+    <xsl:choose>
+      <xsl:when test="not(preceding::chapter
+                          or preceding::appendix
+                          or preceding::article
+                          or preceding::dedication
+                          or parent::part
+                          or parent::reference)">
+        <!-- if there is a preceding component or we're in a part, the -->
+        <!-- page numbering will already be adjusted -->
+        <xsl:attribute name="initial-page-number">1</xsl:attribute>
+      </xsl:when>
+      <xsl:when test="$double.sided != 0">
+        <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
+      </xsl:when>
+    </xsl:choose>
+
+    <xsl:if test="$double.sided = 0">
+      <xsl:attribute name="force-page-count">no-force</xsl:attribute>
     </xsl:if>
 
+    <xsl:attribute name="hyphenation-character">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-character'"/>
+      </xsl:call-template>
+    </xsl:attribute>
+    <xsl:attribute name="hyphenation-push-character-count">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-push-character-count'"/>
+      </xsl:call-template>
+    </xsl:attribute>
+    <xsl:attribute name="hyphenation-remain-character-count">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-remain-character-count'"/>
+      </xsl:call-template>
+    </xsl:attribute>
+
     <xsl:apply-templates select="." mode="running.head.mode">
-      <xsl:with-param name="master-name" select="$master-name"/>
+      <xsl:with-param name="master-reference" select="$master-reference"/>
     </xsl:apply-templates>
+
     <xsl:apply-templates select="." mode="running.foot.mode">
-      <xsl:with-param name="master-name" select="$master-name"/>
+      <xsl:with-param name="master-reference" select="$master-reference"/>
     </xsl:apply-templates>
 
     <fo:flow flow-name="xsl-region-body">
-      <xsl:call-template name="component.separator"/>
-      <xsl:call-template name="chapter.titlepage"/>
-      <xsl:if test="$generate.component.toc">
+      <fo:block id="{$id}">
+        <xsl:call-template name="chapter.titlepage"/>
+      </fo:block>
+
+      <xsl:variable name="toc.params">
+        <xsl:call-template name="find.path.params">
+          <xsl:with-param name="table" select="normalize-space($generate.toc)"/>
+        </xsl:call-template>
+      </xsl:variable>
+      <xsl:if test="contains($toc.params, 'toc')">
         <xsl:call-template name="component.toc"/>
+        <xsl:call-template name="component.toc.separator"/>
       </xsl:if>
       <xsl:apply-templates/>
     </fo:flow>
@@ -227,36 +387,83 @@
 <xsl:template match="chapter/titleabbrev"></xsl:template>
 <xsl:template match="chapter/subtitle"></xsl:template>
 
+<!-- ==================================================================== -->
+
 <xsl:template match="appendix">
   <xsl:variable name="id">
     <xsl:call-template name="object.id"/>
   </xsl:variable>
-  <xsl:variable name="master-name">
+
+  <xsl:variable name="master-reference">
     <xsl:call-template name="select.pagemaster"/>
   </xsl:variable>
 
-  <fo:page-sequence id="{$id}"
-                    hyphenate="{$hyphenate}"
-                    master-name="{$master-name}">
+  <fo:page-sequence hyphenate="{$hyphenate}"
+                    master-reference="{$master-reference}">
     <xsl:attribute name="language">
       <xsl:call-template name="l10n.language"/>
     </xsl:attribute>
-    <xsl:if test="$double.sided != 0">
-      <xsl:attribute name="force-page-count">end-on-even</xsl:attribute>
+    <xsl:attribute name="format">
+      <xsl:call-template name="page.number.format"/>
+    </xsl:attribute>
+    <xsl:choose>
+      <xsl:when test="not(preceding::chapter
+                          or preceding::appendix
+                          or preceding::article
+                          or preceding::dedication
+                          or parent::part
+                          or parent::reference)">
+        <!-- if there is a preceding component or we're in a part, the -->
+        <!-- page numbering will already be adjusted -->
+        <xsl:attribute name="initial-page-number">1</xsl:attribute>
+      </xsl:when>
+      <xsl:when test="$double.sided != 0">
+        <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
+      </xsl:when>
+    </xsl:choose>
+
+    <xsl:if test="$double.sided = 0">
+      <xsl:attribute name="force-page-count">no-force</xsl:attribute>
     </xsl:if>
 
+    <xsl:attribute name="hyphenation-character">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-character'"/>
+      </xsl:call-template>
+    </xsl:attribute>
+    <xsl:attribute name="hyphenation-push-character-count">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-push-character-count'"/>
+      </xsl:call-template>
+    </xsl:attribute>
+    <xsl:attribute name="hyphenation-remain-character-count">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-remain-character-count'"/>
+      </xsl:call-template>
+    </xsl:attribute>
+
     <xsl:apply-templates select="." mode="running.head.mode">
-      <xsl:with-param name="master-name" select="$master-name"/>
+      <xsl:with-param name="master-reference" select="$master-reference"/>
     </xsl:apply-templates>
+
     <xsl:apply-templates select="." mode="running.foot.mode">
-      <xsl:with-param name="master-name" select="$master-name"/>
+      <xsl:with-param name="master-reference" select="$master-reference"/>
     </xsl:apply-templates>
 
     <fo:flow flow-name="xsl-region-body">
-      <xsl:call-template name="component.separator"/>
-      <xsl:call-template name="appendix.titlepage"/>
-      <xsl:if test="$generate.component.toc">
+      <fo:block id="{$id}">
+        <xsl:call-template name="appendix.titlepage"/>
+      </fo:block>
+
+      <xsl:variable name="toc.params">
+        <xsl:call-template name="find.path.params">
+          <xsl:with-param name="table" select="normalize-space($generate.toc)"/>
+        </xsl:call-template>
+      </xsl:variable>
+
+      <xsl:if test="contains($toc.params, 'toc')">
         <xsl:call-template name="component.toc"/>
+        <xsl:call-template name="component.toc.separator"/>
       </xsl:if>
       <xsl:apply-templates/>
     </fo:flow>
@@ -270,101 +477,82 @@
 
 <!-- ==================================================================== -->
 
-<xsl:template match="dedication" mode="component.number">
-  <xsl:param name="add.space" select="false()"/>
-</xsl:template>
-
-<xsl:template match="preface" mode="component.number">
-  <xsl:param name="add.space" select="false()"/>
-</xsl:template>
-
-<xsl:template match="chapter" mode="component.number">
-  <xsl:param name="add.space" select="false()"/>
-  <xsl:choose>
-    <xsl:when test="@label">
-      <xsl:value-of select="@label"/>
-      <xsl:text>.</xsl:text>
-      <xsl:if test="$add.space">
-        <xsl:call-template name="gentext.space"/>
-      </xsl:if>
-    </xsl:when>
-    <xsl:when test="$chapter.autolabel">
-      <xsl:number from="book" count="chapter" format="1."/>
-      <xsl:if test="$add.space">
-        <xsl:call-template name="gentext.space"/>
-      </xsl:if>
-    </xsl:when>
-    <xsl:otherwise></xsl:otherwise>
-  </xsl:choose>
-</xsl:template>
-
-<xsl:template match="appendix" mode="component.number">
-  <xsl:param name="add.space" select="false()"/>
-  <xsl:choose>
-    <xsl:when test="@label">
-      <xsl:value-of select="@label"/>
-      <xsl:text>.</xsl:text>
-      <xsl:if test="$add.space">
-        <xsl:call-template name="gentext.space"/>
-      </xsl:if>
-    </xsl:when>
-    <xsl:when test="$chapter.autolabel">
-      <xsl:number from="book" count="appendix" format="A."/>
-      <xsl:if test="$add.space">
-        <xsl:call-template name="gentext.space"/>
-      </xsl:if>
-    </xsl:when>
-    <xsl:otherwise></xsl:otherwise>
-  </xsl:choose>
-</xsl:template>
-
-<xsl:template match="article" mode="component.number">
-  <xsl:param name="add.space" select="false()"/>
-</xsl:template>
-
-<xsl:template match="bibliography" mode="component.number">
-  <xsl:param name="add.space" select="false()"/>
-</xsl:template>
-
-<xsl:template match="glossary" mode="component.number">
-  <xsl:param name="add.space" select="false()"/>
-</xsl:template>
-
-<xsl:template match="index" mode="component.number">
-  <xsl:param name="add.space" select="false()"/>
-</xsl:template>
-
-<!-- ==================================================================== -->
-
 <xsl:template match="article">
   <xsl:variable name="id">
     <xsl:call-template name="object.id"/>
   </xsl:variable>
-  <xsl:variable name="master-name">
+
+  <xsl:variable name="master-reference">
     <xsl:call-template name="select.pagemaster"/>
   </xsl:variable>
 
-  <fo:page-sequence id="{$id}"
-                    hyphenate="{$hyphenate}"
-                    master-name="{$master-name}">
+  <fo:page-sequence hyphenate="{$hyphenate}"
+                    master-reference="{$master-reference}">
     <xsl:attribute name="language">
       <xsl:call-template name="l10n.language"/>
     </xsl:attribute>
-    <xsl:if test="$double.sided != 0">
-      <xsl:attribute name="force-page-count">end-on-even</xsl:attribute>
+    <xsl:attribute name="format">
+      <xsl:call-template name="page.number.format"/>
+    </xsl:attribute>
+    <xsl:choose>
+      <xsl:when test="not(preceding::chapter
+                          or preceding::preface
+                          or preceding::appendix
+                          or preceding::article
+                          or preceding::dedication
+                          or parent::part
+                          or parent::reference)">
+        <!-- if there is a preceding component or we're in a part, the -->
+        <!-- page numbering will already be adjusted -->
+        <xsl:attribute name="initial-page-number">1</xsl:attribute>
+      </xsl:when>
+      <xsl:when test="$double.sided != 0">
+        <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
+      </xsl:when>
+    </xsl:choose>
+
+    <xsl:if test="$double.sided = 0">
+      <xsl:attribute name="force-page-count">no-force</xsl:attribute>
     </xsl:if>
 
+    <xsl:attribute name="hyphenation-character">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-character'"/>
+      </xsl:call-template>
+    </xsl:attribute>
+    <xsl:attribute name="hyphenation-push-character-count">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-push-character-count'"/>
+      </xsl:call-template>
+    </xsl:attribute>
+    <xsl:attribute name="hyphenation-remain-character-count">
+      <xsl:call-template name="gentext">
+        <xsl:with-param name="key" select="'hyphenation-remain-character-count'"/>
+      </xsl:call-template>
+    </xsl:attribute>
+
     <xsl:apply-templates select="." mode="running.head.mode">
-      <xsl:with-param name="master-name" select="$master-name"/>
+      <xsl:with-param name="master-reference" select="$master-reference"/>
     </xsl:apply-templates>
+
     <xsl:apply-templates select="." mode="running.foot.mode">
-      <xsl:with-param name="master-name" select="$master-name"/>
+      <xsl:with-param name="master-reference" select="$master-reference"/>
     </xsl:apply-templates>
 
     <fo:flow flow-name="xsl-region-body">
-      <xsl:call-template name="article.titlepage"/>
-      <xsl:if test="$generate.component.toc">
+      <fo:block id="{$id}">
+        <xsl:call-template name="article.titlepage"/>
+      </fo:block>
+
+      <xsl:variable name="toc.params">
+        <xsl:call-template name="find.path.params">
+          <xsl:with-param name="table" select="normalize-space($generate.toc)"/>
+        </xsl:call-template>
+      </xsl:variable>
+
+      <xsl:if test="contains($toc.params, 'toc')">
         <xsl:call-template name="component.toc"/>
+        <xsl:call-template name="component.toc.separator"/>
       </xsl:if>
       <xsl:apply-templates/>
     </fo:flow>
@@ -381,13 +569,46 @@
     <xsl:call-template name="object.id"/>
   </xsl:variable>
 
+  <xsl:variable name="title">
+    <xsl:apply-templates select="." mode="title.markup"/>
+  </xsl:variable>
+
+  <xsl:variable name="titleabbrev">
+    <xsl:apply-templates select="." mode="titleabbrev.markup"/>
+  </xsl:variable>
+
   <fo:block id='{$id}'>
-    <xsl:call-template name="section.heading">
-      <xsl:with-param name="level" select="2"/>
-      <xsl:with-param name="title">
-        <xsl:apply-templates select="." mode="title.markup"/>
-      </xsl:with-param>
-    </xsl:call-template>
+    <xsl:if test="$passivetex.extensions != 0">
+      <fotex:bookmark xmlns:fotex="http://www.tug.org/fotex" 
+                      fotex-bookmark-level="{count(ancestor::*)+2}" 
+                      fotex-bookmark-label="{$id}">
+        <xsl:value-of select="$titleabbrev"/>
+      </fotex:bookmark>
+    </xsl:if>
+
+    <xsl:if test="$axf.extensions != 0">
+      <xsl:attribute name="axf:outline-level">
+        <xsl:value-of select="count(ancestor::*)+2"/>
+      </xsl:attribute>
+      <xsl:attribute name="axf:outline-expand">false</xsl:attribute>
+      <xsl:attribute name="axf:outline-title">
+        <xsl:value-of select="$titleabbrev"/>
+      </xsl:attribute>
+    </xsl:if>
+
+    <fo:block xsl:use-attribute-sets="article.appendix.title.properties">
+      <fo:marker marker-class-name="section.head.marker">
+        <xsl:choose>
+          <xsl:when test="$titleabbrev = ''">
+            <xsl:value-of select="$title"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="$titleabbrev"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </fo:marker>
+      <xsl:copy-of select="$title"/>
+    </fo:block>
 
     <xsl:apply-templates/>
   </fo:block>

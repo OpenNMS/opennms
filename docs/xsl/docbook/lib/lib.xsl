@@ -1,10 +1,7 @@
-<?xml version='1.0'?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
-                exclude-result-prefixes="doc"
-                version='1.0'>
+<?xml version="1.0" encoding="utf-8"?>
 
 <!-- ********************************************************************
+     $Id: lib.xweb,v 1.2 2002/05/12 11:11:08 nwalsh Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -15,39 +12,12 @@
 
      ******************************************************************** -->
 
-<doc:reference xmlns="">
-<referenceinfo>
-<releaseinfo role="meta">
-</releaseinfo>
-<author><surname>Walsh</surname>
-<firstname>Norman</firstname></author>
-<copyright><year>1999</year><year>2000</year>
-<holder>Norman Walsh</holder>
-</copyright>
-</referenceinfo>
-<title>Library Template Reference</title>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:src="http://nwalsh.com/xmlns/litprog/fragment" exclude-result-prefixes="src" version="1.0">
 
-<partintro>
-<section><title>Introduction</title>
-
-<para>This is technical reference documentation for the DocBook XSL
-Stylesheets; it documents (some of) the parameters, templates, and
-other elements of the stylesheets.</para>
-
-<para>This is not intended to be <quote>user</quote> documentation.
-It is provided for developers writing customization layers for the
-stylesheets, and for anyone who's interested in <quote>how it
-works</quote>.</para>
-
-<para>Although I am trying to be thorough, this documentation is known
-to be incomplete. Don't forget to read the source, too :-)</para>
-</section>
-</partintro>
-</doc:reference>
 
 <xsl:template name="dot.count">
   <!-- Returns the number of "." characters in a string -->
-  <xsl:param name="string"></xsl:param>
+  <xsl:param name="string"/>
   <xsl:param name="count" select="0"/>
   <xsl:choose>
     <xsl:when test="contains($string, '.')">
@@ -62,16 +32,15 @@ to be incomplete. Don't forget to read the source, too :-)</para>
   </xsl:choose>
 </xsl:template>
 
-<!-- ================================================================== -->
 
 <xsl:template name="copy-string">
   <!-- returns 'count' copies of 'string' -->
-  <xsl:param name="string"></xsl:param>
+  <xsl:param name="string"/>
   <xsl:param name="count" select="0"/>
-  <xsl:param name="result"></xsl:param>
+  <xsl:param name="result"/>
 
   <xsl:choose>
-    <xsl:when test="$count>0">
+    <xsl:when test="$count&gt;0">
       <xsl:call-template name="copy-string">
         <xsl:with-param name="string" select="$string"/>
         <xsl:with-param name="count" select="$count - 1"/>
@@ -87,36 +56,22 @@ to be incomplete. Don't forget to read the source, too :-)</para>
   </xsl:choose>
 </xsl:template>
 
-<!-- ====================================================================== -->
-
-<doc:template name="string.subst" xmlns="">
-<refpurpose>Substitute one text string for another in a string</refpurpose>
-<refdescription>
-<para>The <function>string.subst</function> template replaces all
-occurances of <parameter>target</parameter> in <parameter>string</parameter>
-with <parameter>replacement</parameter> and returns the result.
-</para>
-</refdescription>
-</doc:template>
 
 <xsl:template name="string.subst">
-  <xsl:param name="string"></xsl:param>
-  <xsl:param name="target"></xsl:param>
-  <xsl:param name="replacement"></xsl:param>
+  <xsl:param name="string"/>
+  <xsl:param name="target"/>
+  <xsl:param name="replacement"/>
 
   <xsl:choose>
     <xsl:when test="contains($string, $target)">
       <xsl:variable name="rest">
         <xsl:call-template name="string.subst">
-          <xsl:with-param name="string"
-                          select="substring-after($string, $target)"/>
+          <xsl:with-param name="string" select="substring-after($string, $target)"/>
           <xsl:with-param name="target" select="$target"/>
           <xsl:with-param name="replacement" select="$replacement"/>
         </xsl:call-template>
       </xsl:variable>
-      <xsl:value-of select="concat(substring-before($string, $target),
-                                   $replacement,
-                                   $rest)"/>
+      <xsl:value-of select="concat(substring-before($string, $target),                                    $replacement,                                    $rest)"/>
     </xsl:when>
     <xsl:otherwise>
       <xsl:value-of select="$string"/>
@@ -124,20 +79,6 @@ with <parameter>replacement</parameter> and returns the result.
   </xsl:choose>
 </xsl:template>
 
-<!-- ================================================================== -->
-
-<doc:template name="xpointer.idref" xmlns="">
-<refpurpose>Extract IDREF from an XPointer</refpurpose>
-<refdescription>
-<para>The <function>xpointer.idref</function> template returns the
-ID portion of an XPointer which is a pointer to an ID within the current
-document, or the empty string if it is not.</para>
-<para>In other words, <function>xpointer.idref</function> returns
-<quote>foo</quote> when passed either <literal>#foo</literal>
-or <literal>#xpointer(id('foo'))</literal>, otherwise it returns
-the empty string.</para>
-</refdescription>
-</doc:template>
 
 <xsl:template name="xpointer.idref">
   <xsl:param name="xpointer">http://...</xsl:param>
@@ -154,33 +95,13 @@ the empty string.</para>
   </xsl:choose>
 </xsl:template>
 
-<!-- ================================================================== -->
-
-<doc:template name="length-magnitude" xmlns="">
-<refpurpose>Return the unqualified dimension from a length specification</refpurpose>
-<refdescription>
-<para>The <function>length-magnitude</function> template returns the
-unqualified length ("20" for "20pt") from a dimension.
-</para>
-</refdescription>
-</doc:template>
 
 <xsl:template name="length-magnitude">
   <xsl:param name="length" select="'0pt'"/>
 
   <xsl:choose>
     <xsl:when test="string-length($length) = 0"/>
-    <xsl:when test="substring($length,1,1) = '0'
-                    or substring($length,1,1) = '1'
-                    or substring($length,1,1) = '2'
-                    or substring($length,1,1) = '3'
-                    or substring($length,1,1) = '4'
-                    or substring($length,1,1) = '5'
-                    or substring($length,1,1) = '6'
-                    or substring($length,1,1) = '7'
-                    or substring($length,1,1) = '8'
-                    or substring($length,1,1) = '9'
-                    or substring($length,1,1) = '.'">
+    <xsl:when test="substring($length,1,1) = '0'                     or substring($length,1,1) = '1'                     or substring($length,1,1) = '2'                     or substring($length,1,1) = '3'                     or substring($length,1,1) = '4'                     or substring($length,1,1) = '5'                     or substring($length,1,1) = '6'                     or substring($length,1,1) = '7'                     or substring($length,1,1) = '8'                     or substring($length,1,1) = '9'                     or substring($length,1,1) = '.'">
       <xsl:value-of select="substring($length,1,1)"/>
       <xsl:call-template name="length-magnitude">
         <xsl:with-param name="length" select="substring($length,2)"/>
@@ -189,39 +110,48 @@ unqualified length ("20" for "20pt") from a dimension.
   </xsl:choose>
 </xsl:template>
 
-<!-- ================================================================== -->
 
-<doc:template name="length-spec" xmlns="">
-<refpurpose>Return a fully qualified length specification</refpurpose>
-<refdescription>
-<para>The <function>length-spec</function> template returns the
-qualified length from a dimension. If an unqualified length is given,
-the <parameter>default.units</parameter> will be added to it.
-</para>
-</refdescription>
-</doc:template>
-
-<xsl:template name="length-spec">
+<xsl:template name="length-units">
   <xsl:param name="length" select="'0pt'"/>
-  <xsl:param name="default.units" select="'pt'"/>
+  <xsl:param name="default.units" select="'px'"/>
   <xsl:variable name="magnitude">
     <xsl:call-template name="length-magnitude">
       <xsl:with-param name="length" select="$length"/>
     </xsl:call-template>
   </xsl:variable>
+
+  <xsl:variable name="units">
+    <xsl:value-of select="substring($length, string-length($magnitude)+1)"/>
+  </xsl:variable>
+
+  <xsl:choose>
+    <xsl:when test="$units = ''">
+      <xsl:value-of select="$default.units"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$units"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+
+<xsl:template name="length-spec">
+  <xsl:param name="length" select="'0pt'"/>
+  <xsl:param name="default.units" select="'px'"/>
+
+  <xsl:variable name="magnitude">
+    <xsl:call-template name="length-magnitude">
+      <xsl:with-param name="length" select="$length"/>
+    </xsl:call-template>
+  </xsl:variable>
+
   <xsl:variable name="units">
     <xsl:value-of select="substring($length, string-length($magnitude)+1)"/>
   </xsl:variable>
 
   <xsl:value-of select="$magnitude"/>
   <xsl:choose>
-    <xsl:when test="$units='cm'
-                    or $units='mm'
-                    or $units='in'
-                    or $units='pt'
-                    or $units='pc'
-                    or $units='px'
-                    or $units='em'">
+    <xsl:when test="$units='cm'                     or $units='mm'                     or $units='in'                     or $units='pt'                     or $units='pc'                     or $units='px'                     or $units='em'">
       <xsl:value-of select="$units"/>
     </xsl:when>
     <xsl:when test="$units = ''">
@@ -236,5 +166,218 @@ the <parameter>default.units</parameter> will be added to it.
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
+
+
+<xsl:template name="length-in-points">
+  <xsl:param name="length" select="'0pt'"/>
+  <xsl:param name="em.size" select="10"/>
+  <xsl:param name="pixels.per.inch" select="90"/>
+
+  <xsl:variable name="magnitude">
+    <xsl:call-template name="length-magnitude">
+      <xsl:with-param name="length" select="$length"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="units">
+    <xsl:value-of select="substring($length, string-length($magnitude)+1)"/>
+  </xsl:variable>
+
+  <xsl:choose>
+    <xsl:when test="$units = 'pt'">
+      <xsl:value-of select="$magnitude"/>
+    </xsl:when>
+    <xsl:when test="$units = 'cm'">
+      <xsl:value-of select="$magnitude div 2.54 * 72.0"/>
+    </xsl:when>
+    <xsl:when test="$units = 'mm'">
+      <xsl:value-of select="$magnitude div 25.4 * 72.0"/>
+    </xsl:when>
+    <xsl:when test="$units = 'in'">
+      <xsl:value-of select="$magnitude * 72.0"/>
+    </xsl:when>
+    <xsl:when test="$units = 'pc'">
+      <xsl:value-of select="$magnitude div 6.0 * 72.0"/>
+    </xsl:when>
+    <xsl:when test="$units = 'px'">
+      <xsl:value-of select="$magnitude div $pixels.per.inch * 72.0"/>
+    </xsl:when>
+    <xsl:when test="$units = 'em'">
+      <xsl:value-of select="$magnitude * $em.size"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:message>
+        <xsl:text>Unrecognized unit of measure: </xsl:text>
+        <xsl:value-of select="$units"/>
+        <xsl:text>.</xsl:text>
+      </xsl:message>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+
+<xsl:template name="pi-attribute">
+  <xsl:param name="pis" select="processing-instruction('')"/>
+  <xsl:param name="attribute">filename</xsl:param>
+  <xsl:param name="count">1</xsl:param>
+
+  <xsl:choose>
+    <xsl:when test="$count&gt;count($pis)">
+      <!-- not found -->
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:variable name="pi">
+        <xsl:value-of select="$pis[$count]"/>
+      </xsl:variable>
+      <xsl:choose>
+        <xsl:when test="contains($pi,concat($attribute, '='))">
+          <xsl:variable name="rest" select="substring-after($pi,concat($attribute,'='))"/>
+          <xsl:variable name="quote" select="substring($rest,1,1)"/>
+          <xsl:value-of select="substring-before(substring($rest,2),$quote)"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="pi-attribute">
+            <xsl:with-param name="pis" select="$pis"/>
+            <xsl:with-param name="attribute" select="$attribute"/>
+            <xsl:with-param name="count" select="$count + 1"/>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+
+<xsl:template name="lookup.key">
+  <xsl:param name="key" select="''"/>
+  <xsl:param name="table" select="''"/>
+
+  <xsl:if test="contains($table, ' ')">
+    <xsl:choose>
+      <xsl:when test="substring-before($table, ' ') = $key">
+        <xsl:variable name="rest" select="substring-after($table, ' ')"/>
+        <xsl:choose>
+          <xsl:when test="contains($rest, ' ')">
+            <xsl:value-of select="substring-before($rest, ' ')"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="$rest"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:call-template name="lookup.key">
+          <xsl:with-param name="key" select="$key"/>
+          <xsl:with-param name="table" select="substring-after(substring-after($table,' '), ' ')"/>
+        </xsl:call-template>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:if>
+</xsl:template>
+
+
+<xsl:template name="xpath.location">
+  <xsl:param name="node" select="."/>
+  <xsl:param name="path" select="''"/>
+
+  <xsl:variable name="next.path">
+    <xsl:value-of select="local-name($node)"/>
+    <xsl:if test="$path != ''">/</xsl:if>
+    <xsl:value-of select="$path"/>
+  </xsl:variable>
+
+  <xsl:choose>
+    <xsl:when test="$node/parent::*">
+      <xsl:call-template name="xpath.location">
+        <xsl:with-param name="node" select="$node/parent::*"/>
+        <xsl:with-param name="path" select="$next.path"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:text>/</xsl:text>
+      <xsl:value-of select="$next.path"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+
+<xsl:template name="comment-escape-string">
+  <xsl:param name="string" select="''"/>
+
+  <xsl:if test="starts-with($string, '-')">
+    <xsl:text> </xsl:text>
+  </xsl:if>
+
+  <xsl:call-template name="comment-escape-string.recursive">
+    <xsl:with-param name="string" select="$string"/>
+  </xsl:call-template>
+
+  <xsl:if test="substring($string, string-length($string), 1) = '-'">
+    <xsl:text> </xsl:text>
+  </xsl:if>
+</xsl:template>
+
+
+<xsl:template name="comment-escape-string.recursive">
+  <xsl:param name="string" select="''"/>
+  <xsl:choose>
+    <xsl:when test="contains($string, '--')">
+      <xsl:value-of select="substring-before($string, '--')"/>
+      <xsl:value-of select="'- -'"/>
+      <xsl:call-template name="comment-escape-string.recursive">
+        <xsl:with-param name="string" select="substring-after($string, '--')"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$string"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+
+<xsl:template name="count.uri.path.depth">
+  <xsl:param name="filename" select="''"/>
+  <xsl:param name="count" select="0"/>
+
+  <xsl:choose>
+    <xsl:when test="contains($filename, '/')">
+      <xsl:call-template name="count.uri.path.depth">
+        <xsl:with-param name="filename" select="substring-after($filename, '/')"/>
+        <xsl:with-param name="count" select="$count + 1"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$count"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+
+<xsl:template name="trim.common.uri.paths">
+  <xsl:param name="uriA" select="''"/>
+  <xsl:param name="uriB" select="''"/>
+  <xsl:param name="return" select="'A'"/>
+
+  <xsl:choose>
+    <xsl:when test="contains($uriA, '/') and contains($uriB, '/')                     and substring-before($uriA, '/') = substring-before($uriB, '/')">
+      <xsl:call-template name="trim.common.uri.paths">
+        <xsl:with-param name="uriA" select="substring-after($uriA, '/')"/>
+        <xsl:with-param name="uriB" select="substring-after($uriB, '/')"/>
+        <xsl:with-param name="return" select="$return"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:choose>
+        <xsl:when test="$return = 'A'">
+          <xsl:value-of select="$uriA"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$uriB"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
 
 </xsl:stylesheet>

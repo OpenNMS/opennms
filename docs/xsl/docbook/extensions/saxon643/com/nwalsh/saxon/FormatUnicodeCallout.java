@@ -14,6 +14,7 @@ import com.nwalsh.saxon.Callout;
 /**
  * <p>Utility class for the Verbatim extension (ignore this).</p>
  *
+ * <p>$Id: FormatUnicodeCallout.java,v 1.2 2001/08/05 22:35:38 nwalsh Exp $</p>
  *
  * <p>Copyright (C) 2000, 2001 Norman Walsh.</p>
  *
@@ -28,6 +29,7 @@ import com.nwalsh.saxon.Callout;
  *
  * @see Verbatim
  *
+ * @version $Id: FormatUnicodeCallout.java,v 1.2 2001/08/05 22:35:38 nwalsh Exp $
  **/
 
 public class FormatUnicodeCallout extends FormatCallout {

@@ -4,45 +4,57 @@
    
       <title>Template Stylesheet Reference</title>
       <link rel="stylesheet" href="../reference.css" type="text/css">
-      <meta name="generator" content="DocBook XSL Stylesheets V1">
+      <meta name="generator" content="DocBook XSL Stylesheets V1.64.1">
    </head>
    <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
-      <div class="reference">
-         <div class="titlepage">
+      <div class="reference" lang="en"><a name="d0e1"></a><div class="titlepage">
             <div>
-               <h1 class="title"><a name="d0e1"></a>Template Stylesheet Reference
-               </h1>
+               <div>
+                  <h1 class="title"><a name="d0e1"></a>Template Stylesheet Reference
+                  </h1>
+               </div>
+               <div>
+                  <div class="author">
+                     <h3 class="author"><span class="firstname">Norman</span> <span class="surname">Walsh</span></h3>
+                  </div>
+               </div>
+               <div>
+                  <p class="releaseinfo">
+                     $Id: titlepage.xsl,v 1.5 2004/01/29 12:14:06 nwalsh Exp $
+                     
+                  </p>
+               </div>
+               <div>
+                  <p class="copyright"><a href="../copyright.html">Copyright</a> &copy; 19992000 by Norman Walsh. <a href="../warranty.html">No Warranty</a>.
+                  </p>
+               </div>
             </div>
-            <div>
-               <h3 class="author">Norman Walsh</h3>
-            </div>
-            <div>
-               <p class="releaseinfo">
-                  
-               </p>
-            </div>
-            <div>
-               <p class="copyright"><a href="../copyright.html">Copyright</a> &copy; 1999, 2000 by Norman Walsh. <a href="../warranty.html">No Warranty</a>.
-               </p>
-            </div>
+            <div></div>
             <hr>
          </div>
-         <div class="partintro">
-            <div></div>
-            <div class="section"><a name="d0e24"></a><div class="titlepage">
+         <div class="partintro" lang="en">
+            <div>
+               <div></div>
+               <div></div>
+            </div>
+            <div class="section" lang="en">
+               <div class="titlepage">
                   <div>
-                     <h2 class="title" style="clear: both"><a name="d0e24"></a>Introduction
-                     </h2>
+                     <div>
+                        <h2 class="title" style="clear: both"><a name="d0e24"></a>Introduction
+                        </h2>
+                     </div>
                   </div>
+                  <div></div>
                </div>
                <p>This is technical reference documentation for the DocBook XSL
                   Stylesheets; it documents (some of) the parameters, templates, and
                   other elements of the stylesheets.
                </p>
-               <p>This is not intended to be &#8220;user&#8221; documentation.
+               <p>This is not intended to be &#8220;<span class="quote">user</span>&#8221; documentation.
                   It is provided for developers writing customization layers for the
-                  stylesheets, and for anyone who's interested in &#8220;how it
-                  works&#8221;.
+                  stylesheets, and for anyone who's interested in &#8220;<span class="quote">how it
+                     works</span>&#8221;.
                </p>
                <p>Although I am trying to be thorough, this documentation is known
                   to be incomplete. Don't forget to read the source, too :-)
@@ -88,39 +100,48 @@
                </dl>
             </div>
          </div>
-         <hr>
-         <div class="refentry">
-            <h1 class="title"><a name="d0e39"></a>t:templates
-            </h1>
-            <div class="refnamediv"><a name="d0e40"></a><h2>Name</h2>t:templates &#8212; Construct a stylesheet for the templates provided
+         <div class="refentry" lang="en"><a name="d0e39"></a><div class="titlepage">
+               <div></div>
+               <div></div>
             </div>
-            <div class="refsynopsisdiv"><a name="d0e45"></a><h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="t:templates"/&gt;</pre></div>
+            <div class="refnamediv">
+               <h2>Name</h2>
+               <p>t:templates &#8212; Construct a stylesheet for the templates provided</p>
+            </div>
+            <div class="refsynopsisdiv">
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="t:templates"/&gt;</pre></div>
             <div class="refdescription"><a name="d0e48"></a>
                
                
-               <p>The <tt>t:templates</tt> element is the root of a
+               <p>The <tt class="literal">t:templates</tt> element is the root of a
                   set of templates. This template creates an appropriate
-                  <tt>xsl:stylesheet</tt> for the templates.
+                  <tt class="literal">xsl:stylesheet</tt> for the templates.
                </p>
                
                
                
                
-               <p>If the <tt>t:templates</tt> element has a
-                  <tt>base-stylesheet</tt> attribute, an
-                  <tt>xsl:import</tt> statement is constructed for it.
+               <p>If the <tt class="literal">t:templates</tt> element has a
+                  <tt class="literal">base-stylesheet</tt> attribute, an
+                  <tt class="literal">xsl:import</tt> statement is constructed for it.
                </p>
                
                
             </div>
          </div>
-         <hr>
-         <div class="refentry">
-            <h1 class="title"><a name="d0e71"></a>xsl:*
-            </h1>
-            <div class="refnamediv"><a name="d0e72"></a><h2>Name</h2>xsl:* &#8212; Copy xsl: elements straight through
+         <div class="refentry" lang="en">
+            <div class="refentry.separator">
+               <hr>
+            </div><a name="d0e71"></a><div class="titlepage">
+               <div></div>
+               <div></div>
             </div>
-            <div class="refsynopsisdiv"><a name="d0e77"></a><h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="xsl:*"/&gt;</pre></div>
+            <div class="refnamediv">
+               <h2>Name</h2>
+               <p>xsl:* &#8212; Copy xsl: elements straight through</p>
+            </div>
+            <div class="refsynopsisdiv">
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="xsl:*"/&gt;</pre></div>
             <div class="refdescription"><a name="d0e80"></a>
                
                
@@ -131,20 +152,26 @@
                
             </div>
          </div>
-         <hr>
-         <div class="refentry">
-            <h1 class="title"><a name="d0e85"></a>t:titlepage
-            </h1>
-            <div class="refnamediv"><a name="d0e86"></a><h2>Name</h2>t:titlepage &#8212; Create the templates necessary to construct a title page
+         <div class="refentry" lang="en">
+            <div class="refentry.separator">
+               <hr>
+            </div><a name="d0e85"></a><div class="titlepage">
+               <div></div>
+               <div></div>
             </div>
-            <div class="refsynopsisdiv"><a name="d0e91"></a><h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="t:titlepage"/&gt;</pre></div>
+            <div class="refnamediv">
+               <h2>Name</h2>
+               <p>t:titlepage &#8212; Create the templates necessary to construct a title page</p>
+            </div>
+            <div class="refsynopsisdiv">
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="t:titlepage"/&gt;</pre></div>
             <div class="refdescription"><a name="d0e94"></a>
                
                
-               <p>The <tt>t:titlepage</tt> element creates a set of
+               <p>The <tt class="literal">t:titlepage</tt> element creates a set of
                   templates for processing the titlepage for an element. The
-                  &#8220;root&#8221; of this template set is the template named
-                  &#8220;<tt>wrapper.titlepage</tt>&#8221;. That is the
+                  &#8220;<span class="quote">root</span>&#8221; of this template set is the template named
+                  &#8220;<span class="quote"><tt class="literal">wrapper.titlepage</tt></span>&#8221;. That is the
                   template that should be called to generate the title page.
                   
                </p>
@@ -152,40 +179,42 @@
                
                
                
-               <p>The <tt>t:titlepage</tt> element has three attributes:
+               <p>The <tt class="literal">t:titlepage</tt> element has three attributes:
                   
                   
                   
-                  <div class="variablelist">
-                     <dl>
-                        <dt><a name="d0e115"></a><span class="term">element</span></dt>
-                        <dd>
-                           <p><a name="d0e118"></a>The name of the source document element for which
-                              these templates apply. In other words, to make a title page for the
-                              <tt>article</tt> element, set the
-                              <tt>element</tt> attribute to
-                              &#8220;<tt>article</tt>&#8221;. This attribute is required.
-                              
-                           </p>
-                        </dd>
-                        <dt><a name="d0e131"></a><span class="term">wrapper</span></dt>
-                        <dd>
-                           <p><a name="d0e134"></a>The entire title page can be wrapped with an element.
-                              This attribute identifies that element.
-                              
-                           </p>
-                        </dd>
-                        <dt><a name="d0e137"></a><span class="term">class</span></dt>
-                        <dd>
-                           <p><a name="d0e140"></a>If the <tt>class</tt> attribute
-                              is set, a <tt>class</tt> attribute with this
-                              value will be added to the wrapper element that surrounds the entire
-                              title page.
-                              
-                           </p>
-                        </dd>
-                     </dl>
-                  </div>
+               </p>
+               <div class="variablelist">
+                  <dl>
+                     <dt><span class="term">element</span></dt>
+                     <dd>
+                        <p>The name of the source document element for which
+                           these templates apply. In other words, to make a title page for the
+                           <tt class="sgmltag-element">article</tt> element, set the
+                           <tt class="sgmltag-attribute">element</tt> attribute to
+                           &#8220;<span class="quote"><tt class="literal">article</tt></span>&#8221;. This attribute is required.
+                           
+                        </p>
+                     </dd>
+                     <dt><span class="term">wrapper</span></dt>
+                     <dd>
+                        <p>The entire title page can be wrapped with an element.
+                           This attribute identifies that element.
+                           
+                        </p>
+                     </dd>
+                     <dt><span class="term">class</span></dt>
+                     <dd>
+                        <p>If the <tt class="sgmltag-attribute">class</tt> attribute
+                           is set, a <tt class="sgmltag-attribute">class</tt> attribute with this
+                           value will be added to the wrapper element that surrounds the entire
+                           title page.
+                           
+                        </p>
+                     </dd>
+                  </dl>
+               </div>
+               <p>
                   
                   
                </p>
@@ -200,48 +229,60 @@
                
                
                
-               <p>The content of a <tt>t:titlepage</tt> is one or
-                  more <tt>t:titlepage-content</tt>,
-                  <tt>t:titlepage-separator</tt>, and
-                  <tt>t:titlepage-before</tt> elements.
+               <p>The content of a <tt class="literal">t:titlepage</tt> is one or
+                  more <tt class="literal">t:titlepage-content</tt>,
+                  <tt class="literal">t:titlepage-separator</tt>, and
+                  <tt class="literal">t:titlepage-before</tt> elements.
                </p>
                
                
                
                
-               <p>Each of these elements may be provided for the &#8220;recto&#8221;
-                  and &#8220;verso&#8221; sides of the title page.
+               <p>Each of these elements may be provided for the &#8220;<span class="quote">recto</span>&#8221;
+                  and &#8220;<span class="quote">verso</span>&#8221; sides of the title page.
                </p>
                
                
                
             </div>
          </div>
-         <hr>
-         <div class="refentry">
-            <h1 class="title"><a name="d0e178"></a>@* (in copy.literal.atts mode)
-            </h1>
-            <div class="refnamediv"><a name="d0e179"></a><h2>Name</h2>@* (in copy.literal.atts mode) &#8212; Copy t:titlepage attributes
+         <div class="refentry" lang="en">
+            <div class="refentry.separator">
+               <hr>
+            </div><a name="d0e178"></a><div class="titlepage">
+               <div></div>
+               <div></div>
             </div>
-            <div class="refsynopsisdiv"><a name="d0e184"></a><h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="@*" mode="copy.literal.atts"/&gt;</pre></div>
+            <div class="refnamediv">
+               <h2>Name</h2>
+               <p>@* (in copy.literal.atts mode) &#8212; Copy t:titlepage attributes</p>
+            </div>
+            <div class="refsynopsisdiv">
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="@*" mode="copy.literal.atts"/&gt;</pre></div>
             <div class="refdescription"><a name="d0e187"></a>
                
                
-               <p>This template copies all of the &#8220;other&#8221; attributes
-                  from a <tt>t:titlepage</tt> element onto the specified
+               <p>This template copies all of the &#8220;<span class="quote">other</span>&#8221; attributes
+                  from a <tt class="literal">t:titlepage</tt> element onto the specified
                   wrapper.
                </p>
                
                
             </div>
          </div>
-         <hr>
-         <div class="refentry">
-            <h1 class="title"><a name="d0e198"></a>t:titlepage-content
-            </h1>
-            <div class="refnamediv"><a name="d0e199"></a><h2>Name</h2>t:titlepage-content &#8212; Create templates for the content of one side of a title page
+         <div class="refentry" lang="en">
+            <div class="refentry.separator">
+               <hr>
+            </div><a name="d0e198"></a><div class="titlepage">
+               <div></div>
+               <div></div>
             </div>
-            <div class="refsynopsisdiv"><a name="d0e204"></a><h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="t:titlepage-content"/&gt;</pre></div>
+            <div class="refnamediv">
+               <h2>Name</h2>
+               <p>t:titlepage-content &#8212; Create templates for the content of one side of a title page</p>
+            </div>
+            <div class="refsynopsisdiv">
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="t:titlepage-content"/&gt;</pre></div>
             <div class="refdescription"><a name="d0e207"></a>
                
                
@@ -253,39 +294,41 @@
                
                
                
-               <p>The <tt>t:titlepage-content</tt> element has two attributes:
+               <p>The <tt class="literal">t:titlepage-content</tt> element has two attributes:
                   
                   
                   
-                  <div class="variablelist">
-                     <dl>
-                        <dt><a name="d0e218"></a><span class="term">side</span></dt>
-                        <dd>
-                           <p><a name="d0e221"></a>Identifies the side of the page to which this title
-                              page content applies. The
-                              <tt>side</tt> attribute is required and
-                              must be set to either 
-                              &#8220;<tt>recto</tt>&#8221; or
-                              &#8220;<tt>verso</tt>&#8221;. In addition, you must specify
-                              exactly one <tt>t:titlepage-content</tt> for each side
-                              within each <tt>t:titlepage</tt>.
-                           </p>
-                        </dd>
-                        <dt><a name="d0e241"></a><span class="term">order</span></dt>
-                        <dd>
-                           <p><a name="d0e244"></a>Indicates how the order of the elements presented on
-                              the title page is determined. If the
-                              <tt>order</tt> is
-                              &#8220;<tt>document</tt>&#8221;, the elements are presented
-                              in document order. Otherwise (if the
-                              <tt>order</tt> is
-                              &#8220;<tt>stylesheet</tt>&#8221;), the elements are presented
-                              in the order that they appear in the template (and consequently in
-                              the stylesheet).
-                           </p>
-                        </dd>
-                     </dl>
-                  </div>
+               </p>
+               <div class="variablelist">
+                  <dl>
+                     <dt><span class="term">side</span></dt>
+                     <dd>
+                        <p>Identifies the side of the page to which this title
+                           page content applies. The
+                           <tt class="sgmltag-attribute">side</tt> attribute is required and
+                           must be set to either 
+                           &#8220;<span class="quote"><tt class="literal">recto</tt></span>&#8221; or
+                           &#8220;<span class="quote"><tt class="literal">verso</tt></span>&#8221;. In addition, you must specify
+                           exactly one <tt class="literal">t:titlepage-content</tt> for each side
+                           within each <tt class="literal">t:titlepage</tt>.
+                        </p>
+                     </dd>
+                     <dt><span class="term">order</span></dt>
+                     <dd>
+                        <p>Indicates how the order of the elements presented on
+                           the title page is determined. If the
+                           <tt class="sgmltag-attribute">order</tt> is
+                           &#8220;<span class="quote"><tt class="literal">document</tt></span>&#8221;, the elements are presented
+                           in document order. Otherwise (if the
+                           <tt class="sgmltag-attribute">order</tt> is
+                           &#8220;<span class="quote"><tt class="literal">stylesheet</tt></span>&#8221;), the elements are presented
+                           in the order that they appear in the template (and consequently in
+                           the stylesheet).
+                        </p>
+                     </dd>
+                  </dl>
+               </div>
+               <p>
                   
                   
                </p>
@@ -293,7 +336,7 @@
                
                
                
-               <p>The content of a <tt>t:titlepage-content</tt> element is
+               <p>The content of a <tt class="literal">t:titlepage-content</tt> element is
                   a list of element names. These names should be unqualified.  They identify
                   the elements in the source document that should appear on the title page.
                   
@@ -303,7 +346,7 @@
                
                
                <p>Each element may have a single attribute:
-                  <tt>predicate</tt>. The value of this
+                  <tt class="sgmltag-attribute">predicate</tt>. The value of this
                   attribute is used as a predicate for the expression that matches
                   the element on which it occurs.
                </p>
@@ -315,21 +358,23 @@
                   recto-side of a title
                   page, you could specify:
                   
-                  <pre class="screen">
+                  
+               </p><pre class="screen">
   &lt;t:titlepage-contents side="recto"&gt;
     &lt;!-- other titlepage elements --&gt;
     &lt;author predicate="[count(previous-sibling::author)&lt;2]"/&gt;
     &lt;!-- other titlepage elements --&gt;
   &lt;/t:titlepage-contents&gt;
-</pre>
-                  </p>
+</pre><p>
+                  
+               </p>
                
                
                
                
                <p>Usually, the elements so named are empty. But it is possible to
                   make one level of selection within them. Suppose that you want to
-                  process <tt>authorgroup</tt> elements on the title page, but
+                  process <tt class="literal">authorgroup</tt> elements on the title page, but
                   you want to select only proper authors, editors, or corporate authors,
                   not collaborators or other credited authors.
                </p>
@@ -337,10 +382,11 @@
                
                
                
-               <p>In that case, you can put a <tt>t:or</tt> group inside
-                  the <tt>authorgroup</tt> element:
+               <p>In that case, you can put a <tt class="literal">t:or</tt> group inside
+                  the <tt class="literal">authorgroup</tt> element:
                   
-                  <pre class="screen">
+                  
+               </p><pre class="screen">
   &lt;t:titlepage-contents side="recto"&gt;
     &lt;!-- other titlepage elements --&gt;
     &lt;authorgroup&gt;
@@ -352,14 +398,15 @@
     &lt;/authorgroup&gt;
     &lt;!-- other titlepage elements --&gt;
   &lt;/t:titlepage-contents&gt;
-</pre>
-                  </p>
+</pre><p>
+                  
+               </p>
                
                
                
                
                <p>This will have the effect of automatically generating a template
-                  for processing <tt>authorgroup</tt>s in the title page mode,
+                  for processing <tt class="literal">authorgroup</tt>s in the title page mode,
                   selecting only the specified children. If you need more complex processing,
                   you'll have to construct the templates by hand.
                </p>
@@ -368,49 +415,67 @@
                
             </div>
          </div>
-         <hr>
-         <div class="refentry">
-            <h1 class="title"><a name="d0e305"></a>t:titlepage-separator
-            </h1>
-            <div class="refnamediv"><a name="d0e306"></a><h2>Name</h2>t:titlepage-separator &#8212; Create templates for the separator
+         <div class="refentry" lang="en">
+            <div class="refentry.separator">
+               <hr>
+            </div><a name="d0e305"></a><div class="titlepage">
+               <div></div>
+               <div></div>
             </div>
-            <div class="refsynopsisdiv"><a name="d0e311"></a><h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="t:titlepage-separator"/&gt;</pre></div>
+            <div class="refnamediv">
+               <h2>Name</h2>
+               <p>t:titlepage-separator &#8212; Create templates for the separator</p>
+            </div>
+            <div class="refsynopsisdiv">
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="t:titlepage-separator"/&gt;</pre></div>
             <div class="refdescription"><a name="d0e314"></a>
                
                
                <p>The title page is separated from the content which follows it by
-                  the markup specified in the <tt>t:titlepage-separator</tt>
+                  the markup specified in the <tt class="literal">t:titlepage-separator</tt>
                   element.
                </p>
                
                
             </div>
          </div>
-         <hr>
-         <div class="refentry">
-            <h1 class="title"><a name="d0e322"></a>t:titlepage-before
-            </h1>
-            <div class="refnamediv"><a name="d0e323"></a><h2>Name</h2>t:titlepage-before &#8212; Create templates for what precedes a title page
+         <div class="refentry" lang="en">
+            <div class="refentry.separator">
+               <hr>
+            </div><a name="d0e322"></a><div class="titlepage">
+               <div></div>
+               <div></div>
             </div>
-            <div class="refsynopsisdiv"><a name="d0e328"></a><h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="t:titlepage-before"/&gt;</pre></div>
+            <div class="refnamediv">
+               <h2>Name</h2>
+               <p>t:titlepage-before &#8212; Create templates for what precedes a title page</p>
+            </div>
+            <div class="refsynopsisdiv">
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="t:titlepage-before"/&gt;</pre></div>
             <div class="refdescription"><a name="d0e331"></a>
                
                
                <p>Each side of the title page is preceded by the markup specified
-                  in the <tt>t:titlepage-before</tt> element for that
+                  in the <tt class="literal">t:titlepage-before</tt> element for that
                   side.
                </p>
                
                
             </div>
          </div>
-         <hr>
-         <div class="refentry">
-            <h1 class="title"><a name="d0e339"></a>* (in copy mode)
-            </h1>
-            <div class="refnamediv"><a name="d0e340"></a><h2>Name</h2>* (in copy mode) &#8212; Copy elements
+         <div class="refentry" lang="en">
+            <div class="refentry.separator">
+               <hr>
+            </div><a name="d0e339"></a><div class="titlepage">
+               <div></div>
+               <div></div>
             </div>
-            <div class="refsynopsisdiv"><a name="d0e345"></a><h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="*" mode="copy"/&gt;</pre></div>
+            <div class="refnamediv">
+               <h2>Name</h2>
+               <p>* (in copy mode) &#8212; Copy elements</p>
+            </div>
+            <div class="refsynopsisdiv">
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="*" mode="copy"/&gt;</pre></div>
             <div class="refdescription"><a name="d0e348"></a>
                
                
@@ -421,13 +486,19 @@
                
             </div>
          </div>
-         <hr>
-         <div class="refentry">
-            <h1 class="title"><a name="d0e353"></a>@* (in copy mode)
-            </h1>
-            <div class="refnamediv"><a name="d0e354"></a><h2>Name</h2>@* (in copy mode) &#8212; Copy attributes
+         <div class="refentry" lang="en">
+            <div class="refentry.separator">
+               <hr>
+            </div><a name="d0e353"></a><div class="titlepage">
+               <div></div>
+               <div></div>
             </div>
-            <div class="refsynopsisdiv"><a name="d0e359"></a><h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="@*" mode="copy"/&gt;</pre></div>
+            <div class="refnamediv">
+               <h2>Name</h2>
+               <p>@* (in copy mode) &#8212; Copy attributes</p>
+            </div>
+            <div class="refsynopsisdiv">
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="@*" mode="copy"/&gt;</pre></div>
             <div class="refdescription"><a name="d0e362"></a>
                
                
@@ -438,18 +509,24 @@
                
             </div>
          </div>
-         <hr>
-         <div class="refentry">
-            <h1 class="title"><a name="d0e367"></a>* (in document.order mode)
-            </h1>
-            <div class="refnamediv"><a name="d0e368"></a><h2>Name</h2>* (in document.order mode) &#8212; Create rules to process titlepage elements in document order
+         <div class="refentry" lang="en">
+            <div class="refentry.separator">
+               <hr>
+            </div><a name="d0e367"></a><div class="titlepage">
+               <div></div>
+               <div></div>
             </div>
-            <div class="refsynopsisdiv"><a name="d0e373"></a><h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="*" mode="document.order"/&gt;</pre></div>
+            <div class="refnamediv">
+               <h2>Name</h2>
+               <p>* (in document.order mode) &#8212; Create rules to process titlepage elements in document order</p>
+            </div>
+            <div class="refsynopsisdiv">
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="*" mode="document.order"/&gt;</pre></div>
             <div class="refdescription"><a name="d0e376"></a>
                
                
                <p>This template is called to process all of the children of the
-                  <tt>t:titlepage-content</tt> element. It creates the hairy
+                  <tt class="literal">t:titlepage-content</tt> element. It creates the hairy
                   select expression necessary to process each of those elements in
                   the title page.
                </p>
@@ -475,19 +552,25 @@
                
             </div>
          </div>
-         <hr>
-         <div class="refentry">
-            <h1 class="title"><a name="d0e390"></a>* (in document.order mode)
-            </h1>
-            <div class="refnamediv"><a name="d0e391"></a><h2>Name</h2>* (in document.order mode) &#8212; Create rules to process titlepage elements in stylesheet order
+         <div class="refentry" lang="en">
+            <div class="refentry.separator">
+               <hr>
+            </div><a name="d0e390"></a><div class="titlepage">
+               <div></div>
+               <div></div>
             </div>
-            <div class="refsynopsisdiv"><a name="d0e396"></a><h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="*" mode="document.order"/&gt;</pre></div>
+            <div class="refnamediv">
+               <h2>Name</h2>
+               <p>* (in document.order mode) &#8212; Create rules to process titlepage elements in stylesheet order</p>
+            </div>
+            <div class="refsynopsisdiv">
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="*" mode="document.order"/&gt;</pre></div>
             <div class="refdescription"><a name="d0e399"></a>
                
                
                <p>This template is called to process all of the children of the
-                  <tt>t:titlepage-content</tt> element. It creates the set
-                  of <tt>xsl:apply-templates</tt> elements necessary
+                  <tt class="literal">t:titlepage-content</tt> element. It creates the set
+                  of <tt class="literal">xsl:apply-templates</tt> elements necessary
                   process each of those elements in the title page.
                </p>
                
@@ -512,32 +595,44 @@
                
             </div>
          </div>
-         <hr>
-         <div class="refentry">
-            <h1 class="title"><a name="d0e416"></a>* (in titlepage.specialrules mode)
-            </h1>
-            <div class="refnamediv"><a name="d0e417"></a><h2>Name</h2>* (in titlepage.specialrules mode) &#8212; Create templates for special rules
+         <div class="refentry" lang="en">
+            <div class="refentry.separator">
+               <hr>
+            </div><a name="d0e416"></a><div class="titlepage">
+               <div></div>
+               <div></div>
             </div>
-            <div class="refsynopsisdiv"><a name="d0e422"></a><h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="*" mode="titlepage.specialrules"/&gt;</pre></div>
+            <div class="refnamediv">
+               <h2>Name</h2>
+               <p>* (in titlepage.specialrules mode) &#8212; Create templates for special rules</p>
+            </div>
+            <div class="refsynopsisdiv">
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="*" mode="titlepage.specialrules"/&gt;</pre></div>
             <div class="refdescription"><a name="d0e425"></a>
                
                
                <p>This template is called to process all of the descendants of the
-                  <tt>t:titlepage-content</tt> element that require special
-                  processing. At present, that's just <tt>t:or</tt> elements.
+                  <tt class="literal">t:titlepage-content</tt> element that require special
+                  processing. At present, that's just <tt class="literal">t:or</tt> elements.
                   
                </p>
                
                
             </div>
          </div>
-         <hr>
-         <div class="refentry">
-            <h1 class="title"><a name="d0e436"></a>* (in titlepage.subrules mode)
-            </h1>
-            <div class="refnamediv"><a name="d0e437"></a><h2>Name</h2>* (in titlepage.subrules mode) &#8212; Create template for individual special rules
+         <div class="refentry" lang="en">
+            <div class="refentry.separator">
+               <hr>
+            </div><a name="d0e436"></a><div class="titlepage">
+               <div></div>
+               <div></div>
             </div>
-            <div class="refsynopsisdiv"><a name="d0e442"></a><h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="*" mode="titlepage.subrules"/&gt;</pre></div>
+            <div class="refnamediv">
+               <h2>Name</h2>
+               <p>* (in titlepage.subrules mode) &#8212; Create template for individual special rules</p>
+            </div>
+            <div class="refsynopsisdiv">
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="*" mode="titlepage.subrules"/&gt;</pre></div>
             <div class="refdescription"><a name="d0e445"></a>
                
                
@@ -549,13 +644,19 @@
                
             </div>
          </div>
-         <hr>
-         <div class="refentry">
-            <h1 class="title"><a name="d0e450"></a>t:or
-            </h1>
-            <div class="refnamediv"><a name="d0e451"></a><h2>Name</h2>t:or &#8212; Process the t:or special rule
+         <div class="refentry" lang="en">
+            <div class="refentry.separator">
+               <hr>
+            </div><a name="d0e450"></a><div class="titlepage">
+               <div></div>
+               <div></div>
             </div>
-            <div class="refsynopsisdiv"><a name="d0e456"></a><h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="t:or"/&gt;&lt;xsl:template match="t:or" mode="titlepage.subrules"/&gt;</pre></div>
+            <div class="refnamediv">
+               <h2>Name</h2>
+               <p>t:or &#8212; Process the t:or special rule</p>
+            </div>
+            <div class="refsynopsisdiv">
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="t:or"/&gt;&lt;xsl:template match="t:or" mode="titlepage.subrules"/&gt;</pre></div>
             <div class="refdescription"><a name="d0e459"></a>
                
                
@@ -564,14 +665,21 @@
                
             </div>
          </div>
-         <hr>
-         <div class="refentry">
-            <h1 class="title"><a name="d0e464"></a>t:or (in titlepage.subrules mode)
-            </h1>
-            <div class="refnamediv"><a name="d0e465"></a><h2>Name</h2>t:or (in titlepage.subrules mode) &#8212; Process the t:or special rule in
-               titlepage.subrules mode
+         <div class="refentry" lang="en">
+            <div class="refentry.separator">
+               <hr>
+            </div><a name="d0e464"></a><div class="titlepage">
+               <div></div>
+               <div></div>
             </div>
-            <div class="refsynopsisdiv"><a name="d0e470"></a><h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="t:or" mode="titlepage.subrules"/&gt;</pre></div>
+            <div class="refnamediv">
+               <h2>Name</h2>
+               <p>t:or (in titlepage.subrules mode) &#8212; Process the t:or special rule in
+                  titlepage.subrules mode
+               </p>
+            </div>
+            <div class="refsynopsisdiv">
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template match="t:or" mode="titlepage.subrules"/&gt;</pre></div>
             <div class="refdescription"><a name="d0e473"></a>
                
                
@@ -582,14 +690,21 @@
                
             </div>
          </div>
-         <hr>
-         <div class="refentry">
-            <h1 class="title"><a name="template.element-or-list"></a>element-or-list
-            </h1>
-            <div class="refnamediv"><a name="d0e479"></a><h2>Name</h2>element-or-list &#8212; Construct the "or-list" used in the select attribute for
-               special rules.
+         <div class="refentry" lang="en">
+            <div class="refentry.separator">
+               <hr>
+            </div><a name="template.element-or-list"></a><div class="titlepage">
+               <div></div>
+               <div></div>
             </div>
-            <div class="refsynopsisdiv"><a name="d0e484"></a><h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template name="element-or-list"&gt;
+            <div class="refnamediv">
+               <h2>Name</h2>
+               <p>element-or-list &#8212; Construct the "or-list" used in the select attribute for
+                  special rules.
+               </p>
+            </div>
+            <div class="refsynopsisdiv">
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template name="element-or-list"&gt;
 &lt;xsl:param name="elements" select="*"/&gt;
 &lt;xsl:param name="element.count" select="count($elements)"/&gt;
 &lt;xsl:param name="count" select="1"/&gt;
