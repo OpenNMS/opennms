@@ -29,6 +29,7 @@ your distribution.
  <property name="build.castor.source.dir" value="${build.dir}/castor"/>
  <property name="build.sablecc.source.dir" value="${build.dir}/sablecc"/>
  <property name="build.docs.dir" value="${build.dir}/docs"/>
+ <property name="build.rpm.dir" value="${build.dir}/rpm"/>
  <property name="build.filter.docs.dir" value="${build.dir}/docs/filter"/>
  <property name="build.api.dir" value="${build.dir}/javadoc"/>
  <property name="build.classes.dir" value="${build.dir}/opennms/classes"/>
@@ -138,11 +139,11 @@ your distribution.
   <property name="opennms.version.string" value="${product.version}-${opennms.release.string}"/>
 
   <condition property="wasrpm" value="true">
-   <available property="wasrpm" file="${root.build}/rpm" type="dir"/>
+   <available property="wasrpm" file="${build.rpm.dir}" type="dir"/>
   </condition>
   <condition property="wasrpm" value="false">
    <not>
-    <available property="wasrpm" file="${root.build}/rpm" type="dir"/>
+    <available property="wasrpm" file="${build.rpm.dir}" type="dir"/>
    </not>
   </condition>
 
@@ -301,34 +302,22 @@ your distribution.
  
  <!-- archive/package targets -->
 
- <target name="rpm" depends="init" description="Build an RPM package">
-  <condition property="rpm.sign.arg" value="--sign">
-    <or>
-      <equals arg1="${opennms.snapshot}" arg2="true"/>
-      <equals arg1="${opennms.snapshot}" arg2="yes"/>
-    </or>
-  </condition>
-  <condition property="rpm.sign.arg" value="">
-    <or>
-      <equals arg1="${opennms.snapshot}" arg2="true"/>
-      <equals arg1="${opennms.snapshot}" arg2="yes"/>
-    </or>
-  </condition>
-  <property name="root.rpm" value="${root.build}/rpm"/>
-  <mkdir dir="${root.rpm}/BUILD"/>
-  <mkdir dir="${root.rpm}/RPMS/i386"/>
-  <mkdir dir="${root.rpm}/RPMS/i486"/>
-  <mkdir dir="${root.rpm}/RPMS/i586"/>
-  <mkdir dir="${root.rpm}/RPMS/i686"/>
-  <mkdir dir="${root.rpm}/RPMS/athlon"/>
-  <mkdir dir="${root.rpm}/RPMS/k6"/>
-  <mkdir dir="${root.rpm}/RPMS/noarch"/>
-  <mkdir dir="${root.rpm}/SOURCES"/>
-  <mkdir dir="${root.rpm}/SPECS"/>
-  <mkdir dir="${root.rpm}/SRPMS"/>
-  <mkdir dir="${root.rpm}/tmp"/>
-  <copy filtering="yes"   file="${root.source}/tools/packages/opennms/opennms.spec.in"
-                        tofile="${root.rpm}/SPECS/opennms.spec" overwrite="yes" />
+ <target name="rpm" depends="init,tbz2.source.dist" description="Build an RPM package">
+  <mkdir dir="${build.rpm.dir}/BUILD"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i386"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i486"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i586"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i686"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/athlon"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/k6"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/noarch"/>
+  <mkdir dir="${build.rpm.dir}/SOURCES"/>
+  <mkdir dir="${build.rpm.dir}/SPECS"/>
+  <mkdir dir="${build.rpm.dir}/SRPMS"/>
+  <mkdir dir="${build.rpm.dir}/tmp"/>
+  <copy file="${build.release.dir}/${ant.project.name}-${product.version}-src.tbz2" todir="${build.rpm.dir}/SOURCES"/>
+  <copy file="${basedir}/tools/packages/opennms/opennms.spec.in"
+   tofile="${root.rpm}/SPECS/opennms.spec" filtering="yes" />
   <copy filtering="no" todir="${root.rpm}/SOURCES">
    <fileset dir="${root.source}/tools/packages/opennms">
     <include name="**/*.patch"/>
@@ -337,27 +326,7 @@ your distribution.
    </fileset>
    <mapper type="flatten"/>
   </copy>
-  <touch file="${root.rpm}/SOURCES/${ant.project.name}-source-${opennms.version.string}.tar.gz"/>
-  <echo message="building RPM for OpenNMS version ${opennms.version.string}..."/>
-  <exec dir="${root.rpm}" executable="rpmbuild" failonerror="true">
-   <arg value="-ba"/>
-   <arg value="${root.rpm}/SPECS/opennms.spec"/>
-   <arg value="--define"/>
-   <arg value="platform ${rpm.platform}"/>
-   <arg value="--define"/>
-   <arg value="_topdir ${root.rpm}"/>
-   <arg value="--define"/>
-   <arg value="_tmppath ${root.rpm}/tmp"/>
-   <arg value="--define"/>
-   <arg value="snapshot ${opennms.snapshot}"/>
-   <arg value="--define"/>
-   <arg value="date ${DSTAMP}"/>
-   <arg value="--define"/>
-   <arg value="standalone 0"/>
-   <arg value="--define"/>
-   <arg value="builddocs ${rpm.builddocs}"/>
-   <arg line="${rpm.sign.arg}"/>
-  </exec>
+  <rpm topDir="${build.rpm.dir}" specFile="opennms.spec"/>
  </target>
  
  <target name="srpm" depends="init,release.source" description="Build an RPM and a source RPM package">
@@ -373,19 +342,18 @@ your distribution.
       <equals arg1="${opennms.snapshot}" arg2="yes"/>
     </or>
   </condition>
-  <property name="root.rpm" value="${root.build}/rpm"/>
-  <mkdir dir="${root.rpm}/BUILD"/>
-  <mkdir dir="${root.rpm}/RPMS/i386"/>
-  <mkdir dir="${root.rpm}/RPMS/i486"/>
-  <mkdir dir="${root.rpm}/RPMS/i586"/>
-  <mkdir dir="${root.rpm}/RPMS/i686"/>
-  <mkdir dir="${root.rpm}/RPMS/athlon"/>
-  <mkdir dir="${root.rpm}/RPMS/k6"/>
-  <mkdir dir="${root.rpm}/RPMS/noarch"/>
-  <mkdir dir="${root.rpm}/SOURCES"/>
-  <mkdir dir="${root.rpm}/SPECS"/>
-  <mkdir dir="${root.rpm}/SRPMS"/>
-  <mkdir dir="${root.rpm}/tmp"/>
+  <mkdir dir="${build.rpm.dir}/BUILD"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i386"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i486"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i586"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i686"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/athlon"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/k6"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/noarch"/>
+  <mkdir dir="${build.rpm.dir}/SOURCES"/>
+  <mkdir dir="${build.rpm.dir}/SPECS"/>
+  <mkdir dir="${build.rpm.dir}/SRPMS"/>
+  <mkdir dir="${build.rpm.dir}/tmp"/>
   <copy filtering="yes"   file="${root.source}/tools/packages/opennms/opennms.spec.in"
                         tofile="${root.rpm}/SPECS/opennms.spec" overwrite="${filter.overwrite}" />
   <copy filtering="no" todir="${root.rpm}/SOURCES">
@@ -429,7 +397,7 @@ your distribution.
  <!-- DIST targets -->
  <target name="dist" depends="clean.dist,source.dist,binary.dist,docs.dist" description="Generate a distribution"/>
 
- <target name="source.dist" depends="clean.dist,zip.source.dist,tar.source.dist,tgz.source.dist,tbz2.source.dist,tar.source.dist.clean">
+ <target name="source.dist" depends="clean.dist,zip.source.dist,tgz.source.dist,tbz2.source.dist">
  </target>
 
  <target name="zip.source.dist" depends="prep,clean.dist">
@@ -442,18 +410,14 @@ your distribution.
   <tar destfile="${build.release.dir}/${ant.project.name}-${product.version}-src.tar" basedir="${basedir}" excludes="**/CVS/**,**/${build.dir}/**" includes="**/*"/>
  </target>
 
- <target name="tgz.source.dist" depends="prep,clean.dist">
+ <target name="tgz.source.dist" depends="prep,tar.source.dist,clean.dist">
   <mkdir dir="${build.release.dir}"/>
   <gzip destfile="${build.release.dir}/${ant.project.name}-${product.version}-src.tgz" src="${build.release.dir}/${ant.project.name}-${product.version}-src.tar"/>
  </target>
 
- <target name="tbz2.source.dist" depends="prep,clean.dist">
+ <target name="tbz2.source.dist" depends="prep,clean.dist,tar.source.dist">
   <mkdir dir="${build.release.dir}"/>
   <bzip2 destfile="${build.release.dir}/${ant.project.name}-${product.version}-src.tbz2" src="${build.release.dir}/${ant.project.name}-${product.version}-src.tar"/>
- </target>
-
- <target name="tar.source.dist.clean" depends="prep">
-  <delete file="${build.release.dir}/${ant.project.name}-${product.version}-src.tar"/>
  </target>
 
  <target name="binary.dist" depends="zip.binary.dist,tgz.binary.dist,tbz2.binary.dist"/>
