@@ -107,6 +107,7 @@
         </tr>    
       </table>
 
+    <h3>License and Copyright</h3>
       
       <p>
         The <a href="http://www.opennms.org/">OpenNMS&reg;</a> software, as distributed here, is copyright &copy; 2002-2003 <a href="http://www.blast.com">Blast Internet Services, Inc.</a> <a href="http://www.opennms.org/">OpenNMS&reg;</a> is a registered trademark of <a href="http://www.blast.com">Blast Internet Services, Inc.</a>
@@ -132,8 +133,6 @@
         </td>
         </tr>
 	</table>
-
-    <h3>License and Copyright</h3>
 
       <p>
         This program is free software; you can redistribute it and/or
