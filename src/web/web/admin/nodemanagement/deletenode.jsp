@@ -163,21 +163,23 @@
 <hr> 
   
 <form method="POST" name="deleteNode" action="admin/deleteSelNodes">
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
+<table width="70%" cellspacing="0" cellpadding="0" border="0">
   <tr>
 	<td>&nbsp;</td>
         <td align="left" valign="center">
           <input type="checkbox" name="nodeCheck" value='<%= nodeId %>'>Node
         </td>
-   </tr>
-   <tr>
 	<td>&nbsp;</td>
         <td align="left" valign="center">
           <input type="checkbox" name="nodeData" value='<%= nodeId %>'>Data
         </td>
+        <td align="left" valign="center">
+          Node: <%=node_db.getLabel()%>
+        </td>
         <br>
    </tr>
-   
+   <tr><td>&nbsp;</td></tr>
+   <tr><td>&nbsp;</td></tr>
    <tr>
 	<td>&nbsp;</td>
         <td align="left" valign="center" colspan="5">
