@@ -846,7 +846,7 @@ final class RescanProcessor
                         try
                         {
                                 stmt = dbc.prepareStatement(SQL_DB_RETRIEVE_OTHER_NODES);
-                                stmt.setString(1, ifaddr.getHostAddress());
+                                stmt.setString(1, ipaddr.getHostAddress());
                                 stmt.setInt(2, node.getNodeId());
                                 
                                 ResultSet rs = stmt.executeQuery();
