@@ -26,7 +26,8 @@ public class ExampleWebTest extends WebTestCase {
     public void setUp() throws Exception {
         MockUtil.setupLogging();
         
-        ServletRunner sr = new ServletRunner(new File("dist/webapps/opennms/WEB-INF/web.xml"), "/opennms");
+	// This test needs to be run from the dist/webapps/opennms directory
+        ServletRunner sr = new ServletRunner(new File("WEB-INF/web.xml"), "/opennms");
      
         ServletUnitClient sc = sr.newClient();
         getTestContext().setWebClient(sc);
