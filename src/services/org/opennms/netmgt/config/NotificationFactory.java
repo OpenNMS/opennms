@@ -225,6 +225,12 @@ public class NotificationFactory
 			String eventIf = (String)event.getInterface();
 			String eventSrv = (String)event.getService();
 
+                        if (eventNode == 0)
+                        {
+                        	return true;
+                        }
+
+
                         // ThreadCategory.getInstance(getClass()).debug("Notification Event Interface: " + eventIf + " Service: " + eventSrv);
 
 			// Get the Notification Rule
