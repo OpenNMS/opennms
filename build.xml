@@ -186,7 +186,7 @@ ${print.headertext}
  </target>
 
  <target name="install"
-	depends="install.lib,install.servlet,install.init,install.etc,install.usr.bin,install.bin,install.logs,install.share"
+	depends="install.lib,install.servlet,install.init,install.etc,install.usr.bin,install.bin,install.logs,install.share,install.contrib"
 	description="build &quot;all&quot;, and install it in ${install}"/>
  <target name="all" depends="compile,jar" description="build everything (except documentation)"/>
  
@@ -485,6 +485,12 @@ ${root.install}/bin/opennms.sh $$@
   </copy>
  </target>
 
+ <target name="install.contrib" depends="init,copy.contrib">
+  <copy todir="${install}/contrib">
+   <fileset dir="${root.build}/contrib"/>
+  </copy>
+ </target>
+
  <target name="install.lib" depends="init,compile.native,jar">
   <mkdir dir="${install}/lib"/>
   <mkdir dir="${install}/lib/updates"/>
@@ -578,6 +584,15 @@ OpenNMS as part of the post-install.
     <include name="**/*.gif"/>
     <include name="**/*.jpg"/>
     <include name="**/*.png"/>
+   </fileset>
+  </copy>
+ </target>
+
+ <target name="copy.contrib" depends="init">
+  <mkdir dir="${root.build}/contrib"/>
+  <copy todir="${root.build}/contrib" filtering="no" overwrite="yes">
+   <fileset dir="${root.source}/contrib">
+    <include name="**/*"/>
    </fileset>
   </copy>
  </target>
