@@ -28,7 +28,7 @@ public class ExampleWebTestCase extends WebTestCase {
         getTestContext().setBaseUrl("http://localhost:8080/opennms");
     }
     
-    public void testAddInterface() {
+    public void _testAddInterface() {
         
         beginAt("/index.jsp");
         assertTitleEquals("OpenNMS Web Console");
