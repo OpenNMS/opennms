@@ -1,5 +1,6 @@
 1.1.2 to 1.1.3
 ----------------------------------------------------------------------
+- Updated dtd link in web.xml. Thx Xavier. Bug 813
 - Added a small workaround to "import" issues in jsps. Bug 820
 - Fixed "unary operator" issue on CentOS (RHES) in opennms.sh. Bug 795
 - (ELB) Fixed a number of javadoc warnings
