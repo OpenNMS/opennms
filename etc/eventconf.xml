@@ -667,7 +667,7 @@
 			High threshold exceeded for %service% datasource %parm[ds]% on interface
 			%interface%, parms: %parm[all]%
 		</logmsg>
-		<severity>Major</severity>
+		<severity>Warning</severity>
 	</event>
 	<event>
 		<uei>http://uei.opennms.org/products/bluebird/threshold/lowThresholdExceeded</uei>
@@ -692,6 +692,53 @@
 		</logmsg>
 		<severity>Warning</severity>
 	</event>
+        <event>
+                <uei>http://uei.opennms.org/products/bluebird/threshold/highThresholdRearmed</uei>
+                <event-label>OpenNMS-defined threshold event: highThresholdRearmed</event-label>
+                <descr>
+                        &lt;p&gt;High threshold has been rearmed for %service% datasource
+                        %parm[ds]% on interface %interface%, parms: %parm[all]%&lt;/p&gt;
+                        &lt;p&gt;By default, OpenNMS watches some key parameters
+                        on devices in your network and will alert you with
+                        an event if certain conditions arise. For example, if
+                        the CPU utilization on your Cisco router maintains an
+                        inordinately high percentage of utilization for an extended
+                        period, an event will be generated. These thresholds are
+                        determined and configured based on vendor recommendations,
+                        tempered with real-world experience in working
+                        deployments.&lt;/p&gt; &lt;p&gt;This specific event
+                        indicates that a high threshold was exceeded but then dropped 
+			below the rearm threshold..&lt;/p&gt;
+                </descr>
+                <logmsg dest='logndisplay'>
+                        High threshold rearmed for %service% datasource %parm[ds]% on interface
+                        %interface%, parms: %parm[all]%
+                </logmsg>
+                <severity>Normal</severity>
+        </event>
+        <event>
+                <uei>http://uei.opennms.org/products/bluebird/threshold/lowThresholdRearmed</uei>
+                <event-label>OpenNMS-defined threshold event: lowThresholdRearmed</event-label>
+                <descr>
+                        &lt;p&gt;Low threshold has been rearmed for %service% datasource
+                        %parm[ds]% on interface %interface%, parms: %parm[all]%.&lt;/p&gt;
+                        &lt;p&gt;By default, OpenNMS watches some key parameters
+                        on devices in your network and will alert you with
+                        an event if certain conditions arise. For example, if
+                        the CPU utilization on your Cisco router maintains an
+                        inordinately high percentage of utilization for an extended
+                        period, an event will be generated. These thresholds are
+                        determined and configured based on working experience with
+                        real deployments, not vendor recommendation alone.&lt;/p&gt;
+                        &lt;p&gt;This specific event indicates that a low threshold
+                        was exceeded but then dropped below the rearm threshold.&lt;/p&gt;
+                </descr>
+                <logmsg dest='logndisplay'>
+                        Low threshold rearmed for %service% datasource %parm[ds]% on interface
+                        %interface%, parms: %parm[all]%
+                </logmsg>
+                <severity>Normal</severity>
+        </event>
 	<event>
 		<uei>http://uei.opennms.org/products/bluebird/nodes/thresholdingFailed</uei>
 		<event-label>OpenNMS-defined threshold event: thresholdingFailed</event-label>
