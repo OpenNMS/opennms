@@ -413,8 +413,8 @@ public class NoticeFactory extends Object
 
     /**
      * This method determines the log status of an event associated with a notification
-     * @param eventId, the unique id of the event from the notice
-     * @return boolean, true if the event is display, false if log only
+     * @param eventId the unique id of the event from the notice
+     * @return true if the event is display, false if log only
      */
      public static boolean canDisplayEvent(int eventId)
      {
@@ -477,8 +477,7 @@ public class NoticeFactory extends Object
     /** 
      * Return all notices (optionally only unacknowledged notices) sorted by the 
      * given sort style.
-     * @deprecated Please use {@link #getNotices( SortStyle, AcknowledgeType )
-     * getNotices( SortStyle, AcknowledgeType )} instead.
+     * @deprecated Replaced by {@link " #getNotices(SortStyle,AcknowledgeType) getNotices( SortStyle, AcknowledgeType )"}
      */
     public static Notification[] getNotices( SortStyle sortStyle, boolean includeAcknowledged ) throws SQLException {
         AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED; 
@@ -573,8 +572,7 @@ public class NoticeFactory extends Object
     /** 
      * Return all notices (optionally only unacknowledged notices) sorted by id
      * for the given node.
-     * @deprecated Please use {@link #getNoticesForNode( int, SortStyle, AcknowledgeType )
-     * getNoticesForNode( int, SortStyle, AcknowledgeType )} instead.
+     * @deprecated Replaced by {@link " #getNoticesForNode(int,SortStyle,AcknowledgeType) getNoticesForNode( int, SortStyle, AcknowledgeType )"}
      */
     public static Notification[] getNoticesForNode( int nodeId, boolean includeAcknowledged ) throws SQLException {
         AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED; 

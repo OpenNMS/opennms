@@ -319,7 +319,6 @@ public abstract class Util extends Object
      * each parameter in the given <code>HttpServletRequest</code>.
      *
      * @see #makeQueryString( HttpServletRequest, Map, String[] )
-     * @see HttpServletRequest#getQueryString
      */
     public static String makeQueryString( HttpServletRequest request ) {
         return( makeQueryString( request, new HashMap(), new String[0] ));
@@ -332,7 +331,6 @@ public abstract class Util extends Object
      * given <code>Map</code>.
      *
      * @see #makeQueryString( HttpServletRequest, Map, String[] )
-     * @see HttpServletRequest#getQueryString
      */
     public static String makeQueryString( HttpServletRequest request, Map additions ) {
         return( makeQueryString( request, additions, new String[0] ));
@@ -345,7 +343,6 @@ public abstract class Util extends Object
      * not listed in the ignore list.
      *
      * @see #makeQueryString( HttpServletRequest, Map, String[] )
-     * @see HttpServletRequest#getQueryString
      */
     public static String makeQueryString( HttpServletRequest request, String[] ignores ) {
         return( makeQueryString( request, new HashMap(), ignores ));
@@ -363,7 +360,6 @@ public abstract class Util extends Object
      * @param ignores the list of parameters and map entries not to include
      * @return A string in the <em>x-www-form-urlencoded</em> format that is suitable for adding 
      * to a URL as a query string.
-     * @see HttpServletRequest#getQueryString
      */
     public static String makeQueryString( HttpServletRequest request, Map additions, String[] ignores ) {
         return( makeQueryString( request, additions, ignores, IgnoreType.BOTH ));
@@ -381,7 +377,6 @@ public abstract class Util extends Object
      * @param ignores the list of parameters and map entries not to include
      * @return A string in the <em>x-www-form-urlencoded</em> format that is suitable for adding 
      * to a URL as a query string.
-     * @see HttpServletRequest#getQueryString
      */
     public static String makeQueryString( HttpServletRequest request, Map additions, String[] ignores, IgnoreType ignoreType ) {
         if( request == null || additions == null || ignores == null || ignoreType == null ) {

@@ -109,7 +109,7 @@ public class Category
 	}
 	
 	/**This constructor creates a Category by parsing a string in the UserManager format
-	   @param String aDataString, a string in the format "label$normal$warning$rule"
+	   @param aDataString a string in the format "label$normal$warning$rule"
 	   @deprecated
 	*/
 	public Category(String aDataString)
@@ -203,7 +203,7 @@ public class Category
 	}
 	
 	/**Adds a service to this category
-	   @param String
+	   @param name the service name.
 	*/
 	public void addService(String name)
 	{
@@ -211,7 +211,7 @@ public class Category
 	}
 	
 	/**Returns the list of services in this category
-	   @return List
+	   @return the list of services.
 	*/
 	public List getServices()
 	{
@@ -219,7 +219,7 @@ public class Category
 	}
 	
 	/**Sets the list of services
-	   @param List, a list of service names
+	   @param services a list of service names
 	*/
 	public void setServices(List services)
 	{

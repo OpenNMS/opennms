@@ -160,7 +160,7 @@ public class Log4JLogger implements Logger
      * Set the verbosity level of this logger.  Messages logged with a
      * higher verbosity than this level will be silently ignored.
      *
-     * @param verbosityLevel The new verbosity level, as a string
+     * @param verbosity The new verbosity level, as a string
      */
     public void setVerbosityLevel(String verbosity) {
 
@@ -205,8 +205,8 @@ public class Log4JLogger implements Logger
      * log.  The name and type of the servlet log is specific to the
      * servlet container.  This message will be logged unconditionally.
      *
-     * @param message A <code>String</code> specifying the message to be
-     *  written to the log file
+     * @param msg A <code>String</code> specifying the message to be
+     *  written to the log file.
      */
     public void log(String msg) {
         if( msg != null && msg.toUpperCase().indexOf( "DEBUG" ) > -1 ) {

@@ -294,8 +294,7 @@ public class EventFactory extends Object
     /** 
      * Return all events (optionally only unacknowledged events) sorted by the 
      * given sort style.
-     * @deprecated Please use {@link #getEvents( SortStyle, AcknowledgeType )
-     * getEvents( SortStyle, AcknowledgeType )} instead.
+     * @deprecated Replaced by {@link " #getEvents(SortStyle,AcknowledgeType) getEvents(SortStyle, AcknowledgeType)"}
      */
     public static Event[] getEvents( SortStyle sortStyle, boolean includeAcknowledged ) throws SQLException {
         AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED; 
@@ -397,8 +396,7 @@ public class EventFactory extends Object
     /** 
      * Return all events (optionally only unacknowledged events) sorted by event ID
      * for the given node.
-     * @deprecated Please use {@link #getEventsForNode( int, SortStyle, AcknowledgeType )
-     * getEventsForNode( int, SortStyle, AcknowledgeType )} instead.
+     * @deprecated Replaced by {@link " #getEventsForNode(int,SortStyle,AcknowledgeType) getEventsForNode( int, SortStyle, AcknowledgeType )"}
      */
     public static Event[] getEventsForNode( int nodeId, boolean includeAcknowledged ) throws SQLException {
         AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED; 
@@ -457,8 +455,7 @@ public class EventFactory extends Object
     /** 
      * Return all events (optionally only unacknowledged events) sorted by time
      * for the given interface.
-     * @deprecated Please use {@link #getEventsForInterface( int, String, SortStyle, AcknowledgeType )
-     * getEventsForInterface( int, String, SortStyle, AcknowledgeType )} instead.
+     * @deprecated Replaced by {@link " #getEventsForInterface(int,String,SortStyle,AcknowledgeType) getEventsForInterface( int, String, SortStyle, AcknowledgeType )"}
      */
     public static Event[] getEventsForInterface( int nodeId, String ipAddress, boolean includeAcknowledged ) throws SQLException {
         AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED; 
@@ -495,8 +492,7 @@ public class EventFactory extends Object
     /** 
      * Return all events (optionally only unacknowledged events) sorted by time
      * that have the given IP address, regardless of what node they belong to.
-     * @deprecated Please use {@link #getEventsForInterface( String, SortStyle, AcknowledgeType )
-     * getEventsForInterface( String, SortStyle, AcknowledgeType )} instead.     
+     * @deprecated Replaced by {@link " #getEventsForInterface(String,SortStyle,AcknowledgeType) getEventsForInterface( String, SortStyle, AcknowledgeType )"}
      */
     public static Event[] getEventsForInterface( String ipAddress, boolean includeAcknowledged ) throws SQLException {
         AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED; 
@@ -560,8 +556,7 @@ public class EventFactory extends Object
      * Return all events (optionally only unacknowledged events) sorted by time
      * for the given service.
      *
-     * @deprecated Please use {@link #getEventsForService( int, String, int, SortStyle, AcknowledgeType, int, int )
-     * getEventsForService( int, String, int, SortStyle, AcknowledgeType, int, int )} instead.          
+     * @deprecated Replaced by {@link " #getEventsForService(int,String,int,SortStyle,AcknowledgeType,int,int) getEventsForService( int, String, int, SortStyle, AcknowledgeType, int, int )"}
      */
     public static Event[] getEventsForService( int nodeId, String ipAddress, int serviceId, boolean includeAcknowledged ) throws SQLException {
         AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED; 
@@ -656,8 +651,7 @@ public class EventFactory extends Object
     /** 
      * Return all events (optionally only unacknowledged events) sorted by time
      * for the given severity.
-     * @deprecated Please use {@link #getEventsForSeverity( int, SortStyle, AcknowledgeType )
-     * getEventsForSeverity( int, SortStyle, AcknowledgeType )} instead.
+     * @deprecated Replaced by {@link " #getEventsForSeverity(int,SortStyle,AcknowledgeType) getEventsForSeverity( int, SortStyle, AcknowledgeType )"}
      */
     public static Event[] getEventsForSeverity( int severity, boolean includeAcknowledged ) throws SQLException {
         AcknowledgeType ackType = includeAcknowledged ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED;

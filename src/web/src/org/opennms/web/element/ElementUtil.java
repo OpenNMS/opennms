@@ -41,14 +41,14 @@ import java.util.Map;
 public class ElementUtil extends Object
 {
     /** 
-     * Do not use directly, call {@link #getInterfaceStatusMap 
+     * Do not use directly.  Call {@link #getInterfaceStatusMap 
      * getInterfaceStatusMap} instead. 
      */
     protected static HashMap interfaceStatusMap;
 
     /** 
-     * Do not use directly, call {@link #getServiceStatusMap 
-     * getServiceStatusMap} instead. z
+     * Do not use directly.  Call {@link #getServiceStatusMap 
+     * getServiceStatusMap} instead.
      */
     protected static HashMap serviceStatusMap;
     

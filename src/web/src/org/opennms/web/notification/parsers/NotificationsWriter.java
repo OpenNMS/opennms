@@ -81,7 +81,7 @@ public class NotificationsWriter extends XMLWriter
 	/**This method creates a new DOM tree document that represents the data
 	   in the collection. This document will be serialized to a file to 
 	   save the configuration.
-	   @param Collection groups, the information to save
+	   @param notifications the information to save.
 	   @exception XMLWriteException
 	*/
 	protected void saveDocument(Collection notifications) 

@@ -120,7 +120,7 @@ public class Event extends Object
     protected String logGroup;
 
     /**
-     * Severity of event
+     * Severity the of event.
      * <pre>
      *  1  = Indeterminate
      *  2 = Cleared (unimplemented at this time)

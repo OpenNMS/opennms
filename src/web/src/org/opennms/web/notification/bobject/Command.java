@@ -175,7 +175,7 @@ public class Command
 	}
 	
 	/**Adds a argument to the list of arguments
-	   @param aUser a new username
+	   @param anArgument the argument to be added.
 	*/
 	public void addArgument(Argument anArgument)
 	{

@@ -330,7 +330,7 @@ public class EventConfFactory
 	   NOTE: If an existing event config has the same uei as
 	         the new one it will be overridden (updated) by
 		 the new event config.
-	   @param Event
+	   @param event the event configuration to be saved.
 	  */
 	public synchronized void saveEvent(Event event) 
 		throws XMLWriteException

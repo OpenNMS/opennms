@@ -57,8 +57,7 @@ class OpenNMSPrincipal extends Object implements Principal
     /**
      * Construct a new OpenNMSPrincipal instance.
      *
-     * @param username The username for this Principal
-     * @param password The password for this Principal
+     * @param userInfo The user info for this Principal
      */
     public OpenNMSPrincipal( User userInfo ) {
         this.userInfo = userInfo;

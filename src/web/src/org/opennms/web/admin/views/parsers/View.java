@@ -140,7 +140,7 @@ public class View implements Cloneable
 	}
 	
 	/**This method sets the common rule for the view
-	   @param String
+	   @param common the common rule.
 	*/
 	public void setCommon(String common)
 	{
@@ -148,7 +148,7 @@ public class View implements Cloneable
 	}
 	
 	/**This method returns the common rule for the view
-	   @return String
+	   @return the common rule.
 	*/
 	public String getCommon()
 	{

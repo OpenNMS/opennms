@@ -383,8 +383,7 @@ public class OutageFactory extends Object
      * Return all outages (optionally only unresolved notices) sorted by id
      * for the given interface.
      *
-     * @deprecated Please use {@link #getOutagesForInterface(int,String,SortStyle,OutageType)
-     * getOutagesForInterface(int,String,SortStyle,OutageType)} instead.
+     * @deprecated Replaced by {@link " #getOutagesForInterface(int,String,SortStyle,OutageType) getOutagesForInterface(int,String,SortStyle,OutageType)"}
      */
     public static Outage[] getOutagesForInterface( int nodeId, String ipAddress, boolean includeResolved ) throws SQLException {
         if( ipAddress == null ) {
@@ -425,8 +424,7 @@ public class OutageFactory extends Object
      * Return all outages (optionally only unresolved outages) sorted by id
      * that have the given IP address, regardless of what node they belong to.
      *
-     * @deprecated Please use {@link #getOutagesForInterface(String,SortStyle,OutageType)
-     * getOutagesForInterface(String,SortStyle,OutageType)} instead.     
+     * @deprecated Replaced by {@link " #getOutagesForInterface(String,SortStyle,OutageType) getOutagesForInterface(String,SortStyle,OutageType)"}
      */
     public static Outage[] getOutagesForInterface( String ipAddress, boolean includeResolved ) throws SQLException {
         if( ipAddress == null ) {
@@ -464,8 +462,7 @@ public class OutageFactory extends Object
      * Return all outages (optionally only unresolved outages) sorted by time
      * for the given service.
      *
-     * @deprecated Please use {@link #getOutagesForService(int,String,int,SortStyle,OutageType)
-     * getOutagesForInterface(int,String,int,SortStyle,OutageType)} instead.     
+     * @deprecated Replaced by {@link " #getOutagesForService(int,String,int,SortStyle,OutageType) getOutagesForInterface(int,String,int,SortStyle,OutageType)"}
      */
     public static Outage[] getOutagesForService( int nodeId, String ipAddress, int serviceId, boolean includeResolved ) throws SQLException {
         if( ipAddress == null ) {
@@ -507,8 +504,7 @@ public class OutageFactory extends Object
      * for the given service type, regardless of what node or interface they 
      * belong to.
      *
-     * @deprecated Please use {@link #getOutagesForService(int,SortStyle,OutageType)
-     * getOutagesForInterface(int,SortStyle,OutageType)} instead.     
+     * @deprecated Replaced by {@link " #getOutagesForService(int,SortStyle,OutageType) getOutagesForInterface(int,SortStyle,OutageType)"}
      */
     public static Outage[] getOutagesForService( int serviceId, boolean includeResolved ) throws SQLException {
         OutageType outageType = includeResolved ? OutageType.BOTH : OutageType.CURRENT;
