@@ -15,7 +15,7 @@
             graph.setNodeId(String.valueOf(node_id));
             graph.setInterfaceId(query_interface[i]);  
             graph.setTimespan("7_day");
-            graph.setGraphtype("octets");
+            graph.setGraphtype("bits");
             node_report.addGraph(graph);
         }
         return node_report; 
