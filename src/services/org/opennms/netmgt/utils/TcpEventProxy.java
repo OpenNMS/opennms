@@ -48,6 +48,7 @@ import java.io.Writer;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import org.exolab.castor.xml.Marshaller;
 import org.opennms.core.utils.ThreadCategory;
@@ -65,153 +66,136 @@ import org.opennms.netmgt.xml.event.Log;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */
-public final class TcpEventProxy
-	implements EventProxy 
-{
-	private static final int		DEFAULT_PORT = 5817;
-	private static final InetAddress	DEFAULT_HOST;
+public final class TcpEventProxy implements EventProxy {
+    private static final int		s_default_port = 5817;
+    private static final InetAddress	s_default_host;
 
-	private InetAddress	m_target;
-	private int		m_port;
+    private InetAddress	m_target;
+    private int		m_port;
+
+    static {
+	try {
+	    s_default_host = InetAddress.getByName("127.0.0.1");
+	} catch(UnknownHostException e) {
+	    throw new UndeclaredThrowableException(e);
+	}
+    }
+
+    public TcpEventProxy() throws IOException {
+	this(s_default_host, s_default_port);
+    }
+
+    public TcpEventProxy(int port) throws IOException {
+	this(s_default_host, port);
+    }
+
+    public TcpEventProxy(InetAddress target) throws IOException {
+	this(target, s_default_port);
+    }
+
+    public TcpEventProxy(InetAddress target, int port) throws IOException {
+	m_port = port;
+	m_target = target;
+    }
+
+    /**
+     * This method is called to send the event out
+     *
+     * @param event the event to be sent out
+     *
+     * @exception java.lang.RuntimeException thrown if the send fails
+     *                                        for any reason
+     */
+    public void send(Event event) {
+	try {
+	    Log elog = new Log();
+	    Events events = new Events();
+	    events.addEvent(event);
+	    elog.setEvents(events);
+	    
+	    send(elog);
+	} catch(Throwable t) {
+	    throw new UndeclaredThrowableException(t);
+	}
+    }
+
+    /**
+     * This method is called to send an event log containing multiple
+     * events out.
+     *
+     * @param eventLog the events to be sent out
+     *
+     * @exception java.lang.RuntimeException thrown if the send fails
+     *                                       for any reason
+     */
+    public void send(Log eventLog) {
+	try {
+	    Connection connection = new Connection(m_target, m_port);
+	    Writer writer = connection.getWriter();
+	    Marshaller.marshal(eventLog, writer);
+	    writer.flush();
+	    connection.close();
+	} catch(Throwable t) {
+	    throw new UndeclaredThrowableException(t);
+	}
+    }
+
+    public class Connection {
 	private Socket		m_sock;
 	private Writer		m_writer;
 	private Reader		m_reader;
 	private Thread		m_rdrThread;
 
-	static
-	{
-		try
-		{
-			DEFAULT_HOST = InetAddress.getByName("127.0.0.1");
-		}
-		catch(IOException e)
-		{
-			throw new UndeclaredThrowableException(e);
-		}
-	}
+	public Connection(InetAddress target, int port) throws IOException {
+	    // get a socket and set the timeout
+	    //
+	    m_sock = new Socket(target, port);
+	    m_sock.setSoTimeout(500);
 
-	public TcpEventProxy()
-		throws IOException
-	{
-		this(DEFAULT_HOST, DEFAULT_PORT);
-	}
-
-	public TcpEventProxy(int port)
-		throws IOException
-	{
-		this(DEFAULT_HOST, port);
-	}
-
-	public TcpEventProxy(InetAddress target)
-		throws IOException
-	{
-		this(target, DEFAULT_PORT);
-	}
-
-	public TcpEventProxy(InetAddress target, int port)
-		throws IOException
-	{
-		m_port = port;
-		m_target = target;
-
-		// get a socket and set the timeout
-		//
-		m_sock = new Socket(m_target, m_port);
-		m_sock.setSoTimeout(500);
-
-		m_writer = new OutputStreamWriter(new BufferedOutputStream(m_sock.getOutputStream()));
-		m_reader = new InputStreamReader(m_sock.getInputStream());
-		m_rdrThread = new Thread("TcpEventProxy Input Discarder") {
-			public void run()
-			{
-				int ch = 0;
-				while(ch != -1)
-				{
-					try
-					{
-						ch = m_reader.read();
-					}
-					catch(InterruptedIOException e)
-					{
-						ch = 0;
-					}
-					catch(IOException e)
-					{
-						ch = -1;
-					}
-				}
-			}// end run
+	    m_writer = new OutputStreamWriter(
+		       new BufferedOutputStream(m_sock.getOutputStream()));
+	    m_reader = new InputStreamReader(m_sock.getInputStream());
+	    m_rdrThread = new Thread("TcpEventProxy Input Discarder") {
+		    public void run() {
+			int ch = 0;
+			while (ch != -1) {
+			    try {
+				ch = m_reader.read();
+			    } catch(InterruptedIOException e) { 
+				ch = 0;
+			    } catch(IOException e) {
+				ch = -1;
+			    }
+			}
+		    } // end run()
 		};
-		m_rdrThread.setDaemon(true);
-		m_rdrThread.start();
+
+	    m_rdrThread.setDaemon(true);
+	    m_rdrThread.start();
 	}
 
-	public void close()
-	{
-		if(m_sock != null)
-		{
-			try
-			{
-				m_sock.close();
-			}
-			catch(IOException e)
-			{
-				ThreadCategory.getInstance(getClass()).warn("Error closing socket", e);
-			}
-		}
-		m_sock = null;
-		if(m_rdrThread.isAlive())
-			m_rdrThread.interrupt();
+	public Writer getWriter() {
+	    return m_writer;
 	}
 
-	protected void finalize()
-		throws Throwable
-	{
-		close();
+	public void close() {
+	    if (m_sock != null) {
+		try {
+		    m_sock.close();
+		} catch(IOException e) {
+		    ThreadCategory.getInstance(getClass()).warn("Error closing socket", e);
+		}
+	    }
+
+	    m_sock = null;
+
+	    if (m_rdrThread.isAlive()) {
+		m_rdrThread.interrupt();
+	    }
 	}
 
-	/**
-	 * This method is called to send the event out
-	 *
-	 * @param event		the event to be sent out
-	 *
-	 * @exception java.lang.RuntimeException thrown if the send fails for any reason
-	 */
-	public void send(Event event)
-	{
-		try
-		{
-			Log elog = new Log();
-			Events events = new Events();
-			events.addEvent(event);
-			elog.setEvents(events);
-
-			Marshaller.marshal(elog, m_writer);
-			m_writer.flush();
-		}
-		catch(Throwable t)
-		{
-			throw new UndeclaredThrowableException(t);
-		}
+	protected void finalize() throws Throwable {
+	    close();
 	}
-
-	/**
-	 * This method is called to send an event log containing multiple events out
-	 *
-	 * @param eventLog	the events to be sent out
-	 *
-	 * @exception java.lang.RuntimeException thrown if the send fails for any reason
-	 */
-	public void send(Log eventLog)
-	{
-		try
-		{
-			Marshaller.marshal(eventLog, m_writer);
-			m_writer.flush();
-		}
-		catch(Throwable t)
-		{
-			throw new UndeclaredThrowableException(t);
-		}
-	}
+    }
 }

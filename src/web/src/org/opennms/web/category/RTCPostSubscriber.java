@@ -56,23 +56,26 @@ import org.opennms.web.Util;
  * @author <A HREF="larry@opennms.org">Larry Karnowski</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
-public class RTCPostSubscriber extends Object
-{
-    protected EventProxy proxy;
-    protected String url;
-    protected String username;
-    protected String password;
+public class RTCPostSubscriber extends Object {
+    protected EventProxy m_proxy;
+    protected String m_url;
+    protected String m_username;
+    protected String m_password;
 
-    protected static Category log = ThreadCategory.getInstance( "RTC" );
+    protected static Category log = ThreadCategory.getInstance("RTC");
     
-    public RTCPostSubscriber() throws IOException, MarshalException, ValidationException {
-        this.proxy = new TcpEventProxy();
+    public RTCPostSubscriber()
+	throws IOException, MarshalException, ValidationException {
+        m_proxy = new TcpEventProxy();
     }
 
 
-    public static void sendSubscribeEvent( EventProxy proxy, String url, String username, String password, String categoryName ) {
-        if( proxy == null || url == null || username == null || password == null || categoryName == null ) {
-            throw new IllegalArgumentException( "Cannot take null parameters." );
+    public static void sendSubscribeEvent(EventProxy proxy, String url,
+					  String username, String password,
+					  String categoryName) {
+        if (proxy == null || url == null || username == null ||
+	    password == null || categoryName == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
         Event event = new Event();
@@ -115,17 +118,17 @@ public class RTCPostSubscriber extends Object
         parm.setValue(value);
         parms.addParm(parm);        
 
-        event.setParms( parms );
+        event.setParms(parms);
 
-        proxy.send( event );
+        proxy.send(event);
         
-        log.info("Subscription requested for " + username + " to " + url );
+        log.info("Subscription requested for " + username + " to " + url);
     }
 
 
-    public static void sendUnsubscribeEvent( EventProxy proxy, String url ) {        
-        if( proxy == null || url == null ) {
-            throw new IllegalArgumentException( "Cannot take null parameters." );
+    public static void sendUnsubscribeEvent(EventProxy proxy, String url) {
+        if (proxy == null || url == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
         }
                        
         Event event = new Event();
@@ -143,89 +146,94 @@ public class RTCPostSubscriber extends Object
         parm.setValue(value);
         parms.addParm(parm);
         
-        event.setParms( parms );
+        event.setParms(parms);
 
-        proxy.send( event );
+        proxy.send(event);
         
-        log.info("Unsubscription sent for " + url );        
+        log.info("Unsubscription sent for " + url);
     }
 
 
 
-    public String subscribe( String categoryName ) {
-        if( categoryName == null ) {
-            throw new IllegalArgumentException( "Cannot take null parameters." );
+    public String subscribe(String categoryName) {
+        if (categoryName == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        this.initFromRtcPropertyFile(categoryName);
+        initFromRtcPropertyFile(categoryName);
 
-        sendSubscribeEvent( this.proxy, this.url, this.username, this.password, categoryName );
-        return( this.url );
+        sendSubscribeEvent(m_proxy, m_url, m_username, m_password,
+			   categoryName);
+        return (m_url);
     }
 
 
     public void unsubscribe() {
-        sendUnsubscribeEvent( this.proxy, this.url );        
+        sendUnsubscribeEvent(m_proxy, m_url);
     }
-    
-    
+        
     public void close() {
-        ((TcpEventProxy)proxy).close();
-        this.proxy = null;
+        m_proxy = null;
     }
     
-    protected void initFromRtcPropertyFile( String categoryName) {
-        if( categoryName == null ) {
-            throw new IllegalArgumentException( "Cannot take null parameters." );
+    protected void initFromRtcPropertyFile(String categoryName) {
+        if (categoryName == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
         }
         
-        this.username  = Vault.getProperty("opennms.rtc-client.http-post.username");
-        this.password  = Vault.getProperty("opennms.rtc-client.http-post.password");
-        String baseUrl = Vault.getProperty("opennms.rtc-client.http-post.base-url");
+        m_username =
+	    Vault.getProperty("opennms.rtc-client.http-post.username");
+        m_password =
+	    Vault.getProperty("opennms.rtc-client.http-post.password");
+        String baseUrl =
+	    Vault.getProperty("opennms.rtc-client.http-post.base-url");
 
-        if( baseUrl.endsWith("/") ) {
-            this.url = baseUrl + Util.encode(categoryName);                
-        }
-        else {
-            this.url = baseUrl + "/" + Util.encode(categoryName);
+        if (baseUrl.endsWith("/")) {
+            m_url = baseUrl + Util.encode(categoryName);                
+        } else {
+            m_url = baseUrl + "/" + Util.encode(categoryName);
         }
         
-        log.debug("RTCPostSubscriber initialized: url=" + this.url + ", user=" + this.username);
+        log.debug("RTCPostSubscriber initialized: url=" + m_url +
+		  ", user=" + m_username);
     }
     
     
-    public static void subscribeAll(String viewName) throws IOException, MarshalException, ValidationException {
-        if( viewName == null ) {
+    public static void subscribeAll(String viewName)
+	throws IOException, MarshalException, ValidationException {
+        if (viewName == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
         
         //get the list of categories from the viewsdisplay.xml        
         ViewsDisplayFactory.init();
-        ViewsDisplayFactory factory = ViewsDisplayFactory.getInstance();         
+        ViewsDisplayFactory factory = ViewsDisplayFactory.getInstance();
+
         View view = factory.getView(viewName);
         
-        if( view != null ) {
+        if (view != null) {
             Section[] sections = view.getSection();            
 
             //create a JMS connection to subscribe
             RTCPostSubscriber subscriber = new RTCPostSubscriber();
             
-            for( int i=0; i < sections.length; i++ ) { 
+            for (int i=0; i < sections.length; i++) { 
                 Section section = sections[i];
                 String[] categories = section.getCategory(); 
         
-                for( int j=0; j < categories.length; j++ ) {             
+                for (int j=0; j < categories.length; j++) {
                     try {
                         subscriber.subscribe(categories[j]);
-                        log.info( "Sent subscription event to RTC for category: " + categories[j]);
-                    }
-                    catch( Exception e ) {
-                        log.error( "Could not send POST subscription event to RTC for category: " + categories[j], e );
+                        log.info("Sent subscription event to RTC for " +
+				 "category: " + categories[j]);
+                    } catch (Exception e) {
+                        log.error("Could not send POST subscription event " + 
+				  "to RTC for category: " + categories[j], e);
                     }
                 }
             }        
                         
-            //close the subscription JMS connection
+            // Close the subscription JMS connection.
             subscriber.close();
         }
     }
