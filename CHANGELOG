@@ -1,5 +1,8 @@
 1.1.0 to 1.1.1
 ----------------------------------------------------------------------
+- Slightly improved the output of mib2opennms. Thx John and Rick
+- Added trap definitions for Dell OpenManage.
+- Added trap definitions for Foundry Networks. Thx Bill W.
 - Added trap definitions for ADIC devices. Thx Robert M.
 - Added Key SNMP Custom (KSC) Performance report builder, under 
   the Reports section of the GUI. Thx Dave M.
