@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 Blast Internet Services, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2004 Blast Internet Services, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2004 Apr 01: Fixed case where sysObjectId is null for suspect device
 // 2004 Feb 12: Rebuild collectd package agaist IP List map when determining primary
 //              interface.
 // 2003 Nov 11: Merged changes from Rackspace project
@@ -78,6 +79,7 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.protocols.snmp.SnmpInt32;
+import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpUInt32;
 
@@ -418,7 +420,13 @@ final class SuspectEventProcessor
 				SystemGroup sysgrp = snmpc.getSystemGroup();
 
 				// sysObjectId
-				entryNode.setSystemOID(sysgrp.get(SystemGroup.SYS_OBJECTID).toString());
+				SnmpObjectId sysObjectId = (SnmpObjectId)sysgrp.get(SystemGroup.SYS_OBJECTID);
+				if (sysObjectId != null)
+					entryNode.setSystemOID(sysObjectId.toString());
+				else
+					log.warn("SuspectEventProcessor: " + ifaddr.getHostAddress() + " has NO sysObjectId!!!!");
+		
+					
 				
 				// sysName
 				String str = SystemGroup.getPrintableString((SnmpOctetString)sysgrp.get(SystemGroup.SYS_NAME));
