@@ -1360,6 +1360,11 @@ final class SnmpCollector implements ServiceCollector {
 
                 IfInfo ifInfo = (IfInfo) ifMap.get(new Integer(ifIndex));
 
+                if (ifInfo.getCollType() == null){
+                        log.warn("updateRRDs: No SNMP info for ifIndex: " + ifIndex);
+                        continue;
+                }
+
                 if (snmpStorage.equals(SNMP_STORAGE_SELECT)) {
                     if (ifInfo.getCollType() == null) {
                         if (log.isDebugEnabled())

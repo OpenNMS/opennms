@@ -1,5 +1,7 @@
 1.1.4 to 1.1.5
 ----------------------------------------------------------------------
+- Added a test to avoid a nullPointerException during data collection.
+  Thx David. Bug 841
 - Corrected an issue with notification/event matching. Bug 740.
 - Added a check for improperly formatted v2 traps.
 - Deprecated many of the "standard" events that are no longer needed.
