@@ -1,3 +1,10 @@
+1.0.1 to 1.0.2
+----------------------------------------------------------------------
+
+- fixed issue with capsd pulling all of the ifTable for interface.
+  Could cause issues with some HP switches.
+- Bug 664: Notifications not filtering on services.
+
 1.0.0 to 1.0.1
 ----------------------------------------------------------------------
 
