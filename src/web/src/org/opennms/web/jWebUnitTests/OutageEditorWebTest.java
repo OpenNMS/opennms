@@ -333,6 +333,36 @@ public class OutageEditorWebTest extends WebTestCase {
             
         }
     }
+
+    public void testHeader() throws Exception {
+        beginAt("/admin/index.jsp");
+        
+        assertTablePresent("header");
+
+        WebTable headertable = getDialog().getWebTableBySummaryOrId("header");
+        
+//        assertCellImage(headertable, 0, 0);
+        assertCell(headertable, 0, 1, "Admin");
+//        assertCell(table, 0, 2, "", 1);  //Date time stuff
+        
+        assertTablePresent("sub-header");
+        WebTable subheadertable = getDialog().getWebTableBySummaryOrId("sub-header");
+        String[] headerCell = { "List Nodes", "Search", "Outages", "Events", "Notification", "Assets", "Reports", "Help" };
+        assertCellLink(subheadertable, 0, 1, headerCell);
+    }
+        
+    public void testFooter() throws Exception {
+        beginAt("/admin/index.jsp");
+        
+        assertTablePresent("footer");
+
+        WebTable table = getDialog().getWebTableBySummaryOrId("footer");
+        
+//        assertCell(table, 0, 0, "Admin");
+        String[] footerCell = { "List Nodes", "Search", "Outages", "Events", "Notification", "Assets", "Reports", "Help" };
+        assertCellLink(table, 0, 0, footerCell);
+        assertCell(table, 1, 0, "OpenNMS Copyright © 2002-2005 The OpenNMS Group, Inc. OpenNMS® is a registered trademark of The OpenNMS Group, Inc.");
+    }
     
     private String computeImgSrc(Outage outage) {
         // TODO: correctly compute this based on the outage
