@@ -58,9 +58,10 @@ import org.opennms.netmgt.config.DatabaseConnectionFactory;
 public class DeleteGetNodesServlet extends HttpServlet
 {
 	private static final String NODE_QUERY = 
-		"SELECT nodeid, nodelabel FROM node ORDER BY nodelabel, nodeid";
+		//"SELECT nodeid, nodelabel FROM node ORDER BY nodelabel, nodeid";
+		"SELECT nodeid, nodelabel FROM node WHERE nodetype != 'D' ORDER BY nodelabel, nodeid";
 	
-        public void init() throws ServletException 
+        public void init() throws ServletException
         {
                 try {
                         DatabaseConnectionFactory.init();
