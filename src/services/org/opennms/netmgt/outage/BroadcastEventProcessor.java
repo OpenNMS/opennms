@@ -104,9 +104,6 @@ final class BroadcastEventProcessor
 		// nodeRegainedService
 		ueiList.add(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI);
 
-		// deleteService
-		ueiList.add(EventConstants.DELETE_SERVICE_EVENT_UEI);
-
 		// interfaceReparented
 		ueiList.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
 		

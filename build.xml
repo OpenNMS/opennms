@@ -1132,7 +1132,8 @@ OpenNMS as part of the post-install.
    castor.filter.sources.generate,               castor.groups.sources.generate,
    castor.kscReports.sources.generate,           castor.notifd.sources.generate,
    castor.notificationCommands.sources.generate, castor.notifications.sources.generate,
-   castor.outage.sources.generate,               castor.poller.sources.generate,
+   castor.outage.sources.generate,               castor.vacuumd.sources.generate,
+   castor.poller.sources.generate,
    castor.rtc.sources.generate,                  castor.rtceui.sources.generate,             
    castor.scriptd.sources.generate,              castor.server.sources.generate,
    castor.service.sources.generate,              castor.trapd.sources.generate,
@@ -1280,6 +1281,11 @@ OpenNMS as part of the post-install.
   unless="castor.outage.sources.uptodate">
   <castor file="${castor.config.dir}/outage-configuration.xsd" srcpackage="org.opennms.netmgt.config.outage"
    destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+ </target>
+ <target name="castor.vacuumd.sources.generate" depends="castor.sources.uptodate"
+	  unless="castor.vacuumd.sources.uptodate">
+	<castor file="${castor.config.dir}/vacuumd-configuration.xsd" srcpackage="org.opennms.netmgt.config.vacuumd"
+	   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
  </target>
  <target name="castor.poller.sources.generate" depends="castor.sources.uptodate"
   unless="castor.poller.sources.uptodate">
@@ -1505,6 +1511,13 @@ OpenNMS as part of the post-install.
    <available file="${build.castor.source.dir}/org/opennms/netmgt/config/outage/OutageConfiguration.java" type="file"/>
   </condition>
   <dependset>
+    <srcfilelist dir="${castor.config.dir}" files="vacuumd-configuration.xsd"/>
+    <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/vacuumd" includes="*.java"/>
+   </dependset>
+   <condition property="castor.outage.sources.uptodate">
+     <available file="${build.castor.source.dir}/org/opennms/netmgt/config/vacuumd/VacuumdConfiguration.java" type="file"/>
+   </condition>
+   <dependset>
    <srcfilelist dir="${castor.config.dir}" files="poller-configuration.xsd"/>
    <srcfilelist dir="${castor.config.dir}" files="poll-outages.xsd"/>
    <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/poller" includes="*.java"/>

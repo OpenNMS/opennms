@@ -508,6 +508,8 @@ final class PollableService
 							when    = -1;
 							matched = true;
 						}
+                        // FIXME: the below is a subtle bug... should be downSince not m_statusChangeTime
+                        // it is masked by the fact we go thru to loop more than once and reset the values
 						else if(dt.hasEnd() && dt.getEnd() > m_statusChangeTime)
 						{
 							// in this interval

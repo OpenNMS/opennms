@@ -10,7 +10,7 @@
 			<arguments>
 				<dictionary>
 					<key>LaunchConfigHandle</key>
-					<value>GenerateSource.launch</value>
+					<value>&lt;project&gt;/.externalToolBuilders/GenerateSource.launch</value>
 				</dictionary>
 			</arguments>
 		</buildCommand>

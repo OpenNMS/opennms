@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 Blast Internet Services, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2004 Blast Consulting Company  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -12,6 +12,7 @@
 //
 // 2003 Nov 11: Merged changes from Rackspace project
 // 2003 Jan 31: Cleaned up some unused imports.
+// 2004 Sep 08: Completely reorganize to clean up the delete code.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -40,14 +41,19 @@
 package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.queue.FifoQueue;
@@ -56,3046 +62,2231 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
+import org.opennms.netmgt.config.OutageManagerConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.EventListener;
-import org.opennms.netmgt.utils.EventProxy;
-import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.utils.XmlrpcUtil;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 
 /**
- *
- * @author <a href="mailto:jamesz@blast.com">James Zuo</a>
- * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * @author <a href="mailto:matt@opennms.org">Matt Brozowski </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class BroadcastEventProcessor
-	implements EventListener
-{
-	/**
-	 * SQL query to retrieve nodeid of a particulary interface address
-	 */
-	private static String 	SQL_RETRIEVE_NODEID = "select nodeid from ipinterface where ipaddr=? and isManaged!='D'";
-	
-        /**
-         * SQL statement used to query the 'node' and 'ipinterface' tables to verify if a 
-         * specified ipaddr and node label have already exist in the database.
-         */
-        private static String SQL_QUERY_IPINTERFACE_EXIST = "SELECT nodelabel, ipaddr FROM node, ipinterface WHERE node.nodeid = ipinterface.nodeid AND node.nodelabel = ? AND ipinterface.ipaddr = ? AND isManaged !='D' AND nodeType !='D'";
-        
-        /**
-         * SQL statement used to query if a node with the specified nodelabel exist in 
-         * the database, and the nodeid from the database if exists.
-         */
-        private static String SQL_QUERY_NODE_EXIST = "SELECT nodeid, dpname FROM node WHERE nodelabel = ? AND nodeType !='D'"; 
+final class BroadcastEventProcessor implements EventListener {
 
-        /**
-         * SQL statement used to verify if an ifservice with the specified ip address and 
-         * service name exists in the database.
-         */
-        private static String SQL_QUERY_SERVICE_EXIST = "SELECT nodeid FROM ifservices, service WHERE ifservices.serviceid = service.serviceid AND ipaddr = ? AND servicename = ? AND status !='D'"; 
+    /**
+     * SQL statement used to add an interface/server mapping into the database;
+     */
+    private static String SQL_ADD_INTERFACE_TO_SERVER = "INSERT INTO serverMap VALUES (?, ?)";
 
-        /**
-         * SQL statement used to verify if an ipinterface with the specified ip address 
-         * exists in the database and retrieve the nodeid if exists.
-         */
-        private static String SQL_QUERY_IPADDRESS_EXIST = "SELECT nodeid FROM ipinterface WHERE ipaddr = ? AND isManaged !='D'";
+    /**
+     * SQL statement used to add an interface/service mapping into the database.
+     */
+    private static String SQL_ADD_SERVICE_TO_MAPPING = "INSERT INTO serviceMap VALUES (?, ?)";
 
-        /**
-         * SQL statement used to retrieve the serviced id from the database with a specified
-         * service name.
-         */
-        private static String SQL_RETRIEVE_SERVICE_ID = "SELECT serviceid FROM service WHERE servicename = ?";
+    /**
+     * SQL statement used to count all the interface on a node
+     */
+    private static String SQL_COUNT_INTERFACES_ON_NODE = "SELECT count(ipaddr) FROM ipinterface WHERE nodeid = (SELECT nodeid FROM node WHERE nodelabel = ?) ";
 
-        /**
-         * SQL statement used to delete all the ipinterfaces with a specified nodeid.
-         */
-        private static String SQL_DELETE_ALL_INTERFACES_ON_NODE = "DELETE FROM ipinterface WHERE nodeid = ?";
+    /**
+     * SQL statement used to delete all the ipinterfaces with a specified nodeid.
+     */
+    private static String SQL_DELETE_ALL_INTERFACES_ON_NODE = "DELETE FROM ipinterface WHERE nodeid = ?";
 
-        /**
-         * SQL statement used to delete an ipinterfac with a specified nodeid and ipaddress.
-         */
-        private static String SQL_DELETE_INTERFACE = "DELETE FROM ipinterface WHERE nodeid = ? AND ipaddr = ?";
+    /**
+     * SQL statement used to delete all services mapping to a specified interface from the
+     * database.
+     */
+    private static String SQL_DELETE_ALL_SERVICES_INTERFACE_MAPPING = "DELETE FROM serviceMap WHERE ipaddr = ?";
 
-        /**
-         * SQL statement used to delete a node from the database with a specified nodelabel.
-         */
-        private static String SQL_DELETE_NODEID = "DELETE FROM node WHERE nodeid = ?";
+    /**
+     * SQL statement used to delete all assets from the database with a specified nodeid.
+     */
+    private static String SQL_DELETE_ASSETS_ON_NODE = "DELETE FROM assets WHERE nodeid = ?";
 
-        /**
-         * SQL statement used to delete all usersNotified from the database with 
-         * a specified nodeid.
-         */
-         private static String SQL_DELETE_USERSNOTIFIED_ON_NODE = "DELETE FROM usersNotified WHERE notifyID IN ( SELECT notifyID from notifications WHERE nodeid = ?)";
+    /**
+     * SQL statement used to delete all events associated with a specified interface from the
+     * database.
+     */
+    private static String SQL_DELETE_EVENTS_ON_INTERFACE = "DELETE FROM events " + "WHERE nodeid = ? AND ipaddr = ?";
 
-        /**
-         * SQL statement used to delete all notifications from the database with 
-         * a specified nodeid.
-         */
-         private static String SQL_DELETE_NOTIFICATIONS_ON_NODE = "DELETE FROM notifications WHERE nodeid = ?";
+    /**
+     * SQL statement used to delete all events from the database with a specified nodeid.
+     */
+    private static String SQL_DELETE_EVENTS_ON_NODE = "DELETE FROM events WHERE nodeid = ?";
 
-        /**
-         * SQL statement used to delete all outages from the database with 
-         * a specified nodeid.
-         */
-         private static String SQL_DELETE_OUTAGES_ON_NODE = "DELETE FROM outages WHERE nodeid = ?";
+    /**
+     * SQL statement used to delete all ifservices from the database with a specified
+     * interface.
+     */
+    private static String SQL_DELETE_IFSERVICES_ON_INTERFACE = "DELETE FROM ifservices WHERE nodeid = ? AND ipaddr = ?";
 
-        /**
-         * SQL statement used to delete all events from the database with 
-         * a specified nodeid.
-         */
-         private static String SQL_DELETE_EVENTS_ON_NODE = "DELETE FROM events WHERE nodeid = ?";
+    /**
+     * SQL statement used to delete all ifservices from the database with a specified nodeid.
+     */
+    private static String SQL_DELETE_IFSERVICES_ON_NODE = "DELETE FROM ifservices WHERE nodeid = ?";
 
-        /**
-         * SQL statement used to delete all ifservices from the database with 
-         * a specified nodeid.
-         */
-         private static String SQL_DELETE_IFSERVICES_ON_NODE = "DELETE FROM ifservices WHERE nodeid = ?";
+    /**
+     * SQL statement used to delete an ipinterfac with a specified nodeid and ipaddress.
+     */
+    private static String SQL_DELETE_INTERFACE = "DELETE FROM ipinterface WHERE nodeid = ? AND ipaddr = ?";
 
-        /**
-         * SQL statement used to delete all snmpinterface from the database with 
-         * a specified nodeid.
-         */
-         private static String SQL_DELETE_SNMPINTERFACE_ON_NODE = "DELETE FROM snmpinterface WHERE nodeid = ?";
+    /**
+     * SQL statement used to delete an interface/server mapping from the database.
+     */
+    private static String SQL_DELETE_INTERFACE_ON_SERVER = "DELETE FROM serverMap WHERE ipaddr = ? AND servername = ?";
 
-        /**
-         * SQL statement used to delete all assets from the database with 
-         * a specified nodeid.
-         */
-         private static String SQL_DELETE_ASSETS_ON_NODE = "DELETE FROM assets WHERE nodeid = ?";
+    /**
+     * SQL statement used to delete a node from the database with a specified nodelabel.
+     */
+    private static String SQL_DELETE_NODEID = "DELETE FROM node WHERE nodeid = ?";
 
-        /**
-         * SQL statement used to delete all usersnotified info associated with a specified interface 
-         * from the database.
-         */
-         private static String SQL_DELETE_USERSNOTIFIED_ON_INTERFACE = "DELETE FROM usersnotified WHERE notifyid IN " +
-                                                                    "(SELECT notifid FROM notifications " +
-                                                                    " WHERE nodeid = ? AND interfaceid = ?)";
-        /**
-         * SQL statement used to delete all notifications associated with a specified interface 
-         * from the database.
-         */
-         private static String SQL_DELETE_NOTIFICATIONS_ON_INTERFACE = "DELETE FROM notifications " +
-                                                                    "WHERE nodeid = ? AND interfaceid = ?";
-        
-        /**
-         * SQL statement used to delete all notifications associated with a specified interface 
-         * from the database.
-         */
-         private static String SQL_DELETE_OUTAGES_ON_INTERFACE = "DELETE FROM outages " +
-                                                                 "WHERE nodeid = ? AND ipaddr = ?";
-        /**
-         * SQL statement used to delete all events associated with a specified interface 
-         * from the database.
-         */
-         private static String SQL_DELETE_EVENTS_ON_INTERFACE = "DELETE FROM events " +
-                                                                "WHERE nodeid = ? AND ipaddr = ?";
-        
-        /**
-         * SQL statement used to delete the snmpinterface entry associated with a specified interface 
-         * from the database.
-         */
-         private static String SQL_DELETE_SNMPINTERFACE_ON_INTERFACE = "DELETE FROM snmpinterface " +
-                                                                       "WHERE nodeid = ? AND ipaddr = ?";
-        
-        /**
-         * SQL statement used to query if an interface is the snmp primary interface of a node.
-         */
-         private static String SQL_QUERY_PRIMARY_INTERFACE = "SELECT isSnmpPrimary FROM ipinterface " +
-                                                             "WHERE nodeid = ? AND ipaddr = ?";
-        
-        /**
-         * SQL statement used to delete all ifservices from the database with 
-         * a specified interface.
-         */
-         private static String SQL_DELETE_IFSERVICES_ON_INTERFACE = "DELETE FROM ifservices WHERE nodeid = ? AND ipaddr = ?";
+    /**
+     * SQL statement used to delete all notifications associated with a specified interface
+     * from the database.
+     */
+    private static String SQL_DELETE_NOTIFICATIONS_ON_INTERFACE = "DELETE FROM notifications " + "WHERE nodeid = ? AND interfaceid = ?";
 
-        /**
-         * SQL statement used to query if an interface/server mapping already exists in the database.
-         */
-         private static String SQL_QUERY_INTERFACE_ON_SERVER = "SELECT * FROM serverMap WHERE ipaddr = ? AND servername = ?";
+    /**
+     * SQL statement used to delete all notifications from the database with a specified
+     * nodeid.
+     */
+    private static String SQL_DELETE_NOTIFICATIONS_ON_NODE = "DELETE FROM notifications WHERE nodeid = ?";
 
-        /**
-         * SQL statement used to query if an interface/service mapping already exists in the database.
-         */
-         private static String SQL_QUERY_SERVICE_MAPPING_EXIST = "SELECT * FROM serviceMap WHERE ipaddr = ? AND servicemapname = ?";
+    /**
+     * SQL statement used to delete all notifications associated with a specified interface
+     * from the database.
+     */
+    private static String SQL_DELETE_OUTAGES_ON_INTERFACE = "DELETE FROM outages " + "WHERE nodeid = ? AND ipaddr = ?";
 
-        /**
-         * SQL statement used to delete an interface/server mapping from the database.
-         */
-         private static String SQL_DELETE_INTERFACE_ON_SERVER = "DELETE FROM serverMap WHERE ipaddr = ? AND servername = ?";
+    /**
+     * SQL statement used to delete all outages from the database with a specified nodeid.
+     */
+    private static String SQL_DELETE_OUTAGES_ON_NODE = "DELETE FROM outages WHERE nodeid = ?";
 
-        /**
-         * SQL statement used to add an interface/server mapping into the database;
-         */
-         private static String SQL_ADD_INTERFACE_TO_SERVER = "INSERT INTO serverMap VALUES (?, ?)";
+    /**
+     * SQL statement used to delete an interface/service mapping from the database.
+     */
+    private static String SQL_DELETE_SERVICE_INTERFACE_MAPPING = "DELETE FROM serviceMap WHERE ipaddr = ? AND servicemapname = ?";
 
-        /**
-         * SQL statement used to add an interface/service mapping into the database.
-         */
-         private static String SQL_ADD_SERVICE_TO_MAPPING = "INSERT INTO serviceMap VALUES (?, ?)";
+    /**
+     * SQL statement used to delete the snmpinterface entry associated with a specified
+     * interface from the database.
+     */
+    private static String SQL_DELETE_SNMPINTERFACE_ON_INTERFACE = "DELETE FROM snmpinterface " + "WHERE nodeid = ? AND ipaddr = ?";
 
-        /**
-         * SQL statement used to delete all services mapping to a specified interface from the database.
-         */
-         private static String SQL_DELETE_ALL_SERVICES_INTERFACE_MAPPING = "DELETE FROM serviceMap WHERE ipaddr = ?";
+    /**
+     * SQL statement used to delete all snmpinterface from the database with a specified
+     * nodeid.
+     */
+    private static String SQL_DELETE_SNMPINTERFACE_ON_NODE = "DELETE FROM snmpinterface WHERE nodeid = ?";
 
-        /**
-         * SQL statement used to delete an interface/service mapping from the database.
-         */
-         private static String SQL_DELETE_SERVICE_INTERFACE_MAPPING = "DELETE FROM serviceMap WHERE ipaddr = ? AND servicemapname = ?";
+    /**
+     * SQL statement used to delete all usersnotified info associated with a specified
+     * interface from the database.
+     */
+    private static String SQL_DELETE_USERSNOTIFIED_ON_INTERFACE = "DELETE FROM usersnotified WHERE notifyid IN "
+            + "(SELECT notifid FROM notifications " + " WHERE nodeid = ? AND interfaceid = ?)";
 
-        /**
-         * SQL statement used to count all the interface on a node
-         */
-         private static String SQL_COUNT_INTERFACES_ON_NODE = "SELECT count(ipaddr) FROM ipinterface WHERE nodeid = (SELECT nodeid FROM node WHERE nodelabel = ?) ";
-         
-        /**
-         * SQL statement used to count all the interface on a node
-         */
-         private static String SQL_FIND_SERVICES_ON_NODE = "SELECT ifservices.ipaddr, service.servicename FROM ifservices, service WHERE nodeID = ?";
+    /**
+     * SQL statement used to delete all usersNotified from the database with a specified
+     * nodeid.
+     */
+    private static String SQL_DELETE_USERSNOTIFIED_ON_NODE = "DELETE FROM usersNotified WHERE notifyID IN ( SELECT notifyID from notifications WHERE nodeid = ?)";
 
-        /**
-	 * The location where suspectInterface events are enqueued
-	 * for processing.
-	 */
-	private FifoQueue	m_suspectQ;
+    /**
+     * SQL statement used to count all the interface on a node
+     */
+    private static String SQL_FIND_SERVICES_ON_NODE = "SELECT ifservices.ipaddr, service.servicename FROM ifservices, service WHERE nodeID = ?";
 
-	/**
-	 * The Capsd rescan scheduler
-	 */
-	private Scheduler 	m_scheduler;
+    /**
+     * SQL statement used to verify if an ipinterface with the specified ip address exists in
+     * the database and retrieve the nodeid if exists.
+     */
+    private static String SQL_QUERY_IPADDRESS_EXIST = "SELECT nodeid FROM ipinterface WHERE ipaddr = ? AND isManaged !='D'";
 
-        /**
-         * Boolean flag to indicate if need to notify external xmlrpc server with
-         * event processing failure.
-         */
-        private boolean         m_xmlrpc = false;
+    /**
+     * SQL statement used to query the 'node' and 'ipinterface' tables to verify if a specified
+     * ipaddr and node label have already exist in the database.
+     */
+    private static String SQL_QUERY_IPINTERFACE_EXIST = "SELECT nodelabel, ipaddr FROM node, ipinterface WHERE node.nodeid = ipinterface.nodeid AND node.nodelabel = ? AND ipinterface.ipaddr = ? AND isManaged !='D' AND nodeType !='D'";
 
-        /**
-         * local openNMS server name
-         */
-        private String          m_localServer = null;
-        
-	/**
-	 * Create message selector to set to the subscription
-	 */
-	private void createMessageSelectorAndSubscribe()
-	{
-		// Create the selector for the ueis this service is interested in
-		//
-		List ueiList = new ArrayList();
+    /**
+     * SQL statement used to query if a node with the specified nodelabel exist in the
+     * database, and the nodeid from the database if exists.
+     */
+    private static String SQL_QUERY_NODE_EXIST = "SELECT nodeid, dpname FROM node WHERE nodelabel = ? AND nodeType !='D'";
 
-		// newSuspectInterface
-		ueiList.add(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
+    /**
+     * SQL statement used to query if an interface is the snmp primary interface of a node.
+     */
+    private static String SQL_QUERY_PRIMARY_INTERFACE = "SELECT isSnmpPrimary FROM ipinterface " + "WHERE nodeid = ? AND ipaddr = ?";
 
-		// forceRescan
-		ueiList.add(EventConstants.FORCE_RESCAN_EVENT_UEI);
+    /**
+     * SQL statement used to verify if an ifservice with the specified ip address and service
+     * name exists in the database.
+     */
+    private static String SQL_QUERY_SERVICE_EXIST = "SELECT nodeid FROM ifservices, service WHERE ifservices.serviceid = service.serviceid AND ipaddr = ? AND servicename = ? AND status !='D'";
 
-                // addNode
-                ueiList.add(EventConstants.ADD_NODE_EVENT_UEI);
-                
-                // deleteNode
-                ueiList.add(EventConstants.DELETE_NODE_EVENT_UEI);
-		
-                // addInterface
-                ueiList.add(EventConstants.ADD_INTERFACE_EVENT_UEI);
+    /**
+     * SQL statement used to query if an interface/service mapping already exists in the
+     * database.
+     */
+    private static String SQL_QUERY_SERVICE_MAPPING_EXIST = "SELECT * FROM serviceMap WHERE ipaddr = ? AND servicemapname = ?";
 
-                // deleteInterface
-                ueiList.add(EventConstants.DELETE_INTERFACE_EVENT_UEI);
-                
-                // changeService
-                ueiList.add(EventConstants.CHANGE_SERVICE_EVENT_UEI);
+    /**
+     * SQL query to retrieve nodeid of a particulary interface address
+     */
+    private static String SQL_RETRIEVE_NODEID = "select nodeid from ipinterface where ipaddr=? and isManaged!='D'";
 
-		// updateServer
-		ueiList.add(EventConstants.UPDATE_SERVER_EVENT_UEI);
+    /**
+     * SQL statement used to retrieve the serviced id from the database with a specified
+     * service name.
+     */
+    private static String SQL_RETRIEVE_SERVICE_ID = "SELECT serviceid FROM service WHERE servicename = ?";
 
-		// updateService
-		ueiList.add(EventConstants.UPDATE_SERVICE_EVENT_UEI);
-                
-		// nodeAdded
-		ueiList.add(EventConstants.NODE_ADDED_EVENT_UEI);
+    /**
+     * Determines if deletePropagation is enabled in the Outage Manager.
+     * 
+     * @return true if deletePropagation is enable, false otherwise
+     */
+    public static boolean isPropagationEnabled() {
+        return OutageManagerConfigFactory.getInstance().deletePropagation();
+    }
 
-		// nodeDeleted
-		ueiList.add(EventConstants.NODE_DELETED_EVENT_UEI);
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @return Returns the xmlrpc.
+     */
+    public static boolean isXmlRpcEnabled() {
+        return CapsdConfigFactory.getInstance().getXmlrpc().equals("true");
+    }
 
-		// duplicateNodeDeleted
-		ueiList.add(EventConstants.DUP_NODE_DELETED_EVENT_UEI);
+    /**
+     * local openNMS server name
+     */
+    private String m_localServer = null;
 
-		EventIpcManagerFactory.init();
-		EventIpcManagerFactory.getInstance().getManager().addEventListener(this, ueiList);
-	}
+    /**
+     * Set of event ueis that we should notify when we receive and when a success or failure
+     * occurs.
+     */
+    private Set m_notifySet = new HashSet();
 
-	/**
-	 * Constructor 
-	 *
-	 * @param suspectQ	The queue where new SuspectEventProcessor objects 
-	 *                      are enqueued for running..
-	 * @param scheduler	Rescan scheduler.
-	 */
-	BroadcastEventProcessor(FifoQueue suspectQ, Scheduler scheduler)
-	{
-		// Suspect queue
-		//
-		m_suspectQ = suspectQ;
+    /**
+     * The Capsd rescan scheduler
+     */
+    private Scheduler m_scheduler;
 
-		// Scheduler
-		//
-		m_scheduler = scheduler;
+    /**
+     * The location where suspectInterface events are enqueued for processing.
+     */
+    private FifoQueue m_suspectQ;
 
-                // If need to notify external xmlrpc server
-                m_xmlrpc = CapsdConfigFactory.getInstance().getXmlrpc().equals("true");
+    /**
+     * Constructor
+     * 
+     * @param suspectQ
+     *            The queue where new SuspectEventProcessor objects are enqueued for running..
+     * @param scheduler
+     *            Rescan scheduler.
+     */
+    BroadcastEventProcessor(FifoQueue suspectQ, Scheduler scheduler) {
+        // Suspect queue
+        //
+        m_suspectQ = suspectQ;
 
-                // the local servername
-                m_localServer = OpennmsServerConfigFactory.getInstance().getServerName();
-                
-		// Subscribe to eventd
-		//
-		createMessageSelectorAndSubscribe();
-	}
-        
+        // Scheduler
+        //
+        m_scheduler = scheduler;
 
-        /**
-         * Get the local server name
-         */
-        public String getLocalServer()
-        {
-                return m_localServer;
+        // the local servername
+        m_localServer = OpennmsServerConfigFactory.getInstance().getServerName();
+
+        // Subscribe to eventd
+        //
+        createMessageSelectorAndSubscribe();
+    }
+
+    /**
+     * Unsubscribe from eventd
+     */
+    public void close() {
+        EventIpcManagerFactory.getInstance().getManager().removeEventListener(this);
+    }
+
+    /**
+     * Counts the number of interfaces on the node other than a given interface
+     * 
+     * @param dbConn
+     *            the database connection
+     * @param nodeid
+     *            the node to check interfaces for
+     * @param ipAddr
+     *            the interface not to include in the count
+     * @return the numer of interfaces other than the given one
+     * @throws SQLException
+     *             if an error occurs talking to the database
+     */
+    private int countOtherInterfacesOnNode(Connection dbConn, long nodeId, String ipAddr) throws SQLException {
+        Category log = ThreadCategory.getInstance(getClass());
+
+        final String DB_COUNT_OTHER_INTERFACES_ON_NODE = "SELECT count(*) FROM ipinterface WHERE nodeID=? and ipAddr != ? and isManaged != 'D'";
+
+        PreparedStatement stmt = dbConn.prepareStatement(DB_COUNT_OTHER_INTERFACES_ON_NODE);
+        stmt.setLong(1, nodeId);
+        stmt.setString(2, ipAddr);
+        ResultSet rs = stmt.executeQuery();
+        int count = 0;
+        while (rs.next()) {
+            count = rs.getInt(1);
         }
-        
-	/**
-	 * Unsubscribe from eventd
-	 */
-	public void close()
-	{
-		EventIpcManagerFactory.getInstance().getManager().removeEventListener(this);
-	}
 
-	/**
-	 * Process the event,  add a node with the specified node label and interface 
-         * to the database
-	 *
-	 * @param event	The event to process.
-	 */
-	private void addNodeHandler(Event event)
-	{
-	        String ipaddr = event.getInterface();
-                String sourceUei = event.getUei();
+        if (log.isDebugEnabled()) log.debug("countServicesForInterface: count services for interface " + nodeId + "/" + ipAddr + ": found " + count);
 
-                Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-			log.debug("addNodeHandler:  processing addNode event for " + ipaddr);
-			
-		// Extract node label and transaction No. from the event parms
-		String nodeLabel = null;
-                long txNo = -1L;
-		Parms parms = event.getParms();
-		if (parms != null)
-		{
-			String parmName = null;
-			Value parmValue = null;
-			String parmContent = null;
-		
-			Enumeration parmEnum = parms.enumerateParm();
-			while(parmEnum.hasMoreElements())
-			{
-				Parm parm = (Parm)parmEnum.nextElement();
-				parmName  = parm.getParmName();
-				parmValue = parm.getValue();
-				if (parmValue == null)
-					continue;
-				else 
-					parmContent = parmValue.getContent();
-	
-				//  get node label
-				if (parmName.equals(EventConstants.PARM_NODE_LABEL))
-				{
-					nodeLabel = parmContent;
-		                        if (log.isDebugEnabled())
-			                        log.debug("addNodeHandler:  parmName: " + parmName
-                                                        + " /parmContent: " + parmContent);
-				}
-				else if (parmName.equals(EventConstants.PARM_TRANSACTION_NO))
-                                {
-                                        String temp = parmContent;
-		                        if (log.isDebugEnabled())
-			                        log.debug("addNodeHandler:  parmName: " + parmName
-                                                        + " /parmContent: " + parmContent);
-                                        try
-                                        {
-                                                txNo = Long.valueOf(temp).longValue();
-                                        }
-                                        catch (NumberFormatException nfe)
-                                        {
-                                                log.warn("addNodeHandler: Parameter " + EventConstants.PARM_TRANSACTION_NO 
-                                                        + " cannot be non-numberic", nfe);
-                                                txNo = -1L;
-                                        }
-                                }
-			}
-		}
+        stmt.close();
 
-                boolean invalidParameters = ((ipaddr == null) || (nodeLabel == null));
-                if (m_xmlrpc)
-                        invalidParameters = invalidParameters || (txNo == -1L);
-                
-                if (invalidParameters)
-                {
-		        if (log.isDebugEnabled())
-		                log.debug("addNodeHandler:  Invalid parameters." );
+        return count;
+    }
 
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, "Invalid parameters", 
-                                        status, "OpenNMS.Capsd");
-                        }
-                        
-			return;
-		}
-                
-                java.sql.Connection dbConn = null;
-		PreparedStatement stmt = null;
-		try
-		{
-			dbConn = DatabaseConnectionFactory.getInstance().getConnection();
-		
-			stmt = dbConn.prepareStatement(SQL_QUERY_IPINTERFACE_EXIST);
-	
-			stmt.setString(1, nodeLabel);
-			stmt.setString(2, ipaddr);
-	
-			ResultSet rs = stmt.executeQuery();
-			log.debug("addNodeHandler: node " + nodeLabel + " with IPAddress " 
-                                    + ipaddr  + " progressing to the checkpoint.");
-			while(rs.next())
-			{
-				if (log.isDebugEnabled())
-				{
-					log.debug("addNodeHandler: node " + nodeLabel + " with IPAddress " 
-                                        + ipaddr + " already exist in the database.");
-				}
-                                
-                                if (m_xmlrpc)
-                                {
-                                        int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, 
-                                                                              sourceUei, 
-                                                                              "Node allready exist.",
-                                                                              status,
-                                                                              "OpenNMS.Capsd");
-                                }
-			        return;
-			}
+    /**
+     * Counts the number of other non deleted services associated with the interface defined by
+     * nodeid/ipAddr
+     * 
+     * @param dbConn
+     *            the database connection
+     * @param nodeId
+     *            the node to chck
+     * @param ipAddr
+     *            the interface to check
+     * @param service
+     *            the name of the service not to include
+     * @return the number of non deleted services, other than serviceId
+     */
+    private int countOtherServicesOnInterface(Connection dbConn, long nodeId, String ipAddr, String service) throws SQLException {
 
-                        // the node does not exist in the database. Add the node with the specified
-                        // node label and add the ipaddress to the database.
-                        addNode(dbConn, nodeLabel, ipaddr, txNo, sourceUei);
+        Category log = ThreadCategory.getInstance(getClass());
 
-		}
-		catch(SQLException sqlE)
-		{
-			log.error("addNodeHandler: SQLException during add node and ipaddress to tables", sqlE);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                                        sqlE.getMessage(), status, "OpenNMS.Capsd");
-                        }
-		}
-		catch(java.net.UnknownHostException e)
-		{
-			log.error("addNodeHandler: can not solve unknow host.", e);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, e.getMessage(), 
-                                        status, "OpenNMS.Capsd"); 
-                        }
-		}
-		finally
-		{
-			// close the statement
-			if (stmt != null)
-				try { stmt.close(); } catch(SQLException sqlE) { };
+        final String DB_COUNT_OTHER_SERVICES_ON_IFACE = "SELECT count(*) FROM ifservices, service "
+                + "WHERE ifservices.serviceId = service.serviceId AND ifservices.status != 'D' "
+                + "AND ifservices.nodeID=? AND ifservices.ipAddr=? AND service.servicename != ?";
 
-			// close the connection
-			if (dbConn != null)
-				try { dbConn.close(); } catch(SQLException sqlE) { };					
-		}
-		
-	}
+        PreparedStatement stmt = dbConn.prepareStatement(DB_COUNT_OTHER_SERVICES_ON_IFACE);
+        stmt.setLong(1, nodeId);
+        stmt.setString(2, ipAddr);
+        stmt.setString(3, service);
+        ResultSet rs = stmt.executeQuery();
+        int count = 0;
+        while (rs.next()) {
+            count = rs.getInt(1);
+        }
 
+        if (log.isDebugEnabled()) log.debug("countServicesForInterface: count services for interface " + nodeId + "/" + ipAddr + ": found " + count);
 
-	/**
-	 * This method add a node with the specified node label and the secified
-         * IP address to the database.
-	 *
-	 * @param conn 	        The JDBC Database connection.
-         * @param nodeLabel     the node label to identify the node to create. 
-         * @param ipaddr        the ipaddress to be added into the ipinterface table.
-         * @param txNo          the transaction no.
-         * @param callerUei     the uei of the caller event
-	 */
-	private void addNode(java.sql.Connection conn, String nodeLabel, String ipaddr, long txNo, String callerUei)
-	        throws SQLException, java.net.UnknownHostException	
-	{
-		Category log = ThreadCategory.getInstance(getClass());
-		
-                if (nodeLabel == null | ipaddr == null)
-			return;
-		
-                if (log.isDebugEnabled())
-			log.debug("addNode:  Add a node " + nodeLabel + " to the database");
-                        
-                DbNodeEntry node = DbNodeEntry.create();
-                Date now = new Date();
-                node.setCreationTime(now);
-                node.setNodeType(DbNodeEntry.NODE_TYPE_ACTIVE);
-                node.setLabel(nodeLabel);
-                node.setLabelSource(DbNodeEntry.LABEL_SOURCE_USER);
-                node.store(conn);
+        stmt.close();
 
-                createAndSendNodeAddedEvent(node, txNo, callerUei);
-                if (m_xmlrpc)
-                {
-                        int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, 
-                                                              callerUei, 
-                                                              "Successfully added node" + nodeLabel,
-                                                              status,
-                                                              "OpenNMS.Capsd");
-                }
+        return count;
+    }
 
-		if (log.isDebugEnabled())
-			log.debug("addNode:  Add an IP Address " + ipaddr + " to the database");
-                        
-                // add the ipaddess to the database
+    /**
+     * Counts the number of non deleted services on a node on interfaces other than a given
+     * interface
+     * 
+     * @param dbConn
+     *            the database connection
+     * @param nodeId
+     *            the nodeid to check
+     * @param ipAddr
+     *            the address of the interface not to include
+     * @return the number of non deleted services on other interfaces
+     */
+    private int countServicesOnOtherInterfaces(Connection dbConn, long nodeId, String ipAddr) throws SQLException {
+        Category log = ThreadCategory.getInstance(getClass());
+
+        final String DB_COUNT_SERVICES_ON_OTHER_INTERFACES = "SELECT count(*) FROM ifservices WHERE nodeID=? and ipAddr != ? and status != 'D'";
+
+        PreparedStatement stmt = dbConn.prepareStatement(DB_COUNT_SERVICES_ON_OTHER_INTERFACES);
+        stmt.setLong(1, nodeId);
+        stmt.setString(2, ipAddr);
+        ResultSet rs = stmt.executeQuery();
+
+        int count = 0;
+        while (rs.next()) {
+            count = rs.getInt(1);
+        }
+
+        if (log.isDebugEnabled()) log.debug("countServicesOnOtherInterfaces: count services for node " + nodeId + ": found " + count);
+
+        stmt.close();
+
+        return count;
+    }
+
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param dbConn
+     * @param nodeLabel
+     * @param ipaddr
+     * @param txNo
+     * @return @throws
+     *         SQLException
+     * @throws FailedOperationException
+     */
+    private List createInterfaceOnNode(Connection dbConn, String nodeLabel, String ipaddr, long txNo) throws SQLException, FailedOperationException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            Category log = ThreadCategory.getInstance(getClass());
+            // There is no ipinterface associated with the specified nodeLabel exist
+            // in the database. Verify if a node with the nodeLabel already exist in
+            // the database. If not, create a node with the nodeLabel and add it to the
+            // database, and also add the ipaddress associated with this node to the
+            // database. If the node with the nodeLabel exists in the node table, just
+            // add the ip address to the database.
+            stmt = dbConn.prepareStatement(SQL_QUERY_NODE_EXIST);
+            stmt.setString(1, nodeLabel);
+
+            rs = stmt.executeQuery();
+            List eventsToSend = new LinkedList();
+            while (rs.next()) {
+
+                if (log.isDebugEnabled()) log.debug("addInterfaceHandler:  add interface: " + ipaddr + " to the database.");
+
+                // Node already exists. Add the ipaddess to the ipinterface table
+                InetAddress ifaddr = InetAddress.getByName(ipaddr);
+                int nodeId = rs.getInt(1);
+                String dpName = rs.getString(2);
+
+                DbIpInterfaceEntry ipInterface = DbIpInterfaceEntry.create(nodeId, ifaddr);
+                ipInterface.setHostname(ifaddr.getHostName());
+                ipInterface.setManagedState(DbIpInterfaceEntry.STATE_MANAGED);
+                ipInterface.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
+                ipInterface.store(dbConn);
+
+                // create a nodeEntry
+                DbNodeEntry nodeEntry = DbNodeEntry.get(nodeId, dpName);
+                Event newEvent = EventUtils.createNodeGainedInterfaceEvent(nodeEntry, ifaddr, txNo);
+                eventsToSend.add(newEvent);
+
+            }
+            return eventsToSend;
+        } catch (UnknownHostException e) {
+            throw new FailedOperationException("unable to resolve host " + ipaddr + ": " + e.getMessage(), e);
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+            }
+        }
+    }
+
+    /**
+     * Create message selector to set to the subscription
+     */
+    private void createMessageSelectorAndSubscribe() {
+        // Create the selector for the ueis this service is interested in
+        //
+        List ueiList = new ArrayList();
+
+        // newSuspectInterface
+        ueiList.add(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
+
+        // forceRescan
+        ueiList.add(EventConstants.FORCE_RESCAN_EVENT_UEI);
+
+        // addNode
+        ueiList.add(EventConstants.ADD_NODE_EVENT_UEI);
+        m_notifySet.add(EventConstants.ADD_NODE_EVENT_UEI);
+
+        // deleteNode
+        ueiList.add(EventConstants.DELETE_NODE_EVENT_UEI);
+        m_notifySet.add(EventConstants.DELETE_NODE_EVENT_UEI);
+
+        // addInterface
+        ueiList.add(EventConstants.ADD_INTERFACE_EVENT_UEI);
+        m_notifySet.add(EventConstants.ADD_INTERFACE_EVENT_UEI);
+
+        // deleteInterface
+        ueiList.add(EventConstants.DELETE_INTERFACE_EVENT_UEI);
+        m_notifySet.add(EventConstants.DELETE_INTERFACE_EVENT_UEI);
+
+        // deleteService
+        ueiList.add(EventConstants.DELETE_SERVICE_EVENT_UEI);
+
+        // changeService
+        ueiList.add(EventConstants.CHANGE_SERVICE_EVENT_UEI);
+        m_notifySet.add(EventConstants.CHANGE_SERVICE_EVENT_UEI);
+
+        // updateServer
+        ueiList.add(EventConstants.UPDATE_SERVER_EVENT_UEI);
+        m_notifySet.add(EventConstants.UPDATE_SERVER_EVENT_UEI);
+
+        // updateService
+        ueiList.add(EventConstants.UPDATE_SERVICE_EVENT_UEI);
+        m_notifySet.add(EventConstants.UPDATE_SERVICE_EVENT_UEI);
+
+        // nodeAdded
+        ueiList.add(EventConstants.NODE_ADDED_EVENT_UEI);
+
+        // nodeDeleted
+        ueiList.add(EventConstants.NODE_DELETED_EVENT_UEI);
+
+        // duplicateNodeDeleted
+        ueiList.add(EventConstants.DUP_NODE_DELETED_EVENT_UEI);
+
+        EventIpcManagerFactory.init();
+        EventIpcManagerFactory.getInstance().getManager().addEventListener(this, ueiList);
+    }
+
+    /**
+     * This method add a node with the specified node label to the database. If also adds in
+     * interface with the given ipaddress to the node, if the ipaddr is not null
+     * 
+     * @param conn
+     *            The JDBC Database connection.
+     * @param nodeLabel
+     *            the node label to identify the node to create.
+     * @param ipaddr
+     *            the ipaddress to be added into the ipinterface table.
+     * @param txNo
+     *            the transaction no.
+     * 
+     * @throws SQLException
+     *             if a database error occurs
+     * @throws FailedOperationException
+     *             if the ipaddr is not resolvable
+     */
+    private List createNodeWithInterface(Connection conn, String nodeLabel, String ipaddr, long txNo) throws SQLException, FailedOperationException {
+        Category log = ThreadCategory.getInstance(getClass());
+
+        if (nodeLabel == null) return Collections.EMPTY_LIST;
+
+        if (log.isDebugEnabled()) log.debug("addNode:  Add a node " + nodeLabel + " to the database");
+
+        List eventsToSend = new LinkedList();
+        DbNodeEntry node = DbNodeEntry.create();
+        Date now = new Date();
+        node.setCreationTime(now);
+        node.setNodeType(DbNodeEntry.NODE_TYPE_ACTIVE);
+        node.setLabel(nodeLabel);
+        node.setLabelSource(DbNodeEntry.LABEL_SOURCE_USER);
+        node.store(conn);
+
+        Event newEvent = EventUtils.createNodeAddedEvent(node, txNo);
+        eventsToSend.add(newEvent);
+
+        if (ipaddr != null) try {
+            if (log.isDebugEnabled()) log.debug("addNode:  Add an IP Address " + ipaddr + " to the database");
+
+            // add the ipaddess to the database
                 InetAddress ifaddress = InetAddress.getByName(ipaddr);
-                DbIpInterfaceEntry ipInterface = DbIpInterfaceEntry.create(node.getNodeId(), ifaddress); 
+                DbIpInterfaceEntry ipInterface = DbIpInterfaceEntry.create(node.getNodeId(), ifaddress);
                 ipInterface.setHostname(ifaddress.getHostName());
                 ipInterface.setManagedState(DbIpInterfaceEntry.STATE_MANAGED);
                 ipInterface.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
                 ipInterface.store(conn);
 
-                createAndSendNodeGainedInterfaceEvent(node, ifaddress, txNo, callerUei);
-                if (m_xmlrpc)
-                {
-                        int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                        String message = new String("Successfully added interface: ") + ipaddr 
-                                                        + " to node: " + nodeLabel;
-                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, 
-                                                              callerUei, 
-                                                              message,
-                                                              status,
-                                                              "OpenNMS.Capsd");
-                }
+                Event gainIfEvent = EventUtils.createNodeGainedInterfaceEvent(node, ifaddress, txNo);
+                eventsToSend.add(gainIfEvent);
+            } catch (UnknownHostException e) {
+                throw new FailedOperationException("unable to resolve host " + ipaddr + ": " + e.getMessage(), e);
+            }
+        return eventsToSend;
+    }
+
+    /**
+     * FIXME: finish the docs here
+     * 
+     * @param dbConn
+     * @param nodeLabel
+     * @param ipaddr
+     * @param txNo
+     * @return @throws
+     *         SQLException
+     * @throws FailedOperationException
+     */
+    private List doAddInterface(Connection dbConn, String nodeLabel, String ipaddr, long txNo) throws SQLException, FailedOperationException {
+        List eventsToSend;
+        if (interfaceExists(dbConn, nodeLabel, ipaddr)) {
+            Category log = ThreadCategory.getInstance(getClass());
+            if (log.isDebugEnabled()) {
+                log.debug("addInterfaceHandler: node " + nodeLabel + " with IPAddress " + ipaddr + " already exist in the database.");
+            }
+            eventsToSend = Collections.EMPTY_LIST;
         }
 
-       
-        /**
-         * This method is responsible for generating a nodeAdded event and sending
-         * it to eventd..
-         *
-         * @param nodeEntry     The node Added.
-         * @param txNo          the transaction no.
-         * @param callerUei     the Uei of the caller event.
-         *
-         */
-        private void createAndSendNodeAddedEvent(DbNodeEntry nodeEntry, long txNo, String callerUei)
-        {
-		Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-			log.debug("createAndSendNodeAddedEvent:  nodeId  " + nodeEntry.getNodeId());
-        
-                Event newEvent = new Event();
-                newEvent.setUei(EventConstants.NODE_ADDED_EVENT_UEI);
-                newEvent.setSource("OpenNMS.Capsd");
-                newEvent.setNodeid(nodeEntry.getNodeId());
-                newEvent.setHost(Capsd.getLocalHostAddress());
-                newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        else if (nodeExists(dbConn, nodeLabel)) {
+            eventsToSend = createInterfaceOnNode(dbConn, nodeLabel, ipaddr, txNo);
+        } else {
+            // The node does not exist in the database, add the node and
+            // the ipinterface into the database.
+            eventsToSend = createNodeWithInterface(dbConn, nodeLabel, ipaddr, txNo);
+        }
+        return eventsToSend;
+    }
 
-                // Add appropriate parms
-                Parms eventParms = new Parms();
-                Parm eventParm = null;
-                Value parmValue = null;
+    /**
+     * Perform the buld of the work for processing an addNode event
+     * 
+     * @param dbConn
+     *            the database connection
+     * @param nodeLabel
+     *            the label for the node to add
+     * @param ipaddr
+     *            an interface on the node (may be null if no interface is supplied)
+     * @param txNo
+     *            a transaction number to associate with the modification
+     * @return a list of events that need to be sent in response to these changes
+     * @throws SQLException
+     *             if a database error occurrs
+     * @throws FailedOperationException
+     *             if other errors occur
+     */
+    private List doAddNode(Connection dbConn, String nodeLabel, String ipaddr, long txNo) throws SQLException, FailedOperationException {
+        List eventsToSend;
+        if (!nodeExists(dbConn, nodeLabel)) {
+            // the node does not exist in the database. Add the node with the specified
+            // node label and add the ipaddress to the database.
+            eventsToSend = createNodeWithInterface(dbConn, nodeLabel, ipaddr, txNo);
+        } else {
+            eventsToSend = Collections.EMPTY_LIST;
+            Category log = ThreadCategory.getInstance(getClass());
+            if (log.isDebugEnabled()) {
+                log.debug("doAddNode: node " + nodeLabel + " with IPAddress " + ipaddr + " already exist in the database.");
+            }
+        }
+        return eventsToSend;
+    }
 
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-                parmValue = new Value();
-                parmValue.setContent(nodeEntry.getLabel());
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param dbConn
+     * @param ipaddr
+     * @param serviceName
+     * @param action
+     * @param txNo
+     * @return @throws
+     *         SQLException
+     * @throws FailedOperationException
+     */
+    private List doAddServiceMapping(Connection dbConn, String ipaddr, String serviceName, long txNo) throws SQLException, FailedOperationException {
+        PreparedStatement stmt = null;
+        Category log = ThreadCategory.getInstance(getClass());
+        stmt = dbConn.prepareStatement(SQL_ADD_SERVICE_TO_MAPPING);
 
-                // Add node label source
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_NODE_LABEL_SOURCE);
-                parmValue = new Value();
-                char labelSource[] = new char[] {nodeEntry.getLabelSource()};
-                parmValue.setContent(new String(labelSource));
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-                
-                
-                // Add Parms to the event
-                newEvent.setParms(eventParms);
+        stmt.setString(1, ipaddr);
+        stmt.setString(2, serviceName);
+        stmt.executeUpdate();
+        stmt.close();
 
-                // Send event to Eventd
-                try
-                {
-                        EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
-
-                        if (log.isDebugEnabled())
-                                log.debug("createdAndSendNodeAddedEvent: successfully sent nodeAdded event for nodeId: " 
-                                        + nodeEntry.getNodeId());
-                }
-                catch(Throwable t)
-                {
-                        log.warn("run: unexpected throwable exception caught during send to middleware", t);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
-                                        "caught unexpected throwable exception.", status, "OpenNMS.Capsd");
-                        }
-                }
-        }                
-	
-	
-        /**
-         * This method is responsible for generating a nodeGainedInterface event and sending
-         * it to eventd..
-         *
-         * @param nodeEntry     The node that gained the interface.
-         * @param ifaddr        the interface gained on the node.
-         * @param txNo          the transaction no.
-         * @param callerUei     the uei of the caller event.
-         *
-         */
-        private void createAndSendNodeGainedInterfaceEvent(DbNodeEntry nodeEntry, 
-                        InetAddress ifaddr, long txNo, String callerUei)
-        {
-		Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-			log.debug("createAndSendNodeAddedEvent:  nodeId  " + nodeEntry.getNodeId());
-        
-                Event newEvent = new Event();
-                newEvent.setUei(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI);
-                newEvent.setSource("OpenNMS.Capsd");
-                newEvent.setNodeid(nodeEntry.getNodeId());
-                newEvent.setHost(Capsd.getLocalHostAddress());
-                newEvent.setInterface(ifaddr.getHostAddress());
-                newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-                // Add appropriate parms
-                Parms eventParms = new Parms();
-                Parm eventParm = null;
-                Value parmValue = null;
-
-                // Add IP host name
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_IP_HOSTNAME);
-                parmValue = new Value();
-                parmValue.setContent(ifaddr.getHostName());
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-
-                eventParms.addParm(eventParm);
-                
-                
-                // Add Parms to the event
-                newEvent.setParms(eventParms);
-
-                // Send event to Eventd
-                try
-                {
-                        EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
-
-                        if (log.isDebugEnabled())
-                                log.debug("createdAndSendNodeGainedInterfaceEvent: successfully sent nodeGainedInterface event "
-                                        + "for interface: " + ifaddr.getHostAddress() + " on nodeId: " 
-                                        + nodeEntry.getNodeId());
-                }
-                catch(Throwable t)
-                {
-                        log.warn("run: unexpected throwable exception caught during send to middleware", t);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
-                                        "caught unexpected throwable exception.", status, "OpenNMS.Capsd");
-                        }
-                }
-        }                
-	
-        /** 
-	 * This method handles the deletion of a node.
-         * <pre>1. removing the node specified in the deleteNode event from the database.
-         * 2. delete all IP addresses associated with this node from the database.
-         * 3. delete all services being polled from this node from the database
-         * 4. issue an nodeDeleted event so that this node will be removed from the 
-         *    Poller's pollable node map, and all the servies polling from this node 
-         *    shall be stopped.
-         * 5. delete all info associated with this node from the database, such as
-         *    notifications, events, outages etc.</pre>
-         */
-	private void deleteNodeHandler(Event event)
-	{
-		Category log = ThreadCategory.getInstance(getClass());
-                String sourceUei = event.getUei();
-                
-		// Extract node label and transaction No. from the event parms
-		String nodeLabel = null;
-                long txNo = -1L;
-                
-		String transaction = null;
-		Parms parms = event.getParms();
-		int nodeid = (int)event.getNodeid();
-
-		if (nodeid < 1)
-			nodeid = -1;
-
-		if (parms != null)
-		{
-			String parmName = null;
-			Value parmValue = null;
-			String parmContent = null;
-		
-			Enumeration parmEnum = parms.enumerateParm();
-			while(parmEnum.hasMoreElements())
-			{
-				Parm parm = (Parm)parmEnum.nextElement();
-				parmName  = parm.getParmName();
-				parmValue = parm.getValue();
-				if (parmValue == null)
-					continue;
-				else 
-					parmContent = parmValue.getContent();
-	
-				//  get node label
-				if (parmName.equals(EventConstants.PARM_NODE_LABEL))
-				{
-					nodeLabel = parmContent;
-				}
-				else if (parmName.equals(EventConstants.PARM_TRANSACTION_NO))
-                                {
-                                        transaction = parmContent;
-		                        if (log.isDebugEnabled())
-			                        log.debug("deleteNodeHandler:  parmName: " + parmName
-                                                        + " /parmContent: " + parmContent);
-					if (!transaction.equals("webUI"))
-					{
-                                        	try
-                                        	{
-                                                	txNo = Long.valueOf(transaction).longValue();
-                                        	}
-                                        	catch (NumberFormatException nfe)
-                                        	{
-                                                	log.warn("deleteNodeHandler: Parameter " + EventConstants.PARM_TRANSACTION_NO 
-                                                      	 	 + " cannot be non-numeric", nfe);
-                                                	txNo = -1L;
-                                        	}
-                                	}
-                                }
-						
-			}
-		}
-                
-                boolean invalidParameters = (nodeLabel == null);
-                if (m_xmlrpc)
-                        invalidParameters = invalidParameters || (txNo == -1L);
-                        
-		if ((invalidParameters) && (!transaction.equals("webUI")))
-                {
-		        if (log.isDebugEnabled())
-		                log.debug("deleteNodeHandler:  Invalid parameters." );
-                                
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                        "Invalid parameters", status, "OpenNMS.Capsd");
-                        }
-                        
-			return;
-		}
-                
-		if (log.isDebugEnabled())
-			log.debug("deleteNodeHandler: deleting node: " + nodeLabel);
-		
-                java.sql.Connection dbConn = null;
-		PreparedStatement stmt = null;
-		try
-		{
-			dbConn = DatabaseConnectionFactory.getInstance().getConnection();
-		        
-                        // First, verify if the node exists in database, and retrieve
-                        // nodeid if exists.
-
-			if (nodeid == -1)
-			{
-				stmt = dbConn.prepareStatement(SQL_QUERY_NODE_EXIST);
-	
-				stmt.setString(1, nodeLabel);
-                        
-				ResultSet rs = stmt.executeQuery();
-				while(rs.next())
-				{
-                                	nodeid = rs.getInt(1);
-                        	}
-		        
-                        	if (nodeid == -1)  // Sanity check
-		        	{
-			        	log.error("DeleteNode: There is no node with node label: " + nodeLabel + " exists in the database.");
-                                	int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                	XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                        	"Node does not exist in the database", status, "OpenNMS.Capsd");
-			        	return;
-		        	}
-			}
-		
-			if (log.isDebugEnabled())
-				log.debug("deleteNodeHandler: Starting delete of nodeid: " + nodeid);
-
-			// We need to send a serviceDeletedEvent before we blow away the database so that
-			// RTC can update the categories.
-
-			stmt = dbConn.prepareStatement(SQL_FIND_SERVICES_ON_NODE);
-			stmt.setInt(1, nodeid);
-			ResultSet rs = stmt.executeQuery();
-			while (rs.next())
-			{
-				String iface = rs.getString(1);
-				String svcname = rs.getString(2);
-				sendServiceDeletedEvent(nodeid, iface, svcname);
-			}
-                
-	                // Deleting all the userNotified info associated with the nodeid
-			stmt = dbConn.prepareStatement(SQL_DELETE_USERSNOTIFIED_ON_NODE);
-			stmt.setInt(1, nodeid);
-			stmt.executeUpdate();
-			if (log.isDebugEnabled())
-				log.debug("deleteNodeHandler: deleted all usersNotified info on  nodeid: " + nodeid);
-
-	                // Deleting all the notifications associated with the nodeid
-			stmt = dbConn.prepareStatement(SQL_DELETE_NOTIFICATIONS_ON_NODE);
-			stmt.setInt(1, nodeid);
-			stmt.executeUpdate();
-			if (log.isDebugEnabled())
-				log.debug("deleteNodeHandler: deleted all notifications on  nodeid: " + nodeid);
-
-	                // Deleting all the outages associated with the nodeid
-			stmt = dbConn.prepareStatement(SQL_DELETE_OUTAGES_ON_NODE);
-			stmt.setInt(1, nodeid);
-			stmt.executeUpdate();
-			if (log.isDebugEnabled())
-				log.debug("deleteNodeHandler: deleted all outages on  nodeid: " + nodeid);
-
-	                // Deleting all the events associated with the nodeid
-			stmt = dbConn.prepareStatement(SQL_DELETE_EVENTS_ON_NODE);
-			stmt.setInt(1, nodeid);
-			stmt.executeUpdate();
-			if (log.isDebugEnabled())
-				log.debug("deleteNodeHandler: deleted all events on  nodeid: " + nodeid);
-
-	                // Deleting all the ifservices associated with the nodeid
-			stmt = dbConn.prepareStatement(SQL_DELETE_IFSERVICES_ON_NODE);
-			stmt.setInt(1, nodeid);
-			stmt.executeUpdate();
-			if (log.isDebugEnabled())
-				log.debug("deleteNodeHandler: deleted all ifservices on  nodeid: " + nodeid);
-
-	                // Deleting all the ipaddresses associated with the nodeid
-			stmt = dbConn.prepareStatement(SQL_DELETE_ALL_INTERFACES_ON_NODE);
-			stmt.setInt(1, nodeid);
-			stmt.executeUpdate();
-			if (log.isDebugEnabled())
-                        {
-				log.debug("deleteNodeHandler: deleted all ipaddresses on  nodeid: " + nodeid);
-                        
-			}
-	                
-	                // Deleting all the snmpInterfaces associated with the nodeid
-			stmt = dbConn.prepareStatement(SQL_DELETE_SNMPINTERFACE_ON_NODE);
-			stmt.setInt(1, nodeid);
-			stmt.executeUpdate();
-			if (log.isDebugEnabled())
-				log.debug("deleteNodeHandler: deleted all snmpinterfaces on  nodeid: " + nodeid);
-                        
-	                // Deleting all the assets associated with the nodeid
-			stmt = dbConn.prepareStatement(SQL_DELETE_ASSETS_ON_NODE);
-			stmt.setInt(1, nodeid);
-			stmt.executeUpdate();
-			if (log.isDebugEnabled())
-				log.debug("deleteNodeHandler: deleted all assets on  nodeid: " + nodeid);
-                        
-                        // Deleting the node from the database 
-			stmt = dbConn.prepareStatement(SQL_DELETE_NODEID);
-			stmt.setInt(1, nodeid);
-			stmt.executeUpdate();
-			if (log.isDebugEnabled())
-				log.debug("deleteNodeHandler: deleted the node with node label: " + nodeLabel);
-                        
-                        // Create a nodeDeleted event and send it to eventd, this new event will remove all
-                        // the services and interfaces associated with the specified node from the pollable
-                        // node list, so the poller will stop to poll any service on this node.
-                        createAndSendNodeDeletedEvent(nodeid, event.getHost(), nodeLabel, txNo, sourceUei);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                String message = new String("Successfully deleted node with node label: ")  + nodeLabel;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, message, 
-                                        status, "OpenNMS.Capsd"); 
-                        }
-
-                }
-		catch(SQLException sqlE)
-		{
-			log.error("SQLException during add node and ipaddress to tables", sqlE);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                        sqlE.getMessage(), status, "OpenNMS.Capsd"); 
-                        }
-		}
-		finally
-		{
-			// close the statement
-			if (stmt != null)
-				try { stmt.close(); } catch(SQLException sqlE) { };
-
-			// close the connection
-			if (dbConn != null)
-				try { dbConn.close(); } catch(SQLException sqlE) { };					
-		}
-                
-	}
-       
-        /**
-         * This method is responsible for generating a nodeDeleted event and sending
-         * it to eventd..
-         *
-         * @param nodeId        Nodeid of the node got deleted.
-         * @param hostName      the Host server name. 
-         * @param nodeLabel     the node label of the deleted node.
-         * @param callerUei     the uei of the caller event.
-         */
-        private void createAndSendNodeDeletedEvent( int nodeId, String hostName, String nodeLabel, 
-                                                    long txNo, String callerUei)
-        {
-		Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-			log.debug("createAndSendNodeDeletedEvent:  processing deleteNode event for nodeid:  " + nodeId);
-        
-                Event newEvent = new Event();
-                newEvent.setUei(EventConstants.NODE_DELETED_EVENT_UEI);
-                newEvent.setSource("OpenNMS.Capsd");
-                newEvent.setNodeid(nodeId);
-                newEvent.setHost(hostName);
-                newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-                // Add appropriate parms
-                Parms eventParms = new Parms();
-                Parm eventParm = null;
-                Value parmValue = null;
-
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-                parmValue = new Value();
-                parmValue.setContent(nodeLabel);
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-                parmValue = new Value();
-                parmValue.setContent((new Long(txNo)).toString());
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-                
-                // Add Parms to the event
-		if ((nodeLabel != null) && (((new Long(txNo)).toString()) != null))
-                	newEvent.setParms(eventParms);
-
-                // Send event to Eventd
-                try
-                {
-                        EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
-
-                        if (log.isDebugEnabled())
-                                log.debug("createdAndSendNodeDeletedEvent: successfully sent nodeDeleted event for node: " 
-                                        + nodeLabel);
-                }
-                catch(Throwable t)
-                {
-                        log.warn("run: unexpected throwable exception caught during send to middleware", t);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
-                                                "caught unexpected throwable exception.", status, "OpenNMS.Capsd");
-                        }
-                }
-        }                
-
-	// This method creates a service deleted event
-        // FIXME: This the wrong name for this method
-
-        private void sendServiceDeletedEvent(int node, String iface, String svcname)
-        {
-                Event serviceDeleted = new Event();
-                serviceDeleted.setUei("uei.opennms.org/nodes/deleteService");
-                serviceDeleted.setSource("web ui");
-                serviceDeleted.setNodeid(node);
-                serviceDeleted.setInterface(iface);
-                serviceDeleted.setService(svcname);
-                serviceDeleted.setTime(EventConstants.formatToString(new java.util.Date()));
-
-                sendEvent(serviceDeleted);
+        if (log.isDebugEnabled()) {
+            log.debug("updateServiceHandler: add service " + serviceName + " to interface: " + ipaddr);
         }
 
-	// This utility sends events
+        return doChangeService(dbConn, ipaddr, serviceName, "ADD", txNo);
+    }
 
-        private void sendEvent(Event event)
-        {
-		Category log = ThreadCategory.getInstance(getClass());
-                try
-                {
-                        EventProxy eventProxy = new TcpEventProxy();
-                                eventProxy.send(event);
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param dbConn
+     * @param sourceUei
+     * @param ipaddr
+     * @param serviceName
+     * @param serviceId
+     * @param txNo
+     * @throws SQLException
+     * @throws FailedOperationException
+     */
+    private List doAddServiceToInterface(Connection dbConn, String ipaddr, String serviceName, int serviceId, long txNo) throws SQLException,
+            FailedOperationException {
+
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            Category log = ThreadCategory.getInstance(getClass());
+            stmt = dbConn.prepareStatement(SQL_QUERY_IPADDRESS_EXIST);
+
+            stmt.setString(1, ipaddr);
+            rs = stmt.executeQuery();
+
+            List eventsToSend = new LinkedList();
+            while (rs.next()) {
+                if (log.isDebugEnabled()) {
+                    log.debug("changeServiceHandler: add service " + serviceName + " to interface: " + ipaddr);
                 }
-                catch(Exception e)
-                {
-                        log.warn("Could not send event " + event.getUei(), e);
-                }
+
+                int nodeId = rs.getInt(1);
+                // insert service
+                DbIfServiceEntry service = DbIfServiceEntry.create(nodeId, InetAddress.getByName(ipaddr), serviceId);
+                service.setSource(DbIfServiceEntry.SOURCE_PLUGIN);
+                service.setStatus(DbIfServiceEntry.STATUS_ACTIVE);
+                service.setNotify(DbIfServiceEntry.NOTIFY_ON);
+                service.store(dbConn);
+
+                //Create a nodeGainedService event to eventd.
+                DbNodeEntry nodeEntry = DbNodeEntry.get(nodeId);
+                Event newEvent = EventUtils.createNodeGainedServiceEvent(nodeEntry, InetAddress.getByName(ipaddr), serviceName, txNo);
+                eventsToSend.add(newEvent);
+            }
+            return eventsToSend;
+        } catch (UnknownHostException e) {
+            throw new FailedOperationException("Unable to resolve host: " + e.getMessage(), e);
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException ex) {
+            }
         }
-        
-	/**
-	 * Process the event,  add the specified interface into database. If the associated 
-         * node does not exist in the database yet, add a node into the database.
-	 *
-	 * @param event	The event to process.
-	 */
-	private void addInterfaceHandler(Event event)
-	{
-                String sourceUei = event.getUei();
-                String ipaddr = event.getInterface();
+    }
 
-		Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-			log.debug("addInterfaceHandler:  processing addInterface event for " + ipaddr);
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param dbConn
+     * @param sourceUei
+     * @param ipaddr
+     * @param serviceName
+     * @param action
+     * @param txNo
+     * @throws SQLException
+     * @throws FailedOperationException
+     */
+    private List doChangeService(Connection dbConn, String ipaddr, String serviceName, String action, long txNo) throws SQLException,
+            FailedOperationException {
+        List eventsToSend = null;
+        int serviceId = verifyServiceExists(dbConn, serviceName);
 
-		// Extract node label and transaction No. from the event parms
-		String nodeLabel = null;
-                long txNo = -1L;
-		Parms parms = event.getParms();
-		if (parms != null)
-		{
-			String parmName = null;
-			Value parmValue = null;
-			String parmContent = null;
-		
-			Enumeration parmEnum = parms.enumerateParm();
-			while(parmEnum.hasMoreElements())
-			{
-				Parm parm = (Parm)parmEnum.nextElement();
-				parmName  = parm.getParmName();
-				parmValue = parm.getValue();
-				if (parmValue == null)
-					continue;
-				else 
-					parmContent = parmValue.getContent();
-	
-				//  get node label
-				if (parmName.equals(EventConstants.PARM_NODE_LABEL))
-				{
-					nodeLabel = parmContent;
-		                        if (log.isDebugEnabled())
-			                        log.debug("addInterfaceHandler:  parmName: " + parmName
-                                                        + " /parmContent: " + parmContent);
-				}
-				else if (parmName.equals(EventConstants.PARM_TRANSACTION_NO))
-                                {
-                                        String temp = parmContent;
-		                        if (log.isDebugEnabled())
-			                        log.debug("addInterfaceHandler:  parmName: " + parmName
-                                                        + " /parmContent: " + parmContent);
-                                        try
-                                        {
-                                                txNo = Long.valueOf(temp).longValue();
-                                        }
-                                        catch (NumberFormatException nfe)
-                                        {
-                                                log.warn("addInterfaceHandler: Parameter " + EventConstants.PARM_TRANSACTION_NO 
-                                                        + " cannot be non-numberic", nfe);
-                                                txNo = -1L;
-                                        }
-                                }
-						
-			}
-		}
+        if (action.equalsIgnoreCase("DELETE")) {
+            eventsToSend = new LinkedList();
+            // find the node Id associated with the serviceName and interface
+            int[] nodeIds = findNodeIdForServiceAndInterface(dbConn, ipaddr, serviceName);
+            for (int i = 0; i < nodeIds.length; i++) {
+                int nodeId = nodeIds[i];
+                // delete the service from the database
+                eventsToSend.addAll(doDeleteService(dbConn, "OpenNMS.Capsd", nodeId, ipaddr, serviceName, txNo));
+            }
+        } else if (action.equalsIgnoreCase("ADD")) {
+            eventsToSend = doAddServiceToInterface(dbConn, ipaddr, serviceName, serviceId, txNo);
+        } else {
+            eventsToSend = Collections.EMPTY_LIST;
+        }
+        return eventsToSend;
+    }
 
-                boolean invalidParameters = ((ipaddr == null) || (nodeLabel == null));
-                if (m_xmlrpc)
-                        invalidParameters = invalidParameters || (txNo == -1L);
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param dbConn
+     * @param nodeLabel
+     * @param ipaddr
+     * @param hostName
+     * @param txNo
+     * @return @throws
+     *         SQLException
+     */
+    private List doCreateInterfaceMappings(Connection dbConn, String nodeLabel, String ipaddr, String hostName, long txNo) throws SQLException {
+        PreparedStatement stmt = null;
+        try {
+            Category log = ThreadCategory.getInstance(getClass());
+            stmt = dbConn.prepareStatement(SQL_ADD_INTERFACE_TO_SERVER);
 
-                if (invalidParameters)
-                {
-		        if (log.isDebugEnabled())
-		                log.debug("addInterfaceHandler:  Invalid parameters." );
+            stmt.setString(1, ipaddr);
+            stmt.setString(2, hostName);
+            stmt.executeUpdate();
 
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                        "Invalid parameters.", status, "OpenNMS.Capsd");
-                        }
-                        
-			return;
-		}
-                
-		// First make sure the specified node label and ipaddress do not exist in the database
-                // before trying to add them in. 
-		java.sql.Connection dbConn = null;
-		PreparedStatement stmt = null;
-		try
-		{
-			dbConn = DatabaseConnectionFactory.getInstance().getConnection();
-		
-			stmt = dbConn.prepareStatement(SQL_QUERY_IPINTERFACE_EXIST);
-	
-			stmt.setString(1, nodeLabel);
-			stmt.setString(2, ipaddr);
-	
-			ResultSet rs = stmt.executeQuery();
-			while(rs.next())
-			{
-				if (log.isDebugEnabled())
-				{
-					log.debug("addInterfaceHandler: node " + nodeLabel + " with IPAddress " 
-                                        + ipaddr + " already exist in the database.");
-				}
-                                
-                                if (m_xmlrpc)
-                                {
-                                        int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                                "interface already exists on the node.", status, "OpenNMS.Capsd");
-                                }
-			        return;
-			}
+            if (log.isDebugEnabled()) {
+                log.debug("updateServerHandler: added interface " + ipaddr + " into NMS server: " + hostName);
+            }
+
+            //Create a addInterface event and process it.
+            // FIXME: do I need to make a direct call here?
+            Event newEvent = EventUtils.createAddInterfaceEvent("OpenNMS.Capsd", nodeLabel, ipaddr, hostName, txNo);
+            return Collections.singletonList(newEvent);
+        } finally {
+            if (stmt != null) try {
+                stmt.close();
+            } catch (SQLException e) {
+            }
+        }
+
+    }
+
+    /**
+     * Mark as deleted the specified interface and its associated services, if delete
+     * propagation is enable and the interface is the only one on the node, delete the node as
+     * well.
+     * 
+     * @param dbConn
+     *            the database connection
+     * @param source
+     *            the source for any events that must be sent
+     * @param nodeid
+     *            the id of the node the interface resides on
+     * @param ipAddr
+     *            the ip address of the interface to be deleted
+     * @param txNo
+     *            a transaction number to associate with the deletion
+     * @return a list of events that need to be sent w.r.t. this deletion
+     * @throws SQLException
+     *             if any database errors occur
+     */
+    private List doDeleteInterface(Connection dbConn, String source, long nodeid, String ipAddr, long txNo) throws SQLException {
+        List eventsToSend = new LinkedList();
+
+        // if this is the last interface for the node then delete the node instead
+        if (isPropagationEnabled() && countOtherInterfacesOnNode(dbConn, nodeid, ipAddr) == 0) {
+            // there are no other ifs for this node so delete the node
+            doDeleteNode(dbConn, source, nodeid, txNo);
+        } else {
+            eventsToSend.addAll(markAllServicesForInterfaceDeleted(dbConn, source, nodeid, ipAddr, txNo));
+            eventsToSend.addAll(markInterfaceDeleted(dbConn, source, nodeid, ipAddr, txNo));
+        }
+        return eventsToSend;
+    }
+
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param dbConn
+     * @param nodeLabel
+     * @param ipaddr
+     * @param hostName
+     * @param txNo
+     * @param log
+     * @return @throws
+     *         SQLException
+     */
+    private List doDeleteInterfaceMappings(Connection dbConn, String nodeLabel, String ipaddr, String hostName, long txNo) throws SQLException {
+        PreparedStatement stmt = null;
+        try {
+            List eventsToSend = new LinkedList();
+
+            Category log = ThreadCategory.getInstance(getClass());
+
+            // Delete all services on the specified interface in interface/service
+            // mapping
+            //
+            if (log.isDebugEnabled()) {
+                log.debug("updateServer: delete all services on the interface: " + ipaddr + " in the interface/service mapping.");
+            }
+            stmt = dbConn.prepareStatement(SQL_DELETE_ALL_SERVICES_INTERFACE_MAPPING);
+            stmt.setString(1, ipaddr);
+            stmt.executeUpdate();
+
+            // Delete the interface on interface/server mapping
+            if (log.isDebugEnabled()) {
+                log.debug("updateServer: delete interface: " + ipaddr + " on NMS server: " + hostName);
+            }
+            stmt = dbConn.prepareStatement(SQL_DELETE_INTERFACE_ON_SERVER);
+            stmt.setString(1, ipaddr);
+            stmt.setString(2, hostName);
+            stmt.executeUpdate();
+
+            // Now mark the interface as deleted (and its services as well)
+            long[] nodeIds = findNodeIdsForInterfaceAndLabel(dbConn, nodeLabel, ipaddr);
+            for (int i = 0; i < nodeIds.length; i++) {
+                long nodeId = nodeIds[i];
+                eventsToSend.addAll(doDeleteInterface(dbConn, "OpenNMS.Capsd", nodeId, ipaddr, txNo));
+            }
+            return eventsToSend;
+        } finally {
+            if (stmt != null) try {
+                stmt.close();
+            } catch (SQLException e) {
+            }
+        }
+    }
+
+    /**
+     * Mark as deleted the specified node, its associated interfaces and services.
+     * 
+     * @param dbConn
+     *            the connection to the database
+     * @param source
+     *            the source for any events to send
+     * @param nodeid
+     *            the nodeid to be deleted
+     * @param txNo
+     *            a transaction id to associate with this deletion
+     * 
+     * @return the list of events that need to be sent in response to the node being deleted
+     * @throws SQLException
+     *             if any exception occurs communicating with the database
+     */
+    private List doDeleteNode(Connection dbConn, String source, long nodeid, long txNo) throws SQLException {
+        List eventsToSend = new LinkedList();
+        eventsToSend.addAll(markInterfacesAndServicesDeleted(dbConn, source, nodeid, txNo));
+        eventsToSend.addAll(markNodeDeleted(dbConn, source, nodeid, txNo));
+        return eventsToSend;
+    }
+
+    /**
+     * Mark as deleted the specified service, if this is the only service on an interface or
+     * node and deletePropagation is enabled, the interface or node is marked as deleted as
+     * well.
+     * 
+     * @param dbConn
+     *            the connection to the database
+     * @param source
+     *            the source for any events to send
+     * @param nodeid
+     *            the nodeid that the service resides on
+     * @param ipAddr
+     *            the interface that the service resides on
+     * @param service
+     *            the name of the service
+     * @param txNo
+     *            a transaction id to associate with this deletion
+     * 
+     * @return the list of events that need to be sent in response to the service being deleted
+     * @throws SQLException
+     *             if any exception occurs communicating with the database
+     */
+    private List doDeleteService(Connection dbConn, String source, long nodeid, String ipAddr, String service, long txNo) throws SQLException {
+
+        List eventsToSend = new LinkedList();
+
+        if (isPropagationEnabled()) {
+            // if this is the last service for the interface or the last service
+            // for the node then send delete events for the interface or node instead
+            int otherSvcsOnIfCnt = countOtherServicesOnInterface(dbConn, nodeid, ipAddr, service);
+            if (otherSvcsOnIfCnt == 0 && countServicesOnOtherInterfaces(dbConn, nodeid, ipAddr) == 0) {
+                // no services on this interface or any other interface on this node so delete
+                // node
+                eventsToSend.add(doDeleteNode(dbConn, source, nodeid, txNo));
+            } else if (otherSvcsOnIfCnt == 0) {
+                // no services on this interface so delete interface
+                eventsToSend.add(doDeleteInterface(dbConn, source, nodeid, ipAddr, txNo));
+            } else {
+                // otherwise just mark the service as deleted and send a serviceDeleted event
+                eventsToSend.addAll(markServiceDeleted(dbConn, source, nodeid, ipAddr, service, txNo));
+            }
+        } else {
+            // otherwise just mark the service as deleted and send a serviceDeleted event
+            eventsToSend.addAll(markServiceDeleted(dbConn, source, nodeid, ipAddr, service, txNo));
+        }
+        return eventsToSend;
+    }
+
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param dbConn
+     * @param ipaddr
+     * @param serviceName
+     * @param action
+     * @param txNo
+     * @return @throws
+     *         SQLException
+     * @throws FailedOperationException
+     */
+    private List doDeleteServiceMapping(Connection dbConn, String ipaddr, String serviceName, long txNo) throws SQLException,
+            FailedOperationException {
+        PreparedStatement stmt = null;
+        try {
+            Category log = ThreadCategory.getInstance(getClass());
+            if (log.isDebugEnabled()) {
+                log.debug("handleUpdateService: delete service: " + serviceName + " on IPAddress: " + ipaddr);
+            }
+            stmt = dbConn.prepareStatement(SQL_DELETE_SERVICE_INTERFACE_MAPPING);
+
+            stmt.setString(1, ipaddr);
+            stmt.setString(2, serviceName);
+
+            stmt.executeUpdate();
+
+            return doChangeService(dbConn, ipaddr, serviceName, "DELETE", txNo);
+        } finally {
+            if (stmt != null) try {
+                stmt.close();
+            } catch (SQLException e) {
+            }
+        }
+    }
+
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param dbConn
+     * @param nodeLabel
+     * @param ipaddr
+     * @param action
+     * @param hostName
+     * @param txNo
+     * @throws SQLException
+     */
+    private List doUpdateServer(Connection dbConn, String nodeLabel, String ipaddr, String action, String hostName, long txNo) throws SQLException {
+
+        Category log = ThreadCategory.getInstance(getClass());
+
+        boolean exists = existsInServerMap(dbConn, hostName, ipaddr);
+
+        if (exists && "DELETE".equalsIgnoreCase(action)) {
+            return doDeleteInterfaceMappings(dbConn, nodeLabel, ipaddr, hostName, txNo);
+        } else if (!exists && "ADD".equalsIgnoreCase(action)) {
+            return doCreateInterfaceMappings(dbConn, nodeLabel, ipaddr, hostName, txNo);
+        } else {
+            log.error("updateServerHandler: could not process interface: " + ipaddr + " on NMS server: " + hostName);
+            return Collections.EMPTY_LIST;
+        }
+    }
+
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param dbConn
+     * @param ipaddr
+     * @param serviceName
+     * @param action
+     * @param txNo
+     * @return @throws
+     *         SQLException
+     * @throws FailedOperationException
+     */
+    private List doUpdateService(Connection dbConn, String ipaddr, String serviceName, String action, long txNo) throws SQLException,
+            FailedOperationException {
+        List eventsToSend;
+        verifyServiceExists(dbConn, serviceName);
+
+        boolean mapExists = serviceMappingExists(dbConn, ipaddr, serviceName);
+
+        if (mapExists && "DELETE".equalsIgnoreCase(action)) {
+            // the mapping exists and should be deleted
+            eventsToSend = doDeleteServiceMapping(dbConn, ipaddr, serviceName, txNo);
+        } else if (!mapExists && "ADD".equalsIgnoreCase(action)) {
+            // we need to add the mapping, it doesn't exist
+            eventsToSend = doAddServiceMapping(dbConn, ipaddr, serviceName, txNo);
+        } else {
+            eventsToSend = Collections.EMPTY_LIST;
+        }
+        return eventsToSend;
+    }
+
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param dbConn
+     * @param hostName
+     * @param ipaddr
+     * @return @throws
+     *         SQLException
+     */
+    private boolean existsInServerMap(Connection dbConn, String hostName, String ipaddr) throws SQLException {
+        PreparedStatement stmt = null;
+        try {
+            /**
+             * SQL statement used to query if an interface/server mapping already exists in the
+             * database.
+             */
+            final String SQL_QUERY_INTERFACE_ON_SERVER = "SELECT count(*)  FROM serverMap WHERE ipaddr = ? AND servername = ?";
+
+            // Verify if the interface already exists on the NMS server
+            stmt = dbConn.prepareStatement(SQL_QUERY_INTERFACE_ON_SERVER);
+
+            stmt.setString(1, ipaddr);
+            stmt.setString(2, hostName);
+
+            ResultSet rs = stmt.executeQuery();
+            int count = 0;
+            while (rs.next()) {
+                count = rs.getInt(1);
+            }
+
+            return count > 0;
+        } finally {
+            if (stmt != null) try {
+                stmt.close();
+            } catch (SQLException e) {
+            }
+        }
+    }
+
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param dbConn
+     * @param ipaddr
+     * @param serviceName
+     * @return @throws
+     *         SQLException
+     */
+    private int[] findNodeIdForServiceAndInterface(Connection dbConn, String ipaddr, String serviceName) throws SQLException {
+        int[] nodeIds;
+        Category log = ThreadCategory.getInstance(getClass());
+        PreparedStatement stmt = null;
+        // Verify if the specified service already exist.
+        stmt = dbConn.prepareStatement(SQL_QUERY_SERVICE_EXIST);
+
+        stmt.setString(1, ipaddr);
+        stmt.setString(2, serviceName);
+
+        ResultSet rs = stmt.executeQuery();
+        List nodeIdList = new LinkedList();
+        while (rs.next()) {
+            if (log.isDebugEnabled()) {
+                log.debug("changeService: service " + serviceName + " on IPAddress " + ipaddr + " already exists in the database.");
+            }
+            int nodeId = rs.getInt(1);
+            nodeIdList.add(new Integer(nodeId));
+        }
+        rs.close();
+        stmt.close();
+        nodeIds = new int[nodeIdList.size()];
+        int i = 0;
+        for (Iterator it = nodeIdList.iterator(); it.hasNext(); i++) {
+            Integer n = (Integer) it.next();
+            nodeIds[i] = n.intValue();
+        }
+        return nodeIds;
+    }
+
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param dbConn
+     * @param nodeLabel
+     * @param ipAddr
+     * @return @throws
+     *         SQLException
+     */
+    private long[] findNodeIdsForInterfaceAndLabel(Connection dbConn, String nodeLabel, String ipAddr) throws SQLException {
+        PreparedStatement stmt = null;
+        try {
+            stmt = dbConn
+                    .prepareStatement("SELECT node.nodeid FROM node, ipinterface WHERE node.nodeid = ipinterface.nodeid AND node.nodelabel = ? AND ipinterface.ipaddr = ? AND isManaged !='D' AND nodeType !='D'");
+            stmt.setString(1, nodeLabel);
+            stmt.setString(2, ipAddr);
+
+            ResultSet rs = stmt.executeQuery();
+            List nodeIdList = new LinkedList();
+            while (rs.next()) {
+                nodeIdList.add(new Long(rs.getLong(1)));
+            }
+
+            long[] nodeIds = new long[nodeIdList.size()];
+            int i = 0;
+            for (Iterator it = nodeIdList.iterator(); it.hasNext(); i++) {
+                Long nodeId = (Long) it.next();
+                nodeIds[i] = nodeId.longValue();
+            }
+            return nodeIds;
+        } finally {
+            if (stmt != null) try {
+                stmt.close();
+            } catch (SQLException e) {
+            }
+        }
+    }
+
+    /**
+     * Get the local server name
+     */
+    public String getLocalServer() {
+        return m_localServer;
+    }
+
+    /**
+     * Return an id for this event listener
+     */
+    public String getName() {
+        return "Capsd:BroadcastEventProcessor";
+    }
+
+    /**
+     * Process the event, add the specified interface into database. If the associated node
+     * does not exist in the database yet, add a node into the database.
+     * 
+     * @param event
+     *            The event to process.
+     * @throws InsufficientInformationException
+     *             if the event is missing essential information
+     * @throws FailedOperationException
+     *             if the operation fails (because of database error for example)
+     */
+    private void handleAddInterface(Event event) throws InsufficientInformationException, FailedOperationException {
+        Category log = ThreadCategory.getInstance(getClass());
+
+        EventUtils.checkInterface(event);
+        EventUtils.requireParm(event, EventConstants.PARM_NODE_LABEL);
+        if (isXmlRpcEnabled()) EventUtils.requireParm(event, EventConstants.PARM_TRANSACTION_NO);
+        if (log.isDebugEnabled()) log.debug("addInterfaceHandler:  processing addInterface event for " + event.getInterface());
+
+        String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
+        long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
+
+        // First make sure the specified node label and ipaddress do not exist in the database
+        // before trying to add them in.
+        Connection dbConn = null;
+        List eventsToSend = null;
+        try {
+            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn.setAutoCommit(false);
+
+            eventsToSend = doAddInterface(dbConn, nodeLabel, event.getInterface(), txNo);
+        } catch (SQLException sqlE) {
+            log.error("addInterfaceHandler: SQLException during add node and ipaddress to the database.", sqlE);
+            throw new FailedOperationException("Database error: " + sqlE.getMessage(), sqlE);
+        } finally {
+            if (dbConn != null) try {
+                if (eventsToSend != null) {
+                    dbConn.commit();
+                    for (Iterator it = eventsToSend.iterator(); it.hasNext();) {
+                        EventUtils.sendEvent((Event) it.next(), event.getUei(), txNo, isXmlRpcEnabled());
+                    }
+                } else {
+                    dbConn.rollback();
+                }
+                dbConn.close();
+            } catch (SQLException ex) {
+            }
+        }
+    }
+
+    /**
+     * Process an addNode event.
+     * 
+     * @param event
+     *            The event to process.
+     * @throws InsufficientInformationException
+     *             if the event is missing information
+     * @throws FailedOperationException
+     *             if an error occurs during processing
+     */
+    private void handleAddNode(Event event) throws InsufficientInformationException, FailedOperationException {
+        //        Category log = ThreadCategory.getInstance(getClass());
+
+        EventUtils.requireParm(event, EventConstants.PARM_NODE_LABEL);
+        if (isXmlRpcEnabled()) {
+            EventUtils.requireParm(event, EventConstants.PARM_TRANSACTION_NO);
+        }
+
+        String ipaddr = event.getInterface();
+        String sourceUei = event.getUei();
+        String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
+        long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
+        {
+
+            Category log = ThreadCategory.getInstance(getClass());
+
+            if (log.isDebugEnabled()) log.debug("addNodeHandler:  processing addNode event for " + ipaddr);
+        }
+        Connection dbConn = null;
+        List eventsToSend = null;
+        try {
+            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn.setAutoCommit(false);
+
+            eventsToSend = doAddNode(dbConn, nodeLabel, ipaddr, txNo);
+        } catch (SQLException sqlE) {
+            Category log = ThreadCategory.getInstance(getClass());
+            log.error("addNodeHandler: SQLException during add node and ipaddress to tables", sqlE);
+            throw new FailedOperationException("database error: " + sqlE.getMessage(), sqlE);
+        } finally {
+            if (dbConn != null) try {
+                if (eventsToSend != null) {
+                    dbConn.commit();
+                    for (Iterator it = eventsToSend.iterator(); it.hasNext();) {
+                        EventUtils.sendEvent((Event) it.next(), event.getUei(), txNo, isXmlRpcEnabled());
+                    }
+                } else {
+                    dbConn.rollback();
+                }
+                dbConn.close();
+            } catch (SQLException ex) {
+            }
+        }
+
+    }
+
+    /**
+     * Process the event, add or remove a specified service from an interface. An 'action'
+     * parameter wraped in the event will tell which action to take to the service.
+     * 
+     * @param event
+     *            The event to process.
+     * @throws FailedOperationException
+     *             FIXME: finish the doc here
+     */
+    private void handleChangeService(Event event) throws InsufficientInformationException, FailedOperationException {
+        Category log = ThreadCategory.getInstance(getClass());
+
+        EventUtils.checkInterface(event);
+        EventUtils.checkService(event);
+        EventUtils.requireParm(event, EventConstants.PARM_ACTION);
+        if (isXmlRpcEnabled()) {
+            EventUtils.requireParm(event, EventConstants.PARM_TRANSACTION_NO);
+        }
+
+        String action = EventUtils.getParm(event, EventConstants.PARM_ACTION);
+        long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
+
+        if (log.isDebugEnabled()) log.debug("changeServiceHandler:  processing changeService event on: " + event.getInterface());
+
+        Connection dbConn = null;
+        List eventsToSend = null;
+        try {
+            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn.setAutoCommit(false);
+
+            eventsToSend = doChangeService(dbConn, event.getInterface(), event.getService(), action, txNo);
+        } catch (SQLException sqlE) {
+            log.error("SQLException during changeService on database.", sqlE);
+            throw new FailedOperationException("exeption processing changeService: " + sqlE.getMessage(), sqlE);
+        } finally {
+            if (dbConn != null) try {
+                if (eventsToSend != null) {
+                    dbConn.commit();
+                    for (Iterator it = eventsToSend.iterator(); it.hasNext();) {
+                        EventUtils.sendEvent((Event) it.next(), event.getUei(), txNo, isXmlRpcEnabled());
+                    }
+                } else {
+                    dbConn.rollback();
+                }
+                dbConn.close();
+            } catch (SQLException ex) {
+            }
+        }
+
+    }
+
+    /**
+     * Handle a deleteInterface Event. Here we process the event by marking all the appropriate
+     * data rows as deleted.
+     * 
+     * FIXME: finish the doc here
+     * 
+     * @param e
+     *            The event indicating what interface to delete
+     * @throws InsufficientInformationException
+     *             if the required information is not part of the event
+     */
+    private void handleDeleteInterface(Event e) throws InsufficientInformationException, FailedOperationException {
+        // validate event
+        EventUtils.checkEventId(e);
+        EventUtils.checkInterface(e);
+        EventUtils.checkNodeId(e);
+        if (isXmlRpcEnabled()) EventUtils.requireParm(e, EventConstants.PARM_TRANSACTION_NO);
+
+        Category log = ThreadCategory.getInstance(getClass());
+
+        // log the event
+        if (log.isDebugEnabled())
+                log.debug("handleDeleteInterface: Event\n" + "uei\t\t" + e.getUei() + "\neventid\t\t" + e.getDbid() + "\nnodeId\t\t" + e.getNodeid()
+                        + "\nipaddr\t\t" + e.getInterface() + "\neventtime\t" + (e.getTime() != null ? e.getTime() : "<null>"));
+
+        long txNo = EventUtils.getLongParm(e, EventConstants.PARM_TRANSACTION_NO, -1L);
+
+        // update the database
+        Connection dbConn = null;
+        List eventsToSend = null;
+        try {
+            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn.setAutoCommit(false);
+
+            String source = (e.getSource() == null ? "OpenNMS.Capsd" : e.getSource());
+
+            eventsToSend = doDeleteInterface(dbConn, source, e.getNodeid(), e.getInterface(), txNo);
+        } catch (SQLException ex) {
+            log.error("handleDeleteService:  Database error deleting service " + e.getService() + " on ipAddr " + e.getInterface() + " for node "
+                    + e.getNodeid(), ex);
+            throw new FailedOperationException("database error: " + ex.getMessage(), ex);
+        } finally {
+            if (dbConn != null) try {
+                if (eventsToSend != null) {
+                    dbConn.commit();
+                    for (Iterator it = eventsToSend.iterator(); it.hasNext();) {
+                        EventUtils.sendEvent((Event) it.next(), e.getUei(), txNo, isXmlRpcEnabled());
+                    }
+                } else {
+                    dbConn.rollback();
+                }
+                dbConn.close();
+            } catch (SQLException ex) {
+            }
+        }
+    }
+
+    /**
+     * Handle a deleteNode Event. Here we process the event by marking all the appropriate data
+     * rows as deleted.
+     * 
+     * FIXME: finish the doc here
+     * 
+     * @param e
+     *            The event indicating what node to delete
+     * @throws InsufficientInformationException
+     *             if the required information is not part of the event
+     */
+    private void handleDeleteNode(Event e) throws InsufficientInformationException, FailedOperationException {
+        // validate event
+        EventUtils.checkEventId(e);
+        EventUtils.checkNodeId(e);
+        if (isXmlRpcEnabled()) EventUtils.requireParm(e, EventConstants.PARM_TRANSACTION_NO);
+
+        Category log = ThreadCategory.getInstance(getClass());
+
+        // log the event
+        long nodeid = e.getNodeid();
+        if (log.isDebugEnabled())
+                log.debug("handleDeleteNode: Event\n" + "uei\t\t" + e.getUei() + "\neventid\t\t" + e.getDbid() + "\nnodeId\t\t" + nodeid
+                        + "\neventtime\t" + (e.getTime() != null ? e.getTime() : "<null>"));
+
+        long txNo = EventUtils.getLongParm(e, EventConstants.PARM_TRANSACTION_NO, -1L);
+
+        // update the database
+        Connection dbConn = null;
+        List eventsToSend = null;
+        try {
+            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn.setAutoCommit(false);
+
+            String source = (e.getSource() == null ? "OpenNMS.Capsd" : e.getSource());
+
+            eventsToSend = doDeleteNode(dbConn, source, nodeid, txNo);
+        } catch (SQLException ex) {
+            log.error("handleDeleteService:  Database error deleting service " + e.getService() + " on ipAddr " + e.getInterface() + " for node "
+                    + nodeid, ex);
+            throw new FailedOperationException("database error: " + ex.getMessage(), ex);
+
+        } finally {
+
+            if (dbConn != null) try {
+                if (eventsToSend != null) {
+                    dbConn.commit();
+                    for (Iterator it = eventsToSend.iterator(); it.hasNext();) {
+                        EventUtils.sendEvent((Event) it.next(), e.getUei(), txNo, isXmlRpcEnabled());
+                    }
+                } else {
+                    dbConn.rollback();
+                }
+                dbConn.close();
+            } catch (SQLException ex) {
+            }
+        }
+    }
+
+    /**
+     * Handle a deleteService Event. Here we process the event by marking all the appropriate
+     * data rows as deleted.
+     * 
+     * FIXME: finish the doc here
+     * 
+     * @param e
+     *            The event indicating what service to delete
+     * @throws InsufficientInformationException
+     *             if the required information is not part of the event
+     */
+    private void handleDeleteService(Event e) throws InsufficientInformationException, FailedOperationException {
+
+        // validate event
+        EventUtils.checkEventId(e);
+        EventUtils.checkNodeId(e);
+        EventUtils.checkInterface(e);
+        EventUtils.checkService(e);
+
+        Category log = ThreadCategory.getInstance(getClass());
+
+        // log the event
+        if (log.isDebugEnabled())
+                log.debug("handleDeleteService: Event\nuei\t\t" + e.getUei() + "\neventid\t\t" + e.getDbid() + "\nnodeid\t\t" + e.getNodeid()
+                        + "\nipaddr\t\t" + e.getInterface() + "\nservice\t\t" + e.getService() + "\neventtime\t"
+                        + (e.getTime() != null ? e.getTime() : "<null>"));
+
+        long txNo = EventUtils.getLongParm(e, EventConstants.PARM_TRANSACTION_NO, -1L);
+
+        // update the database
+        Connection dbConn = null;
+        List eventsToSend = null;
+        try {
+            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn.setAutoCommit(false);
+            String source = (e.getSource() == null ? "OpenNMS.Capsd" : e.getSource());
+            eventsToSend = doDeleteService(dbConn, source, e.getNodeid(), e.getInterface(), e.getService(), txNo);
+        } catch (SQLException ex) {
+            log.error("handleDeleteService:  Database error deleting service " + e.getService() + " on ipAddr " + e.getInterface() + " for node "
+                    + e.getNodeid(), ex);
+            throw new FailedOperationException("database error: " + ex.getMessage(), ex);
+        } finally {
+
+            if (dbConn != null) try {
+                if (eventsToSend != null) {
+                    dbConn.commit();
+                    for (Iterator it = eventsToSend.iterator(); it.hasNext();) {
+                        EventUtils.sendEvent((Event) it.next(), e.getUei(), txNo, isXmlRpcEnabled());
+                    }
+                } else {
+                    dbConn.rollback();
+                }
+                dbConn.close();
+            } catch (SQLException ex) {
+            }
+        }
+    }
+
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param event
+     */
+    private void handleDupNodeDeleted(Event event) throws InsufficientInformationException {
+        Category log = ThreadCategory.getInstance(getClass());
+
+        EventUtils.checkNodeId(event);
+
+        // Remove the deleted node from the scheduler
+        m_scheduler.unscheduleNode((int) event.getNodeid());
+    }
+
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param event
+     */
+    private void handleForceRescan(Event event) throws InsufficientInformationException {
+        Category log = ThreadCategory.getInstance(getClass());
+        // If the event has a node identifier use it otherwise
+        // will need to use the interface to lookup the node id
+        // from the database
+        int nodeid = -1;
+
+        if (event.hasNodeid())
+            nodeid = (int) event.getNodeid();
+        else {
+            // Extract interface from the event and use it to
+            // lookup the node identifier associated with the
+            // interface from the database.
+            //
+
+            // ensure the ipaddr is set
+            EventUtils.checkInterface(event);
+
+            // Get database connection and retrieve nodeid
+            Connection dbc = null;
+            PreparedStatement stmt = null;
+            ResultSet rs = null;
+            try {
+                dbc = DatabaseConnectionFactory.getInstance().getConnection();
+
+                // Retrieve node id
+                stmt = dbc.prepareStatement(SQL_RETRIEVE_NODEID);
+                stmt.setString(1, event.getInterface());
+                rs = stmt.executeQuery();
+                if (rs.next()) {
+                    nodeid = rs.getInt(1);
+                }
+            } catch (SQLException sqlE) {
+                log.error("onMessage: Database error during nodeid retrieval for interface " + event.getInterface(), sqlE);
+            } finally {
+                // Close the prepared statement
+                if (stmt != null) {
+                    try {
                         stmt.close();
-                        
-                        // There is no ipinterface associated with the specified nodeLabel exist
-                        // in the database. Verify if a node with the nodeLabel already exist in 
-                        // the database. If not, create a node with the nodeLabel and add it to the 
-                        // database, and also add the ipaddress associated with this node to the 
-                        // database. If the node with the nodeLabel exists in the node table, just 
-                        // add the ip address to the database.
-                        stmt = dbConn.prepareStatement(SQL_QUERY_NODE_EXIST);
-                        stmt.setString(1, nodeLabel);
-
-                        rs = stmt.executeQuery();
-
-                        while (rs.next())
-                        {
-
-		                if (log.isDebugEnabled())
-			                log.debug("addInterfaceHandler:  add interface: " + ipaddr
-                                                + " to the database.");
-                                                
-                                // Node already exists. Add the ipaddess to the ipinterface table
-                                InetAddress ifaddr = InetAddress.getByName(ipaddr);
-                                int nodeId = rs.getInt(1);
-                                String dpName = rs.getString(2);
-                                
-                                DbIpInterfaceEntry ipInterface = DbIpInterfaceEntry.create(nodeId, ifaddr); 
-                                ipInterface.setHostname(ifaddr.getHostName());
-                                ipInterface.setManagedState(DbIpInterfaceEntry.STATE_MANAGED);
-                                ipInterface.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
-                                ipInterface.store(dbConn);
-
-                                // create a nodeEntry 
-                                DbNodeEntry nodeEntry = DbNodeEntry.get(nodeId, dpName);
-                                createAndSendNodeGainedInterfaceEvent(nodeEntry, ifaddr, txNo, sourceUei);
-                                if (m_xmlrpc)
-                                {
-                                        String message = new String("Successfully added interface: ") + ipaddr 
-                                                        + " to node: " + nodeLabel;
-                                        int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, message, 
-                                                status, "OpenNMS.Capsd"); 
-                                }
-                                return;
-                        }
-                        
-                        // The node does not exist in the database, add the node and
-                        // the ipinterface into the database.
-                        addNode(dbConn, nodeLabel, ipaddr, txNo, sourceUei);
-		}
-		catch(SQLException sqlE)
-		{
-			log.error("addInterfaceHandler: SQLException during add node and ipaddress to the database.", sqlE);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                        sqlE.getMessage(), status, "OpenNMS.Capsd"); 
-                        }
-		}
-		catch(java.net.UnknownHostException e)
-		{
-			log.error("addInterfaceHandler: can not solve unknow host.", e);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                        e.getMessage(), status, "OpenNMS.Capsd"); 
-                        }
-		}
-		finally
-		{
-			// close the statement
-			if (stmt != null)
-				try { stmt.close(); } catch(SQLException sqlE) { };
-
-			// close the connection
-			if (dbConn != null)
-				try { dbConn.close(); } catch(SQLException sqlE) { };					
-		}
-	}
-
-
-	/** 
-	 * This method handles the deletion of an interface.
-         * <pre>1. stop all services associated with the specified interface.
-         * 2. removing all services associated with the interface.
-         * 3. remove the interface from the database.
-         * 4. issue an interfaceDeleted event to stop polling all the services on 
-         *    this interface</pre>
-         */
-	private void deleteInterfaceHandler(Event event)
-	{
-                String ipaddr = event.getInterface();
-                String sourceUei = event.getUei();
-
-                Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-			log.debug("deleteInterfaceHandler: deleting interface: " + ipaddr);
-			
-		// Extract node label and transaction No. from the event parms
-		String nodeLabel = null;
-                long txNo = -1L;
-                
-		Parms parms = event.getParms();
-		if (parms != null)
-		{
-			String parmName = null;
-			Value parmValue = null;
-			String parmContent = null;
-		
-			Enumeration parmEnum = parms.enumerateParm();
-			while(parmEnum.hasMoreElements())
-			{
-				Parm parm = (Parm)parmEnum.nextElement();
-				parmName  = parm.getParmName();
-				parmValue = parm.getValue();
-				if (parmValue == null)
-					continue;
-				else 
-					parmContent = parmValue.getContent();
-	
-				//  get node label
-				if (parmName.equals(EventConstants.PARM_NODE_LABEL))
-				{
-					nodeLabel = parmContent;
-		                        if (log.isDebugEnabled())
-			                        log.debug("deleteInterfaceHandler:  parmName: " + parmName
-                                                        + " /parmContent: " + parmContent);
-				}
-				else if (parmName.equals(EventConstants.PARM_TRANSACTION_NO))
-                                {
-                                        String temp = parmContent;
-		                        if (log.isDebugEnabled())
-			                        log.debug("deleteInterfaceHandler:  parmName: " + parmName
-                                                        + " /parmContent: " + parmContent);
-                                        try
-                                        {
-                                                txNo = Long.valueOf(temp).longValue();
-                                        }
-                                        catch (NumberFormatException nfe)
-                                        {
-                                                log.warn("deleteInterfaceHandler: Parameter " + EventConstants.PARM_TRANSACTION_NO 
-                                                        + " cannot be non-numberic", nfe);
-                                                txNo = -1L;
-                                        }
-                                }
-			}
-		}
-                
-                boolean invalidParameters = ((ipaddr == null) || (nodeLabel == null));
-                if (m_xmlrpc)
-                        invalidParameters = invalidParameters || (txNo == -1L);
-                
-                if (invalidParameters)
-                {
-		        if (log.isDebugEnabled())
-		                log.debug("deleteInterfaceHandler:  Invalid parameters." );
-                        
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                        "Invalid parameters.", status, "OpenNMS.Capsd"); 
-                        }
-                        
-			return;
-		}
-
-		java.sql.Connection dbConn = null;
-		PreparedStatement stmt = null;
-		try
-		{
-			dbConn = DatabaseConnectionFactory.getInstance().getConnection();
-		        
-                        // First, verify if the node exists in database, and retrieve
-                        // nodeid if exists.
-			stmt = dbConn.prepareStatement(SQL_QUERY_NODE_EXIST);
-	
-			stmt.setString(1, nodeLabel);
-                        int nodeid = -1;
-                        
-			ResultSet rs = stmt.executeQuery();
-			while(rs.next())
-			{
-                                nodeid = rs.getInt(1);
-                        }
-		        
-                        if (nodeid == -1)  // Sanity check
-		        {
-			        log.error("deleteInterfaceHandler: There is no node with node label: " 
-                                        + nodeLabel + " exists in the database.");
-                        
-                                if (m_xmlrpc)
-                                {
-                                        int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                                "No node with the specified node label exists.", status, "OpenNMS.Capsd");
-                                }
-			        return;
-		        }
-	                rs.close();	
-                        stmt.close();
-                        
-                        // Count interfaces on the node
-			if (log.isDebugEnabled())
-		        {
-			        log.debug("deleteInterfaceHandler: count interfaces on node: " + nodeLabel);
-		        }
-		        stmt = dbConn.prepareStatement(SQL_COUNT_INTERFACES_ON_NODE);
-		        stmt.setString(1, nodeLabel);
-		        rs = stmt.executeQuery();
-                        int numOfInterface = 0;
-                                       
-                        if (rs.next())
-                              numOfInterface = rs.getInt(1);
-
-                        // if the interface is the only interface on the node, issue a delete node event.
-                        if (numOfInterface == 1 )
-                        {
-                                createAndSendDeleteNodeEvent(event.getHost(), nodeLabel, txNo, sourceUei);
-                        }
-                        else
-                        {
-                                // Deleting all usersnotified info associated with the nodeid and ipaddress
-        			stmt = dbConn.prepareStatement(SQL_DELETE_USERSNOTIFIED_ON_INTERFACE);
-        			stmt.setInt(1, nodeid);
-                                stmt.setString(2, ipaddr);
-        			stmt.executeUpdate();
-        			if (log.isDebugEnabled())
-                                {
-        				log.debug("deleteInterfaceHandler: deleted all usersnotified info on interface: "
-                                                + ipaddr + " at nodeid: " + nodeid);
-                                }
-                                stmt.close();
-        	                
-                                // Deleting all the notifications associated with the nodeid and ipaddress
-        			stmt = dbConn.prepareStatement(SQL_DELETE_NOTIFICATIONS_ON_INTERFACE);
-        			stmt.setInt(1, nodeid);
-                                stmt.setString(2, ipaddr);
-        			stmt.executeUpdate();
-        			if (log.isDebugEnabled())
-                                {
-        				log.debug("deleteInterfaceHandler: deleted all notifications on interface: "
-                                                + ipaddr + " at nodeid: " + nodeid);
-                                }
-                                stmt.close();
-                                
-                                // Deleting all outages associated with the nodeid and ipaddress
-        			stmt = dbConn.prepareStatement(SQL_DELETE_OUTAGES_ON_INTERFACE);
-        			stmt.setInt(1, nodeid);
-                                stmt.setString(2, ipaddr);
-        			stmt.executeUpdate();
-        			if (log.isDebugEnabled())
-                                {
-        				log.debug("deleteInterfaceHandler: deleted all outages on interface: "
-                                                + ipaddr + " at nodeid: " + nodeid);
-                                }
-                                stmt.close();
-                                
-                                // Deleting all events associated with the nodeid and ipaddress
-        			stmt = dbConn.prepareStatement(SQL_DELETE_EVENTS_ON_INTERFACE);
-        			stmt.setInt(1, nodeid);
-                                stmt.setString(2, ipaddr);
-        			stmt.executeUpdate();
-        			if (log.isDebugEnabled())
-                                {
-        				log.debug("deleteInterfaceHandler: deleted all events on interface: "
-                                                + ipaddr + " at nodeid: " + nodeid);
-                                }
-                                stmt.close();
-                                
-                                // Deleting the snmpinterface entry with the nodeid and ipaddress
-        			stmt = dbConn.prepareStatement(SQL_DELETE_SNMPINTERFACE_ON_INTERFACE);
-        			stmt.setInt(1, nodeid);
-                                stmt.setString(2, ipaddr);
-        			stmt.executeUpdate();
-        			if (log.isDebugEnabled())
-                                {
-        				log.debug("deleteInterfaceHandler: deleted the snmpinterface entry of interface: "
-                                                + ipaddr + " at nodeid: " + nodeid);
-                                }
-                                stmt.close();
-                                
-                                // Deleting all the ifservices associated with the nodeid and ipaddress
-        			stmt = dbConn.prepareStatement(SQL_DELETE_IFSERVICES_ON_INTERFACE);
-        			stmt.setInt(1, nodeid);
-                                stmt.setString(2, ipaddr);
-        			stmt.executeUpdate();
-        			if (log.isDebugEnabled())
-                                {
-        				log.debug("deleteInterfaceHandler: deleted all ifservices on interface: "
-                                                + ipaddr + " at nodeid: " + nodeid);
-                                }
-                                stmt.close();
-        
-                                // if the deleted interface is the SNMP primary interface of a node,
-                                // an forceRescan event should be issued.
-                                //
-                                stmt = dbConn.prepareStatement(SQL_QUERY_PRIMARY_INTERFACE);
-                                stmt.setInt(1, nodeid);
-                                stmt.setString(2, ipaddr);
-                                
-                                rs = stmt.executeQuery();
-                                char isPrimary = 'N';
-                                if (rs.next())
-                                        isPrimary = rs.getString(1).charAt(0);
-
-                                rs.close();
-                                stmt.close();
-        	                // Deleting the interface on the node
-        			stmt = dbConn.prepareStatement(SQL_DELETE_INTERFACE);
-        			stmt.setInt(1, nodeid);
-                                stmt.setString(2, ipaddr);
-        			stmt.executeUpdate();
-        			
-                                stmt.close();
-                                
-                                if (log.isDebugEnabled())
-                                {
-        				log.debug("deleteInterfaceHandler: deleted the ipaddress: " 
-                                                + ipaddr + " on  nodeid: " + nodeid);
-                                
-        			}
-                                        
-                                // Create an interfaceDeleted event and send it to eventd, this new event will 
-                                // remove all the services on the interface and the interface from the 
-                                // nodeid/interface/services conbination of the pollable node list.
-                                //
-                                createAndSendInterfaceDeletedEvent(nodeid, event.getHost(), ipaddr, txNo, sourceUei);
-                                if (m_xmlrpc)
-                                {
-                                        int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                        String message = new String("Successfully deleted interface: ") + ipaddr 
-                                                        + " on node: " + nodeLabel;
-                                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, message, 
-                                                status, "OpenNMS.Capsd"); 
-                                }
-                                
-                                if (isPrimary == 'P')
-                                        createAndSendForceRescanEvent(event.getHost(), (long)nodeid);
-                        }
-	                
-		}
-		catch(SQLException sqlE)
-		{
-			log.error("deleteInterfaceHandler: SQLException during delete interface from the database.", sqlE);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                        sqlE.getMessage(), status, "OpenNMS.Capsd"); 
-                        }
-		}
-		finally
-		{
-			// close the statement
-			if (stmt != null)
-				try { stmt.close(); } catch(SQLException sqlE) { };
-
-			// close the connection
-			if (dbConn != null)
-				try { dbConn.close(); } catch(SQLException sqlE) { };					
-		}
-	}
-      
-      
-        /**
-         * This method is responsible for generating a deleteNode event and sending
-         * it to eventd..
-         *
-         * @param hostName      the Host server name. 
-         * @param nodeLabel     the nodelabel of the deleted node.
-         * @param txNo          the external transaction No of the event.
-         * @param callerUei     the uei of the caller event.
-         */
-        private void createAndSendDeleteNodeEvent(String hostName, String nodeLabel, long txNo, String callerUei)
-        {
-		Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-                        log.debug("createdAndSendDeleteNodeEvent: processing deleteInterface event... "); 
-        
-                Event newEvent = new Event();
-                newEvent.setUei(EventConstants.DELETE_NODE_EVENT_UEI);
-                newEvent.setSource("OpenNMS.Capsd");
-                newEvent.setHost(hostName);
-                newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-                // Add appropriate parms
-                Parms eventParms = new Parms();
-                Parm eventParm = null;
-                Value parmValue = null;
-
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-                parmValue = new Value();
-                parmValue.setContent(nodeLabel);
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-                parmValue = new Value();
-                parmValue.setContent((new Long(txNo)).toString());
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-
-                // Add Parms to the event
-                newEvent.setParms(eventParms);
-
-                // Send event to Eventd
-                try
-                {
-                        EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
-
-                        if (log.isDebugEnabled())
-                                log.debug("createAndSendDeleteNodeEvent: successfully sent deleteNode event for node: " 
-                                        + nodeLabel);
-                }
-                catch(Throwable t)
-                {
-                        log.warn("run: unexpected throwable exception caught during send to middleware", t);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
-                                           "caught unexpected throwable exception.", status, "OpenNMS.Capsd");
-                        }
-                }
-        }                
-        
-        /**
-         * This method is responsible for generating a forceRescan event and sending
-         * it to eventd..
-         *
-         * @param hostName      the Host server name. 
-         * @param nodeId        the node ID of the node to rescan.
-         */
-        private void createAndSendForceRescanEvent(String hostName, long nodeId)
-        {
-		Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-                        log.debug("createdAndSendForceRescanEvent: processing forceRescan event... "); 
-        
-                Event newEvent = new Event();
-                newEvent.setUei(EventConstants.FORCE_RESCAN_EVENT_UEI);
-                newEvent.setSource("OpenNMS.Capsd");
-                newEvent.setNodeid(nodeId);
-                newEvent.setHost(hostName);
-                newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-                // Send event to Eventd
-                try
-                {
-                        EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
-
-                        if (log.isDebugEnabled())
-                                log.debug("createAndSendForceRescanEvent: successfully sent forceRescan event for node: " 
-                                        + nodeId);
-                }
-                catch(Throwable t)
-                {
-                        log.warn("run: unexpected throwable exception caught during send to middleware", t);
-                }
-        }                
-       
-        /**
-         * This method is responsible for generating an interfaceDeleted event and sending
-         * it to eventd...
-         *
-         * @param nodeId        Nodeid of the node that the deleted interface resides on.
-         * @param hostName      the Host server name. 
-         * @param ipaddr        the ipaddress of the deleted Interface. 
-         * @param txNo          the external transaction No. of the original event.
-         * @param callerUei     the uei of the caller event
-         */
-        private void createAndSendInterfaceDeletedEvent(int nodeId, String hostName, String ipaddr, 
-                                                        long txNo, String callerUei)
-        {
-		Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-			log.debug("createAndSendInterfaceDeletedEvent:  processing deleteInterface event for interface: " 
-                                + ipaddr + " at nodeid: " + nodeId);
-        
-                Event newEvent = new Event();
-                newEvent.setUei(EventConstants.INTERFACE_DELETED_EVENT_UEI);
-                newEvent.setSource("OpenNMS.capsd");
-                newEvent.setNodeid(nodeId);
-                newEvent.setInterface(ipaddr);
-                newEvent.setHost(hostName);
-                newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-                
-                // Add appropriate parms
-                Parms eventParms = new Parms();
-                Parm eventParm = null;
-                Value parmValue = null;
-
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-                parmValue = new Value();
-                parmValue.setContent((new Long(txNo)).toString());
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-                
-                // Add Parms to the event
-                newEvent.setParms(eventParms);
-
-                // Send event to Eventd
-                try
-                {
-                        EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
-
-                        if (log.isDebugEnabled())
-                                log.debug("createdAndSendInterfaceDeletedEvent: successfully sent interfaceDeleted event for nodeid: " 
-                                        + nodeId);
-                }
-                catch(Throwable t)
-                {
-                        log.warn("run: unexpected throwable exception caught during send to middleware", t);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
-                                           "caught unexpected throwable exception.", status, "OpenNMS.Capsd");
-                        }
-                }
-        }                
-
-        
-	/**
-	 * Process the event,  add or remove a specified service from an interface. An 'action'
-         * parameter wraped in the event will tell which action to take to the service.
-	 *
-	 * @param event	The event to process.
-	 */
-	private void changeServiceHandler(Event event)
-	{
-	        String ipaddr = event.getInterface();
-                String serviceName = event.getService();
-                String sourceUei = event.getUei();
-                
-                Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-			log.debug("changeServiceHandler:  processing changeService event on: " + ipaddr);
-
-		// Extract action from the event parms
-		String action = null;
-                long txNo = -1;
-		Parms parms = event.getParms();
-		if (parms != null)
-		{
-                                
-			String parmName = null;
-			Value parmValue = null;
-			String parmContent = null;
-		
-			Enumeration parmEnum = parms.enumerateParm();
-			while(parmEnum.hasMoreElements())
-			{
-				Parm parm = (Parm)parmEnum.nextElement();
-				parmName  = parm.getParmName();
-				parmValue = parm.getValue();
-				if (parmValue == null)
-					continue;
-                                else 
-					parmContent = parmValue.getContent();
-				//  get the action 
-				if (parmName.equals(EventConstants.PARM_ACTION))
-				{
-					action = parmContent;
-		                        if (log.isDebugEnabled())
-			                        log.debug("changeServiceHandler:  ParmName:" + parmName 
-                                                + " / ParmContent: " + parmContent);
-				}
-				else if (parmName.equals(EventConstants.PARM_TRANSACTION_NO))
-                                {
-                                        String temp = parmContent;
-		                        if (log.isDebugEnabled())
-			                        log.debug("changeServiceHandler:  parmName: " + parmName
-                                                        + " /parmContent: " + parmContent);
-                                        try
-                                        {
-                                                txNo = Long.valueOf(temp).longValue();
-                                        }
-                                        catch (NumberFormatException nfe)
-                                        {
-                                                log.warn("changeServiceHandler: Parameter " + EventConstants.PARM_TRANSACTION_NO 
-                                                        + " cannot be non-numberic", nfe);
-                                                txNo = -1L;
-                                        }
-                                }
-						
-			}
-		}
-                
-                boolean invalidParameters = ((ipaddr == null) || (action == null) || serviceName == null);
-                if(m_xmlrpc)
-                        invalidParameters = invalidParameters || (txNo == -1L);
-
-                if (invalidParameters)
-                {
-		        if (log.isDebugEnabled())
-		                log.debug("changeServiceHandler:  Invalid parameters." );
-                        
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                           "Invalid parameters.", status, "OpenNMS.Capsd");
-                        }
-                        
-			return;
-		}
-
-		java.sql.Connection dbConn = null;
-		PreparedStatement stmt = null;
-		try
-		{
-			dbConn = DatabaseConnectionFactory.getInstance().getConnection();
-
-                        // Retrieve the serviceId
-			stmt = dbConn.prepareStatement(SQL_RETRIEVE_SERVICE_ID);
-	
-			stmt.setString(1, serviceName);
-	
-			ResultSet rs = stmt.executeQuery();
-                        int  serviceId = -1;
-			while(rs.next())
-			{
-				if (log.isDebugEnabled())
-					log.debug("changeServiceHandler: retrieve serviceid for service " + serviceName);
-                                serviceId = rs.getInt(1); 
-			}
-                        
-                        if (serviceId < 0)
-                        {
-				if (log.isDebugEnabled())
-					log.debug("changeServiceHandler: the specified service: " 
-                                                + serviceName + " does not exist in the database.");
-                                if (m_xmlrpc)
-                                {
-                                        StringBuffer message = new StringBuffer("Invalid service: ").append(serviceName);
-                                        int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei, 
-                                                   message.toString(), status, "OpenNMS.Capsd");
-                                }
-                                return;
-                        }
-                        
-                        stmt.close();
-
-                        int nodeId = -1;
-                        
-                        // Verify if the specified service already exist.        
-			stmt = dbConn.prepareStatement(SQL_QUERY_SERVICE_EXIST);
-	
-			stmt.setString(1, ipaddr);
-			stmt.setString(2, event.getService());
-	
-			rs = stmt.executeQuery();
-			while(rs.next())
-			{
-				if (log.isDebugEnabled())
-				{
-					log.debug("changeService: service " + serviceName  + " on IPAddress " 
-                                        + ipaddr + " already exists in the database.");
-				}
-                                nodeId = rs.getInt(1);
-                                
-                                // The service exists on the ipinterface, a 'DELETE operation could be performed,
-                                // but just return for the 'ADD' operation.
-                                if (action.equalsIgnoreCase("DELETE"))
-                                {
-                                        // Create a deleteService event to eventd
-                                        DbNodeEntry nodeEntry = DbNodeEntry.get(nodeId);
-                                        createAndSendDeleteServiceEvent(nodeEntry, InetAddress.getByName(ipaddr), 
-                                                                         serviceName, txNo, sourceUei);
-                                        
-                                        if (m_xmlrpc)
-                                        {
-                                                StringBuffer message = new StringBuffer("Deleted service: ");
-                                                message.append(serviceName).append(" on ").append(ipaddr);
-                                                int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei, 
-                                                           message.toString(), status, "OpenNMS.Capsd");
-                                        }
-                                }
-			        else // could not perform 'ADD' since the service already exists.
-                                {
-                                        log.warn("changeServiceHandler: could not add an existing service in.");
-                                        if (m_xmlrpc)
-                                        {
-                                                StringBuffer message = new StringBuffer("Could not add in service: ");
-                                                message.append(serviceName).append(". It is already in the database.");
-                                                int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                                           message.toString(), status, "OpenNMS.Capsd");
-                                        }
-                                }
-                                
-                                return;
-			}
-                        stmt.close();
-                        
-                        // verify if the interface exists in the database. If it does, that means
-                        // the service does not exist in the database, and an 'ADD' operation could
-                        // be performed. In any other cases, log error message.
-                        if (action.equalsIgnoreCase("ADD"))
-                        {
-                                stmt = dbConn.prepareStatement(SQL_QUERY_IPADDRESS_EXIST);
-
-                                stmt.setString(1, ipaddr);
-                                rs = stmt.executeQuery();
-                                
-                                while (rs.next())
-                                {
-				        if (log.isDebugEnabled())
-				        {
-					        log.debug("changeServiceHandler: add service " + serviceName  
-                                                + " to interface: " + ipaddr);
-				        }
-
-                                        nodeId = rs.getInt(1);
-                                        // insert service
-                                        DbIfServiceEntry service = DbIfServiceEntry.create(nodeId, 
-                                                InetAddress.getByName(ipaddr),
-                                                serviceId);
-                                        service.setSource(DbIfServiceEntry.SOURCE_PLUGIN);
-                                        service.setStatus(DbIfServiceEntry.STATUS_ACTIVE);
-                                        service.setNotify(DbIfServiceEntry.NOTIFY_ON);
-                                        service.store(dbConn);
-                                        
-                                        //Create a nodeGainedService event to eventd. 
-                                        DbNodeEntry nodeEntry = DbNodeEntry.get(nodeId);
-                                        createAndSendNodeGainedServiceEvent(nodeEntry,
-                                                                            InetAddress.getByName(ipaddr),
-                                                                            serviceName,
-                                                                            txNo,
-                                                                            sourceUei);
-                                        if (m_xmlrpc)
-                                        {
-                                                StringBuffer message = new StringBuffer("Added service: ");
-                                                message.append(serviceName).append(" to ").append(ipaddr);
-                                                message.append(" on node: ").append(nodeEntry.getLabel());
-                                                int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                                           message.toString(), status, "OpenNMS.Capsd");
-                                        }
-                                }
-                        }
-                        else 
-                        {
-                                log.error("changeServiceHandler: could not delete non-existing service.");
-                                if (m_xmlrpc)
-                                {
-                                        StringBuffer message = new StringBuffer("Could not delete non-existing service: ");
-                                        message.append(serviceName).append(".");
-                                        int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                                   message.toString(), status, "OpenNMS.Capsd");
-                                }
-                        }
-		}
-		catch(SQLException sqlE)
-		{
-			log.error("SQLException during changeService on database.", sqlE);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                           sqlE.getMessage(), status, "OpenNMS.Capsd");
-                        }
-		}
-		catch(java.net.UnknownHostException e)
-		{
-			log.error("changeServiceHandler: can not solve unknow host.", e);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, 
-                                           e.getMessage(), status, "OpenNMS.Capsd");
-                        }
-		}
-		finally
-		{
-			// close the statement
-			if (stmt != null)
-				try { stmt.close(); } catch(SQLException sqlE) { };
-
-			// close the connection
-			if (dbConn != null)
-				try { dbConn.close(); } catch(SQLException sqlE) { };					
-		}
-		
-	}
-
-        /**
-         * This method is responsible for generating a nodeGainedService event and sending
-         * it to eventd..
-         *
-         * @param nodeEntry     The node that gained the service.
-         * @param ifaddr        the interface gained the service.
-         * @param service       the service gained.
-         * @param txNo          the transaction no.
-         * @param callerUei     the uei of the caller event.
-         *
-         */
-        private void createAndSendNodeGainedServiceEvent(DbNodeEntry nodeEntry, InetAddress ifaddr, 
-                                                         String service, long txNo, String callerUei)
-        {
-		Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-			log.debug("createAndSendNodeGainedServiceEvent:  nodeId/interface/service  " 
-                        + nodeEntry.getNodeId() + "/" + ifaddr.getHostAddress() + "/" + service);
-        
-                Event newEvent = new Event();
-                newEvent.setUei(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
-                newEvent.setSource("OpenNMS.Capsd");
-                newEvent.setNodeid(nodeEntry.getNodeId());
-                newEvent.setHost(Capsd.getLocalHostAddress());
-                newEvent.setInterface(ifaddr.getHostAddress());
-                newEvent.setService(service);
-                newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-                // Add appropriate parms
-                Parms eventParms = new Parms();
-                Parm eventParm = null;
-                Value parmValue = null;
-
-                // Add IP host name
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_IP_HOSTNAME);
-                parmValue = new Value();
-                parmValue.setContent(ifaddr.getHostName());
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-                
-                // Add Node Label
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-                parmValue = new Value();
-                parmValue.setContent(nodeEntry.getLabel());
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-
-                // Add Node Label source
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_NODE_LABEL_SOURCE);
-                parmValue = new Value();
-                char labelSource[] = new char[] {nodeEntry.getLabelSource()};
-                parmValue.setContent(new String(labelSource));
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-
-                // Add sysName if available
-                if (nodeEntry.getSystemName() != null)
-                {
-                        eventParm = new Parm();
-                        eventParm.setParmName(EventConstants.PARM_NODE_SYSNAME);
-                        parmValue = new Value();
-                        parmValue.setContent(nodeEntry.getSystemName());
-                        eventParm.setValue(parmValue);
-                        eventParms.addParm(eventParm);
+                    } catch (SQLException sqlE) {
+                        // Ignore
+                    }
                 }
 
-                // Add sysDescr if available
-                if (nodeEntry.getSystemDescription() != null)
-                {
-                        eventParm = new Parm();
-                        eventParm.setParmName(EventConstants.PARM_NODE_SYSDESCRIPTION);
-                        parmValue = new Value();
-                        parmValue.setContent(nodeEntry.getSystemDescription());
-                        eventParm.setValue(parmValue);
-                        eventParms.addParm(eventParm);
+                // Close the connection
+                if (dbc != null) {
+                    try {
+                        dbc.close();
+                    } catch (SQLException sqlE) {
+                        // Ignore
+                    }
                 }
-                
-                // Add Parms to the event
-                newEvent.setParms(eventParms);
-                
-                // Send event to Eventd
-                try
-                {
-                        EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
+            }
 
-                        if (log.isDebugEnabled())
-                                log.debug("createdAndSendNodeGainedServiceEvent: successfully sent nodeGainedService event "
-                                        + "for nodeid/interface/service: " 
-                                        + nodeEntry.getNodeId() + "/"
-                                        + ifaddr.getHostAddress() + "/" + service);
-                                        
+        }
+
+        if (nodeid == -1) {
+            log.error("onMessage: Nodeid retrieval for interface " + event.getInterface() + " failed.  Unable to perform rescan.");
+        } else {
+            // Rescan the node.
+            m_scheduler.forceRescan(nodeid);
+        }
+    }
+
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param event
+     */
+    private void handleNewSuspect(Event event) throws InsufficientInformationException {
+        Category log = ThreadCategory.getInstance(getClass());
+
+        // ensure the event has an interface
+        EventUtils.checkInterface(event);
+        // new poll event
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug("onMessage: Adding interface to suspectInterface Q: " + event.getInterface());
+            }
+            m_suspectQ.add(new SuspectEventProcessor(event.getInterface()));
+        } catch (Exception ex) {
+            log.error("onMessage: Failed to add interface to suspect queue", ex);
+        }
+    }
+
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param event
+     */
+    private void handleNodeAdded(Event event) throws InsufficientInformationException {
+        Category log = ThreadCategory.getInstance(getClass());
+
+        EventUtils.checkNodeId(event);
+
+        // Schedule the new node.
+        try {
+            m_scheduler.scheduleNode((int) event.getNodeid());
+        } catch (SQLException sqlE) {
+            log.error("onMessage: SQL exception while attempting to schedule node " + event.getNodeid(), sqlE);
+        }
+    }
+
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param event
+     */
+    private void handleNodeDeleted(Event event) throws InsufficientInformationException {
+        Category log = ThreadCategory.getInstance(getClass());
+
+        EventUtils.checkNodeId(event);
+
+        // Remove the deleted node from the scheduler
+        m_scheduler.unscheduleNode((int) event.getNodeid());
+    }
+
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param event
+     */
+    private void handleUpdateServer(Event event) throws InsufficientInformationException, FailedOperationException {
+        Category log = ThreadCategory.getInstance(getClass());
+
+        // If there is no interface or NMS server found then it cannot be processed
+        EventUtils.checkInterface(event);
+        EventUtils.checkHost(event);
+        EventUtils.requireParm(event, EventConstants.PARM_ACTION);
+        EventUtils.requireParm(event, EventConstants.PARM_NODE_LABEL);
+        if (isXmlRpcEnabled()) {
+            EventUtils.requireParm(event, EventConstants.PARM_TRANSACTION_NO);
+        }
+
+        String action = EventUtils.getParm(event, EventConstants.PARM_ACTION);
+        String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
+        long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
+
+        if (log.isDebugEnabled())
+                log.debug("updateServerHandler:  processing updateServer event for: " + event.getInterface() + " on OpenNMS server: "
+                        + getLocalServer());
+
+        Connection dbConn = null;
+        List eventsToSend = null;
+        try {
+            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn.setAutoCommit(false);
+
+            eventsToSend = doUpdateServer(dbConn, nodeLabel, event.getInterface(), action, getLocalServer(), txNo);
+
+        } catch (SQLException sqlE) {
+            log.error("SQLException during updateServer on database.", sqlE);
+            throw new FailedOperationException("SQLException during updateServer on database.", sqlE);
+        } finally {
+            if (dbConn != null) try {
+                if (eventsToSend != null) {
+                    dbConn.commit();
+                    for (Iterator it = eventsToSend.iterator(); it.hasNext();) {
+                        EventUtils.sendEvent((Event) it.next(), event.getUei(), txNo, isXmlRpcEnabled());
+                    }
+                } else {
+                    dbConn.rollback();
                 }
-                catch(Throwable t)
-                {
-                        log.warn("run: unexpected throwable exception caught during send to middleware", t);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
-                                           "caught unexpected throwable exception.", status, "OpenNMS.Capsd");
-                        }
+                dbConn.close();
+            } catch (SQLException ex) {
+            }
+        }
+
+    }
+
+    /**
+     * Process the event, add or remove a specified interface/service pair into the database.
+     * this event will cause an changeService event with the specified action. An 'action'
+     * parameter wraped in the event will tell which action to take to the service on the
+     * specified interface. The ipaddress of the interface, the service name must be included
+     * in the event.
+     * 
+     * @param event
+     *            The event to process.
+     * @throws InsufficientInformationException
+     *             if there is missing information in the event
+     * @throws FailedOperationException
+     *             if the operation fails for some reason
+     */
+    private void handleUpdateService(Event event) throws InsufficientInformationException, FailedOperationException {
+        //Category log = ThreadCategory.getInstance(getClass());
+
+        EventUtils.checkInterface(event);
+        EventUtils.checkService(event);
+        EventUtils.requireParm(event, EventConstants.PARM_ACTION);
+        if (isXmlRpcEnabled()) {
+            EventUtils.requireParm(event, EventConstants.PARM_TRANSACTION_NO);
+        }
+
+        long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
+        String action = EventUtils.getParm(event, EventConstants.PARM_ACTION);
+
+        Category log = ThreadCategory.getInstance(getClass());
+        if (log.isDebugEnabled())
+                log.debug("handleUpdateService:  processing updateService event for : " + event.getService() + " on : " + event.getInterface());
+
+        List eventsToSend = null;
+        Connection dbConn = null;
+        try {
+            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn.setAutoCommit(false);
+
+            eventsToSend = doUpdateService(dbConn, event.getInterface(), event.getService(), action, txNo);
+
+        } catch (SQLException sqlE) {
+            log.error("SQLException during handleUpdateService on database.", sqlE);
+            throw new FailedOperationException(sqlE.getMessage());
+        } finally {
+
+            if (dbConn != null) try {
+                if (eventsToSend != null) {
+                    dbConn.commit();
+                    for (Iterator it = eventsToSend.iterator(); it.hasNext();) {
+                        EventUtils.sendEvent((Event) it.next(), event.getUei(), txNo, isXmlRpcEnabled());
+                    }
+                } else {
+                    dbConn.rollback();
                 }
-        }                
-	
-        /**
-         * This method is responsible for generating a deleteService event and sending
-         * it to eventd..
-         *
-         * @param nodeEntry     The node that the service to get deleted on.
-         * @param ifaddr        the interface the service to get deleted on.
-         * @param service       the service to delete.
-         * @param txNo          the transaction no.
-         * @param callerUei     the uei of the caller event.
-         */
-        private void createAndSendDeleteServiceEvent( DbNodeEntry nodeEntry, InetAddress ifaddr, 
-                                                       String service, long txNo, String callerUei)
-        {
-		Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-			log.debug("createAndSendDeleteServiceEvent:  nodeId/interface/service  " 
-                        + nodeEntry.getNodeId() + "/" + ifaddr.getHostAddress() + "/" + service);
-        
-                Event newEvent = new Event();
-                newEvent.setUei(EventConstants.DELETE_SERVICE_EVENT_UEI);
-                newEvent.setSource("OpenNMS.Capsd");
-                newEvent.setNodeid(nodeEntry.getNodeId());
-                newEvent.setHost(Capsd.getLocalHostAddress());
-                newEvent.setInterface(ifaddr.getHostAddress());
-                newEvent.setService(service);
-                newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+                dbConn.close();
+            } catch (SQLException ex) {
+            }
+        }
 
-                // Add appropriate parms
-                Parms eventParms = new Parms();
-                Parm eventParm = null;
-                Value parmValue = null;
+    }
 
-                // Add IP host name
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_IP_HOSTNAME);
-                parmValue = new Value();
-                parmValue.setContent(ifaddr.getHostName());
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-                
-                // Add Node Label
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-                parmValue = new Value();
-                parmValue.setContent(nodeEntry.getLabel());
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
+    /**
+     * Returns true if and only an interface with the given ipaddr on a node with the give
+     * label exists
+     * 
+     * @param dbConn
+     *            a database connection
+     * @param nodeLabel
+     *            the label of the node the interface must reside on
+     * @param ipaddr
+     *            the ip address the interface should have
+     * @return true iff the interface exists
+     * @throws SQLException
+     *             if a database error occurs
+     */
+    private boolean interfaceExists(Connection dbConn, String nodeLabel, String ipaddr) throws SQLException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = dbConn.prepareStatement(SQL_QUERY_IPINTERFACE_EXIST);
 
-                // Add Node Label source
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_NODE_LABEL_SOURCE);
-                parmValue = new Value();
-                char labelSource[] = new char[] {nodeEntry.getLabelSource()};
-                parmValue.setContent(new String(labelSource));
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
+            stmt.setString(1, nodeLabel);
+            stmt.setString(2, ipaddr);
 
-                // Add Parms to the event
-                newEvent.setParms(eventParms);
-                
-                // Send event to Eventd
-                try
-                {
-                        EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
+            rs = stmt.executeQuery();
+            return rs.next();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+            }
+        }
 
-                        if (log.isDebugEnabled())
-                                log.debug("createdAndSendDeleteServiceEvent: successfully sent serviceDeleted event "
-                                        + "for nodeid/interface/service: " 
-                                        + nodeEntry.getNodeId() + "/"
-                                        + ifaddr.getHostAddress() + "/" + service);
-                                        
+    }
+
+    /**
+     * Mark all the services associated with a given interface as deleted and create service
+     * deleted events for each one that gets deleted
+     * 
+     * @param dbConn
+     *            the database connection
+     * @param nodeId
+     *            the node that interface resides on
+     * @param ipAddr
+     *            the ipAddress of the interface
+     * @param txNo
+     *            a transaction number that can be associated with this deletion
+     * @return a List of serviceDeleted events, one for each service marked
+     * @throws SQLException
+     *             if a database error occurs
+     */
+    private List markAllServicesForInterfaceDeleted(Connection dbConn, String source, long nodeId, String ipAddr, long txNo) throws SQLException {
+        Category log = ThreadCategory.getInstance(getClass());
+        PreparedStatement stmt = null;
+        List eventsToSend = new LinkedList();
+
+        final String DB_FIND_SERVICES_FOR_INTERFACE = "SELECT service.serviceName, ifservices.status FROM ifservices as ifservices, service as service WHERE ifservices.nodeID = ? and ifservices.ipAddr = ? and ifservices.status != 'D' and ifservices.serviceID = service.serviceID";
+        stmt = dbConn.prepareStatement(DB_FIND_SERVICES_FOR_INTERFACE, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        stmt.setLong(1, nodeId);
+        stmt.setString(2, ipAddr);
+        ResultSet rs = stmt.executeQuery();
+
+        while (rs.next()) {
+            String service = rs.getString(1);
+            rs.updateString(2, "D");
+            rs.updateRow();
+            eventsToSend.add(EventUtils.createServiceDeletedEvent(source, nodeId, ipAddr, service, txNo));
+        }
+
+        if (log.isDebugEnabled()) log.debug("markServicesDeleted: marked service deleted: " + nodeId + "/" + ipAddr);
+
+        rs.close();
+        stmt.close();
+
+        return eventsToSend;
+
+    }
+
+    /**
+     * Mark the given interface deleted
+     * 
+     * @param dbConn
+     *            the database connection
+     * @param source
+     *            the source for any events set
+     * @param nodeId
+     *            the id the interface resides on
+     * @param ipAddr
+     *            the ipAddress of the interface
+     * @param txNo
+     *            a transaction no to associate with this deletion
+     * @return a List containing an interfaceDeleted event for the interface if it was actually
+     *         marked
+     * @throws SQLException
+     *             if a database error occurs
+     */
+    private List markInterfaceDeleted(Connection dbConn, String source, long nodeId, String ipAddr, long txNo) throws SQLException {
+        final String DB_FIND_INTERFACE = "UPDATE ipinterface SET isManaged = 'D' WHERE nodeid = ? and ipAddr = ? and isManaged != 'D'";
+        Category log = ThreadCategory.getInstance(getClass());
+        PreparedStatement stmt = null;
+        List eventsToSend = new LinkedList();
+
+        stmt = dbConn.prepareStatement(DB_FIND_INTERFACE);
+        stmt.setLong(1, nodeId);
+        stmt.setString(2, ipAddr);
+        int count = stmt.executeUpdate();
+        stmt.close();
+
+        if (log.isDebugEnabled()) log.debug("markServicesDeleted: marked service deleted: " + nodeId + "/" + ipAddr);
+
+        if (count > 0)
+            return Collections.singletonList(EventUtils.createInterfaceDeletedEvent(source, nodeId, ipAddr, txNo));
+        else
+            return Collections.EMPTY_LIST;
+    }
+
+    /**
+     * Marks all the interfaces and services for a given node deleted and constructs events for
+     * each. The order of events is significant representing the hierarchy, service events
+     * preceed the event for the interface the service is on
+     * 
+     * @param dbConn
+     *            the database connection
+     * @param source
+     *            the source for use in the constructed events
+     * @param nodeId
+     *            the node whose interfaces and services are to be deleted
+     * @param txNo
+     *            a transaction number to associate with this deletion
+     * @return a List of events indicating which nodes and services have been deleted
+     * 
+     * @throws SQLException
+     */
+    private List markInterfacesAndServicesDeleted(Connection dbConn, String source, long nodeId, long txNo) throws SQLException {
+        Category log = ThreadCategory.getInstance(getClass());
+        List eventsToSend = new LinkedList();
+
+        // The following query takes a nodeid and produces a table of (ipaddr, interface
+        // status, serviceid, service status) tuples
+        // 
+        //  - Interfaces that are not marked deleted and with services that are not marked
+        // deleted have fully filled out
+        //    columns
+        //  - Interfaces that have no services or whose services are already marked deleted are
+        // in the table with NULL in the
+        //    serviceid and service status columns.
+        //  - Interfaces that have been marked deleted but have undeleted services will be fully
+        // filled out in the table
+        //    but will have a 'D' in the interface status column
+        //  - Interfaces that have been marked deleted and have no services or have only
+        // services that have been marked deleted
+        //    do not show up in the table.
+        //
+        // This table is ordered by ipAddr, serviceid
+
+        final String DB_FIND_IFS_AND_SVCS_FOR_NODE = "SELECT ipinterface.ipaddr, ipinterface.ismanaged, service.servicename, ifservices.serviceid, ifservices.status "
+                + "FROM ipinterface LEFT OUTER JOIN ifservices "
+                + "ON (ipinterface.nodeid = ifservices.nodeid AND ipinterface.ipaddr = ifservices.ipaddr AND ifservices.status != 'D') "
+                + "LEFT OUTER JOIN service ON (ifservices.serviceid = service.serviceid) "
+                + "WHERE ipinterface.nodeId = ? AND (ifservices.serviceid is not null or ipinterface.ismanaged != 'D') "
+                + "ORDER BY ipinterface.ipaddr, ifservices.serviceid";
+
+        PreparedStatement stmt = dbConn
+                .prepareStatement(DB_FIND_IFS_AND_SVCS_FOR_NODE, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        stmt.setLong(1, nodeId);
+        ResultSet rs = stmt.executeQuery();
+
+        String prevIpAddr = null;
+        while (rs.next()) {
+            String ipAddr = rs.getString(1);
+            String ifStatus = rs.getString(2);
+
+            // mark the service deleted and create a serviceDeleted event
+            String serviceName = rs.getString(3);
+            long serviceId = rs.getLong(4);
+            if (!rs.wasNull()) { // a service for this interface exists
+                rs.updateString(5, "D");
+                if (serviceName != null)
+                    eventsToSend.add(EventUtils.createServiceDeletedEvent(source, nodeId, ipAddr, serviceName, txNo));
+                else
+                    log.error("found a service id " + serviceId + " with no correspondonding serviceName");
+            }
+
+            // only process interfaces that are not already deleted.
+            if (!"D".equals(ifStatus)) {
+                // update the status in the table
+                // DAVE: look here
+                rs.updateString(2, "D");
+
+                // if the ipAddr is different from the previous row then we have a new
+                // ipAddr so send the event from the lastRow
+                if (!ipAddr.equals(prevIpAddr)) {
+                    if (prevIpAddr != null) {
+                        eventsToSend.add(EventUtils.createInterfaceDeletedEvent(source, nodeId, prevIpAddr, txNo));
+                    }
+                    prevIpAddr = ipAddr;
                 }
-                catch(Throwable t)
-                {
-                        log.warn("run: unexpected throwable exception caught during send to middleware", t);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, callerUei, 
-                                           "caught unexpected throwable exception.", status, "OpenNMS.Capsd");
-                        }
-                }
-        }                
+            }
 
-	/**
-	 * Process the event, add or remove a specified interface from an opennms server. An 'action'
-         * parameter wraped in the event will tell which action to take to the interface, and a 'nodelabel'
-         * parameter wraped in the event will tell the node that the interface resides on. The interface 
-         * ipaddress and the opennms server hostname is included in the event.
-	 *
-	 * @param event	The event to process.
-	 */
-	private void updateServerHandler(Event event)
-	{
-	        String ipaddr = event.getInterface();
-                String hostName = getLocalServer();
-                String sourceUei = event.getUei();
+            rs.updateRow();
+        }
 
-                Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-			log.debug("updateServerHandler:  processing updateServer event for: " 
-                                + ipaddr + " on OpenNMS server: " + hostName);
+        if (prevIpAddr != null) {
+            eventsToSend.add(EventUtils.createInterfaceDeletedEvent(source, nodeId, prevIpAddr, txNo));
+        }
 
-                // Extract action, nodeLabel and external transaction number from 
-                // the event parms
-                //
-		String action = null;
-                String nodeLabel = null;
-                long txNo = -1L;
-                
-		Parms parms = event.getParms();
-		if (parms != null)
-		{
-                                
-			String parmName = null;
-			Value parmValue = null;
-			String parmContent = null;
-		
-			Enumeration parmEnum = parms.enumerateParm();
-			while(parmEnum.hasMoreElements())
-			{
-				Parm parm = (Parm)parmEnum.nextElement();
-				parmName  = parm.getParmName();
-				parmValue = parm.getValue();
-				if (parmValue == null)
-					continue;
-                                else 
-					parmContent = parmValue.getContent();
-				//  get the action and nodelabel
-				if (parmName.equals(EventConstants.PARM_ACTION))
-				{
-					action = parmContent;
-		                        if (log.isDebugEnabled())
-			                        log.debug("updateServerHandler:  ParmName:" + parmName 
-                                                + " / ParmContent: " + parmContent);
-				} 
-                                else	if (parmName.equals(EventConstants.PARM_NODE_LABEL))
-				{
-					nodeLabel = parmContent;
-		                        if (log.isDebugEnabled())
-			                        log.debug("updateServerHandler:  ParmName:" + parmName 
-                                                + " / ParmContent: " + parmContent);
-				}
-				else if (parmName.equals(EventConstants.PARM_TRANSACTION_NO))
-                                {
-                                        String temp = parmContent;
-		                        if (log.isDebugEnabled())
-			                        log.debug("updateServerHandler:  parmName: " + parmName
-                                                        + " /parmContent: " + parmContent);
-                                        try
-                                        {
-                                                txNo = Long.valueOf(temp).longValue();
-                                        }
-                                        catch (NumberFormatException nfe)
-                                        {
-                                                log.warn("updateServerHandler: Parameter " + EventConstants.PARM_TRANSACTION_NO 
-                                                        + " cannot be non-numberic", nfe);
-                                                txNo = -1L;
-                                        }
-                                }
-						
-			}
-		}
-                
-                // Notify the external xmlrpc server receiving of the event.
-                //
-                if (m_xmlrpc)
-                {
-                        StringBuffer message = new StringBuffer("Received event: UpdateServer-- action: ").append(action);
-                        message.append(". nodeLabel/ipaddr/hostname: ").append(nodeLabel).append("/");
-                        message.append(ipaddr).append("/").append(hostName);
-                        int status = EventConstants.XMLRPC_NOTIFY_RECEIVED;
-                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei,message.toString(), 
-                                status, "OpenNMS.Capsd"); 
-                }
-		boolean invalidParameters = ((ipaddr == null) || (hostName == null) || (nodeLabel == null) || (action == null));
-                if (m_xmlrpc)
-                        invalidParameters = invalidParameters || (txNo == -1L);
-                
-                if (invalidParameters)
-                {
-		        if (log.isDebugEnabled())
-		                log.debug("updateServerHandler:  Invalid parameters." );
-                        
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                           "Invalid parameters.", status, "OpenNMS.Capsd"); 
-                        }
-                        
-			return;
-		}
+        if (log.isDebugEnabled()) log.debug("markServicesDeleted: marked service deleted: " + nodeId);
 
-		java.sql.Connection dbConn = null;
-		PreparedStatement stmt = null;
-		try
-		{
-			dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+        rs.close();
+        stmt.close();
 
-                        // Verify if the interface already exists on the NMS server 
-			stmt = dbConn.prepareStatement(SQL_QUERY_INTERFACE_ON_SERVER);
-	
-			stmt.setString(1, ipaddr);
-                        stmt.setString(2, hostName);
-	
-			ResultSet rs = stmt.executeQuery();
-	
-			rs = stmt.executeQuery();
-			while(rs.next())
-			{
-				if (log.isDebugEnabled())
-				{
-					log.debug("updateServer: the Interface "  + ipaddr + 
-                                                " on NMS server: " + hostName + " already exists in the database.");
-				}
-                                
-                                // The interface exists on the NMS server, a 'DELETE operation could be performed,
-                                // but just return for the 'ADD' operation.
-                                if (action.equalsIgnoreCase("DELETE"))
-                                {
-                                        // Delete all services on the specified interface in interface/service mapping
-                                        //
-				        if (log.isDebugEnabled())
-				        {
-					        log.debug("updateServer: delete all services on the interface: " + ipaddr
-                                                        + " in the interface/service mapping." );
-				        }
-			                stmt = dbConn.prepareStatement(SQL_DELETE_ALL_SERVICES_INTERFACE_MAPPING);
-			                stmt.setString(1, ipaddr);
-			                stmt.executeUpdate();
+        return eventsToSend;
+    }
 
-                                        
-                                        // Delete the interface on interface/server mapping
-				        if (log.isDebugEnabled())
-				        {
-					        log.debug("updateServer: delete interface: " + ipaddr
-                                                        + " on NMS server: " + hostName);
-				        }
-			                stmt = dbConn.prepareStatement(SQL_DELETE_INTERFACE_ON_SERVER);
-			                stmt.setString(1, ipaddr);
-			                stmt.setString(2, hostName);
-			                stmt.executeUpdate();
-                                        
-                                        //Create a deleteInterface event to eventd.
-                                        createAndSendDeleteInterfaceEvent(nodeLabel, ipaddr, hostName, 
-                                                                          txNo, sourceUei);
-                                }
-			        else // could not perform 'ADD' since the service already exists.
-                                {
-                                        log.warn("updateServerHandler: the interface " + ipaddr 
-                                                + " already exist on NMS server: " + hostName 
-                                                + ". Could not perform 'ADD' operation.");
-                                        
-                                        if (m_xmlrpc)
-                                        {
-                                                int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                                           "Interface already exists.", status, "OpenNMS.Capsd"); 
-                                        }
-                                }
-                                
-                                return;
-			}
-                        stmt.close();
-                        
-                        // the interface does not exist on the NMS server yet, an 'ADD' operation could
-                        // be performed. In any other cases, log error message.
-                        if (action.equalsIgnoreCase("ADD"))
-                        {
-                                stmt = dbConn.prepareStatement(SQL_ADD_INTERFACE_TO_SERVER);
+    /**
+     * Marks a node deleted and creates an event for it if necessary.
+     * 
+     * @param dbConn
+     *            the database connection
+     * @param source
+     *            the source to use for constructed events
+     * @param nodeId
+     *            the node to delete
+     * @param txNo
+     *            a transaction number to associate with this deletion
+     * @return a List containing the node deleted event if necessary
+     * @throws SQLException
+     *             if a database error occurs
+     */
+    private List markNodeDeleted(Connection dbConn, String source, long nodeId, long txNo) throws SQLException {
+        final String DB_FIND_INTERFACE = "UPDATE node SET nodeType = 'D' WHERE nodeid = ? and nodeType != 'D'";
+        Category log = ThreadCategory.getInstance(getClass());
+        PreparedStatement stmt = null;
+        List eventsToSend = new LinkedList();
 
-                                stmt.setString(1, ipaddr);
-                                stmt.setString(2, hostName);
-                                stmt.executeUpdate();
-                                
-			        if (log.isDebugEnabled())
-			        {
-				        log.debug("updateServerHandler: added interface " + ipaddr  
-                                               + " into NMS server: " + hostName);
-			        }
+        stmt = dbConn.prepareStatement(DB_FIND_INTERFACE);
+        stmt.setLong(1, nodeId);
+        int count = stmt.executeUpdate();
+        stmt.close();
 
-                                //Create a addInterface event and process it. 
-                                createAndSendAddInterfaceEvent(nodeLabel, ipaddr, hostName, txNo, sourceUei);
+        if (log.isDebugEnabled()) log.debug("markServicesDeleted: marked service deleted: " + nodeId);
 
-                        }
-                        else 
-                        {
-                                log.error("updateServerHandler: could not delete non-existing interface: " + ipaddr
-                                + " on NMS server: " + hostName);
-                                
-                                if (m_xmlrpc)
-                                {
-                                        int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                                   "Interface not exist yet.", status, "OpenNMS.Capsd"); 
-                                }
-                        }
-		}
-		catch(SQLException sqlE)
-		{
-			log.error("SQLException during updateServer on database.", sqlE);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                           sqlE.getMessage(), status, "OpenNMS.Capsd"); 
-                        }
-		}
-		finally
-		{
-			// close the statement
-			if (stmt != null)
-				try { stmt.close(); } catch(SQLException sqlE) { };
+        if (count > 0)
+            return Collections.singletonList(EventUtils.createNodeDeletedEvent(source, nodeId, txNo));
+        else
+            return Collections.EMPTY_LIST;
+    }
 
-			// close the connection
-			if (dbConn != null)
-				try { dbConn.close(); } catch(SQLException sqlE) { };					
-		}
-		
-	}
+    /**
+     * Marks the service deleted in the database and returns a serviceDeleted event for the
+     * service, if and only if the service existed
+     * 
+     * @param dbConn
+     *            the database connection
+     * @param source
+     *            the source for any events sent
+     * @param nodeId
+     *            the node the service resides on
+     * @param ipAddr
+     *            the interface the service resides on
+     * @param service
+     *            the name of the service
+     * @param txNo
+     *            a transaction number to associate with this deletion
+     * @return a List containing a service deleted event.
+     * @throws SQLException
+     *             if an error occurs communicating with the database
+     */
+    private List markServiceDeleted(Connection dbConn, String source, long nodeId, String ipAddr, String service, long txNo) throws SQLException {
+        Category log = ThreadCategory.getInstance(getClass());
+        PreparedStatement stmt = null;
 
-        
-        /**
-         * This method is responsible for generating an addInterface  event 
-         * and sending it to eventd..
-         *
-         * @param nodeLabel     the node label of the node where the interface resides.
-         * @param ipaddr        IP address of the interface to be added.
-         * @param hostName      the Host server name. 
-         * @param txNo          the exteranl transaction number
-         * @param callerUei     the uei of the caller event
-         */
-        private void createAndSendAddInterfaceEvent(String nodeLabel, String ipaddr, String hostName, 
-                                                    long txNo, String callerUei)
-        {
-		Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-			log.debug("createAndSendAddInterfaceEvent:  processing updateServer event for interface:  " 
-                                + ipaddr + " on server: " + hostName);
-        
-                Event newEvent = new Event();
-                newEvent.setUei(EventConstants.ADD_INTERFACE_EVENT_UEI);
-                newEvent.setSource("OpenNMS.capsd");
-                newEvent.setInterface(ipaddr);
-                newEvent.setHost(hostName);
-                newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+        final String DB_MARK_SERVICE_DELETED = "UPDATE ifservices SET status='D' " + "WHERE ifservices.serviceID = service.serviceID "
+                + "AND ifservices.nodeID=? AND ifservices.ipAddr=? AND service.serviceName=?";
 
-                // Add appropriate parms
-                Parms eventParms = new Parms();
-                Parm eventParm = null;
-                Value parmValue = null;
+        stmt = dbConn.prepareStatement(DB_MARK_SERVICE_DELETED);
+        stmt.setLong(1, nodeId);
+        stmt.setString(2, ipAddr);
+        stmt.setString(3, service);
+        int count = stmt.executeUpdate();
 
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-                parmValue = new Value();
-                parmValue.setContent(nodeLabel);
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
+        if (log.isDebugEnabled()) log.debug("markServiceDeleted: marked service deleted: " + nodeId + "/" + ipAddr + "/" + service);
 
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-                parmValue = new Value();
-                parmValue.setContent((new Long(txNo)).toString());
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
+        stmt.close();
 
-                // Add Parms to the event
-                newEvent.setParms(eventParms);
-                
-                // Send event to Eventd
-                try
-                {
-                        EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
+        if (count > 0)
+            return Collections.singletonList(EventUtils.createServiceDeletedEvent(source, nodeId, ipAddr, service, txNo));
+        else
+            return Collections.EMPTY_LIST;
+    }
 
-                        if (log.isDebugEnabled())
-                                log.debug("createAndSendAddInterfaceEvent: successfully sent " 
-                                        + " addInterface event for interface: " + ipaddr 
-                                        + " node: " + nodeLabel);
-                }
-                catch(Throwable t)
-                {
-                        log.warn("run: unexpected throwable exception caught during send to middleware", t);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, callerUei,
-                                           "caught unexpected throwable exception.", status, "OpenNMS.Capsd");
-                        }
-                }
-        }                
-       
-        /**
-         * This method is responsible for generating a deleteInterface  event 
-         * and sending it to eventd..
-         *
-         * @param nodeLabel     the node label of the node where the interface resides.
-         * @param ipaddr        IP address of the interface to be deleted.
-         * @param hostName      the Host server name.
-         * @param txNo          the external transaction No.
-         * @param callerUei     the uei of the caller event
-         */
-        private void createAndSendDeleteInterfaceEvent( String nodeLabel, String ipaddr, String hostName, 
-                                                        long txNo, String callerUei)
-        {
-		Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-			log.debug("createAndSendDeleteInterfaceEvent:  processing updateServer event for interface:  " 
-                                + ipaddr + " on server: " + hostName);
-        
-                Event newEvent = new Event();
-                newEvent.setUei(EventConstants.DELETE_INTERFACE_EVENT_UEI);
-                newEvent.setSource("OpenNMS.capsd");
-                newEvent.setInterface(ipaddr);
-                newEvent.setHost(hostName);
-                newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+    /**
+     * Returns true if and only a node with the give label exists
+     * 
+     * @param dbConn
+     *            a database connection
+     * @param nodeLabel
+     *            the label to check
+     * @return true iff the node exists
+     * @throws SQLException
+     *             if a database error occurs
+     */
+    private boolean nodeExists(Connection dbConn, String nodeLabel) throws SQLException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = dbConn.prepareStatement(SQL_QUERY_NODE_EXIST);
 
-                // Add appropriate parms
-                Parms eventParms = new Parms();
-                Parm eventParm = null;
-                Value parmValue = null;
+            stmt.setString(1, nodeLabel);
 
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-                parmValue = new Value();
-                parmValue.setContent(nodeLabel);
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
+            rs = stmt.executeQuery();
+            return rs.next();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+            }
+        }
 
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-                parmValue = new Value();
-                parmValue.setContent((new Long(txNo)).toString());
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-                
-                // Add Parms to the event
-                newEvent.setParms(eventParms);
-                
-                // Send event to Eventd
-                try
-                {
-                        EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
+    }
 
-                        if (log.isDebugEnabled())
-                                log.debug("createdAndSendDeleteInterfaceEvent: successfully sent " 
-                                        + " deleteInterface event for interface: " + ipaddr 
-                                        + " node: " + nodeLabel);
-                }
-                catch(Throwable t)
-                {
-                        log.warn("run: unexpected throwable exception caught during send to middleware", t);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, callerUei,
-                                           "caught unexpected throwable exception.", status, "OpenNMS.Capsd");
-                        }
-                }
-        }                
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param event
+     * @param msg
+     * @param ex
+     */
+    private void notifyEventError(Event event, String msg, Exception ex) {
+        if (!isXmlRpcEnabled()) return;
 
-        
-	/**
-	 * Process the event,  add or remove a specified interface/service pair into the database.
-         * this event will cause an changeService event with the specified action. An 'action' 
-         * parameter wraped in the event will tell which action to take to the service on the 
-         * specified interface. The ipaddress of the interface, the service name must be included 
-         * in the event.
-	 *
-	 * @param event	The event to process.
-	 */
-	private void updateServiceHandler(Event event)
-	{
-	        String ipaddr = event.getInterface();
-                String serviceName = event.getService();
-                String sourceUei = event.getUei();
+        long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
+        if ((txNo != -1) && m_notifySet.contains(event.getUei())) {
+            int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
+            XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, event.getUei(), msg + ex.getMessage(), status, "OpenNMS.Capsd");
+        }
+    }
 
-                Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-			log.debug("updateServiceHandler:  processing updateService event for : " + serviceName
-                                + " on : " + ipaddr);
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param event
+     */
+    private void notifyEventReceived(Event event) {
+        if (!isXmlRpcEnabled()) return;
 
-		// Extract action from the event parms
-		String action = null;
-                long txNo = -1L;
-		Parms parms = event.getParms();
-		if (parms != null)
-		{
-                                
-			String parmName = null;
-			Value parmValue = null;
-			String parmContent = null;
-		
-			Enumeration parmEnum = parms.enumerateParm();
-			while(parmEnum.hasMoreElements())
-			{
-				Parm parm = (Parm)parmEnum.nextElement();
-				parmName  = parm.getParmName();
-				parmValue = parm.getValue();
-				if (parmValue == null)
-					continue;
-                                else 
-					parmContent = parmValue.getContent();
-				//  get the action 
-				if (parmName.equals(EventConstants.PARM_ACTION))
-				{
-					action = parmContent;
-		                        if (log.isDebugEnabled())
-			                        log.debug("updateServiceHandler:  ParmName:" + parmName 
-                                                + " / ParmContent: " + parmContent);
-				}
-				else if (parmName.equals(EventConstants.PARM_TRANSACTION_NO))
-                                {
-                                        String temp = parmContent;
-		                        if (log.isDebugEnabled())
-			                        log.debug("updateServiceHandler:  parmName: " + parmName
-                                                        + " /parmContent: " + parmContent);
-                                        try
-                                        {
-                                                txNo = Long.valueOf(temp).longValue();
-                                        }
-                                        catch (NumberFormatException nfe)
-                                        {
-                                                log.warn("updateServiceHandler: Parameter " + EventConstants.PARM_TRANSACTION_NO 
-                                                        + " cannot be non-numberic", nfe);
-                                                txNo = -1L;
-                                        }
-                                }
-						
-			}
-		}
-                
-                // Notify the external xmlrpc server receiving of the event.
-                //
-                if (m_xmlrpc)
-                {
-                        int status = EventConstants.XMLRPC_NOTIFY_RECEIVED;
-                        StringBuffer message = new StringBuffer("Received event: updateService/action --");
-                        message.append(action).append("  ").append(serviceName);
-                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei, 
-                                message.toString(), status, "OpenNMS.Capsd");
-                }
-                
-                boolean invalidParameters = ((ipaddr == null) || (serviceName == null) || (action == null));
-                if (m_xmlrpc)
-                        invalidParameters = invalidParameters || (txNo == -1L);
+        long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
 
-                if (invalidParameters)
-                {
-		        if (log.isDebugEnabled())
-		                log.debug("updateServiceHandler:  Invalid parameters." );
-                        
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                           "Invalid parameters.", status, "OpenNMS.Capsd");
-                        }
-                        
-			return;
-		}
+        if ((txNo != -1) && m_notifySet.contains(event.getUei())) {
+            StringBuffer message = new StringBuffer("Received event: ");
+            message.append(event.getUei());
+            message.append(" : ");
+            message.append(event);
+            int status = EventConstants.XMLRPC_NOTIFY_RECEIVED;
+            XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, event.getUei(), message.toString(), status, "OpenNMS.Capsd");
+        }
+    }
 
-		java.sql.Connection dbConn = null;
-		PreparedStatement stmt = null;
-		try
-		{
-			dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param event
+     */
+    private void notifyEventSuccess(Event event) {
+        if (!isXmlRpcEnabled()) return;
 
-                        // Retrieve the serviceId and verify if the specified service is valid.
-			stmt = dbConn.prepareStatement(SQL_RETRIEVE_SERVICE_ID);
-	
-			stmt.setString(1, serviceName);
-	
-			ResultSet rs = stmt.executeQuery();
-                        int  serviceId = -1;
-			while(rs.next())
-			{
-				if (log.isDebugEnabled())
-					log.debug("updateServiceHandler: retrieve serviceid for service " + serviceName);
-                                serviceId = rs.getInt(1); 
-			}
-                        
-                        if (serviceId < 0)
-                        {
-				if (log.isDebugEnabled())
-					log.debug("updateServiceHandler: the specified service: " 
-                                                + serviceName + " does not exist in the database.");
-                                if (m_xmlrpc)
-                                {
-                                        int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                        StringBuffer message = new StringBuffer("The specified service: ").append(serviceName);
-                                        message.append(" does not exist in the database.");
-                                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                                message.toString(), status, "OpenNMS.Capsd");
-                                }
-                                return;
-                        }
-                        
-                        stmt.close();
+        long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
 
-                        // Verify if the specified service already exists on the interface/service mapping.        
-			stmt = dbConn.prepareStatement(SQL_QUERY_SERVICE_MAPPING_EXIST);
-	
-			stmt.setString(1, ipaddr);
-			stmt.setString(2, serviceName);
-	
-			rs = stmt.executeQuery();
-			while(rs.next())
-			{
-				if (log.isDebugEnabled())
-				{
-					log.debug("updateService: service " + serviceName  + " on IPAddress " 
-                                        + ipaddr + " already exists in the database.");
-				}
-                                
-                                // The service exists on the interface/service mapping, a 'DELETE operation could be 
-                                // performed. Just return for the 'ADD' operation.
-                                if (action.equalsIgnoreCase("DELETE"))
-                                {
-				        if (log.isDebugEnabled())
-				        {
-					        log.debug("updateServiceHandler: delete service: " + serviceName  
-                                                + " on IPAddress: " + ipaddr);
-				        }
-			                stmt = dbConn.prepareStatement(SQL_DELETE_SERVICE_INTERFACE_MAPPING);
-	
-			                stmt.setString(1, ipaddr);
-			                stmt.setString(2, serviceName);
-	
-			                stmt.executeUpdate();
-                                        
-                                        //Create a changeService event to eventd. 
-                                        createAndSendChangeServiceEvent(ipaddr, serviceName, action, txNo, sourceUei);
-                                }
-			        else // could not perform 'ADD' since the service already exists in the mapping.
-                                {
-                                        log.warn("updateServiceHandler: could not add an existing service in.");
-                                        if (m_xmlrpc)
-                                        {
-                                                int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                                        "Service already exists.", status, "OpenNMS.Capsd");
-                                        }
-                                }
-                                
-                                return;
-			}
-                        stmt.close();
-                        
-                        // the service does not exist in the interface/service mapping yet, an 'ADD' operation could
-                        // be performed. For other operations, log error message.
-                        if (action.equalsIgnoreCase("ADD"))
-                        {
-                                stmt = dbConn.prepareStatement(SQL_ADD_SERVICE_TO_MAPPING);
+        if ((txNo != -1) && m_notifySet.contains(event.getUei())) {
+            StringBuffer message = new StringBuffer("Completed processing event: ");
+            message.append(event.getUei());
+            message.append(" : ");
+            message.append(event);
+            int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
+            XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, event.getUei(), message.toString(), status, "OpenNMS.Capsd");
+        }
+    }
 
-                                stmt.setString(1, ipaddr);
-                                stmt.setString(2, serviceName);
-                                stmt.executeUpdate();
-                                
-			        if (log.isDebugEnabled())
-			        {
-				        log.debug("updateServiceHandler: add service " + serviceName  
-                                               + " to interface: " + ipaddr);
-			        }
+    /**
+     * This method is invoked by the EventIpcManager when a new event is available for
+     * processing. Currently only text based messages are processed by this callback. Each
+     * message is examined for its Universal Event Identifier and the appropriate action is
+     * taking based on each UEI.
+     * 
+     * @param event
+     *            The event.
+     *  
+     */
+    public void onEvent(Event event) {
+        Category log = ThreadCategory.getInstance(getClass());
 
-                                //Create a changeService event to eventd. 
-                                createAndSendChangeServiceEvent(ipaddr, serviceName,  action, txNo, sourceUei);
+        try {
 
-                        }
-                        else 
-                        {
-                                log.error("updateServiceHandler: could not delete non-existing service.");
-                                if (m_xmlrpc)
-                                {
-                                        int status = EventConstants.XMLRPC_NOTIFY_SUCCESS;
-                                        StringBuffer message = new StringBuffer("Non-existing service: ");
-                                        message.append(serviceName);
-                                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                                message.toString(), status, "OpenNMS.Capsd");
-                                }
-                        }
-		}
-		catch(SQLException sqlE)
-		{
-			log.error("SQLException during updateService on database.", sqlE);
-                        if (m_xmlrpc)
-                        {
-                                int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                                XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, sourceUei,
-                                           sqlE.getMessage(), status, "OpenNMS.Capsd");
-                        }
-		}
-		finally
-		{
-			// close the statement
-			if (stmt != null)
-				try { stmt.close(); } catch(SQLException sqlE) { };
+            String eventUei = event.getUei();
+            if (eventUei == null) { return; }
 
-			// close the connection
-			if (dbConn != null)
-				try { dbConn.close(); } catch(SQLException sqlE) { };					
-		}
-		
-	}
-        
-       
-        /**
-         * This method is responsible for generating a changeService  event 
-         * and sending it to eventd..
-         *
-         * @param ipaddr        IP address of the interface where the service resides.
-         * @param service       the service to be changed(add or remove).
-         * @param action        what operation to perform for the service/interface pair.
-         * @param txNo          the external transaction No.
-         * @param callerUei     the uei of the caller event.
-         */
-        private void createAndSendChangeServiceEvent( String ipaddr, String service, String action, 
-                                                      long txNo, String callerUei)
-        {
-		Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-			log.debug("createAndSendChangeServiceEvent:  processing updateService event for service:  " 
-                                + service + " on interface: " + ipaddr);
-        
-                Event newEvent = new Event();
-                newEvent.setUei(EventConstants.CHANGE_SERVICE_EVENT_UEI);
-                newEvent.setSource("OpenNMS.capsd");
-                newEvent.setInterface(ipaddr);
-                newEvent.setService(service);
-                newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+            if (log.isDebugEnabled()) {
+                log.debug("Received event: " + eventUei);
+            }
 
-                // Add appropriate parms
-                Parms eventParms = new Parms();
-                Parm eventParm = null;
-                Value parmValue = null;
+            notifyEventReceived(event);
 
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_ACTION);
-                parmValue = new Value();
-                parmValue.setContent(action);
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
+            if (eventUei.equals(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)) {
+                handleNewSuspect(event);
+            } else if (eventUei.equals(EventConstants.FORCE_RESCAN_EVENT_UEI)) {
+                handleForceRescan(event);
+            } else if (event.getUei().equals(EventConstants.UPDATE_SERVER_EVENT_UEI)) {
+                handleUpdateServer(event);
+            } else if (event.getUei().equals(EventConstants.UPDATE_SERVICE_EVENT_UEI)) {
+                handleUpdateService(event);
+            } else if (event.getUei().equals(EventConstants.ADD_NODE_EVENT_UEI)) {
+                handleAddNode(event);
+            } else if (event.getUei().equals(EventConstants.DELETE_NODE_EVENT_UEI)) {
+                handleDeleteNode(event);
+            } else if (event.getUei().equals(EventConstants.ADD_INTERFACE_EVENT_UEI)) {
+                handleAddInterface(event);
+            } else if (event.getUei().equals(EventConstants.DELETE_INTERFACE_EVENT_UEI)) {
+                handleDeleteInterface(event);
+            } else if (event.getUei().equals(EventConstants.DELETE_SERVICE_EVENT_UEI)) {
+                handleDeleteService(event);
+            } else if (event.getUei().equals(EventConstants.CHANGE_SERVICE_EVENT_UEI)) {
+                handleChangeService(event);
+            } else if (eventUei.equals(EventConstants.NODE_ADDED_EVENT_UEI)) {
+                handleNodeAdded(event);
+            } else if (eventUei.equals(EventConstants.NODE_DELETED_EVENT_UEI)) {
+                handleNodeDeleted(event);
+            } else if (eventUei.equals(EventConstants.DUP_NODE_DELETED_EVENT_UEI)) {
+                handleDupNodeDeleted(event);
+            }
+            notifyEventSuccess(event);
+        } catch (InsufficientInformationException ex) {
+            log.info("BroadcastEventProcessor: insufficient information in event, discarding it: " + ex.getMessage());
+            notifyEventError(event, "Invalid parameters: ", ex);
+        } catch (FailedOperationException ex) {
+            log.error("BroadcastEventProcessor: operation failed for event: " + event.getUei() + ", exception: " + ex.getMessage());
+            notifyEventError(event, "processing failed: ", ex);
+        }
+    } // end onEvent()
 
-                eventParm = new Parm();
-                eventParm.setParmName(EventConstants.PARM_TRANSACTION_NO);
-                parmValue = new Value();
-                parmValue.setContent((new Long(txNo)).toString());
-                eventParm.setValue(parmValue);
-                eventParms.addParm(eventParm);
-                
-                // Add Parms to the event
-                newEvent.setParms(eventParms);
-                
-                // Send event to Eventd
-                try
-                {
-                        EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param dbConn
+     * @param ipaddr
+     * @param serviceName
+     * @return @throws
+     *         SQLException
+     */
+    private boolean serviceMappingExists(Connection dbConn, String ipaddr, String serviceName) throws SQLException {
+        boolean mapExists;
+        PreparedStatement stmt = null;
+        // Verify if the specified service already exists on the interface/service
+        // mapping.
+        stmt = dbConn.prepareStatement(SQL_QUERY_SERVICE_MAPPING_EXIST);
 
-                        if (log.isDebugEnabled())
-                                log.debug("createAndSendChangeServiceEvent: successfully sent " 
-                                        + " changeService event service: " + service 
-                                        + " on interface: " + ipaddr);
-                }
-                catch(Throwable t)
-                {
-                        log.warn("run: unexpected throwable exception caught during send to middleware", t);
-                        int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-                        XmlrpcUtil.createAndSendXmlrpcNotificationEvent( txNo, callerUei,
-                                   "caught unexpected throwable exception.", status, "OpenNMS.Capsd");
-                }
-        }                
-        
-        /**
-	 * This method is invoked by the EventIpcManager
-	 * when a new event is available for processing. Currently
-	 * only text based messages are processed by this callback.
-	 * Each message is examined for its Universal Event Identifier
-	 * and the appropriate action is taking based on each UEI.
-	 *
-	 * @param event	The event.
-	 */
-	public void onEvent(Event event)
-	{
-		Category log = ThreadCategory.getInstance(getClass());
+        stmt.setString(1, ipaddr);
+        stmt.setString(2, serviceName);
 
-		String eventUei = event.getUei();
-		if (eventUei == null)
-		{
-			return;
-		}
-		
-		if (log.isDebugEnabled())
-		{
-			log.debug("Received event: " + eventUei);
-		}
+        ResultSet rs = stmt.executeQuery();
+        mapExists = rs.next();
+        stmt.close();
+        return mapExists;
+    }
 
-		if(eventUei.equals(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI))
-		{
-			// new poll event
-			try
-			{
-				if (log.isDebugEnabled())
-				{
-					log.debug("onMessage: Adding interface to suspectInterface Q: " + event.getInterface());
-				}
-				m_suspectQ.add(new SuspectEventProcessor(event.getInterface()));
-			}
-			catch(Exception ex)
-			{
-				log.error("onMessage: Failed to add interface to suspect queue", ex);
-			}
-		}
-		else if(eventUei.equals(EventConstants.FORCE_RESCAN_EVENT_UEI))
-		{
-			// If the event has a node identifier use it otherwise
-			// will need to use the interface to lookup the node id
-			// from the database
-			int nodeid = -1;
-			
-			if (event.hasNodeid())
-				nodeid = (int)event.getNodeid();
-			else
-			{
-				// Extract interface from the event and use it to
-				// lookup the node identifier associated with the 
-				// interface from the database.
-				//
-			
-				// Get database connection and retrieve nodeid
-				Connection dbc = null;
-				PreparedStatement stmt = null;
-				ResultSet rs = null;
-				try
-				{
-					dbc = DatabaseConnectionFactory.getInstance().getConnection();
-				
-					// Retrieve node id
-					stmt = dbc.prepareStatement(SQL_RETRIEVE_NODEID);
-					stmt.setString(1, event.getInterface());
-					rs = stmt.executeQuery();
-					if (rs.next())
-					{
-						nodeid = rs.getInt(1);
-					}
-				}
-				catch (SQLException sqlE)
-				{
-					log.error("onMessage: Database error during nodeid retrieval for interface " + event.getInterface(), sqlE);
-				}
-				finally	
-				{
-					// Close the prepared statement
-					if (stmt != null)
-					{
-						try
-						{
-							stmt.close();
-						}
-						catch (SQLException sqlE)
-						{
-							// Ignore
-						}
-					}
-				
-					// Close the connection
-					if (dbc != null)
-					{
-						try
-						{
-							dbc.close();
-						}
-						catch (SQLException sqlE)
-						{
-							// Ignore
-						}
-					}
-				}
-			
-				if (nodeid == -1)
-				{
-					log.error("onMessage: Nodeid retrieval for interface " + event.getInterface() + " failed.  Unable to perform rescan.");
-					return;
-				}
-			}
-			
-			// Rescan the node.  
-			m_scheduler.forceRescan(nodeid);
-		}
-		else if(event.getUei().equals(EventConstants.UPDATE_SERVER_EVENT_UEI))
-		{
-			// If there is no interface or NMS server found then it cannot be processed
-			//
-			if(event.getInterface() == null || event.getInterface().length() == 0
-                                || event.getHost() == null || event.getHost().length()==0)
-			{
-				log.info("BroadcastEventProcessor: no interface or NMS host server found, discarding event");
-			}
-			else
-			{
-				updateServerHandler(event);
-			}
-                }
-		else if(event.getUei().equals(EventConstants.UPDATE_SERVICE_EVENT_UEI))
-		{
-			// If there is no interface, or service found,  
-                        // then it cannot be processed
-			//
-			if(event.getInterface() == null || event.getInterface().length() == 0
-                                || event.getService() == null || event.getService().length()==0)
-			{
-				log.info("BroadcastEventProcessor: no interface, NMS host server,"
-                                        + " or service found, discarding event");
-			}
-			else
-			{
-				updateServiceHandler(event);
-			}
-                }
-		else if(event.getUei().equals(EventConstants.ADD_NODE_EVENT_UEI))
-		{
-			// If there is no interface then it cannot be processed
-			//
-			if(event.getInterface() == null || event.getInterface().length() == 0)
-			{
-				log.info("BroadcastEventProcessor: no interface found, discarding event");
-			}
-			else
-			{
-				addNodeHandler(event);
-			}
-                }
-                else if(event.getUei().equals(EventConstants.DELETE_NODE_EVENT_UEI))
-		{
-			deleteNodeHandler(event);
-                }
-		else if(event.getUei().equals(EventConstants.ADD_INTERFACE_EVENT_UEI))
-		{
-			// If there is no interface then it cannot be processed
-			//
-			if(event.getInterface() == null || event.getInterface().length() == 0)
-			{
-				log.info("BroadcastEventProcessor: no interface found, discarding event");
-			}
-			else
-			{
-				addInterfaceHandler(event);
-			}
-                }
-		else if(event.getUei().equals(EventConstants.DELETE_INTERFACE_EVENT_UEI))
-		{
-			// If there is no interface then it cannot be processed
-			//
-			if(event.getInterface() == null || event.getInterface().length() == 0)
-			{
-				log.info("BroadcastEventProcessor: no interface found, discarding event");
-			}
-			else
-			{
-				deleteInterfaceHandler(event);
-			}
-                }
-		else if(event.getUei().equals(EventConstants.CHANGE_SERVICE_EVENT_UEI))
-		{
-			// If there is no interface or service then it cannot be processed
-			//
-			if(event.getInterface() == null || event.getInterface().length() == 0
-                                || event.getService() == null || event.getService().length() == 0)
-			{
-				log.info("BroadcastEventProcessor: no interface found, discarding event");
-			}
-			else
-			{
-				changeServiceHandler(event);
-			}
-                }
-		else if(eventUei.equals(EventConstants.NODE_ADDED_EVENT_UEI))
-		{
-			// Schedule the new node.
-			try
-			{
-				m_scheduler.scheduleNode((int)event.getNodeid());
-			}
-			catch(SQLException sqlE)
-			{
-				log.error("onMessage: SQL exception while attempting to schedule node " + event.getNodeid(), sqlE);
-			}
-		}
-		else if(eventUei.equals(EventConstants.NODE_DELETED_EVENT_UEI))
-		{
-			// Remove the deleted node from the scheduler
-			m_scheduler.unscheduleNode((int)event.getNodeid());
-		}
-		else if(eventUei.equals(EventConstants.DUP_NODE_DELETED_EVENT_UEI))
-		{
-			// Remove the deleted node from the scheduler
-			m_scheduler.unscheduleNode((int)event.getNodeid());
-		}
-	} // end onEvent()
+    /**
+     * FIXME: finish the doc here
+     * 
+     * @param dbConn
+     * @param serviceName
+     * @return @throws
+     *         SQLException
+     * @throws FailedOperationException
+     */
+    private int verifyServiceExists(Connection dbConn, String serviceName) throws SQLException, FailedOperationException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            Category log = ThreadCategory.getInstance(getClass());
 
-	/**
-	 * Return an id for this event listener
-	 */
-	public String getName()
-	{
-		return "Capsd:BroadcastEventProcessor";
-	}
+            // Retrieve the serviceId
+            stmt = dbConn.prepareStatement(SQL_RETRIEVE_SERVICE_ID);
+
+            stmt.setString(1, serviceName);
+
+            rs = stmt.executeQuery();
+            int serviceId = -1;
+            while (rs.next()) {
+                if (log.isDebugEnabled()) log.debug("verifyServiceExists: retrieve serviceid for service " + serviceName);
+                serviceId = rs.getInt(1);
+            }
+
+            if (serviceId < 0) {
+                if (log.isDebugEnabled())
+                        log.debug("verifyServiceExists: the specified service: " + serviceName + " does not exist in the database.");
+                throw new FailedOperationException("Invalid service: " + serviceName);
+            }
+
+            return serviceId;
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+
+            }
+        }
+    }
 
 } // end class
 
