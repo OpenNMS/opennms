@@ -1,0 +1,21 @@
+<schema	xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/localServer">
+	<element name="localServer">
+		<complexType>
+
+			<attribute name="serverName" type="string" use="optional" default="localhost"/>
+                        
+                        <!--- a flag to indicate if poller has to identify the nms server to restrict 
+                              - services to poll.
+			-->
+  			<attribute name="verifyServer" type="string" use="optional" default="false">
+                                <simpleType>
+                                        <restriction base="string">
+                                                <pattern value="(true|false)"/>
+                                        </restriction>
+                                </simpleType>
+                        </attribute>
+                        
+		</complexType>
+	</element>
+</schema>
