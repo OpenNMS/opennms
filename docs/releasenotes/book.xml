@@ -5,7 +5,7 @@
   <bookinfo id="bookinfo">
     <title>OpenNMS Release Notes</title>
 
-    <subtitle>Information About OpenNMS Release @opennms-version@</subtitle>
+    <subtitle>Information About OpenNMS Release @product.version@</subtitle>
 
     <authorgroup>
       <corpauthor>Tarus Balog, Ben Reed</corpauthor>
@@ -13,7 +13,7 @@
 
     <pubdate>2003 September 4</pubdate>
 
-    <pubsnumber>Revision: @opennms.version@</pubsnumber>
+    <pubsnumber>Revision: @product.version@</pubsnumber>
 
     <legalnotice>
       <para>Permission is granted to copy, distribute and/or modify this

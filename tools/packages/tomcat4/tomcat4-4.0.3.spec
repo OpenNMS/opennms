@@ -186,7 +186,7 @@ for i in $RPM_BUILD_ROOT/%{sconfdir}/%{name}.conf $RPM_BUILD_ROOT%{_bindir}/d%{n
 
 done
 
-%{!?version:%define version @opennms.version@}
+%{!?version:%define version @product.version@}
 
 perl -pi -e 's|8080|%{http}|g'		$RPM_BUILD_ROOT%{confdir}/server.xml
 perl -pi -e 's|8081|%{httpproxy}|g'	$RPM_BUILD_ROOT%{confdir}/server.xml

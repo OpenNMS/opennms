@@ -1,7 +1,7 @@
-%{!?version:%define version @opennms.version@}
+%{!?version:%define version @product.version@}
 %{!?release:%define release @opennms.release@}
 %{!?instprefix:%define instprefix @rpm.install@}
-%{!?packagedir:%define packagedir @ant.project.name@-@opennms.version@-@opennms.release@}
+%{!?packagedir:%define packagedir @ant.project.name@-@product.version@-@opennms.release@}
 %{!?dbuser:%define dbuser @rpm.database.user@}
 %{!?dbpass:%define dbpass @rpm.database.password@}
 %{!?dbname:%define dbname @rpm.database.name@}

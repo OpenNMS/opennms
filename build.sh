@@ -25,7 +25,7 @@ cd $PREFIX
 
 # load libraries
 for script in pid_process arg_process \
-	compiler_setup find_jarfile handle_properties java_lint version_compare; do
+	find_jarfile handle_properties java_lint version_compare; do
 	source $PREFIX/tools/infrastructure/${script}.sh
 done
 
