@@ -77,10 +77,8 @@ public class NotificationCommandFactory extends NotificationCommandManager {
     /**
      */
     public static synchronized NotificationCommandFactory getInstance() {
-        if (!initialized)
-            return null;
 
-        if (instance == null) {
+        if (instance == null || !initialized) {
             instance = new NotificationCommandFactory();
         }
 
