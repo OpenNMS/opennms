@@ -96,7 +96,7 @@
                                                 <title>Tomcat4</title>
 						<para>
 							For a variety of reasons, OpenNMS 1.1.1 and beyond will
-							require Tomcat4 version 4.1.10 or higher.
+							require Tomcat4 version 4.1.18 or higher.
 						</para>
                                         </formalpara>
 				</listitem>
