@@ -1,5 +1,7 @@
 1.1.4 to 1.1.5
 ----------------------------------------------------------------------
+- Removed the cisco.pixcpu report as a duplicate of avgBsy5. Thx Alex
+  Bug 925.
 - Made the Netware mask more generic. Thx Wes. Bug 880
 - Corrected the text for send-event.pl. Thx John. Bug 819
 - Added a patch to prevent issues with Cisco Routers and CEF enabled.
