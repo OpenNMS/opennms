@@ -1,5 +1,6 @@
 1.1.4 to 1.1.5
 ----------------------------------------------------------------------
+- Added Patrol Events
 - Relabeled hpux.cpu report from Swap to CPU. Thx Jason
 - Changed the label to "UnAck" when looking at acknowledged events.
   Bug 927

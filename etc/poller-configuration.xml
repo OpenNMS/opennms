@@ -20,60 +20,63 @@
                         <rra>RRA:MAX:0.5:12:4464</rra>
                 </rrd>
 		<service name="DominoIIOP" interval="300000" user-defined="false" status="on">
-                        <parameter key="retry" value="3"/>
+                        <parameter key="retry" value="2"/>
 			<parameter key="timeout" value="3000"/>
                         <parameter key="ior-port" value="80"/>
                         <parameter key="port" value="63148"/>
                 </service>
                 <service name="Citrix" interval="300000" user-defined="false" status="on">
-                        <parameter key="retry" value="3"/>
+                        <parameter key="retry" value="2"/>
 			<parameter key="timeout" value="3000"/>
                 </service>
 		<service name="LDAP" interval="300000" user-defined="false" status="on">
 			<parameter key="version" value="3"/>
-                        <parameter key="retry" value="3"/>
+                        <parameter key="retry" value="2"/>
 			<parameter key="timeout" value="3000"/>
                 </service>
                 <service name="ICMP" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="3"/>
+			<parameter key="retry" value="2"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="ds-name" value="icmp"/>
 		</service>
 		<service name="DNS" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="3"/>
+			<parameter key="retry" value="2"/>
 			<parameter key="timeout" value="5000"/>
 			<parameter key="port" value="53"/>
 			<parameter key="lookup" value="localhost"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="ds-name" value="dns"/>
 		</service>
-		<service name="NTP" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="3"/>
+		<service name="NTP" interval="300000" user-defined="false" status="off">
+			<parameter key="retry" value="2"/>
 			<parameter key="timeout" value="5000"/>
 			<parameter key="port" value="123"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="ds-name" value="ntp"/>
 		</service>
 		<service name="SMTP" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="port" value="25"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="ds-name" value="smtp"/>
 		</service>
 		<service name="FTP" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="port" value="21"/>
 			<parameter key="userid" value=""/>
 			<parameter key="password" value=""/>
 		</service>
 		<service name="SNMP" interval="300000" user-defined="false" status="off">
-			<parameter key="retry" value="3"/>
+			<parameter key="retry" value="2"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="port" value="161"/>
 			<parameter key="oid" value=".1.3.6.1.2.1.1.2"/>
 		</service>
 		<service name="HTTP" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
                         <parameter key="timeout" value="3000"/>
                         <parameter key="port" value="80"/>
                         <parameter key="url" value="/"/>
@@ -81,11 +84,13 @@
 			<parameter key="ds-name" value="http"/>
                 </service>
 		<service name="HTTP-MGMT" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
                         <parameter key="timeout" value="3000"/>
                         <parameter key="port" value="280"/>
                         <parameter key="url" value="/"/>
                 </service>
                 <service name="HTTP-8080" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
                         <parameter key="timeout" value="3000"/>
                         <parameter key="port" value="8080"/>
                         <parameter key="url" value="/"/>
@@ -93,6 +98,7 @@
 			<parameter key="ds-name" value="http-8080"/>
                 </service>
                 <service name="HTTP-8000" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
                         <parameter key="timeout" value="3000"/>
                         <parameter key="port" value="8000"/>
                         <parameter key="url" value="/"/>
@@ -100,41 +106,49 @@
 			<parameter key="ds-name" value="http-8000"/>
                 </service>
                 <service name="HTTPS" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
 			<parameter key="timeout" value="5000"/>
 			<parameter key="port" value="443"/>
 			<parameter key="url" value="/"/>
 		</service>
 		<service name="MySQL" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="port" value="3306"/>
 			<parameter key="banner" value="*"/>
 		</service>
 		<service name="Sybase" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="port" value="1498"/>
 			<parameter key="banner" value="*"/>
 		</service>
 		<service name="Informix" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="port" value="1536"/>
 			<parameter key="banner" value="*"/>
 		</service>
 		<service name="SQLServer" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="port" value="1433"/>
 			<parameter key="banner" value="*"/>
 		</service>
 		<service name="Oracle" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="port" value="1521"/>
 			<parameter key="banner" value="*"/>
 		</service>
 		<service name="Postgres" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
 			<parameter key="banner" value="*"/>
 			<parameter key="port" value="5432"/>
 			<parameter key="timeout" value="3000"/>
 		</service>
 		<service name="SSH" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
 			<parameter key="banner" value="SSH"/>
 			<parameter key="port" value="22"/>
 			<parameter key="timeout" value="3000"/>
@@ -142,16 +156,18 @@
 			<parameter key="ds-name" value="ssh"/>
 		</service>
 		<service name="DHCP" interval="300000" user-defined="false" status="on">
-			<parameter key="retry" value="3"/>
+			<parameter key="retry" value="2"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
 			<parameter key="ds-name" value="dhcp"/>
 		</service>
 		<service name="IMAP" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
 			<parameter key="port" value="143"/>
 			<parameter key="timeout" value="3000"/>
 		</service>
 		<service name="POP3" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
 			<parameter key="port" value="110"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
