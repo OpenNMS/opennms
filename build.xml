@@ -32,6 +32,9 @@ your distribution.
 
   <!-- build options -->
   <!-- Warning: there are some internal ant properties named build.* -->
+  <!-- Note: build.dir needs to be a path relative to ${basedir}, and
+       the same thing might be the case for some properties that
+       contain build.dir -->
   <property name="build.dir" value="work"/>
   <property name="build.castor.source.dir" value="${build.dir}/castor"/>
   <property name="build.sablecc.source.dir" value="${build.dir}/sablecc"/>
