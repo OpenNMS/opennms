@@ -2,23 +2,26 @@
 #
 # replace the above line with the path to your perl
 #
+use Getopt::Long;
+#
+# Get the host and timeout
+#
+my $host = "";
+my $timeout = 0;
+GetOptions
+	("H|hostname=s" => \$host,
+	"t|timeout=i"  => \$timeout);
+# get the current time
+#
 $t = localtime();
-#
-# Comment out the next 3 lines if you don't want logging,
-# or change the location of the log if you want it
-# somewhere other than /tmp/gplog
-#
-open(LOG,">>/tmp/gplog");
-print LOG "$t: @ARGV\n";
-close(LOG);
 #
 # Put the IP addresses that you want to "pass" the test in the
 # following list variable
 #
 @goodones = qw(
-		128.193.128.202
-		128.193.128.17
-		128.193.4.20
+		10.0.0.12
+		192.168.20.44
+		192.168.31.2
 	);
 #
 # uncomment the following line to increase the response time
@@ -28,7 +31,7 @@ close(LOG);
 #
 $isit = 0;
 foreach $i (@goodones) {
-  if ($i eq $ARGV[0]) {
+  if ($i eq $host) {
     $isit = 1;
   }
 }
@@ -38,6 +41,14 @@ if($isit != 0) {
 else {
   print "gptest.pl failed";
 }
+#
+# Comment out the next 3 lines if you don't want logging,
+# or change the location and/or message of the log if you
+# want something different.
+#
+open(LOG,">>/tmp/gplog");
+print LOG "$t: $host: timeout = $timeout @ARGV result = $isit\n";
+close(LOG);
 #
 # Uncomment one of the following lines to create an error message
 # or return a non-zero exit code.
