@@ -1,5 +1,6 @@
 1.1.4 to 1.1.5
 ----------------------------------------------------------------------
+- Corrected the text for send-event.pl. Thx John. Bug 819
 - Added a patch to prevent issues with Cisco Routers and CEF enabled.
   Thx Siddhartha. Bug 803.
 - Added a fix to address an issue when editing destination paths.

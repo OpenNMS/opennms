@@ -241,8 +241,8 @@ Example:
         Force discovery of a node
 
         send-event.pl \\
-        uei.opennms.org/internal/discovery/newSuspect \\
         --interface 172.16.1.1
+        uei.opennms.org/internal/discovery/newSuspect \\
 
 END
 }
