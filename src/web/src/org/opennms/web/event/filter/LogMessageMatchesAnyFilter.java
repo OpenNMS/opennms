@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of Blast Internet Services, Inc.
 //
+// Modifications:
+//
+// 2004 Feb 11: Change the search string logic from 'OR' to 'AND'.
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -35,7 +39,9 @@ package org.opennms.web.event.filter;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-
+/**
+ * @author <A HREF="mailto:jamesz@blast.com">James Zuo</A>
+ */
 public class LogMessageMatchesAnyFilter extends Object implements Filter 
 {
     public static final String TYPE = "msgmatchany";
@@ -75,17 +81,8 @@ public class LogMessageMatchesAnyFilter extends Object implements Filter
         StringBuffer buffer = new StringBuffer(" (");
         
         buffer.append("UPPER(EVENTLOGMSG) LIKE '%");
-        buffer.append(this.substrings[0].toUpperCase());
+        buffer.append(getQueryString().toUpperCase());
         buffer.append("%'");
-        
-        for(int i=1; i < this.substrings.length; i++ ) {
-            buffer.append(" OR ");
-
-            buffer.append("UPPER(EVENTLOGMSG) LIKE '%");
-            buffer.append(this.substrings[i].toUpperCase());
-            buffer.append("%'");
-        }
-        
         buffer.append(")");
         
         return buffer.toString();
@@ -97,14 +94,8 @@ public class LogMessageMatchesAnyFilter extends Object implements Filter
     
     public String getTextDescription(){
         StringBuffer buffer = new StringBuffer("message containing \"");        
-        buffer.append(this.substrings[0]);
+        buffer.append(getQueryString());
         buffer.append("\"");
-
-        for(int i=1; i < this.substrings.length; i++ ) {
-            buffer.append(" or \"");
-            buffer.append(this.substrings[i]);
-            buffer.append("\"");            
-        }
                 
         return buffer.toString();
     }
