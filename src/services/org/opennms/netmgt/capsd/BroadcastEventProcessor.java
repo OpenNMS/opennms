@@ -1815,199 +1815,184 @@ final class BroadcastEventProcessor implements EventListener {
     }
 
     /**
-     * Mark all the services associated with a given interface as deleted and create service
-     * deleted events for each one that gets deleted
-     * 
-     * @param dbConn
-     *            the database connection
-     * @param nodeId
-     *            the node that interface resides on
-     * @param ipAddr
-     *            the ipAddress of the interface
-     * @param txNo
-     *            a transaction number that can be associated with this deletion
-     * @return a List of serviceDeleted events, one for each service marked
-     * @throws SQLException
-     *             if a database error occurs
-     */
-    private List markAllServicesForInterfaceDeleted(Connection dbConn, String source, long nodeId, String ipAddr, long txNo) throws SQLException {
-        Category log = ThreadCategory.getInstance(getClass());
-        PreparedStatement stmt = null;
-        List eventsToSend = new LinkedList();
+	 * Mark all the services associated with a given interface as deleted and
+	 * create service deleted events for each one that gets deleted
+	 * 
+	 * @param dbConn
+	 *            the database connection
+	 * @param nodeId
+	 *            the node that interface resides on
+	 * @param ipAddr
+	 *            the ipAddress of the interface
+	 * @param txNo
+	 *            a transaction number that can be associated with this deletion
+	 * @return a List of serviceDeleted events, one for each service marked
+	 * @throws SQLException
+	 *             if a database error occurs
+	 */
+	private List markAllServicesForInterfaceDeleted(Connection dbConn,
+			String source, long nodeId, String ipAddr, long txNo)
+			throws SQLException {
+		Category log = ThreadCategory.getInstance(getClass());
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			List eventsToSend = new LinkedList();
 
-        final String DB_FIND_SERVICES_FOR_INTERFACE = "SELECT service.serviceName, ifservices.status FROM ifservices as ifservices, service as service WHERE ifservices.nodeID = ? and ifservices.ipAddr = ? and ifservices.status != 'D' and ifservices.serviceID = service.serviceID";
-        stmt = dbConn.prepareStatement(DB_FIND_SERVICES_FOR_INTERFACE, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-        stmt.setLong(1, nodeId);
-        stmt.setString(2, ipAddr);
-        ResultSet rs = stmt.executeQuery();
+			final String DB_FIND_SERVICES_FOR_INTERFACE = "SELECT service.serviceName, ifservices.status FROM ifservices as ifservices, service as service WHERE ifservices.nodeID = ? and ifservices.ipAddr = ? and ifservices.status != 'D' and ifservices.serviceID = service.serviceID";
+			stmt = dbConn.prepareStatement(DB_FIND_SERVICES_FOR_INTERFACE,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			stmt.setLong(1, nodeId);
+			stmt.setString(2, ipAddr);
+			rs = stmt.executeQuery();
 
-        while (rs.next()) {
-            String service = rs.getString(1);
-            rs.updateString(2, "D");
-            rs.updateRow();
-            eventsToSend.add(EventUtils.createServiceDeletedEvent(source, nodeId, ipAddr, service, txNo));
-        }
+			while (rs.next()) {
+				String service = rs.getString(1);
+				rs.updateString(2, "D");
+				rs.updateRow();
+				eventsToSend.add(EventUtils.createServiceDeletedEvent(source,
+						nodeId, ipAddr, service, txNo));
+			}
 
-        if (log.isDebugEnabled()) log.debug("markServicesDeleted: marked service deleted: " + nodeId + "/" + ipAddr);
+			if (log.isDebugEnabled())
+				log.debug("markServicesDeleted: marked service deleted: "
+						+ nodeId + "/" + ipAddr);
 
-        rs.close();
-        stmt.close();
+			return eventsToSend;
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (stmt != null)
+					stmt.close();
+			} catch (SQLException e) {
+			}
 
-        return eventsToSend;
-
-    }
-
-    /**
-     * Mark the given interface deleted
-     * 
-     * @param dbConn
-     *            the database connection
-     * @param source
-     *            the source for any events set
-     * @param nodeId
-     *            the id the interface resides on
-     * @param ipAddr
-     *            the ipAddress of the interface
-     * @param txNo
-     *            a transaction no to associate with this deletion
-     * @return a List containing an interfaceDeleted event for the interface if it was actually
-     *         marked
-     * @throws SQLException
-     *             if a database error occurs
-     */
-    private List markInterfaceDeleted(Connection dbConn, String source, long nodeId, String ipAddr, long txNo) throws SQLException {
-        final String DB_FIND_INTERFACE = "UPDATE ipinterface SET isManaged = 'D' WHERE nodeid = ? and ipAddr = ? and isManaged != 'D'";
-        Category log = ThreadCategory.getInstance(getClass());
-        PreparedStatement stmt = null;
-        List eventsToSend = new LinkedList();
-
-        stmt = dbConn.prepareStatement(DB_FIND_INTERFACE);
-        stmt.setLong(1, nodeId);
-        stmt.setString(2, ipAddr);
-        int count = stmt.executeUpdate();
-        stmt.close();
-
-        if (log.isDebugEnabled()) log.debug("markServicesDeleted: marked service deleted: " + nodeId + "/" + ipAddr);
-
-        if (count > 0)
-            return Collections.singletonList(EventUtils.createInterfaceDeletedEvent(source, nodeId, ipAddr, txNo));
-        else
-            return Collections.EMPTY_LIST;
-    }
+		}
+	}
 
     /**
-     * Marks all the interfaces and services for a given node deleted and constructs events for
-     * each. The order of events is significant representing the hierarchy, service events
-     * preceed the event for the interface the service is on
-     * 
-     * @param dbConn
-     *            the database connection
-     * @param source
-     *            the source for use in the constructed events
-     * @param nodeId
-     *            the node whose interfaces and services are to be deleted
-     * @param txNo
-     *            a transaction number to associate with this deletion
-     * @return a List of events indicating which nodes and services have been deleted
-     * 
-     * @throws SQLException
-     */
-    private List markInterfacesAndServicesDeleted(Connection dbConn, String source, long nodeId, long txNo) throws SQLException {
-        Category log = ThreadCategory.getInstance(getClass());
-        List eventsToSend = new LinkedList();
+	 * Mark the given interface deleted
+	 * 
+	 * @param dbConn
+	 *            the database connection
+	 * @param source
+	 *            the source for any events set
+	 * @param nodeId
+	 *            the id the interface resides on
+	 * @param ipAddr
+	 *            the ipAddress of the interface
+	 * @param txNo
+	 *            a transaction no to associate with this deletion
+	 * @return a List containing an interfaceDeleted event for the interface if
+	 *         it was actually marked
+	 * @throws SQLException
+	 *             if a database error occurs
+	 */
+	private List markInterfaceDeleted(Connection dbConn, String source,
+			long nodeId, String ipAddr, long txNo) throws SQLException {
+		final String DB_FIND_INTERFACE = "UPDATE ipinterface SET isManaged = 'D' WHERE nodeid = ? and ipAddr = ? and isManaged != 'D'";
+		Category log = ThreadCategory.getInstance(getClass());
+		PreparedStatement stmt = null;
+		try {
+			List eventsToSend = new LinkedList();
 
-        // The following query takes a nodeid and produces a table of (ipaddr, interface
-        // status, serviceid, service status) tuples
-        // 
-        //  - Interfaces that are not marked deleted and with services that are not marked
-        // deleted have fully filled out
-        //    columns
-        //  - Interfaces that have no services or whose services are already marked deleted are
-        // in the table with NULL in the
-        //    serviceid and service status columns.
-        //  - Interfaces that have been marked deleted but have undeleted services will be fully
-        // filled out in the table
-        //    but will have a 'D' in the interface status column
-        //  - Interfaces that have been marked deleted and have no services or have only
-        // services that have been marked deleted
-        //    do not show up in the table.
-        //
-        // This table is ordered by ipAddr, serviceid
+			stmt = dbConn.prepareStatement(DB_FIND_INTERFACE);
+			stmt.setLong(1, nodeId);
+			stmt.setString(2, ipAddr);
+			int count = stmt.executeUpdate();
+			stmt.close();
 
-        final String DB_FIND_IFS_AND_SVCS_FOR_NODE = "SELECT ipinterface.ipaddr, ipinterface.ismanaged, service.servicename, ifservices.serviceid, ifservices.status "
-                + "FROM ipinterface LEFT OUTER JOIN ifservices "
-                + "ON (ipinterface.nodeid = ifservices.nodeid AND ipinterface.ipaddr = ifservices.ipaddr AND ifservices.status != 'D') "
-                + "LEFT OUTER JOIN service ON (ifservices.serviceid = service.serviceid) "
-                + "WHERE ipinterface.nodeId = ? AND (ifservices.serviceid is not null or ipinterface.ismanaged != 'D') "
-                + "ORDER BY ipinterface.ipaddr, ifservices.serviceid";
+			if (log.isDebugEnabled())
+				log.debug("markServicesDeleted: marked service deleted: "
+						+ nodeId + "/" + ipAddr);
 
-        PreparedStatement stmt = dbConn
-                .prepareStatement(DB_FIND_IFS_AND_SVCS_FOR_NODE, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-        stmt.setLong(1, nodeId);
-        ResultSet rs = stmt.executeQuery();
+			if (count > 0)
+				return Collections.singletonList(EventUtils
+						.createInterfaceDeletedEvent(source, nodeId, ipAddr,
+								txNo));
+			else
+				return Collections.EMPTY_LIST;
+		} finally {
+			try {
+				if (stmt != null) stmt.close();
+			} catch (SQLException e) {
+			}
+		}
+	}
 
-        String prevIpAddr = null;
-        while (rs.next()) {
-            String ipAddr = rs.getString(1);
-            String ifStatus = rs.getString(2);
+    /**
+	 * Marks all the interfaces and services for a given node deleted and
+	 * constructs events for each. The order of events is significant
+	 * representing the hierarchy, service events preceed the event for the
+	 * interface the service is on
+	 * 
+	 * @param dbConn
+	 *            the database connection
+	 * @param source
+	 *            the source for use in the constructed events
+	 * @param nodeId
+	 *            the node whose interfaces and services are to be deleted
+	 * @param txNo
+	 *            a transaction number to associate with this deletion
+	 * @return a List of events indicating which nodes and services have been
+	 *         deleted
+	 * 
+	 * @throws SQLException
+	 */
+	private List markInterfacesAndServicesDeleted(Connection dbConn, String source, long nodeId, long txNo) throws SQLException {
+		Category log = ThreadCategory.getInstance(getClass());
+		List eventsToSend = new LinkedList();
 
-            // mark the service deleted and create a serviceDeleted event
-            String serviceName = rs.getString(3);
-            long serviceId = rs.getLong(4);
-            if (!rs.wasNull()) { // a service for this interface exists
-                rs.updateString(5, "D");
-                if (serviceName != null)
-                    eventsToSend.add(EventUtils.createServiceDeletedEvent(source, nodeId, ipAddr, serviceName, txNo));
-                else
-                    log.error("found a service id " + serviceId + " with no correspondonding serviceName");
+		final String DB_FIND_IFS_FOR_NODE = "SELECT ipinterface.ipaddr FROM ipinterface WHERE ipinterface.nodeid = ? and ipinterface.ismanaged != 'D'";
+
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			stmt = dbConn.prepareStatement(DB_FIND_IFS_FOR_NODE);
+			stmt.setLong(1, nodeId);
+			rs = stmt.executeQuery();
+
+			List ipAddrs = new LinkedList();
+			while (rs.next()) {
+				String ipAddr = rs.getString(1);
+				ipAddrs.add(ipAddr);
+			}
+
+			for (Iterator it = ipAddrs.iterator(); it.hasNext();) {
+				String ipAddr = (String) it.next();
+				eventsToSend.addAll(markAllServicesForInterfaceDeleted(dbConn,
+						source, nodeId, ipAddr, txNo));
+				eventsToSend.addAll(markInterfaceDeleted(dbConn, source,
+						nodeId, ipAddr, txNo));
+			}
+
+			return eventsToSend;
+		} finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
             }
-
-            // only process interfaces that are not already deleted.
-            if (!"D".equals(ifStatus)) {
-                // update the status in the table
-                // DAVE: look here
-                rs.updateString(2, "D");
-
-                // if the ipAddr is different from the previous row then we have a new
-                // ipAddr so send the event from the lastRow
-                if (!ipAddr.equals(prevIpAddr)) {
-                    if (prevIpAddr != null) {
-                        eventsToSend.add(EventUtils.createInterfaceDeletedEvent(source, nodeId, prevIpAddr, txNo));
-                    }
-                    prevIpAddr = ipAddr;
-                }
-            }
-
-            rs.updateRow();
-        }
-
-        if (prevIpAddr != null) {
-            eventsToSend.add(EventUtils.createInterfaceDeletedEvent(source, nodeId, prevIpAddr, txNo));
-        }
-
-        if (log.isDebugEnabled()) log.debug("markServicesDeleted: marked service deleted: " + nodeId);
-
-        rs.close();
-        stmt.close();
-
-        return eventsToSend;
-    }
+		}
+	}
 
     /**
-     * Marks a node deleted and creates an event for it if necessary.
-     * 
-     * @param dbConn
-     *            the database connection
-     * @param source
-     *            the source to use for constructed events
-     * @param nodeId
-     *            the node to delete
-     * @param txNo
-     *            a transaction number to associate with this deletion
-     * @return a List containing the node deleted event if necessary
-     * @throws SQLException
-     *             if a database error occurs
-     */
+	 * Marks a node deleted and creates an event for it if necessary.
+	 * 
+	 * @param dbConn
+	 *            the database connection
+	 * @param source
+	 *            the source to use for constructed events
+	 * @param nodeId
+	 *            the node to delete
+	 * @param txNo
+	 *            a transaction number to associate with this deletion
+	 * @return a List containing the node deleted event if necessary
+	 * @throws SQLException
+	 *             if a database error occurs
+	 */
     private List markNodeDeleted(Connection dbConn, String source, long nodeId, long txNo) throws SQLException {
         final String DB_FIND_INTERFACE = "UPDATE node SET nodeType = 'D' WHERE nodeid = ? and nodeType != 'D'";
         Category log = ThreadCategory.getInstance(getClass());
