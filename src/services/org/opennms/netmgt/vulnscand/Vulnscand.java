@@ -207,7 +207,7 @@ public class Vulnscand implements PausableFiber
 		//
 		try
 		{
-			DatabaseConnectionFactory.reload();
+			DatabaseConnectionFactory.init();
 		}
 		catch (IOException ie)
 		{

@@ -225,7 +225,7 @@ public final class Poller
 		ResultSet rs = null;
 		try
 		{
-			DatabaseConnectionFactory.reload();
+			DatabaseConnectionFactory.init();
 			ctest = DatabaseConnectionFactory.getInstance().getConnection();
 			
 			PreparedStatement loadStmt= ctest.prepareStatement(SQL_RETRIEVE_SERVICE_IDS);

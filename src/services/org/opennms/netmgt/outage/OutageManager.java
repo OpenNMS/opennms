@@ -237,7 +237,7 @@ public final class OutageManager implements PausableFiber
 		java.sql.Connection conn = null;
 		try
 		{
-			DatabaseConnectionFactory.reload();
+			DatabaseConnectionFactory.init();
 			conn = DatabaseConnectionFactory.getInstance().getConnection();
 
 			// close open outages for unmanaged entities

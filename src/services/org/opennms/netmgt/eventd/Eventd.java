@@ -240,7 +240,7 @@ public final class Eventd
 		java.sql.Connection tempConn = null;
 		try
 		{
-			DatabaseConnectionFactory.reload();
+			DatabaseConnectionFactory.init();
 			tempConn = DatabaseConnectionFactory.getInstance().getConnection();
 
 			// create the service table map

@@ -250,7 +250,7 @@ public class Capsd implements PausableFiber
 		//
 		try
 		{
-			DatabaseConnectionFactory.reload();
+			DatabaseConnectionFactory.init();
 		}
 		catch (IOException ie)
 		{

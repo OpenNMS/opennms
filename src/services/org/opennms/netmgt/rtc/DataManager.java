@@ -708,7 +708,7 @@ public class DataManager extends Object
 	    try {
 	        try
 	        {
-	            DatabaseConnectionFactory.reload();
+	            DatabaseConnectionFactory.init();
 	            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
 	        }
 	        catch(IOException ex)
@@ -1107,30 +1107,9 @@ public class DataManager extends Object
 	    try {
 	        try
 	        {
-	            DatabaseConnectionFactory.reload();
 	            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
 	        }      
-	        catch(IOException ex)
-	        {      
-	            log.warn("Failed to load database config", ex);
-	            throw new UndeclaredThrowableException(ex);
-	        }
-	        catch(MarshalException ex)
-	        {
-	            log.warn("Failed to unmarshall database config", ex);
-	            throw new UndeclaredThrowableException(ex);
-	        }       
-	        catch(ValidationException ex)
-	        {
-	            log.warn("Failed to unmarshall database config", ex);
-	            throw new UndeclaredThrowableException(ex);
-	        }       
 	        catch(SQLException ex)
-	        {
-	            log.warn("Failed to get database connection", ex);
-	            throw new UndeclaredThrowableException(ex);
-	        }       
-	        catch(ClassNotFoundException ex)
 	        {
 	            log.warn("Failed to get database connection", ex);
 	            throw new UndeclaredThrowableException(ex);

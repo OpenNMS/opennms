@@ -1140,7 +1140,7 @@ public final class DatabaseConnectionFactory
 	 * @exception org.exolab.castor.xml.ValidationException Thrown if 
 	 *	the contents do not match the required schema.
 	 */
-	public static synchronized void reload()
+	private static synchronized void reload()
 		throws 	IOException,
 		        MarshalException, 
 			ValidationException,

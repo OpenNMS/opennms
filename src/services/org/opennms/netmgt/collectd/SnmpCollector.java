@@ -337,7 +337,7 @@ final class SnmpCollector
 		java.sql.Connection ctest = null;
 		try
 		{
-			DatabaseConnectionFactory.reload();
+			DatabaseConnectionFactory.init();
 			ctest = DatabaseConnectionFactory.getInstance().getConnection();
 		}
 		catch (IOException ie)
