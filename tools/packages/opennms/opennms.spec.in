@@ -76,20 +76,20 @@ AutoReqProv:		no
 # grr, we depend on XFree86-libs because j2sdk package deps are broken!
 Requires:		rrdtool, perl-DBD-Pg, j2sdk >= 1.4, XFree86-libs
 
-%if "%{platform}" == "linux-i386-suse-7"
-%define	initdir		/etc/rc.d
+%if "%{platform}" == "linux-i386-centos-3"
+%define	initdir		/etc
 %define	psql		/usr/bin/psql
-%define psql_service	postgres
-%define tomcat_name    	jakarta-tomcat
-Requires:		postgres >= 7.2
+%define psql_service	rhdb
+%define tomcat_name    	tomcat4
+Requires:		postgresql-server >= 7.2, compat-libstdc++
 %endif
 
-%if "%{platform}" == "linux-i386-suse-8"
-%define	initdir		/etc/rc.d
+%if "%{platform}" == "linux-i386-fedora-1"
+%define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
-%define tomcat_name    	jakarta-tomcat
-Requires:		postgresql >= 7.2, postgresql-server >= 7.2
+%define tomcat_name    	tomcat4
+Requires:		postgresql-server >= 7.2, compat-libstdc++
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-7"
@@ -148,12 +148,20 @@ Requires:		postgresql-server >= 7.2, compat-libstdc++
 Requires:		postgresql-server >= 7.2, compat-libstdc++
 %endif
 
-%if "%{platform}" == "linux-i386-fedora-1"
-%define	initdir		/etc
+%if "%{platform}" == "linux-i386-suse-7"
+%define	initdir		/etc/rc.d
+%define	psql		/usr/bin/psql
+%define psql_service	postgres
+%define tomcat_name    	jakarta-tomcat
+Requires:		postgres >= 7.2
+%endif
+
+%if "%{platform}" == "linux-i386-suse-8"
+%define	initdir		/etc/rc.d
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
-%define tomcat_name    	tomcat4
-Requires:		postgresql-server >= 7.2, compat-libstdc++
+%define tomcat_name    	jakarta-tomcat
+Requires:		postgresql >= 7.2, postgresql-server >= 7.2
 %endif
 
 %define builddefines -Droot.install=%{instprefix} -Droot.install.sbindir=/usr/local/sbin -Droot.install.contrib=%{instprefix}/contrib -Droot.install.initdir=%{initdir}/init.d -Droot.install.servlets=%{tomcatdir}/webapps/%{name} -Droot.install.share=%{sharedir} -Droot.install.rrdtool=%{rrdlibdir} -Droot.install.postgresql=%{pglibdir} -Droot.install.logs=%{logdir} -Droot.install.pid=%{pidfile} -Dfilter.overwrite="yes" -Disrpm="true"
