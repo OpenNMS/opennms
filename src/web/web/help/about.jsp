@@ -57,7 +57,7 @@
     <td>
       <h3>OpenNMS Web Console</h3>
       <p>
-        <a href="http://www.opennms.org/">OpenNMS</a>, Copyright &copy; 2001 Oculan Corp.
+        <a href="http://www.opennms.org/">OpenNMS</a>, Copyright &copy; 2003 <a href="http://www.sortova.com">Sortova Consulting Group, Inc.</a>
       </p>
         
       <p>
