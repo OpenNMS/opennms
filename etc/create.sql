@@ -632,13 +632,11 @@ create table vulnPlugins (
         md5                     varchar(32)
 );
 
-
-create unique index vulnplugins_pluginid_pluginsubid_idx on vulnPlugins(pluginID, pluginSubID);
-
 --#  This constraint not understood installer
 --#        CONSTRAINT pk_vulnplugins PRIMARY KEY (pluginID,pluginSubID));
 --#
-        
+
+create unique index vulnplugins_plugin_idx on vulnPlugins(pluginID, pluginSubID);
 
 --########################################################################
 --# notification table - Contains information on acknowleged and outstanding
