@@ -3,6 +3,7 @@
 - Added the ability to sort on parameters as well as events for
   notifications.
 - Added some new standard performance reports. Thx Ted.
+- Fix RPM dependencies.  Bug 905.
 
 
 1.1.2 to 1.1.3
