@@ -1830,47 +1830,60 @@ final class BroadcastEventProcessor implements EventListener {
 	 * @throws SQLException
 	 *             if a database error occurs
 	 */
-	private List markAllServicesForInterfaceDeleted(Connection dbConn,
-			String source, long nodeId, String ipAddr, long txNo)
-			throws SQLException {
-		Category log = ThreadCategory.getInstance(getClass());
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		try {
-			List eventsToSend = new LinkedList();
-
-			final String DB_FIND_SERVICES_FOR_INTERFACE = "SELECT service.serviceName, ifservices.status FROM ifservices as ifservices, service as service WHERE ifservices.nodeID = ? and ifservices.ipAddr = ? and ifservices.status != 'D' and ifservices.serviceID = service.serviceID";
-			stmt = dbConn.prepareStatement(DB_FIND_SERVICES_FOR_INTERFACE,
-					ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_UPDATABLE);
-			stmt.setLong(1, nodeId);
-			stmt.setString(2, ipAddr);
-			rs = stmt.executeQuery();
-
-			while (rs.next()) {
-				String service = rs.getString(1);
-				rs.updateString(2, "D");
-				rs.updateRow();
-				eventsToSend.add(EventUtils.createServiceDeletedEvent(source,
-						nodeId, ipAddr, service, txNo));
-			}
-
-			if (log.isDebugEnabled())
-				log.debug("markServicesDeleted: marked service deleted: "
-						+ nodeId + "/" + ipAddr);
-
-			return eventsToSend;
-		} finally {
-			try {
-				if (rs != null)
-					rs.close();
-				if (stmt != null)
-					stmt.close();
-			} catch (SQLException e) {
-			}
-
-		}
-	}
+    private List markAllServicesForInterfaceDeleted(Connection dbConn,
+            String source, long nodeId, String ipAddr, long txNo)
+    throws SQLException {
+        Category log = ThreadCategory.getInstance(getClass());
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            List eventsToSend = new LinkedList();
+            
+            final String DB_FIND_SERVICES_FOR_INTERFACE = "SELECT DISTINCT service.serviceName FROM ifservices as ifservices, service as service WHERE ifservices.nodeID = ? and ifservices.ipAddr = ? and ifservices.status != 'D' and ifservices.serviceID = service.serviceID";
+            stmt = dbConn.prepareStatement(DB_FIND_SERVICES_FOR_INTERFACE);
+            stmt.setLong(1, nodeId);
+            stmt.setString(2, ipAddr);
+            rs = stmt.executeQuery();
+            
+            List services = new LinkedList();
+            while (rs.next()) {
+                String serviceName = rs.getString(1);
+                services.add(serviceName);
+            }
+            
+            rs.close();
+            rs = null;
+            stmt.close();
+            stmt = null;
+            
+            final String DB_MARK_SERVICES_FOR_INTERFACE = "UPDATE ifservices SET ifservices.status = 'D' where ifservices.nodeID = ? and ifservices.ipAddr = ?";
+            stmt = dbConn.prepareStatement(DB_MARK_SERVICES_FOR_INTERFACE);
+            stmt.setLong(1, nodeId);
+            stmt.setString(2, ipAddr);
+            
+            int count = stmt.executeUpdate();
+            
+            for (Iterator it = services.iterator(); it.hasNext();) {
+                String serviceName = (String) it.next();
+                eventsToSend.add(EventUtils.createServiceDeletedEvent(source, nodeId, ipAddr, serviceName, txNo));
+            }
+            
+            if (log.isDebugEnabled())
+                log.debug("markServicesDeleted: marked service deleted: "
+                        + nodeId + "/" + ipAddr);
+            
+            return eventsToSend;
+        } finally {
+            try {
+                if (rs != null)
+                    rs.close();
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException e) {
+            }
+            
+        }
+    }
 
     /**
 	 * Mark the given interface deleted
