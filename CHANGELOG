@@ -1,5 +1,7 @@
 1.0.0 to 1.1.0
 ----------------------------------------------------------------------
+- Modified eventconf.xml to allow for event definition files to be
+  included using the <event-file> tag.
 - Added a Threshold Rearm event for both Low and High Thresholds.
 - Added an Admin GUI page for deleting nodes
 - Added the ability to select which non-IP interfaces would be 

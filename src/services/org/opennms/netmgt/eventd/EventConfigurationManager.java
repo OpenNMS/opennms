@@ -44,6 +44,10 @@ import org.exolab.castor.xml.ValidationException;
 
 import org.opennms.netmgt.eventd.datablock.*;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+
+
 /**
  * <p>This is the singleton class used to manage the event configuration.
  * When the class is loaded an attempt is made to read and load
@@ -140,9 +144,11 @@ public final class EventConfigurationManager
 	 *	the contents do not match the required schema.
 	 */
 	public static void loadConfiguration(Reader rdr)
-		throws 	MarshalException, 
+		throws 	IOException,
+			MarshalException, 
 			ValidationException
 	{
+		Category log = ThreadCategory.getInstance();
 		synchronized(m_eventConf)
 		{
 			Events toplevel = null;
@@ -158,6 +164,30 @@ public final class EventConfigurationManager
 			}
 
 			m_secureTags = toplevel.getGlobal().getSecurity().getDoNotOverride();
+
+                        Enumeration e2 = toplevel.enumerateEventFile();
+                        while(e2.hasMoreElements())
+                        {
+				String eventfile = (String)e2.nextElement();
+                		InputStream fileIn = new FileInputStream(eventfile);
+                		if(fileIn == null)
+                		{
+                        		throw new IOException("Eventconf: Failed to load/locate events file: " + eventfile);
+                		}
+
+				if(log.isDebugEnabled())
+					log.debug("Eventconf: Loading event file: " + eventfile);
+
+                		Reader filerdr = new InputStreamReader(fileIn);
+				Events filelevel = null;
+                		filelevel = (Events)Unmarshaller.unmarshal(Events.class, filerdr);
+				Enumeration efile = filelevel.enumerateEvent();
+                        	while(efile.hasMoreElements())
+                        	{
+                                	Event event = (Event)efile.nextElement();
+                                	m_eventConf.put(event);
+                        	}
+                        }
 
 			try
 			{
