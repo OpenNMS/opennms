@@ -731,7 +731,7 @@
   <servlet>
     <!-- This servlet is used to set NodeParentID -->
     <servlet-name>modifyParent</servlet-name>
-    <servlet-class>org.opennms.web.map.modifyParentServlet</servlet-class>
+    <servlet-class>org.opennms.web.map.ModifyParentServlet</servlet-class>
   </servlet>
   
   <!-- python servlet for testing purposes - ->
