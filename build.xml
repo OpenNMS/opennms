@@ -212,6 +212,7 @@ your distribution.
     <include name="batik.jar" />
     <include name="jcifs.jar" />
     <include name="ldap.jar" />
+  	<include name="jrobin*.jar" />
   </patternset>
 
   <!-- ant tasks -->

@@ -122,12 +122,17 @@ public class RRDGraphServlet extends HttpServlet
             
         }
         catch( FileNotFoundException e ) {
+            log("Could not find configuration file", e);
             throw new ServletException( "Could not find configuration file", e );
-        }
-        catch( IOException e ) {
-            throw new ServletException( "Could not load configuration file", e );
+        } catch( IOException e ) {
+            log("Could not load configuration file", e);
+            throw new ServletException( "Could not load configuration file: ", e );
         } catch (RrdException e) {
-            throw new ServletException( "Could not initialize graphing system", e);
+            log("Could not inititalize the graphing system", e);
+            throw new ServletException( "Could not initialize graphing system: "+e.getMessage(), e);
+        } catch (Throwable e) {
+            log("Unexpected exception or error occurred", e);
+            throw new ServletException("Unexpected exception or error occured: "+e.getMessage(), e);
         }
 
         this.workDir = new File( properties.getProperty( "command.input.dir" ));
