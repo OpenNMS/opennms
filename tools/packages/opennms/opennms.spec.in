@@ -21,12 +21,21 @@
 
 %define debug_package %{nil}
 
+%if "%{platform}" == "linux-i386-centos-3"
+%define	initdir		/etc
+%define	psql		/usr/bin/psql
+%define psql_service	rhdb
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
 %if "%{platform}" == "linux-i386-fedora-1"
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
 %define tomcat_service	tomcat4
-%define requires	postgresql-server >= 7.2, compat-libstdc++
+%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
@@ -35,7 +44,7 @@
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
 %define tomcat_service	tomcat4
-%define requires	postgresql-server >= 7.2, compat-libstdc++
+%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
@@ -44,7 +53,7 @@
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
 %define tomcat_service	tomcat4
-%define requires	postgresql-server >= 7.2
+%define requires	postgresql-server >= 7.2, metamail
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
@@ -53,7 +62,7 @@
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
 %define tomcat_service	tomcat4
-%define requires	postgresql-server >= 7.2, libstdc++2.10
+%define requires	postgresql-server >= 7.2, libstdc++2.10, metamail
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
@@ -62,16 +71,16 @@
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
 %define tomcat_service	tomcat4
-%define requires	postgresql-server >= 7.2, libstdc++2.10
+%define requires	postgresql-server >= 7.2, libstdc++2.10, metamail
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
-%if "%{platform}" == "linux-i386-redhat-6"
-%define	initdir		/etc/rc.d
+%if "%{platform}" == "linux-i386-mandrake-10"
+%define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
 %define tomcat_service	tomcat4
-%define requires	postgresql-server >= 7.2
+%define requires	postgresql-server >= 7.2, libstdc++2.10, metamail
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
@@ -80,7 +89,7 @@
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
 %define tomcat_service	tomcat4
-%define requires        postgresql-server >= 7.2, compat-libstdc++
+%define requires        postgresql-server >= 7.2, compat-libstdc++, metamail
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
@@ -89,7 +98,7 @@
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
 %define tomcat_service	tomcat4
-%define requires	postgresql-server >= 7.2, compat-libstdc++
+%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
@@ -98,7 +107,16 @@
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
 %define tomcat_service	tomcat4
-%define requires	postgresql-server >= 7.2, compat-libstdc++
+%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail
+%define webapp_requires tomcat4 >= 4.1.18
+%endif
+
+%if "%{platform}" == "linux-i386-rhel-3"
+%define	initdir		/etc
+%define	psql		/usr/bin/psql
+%define psql_service	rhdb
+%define tomcat_service	tomcat4
+%define requires	postgresql-server >= 7.2, compat-libstdc++, metamail
 %define webapp_requires tomcat4 >= 4.1.18
 %endif
 
@@ -107,7 +125,7 @@
 %define	psql		/usr/bin/psql
 %define psql_service	postgres
 %define tomcat_service	tomcat
-%define requires        postgres >= 7.2
+%define requires        postgres >= 7.2, metamail
 %define webapp_requires tomcat >= 4.1.18
 %endif
 
@@ -117,7 +135,7 @@
 %define psql_service	postgresql
 %define tomcat_service	tomcat
 %define tomcatdir	/opt/jakarta/tomcat
-%define requires	postgresql >= 7.2, postgresql-server >= 7.2
+%define requires	postgresql >= 7.2, postgresql-server >= 7.2, metamail
 %define webapp_requires tomcat >= 4.1.18
 %endif
 
@@ -127,7 +145,7 @@
 %define psql_service	postgresql
 %define tomcat_service	tomcat
 %define tomcatdir	/opt/jakarta/tomcat
-%define requires	postgresql >= 7.2, postgresql-server >= 7.2
+%define requires	postgresql >= 7.2, postgresql-server >= 7.2, metamail
 %define webapp_requires tomcat >= 4.1.18
 %endif
 
