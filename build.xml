@@ -245,6 +245,38 @@ your distribution.
     <exclude name="*.bat"/>
   </patternset>
   -->
+
+  <path id="jsp.compile.path">
+    <path refid="libraries.java.path" />
+    <path refid="tomcatlib.jars.path" />
+    <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_common.jar"/>
+    <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_core.jar"/>
+    <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_install.jar"/>
+    <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_joesnmp.jar"/>
+    <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_services.jar"/>
+    <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_web.jar"/>
+    <pathelement location="${dev.lib.dir}/jasper/jasper-compiler.jar"/>
+    <pathelement location="${dev.lib.dir}/jasper/jasper-runtime.jar"/>
+    <pathelement location="${packaged.lib.dir}/servlet.jar"/>
+  </path>  
+  
+  <path id="jsp.compile.javac.sourcepath">
+    <fileset dir="${build.dir}/jsp-source">
+      <include name="**/*.java"/>
+      <exclude name="KSC/include_init1_jsp.java"/>
+      <exclude name="KSC/include_init2_jsp.java"/>
+      <exclude name="KSC/include_nodereport_jsp.java"/>
+      <exclude name="KSC/include_rrd_jsp.java"/>
+      <exclude name="admin/eventconf/**"/>
+      <exclude name="admin/notification/assignNotices_jsp.java"/>
+      <exclude name="errors/errorpage_jsp.java"/>
+    </fileset>
+  </path>
+  <pathconvert targetos="unix" refid="jsp.compile.javac.sourcepath"
+	       property="jsp.compile.javac.sourcelist">
+    <map from="${build.dir}/jsp-source/" to=""/>
+  </pathconvert>
+
   
   <!-- Files in ${packaged.lib.dir} that are copied into ${install.dir}/lib.
        Note: everything in ${build.jar.dir} is also copied.  -->
@@ -338,28 +370,15 @@ your distribution.
     </classpath>
   </taskdef>
 
-   <taskdef classname="org.apache.jasper.JspC" name="jasper2" > 
-      <classpath>
-        <pathelement location="${dev.lib.dir}/jasper/jasper-compiler.jar"/>
-        <pathelement location="${dev.lib.dir}/jasper/jasper-runtime.jar"/>
-        <pathelement location="${packaged.lib.dir}/servlet.jar"/>
-      </classpath> 
-    </taskdef> 
+  <taskdef classname="org.apache.jasper.JspC" name="jasper2" > 
+    <classpath>
+      <pathelement location="${dev.lib.dir}/jasper/jasper-compiler.jar"/>
+      <pathelement location="${dev.lib.dir}/jasper/jasper-runtime.jar"/>
+      <pathelement location="${packaged.lib.dir}/servlet.jar"/>
+    </classpath> 
+  </taskdef> 
 
-<!--        <pathelement location="${java.home}/../lib/tools.jar"/>  -->
-<!--        <fileset dir="${dev.lib.dir}"> 
-          <include name="*.jar"/> 
-        </fileset> 
--->
-
-<!--
-    <jasper2 
-             validateXml="false" 
-             uriroot="${webapp.path}" 
-             webXmlFragment="${webapp.path}/WEB-INF/generated_web.xml" 
-             outputDir="${webapp.path}/WEB-INF/src" /> 
-
--->
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
 
   <!-- PREP target -->
   <target name="prep" depends="platform.check, java.check" unless="prep.done">
@@ -1225,43 +1244,23 @@ OpenNMS as part of the post-install.
  </target>
 
  <target name="jsp.compile.javac" depends="jsp.compile.jspc">
-   <path id="jsp.compile.path">
-     <path refid="libraries.java.path" />
-     <path refid="tomcatlib.jars.path" />
-     <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_common.jar"/>
-     <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_core.jar"/>
-     <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_install.jar"/>
-     <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_joesnmp.jar"/>
-     <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_services.jar"/>
-     <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_web.jar"/>
-     <pathelement location="${dev.lib.dir}/jasper/jasper-compiler.jar"/>
-     <pathelement location="${dev.lib.dir}/jasper/jasper-runtime.jar"/>
-     <pathelement location="${packaged.lib.dir}/servlet.jar"/>
-   </path>  
-   <pathconvert targetos="unix" refid="jsp.compile.path"
-		property="jsp.compile.classpath">
-     <map from="${basedir}/" to=""/>
-   </pathconvert>
+   <foreach list="${jsp.compile.javac.sourcelist}" delimiter=":"
+	    target="jsp.compile.javac.each" param="jsp.compile.javac.file"
+	    inheritall="true" parallel="false"/>
+ </target>
 
-   <apply executable="${java.home}/bin/javac"
-	  dest="${build.dir}/jsp-classes/org/apache/jsp"
-	  dir="${basedir}" failonerror="true">
-     <fileset dir="${build.dir}/jsp-source">
-       <include name="**/*.java"/>
-       <exclude name="KSC/include_init1_jsp.java"/>
-       <exclude name="KSC/include_init2_jsp.java"/>
-       <exclude name="KSC/include_nodereport_jsp.java"/>
-       <exclude name="KSC/include_rrd_jsp.java"/>
-       <exclude name="admin/eventconf/**"/>
-       <exclude name="admin/notification/assignNotices_jsp.java"/>
-       <exclude name="errors/errorpage_jsp.java"/>
-     </fileset>
-     <mapper type="glob" from="*.java" to="*.class"/>
-     <arg value="-classpath"/>
-     <arg value="${jsp.compile.classpath}"/>
-     <arg value="-d"/>
-     <arg value="${build.dir}/jsp-classes"/>
-   </apply>
+ <target name="jsp.compile.javac.each">
+   <javac destdir="${build.dir}/jsp-classes"
+	  debug="${compiler.debug}"
+	  optimize="${compiler.optimize}"
+	  verbose="${compiler.verbose}"
+	  deprecation="${compiler.deprecation}">
+     <src path="${build.dir}/jsp-source"/>
+     <include name="${jsp.compile.javac.file}"/>
+     <classpath>
+       <path refid="jsp.compile.path"/>
+     </classpath>
+   </javac>
  </target>
 
  <!-- java build -->
