@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2004 Feb 11: remove the extra 'limit' parameter in the base URL.
 // 2003 Sep 04: Added a check to allow for deleted node events to display.
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
@@ -450,8 +451,6 @@
       buffer.append( EventUtil.getSortStyleString(sortStyle) );
       buffer.append( "&acktype=" );
       buffer.append( EventUtil.getAcknowledgeTypeString(ackType) );
-      buffer.append( "&limit=" );
-      buffer.append( limit );
       buffer.append( this.getFiltersAsString(filters) );
 
       return( buffer.toString() );
