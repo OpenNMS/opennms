@@ -1,527 +1,152 @@
 <?xml version="1.0"?>
- 
+
 <!--=================================================================
 
    $Id$
 
 ==================================================================== -->
- 
+
 <project name="opennms" default="castor.sources.generate" basedir=".">
-  <description>
-Build file for OpenNMS' castor-generated Java files.
-  </description>
+	
+	<description>Build file for OpenNMS' castor-generated Java files.</description>
 
-<taskdef classname="com.tombrus.cleanImports.ant.CleanImports" classpath="${basedir}/devlib/cleanImports.jar" name="cleanimports"/>
+	<taskdef classname="com.tombrus.cleanImports.ant.CleanImports" classpath="${basedir}/devlib/cleanImports.jar" name="cleanimports" />
 
- <!-- Generates Castor java files if necessary -->
- <target name="castor.sources.generate"
-  depends="castor.actiond.sources.generate,      castor.availability.sources.generate,
-   castor.capsd.sources.generate,                castor.categories.sources.generate,
-   castor.collectd.sources.generate,             castor.destinationPaths.sources.generate,
-   castor.dhcpd.sources.generate,                castor.discovery.sources.generate,
-   castor.event.sources.generate,                castor.eventconf.sources.generate,
-   castor.eventd.sources.generate,               castor.events.sources.generate,
-   castor.filter.sources.generate,               castor.groups.sources.generate,
-   castor.kscReports.sources.generate,           castor.notifd.sources.generate,
-   castor.notificationCommands.sources.generate, castor.notifications.sources.generate,
-   castor.outage.sources.generate,               castor.vacuumd.sources.generate,
-   castor.poller.sources.generate,
-   castor.rtc.sources.generate,                  castor.rtceui.sources.generate,             
-   castor.scriptd.sources.generate,              castor.server.sources.generate,
-   castor.service.sources.generate,              castor.trapd.sources.generate,
-   castor.threshd.sources.generate,              castor.vulnscand.sources.generate,
-   castor.xmlrpcd.sources.generate,              castor.users.sources.generate,
-   castor.views.sources.generate,                castor.viewsdisplay.sources.generate,
-   castor.webuiColors.sources.generate, clean.imports">
-   </target>
- 
-   <target name="clean.imports" if="build.clean.imports">
-    <echo>Cleaning imports for generated sources... </echo>
-     <cleanimports srcdir="${build.castor.source.dir}">
-		 <classpath refid="libraries.java.path"/>
- 	</cleanimports>
-   </target>   
+	<target name="clean.imports" if="build.clean.imports">
+		<echo>Cleaning imports for generated sources... </echo>
+		<cleanimports srcdir="${build.castor.source.dir}">
+			<classpath refid="libraries.java.path" />
+		</cleanimports>
+	</target>
 
- <!-- this doesn't work... not sure if I can easily get something like this
-      to work...
- <macrodef name="castorgenerate">
-   <attribute name="xsd"/>
-   <attribute name="srcpackage"/>
-   <attribute name="targetdir"/>
-   <attribute name="class"/>
 
-   <sequential>
-     <dependset>
-       <srcfilelist dir="${castor.config.dir}"
-		    files="@{xsd}"/>
-       <targetfileset dir="${build.castor.source.dir}/@{targetdir}"
-		      includes="*.java"/>
-     </dependset>
-     <condition property="castor.sources.@{srcpackage}.uptodate">
-       <and>
-	 <available
-	    file="${build.castor.source.dir}/@{targetdir}/@{class}.java"
-	    type="file"/>
-	 <available
-	    file="${build.castor.source.dir}/@{targetdir}/@{class}Descriptor.java"
-	    type="file"/>
-       </and>
-     </condition>
+	<macrodef name="castor-gen">
+		<attribute name="file" default="" />
+		<attribute name="srcpackage" />
+		<element name="pathelements" optional="yes" implicit="yes" />
+		<sequential>
+			<mkdir dir="${build.castor.source.dir}" />
 
-     <target name="castor.sources.${srcpackage}.generate"
-	     depends="castor.sources.@{srcpackage}.uptodate"
-	     unless="castor.sources.@{srcpackage}.uptodate">
-       <castor file="${castor.config.dir}/@{xsd}"
-	       srcpackage="@{srcpackage}"
-	       destination="${build.castor.source.dir}"
-	       typefactory="${castor.typefactory}"/>
-     </target>
-   </sequential>
- </macrodef>
- -->
+			<!-- compute the package dir from the package name -->
+			<propertyregex property="@{srcpackage}.srcdir" input="@{srcpackage}" regexp="\." replace="/" global="true" />
 
- <!-- These targets generate a specific set of castor classes based on the
-      xsd the target refers to -->
- <target name="castor.actiond.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.actiond.sources.uptodate">
-  <castor file="${castor.config.dir}/actiond-configuration.xsd" srcpackage="org.opennms.netmgt.config.actiond"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.availability.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.availability.sources.uptodate">
-  <castor file="${castor.xsd.dir}/availability_report.xsd" srcpackage="org.opennms.report.availability"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.capsd.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.capsd.sources.uptodate">
-  <castor file="${castor.config.dir}/capsd-configuration.xsd" srcpackage="org.opennms.netmgt.config.capsd"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.categories.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.categories.sources.uptodate">
-  <castor file="${castor.config.dir}/categories.xsd" srcpackage="org.opennms.netmgt.config.categories"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.collectd.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.collectd.sources.uptodate">
-  <delete quiet="true">
-   <fileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/collectd" includes="*.java"/>
-  </delete>
-  <castor file="${castor.config.dir}/collectd-configuration.xsd" srcpackage="org.opennms.netmgt.config.collectd"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
-  <castor file="${castor.config.dir}/datacollection-config.xsd" srcpackage="org.opennms.netmgt.config.collectd"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.destinationPaths.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.destinationPaths.sources.uptodate">
-  <castor file="${castor.config.dir}/destinationPaths.xsd" srcpackage="org.opennms.netmgt.config.destinationPaths"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.dhcpd.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.dhcpd.sources.uptodate">
-  <castor file="${castor.config.dir}/dhcpd-configuration.xsd" srcpackage="org.opennms.netmgt.config.dhcpd"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.discovery.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.discovery.sources.uptodate">
-  <castor file="${castor.config.dir}/discovery-configuration.xsd" srcpackage="org.opennms.netmgt.config.discovery"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.event.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.event.sources.uptodate">
-  <castor file="${castor.xsd.dir}/event.xsd" srcpackage="org.opennms.netmgt.xml.event"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.eventconf.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.eventconf.sources.uptodate">
-  <castor file="${castor.xsd.dir}/eventconf.xsd" srcpackage="org.opennms.netmgt.xml.eventconf"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.eventd.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.eventd.sources.uptodate">
-  <castor file="${castor.config.dir}/eventd-configuration.xsd" srcpackage="org.opennms.netmgt.config.eventd"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.events.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.events.sources.uptodate">
-  <castor file="${castor.config.dir}/events-archiver-configuration.xsd" srcpackage="org.opennms.netmgt.config.archiver.events"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.filter.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.filter.sources.uptodate">
-  <castor file="${castor.config.dir}/database-schema.xsd" srcpackage="org.opennms.netmgt.config.filter"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.groups.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.groups.sources.uptodate">
-  <castor file="${castor.config.dir}/groups.xsd" srcpackage="org.opennms.netmgt.config.groups"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.kscReports.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.kscReports.sources.uptodate">
-  <castor file="${castor.config.dir}/ksc-performance-reports.xsd" srcpackage="org.opennms.netmgt.config.kscReports"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.notifd.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.notifd.sources.uptodate">
-  <castor file="${castor.config.dir}/notifd-configuration.xsd" srcpackage="org.opennms.netmgt.config.notifd"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.notificationCommands.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.notificationCommands.sources.uptodate">
-  <castor file="${castor.config.dir}/notificationCommands.xsd" srcpackage="org.opennms.netmgt.config.notificationCommands"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.notifications.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.notifications.sources.uptodate">
-  <castor file="${castor.config.dir}/notifications.xsd" srcpackage="org.opennms.netmgt.config.notifications"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.outage.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.outage.sources.uptodate">
-  <castor file="${castor.config.dir}/outage-configuration.xsd" srcpackage="org.opennms.netmgt.config.outage"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.vacuumd.sources.generate" depends="castor.sources.uptodate"
-	  unless="castor.vacuumd.sources.uptodate">
-	<castor file="${castor.config.dir}/vacuumd-configuration.xsd" srcpackage="org.opennms.netmgt.config.vacuumd"
-	   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.poller.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.poller.sources.uptodate">
-  <delete quiet="true">
-   <fileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/poller" includes="*.java"/>
-  </delete>
-  <castor file="${castor.config.dir}/poller-configuration.xsd" srcpackage="org.opennms.netmgt.config.poller"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
-  <castor file="${castor.config.dir}/poll-outages.xsd" srcpackage="org.opennms.netmgt.config.poller"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.rtc.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.rtc.sources.uptodate">
-  <castor file="${castor.config.dir}/rtc-configuration.xsd" srcpackage="org.opennms.netmgt.config.rtc"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.rtceui.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.rtceui.sources.uptodate">
-  <castor file="${castor.xsd.dir}/rtceui.xsd" srcpackage="org.opennms.netmgt.xml.rtc"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.scriptd.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.scriptd.sources.uptodate">
-  <castor file="${castor.config.dir}/scriptd-configuration.xsd" srcpackage="org.opennms.netmgt.config.scriptd"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.server.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.server.sources.uptodate">
-  <castor file="${castor.config.dir}/opennms-server.xsd" srcpackage="org.opennms.netmgt.config.server"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.service.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.service.sources.uptodate">
-  <castor file="${castor.config.dir}/service-configuration.xsd" srcpackage="org.opennms.netmgt.config.service"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.trapd.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.trapd.sources.uptodate">
-  <castor file="${castor.config.dir}/trapd-configuration.xsd" srcpackage="org.opennms.netmgt.config.trapd"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.threshd.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.threshd.sources.uptodate">
-  <delete quiet="true">
-   <fileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/threshd" includes="*.java"/>
-  </delete>
-  <castor file="${castor.config.dir}/threshd-configuration.xsd" srcpackage="org.opennms.netmgt.config.threshd"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
-  <castor file="${castor.config.dir}/thresholding-config.xsd" srcpackage="org.opennms.netmgt.config.threshd"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.vulnscand.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.vulnscand.sources.uptodate">
-  <castor file="${castor.config.dir}/vulnscand-configuration.xsd" srcpackage="org.opennms.netmgt.config.vulnscand"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.xmlrpcd.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.xmlrpcd.sources.uptodate">
-  <castor file="${castor.config.dir}/xmlrpcd-configuration.xsd" srcpackage="org.opennms.netmgt.config.xmlrpcd"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.users.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.users.sources.uptodate">
-  <castor file="${castor.config.dir}/users.xsd" srcpackage="org.opennms.netmgt.config.users"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.views.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.views.sources.uptodate">
-  <castor file="${castor.config.dir}/views.xsd" srcpackage="org.opennms.netmgt.config.views"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.viewsdisplay.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.viewsdisplay.sources.uptodate">
-  <castor file="${castor.config.dir}/viewsdisplay.xsd" srcpackage="org.opennms.netmgt.config.viewsdisplay"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
- <target name="castor.webuiColors.sources.generate" depends="castor.sources.uptodate"
-  unless="castor.webuiColors.sources.uptodate">
-  <castor file="${castor.config.dir}/webui-colors.xsd" srcpackage="org.opennms.netmgt.config.webuiColors"
-   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
- </target>
+			<!-- store the package dir in castor.gen.target.dir -->
+			<propertycopy override="true" name="castor.gen.targetdir" from="@{srcpackage}.srcdir" />
 
- <!-- This target is used to determine if the castor sources are up to date.
-      First it uses a dependset rule to remove all files older than the xsd,
-      then it uses a condition to see if the root class described in the xsd
-      exists, and if it does, it sets an uptodate property for the xsd. -->
- <target name="castor.sources.uptodate" if="prep.done">
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="actiond-configuration.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/actiond" includes="*.java"/>
-  </dependset>
-  <condition property="castor.actiond.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/actiond/ActiondConfiguration.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.xsd.dir}" files="availability_report.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/report/availability" includes="*.java"/>
-  </dependset>
-  <condition property="castor.availability.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/report/availability/Report.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="capsd-configuration.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/capsd" includes="*.java"/>
-  </dependset>
-  <condition property="castor.capsd.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/capsd/CapsdConfiguration.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="categories.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/categories" includes="*.java"/>
-  </dependset>
-  <condition property="castor.categories.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/categories/Catinfo.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="collectd-configuration.xsd"/>
-   <srcfilelist dir="${castor.config.dir}" files="datacollection-config.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/collectd" includes="*.java"/>
-  </dependset>
-  <condition property="castor.collectd.sources.uptodate">
-   <and>
-    <available file="${build.castor.source.dir}/org/opennms/netmgt/config/collectd/CollectdConfiguration.java" type="file"/>
-    <available file="${build.castor.source.dir}/org/opennms/netmgt/config/collectd/DatacollectionConfig.java" type="file"/>
-   </and>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="destinationPaths.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/destinationPaths" includes="*.java"/>
-  </dependset>
-  <condition property="castor.destinationPaths.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/destinationPaths/DestinationPaths.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="dhcpd-configuration.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/dhcpd" includes="*.java"/>
-  </dependset>
-  <condition property="castor.dhcpd.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/dhcpd/DhcpdConfiguration.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="discovery-configuration.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/discovery" includes="*.java"/>
-  </dependset>
-  <condition property="castor.discovery.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/discovery/DiscoveryConfiguration.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.xsd.dir}" files="event.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/xml/event" includes="*.java"/>
-  </dependset>
-  <condition property="castor.event.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/xml/event/Event.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.xsd.dir}" files="eventconf.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/xml/eventconf" includes="*.java"/>
-  </dependset>
-  <condition property="castor.eventconf.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/xml/eventconf/Events.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="eventd-configuration.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/eventd" includes="*.java"/>
-  </dependset>
-  <condition property="castor.eventd.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/eventd/EventdConfiguration.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="events-archiver-configuration.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/archiver/events" includes="*.java"/>
-  </dependset>
-  <condition property="castor.events.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/archiver/events/EventsArchiverConfiguration.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="database-schema.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/filter" includes="*.java"/>
-  </dependset>
-  <condition property="castor.filter.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/filter/DatabaseSchema.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="groups.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/groups" includes="*.java"/>
-  </dependset>
-  <condition property="castor.groups.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/groups/Groupinfo.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="ksc-performance-reports.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/kscReports" includes="*.java"/>
-  </dependset>
-  <condition property="castor.kscReports.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/kscReports/ReportsList.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="notifd-configuration.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/notifd" includes="*.java"/>
-  </dependset>
-  <condition property="castor.notifd.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/notifd/NotifdConfiguration.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="notificationCommands.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/notificationCommands" includes="*.java"/>
-  </dependset>
-  <condition property="castor.notificationCommands.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/notificationCommands/NotificationCommands.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="notifications.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/notifications" includes="*.java"/>
-  </dependset>
-  <condition property="castor.notifications.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/notifications/Notifications.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="outage-configuration.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/outage" includes="*.java"/>
-  </dependset>
-  <condition property="castor.outage.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/outage/OutageConfiguration.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="vacuumd-configuration.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/vacuumd" includes="*.java"/>
-  </dependset>
-  <condition property="castor.vacuumd.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/vacuumd/VacuumdConfiguration.java" type="file"/>
-  </condition>
-   <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="poller-configuration.xsd"/>
-   <srcfilelist dir="${castor.config.dir}" files="poll-outages.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/poller" includes="*.java"/>
-  </dependset>
-  <condition property="castor.poller.sources.uptodate">
-   <and>
-    <available file="${build.castor.source.dir}/org/opennms/netmgt/config/poller/PollerConfiguration.java" type="file"/>
-    <available file="${build.castor.source.dir}/org/opennms/netmgt/config/poller/Outages.java" type="file"/>
-   </and>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="rtc-configuration.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/rtc" includes="*.java"/>
-  </dependset>
-  <condition property="castor.rtc.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/rtc/RTCConfiguration.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.xsd.dir}" files="rtceui.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/xml/rtc" includes="*.java"/>
-  </dependset>
-  <condition property="castor.rtceui.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/xml/rtc/EuiLevel.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="scriptd-configuration.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/scriptd" includes="*.java"/>
-  </dependset>
-  <condition property="castor.scriptd.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/scriptd/ScriptdConfiguration.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="opennms-server.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/server" includes="*.java"/>
-  </dependset>
-  <condition property="castor.server.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/server/LocalServer.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="service-configuration.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/service" includes="*.java"/>
-  </dependset>
-  <condition property="castor.service.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/service/ServiceConfiguration.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="trapd-configuration.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/trapd" includes="*.java"/>
-  </dependset>
-  <condition property="castor.trapd.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/trapd/TrapdConfiguration.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="threshd-configuration.xsd"/>
-   <srcfilelist dir="${castor.config.dir}" files="thresholding-config.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/threshd" includes="*.java"/>
-  </dependset>
-  <condition property="castor.threshd.sources.uptodate">
-   <and>
-    <available file="${build.castor.source.dir}/org/opennms/netmgt/config/threshd/ThreshdConfiguration.java" type="file"/>
-    <available file="${build.castor.source.dir}/org/opennms/netmgt/config/threshd/ThresholdingConfig.java" type="file"/>
-   </and>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="vulnscand-configuration.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/vulnscand" includes="*.java"/>
-  </dependset>
-  <condition property="castor.vulnscand.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/vulnscand/VulnscandConfiguration.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="xmlrpcd-configuration.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/xmlrpcd" includes="*.java"/>
-  </dependset>
-  <condition property="castor.xmlrpcd.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/xmlrpcd/XmlrpcdConfiguration.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="users.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/users" includes="*.java"/>
-  </dependset>
-  <condition property="castor.users.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/users/Userinfo.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="views.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/views" includes="*.java"/>
-  </dependset>
-  <condition property="castor.views.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/views/Viewinfo.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="viewsdisplay.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/viewsdisplay" includes="*.java"/>
-  </dependset>
-  <condition property="castor.viewsdisplay.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/viewsdisplay/Viewinfo.java" type="file"/>
-  </condition>
-  <dependset>
-   <srcfilelist dir="${castor.config.dir}" files="webui-colors.xsd"/>
-   <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/webuiColors" includes="*.java"/>
-  </dependset>
-  <condition property="castor.webuiColors.sources.uptodate">
-   <available file="${build.castor.source.dir}/org/opennms/netmgt/config/webuiColors/CategoryColors.java" type="file"/>
-  </condition>
- </target>
+			<!-- HACK:  Seems like outofdate below doesn't like it if there are no files and
+    	     no dir which seems like would be common when bootstrapping.  But... it doesn't
+    	     really matter here.  As a result if the dir doesn't exist I set a flag that
+    	     forces castor to run for this .xsd
+    	     -->
+			<if>
+				<not>
+					<available file="${build.castor.source.dir}/${castor.gen.targetdir}" />
+				</not>
+				<then>
+					<mkdir dir="${build.castor.source.dir}/${castor.gen.targetdir}" />
+					<property name="@{srcpackage}.force" value="true" />
+					<propertycopy override="true" name="castor.gen.force" from="@{srcpackage}.force" />
+				</then>
+				<else>
+					<property name="@{srcpackage}.force" value="false" />
+					<propertycopy override="true" name="castor.gen.force" from="@{srcpackage}.force" />
+				</else>
+			</if>
+
+			<!-- now rerun castor if the .java files are out of date. We delete the
+			     files so castor doesn't ask us if we want to overwrite it.  -->
+			<outofdate force="${castor.gen.force}">
+				<!-- the xsds -->
+				<sourcefiles>
+					<pathelement path="@{file}" />
+					<pathelements />
+				</sourcefiles>
+				<!-- the generated files -->
+				<targetfiles>
+					<fileset dir="${build.castor.source.dir}/${castor.gen.targetdir}">
+						<include name="*.java" />
+					</fileset>
+				</targetfiles>
+				<!-- we delete all the targets if they are out of date so if doesn't ask -->
+				<deletetargets all="true" quiet="true" />
+				<sequential>
+					<!-- run the castor task for every xsd -->
+					<for param="xsd">
+						<!-- this are the elements that 'for' loops over -->
+						<path>
+							<pathelement path="@{file}" />
+							<pathelements />
+						</path>
+						<!-- run castor -->
+						<sequential>
+							<castor file="@{xsd}" srcpackage="@{srcpackage}" destination="${build.castor.source.dir}" typefactory="${castor.typefactory}" />
+						</sequential>
+					</for>
+
+					<!-- Clean the imports so when using eclipse we don't have so many warnings -->
+					<if>
+						<istrue value="${build.clean.imports}" />
+						<then>
+							<echo>Cleaning imports for @{srcpackage}...</echo>
+							<cleanimports srcdir="${build.castor.source.dir}" includes="${castor.gen.targetdir}/*.java">
+								<classpath refid="libraries.java.path" />
+							</cleanimports>
+						</then>
+					</if>
+
+				</sequential>
+			</outofdate>
+
+		</sequential>
+	</macrodef>
+
+	<!-- this target processes each xsd -->
+
+	<target name="castor.sources.generate">
+		<castor-gen srcpackage="org.opennms.netmgt.config.threshd">
+			<pathelement path="${castor.config.dir}/threshd-configuration.xsd" />
+			<pathelement path="${castor.config.dir}/thresholding-config.xsd" />
+		</castor-gen>
+		<castor-gen srcpackage="org.opennms.netmgt.config.collectd">
+			<pathelement path="${castor.config.dir}/collectd-configuration.xsd" />
+			<pathelement path="${castor.config.dir}/datacollection-config.xsd" />
+		</castor-gen>
+		<castor-gen srcpackage="org.opennms.netmgt.config.poller">
+			<pathelement path="${castor.config.dir}/poller-configuration.xsd" />
+			<pathelement path="${castor.config.dir}/poll-outages.xsd" />
+		</castor-gen>
+		<castor-gen file="${castor.config.dir}/actiond-configuration.xsd" srcpackage="org.opennms.netmgt.config.actiond" />
+		<castor-gen file="${castor.xsd.dir}/availability_report.xsd" srcpackage="org.opennms.report.availability" />
+		<castor-gen file="${castor.config.dir}/capsd-configuration.xsd" srcpackage="org.opennms.netmgt.config.capsd" />
+		<castor-gen file="${castor.config.dir}/categories.xsd" srcpackage="org.opennms.netmgt.config.categories" />
+		<castor-gen file="${castor.config.dir}/destinationPaths.xsd" srcpackage="org.opennms.netmgt.config.destinationPaths" />
+		<castor-gen file="${castor.config.dir}/dhcpd-configuration.xsd" srcpackage="org.opennms.netmgt.config.dhcpd" />
+		<castor-gen file="${castor.config.dir}/discovery-configuration.xsd" srcpackage="org.opennms.netmgt.config.discovery" />
+		<castor-gen file="${castor.xsd.dir}/event.xsd" srcpackage="org.opennms.netmgt.xml.event" />
+		<castor-gen file="${castor.xsd.dir}/eventconf.xsd" srcpackage="org.opennms.netmgt.xml.eventconf" />
+		<castor-gen file="${castor.config.dir}/eventd-configuration.xsd" srcpackage="org.opennms.netmgt.config.eventd" />
+		<castor-gen file="${castor.config.dir}/events-archiver-configuration.xsd" srcpackage="org.opennms.netmgt.config.archiver.events" />
+		<castor-gen file="${castor.config.dir}/database-schema.xsd" srcpackage="org.opennms.netmgt.config.filter" />
+		<castor-gen file="${castor.config.dir}/groups.xsd" srcpackage="org.opennms.netmgt.config.groups" />
+		<castor-gen file="${castor.config.dir}/ksc-performance-reports.xsd" srcpackage="org.opennms.netmgt.config.kscReports" />
+		<castor-gen file="${castor.config.dir}/notifd-configuration.xsd" srcpackage="org.opennms.netmgt.config.notifd" />
+		<castor-gen file="${castor.config.dir}/notificationCommands.xsd" srcpackage="org.opennms.netmgt.config.notificationCommands" />
+		<castor-gen file="${castor.config.dir}/notifications.xsd" srcpackage="org.opennms.netmgt.config.notifications" />
+		<castor-gen file="${castor.config.dir}/outage-configuration.xsd" srcpackage="org.opennms.netmgt.config.outage" />
+		<castor-gen file="${castor.config.dir}/vacuumd-configuration.xsd" srcpackage="org.opennms.netmgt.config.vacuumd" />
+		<castor-gen file="${castor.config.dir}/rtc-configuration.xsd" srcpackage="org.opennms.netmgt.config.rtc" />
+		<castor-gen file="${castor.xsd.dir}/rtceui.xsd" srcpackage="org.opennms.netmgt.xml.rtc" />
+		<castor-gen file="${castor.config.dir}/scriptd-configuration.xsd" srcpackage="org.opennms.netmgt.config.scriptd" />
+		<castor-gen file="${castor.config.dir}/opennms-server.xsd" srcpackage="org.opennms.netmgt.config.server" />
+		<castor-gen file="${castor.config.dir}/service-configuration.xsd" srcpackage="org.opennms.netmgt.config.service" />
+		<castor-gen file="${castor.config.dir}/trapd-configuration.xsd" srcpackage="org.opennms.netmgt.config.trapd" />
+		<castor-gen file="${castor.config.dir}/vulnscand-configuration.xsd" srcpackage="org.opennms.netmgt.config.vulnscand" />
+		<castor-gen file="${castor.config.dir}/xmlrpcd-configuration.xsd" srcpackage="org.opennms.netmgt.config.xmlrpcd" />
+		<castor-gen file="${castor.config.dir}/users.xsd" srcpackage="org.opennms.netmgt.config.users" />
+		<castor-gen file="${castor.config.dir}/views.xsd" srcpackage="org.opennms.netmgt.config.views" />
+		<castor-gen file="${castor.config.dir}/viewsdisplay.xsd" srcpackage="org.opennms.netmgt.config.viewsdisplay" />
+		<castor-gen file="${castor.config.dir}/webui-colors.xsd" srcpackage="org.opennms.netmgt.config.webuiColors" />
+
+	</target>
+
 </project>

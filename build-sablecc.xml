@@ -25,8 +25,13 @@ Build file for OpenNMS' sablecc-generated Java files.
   </target>
    
 <target name="clean.imports" if="build.clean.imports">   
-  <echo>Cleaning imports for generated source...</echo>
-  <cleanimports srcdir="${build.sablecc.source.dir}" />
+  <if>
+  	<isfalse value="${sablecc.filter.sources.uptodate}" />
+    <then>
+     <echo>Cleaning imports for generated source...</echo>
+     <cleanimports srcdir="${build.sablecc.source.dir}" />
+    	</then>
+ </if>
  </target>
 
 <!--

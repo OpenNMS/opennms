@@ -358,19 +358,11 @@ your distribution.
       <pathelement location="${dev.lib.dir}/servlet.jar"/>
     </classpath> 
   </taskdef> 
-
-  <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+	
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
     <classpath>
       <pathelement location="${dev.lib.dir}/ant-contrib.jar"/>
-    </classpath> 
-  </taskdef>
-
-  <!-- In the properties file referenced above, the For task is commented
-       out in the 1.02b jar file, so I need to have this taskdef -->
-  <taskdef name="for" classname="net.sf.antcontrib.logic.For">
-    <classpath>
-      <pathelement location="${dev.lib.dir}/ant-contrib.jar"/>
-    </classpath> 
+    </classpath>
   </taskdef>
 
   <!-- PREP target -->

@@ -1,5 +1,9 @@
 1.2.X to 1.3.0
 ----------------------------------------------------------------------
+- Revised build-castor.xml to make use of macros also made cleanImports run
+  only if an xsd was processed
+- Revised build-sablecc.xml so cleanImports runs only if the .java files are 
+  generated.
 - Modified Eclipse project to exclude installer.properties and MANIFEST.MF when
   building as these need to pass thru ant token filters.
 - Rearrange ant libraries to add more control over the ant classpath
