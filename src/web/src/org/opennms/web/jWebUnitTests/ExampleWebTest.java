@@ -10,6 +10,8 @@ package org.opennms.web.jWebUnitTests;
 
 import java.io.File;
 
+import org.opennms.netmgt.mock.MockUtil;
+
 import net.sourceforge.jwebunit.WebTestCase;
 
 import com.meterware.servletunit.ServletRunner;
@@ -22,6 +24,7 @@ public class ExampleWebTest extends WebTestCase {
     }
     
     public void setUp() throws Exception {
+        MockUtil.setupLogging();
         
         ServletRunner sr = new ServletRunner(new File("dist/webapps/opennms/WEB-INF/web.xml"), "/opennms");
      
@@ -62,7 +65,7 @@ public class ExampleWebTest extends WebTestCase {
         assertRadioOptionSelected("category", "Overall Service Availability");
         setWorkingForm("avail");
         submit();
-        getTester().dumpResponse();
+        //getTester().dumpResponse();
         assertTextPresent("No Email Address Configured");
         
 //        assertTextPresent("You should have received a copy of the GNU General Public License along with this program; if not, write to the");
