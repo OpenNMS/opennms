@@ -666,6 +666,37 @@
 		<severity>Warning</severity>
 	</event>
 	<event>
+		<uei>uei.opennms.org/internal/poller/suspendPollingService</uei>
+		<event-label>OpenNMS-defined poller event: suspendPollingService</event-label>
+		<descr>
+			&lt;p&gt;A forced rescan has identified the %service% service
+			on interface %interface% as no longer part of any poller package,
+			or the service has been unmanaged.
+			&lt;/p&gt; Polling will be discontinued.&lt;/p&gt;
+		</descr>
+		<logmsg dest='logndisplay'>
+			Polling will be discontinued for %service% service on interface
+			%interface%.
+		</logmsg>
+		<severity>Warning</severity>
+	</event>
+	<event>
+		<uei>uei.opennms.org/internal/poller/resumePollingService</uei>
+		<event-label>OpenNMS-defined poller event: resumePollingService</event-label>
+		<descr>
+			&lt;p&gt;A forced rescan has identified the %service% service
+			on interface %interface% as covered by a poller package, and
+			managed.
+			&lt;/p&gt; Polling will begin in accordance with the package and
+			any applicable outage calendar.&lt;/p&gt;
+		</descr>
+		<logmsg dest='logndisplay'>
+			Polling will begin/resume for %service% service on interface
+			%interface%.
+		</logmsg>
+		<severity>Warning</severity>
+	</event>
+	<event>
 		<uei>uei.opennms.org/nodes/nodeInfoChanged</uei>
 		<event-label>OpenNMS-defined node event: nodeInfoChanged</event-label>
 		<descr>

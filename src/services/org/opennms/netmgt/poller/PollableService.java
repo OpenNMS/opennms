@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2004 Jan 06: Added a log.debug entry to note when a service will no longer
+// 		be polled
 // 2003 Jul 02: Fixed ClassCastException.
 // 2003 Jan 31: Added the option to match any IP address in an outage calendar.
 // 2003 Jan 31: Added the ability to imbed RRA information in poller packages.
@@ -901,7 +903,15 @@ final class PollableService
 		// Is the service marked for deletion?  If so simply return.
 		//
 		if (this.isDeleted())
+		{
+			if (log.isDebugEnabled())
+			{
+				log.debug("PollableService doRun: Skipping service marked as deleted on "
+						+ m_pInterface.getAddress().getHostAddress()
+						+ ", service = " + m_service.getName() + ", status = " + m_status);
+			}
 			return;
+		}
 		
 		// NodeId
 		int nodeId = m_pInterface.getNode().getNodeId();

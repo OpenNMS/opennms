@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2004 Jan 06: Added support for STATUS_SUSPEND and STATUS_RESUME
 // 2002 Nov 10: Removed "http://" from UEIs and removed references to bluebird.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -185,7 +186,7 @@ public class ManageNodesServlet extends HttpServlet
 							//newEvent.setService(curService.getName());
 							//newEvent.setTime(curDate);
 							
-							stmt.setString(1, "A");
+							stmt.setString(1, "R");
 							stmt.setString(2, curInterface.getAddress());
 							stmt.setInt(3, curInterface.getNodeid());
 							stmt.setInt(4, curService.getId());
@@ -202,7 +203,7 @@ public class ManageNodesServlet extends HttpServlet
 							//newEvent.setService(curService.getName());
 							//newEvent.setTime(curDate);
 							
-							stmt.setString(1, "F");
+							stmt.setString(1, "S");
 							stmt.setString(2, curInterface.getAddress());
 							stmt.setInt(3, curInterface.getNodeid());
 							stmt.setInt(4, curService.getId());

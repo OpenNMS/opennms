@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2004 Jan 06: Added support for SUSPEND_POLLING_SERVICE_EVENT_UEI and
+// 		RESUME_POLLING_SERVICE_EVENT_UEI
 // 2003 Nov 11: Merged changes from Rackspace project
 // 2003 Jan 31: Cleaned up some unused imports.
 //
@@ -235,6 +237,12 @@ final class BroadcastEventProcessor
 
 		// interfaceDeleted
 		ueiList.add(EventConstants.INTERFACE_DELETED_EVENT_UEI);
+
+		// suspendPollingService
+		 ueiList.add(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI);
+
+		 // resumePollingService
+		 ueiList.add(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI);
 		
 		// Subscribe to eventd
 		EventIpcManagerFactory.init();
@@ -254,6 +262,17 @@ final class BroadcastEventProcessor
 	private void nodeGainedServiceHandler(Event event)
 	{
 		Category log = ThreadCategory.getInstance(getClass());
+
+		// Is this the result of a resumePollingService event?
+		String whichEvent = "Unexpected Event: " + event.getUei() + ": ";
+		if(event.getUei().equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI))
+		{
+			whichEvent = "nodeGainedService: ";
+		}
+		else if(event.getUei().equals(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI))
+		{
+			whichEvent = "resumePollingService: ";
+		}
 
 		// First make sure the service gained is in active state before trying to
 		// schedule
@@ -281,15 +300,15 @@ final class BroadcastEventProcessor
 			{
 				if (log.isDebugEnabled())
 				{
-					log.debug("nodeGainedService: number check to see if service is in status: " + count); 
-					log.debug("nodeGainedService: " + event.getNodeid() + "/" + event.getInterface() 
+					log.debug(whichEvent + "number check to see if service is in status: " + count); 
+					log.debug(whichEvent + event.getNodeid() + "/" + event.getInterface() 
                                                 + "/" + event.getService() + " not active - hence not scheduled");
 				}
 				return;
 			}
 
 			if (log.isDebugEnabled())
-				log.debug("nodeGainedService: " + event.getNodeid() + "/" + event.getInterface() 
+				log.debug(whichEvent + event.getNodeid() + "/" + event.getInterface() 
                                         + "/" + event.getService() + " active");
 		}
 		catch(SQLException sqlE)
@@ -320,7 +339,7 @@ final class BroadcastEventProcessor
 			if (!pCfgFactory.serviceInPackageAndEnabled(event.getService(), pkg))
 			{
 				if(log.isDebugEnabled())
-					log.debug("nodeGainedService: interface " + event.getInterface() + 
+					log.debug(whichEvent + "interface " + event.getInterface() + 
 							" gained service " + event.getService() + 
 							", but the service is not enabled or does not exist in package: " 
 							+ pkg.getName());
@@ -332,7 +351,7 @@ final class BroadcastEventProcessor
 			if(!pCfgFactory.interfaceInPackage(event.getInterface(), pkg))
 			{
 				if(log.isDebugEnabled())
-					log.debug("nodeGainedService: interface " + event.getInterface() + 
+					log.debug(whichEvent + "interface " + event.getInterface() + 
 							" gained service " + event.getService() + 
 							", but the interface was not in package: " 
 							+ pkg.getName());
@@ -354,7 +373,7 @@ final class BroadcastEventProcessor
 				//
 				int nodeId = (int)event.getNodeid();
 				pNode = Poller.getInstance().getNode(nodeId);
-				log.debug("nodeGainedService: attempting to retrieve pollable node object for nodeid " + nodeId);
+				log.debug(whichEvent + "attempting to retrieve pollable node object for nodeid " + nodeId);
 				if (pNode == null)
 				{
 					// Nope...so we need to create it
@@ -375,7 +394,7 @@ final class BroadcastEventProcessor
 				{
 					// Create the PollableInterface and add it to the node
 					if (log.isDebugEnabled())
-						log.debug("nodeGainedService: creating new pollable interface: " + event.getInterface() + 
+						log.debug(whichEvent + "creating new pollable interface: " + event.getInterface() + 
 								" to pollable node " + pNode.getNodeId());
 					pInterface = new PollableInterface(pNode, InetAddress.getByName(event.getInterface()));
 					interfaceCreated = true;
@@ -383,7 +402,7 @@ final class BroadcastEventProcessor
 				
 				// Create a new PollableService representing this node, interface,
 				// service and package pairing
-				log.debug("nodeGainedService: creating new pollable service object for: " + nodeId + "/" 
+				log.debug(whichEvent + "creating new pollable service object for: " + nodeId + "/" 
                                         + event.getInterface() + "/" + event.getService());
 				pSvc = new PollableService(pInterface,
 								event.getService(),
@@ -408,7 +427,7 @@ final class BroadcastEventProcessor
 				//           PollableService aded to the interface for a 
 				//           particular service will be represented in the
 				//           map.  THIS IS BY DESIGN
-				log.debug("nodeGainedService: adding pollable service to service list of interface: " 
+				log.debug(whichEvent + "adding pollable service to service list of interface: " 
                                         + event.getInterface());
 				pInterface.addService(pSvc);
 				
@@ -418,7 +437,7 @@ final class BroadcastEventProcessor
 					//
 					// NOTE:  addInterface() calls recalculateStatus() automatically
 					if (log.isDebugEnabled())
-						log.debug("nodeGainedService: adding new pollable interface " + 
+						log.debug(whichEvent + "adding new pollable interface " + 
 								event.getInterface() + " to pollable node " + pNode.getNodeId());
 					pNode.addInterface(pInterface);
 				}
@@ -434,14 +453,14 @@ final class BroadcastEventProcessor
 					// Add the node to the node map
 					//
 					if (log.isDebugEnabled())
-						log.debug("nodeGainedService: adding new pollable node: " + pNode.getNodeId());
+						log.debug(whichEvent + "adding new pollable node: " + pNode.getNodeId());
 					Poller.getInstance().addNode(pNode);
 				}
 								
 				// Schedule the service for polling
 				m_scheduler.schedule(pSvc, pSvc.recalculateInterval());
 				if (log.isDebugEnabled())
-					log.debug("nodeGainedService: " + event.getNodeid() + "/" + event.getInterface() + 
+					log.debug(whichEvent + event.getNodeid() + "/" + event.getInterface() + 
 							"/" + event.getService() + " scheduled ");
 			}
 			catch(UnknownHostException ex)
@@ -1133,6 +1152,95 @@ final class BroadcastEventProcessor
                        	}
 		}	
 	}
+
+	/**
+	 * This method is responsible for removing a node's
+	 * pollable service from the pollable services list
+	 */
+	private void nodeRemovePollableServiceHandler(Event event)
+	{
+		Category log = ThreadCategory.getInstance(getClass());
+
+		int nodeId = (int)event.getNodeid();
+		String intfc = event.getInterface();
+		String svc = event.getService();
+
+		PollableNode pNode = Poller.getInstance().getNode(nodeId);
+		if (pNode == null)  // Sanity check
+		{
+			log.error("Nodeid " + nodeId + " does not exist in pollable node map, unable to remove service from pollable services list.");
+			return;
+		}
+
+		PollableInterface pInterface = pNode.getInterface(event.getInterface());
+		if (pInterface == null)  // Sanity check
+		{
+			log.error("Interface " + intfc + "on node " + nodeId + " does not exist in pollable node map, unable to remove service from pollable services list.");
+			return;
+		}
+
+		PollableService pService = pInterface.getService(event.getService());
+		if (pService == null)  // Sanity check
+		{
+			log.error("Service " + svc + "on Interface " + intfc + "on node " + nodeId + " does not exist in pollable node map, unable to remove service from pollable services list.");
+			return;
+		}
+
+		// acquire lock to 'PollableNode'
+		//
+		boolean ownLock = false;
+		try
+		{
+			// Attempt to obtain node lock...wait as long as it takes.
+			//
+			if (log.isDebugEnabled())
+				log.debug("nodeRemovePollableServiceHandler: Trying to get node lock for nodeId " + nodeId);
+
+			ownLock = pNode.getNodeLock(WAIT_FOREVER);
+			if (ownLock)
+			{
+				if (log.isDebugEnabled())
+					log.debug("nodeRemovePollableServiceHandler: obtained node lock for nodeid: " + nodeId);
+
+				// Mark the service as deleted
+				pService.markAsDeleted();
+				if (log.isDebugEnabled())
+					log.debug("nodeRemovePollableServiceHandler: Marking service " + svc + " for deletion from active polling on node " + nodeId);
+			}
+			else
+			{
+				// failed to acquire lock
+				log.error("nodeRemovePollableServiceHandler: failed to obtain lock on nodeId " + nodeId);
+			}
+		}
+		catch (InterruptedException iE)
+		{
+			// failed to acquire lock
+			log.error("nodeRemovePollableServiceHandler: thread interrupted...failed to obtain lock on nodeId " + nodeId);
+		}
+		catch (Throwable t)
+		{
+			log.error("exception caught processing suspendPollingService event for " + nodeId, t);
+		}
+		finally
+		{
+			if (ownLock)
+			{
+				if (log.isDebugEnabled())
+					log.debug("nodeRemovePollableServiceHandler: releasing node lock for nodeid: " + nodeId);
+				try
+				{
+					pNode.releaseNodeLock();
+				}
+				catch (InterruptedException iE)
+				{
+					log.error("nodeRemovePollableServiceHandler: thread interrupted...failed to release lock on nodeId " + nodeId);
+				}
+			}
+		}
+	}
+
+
 	
 	/** 
 	 * This method is responsible for removing the node specified
@@ -1728,6 +1836,32 @@ final class BroadcastEventProcessor
 			else
 			{
 				nodeGainedServiceHandler(event);
+			}
+		}
+		else if(event.getUei().equals(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI))
+		{
+			// If there is no interface then it cannot be processed
+			//
+			if(event.getInterface() == null || event.getInterface().length() == 0)
+			{
+				log.info("BroadcastEventProcessor: no interface found, cannot resume polling service, discarding event");
+			}
+			else
+			{
+				nodeGainedServiceHandler(event);
+			}
+		}
+		else if(event.getUei().equals(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI))
+		{
+			// If there is no interface then it cannot be processed
+			//
+			if(event.getInterface() == null || event.getInterface().length() == 0)
+			{
+				log.info("BroadcastEventProcessor: no interface found, cannot suspend polling service, discarding event");
+			}
+			else
+			{
+				nodeRemovePollableServiceHandler(event);
 			}
 		}
 		else if(event.getUei().equals(EventConstants.RESTART_POLLING_INTERFACE_EVENT_UEI))

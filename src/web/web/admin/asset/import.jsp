@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2004 Jan 06: Added support for Display, Notify, Poller and Threshold categories
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
@@ -94,11 +95,11 @@
                 <li> AssetNumber
                 <li> OperatingSystem
                 <li> Rack
+		<li> Slot
               </ol>
             </td>
             <td colspan="33%">
               <ol start="13">
-                <li> Slot
                 <li> Port
                 <li> Region
                 <li> Division
@@ -110,12 +111,12 @@
                 <li> Zip
                 <li> Building
                 <li> Floor
+                <li> Room
+                <li> VendorPhone
               </ol>
             </td>
             <td colspan="33%">
               <ol start="25">
-                <li> Room
-                <li> VendorPhone
                 <li> VendorFax
                 <li> DateInstalled
                 <li> Lease
@@ -124,6 +125,10 @@
                 <li> MaintContract
                 <li> VendorAssetNumber
                 <li> MaintContractExpires
+		<li> Display Category
+		<li> Notification Category
+		<li> Poller Category
+		<li> Threshold Category
                 <li> Comments
               </ol>
             </td>

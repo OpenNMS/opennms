@@ -70,6 +70,14 @@
      		<column name="ipAddr" visable="false"/>
      		<column name="serviceMapName"/>
 	</table>
+	<table name="assets">
+		<join column="nodeID" table="ipInterface" table-column="nodeID"/>
+		<column name="nodeID" visable="false"/>
+		<column name="displayCategory"/>
+		<column name="notifyCategory"/>
+		<column name="pollerCategory"/>
+		<column name="thresholdCategory"/>
+	</table>
 
 
 </database-schema>

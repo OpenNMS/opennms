@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2004 Jan 06: Added support for STATUS_SUSPEND abd STATUS_RESUME
 // 2003 Nov 11: Merged changes from Rackspace project
 // 2003 Sep 17: Fixed an SQL parameter problem.
 // 2003 Sep 16: Changed rescan information to let OpenNMS handle duplicate IPs.
@@ -991,6 +992,8 @@ public final class CapsdConfigFactory
 						// service is not enabled, try all packages
 						//
 						boolean svcToBePolled = false;
+						char oldStatus = svcStatus;
+						char newStatus = 'U';
 						if (ipPkg != null)
 						{
 							svcToBePolled = pollerCfgFactory.isPolled(svcName, ipPkg);
@@ -1006,15 +1009,26 @@ public final class CapsdConfigFactory
 						{
 							// current status is right
 							if (log.isDebugEnabled())
-								log.debug("syncManagementState: " + ifEntry.getNodeId() + "/" + ipaddress  + "/" + svcName + " - no change in status");
+								log.debug("syncManagementState: " + ifEntry.getNodeId() + "/" + ipaddress  + "/" + svcName + " status = " +svcStatus + " - no change in status");
 						}
 						else
 						{
 							// Update the 'ifServices' table
-							if (svcToBePolled)
+							if (svcStatus == DbIfServiceEntry.STATUS_SUSPEND  && svcToBePolled)
+							{
+								svcUpdateStmt.setString(1, new String(new char[] { DbIfServiceEntry.STATUS_FORCED }));
+								newStatus = 'F';
+							}
+							else if (svcToBePolled)
+							{
 								svcUpdateStmt.setString(1, new String(new char[] { DbIfServiceEntry.STATUS_ACTIVE }));
+								newStatus = 'A';
+							}
 							else
+							{
 								svcUpdateStmt.setString(1, new String(new char[] { DbIfServiceEntry.STATUS_NOT_POLLED }));
+								newStatus = 'N';
+							}
 							svcUpdateStmt.setInt(2, ifEntry.getNodeId());
 							svcUpdateStmt.setString(3, ipaddress);
 							svcUpdateStmt.setInt(4, svcId);
@@ -1023,8 +1037,8 @@ public final class CapsdConfigFactory
 							if (log.isDebugEnabled())
 							{
 								log.debug("syncManagementState: update completed for node/interface/svc: " + 
-								ifEntry.getNodeId() + "/" + ipaddress
-								+ "/" + svcName);
+								ifEntry.getNodeId() + "/" + ipaddress + "/" + svcName +
+								" status changed from " + oldStatus + " to " + newStatus);
 							}
 						}
 

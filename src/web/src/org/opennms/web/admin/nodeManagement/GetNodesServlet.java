@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2004 Jan 06: Added support for STATUS_SUSPEND and STATUS_RESUME
 // 2003 Feb 05: Added ORDER BY to SQL statement.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -61,7 +62,7 @@ public class GetNodesServlet extends HttpServlet
                 "SELECT nodeid, ipaddr, isManaged FROM ipinterface WHERE ismanaged in ('M','A','U','F') AND ipaddr <> '0.0.0.0' ORDER BY inet(ipaddr)";
         
         private static final String SERVICE_QUERY =
-                "SELECT ifservices.serviceid, servicename, status FROM ifservices, service WHERE nodeid=? AND ipaddr=? AND status in ('A','U','F') AND ifservices.serviceid = service.serviceid ORDER BY servicename";
+                "SELECT ifservices.serviceid, servicename, status FROM ifservices, service WHERE nodeid=? AND ipaddr=? AND status in ('A','U','F', 'S', 'R') AND ifservices.serviceid = service.serviceid ORDER BY servicename";
 	
         public void init() throws ServletException 
         {

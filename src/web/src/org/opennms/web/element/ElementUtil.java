@@ -10,6 +10,8 @@
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
+// 2004 Jan 06: added support for STATUS_SUSPEND and STATUS_RESUME
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -97,6 +99,8 @@ public class ElementUtil extends Object
                 serviceStatusMap.put( new Character('D'), "Deleted" );
                 serviceStatusMap.put( new Character('F'), "Forced Unmanaged" );
                 serviceStatusMap.put( new Character('N'), "Not Polled" );                
+		serviceStatusMap.put( new Character('R'), "Rescan to Resume" );
+		serviceStatusMap.put( new Character('S'), "Rescan to Suspend" );
             }
         }        
         

@@ -10,6 +10,8 @@
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
+// 2004 Jan 06: Added support for Display, Notify, Poller and Threshold categories
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -131,7 +133,7 @@ public class ImportAssetsServlet extends HttpServlet
 	    ArrayList tokens = this.splitfields( line, ",", -1 );
 	
 	    try {
-		if( tokens.size() != 35 ) {
+		if( tokens.size() != 39 ) {
 		    throw new NoSuchElementException();
 		}
  
@@ -171,7 +173,11 @@ public class ImportAssetsServlet extends HttpServlet
 		asset.setMaintContract( URLDecoder.decode( (String)tokens.get(31) ));
 		asset.setVendorAssetNumber( URLDecoder.decode( (String)tokens.get(32) ));
 		asset.setMaintContractExpires( URLDecoder.decode( (String)tokens.get(33) ));
-		asset.setComments( URLDecoder.decode( (String)tokens.get(34) ));
+		asset.setDisplayCategory( URLDecoder.decode( (String)tokens.get(34) ));
+		asset.setNotifyCategory( URLDecoder.decode( (String)tokens.get(35) ));
+		asset.setPollerCategory( URLDecoder.decode( (String)tokens.get(36) ));
+		asset.setThresholdCategory( URLDecoder.decode( (String)tokens.get(37) ));
+		asset.setComments( URLDecoder.decode( (String)tokens.get(38) ));
 
 		list.add( asset );
 	    }

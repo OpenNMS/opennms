@@ -10,6 +10,7 @@
 //
 // Modifications:
 // 
+// 2004 Jan 06: Added support for Display, Notify, Poller, and Threshold categories
 // 2003 Feb 05: Added ORDER BY to SQL statement.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -100,7 +101,7 @@ public class AssetModel extends Object
         Connection conn = Vault.getDbConnection();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement( "INSERT INTO ASSETS (nodeID,category,manufacturer,vendor,modelNumber,serialNumber,description,circuitId,assetNumber,operatingSystem,rack,slot,port,region,division,department,address1,address2,city,state,zip,building,floor,room,vendorPhone,vendorFax,userLastModified,lastModifiedDate,dateInstalled,lease,leaseExpires,supportPhone,maintContract,vendorAssetNumber,maintContractExpires,comment) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            PreparedStatement stmt = conn.prepareStatement( "INSERT INTO ASSETS (nodeID,category,manufacturer,vendor,modelNumber,serialNumber,description,circuitId,assetNumber,operatingSystem,rack,slot,port,region,division,department,address1,address2,city,state,zip,building,floor,room,vendorPhone,vendorFax,userLastModified,lastModifiedDate,dateInstalled,lease,leaseExpires,supportPhone,maintContract,vendorAssetNumber,maintContractExpires,displayCategory,notifyCategory,pollerCategory,thresholdCategory,comment) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             stmt.setInt( 1, asset.nodeId );
             stmt.setString( 2, asset.category );
             stmt.setString( 3, asset.manufacturer );
@@ -136,7 +137,11 @@ public class AssetModel extends Object
             stmt.setString( 33, asset.maintContract );
             stmt.setString( 34, asset.vendorAssetNumber );
             stmt.setString( 35, asset.maintContractExpires );
-            stmt.setString( 36, asset.comments );
+	    stmt.setString( 36, asset.displayCategory );
+	    stmt.setString( 37, asset.notifyCategory );
+	    stmt.setString( 38, asset.pollerCategory );
+	    stmt.setString( 39, asset.thresholdCategory );
+            stmt.setString( 40, asset.comments );
             
             stmt.execute();
             stmt.close();
@@ -155,7 +160,7 @@ public class AssetModel extends Object
         Connection conn = Vault.getDbConnection();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement( "UPDATE ASSETS SET category=?,manufacturer=?,vendor=?,modelNumber=?,serialNumber=?,description=?,circuitId=?,assetNumber=?,operatingSystem=?,rack=?,slot=?,port=?,region=?,division=?,department=?,address1=?,address2=?,city=?,state=?,zip=?,building=?,floor=?,room=?,vendorPhone=?,vendorFax=?,userLastModified=?,lastModifiedDate=?,dateInstalled=?,lease=?,leaseExpires=?,supportPhone=?,maintContract=?,vendorAssetNumber=?,maintContractExpires=?,comment=? WHERE nodeid=?");
+            PreparedStatement stmt = conn.prepareStatement( "UPDATE ASSETS SET category=?,manufacturer=?,vendor=?,modelNumber=?,serialNumber=?,description=?,circuitId=?,assetNumber=?,operatingSystem=?,rack=?,slot=?,port=?,region=?,division=?,department=?,address1=?,address2=?,city=?,state=?,zip=?,building=?,floor=?,room=?,vendorPhone=?,vendorFax=?,userLastModified=?,lastModifiedDate=?,dateInstalled=?,lease=?,leaseExpires=?,supportPhone=?,maintContract=?,vendorAssetNumber=?,maintContractExpires=?,displayCategory=?,notifyCategory=?,pollerCategory=?,thresholdCategory=?,comment=? WHERE nodeid=?");
             stmt.setString( 1, asset.category );
             stmt.setString( 2, asset.manufacturer );
             stmt.setString( 3, asset.vendor );
@@ -190,8 +195,12 @@ public class AssetModel extends Object
             stmt.setString( 32, asset.maintContract );
             stmt.setString( 33, asset.vendorAssetNumber );
             stmt.setString( 34, asset.maintContractExpires );
-            stmt.setString( 35, asset.comments );
-            stmt.setInt( 36, asset.nodeId );
+	    stmt.setString( 35, asset.displayCategory );
+	    stmt.setString( 36, asset.notifyCategory );
+	    stmt.setString( 37, asset.pollerCategory );
+	    stmt.setString( 38, asset.thresholdCategory );
+            stmt.setString( 39, asset.comments );
+            stmt.setInt( 40, asset.nodeId );
             
             stmt.execute();
             stmt.close();
@@ -296,6 +305,10 @@ public class AssetModel extends Object
             asset.setLeaseExpires ( rs.getString("leaseExpires"));
             asset.setMaintContractExpires ( rs.getString("maintContractExpires"));
             asset.setVendorAssetNumber ( rs.getString("vendorAssetNumber"));
+	    asset.setDisplayCategory ( rs.getString("displayCategory"));
+	    asset.setNotifyCategory ( rs.getString("notifyCategory"));
+	    asset.setPollerCategory ( rs.getString("pollerCategory"));
+	    asset.setThresholdCategory ( rs.getString("thresholdCategory"));
             asset.setComments ( rs.getString("comment"));
 
             element = rs.getTimestamp("lastModifiedDate");
@@ -335,6 +348,7 @@ public class AssetModel extends Object
         new String[] { "Date Installed", "dateInstalled" },
         new String[] { "Department", "department" },
         new String[] { "Description", "description" },
+	new String[] { "Display Category", "displayCategory" },
         new String[] { "Division", "division" },
         new String[] { "Floor", "floor" },
         new String[] { "Lease", "lease" },
@@ -344,14 +358,17 @@ public class AssetModel extends Object
         new String[] { "Maint Phone", "supportPhone" },
         new String[] { "Manufacturer", "manufacturer" },
         new String[] { "Model Number", "modelNumber" },
+	new String[] { "Notification Category", "notifyCategory" },
         new String[] { "Operating System", "operatingSystem" },
         new String[] { "Port", "port" },
+	new String[] { "Poller Category", "pollerCategory" },
         new String[] { "Rack", "rack" },
         new String[] { "Region", "region" },
         new String[] { "Room", "room" },
         new String[] { "Serial Number", "serialNumber" },
         new String[] { "Slot", "slot" },
         new String[] { "State", "state" },
+	new String[] { "Threshold Category", "thresholdCategory" },
         new String[] { "User Last Modified", "userLastModified" },
         new String[] { "Vendor", "vendor" },
         new String[] { "Vendor Asset Number", "vendorAssetNumber" },

@@ -10,6 +10,7 @@
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
+// 2004 Jan 06: Added support for Display, Notify, Poller, and Threshold categories
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -94,6 +95,10 @@ public class Asset extends Object
     protected String maintContract = "";
     protected String vendorAssetNumber = "";
     protected String maintContractExpires = "";
+    protected String displayCategory = "";
+    protected String notifyCategory = "";
+    protected String pollerCategory = "";
+    protected String thresholdCategory = "";
     protected String comments = "";
 
 
@@ -131,7 +136,58 @@ public class Asset extends Object
         return( this.category );
     }
     
-    
+   public void setDisplayCategory( String displayCategory ) {
+	if( displayCategory != null ) {
+	    this.displayCategory = displayCategory;
+	}
+	else {
+	    this.displayCategory = "";
+	}
+   }
+
+   public String getDisplayCategory() {
+	return( this.displayCategory );
+   }
+
+   public void setNotifyCategory( String notifyCategory ) {
+	if( notifyCategory != null ) {
+	    this.notifyCategory = notifyCategory;
+	}
+	else {
+	    this.notifyCategory = "";
+	}
+   }
+
+   public String getNotifyCategory() {
+	return( this.notifyCategory );
+   }
+
+   public void setPollerCategory( String pollerCategory ) {
+	if( pollerCategory != null ) {
+	    this.pollerCategory = pollerCategory;
+	}
+	else {
+	    this.pollerCategory = "";
+	}
+   }
+
+   public String getPollerCategory() {
+	return( this.pollerCategory );
+   }
+
+   public void setThresholdCategory( String thresholdCategory ) {
+	if( thresholdCategory != null ) {
+	    this.thresholdCategory = thresholdCategory;
+	}
+	else {
+	    this.thresholdCategory = "";
+	}
+   }
+
+    public String getThresholdCategory() {
+	return( this.thresholdCategory );
+    }
+
     public void setManufacturer( String manufacturer ) {
         if( manufacturer != null ) {
             this.manufacturer = manufacturer;

@@ -10,6 +10,9 @@
 //
 // Modifications:
 //
+// 2004 Jan 06: Added the suspend polling service event UEI, and the
+//		resume polling service event UEI. Cleaned up some typos
+//		in comments.
 // 2003 Nov 11: Merged changes from Rackspace project
 // 2003 Sep 09: Added code to support duplicate IP address handling.
 //
@@ -192,7 +195,7 @@ public class EventConstants
 	public final static String	ADD_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/capsd/addInterface";
         
         /**
-	 * The add interface event UEI
+	 * The delete interface event UEI
 	 */
 	public final static String	DELETE_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/capsd/deleteInterface";
 	
@@ -292,12 +295,12 @@ public class EventConstants
 	public final static String HIGH_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/highThresholdExceeded";   
 
 	/**
-	 * The high threshold exceeded event UEI
+	 * The high threshold rearm event UEI
 	 */
 	public final static String HIGH_THRESHOLD_REARM_EVENT_UEI = "uei.opennms.org/threshold/highThresholdRearmed";   
 
 	/**
-	 * The high threshold exceeded event UEI
+	 * The low threshold rearm event UEI
 	 */
 	public final static String LOW_THRESHOLD_REARM_EVENT_UEI = "uei.opennms.org/threshold/lowThresholdRearmed";   
 
@@ -381,6 +384,16 @@ public class EventConstants
 	 * The force interface rescan event UEI
 	 */
 	public final static String FORCE_RESCAN_EVENT_UEI = "uei.opennms.org/internal/capsd/forceRescan";
+
+	/**
+	 * The suspend polling service event UEI
+	 */
+	public final static String SUSPEND_POLLING_SERVICE_EVENT_UEI = "uei.opennms.org/internal/poller/suspendPollingService";
+
+	/**
+	 * The resume polling service event UEI
+	 */
+	public final static String RESUME_POLLING_SERVICE_EVENT_UEI = "uei.opennms.org/internal/poller/resumePollingService";
 	
 	/**
 	 * The RTC subscribe event
@@ -398,7 +411,7 @@ public class EventConstants
 	public final static String SERVICE_STATUS_UNKNOWN = "uei.opennms.org/internal/unknownServiceStatus";
 
 	/**
-	 *
+	 * Notification without users event
 	 */
 	public final static String NOTIFICATION_WITHOUT_USERS = "uei.opennms.org/internal/notificationWithoutUsers";
 

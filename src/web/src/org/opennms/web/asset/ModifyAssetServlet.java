@@ -10,6 +10,8 @@
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
+// 2004 Jan 06: Added support for Display, Notify, Poller and Threshold Categories
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -120,7 +122,10 @@ public class ModifyAssetServlet extends HttpServlet
         asset.setMaintContract(this.stripBadCharacters(request.getParameter("maintcontract")));
         asset.setVendorAssetNumber(this.stripBadCharacters(request.getParameter("vendorassetnumber")));
         asset.setMaintContractExpires(this.stripBadCharacters(request.getParameter("maintcontractexpires")));
-        asset.setSupportPhone(this.stripBadCharacters(request.getParameter("supportphone")));
+	asset.setDisplayCategory(this.stripBadCharacters(request.getParameter("displaycategory")));
+	asset.setNotifyCategory(this.stripBadCharacters(request.getParameter("notifycategory")));
+	asset.setPollerCategory(this.stripBadCharacters(request.getParameter("pollercategory")));
+	asset.setThresholdCategory(this.stripBadCharacters(request.getParameter("thresholdcategory")));
         asset.setComments(this.stripBadCharacters(request.getParameter("comments")));
         
         asset.setUserLastModified(request.getRemoteUser());

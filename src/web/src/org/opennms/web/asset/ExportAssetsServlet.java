@@ -10,6 +10,8 @@
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
+// 2004 Jan 06: Added support for Display, Notify, Poller and Threshold categories
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -104,6 +106,10 @@ public class ExportAssetsServlet extends HttpServlet
         buffer.append( "Maint Contract," );
         buffer.append( "Vendor Asset Number," );
         buffer.append( "Maint Contract Expires," );
+	buffer.append( "Display Category," );
+	buffer.append( "Notification Category," );
+	buffer.append( "Poller Category," );
+	buffer.append( "Threshold Category," );
         buffer.append( "Comments" );
         
         out.println( buffer.toString() );
@@ -188,6 +194,14 @@ public class ExportAssetsServlet extends HttpServlet
             buffer.append( asset.getVendorAssetNumber() );
             buffer.append( "," );
             buffer.append( asset.getMaintContractExpires() );
+	    buffer.append( "," );
+	    buffer.append( asset.getDisplayCategory() );
+	    buffer.append( "," );
+	    buffer.append( asset.getNotifyCategory() );
+	    buffer.append( "," );
+	    buffer.append( asset.getPollerCategory() );
+	    buffer.append( "," );
+	    buffer.append( asset.getThresholdCategory() );
             buffer.append( "," );
             buffer.append( asset.getComments() );
             out.println( buffer.toString() );

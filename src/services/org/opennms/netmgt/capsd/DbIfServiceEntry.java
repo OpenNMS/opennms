@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2004 Jan 06: Added STATUS_SUSPEND and STATUS_RESUME to support update of polling
+// 		status on forced rescan.
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -81,6 +83,8 @@ public final class DbIfServiceEntry
 	public final static char	STATUS_FORCED		= 'F';
 	public final static char	STATUS_NOT_POLLED	= 'N';
 	public final static char	STATUS_UNKNOWN		= ' ';
+	public final static char        STATUS_SUSPEND          = 'S';
+	public final static char        STATUS_RESUME           = 'R';
 
 	final static char	SOURCE_PLUGIN		= 'P';
 	final static char	SOURCE_FORCED		= 'F';
@@ -290,7 +294,7 @@ public final class DbIfServiceEntry
 	}
 
 	/** 
-	 * Updates an existing record in the OpenNMS ipInterface table.
+	 * Updates an existing record in the OpenNMS ifServices table.
 	 * 
 	 * @param c	The connection used for the update.
 	 *
@@ -305,9 +309,7 @@ public final class DbIfServiceEntry
 
 		Category log = ThreadCategory.getInstance(getClass());
 
-		// first extract the next node identifier
-		//
-		StringBuffer sqlText = new StringBuffer("UPDATE ipInterface SET ");
+		StringBuffer sqlText = new StringBuffer("UPDATE ifServices SET ");
 
 		char comma = ' ';
 		if((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)

@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2004 Jan 06: Added support for Display, Notify, Poller and threshold categories
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
@@ -239,6 +240,21 @@
             <td>Maint Phone</td>
             <td><input type="text" name="supportphone" value="<%=asset.getSupportPhone()%>" size="20" maxlength="64"/></td>
           </tr>
+	  <tr>
+	    <td colspan="6"><h3>Configuration Categories</h3></td>
+	  </tr>
+	  <tr>
+	    <td>Display Category</td>
+	    <td><input type="text" name="displaycategory" value="<%=asset.getDisplayCategory()%>" size="20" maxlength="64"/></td>
+	    <td>Notification Category</td>
+	    <td><input type="text" name="notifycategory"  value="<%=asset.getNotifyCategory()%>" size="20" maxlength="64"/></td>
+	  </tr>
+	  <tr>
+	    <td>Poller Category</td>
+	    <td><input type="text" name="pollercategory" value="<%=asset.getPollerCategory()%>" size="20" maxlength="64"/></td>
+	    <td>Threshold Category</td>
+	    <td><input type="text" name="thresholdcategory"  value="<%=asset.getThresholdCategory()%>" size="20" maxlength="64"/></td>
+	  </tr>
           <tr>
             <td colspan="6"><h3>Comments</h3></td>
           </tr>
