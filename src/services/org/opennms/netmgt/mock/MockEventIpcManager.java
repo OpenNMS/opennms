@@ -30,7 +30,7 @@
 //     http://www.opennms.com/
 //
 
-package org.opennms.netmgt.poller.mock;
+package org.opennms.netmgt.mock;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,11 +82,8 @@ public class MockEventIpcManager implements EventIpcManager {
 
     private List m_listeners = new ArrayList();
 
-    private MockNetwork m_network;
-
-    public MockEventIpcManager(MockNetwork network) {
-        m_network = network;
-        m_anticipator = new EventAnticipator(network);
+    public MockEventIpcManager() {
+        m_anticipator = new EventAnticipator();
     }
 
     public void addEventListener(EventListener listener) {

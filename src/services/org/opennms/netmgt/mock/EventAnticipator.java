@@ -29,7 +29,7 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.poller.mock;
+package org.opennms.netmgt.mock;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -73,15 +73,11 @@ public class EventAnticipator {
 
     List m_anticipatedEvents = new ArrayList();
 
-    MockNetwork m_network;
-
     List m_unanticipatedEvents = new ArrayList();
 
     /**
-     * @param network
      */
-    public EventAnticipator(MockNetwork network) {
-        m_network = network;
+    public EventAnticipator() {
     }
 
     /**

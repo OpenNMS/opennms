@@ -30,7 +30,9 @@
 //     http://www.opennms.com/
 //
 
-package org.opennms.netmgt.poller.mock;
+package org.opennms.netmgt.mock;
+
+import org.opennms.netmgt.poller.ServiceMonitor;
 
 /**
  * @author brozow
@@ -38,79 +40,77 @@ package org.opennms.netmgt.poller.mock;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class MockNode extends MockContainer {
+abstract public class MockElement {
 
-    String m_label;
+    MockContainer m_parent;
 
-    int m_nodeid;
-
-    /**
-     * @param nodeid
-     * @param label
-     */
-    public MockNode(MockNetwork network, int nodeid, String label) {
-        super(network);
-        m_nodeid = nodeid;
-        m_label = label;
+    protected MockElement(MockContainer parent) {
+        m_parent = parent;
     }
 
     /**
-     * @param ipAddr
-     * @return
+     * @param trigger
      */
-    public MockInterface addInterface(String ipAddr) {
-        return (MockInterface) addMember(new MockInterface(this, ipAddr));
+    abstract public void addAnticipator(PollAnticipator trigger);
+
+    /**
+     * 
+     */
+    public void bringDown() {
+        setServicePollStatus(ServiceMonitor.SERVICE_UNAVAILABLE);
     }
 
     /**
-     * @param ipAddr
-     * @return
+     * 
      */
-    public MockInterface getInterface(String ipAddr) {
-        return (MockInterface) getMember(ipAddr);
+    public void bringUp() {
+        setServicePollStatus(ServiceMonitor.SERVICE_AVAILABLE);
     }
 
-    Object getKey() {
-        return new Integer(m_nodeid);
+    abstract Object getKey();
+
+    public MockContainer getParent() {
+        return m_parent;
     }
 
     /**
      * @return
      */
-    public String getLabel() {
-        return m_label;
+    abstract public int getPollCount();
+
+    abstract public int getPollStatus();
+
+    public void moveTo(MockContainer newParent) {
+        m_parent.removeMember(this);
+        newParent.addMember(this);
     }
 
-    public MockNetwork getNetwork() {
-        return (MockNetwork) getParent();
+    abstract public void removeAnticipator(PollAnticipator trigger);
+
+    /**
+     * 
+     */
+    abstract public void resetPollCount();
+
+    void setParent(MockContainer parent) {
+        m_parent = parent;
     }
 
     /**
-     * @return
+     * @param expectedUei
+     * @param newStatus
      */
-    public int getNodeId() {
-        return m_nodeid;
+    private void setServicePollStatus(final int newStatus) {
+        MockVisitor statusSetter = new MockVisitorAdapter() {
+            public void visitService(MockService svc) {
+                svc.setPollStatus(newStatus);
+            }
+        };
+        visit(statusSetter);
     }
 
-    /**
-     * @param iface
-     */
-    public void removeInterface(MockInterface iface) {
-        removeMember(iface);
-    }
-
-    public String toString() {
-        return "Node[" + m_nodeid + "," + m_label + "]";
-
-    }
-
-    /**
-     * @param v
-     */
     public void visit(MockVisitor v) {
-        super.visit(v);
-        v.visitNode(this);
-        visitMembers(v);
+        v.visitElement(this);
     }
 
 }

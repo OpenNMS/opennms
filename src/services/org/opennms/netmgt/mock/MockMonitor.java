@@ -30,7 +30,7 @@
 //     http://www.opennms.com/
 //
 
-package org.opennms.netmgt.poller.mock;
+package org.opennms.netmgt.mock;
 
 import java.net.InetAddress;
 import java.util.Map;

@@ -30,7 +30,7 @@
 //     http://www.opennms.com/
 //
 
-package org.opennms.netmgt.poller.mock;
+package org.opennms.netmgt.mock;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -41,7 +41,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.opennms.netmgt.EventConstants;
@@ -166,19 +165,6 @@ public class MockNetworkTest extends TestCase {
                 throw new RuntimeException("Unknownhost ", e);
             }
         }
-    }
-
-    static private void assertEventMatches(Event e1, Event e2) {
-        if (e1 == e2)
-            return;
-        if (e1 == null)
-            Assert.assertNull(e2);
-
-        Assert.assertNotNull(e2);
-        Assert.assertEquals(e1.getUei(), e2.getUei());
-        Assert.assertEquals(e1.getNodeid(), e2.getNodeid());
-        Assert.assertEquals(e1.getInterface(), e2.getInterface());
-        Assert.assertEquals(e1.getService(), e2.getService());
     }
 
     private StatusChecker m_downChecker;

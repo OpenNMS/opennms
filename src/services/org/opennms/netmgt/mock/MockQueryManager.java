@@ -30,7 +30,7 @@
 //     http://www.opennms.com/
 //
 
-package org.opennms.netmgt.poller.mock;
+package org.opennms.netmgt.mock;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

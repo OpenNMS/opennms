@@ -1,5 +1,3 @@
-package org.opennms.netmgt.poller.mock;
-
 //
 // This file is part of the OpenNMS(R) Application.
 //
@@ -32,8 +30,8 @@ package org.opennms.netmgt.poller.mock;
 //     http://www.opennms.com/
 //
 
-import java.util.ArrayList;
-import java.util.Iterator;
+package org.opennms.netmgt.mock;
+
 import java.util.List;
 
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -44,75 +42,47 @@ import org.opennms.netmgt.poller.ServiceMonitor;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class MockService extends MockElement {
+public class MockInterface extends MockContainer {
 
-    private int m_pollCount;
-
-    private int m_pollStatus;
-
-    private int m_serviceId;
-
-    private String m_svcName;
-
-    private List m_triggers = new ArrayList();
+    String m_ipAddr;
 
     /**
-     * @param iface
+     * @param ipAddr
+     */
+    public MockInterface(MockNode node, String ipAddr) {
+        super(node);
+        m_ipAddr = ipAddr;
+    }
+
+    /**
      * @param svcName
      */
-    public MockService(MockInterface iface, String svcName, int serviceId) {
-        super(iface);
-        m_svcName = svcName;
-        m_serviceId = serviceId;
-        m_pollStatus = ServiceMonitor.SERVICE_AVAILABLE;
-        m_pollCount = 0;
-
-    }
-
-    public void addAnticipator(PollAnticipator trigger) {
-        m_triggers.add(trigger);
+    public MockService addService(String svcName, int serviceId) {
+        return (MockService) addMember(new MockService(this, svcName, serviceId));
     }
 
     /**
      * @return
      */
-    public int getId() {
-        return m_serviceId;
-    }
-
-    /**
-     * @return
-     */
-    public MockInterface getInterface() {
-        return (MockInterface) getParent();
-    }
-
     public String getIpAddr() {
-        return getInterface().getIpAddr();
+        return m_ipAddr;
     }
 
     Object getKey() {
-        return m_svcName;
-    }
-
-    /**
-     * @return
-     */
-    public String getName() {
-        return m_svcName;
+        return m_ipAddr;
     }
 
     public MockNetwork getNetwork() {
-        return getInterface().getNetwork();
-    }
-
-    public MockNode getNode() {
-        return getInterface().getNode();
+        return getNode().getNetwork();
     }
 
     /**
      * @return
      */
+    public MockNode getNode() {
+        return (MockNode) getParent();
+    }
+
     public int getNodeId() {
         return getNode().getNodeId();
     }
@@ -121,52 +91,52 @@ public class MockService extends MockElement {
         return getNode().getLabel();
     }
 
-    /**
-     * @return
-     */
-    public int getPollCount() {
-        return m_pollCount;
-    }
-
-    /**
-     * @return
-     */
     public int getPollStatus() {
-        return m_pollStatus;
+        final String critSvc = getNetwork().getCriticalService();
+        class IFStatusCalculator extends MockVisitorAdapter {
+            int status = ServiceMonitor.SERVICE_UNAVAILABLE;
+
+            public int getStatus() {
+                return status;
+            }
+
+            public void visitService(MockService svc) {
+                if (critSvc == null || critSvc.equals(svc.getName())) {
+                    if (svc.getPollStatus() == ServiceMonitor.SERVICE_AVAILABLE)
+                        status = ServiceMonitor.SERVICE_AVAILABLE;
+                }
+            }
+
+        }
+        ;
+        IFStatusCalculator calc = new IFStatusCalculator();
+        visit(calc);
+        return calc.getStatus();
+    }
+
+    /**
+     * @param svcName
+     */
+    public MockService getService(String svcName) {
+        return (MockService) getMember(svcName);
     }
 
     /**
      * @return
      */
-    public int poll() {
-        m_pollCount++;
-
-        Iterator it = m_triggers.iterator();
-        while (it.hasNext()) {
-            PollAnticipator trigger = (PollAnticipator) it.next();
-            trigger.poll(this);
-        }
-
-        return getPollStatus();
-
-    }
-
-    public void removeAnticipator(PollAnticipator trigger) {
-        m_triggers.remove(trigger);
+    public List getServices() {
+        return getMembers();
     }
 
     /**
-     * 
+     * @param svc
      */
-    public void resetPollCount() {
-        m_pollCount = 0;
+    public void removeService(MockService svc) {
+        removeMember(svc);
     }
 
-    /**
-     * 
-     */
-    public void setPollStatus(int status) {
-        m_pollStatus = status;
+    public String toString() {
+        return "If[" + m_ipAddr + "]";
     }
 
     /**
@@ -174,7 +144,8 @@ public class MockService extends MockElement {
      */
     public void visit(MockVisitor v) {
         super.visit(v);
-        v.visitService(this);
+        v.visitInterface(this);
+        visitMembers(v);
     }
 
 }

@@ -34,16 +34,16 @@ package org.opennms.netmgt.poller;
 import junit.framework.TestCase;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.poller.mock.EventAnticipator;
-import org.opennms.netmgt.poller.mock.MockElement;
-import org.opennms.netmgt.poller.mock.MockInterface;
-import org.opennms.netmgt.poller.mock.MockNetwork;
-import org.opennms.netmgt.poller.mock.MockNode;
-import org.opennms.netmgt.poller.mock.MockService;
-import org.opennms.netmgt.poller.mock.MockUtil;
-import org.opennms.netmgt.poller.mock.MockVisitor;
-import org.opennms.netmgt.poller.mock.MockVisitorAdapter;
-import org.opennms.netmgt.poller.mock.PollAnticipator;
+import org.opennms.netmgt.mock.EventAnticipator;
+import org.opennms.netmgt.mock.MockElement;
+import org.opennms.netmgt.mock.MockInterface;
+import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.netmgt.mock.MockNode;
+import org.opennms.netmgt.mock.MockService;
+import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockVisitor;
+import org.opennms.netmgt.mock.MockVisitorAdapter;
+import org.opennms.netmgt.mock.PollAnticipator;
 import org.opennms.netmgt.xml.event.Event;
 
 public class PollerTest extends TestCase {

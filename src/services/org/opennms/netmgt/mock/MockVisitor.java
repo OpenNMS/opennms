@@ -30,7 +30,7 @@
 //     http://www.opennms.com/
 //
 
-package org.opennms.netmgt.poller.mock;
+package org.opennms.netmgt.mock;
 
 /**
  * @author brozow
@@ -38,24 +38,18 @@ package org.opennms.netmgt.poller.mock;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class MockVisitorAdapter implements MockVisitor {
+public interface MockVisitor {
 
-    public void visitContainer(MockContainer n) {
-    }
+    public void visitContainer(MockContainer c);
 
-    public void visitElement(MockElement e) {
-    }
+    public void visitElement(MockElement e);
 
-    public void visitInterface(MockInterface i) {
-    }
+    public void visitInterface(MockInterface i);
 
-    public void visitNetwork(MockNetwork n) {
-    }
+    public void visitNetwork(MockNetwork n);
 
-    public void visitNode(MockNode n) {
-    }
+    public void visitNode(MockNode n);
 
-    public void visitService(MockService s) {
-    }
+    public void visitService(MockService s);
 
 }

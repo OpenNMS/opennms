@@ -30,7 +30,7 @@
 //     http://www.opennms.com/
 //
 
-package org.opennms.netmgt.poller.mock;
+package org.opennms.netmgt.mock;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -57,7 +57,7 @@ public class MockNetwork extends MockContainer {
 
     private long m_defaultInterval = 1234L;
 
-    private MockEventIpcManager m_eventMgr = new MockEventIpcManager(this);
+    private MockEventIpcManager m_eventMgr = new MockEventIpcManager();
 
     private Map m_idToNameMap = new HashMap();
 
