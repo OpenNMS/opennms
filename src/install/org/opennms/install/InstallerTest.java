@@ -18,11 +18,16 @@ import junit.framework.TestCase;
 
 public class InstallerTest extends TestCase {
     private static final String m_constraint = "fk_nodeid6";
+    private static final String m_runProperty = "mock.rundbtests";
 
     private String m_testDatabase;
     private Installer m_installer;
 
     protected void setUp() throws Exception {
+	if (!isDBTestEnabled()) {
+	    return;
+	}
+
 	m_testDatabase = "opennms_test_" + System.currentTimeMillis();
 
 	m_installer = new Installer();
@@ -51,6 +56,10 @@ public class InstallerTest extends TestCase {
 	
 
     public void tearDown() throws Exception {
+	if (!isDBTestEnabled()) {
+	    return;
+	}
+
 	m_installer.databaseDisconnect();
 
 	/*
@@ -68,6 +77,11 @@ public class InstallerTest extends TestCase {
 	Thread.sleep(1000);
     }
 
+    public boolean isDBTestEnabled() {
+	String property = System.getProperty(m_runProperty);
+	return "true".equals(property);
+    }
+
     public void destroyDatabase() throws SQLException {
 	Statement st = m_installer.m_dbconnection.createStatement();
         st.execute("DROP DATABASE " + m_testDatabase);
@@ -80,6 +94,10 @@ public class InstallerTest extends TestCase {
      * exception because we have not created a table matching "_old_".
      */
     public void testBug1006NoOldTables() throws SQLException {
+	if (!isDBTestEnabled()) {
+	    return;
+	}
+
 	try {
 	    m_installer.checkOldTables();
 	} catch (Exception e) {
@@ -94,6 +112,10 @@ public class InstallerTest extends TestCase {
      * exception we are expecting, and fail otherwise.
      */
     public void testBug1006HasOldTables() throws SQLException {
+	if (!isDBTestEnabled()) {
+	    return;
+	}
+
 	final String errorSubstring = "One or more backup tables from a previous install still exists";
 
 	String table = "testBug1006_old_" + System.currentTimeMillis();
@@ -117,6 +139,10 @@ public class InstallerTest extends TestCase {
     }
 
     public void executeSQL(String[] commands) throws SQLException {
+	if (!isDBTestEnabled()) {
+	    return;
+	}
+
 	Statement st = m_installer.m_dbconnection.createStatement();
 	for (int i = 0; i < commands.length; i++) {
 	    st.execute(commands[i]);
@@ -156,41 +182,77 @@ public class InstallerTest extends TestCase {
     }
 
     public void testBug931ConstraintsOkayTwoTables() throws Exception {
+	if (!isDBTestEnabled()) {
+	    return;
+	}
+
 	doTestBug931(false, 0, false);
     }
 
     public void testBug931ConstraintsOkayOneTable() throws Exception {
+	if (!isDBTestEnabled()) {
+	    return;
+	}
+
 	doTestBug931(true, 0, false);
     }
 
     public void testBug931ConstraintsBadTwoTables() throws Exception {
+	if (!isDBTestEnabled()) {
+	    return;
+	}
+
 	doTestBug931(false, 1, false);
     }
 
     public void testBug931ConstraintsBadOneTable() throws Exception {
+	if (!isDBTestEnabled()) {
+	    return;
+	}
+
 	doTestBug931(true, 2, false);
     }
 
     public void testConstraintsFixedNullTwoTables() throws Exception {
+	if (!isDBTestEnabled()) {
+	    return;
+	}
+
 	doTestBug931(false, 0, true);
     }
 
     public void testConstraintsFixedNullOneTable() throws Exception {
+	if (!isDBTestEnabled()) {
+	    return;
+	}
+
 	doTestBug931(true, 0, true);
     }
 
 
     public void testConstraintsFixedDelTwoTables() throws Exception {
+	if (!isDBTestEnabled()) {
+	    return;
+	}
+
 	m_installer.m_fix_constraint_remove_rows = true;
 	doTestBug931(false, 0, true);
     }
 
     public void testConstraintsFixedDelOneTable() throws Exception {
+	if (!isDBTestEnabled()) {
+	    return;
+	}
+
 	m_installer.m_fix_constraint_remove_rows = true;
 	doTestBug931(true, 0, true);
     }
 
     public void testBogusConstraintName() throws Exception {
+	if (!isDBTestEnabled()) {
+	    return;
+	}
+
 	String constraint = "bogus_test_" + System.currentTimeMillis();
 	doTestBogusConstraint(constraint,
 			      "Did not find constraint " + constraint +
@@ -198,6 +260,10 @@ public class InstallerTest extends TestCase {
     }
 
     public void testBogusConstraintTable() throws Exception {
+	if (!isDBTestEnabled()) {
+	    return;
+	}
+
 	String constraint = "fk_nodeid1";
 	doTestBogusConstraint(constraint,
 			      "Constraint " + constraint + " is on table " +
@@ -205,6 +271,10 @@ public class InstallerTest extends TestCase {
     }
 
     public void testBogusConstraintColumn() throws Exception {
+	if (!isDBTestEnabled()) {
+	    return;
+	}
+
 	String constraint = "fk_dpname";
 	doTestBogusConstraint(constraint,
 			      "Constraint " + constraint + " is on column " +

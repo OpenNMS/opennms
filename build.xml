@@ -82,6 +82,7 @@ your distribution.
   <property name="test.xml.dir" value="${build.dir}/test-results" />
   <property name="mock.logLevel" value="WARN" />
   <property name="mock.debug" value="false" />
+  <property name="mock.rundbtests" value="false" />
 
   <!-- docs source directory -->
   <property name="docs.source.dir" value="${basedir}/docs"/>
@@ -1261,6 +1262,7 @@ OpenNMS as part of the post-install.
      </batchtest>
      <sysproperty key="mock.logLevel" value="${mock.logLevel}" />
      <sysproperty key="mock.debug" value="${mock.debug}" />
+     <sysproperty key="mock.rundbtests" value="${mock.rundbtests}" />
   </junit>
   <condition property="continue.build">
     <or>
@@ -1273,7 +1275,7 @@ OpenNMS as part of the post-install.
   </fail>
 </target>
 
-<target name="runTest" depends="prep, java.compile, junit.compile" description="Run all the unit tests">
+<target name="runTest" depends="prep, java.compile, junit.compile" description="Run a single unit test class">
   <fail unless="test.class">
     You need to define test.class to indicate which test to run.
   </fail>
@@ -1290,6 +1292,7 @@ OpenNMS as part of the post-install.
      <test name="${test.class}"/>
      <sysproperty key="mock.logLevel" value="${mock.logLevel}" />
      <sysproperty key="mock.debug" value="${mock.debug}" />
+     <sysproperty key="mock.rundbtests" value="${mock.rundbtests}" />
   </junit>
   <condition property="continue.build">
     <or>
