@@ -35,10 +35,9 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
@@ -85,14 +84,13 @@ public final class DhcpdConfigFactory
 	 * @exception org.exolab.castor.xml.ValidationException Thrown if 
 	 *	the contents do not match the required schema.
 	 */
-	private DhcpdConfigFactory(String configFile)
+	private DhcpdConfigFactory(File configFile)
 		throws 	IOException,
 			MarshalException, 
 			ValidationException
 	{
-		InputStream cfgIn = new FileInputStream(configFile);
-
-		m_config = (DhcpdConfiguration) Unmarshaller.unmarshal(DhcpdConfiguration.class, new InputStreamReader(cfgIn));
+		Reader cfgIn = new FileReader(configFile);
+		m_config = (DhcpdConfiguration) Unmarshaller.unmarshal(DhcpdConfiguration.class, cfgIn);
 		cfgIn.close();
 
 	}
@@ -119,29 +117,8 @@ public final class DhcpdConfigFactory
 			// to reload, reload() will need to be called
 			return;
 		}
-
-		String homeDir = System.getProperty("opennms.home");
-		if(homeDir == null)
-			throw new IOException("Unable to get required property \'opennms.home\'");
-		
-
-		// Form the complete filename for the config file
-		String configFile;
-		if (homeDir.endsWith(File.separator))
-		{
-			configFile = homeDir + "etc" + File.separator + ConfigFileConstants.DHCPD_CONFIG_FILE_NAME;
-		}
-		else if (homeDir.endsWith("/"))
-			// here because the user can still use the '/'
-			// delimited name for the directory on the windows platform
-		{
-			configFile = homeDir + "etc/" + ConfigFileConstants.DHCPD_CONFIG_FILE_NAME;
-		}
-		else
-		{
-			configFile = homeDir + File.separator + "etc" + File.separator + ConfigFileConstants.DHCPD_CONFIG_FILE_NAME;
-		}
-
+        
+        File configFile = ConfigFileConstants.getFile(ConfigFileConstants.DHCPD_CONFIG_FILE_NAME);
 		m_singleton = new DhcpdConfigFactory(configFile);
 
 		m_loaded = true;
