@@ -65,6 +65,17 @@
     </init-param>
   </filter>
 
+  <filter>
+    <filter-name>AddRefreshHeader-120</filter-name>
+    <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
+    <filter-class>org.opennms.web.AddRefreshHeaderFilter</filter-class>
+    <init-param>
+      <param-name>seconds</param-name>
+      <param-value>120</param-value>
+      <description>This parameter specifies how often to refresh the page.</description>
+    </init-param>
+  </filter>
+
   <filter-mapping>
     <filter-name>AddRefreshHeader-300</filter-name>
     <url-pattern>/index.jsp</url-pattern>
@@ -88,6 +99,10 @@
   <filter-mapping>
     <filter-name>AddRefreshHeader-300</filter-name>
     <url-pattern>/outage/current.jsp</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-120</filter-name>
+    <url-pattern>/event/list</url-pattern>
   </filter-mapping>
 
   <listener>
