@@ -132,7 +132,7 @@
 		Last update:
 <%=		(earliestUpdate > 0 ?
 			 new Date(earliestUpdate).toString() :
-			 "one or more categories have never been udpated.") %>
+			 "one or more categories have never been updated.") %>
 	      </font>
             </td>
 <%	} else { %>

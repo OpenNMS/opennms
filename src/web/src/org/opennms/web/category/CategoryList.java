@@ -285,7 +285,7 @@ public class CategoryList {
 
         out.println("<tr bgcolor=\"#999999\">");
         if (opennmsDisconnect) {
-            out.println("<td colspan=\"3\"><font color=\"#bb1111\">" + "OpenNMS Disconnect -- is the OpenNMS daemon " + "running?<br/>Last update: " + (earliestUpdate > 0 ? new Date(earliestUpdate).toString() : "one or more categories have never been udpated.") + "</font></td>");
+            out.println("<td colspan=\"3\"><font color=\"#bb1111\">" + "OpenNMS Disconnect -- is the OpenNMS daemon " + "running?<br/>Last update: " + (earliestUpdate > 0 ? new Date(earliestUpdate).toString() : "one or more categories have never been updated.") + "</font></td>");
         } else {
             out.println("<td colspan=\"3\">Percentage over last " + "24 hours</td>");
         }
