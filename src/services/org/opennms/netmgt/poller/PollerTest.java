@@ -137,7 +137,7 @@ public class PollerTest extends TestCase {
     public void tearDown() {
         stopDaemons();
         sleep(200);
-        assertTrue(MockUtil.noWarningsOrHigherLogged());
+        assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
         m_db.drop();
         MockUtil.println("------------ End Test "+getName()+" --------------------------");
     }
