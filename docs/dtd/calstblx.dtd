@@ -1,18 +1,19 @@
 <!-- ...................................................................... -->
-<!-- DocBook XML CALS Table Model V4.1.2 .................................... -->
+<!-- DocBook CALS Table Model V4.2 ........................................ -->
 <!-- File calstblx.mod .................................................... -->
 
-<!-- Copyright 1992-2000 HaL Computer Systems, Inc.,
+<!-- Copyright 1992-2002 HaL Computer Systems, Inc.,
      O'Reilly & Associates, Inc., ArborText, Inc., Fujitsu Software
-     Corporation, Norman Walsh and the Organization for the Advancement
-     of Structured Information Standards (OASIS).
+     Corporation, Norman Walsh, Sun Microsystems, Inc., and the
+     Organization for the Advancement of Structured Information
+     Standards (OASIS).
 
      This DTD is based on the CALS Table Model
      PUBLIC "-//USA-DOD//DTD Table Model 951010//EN"
 
-     calstblx.dtd,v 1.2 2001/11/15 15:19:33 ben Exp
+     $Id$
 
-     Permission to use, copy, modify and distribute the DocBook XML DTD
+     Permission to use, copy, modify and distribute the DocBook DTD
      and its accompanying documentation for any purpose and without fee
      is hereby granted in perpetuity, provided that the above copyright
      notice and this paragraph appear in all copies.  The copyright
@@ -20,7 +21,7 @@
      any purpose.  It is provided "as is" without expressed or implied
      warranty.
 
-     If you modify the DocBook XML DTD in any way, except for declaring and
+     If you modify the DocBook DTD in any way, except for declaring and
      referencing additional sets of general entities and declaring
      additional notations, label your DTD as a variant of DocBook.  See
      the maintenance documentation for more information.
@@ -36,8 +37,8 @@
      converted to XML.
 -->
 
-<!-- These definitions are not directly related to the table model, but are 
-     used in the default CALS table model and are usually defined elsewhere 
+<!-- These definitions are not directly related to the table model, but are
+     used in the default CALS table model and are usually defined elsewhere
      (and prior to the inclusion of this table module) in a CALS DTD. -->
 
 <!ENTITY % bodyatt "">
@@ -83,7 +84,7 @@ of the current application.
 <!ENTITY % tbl.entry.mdl        "(para|warning|caution|note|legend|%paracon;)*">
 <!-- =====  Element and attribute declarations follow. =====  -->
 
-<!ELEMENT table (%tbl.table.mdl;)>
+<!ELEMENT table %ho; (%tbl.table.mdl;)>
 
 <!ATTLIST table
         frame           (top|bottom|topbot|all|sides|none)      #IMPLIED
@@ -94,7 +95,7 @@ of the current application.
         %secur;
 >
 
-<!ELEMENT tgroup (%tbl.tgroup.mdl;) >
+<!ELEMENT tgroup %ho; (%tbl.tgroup.mdl;) >
 
 <!ATTLIST tgroup
         cols            CDATA                                   #REQUIRED
@@ -107,7 +108,7 @@ of the current application.
         %secur;
 >
 
-<!ELEMENT colspec EMPTY >
+<!ELEMENT colspec %ho; EMPTY >
 
 <!ATTLIST colspec
         colnum          CDATA                                   #IMPLIED
@@ -120,7 +121,7 @@ of the current application.
         charoff         CDATA                                   #IMPLIED
 >
 
-<!ELEMENT spanspec EMPTY >
+<!ELEMENT spanspec %ho; EMPTY >
 
 <!ATTLIST spanspec
         namest          CDATA                                   #REQUIRED
@@ -133,26 +134,26 @@ of the current application.
         charoff         CDATA                                   #IMPLIED
 >
 
-<!ELEMENT thead (%tbl.hdft.mdl;)>
+<!ELEMENT thead %ho; (%tbl.hdft.mdl;)>
 <!ATTLIST thead
         valign          (top|middle|bottom)                     #IMPLIED
         %secur;
 >
 
-<!ELEMENT tfoot (%tbl.hdft.mdl;)>
+<!ELEMENT tfoot %ho; (%tbl.hdft.mdl;)>
 <!ATTLIST tfoot
         valign          (top|middle|bottom)                     #IMPLIED
         %secur;
 >
 
-<!ELEMENT tbody (row+)>
+<!ELEMENT tbody %ho; (row+)>
 
 <!ATTLIST tbody
         valign          (top|middle|bottom)                     #IMPLIED
         %secur;
 >
 
-<!ELEMENT row (%tbl.row.mdl;)>
+<!ELEMENT row %ho; (%tbl.row.mdl;)>
 
 <!ATTLIST row
         rowsep          %yesorno;                               #IMPLIED
@@ -160,7 +161,7 @@ of the current application.
         %secur;
 >
 
-<!ELEMENT entrytbl (%tbl.entrytbl.mdl;)>
+<!ELEMENT entrytbl %ho; (%tbl.entrytbl.mdl;)>
 
 <!ATTLIST entrytbl
         cols            CDATA                                   #REQUIRED
@@ -177,7 +178,7 @@ of the current application.
         %secur;
 >
 
-<!ELEMENT entry (%tbl.entry.mdl;)*>
+<!ELEMENT entry %ho; (%tbl.entry.mdl;)*>
 
 <!ATTLIST entry
         colname         CDATA                                   #IMPLIED
@@ -195,5 +196,5 @@ of the current application.
         %secur;
 >
 
-<!-- End of DocBook XML CALS Table Model V4.1.2 ............................. -->
+<!-- End of DocBook CALS Table Model V4.2 ................................. -->
 <!-- ...................................................................... -->

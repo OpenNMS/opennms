@@ -1,7 +1,3 @@
-<!ENTITY % preservespace PUBLIC "-//xmledit//preserve space//EN" 
-"preservespace.ent">
-%preservespace;
-
 <!-- ...................................................................... -->
 <!-- DocBook XML DTD V4.2 ................................................. -->
 <!-- File docbookx.dtd .................................................... -->

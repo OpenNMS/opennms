@@ -237,6 +237,16 @@
 			<xsl:apply-templates/>
 		</pre>
 	</xsl:template>
+	<xsl:template match="varname">
+		<code>
+			<xsl:apply-templates/>
+		</code>
+	</xsl:template>
+	<xsl:template match="filename">
+		<code>
+			<xsl:apply-templates/>
+		</code>
+	</xsl:template>
 	<xsl:template match="member">
 		<dd>
 			<xsl:apply-templates/>
@@ -251,6 +261,16 @@
 		<ol>
 			<xsl:apply-templates/>
 		</ol>
+	</xsl:template>
+	<xsl:template match="bridgehead">
+		<b>
+			<xsl:apply-templates/>
+		</b>
+	</xsl:template>
+	<xsl:template match="quote">
+		<i>
+			<xsl:apply-templates/>
+		</i>
 	</xsl:template>
 	<xsl:template match="listitem">
 		<li>
