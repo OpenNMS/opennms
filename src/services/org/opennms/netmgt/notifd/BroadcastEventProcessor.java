@@ -375,7 +375,7 @@ final class BroadcastEventProcessor implements EventListener {
                         try {
                             path = m_notifd.getDestinationPathManager().getPath(notification.getDestinationPath());
                             if (path == null) {
-                                log.warn("Unknown destination path " + notification.getDestinationPath() + ". Please check the <destinationPath> tag for the notification " + notification.getName() + " in the notification.xml file.");
+                                log.warn("Unknown destination path " + notification.getDestinationPath() + ". Please check the <destinationPath> tag for the notification " + notification.getName() + " in the notifications.xml file.");
                                 
                                 //changing posted by Wiktor Wodecki
                                 //return;
