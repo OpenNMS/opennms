@@ -230,7 +230,6 @@ public class NotificationFactory
                         	return true;
                         }
 
-
                         // ThreadCategory.getInstance(getClass()).debug("Notification Event Interface: " + eventIf + " Service: " + eventSrv);
 
 			// Get the Notification Rule

@@ -10,7 +10,7 @@
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Admin</destinationPath>
         <text-message>The %service% poll to interface %interfaceresolve% (%interface%) 
-on node %nodelabel%) on node %nodelabel% successfully 
+on node %nodelabel% successfully 
 completed a connection to the service listener on the 
 remote machine. However, the synthetic transaction failed 
 to complete within %parm[timeout]% milliseconds, over 
@@ -75,7 +75,7 @@ on node %nodelabel% which was previously down is now up.</text-message>
         <uei>uei.opennms.org/nodes/nodeLostService</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Admin</destinationPath>
-        <text-message>The %service% service poll on interface %interfaceresolve% (%interface%) i
+        <text-message>The %service% service poll on interface %interfaceresolve% (%interface%) 
 on node %nodelabel% failed at %time%. 
 	</text-message>
         <subject>Notice #%noticeid%: %service% down on %interfaceresolve% (%interface%) on node %nodelabel%.</subject>

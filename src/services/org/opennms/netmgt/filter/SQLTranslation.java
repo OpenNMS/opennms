@@ -499,7 +499,6 @@ public class SQLTranslation
                 m_selectList.add("ipinterface.nodeid");
         }
 
-
     	public void outStart(Start node)
 	{
 		//finish the where clause by putting in the join clauses to 

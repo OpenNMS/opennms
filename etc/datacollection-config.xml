@@ -19,7 +19,6 @@
 				<mibObj oid=".1.3.6.1.2.1.2.2.1.19" instance="ifIndex" alias="ifOutDiscards" type="counter"/>
 				<mibObj oid=".1.3.6.1.2.1.2.2.1.20" instance="ifIndex" alias="ifOutErrors"   type="counter"/>
 			</group>
-			
 			<group 	name = "mib2-interfaces-net-snmp" ifType = "all">
 				<mibObj oid=".1.3.6.1.2.1.2.2.1.10" instance="ifIndex" alias="ifInOctets"    type="counter"/>
 				<mibObj oid=".1.3.6.1.2.1.2.2.1.14" instance="ifIndex" alias="ifInErrors"    type="counter"/>
@@ -27,7 +26,6 @@
 				<mibObj oid=".1.3.6.1.2.1.2.2.1.19" instance="ifIndex" alias="ifOutDiscards" type="counter"/>
 				<mibObj oid=".1.3.6.1.2.1.2.2.1.20" instance="ifIndex" alias="ifOutErrors"   type="counter"/>
 			</group>
-			
 			<group 	name = "mib2-host-resources-storage" ifType = "ignore">
 				<!-- Note that hrStorage is really a table -->
 				<!-- and I'm ignoring the hrStorageIndex altogether -->
@@ -35,195 +33,50 @@
 				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="2" alias="hrStorageSize"  type="counter"/>
 				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="2" alias="hrStorageUsed"  type="counter"/>
 			</group>
-					
 			<group 	name = "mib2-host-resources-system" ifType = "ignore">
 				<mibObj oid=".1.3.6.1.2.1.25.1.1" instance="0" alias="hrSystemUptime"    type="timeticks"/>
 				<mibObj oid=".1.3.6.1.2.1.25.1.5" instance="0" alias="hrSystemNumUsers"  type="gauge"/>
 				<mibObj oid=".1.3.6.1.2.1.25.1.6" instance="0" alias="hrSystemProcesses" type="gauge"/>
 			</group>
-			
 			<group 	name = "mib2-host-resources-memory" ifType = "ignore">
 				<mibObj oid=".1.3.6.1.2.1.25.2.2" instance="0" alias="hrMemorySize"    type="integer"/>
 			</group>
-
-			<group name="printer-usage" ifType="ignore">
-				<mibObj oid="1.3.6.1.2.1.43.10.2.1.4.1"    instance="1" alias="lifeCount" type="Gauge" />
-				<mibObj oid="1.3.6.1.2.1.43.10.2.1.4.1"    instance="1" alias="powerOnCount" type="Gauge" />
-			</group>
-			
-			<!-- group definition for rmon etherstats -->
-			<group name = "rmon-etherStats-size" ifType = "6,62,69,117">
-			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.3" instance="ifIndex" alias="s_Drop" type="counter"/>
-			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.4" instance="ifIndex" alias="s_Octets" type="counter"/>
-			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.5" instance="ifIndex" alias="s_Ethpacket" type="counter"/>
-			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.6" instance="ifIndex" alias="s_Broadcast" type="counter"/>
-			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.7" instance="ifIndex" alias="s_Multicast" type="counter"/>
-			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.8" instance="ifIndex" alias="s_CRCAlign" type="counter"/>
-			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.9" instance="ifIndex" alias="s_Under" type="counter"/>
-			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.10" instance="ifIndex" alias="s_Over" type="counter"/>
-			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.11" instance="ifIndex" alias="s_Fragment" type="counter"/>
-			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.12" instance="ifIndex" alias="s_Jabber" type="counter"/>
-			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.13" instance="ifIndex" alias="s_Collision" type="counter"/>
-			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.14" instance="ifIndex" alias="s_Size64" type="counter"/>
-			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.15" instance="ifIndex" alias="s_Size127" type="counter"/>
-			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.16" instance="ifIndex" alias="s_Size255" type="counter"/>
-			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.17" instance="ifIndex" alias="s_Size511" type="counter"/>
-			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.18" instance="ifIndex" alias="s_Size1023" type="counter"/>
-			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.19" instance="ifIndex" alias="s_Size1518" type="counter"/>
-			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.21" instance="ifIndex" alias="s_Status" type="counter"/>
-		        </group>
-
-			<group name = "upsmib.in.1" ifType="ignore">
-				<mibObj oid=".1.3.6.1.2.1.33.1.3.3.1.2"    instance="1" alias="inFreq" type="Gauge32" />
-				<mibObj oid=".1.3.6.1.2.1.33.1.3.3.1.3"    instance="1" alias="inVolt" type="Gauge32" />
-				<mibObj oid=".1.3.6.1.2.1.33.1.3.3.1.4"    instance="1" alias="inAmp" type="Gauge32" />
-				<mibObj oid=".1.3.6.1.2.1.33.1.3.3.1.5"    instance="1" alias="inWatt" type="Gauge32" />
-			</group>
-
-			<group name = "upsmib.out.1" ifType="ignore">
-				<mibObj oid=".1.3.6.1.2.1.33.1.4.2"    instance="0" alias="outFreq"  type="Gauge32" />
-				<mibObj oid=".1.3.6.1.2.1.33.1.4.4.1.2"    instance="1" alias="outVolt" type="Gauge32" />
-				<mibObj oid=".1.3.6.1.2.1.33.1.4.4.1.3"    instance="1" alias="outAmp" type="Gauge32" />
-				<mibObj oid=".1.3.6.1.2.1.33.1.4.4.1.4"    instance="1" alias="outWatt" type="Gauge32" />
-				<mibObj oid=".1.3.6.1.2.1.33.1.4.4.1.5"    instance="1" alias="outLoad" type="Gauge32" />
-			</group>
-
-
+                        <group  name = "APC" ifType = "ignore">
+                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.2.2.1" instance="0" alias="apcpercent"    type="gauge32"/>
+                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.2.2.2" instance="0" alias="apctemp"    type="gauge32"/>
+                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.2.2.3" instance="0" alias="apctime"    type="TimeTicks"/>
+                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.4.2.1" instance="0" alias="apcoutvac"    type="gauge32"/>
+                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.4.2.3" instance="0" alias="apcload"    type="gauge32"/>
+                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.4.2.4" instance="0" alias="apccurrent"    type="gauge32"/>
+                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.3.2.1" instance="0" alias="apcinvac"    type="gauge32"/>
+                        </group>
 			<group 	name = "cisco-router" ifType = "ignore">
 				<mibObj oid=".1.3.6.1.4.1.9.2.1.58" instance="0" alias="avgBusy5"    type="integer"/>
 				<mibObj oid=".1.3.6.1.4.1.9.2.1.8"  instance="0" alias="freeMem"     type="gauge"/>
 				<mibObj oid=".1.3.6.1.4.1.9.2.1.46" instance="0" alias="bufferFail"  type="counter"/>
 				<mibObj oid=".1.3.6.1.4.1.9.2.1.47" instance="0" alias="bufferNoMem" type="counter"/>
 			</group>
-
-			<group name = "cisco-router-protocols" ifType = "all">
-                                <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.44" instance="ifIndex" alias="locIfipInOct" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.45" instance="ifIndex" alias="locIfipOutOct" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.64" instance="ifIndex" alias="locIfnovellInOct" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.65" instance="ifIndex" alias="locIfnovellOutOct" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.76" instance="ifIndex" alias="locIfbridgedInOct" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.77" instance="ifIndex" alias="locIfbridgedOutOct" type="counter"/>
-                        </group>
-
-                        <group name = "cisco-router-buffers" ifType = "ignore">
-                                <mibObj oid=".1.3.6.1.4.1.9.2.1.15" instance="0" alias="bufferSmTotal" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.1.16" instance="0" alias="bufferSmFree" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.1.18" instance="0" alias="bufferSmHit" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.1.19" instance="0" alias="bufferSmMiss" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.1.23" instance="0" alias="bufferMdTotal" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.1.24" instance="0" alias="bufferMdFree" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.1.26" instance="0" alias="bufferMdHit" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.1.27" instance="0" alias="bufferMdMiss" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.1.31" instance="0" alias="bufferBgTotal" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.1.32" instance="0" alias="bufferBgFree" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.1.34" instance="0" alias="bufferBgHit" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.1.35" instance="0" alias="bufferBgMiss" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.1.39" instance="0" alias="bufferLgTotal" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.1.40" instance="0" alias="bufferLgFree" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.1.42" instance="0" alias="bufferLgHit" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.1.43" instance="0" alias="bufferLgMiss" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.1.63" instance="0" alias="bufferHgTotal" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.1.64" instance="0" alias="bufferHgFree" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.1.66" instance="0" alias="bufferHgHit" type="counter"/>
-                                <mibObj oid=".1.3.6.1.4.1.9.2.1.67" instance="0" alias="bufferHgMiss" type="counter"/>
-                        </group>
-			
 			<group 	name = "bay-router" ifType = "ignore">
 				<mibObj oid=".1.3.6.1.4.1.18.3.3.2.5.1.1.9"  instance="0" alias="wfkernelTasksTotal"  type="gauge"/>
 				<mibObj oid=".1.3.6.1.4.1.18.3.3.2.5.1.1.10" instance="0" alias="wfkernelTasksInQue"  type="counter"/>
 				<mibObj oid=".1.3.6.1.4.1.18.3.3.2.5.1.1.3"  instance="0" alias="wfkernelMemoryFree"  type="counter"/>
 				<mibObj oid=".1.3.6.1.4.1.18.3.3.2.5.1.1.3"  instance="0" alias="wfkernelBuffersFree" type="counter"/>
 			</group>
-			
-			<group 	name = "3Com-router-perf" ifType = "ignore">
-				<mibObj oid=".1.3.6.1.4.1.43.2.33.1.1.2.1.4" instance="0" alias="a3perfBufMemAvail"      type="integer"/>
-				<mibObj oid=".1.3.6.1.4.1.43.2.33.1.1.2.1.5" instance="0" alias="a3perfBufMemFailed"     type="integer"/>
-				<mibObj oid=".1.3.6.1.4.1.43.2.33.1.1.2.1.3" instance="0" alias="a3perfBufMemTotal"      type="integer"/>
-				<mibObj oid=".1.3.6.1.4.1.43.2.33.1.1.1"     instance="0" alias="a3perfBufMemTotalAvail" type="integer"/>
-			</group>
-			
-			<group 	name = "3com-router-sys" ifType = "ignore">
-				<mibObj oid=".1.3.6.1.4.1.43.2.13.3.1.1.5" instance="0" alias="a3sysMemSize" type="integer"/>
-				<mibObj oid=".1.3.6.1.4.1.43.2.13.8.4"     instance="0" alias="a3sysCpuUtil" type="integer"/>
-			</group>
-
-			<group 	name = "extreme-sys" ifType = "ignore">
-				<mibObj oid=".1.3.6.1.4.1.1916.1.1.1.8" instance="0" alias="xtrmCurrentTemp" type="integer"/>
-			</group>
-			
-			<group 	name = "hpux" ifType = "ignore">
-				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.2" instance="0" alias="hpuxNumberOfUsers" type="gauge"/>
-				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.7" instance="0" alias="hpuxFreeMemory" type="gauge"/>
-				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.8" instance="0" alias="hpuxPhysMemory" type="integer"/>
-				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.10" instance="0" alias="hpuxSwapConfigured" type="integer"/>
-				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.11" instance="0" alias="hpuxSwapEnabled" type="gauge"/>
-				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.12" instance="0" alias="hpuxSwapFree" type="gauge"/>
-				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.13" instance="0" alias="hpuxCpuUsedByUsers" type="counter"/>
-				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.14" instance="0" alias="hpuxCpuUsedBySys" type="counter"/>
-				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.15" instance="0" alias="hpuxCpuIdle" type="counter"/>
-				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.16" instance="0" alias="hpuxCpuNice" type="counter"/>
-				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.1" instance="0" alias="hpuxTotalFsMounted" type="gauge"/>
-				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.4.1" instance="0" alias="hpuxTotalProcesses" type="gauge"/>
-			</group>
-		
-			<group 	name = "sun" ifType = "ignore">
-				<mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.1.1.1" instance="0" alias="sunAvailableSwap" type="integer"/>
-				<mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.1.1.2" instance="0" alias="sunReservedSwap" type="integer"/>
-				<mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.1.1.3" instance="0" alias="sunAllocatedSwap" type="integer"/>
-				<mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.1.1.4" instance="0" alias="sunUsedSwap" type="integer"/>
-				<mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.4.1.1" instance="0" alias="sunProcsInRunQueue" type="integer"/>
-				<mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.4.1.2" instance="0" alias="sunProcsBlocked" type="integer"/>
-				<mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.4.1.3" instance="0" alias="sunProcsInSwap" type="integer"/>
-			</group>
-			
-			<group name = "mge.max.stats.1" ifType="ignore">
-				<mibObj oid=".1.3.6.1.4.1.705.1.6.2.1.5"    instance="1" alias="inVmax" type="Gauge32" />
-				<mibObj oid=".1.3.6.1.4.1.705.1.6.2.1.4"    instance="1" alias="inVmin" type="Gauge32" />
-			</group>
-
-			<group name = "netware-host" ifType = "ignore">
-				<mibObj oid=".1.3.6.1.2.1.25.3.3.1.2" instance="1" alias="cpuPercentBusy" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.1.6" instance="0" alias="numberOfNLMsLoaded" type="gauge" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.2" instance="0" alias="memorySize" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="3" alias="cacheBuffersUnits" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="3" alias="cacheBuffersSize" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="3" alias="cacheBuffersUsed" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="6" alias="codeDataMemoryUnits" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="6" alias="codeDataMemorySize" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="6" alias="codeDataMemoryUsed" type="integer" />
-				<mibObj oid=".1.3.6.1.4.1.23.2.28.2.7" instance="0" alias="currentOpenFiles" type="integer" />
-				<mibObj oid=".1.3.6.1.4.1.23.2.28.3.2" instance="0" alias="licensedConnections" type="integer" />
-				<mibObj oid=".1.3.6.1.4.1.23.2.28.2.14.1.4" instance="1" alias="freeSpaceOnSys" type="integer" />
-				<mibObj oid=".1.3.6.1.4.1.23.2.28.2.14.1.5" instance="1" alias="freeableSpaceOnSys" type="integer" />
-				<mibObj oid=".1.3.6.1.4.1.23.2.28.2.14.1.4" instance="3" alias="freeSpaceOnVol2" type="integer" />
-				<mibObj oid=".1.3.6.1.4.1.23.2.28.2.14.1.5" instance="3" alias="freeableSpaceOnVol2" type="integer" />
-			</group>
-			<group name = "windows-host" ifType = "ignore">
-				<mibObj oid=".1.3.6.1.2.1.25.3.3.1.2" instance="1" alias="cpuPercentBusy" type="integer" />
-				<!-- Drive information is from the hrStorage table. -->
-				<!-- I'm cheating and assuming that the second and third -->
-				<!-- entries refer to Drive_C and Drive_D -->
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="2" alias="unitsDriveC" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="2" alias="sizeDriveC" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="2" alias="usedDriveC" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="3" alias="unitsDriveD" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="3" alias="sizeDriveD" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="3" alias="usedDriveD" type="integer" />
-				<!-- Memory in KBytes -->
-				<mibObj oid=".1.3.6.1.2.1.25.2.2" instance="0" alias="memorySize" type="integer" />
-			</group>
-
 			<group name = "checkpoint-host" ifType = "ignore">
 				<mibObj oid=".1.3.6.1.2.1.25.1.5" instance="0" alias="stateInfoStored" type="integer" />
 				<mibObj oid=".1.3.6.1.2.1.25.1.6" instance="0" alias="processContexts" type="integer" />
 				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="1" alias="allocatedStorage" type="integer" />
-				<mibObj oid=".1.3.6.1.4.1.94.1.21.1.7.1" instance="0" alias="cpuUtilization" type="integer" />
+				<mibObj oid=".1.3.6.1.4.1.94.1.21.1.6.1" instance="0" alias="cpuUtilization" type="integer" />
 				<mibObj oid=".1.3.6.1.4.1.2620.1.1.4" instance="0" alias="pktsAccepted" type="integer" />
 				<mibObj oid=".1.3.6.1.4.1.2620.1.1.5" instance="0" alias="pktsRejected" type="integer" />
 				<mibObj oid=".1.3.6.1.4.1.2620.1.1.6" instance="0" alias="pktsDropped" type="integer" />
 				<mibObj oid=".1.3.6.1.4.1.2620.1.1.7" instance="0" alias="pktsLogged" type="integer" />
 			</group>
-
+			<group name = "compaq-insight-manager-stats" ifType = "ignore">
+				 <mibObj oid="1.3.6.1.4.1.232.11.2.4.1.1.5"    instance="0" alias="cimPctHddUsed1"  type="integer" />
+				 <mibObj oid="1.3.6.1.4.1.232.11.2.4.1.1.5"    instance="1" alias="cimPctHddUsed2"  type="integer" />
+				 <mibObj oid="1.3.6.1.4.1.232.11.2.3.1.1.3"    instance="0" alias="cim5MinCpuUtilPct"  type="integer" />
+			</group>	
 			<group name = "domino-stats" ifType = "ignore">
                                 <mibObj oid=".1.3.6.1.4.1.334.72.1.1.6.3.6"   instance="0" alias="attachedUsers"       type="integer" />
                                 <mibObj oid=".1.3.6.1.4.1.334.72.1.1.4.1"     instance="0" alias="deadMail"            type="integer" />
@@ -244,32 +97,66 @@
                                 <mibObj oid=".1.3.6.1.4.1.334.72.1.1.16.1"    instance="0" alias="totalApptmtReserv"   type="integer" />
                                 <mibObj oid=".1.3.6.1.4.1.334.72.1.1.16.6"    instance="0" alias="totalCalendarUsers"  type="integer" />
                         </group>
-
-			<group name = "compaq-insight-manager-stats" ifType = "ignore">
-				 <mibObj oid="1.3.6.1.4.1.232.11.2.4.1.1.5"    instance="0" alias="cimPctHddUsed1"  type="integer" />
-				 <mibObj oid="1.3.6.1.4.1.232.11.2.4.1.1.5"    instance="1" alias="cimPctHddUsed2"  type="integer" />
-				 <mibObj oid="1.3.6.1.4.1.232.11.2.3.1.1.3"    instance="0" alias="cim5MinCpuUtilPct"  type="integer" />
-			</group>	
-			<group name="ucd-loadavg" ifType="ignore">
-				<mibObj oid=".1.3.6.1.4.1.2021.10.1.5" instance="1" alias="loadavg1" type="integer" /> 
-				<mibObj oid=".1.3.6.1.4.1.2021.10.1.5" instance="2" alias="loadavg5" type="integer" /> 
-				<mibObj oid=".1.3.6.1.4.1.2021.10.1.5" instance="3" alias="loadavg15" type="integer" /> 
+			<group 	name = "extreme-sys" ifType = "ignore">
+				<mibObj oid=".1.3.6.1.4.1.1916.1.1.1.8" instance="0" alias="xtrmCurrentTemp" type="integer"/>
 			</group>
-
-			<group  name="mib2-interfaces-sunw" ifType="all">
-                                <mibObj oid=".1.3.6.1.2.1.2.2.1.10" instance="ifIndex" alias="ifInOctets"        type="counter"/>
-                                <mibObj oid=".1.3.6.1.2.1.2.2.1.11" instance="ifIndex" alias="ifInUcastPkts"     type="counter"/>
-                                <mibObj oid=".1.3.6.1.2.1.2.2.1.12" instance="ifIndex" alias="ifInNUcastPkts"    type="counter"/>
-                                <mibObj oid=".1.3.6.1.2.1.2.2.1.13" instance="ifIndex" alias="ifInDiscards"      type="counter"/>
-                                <mibObj oid=".1.3.6.1.2.1.2.2.1.14" instance="ifIndex" alias="ifInErrors"        type="counter"/>
-                                <mibObj oid=".1.3.6.1.2.1.2.2.1.15" instance="ifIndex" alias="ifInUnknownProtos" type="counter"/>
-                                <mibObj oid=".1.3.6.1.2.1.2.2.1.16" instance="ifIndex" alias="ifOutOctets"       type="counter"/>
-                                <mibObj oid=".1.3.6.1.2.1.2.2.1.17" instance="ifIndex" alias="ifOutUcastPkts"    type="counter"/>
-                                <mibObj oid=".1.3.6.1.2.1.2.2.1.18" instance="ifIndex" alias="ifOutNUcastPkts"   type="counter"/>
-                                <mibObj oid=".1.3.6.1.2.1.2.2.1.19" instance="ifIndex" alias="ifOutDiscards"     type="counter"/>
-                                <mibObj oid=".1.3.6.1.2.1.2.2.1.20" instance="ifIndex" alias="ifOutErrors"       type="counter"/>
+			<group 	name = "hpux" ifType = "ignore">
+				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.2" instance="0" alias="hpuxNumberOfUsers" type="gauge"/>
+				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.7" instance="0" alias="hpuxFreeMemory" type="gauge"/>
+				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.8" instance="0" alias="hpuxPhysMemory" type="integer"/>
+				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.10" instance="0" alias="hpuxSwapConfigured" type="integer"/>
+				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.11" instance="0" alias="hpuxSwapEnabled" type="gauge"/>
+				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.12" instance="0" alias="hpuxSwapFree" type="gauge"/>
+				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.13" instance="0" alias="hpuxCpuUsedByUsers" type="counter"/>
+				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.14" instance="0" alias="hpuxCpuUsedBySys" type="counter"/>
+				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.15" instance="0" alias="hpuxCpuIdle" type="counter"/>
+				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.16" instance="0" alias="hpuxCpuNice" type="counter"/>
+				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.1" instance="0" alias="hpuxTotalFsMounted" type="gauge"/>
+				<mibObj oid=".1.3.6.1.4.1.11.2.3.1.4.1" instance="0" alias="hpuxTotalProcesses" type="gauge"/>
+			</group>
+                        <group  name = "juniper-router" ifType = "ignore">
+                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.8.6.1.0" instance="0" alias="juniperCpuFeb"    type="gauge32"/>
+                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.8.7.1.0" instance="0" alias="juniperCpuFpc0"    type="gauge32"/>
+                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.8.7.2.0" instance="0" alias="juniperCpuFpc1"    type="gauge32"/>
+                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.8.9.1.0" instance="0" alias="juniperCpuRe"    type="gauge32"/>
+                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.7.6.1.0" instance="0" alias="juniperTempFeb" type="gauge32"/>
+                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.7.7.1.0" instance="0" alias="juniperTempFpc0" type="gauge32"/>
+                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.7.7.2.0" instance="0" alias="juniperTempFpc1" type="gauge32"/>
+                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.7.9.1.0" instance="0" alias="juniperTempRe" type="gauge32"/>
+                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.11.6.1.0" instance="0" alias="juniperBufferFeb" type="gauge32"/>
+                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.11.7.1.0" instance="0" alias="juniperBufferFpc0" type="gauge32"/>
+                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.11.7.2.0" instance="0" alias="juniperBufferFpc1" type="gauge32"/>
                         </group>
-
+			<group name = "mge.max.stats.1" ifType="ignore">
+				<mibObj oid=".1.3.6.1.4.1.705.1.6.2.1.5"    instance="1" alias="inVmax" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.705.1.6.2.1.4"    instance="1" alias="inVmin" type="Gauge32" />
+			</group>
+			<group name = "netware-host" ifType = "ignore">
+				<mibObj oid=".1.3.6.1.2.1.25.3.3.1.2" instance="1" alias="cpuPercentBusy" type="integer" />
+				<mibObj oid=".1.3.6.1.2.1.25.1.6" instance="0" alias="numberOfNLMsLoaded" type="gauge" />
+				<mibObj oid=".1.3.6.1.2.1.25.2.2" instance="0" alias="memorySize" type="integer" />
+				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="3" alias="cacheBuffersUnits" type="integer" />
+				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="3" alias="cacheBuffersSize" type="integer" />
+				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="3" alias="cacheBuffersUsed" type="integer" />
+				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="6" alias="codeDataMemoryUnits" type="integer" />
+				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="6" alias="codeDataMemorySize" type="integer" />
+				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="6" alias="codeDataMemoryUsed" type="integer" />
+				<mibObj oid=".1.3.6.1.4.1.23.2.28.2.7" instance="0" alias="currentOpenFiles" type="integer" />
+				<mibObj oid=".1.3.6.1.4.1.23.2.28.3.2" instance="0" alias="licensedConnections" type="integer" />
+				<mibObj oid=".1.3.6.1.4.1.23.2.28.2.14.1.4" instance="1" alias="freeSpaceOnSys" type="integer" />
+				<mibObj oid=".1.3.6.1.4.1.23.2.28.2.14.1.5" instance="1" alias="freeableSpaceOnSys" type="integer" />
+				<mibObj oid=".1.3.6.1.4.1.23.2.28.2.14.1.4" instance="3" alias="freeSpaceOnVol2" type="integer" />
+				<mibObj oid=".1.3.6.1.4.1.23.2.28.2.14.1.5" instance="3" alias="freeableSpaceOnVol2" type="integer" />
+			</group>
+			<group 	name = "sun" ifType = "ignore">
+				<mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.1.1.1" instance="0" alias="sunAvailableSwap" type="integer"/>
+				<mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.1.1.2" instance="0" alias="sunReservedSwap" type="integer"/>
+				<mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.1.1.3" instance="0" alias="sunAllocatedSwap" type="integer"/>
+				<mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.1.1.4" instance="0" alias="sunUsedSwap" type="integer"/>
+				<mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.4.1.1" instance="0" alias="sunProcsInRunQueue" type="integer"/>
+				<mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.4.1.2" instance="0" alias="sunProcsBlocked" type="integer"/>
+				<mibObj oid=".1.3.6.1.4.1.42.2.12.2.2.11.4.1.3" instance="0" alias="sunProcsInSwap" type="integer"/>
+			</group>
                         <group  name="sunHostPerf" ifType = "ignore">
                                 <mibObj oid=".1.3.6.1.4.1.42.3.13.1"  instance="0" alias="rsUserProcessTime"   type="counter"/>
                                 <mibObj oid=".1.3.6.1.4.1.42.3.13.2"  instance="0" alias="rsNiceModeTime"      type="counter"/>
@@ -290,35 +177,49 @@
                                 <mibObj oid=".1.3.6.1.4.1.42.3.13.17" instance="0" alias="rsIfOutErrors"       type="counter"/>
                                 <mibObj oid=".1.3.6.1.4.1.42.3.13.18" instance="0" alias="rsIfCollisions"      type="counter"/>
                         </group>
-
-                        <group  name = "APC" ifType = "ignore">
-                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.2.2.1" instance="0" alias="apcpercent"    type="gauge32"/>
-                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.2.2.2" instance="0" alias="apctemp"    type="gauge32"/>
-                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.2.2.3" instance="0" alias="apctime"    type="TimeTicks"/>
-                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.4.2.1" instance="0" alias="apcoutvac"    type="gauge32"/>
-                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.4.2.3" instance="0" alias="apcload"    type="gauge32"/>
-                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.4.2.4" instance="0" alias="apccurrent"    type="gauge32"/>
-                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.3.2.1" instance="0" alias="apcinvac"    type="gauge32"/>
+			<group  name="mib2-interfaces-sunw" ifType="all">
+                                <mibObj oid=".1.3.6.1.2.1.2.2.1.10" instance="ifIndex" alias="ifInOctets"        type="counter"/>
+                                <mibObj oid=".1.3.6.1.2.1.2.2.1.11" instance="ifIndex" alias="ifInUcastPkts"     type="counter"/>
+                                <mibObj oid=".1.3.6.1.2.1.2.2.1.12" instance="ifIndex" alias="ifInNUcastPkts"    type="counter"/>
+                                <mibObj oid=".1.3.6.1.2.1.2.2.1.13" instance="ifIndex" alias="ifInDiscards"      type="counter"/>
+                                <mibObj oid=".1.3.6.1.2.1.2.2.1.14" instance="ifIndex" alias="ifInErrors"        type="counter"/>
+                                <mibObj oid=".1.3.6.1.2.1.2.2.1.15" instance="ifIndex" alias="ifInUnknownProtos" type="counter"/>
+                                <mibObj oid=".1.3.6.1.2.1.2.2.1.16" instance="ifIndex" alias="ifOutOctets"       type="counter"/>
+                                <mibObj oid=".1.3.6.1.2.1.2.2.1.17" instance="ifIndex" alias="ifOutUcastPkts"    type="counter"/>
+                                <mibObj oid=".1.3.6.1.2.1.2.2.1.18" instance="ifIndex" alias="ifOutNUcastPkts"   type="counter"/>
+                                <mibObj oid=".1.3.6.1.2.1.2.2.1.19" instance="ifIndex" alias="ifOutDiscards"     type="counter"/>
+                                <mibObj oid=".1.3.6.1.2.1.2.2.1.20" instance="ifIndex" alias="ifOutErrors"       type="counter"/>
                         </group>
-
-                        <group  name = "juniper-router" ifType = "ignore">
-                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.8.6.1.0" instance="0" alias="juniperCpuFeb"    type="gauge32"/>
-                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.8.7.1.0" instance="0" alias="juniperCpuFpc0"    type="gauge32"/>
-                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.8.7.2.0" instance="0" alias="juniperCpuFpc1"    type="gauge32"/>
-                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.8.9.1.0" instance="0" alias="juniperCpuRe"    type="gauge32"/>
-                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.7.6.1.0" instance="0" alias="juniperTempFeb" type="gauge32"/>
-                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.7.7.1.0" instance="0" alias="juniperTempFpc0" type="gauge32"/>
-                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.7.7.2.0" instance="0" alias="juniperTempFpc1" type="gauge32"/>
-                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.7.9.1.0" instance="0" alias="juniperTempRe" type="gauge32"/>
-                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.11.6.1.0" instance="0" alias="juniperBufferFeb" type="gauge32"/>
-                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.11.7.1.0" instance="0" alias="juniperBufferFpc0" type="gauge32"/>
-                                <mibObj oid=".1.3.6.1.4.1.2636.3.1.13.1.11.7.2.0" instance="0" alias="juniperBufferFpc1" type="gauge32"/>
-                        </group>
-
-
-
+			<group 	name = "3Com-router-perf" ifType = "ignore">
+				<mibObj oid=".1.3.6.1.4.1.43.2.33.1.1.2.1.4" instance="0" alias="a3perfBufMemAvail"      type="integer"/>
+				<mibObj oid=".1.3.6.1.4.1.43.2.33.1.1.2.1.5" instance="0" alias="a3perfBufMemFailed"     type="integer"/>
+				<mibObj oid=".1.3.6.1.4.1.43.2.33.1.1.2.1.3" instance="0" alias="a3perfBufMemTotal"      type="integer"/>
+				<mibObj oid=".1.3.6.1.4.1.43.2.33.1.1.1"     instance="0" alias="a3perfBufMemTotalAvail" type="integer"/>
+			</group>
+			<group 	name = "3com-router-sys" ifType = "ignore">
+				<mibObj oid=".1.3.6.1.4.1.43.2.13.3.1.1.5" instance="0" alias="a3sysMemSize" type="integer"/>
+				<mibObj oid=".1.3.6.1.4.1.43.2.13.8.4"     instance="0" alias="a3sysCpuUtil" type="integer"/>
+			</group>
+			<group name="ucd-loadavg" ifType="ignore">
+				<mibObj oid=".1.3.6.1.4.1.2021.10.1.5" instance="1" alias="loadavg1" type="integer" /> 
+				<mibObj oid=".1.3.6.1.4.1.2021.10.1.5" instance="2" alias="loadavg5" type="integer" /> 
+				<mibObj oid=".1.3.6.1.4.1.2021.10.1.5" instance="3" alias="loadavg15" type="integer" /> 
+			</group>
+			<group name = "windows-host" ifType = "ignore">
+				<mibObj oid=".1.3.6.1.2.1.25.3.3.1.2" instance="1" alias="cpuPercentBusy" type="integer" />
+				<!-- Drive information is from the hrStorage table. -->
+				<!-- I'm cheating and assuming that the second and third -->
+				<!-- entries refer to Drive_C and Drive_D -->
+				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="2" alias="unitsDriveC" type="integer" />
+				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="2" alias="sizeDriveC" type="integer" />
+				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="2" alias="usedDriveC" type="integer" />
+				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="3" alias="unitsDriveD" type="integer" />
+				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="3" alias="sizeDriveD" type="integer" />
+				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="3" alias="usedDriveD" type="integer" />
+				<!-- Memory in KBytes -->
+				<mibObj oid=".1.3.6.1.2.1.25.2.2" instance="0" alias="memorySize" type="integer" />
+			</group>
 		</groups>
-
 		<systems>
 			<systemDef name = "Enterprise">
 				<sysoidMask>.1.3.6.1.4.1.</sysoidMask>
@@ -327,23 +228,6 @@
 				</collect>
 			</systemDef>		
 			
-			<systemDef name="AlliedTelesyn switches">
-				<sysoidMask>.1.3.6.1.4.1.207.1.4.</sysoidMask>
-				<collect>
-					<includeGroup>mib2-interfaces</includeGroup>
-					<includeGroup>mib2-packets-classification</includeGroup>
-					<includeGroup>mib2-EtherLike</includeGroup>
-					<includeGroup>rmon-etherStats-size</includeGroup>
-				</collect>
-			</systemDef>
-
-                        <systemDef name = "American Power Conversion">
-                                <sysoidMask>.1.3.6.1.4.1.318.</sysoidMask>
-                                <collect>
-                                        <includeGroup>APC</includeGroup>
-                                </collect>
-                        </systemDef>
-
 			<systemDef name = "Bay Routers">
 				<sysoidMask>.1.3.6.1.4.1.18.</sysoidMask>
 				<collect>
@@ -365,11 +249,9 @@
 				<collect>
 					<includeGroup>mib2-interfaces</includeGroup>
 					<includeGroup>cisco-router</includeGroup>
-					<includeGroup>cisco-router-protocols</includeGroup>
-					<includeGroup>cisco-router-buffers</includeGroup>
 				</collect>
 			</systemDef>
-			
+
 			<systemDef name = "Citrix">
 				<sysoid>.1.3.6.1.4.1.311.1.1.3.1.2</sysoid>
 				<collect>
@@ -378,11 +260,27 @@
 				</collect>
 			</systemDef>
 			
-			<systemDef name = "HpPrinters">
-			<sysoidMask>.1.3.6.1.4.1.11.2.3.9.1</sysoidMask>
+			<systemDef name = "Extreme Networks">
+				<sysoidMask>.1.3.6.1.4.1.1916.2.</sysoidMask>
 				<collect>
 					<includeGroup>mib2-interfaces</includeGroup>
-					<includeGroup>printer-usage</includeGroup>
+					<includeGroup>extreme-sys</includeGroup>
+				</collect>
+			</systemDef>
+
+                        <systemDef name = "HpPrinters">
+                        	<sysoidMask>.1.3.6.1.4.1.11.2.3.9.1</sysoidMask>
+                                <collect>
+                                        <includeGroup>mib2-interfaces</includeGroup>
+                                        <includeGroup>printer-usage</includeGroup>
+                                </collect>
+                        </systemDef>
+
+			<systemDef name = "HP-UX">
+				<sysoidMask>.1.3.6.1.4.1.11.2.3.2.</sysoidMask>
+				<collect>
+					<includeGroup>mib2-interfaces</includeGroup>
+					<includeGroup>hpux</includeGroup>
 				</collect>
 			</systemDef>
 
@@ -416,24 +314,6 @@
 				</collect>
 			</systemDef>
 			
-			<systemDef name = "MGE-UPS.1">
-				<sysoidMask>.1.3.6.1.4.1.705.1.2</sysoidMask>
-				<collect>
-					<includeGroup>upsmib.in.1</includeGroup>
-					<includeGroup>upsmib.out.1</includeGroup>
-					<includeGroup>mge.max.stats.1</includeGroup>
-				</collect>
-			</systemDef>
-
-			<systemDef name = "MGE-UPS.2">
-				<sysoidMask>.1.3.6.1.4.1.705.1.3</sysoidMask>
-				<collect>
-					<includeGroup>upsmib.in.1</includeGroup>
-					<includeGroup>upsmib.out.1</includeGroup>
-					<includeGroup>mge.max.stats.1</includeGroup>
-				</collect>
-			</systemDef>
-
 			<systemDef name = "Netware">
 				<sysoidMask>.1.3.6.1.4.1.23.1.6.</sysoidMask>
 				<collect>
@@ -441,14 +321,15 @@
 					<includeGroup>netware-host</includeGroup>
 				</collect>
 			</systemDef>
-
-			<systemDef name = "Sun Enterprise Agent v1.0.3">
-				<sysoidMask>.1.3.6.1.4.1.42.</sysoidMask>
-                                <collect>
-					<includeGroup>mib2-interfaces-sunw</includeGroup>
+			
+			<systemDef name = "Sun">
+				<sysoidMask>.1.3.6.1.4.1.42.2.</sysoidMask>
+				<collect>
+					<includeGroup>sun</includeGroup>
 					<includeGroup>sunHostPerf</includeGroup>
-                                </collect>
-                        </systemDef>
+					<includeGroup>mib2-interfaces-sunw</includeGroup>
+				</collect>
+			</systemDef>
 
 			<systemDef name = "3Com Routers">
 				<sysoidMask>.1.3.6.1.4.1.43.</sysoidMask>
@@ -456,30 +337,6 @@
 					<includeGroup>mib2-interfaces</includeGroup>
 					<includeGroup>3com-router-sys</includeGroup>
 					<includeGroup>3com-router-perf</includeGroup>
-				</collect>
-			</systemDef>
-
-			<systemDef name = "Extreme Networks">
-				<sysoidMask>.1.3.6.1.4.1.1916.2.</sysoidMask>
-				<collect>
-					<includeGroup>mib2-interfaces</includeGroup>
-					<includeGroup>extreme-sys</includeGroup>
-				</collect>
-			</systemDef>
-
-			<systemDef name = "HP-UX">
-				<sysoidMask>.1.3.6.1.4.1.11.2.3.2.</sysoidMask>
-				<collect>
-					<includeGroup>mib2-interfaces</includeGroup>
-					<includeGroup>hpux</includeGroup>
-				</collect>
-			</systemDef>
-
-			<systemDef name = "Sun">
-				<sysoidMask>.1.3.6.1.4.1.42.2.</sysoidMask>
-				<collect>
-					<includeGroup>mib2-interfaces</includeGroup>
-					<includeGroup>sun</includeGroup>
 				</collect>
 			</systemDef>
 
@@ -493,7 +350,6 @@
 					<includeGroup>compaq-insight-manager-stats</includeGroup>
 				</collect>
 			</systemDef>
-
 		</systems>
 	</snmp-collection>
 </datacollection-config>
