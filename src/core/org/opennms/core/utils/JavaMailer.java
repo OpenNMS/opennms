@@ -39,7 +39,7 @@ import com.sun.mail.smtp.SMTPTransport;
  */
 public class JavaMailer {
 
-    private final String DEFAULT_FROM_ADDRESS = JavaMailerConfig.getProperty("org.opennms.core.utils.fromAddress", "root@127.0.0.1");
+    private final String DEFAULT_FROM_ADDRESS = JavaMailerConfig.getProperty("org.opennms.core.utils.fromAddress", "root@[127.0.0.1]");
 
     private final String DEFAULT_MAIL_HOST = JavaMailerConfig.getProperty("org.opennms.core.utils.mailHost", "127.0.0.1");
 
