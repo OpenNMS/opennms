@@ -1,0 +1,18 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/eventarchiver">
+	<element name="EventsArchiverConfiguration">
+ 		<complexType>
+			<!--- archive age - events older than current time minus this time are removed
+			      (is typically in days, hours, minutes although seconds, milliseconds
+			      and microseconds are also supported!)
+			 -->
+			<attribute name="archiveAge" type="string" use="required"/>
+
+			<!--- the separator used in between event table column values when an
+			      event is written to the archive file
+			 -->
+			<attribute name="separator" use="optional" type="string" default="#"/>
+ 		</complexType>
+	</element>
+</schema>
+

@@ -1,0 +1,223 @@
+#!/bin/sh
+
+# Wrolf Courtney
+# wrolf@wrolf.net
+#
+# 8/21/2002 Early version
+#
+# Quick CGI-BIN script to display which OpenNMS nodes, interfaces,
+# and services are down.
+#
+# Place in your CGI-BIN directory, e.g. in /var/www/cgi-bin, and
+# make executable.
+#
+# 10/23/2002 Cleaned up for distribution
+#
+
+cat <<HERE
+Content-Type: text/html; charset=ISO-8859-1"
+
+<html>
+<head>
+  <title>OpenNMS - Down Nodes, Interfaces, and Services"</title>
+HERE
+hostname --fqdn | perl -ne 'chomp;print "  <base HREF=\"http://$_:8080/opennms/\" />\n"';
+cat <<HERE
+  <link rel="stylesheet" type="text/css" href="includes/styles.css" />
+</head>
+
+<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+
+<!-- Header -->
+<table width="100%" border="0" cellspacing="0" cellpadding="2" background="images/logo-background.gif">
+  <tr> 
+    <td WIDTH="30%">
+      <a href="index.jsp"><img src="images/logo.gif" hspace="0" vspace="0" border="0" alt="OpenNMS Web Console Home"></a>
+    </td>
+    <td ALIGN="center">
+      <b>Web Console</b>
+
+    </td>
+
+  </tr>
+  <tr bgcolor="white">
+    <td COLSPAN="3" ALIGN="center" >
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td align="left">      
+            <font SIZE="-1" FACE="arial">
+            <a href="index.jsp">Home</a> 
+            
+            </font>
+
+          </td>
+          <td align="right">
+          <font SIZE="-1" FACE="arial">
+                  <a href="element/index.jsp">Search</a>&nbsp;|&nbsp;
+                  <a href="outage/index.jsp">Outages</a>&nbsp;|&nbsp;
+                  <a href="event/index.jsp">Events</a>&nbsp;|&nbsp;
+                  <a href="notification/index.jsp">Notification</a>&nbsp;|&nbsp;
+                  <a href="asset/index.jsp">Assets</a>&nbsp;|&nbsp;
+                  <a href="report/index.jsp">Reports</a>&nbsp;|&nbsp;
+                  <a href="help/index.jsp">Help</a>
+          </font>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+
+<br> 
+
+<!-- Body -->
+
+<table width="100%" border="0" cellspacing="0" cellpadding="2" >
+  <tr> 
+    <td>&nbsp;</td>
+  
+    <!-- Column 1 of Body -->  
+    <td width="25%" valign="top" >
+      <!-- Nodes down box -->
+
+<H2>Down Nodes</H2>
+HERE
+
+psql -q opennms opennms <<HERE
+\pset format HTML
+\pset tableattr border=1
+\pset tableattr CELLPADDING=1
+\pset tableattr CELLSPACING=0
+\pset tableattr width="100%"
+\pset tableattr border="1"
+\pset tableattr bordercolor="black"
+\pset tableattr BGCOLOR="palegoldenrod"
+
+select
+	nodelabel as "Name",
+	timedown as "Time Down"
+from
+ (select nodeid, max(eventtime) as timedown
+  from events
+  where
+   eventuei = 'uei.opennms.org/nodes/nodeDown'
+  group by nodeid) as down
+ natural left outer join 
+ (select nodeid, max(eventtime) as timeup
+  from events
+  where eventuei = 'uei.opennms.org/nodes/nodeUp' group by nodeid) as up
+ natural join node
+where
+ timedown > timeup or timeup is null;
+HERE
+
+cat <<HERE
+    </td>
+    
+    <td>&nbsp;</td>
+
+    <!-- Middle Column -->
+
+    <td valign="top">
+      <!-- Interfaces Down -->    
+
+<H2>Down Interfaces</H2>
+HERE
+
+psql -q opennms opennms <<HERE
+\pset format HTML
+\pset tableattr border=1
+\pset tableattr CELLPADDING=1
+\pset tableattr CELLSPACING=0
+\pset tableattr width="100%"
+\pset tableattr border="1"
+\pset tableattr bordercolor="black"
+\pset tableattr BGCOLOR="palegoldenrod"
+
+select
+	nodelabel as "Name",
+	ipaddr as "Address"
+from
+	node natural join ipinterface
+where
+	isManaged = 'M' and
+	ipStatus = '2'
+order by
+	nodelabel, ipaddr;
+HERE
+
+cat <<HERE
+    </td>
+    
+    <td>&nbsp;</td>
+
+    <!-- Right Column -->
+
+    <td valign="top">
+      <!-- Services Down -->    
+
+<H2>Down Services</H2>
+HERE
+
+psql -q opennms opennms <<HERE
+\pset format HTML
+\pset tableattr border=1
+\pset tableattr CELLPADDING=1
+\pset tableattr CELLSPACING=0
+\pset tableattr width="100%"
+\pset tableattr border="1"
+\pset tableattr bordercolor="black"
+\pset tableattr BGCOLOR="palegoldenrod"
+
+select
+	nodelabel as "Name",
+	ipaddr as "Address",
+	servicename as "Service",
+	ifLostService as "Down At"
+from
+	outages natural join service natural join node
+where
+	ifregainedservice is null
+order by
+	nodelabel, ipaddr, servicename;
+
+HERE
+
+cat <<HERE
+    </td>
+
+    <td>&nbsp;</td>   
+  </tr>
+</table>
+<br>
+
+
+<!-- Footer -->
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+  <tr>
+    <td class="footer" ALIGN="center">
+      <font SIZE="-1" FACE="arial">
+              <a href="element/index.jsp">Search</a>&nbsp;|&nbsp;
+              <a href="outage/index.jsp">Outages</a>&nbsp;|&nbsp;
+              <a href="event/index.jsp">Events</a>&nbsp;|&nbsp;
+              <a href="notification/index.jsp">Notification</a>&nbsp;|&nbsp;
+              <a href="asset/index.jsp">Assets</a>&nbsp;|&nbsp;
+              <a href="report/index.jsp">Reports</a>&nbsp;|&nbsp;
+              <a href="help/index.jsp">Help</a>
+        
+      </font>
+    </td>
+  </tr>
+  <tr> 
+    <td align="center" >
+      <font  SIZE="-1"><a HREF="http://www.opennms.org/">OpenNMS.org</a> is a project supported by Oculan Corp. </font>
+
+    </td>
+  </tr>
+</table>
+
+
+</body>
+</html>
+HERE

@@ -1,0 +1,169 @@
+diff -uNr postgresql-7.1.2.orig/src/bin/scripts/createlang.sh postgresql-7.1.2/src/bin/scripts/createlang.sh
+--- postgresql-7.1.2.orig/src/bin/scripts/createlang.sh	Sun Feb 18 13:34:01 2001
++++ postgresql-7.1.2/src/bin/scripts/createlang.sh	Wed Jun 13 16:00:55 2001
+@@ -164,7 +164,7 @@
+ # Check that we have PGLIB
+ # ----------
+ if [ -z "$PGLIB" ]; then
+-	PGLIB='@libdir@'
++	PGLIB='/usr/lib/pgsql'
+ fi
+ 
+ # ----------
+diff -uNr postgresql-7.1.2.orig/src/interfaces/perl5/GNUmakefile postgresql-7.1.2/src/interfaces/perl5/GNUmakefile
+--- postgresql-7.1.2.orig/src/interfaces/perl5/GNUmakefile	Thu Nov 16 19:08:57 2000
++++ postgresql-7.1.2/src/interfaces/perl5/GNUmakefile	Wed Jun 13 16:00:55 2001
+@@ -36,8 +36,8 @@
+ 
+ install: Makefile
+ 	$(MAKE) -f Makefile clean
+-	POSTGRES_LIB="$(libdir)" \
+-	  POSTGRES_INCLUDE="$(includedir)" \
++	POSTGRES_LIB="$(RPM_BUILD_ROOT)$(libdir)" \
++	  POSTGRES_INCLUDE="$(RPM_BUILD_ROOT)$(includedir)" \
+ 	  $(PERL) $(srcdir)/Makefile.PL
+ 	$(MAKE) -f Makefile all
+ 	-@if [ -w "`$(MAKE) --quiet -f Makefile echo-installdir`" ]; then \
+diff -uNr postgresql-7.1.2.orig/src/interfaces/perl5/test.pl postgresql-7.1.2/src/interfaces/perl5/test.pl
+--- postgresql-7.1.2.orig/src/interfaces/perl5/test.pl	Thu Nov 16 19:24:03 2000
++++ postgresql-7.1.2/src/interfaces/perl5/test.pl	Wed Jun 13 16:00:55 2001
+@@ -1,4 +1,4 @@
+-#!/usr/local/bin/perl -w
++#!/usr/bin/perl -w
+ 
+ # rpm-pgsql-7.1.patch,v 1.1.1.1 2001/11/11 17:28:55 ben Exp
+ 
+diff -uNr postgresql-7.1.2.orig/src/test/performance/runtests.pl postgresql-7.1.2/src/test/performance/runtests.pl
+--- postgresql-7.1.2.orig/src/test/performance/runtests.pl	Fri Sep 26 10:55:20 1997
++++ postgresql-7.1.2/src/test/performance/runtests.pl	Wed Jun 13 16:00:55 2001
+@@ -1,4 +1,4 @@
+-#!/usr/local/bin/perl
++#!/usr/bin/perl
+ #
+ # Accepts one argument - DBMS name (pgsql, ...) and initializes
+ # global variable $TestDBMS with this name.
+diff -uNr postgresql-7.1.2.orig/src/test/regress/GNUmakefile postgresql-7.1.2/src/test/regress/GNUmakefile
+--- postgresql-7.1.2.orig/src/test/regress/GNUmakefile	Wed Apr  4 17:15:56 2001
++++ postgresql-7.1.2/src/test/regress/GNUmakefile	Wed Jun 13 16:00:55 2001
+@@ -67,8 +67,8 @@
+ abs_builddir := $(shell pwd)
+ 
+ define sed-command
+-sed -e 's,@abs_srcdir@,$(abs_srcdir),g' \
+-    -e 's,@abs_builddir@,$(abs_builddir),g' \
++sed -e 's,@abs_srcdir@,/usr/lib/pgsql/test/regress,g' \
++    -e 's,@abs_builddir@,/usr/lib/pgsql/test/regress,g' \
+     -e 's/@DLSUFFIX@/$(DLSUFFIX)/g' $< >$@
+ endef
+ 
+diff -uNr postgresql-7.1.2.orig/src/test/regress/input/create_function_1.source postgresql-7.1.2/src/test/regress/input/create_function_1.source
+--- postgresql-7.1.2.orig/src/test/regress/input/create_function_1.source	Mon Nov 20 15:36:54 2000
++++ postgresql-7.1.2/src/test/regress/input/create_function_1.source	Wed Jun 13 16:00:55 2001
+@@ -4,41 +4,41 @@
+ 
+ CREATE FUNCTION widget_in(opaque)
+    RETURNS widget
+-   AS '@abs_builddir@/regress@DLSUFFIX@'
++   AS '/usr/lib/pgsql/test/regress/regress.so'
+    LANGUAGE 'c';
+ 
+ CREATE FUNCTION widget_out(opaque)
+    RETURNS opaque
+-   AS '@abs_builddir@/regress@DLSUFFIX@'
++   AS '/usr/lib/pgsql/test/regress/regress.so'
+    LANGUAGE 'c';
+ 
+ CREATE FUNCTION check_primary_key ()
+ 	RETURNS opaque
+-	AS '@abs_builddir@/../../../contrib/spi/refint@DLSUFFIX@'
++	AS '/usr/lib/pgsql/test/regress/refint.so'
+ 	LANGUAGE 'C';
+ 
+ CREATE FUNCTION check_foreign_key ()
+ 	RETURNS opaque
+-	AS '@abs_builddir@/../../../contrib/spi/refint@DLSUFFIX@'
++	AS '/usr/lib/pgsql/test/regress/refint.so'
+ 	LANGUAGE 'C';
+ 
+ CREATE FUNCTION autoinc ()
+ 	RETURNS opaque
+-	AS '@abs_builddir@/../../../contrib/spi/autoinc@DLSUFFIX@'
++	AS '/usr/lib/pgsql/test/regress/autoinc.so'
+ 	LANGUAGE 'C';
+ 
+ CREATE FUNCTION funny_dup17 ()
+         RETURNS opaque
+-        AS '@abs_builddir@/regress@DLSUFFIX@'
++        AS '/usr/lib/pgsql/test/regress/regress.so'
+         LANGUAGE 'C';
+ 
+ CREATE FUNCTION ttdummy ()
+         RETURNS opaque
+-        AS '@abs_builddir@/regress@DLSUFFIX@'
++        AS '/usr/lib/pgsql/test/regress/regress.so'
+         LANGUAGE 'C';
+ 
+ CREATE FUNCTION set_ttdummy (int4)
+         RETURNS int4
+-        AS '@abs_builddir@/regress@DLSUFFIX@'
++        AS '/usr/lib/pgsql/test/regress/regress.so'
+         LANGUAGE 'C';
+ 
+diff -uNr postgresql-7.1.2.orig/src/test/regress/output/create_function_1.source postgresql-7.1.2/src/test/regress/output/create_function_1.source
+--- postgresql-7.1.2.orig/src/test/regress/output/create_function_1.source	Mon Nov 20 15:36:54 2000
++++ postgresql-7.1.2/src/test/regress/output/create_function_1.source	Wed Jun 13 16:00:55 2001
+@@ -3,34 +3,34 @@
+ --
+ CREATE FUNCTION widget_in(opaque)
+    RETURNS widget
+-   AS '@abs_builddir@/regress@DLSUFFIX@'
++   AS '/usr/lib/pgsql/test/regress/regress.so'
+    LANGUAGE 'c';
+ NOTICE:  ProcedureCreate: type 'widget' is not yet defined
+ CREATE FUNCTION widget_out(opaque)
+    RETURNS opaque
+-   AS '@abs_builddir@/regress@DLSUFFIX@'
++   AS '/usr/lib/pgsql/test/regress/regress.so'
+    LANGUAGE 'c';
+ CREATE FUNCTION check_primary_key ()
+ 	RETURNS opaque
+-	AS '@abs_builddir@/../../../contrib/spi/refint@DLSUFFIX@'
++	AS '/usr/lib/pgsql/test/regress/refint.so'
+ 	LANGUAGE 'C';
+ CREATE FUNCTION check_foreign_key ()
+ 	RETURNS opaque
+-	AS '@abs_builddir@/../../../contrib/spi/refint@DLSUFFIX@'
++	AS '/usr/lib/pgsql/test/regress/refint.so'
+ 	LANGUAGE 'C';
+ CREATE FUNCTION autoinc ()
+ 	RETURNS opaque
+-	AS '@abs_builddir@/../../../contrib/spi/autoinc@DLSUFFIX@'
++	AS '/usr/lib/pgsql/test/regress/autoinc.so'
+ 	LANGUAGE 'C';
+ CREATE FUNCTION funny_dup17 ()
+         RETURNS opaque
+-        AS '@abs_builddir@/regress@DLSUFFIX@'
++        AS '/usr/lib/pgsql/test/regress/regress.so'
+         LANGUAGE 'C';
+ CREATE FUNCTION ttdummy ()
+         RETURNS opaque
+-        AS '@abs_builddir@/regress@DLSUFFIX@'
++        AS '/usr/lib/pgsql/test/regress/regress.so'
+         LANGUAGE 'C';
+ CREATE FUNCTION set_ttdummy (int4)
+         RETURNS int4
+-        AS '@abs_builddir@/regress@DLSUFFIX@'
++        AS '/usr/lib/pgsql/test/regress/regress.so'
+         LANGUAGE 'C';
+diff -uNr postgresql-7.1.2.orig/src/test/regress/pg_regress.sh postgresql-7.1.2/src/test/regress/pg_regress.sh
+--- postgresql-7.1.2.orig/src/test/regress/pg_regress.sh	Sat Mar 24 18:32:25 2001
++++ postgresql-7.1.2/src/test/regress/pg_regress.sh	Wed Jun 13 16:02:02 2001
+@@ -69,7 +69,7 @@
+ : ${inputdir=.}
+ : ${outputdir=.}
+ 
+-libdir='@libdir@'
++libdir='/usr/lib/pgsql'
+ bindir='@bindir@'
+ datadir='@datadir@'
+ host_platform='@host_tuple@'

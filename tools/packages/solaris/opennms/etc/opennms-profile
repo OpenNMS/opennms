@@ -1,0 +1,10 @@
+LD_LIBRARY_PATH="/usr/local/lib:/usr/local/pgsql/lib:/usr/local/rrdtool-1.0.37/lib:/usr/local/ssl/lib:$LD_LIBRARY_PATH"
+PATH="/usr/local/bin:/usr/local/pgsql/bin:/usr/local/rrdtool-1.0.37/bin:/usr/local/ssl/bin:/usr/local/bin:$PATH"
+OPENNMS_HOME="/usr/local/opennms"
+JAVA_HOME="/usr/java/j2sdk1.4.0_02"
+TOMCAT_HOME="/usr/local/tomcat"
+POSTGRES_INCLUDE="/usr/local/pgsql/include"
+POSTGRES_LIB="/usr/local/pgsql/lib"
+PERL5LIB="/usr/local/lib/perl5:$PERL5LIB"
+
+export LD_LIBRARY_PATH PATH OPENNMS_HOME JAVA_HOME TOMCAT_HOME POSTGRES_INCLUDE POSTGRES_LIB PERL5LIB

@@ -1,0 +1,51 @@
+From: Nick Wesselman <nick@digivis.com>
+Date: Mon, November 11, 2002 5:37 pm
+
+The mail.pl script is an alternative to /bin/mail for sending email 
+notifications. It offers a configurable "from" address, primary SMTP 
+server, and backup SMTP server.
+
+It's a perl script which requires Net::SMTP. (perl -MCPAN -e 'install 
+Net::SMTP')
+
+We've had the problem of OpenNMS driving up our load balance and causing 
+sendmail on the local machine to refuse to send messages. So being able 
+to send notifications via SMTP was useful. Being able to control the 
+"from" header allows for easier filtering in your mail client as well.
+
+Though you are a little screwed if both your primary and secondary SMTP 
+servers are inaccessible. :-)
+
+Here's a sample config for replacing the "email" notification command. 
+You could do something similar for "pagerEmail" by replacing "-email" 
+with "-pemail."
+
+         <command>
+                 <name>email</name>
+                 <execute>/path/to/mail.pl</execute>
+                 <comment>for sending email via SMTP</comment>
+                 <argument streamed="false">
+                         <switch>-email</switch>
+                 </argument>
+                 <argument streamed="false">
+			 <substitution>opennms@mycompany.com</substitution>
+                 </argument>
+                 <argument streamed="false">
+                         <switch>-subject</switch>
+                 </argument>
+                 <argument streamed="false">
+                         <substitution>mx1.mycompany.com</substitution>
+                 </argument>
+                 <argument streamed="false">
+                         <substitution>mx2.mycompany.com</substitution>
+                 </argument>
+                 <argument streamed="true">
+                         <switch>-tm</switch>
+                 </argument>
+         </command>
+
+Enjoy,
+
+Nick Wesselman
+Digital Visions, Inc.
+
