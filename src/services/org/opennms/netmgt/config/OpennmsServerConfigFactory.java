@@ -43,12 +43,12 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.server.LocalServer;
 
 /**
- * <p>This is the singleton class used to load the configuration for
- * the OpenNMS OutageManager from the outage-configuration.xml.</p>
+ * This is the singleton class used to load the configuration for
+ * the OpenNMS OutageManager from the outage-configuration xml file.
  *
- * <p><strong>Note:</strong>Users of this class should make sure the 
+ * <strong>Note:</strong>Users of this class should make sure the 
  * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods</p>
+ * the config is loaded before accessing other convenience methods.
  *
  * @author <a href="mailto:jamesz@blast.com">James Zuo</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
@@ -145,7 +145,7 @@ public final class OpennmsServerConfigFactory
 	}
 
 	/**
-	 * <p>Return the singleton instance of this factory</p>
+	 * Return the singleton instance of this factory.
 	 *
 	 * @return The current factory instance.
 	 *
@@ -161,7 +161,7 @@ public final class OpennmsServerConfigFactory
 	}
 
 	/**
-	 * <p>Return the local opennms server name</p>
+	 * Return the local opennms server name.
 	 *
 	 * @return the name of the local opennms server
 	 */
@@ -171,8 +171,8 @@ public final class OpennmsServerConfigFactory
 	}
 
         /**
-	 * <p>Return the boolean flag verify server to determine if poller what to use
-         * server to restrict services to poll.</p>
+	 * Return the boolean flag verify server to determine if poller what 
+	 * to use server to restrict services to poll.
 	 *
 	 * @return boolean flag 
 	 */

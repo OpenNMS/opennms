@@ -106,7 +106,7 @@ class TrapQueueProcessor
 
 	/**
 	 * The snmp trap enterprise OID, which if present in a V2 trap
-	 * is the last varbind
+	 * is the last varbind.
 	 *
 	 * ref - book 'SNMP, SNMPv2, SNMPv3..'
 	 *       by William Stallings, third edition, section 13.1.3
@@ -115,7 +115,7 @@ class TrapQueueProcessor
 
 	/**
 	 * The snmpTraps value to be used in case a standard trap comes in
-	 * without the SNMP_TRAP_ENTERPRISE_ID as the last varbind
+	 * without the SNMP_TRAP_ENTERPRISE_ID as the last varbind.
 	 */
 	private static final String SNMP_TRAPS=".1.3.6.1.6.3.1.1.5";
 

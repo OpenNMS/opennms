@@ -74,15 +74,15 @@ import org.opennms.netmgt.utils.IpListFromUrl;
  */
 
 /**
- * <p>This is the singleton class used to load the configuration for
- * the OpenNMS Collection Daemon from the collectd-configuration.xml.</p>
+ * This is the singleton class used to load the configuration for
+ * the OpenNMS Collection Daemon from the collectd-configuration xml file.
  *
- * <p>A mapping of the configured URLs to the iplist they contain is
- * built at init() time so as to avoid numerous file reads</p> 
+ * A mapping of the configured URLs to the iplist they contain is
+ * built at init() time so as to avoid numerous file reads.
  *
- * <p><strong>Note:</strong>Users of this class should make sure the 
+ * <strong>Note:</strong>Users of this class should make sure the 
  * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods</p>
+ * the config is loaded before accessing other convenience methods.
  */
 public final class CollectdConfigFactory
 {
@@ -157,9 +157,9 @@ public final class CollectdConfigFactory
 	}
 	
         /**
-	 * <p>This method is used to establish package agaist iplist 
+	 * This method is used to establish package agaist iplist 
          * mapping, with which, the iplist is selected per package
-         * via the configured filter rules from the database. </p>
+         * via the configured filter rules from the database.
 	 */
 	private void createPackageIpListMap()
 	{
@@ -213,11 +213,11 @@ public final class CollectdConfigFactory
         }
         
         /**
-         * <p>This method is used to rebuild the package agaist iplist mapping when needed.
+         * This method is used to rebuild the package agaist iplist mapping when needed.
          * When a node gained service event occurs, collectd has to determine which package 
          * the ip/service combination is in, but if the interface is a newly added one, the 
          * package iplist should be rebuilt so that collectd could know which package this
-         * ip/service pair is in. </p>
+         * ip/service pair is in.
          */
         public synchronized void rebuildPackageIpListMap()
         {
@@ -306,7 +306,7 @@ public final class CollectdConfigFactory
 	}
 
 	/**
-	 * <p>Return the singleton instance of this factory<p>
+	 * Return the singleton instance of this factory.
 	 *
 	 * @return The current factory instance.
 	 *
@@ -322,7 +322,7 @@ public final class CollectdConfigFactory
 	}
 
 	/** 
-	 * <p>Return the collectd configuration object</p>
+	 * Return the collectd configuration object.
 	 */
 	public synchronized CollectdConfiguration getConfiguration()
 	{
@@ -330,10 +330,10 @@ public final class CollectdConfigFactory
 	}
 
 	/**
-	 * <p>This method is used to determine if the named interface is
+	 * This method is used to determine if the named interface is
 	 * included in the passed package's url includes. If the interface
 	 * is found in any of the URL files, then a value of true is returned, else
-	 * a false value is returned.</p>
+	 * a false value is returned.
 	 *
 	 * <pre>The file URL is read and each entry in this file checked. Each line
 	 * in the URL file can be one of -
@@ -366,14 +366,14 @@ public final class CollectdConfigFactory
 	}
 
 	/**
-	 * <p>This method is used to determine if the named interface is
+	 * This method is used to determine if the named interface is
 	 * included in the passed package definition. If the interface
 	 * belongs to the package then a value of true is returned. If
 	 * the interface does not belong to the package a false value
-	 * is returned.</p>
+	 * is returned.
 	 *
-	 * <p><strong>Note:</strong>Evaluation of the interface against a
-	 * package filter will only work if the IP is already in the database</p>
+	 * <strong>Note:</strong>Evaluation of the interface against a
+	 * package filter will only work if the IP is already in the database.
 	 *
 	 * @param iface		The interface to test against the package.
 	 * @param pkg		The package to check for the inclusion of

@@ -47,12 +47,12 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
 
 /**
- * <p>This is the singleton class used to load the configuration for
- * the OpenNMS RTC from the rtc-configuration.xml.</p>
+ * This is the singleton class used to load the configuration for
+ * the OpenNMS RTC from the rtc-configuration xml file.
  *
- * <p><strong>Note:</strong>Users of this class should make sure the 
+ * <strong>Note:</strong>Users of this class should make sure the 
  * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods</p>
+ * the config is loaded before accessing other convenience methods.
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
@@ -230,7 +230,7 @@ public final class RTCConfigFactory
 	}
 
 	/**
-	 * <p>Return the singleton instance of this factory<p>
+	 * Return the singleton instance of this factory.
 	 *
 	 * @return The current factory instance.
 	 *
@@ -246,7 +246,7 @@ public final class RTCConfigFactory
 	}
 
 	/**
-	 * <p>Return the number of updater threads to be started</p>
+	 * Return the number of updater threads to be started.
 	 *
 	 * @return the number of updater threads to be started
 	 */
@@ -256,7 +256,7 @@ public final class RTCConfigFactory
 	}
 
 	/**
-	 * <p>Return the number of sender to be started</p>
+	 * Return the number of sender to be started.
 	 *
 	 * @return the number of sender threads to be started
 	 */
@@ -266,7 +266,7 @@ public final class RTCConfigFactory
 	}
 
 	/**
-	 * <p>Return the rolling window for which availability is to be computed</p>
+	 * Return the rolling window for which availability is to be computed.
 	 *
 	 * @return the rolling window for which availability is to be computed
 	 */
@@ -276,7 +276,7 @@ public final class RTCConfigFactory
 	}
 
 	/**
-	 * <p>Return the rolling window for which availability is to be computed</p>
+	 * Return the rolling window for which availability is to be computed.
 	 *
 	 * @return the rolling window for which availability is to be computed
 	 */
@@ -286,7 +286,7 @@ public final class RTCConfigFactory
 	}
 
 	/**
-	 * <p>Return the max number of events after which data is to resent</p>
+	 * Return the max number of events after which data is to resent.
 	 *
 	 * @return the max number of events after which data is to resent
 	 */
@@ -296,7 +296,7 @@ public final class RTCConfigFactory
 	}
 
 	/**
-	 * <p>Return the low threshold interval at which data is to be resent</p>
+	 * Return the low threshold interval at which data is to be resent.
 	 *
 	 * @return the low threshold interval at which data is to be resent
 	 */
@@ -306,7 +306,7 @@ public final class RTCConfigFactory
 	}
 
 	/**
-	 * <p>Return the low threshold interval at which data is to be resent</p>
+	 * Return the low threshold interval at which data is to be resent.
 	 *
 	 * @return the low threshold interval at which data is to be resent
 	 */
@@ -316,7 +316,7 @@ public final class RTCConfigFactory
 	}
 
 	/**
-	 * <p>Return the high threshold interval at which data is to be resent</p>
+	 * Return the high threshold interval at which data is to be resent.
 	 *
 	 * @return the high threshold interval at which data is to be resent
 	 */
@@ -326,7 +326,7 @@ public final class RTCConfigFactory
 	}
 
 	/**
-	 * <p>Return the high threshold interval at which data is to be resent</p>
+	 * Return the high threshold interval at which data is to be resent.
 	 *
 	 * @return the high threshold interval at which data is to be resent
 	 */
@@ -336,8 +336,8 @@ public final class RTCConfigFactory
 	}
 
 	/**
-	 * <p>Return the user refresh interval at which data is to be resent - this
-	 * is the interval at which data is resent when no events are received</p>
+	 * Return the user refresh interval at which data is to be resent - this
+	 * is the interval at which data is resent when no events are received.
 	 *
 	 * @return the user refresh interval at which data is to be resent
 	 */
@@ -347,8 +347,8 @@ public final class RTCConfigFactory
 	}
 
 	/**
-	 * <p>Return the user refresh interval at which data is to be resent - this
-	 * is the interval at which data is resent when no events are received</p>
+	 * Return the user refresh interval at which data is to be resent - this
+	 * is the interval at which data is resent when no events are received.
 	 *
 	 * @return the user refresh interval at which data is to be resent
 	 */
@@ -358,8 +358,9 @@ public final class RTCConfigFactory
 	}
 
 	/**
-	 * <p>Return the number of times posts are tried with errors before
-	 * an URL is automatically unsubscribed. A negative value means URL is never unsubscribed</p>
+	 * Return the number of times posts are tried with errors before
+	 * an URL is automatically unsubscribed. 
+	 * A negative value means URL is never unsubscribed
 	 *
 	 * @return the number of times posts are tried with errors before an URL is automatically unsubscribed
 	 */

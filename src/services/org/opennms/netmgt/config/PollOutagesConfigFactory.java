@@ -65,12 +65,12 @@ import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.config.poller.Time;
 
 /**
- * <p>This is the singleton class used to load the configuration for
- * the poller outages from the poll-outages.xml.</p>
+ * This is the singleton class used to load the configuration for
+ * the poller outages from the poll-outages xml file.
  *
- * <p><strong>Note:</strong>Users of this class should make sure the 
+ * <strong>Note:</strong>Users of this class should make sure the 
  * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods</p>
+ * the config is loaded before accessing other convenience methods.
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
@@ -257,7 +257,7 @@ public final class PollOutagesConfigFactory
 	}
 
 	/**
-	 * <p>Return the singleton instance of this factory</p>
+	 * Return the singleton instance of this factory.
 	 *
 	 * @return The current factory instance.
 	 *
@@ -273,7 +273,7 @@ public final class PollOutagesConfigFactory
 	}
 
 	/**
-	 * <p>Return the outages configured</p>
+	 * Return the outages configured.
 	 *
 	 * @return the outages configured
 	 */
@@ -283,7 +283,7 @@ public final class PollOutagesConfigFactory
 	}
 
 	/**
-	 * <p>Return the specified outage</p>
+	 * Return the specified outage.
 	 *
 	 * @param name	the outage that is to be looked up
 	 *
@@ -305,7 +305,7 @@ public final class PollOutagesConfigFactory
 	}
 
 	/**
-	 * <p>Return the type for specified outage</p>
+	 * Return the type for specified outage.
 	 *
 	 * @param name	the outage that is to be looked up
 	 *
@@ -321,7 +321,7 @@ public final class PollOutagesConfigFactory
 	}
 
 	/**
-	 * <p>Return the outage times for specified outage</p>
+	 * Return the outage times for specified outage.
 	 *
 	 * @param name	the outage that is to be looked up
 	 *
@@ -337,7 +337,7 @@ public final class PollOutagesConfigFactory
 	}
 
 	/**
-	 * <p>Return the interfaces for specified outage</p>
+	 * Return the interfaces for specified outage.
 	 *
 	 * @param name	the outage that is to be looked up
 	 *
@@ -353,7 +353,7 @@ public final class PollOutagesConfigFactory
 	}
 
 	/**
-	 * <p>Return if interfaces is part of specified outage</p>
+	 * Return if interfaces is part of specified outage.
 	 *
 	 * @param linterface	the interface to be looked up
 	 * @param outName	the outage name
@@ -370,10 +370,10 @@ public final class PollOutagesConfigFactory
 	}
 
 	/**
-	 * <p>Return if interfaces is part of specified outage</p>
+	 * Return if interfaces is part of specified outage.
 	 *
 	 * @param linterface	the interface to be looked up
-	 * @param outName	the outage 
+	 * @param out	the outage 
 	 *
 	 * @return the interface is part of the specified outage
 	 */
@@ -396,7 +396,7 @@ public final class PollOutagesConfigFactory
 	}
 
 	/**
-	 * <p>Return if time is part of specified outage</p>
+	 * Return if time is part of specified outage.
 	 *
 	 * @param cal		the calendar to lookup
 	 * @param outName	the outage name
@@ -413,7 +413,7 @@ public final class PollOutagesConfigFactory
 	}
 
 	/**
-	 * <p>Return if time is part of specified outage</p>
+	 * Return if time is part of specified outage.
 	 *
 	 * @param cal		the calendar to lookup
 	 * @param out		the outage
@@ -500,7 +500,7 @@ public final class PollOutagesConfigFactory
 	}
 
 	/**
-	 * <p>Return if current time is part of specified outage</p>
+	 * Return if current time is part of specified outage.
 	 *
 	 * @param outName	the outage name
 	 *
@@ -514,7 +514,7 @@ public final class PollOutagesConfigFactory
 		return isTimeInOutage(cal, outName);
 	}
 	/**
-	 * <p>Return if current time is part of specified outage</p>
+	 * Return if current time is part of specified outage.
 	 *
 	 * @param out	the outage
 	 *

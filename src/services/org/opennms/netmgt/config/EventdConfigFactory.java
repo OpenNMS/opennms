@@ -47,12 +47,12 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.eventd.EventdConfiguration;
 
 /**
- * <p>This is the singleton class used to load the configuration for
- * the OpenNMS Eventd from the eventd-configuration.xml.</p>
+ * This is the singleton class used to load the configuration for
+ * the OpenNMS Eventd from the eventd-configuration xml file.
  *
- * <p><strong>Note:</strong>Users of this class should make sure the 
+ * <strong>Note:</strong>Users of this class should make sure the 
  * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods</p>
+ * the config is loaded before accessing other convenience methods.
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
@@ -149,7 +149,7 @@ public final class EventdConfigFactory
 	}
 
 	/**
-	 * <p>Return the singleton instance of this factory<p>
+	 * Return the singleton instance of this factory.
 	 *
 	 * @return The current factory instance.
 	 *
@@ -165,7 +165,7 @@ public final class EventdConfigFactory
 	}
 
 	/**
-	 * <p>Return the port on which eventd listens for TCP connections</p>
+	 * Return the port on which eventd listens for TCP connections.
 	 *
 	 * @return the port on which eventd listens for TCP connections
 	 */
@@ -175,7 +175,7 @@ public final class EventdConfigFactory
 	}
 
 	/**
-	 * <p>Return the port on which eventd listens for UDP data</p>
+	 * Return the port on which eventd listens for UDP data.
 	 *
 	 * @return the port on which eventd listens for UDP data
 	 */
@@ -185,7 +185,7 @@ public final class EventdConfigFactory
 	}
 
 	/**
-	 * <p>Return the number of event receivers to be started</p>
+	 * Return the number of event receivers to be started.
 	 *
 	 * @return the number of event receivers to be started
 	 */
@@ -195,7 +195,7 @@ public final class EventdConfigFactory
 	}
 
 	/**
-	 * <p>Return string indicating if timeout is to be set on the socket</p>
+	 * Return string indicating if timeout is to be set on the socket.
 	 *
 	 * @return string indicating if timeout is to be set on the socket
 	 */
@@ -205,7 +205,7 @@ public final class EventdConfigFactory
 	}
 
 	/**
-	 * <p>Return timeout to be set on the socket</p>
+	 * Return timeout to be set on the socket.
 	 *
 	 * @return timeout is to be set on the socket
 	 */
@@ -215,7 +215,7 @@ public final class EventdConfigFactory
 	}
 
 	/**
-	 * <p>Return flag indicating if timeout to be set on the socket is specified</p>
+	 * Return flag indicating if timeout to be set on the socket is specified.
 	 *
 	 * @return flag indicating if timeout to be set on the socket is specified<
 	 */
@@ -225,7 +225,7 @@ public final class EventdConfigFactory
 	}
 
 	/**
-	 * <p>Return the SQL statemet to get the next event ID</p>
+	 * Return the SQL statemet to get the next event ID.
 	 *
 	 * @return the SQL statemet to get the next event ID
 	 */

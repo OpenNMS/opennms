@@ -66,15 +66,15 @@ import org.opennms.netmgt.utils.IPSorter;
 import org.opennms.netmgt.utils.IpListFromUrl;
 
 /**
- * <p>This is the singleton class used to load the configuration for
- * the OpenNMS Poller service from the poller-configuration.xml.</p>
+ * This is the singleton class used to load the configuration for
+ * the OpenNMS Poller service from the poller-configuration xml file.
  *
- * <p>A mapping of the configured URLs to the iplist they contain is
- * built at init() time so as to avoid numerous file reads</p> 
+ * A mapping of the configured URLs to the iplist they contain is
+ * built at init() time so as to avoid numerous file reads.
  *
- * <p><strong>Note:</strong>Users of this class should make sure the 
+ * <strong>Note:</strong>Users of this class should make sure the 
  * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods</p>
+ * the config is loaded before accessing other convenience methods.
  *
  * @author <a href="mailto:jamesz@blast.com">James Zuo</a>
  * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
@@ -233,7 +233,7 @@ public final class PollerConfigFactory
 	}
 
 	/**
-	 * <p>Return the singleton instance of this factory<p>
+	 * Return the singleton instance of this factory.
 	 *
 	 * @return The current factory instance.
 	 *
@@ -249,7 +249,7 @@ public final class PollerConfigFactory
 	}
 
 	/** 
-	 * <p>Return the poller configuration object</p>
+	 * Return the poller configuration object.
 	 */
 	public synchronized PollerConfiguration getConfiguration()
 	{
@@ -257,10 +257,10 @@ public final class PollerConfigFactory
 	}
 
 	/**
-	 * <p>This method is used to determine if the named interface is
+	 * This method is used to determine if the named interface is
 	 * included in the passed package's url includes. If the interface
 	 * is found in any of the URL files, then a value of true is returned, else
-	 * a false value is returned.</p>
+	 * a false value is returned.
 	 *
 	 * <pre>The file URL is read and each entry in this file checked. Each line
 	 * in the URL file can be one of -
@@ -274,7 +274,7 @@ public final class PollerConfigFactory
 	 * a '<space>#' in a line.</pre>
 	 *
 	 * @param addr		The interface to test against the package's URL
-	 * @param URL		The url file to read
+	 * @param url		The url file to read
 	 *
 	 * @return	True if the interface is included in the url, false otherwise.
 	 */
@@ -293,8 +293,8 @@ public final class PollerConfigFactory
 	}
 
         /**
-         * <p>This method returns the boolean flag xmlrpc to indicate
-         * if notification to external xmlrpc server is needed.</p>
+         * This method returns the boolean flag xmlrpc to indicate
+         * if notification to external xmlrpc server is needed.
          *
          * @return      true if need to notify an external xmlrpc server
          */
@@ -308,7 +308,7 @@ public final class PollerConfigFactory
         }
         
 	/**
-	 * <p>This method returns the configured critical service name</p>
+	 * This method returns the configured critical service name.
 	 *
 	 * @return	the name of the configured critical service, 
 	 *      	or null if none is present
@@ -319,7 +319,7 @@ public final class PollerConfigFactory
 	}
 
 	/**
-	 * <p>This method returns the configured value of the 
+	 * This method returns the configured value of the 
 	 * 'pollAllIfNoCriticalServiceDefined' flag.  
 	 * 
 	 * A value of true causes the poller's node outage code
@@ -372,9 +372,9 @@ public final class PollerConfigFactory
         }
 
 	/**
-	 * <p>This method is used to establish package agaist iplist  
+	 * This method is used to establish package agaist iplist  
          * mapping, with which, the iplist is selected per package
-         * via the configured filter rules from the database. </p>
+         * via the configured filter rules from the database.
 	 */
 	private void createPackageIpListMap()
 	{
@@ -434,7 +434,7 @@ public final class PollerConfigFactory
         }
 
 	/**
-	 * <p>This method is used to rebuild the package agaist iplist  
+	 * This method is used to rebuild the package agaist iplist  
          * mapping when needed. When a node gained service event occurs,
          * poller has to determine which package the ip/service combination 
          * is in, but if the interface is a newly added one, the package
@@ -447,14 +447,14 @@ public final class PollerConfigFactory
         }
 
 	/**
-	 * <p>This method is used to determine if the named interface is
+	 * This method is used to determine if the named interface is
 	 * included in the passed package definition. If the interface
 	 * belongs to the package then a value of true is returned. If
 	 * the interface does not belong to the package a false value
-	 * is returned.</p>
+	 * is returned.
 	 *
-	 * <p><strong>Note:</strong>Evaluation of the interface against a
-	 * package filter will only work if the IP is already in the database</p>
+	 * <strong>Note:</strong>Evaluation of the interface against a
+	 * package filter will only work if the IP is already in the database.
 	 *
 	 * @param iface		The interface to test against the package.
 	 * @param pkg		The package to check for the inclusion of
@@ -590,7 +590,7 @@ public final class PollerConfigFactory
 	}
 
 	/**
-	 * <p>Returns true if the service has a monitor configured, false otherwise</p>
+	 * Returns true if the service has a monitor configured, false otherwise.
 	 *
 	 * @param svcName	The service name to lookup.
 	 */
@@ -613,14 +613,14 @@ public final class PollerConfigFactory
 	}
 
 	/**
-	 * <p>Returns the first package that the ip belongs to, null if none</p>
+	 * Returns the first package that the ip belongs to, null if none.
 	 *
-	 * <p><strong>Note:</strong>Evaluation of the interface against a package
-	 * filter will only work if the IP is alrady in the database</p>
+	 * <strong>Note:</strong>Evaluation of the interface against a package
+	 * filter will only work if the IP is alrady in the database.
 	 *
 	 * @param ipaddr	the interface to check
 	 *
-	 * @returns the first package that the ip belongs to, null if none
+	 * @return the first package that the ip belongs to, null if none
 	 */
 	public synchronized org.opennms.netmgt.config.poller.Package getFirstPackageMatch(String ipaddr)
 	{
@@ -638,14 +638,14 @@ public final class PollerConfigFactory
 	}
 
 	/**
-	 * <p>Returns true if the ip is part of atleast one package.</p>
+	 * Returns true if the ip is part of atleast one package.
 	 *
-	 * <p><strong>Note:</strong>Evaluation of the interface against a package
-	 * filter will only work if the IP is alrady in the database</p>
+	 * <strong>Note:</strong>Evaluation of the interface against a package
+	 * filter will only work if the IP is alrady in the database.
 	 *
 	 * @param ipaddr	the interface to check
 	 *
-	 * @returns true if the ip is part of atleast one package, false otherwise
+	 * @return true if the ip is part of atleast one package, false otherwise
 	 */
 	public synchronized boolean isPolled(String ipaddr)
 	{
@@ -663,16 +663,16 @@ public final class PollerConfigFactory
 	}
 
 	/**
-	 * <p>Returns true if this package has the service enabled and if there is
-	 * a monitor for this service</p>
+	 * Returns true if this package has the service enabled and if there is
+	 * a monitor for this service.
 	 *
-	 * <p><strong>Note:</strong>Evaluation of the interface against a package
-	 * filter will only work if the IP is alrady in the database</p>
+	 * <strong>Note:</strong>Evaluation of the interface against a package
+	 * filter will only work if the IP is alrady in the database.
 	 *
 	 * @param svcName	the service to check
 	 * @param pkg		the package to check
 	 *
-	 * @returns true if the ip is part of atleast one package and the service is enabled
+	 * @return true if the ip is part of atleast one package and the service is enabled
 	 * in this package and monitored, false otherwise
 	 */
 	public synchronized boolean isPolled(String svcName, org.opennms.netmgt.config.poller.Package pkg)
@@ -690,16 +690,17 @@ public final class PollerConfigFactory
 	}
 
 	/**
-	 * <p>Returns true if the ip is part of atleast one package and if this package
-	 * has the service enabled and if there is a monitor for this service</p>
+	 * Returns true if the ip is part of atleast one package and if this 
+	 * package has the service enabled and if there is a monitor for this 
+	 * service.
 	 *
-	 * <p><strong>Note:</strong>Evaluation of the interface against a package
-	 * filter will only work if the IP is alrady in the database</p>
+	 * <strong>Note:</strong>Evaluation of the interface against a package
+	 * filter will only work if the IP is alrady in the database.
 	 *
 	 * @param ipaddr	the interface to check
 	 * @param svcName	the service to check
 	 *
-	 * @returns true if the ip is part of atleast one package and the service is enabled
+	 * @return true if the ip is part of atleast one package and the service is enabled
 	 * in this package and monitored, false otherwise
 	 */
 	public synchronized boolean isPolled(String ipaddr, String svcName)
@@ -736,7 +737,7 @@ public final class PollerConfigFactory
         /**
          * Retrieves configured RRD step size.
          *
-         * @param cName Name of the data collection
+         * @param pkg Name of the data collection
          *
          * @return RRD step size for the specified collection
          */
@@ -748,7 +749,7 @@ public final class PollerConfigFactory
         /**
          * Retrieves configured list of RoundRobin Archive statements.
          *
-         * @param cName Name of the data collection
+         * @param pkg Name of the data collection
          *
          * @return list of RRA strings.
          */

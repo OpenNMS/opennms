@@ -48,12 +48,12 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 
 /**
- * <p>This is the singleton class used to load the configuration for
- * the OpenNMS Discovery service from the discovery-configuration.xml.</p>
+ * This is the singleton class used to load the configuration for
+ * the OpenNMS Discovery service from the discovery-configuration xml file.
  *
- * <p><strong>Note:</strong>Users of this class should make sure the 
+ * <strong>Note:</strong>Users of this class should make sure the 
  * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods</p>
+ * the config is loaded before accessing other convenience methods.
  *
  * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
@@ -152,7 +152,7 @@ public final class DiscoveryConfigFactory
 	}
 
 	/**
-	 * <p>Return the singleton instance of this factory<p>
+	 * Return the singleton instance of this factory.
 	 *
 	 * @return The current factory instance.
 	 *
@@ -168,7 +168,7 @@ public final class DiscoveryConfigFactory
 	}
 
 	/** 
-	 * <p>Return the discovery configuration object</p>
+	 * Return the discovery configuration object.
 	 */
 	public synchronized DiscoveryConfiguration getConfiguration()
 	{

@@ -53,12 +53,12 @@ import org.opennms.netmgt.config.scriptd.StartScript;
 import org.opennms.netmgt.config.scriptd.StopScript;
 
 /**
- * <p>This is the singleton class used to load the configuration for
- * the OpenNMS Scriptd from the scriptd-configuration.xml.</p>
+ * This is the singleton class used to load the configuration for
+ * the OpenNMS Scriptd from the scriptd-configuration xml file.
  *
- * <p><strong>Note:</strong>Users of this class should make sure the 
+ * <strong>Note:</strong>Users of this class should make sure the 
  * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods</p>
+ * the config is loaded before accessing other convenience methods.
  *
  * @author <a href="mailto:jim.doble@tavve.com">Jim Doble</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
@@ -154,7 +154,7 @@ public final class ScriptdConfigFactory
 	}
 
 	/**
-	 * <p>Return the singleton instance of this factory<p>
+	 * Return the singleton instance of this factory.
 	 *
 	 * @return The current factory instance.
 	 *
@@ -170,7 +170,7 @@ public final class ScriptdConfigFactory
 	}
 
 	/**
-	 * <p>Return the array of configured engines</p>
+	 * Return the array of configured engines.
 	 *
 	 * @return the array of configured engines
 	 */
@@ -180,7 +180,7 @@ public final class ScriptdConfigFactory
 	}
 	
 	/**
-	 * <p>Return the array of start scripts</p>
+	 * Return the array of start scripts.
 	 *
 	 * @return the array of start scripts
 	 */
@@ -190,7 +190,7 @@ public final class ScriptdConfigFactory
 	}
 	
 	/**
-	 * <p>Return the array of stop scripts</p>
+	 * Return the array of stop scripts.
 	 *
 	 * @return the array of stop scripts
 	 */
@@ -200,7 +200,7 @@ public final class ScriptdConfigFactory
 	}
 
 	/**
-	 * <p>Return the array of reload scripts</p>
+	 * Return the array of reload scripts.
 	 *
 	 * @return the array of reload scripts
 	 */
@@ -210,7 +210,7 @@ public final class ScriptdConfigFactory
 	}
 
 	/**
-	 * <p>Return the array of configured event scripts</p>
+	 * Return the array of configured event scripts.
 	 *
 	 * @return the array of configured event scripts
 	 */

@@ -283,7 +283,7 @@ public class DestinationPathFactory
         }
         
         /** Removes a Path from the xml file.
-         *  @param path, the path to remove
+         *  @param path the path to remove
          *  @exception MarshalException
          *  @exception ValidationException
          *  @exception IOException
@@ -297,7 +297,7 @@ public class DestinationPathFactory
         }
         
         /** Removes a Path form the xml file based on its name
-         *  @param name, the name of the path to remove
+         *  @param name the name of the path to remove
          *  @exception MarshalException
          *  @exception ValidationException
          *  @exception IOException

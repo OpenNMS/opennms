@@ -72,9 +72,9 @@ import org.opennms.netmgt.config.collectd.SystemDefChoice;
  * When this class is loaded it reads the snmp data collection 
  * configuration into memory.
  *
- * <p><strong>Note:</strong>Users of this class should make sure the 
+ * <strong>Note:</strong>Users of this class should make sure the 
  * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods</p>
+ * the config is loaded before accessing other convenience methods.
  *
  * @author <a href="mailto:weave@oculan.com">Weave</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
@@ -228,7 +228,7 @@ public final class DataCollectionConfigFactory
 	}
 
 	/**
-	 * <p>Return the singleton instance of this factory</p>
+	 * Return the singleton instance of this factory.
 	 *
 	 * @return The current factory instance.
 	 *
@@ -486,7 +486,7 @@ public final class DataCollectionConfigFactory
 	 * @param cName 	Collection name
 	 * @param groupName	Name of the group to process
 	 * @param ifType	Interface type
-	 * @param objectList 	List of MibObject objects being built.
+	 * @param mibObjectList 	List of MibObject objects being built.
 	 */
 	private void processGroupName(String cName, String groupName, int ifType, List mibObjectList) 
 	{

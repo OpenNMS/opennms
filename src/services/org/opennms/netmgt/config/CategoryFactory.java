@@ -51,14 +51,14 @@ import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.config.categories.Catinfo;
 
 /**
- * <p>This is the singleton class used to load the  configuration
+ * This is the singleton class used to load the  configuration
  * from the categories.xml. This provides convenience methods to
- * get the configured categories and their info., add/delete categories
- * fromc ategory groups</p>
+ * get the configured categories and their information, add/delete categories
+ * from category groups.
  *
- * <p><strong>Note:</strong>Users of this class should make sure the 
+ * <strong>Note:</strong>Users of this class should make sure the 
  * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods</p>
+ * the config is loaded before accessing other convenience methods.
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
@@ -155,7 +155,7 @@ public final class CategoryFactory
 	}
 
 	/**
-	 * <p>Return the singleton instance of this factory</p>
+	 * Return the singleton instance of this factory.
 	 *
 	 * @return The current factory instance.
 	 *
@@ -171,7 +171,7 @@ public final class CategoryFactory
 	}
 
 	/**
-	 * <p>Return the categories configuration</p>
+	 * Return the categories configuration.
 	 *
 	 * @return the categories configuration
 	 */
@@ -181,7 +181,7 @@ public final class CategoryFactory
 	}
 
 	/**
-	 * <p>Add a categorygroup</p>
+	 * Add a categorygroup.
 	 *
 	 * @param group		category group to be added
 	 */
@@ -191,7 +191,7 @@ public final class CategoryFactory
 	}
 
 	/**
-	 * <p>Replace categorygroup</p>
+	 * Replace categorygroup.
 	 *
 	 * @param group		category group to be replaced
 	 *
@@ -219,7 +219,7 @@ public final class CategoryFactory
 	}
 
 	/**
-	 * <p>Delete a categorygroup</p>
+	 * Delete a categorygroup.
 	 *
 	 * @param group		category group to be removed
 	 *
@@ -231,7 +231,7 @@ public final class CategoryFactory
 	}
 
 	/**
-	 * <p>Delete a categorygroup</p>
+	 * Delete a categorygroup.
 	 *
 	 * @param groupname	category group to be removed
 	 *
@@ -258,7 +258,7 @@ public final class CategoryFactory
 	}
 
 	/**
-	 * <p>Add category to a categorygroup</p>
+	 * Add category to a categorygroup.
 	 *
 	 * @param groupname	category group to which category is to be added
 	 * @param cat		category to be added
@@ -288,7 +288,7 @@ public final class CategoryFactory
 	}
 
 	/**
-	 * <p>Replace category in a categorygroup</p>
+	 * Replace category in a categorygroup.
 	 *
 	 * @param groupname	category group to which category is to be added
 	 * @param cat		category to be replaced
@@ -329,7 +329,7 @@ public final class CategoryFactory
 	}
 
 	/**
-	 * <p>Delete category from a categorygroup</p>
+	 * Delete category from a categorygroup.
 	 *
 	 * @param groupname	category group from which category is to be removed
 	 * @param cat		category to be deleted
@@ -359,7 +359,7 @@ public final class CategoryFactory
 	}
 
 	/**
-	 * <p>Delete category from a categorygroup</p>
+	 * Delete category from a categorygroup.
 	 *
 	 * @param groupname	category group from which category is to be removed
 	 * @param catlabel	label of the category to be deleted
@@ -400,7 +400,7 @@ public final class CategoryFactory
 	}
 
 	/**
-	 * <p>Return the category specified by name</p>
+	 * Return the category specified by name.
 	 *
 	 * @return the category specified by name, null if not found
 	 */
@@ -429,7 +429,7 @@ public final class CategoryFactory
 	}
 
 	/**
-	 * <p>Return the normal value for the specified category</p>
+	 * Return the normal value for the specified category.
 	 *
 	 * @param catlabel	the label for the category whose normal value is needed
 	 *
@@ -460,7 +460,7 @@ public final class CategoryFactory
 	}
 
 	/**
-	 * <p>Return the warning value for the specified category</p>
+	 * Return the warning value for the specified category.
 	 *
 	 * @param catlabel	the label for the category whose warning value is needed
 	 *
@@ -491,7 +491,7 @@ public final class CategoryFactory
 	}
 
 	/**
-	 * <p>Return the services list for the specified category</p>
+	 * Return the services list for the specified category.
 	 *
 	 * @param catlabel	the label for the category whose services list is needed
 	 *
@@ -522,7 +522,7 @@ public final class CategoryFactory
 	}
 
 	/**
-	 * <p>Return the rule for the specified category</p>
+	 * Return the rule for the specified category.
 	 *
 	 * @param catlabel	the label for the category whose services list is needed
 	 *
@@ -553,8 +553,9 @@ public final class CategoryFactory
 	}
 
 	/**
-	 * <p>Return the effective rule for the specified category - i.e the category
-	 * rule ANDed with the rule of the category group that the category belongs to</p>
+	 * Return the effective rule for the specified category.  The category
+	 * rule ANDed with the rule of the category group that the category 
+	 * belongs to.
 	 *
 	 * @param catlabel	the label for the category whose effective rule is needed
 	 *
