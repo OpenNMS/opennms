@@ -15,14 +15,16 @@ $from = $ARGV[1];
 $subject = $ARGV[2];
 $server = $ARGV[3];
 $backupserver = $ARGV[4];
-@body = <STDIN>;
 
 $numargs = @ARGV;
 if ($numargs < 4) {
     print "Usage: mail.pl <to> <from> <subject> <server> [backupserver]\n";
-} else {
-    &sendmail($to,$from,$subject,$server,\@body);
-}
+    exit 1;
+} 
+
+@body = <STDIN>;
+
+&sendmail($to,$from,$subject,$server,\@body);
 
 sub sendmail {
     local $stop = 0;
@@ -55,4 +57,3 @@ sub sendmail {
         $smtp->quit;
     } 
 }
-)
