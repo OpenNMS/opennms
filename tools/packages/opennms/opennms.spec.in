@@ -24,12 +24,15 @@
 
 %define debug_package %{nil}
 
+%define platform_matched %{nil}
+
 %if "%{platform}" == "linux-i386-centos-3"
 %define	initdir		/etc
 %define psql_service	rhdb
 %define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_centos3
+%define platform_match	true
 %endif
 
 %if "%{platform}" == "linux-i386-fedora-1"
@@ -38,6 +41,7 @@
 %define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_fc1
+%define platform_match	true
 %endif
 
 %if "%{platform}" == "linux-i386-fedora-2"
@@ -46,6 +50,7 @@
 %define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_fc2
+%define platform_match	true
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-7"
@@ -54,6 +59,7 @@
 %define requires	postgresql-server >= 7.2, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk7
+%define platform_match	true
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-8"
@@ -62,6 +68,7 @@
 %define requires	postgresql-server >= 7.2, libstdc++2.10, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk8
+%define platform_match	true
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-90"
@@ -70,6 +77,7 @@
 %define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2, libstdc++2.10, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk90
+%define platform_match	true
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-92"
@@ -78,6 +86,7 @@
 %define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2, libstdc++2.10, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk92
+%define platform_match	true
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-10"
@@ -86,6 +95,7 @@
 %define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2, libstdc++2.10, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk10
+%define platform_match	true
 %endif
 
 %if "%{platform}" == "linux-i386-redhat-7"
@@ -94,6 +104,7 @@
 %define requires        postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_rhl7
+%define platform_match	true
 %endif
 
 %if "%{platform}" == "linux-i386-redhat-8"
@@ -102,6 +113,7 @@
 %define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_rhl8
+%define platform_match	true
 %endif
 
 %if "%{platform}" == "linux-i386-redhat-9"
@@ -110,6 +122,7 @@
 %define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_rhl9
+%define platform_match	true
 %endif
 
 %if "%{platform}" == "linux-i386-rhel-3"
@@ -118,6 +131,7 @@
 %define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_rhel3
+%define platform_match	true
 %endif
 
 %if "%{platform}" == "linux-i386-suse-7"
@@ -126,6 +140,7 @@
 %define requires        postgres >= 7.2, java2 >= 1.4
 %define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %define release_pkg     %{release}_suse7
+%define platform_match	true
 %endif
 
 %if "%{platform}" == "linux-i386-suse-8"
@@ -135,6 +150,7 @@
 %define requires	postgresql >= 7.2, postgresql-server >= 7.2, java2 >= 1.4
 %define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %define release_pkg     %{release}_suse8
+%define platform_match	true
 %endif
 
 %if "%{platform}" == "linux-i386-suse-9"
@@ -144,6 +160,11 @@
 %define requires	postgresql >= 7.2, postgresql-server >= 7.2, java2 >= 1.4
 %define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %define release_pkg     %{release}_suse9
+%define platform_match	true
+%endif
+
+%if "%{platform_match}" != "true"
+%error error - platform macro (or rpm.platform property when building from ant) not defined or set to an invalid platform.
 %endif
 
 %define webappsdir	%{tomcatdir}/webapps
