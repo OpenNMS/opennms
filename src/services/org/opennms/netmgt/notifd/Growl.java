@@ -8,10 +8,8 @@ package org.opennms.netmgt.notifd;
  *
  * Revisions:
  * $Log$
- * Revision 1.1.2.1  2005/03/24 02:04:40  rangerrick
- * Mac OS X Growl notification support
- * TODO: what is the correct way to add /System/Library/Java to the OpenNMS
- * classpath?
+ * Revision 1.1.2.2  2005/03/25 16:10:43  rangerrick
+ * fix growl to not build if you don't have the apple java APIs
  *
  *
  */

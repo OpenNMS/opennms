@@ -198,6 +198,7 @@ your distribution.
 <!--  	<pathelement path="${packaged.lib.dir}/pop3.jar"/> -->
     <pathelement path="${packaged.lib.dir}/activation.jar"/>
     <pathelement path="${packaged.lib.dir}/jmta.jar"/>
+    <pathelement path="/System/Library/Java"/>
   </path>
 
   <!-- The jars listed for Class-Path in the MANIFEST.MF for the installer's
@@ -586,6 +587,13 @@ your distribution.
       contains librrd.a or librrd.so.  See README.build for details on setting
       properties.
     </fail>
+
+    <available property="apple.apis.present" classname="com.apple.cocoa.foundation.NSArray" classpathref="libraries.java.path" />
+
+    <fail unless="apple.apis.present">
+     Couldn't find it!
+    </fail>
+
   </target>
  
  <target name="info" depends="prep"
@@ -1115,6 +1123,7 @@ OpenNMS as part of the post-install.
    <include name="**/*.java"/>
    <exclude name="**/*Test.java"/>
    <exclude name="**/mock/*.java"/>
+   <exclude name="**/*Growl*" unless="apple.apis.present"/>
   </javac>
   <copy todir="${build.classes.dir}">
    <fileset dir="${build.sablecc.source.dir}">
