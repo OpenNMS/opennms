@@ -255,9 +255,11 @@
 
 			<!-- Foundry Systems MIBs -->
 			<group  name = "foundry-sys" ifType = "ignore">
-				<mibObj oid=".1.3.6.1.4.1.1991.1.1.1.1.18" instance="0" alias="sbChAcTemperature" type="gauge"/>
-				<mibObj oid=".1.3.6.1.4.1.1991.1.1.2.1.52" instance="0" alias="snAgGbCpu1MinAvg" type="gauge"/>
-				<mibObj oid=".1.3.6.1.4.1.1991.1.1.2.1.53" instance="0" alias="snAgGblDynMemUtil" type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.1991.1.1.1.1.18" instance="0" alias="sbChAcTemperature" type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.1991.1.1.1.1.19" instance="0" alias="snChWarnTemp" type="INTEGER" />
+                                <mibObj oid=".1.3.6.1.4.1.1991.1.1.1.1.20" instance="0" alias="snChShutTemp" type="INTEGER" />
+                                <mibObj oid=".1.3.6.1.4.1.1991.1.1.2.1.52" instance="0" alias="snAgGbCpu1MinAvg" type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.1991.1.1.2.1.53" instance="0" alias="snAgGblDynMemUtil" type="gauge"/>
 			</group>
 
 			<!-- Hewlett-Packard MIBs -->
