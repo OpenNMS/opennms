@@ -60,7 +60,7 @@
 	<classpathentry kind="lib" path="devlib/jwebunit-1.2.jar"/>
 	<classpathentry kind="lib" path="devlib/nekohtml.jar"/>
 	<classpathentry kind="lib" path="devlib/servlet.jar"/>
-	<classpathentry kind="lib" path="devlib/jasper-compiler.jar"/>
-	<classpathentry kind="lib" path="devlib/jasper-runtime.jar"/>
+	<classpathentry kind="lib" path="devlib/jasper/jasper-compiler.jar"/>
+	<classpathentry kind="lib" path="devlib/jasper/jasper-runtime.jar"/>
 	<classpathentry kind="output" path="work/opennms/classes"/>
 </classpath>
