@@ -48,8 +48,6 @@ use vars qw(
 	$template
 	$psql
 	$database
-
-	$serverxml
 );
 
 use File::Find;
@@ -85,7 +83,6 @@ $DATABASE	= 'opennms';
 	'nov' => 11,
 	'dec' => 12,
 );
-$serverxml = '/var/tomcat4/conf/server.xml';
 
 chomp($PWD = `pwd`);
 
@@ -633,41 +630,45 @@ unless ($NOINSERT) {
 
 if ($TOMCAT) {
 
-	if (-f $serverxml) {
-		my $server_in;
+	for my $dir in ('/var/tomcat4', '/sw/var/tomcat4', '/usr/local/tomcat4') {
 
-		print "- checking Tomcat 4 for OpenNMS web UI... ";
-		if (open(FILEIN, $serverxml)) {
-			$server_in .= $_ while (<FILEIN>);
-			close (FILEIN);
-
-			if (grep(/opennms/gsi, $server_in)) {
-				if (not grep(/homeDir/gs, $server_in)) {
-					print "UPDATING:\n";
-					if (open(FILEOUT, ">$serverxml")) {
-						$server_in =~ s#userFile\s*=\s*\".*?\"\s*#homeDir="${OPENNMS_HOME}" #gs;
-						$server_in =~ s#<Logger className="org.apache.catalina.logger.FileLogger" prefix="localhost_opennms_log." suffix=".txt" timestamp="true"/>#<Logger className="org.opennms.web.log.Log4JLogger" homeDir="${OPENNMS_HOME}" />#gs;
-						
-						print FILEOUT $server_in;
-						if (close(FILEOUT)) {
-							print "DONE\n";
+		my $serverxml = $dir . '/server.xml';
+	
+		if (-f $serverxml) {
+			my $server_in;
+	
+			print "- checking Tomcat 4 for OpenNMS web UI... ";
+			if (open(FILEIN, $serverxml)) {
+				$server_in .= $_ while (<FILEIN>);
+				close (FILEIN);
+	
+				if (grep(/opennms/gsi, $server_in)) {
+					if (not grep(/homeDir/gs, $server_in)) {
+						print "UPDATING:\n";
+						if (open(FILEOUT, ">$serverxml")) {
+							$server_in =~ s#userFile\s*=\s*\".*?\"\s*#homeDir="${OPENNMS_HOME}" #gs;
+							$server_in =~ s#<Logger className="org.apache.catalina.logger.FileLogger" prefix="localhost_opennms_log." suffix=".txt" timestamp="true"/>#<Logger className="org.opennms.web.log.Log4JLogger" homeDir="${OPENNMS_HOME}" />#gs;
+							
+							print FILEOUT $server_in;
+							if (close(FILEOUT)) {
+								print "DONE\n";
+							}
+						} else {
+							$ERRORS++;
+							print "FAILED\n";
 						}
 					} else {
-						$ERRORS++;
-						print "FAILED\n";
+						print "FOUND\n";
 					}
 				} else {
-					print "FOUND\n";
-				}
-			} else {
-				print "UPDATING:\n";
-
-				print "- adding OpenNMS web UI context to server.xml... ";
-
-				if (open(FILEOUT, ">$serverxml")) {
-					for my $line (split(/\r?\n/, $server_in)) {
-						if ($line =~ m#</host>#gsi) {
-							print FILEOUT <<END;
+					print "UPDATING:\n";
+	
+					print "- adding OpenNMS web UI context to server.xml... ";
+	
+					if (open(FILEOUT, ">$serverxml")) {
+						for my $line (split(/\r?\n/, $server_in)) {
+							if ($line =~ m#</host>#gsi) {
+								print FILEOUT <<END;
 
         <Context path="/opennms" docBase="opennms" debug="0" reloadable="true">
          <Logger className="org.opennms.web.log.Log4JLogger" homeDir="${OPENNMS_HOME}"/>
@@ -675,28 +676,27 @@ if ($TOMCAT) {
         </Context>
 
 END
+							}
+	
+							print FILEOUT $line, "\n";
 						}
-
-						print FILEOUT $line, "\n";
-					}
-					if (close(FILEOUT)) {
-						print "DONE\n";
+						if (close(FILEOUT)) {
+							print "DONE\n";
+						} else {
+							$ERRORS++;
+							print "FAILED\n";
+						}
 					} else {
 						$ERRORS++;
 						print "FAILED\n";
 					}
-				} else {
-					$ERRORS++;
-					print "FAILED\n";
 				}
+	
+			} else {
+				$ERRORS++;
+				print "FAILED\n";
 			}
-
-		} else {
-			$ERRORS++;
-			print "FAILED\n";
 		}
-	} else {
-		print "*** $serverxml not found ***\n";
 	}
 
 }
