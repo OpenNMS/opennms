@@ -52,7 +52,7 @@
 
           <itemizedlist>
             <listitem>
-              <para>The j<code>ava-common</code> package is a dependency for
+              <para>The <code>java-common</code> package is a dependency for
               the <code>j2sdk1.4</code> package you will be creating, and
               since it will be installed by <filename>dpkg</filename>,
               <filename>apt</filename> will not be there to pull it in so
@@ -211,7 +211,7 @@
       <filename>/etc/tomcat4/</filename> on the Red Hat and Fedora series of
       Linux distributions. It looks like this:</para>
 
-      <para><programlisting>j# tomcat /etc/rc.d script example configuration file
+      <para><programlisting># tomcat /etc/rc.d script example configuration file
 # Use with version 1.07 of the scripts or later
 
 # Use Jpackage utils if present
@@ -307,7 +307,7 @@ TOMCAT_USER="tomcat"
           <filename>capsd-configuration.xml</filename>. Run the
           commands:</para>
 
-          <para><programlisting><computeroutput># </computeroutput><command>chgrp -R $OPENNMS_HOME/etc
+          <para><programlisting><computeroutput># </computeroutput><command>chgrp -R [group name] $OPENNMS_HOME/etc
 </command><computeroutput># </computeroutput><command>chmod -R g+w $OPENNMS_HOME/etc</command></programlisting></para>
 
           <para>where <varname>$OPENNMS_HOME/etc</varname> is the OpenNMS
