@@ -2004,13 +2004,6 @@ public class Installer {
 	    st.execute("VACUUM ANALYZE " + table);
 	    m_out.println("DONE");
 	} catch (Exception e) {
-	    try {
-		m_dbconnection.commit();
-		m_dbconnection.setAutoCommit(true);
-	    } catch (Exception e_ignore) {
-		// ignore
-	    }
-
 	    if (m_no_revert) {
 		m_out.println("FAILED!  Not reverting due to '-R' being " +
 			      "passed.  Old data in " + tmpTable);
@@ -2018,6 +2011,9 @@ public class Installer {
 	    }
 
 	    try {
+		m_dbconnection.rollback();
+		m_dbconnection.setAutoCommit(true);
+	    
 		if (tableExists(table)) {
 		    st.execute("DROP TABLE " + table + m_cascade);
 		}
@@ -2185,33 +2181,7 @@ public class Installer {
 		}
 	    }
 
-	    try {
-		insert.execute();
-	    } catch (SQLException e) {
-		// XXX should we add something for this:
-		//    2004-09-26 22:24:29 ERROR:  duplicate key violates
-		//    unique constraint "pk_eventid"
-		if (e.toString().indexOf("key referenced from " + table +
-					 " not found in") == -1) {
-		    //e.toString().indexOf("Cannot insert a duplicate key " +
-		    //		 "into unique index") == -1 &&
-		    //		    e.toString().indexOf("duplicate key violates unique " +
-		    //					 "constraint") == -1) {
-		    SQLException ex = new SQLException("Failed inserting " +
-						       "due to " +
-						       e.getMessage() + ".  " +
-						       "Executed command: \"" +
-						       insert.toString() +
-						       "\"",
-						       e.getSQLState(),
-						       e.getErrorCode());
-		    ex.setNextException(e);
-		    throw ex;
-		    // error =	      "can't insert into " + table;
-		}
-
-		m_dbconnection.commit();
-	    }
+	    insert.execute();
 
 	    current_row++;
 
