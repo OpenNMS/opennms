@@ -1,39 +1,17 @@
-- I have only lightly tested upgrade from a 1.0.2 or previous 1.1.1 build.
-  It seems to work ok, but I'm sure there are lots of alternate configurations
-  out there that present gotchas.  I need people to test that and let me know
-  what breaks.
+- Move away from the ugly hacking of users pg_hba.conf file. Possibly use
+  debconf to prompt for more reasonable settings.
 
-- Start using Debconf and do the entire database install correctly (prompt for
-  username, password to create opennms user and db, etc).
+- Institute a permissions scheme that will allow Tomcat to run as user
+  tomcat4
 
-- Rework the package split to put the database stuff into an opennms-db package
-  that contains the iplike stored proc and the install.pl stuff to initialize
-  or upgrade the db.  Use Debconf stuff in the opennms-server package to prompt
-  for the proper hostname, port (if needed), user, and password for the DB.
-  This could allow separating the database from the opennms server.
+- Figure out why Tomcat refuses to use web.xml as a symlink.
 
-- Figure out what needs to be done (if it's possible) to truly move
-  opennms-webapp to a separate system from the DB and opennms-server.  If so,
-  use Debconf to prompt for the proper host and ports for the opennms-server.
+- Either the packages should readily support running the webapp, database,
+  and app on seperate machines, or some of these packages should be merged
+  back together.
 
-- Smarter pre/post install/remove logic about checking for tomcat and postgres
-  setups and doing the "right" thing.  I know, that's vague.  It makes sense to
-  me.  ;)
+- Write a man page.
 
-- Figure out a better postgres access control game to play (this one will be
-  tough, given the _ugly_ default debian ident sameuser crap and my lack of
-  good postgres knowledge).  This could be obsoleted by using Debconf prompts
-  for db access during the opennms-db install.
+- Look into lintian overrides
 
-- Precompile jsp's.
-
-- Start a serious security review, not so much of code (not my forte) but of
-  configuration, permissions, authentication.  I've already tightened the file
-  permissions a bit and need to hit a few more spots.  Maybe work with OpenNMS
-  developers on moving passwords out of web.xml (which I need to chmod on).
-
-Sheesh, is that enough???  I'm sure there is more, once people start looking
-at this.  :)
-
-Tony Simone
-Sr. Network Whipping-Boy
+-- Eric Evans, <eevans@opennms.org>

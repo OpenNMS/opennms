@@ -1,69 +1,44 @@
-The OpenNMS package set for Debian GNU/Linux
---------------------------------------------
+opennms for Debian
+------------------
 
-This package has been laboriously built and updated by Tony Simone
-<tony.simone@medvantx.com>.  Until somebody else jumps onboard to help
-maintain the Debian build, direct all comments/suggestions/criticisms
-to Tony.  Please be kind.  :)
+This file only highlights the differences between the Debian packages and 
+the other distributions. 
 
-At the moment I do not know if this package will properly upgrade from
-previous versions.  The real key here is the database stuff that gets
-done post-install by opennms-db.  It should work, assuming install.pl
-does the right thing, but don't expect anything magical to happen here.
-Constructive feedback appreciated!
+For comprehensive offline documentation install the opennms-doc package,
+or check out the online documentation at http://www.opennms.org/users/docs/
 
+For troubleshooting installation and configuration issues see the FAQ, 
+http://faq.opennms.org/faq/fom-serve/cache/1.html
 
-Getting Started:
-
-1. Before starting OpenNMS for the first time, modify the configs in
-   /etc/opennms.  The most important for initial startup are:
-
-	capsd-configuration.xml
-	collectd-configuration.xml
-	discovery-configuration.xml
-	poll-outages.xml
-	poller-configuration.xml
-	snmp-config.xml
-	threshd-configuration.xml
-
-2. Fire it up (/etc/init.d/opennms start)!  If it doesn't start, you may
-   need to change the JAVA_HOME in /etc/default/opennms.
-
-3. It takes a minute to start.  Grab a drink or something.  Watch the logs
-   in /var/log/opennms.  Some Java exceptions are normal and can be ignored.
-   This takes a little experience.  DHCP is a common one to ignore.
-
-4. Start (or restart) tomcat4.  It's another big Java app, so give it a
-   minute.  Watch /var/log/tomcat4/catalina.out for indications of problems.
-
-5. Point your browser to http://yourserver:8180/opennms.  Login as admin
-   with the password admin.
-
-If you make it that far and you don't see errors on the web page, you're in!
+If you have a question that is not answered in the documentation or FAQ
+you can always ask on one of the mailing lists, (although you may want to
+search the archive first to see if the question has already been asked 
+and/or answered ;), http://lists.opennms.org/mailman/listinfo
 
 
-Differences:
+Differences in the Debian packages
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are some noteable difference between this package and what's reported
-at http://www.opennms.org/.  Here's a quick summary:
+- $OPENNMS_HOME on Debian is /usr/share/opennms, not /opt/OpenNMS
 
-1. Tomcat4 in Debian lives on port 8180.
+- The configuration files can be found in /etc/opennms
 
-2. Because of #1, one of the OpenNMS ports was moved to 8280.
+- mail on Debian is /usr/bin/mail, not /bin/mail
 
-3. In Debian, the mail binary lives in /usr/bin/mail, not /bin/mail.
+- Tomcat on Debian lives on port 8180. Since OpenNMS typically runs its
+  HttpAdaptor service on 8180, (see service-configuration.xml), that too
+  has been moved and is on 8280 for the Debian packages. All this really 
+  boils down to for most people is that you will need to point your 
+  browser at http://yourhost:8180/opennms/ instead of the more 
+  conventional http://yourhost:8080/opennms/
 
-4. Default logging in /etc/opennms/log4j.properties has been scaled back to
-   INFO level and higher, and log rotation sizes were reduced.  The defaults
-   in the OpenNMS build were too noisy and large (just my opinion).
 
-5. librrd0 in Debian Sid has not been updated to use libpng3 (aka libpng12)
-   yet.  I've built a new version against libpng3/libpng12 and put it on my
-   server to take care of this.  Otherwise, you end up busting a bunch of KDE
-   and other stuff trying to install OpenNMS.
+Known Issues
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-I think there are more, but I can't remember.  Send me notes and I'll
-include them.
+- By default, access to Postgresql is a lot more restrictive under Debian
+  than it is on the other supported distributions so the opennms-db 
+  post-install makes some rather liberal changes to your pg_hba.conf.
 
--Tony
 
+-- Eric Evans <eevans@opennms.org>, Wed, 14 Nov 2004 15:50:00 -0600
