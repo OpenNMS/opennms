@@ -192,6 +192,8 @@ your distribution.
     <pathelement path="${packaged.lib.dir}/mailapi.jar"/>
     <pathelement path="${packaged.lib.dir}/smtp.jar"/>
     <pathelement path="${packaged.lib.dir}/jradius-client.jar"/>
+    <pathelement path="${packaged.lib.dir}/smack.jar"/>
+    <pathelement path="${packaged.lib.dir}/smackx.jar"/>
 <!--  	<pathelement path="${packaged.lib.dir}/imap.jar"/> -->
 <!--  	<pathelement path="${packaged.lib.dir}/pop3.jar"/> -->
     <pathelement path="${packaged.lib.dir}/activation.jar"/>

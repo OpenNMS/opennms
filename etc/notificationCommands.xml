@@ -106,4 +106,15 @@
             <switch>-tm</switch>
         </argument>
     </command>
+    <command binary="false">
+        <name>xmppMessage</name>
+        <execute>org.opennms.netmgt.notifd.XMPPNotificationStrategy</execute>
+        <comment>class for sending XMPP notifications</comment>
+        <argument streamed="false">
+            <switch>-xmpp</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tm</switch>
+        </argument>
+    </command>
 </notification-commands>

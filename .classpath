@@ -51,5 +51,7 @@
 	<classpathentry kind="lib" path="lib/hsqldb.jar"/>
 	<classpathentry kind="lib" path="lib/jradius-client.jar"/>
 	<classpathentry kind="lib" path="lib/jmta.jar"/>
+	<classpathentry kind="lib" path="lib/smack.jar"/>
+	<classpathentry kind="lib" path="lib/smackx.jar"/>
 	<classpathentry kind="output" path="work/opennms/classes"/>
 </classpath>

@@ -279,6 +279,8 @@ public class NotificationTask extends Thread {
                 value = getEmail(m_user);
             } else if (NotificationManager.PARAM_PAGER_EMAIL.equals(aSwitch)) {
                 value = m_notifd.getUserManager().getPagerEmail(m_user.getUserId());
+            } else if (NotificationManager.PARAM_XMPP_ADDRESS.equals(aSwitch)) {
+            	value = m_notifd.getUserManager().getXMPPAddress(m_user.getUserId());
             } else if (NotificationManager.PARAM_TEXT_PAGER_PIN.equals(aSwitch)) {
                 value = m_notifd.getUserManager().getTextPin(m_user.getUserId());
             } else if (NotificationManager.PARAM_NUM_PAGER_PIN.equals(aSwitch)) {

@@ -95,6 +95,7 @@ public abstract class NotificationManager {
     public static final String PARAM_SUBJECT = "-subject";
     public static final String PARAM_EMAIL = "-email";
     public static final String PARAM_PAGER_EMAIL = "-pemail";
+    public static final String PARAM_XMPP_ADDRESS = "-xmpp";
     public static final String PARAM_TEXT_PAGER_PIN = "-tp";
     public static final String PARAM_NUM_PAGER_PIN = "-np";
     NotifdConfigManager m_configManager;
