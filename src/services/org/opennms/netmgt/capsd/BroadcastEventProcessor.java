@@ -1909,9 +1909,7 @@ final class BroadcastEventProcessor implements EventListener {
 						+ nodeId + "/" + ipAddr);
 
 			if (count > 0)
-				return Collections.singletonList(EventUtils
-						.createInterfaceDeletedEvent(source, nodeId, ipAddr,
-								txNo));
+				return Collections.singletonList(EventUtils.createInterfaceDeletedEvent(source, nodeId, ipAddr, txNo));
 			else
 				return Collections.EMPTY_LIST;
 		} finally {
