@@ -1232,6 +1232,7 @@ OpenNMS as part of the post-install.
    </classpath>
   </javac>
 </target>
+
 <target name="test" depends="prep, java.compile, junit.compile" description="Run all the unit tests">
   <delete dir="${test.xml.dir}"/>
   <mkdir dir="${test.xml.dir}"/>
@@ -1246,7 +1247,6 @@ OpenNMS as part of the post-install.
      <formatter type="brief" usefile="false" />
      <formatter type="xml" />
      <batchtest todir="${test.xml.dir}">
-         
          <fileset dir="${source.dir}/services">
             <include name="**/*Test.java" />
             <exclude name="**/AllTest.java" /> 
@@ -1270,7 +1270,7 @@ OpenNMS as part of the post-install.
   <fail unless="test.class">
     You need to define test.class to indicate which test to run.
   </fail>
-  <junit>
+  <junit errorProperty="test.failed" failureProperty="test.failed">
      <classpath>
        <path refid="libraries.java.path"/>
        <pathelement location="${dev.lib.dir}/junit.jar"/>
@@ -1283,6 +1283,15 @@ OpenNMS as part of the post-install.
      <sysproperty key="mock.logLevel" value="${mock.logLevel}" />
      <sysproperty key="mock.debug" value="${mock.debug}" />
   </junit>
+  <condition property="continue.build">
+    <or>
+     <isset property="ignoreFailedTests" />
+     <not> <isset property="test.failed" /></not>
+    </or>
+  </condition>
+  <fail unless="continue.build" >
+     Unit Test Failed.  To build anyway run the build with -DignoreFailedTests=true
+  </fail>
 </target>
 
  <!-- JAR targets -->
