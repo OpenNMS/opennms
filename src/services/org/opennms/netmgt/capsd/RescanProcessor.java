@@ -1325,6 +1325,24 @@ final class RescanProcessor
 					createInterfaceSupportsSNMPEvent(dbIpIfEntry);
 				}
 			}
+                        else
+                        {
+				DbIfServiceEntry ifSvcEntry = DbIfServiceEntry.get(node.getNodeId(), ifaddr, sid.intValue());
+				if (m_ifIndexOnNodeChangedFlag)
+                                {
+                                        int index = dbIpIfEntry.getIfIndex();
+				        if (index > 0)
+                                        {
+					        ifSvcEntry.setIfIndex(index);
+				                ifSvcEntry.store();
+				                if (log.isDebugEnabled())
+					                log.debug("updateIfServices: change ifindex for  service: " 
+                                                        + p.getProtocolName()
+                                                        + " on interface/nodeid: " + ifaddr.getHostAddress()
+                                                        + " /" + node.getNodeId());
+				        }
+                                }
+                        }
 		} // end while(more protocols)
         }
 
