@@ -597,7 +597,7 @@ public class PollablesTest extends TestCase {
     }
     
     public void testReparentInterface() {
-        //fail("Not yet implemented");
+        fail("Not yet implemented");
     }
     
     public void testStatus() throws Exception {

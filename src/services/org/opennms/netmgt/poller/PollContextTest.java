@@ -220,11 +220,11 @@ public class PollContextTest extends TestCase {
         
     }
 
-    public void testOpenResolveOutage() {
+    public void testOpenResolveOutage() throws Exception {
         Event downEvent = m_mSvc.createDownEvent();
         m_outageAnticipator.anticipateOutageOpened(m_mSvc, downEvent);
         m_eventMgr.sendEventToListeners(downEvent);
-        PollEvent pollDownEvent = new PollEvent(downEvent.getDbid(), new Date());
+        PollEvent pollDownEvent = new PollEvent(downEvent.getDbid(), EventConstants.parseToDate(downEvent.getTime()));
         m_pollContext.openOutage(m_pSvc, pollDownEvent);
                                                   
         verifyOutages();
@@ -233,7 +233,7 @@ public class PollContextTest extends TestCase {
         Event upEvent = m_mSvc.createUpEvent();
         m_outageAnticipator.anticipateOutageClosed(m_mSvc, upEvent);
         m_eventMgr.sendEventToListeners(upEvent);
-        PollEvent pollUpEvent = new PollEvent(upEvent.getDbid(), new Date());
+        PollEvent pollUpEvent = new PollEvent(upEvent.getDbid(), EventConstants.parseToDate(upEvent.getTime()));
         m_pollContext.resolveOutage(m_pSvc, pollUpEvent);
                                    
         verifyOutages();
