@@ -1,5 +1,7 @@
 1.2.0 to 1.2.1
 ----------------------------------------------------------------------
+- Fix the opennms init script so that it works properly with chkconfig.
+  Bug 1177.  Thanks Julian Gomez <JulianJose.Gomez@getronics.com>.
 - Fixed the Configure SNMP Data Collection per Interface UI to be
   much faster and to handle null issnmpprimary values.
 - Initialize begin and end times in isTimeInOutage so days of week is
