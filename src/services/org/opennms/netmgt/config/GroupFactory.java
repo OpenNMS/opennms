@@ -107,7 +107,7 @@ public class GroupFactory extends GroupManager {
     public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         File confFile = ConfigFileConstants.getFile(ConfigFileConstants.GROUPS_CONF_FILE_NAME);
 
-        getInstance().reloadFromFile(confFile);
+        reloadFromFile(confFile);
     }
 
     /**
@@ -123,7 +123,7 @@ public class GroupFactory extends GroupManager {
 
         Reader reader = new InputStreamReader(configIn);
 
-        getInstance().parseXml(reader);
+        parseXml(reader);
     }
 
     /**
