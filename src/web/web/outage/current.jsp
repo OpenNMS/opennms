@@ -142,7 +142,8 @@
             <td><b>Node</b></td>
             <td WIDTH="15%"><b>Interface</b></td>
             <td width="10%"><b>Service&nbsp;Down</b></td>
-            <td WIDTH="40%"><b>Time&nbsp;Down</b></td>
+            <td WIDTH="30%"><b>Time&nbsp;Down</b></td>
+            <td WIDTH="10%"><b>Outage&nbsp;ID</b></td>
           </tr>
 
           <% for( int nodeIndex=0; nodeIndex < nodeList.size(); nodeIndex++ ) { %>
@@ -159,6 +160,7 @@
                     Outage outage = (Outage)svcList.get(svcIndex);
                     int nodeId = outage.getNodeId();
                     String ipAddr = outage.getIpAddress();
+		    int outageId = outage.getId();
                 %>                 
 
                 <tr valign="top" <% if( nodeIndex%2 == 0 ) out.print( "BGCOLOR=\"#cccccc\""); %>>
@@ -172,13 +174,14 @@
                     
                   <td><a HREF="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=outage.getServiceId()%>"><%=outage.getServiceName()%></a></td>
                   <td><%=org.opennms.netmgt.EventConstants.formatToUIString(outage.getTimeDown())%></td>
+                  <td><a href="outage/detail.jsp?id=<%=outageId%>"><%=outageId%></a></td>
                 </tr>
               <% } /* endfor service */ %>
             <% } /*endfor interface */ %>
           <% } /*endfor node */ %>
         
           <tr valign="top" BGCOLOR="#999999">
-            <td colspan="4"> 
+            <td colspan="5"> 
               <b><%=outages.length%> total services down on <%=interfaceCount%> interfaces of <%=nodeCount%> nodes</b>
             </td>
           </tr>

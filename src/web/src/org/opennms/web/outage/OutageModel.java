@@ -80,7 +80,7 @@ public class OutageModel extends Object
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(
-                    "select distinct outages.nodeId, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId, outages.iflostservice, outages.svclosteventid, notifications.notifyId, notifications.answeredBy from outages " +
+                    "select distinct outages.outageid, outages.nodeId, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId, outages.iflostservice, outages.svclosteventid, notifications.notifyId, notifications.answeredBy from outages " +
                     "left outer join notifications on (outages.svclosteventid=notifications.eventid), node, ipinterface, ifservices, service " +
                     "where ifregainedservice is null " +
                     "and (node.nodeid=outages.nodeid and ipinterface.ipaddr=outages.ipaddr and ifservices.serviceid=outages.serviceid) " +
@@ -138,7 +138,7 @@ public class OutageModel extends Object
 
         try {
             PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT DISTINCT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId " +
+                    "SELECT DISTINCT outages.outageid, outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId " +
                     "from outages, node, ipinterface, service " +
                     "where outages.nodeid=? " +
                     "and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr " +
@@ -167,7 +167,7 @@ public class OutageModel extends Object
 
         try {
             PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT DISTINCT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId " +
+                    "SELECT DISTINCT outages.outageid, outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId " +
                     "from outages, node, ipinterface, service " +
                     "where outages.nodeid=? " +
                     "and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr " +
@@ -199,7 +199,7 @@ public class OutageModel extends Object
 
         try {
             PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT DISTINCT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId " +
+                    "SELECT DISTINCT outages.outageid, outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId " +
                     "from outages, node, ipinterface, service " +
                     "where outages.nodeid=? and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr o" +
                     "rder by iflostservice desc");
@@ -238,7 +238,7 @@ public class OutageModel extends Object
 
         try {
             PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT DISTINCT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId " +
+                    "SELECT DISTINCT outages.outageid, outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId " +
                     "from outages, node, ipinterface, service " +
                     "where outages.nodeid=? and node.nodeid=outages.nodeid " +
                     "and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr " +
@@ -266,7 +266,7 @@ public class OutageModel extends Object
 
         try {
             PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT DISTINCT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId " +
+                    "SELECT DISTINCT outages.outageid, outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId " +
                     "from outages, node, ipinterface, service " +
                     "where outages.nodeid=? and outages.ipaddr=? " +
                     "and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr " +
@@ -308,7 +308,7 @@ public class OutageModel extends Object
 
         try {
             PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT DISTINCT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId " +
+                    "SELECT DISTINCT outages.outageid, outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId " +
                     "from outages, node, ipinterface, service " +
                     "where outages.nodeid=? and outages.ipaddr=? " +
                     "and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr " +
@@ -339,7 +339,7 @@ public class OutageModel extends Object
 
         try {
             PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT DISTINCT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId " +
+                    "SELECT DISTINCT outages.outageid, outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId " +
                     "from outages, node, ipinterface, service " +
                     "where outages.nodeid=? and outages.ipaddr=? and outages.serviceid=? " +
                     "and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr " +
@@ -383,7 +383,7 @@ public class OutageModel extends Object
 
         try {
             PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT DISTINCT outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId " +
+                    "SELECT DISTINCT outages.outageid, outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId " +
                     "from outages, node, ipinterface, service " +
                     "where outages.nodeid=? " +
                     "and outages.ipaddr=? and outages.serviceid=? " +
@@ -545,6 +545,11 @@ public class OutageModel extends Object
             element = rs.getString("servicename");
             outage.serviceName = (String)element;
 
+            element = new Integer(rs.getInt("outageid"));
+            if( element != null) {
+            	outage.outageId = ((Integer)element).intValue();
+            }
+            
             element = rs.getTimestamp("iflostservice");
             if( element != null) {
                 outage.lostServiceTime = new Date(((Timestamp)element).getTime());                

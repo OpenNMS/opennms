@@ -87,19 +87,21 @@
   
 
 <% if(outages.length == 0) { %>
-  <td BGCOLOR="#999999" colspan="2">There have been no outages on this service in the last 24 hours.</b></a></td>
+  <td BGCOLOR="#999999" colspan="3">There have been no outages on this service in the last 24 hours.</b></a></td>
 <% } else { %>
   <tr> 
-    <td BGCOLOR="#999999" colspan="2"><b>Recent Outages</b></td>
+    <td BGCOLOR="#999999" colspan="3"><b>Recent Outages</b></td>
   </tr>
   <tr bgcolor="#999999">
     <td><b>Lost</b></td>
     <td><b>Regained</b></td>
+    <td><b>Outage ID</b></td>
   </tr>
   <%  for(int i=0; i < outages.length; i++) { %>
      <tr>
       <td><%=org.opennms.netmgt.EventConstants.formatToUIString(outages[i].getLostServiceTime())%></td>
       <td <%=(outages[i].getRegainedServiceTime() == null) ? "bgcolor=\"red\"" : ""%>><%=(outages[i].getRegainedServiceTime() == null) ? "<b>DOWN</b>" : org.opennms.netmgt.EventConstants.formatToUIString(outages[i].getRegainedServiceTime())%></td>
+      <td><a href="outage/detail.jsp?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a></td>
     </tr>
   <% } %>
 <% } %>
