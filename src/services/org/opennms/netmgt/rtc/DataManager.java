@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2004 Sep 08: Cleaned up the rescan node method.
 // 2004 Mar 17: Fixed a number of bugs with added and deleting services within RTC.
 //              Added a method to rescan a node within RTC.
 // 2003 Jan 31: Cleaned up some unused imports.
@@ -810,113 +811,43 @@ public class DataManager extends Object
 			if (log.isDebugEnabled())
 				log.debug("nodeGainedSvc: " + nodeid + "/" + ip + "/" + svcName + "/" + svcStatus);
 
-			// create the key for this node
-			RTCNodeKey key = new RTCNodeKey(nodeid, ip, svcName);
+			// I ran into problems with adding new services, so I just ripped all that out and added
+			// a call to the rescan method. -T
 
-			// create the node
-			RTCNode rtcN = new RTCNode(nodeid, ip, svcName);
+			// Hrm - since the rules can be based on things other than the service name
+			// we really need to rescan every time a new service is discovered. For
+			// example, if I have a category where the rule is "ipaddr = 10.1.1.1 & isHTTP"
+			// yet I only have ICMP in the service list, the node will not be added when
+			// HTTP is discovered, because it is not in the services list.
+			// 
+			// This is mainly useful when SNMP is discovered on a node.
 
-			// add to the data holder
-			m_map.put(key,  rtcN);
-			m_map.add(nodeid, rtcN);
-			m_map.add(nodeid, ip, rtcN);
-
-			// filter to check if this satisfies category rules
-			Filter filter =  new Filter();
-
-			// now go through the categories and add to appropriate
-			// ones
-			Iterator iter = m_categories.values().iterator();
-			while(iter.hasNext())
+       	        	if(log.isDebugEnabled())
+       		        {
+		             	log.debug("rtcN : Rescanning services on : " + ip);
+       		        }
+			try
 			{
-				RTCCategory cat = (RTCCategory)iter.next();
-	
-				// unless the service found is in the category's services list,
-				// do not bother about this service
-				if (!cat.containsService(svcName))
-				{
-					continue;
-				}
-	
-				// Validate the IP for this category
-				boolean nodeValidated = false;
-	
-				// Check if this IP has already been validated for this category
-				nodeValidated = m_map.isIpValidated(nodeid, ip, cat.getLabel());
-				if(log.isDebugEnabled())
-				{
-					log.debug("rtcN : nodeValidated: nodeid:" + nodeid + " IP: " + ip + 
-						  " added to cat: " + cat.getLabel() + " nodeValidated: " + nodeValidated);
-				}
-				if (!nodeValidated)
-				{
-					// get the rule for this category and see if this node satisfies the rule
-					String filterRule = cat.getEffectiveRule();
-	
-					try
-					{
-						nodeValidated = filter.isValid(ip, filterRule);
-					}
-					catch(Exception e)
-					{
-						//  Log  error and ignore this category?
-						log.warn("Unable to validate/add new node " + rtcN.toString() + " to category \'" 
-							+ cat.getLabel() + "\' exception", e);
-						continue;
-					}
-				}
-	
-				// if node did validate against this category
-				// add that info
-				if (nodeValidated)
-				{
-					// add to category
-					cat.addNode(rtcN);
-	
-					// add the category info to the node
-					rtcN.addCategory(cat.getLabel());
-	
-					if(log.isDebugEnabled())
-					{
-						log.debug("rtcN : " + rtcN.getNodeID() + "/" + rtcN.getIP() + "/" + rtcN.getSvcName() 
-							  + " added to cat: " + cat.getLabel());
-					}
-				}
-	
+				rtcNodeIpRescan(nodeid, ip);
 			}
+               		catch(FilterParseException ex)
+       	        	{
+       	                	log.warn("Failed to unmarshall database config", ex);
+   	                	throw new UndeclaredThrowableException(ex);
+       	        	}       
+       	        	catch(SQLException ex)
+       	        	{
+       	                	log.warn("Failed to get database connection", ex);
+       	                	throw new UndeclaredThrowableException(ex);
+       	        	}       
+       	        	catch(RTCException ex)
+       	        	{
+      	                	log.warn("Failed to get database connection", ex);
+      	                	throw new UndeclaredThrowableException(ex);
+      	        	}       
+
 		}
 
-		// Hrm - since the rules can be based on things other than the service name
-		// we really need to rescan every time a new service is discovered. For
-		// example, if I have a category where the rule is "ipaddr = 10.1.1.1 & isHTTP"
-		// yet I only have ICMP in the service list, the node will not be added when
-		// HTTP is discovered, because it is not in the services list.
-		// 
-		// This is mainly useful when SNMP is discovered on a node.
-
-               	if(log.isDebugEnabled())
-                {
-	              	log.debug("rtcN : Rescanning services on : " + ip);
-                }
-		try
-		{
-			rtcNodeIpRescan(nodeid, ip);
-		}
-               	catch(FilterParseException ex)
-       	        {
-       	                log.warn("Failed to unmarshall database config", ex);
-   	                throw new UndeclaredThrowableException(ex);
-       	        }       
-       	        catch(SQLException ex)
-       	        {
-       	                log.warn("Failed to get database connection", ex);
-       	                throw new UndeclaredThrowableException(ex);
-       	        }       
-       	        catch(RTCException ex)
-       	        {
-      	                log.warn("Failed to get database connection", ex);
-      	                throw new UndeclaredThrowableException(ex);
-      	        }       
 	}
 
 	/**
@@ -1242,6 +1173,16 @@ public class DataManager extends Object
 
 				if (log.isDebugEnabled())
 					log.debug("IP in cat: " + ipInCat);
+
+				// Interesting problem. Since it is not possible to determine if a node has been 
+				// added to a category with a particular service, on a rescan it is best
+				// to delete the node from the category and re-add it.
+
+				if (ipInCat)
+				{
+					ipInCat = false;
+					cat.deleteNode(nodeid);
+				}
 				
                                 Iterator nodeIter = nodeIPs.iterator();
                                 while(nodeIter.hasNext())

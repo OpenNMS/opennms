@@ -1,25 +1,6 @@
 //
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2002-2003 Blast Internet Services, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of Blast Internet Services, Inc.
-//
-// Modifications:
-//
-// 2003 Aug 01: Created a proper JOIN for notifications. Bug #752
-// 2003 Jan 31: Added an ORDER BY clause. Bug #648
-// 2003 Jan 08: Allow notification where nodeid, interfaceid and/or serviceid are null.
-// 2002 Nov 13: Corrected a small bug with notifications.
-// 2002 Nov 13: Added two new files for notifications, nodelabel and interfaceresolve.
-// 2002 Nov 09: Added the ability to map a single event to multiple notifications.
-// 2002 Oct 30: Modified filter rules to work on node, interface and/or service.
-// 2002 Jul 08: Corrected SELECT statement to correct return acknowledged notifications.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
+// Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,55 +10,44 @@
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
+// GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//       
-// For more information contact: 
+//
+// For more information contact:
 //      OpenNMS Licensing       <license@opennms.org>
 //      http://www.opennms.org/
-//      http://www.blast.com/
+//      http://www.sortova.com/
 //
-
 package org.opennms.netmgt.config;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.sql.*;
+import java.text.*;
+import java.lang.reflect.UndeclaredThrowableException;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+
+import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.EventConstants;
+
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.notifications.*;
 import org.opennms.netmgt.config.notifications.Header;
-import org.opennms.netmgt.config.notifications.Notification;
-import org.opennms.netmgt.config.notifications.Notifications;
-import org.opennms.netmgt.filter.Filter;
-import org.opennms.netmgt.filter.FilterParseException;
-import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.*;
+import org.opennms.netmgt.filter.*;
+import org.opennms.netmgt.notifd.*;
+import org.opennms.netmgt.*;
+import org.opennms.core.resource.*;
+
+import org.opennms.netmgt.config.NotifdConfigFactory;
 
 /**
 */
@@ -206,6 +176,52 @@ public class NotificationFactory
 		}
 		
 		return false;
+	}
+	/**
+	 * Returns a list of user ids of users who were sent a message for the given notification id
+	 * @param notifId
+	 * @return
+	 * @throws IOException
+	 * @throws MarshalException
+	 * @throws ValidationException
+	 */
+	public List getUsersNotified(int notifId)
+		throws IOException, MarshalException, ValidationException {
+		List usersNotified = new ArrayList();
+		String getNotifiedUsersSql =
+			"SELECT userid,media FROM usersnotified WHERE notifyid=?";
+		Connection connection = null;
+		try {
+			connection =
+				DatabaseConnectionFactory.getInstance().getConnection();
+			PreparedStatement statement =
+				connection.prepareStatement(getNotifiedUsersSql);
+
+			statement.setInt(1, notifId);
+
+			ResultSet results = statement.executeQuery();
+			while (results.next()) {
+				Map thisResult=new HashMap();
+				thisResult.put("userId",results.getString(1));
+				thisResult.put("command",results.getString(2));
+				usersNotified.add(thisResult);
+			}
+			statement.close();
+			results.close();
+		} catch (SQLException e) {
+			ThreadCategory.getInstance(
+				NotificationFactory.class.getName()).error(
+				"Error getting users ids for notification: " + e.getMessage(),
+				e);
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
+		return usersNotified;
 	}
 	
 	public Notification[] getNotifForEvent(Event event)
@@ -429,77 +445,100 @@ public class NotificationFactory
 		
 		return response;
 	}
-	
+	public static List getNotifIds(Event event, String uei, String[] matchList)
+		throws SQLException, IOException, MarshalException, ValidationException {
+		//get the notification id and see if only one is returned
+		Connection connection = null;
+		List resultIds = new ArrayList();
+		try {
+			connection =
+				DatabaseConnectionFactory.getInstance().getConnection();
+			StringBuffer sql =
+				new StringBuffer("SELECT notifyid FROM notifications WHERE eventuei=? AND respondTime is null ");
+
+			for (int i = 0; i < matchList.length; i++) {
+				sql.append("AND ").append(matchList[i]).append("=? ");
+			}
+
+			sql.append("ORDER BY pagetime");
+
+			PreparedStatement statement =
+				connection.prepareStatement(sql.toString());
+			statement.setString(1, uei);
+
+			for (int i = 0; i < matchList.length; i++) {
+				if (matchList[i].equals("nodeid")) {
+					statement.setLong(i + 2, event.getNodeid());
+				}
+
+				if (matchList[i].equals("interfaceid")) {
+					statement.setString(i + 2, event.getInterface());
+				}
+
+				if (matchList[i].equals("serviceid")) {
+					statement.setInt(i + 2, getServiceId(event.getService()));
+				}
+			}
+
+			ResultSet results = statement.executeQuery();
+
+			//count how many rows were returned, if there is even one then the page
+			//has been responded too.
+
+			if (results != null) {
+				while (results.next()) {
+					int notifID = results.getInt(1);
+					resultIds.add(new Integer(notifID));
+				}
+			}
+
+			statement.close();
+			results.close();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
+		return resultIds;
+	}
+
 	/**
 	 *
 	 */
 	public void acknowledgeNotice(Event event, String uei, String[] matchList)
-		throws SQLException, IOException, MarshalException, ValidationException
-	{
+		throws SQLException, IOException, MarshalException, ValidationException {
 		//get the notification id and see if only one is returned
 		Connection connection = null;
-		try
-		{
-			connection = DatabaseConnectionFactory.getInstance().getConnection();
-			StringBuffer sql = new StringBuffer("SELECT notifyid FROM notifications WHERE eventuei=? AND respondTime is null ");
-                        
-                        for (int i = 0; i < matchList.length; i++)
-                        {
-                                sql.append("AND ").append(matchList[i]).append("=? ");
-                        }
+		try {
+			connection =
+				DatabaseConnectionFactory.getInstance().getConnection();
 
-			sql.append("ORDER BY pagetime");
-                        
-                        PreparedStatement statement = connection.prepareStatement(sql.toString());
-                        statement.setString(1, uei);
-			
-                        for (int i = 0; i < matchList.length; i++)
-                        {
-                                if (matchList[i].equals("nodeid"))
-                                {
-                                        statement.setLong(i+2, event.getNodeid());
-                                }
-                                
-                                if (matchList[i].equals("interfaceid"))
-                                {
-                                        statement.setString(i+2, event.getInterface());
-                                }
-                                
-                                if (matchList[i].equals("serviceid"))
-                                {
-                                        statement.setInt(i+2, getServiceId(event.getService()));
-                                }
+			List notifIds = this.getNotifIds(event, uei, matchList);
+			Iterator iterator = notifIds.iterator();
+			while (iterator.hasNext()) {
+				int notifID = ((Integer) iterator.next()).intValue();
+				PreparedStatement update =
+					connection.prepareStatement(
+						NotifdConfigFactory
+							.getConfiguration()
+							.getAcknowledgeUpdateSql());
+
+				update.setString(1, "auto-acknowledged");
+				update.setTimestamp(2, new Timestamp((new Date()).getTime()));
+				update.setInt(3, notifID);
+
+				update.executeUpdate();
+				update.close();
 			}
-                        
-			ResultSet results = statement.executeQuery();
-                        
-			//count how many rows were returned, if there is even one then the page
-			//has been responded too.
-                        
-			if (results != null)
-			{
-				while (results.next())
-				{
-					int notifID = results.getInt(1);
-					PreparedStatement update = connection.prepareStatement(NotifdConfigFactory.getConfiguration().getAcknowledgeUpdateSql());
-                                
-					update.setString(1, "auto-acknowledged");
-					update.setTimestamp(2, new Timestamp((new Date()).getTime()));
-					update.setInt(3, notifID);
-                                
-					update.executeUpdate();
-					update.close();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
 				}
-			}
-                        
-			statement.close();
-			results.close();
-		}
-		finally
-		{
-			if(connection != null)
-			{
-				try { connection.close(); } catch(SQLException e) { }
 			}
 		}
 	}
@@ -567,6 +606,8 @@ public class NotificationFactory
 			statement.setString(3, service);
                         
 			ResultSet rs = statement.executeQuery();
+                        
+			rs.next();
                         
 			if (rs.next() && rs.getString("notify")!= null)
 			{
@@ -694,8 +735,8 @@ public class NotificationFactory
 	}
 	
 	/**This method queries the database in search of a service id for a given serivice name
-	   @param service the name of the service
-	   @return the serviceID of the service
+	   @param String service, the name of the service
+	   @return int, the serviceID of the service
 	*/
 	private static int getServiceId(String service)
 		throws SQLException
@@ -821,8 +862,8 @@ public class NotificationFactory
         }
         
         /**
-         * Handles adding a new Notification.
-         * @param notice The Notification to add.
+         * Handles adding a new Notification 
+         * @param notice, the Notification to add
          */
         public synchronized void addNotification(Notification notice)
                 throws MarshalException, ValidationException, IOException, ClassNotFoundException
@@ -848,9 +889,9 @@ public class NotificationFactory
         }
         
         /**
-         * Sets the status on an individual notification configuration and saves to xml.
-         * @param name The name of the notification.
-         * @param status The status (either "on" or "off").
+         * Sets the status on an individual notification configuration and saves to xml
+         * @param name, the name of the notification
+         * @param status, the status (either "on" or "off")
          */
         public synchronized void updateStatus(String name, String status)
                 throws MarshalException, ValidationException, IOException, ClassNotFoundException

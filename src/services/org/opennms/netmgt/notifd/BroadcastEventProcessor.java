@@ -76,6 +76,7 @@ import org.opennms.netmgt.config.notifd.AutoAcknowledge;
 import org.opennms.netmgt.config.notificationCommands.Command;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Parameter;
+import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -201,6 +202,31 @@ final class BroadcastEventProcessor
 
 	} // end onEvent()
 
+
+	/**
+	 * Returns true if an auto acknowledgment exists for the specificed event, such that the arrival of some second, different event
+	 * will auto acknowledge the event passed as an argument.  E.g. if there is an auto ack set up to acknowledge a nodeDown when a 
+	 * nodeUp is received, passing nodeDown to this method will return true.
+	 * Should this method be in NotifdConfigFactory?
+	 */
+	private boolean autoAckExistsForEvent(String eventUei) {
+		try {
+		Collection ueis = NotifdConfigFactory.getInstance().getConfiguration().getAutoAcknowledgeCollection();
+		Iterator i = ueis.iterator();
+		while(i.hasNext())
+		{
+			AutoAcknowledge curAck = (AutoAcknowledge)i.next();
+			if(curAck.getAcknowledge().equals(eventUei)) {
+				return true;
+			}
+		}
+		return false;
+		} catch (Exception e) {
+			ThreadCategory.getInstance(getClass()).error("Unable to find if an auto acknowledge exists for event "+eventUei+" due to exception.", e);
+			return false;
+		}
+	}
+
 	/**
 	 *
 	 */
@@ -210,6 +236,7 @@ final class BroadcastEventProcessor
                 {
 		Collection ueis = NotifdConfigFactory.getConfiguration().getAutoAcknowledgeCollection();
 		
+		List origNotifIds = null;		
 		//see if this event has an auto acknowledge for a notice
 		Iterator i = ueis.iterator();
 		while(i.hasNext())
@@ -220,6 +247,13 @@ final class BroadcastEventProcessor
 				try
 				{
 					ThreadCategory.getInstance(getClass()).debug("Acknowledging event " + curAck.getAcknowledge() + " " + event.getNodeid()+":"+event.getInterface()+":"+event.getService());
+					//Get a copy of all unacknowledged messages for the original event - we need them a bit later
+					origNotifIds =
+						NotificationFactory.getNotifIds(
+							event,
+							curAck.getAcknowledge(),
+							curAck.getMatch());
+
 					NotificationFactory.getInstance().acknowledgeNotice(event, curAck.getAcknowledge(), curAck.getMatch());
 				}
 				catch (SQLException e)
@@ -239,6 +273,13 @@ final class BroadcastEventProcessor
                                 {
                                         ThreadCategory.getInstance(getClass()).error("Failed to auto acknowledge source notice.", e);
                                 }
+				//Now check for anyone who received the original notice (and who hasn't ack'd their message yet)
+				//and send a notice to them so they know things are fixed
+				Iterator iter = origNotifIds.iterator();
+				while (iter.hasNext()) {
+					int thisNotifId = ((Integer) iter.next()).intValue();
+					sendMessageToReceiversOfNotice(thisNotifId, event);
+				}
                         }
 
 		}
@@ -247,6 +288,127 @@ final class BroadcastEventProcessor
                 {
                         ThreadCategory.getInstance(getClass()).error("Unable to auto acknowledge notice due to exception.", e);
                 }
+	}
+
+	/**
+	 * Sends a standard message about "event" (not a notification) to all who have received the notification
+	 * identified by notificationId
+	 * 
+	 * Used on auto-acked events to send "up" messages to those who received the "down" message, when clear=true
+	 * @param notificationId
+	 * @param event
+	 */
+	private void sendMessageToReceiversOfNotice(int origNotifId, Event secondEvent) {
+
+		long now = System.currentTimeMillis();
+		try {
+			//Find the users who got the original notification and interate over them
+			List usersNotified = NotificationFactory.getInstance().getUsersNotified(origNotifId);
+			Iterator iter = usersNotified.iterator();
+			while (iter.hasNext()) {
+				Map userInfo = (Map) iter.next();
+				String userId = (String) userInfo.get("userId");
+				//We need to know which command was originally used to contact the user in question
+				String[] commands = new String[] {(String) userInfo.get("command")};
+				//This is a little counter-intuitive.  We need to find all notifications for the *second* event
+				// (the one which, when recieved, caused the original notification to be auto-ack).  Typically
+				// this will be only one, but we need all of them in order to send all appropriate "up" notification
+				// messages.  Much of this next section is duplicated code from elsewhere in this class, but slightly 
+				// different - it can probably be rather nicely refactored.
+				Notification[] notifications =
+					NotificationFactory.getInstance().getNotifForEvent(secondEvent);
+				if (notifications != null) {
+					for (int i = 0; i < notifications.length; i++) {
+						Notification notification = notifications[i];
+						String queueID =
+							(notification.getNoticeQueue() != null
+								? notification.getNoticeQueue()
+								: "default");
+
+						NoticeQueue noticeQueue = (NoticeQueue) m_noticeQueues.get(queueID);
+
+						List targetSiblings = new ArrayList();
+						NotificationTask newTask = null;
+						Map params = buildParameterMap(notification, secondEvent, origNotifId);
+						if (GroupFactory.getInstance().hasGroup((userId))) {
+							Group group = GroupFactory.getInstance().getGroup(userId);
+							String[] users = group.getUser();
+
+							if (users != null && users.length > 0) {
+								for (int j = 0; j < users.length; j++) {
+									newTask =
+										makeUserTask(
+											now,
+											params,
+											origNotifId,
+											users[j],
+											commands,
+											targetSiblings);
+									//Always send this, even if the notification has been acked (which it will have been in this case)	
+									newTask.setAlwaysSend(true);
+									//Nuke this list - no-body cares (it's only used to *not* send messages), we just want the messages sent.
+									targetSiblings.clear();
+									if (newTask != null) {
+										noticeQueue.put(new Long(now), newTask);
+									}
+								}
+							} else {
+								ThreadCategory.getInstance(getClass()).debug(
+									"Not sending notice, no users specified for group "
+										+ group.getName());
+							}
+						} else if (UserFactory.getInstance().hasUser(userId)) {
+							newTask =
+								makeUserTask(
+									now,
+									params,
+									origNotifId,
+									userId,
+									commands,
+									targetSiblings);
+							//Always send this, even if the notification has been acked (which it will have been in this case)	
+							newTask.setAlwaysSend(true);
+							//Nuke this list - no-body cares (it's only used to *not* send messages), we just want the messages sent.
+							targetSiblings.clear();
+							if (newTask != null) {
+								noticeQueue.put(new Long(now), newTask);
+							}
+
+						} else if (userId.indexOf("@") > -1) {
+							newTask =
+								makeEmailTask(
+									now,
+									params,
+									origNotifId,
+									userId,
+									commands,
+									targetSiblings);
+							//Always send this, even if the notification has been acked (which it will have been in this case)	
+							newTask.setAlwaysSend(true);
+							//Nuke this list - no-body cares (it's only used to *not* send messages), we just want the messages sent.
+							targetSiblings.clear();
+							if (newTask != null) {
+								noticeQueue.put(new Long(now), newTask);
+							}
+
+						}
+					}
+
+				}
+			}
+		} catch (ValidationException e) {
+			ThreadCategory.getInstance(getClass()).error(
+				"error trying to send auto-ack messages:" + e.getMessage());
+			return;
+		} catch (MarshalException e) {
+			ThreadCategory.getInstance(getClass()).error(
+				"error trying to send auto-ack messages:" + e.getMessage());
+			return;
+		} catch (IOException e) {
+			ThreadCategory.getInstance(getClass()).error(
+				"error trying to send auto-ack messages:" + e.getMessage());
+			return;
+		}
 	}
 	
         /**
@@ -736,7 +898,7 @@ final class BroadcastEventProcessor
                         task = new NotificationTask(sendTime, parameters, siblings);
 			
 			User user = new User();
-			user.setUserId("email-address");
+			user.setUserId(address);
                         Contact contact = new Contact();
                         contact.setType("email");
                         ThreadCategory.getInstance(getClass()).debug("email address = " + address);
