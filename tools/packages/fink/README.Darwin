@@ -52,11 +52,9 @@ make sure that the following values are set:
 Database Setup -- All Platforms
 ------------------------------------------------------------------------------
 
-Then, you can run @PREFIX@/var/opennms/bin/install.pl to configure the
-database, like so:
+Then you can run the java installer to configure the database, like so:
 
-  sudo @PREFIX@/var/opennms/bin/install.pl -q \
-		@PREFIX@/var/opennms/etc/create.sql
+  sudo java -Xmx256m -jar @PREFIX@/var/opennms/lib/opennms_install.jar -disU
 
 ------------------------------------------------------------------------------
 Startup
@@ -68,5 +66,5 @@ quick start guide at http://www.opennms.org/users/docs/) and run:
 
   sudo @PREFIX@/bin/pgsql.sh start
   sudo @PREFIX@/var/opennms/bin/opennms.sh start
-  sudo -u tomcat @PREFIX@/bin/tomcat start
+  sudo -u tomcat @PREFIX@/bin/tomcat4 start
 

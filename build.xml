@@ -101,8 +101,9 @@ your distribution.
   <property name="install.dir" value="${basedir}/${relative.install}"/>
 
   <property name="install.init.dir" value="${install.dir}/bin"/>
+  <property name="install.webapps.dir" value="${install.dir}/webapps" />
   <property name="install.servlet.dir"
-	    value="${install.dir}/webapps/opennms"/>
+	    value="${install.webapps.dir}/opennms"/>
   <property name="install.share.dir" value="${install.dir}/share"/>
   <property name="install.bin.dir" value="${install.dir}/bin"/>
   <property name="install.postgresql.dir" value="${install.dir}/lib"/>
@@ -365,6 +366,7 @@ your distribution.
     <filter token="install.logs.dir" value="${install.logs.dir}"/>
     <filter token="install.pid.file" value="${install.pid.file}"/>
     <filter token="install.postgresql.dir" value="${install.postgresql.dir}"/>
+    <filter token="install.webapps.dir" value="${install.webapps.dir}"/>
     <filter token="install.servlet.dir" value="${install.servlet.dir}"/>
     <filter token="install.share.dir" value="${install.share.dir}"/>
     <filter token="install.dir" value="${install.dir}"/>
@@ -2005,6 +2007,13 @@ OpenNMS as part of the post-install.
  
  <!-- copy web UI JSPs to the webapp directory -->
  <target name="install.jsp" depends="prep">
+  <mkdir dir="${install.prefix}${install.webapps.dir}"/>
+  <copy todir="${install.prefix}${install.webapps.dir}" filtering="yes"
+	overwrite="${filter.overwrite}">
+     <fileset dir="src/web">
+        <include name="opennms.xml"/>
+     </fileset>
+  </copy>
   <mkdir dir="${install.prefix}${install.servlet.dir}"/>
   <copy todir="${install.prefix}${install.servlet.dir}" filtering="yes"
 	overwrite="${filter.overwrite}">
