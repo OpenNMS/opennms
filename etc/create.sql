@@ -24,16 +24,16 @@
 
 
 drop table assets;
-drop table snmpInterface;
-drop table outages;
-drop table ifServices;
-drop table service;
-drop table ipInterface;
-drop table node;
-drop table distPoller;
-drop table events;
 drop table usersNotified;
 drop table notifications;
+drop table outages;
+drop table ifServices;
+drop table snmpInterface;
+drop table ipInterface;
+drop table node;
+drop table service;
+drop table distPoller;
+drop table events;
 drop table vulnerabilities;
 drop table vulnPlugins;
 drop table serverMap;
