@@ -45,7 +45,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-class StressTest {
+class RrdStresser {
 
     static int currFileNum = 0;
 
@@ -178,7 +178,7 @@ class StressTest {
         rrdInitialize();
 
         print("Loading update file");
-        BufferedReader rdr = new BufferedReader(new InputStreamReader(StressTest.class.getResourceAsStream(UPDATE_FILE)));
+        BufferedReader rdr = new BufferedReader(new InputStreamReader(RrdStresser.class.getResourceAsStream(UPDATE_FILE)));
         List dataList = new LinkedList();
         String line;
         while ((line = rdr.readLine()) != null) {
@@ -214,7 +214,7 @@ class StressTest {
 
                 public void run() {
                     try {
-                        StressTest test = new StressTest();
+                        RrdStresser test = new RrdStresser();
                         test.execute(args);
                     } catch (Exception e) {
                         e.printStackTrace();

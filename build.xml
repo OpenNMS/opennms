@@ -20,6 +20,7 @@ For more information consult the README file included in
 your distribution.
   </description>
 
+	
   <!-- overrride with site-specific settings (first proprety set wins) -->
   <property file="build.properties"/>
  
@@ -319,6 +320,7 @@ your distribution.
     </classpath>
   </taskdef>
 
+
   <!-- PREP target -->
   <target name="prep" depends="platform.check, java.check" unless="prep.done">
     <tstamp/>
@@ -615,7 +617,8 @@ your distribution.
  <target name="all" depends="compile, jar"
 	 description="build everything (except documentation)"/>
  
- <target name="test" depends="junit.compile, test.jsp"/>
+ <target name="test" depends="junit.compile, test.jsp"
+ 	description="compile jsps and run junit tests"/>
 
  <!-- CLEAN targets -->
  <target name="clean" depends="prep">
