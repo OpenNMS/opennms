@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2003 Nov 21: Change the collectServices list from LinkedList to ArrayList.
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -50,7 +51,6 @@ import java.util.TreeMap;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.HashMap;
 
@@ -140,7 +140,7 @@ public final class Collectd
 		m_scheduler = null;
 		m_status    = START_PENDING;
 		m_svcCollectors = Collections.synchronizedMap(new TreeMap());
-		m_collectableServices = Collections.synchronizedList(new LinkedList());
+		m_collectableServices = Collections.synchronizedList(new ArrayList());
 	}
 
 	/** 

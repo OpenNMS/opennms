@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2003 Nov 20: Set up capacity for all the ArrayList for performance gain.
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -70,6 +71,7 @@ import org.opennms.netmgt.config.collectd.*;
 
 /**
  *
+ * @author <a href="mailto:jamesz@blast.com">James Zuo</a>
  * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
@@ -90,6 +92,11 @@ final class BroadcastEventProcessor
 	 * List of CollectableService objects.
 	 */
 	private	List 		m_collectableServices;
+
+        /**
+         *  The initial capacity of the uei list.
+         */
+        private final int       INIT_UEI_CAPACITY = 10;
 	
 	/**
 	 * This constructor is called to initilize the JMS event receiver.
@@ -123,7 +130,7 @@ final class BroadcastEventProcessor
 	{
 		// Create the JMS selector for the ueis this service is interested in
 		//
-		List ueiList = new ArrayList();
+		List ueiList = new ArrayList(INIT_UEI_CAPACITY);
 
 		// nodeGainedService
 		ueiList.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
