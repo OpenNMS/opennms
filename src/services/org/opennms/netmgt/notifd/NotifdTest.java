@@ -36,6 +36,7 @@ package org.opennms.netmgt.notifd;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -50,6 +51,7 @@ import junit.framework.TestCase;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.TimeConverter;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.groups.Group;
@@ -217,6 +219,14 @@ public class NotifdTest extends TestCase {
             "            <vbvalue>loadavg5</vbvalue>\n" + 
             "        </varbind>\n" + 
             "    </notification>" +
+            "    <notification name=\"nodeTimeTest\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/tests/nodeTimeTest</uei>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>NoEscalate</destinationPath>\n" + 
+            "        <text-message>Timestamp: %time%.</text-message>\n" + 
+            "        <subject>time %time%.</subject>\n" + 
+            "        <numeric-message>333-%noticeid%</numeric-message>\n" + 
+            "    </notification>\n" + 
             "</notifications>\n" + 
             "";
     
@@ -530,7 +540,7 @@ public class NotifdTest extends TestCase {
         long interval = computeInterval();
 
         long endTime = anticipateNotificationsForGroup("service ICMP on 192.168.1.1 down.", "InitialGroup", date, interval);
-        
+
         m_eventMgr.sendEventToListeners(svc.createDownEvent(date));
         
         verifyAnticipated(endTime, 500);
@@ -656,6 +666,29 @@ public class NotifdTest extends TestCase {
         
     }
     
+    public void testBug1114() throws Exception {
+        MockService svc = m_network.getService(1, "192.168.1.1", "ICMP");
+        
+        Date date = new Date();
+        
+        long interval = computeInterval();
+
+        String dateString = DateFormat.getDateTimeInstance(DateFormat.FULL,
+        			DateFormat.FULL).format(date);
+        long endTime = anticipateNotificationsForGroup("time " + dateString + ".", "InitialGroup", date, interval);
+
+        //Event event = svc.createDownEvent(date);
+        Event event = MockUtil.createServiceEvent("Test", "uei.opennms.org/tests/nodeTimeTest", svc);
+        
+        String eventTime = EventConstants.formatToString(date);
+        event.setCreationTime(eventTime);
+        event.setTime(eventTime);
+  
+        m_eventMgr.sendEventToListeners(event);
+
+        verifyAnticipated(endTime, 500);
+    }
+    
     public void testRebuildParameterMap() throws Exception {
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
 
@@ -727,10 +760,7 @@ public class NotifdTest extends TestCase {
             };
             m_notificationManager.forEachUserNotification(notifId.intValue(), rp);
 	   
-	    for (Iterator i = expectedResults.iterator(); i.hasNext(); ) {
-		assertTrue(actualResults.remove(i.next()));
-	    }
-	    assertEquals(actualResults.size(), 0);
+            assertEquals(expectedResults, actualResults);
         }
     }
     
@@ -776,7 +806,7 @@ public class NotifdTest extends TestCase {
         
         Collection missingNotifications = m_anticipator.waitForAnticipated(totalWaitTime);
         printNotifications("Missing notifications", missingNotifications);
-        assertEquals("Expected notifications not forthcoming.", 0, missingNotifications.size());
+        assertEquals("Some expected notifications still outstanding.", 0, missingNotifications.size());
         // make sure that we didn't start before we should have
         long now = System.currentTimeMillis();
         MockUtil.println("Expected notifications no sooner than "+lastNotifyTime+", currentTime is "+now);
