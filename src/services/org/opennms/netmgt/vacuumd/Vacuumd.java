@@ -192,29 +192,46 @@ public class Vacuumd implements PausableFiber, Runnable {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance(getClass());
         log.info("Vacuumd scheduling started");
-
+        
         long now = System.currentTimeMillis();
         long period = VacuumdConfigFactory.getInstance().getPeriod();
         
-        log.info("Vacuumd sleeping until time to execute statements");
+        log.info("Vacuumd sleeping until time to execute statements period = "+period);
         
-        long waitTime = Math.max(500L, period/10);
+        long waitTime = 500L;
         
-        while(!m_stopped && ((now - m_startTime) < period)) {
-            try {
-                Thread.sleep(waitTime);
-            } catch (InterruptedException e) {
-                // FIXME: what do I do here?
-            }
-        }
-        log.info("Vacuumd beginning to execute statements");
-        
-        if (!m_stopped) {
-            String[] stmts = VacuumdConfigFactory.getInstance().getStatements();
-            for(int i = 0; i < stmts.length; i++) {
-                runUpdate(stmts[i]);
-            }
+        while(!m_stopped) {
             
+            try {
+                int count = 0;
+                while(!m_stopped && ((now - m_startTime) < period)) {
+                    try {
+                        
+                        if (count % 100 == 0) {
+                            log.debug("Vacuumd: "+(period - now + m_startTime)+" millis remaining to execution.");
+                        }
+                        Thread.sleep(waitTime);
+                        now = System.currentTimeMillis();
+                        count++;
+                    } catch (InterruptedException e) {
+                        // FIXME: what do I do here?
+                    }
+                }
+                log.info("Vacuumd beginning to execute statements");
+                
+                if (!m_stopped) {
+                    String[] stmts = VacuumdConfigFactory.getInstance().getStatements();
+                    for(int i = 0; i < stmts.length; i++) {
+                        runUpdate(stmts[i]);
+                    }
+                    
+                }
+                
+                m_startTime = System.currentTimeMillis();
+                
+            } catch (Exception e) {
+                log.error("Unexpected exception: ", e);
+            }
         }
     }
 
@@ -251,7 +268,7 @@ public class Vacuumd implements PausableFiber, Runnable {
                 if (dbConn != null) try { dbConn.close(); } catch (Exception e) {}                
             }
         }
-
+        
     }
 
 

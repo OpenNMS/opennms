@@ -1,4 +1,4 @@
-<VacuumdConfiguration period="86400" >
+<VacuumdConfiguration period="86400000" >
 	<statement>
 	    <!-- this deletes all the nodes that have been marked as deleted - it relies on cascading deletes -->
 		DELETE FROM node WHERE node.nodeType = 'D';
@@ -11,4 +11,14 @@
 	   <!-- this deletes all the services that have been marked as deleted - it relies on cascading deletes -->
 	   DELETE FROM ifServices WHERE ifServices.status = 'D';
 	</statement>
+    <statement>
+       <!-- this deletes any events that are not associated with outages - Thanks to Chris Fedde for this -->
+	   DELETE FROM events WHERE NOT EXISTS 
+          (SELECT svclosteventid FROM outages WHERE svclosteventid = events.eventid  
+        UNION 
+          SELECT svcregainedeventid FROM outages WHERE svcregainedeventid = events.eventid 
+        UNION 
+          SELECT eventid FROM notifications WHERE eventid = events.eventid) 
+       AND eventtime &lt; now() - interval '1 week';
+    </statement>
 </VacuumdConfiguration>
