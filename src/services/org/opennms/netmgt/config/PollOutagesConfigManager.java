@@ -611,9 +611,14 @@ abstract public class PollOutagesConfigManager implements PollOutagesConfig {
         if (xmlString != null) {
             saveXML(xmlString);
         }
+        
+        update();
 
     }
 
     abstract protected void saveXML(String xmlString) throws IOException, MarshalException, ValidationException;
+    
+    abstract public void update() throws IOException, MarshalException, ValidationException;
+
 
 }

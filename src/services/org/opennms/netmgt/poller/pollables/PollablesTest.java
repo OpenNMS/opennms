@@ -139,6 +139,11 @@ public class PollablesTest extends TestCase {
         public long getCurrentTime() {
             return System.currentTimeMillis();
         }
+
+        public void refresh() {
+            // TODO Auto-generated method stub
+            
+        }
     }
     /*
      * @see TestCase#setUp()

@@ -657,7 +657,7 @@ public final class Poller implements PausableFiber {
     public void refreshServicePackages() {
 	PollableVisitor visitor = new PollableVisitorAdaptor() {
 		public void visitService(PollableService service) {
-			service.refreshPackage();
+			service.refreshConfig();
 		}
 	};
 	m_network.visit(visitor);

@@ -53,8 +53,6 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.config.PollerConfigFactory;
-import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.poller.pollables.PollableInterface;
@@ -558,15 +556,9 @@ final class PollerEventProcessor implements EventListener {
         }
 
 	if(event.getUei().equals(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
-		log.warn("Reloading poller config factory and polloutages config factory");
-		try {
-			PollerConfigFactory.reload();
-			PollOutagesConfigFactory.reload();
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.error("Failed to reload PollerConfigFactory because "+e.getMessage());
-		}
-		getPoller().refreshServicePackages();
+		log.info("Reloading poller config factory and polloutages config factory");
+        
+		scheduledOutagesChangeHandler(log);
 	} else if(!event.hasNodeid()) {
 	    // For all other events, if the event doesn't have a nodeId it can't be processed.
 
@@ -629,6 +621,17 @@ final class PollerEventProcessor implements EventListener {
         } // end single event proces
 
     } // end onEvent()
+
+    private void scheduledOutagesChangeHandler(Category log) {
+        try {
+            getPollerConfig().update();
+            getPoller().getPollOutagesConfig().update();
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("Failed to reload PollerConfigFactory because "+e.getMessage(), e);
+		}
+        getPoller().refreshServicePackages();
+    }
 
     /**
      * Return an id for this event listener

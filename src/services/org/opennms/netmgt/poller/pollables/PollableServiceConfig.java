@@ -75,14 +75,6 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         monitor.initialize(m_service.getNetInterface());
     }
 
-    public void setPackage(Package newPackage) {
-	this.m_pkg=newPackage;
-    }
-
-    public String getPackageName() {
-	return this.m_pkg.getName();
-    }
-
     /**
      * @param pkg
      * @return
@@ -108,11 +100,27 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         ThreadCategory.getInstance(getClass()).debug("Finish polling "+m_service+" using pkg "+m_pkg.getName()+" result ="+result);
         return result;
     }
+    
+        /**
+    * Uses the existing package name to try and re-obtain the package from the poller config factory.
+    * Should be called when the poller config has been reloaded.
+    */
+    public synchronized void refresh() {
+        Package newPkg = m_pollerConfig.getPackage(m_pkg.getName());
+        if (newPkg == null) {
+            ThreadCategory.getInstance(PollableServiceConfig.class).warn("Package named "+m_pkg.getName()+" no longer exists.");
+        }
+        m_pkg = newPkg;
+        m_configService = findService(m_pkg);
+        m_parameters = null;
+        
+    }
+
 
     /**
      * @return
      */
-    private Map getParameters() {
+    private synchronized Map getParameters() {
         if (m_parameters == null) {
             
             m_parameters = createPropertyMap(m_configService);

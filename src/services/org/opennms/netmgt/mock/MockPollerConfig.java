@@ -378,4 +378,9 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         
     }
 
+    public void update() throws IOException, MarshalException, ValidationException {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

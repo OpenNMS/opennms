@@ -40,12 +40,11 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -55,8 +54,8 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
-import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -166,18 +165,17 @@ public final class PollerConfigFactory implements PollerConfig {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
-    private PollerConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
+    private PollerConfigFactory(OpennmsServerConfigFactory serverConfig, Reader reader) throws IOException, MarshalException, ValidationException {
 
-        m_config = (PollerConfiguration) Unmarshaller.unmarshal(PollerConfiguration.class, new InputStreamReader(cfgIn));
-        cfgIn.close();
+        reloadXML(serverConfig, reader);
+    }
 
+    private void reloadXML(OpennmsServerConfigFactory serverConfig, Reader reader) throws MarshalException, ValidationException, IOException {
+        m_config = (PollerConfiguration) Unmarshaller.unmarshal(PollerConfiguration.class, reader);
+        reader.close();
         createUrlIpMap();
-
-        OpennmsServerConfigFactory.init();
-        m_verifyServer = OpennmsServerConfigFactory.getInstance().verifyServer();
-        m_localServer = OpennmsServerConfigFactory.getInstance().getServerName();
-
+        m_verifyServer = serverConfig.verifyServer();
+        m_localServer = serverConfig.getServerName();
         createPackageIpListMap();
         createServiceMonitors();
     }
@@ -199,12 +197,15 @@ public final class PollerConfigFactory implements PollerConfig {
             // to reload, reload() will need to be called
             return;
         }
+        
+        OpennmsServerConfigFactory.init();
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
 
         ThreadCategory.getInstance(PollerConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
 
-        m_singleton = new PollerConfigFactory(cfgFile.getPath());
+        
+        m_singleton = new PollerConfigFactory(OpennmsServerConfigFactory.getInstance(), new FileReader(cfgFile));
 
         m_loaded = true;
     }
@@ -220,10 +221,7 @@ public final class PollerConfigFactory implements PollerConfig {
      *                Thrown if the contents do not match the required schema.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
-        m_singleton = null;
-        m_loaded = false;
-
-        init();
+        getInstance().update();
     }
 
          /**
@@ -246,7 +244,7 @@ public final class PollerConfigFactory implements PollerConfig {
                          fileWriter.close();
                  }
 
-                 reload();
+                 update();
          }
 
 
@@ -801,5 +799,13 @@ public final class PollerConfigFactory implements PollerConfig {
 
     public String getNextOutageIdSql() {
         return m_config.getNextOutageId();
+    }
+
+    public void update() throws IOException, MarshalException, ValidationException {
+        
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
+
+        ThreadCategory.getInstance(PollerConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
+        reloadXML(OpennmsServerConfigFactory.getInstance(), new FileReader(cfgFile));
     }
 }

@@ -41,10 +41,12 @@ package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
@@ -131,10 +133,7 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
      *                Thrown if the contents do not match the required schema.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
-        m_singleton = null;
-        m_loaded = false;
-
-        init();
+        getInstance().update();
     }
 
     /**
@@ -159,6 +158,13 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
         fileWriter.write(xmlString);
         fileWriter.flush();
         fileWriter.close();
-        reload();
+    }
+
+    public void update() throws IOException, MarshalException, ValidationException {
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLL_OUTAGES_CONFIG_FILE_NAME);
+
+        Reader r = new FileReader(cfgFile);
+        setConfig((Outages) Unmarshaller.unmarshal(Outages.class, r));
+        r.close();
     }
 }
