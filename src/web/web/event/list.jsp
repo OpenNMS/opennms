@@ -264,7 +264,7 @@
             </nobr>
           </td>
           <td>
-            <% if(events[i].getNodeId() != 0 ) { %>
+	    <% if(events[i].getNodeId() != 0 && events[i].getNodeLabel()!= null ) { %>
               <% org.opennms.web.event.filter.Filter nodeFilter = new NodeFilter(events[i].getNodeId()); %>             
               <% String[] labels = this.getNodeLabels( events[i].getNodeLabel() ); %>
               <a href="element/node.jsp?node=<%=events[i].getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
