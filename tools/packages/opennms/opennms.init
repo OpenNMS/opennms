@@ -21,6 +21,7 @@ else
 			FUNCTIONS_LOADED=1
 		fi
 	done
+fi
 
 
 if [ "$FUNCTIONS_LOADED" = "0" ]; then
