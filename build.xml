@@ -95,7 +95,7 @@ your distribution.
  <target name="init" unless="init.done">
   <tstamp/>
   <!-- set properties -->
-  <property file="${root.source}/build.properties"/>
+  <property file="build.properties"/>
   <property environment="env"/>
   <property name="install" value="${root.installprefix}${root.install}"/>
   <property name="install.initdir" value="${root.installprefix}${root.install.initdir}"/>
@@ -532,11 +532,11 @@ OpenNMS as part of the post-install.
 
   </echo>
   <copy todir="${install}/lib">
-   <fileset dir="${jar.build.dir}" includes="*.jar" />
-   <fileset dir="${jicmp.build.dir}" includes="*${compile.jniext}*"/>
-   <fileset dir="${jrrd.build.dir}" includes="*${compile.jniext}*"/>
-   <fileset dir="${postgresql.build.dir}" includes="*.${compile.soext}.*"/>
-   <fileset dir="${root.source}/lib">
+   <fileset dir="${build.jar.dir}" includes="*.jar" />
+   <fileset dir="${build.jicmp.dir}" includes="*${compile.jniext}*"/>
+   <fileset dir="${build.jrrd.dir}" includes="*${compile.jniext}*"/>
+   <fileset dir="${build.postgresql.dir}" includes="*.${compile.soext}.*"/>
+   <fileset dir="${build.lib.dir}">
     <patternset refid="lib.jars" />
    </fileset>
    <!-- classpathref="libraries.java.path" -->
