@@ -81,10 +81,10 @@ public class NewUser
 		
 	public NewUser(	String fullName, 
                         String userId, 
-				String passwd,
+				String userPasswd,
 				String confirm, 
-				String comments, 
-				String email, 
+				String userComments, 
+				String userEmail, 
 				String numericSvc, 
 				String numericPin, 
 				String txtSvc,
@@ -93,10 +93,10 @@ public class NewUser
 	{
 		fullname = fullName;
 		user = userId;
-		passwd = passwd;
+		passwd = userPasswd;
 		confirmpasswd = confirm;
-		comments = comments;
-		email = email;
+		comments = userComments;
+		email = userEmail;
 		numsvc = numericSvc;
 		numpin = numericPin;
 		txtsvc = txtSvc;
