@@ -43,7 +43,6 @@ package org.opennms.netmgt.eventd;
 
 import java.util.Enumeration;
 
-import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
@@ -137,8 +136,6 @@ public final class EventExpander {
                                                             // Neighbor Loss
             DEFAULT_TRAP_UEI // generic = 6, Enterprise Specific Trap
     };
-
-    private static DbConnectionFactory m_dbConn;
 
     /**
      * private constructor
@@ -657,7 +654,7 @@ public final class EventExpander {
         
         // reductionKey
         if (event.getReductionKey() != null) {
-            strRet = EventUtil.expandParms(event.getReductionKey(), event, m_dbConn);
+            strRet = EventUtil.expandParms(event.getReductionKey(), event);
             if (strRet != null) {
                 event.setReductionKey(strRet);
                 strRet = null;
@@ -824,18 +821,8 @@ public final class EventExpander {
         } // end fill of event using econf
 
         // do the event parm expansion
-        expandParms(e, m_dbConn);
+        expandParms(e);
 
     } // end expandEvent()
 
-    private static void expandParms(Event e, DbConnectionFactory conn) {
-        m_dbConn = conn;
-        expandParms(e);
-        
-    }
-
-    public static void expandEvent(Event event, DbConnectionFactory dbConnectionFactory) {
-        m_dbConn = dbConnectionFactory;
-        expandEvent(event);
-    }
 }

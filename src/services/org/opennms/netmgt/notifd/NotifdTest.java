@@ -35,7 +35,7 @@ package org.opennms.netmgt.notifd;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat; // XXX 1
+import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.mock.MockInterface;

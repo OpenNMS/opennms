@@ -153,7 +153,7 @@ final class EventHandler implements Runnable {
 
             try {
                 // look up eventconf match and expand event
-                EventExpander.expandEvent(event, m_dbConnectionFactory);
+                EventExpander.expandEvent(event);
 
                 // add to database
                 eventWriter.persistEvent(m_eventLog.getHeader(), event);

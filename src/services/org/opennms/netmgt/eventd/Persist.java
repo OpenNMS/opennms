@@ -584,16 +584,12 @@ class Persist {
         // eventParms
         set(m_insStmt, 11, (event.getParms() != null) ? Parameter.format(event.getParms()) : null);
 
-        /*FIXME: Not sure why this is here... came in from merge of 1.2.1 to head
-         * castor hasn't created the getIfIndex() method and not sure why
-         * this call is here.  Need to check the CVS history.
-         */
-//        // grab the ifIndex out of the parms if it is defined   
-//        if (event.getIfIndex() != null) {
-//            if (event.getParms() != null) {
-//                Parameter.format(event.getParms());
-//            }
-//        }
+        // grab the ifIndex out of the parms if it is defined   
+        if (event.getIfIndex() != null) {
+            if (event.getParms() != null) {
+                Parameter.format(event.getParms());
+            }
+        }
 
         // eventCreateTime
         java.sql.Timestamp eventCreateTime = new java.sql.Timestamp((new java.util.Date()).getTime());

@@ -39,6 +39,7 @@ import java.sql.ResultSet;
 
 import junit.framework.TestCase;
 
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventConfigManager;
@@ -1177,6 +1178,7 @@ public class EventdTest extends TestCase {
         m_eventdConfigMgr = new MockEventConfigManager(MOCK_EVENT_CONFIG);
         m_eventd.setConfigManager(m_eventdConfigMgr);
         m_eventd.setDbConnectionFactory(m_db);
+        DatabaseConnectionFactory.setInstance(m_db);
         
         Reader rdr = new StringReader(MOCK_EVENT_CONF);
         EventConfigurationManager.loadConfiguration(rdr);

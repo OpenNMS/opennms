@@ -428,7 +428,7 @@ public class NotificationsTestCase extends TestCase {
 
     private MockDatabase createDatabase(MockNetwork network) {
         MockDatabase db = new MockDatabase();
-	DatabaseConnectionFactory.setInstance(db);
+        DatabaseConnectionFactory.setInstance(db);
         db.populate(network);
         return db;
     }
@@ -438,16 +438,16 @@ public class NotificationsTestCase extends TestCase {
         network.setCriticalService("ICMP");
         network.addNode(1, "Router");
         network.addInterface("192.168.1.1");
-	network.setIfAlias("dot1 interface alias");
+        network.setIfAlias("dot1 interface alias");
         network.addService("ICMP");
         network.addService("SMTP");
         network.addInterface("192.168.1.2");
-	network.setIfAlias("dot2 interface alias");
+        network.setIfAlias("dot2 interface alias");
         network.addService("ICMP");
         network.addService("SMTP");
         network.addNode(2, "Server");
         network.addInterface("192.168.1.3");
-	network.setIfAlias("dot3 interface alias");
+        network.setIfAlias("dot3 interface alias");
         network.addService("ICMP");
         network.addService("HTTP");
         return network;
