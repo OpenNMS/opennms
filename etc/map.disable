@@ -3,14 +3,18 @@
 # In order to enable access to the maps in OpenNMS
 # move this file to $OPENNMS_HOME/etc/map.enable.
 #
-# Note: The initial generation of the map will use
-# a lot of memory and a lot of CPU. Also, you will
-# need to have a browser that supports SVG. At the
-# moment, only Internet Explorer supports the SVG
-# Plug-in from Adobe:
+# Notes: The initial generation of the map will use
+# a lot of memory and a lot of CPU. 
+#
+# Also, it is best if you have a broswer that 
+# suports SVG. At the moment, only Internet 
+# Explorer supports the SVG Plug-in from Adobe:
 #
 # http://www.adobe.com/svg/viewer/install/?image/svg+xml
 #
 # but it is supposedly possible to build SVG
-# support into Mozilla.
+# support into Mozilla. If you don't have an SVG
+# browser, you can use the PNG format, but the 
+# conversion will use lots of memory and could
+# fail.
 
