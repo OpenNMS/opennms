@@ -54,7 +54,6 @@
 #include <sys/socket.h>
 #if defined(__SOLARIS__) || defined (__FreeBSD__)
 # include <netinet/in_systm.h>
-# endif
 #endif
 #if defined(__DARWIN__) 
 #include <stdint.h>
