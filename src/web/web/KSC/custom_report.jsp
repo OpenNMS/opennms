@@ -227,6 +227,11 @@
                 </table>
             </td> 
         </tr>
+        <tr>
+            <td>
+              Please make sure to save the added graph with the report, as the first save only adds it to the the present view.
+            </td>
+        </tr>
 
     </table>
 
