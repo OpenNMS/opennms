@@ -227,8 +227,8 @@
 
           <td valign="top" width="48%">
             <!-- events list  box -->
-            <% String eventHeader = "<a href='" + URLEncoder.encode("event/list.jsp?filter=node%3D" + nodeId  ) + "'>Recent Events</a>"; %>
-            <% String moreEventsUrl = URLEncoder.encode("event/list.jsp?filter=node=" + nodeId); %>
+            <% String eventHeader = "<a href='" + URLEncoder.encode("event/list?filter=node%3D" + nodeId  ) + "'>Recent Events</a>"; %>
+            <% String moreEventsUrl = URLEncoder.encode("event/list?filter=node%3D" + nodeId); %>
 
             <jsp:include page="/includes/eventlist.jsp" flush="false" >
               <jsp:param name="node" value="<%=nodeId%>" />
