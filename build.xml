@@ -327,7 +327,7 @@ your distribution.
 	   classname="org.apache.tools.ant.taskdefs.optional.castor.SourceGeneratorTask">
     <classpath>
       <pathelement location="${dev.lib.dir}/castorAntTask.jar" />
-      <pathelement location="${dev.lib.dir}/castor-0.9.3.9.jar" />
+      <pathelement location="${packaged.lib.dir}/castor-0.9.3.9.jar" />
         <pathelement location="${dev.lib.dir}/xercesImpl.jar" />
     </classpath>
   </taskdef>
@@ -1327,6 +1327,7 @@ OpenNMS as part of the post-install.
      <path refid="libraries.java.path"/>
      <pathelement location="${dev.lib.dir}/junit.jar"/>
      <pathelement location="${packaged.lib.dir}/hsqldb.jar"/>
+     <pathelement location="${packaged.lib.dir}/SNMP4J.jar"/>
      <pathelement location="${build.classes.dir}"/>
    </classpath>
   </javac>
