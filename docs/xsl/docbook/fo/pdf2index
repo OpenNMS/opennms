@@ -114,7 +114,7 @@ sub rangesort {
     # Make sure roman pages come before arabic ones, otherwise sort them in order
     return -1 if ($apno !~ /^\d+/ && $bpno =~ /^\d+/);
     return  1 if ($apno =~ /^\d+/ && $bpno !~ /^\d+/);
-    return $apno cmp $bpno;
+    return $apno <=> $bpno;
 }
 
 sub rangelen {

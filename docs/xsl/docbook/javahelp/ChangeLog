@@ -1,3 +1,7 @@
+2004-10-22  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* javahelp.xsl: Added fix for &trade; being output when processed with Xalan.  That entity is not supported in Javahelp 2.0.
+
 2003-12-21  Jirka Kosek <kosek@users.sourceforge.net>
 
 	* javahelp.xsl: Fixed bug #864018

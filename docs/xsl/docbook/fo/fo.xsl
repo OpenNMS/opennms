@@ -4,7 +4,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: fo.xsl,v 1.5 2002/03/14 18:43:34 nwalsh Exp $
+     $Id: fo.xsl,v 1.6 2004/08/09 00:31:05 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -56,6 +56,15 @@
       </fo:inline>
     </xsl:otherwise>
   </xsl:choose>
+</xsl:template>
+
+<xsl:template name="href.target">
+  <xsl:param name="context" select="."/>
+  <xsl:param name="object" select="."/>
+  <xsl:text>#</xsl:text>
+  <xsl:call-template name="object.id">
+    <xsl:with-param name="object" select="$object"/>
+  </xsl:call-template>
 </xsl:template>
 
 </xsl:stylesheet>

@@ -4,7 +4,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
 
 <!-- ********************************************************************
-     $Id: autoidx.xsl,v 1.19 2003/11/30 19:42:23 bobstayton Exp $
+     $Id: autoidx.xsl,v 1.25 2004/11/17 20:57:18 kosek Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -43,7 +43,19 @@
 <xsl:template name="generate-index">
   <xsl:param name="scope" select="(ancestor::book|/)[last()]"/>
 
-  <xsl:variable name="terms" select="//indexterm[count(.|key('letter',                                                 translate(substring(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), 1, 1),                                                           'abcdefghijklmnopqrstuvwxyz',                                                           'ABCDEFGHIJKLMNOPQRSTUVWXYZ'))[count(ancestor::node()|$scope) = count(ancestor::node())][1]) = 1                                     and not(@class = 'endofrange')]"/>
+  <xsl:variable name="role">
+    <xsl:if test="$index.on.role != 0">
+      <xsl:value-of select="@role"/>
+    </xsl:if>
+  </xsl:variable>
+
+  <xsl:variable name="type">
+    <xsl:if test="$index.on.type != 0">
+      <xsl:value-of select="@type"/>
+    </xsl:if>
+  </xsl:variable>
+
+  <xsl:variable name="terms" select="//indexterm[count(.|key('letter',                                                 translate(substring(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), 1, 1),                                                           'abcdefghijklmnopqrstuvwxyz',                                                           'ABCDEFGHIJKLMNOPQRSTUVWXYZ'))[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))][1]) = 1                                     and not(@class = 'endofrange')]"/>
 
   <xsl:variable name="alphabetical" select="$terms[contains(concat('abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'),                                         substring(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), 1, 1))]"/>
 
@@ -57,16 +69,20 @@
           </xsl:call-template>
         </h3>
         <dl>
-          <xsl:apply-templates select="$others[count(.|key('primary',                                        normalize-space(concat(primary/@sortas, primary[not(@sortas)])))[count(ancestor::node()|$scope) = count(ancestor::node())][1]) = 1]" mode="index-symbol-div">
+          <xsl:apply-templates select="$others[count(.|key('primary',                                        normalize-space(concat(primary/@sortas, primary[not(@sortas)])))[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))][1]) = 1]" mode="index-symbol-div">
             <xsl:with-param name="scope" select="$scope"/>
+            <xsl:with-param name="role" select="$role"/>
+            <xsl:with-param name="type" select="$type"/>
             <xsl:sort select="translate(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
           </xsl:apply-templates>
         </dl>
       </div>
     </xsl:if>
 
-    <xsl:apply-templates select="$alphabetical[count(.|key('letter',                                  translate(substring(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), 1, 1),                                            'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ'))[count(ancestor::node()|$scope) = count(ancestor::node())][1]) = 1]" mode="index-div">
+    <xsl:apply-templates select="$alphabetical[count(.|key('letter',                                  translate(substring(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), 1, 1),                                            'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ'))[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))][1]) = 1]" mode="index-div">
       <xsl:with-param name="scope" select="$scope"/>
+      <xsl:with-param name="role" select="$role"/>
+      <xsl:with-param name="type" select="$type"/>
       <xsl:sort select="translate(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
     </xsl:apply-templates>
   </div>
@@ -74,11 +90,13 @@
 
 <xsl:template match="indexterm" mode="index-div">
   <xsl:param name="scope" select="."/>
+  <xsl:param name="role" select="''"/>
+  <xsl:param name="type" select="''"/>
 
   <xsl:variable name="key" select="translate(substring(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), 1, 1),'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
 
   <!-- Make sure that we don't generate a div if there are no terms in scope -->
-  <xsl:if test="key('letter', $key)[count(ancestor::node()|$scope) = count(ancestor::node())]                 [count(.|key('primary', normalize-space(concat(primary/@sortas, primary[not(@sortas)])))[count(ancestor::node()|$scope) = count(ancestor::node())][1]) = 1]">
+  <xsl:if test="key('letter', $key)[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))]                 [count(.|key('primary', normalize-space(concat(primary/@sortas, primary[not(@sortas)])))[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))][1]) = 1]">
     <div class="indexdiv">
       <xsl:if test="contains(concat('abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'), $key)">
         <h3>
@@ -86,8 +104,10 @@
         </h3>
       </xsl:if>
       <dl>
-        <xsl:apply-templates select="key('letter', $key)[count(ancestor::node()|$scope) = count(ancestor::node())]                                      [count(.|key('primary', normalize-space(concat(primary/@sortas, primary[not(@sortas)])))[count(ancestor::node()|$scope) = count(ancestor::node())][1])=1]" mode="index-primary">
+        <xsl:apply-templates select="key('letter', $key)[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))]                                      [count(.|key('primary', normalize-space(concat(primary/@sortas, primary[not(@sortas)])))[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))][1])=1]" mode="index-primary">
           <xsl:with-param name="scope" select="$scope"/>
+          <xsl:with-param name="role" select="$role"/>
+          <xsl:with-param name="type" select="$type"/>
           <xsl:sort select="translate(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
         </xsl:apply-templates>
       </dl>
@@ -97,31 +117,41 @@
 
 <xsl:template match="indexterm" mode="index-symbol-div">
   <xsl:param name="scope" select="/"/>
+  <xsl:param name="role" select="''"/>
+  <xsl:param name="type" select="''"/>
 
   <xsl:variable name="key" select="translate(substring(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), 1, 1),                                              'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
 
-  <xsl:apply-templates select="key('letter', $key)                                [count(.|key('primary', normalize-space(concat(primary/@sortas, primary[not(@sortas)])))[count(ancestor::node()|$scope) = count(ancestor::node())][1]) = 1]" mode="index-primary">
+  <xsl:apply-templates select="key('letter', $key)                                [count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))][count(.|key('primary', normalize-space(concat(primary/@sortas, primary[not(@sortas)])))[1]) = 1]" mode="index-primary">
     <xsl:with-param name="scope" select="$scope"/>
+    <xsl:with-param name="role" select="$role"/>
+    <xsl:with-param name="type" select="$type"/>
     <xsl:sort select="translate(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
   </xsl:apply-templates>
 </xsl:template>
 
 <xsl:template match="indexterm" mode="index-primary">
   <xsl:param name="scope" select="."/>
+  <xsl:param name="role" select="''"/>
+  <xsl:param name="type" select="''"/>
 
   <xsl:variable name="key" select="normalize-space(concat(primary/@sortas, primary[not(@sortas)]))"/>
-  <xsl:variable name="refs" select="key('primary', $key)[count(ancestor::node()|$scope) = count(ancestor::node())]"/>
+  <xsl:variable name="refs" select="key('primary', $key)[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))]"/>
   <dt>
     <xsl:value-of select="primary"/>
-    <xsl:for-each select="$refs[generate-id() = generate-id(key('primary-section', concat($key, &#34; &#34;, generate-id((ancestor-or-self::set                      |ancestor-or-self::book                      |ancestor-or-self::part                      |ancestor-or-self::reference                      |ancestor-or-self::partintro                      |ancestor-or-self::chapter                      |ancestor-or-self::appendix                      |ancestor-or-self::preface                      |ancestor-or-self::article                      |ancestor-or-self::section                      |ancestor-or-self::sect1                      |ancestor-or-self::sect2                      |ancestor-or-self::sect3                      |ancestor-or-self::sect4                      |ancestor-or-self::sect5                      |ancestor-or-self::refentry                      |ancestor-or-self::refsect1                      |ancestor-or-self::refsect2                      |ancestor-or-self::refsect3                      |ancestor-or-self::simplesect                      |ancestor-or-self::bibliography                      |ancestor-or-self::glossary                      |ancestor-or-self::index                      |ancestor-or-self::webpage)[last()])))[count(ancestor::node()|$scope) = count(ancestor::node())][1])]">
+    <xsl:for-each select="$refs[generate-id() = generate-id(key('primary-section', concat($key, &#34; &#34;, generate-id((ancestor-or-self::set                      |ancestor-or-self::book                      |ancestor-or-self::part                      |ancestor-or-self::reference                      |ancestor-or-self::partintro                      |ancestor-or-self::chapter                      |ancestor-or-self::appendix                      |ancestor-or-self::preface                      |ancestor-or-self::article                      |ancestor-or-self::section                      |ancestor-or-self::sect1                      |ancestor-or-self::sect2                      |ancestor-or-self::sect3                      |ancestor-or-self::sect4                      |ancestor-or-self::sect5                      |ancestor-or-self::refentry                      |ancestor-or-self::refsect1                      |ancestor-or-self::refsect2                      |ancestor-or-self::refsect3                      |ancestor-or-self::simplesect                      |ancestor-or-self::bibliography                      |ancestor-or-self::glossary                      |ancestor-or-self::index                      |ancestor-or-self::webpage)[last()])))[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))][1])]">
       <xsl:apply-templates select="." mode="reference">
         <xsl:with-param name="scope" select="$scope"/>
+        <xsl:with-param name="role" select="$role"/>
+        <xsl:with-param name="type" select="$type"/>
       </xsl:apply-templates>
     </xsl:for-each>
 
     <xsl:if test="$refs[not(secondary)]/*[self::see]">
-      <xsl:apply-templates select="$refs[generate-id() = generate-id(key('see', concat(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), &#34; &#34;, &#34; &#34;, &#34; &#34;, see))[count(ancestor::node()|$scope) = count(ancestor::node())][1])]" mode="index-see">
+      <xsl:apply-templates select="$refs[generate-id() = generate-id(key('see', concat(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), &#34; &#34;, &#34; &#34;, &#34; &#34;, see))[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))][1])]" mode="index-see">
         <xsl:with-param name="scope" select="$scope"/>
+        <xsl:with-param name="role" select="$role"/>
+        <xsl:with-param name="type" select="$type"/>
         <xsl:sort select="translate(see, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
       </xsl:apply-templates>
     </xsl:if>
@@ -129,12 +159,16 @@
   <xsl:if test="$refs/secondary or $refs[not(secondary)]/*[self::seealso]">
     <dd>
       <dl>
-        <xsl:apply-templates select="$refs[generate-id() = generate-id(key('see-also', concat(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), &#34; &#34;, &#34; &#34;, &#34; &#34;, seealso))[count(ancestor::node()|$scope) = count(ancestor::node())][1])]" mode="index-seealso">
+        <xsl:apply-templates select="$refs[generate-id() = generate-id(key('see-also', concat(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), &#34; &#34;, &#34; &#34;, &#34; &#34;, seealso))[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))][1])]" mode="index-seealso">
           <xsl:with-param name="scope" select="$scope"/>
+          <xsl:with-param name="role" select="$role"/>
+          <xsl:with-param name="type" select="$type"/>
           <xsl:sort select="translate(seealso, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
         </xsl:apply-templates>
-        <xsl:apply-templates select="$refs[secondary and count(.|key('secondary', concat($key, &#34; &#34;, normalize-space(concat(secondary/@sortas, secondary[not(@sortas)]))))[count(ancestor::node()|$scope) = count(ancestor::node())][1]) = 1]" mode="index-secondary">
+        <xsl:apply-templates select="$refs[secondary and count(.|key('secondary', concat($key, &#34; &#34;, normalize-space(concat(secondary/@sortas, secondary[not(@sortas)]))))[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))][1]) = 1]" mode="index-secondary">
           <xsl:with-param name="scope" select="$scope"/>
+          <xsl:with-param name="role" select="$role"/>
+          <xsl:with-param name="type" select="$type"/>
           <xsl:sort select="translate(normalize-space(concat(secondary/@sortas, secondary[not(@sortas)])), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
         </xsl:apply-templates>
       </dl>
@@ -144,20 +178,26 @@
 
 <xsl:template match="indexterm" mode="index-secondary">
   <xsl:param name="scope" select="."/>
+  <xsl:param name="role" select="''"/>
+  <xsl:param name="type" select="''"/>
 
   <xsl:variable name="key" select="concat(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), &#34; &#34;, normalize-space(concat(secondary/@sortas, secondary[not(@sortas)])))"/>
-  <xsl:variable name="refs" select="key('secondary', $key)[count(ancestor::node()|$scope) = count(ancestor::node())]"/>
+  <xsl:variable name="refs" select="key('secondary', $key)[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))]"/>
   <dt>
     <xsl:value-of select="secondary"/>
-    <xsl:for-each select="$refs[generate-id() = generate-id(key('secondary-section', concat($key, &#34; &#34;, generate-id((ancestor-or-self::set                      |ancestor-or-self::book                      |ancestor-or-self::part                      |ancestor-or-self::reference                      |ancestor-or-self::partintro                      |ancestor-or-self::chapter                      |ancestor-or-self::appendix                      |ancestor-or-self::preface                      |ancestor-or-self::article                      |ancestor-or-self::section                      |ancestor-or-self::sect1                      |ancestor-or-self::sect2                      |ancestor-or-self::sect3                      |ancestor-or-self::sect4                      |ancestor-or-self::sect5                      |ancestor-or-self::refentry                      |ancestor-or-self::refsect1                      |ancestor-or-self::refsect2                      |ancestor-or-self::refsect3                      |ancestor-or-self::simplesect                      |ancestor-or-self::bibliography                      |ancestor-or-self::glossary                      |ancestor-or-self::index                      |ancestor-or-self::webpage)[last()])))[count(ancestor::node()|$scope) = count(ancestor::node())][1])]">
+    <xsl:for-each select="$refs[generate-id() = generate-id(key('secondary-section', concat($key, &#34; &#34;, generate-id((ancestor-or-self::set                      |ancestor-or-self::book                      |ancestor-or-self::part                      |ancestor-or-self::reference                      |ancestor-or-self::partintro                      |ancestor-or-self::chapter                      |ancestor-or-self::appendix                      |ancestor-or-self::preface                      |ancestor-or-self::article                      |ancestor-or-self::section                      |ancestor-or-self::sect1                      |ancestor-or-self::sect2                      |ancestor-or-self::sect3                      |ancestor-or-self::sect4                      |ancestor-or-self::sect5                      |ancestor-or-self::refentry                      |ancestor-or-self::refsect1                      |ancestor-or-self::refsect2                      |ancestor-or-self::refsect3                      |ancestor-or-self::simplesect                      |ancestor-or-self::bibliography                      |ancestor-or-self::glossary                      |ancestor-or-self::index                      |ancestor-or-self::webpage)[last()])))[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))][1])]">
       <xsl:apply-templates select="." mode="reference">
         <xsl:with-param name="scope" select="$scope"/>
+        <xsl:with-param name="role" select="$role"/>
+        <xsl:with-param name="type" select="$type"/>
       </xsl:apply-templates>
     </xsl:for-each>
 
     <xsl:if test="$refs[not(tertiary)]/*[self::see]">
-      <xsl:apply-templates select="$refs[generate-id() = generate-id(key('see', concat(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), &#34; &#34;, normalize-space(concat(secondary/@sortas, secondary[not(@sortas)])), &#34; &#34;, &#34; &#34;, see))[count(ancestor::node()|$scope) = count(ancestor::node())][1])]" mode="index-see">
+      <xsl:apply-templates select="$refs[generate-id() = generate-id(key('see', concat(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), &#34; &#34;, normalize-space(concat(secondary/@sortas, secondary[not(@sortas)])), &#34; &#34;, &#34; &#34;, see))[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))][1])]" mode="index-see">
         <xsl:with-param name="scope" select="$scope"/>
+        <xsl:with-param name="role" select="$role"/>
+        <xsl:with-param name="type" select="$type"/>
         <xsl:sort select="translate(see, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
       </xsl:apply-templates>
     </xsl:if>
@@ -165,12 +205,16 @@
   <xsl:if test="$refs/tertiary or $refs[not(tertiary)]/*[self::seealso]">
     <dd>
       <dl>
-        <xsl:apply-templates select="$refs[generate-id() = generate-id(key('see-also', concat(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), &#34; &#34;, normalize-space(concat(secondary/@sortas, secondary[not(@sortas)])), &#34; &#34;, &#34; &#34;, seealso))[count(ancestor::node()|$scope) = count(ancestor::node())][1])]" mode="index-seealso">
+        <xsl:apply-templates select="$refs[generate-id() = generate-id(key('see-also', concat(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), &#34; &#34;, normalize-space(concat(secondary/@sortas, secondary[not(@sortas)])), &#34; &#34;, &#34; &#34;, seealso))[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))][1])]" mode="index-seealso">
           <xsl:with-param name="scope" select="$scope"/>
+          <xsl:with-param name="role" select="$role"/>
+          <xsl:with-param name="type" select="$type"/>
           <xsl:sort select="translate(seealso, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
         </xsl:apply-templates>
-        <xsl:apply-templates select="$refs[tertiary and count(.|key('tertiary', concat($key, &#34; &#34;, normalize-space(concat(tertiary/@sortas, tertiary[not(@sortas)]))))[count(ancestor::node()|$scope) = count(ancestor::node())][1]) = 1]" mode="index-tertiary">
+        <xsl:apply-templates select="$refs[tertiary and count(.|key('tertiary', concat($key, &#34; &#34;, normalize-space(concat(tertiary/@sortas, tertiary[not(@sortas)]))))[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))][1]) = 1]" mode="index-tertiary">
           <xsl:with-param name="scope" select="$scope"/>
+          <xsl:with-param name="role" select="$role"/>
+          <xsl:with-param name="type" select="$type"/>
           <xsl:sort select="translate(normalize-space(concat(tertiary/@sortas, tertiary[not(@sortas)])), 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
         </xsl:apply-templates>
       </dl>
@@ -180,20 +224,26 @@
 
 <xsl:template match="indexterm" mode="index-tertiary">
   <xsl:param name="scope" select="."/>
+  <xsl:param name="role" select="''"/>
+  <xsl:param name="type" select="''"/>
 
   <xsl:variable name="key" select="concat(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), &#34; &#34;, normalize-space(concat(secondary/@sortas, secondary[not(@sortas)])), &#34; &#34;, normalize-space(concat(tertiary/@sortas, tertiary[not(@sortas)])))"/>
-  <xsl:variable name="refs" select="key('tertiary', $key)[count(ancestor::node()|$scope) = count(ancestor::node())]"/>
+  <xsl:variable name="refs" select="key('tertiary', $key)[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))]"/>
   <dt>
     <xsl:value-of select="tertiary"/>
-    <xsl:for-each select="$refs[generate-id() = generate-id(key('tertiary-section', concat($key, &#34; &#34;, generate-id((ancestor-or-self::set                      |ancestor-or-self::book                      |ancestor-or-self::part                      |ancestor-or-self::reference                      |ancestor-or-self::partintro                      |ancestor-or-self::chapter                      |ancestor-or-self::appendix                      |ancestor-or-self::preface                      |ancestor-or-self::article                      |ancestor-or-self::section                      |ancestor-or-self::sect1                      |ancestor-or-self::sect2                      |ancestor-or-self::sect3                      |ancestor-or-self::sect4                      |ancestor-or-self::sect5                      |ancestor-or-self::refentry                      |ancestor-or-self::refsect1                      |ancestor-or-self::refsect2                      |ancestor-or-self::refsect3                      |ancestor-or-self::simplesect                      |ancestor-or-self::bibliography                      |ancestor-or-self::glossary                      |ancestor-or-self::index                      |ancestor-or-self::webpage)[last()])))[count(ancestor::node()|$scope) = count(ancestor::node())][1])]">
+    <xsl:for-each select="$refs[generate-id() = generate-id(key('tertiary-section', concat($key, &#34; &#34;, generate-id((ancestor-or-self::set                      |ancestor-or-self::book                      |ancestor-or-self::part                      |ancestor-or-self::reference                      |ancestor-or-self::partintro                      |ancestor-or-self::chapter                      |ancestor-or-self::appendix                      |ancestor-or-self::preface                      |ancestor-or-self::article                      |ancestor-or-self::section                      |ancestor-or-self::sect1                      |ancestor-or-self::sect2                      |ancestor-or-self::sect3                      |ancestor-or-self::sect4                      |ancestor-or-self::sect5                      |ancestor-or-self::refentry                      |ancestor-or-self::refsect1                      |ancestor-or-self::refsect2                      |ancestor-or-self::refsect3                      |ancestor-or-self::simplesect                      |ancestor-or-self::bibliography                      |ancestor-or-self::glossary                      |ancestor-or-self::index                      |ancestor-or-self::webpage)[last()])))[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))][1])]">
       <xsl:apply-templates select="." mode="reference">
         <xsl:with-param name="scope" select="$scope"/>
+        <xsl:with-param name="role" select="$role"/>
+        <xsl:with-param name="type" select="$type"/>
       </xsl:apply-templates>
     </xsl:for-each>
 
     <xsl:if test="$refs/see">
-      <xsl:apply-templates select="$refs[generate-id() = generate-id(key('see', concat(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), &#34; &#34;, normalize-space(concat(secondary/@sortas, secondary[not(@sortas)])), &#34; &#34;, normalize-space(concat(tertiary/@sortas, tertiary[not(@sortas)])), &#34; &#34;, see))[count(ancestor::node()|$scope) = count(ancestor::node())][1])]" mode="index-see">
+      <xsl:apply-templates select="$refs[generate-id() = generate-id(key('see', concat(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), &#34; &#34;, normalize-space(concat(secondary/@sortas, secondary[not(@sortas)])), &#34; &#34;, normalize-space(concat(tertiary/@sortas, tertiary[not(@sortas)])), &#34; &#34;, see))[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))][1])]" mode="index-see">
         <xsl:with-param name="scope" select="$scope"/>
+        <xsl:with-param name="role" select="$role"/>
+        <xsl:with-param name="type" select="$type"/>
         <xsl:sort select="translate(see, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
       </xsl:apply-templates>
     </xsl:if>
@@ -201,13 +251,11 @@
   <xsl:if test="$refs/seealso">
     <dd>
       <dl>
-        <xsl:apply-templates select="$refs[generate-id() = generate-id(key('see', concat(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), &#34; &#34;, normalize-space(concat(secondary/@sortas, secondary[not(@sortas)])), &#34; &#34;, normalize-space(concat(tertiary/@sortas, tertiary[not(@sortas)])), &#34; &#34;, see))[count(ancestor::node()|$scope) = count(ancestor::node())][1])]" mode="index-see">
+        <xsl:apply-templates select="$refs[generate-id() = generate-id(key('see-also', concat(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), &#34; &#34;, normalize-space(concat(secondary/@sortas, secondary[not(@sortas)])), &#34; &#34;, normalize-space(concat(tertiary/@sortas, tertiary[not(@sortas)])), &#34; &#34;, seealso))[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))][1])]" mode="index-seealso">
           <xsl:with-param name="scope" select="$scope"/>
-          <xsl:sort select="translate(see, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
-        </xsl:apply-templates>
-        <xsl:apply-templates select="$refs[generate-id() = generate-id(key('see-also', concat(normalize-space(concat(primary/@sortas, primary[not(@sortas)])), &#34; &#34;, normalize-space(concat(secondary/@sortas, secondary[not(@sortas)])), &#34; &#34;, normalize-space(concat(tertiary/@sortas, tertiary[not(@sortas)])), &#34; &#34;, seealso))[count(ancestor::node()|$scope) = count(ancestor::node())][1])]" mode="index-seealso">
-          <xsl:with-param name="scope" select="$scope"/>
-	  <xsl:sort select="translate(seealso, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
+          <xsl:with-param name="role" select="$role"/>
+          <xsl:with-param name="type" select="$type"/>
+          <xsl:sort select="translate(seealso, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
         </xsl:apply-templates>
       </dl>
     </dd>
@@ -216,6 +264,8 @@
 
 <xsl:template match="indexterm" mode="reference">
   <xsl:param name="scope" select="."/>
+  <xsl:param name="role" select="''"/>
+  <xsl:param name="type" select="''"/>
   <xsl:param name="separator" select="', '"/>
 
   <xsl:value-of select="$separator"/>
@@ -223,13 +273,22 @@
     <xsl:when test="@zone and string(@zone)">
       <xsl:call-template name="reference">
         <xsl:with-param name="zones" select="normalize-space(@zone)"/>
-          <xsl:with-param name="scope" select="$scope"/>
+        <xsl:with-param name="scope" select="$scope"/>
+        <xsl:with-param name="role" select="$role"/>
+        <xsl:with-param name="type" select="$type"/>
       </xsl:call-template>
     </xsl:when>
     <xsl:otherwise>
       <a>
         <xsl:variable name="title">
-          <xsl:apply-templates select="(ancestor-or-self::set                      |ancestor-or-self::book                      |ancestor-or-self::part                      |ancestor-or-self::reference                      |ancestor-or-self::partintro                      |ancestor-or-self::chapter                      |ancestor-or-self::appendix                      |ancestor-or-self::preface                      |ancestor-or-self::article                      |ancestor-or-self::section                      |ancestor-or-self::sect1                      |ancestor-or-self::sect2                      |ancestor-or-self::sect3                      |ancestor-or-self::sect4                      |ancestor-or-self::sect5                      |ancestor-or-self::refentry                      |ancestor-or-self::refsect1                      |ancestor-or-self::refsect2                      |ancestor-or-self::refsect3                      |ancestor-or-self::simplesect                      |ancestor-or-self::bibliography                      |ancestor-or-self::glossary                      |ancestor-or-self::index                      |ancestor-or-self::webpage)[last()]" mode="title.markup"/>
+          <xsl:choose>
+            <xsl:when test="(ancestor-or-self::set                      |ancestor-or-self::book                      |ancestor-or-self::part                      |ancestor-or-self::reference                      |ancestor-or-self::partintro                      |ancestor-or-self::chapter                      |ancestor-or-self::appendix                      |ancestor-or-self::preface                      |ancestor-or-self::article                      |ancestor-or-self::section                      |ancestor-or-self::sect1                      |ancestor-or-self::sect2                      |ancestor-or-self::sect3                      |ancestor-or-self::sect4                      |ancestor-or-self::sect5                      |ancestor-or-self::refentry                      |ancestor-or-self::refsect1                      |ancestor-or-self::refsect2                      |ancestor-or-self::refsect3                      |ancestor-or-self::simplesect                      |ancestor-or-self::bibliography                      |ancestor-or-self::glossary                      |ancestor-or-self::index                      |ancestor-or-self::webpage)[last()]/titleabbrev and $index.prefer.titleabbrev != 0">
+              <xsl:apply-templates select="(ancestor-or-self::set                      |ancestor-or-self::book                      |ancestor-or-self::part                      |ancestor-or-self::reference                      |ancestor-or-self::partintro                      |ancestor-or-self::chapter                      |ancestor-or-self::appendix                      |ancestor-or-self::preface                      |ancestor-or-self::article                      |ancestor-or-self::section                      |ancestor-or-self::sect1                      |ancestor-or-self::sect2                      |ancestor-or-self::sect3                      |ancestor-or-self::sect4                      |ancestor-or-self::sect5                      |ancestor-or-self::refentry                      |ancestor-or-self::refsect1                      |ancestor-or-self::refsect2                      |ancestor-or-self::refsect3                      |ancestor-or-self::simplesect                      |ancestor-or-self::bibliography                      |ancestor-or-self::glossary                      |ancestor-or-self::index                      |ancestor-or-self::webpage)[last()]" mode="titleabbrev.markup"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:apply-templates select="(ancestor-or-self::set                      |ancestor-or-self::book                      |ancestor-or-self::part                      |ancestor-or-self::reference                      |ancestor-or-self::partintro                      |ancestor-or-self::chapter                      |ancestor-or-self::appendix                      |ancestor-or-self::preface                      |ancestor-or-self::article                      |ancestor-or-self::section                      |ancestor-or-self::sect1                      |ancestor-or-self::sect2                      |ancestor-or-self::sect3                      |ancestor-or-self::sect4                      |ancestor-or-self::sect5                      |ancestor-or-self::refentry                      |ancestor-or-self::refsect1                      |ancestor-or-self::refsect2                      |ancestor-or-self::refsect3                      |ancestor-or-self::simplesect                      |ancestor-or-self::bibliography                      |ancestor-or-self::glossary                      |ancestor-or-self::index                      |ancestor-or-self::webpage)[last()]" mode="title.markup"/>
+            </xsl:otherwise>
+          </xsl:choose>
         </xsl:variable>
 
         <xsl:attribute name="href">
@@ -241,9 +300,11 @@
         <xsl:value-of select="$title"/> <!-- text only -->
       </a>
 
-      <xsl:if test="key('endofrange', @id)[count(ancestor::node()|$scope) = count(ancestor::node())]">
-        <xsl:apply-templates select="key('endofrange', @id)[count(ancestor::node()|$scope) = count(ancestor::node())][last()]" mode="reference">
+      <xsl:if test="key('endofrange', @id)[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))]">
+        <xsl:apply-templates select="key('endofrange', @id)[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))][last()]" mode="reference">
           <xsl:with-param name="scope" select="$scope"/>
+          <xsl:with-param name="role" select="$role"/>
+          <xsl:with-param name="type" select="$type"/>
           <xsl:with-param name="separator" select="'-'"/>
         </xsl:apply-templates>
       </xsl:if>
@@ -253,12 +314,14 @@
 
 <xsl:template name="reference">
   <xsl:param name="scope" select="."/>
+  <xsl:param name="role" select="''"/>
+  <xsl:param name="type" select="''"/>
   <xsl:param name="zones"/>
 
   <xsl:choose>
     <xsl:when test="contains($zones, ' ')">
       <xsl:variable name="zone" select="substring-before($zones, ' ')"/>
-      <xsl:variable name="target" select="key('sections', $zone)[count(ancestor::node()|$scope) = count(ancestor::node())]"/>
+      <xsl:variable name="target" select="key('sections', $zone)[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))]"/>
 
       <a>
         <xsl:attribute name="href">
@@ -272,11 +335,13 @@
       <xsl:call-template name="reference">
         <xsl:with-param name="zones" select="substring-after($zones, ' ')"/>
         <xsl:with-param name="scope" select="$scope"/>
+        <xsl:with-param name="role" select="$role"/>
+        <xsl:with-param name="type" select="$type"/>
       </xsl:call-template>
     </xsl:when>
     <xsl:otherwise>
       <xsl:variable name="zone" select="$zones"/>
-      <xsl:variable name="target" select="key('sections', $zone)[count(ancestor::node()|$scope) = count(ancestor::node())]"/>
+      <xsl:variable name="target" select="key('sections', $zone)[count(ancestor::node()|$scope) = count(ancestor::node())                 and ($role = @role or $type = @type or                 (string-length($role) = 0 and string-length($type) = 0))]"/>
 
       <a>
         <xsl:attribute name="href">
@@ -292,6 +357,8 @@
 
 <xsl:template match="indexterm" mode="index-see">
   <xsl:param name="scope" select="."/>
+  <xsl:param name="role" select="''"/>
+  <xsl:param name="type" select="''"/>
 
   <xsl:text> (</xsl:text>
   <xsl:call-template name="gentext">
@@ -304,16 +371,21 @@
 
 <xsl:template match="indexterm" mode="index-seealso">
   <xsl:param name="scope" select="."/>
+  <xsl:param name="role" select="''"/>
+  <xsl:param name="type" select="''"/>
 
-  <dt>
-  <xsl:text>(</xsl:text>
-  <xsl:call-template name="gentext">
-    <xsl:with-param name="key" select="'seealso'"/>
-  </xsl:call-template>
-  <xsl:text> </xsl:text>
-  <xsl:value-of select="seealso"/>
-  <xsl:text>)</xsl:text>
-  </dt>
+  <xsl:for-each select="seealso">
+    <xsl:sort select="translate(., 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
+    <dt>
+    <xsl:text>(</xsl:text>
+    <xsl:call-template name="gentext">
+      <xsl:with-param name="key" select="'seealso'"/>
+    </xsl:call-template>
+    <xsl:text> </xsl:text>
+    <xsl:value-of select="."/>
+    <xsl:text>)</xsl:text>
+    </dt>
+  </xsl:for-each>
 </xsl:template>
 
 <xsl:template match="*" mode="index-title-content">

@@ -4,11 +4,12 @@
                 xmlns:sverb="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.Verbatim"
                 xmlns:xverb="com.nwalsh.xalan.Verbatim"
                 xmlns:lxslt="http://xml.apache.org/xslt"
-                exclude-result-prefixes="sverb xverb lxslt"
+                xmlns:exsl="http://exslt.org/common"
+                exclude-result-prefixes="sverb xverb lxslt exsl"
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: verbatim.xsl,v 1.12 2004/02/26 17:50:19 nwalsh Exp $
+     $Id: verbatim.xsl,v 1.15 2004/10/20 09:42:37 kosek Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -44,22 +45,35 @@
 
   <xsl:choose>
     <xsl:when test="$shade.verbatim != 0">
-      <fo:block wrap-option='no-wrap'
+      <fo:block id="{$id}"
                 white-space-collapse='false'
-		white-space-treatment='preserve'
+                white-space-treatment='preserve'
                 linefeed-treatment='preserve'
                 xsl:use-attribute-sets="monospace.verbatim.properties shade.verbatim.style">
-
-        <xsl:copy-of select="$content"/>
+        <xsl:choose>
+          <xsl:when test="$hyphenate.verbatim != 0 and function-available('exsl:node-set')">
+            <xsl:apply-templates select="exsl:node-set($content)" mode="hyphenate.verbatim"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:copy-of select="$content"/>
+          </xsl:otherwise>
+        </xsl:choose>
       </fo:block>
     </xsl:when>
     <xsl:otherwise>
-      <fo:block wrap-option='no-wrap'
+      <fo:block id="{$id}"
                 white-space-collapse='false'
-		white-space-treatment='preserve'
+                white-space-treatment='preserve'
                 linefeed-treatment="preserve"
                 xsl:use-attribute-sets="monospace.verbatim.properties">
-        <xsl:copy-of select="$content"/>
+        <xsl:choose>
+          <xsl:when test="$hyphenate.verbatim != 0 and function-available('exsl:node-set')">
+            <xsl:apply-templates select="exsl:node-set($content)" mode="hyphenate.verbatim"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:copy-of select="$content"/>
+          </xsl:otherwise>
+        </xsl:choose>
       </fo:block>
     </xsl:otherwise>
   </xsl:choose>
@@ -67,6 +81,8 @@
 
 <xsl:template match="literallayout">
   <xsl:param name="suppress-numbers" select="'0'"/>
+
+  <xsl:variable name="id"><xsl:call-template name="object.id"/></xsl:variable>
 
   <xsl:variable name="content">
     <xsl:choose>
@@ -90,9 +106,9 @@
     <xsl:when test="@class='monospaced'">
       <xsl:choose>
         <xsl:when test="$shade.verbatim != 0">
-          <fo:block wrap-option='no-wrap'
+          <fo:block id="{$id}"
                     white-space-collapse='false'
-		    white-space-treatment='preserve'
+                    white-space-treatment='preserve'
                     linefeed-treatment="preserve"
                     xsl:use-attribute-sets="monospace.verbatim.properties shade.verbatim.style">
 
@@ -100,9 +116,9 @@
           </fo:block>
         </xsl:when>
         <xsl:otherwise>
-          <fo:block wrap-option='no-wrap'
+          <fo:block id="{$id}"
                     white-space-collapse='false'
-		    white-space-treatment='preserve'
+                    white-space-treatment='preserve'
                     linefeed-treatment="preserve"
                     xsl:use-attribute-sets="monospace.verbatim.properties">
             <xsl:copy-of select="$content"/>
@@ -113,9 +129,10 @@
     <xsl:otherwise>
       <xsl:choose>
         <xsl:when test="$shade.verbatim != 0">
-          <fo:block wrap-option='no-wrap'
+          <fo:block id="{$id}"
+                    wrap-option='no-wrap'
                     white-space-collapse='false'
-		    white-space-treatment='preserve'
+                    white-space-treatment='preserve'
                     text-align='start'
                     linefeed-treatment="preserve"
                     xsl:use-attribute-sets="verbatim.properties shade.verbatim.style">
@@ -123,9 +140,10 @@
           </fo:block>
         </xsl:when>
         <xsl:otherwise>
-          <fo:block wrap-option='no-wrap'
+          <fo:block id="{$id}"
+                    wrap-option='no-wrap'
                     white-space-collapse='false'
-		    white-space-treatment='preserve'
+                    white-space-treatment='preserve'
                     text-align='start'
                     linefeed-treatment="preserve"
                     xsl:use-attribute-sets="verbatim.properties">
@@ -160,7 +178,7 @@
 
   <fo:block wrap-option='no-wrap'
             white-space-collapse='false'
-	    white-space-treatment='preserve'
+            white-space-treatment='preserve'
             linefeed-treatment="preserve"
             xsl:use-attribute-sets="verbatim.properties">
     <xsl:copy-of select="$content"/>
@@ -356,5 +374,41 @@
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
+
+<!-- ======================================================================== -->
+
+<xsl:template match="node()|@*" mode="hyphenate.verbatim">
+  <xsl:copy>
+    <xsl:apply-templates select="node()|@*" mode="hyphenate.verbatim"/>
+  </xsl:copy>
+</xsl:template>
+
+<xsl:template match="text()" mode="hyphenate.verbatim" priority="2">
+  <xsl:call-template name="hyphenate.verbatim">
+    <xsl:with-param name="content" select="."/>
+  </xsl:call-template>
+</xsl:template>
+
+<xsl:template name="hyphenate.verbatim">
+  <xsl:param name="content"/>
+  <xsl:variable name="head" select="substring($content, 1, 1)"/>
+  <xsl:variable name="tail" select="substring($content, 2)"/>
+  <xsl:choose>
+    <!-- Place soft-hyphen after space or non-breakable space. -->
+    <xsl:when test="$head = ' ' or $head = '&#160;'">
+      <xsl:text>&#160;</xsl:text>
+      <xsl:text>&#x00AD;</xsl:text>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$head"/>
+    </xsl:otherwise>
+  </xsl:choose>
+  <xsl:if test="$tail">
+    <xsl:call-template name="hyphenate.verbatim">
+      <xsl:with-param name="content" select="$tail"/>
+    </xsl:call-template>
+  </xsl:if>
+</xsl:template>
+
 
 </xsl:stylesheet>

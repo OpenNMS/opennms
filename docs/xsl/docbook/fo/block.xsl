@@ -4,7 +4,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: block.xsl,v 1.18 2003/09/27 22:01:56 nwalsh Exp $
+     $Id: block.xsl,v 1.20 2004/09/19 00:41:35 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -146,11 +146,9 @@
     <xsl:if test="@id">
       <xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
     </xsl:if>
-    <xsl:call-template name="formal.object.heading">
-      <xsl:with-param name="title">
-        <xsl:apply-templates select="." mode="title.markup"/>
-      </xsl:with-param>
-    </xsl:call-template>
+    <xsl:if test="title">
+      <xsl:call-template name="formal.object.heading"/>
+    </xsl:if>
     <xsl:apply-templates/>
   </fo:block>
 </xsl:template>

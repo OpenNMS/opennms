@@ -1,3 +1,7 @@
+2004-10-24  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* Makefile: Build the Saxon8 extensions
+
 2002-11-17  Norman Walsh <nwalsh@users.sourceforge.net>
 
 	* build.xml: New file.

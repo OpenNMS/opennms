@@ -4,7 +4,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:suwl="http://nwalsh.com/xslt/ext/com.nwalsh.saxon.UnwrapLinks" xmlns="http://www.w3.org/1999/xhtml" exclude-result-prefixes="xlink suwl" version="1.0">
 
 <!-- ********************************************************************
-     $Id: inline.xsl,v 1.36 2004/01/29 13:16:27 nwalsh Exp $
+     $Id: inline.xsl,v 1.40 2004/11/08 10:22:13 xmldoc Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -116,14 +116,14 @@
       </xsl:with-param>
     </xsl:call-template>
   </xsl:param>
-  <tt class="{local-name(.)}">
+  <code class="{local-name(.)}">
     <xsl:if test="@dir">
       <xsl:attribute name="dir">
         <xsl:value-of select="@dir"/>
       </xsl:attribute>
     </xsl:if>
     <xsl:copy-of select="$content"/>
-  </tt>
+  </code>
 </xsl:template>
 
 <xsl:template name="inline.boldseq">
@@ -143,15 +143,15 @@
       </xsl:attribute>
     </xsl:if>
 
-    <!-- don't put <b> inside figure, example, or table titles -->
+    <!-- don't put <strong> inside figure, example, or table titles -->
     <xsl:choose>
       <xsl:when test="local-name(..) = 'title'                       and (local-name(../..) = 'figure'                       or local-name(../..) = 'example'                       or local-name(../..) = 'table')">
         <xsl:copy-of select="$content"/>
       </xsl:when>
       <xsl:otherwise>
-        <b class="{local-name(.)}">
+        <strong class="{local-name(.)}">
           <xsl:copy-of select="$content"/>
-        </b>
+        </strong>
       </xsl:otherwise>
     </xsl:choose>
   </span>
@@ -166,14 +166,14 @@
       </xsl:with-param>
     </xsl:call-template>
   </xsl:param>
-  <i class="{local-name(.)}">
+  <em class="{local-name(.)}">
     <xsl:if test="@dir">
       <xsl:attribute name="dir">
         <xsl:value-of select="@dir"/>
       </xsl:attribute>
     </xsl:if>
     <xsl:copy-of select="$content"/>
-  </i>
+  </em>
 </xsl:template>
 
 <xsl:template name="inline.boldmonoseq">
@@ -185,30 +185,30 @@
       </xsl:with-param>
     </xsl:call-template>
   </xsl:param>
-  <!-- don't put <b> inside figure, example, or table titles -->
-  <!-- or other titles that may already be represented with <b>'s. -->
+  <!-- don't put <strong> inside figure, example, or table titles -->
+  <!-- or other titles that may already be represented with <strong>'s. -->
   <xsl:choose>
     <xsl:when test="local-name(..) = 'title'                     and (local-name(../..) = 'figure'                          or local-name(../..) = 'example'                          or local-name(../..) = 'table'                          or local-name(../..) = 'formalpara')">
-      <tt class="{local-name(.)}">
+      <code class="{local-name(.)}">
         <xsl:if test="@dir">
           <xsl:attribute name="dir">
             <xsl:value-of select="@dir"/>
           </xsl:attribute>
         </xsl:if>
         <xsl:copy-of select="$content"/>
-      </tt>
+      </code>
     </xsl:when>
     <xsl:otherwise>
-      <b class="{local-name(.)}">
-        <tt>
+      <strong class="{local-name(.)}">
+        <code>
           <xsl:if test="@dir">
             <xsl:attribute name="dir">
               <xsl:value-of select="@dir"/>
             </xsl:attribute>
           </xsl:if>
           <xsl:copy-of select="$content"/>
-        </tt>
-      </b>
+        </code>
+      </strong>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
@@ -222,16 +222,16 @@
       </xsl:with-param>
     </xsl:call-template>
   </xsl:param>
-  <i class="{local-name(.)}">
-    <tt>
+  <em class="{local-name(.)}">
+    <code>
       <xsl:if test="@dir">
         <xsl:attribute name="dir">
           <xsl:value-of select="@dir"/>
         </xsl:attribute>
       </xsl:if>
       <xsl:copy-of select="$content"/>
-    </tt>
-  </i>
+    </code>
+  </em>
 </xsl:template>
 
 <xsl:template name="inline.superscriptseq">
@@ -479,6 +479,10 @@
   <xsl:call-template name="inline.monoseq"/>
 </xsl:template>
 
+<xsl:template match="package">
+  <xsl:call-template name="inline.charseq"/>
+</xsl:template>
+
 <xsl:template match="parameter">
   <xsl:call-template name="inline.italicmonoseq"/>
 </xsl:template>
@@ -595,7 +599,7 @@
     <xsl:call-template name="simple.xlink">
       <xsl:with-param name="content">
         <xsl:choose>
-          <xsl:when test="@role = 'bold'">
+          <xsl:when test="@role = 'bold' or @role='strong'">
             <!-- backwards compatibility: make bold into b elements, but -->
             <!-- don't put bold inside figure, example, or table titles -->
             <xsl:choose>
@@ -603,7 +607,7 @@
                 <xsl:apply-templates/>
               </xsl:when>
               <xsl:otherwise>
-                <b><xsl:apply-templates/></b>
+                <strong><xsl:apply-templates/></strong>
               </xsl:otherwise>
             </xsl:choose>
           </xsl:when>
@@ -680,9 +684,9 @@
 </xsl:template>
 
 <xsl:template match="lineannotation">
-  <i class="{local-name(.)}">
+  <em class="{local-name(.)}">
     <xsl:call-template name="inline.charseq"/>
-  </i>
+  </em>
 </xsl:template>
 
 <xsl:template match="superscript">
@@ -889,7 +893,7 @@
     </xsl:choose>
   </xsl:param>
 
-  <tt class="sgmltag-{$class}">
+  <code class="sgmltag-{$class}">
     <xsl:choose>
       <xsl:when test="$class='attribute'">
         <xsl:apply-templates/>
@@ -949,7 +953,7 @@
         <xsl:apply-templates/>
       </xsl:otherwise>
     </xsl:choose>
-  </tt>
+  </code>
 </xsl:template>
 
 <xsl:template match="email">
@@ -1049,9 +1053,15 @@
 
 <!-- ==================================================================== -->
 
+<xsl:template match="comment[parent::answer|parent::appendix|parent::article|parent::bibliodiv|                                   parent::bibliography|parent::blockquote|parent::caution|parent::chapter|                                   parent::glossary|parent::glossdiv|parent::important|parent::index|                                   parent::indexdiv|parent::listitem|parent::note|parent::orderedlist|                                   parent::partintro|parent::preface|parent::procedure|parent::qandadiv|                                   parent::qandaset|parent::question|parent::refentry|parent::refnamediv|                                   parent::refsect1|parent::refsect2|parent::refsect3|parent::refsection|                                   parent::refsynopsisdiv|parent::sect1|parent::sect2|parent::sect3|parent::sect4|                                   parent::sect5|parent::section|parent::setindex|parent::sidebar|                                   parent::simplesect|parent::taskprerequisites|parent::taskrelated|                                   parent::tasksummary|parent::warning]|remark[parent::answer|parent::appendix|parent::article|parent::bibliodiv|                                   parent::bibliography|parent::blockquote|parent::caution|parent::chapter|                                   parent::glossary|parent::glossdiv|parent::important|parent::index|                                   parent::indexdiv|parent::listitem|parent::note|parent::orderedlist|                                   parent::partintro|parent::preface|parent::procedure|parent::qandadiv|                                   parent::qandaset|parent::question|parent::refentry|parent::refnamediv|                                   parent::refsect1|parent::refsect2|parent::refsect3|parent::refsection|                                   parent::refsynopsisdiv|parent::sect1|parent::sect2|parent::sect3|parent::sect4|                                   parent::sect5|parent::section|parent::setindex|parent::sidebar|                                   parent::simplesect|parent::taskprerequisites|parent::taskrelated|                                   parent::tasksummary|parent::warning]">
+  <xsl:if test="$show.comments != 0">
+    <p class="remark"><i><xsl:call-template name="inline.charseq"/></i></p>
+  </xsl:if>
+</xsl:template>
+
 <xsl:template match="comment|remark">
   <xsl:if test="$show.comments != 0">
-    <i><xsl:call-template name="inline.charseq"/></i>
+    <em><xsl:call-template name="inline.charseq"/></em>
   </xsl:if>
 </xsl:template>
 

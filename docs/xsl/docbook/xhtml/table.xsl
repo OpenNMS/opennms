@@ -6,7 +6,7 @@
 <xsl:include href="../common/table.xsl"/>
 
 <!-- ********************************************************************
-     $Id: table.xsl,v 1.33 2004/01/29 12:33:15 nwalsh Exp $
+     $Id: table.xsl,v 1.34 2004/08/06 08:18:24 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -209,7 +209,7 @@
       </xsl:attribute>
     </xsl:if>
 
-    <xsl:if test="../@pgwide=1">
+    <xsl:if test="../@pgwide=1 or local-name(.) = 'entrytbl'">
       <xsl:attribute name="width">100%</xsl:attribute>
     </xsl:if>
 

@@ -1,8 +1,10 @@
 <?xml version='1.0'?>
 <!DOCTYPE l:i18n SYSTEM "l10n.dtd" [
 <!ENTITY af SYSTEM "af.xml">
+<!ENTITY ar SYSTEM "ar.xml">
 <!ENTITY bg SYSTEM "bg.xml">
 <!ENTITY bn SYSTEM "bn.xml">
+<!ENTITY bs SYSTEM "bs.xml">
 <!ENTITY ca SYSTEM "ca.xml">
 <!ENTITY cs SYSTEM "cs.xml">
 <!ENTITY da SYSTEM "da.xml">
@@ -15,6 +17,7 @@
 <!ENTITY fi SYSTEM "fi.xml">
 <!ENTITY fr SYSTEM "fr.xml">
 <!ENTITY he SYSTEM "he.xml">
+<!ENTITY hr SYSTEM "hr.xml">
 <!ENTITY hu SYSTEM "hu.xml">
 <!ENTITY id SYSTEM "id.xml">
 <!ENTITY it SYSTEM "it.xml">
@@ -45,8 +48,10 @@
 ]>
 <l:i18n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0">
 &af;
+&ar;
 &bg;
 &bn;
+&bs;
 &ca;
 &cs;
 &da;
@@ -59,6 +64,7 @@
 &fi;
 &fr;
 &he;
+&hr;
 &hu;
 &id;
 &it;

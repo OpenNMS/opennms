@@ -6,7 +6,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: xref.xsl,v 1.45 2003/12/30 18:41:06 bobstayton Exp $
+     $Id: xref.xsl,v 1.51 2004/09/24 20:47:49 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -14,11 +14,6 @@
      and other information.
 
      ******************************************************************** -->
-
-<!-- Create keys for quickly looking up olink targets -->
-<xsl:key name="targetdoc-key" match="document" use="@targetdoc" />
-<xsl:key name="targetptr-key"  match="div|obj"
-         use="concat(ancestor::document/@targetdoc, '/', @targetptr)" />
 
 <!-- ==================================================================== -->
 
@@ -97,11 +92,11 @@
   </xsl:choose>
 
   <!-- Add standard page reference? -->
-  <xsl:if test="not(starts-with(normalize-space(@xrefstyle), 'select:') != '' 
+  <xsl:if test="not(starts-with(normalize-space(@xrefstyle), 'select:') 
                 and (contains(@xrefstyle, 'page')
                      or contains(@xrefstyle, 'Page')))
                 and ( $insert.xref.page.number = 'yes' 
-		   or $insert.xref.page.number = '1')
+                   or $insert.xref.page.number = '1')
                 or local-name($target) = 'para'">
     <fo:basic-link internal-destination="{@linkend}"
                    xsl:use-attribute-sets="xref.properties">
@@ -151,13 +146,17 @@
 <xsl:template match="*" mode="xref-to">
   <xsl:param name="referrer"/>
   <xsl:param name="xrefstyle"/>
+  <xsl:param name="verbose" select="1"/>
 
-  <xsl:message>
-    <xsl:text>Don't know what gentext to create for xref to: "</xsl:text>
-    <xsl:value-of select="name(.)"/>
-    <xsl:text>"</xsl:text>
-  </xsl:message>
-  <xsl:text>???</xsl:text>
+
+  <xsl:if test="$verbose != 0">
+    <xsl:message>
+      <xsl:text>Don't know what gentext to create for xref to: "</xsl:text>
+      <xsl:value-of select="name(.)"/>
+      <xsl:text>"</xsl:text>
+    </xsl:message>
+    <xsl:text>???</xsl:text>
+  </xsl:if>
 </xsl:template>
 
 <xsl:template match="title" mode="xref-to">
@@ -192,12 +191,14 @@
               mode="xref-to">
   <xsl:param name="referrer"/>
   <xsl:param name="xrefstyle"/>
+  <xsl:param name="verbose" select="1"/>
 
   <!-- catch-all for things with (possibly optional) titles -->
   <xsl:apply-templates select="." mode="object.xref.markup">
     <xsl:with-param name="purpose" select="'xref'"/>
     <xsl:with-param name="xrefstyle" select="$xrefstyle"/>
     <xsl:with-param name="referrer" select="$referrer"/>
+    <xsl:with-param name="verbose" select="$verbose"/>
   </xsl:apply-templates>
 </xsl:template>
 
@@ -229,11 +230,13 @@
 <xsl:template match="procedure" mode="xref-to">
   <xsl:param name="referrer"/>
   <xsl:param name="xrefstyle"/>
+  <xsl:param name="verbose"/>
 
   <xsl:apply-templates select="." mode="object.xref.markup">
     <xsl:with-param name="purpose" select="'xref'"/>
     <xsl:with-param name="xrefstyle" select="$xrefstyle"/>
     <xsl:with-param name="referrer" select="$referrer"/>
+    <xsl:with-param name="verbose" select="$verbose"/>
   </xsl:apply-templates>
 </xsl:template>
 
@@ -375,11 +378,13 @@
 <xsl:template match="listitem" mode="xref-to">
   <xsl:param name="referrer"/>
   <xsl:param name="xrefstyle"/>
+  <xsl:param name="verbose" select="1"/>
 
   <xsl:apply-templates select="." mode="object.xref.markup">
     <xsl:with-param name="purpose" select="'xref'"/>
     <xsl:with-param name="xrefstyle" select="$xrefstyle"/>
     <xsl:with-param name="referrer" select="$referrer"/>
+    <xsl:with-param name="verbose" select="$verbose"/>
   </xsl:apply-templates>
 </xsl:template>
 
@@ -412,22 +417,26 @@
 <xsl:template match="qandaset" mode="xref-to">
   <xsl:param name="referrer"/>
   <xsl:param name="xrefstyle"/>
+  <xsl:param name="verbose" select="1"/>
 
   <xsl:apply-templates select="." mode="object.xref.markup">
     <xsl:with-param name="purpose" select="'xref'"/>
     <xsl:with-param name="xrefstyle" select="$xrefstyle"/>
     <xsl:with-param name="referrer" select="$referrer"/>
+    <xsl:with-param name="verbose" select="$verbose"/>
   </xsl:apply-templates>
 </xsl:template>
 
 <xsl:template match="qandadiv" mode="xref-to">
   <xsl:param name="referrer"/>
   <xsl:param name="xrefstyle"/>
+  <xsl:param name="verbose" select="1"/>
 
   <xsl:apply-templates select="." mode="object.xref.markup">
     <xsl:with-param name="purpose" select="'xref'"/>
     <xsl:with-param name="xrefstyle" select="$xrefstyle"/>
     <xsl:with-param name="referrer" select="$referrer"/>
+    <xsl:with-param name="verbose" select="$verbose"/>
   </xsl:apply-templates>
 </xsl:template>
 
@@ -546,6 +555,7 @@
 <xsl:template match="para" mode="xref-to">
   <xsl:param name="referrer"/>
   <xsl:param name="xrefstyle"/>
+  <xsl:param name="verbose"/>
 
   <xsl:variable name="context" select="(ancestor::simplesect
                                        |ancestor::section
@@ -571,7 +581,9 @@
                                        |ancestor::listitem
                                        |ancestor::varlistentry)[last()]"/>
 
-  <xsl:apply-templates select="$context" mode="xref-to"/>
+  <xsl:apply-templates select="$context" mode="xref-to">
+    <xsl:with-param name="verbose" select="$verbose"/>
+  </xsl:apply-templates>
 <!--
   <xsl:apply-templates select="." mode="object.xref.markup">
     <xsl:with-param name="purpose" select="'xref'"/>
@@ -659,11 +671,12 @@
     <!-- yes, show the URI -->
     <xsl:choose>
       <xsl:when test="$ulink.footnotes != 0 and not(ancestor::footnote)">
-	<xsl:text>&#xA0;</xsl:text>
         <fo:footnote>
           <xsl:call-template name="ulink.footnote.number"/>
           <fo:footnote-body font-family="{$body.fontset}"
-                            font-size="{$footnote.font.size}">
+                            font-size="{$footnote.font.size}"
+                            font-weight="normal"
+                            font-style="normal">
             <fo:block>
               <xsl:call-template name="ulink.footnote.number"/>
               <xsl:text> </xsl:text>
@@ -688,13 +701,30 @@
 </xsl:template>
 
 <xsl:template name="ulink.footnote.number">
-  <fo:inline font-size="90%">
-    <!-- FIXME: this isn't going to be perfect! -->
-    <xsl:text>[</xsl:text>
-    <xsl:number level="any"
-                from="chapter|appendix|preface|article|refentry"
-                format="{$ulink.footnote.number.format}"/>
-    <xsl:text>]</xsl:text>
+  <fo:inline xsl:use-attribute-sets="superscript.properties">
+    <xsl:choose>
+      <xsl:when test="$fop.extensions != 0">
+        <xsl:attribute name="vertical-align">super</xsl:attribute>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:attribute name="baseline-shift">super</xsl:attribute>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:variable name="fnum">
+      <!-- FIXME: list in @from is probably not complete -->
+      <xsl:number level="any" 
+                  from="chapter|appendix|preface|article|refentry|bibliography" 
+                  count="footnote[not(@label)][not(ancestor::tgroup)]|ulink[node()][@url != .][not(ancestor::footnote)]" 
+                  format="1"/>
+    </xsl:variable>
+    <xsl:choose>
+      <xsl:when test="string-length($footnote.number.symbols) &gt;= $fnum">
+        <xsl:value-of select="substring($footnote.number.symbols, $fnum, 1)"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:number value="$fnum" format="{$footnote.number.format}"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </fo:inline>
 </xsl:template>
 
@@ -718,151 +748,217 @@
   </xsl:choose>
 </xsl:template>
 
-
-<xsl:template match="olink">
-  <xsl:param name="target.database"
-      select="document($target.database.document, /)"/>
+<xsl:template match="olink" name="olink">
+  <xsl:call-template name="anchor"/>
 
   <xsl:variable name="localinfo" select="@localinfo"/>
 
-  <!-- Olink that points to internal id can be a link -->
-  <xsl:variable name="linkend">
-    <xsl:choose>
-      <xsl:when test="@targetdoc and not(@targetptr)" >
-        <xsl:message>Olink missing @targetptr attribute value</xsl:message>
-      </xsl:when>
-      <xsl:when test="not(@targetdoc) and @targetptr" >
-        <xsl:message>Olink missing @targetdoc attribute value</xsl:message>
-      </xsl:when>
-      <xsl:when test="@targetdoc and @targetptr">
-        <xsl:if test="$current.docid = @targetdoc">
-          <xsl:if test="id(@targetptr)">
-            <xsl:value-of select="@targetptr"/>
-          </xsl:if>
-        </xsl:if>
-      </xsl:when>
-    </xsl:choose>
-  </xsl:variable>
-
   <xsl:choose>
-    <xsl:when test="$linkend != ''">
-      <fo:basic-link internal-destination="{$linkend}"
-                   xsl:use-attribute-sets="xref.properties">
-        <xsl:call-template name="olink.hottext">
+    <!-- olinks resolved by stylesheet and target database -->
+    <xsl:when test="@targetdoc or @targetptr" >
+      <xsl:variable name="targetdoc.att" select="@targetdoc"/>
+      <xsl:variable name="targetptr.att" select="@targetptr"/>
+
+      <xsl:variable name="olink.lang">
+        <xsl:call-template name="l10n.language">
+          <xsl:with-param name="xref-context" select="true()"/>
+        </xsl:call-template>
+      </xsl:variable>
+    
+      <xsl:variable name="target.database.filename">
+        <xsl:call-template name="select.target.database">
+          <xsl:with-param name="targetdoc.att" select="$targetdoc.att"/>
+          <xsl:with-param name="targetptr.att" select="$targetptr.att"/>
+          <xsl:with-param name="olink.lang" select="$olink.lang"/>
+        </xsl:call-template>
+      </xsl:variable>
+    
+      <xsl:variable name="target.database" 
+          select="document($target.database.filename, /)"/>
+    
+      <xsl:if test="$olink.debug != 0">
+        <xsl:message>
+          <xsl:text>Olink debug: root element of target.database is '</xsl:text>
+          <xsl:value-of select="local-name($target.database/*[1])"/>
+          <xsl:text>'.</xsl:text>
+        </xsl:message>
+      </xsl:if>
+    
+      <xsl:variable name="olink.key">
+        <xsl:call-template name="select.olink.key">
+          <xsl:with-param name="targetdoc.att" select="$targetdoc.att"/>
+          <xsl:with-param name="targetptr.att" select="$targetptr.att"/>
+          <xsl:with-param name="olink.lang" select="$olink.lang"/>
           <xsl:with-param name="target.database" select="$target.database"/>
         </xsl:call-template>
-      </fo:basic-link>
-    </xsl:when>
-    <xsl:otherwise>
-      <xsl:call-template name="olink.hottext">
-        <xsl:with-param name="target.database" select="$target.database"/>
-      </xsl:call-template>
-
-      <!-- Append other document title if appropriate -->
-      <xsl:if test="@targetdoc and @targetptr and $olink.doctitle != 0
-                  and $current.docid != '' and $current.docid != @targetdoc">
-        <xsl:variable name="doctitle">
-          <xsl:variable name="seek.targetdoc" select="@targetdoc"/>
-          <xsl:for-each select="$target.database" >
-            <xsl:value-of select="key('targetdoc-key', $seek.targetdoc)/div[1]/ttl" />
-          </xsl:for-each>
-        </xsl:variable>
-        <xsl:if test="$doctitle != ''">
-          <xsl:text> (</xsl:text><xsl:value-of select="$doctitle"/><xsl:text>)</xsl:text>
-        </xsl:if>
+      </xsl:variable>
+    
+      <xsl:if test="string-length($olink.key) = 0">
+        <xsl:message>
+          <xsl:text>Error: unresolved olink: </xsl:text>
+          <xsl:text>targetdoc/targetptr = '</xsl:text>
+          <xsl:value-of select="$targetdoc.att"/>
+          <xsl:text>/</xsl:text>
+          <xsl:value-of select="$targetptr.att"/>
+          <xsl:text>'.</xsl:text>
+        </xsl:message>
       </xsl:if>
-    </xsl:otherwise>
-  </xsl:choose>
-</xsl:template>
 
+      <xsl:variable name="href">
+        <xsl:call-template name="make.olink.href">
+          <xsl:with-param name="olink.key" select="$olink.key"/>
+          <xsl:with-param name="target.database" select="$target.database"/>
+        </xsl:call-template>
+      </xsl:variable>
 
-<xsl:template name="olink.hottext">
-  <xsl:param name="target.database"/>
+      <!-- Olink that points to internal id can be a link -->
+      <xsl:variable name="linkend">
+        <xsl:call-template name="olink.as.linkend">
+          <xsl:with-param name="olink.key" select="$olink.key"/>
+          <xsl:with-param name="olink.lang" select="$olink.lang"/>
+          <xsl:with-param name="target.database" select="$target.database"/>
+        </xsl:call-template>
+      </xsl:variable>
 
-  <xsl:choose>
-    <!-- If it has elements or text (not just PI or comment) -->
-    <xsl:when test="child::text() or child::*">
-      <xsl:apply-templates/>
-    </xsl:when>
-    <xsl:when test="@targetdoc and @targetptr">
-      <!-- Get the xref text for this record -->
-      <xsl:variable name="seek.targetdoc" select="@targetdoc"/>
-      <xsl:variable name="seek.targetptr" select="@targetptr"/>
-      <xsl:variable name="xref.text" >
-        <xsl:for-each select="$target.database" >
-          <xsl:value-of select="key('targetptr-key', concat($seek.targetdoc, '/', $seek.targetptr))/xreftext"/>
-        </xsl:for-each>
+      <xsl:variable name="hottext">
+        <xsl:call-template name="olink.hottext">
+          <xsl:with-param name="olink.key" select="$olink.key"/>
+          <xsl:with-param name="olink.lang" select="$olink.lang"/>
+          <xsl:with-param name="target.database" select="$target.database"/>
+        </xsl:call-template>
+      </xsl:variable>
+
+      <xsl:variable name="olink.docname.citation">
+        <xsl:call-template name="olink.document.citation">
+          <xsl:with-param name="olink.key" select="$olink.key"/>
+          <xsl:with-param name="target.database" select="$target.database"/>
+          <xsl:with-param name="olink.lang" select="$olink.lang"/>
+        </xsl:call-template>
+      </xsl:variable>
+
+      <xsl:variable name="olink.page.citation">
+        <xsl:call-template name="olink.page.citation">
+          <xsl:with-param name="olink.key" select="$olink.key"/>
+          <xsl:with-param name="target.database" select="$target.database"/>
+          <xsl:with-param name="olink.lang" select="$olink.lang"/>
+          <xsl:with-param name="linkend" select="$linkend"/>
+        </xsl:call-template>
       </xsl:variable>
 
       <xsl:choose>
-        <xsl:when test="$use.local.olink.style != 0">
-          <!-- Get the element name and lang for this targetptr -->
-          <xsl:variable name="element" >
-            <xsl:for-each select="$target.database" >
-              <xsl:value-of select="key('targetptr-key', concat($seek.targetdoc, '/', $seek.targetptr))/@element"/>
-            </xsl:for-each>
-          </xsl:variable>
-
-          <xsl:variable name="lang">
-            <xsl:variable name="candidate">
-              <xsl:for-each select="$target.database" >
-                <xsl:value-of select="key('targetptr-key', concat($seek.targetdoc, '/', $seek.targetptr))/@lang"/>
-              </xsl:for-each>
-            </xsl:variable>
-            <xsl:choose>
-              <xsl:when test="$candidate != ''">
-                <xsl:value-of select="$candidate"/>
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:value-of select="'en'"/>
-              </xsl:otherwise>
-            </xsl:choose>
-          </xsl:variable>
-          <xsl:variable name="template">
-            <xsl:call-template name="gentext.template">
-              <xsl:with-param name="context" select="'title'"/>
-              <xsl:with-param name="name" select="$element"/>
-              <xsl:with-param name="lang" select="$lang"/>
-            </xsl:call-template>
-          </xsl:variable>
-          <xsl:call-template name="substitute-markup">
-            <xsl:with-param name="template" select="$template"/>
-            <xsl:with-param name="title">
-              <xsl:for-each select="$target.database" >
-                <xsl:value-of select="key('targetptr-key', concat($seek.targetdoc, '/', $seek.targetptr))/ttl"/>
-              </xsl:for-each>
-            </xsl:with-param>
-            <xsl:with-param name="label">
-              <xsl:for-each select="$target.database" >
-                <xsl:value-of select="key('targetptr-key', concat($seek.targetdoc, '/', $seek.targetptr))/@number"/>
-              </xsl:for-each>
-            </xsl:with-param>
-          </xsl:call-template>
+        <xsl:when test="$linkend != ''">
+          <fo:basic-link internal-destination="{$linkend}"
+                       xsl:use-attribute-sets="xref.properties">
+            <xsl:copy-of select="$hottext"/>
+            <xsl:copy-of select="$olink.page.citation"/>
+          </fo:basic-link>
         </xsl:when>
-        <xsl:when test="$xref.text !=''">
-          <xsl:value-of select="$xref.text"/>
+        <xsl:when test="$href != ''">
+          <xsl:choose>
+            <xsl:when test="$xep.extensions != 0">
+              <fo:basic-link external-destination="url({$href})"
+                             xsl:use-attribute-sets="olink.properties">
+                <xsl:copy-of select="$hottext"/>
+              </fo:basic-link>
+              <xsl:copy-of select="$olink.page.citation"/>
+              <xsl:copy-of select="$olink.docname.citation"/>
+            </xsl:when>
+            <xsl:when test="$axf.extensions != 0">
+              <fo:basic-link external-destination="{$href}"
+                             xsl:use-attribute-sets="xref.properties"
+                             show-destination="replace">
+                <xsl:copy-of select="$hottext"/>
+              </fo:basic-link>
+              <xsl:copy-of select="$olink.page.citation"/>
+              <xsl:copy-of select="$olink.docname.citation"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <fo:basic-link external-destination="{$href}"
+                             xsl:use-attribute-sets="xref.properties"
+                             show-destination="replace">
+                <xsl:copy-of select="$hottext"/>
+              </fo:basic-link>
+              <xsl:copy-of select="$olink.page.citation"/>
+              <xsl:copy-of select="$olink.docname.citation"/>
+            </xsl:otherwise>
+          </xsl:choose>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:message>Olink error: no generated text for targetdoc/targetptr = <xsl:value-of select="@targetdoc"/>/<xsl:value-of select="@targetptr"/></xsl:message>
-          <xsl:text>????</xsl:text>
+          <xsl:copy-of select="$hottext"/>
+          <xsl:copy-of select="$olink.page.citation"/>
+          <xsl:copy-of select="$olink.docname.citation"/>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:when>
+
+    <!-- olink never implemented in FO for old olink entity syntax -->
     <xsl:otherwise>
-      <xsl:text>????</xsl:text>
-<!--
-      <xsl:call-template name="olink.outline">
-        <xsl:with-param name="outline.base.uri"
-                        select="unparsed-entity-uri(@targetdocent)"/>
-        <xsl:with-param name="localinfo" select="@localinfo"/>
-        <xsl:with-param name="return" select="'xreftext'"/>
-      </xsl:call-template>
--->
+      <xsl:apply-templates/>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
 
+<xsl:template match="*" mode="insert.olink.docname.markup">
+  <xsl:param name="docname" select="''"/>
+  
+  <fo:inline font-style="italic">
+    <xsl:value-of select="$docname"/>
+  </fo:inline>
+
+</xsl:template>
+
+<!-- This prevents error message when processing olinks with xrefstyle -->
+<xsl:template match="olink" mode="object.xref.template"/>
+
+
+<xsl:template name="olink.as.linkend">
+  <xsl:param name="olink.key" select="''"/>
+  <xsl:param name="olink.lang" select="''"/>
+  <xsl:param name="target.database" select="NotANode"/>
+
+  <xsl:variable name="targetdoc">
+    <xsl:value-of select="substring-before($olink.key, '/')"/>
+  </xsl:variable>
+
+  <xsl:variable name="targetptr">
+    <xsl:value-of 
+       select="substring-before(substring-after($olink.key, '/'), '/')"/>
+  </xsl:variable>
+
+  <xsl:variable name="target.lang">
+    <xsl:variable name="candidate">
+      <xsl:for-each select="$target.database" >
+        <xsl:value-of 
+                  select="key('targetptr-key', $olink.key)/@lang" />
+      </xsl:for-each>
+    </xsl:variable>
+    <xsl:choose>
+      <xsl:when test="$candidate != ''">
+        <xsl:value-of select="$candidate"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$olink.lang"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:if test="$current.docid = $targetdoc and 
+                $olink.lang = $target.lang">
+    <xsl:variable name="targets" select="key('id',$targetptr)"/>
+    <xsl:variable name="target" select="$targets[1]"/>
+    <xsl:if test="$target">
+      <xsl:value-of select="$targetptr"/>
+    </xsl:if>
+  </xsl:if>
+
+</xsl:template>
+
+
 <xsl:template name="olink.outline">
+  <xsl:param name="outline.base.uri"/>
+  <xsl:param name="localinfo"/>
+  <xsl:param name="return" select="href"/>
+
   <xsl:message terminate="yes">Fatal error: what is this supposed to do?</xsl:message>
 </xsl:template>
 

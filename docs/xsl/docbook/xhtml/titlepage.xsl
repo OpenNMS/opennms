@@ -4,7 +4,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
 
 <!-- ********************************************************************
-     $Id: titlepage.xsl,v 1.26 2004/01/29 13:33:13 nwalsh Exp $
+     $Id: titlepage.xsl,v 1.30 2004/08/13 07:35:36 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -218,6 +218,12 @@
   </span>
 </xsl:template>
 
+<xsl:template match="collabname" mode="titlepage.mode">
+  <span class="{name(.)}">
+    <xsl:apply-templates mode="titlepage.mode"/>
+  </span>
+</xsl:template>
+
 <xsl:template match="confgroup" mode="titlepage.mode">
   <div class="{name(.)}">
     <xsl:apply-templates mode="titlepage.mode"/>
@@ -322,6 +328,13 @@
   <h3 class="{name(.)}">
     <xsl:apply-templates mode="titlepage.mode"/>
   </h3>
+</xsl:template>
+
+<xsl:template match="corpcredit" mode="titlepage.mode">
+  <span class="{name(.)}">
+    <xsl:apply-templates mode="titlepage.mode"/>
+    <br/>
+  </span>
 </xsl:template>
 
 <xsl:template match="corpname" mode="titlepage.mode">
@@ -452,6 +465,7 @@
         <xsl:with-param name="filename" select="$filename"/>
         <xsl:with-param name="quiet" select="$chunk.quietly"/>
         <xsl:with-param name="content">
+        <xsl:call-template name="user.preroot"/>
           <html>
             <head>
               <xsl:call-template name="system.head.content"/>
@@ -470,6 +484,7 @@
     </xsl:when>
     <xsl:otherwise>
       <div class="{local-name(.)}">
+        <a id="{$id}"/>
         <xsl:apply-templates mode="titlepage.mode"/>
       </div>
     </xsl:otherwise>

@@ -4,7 +4,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: formal.xsl,v 1.38 2004/03/04 13:51:55 nwalsh Exp $
+     $Id: formal.xsl,v 1.42 2004/11/04 20:48:54 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -34,40 +34,72 @@
     </xsl:if>
   </xsl:variable>
 
+  <xsl:variable name="keep.together">
+    <xsl:call-template name="dbfo-attribute">
+      <xsl:with-param name="pis"
+                      select="processing-instruction('dbfo')"/>
+      <xsl:with-param name="attribute" select="'keep-together'"/>
+    </xsl:call-template>
+  </xsl:variable>
+
   <xsl:choose>
     <xsl:when test="self::figure">
       <fo:block id="{$id}"
                 xsl:use-attribute-sets="figure.properties">
+        <xsl:if test="$keep.together != ''">
+          <xsl:attribute name="keep-together.within-column"><xsl:value-of
+                          select="$keep.together"/></xsl:attribute>
+        </xsl:if>
         <xsl:copy-of select="$content"/>
       </fo:block>
     </xsl:when>
     <xsl:when test="self::example">
       <fo:block id="{$id}"
                 xsl:use-attribute-sets="example.properties">
+        <xsl:if test="$keep.together != ''">
+          <xsl:attribute name="keep-together.within-column"><xsl:value-of
+                          select="$keep.together"/></xsl:attribute>
+        </xsl:if>
         <xsl:copy-of select="$content"/>
       </fo:block>
     </xsl:when>
     <xsl:when test="self::equation">
       <fo:block id="{$id}"
                 xsl:use-attribute-sets="equation.properties">
+        <xsl:if test="$keep.together != ''">
+          <xsl:attribute name="keep-together.within-column"><xsl:value-of
+                          select="$keep.together"/></xsl:attribute>
+        </xsl:if>
         <xsl:copy-of select="$content"/>
       </fo:block>
     </xsl:when>
     <xsl:when test="self::table">
       <fo:block id="{$id}"
                 xsl:use-attribute-sets="table.properties">
+        <xsl:if test="$keep.together != ''">
+          <xsl:attribute name="keep-together.within-column"><xsl:value-of
+                          select="$keep.together"/></xsl:attribute>
+        </xsl:if>
         <xsl:copy-of select="$content"/>
       </fo:block>
     </xsl:when>
     <xsl:when test="self::procedure">
       <fo:block id="{$id}"
                 xsl:use-attribute-sets="procedure.properties">
+        <xsl:if test="$keep.together != ''">
+          <xsl:attribute name="keep-together.within-column"><xsl:value-of
+                          select="$keep.together"/></xsl:attribute>
+        </xsl:if>
         <xsl:copy-of select="$content"/>
       </fo:block>
     </xsl:when>
     <xsl:otherwise>
       <fo:block id="{$id}"
                 xsl:use-attribute-sets="formal.object.properties">
+        <xsl:if test="$keep.together != ''">
+          <xsl:attribute name="keep-together.within-column"><xsl:value-of
+                          select="$keep.together"/></xsl:attribute>
+        </xsl:if>
         <xsl:copy-of select="$content"/>
       </fo:block>
     </xsl:otherwise>
@@ -101,8 +133,7 @@
   </xsl:variable>
 
   <xsl:choose>
-    <xsl:when test="local-name(.) = 'equation' or 
-                    local-name(.) = 'informalequation'">
+    <xsl:when test="local-name(.) = 'equation'">
       <fo:block id="{$id}"
                 xsl:use-attribute-sets="equation.properties">
         <xsl:apply-templates/>
@@ -114,8 +145,32 @@
         <xsl:apply-templates/>
       </fo:block>
     </xsl:when>
+    <xsl:when test="local-name(.) = 'informalfigure'">
+      <fo:block id="{$id}"
+                xsl:use-attribute-sets="informalfigure.properties">
+        <xsl:apply-templates/>
+      </fo:block>
+    </xsl:when>
+    <xsl:when test="local-name(.) = 'informaltable'">
+      <fo:block id="{$id}"
+                xsl:use-attribute-sets="informaltable.properties">
+        <xsl:apply-templates/>
+      </fo:block>
+    </xsl:when>
+    <xsl:when test="local-name(.) = 'informalexample'">
+      <fo:block id="{$id}"
+                xsl:use-attribute-sets="informalexample.properties">
+        <xsl:apply-templates/>
+      </fo:block>
+    </xsl:when>
+    <xsl:when test="local-name(.) = 'informalequation'">
+      <fo:block id="{$id}"
+                xsl:use-attribute-sets="informalequation.properties">
+        <xsl:apply-templates/>
+      </fo:block>
+    </xsl:when>
     <xsl:otherwise>
-      <fo:block id="{$id}">
+      <fo:block id="{$id}" xsl:use-attribute-sets="informal.object.properties">
         <xsl:apply-templates/>
       </fo:block>
     </xsl:otherwise>
@@ -265,7 +320,7 @@
                      |mediaobject/imageobjectco
                      |mediaobject/videoobject
                      |mediaobject/audioobject
-		     |mediaobject/textobject"/>
+                     |mediaobject/textobject"/>
 
       <xsl:variable name="object.index">
         <xsl:call-template name="select.mediaobject.index">
@@ -283,9 +338,9 @@
   <xsl:choose>
     <xsl:when test="$align != ''">
       <fo:block>
-	  <xsl:attribute name="text-align">
-	    <xsl:value-of select="$align"/>
-	  </xsl:attribute>
+          <xsl:attribute name="text-align">
+            <xsl:value-of select="$align"/>
+          </xsl:attribute>
         <xsl:call-template name="formal.object">
           <xsl:with-param name="placement" select="$placement"/>
         </xsl:call-template>
@@ -478,9 +533,23 @@
     </xsl:choose>
   </xsl:variable>
 
+  <xsl:variable name="keep.together">
+    <xsl:call-template name="dbfo-attribute">
+      <xsl:with-param name="pis"
+                      select="processing-instruction('dbfo')"/>
+      <xsl:with-param name="attribute" select="'keep-together'"/>
+    </xsl:call-template>
+  </xsl:variable>
+
   <xsl:variable name="table.content">
     <fo:block id="{$id}"
               xsl:use-attribute-sets="table.properties">
+
+      <xsl:if test="$keep.together != ''">
+        <xsl:attribute name="keep-together.within-column">
+          <xsl:value-of select="$keep.together"/>
+        </xsl:attribute>
+      </xsl:if>
 
       <xsl:if test="$placement = 'before'">
         <xsl:call-template name="formal.object.heading">
@@ -542,10 +611,10 @@
     <xsl:when test="@orient='land'">
       <fo:block-container reference-orientation="90">
         <fo:block>
-	  <!-- Such spans won't work in most FO processors since it does
-	       not follow the XSL spec, which says it must appear on
-	       an element that is a direct child of fo:flow.
-	       Some processors relax that requirement, however. -->
+          <!-- Such spans won't work in most FO processors since it does
+               not follow the XSL spec, which says it must appear on
+               an element that is a direct child of fo:flow.
+               Some processors relax that requirement, however. -->
           <xsl:attribute name="span">
             <xsl:choose>
               <xsl:when test="@pgwide=1">all</xsl:when>
@@ -632,34 +701,34 @@
     <xsl:for-each select="tgroup">
       <xsl:variable name="prop-columns"
                     select=".//colspec[contains(@colwidth, '*')]"/>
-      <fo:block xsl:use-attribute-sets="informal.object.properties">
-	<fo:table xsl:use-attribute-sets="table.table.properties">
-	  <xsl:call-template name="table.frame"/>
-	  <xsl:if test="following-sibling::tgroup">
-	    <xsl:attribute name="border-bottom-width">0pt</xsl:attribute>
-	    <xsl:attribute name="border-bottom-style">none</xsl:attribute>
-	    <xsl:attribute name="padding-bottom">0pt</xsl:attribute>
-	    <xsl:attribute name="margin-bottom">0pt</xsl:attribute>
-	    <xsl:attribute name="space-after">0pt</xsl:attribute>
-	    <xsl:attribute name="space-after.minimum">0pt</xsl:attribute>
-	    <xsl:attribute name="space-after.optimum">0pt</xsl:attribute>
-	    <xsl:attribute name="space-after.maximum">0pt</xsl:attribute>
-	  </xsl:if>
-	  <xsl:if test="preceding-sibling::tgroup">
-	    <xsl:attribute name="border-top-width">0pt</xsl:attribute>
-	    <xsl:attribute name="border-top-style">none</xsl:attribute>
-	    <xsl:attribute name="padding-top">0pt</xsl:attribute>
-	    <xsl:attribute name="margin-top">0pt</xsl:attribute>
-	    <xsl:attribute name="space-before">0pt</xsl:attribute>
-	    <xsl:attribute name="space-before.minimum">0pt</xsl:attribute>
-	    <xsl:attribute name="space-before.optimum">0pt</xsl:attribute>
-	    <xsl:attribute name="space-before.maximum">0pt</xsl:attribute>
-	  </xsl:if>
-	  <xsl:if test="count($prop-columns) != 0">
-	    <xsl:attribute name="table-layout">fixed</xsl:attribute>
-	  </xsl:if>
-	  <xsl:apply-templates select="."/>
-	</fo:table>
+      <fo:block xsl:use-attribute-sets="informaltable.properties">
+        <fo:table xsl:use-attribute-sets="table.table.properties">
+          <xsl:call-template name="table.frame"/>
+          <xsl:if test="following-sibling::tgroup">
+            <xsl:attribute name="border-bottom-width">0pt</xsl:attribute>
+            <xsl:attribute name="border-bottom-style">none</xsl:attribute>
+            <xsl:attribute name="padding-bottom">0pt</xsl:attribute>
+            <xsl:attribute name="margin-bottom">0pt</xsl:attribute>
+            <xsl:attribute name="space-after">0pt</xsl:attribute>
+            <xsl:attribute name="space-after.minimum">0pt</xsl:attribute>
+            <xsl:attribute name="space-after.optimum">0pt</xsl:attribute>
+            <xsl:attribute name="space-after.maximum">0pt</xsl:attribute>
+          </xsl:if>
+          <xsl:if test="preceding-sibling::tgroup">
+            <xsl:attribute name="border-top-width">0pt</xsl:attribute>
+            <xsl:attribute name="border-top-style">none</xsl:attribute>
+            <xsl:attribute name="padding-top">0pt</xsl:attribute>
+            <xsl:attribute name="margin-top">0pt</xsl:attribute>
+            <xsl:attribute name="space-before">0pt</xsl:attribute>
+            <xsl:attribute name="space-before.minimum">0pt</xsl:attribute>
+            <xsl:attribute name="space-before.optimum">0pt</xsl:attribute>
+            <xsl:attribute name="space-before.maximum">0pt</xsl:attribute>
+          </xsl:if>
+          <xsl:if test="count($prop-columns) != 0">
+            <xsl:attribute name="table-layout">fixed</xsl:attribute>
+          </xsl:if>
+          <xsl:apply-templates select="."/>
+        </fo:table>
       </fo:block>
     </xsl:for-each>
   </xsl:variable>

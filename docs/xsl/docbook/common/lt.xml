@@ -12,7 +12,7 @@
    <l:gentext key="Answer" text="Ats:"/>
    <l:gentext key="answer" text="Ats:"/>
    <l:gentext key="Appendix" text="Priedas"/>
-   <l:gentext key="appendix" text="priedas"/>
+   <l:gentext key="appendix" text="Priedas"/>
    <l:gentext key="Article" text="Straipsnis"/>
    <l:gentext key="article" text="Straipsnis"/>
    <l:gentext key="Bibliography" text="Bibliografija"/>
@@ -23,9 +23,9 @@
    <l:gentext key="Caution" text="Atsargiai"/>
    <l:gentext key="caution" text="Atsargiai"/>
    <l:gentext key="Chapter" text="Skyrius"/>
-   <l:gentext key="chapter" text="skyrius"/>
-   <l:gentext key="Colophon" text="&#302;&#382;anga &#303; knyg&#261;"/>
-   <l:gentext key="colophon" text="&#302;&#382;anga &#303; knyg&#336;"/>
+   <l:gentext key="chapter" text="Skyrius"/>
+   <l:gentext key="Colophon" text="Knygos metrika"/>
+   <l:gentext key="colophon" text="Knygos metrika"/>
    <l:gentext key="Copyright" text="Autorin&#279;s teis&#279;s"/>
    <l:gentext key="copyright" text="Autorin&#279;s teis&#279;s"/>
    <l:gentext key="Dedication" text="Dedikacija"/>
@@ -38,10 +38,10 @@
    <l:gentext key="example" text="Pavyzdys"/>
    <l:gentext key="Figure" text="Pav."/>
    <l:gentext key="figure" text="Pav."/>
-   <l:gentext key="Glossary" text="Termin&#371; &#382;odyn&#279;lis"/>
-   <l:gentext key="glossary" text="Termin&#371; &#382;odyn&#279;lis"/>
-   <l:gentext key="GlossSee" text="Termin&#261; &#382;r."/>
-   <l:gentext key="glosssee" text="Termin&#261; &#382;r."/>
+   <l:gentext key="Glossary" text="Termin&#371; &#382;odynas"/>
+   <l:gentext key="glossary" text="Termin&#371; &#382;odynas"/>
+   <l:gentext key="GlossSee" text="&#381;r."/>
+   <l:gentext key="glosssee" text="&#381;r."/>
    <l:gentext key="GlossSeeAlso" text="Taip pat &#382;r."/>
    <l:gentext key="glossseealso" text="Taip pat &#382;r."/>
    <l:gentext key="IMPORTANT" text="SVARBU"/>
@@ -64,19 +64,19 @@
    <l:gentext key="note" text="Pastaba"/>
    <l:gentext key="Part" text="Dalis"/>
    <l:gentext key="part" text="Dalis"/>
-   <l:gentext key="Preface" text="&#302;&#382;anga"/>
-   <l:gentext key="preface" text="&#302;&#382;anga"/>
+   <l:gentext key="Preface" text="&#302;vadas"/>
+   <l:gentext key="preface" text="&#302;vadas"/>
    <l:gentext key="Procedure" text="Proced&#363;ra"/>
    <l:gentext key="procedure" text="Proced&#363;ra"/>
-   <l:gentext key="ProductionSet" text="Production"/>
-   <l:gentext key="PubDate" text="Publication Date" lang="en"/>
-   <l:gentext key="pubdate" text="Publication date" lang="en"/>
+   <l:gentext key="ProductionSet" text="Produkcija"/>
+   <l:gentext key="PubDate" text="I&#353;leidimo data"/>
+   <l:gentext key="pubdate" text="I&#353;leidimo data"/>
    <l:gentext key="Published" text="I&#353;leistas"/>
    <l:gentext key="published" text="I&#353;leistas"/>
-   <l:gentext key="Qandadiv" text="Q &amp; A" lang="en"/>
-   <l:gentext key="qandadiv" text="Q &amp; A" lang="en"/>
-   <l:gentext key="Question" text="Klausimas:"/>
-   <l:gentext key="question" text="Klausimas:"/>
+   <l:gentext key="Qandadiv" text="Klaus. ir Ats."/>
+   <l:gentext key="qandadiv" text="Klaus. ir Ats."/>
+   <l:gentext key="Question" text="Klaus.:"/>
+   <l:gentext key="question" text="Klaus.:"/>
    <l:gentext key="RefEntry" text=""/>
    <l:gentext key="refentry" text=""/>
    <l:gentext key="Reference" text="Nuoroda"/>
@@ -99,10 +99,10 @@
    <l:gentext key="section" text="Skyrius"/>
    <l:gentext key="Section" text="Skyrius"/>
    <l:gentext key="see" text="&#382;r."/>
-   <l:gentext key="See" text="See" lang="en"/>
-   <l:gentext key="seealso" text="&#382;r."/>
-   <l:gentext key="Seealso" text="See also" lang="en"/>
-   <l:gentext key="SeeAlso" text="See Also" lang="en"/>
+   <l:gentext key="See" text="&#381;r."/>
+   <l:gentext key="seealso" text="taip pat &#382;r."/>
+   <l:gentext key="Seealso" text="Taip pat &#382;r."/>
+   <l:gentext key="SeeAlso" text="Taip pat &#382;r."/>
    <l:gentext key="set" text="Set"/>
    <l:gentext key="Set" text="Set"/>
    <l:gentext key="setindex" text="Set Index"/>
@@ -121,65 +121,65 @@
    <l:gentext key="WARNING" text="&#302;SP&#278;JIMAS"/>
    <l:gentext key="and" text="ir"/>
    <l:gentext key="by" text="by"/>
-   <l:gentext key="called" text="called" lang="en"/>
+   <l:gentext key="called" text="called"/>
    <l:gentext key="Edited" text="Redaguotas"/>
    <l:gentext key="edited" text="Redaguotas"/>
-   <l:gentext key="Editedby" text="Redaguotas:"/>
-   <l:gentext key="editedby" text="Redaguotas:"/>
+   <l:gentext key="Editedby" text="Redagavo"/>
+   <l:gentext key="editedby" text="Redagavo"/>
    <l:gentext key="in" text="in"/>
    <l:gentext key="lastlistcomma" text=","/>
    <l:gentext key="listcomma" text=","/>
    <l:gentext key="nonexistantelement" text="neegzistuojantis elementas"/>
    <l:gentext key="notes" text="Pastabos"/>
    <l:gentext key="Notes" text="Pastabos"/>
-   <l:gentext key="Pgs" text="Pgs."/>
-   <l:gentext key="pgs" text="Pgs."/>
+   <l:gentext key="Pgs" text="P."/>
+   <l:gentext key="pgs" text="P."/>
    <l:gentext key="Revisedby" text="Patais&#279;: "/>
    <l:gentext key="revisedby" text="Patais&#279;: "/>
-   <l:gentext key="TableNotes" text="Lentel&#279;s pastabos"/>
-   <l:gentext key="tablenotes" text="Lentel&#279;s pastabos"/>
-   <l:gentext key="TableofContents" text="T&#363;rinys"/>
-   <l:gentext key="tableofcontents" text="T&#363;rinys"/>
-   <l:gentext key="the" text="" lang="en"/>
-   <l:gentext key="unexpectedelementname" text="Unexpected element name"/>
+   <l:gentext key="TableNotes" text="Pastabos"/>
+   <l:gentext key="tablenotes" text="Pastabos"/>
+   <l:gentext key="TableofContents" text="Turinys"/>
+   <l:gentext key="tableofcontents" text="Turinys"/>
+   <l:gentext key="the" text=""/>
+   <l:gentext key="unexpectedelementname" text="Nenumatyto elemento pavadinimas"/>
    <l:gentext key="unsupported" text="nepalaikomas"/>
-   <l:gentext key="xrefto" text="xref to"/>
+   <l:gentext key="xrefto" text="xref &#303;"/>
    <l:gentext key="listofequations" text="Lyg&#269;i&#371; s&#261;ra&#353;as"/>
    <l:gentext key="ListofEquations" text="Lyg&#269;i&#371; s&#261;ra&#353;as"/>
    <l:gentext key="ListofExamples" text="Pavyzd&#382;i&#371; s&#261;ra&#353;as"/>
    <l:gentext key="listofexamples" text="Pavyzd&#382;i&#371; s&#261;ra&#353;as"/>
-   <l:gentext key="ListofFigures" text="Pav. s&#261;ra&#353;as"/>
-   <l:gentext key="listoffigures" text="Pav. s&#261;ra&#353;as"/>
-   <l:gentext key="ListofProcedures" text="List of Procedures" lang="en"/>
-   <l:gentext key="listofprocedures" text="List of Procedures" lang="en"/>
+   <l:gentext key="ListofFigures" text="Paveiksl&#371; s&#261;ra&#353;as"/>
+   <l:gentext key="listoffigures" text="Paveiksl&#371; s&#261;ra&#353;as"/>
+   <l:gentext key="ListofProcedures" text="Proced&#363;r&#371; s&#261;ra&#353;as"/>
+   <l:gentext key="listofprocedures" text="Proced&#363;r&#371; s&#261;ra&#353;as"/>
    <l:gentext key="listoftables" text="Lenteli&#371; s&#261;ra&#353;as"/>
    <l:gentext key="ListofTables" text="Lenteli&#371; s&#261;ra&#353;as"/>
    <l:gentext key="ListofUnknown" text="Ne&#382;inomas s&#261;ra&#353;as"/>
    <l:gentext key="listofunknown" text="Ne&#382;inomas s&#261;ra&#353;as"/>
-   <l:gentext key="nav-home" text="Namai"/>
+   <l:gentext key="nav-home" text="&#302; prad&#382;i&#261;"/>
    <l:gentext key="nav-next" text="Sekantis"/>
-   <l:gentext key="nav-next-sibling" text="Fast Forward"/>
-   <l:gentext key="nav-prev" text="Paskesnis"/>
-   <l:gentext key="nav-prev-sibling" text="Fast Backward"/>
-   <l:gentext key="nav-up" text="&#302; vir&#353;&#371;"/>
-   <l:gentext key="nav-toc" text="ToC"/>
-   <l:gentext key="Draft" text="Draft"/>
-   <l:gentext key="above" text="above"/>
-   <l:gentext key="below" text="below"/>
-   <l:gentext key="sectioncalled" text="the section called"/>
-   <l:gentext key="index symbols" text="Symbols"/>
-   <l:gentext key="lowercase.alpha" text="abcdefghijklmnopqrstuvwxyz"/>
-   <l:gentext key="uppercase.alpha" text="ABCDEFGHIJKLMNOPQRSTUVWXYZ"/>
-   <l:dingbat key="startquote" text="&#8220;"/>
-   <l:dingbat key="endquote" text="&#8221;"/>
+   <l:gentext key="nav-next-sibling" text="Spartus pirmyn"/>
+   <l:gentext key="nav-prev" text="Ankstesnis"/>
+   <l:gentext key="nav-prev-sibling" text="Spartus atgal"/>
+   <l:gentext key="nav-up" text="Auk&#353;tyn"/>
+   <l:gentext key="nav-toc" text="Turinys"/>
+   <l:gentext key="Draft" text="Planas"/>
+   <l:gentext key="above" text="auk&#353;&#269;iau"/>
+   <l:gentext key="below" text="&#382;emiau"/>
+   <l:gentext key="sectioncalled" text="skyrius pavadinimu"/>
+   <l:gentext key="index symbols" text="Simboliai"/>
+   <l:gentext key="lowercase.alpha" text="a&#261;bc&#269;de&#281;&#279;fghi&#303;yjklmnoprs&#353;tu&#371;&#363;vz&#382;qwx"/>
+   <l:gentext key="uppercase.alpha" text="A&#260;BC&#268;DE&#280;&#278;FGHI&#302;YJKLMNOPRS&#352;TU&#370;&#362;VZ&#381;QWX"/>
+   <l:dingbat key="startquote" text="&#8222;"/>
+   <l:dingbat key="endquote" text="&#8220;"/>
    <l:dingbat key="nestedstartquote" text="&#8216;"/>
    <l:dingbat key="nestedendquote" text="&#8217;"/>
-   <l:dingbat key="singlestartquote" text="&#8216;" lang="en"/>
-   <l:dingbat key="singleendquote" text="&#8217;" lang="en"/>
+   <l:dingbat key="singlestartquote" text="&#8216;"/>
+   <l:dingbat key="singleendquote" text="&#8217;"/>
    <l:dingbat key="bullet" text="&#8226;"/>
-   <l:gentext key="hyphenation-character" text="-" lang="en"/>
-   <l:gentext key="hyphenation-push-character-count" text="2" lang="en"/>
-   <l:gentext key="hyphenation-remain-character-count" text="2" lang="en"/>
+   <l:gentext key="hyphenation-character" text="-"/>
+   <l:gentext key="hyphenation-push-character-count" text="2"/>
+   <l:gentext key="hyphenation-remain-character-count" text="2"/>
 
    <l:context name="styles">
       <l:template name="person-name" text="first-last"/>
@@ -194,7 +194,7 @@
       <l:template name="bibliodiv" text="%t"/>
       <l:template name="biblioentry" text="%t"/>
       <l:template name="bibliography" text="%t"/>
-      <l:template name="bibliolist" text="%t" lang="en"/>
+      <l:template name="bibliolist" text="%t"/>
       <l:template name="bibliomixed" text="%t"/>
       <l:template name="bibliomset" text="%t"/>
       <l:template name="biblioset" text="%t"/>
@@ -208,11 +208,13 @@
       <l:template name="equation" text="Lygtis&#160;%n.&#160;%t"/>
       <l:template name="example" text="Pavyzdys&#160;%n.&#160;%t"/>
       <l:template name="figure" text="Pav.&#160;%n.&#160;%t"/>
+      <l:template name="foil" text="%t"/>
+      <l:template name="foilgroup" text="%t"/>
       <l:template name="formalpara" text="%t"/>
       <l:template name="glossary" text="%t"/>
       <l:template name="glossdiv" text="%t"/>
-      <l:template name="glosslist" text="%t" lang="en"/>
-      <l:template name="glossentry" text="%t" lang="en"/>
+      <l:template name="glosslist" text="%t"/>
+      <l:template name="glossentry" text="%t"/>
       <l:template name="important" text="%t"/>
       <l:template name="index" text="%t"/>
       <l:template name="indexdiv" text="%t"/>
@@ -234,7 +236,7 @@
       <l:template name="procedure" text="%t"/>
       <l:template name="procedure.formal" text="Proced&#363;ra&#160;%n.&#160;%t"/>
       <l:template name="productionset" text="%t"/>
-      <l:template name="productionset.formal" text="Production&#160;%n"/>
+      <l:template name="productionset.formal" text="Produkcija&#160;%n"/>
       <l:template name="qandadiv" text="%t"/>
       <l:template name="qandaentry" text="%t"/>
       <l:template name="qandaset" text="%t"/>
@@ -253,7 +255,7 @@
       <l:template name="sidebar" text="%t"/>
       <l:template name="step" text="%t"/>
       <l:template name="table" text="Lentel&#279;&#160;%n.&#160;%t"/>
-      <l:template name="task" text="%t" lang="en"/>
+      <l:template name="task" text="%t"/>
       <l:template name="tip" text="%t"/>
       <l:template name="toc" text="%t"/>
       <l:template name="variablelist" text="%t"/>
@@ -263,7 +265,7 @@
 
    <l:context name="title-unnumbered">
       <l:template name="appendix" text="%t"/>
-      <l:template name="article/appendix" text="%t" lang="en"/>
+      <l:template name="article/appendix" text="%t"/>
       <l:template name="bridgehead" text="%t"/>
       <l:template name="chapter" text="%t"/>
       <l:template name="sect1" text="%t"/>
@@ -277,7 +279,7 @@
 
    <l:context name="title-numbered">
       <l:template name="appendix" text="Priedas&#160;%n.&#160;%t"/>
-      <l:template name="article/appendix" text="%n.&#160;%t" lang="en"/>
+      <l:template name="article/appendix" text="%n.&#160;%t"/>
       <l:template name="bridgehead" text="%n.&#160;%t"/>
       <l:template name="chapter" text="Skyrius&#160;%n.&#160;%t"/>
       <l:template name="sect1" text="%n.&#160;%t"/>
@@ -351,6 +353,8 @@
       <l:template name="equation" text="%t"/>
       <l:template name="example" text="%t"/>
       <l:template name="figure" text="%t"/>
+      <l:template name="foil" text="%t"/>
+      <l:template name="foilgroup" text="%t"/>
       <l:template name="formalpara" text="%t"/>
       <l:template name="glossary" text="%t"/>
       <l:template name="glossdiv" text="%t"/>
@@ -375,9 +379,9 @@
       <l:template name="procedure" text="%t"/>
       <l:template name="productionset" text="%t"/>
       <l:template name="qandadiv" text="%t"/>
-      <l:template name="qandaentry" text="Klausimas:&#160;%n"/>
+      <l:template name="qandaentry" text="Klaus.:&#160;%n"/>
       <l:template name="qandaset" text="%t"/>
-      <l:template name="question" text="Klausimas:&#160;%n"/>
+      <l:template name="question" text="Klaus.:&#160;%n"/>
       <l:template name="reference" text="%t"/>
       <l:template name="refsynopsisdiv" text="%t"/>
       <l:template name="segmentedlist" text="%t"/>
@@ -390,22 +394,26 @@
       <l:template name="variablelist" text="%t"/>
       <l:template name="varlistentry" text="%n"/>
       <l:template name="warning" text="%t"/>
+      <l:template name="olink.document.citation" text=" in %o"/>
+      <l:template name="olink.page.citation" text=" (page %p)"/>
       <l:template name="page.citation" text=" [%p]"/>
-      <l:template name="page" text="(page %p)" lang="en"/>
-      <l:template name="pageabbrev" text="(p. %p)" lang="en"/>
-      <l:template name="Page" text="Page %p" lang="en"/>
-      <l:template name="bridgehead" text="the section called &#8220;%t&#8221;"/>
-      <l:template name="refsection" text="the section called &#8220;%t&#8221;"/>
-      <l:template name="refsect1" text="the section called &#8220;%t&#8221;"/>
-      <l:template name="refsect2" text="the section called &#8220;%t&#8221;"/>
-      <l:template name="refsect3" text="the section called &#8220;%t&#8221;"/>
-      <l:template name="sect1" text="the section called &#8220;%t&#8221;"/>
-      <l:template name="sect2" text="the section called &#8220;%t&#8221;"/>
-      <l:template name="sect3" text="the section called &#8220;%t&#8221;"/>
-      <l:template name="sect4" text="the section called &#8220;%t&#8221;"/>
-      <l:template name="sect5" text="the section called &#8220;%t&#8221;"/>
-      <l:template name="section" text="the section called &#8220;%t&#8221;"/>
-      <l:template name="simplesect" text="the section called &#8220;%t&#8221;"/>
+      <l:template name="page" text="(page %p)"/>
+      <l:template name="docname" text=" in %o"/>
+      <l:template name="docnamelong" text=" in the document titled %o"/>
+      <l:template name="pageabbrev" text="(p. %p)"/>
+      <l:template name="Page" text="Page %p"/>
+      <l:template name="bridgehead" text="skyrius pavadinimu &#8222;%t&#8220;"/>
+      <l:template name="refsection" text="skyrius pavadinimu &#8222;%t&#8220;"/>
+      <l:template name="refsect1" text="skyrius pavadinimu &#8222;%t&#8220;"/>
+      <l:template name="refsect2" text="skyrius pavadinimu &#8222;%t&#8220;"/>
+      <l:template name="refsect3" text="skyrius pavadinimu &#8222;%t&#8220;"/>
+      <l:template name="sect1" text="skyrius pavadinimu &#8222;%t&#8220;"/>
+      <l:template name="sect2" text="skyrius pavadinimu &#8222;%t&#8220;"/>
+      <l:template name="sect3" text="skyrius pavadinimu &#8222;%t&#8220;"/>
+      <l:template name="sect4" text="skyrius pavadinimu &#8222;%t&#8220;"/>
+      <l:template name="sect5" text="skyrius pavadinimu &#8222;%t&#8220;"/>
+      <l:template name="section" text="skyrius pavadinimu &#8222;%t&#8220;"/>
+      <l:template name="simplesect" text="skyrius pavadinimu &#8222;%t&#8220;"/>
    </l:context>
 
    <l:context name="xref-number">
@@ -418,10 +426,10 @@
       <l:template name="figure" text="Pav.&#160;%n"/>
       <l:template name="part" text="Dalis&#160;%n"/>
       <l:template name="procedure" text="Proced&#363;ra&#160;%n"/>
-      <l:template name="productionset" text="Production&#160;%n"/>
-      <l:template name="qandadiv" text="Q &amp; A&#160;%n"/>
-      <l:template name="qandaentry" text="Klausimas:&#160;%n"/>
-      <l:template name="question" text="Klausimas:&#160;%n"/>
+      <l:template name="productionset" text="Produkcija&#160;%n"/>
+      <l:template name="qandadiv" text="Klaus. ir Ats.&#160;%n"/>
+      <l:template name="qandaentry" text="Klaus.:&#160;%n"/>
+      <l:template name="question" text="Klaus.:&#160;%n"/>
       <l:template name="sect1" text="Skyrius&#160;%n"/>
       <l:template name="sect2" text="Skyrius&#160;%n"/>
       <l:template name="sect3" text="Skyrius&#160;%n"/>
@@ -433,27 +441,27 @@
 
    <l:context name="xref-number-and-title">
       <l:template name="appendix" text="Priedas&#160;%n, %t"/>
-      <l:template name="bridgehead" text="Skyrius&#160;%n, &#8220;%t&#8221;"/>
+      <l:template name="bridgehead" text="Skyrius&#160;%n, &#8222;%t&#8220;"/>
       <l:template name="chapter" text="Skyrius&#160;%n, %t"/>
-      <l:template name="equation" text="Lygtis&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="example" text="Pavyzdys&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="figure" text="Pav.&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="part" text="Dalis&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="procedure" text="Proced&#363;ra&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="productionset" text="Production&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="qandadiv" text="Q &amp; A&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="refsect1" text="the section called &#8220;%t&#8221;"/>
-      <l:template name="refsect2" text="the section called &#8220;%t&#8221;"/>
-      <l:template name="refsect3" text="the section called &#8220;%t&#8221;"/>
-      <l:template name="refsection" text="the section called &#8220;%t&#8221;"/>
-      <l:template name="sect1" text="Skyrius&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="sect2" text="Skyrius&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="sect3" text="Skyrius&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="sect4" text="Skyrius&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="sect5" text="Skyrius&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="section" text="Skyrius&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="simplesect" text="the section called &#8220;%t&#8221;"/>
-      <l:template name="table" text="Lentel&#279;&#160;%n, &#8220;%t&#8221;"/>
+      <l:template name="equation" text="Lygtis&#160;%n, &#8222;%t&#8220;"/>
+      <l:template name="example" text="Pavyzdys&#160;%n, &#8222;%t&#8220;"/>
+      <l:template name="figure" text="Pav.&#160;%n, &#8222;%t&#8220;"/>
+      <l:template name="part" text="Dalis&#160;%n, &#8222;%t&#8220;"/>
+      <l:template name="procedure" text="Proced&#363;ra&#160;%n, &#8222;%t&#8220;"/>
+      <l:template name="productionset" text="Produkcija&#160;%n, &#8222;%t&#8220;"/>
+      <l:template name="qandadiv" text="Klaus. ir Ats.&#160;%n, &#8222;%t&#8220;"/>
+      <l:template name="refsect1" text="skyrius pavadinimu &#8222;%t&#8220;"/>
+      <l:template name="refsect2" text="skyrius pavadinimu &#8222;%t&#8220;"/>
+      <l:template name="refsect3" text="skyrius pavadinimu &#8222;%t&#8220;"/>
+      <l:template name="refsection" text="skyrius pavadinimu &#8222;%t&#8220;"/>
+      <l:template name="sect1" text="Skyrius&#160;%n, &#8222;%t&#8220;"/>
+      <l:template name="sect2" text="Skyrius&#160;%n, &#8222;%t&#8220;"/>
+      <l:template name="sect3" text="Skyrius&#160;%n, &#8222;%t&#8220;"/>
+      <l:template name="sect4" text="Skyrius&#160;%n, &#8222;%t&#8220;"/>
+      <l:template name="sect5" text="Skyrius&#160;%n, &#8222;%t&#8220;"/>
+      <l:template name="section" text="Skyrius&#160;%n, &#8222;%t&#8220;"/>
+      <l:template name="simplesect" text="skyrius pavadinimu &#8222;%t&#8220;"/>
+      <l:template name="table" text="Lentel&#279;&#160;%n, &#8222;%t&#8220;"/>
    </l:context>
 
    <l:context name="authorgroup">
@@ -463,7 +471,7 @@
    </l:context>
 
    <l:context name="glossary">
-      <l:template name="see" text="Termin&#261; &#382;r. "/>
+      <l:template name="see" text="&#381;r. "/>
       <l:template name="seealso" text="Taip pat &#382;r. "/>
    </l:context>
 
@@ -474,680 +482,129 @@
    </l:context>
 
    <l:context name="datetime">
-      <l:template name="format" text="m/d/Y" lang="en"/>
+      <l:template name="format" text="Y-m-d"/>
    </l:context>
 
    <l:context name="datetime-full">
-      <l:template name="January" text="January" lang="en"/>
-      <l:template name="February" text="February" lang="en"/>
-      <l:template name="March" text="March" lang="en"/>
-      <l:template name="April" text="April" lang="en"/>
-      <l:template name="May" text="May" lang="en"/>
-      <l:template name="June" text="June" lang="en"/>
-      <l:template name="July" text="July" lang="en"/>
-      <l:template name="August" text="August" lang="en"/>
-      <l:template name="September" text="September" lang="en"/>
-      <l:template name="October" text="October" lang="en"/>
-      <l:template name="November" text="November" lang="en"/>
-      <l:template name="December" text="December" lang="en"/>
-      <l:template name="Monday" text="Monday" lang="en"/>
-      <l:template name="Tuesday" text="Tuesday" lang="en"/>
-      <l:template name="Wednesday" text="Wednesday" lang="en"/>
-      <l:template name="Thursday" text="Thursday" lang="en"/>
-      <l:template name="Friday" text="Friday" lang="en"/>
-      <l:template name="Saturday" text="Saturday" lang="en"/>
-      <l:template name="Sunday" text="Sunday" lang="en"/>
+      <l:template name="January" text="Sausis"/>
+      <l:template name="February" text="Vasaris"/>
+      <l:template name="March" text="Kovas"/>
+      <l:template name="April" text="Balandis"/>
+      <l:template name="May" text="Gegu&#382;&#279;"/>
+      <l:template name="June" text="Bir&#382;elis"/>
+      <l:template name="July" text="Liepa"/>
+      <l:template name="August" text="Rugpj&#363;tis"/>
+      <l:template name="September" text="Rugs&#279;jis"/>
+      <l:template name="October" text="Spalis"/>
+      <l:template name="November" text="Lapkritis"/>
+      <l:template name="December" text="Gruodis"/>
+      <l:template name="Monday" text="Pirmadienis"/>
+      <l:template name="Tuesday" text="Antradienis"/>
+      <l:template name="Wednesday" text="Tre&#269;iadienis"/>
+      <l:template name="Thursday" text="Ketvirtadienis"/>
+      <l:template name="Friday" text="Penktadienis"/>
+      <l:template name="Saturday" text="&#352;e&#353;tadienis"/>
+      <l:template name="Sunday" text="Sekmadienis"/>
    </l:context>
 
    <l:context name="datetime-abbrev">
-      <l:template name="Jan" text="Jan" lang="en"/>
-      <l:template name="Feb" text="Feb" lang="en"/>
-      <l:template name="Mar" text="Mar" lang="en"/>
-      <l:template name="Apr" text="Apr" lang="en"/>
-      <l:template name="May" text="May" lang="en"/>
-      <l:template name="Jun" text="Jun" lang="en"/>
-      <l:template name="Jul" text="Jul" lang="en"/>
-      <l:template name="Aug" text="Aug" lang="en"/>
-      <l:template name="Sep" text="Sep" lang="en"/>
-      <l:template name="Oct" text="Oct" lang="en"/>
-      <l:template name="Nov" text="Nov" lang="en"/>
-      <l:template name="Dec" text="Dec" lang="en"/>
-      <l:template name="Mon" text="Mon" lang="en"/>
-      <l:template name="Tue" text="Tue" lang="en"/>
-      <l:template name="Wed" text="Wed" lang="en"/>
-      <l:template name="Thu" text="Thu" lang="en"/>
-      <l:template name="Fri" text="Fri" lang="en"/>
-      <l:template name="Sat" text="Sat" lang="en"/>
-      <l:template name="Sun" text="Sun" lang="en"/>
+      <l:template name="Jan" text="Sau"/>
+      <l:template name="Feb" text="Vas"/>
+      <l:template name="Mar" text="Kov"/>
+      <l:template name="Apr" text="Bal"/>
+      <l:template name="May" text="Geg"/>
+      <l:template name="Jun" text="Bir"/>
+      <l:template name="Jul" text="Lie"/>
+      <l:template name="Aug" text="Rugp"/>
+      <l:template name="Sep" text="Rugs"/>
+      <l:template name="Oct" text="Spa"/>
+      <l:template name="Nov" text="Lap"/>
+      <l:template name="Dec" text="Gru"/>
+      <l:template name="Mon" text="Pr"/>
+      <l:template name="Tue" text="An"/>
+      <l:template name="Wed" text="Tr"/>
+      <l:template name="Thu" text="Kt"/>
+      <l:template name="Fri" text="Pn"/>
+      <l:template name="Sat" text="&#352;t"/>
+      <l:template name="Sun" text="Sk"/>
    </l:context>
 
    <l:context name="htmlhelp">
       <l:template name="langcode" text="0x0427 Lithuanian"/>
    </l:context>
 
-   <l:letters lang="en">
+   <l:letters>
       <l:l i="-1"/>
-      <l:l i="0">Symbols</l:l>
-      <l:l i="10">A</l:l>
-      <l:l i="10">a</l:l>
-      <l:l i="10">&#192;</l:l>
-      <l:l i="10">&#224;</l:l>
-      <l:l i="10">&#193;</l:l>
-      <l:l i="10">&#225;</l:l>
-      <l:l i="10">&#194;</l:l>
-      <l:l i="10">&#226;</l:l>
-      <l:l i="10">&#195;</l:l>
-      <l:l i="10">&#227;</l:l>
-      <l:l i="10">&#196;</l:l>
-      <l:l i="10">&#228;</l:l>
-      <l:l i="10">&#197;</l:l>
-      <l:l i="10">&#229;</l:l>
-      <l:l i="10">&#256;</l:l>
-      <l:l i="10">&#257;</l:l>
-      <l:l i="10">&#258;</l:l>
-      <l:l i="10">&#259;</l:l>
-      <l:l i="10">&#260;</l:l>
-      <l:l i="10">&#261;</l:l>
-      <l:l i="10">&#461;</l:l>
-      <l:l i="10">&#462;</l:l>
-      <l:l i="10">&#478;</l:l>
-      <l:l i="10">&#479;</l:l>
-      <l:l i="10">&#480;</l:l>
-      <l:l i="10">&#481;</l:l>
-      <l:l i="10">&#506;</l:l>
-      <l:l i="10">&#507;</l:l>
-      <l:l i="10">&#512;</l:l>
-      <l:l i="10">&#513;</l:l>
-      <l:l i="10">&#514;</l:l>
-      <l:l i="10">&#515;</l:l>
-      <l:l i="10">&#550;</l:l>
-      <l:l i="10">&#551;</l:l>
-      <l:l i="10">&#7680;</l:l>
-      <l:l i="10">&#7681;</l:l>
-      <l:l i="10">&#7834;</l:l>
-      <l:l i="10">&#7840;</l:l>
-      <l:l i="10">&#7841;</l:l>
-      <l:l i="10">&#7842;</l:l>
-      <l:l i="10">&#7843;</l:l>
-      <l:l i="10">&#7844;</l:l>
-      <l:l i="10">&#7845;</l:l>
-      <l:l i="10">&#7846;</l:l>
-      <l:l i="10">&#7847;</l:l>
-      <l:l i="10">&#7848;</l:l>
-      <l:l i="10">&#7849;</l:l>
-      <l:l i="10">&#7850;</l:l>
-      <l:l i="10">&#7851;</l:l>
-      <l:l i="10">&#7852;</l:l>
-      <l:l i="10">&#7853;</l:l>
-      <l:l i="10">&#7854;</l:l>
-      <l:l i="10">&#7855;</l:l>
-      <l:l i="10">&#7856;</l:l>
-      <l:l i="10">&#7857;</l:l>
-      <l:l i="10">&#7858;</l:l>
-      <l:l i="10">&#7859;</l:l>
-      <l:l i="10">&#7860;</l:l>
-      <l:l i="10">&#7861;</l:l>
-      <l:l i="10">&#7862;</l:l>
-      <l:l i="10">&#7863;</l:l>
-      <l:l i="20">B</l:l>
-      <l:l i="20">b</l:l>
-      <l:l i="20">&#384;</l:l>
-      <l:l i="20">&#385;</l:l>
-      <l:l i="20">&#595;</l:l>
-      <l:l i="20">&#386;</l:l>
-      <l:l i="20">&#387;</l:l>
-      <l:l i="20">&#7682;</l:l>
-      <l:l i="20">&#7683;</l:l>
-      <l:l i="20">&#7684;</l:l>
-      <l:l i="20">&#7685;</l:l>
-      <l:l i="20">&#7686;</l:l>
-      <l:l i="20">&#7687;</l:l>
-      <l:l i="30">C</l:l>
-      <l:l i="30">c</l:l>
-      <l:l i="30">&#199;</l:l>
-      <l:l i="30">&#231;</l:l>
-      <l:l i="30">&#262;</l:l>
-      <l:l i="30">&#263;</l:l>
-      <l:l i="30">&#264;</l:l>
-      <l:l i="30">&#265;</l:l>
-      <l:l i="30">&#266;</l:l>
-      <l:l i="30">&#267;</l:l>
-      <l:l i="30">&#268;</l:l>
-      <l:l i="30">&#269;</l:l>
-      <l:l i="30">&#391;</l:l>
-      <l:l i="30">&#392;</l:l>
-      <l:l i="30">&#597;</l:l>
-      <l:l i="30">&#7688;</l:l>
-      <l:l i="30">&#7689;</l:l>
-      <l:l i="40">D</l:l>
-      <l:l i="40">d</l:l>
-      <l:l i="40">&#270;</l:l>
-      <l:l i="40">&#271;</l:l>
-      <l:l i="40">&#272;</l:l>
-      <l:l i="40">&#273;</l:l>
-      <l:l i="40">&#394;</l:l>
-      <l:l i="40">&#599;</l:l>
-      <l:l i="40">&#395;</l:l>
-      <l:l i="40">&#396;</l:l>
-      <l:l i="40">&#453;</l:l>
-      <l:l i="40">&#498;</l:l>
-      <l:l i="40">&#545;</l:l>
-      <l:l i="40">&#598;</l:l>
-      <l:l i="40">&#7690;</l:l>
-      <l:l i="40">&#7691;</l:l>
-      <l:l i="40">&#7692;</l:l>
-      <l:l i="40">&#7693;</l:l>
-      <l:l i="40">&#7694;</l:l>
-      <l:l i="40">&#7695;</l:l>
-      <l:l i="40">&#7696;</l:l>
-      <l:l i="40">&#7697;</l:l>
-      <l:l i="40">&#7698;</l:l>
-      <l:l i="40">&#7699;</l:l>
-      <l:l i="50">E</l:l>
-      <l:l i="50">e</l:l>
-      <l:l i="50">&#200;</l:l>
-      <l:l i="50">&#232;</l:l>
-      <l:l i="50">&#201;</l:l>
-      <l:l i="50">&#233;</l:l>
-      <l:l i="50">&#202;</l:l>
-      <l:l i="50">&#234;</l:l>
-      <l:l i="50">&#203;</l:l>
-      <l:l i="50">&#235;</l:l>
-      <l:l i="50">&#274;</l:l>
-      <l:l i="50">&#275;</l:l>
-      <l:l i="50">&#276;</l:l>
-      <l:l i="50">&#277;</l:l>
-      <l:l i="50">&#278;</l:l>
-      <l:l i="50">&#279;</l:l>
-      <l:l i="50">&#280;</l:l>
-      <l:l i="50">&#281;</l:l>
-      <l:l i="50">&#282;</l:l>
-      <l:l i="50">&#283;</l:l>
-      <l:l i="50">&#516;</l:l>
-      <l:l i="50">&#517;</l:l>
-      <l:l i="50">&#518;</l:l>
-      <l:l i="50">&#519;</l:l>
-      <l:l i="50">&#552;</l:l>
-      <l:l i="50">&#553;</l:l>
-      <l:l i="50">&#7700;</l:l>
-      <l:l i="50">&#7701;</l:l>
-      <l:l i="50">&#7702;</l:l>
-      <l:l i="50">&#7703;</l:l>
-      <l:l i="50">&#7704;</l:l>
-      <l:l i="50">&#7705;</l:l>
-      <l:l i="50">&#7706;</l:l>
-      <l:l i="50">&#7707;</l:l>
-      <l:l i="50">&#7708;</l:l>
-      <l:l i="50">&#7709;</l:l>
-      <l:l i="50">&#7864;</l:l>
-      <l:l i="50">&#7865;</l:l>
-      <l:l i="50">&#7866;</l:l>
-      <l:l i="50">&#7867;</l:l>
-      <l:l i="50">&#7868;</l:l>
-      <l:l i="50">&#7869;</l:l>
-      <l:l i="50">&#7870;</l:l>
-      <l:l i="50">&#7871;</l:l>
-      <l:l i="50">&#7872;</l:l>
-      <l:l i="50">&#7873;</l:l>
-      <l:l i="50">&#7874;</l:l>
-      <l:l i="50">&#7875;</l:l>
-      <l:l i="50">&#7876;</l:l>
-      <l:l i="50">&#7877;</l:l>
-      <l:l i="50">&#7878;</l:l>
-      <l:l i="50">&#7879;</l:l>
-      <l:l i="60">F</l:l>
-      <l:l i="60">f</l:l>
-      <l:l i="60">&#401;</l:l>
-      <l:l i="60">&#402;</l:l>
-      <l:l i="60">&#7710;</l:l>
-      <l:l i="60">&#7711;</l:l>
-      <l:l i="70">G</l:l>
-      <l:l i="70">g</l:l>
-      <l:l i="70">&#284;</l:l>
-      <l:l i="70">&#285;</l:l>
-      <l:l i="70">&#286;</l:l>
-      <l:l i="70">&#287;</l:l>
-      <l:l i="70">&#288;</l:l>
-      <l:l i="70">&#289;</l:l>
-      <l:l i="70">&#290;</l:l>
-      <l:l i="70">&#291;</l:l>
-      <l:l i="70">&#403;</l:l>
-      <l:l i="70">&#608;</l:l>
-      <l:l i="70">&#484;</l:l>
-      <l:l i="70">&#485;</l:l>
-      <l:l i="70">&#486;</l:l>
-      <l:l i="70">&#487;</l:l>
-      <l:l i="70">&#500;</l:l>
-      <l:l i="70">&#501;</l:l>
-      <l:l i="70">&#7712;</l:l>
-      <l:l i="70">&#7713;</l:l>
-      <l:l i="80">H</l:l>
-      <l:l i="80">h</l:l>
-      <l:l i="80">&#292;</l:l>
-      <l:l i="80">&#293;</l:l>
-      <l:l i="80">&#294;</l:l>
-      <l:l i="80">&#295;</l:l>
-      <l:l i="80">&#542;</l:l>
-      <l:l i="80">&#543;</l:l>
-      <l:l i="80">&#614;</l:l>
-      <l:l i="80">&#7714;</l:l>
-      <l:l i="80">&#7715;</l:l>
-      <l:l i="80">&#7716;</l:l>
-      <l:l i="80">&#7717;</l:l>
-      <l:l i="80">&#7718;</l:l>
-      <l:l i="80">&#7719;</l:l>
-      <l:l i="80">&#7720;</l:l>
-      <l:l i="80">&#7721;</l:l>
-      <l:l i="80">&#7722;</l:l>
-      <l:l i="80">&#7723;</l:l>
-      <l:l i="80">&#7830;</l:l>
-      <l:l i="90">I</l:l>
-      <l:l i="90">i</l:l>
-      <l:l i="90">&#204;</l:l>
-      <l:l i="90">&#236;</l:l>
-      <l:l i="90">&#205;</l:l>
-      <l:l i="90">&#237;</l:l>
-      <l:l i="90">&#206;</l:l>
-      <l:l i="90">&#238;</l:l>
-      <l:l i="90">&#207;</l:l>
-      <l:l i="90">&#239;</l:l>
-      <l:l i="90">&#296;</l:l>
-      <l:l i="90">&#297;</l:l>
-      <l:l i="90">&#298;</l:l>
-      <l:l i="90">&#299;</l:l>
-      <l:l i="90">&#300;</l:l>
-      <l:l i="90">&#301;</l:l>
-      <l:l i="90">&#302;</l:l>
-      <l:l i="90">&#303;</l:l>
-      <l:l i="90">&#304;</l:l>
-      <l:l i="90">&#407;</l:l>
-      <l:l i="90">&#616;</l:l>
-      <l:l i="90">&#463;</l:l>
-      <l:l i="90">&#464;</l:l>
-      <l:l i="90">&#520;</l:l>
-      <l:l i="90">&#521;</l:l>
-      <l:l i="90">&#522;</l:l>
-      <l:l i="90">&#523;</l:l>
-      <l:l i="90">&#7724;</l:l>
-      <l:l i="90">&#7725;</l:l>
-      <l:l i="90">&#7726;</l:l>
-      <l:l i="90">&#7727;</l:l>
-      <l:l i="90">&#7880;</l:l>
-      <l:l i="90">&#7881;</l:l>
-      <l:l i="90">&#7882;</l:l>
-      <l:l i="90">&#7883;</l:l>
-      <l:l i="100">J</l:l>
-      <l:l i="100">j</l:l>
-      <l:l i="100">&#308;</l:l>
-      <l:l i="100">&#309;</l:l>
-      <l:l i="100">&#496;</l:l>
-      <l:l i="100">&#669;</l:l>
-      <l:l i="110">K</l:l>
-      <l:l i="110">k</l:l>
-      <l:l i="110">&#310;</l:l>
-      <l:l i="110">&#311;</l:l>
-      <l:l i="110">&#408;</l:l>
-      <l:l i="110">&#409;</l:l>
-      <l:l i="110">&#488;</l:l>
-      <l:l i="110">&#489;</l:l>
-      <l:l i="110">&#7728;</l:l>
-      <l:l i="110">&#7729;</l:l>
-      <l:l i="110">&#7730;</l:l>
-      <l:l i="110">&#7731;</l:l>
-      <l:l i="110">&#7732;</l:l>
-      <l:l i="110">&#7733;</l:l>
-      <l:l i="120">L</l:l>
-      <l:l i="120">l</l:l>
-      <l:l i="120">&#313;</l:l>
-      <l:l i="120">&#314;</l:l>
-      <l:l i="120">&#315;</l:l>
-      <l:l i="120">&#316;</l:l>
-      <l:l i="120">&#317;</l:l>
-      <l:l i="120">&#318;</l:l>
-      <l:l i="120">&#319;</l:l>
-      <l:l i="120">&#320;</l:l>
-      <l:l i="120">&#321;</l:l>
-      <l:l i="120">&#322;</l:l>
-      <l:l i="120">&#410;</l:l>
-      <l:l i="120">&#456;</l:l>
-      <l:l i="120">&#564;</l:l>
-      <l:l i="120">&#619;</l:l>
-      <l:l i="120">&#620;</l:l>
-      <l:l i="120">&#621;</l:l>
-      <l:l i="120">&#7734;</l:l>
-      <l:l i="120">&#7735;</l:l>
-      <l:l i="120">&#7736;</l:l>
-      <l:l i="120">&#7737;</l:l>
-      <l:l i="120">&#7738;</l:l>
-      <l:l i="120">&#7739;</l:l>
-      <l:l i="120">&#7740;</l:l>
-      <l:l i="120">&#7741;</l:l>
-      <l:l i="130">M</l:l>
-      <l:l i="130">m</l:l>
-      <l:l i="130">&#625;</l:l>
-      <l:l i="130">&#7742;</l:l>
-      <l:l i="130">&#7743;</l:l>
-      <l:l i="130">&#7744;</l:l>
-      <l:l i="130">&#7745;</l:l>
-      <l:l i="130">&#7746;</l:l>
-      <l:l i="130">&#7747;</l:l>
-      <l:l i="140">N</l:l>
-      <l:l i="140">n</l:l>
-      <l:l i="140">&#209;</l:l>
-      <l:l i="140">&#241;</l:l>
-      <l:l i="140">&#323;</l:l>
-      <l:l i="140">&#324;</l:l>
-      <l:l i="140">&#325;</l:l>
-      <l:l i="140">&#326;</l:l>
-      <l:l i="140">&#327;</l:l>
-      <l:l i="140">&#328;</l:l>
-      <l:l i="140">&#413;</l:l>
-      <l:l i="140">&#626;</l:l>
-      <l:l i="140">&#414;</l:l>
-      <l:l i="140">&#544;</l:l>
-      <l:l i="140">&#459;</l:l>
-      <l:l i="140">&#504;</l:l>
-      <l:l i="140">&#505;</l:l>
-      <l:l i="140">&#565;</l:l>
-      <l:l i="140">&#627;</l:l>
-      <l:l i="140">&#7748;</l:l>
-      <l:l i="140">&#7749;</l:l>
-      <l:l i="140">&#7750;</l:l>
-      <l:l i="140">&#7751;</l:l>
-      <l:l i="140">&#7752;</l:l>
-      <l:l i="140">&#7753;</l:l>
-      <l:l i="140">&#7754;</l:l>
-      <l:l i="140">&#7755;</l:l>
-      <l:l i="150">O</l:l>
-      <l:l i="150">o</l:l>
-      <l:l i="150">&#210;</l:l>
-      <l:l i="150">&#242;</l:l>
-      <l:l i="150">&#211;</l:l>
-      <l:l i="150">&#243;</l:l>
-      <l:l i="150">&#212;</l:l>
-      <l:l i="150">&#244;</l:l>
-      <l:l i="150">&#213;</l:l>
-      <l:l i="150">&#245;</l:l>
-      <l:l i="150">&#214;</l:l>
-      <l:l i="150">&#246;</l:l>
-      <l:l i="150">&#216;</l:l>
-      <l:l i="150">&#248;</l:l>
-      <l:l i="150">&#332;</l:l>
-      <l:l i="150">&#333;</l:l>
-      <l:l i="150">&#334;</l:l>
-      <l:l i="150">&#335;</l:l>
-      <l:l i="150">&#336;</l:l>
-      <l:l i="150">&#337;</l:l>
-      <l:l i="150">&#415;</l:l>
-      <l:l i="150">&#416;</l:l>
-      <l:l i="150">&#417;</l:l>
-      <l:l i="150">&#465;</l:l>
-      <l:l i="150">&#466;</l:l>
-      <l:l i="150">&#490;</l:l>
-      <l:l i="150">&#491;</l:l>
-      <l:l i="150">&#492;</l:l>
-      <l:l i="150">&#493;</l:l>
-      <l:l i="150">&#510;</l:l>
-      <l:l i="150">&#511;</l:l>
-      <l:l i="150">&#524;</l:l>
-      <l:l i="150">&#525;</l:l>
-      <l:l i="150">&#526;</l:l>
-      <l:l i="150">&#527;</l:l>
-      <l:l i="150">&#554;</l:l>
-      <l:l i="150">&#555;</l:l>
-      <l:l i="150">&#556;</l:l>
-      <l:l i="150">&#557;</l:l>
-      <l:l i="150">&#558;</l:l>
-      <l:l i="150">&#559;</l:l>
-      <l:l i="150">&#560;</l:l>
-      <l:l i="150">&#561;</l:l>
-      <l:l i="150">&#7756;</l:l>
-      <l:l i="150">&#7757;</l:l>
-      <l:l i="150">&#7758;</l:l>
-      <l:l i="150">&#7759;</l:l>
-      <l:l i="150">&#7760;</l:l>
-      <l:l i="150">&#7761;</l:l>
-      <l:l i="150">&#7762;</l:l>
-      <l:l i="150">&#7763;</l:l>
-      <l:l i="150">&#7884;</l:l>
-      <l:l i="150">&#7885;</l:l>
-      <l:l i="150">&#7886;</l:l>
-      <l:l i="150">&#7887;</l:l>
-      <l:l i="150">&#7888;</l:l>
-      <l:l i="150">&#7889;</l:l>
-      <l:l i="150">&#7890;</l:l>
-      <l:l i="150">&#7891;</l:l>
-      <l:l i="150">&#7892;</l:l>
-      <l:l i="150">&#7893;</l:l>
-      <l:l i="150">&#7894;</l:l>
-      <l:l i="150">&#7895;</l:l>
-      <l:l i="150">&#7896;</l:l>
-      <l:l i="150">&#7897;</l:l>
-      <l:l i="150">&#7898;</l:l>
-      <l:l i="150">&#7899;</l:l>
-      <l:l i="150">&#7900;</l:l>
-      <l:l i="150">&#7901;</l:l>
-      <l:l i="150">&#7902;</l:l>
-      <l:l i="150">&#7903;</l:l>
-      <l:l i="150">&#7904;</l:l>
-      <l:l i="150">&#7905;</l:l>
-      <l:l i="150">&#7906;</l:l>
-      <l:l i="150">&#7907;</l:l>
-      <l:l i="160">P</l:l>
-      <l:l i="160">p</l:l>
-      <l:l i="160">&#420;</l:l>
-      <l:l i="160">&#421;</l:l>
-      <l:l i="160">&#7764;</l:l>
-      <l:l i="160">&#7765;</l:l>
-      <l:l i="160">&#7766;</l:l>
-      <l:l i="160">&#7767;</l:l>
-      <l:l i="170">Q</l:l>
-      <l:l i="170">q</l:l>
-      <l:l i="170">&#672;</l:l>
-      <l:l i="180">R</l:l>
-      <l:l i="180">r</l:l>
-      <l:l i="180">&#340;</l:l>
-      <l:l i="180">&#341;</l:l>
-      <l:l i="180">&#342;</l:l>
-      <l:l i="180">&#343;</l:l>
-      <l:l i="180">&#344;</l:l>
-      <l:l i="180">&#345;</l:l>
-      <l:l i="180">&#528;</l:l>
-      <l:l i="180">&#529;</l:l>
-      <l:l i="180">&#530;</l:l>
-      <l:l i="180">&#531;</l:l>
-      <l:l i="180">&#636;</l:l>
-      <l:l i="180">&#637;</l:l>
-      <l:l i="180">&#638;</l:l>
-      <l:l i="180">&#7768;</l:l>
-      <l:l i="180">&#7769;</l:l>
-      <l:l i="180">&#7770;</l:l>
-      <l:l i="180">&#7771;</l:l>
-      <l:l i="180">&#7772;</l:l>
-      <l:l i="180">&#7773;</l:l>
-      <l:l i="180">&#7774;</l:l>
-      <l:l i="180">&#7775;</l:l>
-      <l:l i="190">S</l:l>
-      <l:l i="190">s</l:l>
-      <l:l i="190">&#346;</l:l>
-      <l:l i="190">&#347;</l:l>
-      <l:l i="190">&#348;</l:l>
-      <l:l i="190">&#349;</l:l>
-      <l:l i="190">&#350;</l:l>
-      <l:l i="190">&#351;</l:l>
-      <l:l i="190">&#352;</l:l>
-      <l:l i="190">&#353;</l:l>
-      <l:l i="190">&#536;</l:l>
-      <l:l i="190">&#537;</l:l>
-      <l:l i="190">&#642;</l:l>
-      <l:l i="190">&#7776;</l:l>
-      <l:l i="190">&#7777;</l:l>
-      <l:l i="190">&#7778;</l:l>
-      <l:l i="190">&#7779;</l:l>
-      <l:l i="190">&#7780;</l:l>
-      <l:l i="190">&#7781;</l:l>
-      <l:l i="190">&#7782;</l:l>
-      <l:l i="190">&#7783;</l:l>
-      <l:l i="190">&#7784;</l:l>
-      <l:l i="190">&#7785;</l:l>
-      <l:l i="200">T</l:l>
-      <l:l i="200">t</l:l>
-      <l:l i="200">&#354;</l:l>
-      <l:l i="200">&#355;</l:l>
-      <l:l i="200">&#356;</l:l>
-      <l:l i="200">&#357;</l:l>
-      <l:l i="200">&#358;</l:l>
-      <l:l i="200">&#359;</l:l>
-      <l:l i="200">&#427;</l:l>
-      <l:l i="200">&#428;</l:l>
-      <l:l i="200">&#429;</l:l>
-      <l:l i="200">&#430;</l:l>
-      <l:l i="200">&#648;</l:l>
-      <l:l i="200">&#538;</l:l>
-      <l:l i="200">&#539;</l:l>
-      <l:l i="200">&#566;</l:l>
-      <l:l i="200">&#7786;</l:l>
-      <l:l i="200">&#7787;</l:l>
-      <l:l i="200">&#7788;</l:l>
-      <l:l i="200">&#7789;</l:l>
-      <l:l i="200">&#7790;</l:l>
-      <l:l i="200">&#7791;</l:l>
-      <l:l i="200">&#7792;</l:l>
-      <l:l i="200">&#7793;</l:l>
-      <l:l i="200">&#7831;</l:l>
-      <l:l i="210">U</l:l>
-      <l:l i="210">u</l:l>
-      <l:l i="210">&#217;</l:l>
-      <l:l i="210">&#249;</l:l>
-      <l:l i="210">&#218;</l:l>
-      <l:l i="210">&#250;</l:l>
-      <l:l i="210">&#219;</l:l>
-      <l:l i="210">&#251;</l:l>
-      <l:l i="210">&#220;</l:l>
-      <l:l i="210">&#252;</l:l>
-      <l:l i="210">&#360;</l:l>
-      <l:l i="210">&#361;</l:l>
-      <l:l i="210">&#362;</l:l>
-      <l:l i="210">&#363;</l:l>
-      <l:l i="210">&#364;</l:l>
-      <l:l i="210">&#365;</l:l>
-      <l:l i="210">&#366;</l:l>
-      <l:l i="210">&#367;</l:l>
-      <l:l i="210">&#368;</l:l>
-      <l:l i="210">&#369;</l:l>
-      <l:l i="210">&#370;</l:l>
-      <l:l i="210">&#371;</l:l>
-      <l:l i="210">&#431;</l:l>
-      <l:l i="210">&#432;</l:l>
-      <l:l i="210">&#467;</l:l>
-      <l:l i="210">&#468;</l:l>
-      <l:l i="210">&#469;</l:l>
-      <l:l i="210">&#470;</l:l>
-      <l:l i="210">&#471;</l:l>
-      <l:l i="210">&#472;</l:l>
-      <l:l i="210">&#473;</l:l>
-      <l:l i="210">&#474;</l:l>
-      <l:l i="210">&#475;</l:l>
-      <l:l i="210">&#476;</l:l>
-      <l:l i="210">&#532;</l:l>
-      <l:l i="210">&#533;</l:l>
-      <l:l i="210">&#534;</l:l>
-      <l:l i="210">&#535;</l:l>
-      <l:l i="210">&#7794;</l:l>
-      <l:l i="210">&#7795;</l:l>
-      <l:l i="210">&#7796;</l:l>
-      <l:l i="210">&#7797;</l:l>
-      <l:l i="210">&#7798;</l:l>
-      <l:l i="210">&#7799;</l:l>
-      <l:l i="210">&#7800;</l:l>
-      <l:l i="210">&#7801;</l:l>
-      <l:l i="210">&#7802;</l:l>
-      <l:l i="210">&#7803;</l:l>
-      <l:l i="210">&#7908;</l:l>
-      <l:l i="210">&#7909;</l:l>
-      <l:l i="210">&#7910;</l:l>
-      <l:l i="210">&#7911;</l:l>
-      <l:l i="210">&#7912;</l:l>
-      <l:l i="210">&#7913;</l:l>
-      <l:l i="210">&#7914;</l:l>
-      <l:l i="210">&#7915;</l:l>
-      <l:l i="210">&#7916;</l:l>
-      <l:l i="210">&#7917;</l:l>
-      <l:l i="210">&#7918;</l:l>
-      <l:l i="210">&#7919;</l:l>
-      <l:l i="210">&#7920;</l:l>
-      <l:l i="210">&#7921;</l:l>
-      <l:l i="220">V</l:l>
-      <l:l i="220">v</l:l>
-      <l:l i="220">&#434;</l:l>
-      <l:l i="220">&#651;</l:l>
-      <l:l i="220">&#7804;</l:l>
-      <l:l i="220">&#7805;</l:l>
-      <l:l i="220">&#7806;</l:l>
-      <l:l i="220">&#7807;</l:l>
-      <l:l i="230">W</l:l>
-      <l:l i="230">w</l:l>
-      <l:l i="230">&#372;</l:l>
-      <l:l i="230">&#373;</l:l>
-      <l:l i="230">&#7808;</l:l>
-      <l:l i="230">&#7809;</l:l>
-      <l:l i="230">&#7810;</l:l>
-      <l:l i="230">&#7811;</l:l>
-      <l:l i="230">&#7812;</l:l>
-      <l:l i="230">&#7813;</l:l>
-      <l:l i="230">&#7814;</l:l>
-      <l:l i="230">&#7815;</l:l>
-      <l:l i="230">&#7816;</l:l>
-      <l:l i="230">&#7817;</l:l>
-      <l:l i="230">&#7832;</l:l>
-      <l:l i="240">X</l:l>
-      <l:l i="240">x</l:l>
-      <l:l i="240">&#7818;</l:l>
-      <l:l i="240">&#7819;</l:l>
-      <l:l i="240">&#7820;</l:l>
-      <l:l i="240">&#7821;</l:l>
-      <l:l i="250">Y</l:l>
-      <l:l i="250">y</l:l>
-      <l:l i="250">&#221;</l:l>
-      <l:l i="250">&#253;</l:l>
-      <l:l i="250">&#255;</l:l>
-      <l:l i="250">&#376;</l:l>
-      <l:l i="250">&#374;</l:l>
-      <l:l i="250">&#375;</l:l>
-      <l:l i="250">&#435;</l:l>
-      <l:l i="250">&#436;</l:l>
-      <l:l i="250">&#562;</l:l>
-      <l:l i="250">&#563;</l:l>
-      <l:l i="250">&#7822;</l:l>
-      <l:l i="250">&#7823;</l:l>
-      <l:l i="250">&#7833;</l:l>
-      <l:l i="250">&#7922;</l:l>
-      <l:l i="250">&#7923;</l:l>
-      <l:l i="250">&#7924;</l:l>
-      <l:l i="250">&#7925;</l:l>
-      <l:l i="250">&#7926;</l:l>
-      <l:l i="250">&#7927;</l:l>
-      <l:l i="250">&#7928;</l:l>
-      <l:l i="250">&#7929;</l:l>
-      <l:l i="260">Z</l:l>
-      <l:l i="260">z</l:l>
-      <l:l i="260">&#377;</l:l>
-      <l:l i="260">&#378;</l:l>
-      <l:l i="260">&#379;</l:l>
-      <l:l i="260">&#380;</l:l>
-      <l:l i="260">&#381;</l:l>
-      <l:l i="260">&#382;</l:l>
-      <l:l i="260">&#437;</l:l>
-      <l:l i="260">&#438;</l:l>
-      <l:l i="260">&#548;</l:l>
-      <l:l i="260">&#549;</l:l>
-      <l:l i="260">&#656;</l:l>
-      <l:l i="260">&#657;</l:l>
-      <l:l i="260">&#7824;</l:l>
-      <l:l i="260">&#7825;</l:l>
-      <l:l i="260">&#7826;</l:l>
-      <l:l i="260">&#7827;</l:l>
-      <l:l i="260">&#7828;</l:l>
-      <l:l i="260">&#7829;</l:l>
+      <l:l i="0">Simboliai</l:l>
+      <l:l i="1">A</l:l>
+      <l:l i="1">a</l:l>
+      <l:l i="1">&#260;</l:l>
+      <l:l i="1">&#261;</l:l>
+      <l:l i="2">B</l:l>
+      <l:l i="2">b</l:l>
+      <l:l i="3">C</l:l>
+      <l:l i="3">c</l:l>
+      <l:l i="3">&#268;</l:l>
+      <l:l i="3">&#269;</l:l>
+      <l:l i="4">D</l:l>
+      <l:l i="4">d</l:l>
+      <l:l i="5">E</l:l>
+      <l:l i="5">e</l:l>
+      <l:l i="5">&#280;</l:l>
+      <l:l i="5">&#281;</l:l>
+      <l:l i="5">&#278;</l:l>
+      <l:l i="5">&#279;</l:l>
+      <l:l i="6">F</l:l>
+      <l:l i="6">f</l:l>
+      <l:l i="7">G</l:l>
+      <l:l i="7">g</l:l>
+      <l:l i="8">H</l:l>
+      <l:l i="8">h</l:l>
+      <l:l i="9">I</l:l>
+      <l:l i="9">i</l:l>
+      <l:l i="9">&#302;</l:l>
+      <l:l i="9">&#303;</l:l>
+      <l:l i="10">Y</l:l>
+      <l:l i="10">y</l:l>
+      <l:l i="11">J</l:l>
+      <l:l i="11">j</l:l>
+      <l:l i="12">K</l:l>
+      <l:l i="12">k</l:l>
+      <l:l i="13">L</l:l>
+      <l:l i="13">l</l:l>
+      <l:l i="14">M</l:l>
+      <l:l i="14">m</l:l>
+      <l:l i="15">N</l:l>
+      <l:l i="15">n</l:l>
+      <l:l i="16">O</l:l>
+      <l:l i="16">o</l:l>
+      <l:l i="17">P</l:l>
+      <l:l i="17">p</l:l>
+      <l:l i="18">R</l:l>
+      <l:l i="18">r</l:l>
+      <l:l i="19">S</l:l>
+      <l:l i="19">s</l:l>
+      <l:l i="19">&#352;</l:l>
+      <l:l i="19">&#353;</l:l>
+      <l:l i="20">T</l:l>
+      <l:l i="20">t</l:l>
+      <l:l i="21">U</l:l>
+      <l:l i="21">u</l:l>
+      <l:l i="21">&#370;</l:l>
+      <l:l i="21">&#371;</l:l>
+      <l:l i="21">&#362;</l:l>
+      <l:l i="21">&#363;</l:l>
+      <l:l i="22">V</l:l>
+      <l:l i="22">v</l:l>
+      <l:l i="23">Z</l:l>
+      <l:l i="23">z</l:l>
+      <l:l i="23">&#381;</l:l>
+      <l:l i="23">&#382;</l:l>
+      <l:l i="24">Q</l:l>
+      <l:l i="24">q</l:l>
+      <l:l i="25">W</l:l>
+      <l:l i="25">w</l:l>
+      <l:l i="26">X</l:l>
+      <l:l i="26">x</l:l>
    </l:letters>
 </l:l10n>

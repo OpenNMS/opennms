@@ -5,7 +5,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: sections.xsl,v 1.31 2003/12/15 23:40:18 bobstayton Exp $
+     $Id: sections.xsl,v 1.37 2004/11/21 19:53:15 kosek Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -17,53 +17,76 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="section">
-  <xsl:variable name="id">
-    <xsl:call-template name="object.id"/>
-  </xsl:variable>
-
-  <xsl:variable name="level">
-    <xsl:call-template name="section.level">
-      <xsl:with-param name="node" select="."/>
-    </xsl:call-template>
-  </xsl:variable>
-
-  <!-- xsl:use-attribute-sets takes only a Qname, not a variable -->
   <xsl:choose>
-    <xsl:when test="$level = 1">
-      <fo:block id="{$id}"
-                xsl:use-attribute-sets="section.level1.properties">
-        <xsl:call-template name="section.content"/>
-      </fo:block>
-    </xsl:when>
-    <xsl:when test="$level = 2">
-      <fo:block id="{$id}"
-                xsl:use-attribute-sets="section.level2.properties">
-        <xsl:call-template name="section.content"/>
-      </fo:block>
-    </xsl:when>
-    <xsl:when test="$level = 3">
-      <fo:block id="{$id}"
-                xsl:use-attribute-sets="section.level3.properties">
-        <xsl:call-template name="section.content"/>
-      </fo:block>
-    </xsl:when>
-    <xsl:when test="$level = 4">
-      <fo:block id="{$id}"
-                xsl:use-attribute-sets="section.level4.properties">
-        <xsl:call-template name="section.content"/>
-      </fo:block>
-    </xsl:when>
-    <xsl:when test="$level = 5">
-      <fo:block id="{$id}"
-                xsl:use-attribute-sets="section.level5.properties">
-        <xsl:call-template name="section.content"/>
-      </fo:block>
+    <xsl:when test="$rootid = @id">
+      <xsl:call-template name="section.page.sequence"/>
     </xsl:when>
     <xsl:otherwise>
-      <fo:block id="{$id}"
-                xsl:use-attribute-sets="section.level6.properties">
-        <xsl:call-template name="section.content"/>
-      </fo:block>
+      <xsl:variable name="id">
+        <xsl:call-template name="object.id"/>
+      </xsl:variable>
+
+      <xsl:variable name="renderas">
+        <xsl:choose>
+          <xsl:when test="@renderas = 'sect1'">1</xsl:when>
+          <xsl:when test="@renderas = 'sect2'">2</xsl:when>
+          <xsl:when test="@renderas = 'sect3'">3</xsl:when>
+          <xsl:when test="@renderas = 'sect4'">4</xsl:when>
+          <xsl:when test="@renderas = 'sect5'">5</xsl:when>
+          <xsl:otherwise><xsl:value-of select="''"/></xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
+
+      <xsl:variable name="level">
+        <xsl:choose>
+          <xsl:when test="$renderas != ''">
+            <xsl:value-of select="$renderas"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:call-template name="section.level"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
+
+      <!-- xsl:use-attribute-sets takes only a Qname, not a variable -->
+      <xsl:choose>
+        <xsl:when test="$level = 1">
+          <fo:block id="{$id}"
+                    xsl:use-attribute-sets="section.level1.properties">
+            <xsl:call-template name="section.content"/>
+          </fo:block>
+        </xsl:when>
+        <xsl:when test="$level = 2">
+          <fo:block id="{$id}"
+                    xsl:use-attribute-sets="section.level2.properties">
+            <xsl:call-template name="section.content"/>
+          </fo:block>
+        </xsl:when>
+        <xsl:when test="$level = 3">
+          <fo:block id="{$id}"
+                    xsl:use-attribute-sets="section.level3.properties">
+            <xsl:call-template name="section.content"/>
+          </fo:block>
+        </xsl:when>
+        <xsl:when test="$level = 4">
+          <fo:block id="{$id}"
+                    xsl:use-attribute-sets="section.level4.properties">
+            <xsl:call-template name="section.content"/>
+          </fo:block>
+        </xsl:when>
+        <xsl:when test="$level = 5">
+          <fo:block id="{$id}"
+                    xsl:use-attribute-sets="section.level5.properties">
+            <xsl:call-template name="section.content"/>
+          </fo:block>
+        </xsl:when>
+        <xsl:otherwise>
+          <fo:block id="{$id}"
+                    xsl:use-attribute-sets="section.level6.properties">
+            <xsl:call-template name="section.content"/>
+          </fo:block>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
@@ -88,7 +111,7 @@
   <xsl:apply-templates/>
 </xsl:template>
 
-<xsl:template match="/section">
+<xsl:template match="section[not(parent::*)]" name="section.page.sequence">
   <xsl:variable name="id">
     <xsl:call-template name="object.id">
       <xsl:with-param name="object" select="ancestor::reference"/>
@@ -104,11 +127,22 @@
       <xsl:call-template name="l10n.language"/>
     </xsl:attribute>
     <xsl:attribute name="format">
-      <xsl:call-template name="page.number.format"/>
+      <xsl:call-template name="page.number.format">
+        <xsl:with-param name="master-reference" select="$master-reference"/>
+      </xsl:call-template>
     </xsl:attribute>
-    <xsl:if test="$double.sided != 0">
-      <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
-    </xsl:if>
+
+    <xsl:attribute name="initial-page-number">
+      <xsl:call-template name="initial.page.number">
+        <xsl:with-param name="master-reference" select="$master-reference"/>
+      </xsl:call-template>
+    </xsl:attribute>
+
+    <xsl:attribute name="force-page-count">
+      <xsl:call-template name="force.page.count">
+        <xsl:with-param name="master-reference" select="$master-reference"/>
+      </xsl:call-template>
+    </xsl:attribute>
 
     <xsl:attribute name="hyphenation-character">
       <xsl:call-template name="gentext">
@@ -173,10 +207,28 @@
       </xsl:call-template>
     </xsl:variable>
 
+    <xsl:variable name="renderas">
+      <xsl:choose>
+        <xsl:when test="$section/@renderas = 'sect1'">1</xsl:when>
+        <xsl:when test="$section/@renderas = 'sect2'">2</xsl:when>
+        <xsl:when test="$section/@renderas = 'sect3'">3</xsl:when>
+        <xsl:when test="$section/@renderas = 'sect4'">4</xsl:when>
+        <xsl:when test="$section/@renderas = 'sect5'">5</xsl:when>
+        <xsl:otherwise><xsl:value-of select="''"/></xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+  
     <xsl:variable name="level">
-      <xsl:call-template name="section.level">
-        <xsl:with-param name="node" select="$section"/>
-      </xsl:call-template>
+      <xsl:choose>
+        <xsl:when test="$renderas != ''">
+          <xsl:value-of select="$renderas"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="section.level">
+            <xsl:with-param name="node" select="$section"/>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:variable>
 
     <xsl:variable name="marker">
@@ -271,11 +323,22 @@
       <xsl:call-template name="l10n.language"/>
     </xsl:attribute>
     <xsl:attribute name="format">
-      <xsl:call-template name="page.number.format"/>
+      <xsl:call-template name="page.number.format">
+        <xsl:with-param name="master-reference" select="$master-reference"/>
+      </xsl:call-template>
     </xsl:attribute>
-    <xsl:if test="$double.sided != 0">
-      <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
-    </xsl:if>
+
+    <xsl:attribute name="initial-page-number">
+      <xsl:call-template name="initial.page.number">
+        <xsl:with-param name="master-reference" select="$master-reference"/>
+      </xsl:call-template>
+    </xsl:attribute>
+
+    <xsl:attribute name="force-page-count">
+      <xsl:call-template name="force.page.count">
+        <xsl:with-param name="master-reference" select="$master-reference"/>
+      </xsl:call-template>
+    </xsl:attribute>
 
     <xsl:attribute name="hyphenation-character">
       <xsl:call-template name="gentext">

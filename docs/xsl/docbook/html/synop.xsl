@@ -6,7 +6,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: synop.xsl,v 1.13 2002/10/04 10:56:58 nwalsh Exp $
+     $Id: synop.xsl,v 1.15 2004/11/09 11:50:06 xmldoc Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.

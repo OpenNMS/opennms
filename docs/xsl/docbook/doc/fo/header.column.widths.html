@@ -1,8 +1,8 @@
 <html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-   <title>header.column.widths</title><link rel="stylesheet" href="../ref.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.0"><link rel="home" href="index.html" title="FO Parameter Reference"><link rel="up" href="rn17.html" title="Pagination and General Styles"><link rel="previous" href="footer.rule.html" title="footer.rule"><link rel="next" href="footer.column.widths.html" title="footer.column.widths"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">header.column.widths</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="footer.rule.html">Prev</a>&nbsp;</td><th width="60%" align="center">Pagination and General Styles</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="footer.column.widths.html">Next</a></td></tr></table><hr></div><div class="refentry" lang="en"><a name="header.column.widths"></a><div class="titlepage"><div></div><div></div></div><div class="refnamediv"><h2>Name</h2><p>header.column.widths &#8212; Specify relative widths of header areas</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a name="header.column.widths.frag"></a><pre class="programlisting">
+   <title>header.column.widths</title><link rel="stylesheet" href="../ref.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.0"><link rel="start" href="index.html" title="FO Parameter Reference"><link rel="up" href="rn17.html" title="Pagination and General Styles"><link rel="prev" href="footer.rule.html" title="footer.rule"><link rel="next" href="footer.column.widths.html" title="footer.column.widths"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">header.column.widths</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="footer.rule.html">Prev</a>&nbsp;</td><th width="60%" align="center">Pagination and General Styles</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="footer.column.widths.html">Next</a></td></tr></table><hr></div><div class="refentry" lang="en"><a name="header.column.widths"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>header.column.widths &#8212; Specify relative widths of header areas</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a name="header.column.widths.frag"></a><pre class="programlisting">
 &lt;xsl:param name="header.column.widths" select="'1 1 1'"&gt;&lt;/xsl:param&gt;
-</pre></div><div class="refsect1" lang="en"><a name="d0e4226"></a><h2>Description</h2><p>Page headers in print output use a three column table
+</pre></div><div class="refsect1" lang="en"><a name="d0e5117"></a><h2>Description</h2><p>Page headers in print output use a three column table
 to position text at the left, center, and right side of
 the header on the page.
 This parameter lets you specify the relative sizes of the
@@ -23,7 +23,7 @@ In the FO output, this looks like:
 &lt;fo:table-column column-number="1" 
     column-width="proportional-column-width(1)"/&gt;
 </pre><p>
-The <tt class="literal">proportional-column-width()</tt>
+The <code class="literal">proportional-column-width()</code>
 function computes a column width by dividing its
 argument by the total of the arguments for all the columns, and
 then multiplying the result by the width of the whole table

@@ -5,7 +5,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: refentry.xsl,v 1.17 2003/12/05 22:53:54 bobstayton Exp $
+     $Id: refentry.xsl,v 1.20 2004/09/02 04:13:53 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -31,11 +31,22 @@
         <xsl:call-template name="l10n.language"/>
       </xsl:attribute>
       <xsl:attribute name="format">
-        <xsl:call-template name="page.number.format"/>
+        <xsl:call-template name="page.number.format">
+          <xsl:with-param name="master-reference" select="$master-reference"/>
+        </xsl:call-template>
       </xsl:attribute>
-      <xsl:if test="$double.sided != 0">
-        <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
-      </xsl:if>
+
+      <xsl:attribute name="initial-page-number">
+        <xsl:call-template name="initial.page.number">
+          <xsl:with-param name="master-reference" select="$master-reference"/>
+        </xsl:call-template>
+      </xsl:attribute>
+
+      <xsl:attribute name="force-page-count">
+        <xsl:call-template name="force.page.count">
+          <xsl:with-param name="master-reference" select="$master-reference"/>
+        </xsl:call-template>
+      </xsl:attribute>
 
       <xsl:attribute name="hyphenation-character">
         <xsl:call-template name="gentext">
@@ -90,11 +101,22 @@
       <xsl:call-template name="l10n.language"/>
     </xsl:attribute>
     <xsl:attribute name="format">
-      <xsl:call-template name="page.number.format"/>
+      <xsl:call-template name="page.number.format">
+        <xsl:with-param name="master-reference" select="$master-reference"/>
+      </xsl:call-template>
     </xsl:attribute>
-    <xsl:if test="$double.sided != 0">
-      <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
-    </xsl:if>
+
+    <xsl:attribute name="initial-page-number">
+      <xsl:call-template name="initial.page.number">
+        <xsl:with-param name="master-reference" select="$master-reference"/>
+      </xsl:call-template>
+    </xsl:attribute>
+
+    <xsl:attribute name="force-page-count">
+      <xsl:call-template name="force.page.count">
+        <xsl:with-param name="master-reference" select="$master-reference"/>
+      </xsl:call-template>
+    </xsl:attribute>
 
     <xsl:attribute name="hyphenation-character">
       <xsl:call-template name="gentext">
@@ -163,11 +185,22 @@
           <xsl:call-template name="l10n.language"/>
         </xsl:attribute>
         <xsl:attribute name="format">
-          <xsl:call-template name="page.number.format"/>
+          <xsl:call-template name="page.number.format">
+            <xsl:with-param name="master-reference" select="$master-reference"/>
+          </xsl:call-template>
         </xsl:attribute>
-        <xsl:if test="$double.sided != 0">
-          <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
-        </xsl:if>
+
+        <xsl:attribute name="initial-page-number">
+          <xsl:call-template name="initial.page.number">
+            <xsl:with-param name="master-reference" select="$master-reference"/>
+          </xsl:call-template>
+        </xsl:attribute>
+
+        <xsl:attribute name="force-page-count">
+          <xsl:call-template name="force.page.count">
+            <xsl:with-param name="master-reference" select="$master-reference"/>
+          </xsl:call-template>
+        </xsl:attribute>
 
         <xsl:attribute name="hyphenation-character">
           <xsl:call-template name="gentext">

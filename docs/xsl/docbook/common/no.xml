@@ -208,6 +208,8 @@
       <l:template name="equation" text="Formel %n. %t"/>
       <l:template name="example" text="Eksempel %n. %t"/>
       <l:template name="figure" text="Figur %n. %t"/>
+      <l:template name="foil" text="%t" lang="en"/>
+      <l:template name="foilgroup" text="%t" lang="en"/>
       <l:template name="formalpara" text="%t"/>
       <l:template name="glossary" text="%t"/>
       <l:template name="glossdiv" text="%t"/>
@@ -351,6 +353,8 @@
       <l:template name="equation" text="%t"/>
       <l:template name="example" text="%t"/>
       <l:template name="figure" text="%t"/>
+      <l:template name="foil" text="%t" lang="en"/>
+      <l:template name="foilgroup" text="%t" lang="en"/>
       <l:template name="formalpara" text="%t"/>
       <l:template name="glossary" text="%t"/>
       <l:template name="glossdiv" text="%t"/>
@@ -390,8 +394,12 @@
       <l:template name="variablelist" text="%t"/>
       <l:template name="varlistentry" text="%n"/>
       <l:template name="warning" text="%t"/>
+      <l:template name="olink.document.citation" text=" in %o" lang="en"/>
+      <l:template name="olink.page.citation" text=" (page %p)" lang="en"/>
       <l:template name="page.citation" text=" [%p]"/>
       <l:template name="page" text="(page %p)" lang="en"/>
+      <l:template name="docname" text=" in %o" lang="en"/>
+      <l:template name="docnamelong" text=" in the document titled %o" lang="en"/>
       <l:template name="pageabbrev" text="(p. %p)" lang="en"/>
       <l:template name="Page" text="Page %p" lang="en"/>
       <l:template name="bridgehead" text="&#8220;%t&#8221;"/>

@@ -1,3 +1,20 @@
+2004-09-07  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* .cvsignore: I prefer to explicitly list all the files that should be ignored. Really the ones that shouldn't should probably be moved to another directory...
+
+2004-09-06  Michael Smith <xmldoc@users.sourceforge.net>
+
+	* .cvsignore: Ignore generated .xsl files.
+	
+	Without this, cvs update reports all generated .xsl files in this
+	directory as unknown. It's a big list, and it'd be a lot easier to
+	read the cvs update output if these files weren't listed every time.
+	
+	Note: This does not cause CVS to ignore the html2xhtml.xsl file or
+	to treat it in any way way differently than it would if the *.xsl
+	line in this .cvsignore file did not exist. It doesn't seem to at
+	least. If that's wrong, this change can always be reverted.
+
 2003-07-10  Robert Stayton <bobstayton@users.sourceforge.net>
 
 	* html2xhtml.xsl: Set default values for chunker.output parameters so the

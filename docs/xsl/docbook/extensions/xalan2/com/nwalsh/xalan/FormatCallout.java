@@ -3,15 +3,13 @@ package com.nwalsh.xalan;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 import org.w3c.dom.*;
-import org.apache.xml.utils.DOMHelper;
 import org.apache.xml.utils.DOMBuilder;
-import org.apache.xml.utils.AttList;
 import com.nwalsh.xalan.Callout;
 
 /**
  * <p>Utility class for the Verbatim extension (ignore this).</p>
  *
- * <p>$Id: FormatCallout.java,v 1.3 2003/12/17 01:01:34 nwalsh Exp $</p>
+ * <p>$Id: FormatCallout.java,v 1.4 2004/09/01 20:55:38 bobstayton Exp $</p>
  *
  * <p>Copyright (C) 2000, 2001 Norman Walsh.</p>
  *
@@ -26,36 +24,31 @@ import com.nwalsh.xalan.Callout;
  *
  * @see Verbatim
  *
- * @version $Id: FormatCallout.java,v 1.3 2003/12/17 01:01:34 nwalsh Exp $
+ * @version $Id: FormatCallout.java,v 1.4 2004/09/01 20:55:38 bobstayton Exp $
  **/
 
 public abstract class FormatCallout {
   protected static final String foURI = "http://www.w3.org/1999/XSL/Format";
   protected static final String xhURI = "http://www.w3.org/1999/xhtml";
   protected boolean stylesheetFO = false;
-  protected DOMHelper dh = null;
 
   public FormatCallout() {
     //nop;
   }
 
   public String areaLabel(Element area) {
-    NamedNodeMap domAttr = area.getAttributes();
-    AttList attr = new AttList(domAttr, dh);
     String label = null;
 
-    if (attr.getValue("label") != null) {
+    if (area.getAttribute("label") != null) {
       // If this area has a label, use it
-      label = attr.getValue("label");
+      label = area.getAttribute("label");
     } else {
       // Otherwise, if its parent is an areaset and it has a label, use that
       Element parent = (Element) area.getParentNode();
-      NamedNodeMap pdomAttr = parent.getAttributes();
-      AttList pAttr = new AttList(pdomAttr, dh);
       if (parent != null
 	  && parent.getNodeName().equals("areaset")
-	  && pAttr.getValue("label") != null) {
-	label = pAttr.getValue("label");
+	  && parent.getAttribute("label") != null) {
+	label = parent.getAttribute("label");
       }
     }
 

@@ -9,7 +9,7 @@
 <xsl:output method="xml" indent="no"/>
 
 <!-- ********************************************************************
-     $Id: docbook.xsl,v 1.30 2004/01/29 14:09:48 nwalsh Exp $
+     $Id: docbook.xsl,v 1.32 2004/10/04 18:59:40 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -29,6 +29,8 @@
 <xsl:include href="../common/titles.xsl"/>
 <xsl:include href="../common/subtitles.xsl"/>
 <xsl:include href="../common/gentext.xsl"/>
+<xsl:include href="../common/olink.xsl"/>
+<xsl:include href="../common/targets.xsl"/>
 <xsl:include href="../common/pi.xsl"/>
 <xsl:include href="autotoc.xsl"/>
 <xsl:include href="autoidx.xsl"/>
@@ -66,6 +68,7 @@
 <xsl:include href="pi.xsl"/>
 <xsl:include href="ebnf.xsl"/>
 <xsl:include href="docbookng.xsl"/>
+<xsl:include href="../html/chunker.xsl"/>
 
 <xsl:include href="fop.xsl"/>
 <xsl:include href="passivetex.xsl"/>
@@ -112,94 +115,114 @@
       <!-- to documents that don't have one. But not before the whole stylesheet -->
       <!-- has been converted to use namespaces. i.e., don't hold your breath -->
       <xsl:variable name="nons">
-	<xsl:apply-templates mode="stripNS"/>
+        <xsl:apply-templates mode="stripNS"/>
       </xsl:variable>
       <xsl:apply-templates select="exsl:node-set($nons)"/>
     </xsl:when>
     <xsl:otherwise>
-      <xsl:variable name="document.element" select="*[1]"/>
-
-      <xsl:if test="not(contains($root.elements,                           concat(' ', local-name($document.element), ' ')))">
-	<xsl:message terminate="yes">
-	  <xsl:text>ERROR: Document root element for FO output </xsl:text>
-	  <xsl:text>must be one of the following elements:</xsl:text>
-	  <xsl:value-of select="$root.elements"/>
-	</xsl:message>
-      </xsl:if>
-
-      <xsl:call-template name="root.messages"/>
-
-      <xsl:variable name="title">
-	<xsl:choose>
-	  <xsl:when test="$document.element/title[1]">
-	    <xsl:value-of select="$document.element/title[1]"/>
-	  </xsl:when>
-	  <xsl:otherwise>[could not find document title]</xsl:otherwise>
-	</xsl:choose>
-      </xsl:variable>
-      
-      <fo:root xsl:use-attribute-sets="root.properties">
-	<xsl:attribute name="language">
-	  <xsl:call-template name="l10n.language">
-	    <xsl:with-param name="target" select="/*[1]"/>
-	  </xsl:call-template>
-	</xsl:attribute>
-
-	<xsl:if test="$xep.extensions != 0">
-	  <xsl:call-template name="xep-document-information"/>
-	</xsl:if>
-	<xsl:if test="$axf.extensions != 0">
-	  <xsl:call-template name="axf-document-information"/>
-	</xsl:if>
-	<xsl:call-template name="setup.pagemasters"/>
-	<xsl:choose>
-	  <xsl:when test="$rootid != ''">
-	    <xsl:choose>
-	      <xsl:when test="count($profiled-nodes//*[@id=$rootid]) = 0">
-		<xsl:message terminate="yes">
-		  <xsl:text>ID '</xsl:text>
-		  <xsl:value-of select="$rootid"/>
-		  <xsl:text>' not found in document.</xsl:text>
-		</xsl:message>
-	      </xsl:when>
-	      <xsl:otherwise>
-		<xsl:if test="$fop.extensions != 0">
-		  <xsl:apply-templates select="$profiled-nodes//*[@id=$rootid]" mode="fop.outline"/>
-		</xsl:if>
-		<xsl:if test="$xep.extensions != 0">
-		  <xsl:variable name="bookmarks">
-		    <xsl:apply-templates select="$profiled-nodes//*[@id=$rootid]" mode="xep.outline"/>
-		  </xsl:variable>
-		  <xsl:if test="string($bookmarks) != ''">
-		    <rx:outline xmlns:rx="http://www.renderx.com/XSL/Extensions">
-		      <xsl:copy-of select="$bookmarks"/>
-		    </rx:outline>
-		  </xsl:if>
-		</xsl:if>
-		<xsl:apply-templates select="$profiled-nodes//*[@id=$rootid]"/>
-	      </xsl:otherwise>
-	    </xsl:choose>
-	  </xsl:when>
-	  <xsl:otherwise>
-	    <xsl:if test="$fop.extensions != 0">
-	      <xsl:apply-templates mode="fop.outline" select="$profiled-nodes/node()"/>
-	    </xsl:if>
-	    <xsl:if test="$xep.extensions != 0">
-	      <xsl:variable name="bookmarks">
-		<xsl:apply-templates mode="xep.outline" select="$profiled-nodes/node()"/>
-	      </xsl:variable>
-	      <xsl:if test="string($bookmarks) != ''">
-		<rx:outline xmlns:rx="http://www.renderx.com/XSL/Extensions">
-		  <xsl:copy-of select="$bookmarks"/>
-		</rx:outline>
-	      </xsl:if>
-	    </xsl:if>
-	    <xsl:apply-templates select="$profiled-nodes/node()"/>
-	  </xsl:otherwise>
-	</xsl:choose>
-      </fo:root>
+      <xsl:choose>
+        <xsl:when test="$rootid != ''">
+          <xsl:variable name="root.element" select="key('id', $rootid)"/>
+          <xsl:choose>
+            <xsl:when test="count($root.element) = 0">
+              <xsl:message terminate="yes">
+                <xsl:text>ID '</xsl:text>
+                <xsl:value-of select="$rootid"/>
+                <xsl:text>' not found in document.</xsl:text>
+              </xsl:message>
+            </xsl:when>
+            <xsl:when test="not(contains($root.elements, concat(' ', local-name($root.element), ' ')))">
+              <xsl:message terminate="yes">
+                <xsl:text>ERROR: Document root element ($rootid=</xsl:text>
+                <xsl:value-of select="$rootid"/>
+                <xsl:text>) for FO output </xsl:text>
+                <xsl:text>must be one of the following elements:</xsl:text>
+                <xsl:value-of select="$root.elements"/>
+              </xsl:message>
+            </xsl:when>
+            <!-- Otherwise proceed -->
+            <xsl:otherwise>
+              <xsl:if test="$collect.xref.targets = 'yes' or                             $collect.xref.targets = 'only'">
+                <xsl:apply-templates select="$root.element" mode="collect.targets"/>
+              </xsl:if>
+              <xsl:if test="$collect.xref.targets != 'only'">
+                <xsl:apply-templates select="$root.element" mode="process.root"/>
+              </xsl:if>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:when>
+        <!-- Otherwise process the document root element -->
+        <xsl:otherwise>
+          <xsl:variable name="document.element" select="*[1]"/>
+          <xsl:choose>
+            <xsl:when test="not(contains($root.elements,                      concat(' ', local-name($document.element), ' ')))">
+              <xsl:message terminate="yes">
+                <xsl:text>ERROR: Document root element for FO output </xsl:text>
+                <xsl:text>must be one of the following elements:</xsl:text>
+                <xsl:value-of select="$root.elements"/>
+              </xsl:message>
+            </xsl:when>
+            <!-- Otherwise proceed -->
+            <xsl:otherwise>
+              <xsl:if test="$collect.xref.targets = 'yes' or                             $collect.xref.targets = 'only'">
+                <xsl:apply-templates select="$profiled-nodes" mode="collect.targets"/>
+              </xsl:if>
+              <xsl:if test="$collect.xref.targets != 'only'">
+                <xsl:apply-templates select="$profiled-nodes" mode="process.root"/>
+              </xsl:if>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:otherwise>
   </xsl:choose>
+</xsl:template>
+
+<xsl:template match="*" mode="process.root">
+  <xsl:variable name="document.element" select="self::*"/>
+
+  <xsl:call-template name="root.messages"/>
+
+  <xsl:variable name="title">
+    <xsl:choose>
+      <xsl:when test="$document.element/title[1]">
+        <xsl:value-of select="$document.element/title[1]"/>
+      </xsl:when>
+      <xsl:otherwise>[could not find document title]</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  
+  <fo:root xsl:use-attribute-sets="root.properties">
+    <xsl:attribute name="language">
+      <xsl:call-template name="l10n.language">
+        <xsl:with-param name="target" select="/*[1]"/>
+      </xsl:call-template>
+    </xsl:attribute>
+
+    <xsl:if test="$xep.extensions != 0">
+      <xsl:call-template name="xep-document-information"/>
+    </xsl:if>
+    <xsl:if test="$axf.extensions != 0">
+      <xsl:call-template name="axf-document-information"/>
+    </xsl:if>
+
+    <xsl:call-template name="setup.pagemasters"/>
+
+    <xsl:if test="$fop.extensions != 0">
+      <xsl:apply-templates select="$document.element" mode="fop.outline"/>
+    </xsl:if>
+    <xsl:if test="$xep.extensions != 0">
+      <xsl:variable name="bookmarks">
+        <xsl:apply-templates select="$document.element" mode="xep.outline"/>
+      </xsl:variable>
+      <xsl:if test="string($bookmarks) != ''">
+        <rx:outline xmlns:rx="http://www.renderx.com/XSL/Extensions">
+          <xsl:copy-of select="$bookmarks"/>
+        </rx:outline>
+      </xsl:if>
+    </xsl:if>
+    <xsl:apply-templates select="$document.element"/>
+  </fo:root>
 </xsl:template>
 
 <xsl:template name="root.messages">
@@ -224,14 +247,14 @@
   <xsl:choose>
     <xsl:when test="namespace-uri(.) = 'http://docbook.org/docbook-ng'">
       <xsl:element name="{local-name(.)}">
-	<xsl:copy-of select="@*"/>
-	<xsl:apply-templates mode="stripNS"/>
+        <xsl:copy-of select="@*"/>
+        <xsl:apply-templates mode="stripNS"/>
       </xsl:element>
     </xsl:when>
     <xsl:otherwise>
       <xsl:copy>
-	<xsl:copy-of select="@*"/>
-	<xsl:apply-templates mode="stripNS"/>
+        <xsl:copy-of select="@*"/>
+        <xsl:apply-templates mode="stripNS"/>
       </xsl:copy>
     </xsl:otherwise>
   </xsl:choose>

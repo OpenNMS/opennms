@@ -2,9 +2,9 @@
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
    
-      <title></title>
+      <title>Common Template Reference</title>
       <link rel="stylesheet" href="../reference.css" type="text/css">
-      <meta name="generator" content="DocBook XSL Stylesheets V1.62.4">
+      <meta name="generator" content="DocBook XSL Stylesheets V1.67.1">
    </head>
    <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
       <div class="reference" lang="en"><a name="d0e1"></a><div class="titlepage">
@@ -20,83 +20,65 @@
                </div>
                <div>
                   <p class="releaseinfo">
-                     $Id: common.xsl,v 1.39 2003/12/06 00:07:51 bobstayton Exp $
+                     $Id: common.xsl,v 1.44 2004/11/17 18:38:45 bobstayton Exp $
                      
                   </p>
                </div>
                <div>
-                  <p class="copyright"><a href="../copyright.html"></a> &copy; 19992000  Norman Walsh. <a href="../warranty.html">No Warranty</a>.
+                  <p class="copyright"><a href="../copyright.html">Copyright</a> &copy; 19992000 by Norman Walsh. <a href="../warranty.html">No Warranty</a>.
                   </p>
                </div>
             </div>
-            <div></div>
             <hr>
          </div>
          <div class="partintro" lang="en">
-            <div>
-               <div></div>
-               <div></div>
-            </div>
+            <div></div>
             <div class="section" lang="en">
                <div class="titlepage">
                   <div>
                      <div>
-                        <h2 class="title" style="clear: both"><a name="d0e24"></a></h2>
+                        <h2 class="title" style="clear: both"><a name="d0e24"></a>Introduction
+                        </h2>
                      </div>
                   </div>
-                  <div></div>
                </div>
                <p>This is technical reference documentation for the DocBook XSL
                   Stylesheets; it documents (some of) the parameters, templates, and
                   other elements of the stylesheets.
                </p>
-               <p>This is not intended to be <span class="quote">user</span> documentation.
+               <p>This is not intended to be &#8220;<span class="quote">user</span>&#8221; documentation.
                   It is provided for developers writing customization layers for the
-                  stylesheets, and for anyone who's interested in <span class="quote">how it
-                     works</span>.
+                  stylesheets, and for anyone who's interested in &#8220;<span class="quote">how it
+                     works</span>&#8221;.
                </p>
                <p>Although I am trying to be thorough, this documentation is known
                   to be incomplete. Don't forget to read the source, too :-)
                </p>
             </div>
             <div class="toc">
-               <p><b></b></p>
+               <p><b>Table of Contents</b></p>
                <dl>
-                  <dt><a href="#template.is.component">is.component</a> - Tests if a given node is a component-level element
-                  </dt>
-                  <dt><a href="#template.is.section">is.section</a> - Tests if a given node is a section-level element
-                  </dt>
-                  <dt><a href="#template.section.level">section.level</a> - Returns the hierarchical level of a section.
-                  </dt>
-                  <dt><a href="#template.qanda.section.level">qanda.section.level</a> - Returns the hierarchical level of a QandASet.
-                  </dt>
-                  <dt><a href="#template.select.mediaobject">select.mediaobject</a> - Selects and processes an appropriate media object from a list
-                  </dt>
-                  <dt><a href="#template.select.mediaobject.index">select.mediaobject.index</a> - Selects the position of the appropriate media object from a list
-                  </dt>
-                  <dt><a href="#template.is.acceptable.mediaobject">is.acceptable.mediaobject</a> - Returns '1' if the specified media object is recognized.
-                  </dt>
-                  <dt><a href="#template.check.id.unique">check.id.unique</a> - Warn users about references to non-unique IDs
-                  </dt>
-                  <dt><a href="#template.check.idref.targets">check.idref.targets</a> - Warn users about incorrectly typed references
-                  </dt>
-                  <dt><a href="#template.copyright.years">copyright.years</a> - Print a set of years with collapsed ranges
-                  </dt>
-                  <dt><a href="#template.find.path.params">find.path.params</a> - Search in a table for the "best" match for the node
-                  </dt>
+                  <dt><span class="refentrytitle"><a href="#template.is.component">is.component</a></span><span class="refpurpose"> - Tests if a given node is a component-level element</span></dt>
+                  <dt><span class="refentrytitle"><a href="#template.is.section">is.section</a></span><span class="refpurpose"> - Tests if a given node is a section-level element</span></dt>
+                  <dt><span class="refentrytitle"><a href="#template.section.level">section.level</a></span><span class="refpurpose"> - Returns the hierarchical level of a section.</span></dt>
+                  <dt><span class="refentrytitle"><a href="#template.qanda.section.level">qanda.section.level</a></span><span class="refpurpose"> - Returns the hierarchical level of a QandASet.</span></dt>
+                  <dt><span class="refentrytitle"><a href="#template.select.mediaobject">select.mediaobject</a></span><span class="refpurpose"> - Selects and processes an appropriate media object from a list</span></dt>
+                  <dt><span class="refentrytitle"><a href="#template.select.mediaobject.index">select.mediaobject.index</a></span><span class="refpurpose"> - Selects the position of the appropriate media object from a list</span></dt>
+                  <dt><span class="refentrytitle"><a href="#template.is.acceptable.mediaobject">is.acceptable.mediaobject</a></span><span class="refpurpose"> - Returns '1' if the specified media object is recognized.</span></dt>
+                  <dt><span class="refentrytitle"><a href="#template.check.id.unique">check.id.unique</a></span><span class="refpurpose"> - Warn users about references to non-unique IDs</span></dt>
+                  <dt><span class="refentrytitle"><a href="#template.check.idref.targets">check.idref.targets</a></span><span class="refpurpose"> - Warn users about incorrectly typed references</span></dt>
+                  <dt><span class="refentrytitle"><a href="#template.copyright.years">copyright.years</a></span><span class="refpurpose"> - Print a set of years with collapsed ranges</span></dt>
+                  <dt><span class="refentrytitle"><a href="#template.find.path.params">find.path.params</a></span><span class="refpurpose"> - Search in a table for the "best" match for the node</span></dt>
                </dl>
             </div>
          </div>
-         <div class="refentry" lang="en"><a name="template.is.component"></a><div class="titlepage">
-               <div></div>
-               <div></div>
-            </div>
+         <div class="refentry" lang="en"><a name="template.is.component"></a><div class="titlepage"></div>
             <div class="refnamediv">
-               <h2></h2>
+               <h2>Name</h2>
                <p>is.component &#8212; Tests if a given node is a component-level element</p>
             </div>
             <div class="refsynopsisdiv">
-               <h2></h2><pre class="synopsis">&lt;xsl:template name="is.component"&gt;
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template name="is.component"&gt;
 &lt;xsl:param name="node" select="."/&gt;
   ...
 &lt;/xsl:template&gt;</pre></div>
@@ -136,16 +118,13 @@
          <div class="refentry" lang="en">
             <div class="refentry.separator">
                <hr>
-            </div><a name="template.is.section"></a><div class="titlepage">
-               <div></div>
-               <div></div>
-            </div>
+            </div><a name="template.is.section"></a><div class="titlepage"></div>
             <div class="refnamediv">
-               <h2></h2>
+               <h2>Name</h2>
                <p>is.section &#8212; Tests if a given node is a section-level element</p>
             </div>
             <div class="refsynopsisdiv">
-               <h2></h2><pre class="synopsis">&lt;xsl:template name="is.section"&gt;
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template name="is.section"&gt;
 &lt;xsl:param name="node" select="."/&gt;
   ...
 &lt;/xsl:template&gt;</pre></div>
@@ -185,16 +164,13 @@
          <div class="refentry" lang="en">
             <div class="refentry.separator">
                <hr>
-            </div><a name="template.section.level"></a><div class="titlepage">
-               <div></div>
-               <div></div>
-            </div>
+            </div><a name="template.section.level"></a><div class="titlepage"></div>
             <div class="refnamediv">
-               <h2></h2>
+               <h2>Name</h2>
                <p>section.level &#8212; Returns the hierarchical level of a section.</p>
             </div>
             <div class="refsynopsisdiv">
-               <h2></h2><pre class="synopsis">&lt;xsl:template name="section.level"&gt;
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template name="section.level"&gt;
 &lt;xsl:param name="node" select="."/&gt;
   ...
 &lt;/xsl:template&gt;</pre></div>
@@ -202,7 +178,7 @@
                
                
                <p>This template calculates the hierarchical level of a section.
-                  The element <tt class="sgmltag-element">sect1</tt> is at level 1, <tt class="sgmltag-element">sect2</tt> is
+                  The element <code class="sgmltag-element">sect1</code> is at level 1, <code class="sgmltag-element">sect2</code> is
                   at level 2, etc.
                </p>
                
@@ -232,7 +208,7 @@
             <div class="refreturn"><b><a name="d0e130"></a>Returns</b>
                
                
-               <p>The section level, <span class="quote">1</span>, <span class="quote">2</span>, etc.
+               <p>The section level, &#8220;<span class="quote">1</span>&#8221;, &#8220;<span class="quote">2</span>&#8221;, etc.
                   
                </p>
                
@@ -242,16 +218,13 @@
          <div class="refentry" lang="en">
             <div class="refentry.separator">
                <hr>
-            </div><a name="template.qanda.section.level"></a><div class="titlepage">
-               <div></div>
-               <div></div>
-            </div>
+            </div><a name="template.qanda.section.level"></a><div class="titlepage"></div>
             <div class="refnamediv">
-               <h2></h2>
+               <h2>Name</h2>
                <p>qanda.section.level &#8212; Returns the hierarchical level of a QandASet.</p>
             </div>
             <div class="refsynopsisdiv">
-               <h2></h2><pre class="synopsis">&lt;xsl:template name="qanda.section.level"/&gt;</pre></div>
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template name="qanda.section.level"/&gt;</pre></div>
             <div class="refdescription"><a name="d0e150"></a>
                
                
@@ -264,7 +237,7 @@
             <div class="refreturn"><b><a name="d0e155"></a>Returns</b>
                
                
-               <p>The level, <span class="quote">1</span>, <span class="quote">2</span>, etc.
+               <p>The level, &#8220;<span class="quote">1</span>&#8221;, &#8220;<span class="quote">2</span>&#8221;, etc.
                   
                </p>
                
@@ -274,16 +247,13 @@
          <div class="refentry" lang="en">
             <div class="refentry.separator">
                <hr>
-            </div><a name="template.select.mediaobject"></a><div class="titlepage">
-               <div></div>
-               <div></div>
-            </div>
+            </div><a name="template.select.mediaobject"></a><div class="titlepage"></div>
             <div class="refnamediv">
-               <h2></h2>
+               <h2>Name</h2>
                <p>select.mediaobject &#8212; Selects and processes an appropriate media object from a list</p>
             </div>
             <div class="refsynopsisdiv">
-               <h2></h2><pre class="synopsis">&lt;xsl:template name="select.mediaobject"&gt;
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template name="select.mediaobject"&gt;
 &lt;xsl:param name="olist" select="imageobject|imageobjectco                      |videoobject|audioobject|textobject"/&gt;
   ...
 &lt;/xsl:template&gt;</pre></div>
@@ -335,16 +305,13 @@
          <div class="refentry" lang="en">
             <div class="refentry.separator">
                <hr>
-            </div><a name="template.select.mediaobject.index"></a><div class="titlepage">
-               <div></div>
-               <div></div>
-            </div>
+            </div><a name="template.select.mediaobject.index"></a><div class="titlepage"></div>
             <div class="refnamediv">
-               <h2></h2>
+               <h2>Name</h2>
                <p>select.mediaobject.index &#8212; Selects the position of the appropriate media object from a list</p>
             </div>
             <div class="refsynopsisdiv">
-               <h2></h2><pre class="synopsis">&lt;xsl:template name="select.mediaobject.index"&gt;
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template name="select.mediaobject.index"&gt;
 &lt;xsl:param name="olist" select="imageobject|imageobjectco                      |videoobject|audioobject|textobject"/&gt;
 &lt;xsl:param name="count"&gt;1&lt;/xsl:param&gt;
   ...
@@ -361,7 +328,7 @@
                
                
                
-               <p>If the parameter <i class="parameter"><tt>use.role.for.mediaobject</tt></i>
+               <p>If the parameter <em class="parameter"><code>use.role.for.mediaobject</code></em>
                   is nonzero, then it first checks for an object with
                   a role attribute of the appropriate value.  It takes the first
                   of those.  Otherwise, it takes the first acceptable object
@@ -415,16 +382,13 @@
          <div class="refentry" lang="en">
             <div class="refentry.separator">
                <hr>
-            </div><a name="template.is.acceptable.mediaobject"></a><div class="titlepage">
-               <div></div>
-               <div></div>
-            </div>
+            </div><a name="template.is.acceptable.mediaobject"></a><div class="titlepage"></div>
             <div class="refnamediv">
-               <h2></h2>
+               <h2>Name</h2>
                <p>is.acceptable.mediaobject &#8212; Returns '1' if the specified media object is recognized.</p>
             </div>
             <div class="refsynopsisdiv">
-               <h2></h2><pre class="synopsis">&lt;xsl:template name="is.acceptable.mediaobject"&gt;
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template name="is.acceptable.mediaobject"&gt;
 &lt;xsl:param name="object"/&gt;
   ...
 &lt;/xsl:template&gt;</pre></div>
@@ -462,24 +426,21 @@
          <div class="refentry" lang="en">
             <div class="refentry.separator">
                <hr>
-            </div><a name="template.check.id.unique"></a><div class="titlepage">
-               <div></div>
-               <div></div>
-            </div>
+            </div><a name="template.check.id.unique"></a><div class="titlepage"></div>
             <div class="refnamediv">
-               <h2></h2>
+               <h2>Name</h2>
                <p>check.id.unique &#8212; Warn users about references to non-unique IDs</p>
             </div>
             <div class="refsynopsisdiv">
-               <h2></h2><pre class="synopsis">&lt;xsl:template name="check.id.unique"&gt;
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template name="check.id.unique"&gt;
 &lt;xsl:param name="linkend"/&gt;
   ...
 &lt;/xsl:template&gt;</pre></div>
             <div class="refdescription"><a name="d0e286"></a>
                
                
-               <p>If passed an ID in <tt class="varname">linkend</tt>,
-                  <tt class="function">check.id.unique</tt> prints
+               <p>If passed an ID in <code class="varname">linkend</code>,
+                  <code class="function">check.id.unique</code> prints
                   a warning message to the user if either the ID does not exist or
                   the ID is not unique.
                </p>
@@ -490,16 +451,13 @@
          <div class="refentry" lang="en">
             <div class="refentry.separator">
                <hr>
-            </div><a name="template.check.idref.targets"></a><div class="titlepage">
-               <div></div>
-               <div></div>
-            </div>
+            </div><a name="template.check.idref.targets"></a><div class="titlepage"></div>
             <div class="refnamediv">
-               <h2></h2>
+               <h2>Name</h2>
                <p>check.idref.targets &#8212; Warn users about incorrectly typed references</p>
             </div>
             <div class="refsynopsisdiv">
-               <h2></h2><pre class="synopsis">&lt;xsl:template name="check.idref.targets"&gt;
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template name="check.idref.targets"&gt;
 &lt;xsl:param name="linkend"/&gt;
 &lt;xsl:param name="element-list"/&gt;
   ...
@@ -507,10 +465,10 @@
             <div class="refdescription"><a name="d0e306"></a>
                
                
-               <p>If passed an ID in <tt class="varname">linkend</tt>,
-                  <tt class="function">check.idref.targets</tt> makes sure that the element
+               <p>If passed an ID in <code class="varname">linkend</code>,
+                  <code class="function">check.idref.targets</code> makes sure that the element
                   pointed to by the link is one of the elements listed in
-                  <tt class="varname">element-list</tt> and warns the user otherwise.
+                  <code class="varname">element-list</code> and warns the user otherwise.
                </p>
                
                
@@ -519,16 +477,13 @@
          <div class="refentry" lang="en">
             <div class="refentry.separator">
                <hr>
-            </div><a name="template.copyright.years"></a><div class="titlepage">
-               <div></div>
-               <div></div>
-            </div>
+            </div><a name="template.copyright.years"></a><div class="titlepage"></div>
             <div class="refnamediv">
-               <h2></h2>
+               <h2>Name</h2>
                <p>copyright.years &#8212; Print a set of years with collapsed ranges</p>
             </div>
             <div class="refsynopsisdiv">
-               <h2></h2><pre class="synopsis">&lt;xsl:template name="copyright.years"&gt;
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template name="copyright.years"&gt;
 &lt;xsl:param name="years"/&gt;
 &lt;xsl:param name="print.ranges" select="1"/&gt;
 &lt;xsl:param name="single.year.ranges" select="0"/&gt;
@@ -549,7 +504,7 @@
 &lt;year&gt;1994&lt;/year&gt;</pre>
                
                
-               <p>is printed <span class="quote">1992-1994</span>, whereas:
+               <p>is printed &#8220;<span class="quote">1992-1994</span>&#8221;, whereas:
                </p>
                
                
@@ -557,7 +512,7 @@
 &lt;year&gt;1994&lt;/year&gt;</pre>
                
                
-               <p>is printed <span class="quote">1992, 1994</span>.
+               <p>is printed &#8220;<span class="quote">1992, 1994</span>&#8221;.
                </p>
                
                
@@ -566,8 +521,8 @@
                <p>This template assumes that all the year elements contain only
                   decimal year numbers, that the elements are sorted in increasing
                   numerical order, that there are no duplicates, and that all the years
-                  are expressed in full <span class="quote">century+year</span>
-                  (<span class="quote">1999</span> not <span class="quote">99</span>) notation.
+                  are expressed in full &#8220;<span class="quote">century+year</span>&#8221;
+                  (&#8220;<span class="quote">1999</span>&#8221; not &#8220;<span class="quote">99</span>&#8221;) notation.
                </p>
                
                
@@ -591,8 +546,8 @@
                      <dd>
                         <p>If non-zero, two consecutive years will be printed as a range,
                            otherwise, they will be printed discretely. In other words, a single
-                           year range is <span class="quote">1991-1992</span> but discretely it's
-                           <span class="quote">1991, 1992</span>.
+                           year range is &#8220;<span class="quote">1991-1992</span>&#8221; but discretely it's
+                           &#8220;<span class="quote">1991, 1992</span>&#8221;.
                         </p>
                      </dd>
                   </dl>
@@ -611,16 +566,13 @@
          <div class="refentry" lang="en">
             <div class="refentry.separator">
                <hr>
-            </div><a name="template.find.path.params"></a><div class="titlepage">
-               <div></div>
-               <div></div>
-            </div>
+            </div><a name="template.find.path.params"></a><div class="titlepage"></div>
             <div class="refnamediv">
-               <h2></h2>
+               <h2>Name</h2>
                <p>find.path.params &#8212; Search in a table for the "best" match for the node</p>
             </div>
             <div class="refsynopsisdiv">
-               <h2></h2><pre class="synopsis">&lt;xsl:template name="find.path.params"&gt;
+               <h2>Synopsis</h2><pre class="synopsis">&lt;xsl:template name="find.path.params"&gt;
 &lt;xsl:param name="node" select="."/&gt;
 &lt;xsl:param name="table" select="''"/&gt;
 &lt;xsl:param name="location"&gt;

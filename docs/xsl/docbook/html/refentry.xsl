@@ -3,7 +3,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: refentry.xsl,v 1.16 2003/06/23 22:21:31 bobstayton Exp $
+     $Id: refentry.xsl,v 1.17 2004/11/23 11:00:26 xmldoc Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -43,6 +43,7 @@
 <xsl:template match="reference/referenceinfo"></xsl:template>
 <xsl:template match="reference/title"></xsl:template>
 <xsl:template match="reference/subtitle"></xsl:template>
+<xsl:template match="reference/titleabbrev"></xsl:template>
 
 <!-- ==================================================================== -->
 

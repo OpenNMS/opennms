@@ -4,7 +4,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: qandaset.xsl,v 1.16 2004/01/29 13:50:28 nwalsh Exp $
+     $Id: qandaset.xsl,v 1.17 2004/04/10 21:20:25 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -187,15 +187,8 @@
 </xsl:template>
 
 <xsl:template match="qandaentry">
-  <xsl:apply-templates/>
-<!--
-  <fo:block>
-    <xsl:if test="@id">
-      <xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
-    </xsl:if>
-    <xsl:apply-templates/>
-  </fo:block>
--->
+  <!-- Omit revhistory from fo:list-block because it is a table -->
+  <xsl:apply-templates select="question|answer"/>
 </xsl:template>
 
 <xsl:template match="question">
@@ -246,6 +239,8 @@
           <xsl:apply-templates select="*[local-name(.)!='label']"/>
         </xsl:otherwise>
       </xsl:choose>
+      <!-- Uncomment this line to get revhistory output in the question -->
+      <!-- <xsl:apply-templates select="preceding-sibling::revhistory"/> -->
     </fo:list-item-body>
   </fo:list-item>
 </xsl:template>

@@ -4,7 +4,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
 
 <!-- ********************************************************************
-     $Id: lists.xsl,v 1.41 2004/01/29 12:46:19 nwalsh Exp $
+     $Id: lists.xsl,v 1.46 2004/08/14 08:13:27 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -630,7 +630,14 @@
   <xsl:variable name="preamble" select="*[not(self::step                   or self::title                   or self::titleabbrev)]                 |comment()[not(preceding-sibling::step)]                 |processing-instruction()[not(preceding-sibling::step)]"/>
 
   <div class="{name(.)}">
-    <xsl:call-template name="anchor"/>
+    <xsl:call-template name="anchor">
+      <xsl:with-param name="conditional">
+        <xsl:choose>
+	  <xsl:when test="title">0</xsl:when>
+	  <xsl:otherwise>1</xsl:otherwise>
+	</xsl:choose>
+      </xsl:with-param>
+    </xsl:call-template>
 
     <xsl:if test="title and $placement = 'before'">
       <xsl:call-template name="formal.object.heading"/>
@@ -729,7 +736,9 @@
 </xsl:template>
 
 <xsl:template match="segmentedlist/title">
-  <p><b><xsl:apply-templates/></b></p>
+  <div class="title">
+    <strong><span class="title"><xsl:apply-templates/></span></strong>
+  </div>
 </xsl:template>
 
 <xsl:template match="segtitle">
@@ -740,7 +749,10 @@
 </xsl:template>
 
 <xsl:template match="seglistitem">
-  <xsl:apply-templates/>
+  <div class="seglistitem">
+    <xsl:call-template name="anchor"/>
+    <xsl:apply-templates/>
+  </div>
 </xsl:template>
 
 <xsl:template match="seg">
@@ -754,13 +766,15 @@
      you'll get something odd...maybe an error
   -->
 
-  <p>
-    <b>
-      <xsl:apply-templates select="$segtitles[$segnum=position()]" mode="segtitle-in-seg"/>
-      <xsl:text>: </xsl:text>
-    </b>
+  <div class="seg">
+    <strong>
+      <span class="segtitle">
+        <xsl:apply-templates select="$segtitles[$segnum=position()]" mode="segtitle-in-seg"/>
+        <xsl:text>: </xsl:text>
+      </span>
+    </strong>
     <xsl:apply-templates/>
-  </p>
+  </div>
 </xsl:template>
 
 <xsl:template match="segmentedlist" mode="seglist-table">
@@ -792,7 +806,7 @@
       </xsl:attribute>
     </xsl:if>
     <thead>
-      <tr>
+      <tr class="segtitle">
         <xsl:call-template name="tr.attributes">
           <xsl:with-param name="row" select="segtitle[1]"/>
           <xsl:with-param name="rownum" select="1"/>
@@ -815,7 +829,7 @@
     <xsl:number from="segmentedlist" count="seglistitem"/>
   </xsl:variable>
 
-  <tr>
+  <tr class="seglistitem">
     <xsl:call-template name="tr.attributes">
       <xsl:with-param name="rownum" select="$seglinum + 1"/>
     </xsl:call-template>
@@ -824,7 +838,16 @@
 </xsl:template>
 
 <xsl:template match="seg" mode="seglist-table">
-  <td><xsl:apply-templates/></td>
+  <td class="seg"><xsl:apply-templates/></td>
+</xsl:template>
+
+<xsl:template match="seg[1]" mode="seglist-table">
+  <td class="seg">
+    <xsl:call-template name="anchor">
+      <xsl:with-param name="node" select="ancestor::seglistitem"/>
+    </xsl:call-template>
+    <xsl:apply-templates/>
+  </td>
 </xsl:template>
 
 <!-- ==================================================================== -->
@@ -835,14 +858,20 @@
     <xsl:if test="title">
       <xsl:call-template name="formal.object.heading"/>
     </xsl:if>
+
+    <!-- Preserve order of PIs and comments -->
+    <xsl:apply-templates select="*[not(self::callout or self::title or self::titleabbrev)]                    |comment()[not(preceding-sibling::callout)]      |processing-instruction()[not(preceding-sibling::callout)]"/>
+
     <xsl:choose>
       <xsl:when test="$callout.list.table != 0">
         <table border="0" summary="Callout list">
-          <xsl:apply-templates/>
-        </table>
+	  <xsl:apply-templates select="callout            |comment()[preceding-sibling::calllout]     |processing-instruction()[preceding-sibling::callout]"/>
+	</table>
       </xsl:when>
       <xsl:otherwise>
-        <dl compact="compact"><xsl:apply-templates/></dl>
+	<dl compact="compact">
+	  <xsl:apply-templates select="callout            |comment()[preceding-sibling::calllout]     |processing-instruction()[preceding-sibling::callout]"/>
+	</dl>
       </xsl:otherwise>
     </xsl:choose>
   </div>

@@ -2,7 +2,7 @@
       xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <bookinfo>
 <title>XSL Library Template Reference</title>
-<releaseinfo role="cvs">$Id: lib.xweb,v 1.5 2003/04/05 20:22:05 adicarlo Exp $
+<releaseinfo role="cvs">$Id: lib.xweb,v 1.7 2004/09/24 20:38:02 bobstayton Exp $
 </releaseinfo>
 <corpauthor>DocBook Open Repository Team</corpauthor>
 <copyright>
@@ -430,7 +430,7 @@ for example), the template may silently return erroneous results.</para>
 
 <programlisting><src:fragment id='pi-attribute.frag'>
 <xsl:template name="pi-attribute">
-  <xsl:param name="pis" select="processing-instruction('')"/>
+  <xsl:param name="pis" select="processing-instruction('BOGUS_PI')"/>
   <xsl:param name="attribute">filename</xsl:param>
   <xsl:param name="count">1</xsl:param>
 
@@ -442,9 +442,12 @@ for example), the template may silently return erroneous results.</para>
       <xsl:variable name="pi">
         <xsl:value-of select="$pis[$count]"/>
       </xsl:variable>
+      <xsl:variable name="pivalue">
+        <xsl:value-of select="concat(' ', normalize-space($pi))"/>
+      </xsl:variable>
       <xsl:choose>
-        <xsl:when test="contains($pi,concat(' ', $attribute, '='))">
-          <xsl:variable name="rest" select="substring-after($pi,concat(' ', $attribute,'='))"/>
+        <xsl:when test="contains($pivalue,concat(' ', $attribute, '='))">
+          <xsl:variable name="rest" select="substring-after($pivalue,concat(' ', $attribute,'='))"/>
           <xsl:variable name="quote" select="substring($rest,1,1)"/>
           <xsl:value-of select="substring-before(substring($rest,2),$quote)"/>
         </xsl:when>
@@ -730,7 +733,7 @@ around these functions.</para>
 <src:fragment id="top" mundane-result-prefixes="xsl">
 
 <!-- ********************************************************************
-     $Id: lib.xweb,v 1.5 2003/04/05 20:22:05 adicarlo Exp $
+     $Id: lib.xweb,v 1.7 2004/09/24 20:38:02 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.

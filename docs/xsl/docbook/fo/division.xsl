@@ -5,7 +5,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: division.xsl,v 1.22 2004/02/06 05:31:08 bobstayton Exp $
+     $Id: division.xsl,v 1.25 2004/09/02 04:13:53 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -86,16 +86,26 @@
         <xsl:call-template name="l10n.language"/>
       </xsl:attribute>
       <xsl:attribute name="format">
-        <xsl:call-template name="page.number.format"/>
+        <xsl:call-template name="page.number.format">
+          <xsl:with-param name="master-reference" 
+                          select="$titlepage-master-reference"/>
+        </xsl:call-template>
       </xsl:attribute>
-      <xsl:choose>
-        <xsl:when test="$double.sided != 0">
-          <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:attribute name="force-page-count">no-force</xsl:attribute>
-        </xsl:otherwise>
-      </xsl:choose>
+
+      <xsl:attribute name="initial-page-number">
+        <xsl:call-template name="initial.page.number">
+          <xsl:with-param name="master-reference" 
+                          select="$titlepage-master-reference"/>
+        </xsl:call-template>
+      </xsl:attribute>
+
+      <xsl:attribute name="force-page-count">
+        <xsl:call-template name="force.page.count">
+          <xsl:with-param name="master-reference" 
+                          select="$titlepage-master-reference"/>
+        </xsl:call-template>
+      </xsl:attribute>
+
       <xsl:attribute name="hyphenation-character">
         <xsl:call-template name="gentext">
           <xsl:with-param name="key" select="'hyphenation-character'"/>
@@ -136,7 +146,6 @@
 
   <xsl:if test="contains($toc.params, 'toc')">
     <fo:page-sequence hyphenate="{$hyphenate}"
-                      format="i"
                       master-reference="{$lot-master-reference}">
       <xsl:attribute name="language">
         <xsl:call-template name="l10n.language"/>
@@ -144,16 +153,22 @@
       <xsl:attribute name="format">
         <xsl:call-template name="page.number.format">
           <xsl:with-param name="element" select="'toc'"/>
+          <xsl:with-param name="master-reference"
+                          select="$lot-master-reference"/>
         </xsl:call-template>
       </xsl:attribute>
-      <xsl:choose>
-        <xsl:when test="$double.sided != 0">
-          <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:attribute name="force-page-count">no-force</xsl:attribute>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:attribute name="initial-page-number">
+        <xsl:call-template name="initial.page.number">
+          <xsl:with-param name="master-reference"
+                          select="$lot-master-reference"/>
+        </xsl:call-template>
+      </xsl:attribute>
+      <xsl:attribute name="force-page-count">
+        <xsl:call-template name="force.page.count">
+          <xsl:with-param name="master-reference"
+                          select="$lot-master-reference"/>
+        </xsl:call-template>
+      </xsl:attribute>
 
       <xsl:attribute name="hyphenation-character">
         <xsl:call-template name="gentext">
@@ -221,22 +236,28 @@
 
   <xsl:if test="$preamble">
     <fo:page-sequence hyphenate="{$hyphenate}"
-                      master-reference="{$titlepage-master-reference}"
-                      initial-page-number="1">
+                      master-reference="{$titlepage-master-reference}">
       <xsl:attribute name="language">
         <xsl:call-template name="l10n.language"/>
       </xsl:attribute>
       <xsl:attribute name="format">
-        <xsl:call-template name="page.number.format"/>
+        <xsl:call-template name="page.number.format">
+          <xsl:with-param name="master-reference"
+                          select="$titlepage-master-reference"/>
+        </xsl:call-template>
       </xsl:attribute>
-      <xsl:choose>
-        <xsl:when test="$double.sided != 0">
-          <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:attribute name="force-page-count">no-force</xsl:attribute>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:attribute name="initial-page-number">
+        <xsl:call-template name="initial.page.number">
+          <xsl:with-param name="master-reference" 
+	                  select="$titlepage-master-reference"/>
+        </xsl:call-template>
+      </xsl:attribute>
+      <xsl:attribute name="force-page-count">
+        <xsl:call-template name="force.page.count">
+          <xsl:with-param name="master-reference" 
+	                  select="$titlepage-master-reference"/>
+        </xsl:call-template>
+      </xsl:attribute>
 
       <xsl:attribute name="hyphenation-character">
         <xsl:call-template name="gentext">
@@ -280,7 +301,6 @@
 
   <xsl:if test="contains($toc.params, 'toc')">
     <fo:page-sequence hyphenate="{$hyphenate}"
-                      format="i"
                       master-reference="{$lot-master-reference}">
       <xsl:attribute name="language">
         <xsl:call-template name="l10n.language"/>
@@ -288,16 +308,23 @@
       <xsl:attribute name="format">
         <xsl:call-template name="page.number.format">
           <xsl:with-param name="element" select="'toc'"/>
+          <xsl:with-param name="master-reference" 
+                          select="$lot-master-reference"/>
         </xsl:call-template>
       </xsl:attribute>
-      <xsl:choose>
-        <xsl:when test="$double.sided != 0">
-          <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:attribute name="force-page-count">no-force</xsl:attribute>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:attribute name="initial-page-number">
+        <xsl:call-template name="initial.page.number">
+        <xsl:with-param name="element" select="'toc'"/>
+        <xsl:with-param name="master-reference" 
+                        select="$lot-master-reference"/>
+         </xsl:call-template>
+      </xsl:attribute>
+      <xsl:attribute name="force-page-count">
+        <xsl:call-template name="force.page.count">
+          <xsl:with-param name="master-reference" 
+	                  select="$lot-master-reference"/>
+        </xsl:call-template>
+      </xsl:attribute>
 
       <xsl:attribute name="hyphenation-character">
         <xsl:call-template name="gentext">
@@ -333,7 +360,6 @@
 
   <xsl:if test="contains($toc.params,'figure') and .//figure">
     <fo:page-sequence hyphenate="{$hyphenate}"
-                      format="i"
                       master-reference="{$lot-master-reference}">
       <xsl:attribute name="language">
         <xsl:call-template name="l10n.language"/>
@@ -341,16 +367,23 @@
       <xsl:attribute name="format">
         <xsl:call-template name="page.number.format">
           <xsl:with-param name="element" select="'toc'"/>
+          <xsl:with-param name="master-reference" 
+                          select="$lot-master-reference"/>
         </xsl:call-template>
       </xsl:attribute>
-      <xsl:choose>
-        <xsl:when test="$double.sided != 0">
-          <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:attribute name="force-page-count">no-force</xsl:attribute>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:attribute name="initial-page-number">
+        <xsl:call-template name="initial.page.number">
+          <xsl:with-param name="element" select="'toc'"/>
+          <xsl:with-param name="master-reference" 
+                          select="$lot-master-reference"/>
+        </xsl:call-template>
+      </xsl:attribute>
+      <xsl:attribute name="force-page-count">
+        <xsl:call-template name="force.page.count">
+          <xsl:with-param name="master-reference" 
+                          select="$lot-master-reference"/>
+        </xsl:call-template>
+      </xsl:attribute>
 
       <xsl:attribute name="hyphenation-character">
         <xsl:call-template name="gentext">
@@ -389,7 +422,6 @@
 
   <xsl:if test="contains($toc.params,'table') and .//table">
     <fo:page-sequence hyphenate="{$hyphenate}"
-                      format="i"
                       master-reference="{$lot-master-reference}">
       <xsl:attribute name="language">
         <xsl:call-template name="l10n.language"/>
@@ -397,16 +429,23 @@
       <xsl:attribute name="format">
         <xsl:call-template name="page.number.format">
           <xsl:with-param name="element" select="'toc'"/>
+          <xsl:with-param name="master-reference" 
+                          select="$lot-master-reference"/>
         </xsl:call-template>
       </xsl:attribute>
-      <xsl:choose>
-        <xsl:when test="$double.sided != 0">
-          <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:attribute name="force-page-count">no-force</xsl:attribute>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:attribute name="initial-page-number">
+        <xsl:call-template name="initial.page.number">
+        <xsl:with-param name="element" select="'toc'"/>
+        <xsl:with-param name="master-reference" 
+                        select="$lot-master-reference"/>
+         </xsl:call-template>
+      </xsl:attribute>
+      <xsl:attribute name="force-page-count">
+        <xsl:call-template name="force.page.count">
+          <xsl:with-param name="master-reference" 
+	                  select="$lot-master-reference"/>
+        </xsl:call-template>
+      </xsl:attribute>
 
       <xsl:attribute name="hyphenation-character">
         <xsl:call-template name="gentext">
@@ -445,7 +484,6 @@
 
   <xsl:if test="contains($toc.params,'example') and .//example">
     <fo:page-sequence hyphenate="{$hyphenate}"
-                      format="i"
                       master-reference="{$lot-master-reference}">
       <xsl:attribute name="language">
         <xsl:call-template name="l10n.language"/>
@@ -453,16 +491,23 @@
       <xsl:attribute name="format">
         <xsl:call-template name="page.number.format">
           <xsl:with-param name="element" select="'toc'"/>
+          <xsl:with-param name="master-reference" 
+                          select="$lot-master-reference"/>
         </xsl:call-template>
       </xsl:attribute>
-      <xsl:choose>
-        <xsl:when test="$double.sided != 0">
-          <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:attribute name="force-page-count">no-force</xsl:attribute>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:attribute name="initial-page-number">
+        <xsl:call-template name="initial.page.number">
+        <xsl:with-param name="element" select="'toc'"/>
+        <xsl:with-param name="master-reference" 
+                        select="$lot-master-reference"/>
+         </xsl:call-template>
+      </xsl:attribute>
+      <xsl:attribute name="force-page-count">
+        <xsl:call-template name="force.page.count">
+          <xsl:with-param name="master-reference" 
+	                  select="$lot-master-reference"/>
+        </xsl:call-template>
+      </xsl:attribute>
 
       <xsl:attribute name="hyphenation-character">
         <xsl:call-template name="gentext">
@@ -501,7 +546,6 @@
 
   <xsl:if test="contains($toc.params,'equation') and .//equation">
     <fo:page-sequence hyphenate="{$hyphenate}"
-                      format="i"
                       master-reference="{$lot-master-reference}">
       <xsl:attribute name="language">
         <xsl:call-template name="l10n.language"/>
@@ -509,16 +553,24 @@
       <xsl:attribute name="format">
         <xsl:call-template name="page.number.format">
           <xsl:with-param name="element" select="'toc'"/>
+          <xsl:with-param name="master-reference" 
+                          select="$lot-master-reference"/>
         </xsl:call-template>
       </xsl:attribute>
-      <xsl:choose>
-        <xsl:when test="$double.sided != 0">
-          <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:attribute name="force-page-count">no-force</xsl:attribute>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:attribute name="initial-page-number">
+        <xsl:call-template name="initial.page.number">
+        <xsl:with-param name="element" select="'toc'"/>
+        <xsl:with-param name="master-reference" 
+                        select="$lot-master-reference"/>
+         </xsl:call-template>
+      </xsl:attribute>
+
+      <xsl:attribute name="force-page-count">
+        <xsl:call-template name="force.page.count">
+          <xsl:with-param name="master-reference" 
+	                  select="$lot-master-reference"/>
+        </xsl:call-template>
+      </xsl:attribute>
 
       <xsl:attribute name="hyphenation-character">
         <xsl:call-template name="gentext">
@@ -557,7 +609,6 @@
 
   <xsl:if test="contains($toc.params,'procedure') and .//procedure">
     <fo:page-sequence hyphenate="{$hyphenate}"
-                      format="i"
                       master-reference="{$lot-master-reference}">
       <xsl:attribute name="language">
         <xsl:call-template name="l10n.language"/>
@@ -565,16 +616,23 @@
       <xsl:attribute name="format">
         <xsl:call-template name="page.number.format">
           <xsl:with-param name="element" select="'toc'"/>
+          <xsl:with-param name="master-reference" 
+                          select="$lot-master-reference"/>
         </xsl:call-template>
       </xsl:attribute>
-      <xsl:choose>
-        <xsl:when test="$double.sided != 0">
-          <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:attribute name="force-page-count">no-force</xsl:attribute>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:attribute name="initial-page-number">
+        <xsl:call-template name="initial.page.number">
+        <xsl:with-param name="element" select="'toc'"/>
+        <xsl:with-param name="master-reference" 
+                        select="$lot-master-reference"/>
+         </xsl:call-template>
+      </xsl:attribute>
+      <xsl:attribute name="force-page-count">
+        <xsl:call-template name="force.page.count">
+          <xsl:with-param name="master-reference" 
+	                  select="$lot-master-reference"/>
+        </xsl:call-template>
+      </xsl:attribute>
 
       <xsl:attribute name="hyphenation-character">
         <xsl:call-template name="gentext">
@@ -648,23 +706,25 @@
       <xsl:call-template name="l10n.language"/>
     </xsl:attribute>
     <xsl:attribute name="format">
-      <xsl:call-template name="page.number.format"/>
+      <xsl:call-template name="page.number.format">
+        <xsl:with-param name="master-reference" 
+                        select="$titlepage-master-reference"/>
+      </xsl:call-template>
     </xsl:attribute>
 
-    <xsl:choose>
-      <xsl:when test="not(preceding::chapter)
-                      and not(preceding::part)">
-        <!-- if there is a preceding chapter or part, page numbering will already -->
-        <!-- be adjusted, otherwise restart the page numbers -->
-        <xsl:attribute name="initial-page-number">1</xsl:attribute>
-      </xsl:when>
-      <xsl:when test="$double.sided != 0">
-        <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
-      </xsl:when>
-    </xsl:choose>
-    <xsl:if test="$double.sided = 0">
-      <xsl:attribute name="force-page-count">no-force</xsl:attribute>
-    </xsl:if>
+    <xsl:attribute name="initial-page-number">
+      <xsl:call-template name="initial.page.number">
+        <xsl:with-param name="master-reference" 
+                        select="$titlepage-master-reference"/>
+      </xsl:call-template>
+    </xsl:attribute>
+
+    <xsl:attribute name="force-page-count">
+      <xsl:call-template name="force.page.count">
+        <xsl:with-param name="master-reference" 
+                        select="$titlepage-master-reference"/>
+      </xsl:call-template>
+    </xsl:attribute>
 
     <xsl:attribute name="hyphenation-character">
       <xsl:call-template name="gentext">
@@ -730,16 +790,23 @@
       <xsl:attribute name="format">
         <xsl:call-template name="page.number.format">
           <xsl:with-param name="element" select="'toc'"/>
+          <xsl:with-param name="master-reference" 
+                          select="$lot-master-reference"/>
         </xsl:call-template>
       </xsl:attribute>
-      <xsl:choose>
-        <xsl:when test="$double.sided != 0">
-          <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:attribute name="force-page-count">no-force</xsl:attribute>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:attribute name="initial-page-number">
+        <xsl:call-template name="initial.page.number">
+          <xsl:with-param name="element" select="'toc'"/>
+          <xsl:with-param name="master-reference" 
+                          select="$lot-master-reference"/>
+         </xsl:call-template>
+      </xsl:attribute>
+      <xsl:attribute name="force-page-count">
+        <xsl:call-template name="force.page.count">
+          <xsl:with-param name="master-reference" 
+                          select="$lot-master-reference"/>
+        </xsl:call-template>
+      </xsl:attribute>
 
       <xsl:attribute name="hyphenation-character">
         <xsl:call-template name="gentext">

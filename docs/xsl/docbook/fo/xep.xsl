@@ -5,7 +5,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: xep.xsl,v 1.18 2004/03/02 13:59:01 kosek Exp $
+     $Id: xep.xsl,v 1.19 2004/04/08 12:26:49 kosek Exp $
      ********************************************************************
      (c) Stephane Bline Peregrine Systems 2001
      Implementation of xep extensions:
@@ -27,12 +27,12 @@
 
 <xsl:template name="xep-document-information">
   <rx:meta-info>
-    <xsl:if test="//author[1]">
+    <xsl:if test="(//author)[1]">
       <xsl:element name="rx:meta-field">
         <xsl:attribute name="name">author</xsl:attribute>
         <xsl:attribute name="value">
           <xsl:call-template name="person.name">
-            <xsl:with-param name="node" select="//author[1]"/>
+            <xsl:with-param name="node" select="(//author)[1]"/>
           </xsl:call-template>
         </xsl:attribute>
       </xsl:element>

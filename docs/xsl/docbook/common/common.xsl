@@ -5,7 +5,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: common.xsl,v 1.39 2003/12/06 00:07:51 bobstayton Exp $
+     $Id: common.xsl,v 1.44 2004/11/17 18:38:45 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -19,7 +19,7 @@
 <doc:reference xmlns="">
 <referenceinfo>
 <releaseinfo role="meta">
-$Id: common.xsl,v 1.39 2003/12/06 00:07:51 bobstayton Exp $
+$Id: common.xsl,v 1.44 2004/11/17 18:38:45 bobstayton Exp $
 </releaseinfo>
 <author><surname>Walsh</surname>
 <firstname>Norman</firstname></author>
@@ -59,7 +59,7 @@ artheader article audiodata audioobject author authorblurb authorgroup
 beginpage bibliodiv biblioentry bibliography biblioset blockquote book
 bookbiblio bookinfo callout calloutlist caption caution chapter
 citerefentry cmdsynopsis co collab colophon colspec confgroup
-copyright dedication docinfo editor entry entrytbl epigraph equation
+copyright dedication docinfo editor entrytbl epigraph equation
 example figure footnote footnoteref formalpara funcprototype
 funcsynopsis glossary glossdef glossdiv glossentry glosslist graphicco
 group highlights imagedata imageobject imageobjectco important index
@@ -1110,7 +1110,7 @@ object is recognized as a graphic.</para>
   <xsl:variable name="filename">
     <xsl:choose>
       <xsl:when test="$data[@fileref]">
-        <xsl:value-of select="$data/@fileref"/>
+        <xsl:apply-templates select="$data/@fileref"/>
       </xsl:when>
       <xsl:when test="$data[@entityref]">
         <xsl:value-of select="unparsed-entity-uri($data/@entityref)"/>
@@ -1652,6 +1652,112 @@ node location.</para>
       </xsl:call-template>
     </xsl:when>
   </xsl:choose>
+</xsl:template>
+
+<xsl:template name="relative-uri">
+  <xsl:param name="filename" select="."/>
+  <xsl:param name="destdir" select="''"/>
+  
+  <xsl:variable name="srcurl">
+    <xsl:call-template name="strippath">
+      <xsl:with-param name="filename">
+        <xsl:call-template name="xml.base.dirs">
+          <xsl:with-param name="base.elem" 
+                          select="$filename/ancestor-or-self::*
+                                   [@xml:base != ''][1]"/>
+        </xsl:call-template>
+        <xsl:value-of select="$filename"/>
+      </xsl:with-param>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="srcurl.trimmed">
+    <xsl:call-template name="trim.common.uri.paths">
+      <xsl:with-param name="uriA" select="$srcurl"/>
+      <xsl:with-param name="uriB" select="$destdir"/>
+      <xsl:with-param name="return" select="'A'"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="destdir.trimmed">
+    <xsl:call-template name="trim.common.uri.paths">
+      <xsl:with-param name="uriA" select="$srcurl"/>
+      <xsl:with-param name="uriB" select="$destdir"/>
+      <xsl:with-param name="return" select="'B'"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="depth">
+    <xsl:call-template name="count.uri.path.depth">
+      <xsl:with-param name="filename" select="$destdir.trimmed"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:call-template name="copy-string">
+    <xsl:with-param name="string" select="'../'"/>
+    <xsl:with-param name="count" select="$depth"/>
+  </xsl:call-template>
+  <xsl:value-of select="$srcurl.trimmed"/>
+
+</xsl:template>
+
+<!-- ===================================== -->
+
+<xsl:template name="xml.base.dirs">
+  <xsl:param name="base.elem" select="NONODE"/>
+
+  <!-- Recursively resolve xml:base attributes -->
+  <xsl:if test="$base.elem/ancestor::*[@xml:base != '']">
+    <xsl:call-template name="xml.base.dirs">
+      <xsl:with-param name="base.elem" 
+                      select="$base.elem/ancestor::*[@xml:base != ''][1]"/>
+    </xsl:call-template>
+  </xsl:if>
+  <xsl:call-template name="getdir">
+    <xsl:with-param name="filename" select="$base.elem/@xml:base"/>
+  </xsl:call-template>
+
+</xsl:template>
+
+<!-- ===================================== -->
+
+<xsl:template name="strippath">
+  <xsl:param name="filename" select="''"/>
+  <xsl:choose>
+    <!-- Leading .. are not eliminated -->
+    <xsl:when test="starts-with($filename, '../')">
+      <xsl:value-of select="'../'"/>
+      <xsl:call-template name="strippath">
+        <xsl:with-param name="filename" select="substring-after($filename, '../')"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:when test="contains($filename, '/../')">
+      <xsl:call-template name="strippath">
+        <xsl:with-param name="filename">
+          <xsl:call-template name="getdir">
+            <xsl:with-param name="filename" select="substring-before($filename, '/../')"/>
+          </xsl:call-template>
+          <xsl:value-of select="substring-after($filename, '/../')"/>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$filename"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<!-- ===================================== -->
+
+<xsl:template name="getdir">
+  <xsl:param name="filename" select="''"/>
+  <xsl:if test="contains($filename, '/')">
+    <xsl:value-of select="substring-before($filename, '/')"/>
+    <xsl:text>/</xsl:text>
+    <xsl:call-template name="getdir">
+      <xsl:with-param name="filename" select="substring-after($filename, '/')"/>
+    </xsl:call-template>
+  </xsl:if>
 </xsl:template>
 
 </xsl:stylesheet>

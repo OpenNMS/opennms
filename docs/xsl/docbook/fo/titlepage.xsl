@@ -4,7 +4,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: titlepage.xsl,v 1.27 2004/01/29 18:00:56 bobstayton Exp $
+     $Id: titlepage.xsl,v 1.32 2004/11/24 20:08:32 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -180,13 +180,11 @@
 
 <xsl:template match="abstract" mode="titlepage.mode">
   <fo:block>
-    <xsl:if test="title"> <!-- FIXME: add param for using default title? -->
-      <xsl:call-template name="formal.object.heading">
-        <xsl:with-param name="title">
-          <xsl:apply-templates select="." mode="title.markup"/>
-        </xsl:with-param>
-      </xsl:call-template>
-    </xsl:if>
+    <xsl:call-template name="formal.object.heading">
+      <xsl:with-param name="title">
+        <xsl:apply-templates select="." mode="title.markup"/>
+      </xsl:with-param>
+    </xsl:call-template>
     <xsl:apply-templates mode="titlepage.mode"/>
   </fo:block>
 </xsl:template>
@@ -321,6 +319,10 @@
   <xsl:apply-templates mode="titlepage.mode"/>
 </xsl:template>
 
+<xsl:template match="corpcredit" mode="titlepage.mode">
+  <xsl:apply-templates mode="titlepage.mode"/>
+</xsl:template>
+
 <xsl:template match="corpname" mode="titlepage.mode">
   <xsl:apply-templates mode="titlepage.mode"/>
 </xsl:template>
@@ -397,13 +399,14 @@
 </xsl:template>
 
 <xsl:template match="legalnotice" mode="titlepage.mode">
-  <fo:block>
+
+  <xsl:variable name="id">
+    <xsl:call-template name="object.id"/>
+  </xsl:variable>
+
+  <fo:block id="{$id}">
     <xsl:if test="title"> <!-- FIXME: add param for using default title? -->
-    <xsl:call-template name="formal.object.heading">
-        <xsl:with-param name="title">
-          <xsl:apply-templates select="." mode="title.markup"/>
-        </xsl:with-param>
-      </xsl:call-template>
+      <xsl:call-template name="formal.object.heading"/>
     </xsl:if>
     <xsl:apply-templates mode="titlepage.mode"/>
   </fo:block>

@@ -1,9 +1,10 @@
 <?xml version='1.0'?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:fo="http://www.w3.org/1999/XSL/Format"
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: pi.xsl,v 1.4 2002/03/14 18:43:34 nwalsh Exp $
+     $Id: pi.xsl,v 1.7 2004/11/17 23:00:55 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -156,6 +157,140 @@
     </xsl:call-template>
   </dl>
 </xsl:template>
+
+<!-- ==================================================================== -->
+
+<!-- "need" processing instruction, a kind of soft page break -->
+<!-- A "need" is a request for space on a page.  If the requested space
+     is not available, the page breaks and the content that follows
+     the need request appears on the next page. If the requested
+     space is available, then the request is ignored. -->
+
+<xsl:template match="processing-instruction('dbfo-need')">
+
+  <xsl:variable name="pi-height">
+    <xsl:call-template name="dbfo-attribute">
+      <xsl:with-param name="pis" select="."/>
+      <xsl:with-param name="attribute" select="'height'"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="height">
+    <xsl:choose>
+      <xsl:when test="$pi-height != ''">
+        <xsl:value-of select="$pi-height"/>
+      </xsl:when>
+      <xsl:otherwise>0pt</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="pi-before">
+    <xsl:call-template name="dbfo-attribute">
+      <xsl:with-param name="pis" select="."/>
+      <xsl:with-param name="attribute" select="'space-before'"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="spacer">
+    <fo:block-container width="100%" height="{$height}">
+      <fo:block><fo:leader leader-length="0pt"/></fo:block>
+    </fo:block-container>
+  </xsl:variable>
+
+  <xsl:choose>
+    <xsl:when test="$fop.extensions != 0">
+      <!-- Doesn't work in fop -->
+    </xsl:when>
+    <xsl:when test="$pi-before != ''">
+      <fo:block space-after="0pt" space-before="{$pi-before}">
+        <xsl:copy-of select="$spacer"/>
+      </fo:block>
+    </xsl:when>
+    <xsl:when test="following-sibling::para">
+      <fo:block space-after="0pt" 
+                xsl:use-attribute-sets="normal.para.spacing">
+        <xsl:copy-of select="$spacer"/>
+      </fo:block>
+    </xsl:when>
+    <xsl:when test="following-sibling::table or
+                    following-sibling::figure or
+                    following-sibling::example or
+                    following-sibling::equation">
+      <fo:block space-after="0pt" 
+                xsl:use-attribute-sets="formal.object.properties">
+        <xsl:copy-of select="$spacer"/>
+      </fo:block>
+    </xsl:when>
+    <xsl:when test="following-sibling::informaltable or
+                    following-sibling::informalfigure or
+                    following-sibling::informalexample or
+                    following-sibling::informalequation">
+      <fo:block space-after="0pt" 
+                xsl:use-attribute-sets="informal.object.properties">
+        <xsl:copy-of select="$spacer"/>
+      </fo:block>
+    </xsl:when>
+    <xsl:when test="following-sibling::itemizedlist or
+                    following-sibling::orderedlist or
+                    following-sibling::variablelist or
+                    following-sibling::simplelist">
+      <fo:block space-after="0pt" 
+                xsl:use-attribute-sets="informal.object.properties">
+        <xsl:copy-of select="$spacer"/>
+      </fo:block>
+    </xsl:when>
+    <xsl:when test="following-sibling::listitem or
+                    following-sibling::step">
+      <fo:list-item space-after="0pt" 
+                xsl:use-attribute-sets="informal.object.properties">
+        <fo:list-item-label/>
+        <fo:list-item-body start-indent="0pt" end-indent="0pt">
+          <xsl:copy-of select="$spacer"/>
+        </fo:list-item-body>
+      </fo:list-item>
+    </xsl:when>
+    <xsl:when test="following-sibling::sect1 or
+                    following-sibling::sect2 or
+                    following-sibling::sect3 or
+                    following-sibling::sect4 or
+                    following-sibling::sect5 or
+                    following-sibling::section">
+      <fo:block space-after="0pt" 
+                xsl:use-attribute-sets="section.title.properties">
+        <xsl:copy-of select="$spacer"/>
+      </fo:block>
+    </xsl:when>
+    <xsl:otherwise>
+      <fo:block space-after="0pt" space-before="0em">
+        <xsl:copy-of select="$spacer"/>
+      </fo:block>
+    </xsl:otherwise>
+  </xsl:choose>
+
+  <xsl:choose>
+    <xsl:when test="$fop.extensions != 0">
+      <!-- Doesn't work in fop -->
+    </xsl:when>
+    <xsl:when test="following-sibling::listitem or
+                    following-sibling::step">
+      <fo:list-item space-before.precedence="force"
+                space-before="-{$height}"
+                space-after="0pt"
+                space-after.precedence="force">
+        <fo:list-item-label/>
+        <fo:list-item-body start-indent="0pt" end-indent="0pt"/>
+      </fo:list-item>
+    </xsl:when>
+    <xsl:otherwise>
+      <fo:block space-before.precedence="force"
+                space-before="-{$height}"
+                space-after="0pt"
+                space-after.precedence="force">
+      </fo:block>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
 
 <!-- ==================================================================== -->
 

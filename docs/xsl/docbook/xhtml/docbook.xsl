@@ -6,7 +6,7 @@
 <xsl:output method="xml" encoding="UTF-8" indent="no" doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
 
 <!-- ********************************************************************
-     $Id: docbook.xsl,v 1.30 2004/01/29 13:35:51 nwalsh Exp $
+     $Id: docbook.xsl,v 1.33 2004/11/17 20:57:18 kosek Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -27,6 +27,7 @@
 <xsl:include href="../common/subtitles.xsl"/>
 <xsl:include href="../common/gentext.xsl"/>
 <xsl:include href="../common/targets.xsl"/>
+<xsl:include href="../common/olink.xsl"/>
 <xsl:include href="../common/pi.xsl"/>
 <xsl:include href="autotoc.xsl"/>
 <xsl:include href="autoidx.xsl"/>
@@ -66,6 +67,7 @@
 <xsl:include href="docbookng.xsl"/>
 
 <xsl:param name="stylesheet.result.type" select="'xhtml'"/>
+<xsl:param name="htmlhelp.output" select="0"/>
 
 <!-- ==================================================================== -->
 
@@ -234,6 +236,11 @@ body { background-image: url('</xsl:text>
 
 <!-- ============================================================ -->
 
+<xsl:template name="user.preroot">
+  <!-- Pre-root output, can be used to output comments and PIs. -->
+  <!-- This must not output any element content! -->
+</xsl:template>
+
 <xsl:template name="user.head.content">
   <xsl:param name="node" select="."/>
 </xsl:template>
@@ -309,6 +316,7 @@ body { background-image: url('</xsl:text>
 <xsl:template match="*" mode="process.root">
   <xsl:variable name="doc" select="self::*"/>
 
+  <xsl:call-template name="user.preroot"/>
   <xsl:call-template name="root.messages"/>
 
   <html>

@@ -1,3 +1,6 @@
+<!-- OBSOLETE, don't try to use this file.  Instead, copy the
+     titlepage.templates.xml file from either fo or html and
+     edit that -->
 <t:templates xmlns:t="http://nwalsh.com/docbook/xsl/template/1.0"
              base-stylesheet="../html/docbook.xsl">
 

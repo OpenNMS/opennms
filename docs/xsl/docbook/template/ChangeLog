@@ -1,3 +1,13 @@
+2004-07-16  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* testtemplate.xml: Marked as obsolete.
+
+2004-04-25  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* titlepage.xsl: Containers for recto and verso part of titlepage (div or fo:block) are emitted only when there is content for recto/verso titlepage. This prevents emitting empty div elements between chapter/section titles and first para which leads to big space. Fixed bug #930954.
+
+	* titlepage.xsl: Fixed cut'n'paste mistake. Attributes must be attached to wrapper element, not to variable.
+
 2004-01-29  Norman Walsh <nwalsh@users.sourceforge.net>
 
 	* titlepage.xsl: Support 'info' everywhere

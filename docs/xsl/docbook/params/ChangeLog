@@ -1,3 +1,122 @@
+2004-11-23  Michael Smith <xmldoc@users.sourceforge.net>
+
+	* footnote.number.symbols.xml, formal.title.placement.xml, menuchoice.menu.separator.xml, menuchoice.separator.xml, table.footnote.number.symbols.xml: 
+	Filled out refpurposes
+
+	* htmlhelp.hhc.binary.xml, htmlhelp.hhc.folders.instead.books.xml: 
+	Filled out a couple of empty refpurpose's
+
+	* process.empty.source.toc.xml, process.source.toc.xml: 
+	Ref. doc change; Filled in a couple of FIXMEs
+
+	* simplesect.in.toc.xml: New file.
+
+2004-11-22  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* index.prefer.titleabbrev.xml: New file.
+
+2004-11-18  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* component.title.properties.xml: Moved the hardwired properties from the component.title template to
+	this attribute-set.
+
+2004-11-08  Michael Smith <xmldoc@users.sourceforge.net>
+
+	* ebnf.assignment.xml: Replace <tt></tt> output with <code></code>
+
+2004-10-29  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* shade.verbatim.xml: Added description
+
+2004-10-26  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* callout.graphics.number.limit.xml: Changed the default from 10 to 15.
+
+2004-10-21  Michael Smith <xmldoc@users.sourceforge.net>
+
+	* admon.textlabel.xml, article.appendix.title.properties.xml, htmlhelp.display.progress.xml, htmlhelp.enhanced.decompilation.xml, htmlhelp.hhc.width.xml, htmlhelp.hhp.windows.xml, htmlhelp.remember.window.position.xml, htmlhelp.show.toolbar.text.xml, htmlhelp.window.geometry.xml, index.preferred.page.properties.xml, manifest.in.base.dir.xml, qanda.title.properties.xml, textdata.default.encoding.xml: 
+	Bug #865551 (release 1.64.1 contains executable xml files)
+	
+	Changed perms to 644 & added newline to end of each to force commit
+
+2004-10-20  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* hyphenate.verbatim.xml: New file.
+
+2004-10-19  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* verbatim.properties.xml: Add hyphenate=false to verbatim.properties
+
+2004-10-04  <balls@users.sourceforge.net>
+
+	* wordml.template.xml: New file.
+
+2004-09-23  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* chunk.separate.lots.xml: fixed misworded reference.
+
+2004-08-26  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* component.label.includes.part.label.xml: New file.
+
+2004-08-19  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* footnote.sep.leader.properties.xml: Fixed WF error
+
+2004-08-15  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* footnote.sep.leader.properties.xml: New file.
+
+2004-08-12  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* arbortext.extensions.xml, axf.extensions.xml, fop.extensions.xml, passivetex.extensions.xml, xep.extensions.xml: 
+	Mentioned that the parameter also affects which graphics
+	file formats are supported.
+
+	* img.src.path.xml: New file.
+
+2004-08-09  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* insert.olink.page.number.xml, insert.olink.pdf.frag.xml, olink.debug.xml, olink.doctitle.xml, olink.lang.fallback.sequence.xml, olink.properties.xml, prefer.internal.olink.xml: 
+	New parameters to support new olink features.
+
+2004-06-22  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* index.on.role.xml: Mentioned index.on.type for 4.3 users.
+
+	* index.on.role.xml, index.on.type.xml: Changed the default value to zero.
+
+2004-06-21  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* informalequation.properties.xml, informalexample.properties.xml, informalfigure.properties.xml, informaltable.properties.xml: 
+	New file.
+
+2004-06-20  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* section.autolabel.max.depth.xml: New file.
+
+2004-06-13  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* index.on.type.xml: New file.
+
+2004-04-19  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* chunk.separate.lots.xml: New file.
+
+2004-04-18  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* index.on.role.xml: New file.
+
+2004-03-25  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* component.title.properties.xml: Added new attribute set component.title.properties for easy modifications of component's title formatting in FO output.
+
+	* monospace.verbatim.properties.xml: wrap property for monospaced verbatim environments moved to attribute set so it can be overriden in customization layer.
+
+2004-03-24  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* textdata.default.encoding.xml: New file.
+
 2004-03-04  Norman Walsh <nwalsh@users.sourceforge.net>
 
 	* root.properties.xml: Added line-height-shift-adjustment=disregard-shifts to the root properties

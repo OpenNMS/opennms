@@ -3,7 +3,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: block.xsl,v 1.19 2003/09/27 22:01:57 nwalsh Exp $
+     $Id: block.xsl,v 1.20 2004/05/25 10:37:09 nwalsh Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -151,11 +151,11 @@
             <td width="10%" valign="top">&#160;</td>
           </tr>
           <tr>
+            <td width="10%" valign="top">&#160;</td>
             <td colspan="2" align="right" valign="top">
               <xsl:text>--</xsl:text>
               <xsl:apply-templates select="attribution"/>
             </td>
-            <td width="10%" valign="top">&#160;</td>
           </tr>
         </table>
       </xsl:when>

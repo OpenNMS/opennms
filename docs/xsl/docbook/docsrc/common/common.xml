@@ -4,7 +4,7 @@
 <reference>
 <referenceinfo>
 <releaseinfo role="meta">
-$Id: common.xsl,v 1.39 2003/12/06 00:07:51 bobstayton Exp $
+$Id: common.xsl,v 1.44 2004/11/17 18:38:45 bobstayton Exp $
 </releaseinfo>
 <author><surname>Walsh</surname>
 <firstname>Norman</firstname></author>
