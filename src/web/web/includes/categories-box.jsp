@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2004 Oct 01: Added a color change when disconnected from OpenNMS.
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Oct 24: Added a mouse over for last update times. Bug #517.
 // 
@@ -95,6 +96,7 @@
     Map categoryMap = this.model.getCategoryMap();
     List sectionList = this.getSections( categoryMap );
     int sectionCount = sectionList.size();
+    boolean opennmsDisconnect = false; 
 %>
 
 
@@ -127,13 +129,24 @@
                 
                 String color = CategoryUtil.getCategoryColor( category );
                 String outageColor = CategoryUtil.getCategoryColor( category, servicePercentage );
+		long now = new java.util.Date().getTime();
+		if (category.getLastUpdated().getTime() + 130000 < now) 
+		{
+			opennmsDisconnect = true;
+		}
             %>
                 <tr>
+		<% if (opennmsDisconnect) { %>
+                  <td><a href="rtc/category.jsp?category=<%= java.net.URLEncoder.encode(categoryName) %>" title="<%=(title == null) ? categoryName : title%>"><%=categoryName%></a></td>
+                  <td bgcolor="lightblue" align="right" title="Updated: <%=category.getLastUpdated()%>"><%=serviceDownCount%> of <%=serviceCount%></td>
+                  <td bgcolor="lightblue" align="right" title="Updated: <%=category.getLastUpdated()%>"><b><%=CategoryUtil.valueFormat.format( category.getValue() )%>%</b></td>
+		<% } else { %>
                   <td><a href="rtc/category.jsp?category=<%= java.net.URLEncoder.encode(categoryName) %>" title="<%=(title == null) ? categoryName : title%>"><%=categoryName%></a></td>
                   <td bgcolor="<%=outageColor%>" align="right" title="Updated: <%=category.getLastUpdated()%>"><%=serviceDownCount%> of <%=serviceCount%></td>
                   <td bgcolor="<%=color%>" align="right" title="Updated: <%=category.getLastUpdated()%>"><b><%=CategoryUtil.valueFormat.format( category.getValue() )%>%</b></td>
                   <!-- Last updated <%=category.getLastUpdated()%> -->
                   <!-- Epoch time:  <%=category.getLastUpdated().getTime()%> -->
+		<% } %>
                 </tr>
             <% } else { %>
               <% notFoundCategoryCount++; %>            
@@ -145,9 +158,13 @@
             <% } %>                                
       <% } %>
   <% } %>
-    
+
   <tr bgcolor="#999999">
+  <% if (opennmsDisconnect) { %>
+    <td colspan="3"><font color="red">Warning:</font> OpenNMS Disconnect.</td> <%-- next iteration, read this from same properties file that sets up for RTCVCM --%>
+            <% } else { %>
     <td colspan="3">Percentage over last 24 hours</td> <%-- next iteration, read this from same properties file that sets up for RTCVCM --%>
+            <% } %>                                
   </tr>   
 </table>
 
@@ -207,3 +224,4 @@
     }
     
 %>
+

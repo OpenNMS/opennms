@@ -1,5 +1,9 @@
 1.1.3 to 1.1.4
 ----------------------------------------------------------------------
+- Added a new indicator to the webUI that if the categories
+  have not been updated in two minutes, the category colors
+  will go light blue - like "Calculating .." to indicate
+  that Tomcat is not talking with OpenNMS. Thx Mike.
 - Added the ability to sort on parameters as well as events for
   notifications.
 - Added some new standard performance reports. Thx Ted.
