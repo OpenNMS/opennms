@@ -199,6 +199,7 @@ your distribution.
 <!--  	<pathelement path="${packaged.lib.dir}/pop3.jar"/> -->
     <pathelement path="${packaged.lib.dir}/activation.jar"/>
     <pathelement path="${packaged.lib.dir}/jmta.jar"/>
+  	<pathelement path="${packaged.lib.dir}/SNMP4J.jar"/>
     <pathelement path="/System/Library/Java"/>
   </path>
 
