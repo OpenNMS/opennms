@@ -681,6 +681,8 @@ final class PingManager
 	 */
 	public void run()
 	{
+        Category log = ThreadCategory.getInstance(getClass());
+
 		synchronized(this)
 		{
 			m_status = RUNNING;
@@ -737,7 +739,7 @@ final class PingManager
 		}
 		catch(Exception e)
 		{
-			return;
+			log.error("Unexpected Exception occurred in the PingManager.", e);
 		}
 		finally
 		{
