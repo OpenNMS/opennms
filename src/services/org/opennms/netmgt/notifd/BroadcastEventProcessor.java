@@ -194,7 +194,7 @@ final class BroadcastEventProcessor implements EventListener {
                         Collection notifIDs = getNotificationManager().acknowledgeNotice(event, curAck.getAcknowledge(), curAck.getMatch());
                         try {
                             if (curAck.getNotify()) {
-                                sendResolvedNotifications(notifIDs, event, curAck.getAcknowledge(), curAck.getMatch());
+                                sendResolvedNotifications(notifIDs, event, curAck.getAcknowledge(), curAck.getMatch(), curAck.getResolutionPrefix());
                             }
                         } catch (Exception e) {
                             ThreadCategory.getInstance(getClass()).error("Failed to send resolution notifications.", e);
@@ -210,10 +210,10 @@ final class BroadcastEventProcessor implements EventListener {
         }
     }
 
-    private void sendResolvedNotifications(Collection notifIDs, Event event, String acknowledge, String[] match) throws Exception {
+    private void sendResolvedNotifications(Collection notifIDs, Event event, String acknowledge, String[] match, String resolutionPrefix) throws Exception {
         for (Iterator it = notifIDs.iterator(); it.hasNext();) {
             int notifId = ((Integer) it.next()).intValue();
-            final Map parmMap = rebuildParameterMap(notifId);
+            final Map parmMap = rebuildParameterMap(notifId, resolutionPrefix);
             
             String queueID = getNotificationManager().getQueueForNotification(notifId);
             
@@ -712,8 +712,8 @@ final class BroadcastEventProcessor implements EventListener {
      * @param i
      * @return
      */
-    public Map rebuildParameterMap(int notifId) throws Exception {
-        return getNotificationManager().rebuildParamterMap(notifId);
+    public Map rebuildParameterMap(int notifId, String resolutionPrefix) throws Exception {
+        return getNotificationManager().rebuildParamterMap(notifId, resolutionPrefix);
 
     }
 

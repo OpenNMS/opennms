@@ -24,6 +24,7 @@
                         <sequence>
                                 <element name="match" type="string" minOccurs="1" maxOccurs="unbounded"/>
                         </sequence>
+                        <attribute name="resolution-prefix" type="string" default="RESOLVED: " />
                         <attribute name="uei" type="string" use="required"/>
                         <attribute name="acknowledge" type="string" use="required"/>
                         <attribute name="notify" type="boolean" default = "true" use="optional"/>
