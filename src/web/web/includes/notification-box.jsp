@@ -64,7 +64,7 @@
       <table width="100%" border="0" cellspacing="0" cellpadding="1">
         <tr>
           <td>
-            <a href="notification/browse?akctype=unack&filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check Your Notices</a>
+            <a href="notification/browse?acktype=unack&filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check Your Notices</a>
           </td>
         </tr>
         <tr>

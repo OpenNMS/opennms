@@ -65,7 +65,7 @@
       <h3>Notification queries</h3>
 
       <p>
-        <a HREF="notification/browse?akctype=unack&filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check your outstanding notices</a>
+        <a HREF="notification/browse?acktype=unack&filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check your outstanding notices</a>
       </p>
       <p>
         <a HREF="notification/browse?acktype=unack">View all outstanding notices</a>
