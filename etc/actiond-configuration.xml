@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<actiond-configuration
+	max-outstanding-actions="10"
+	max-process-time="120000">
+</actiond-configuration>
+

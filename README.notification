@@ -1,0 +1,193 @@
+==============================================================================
+Using The New Notification System For Fun And Profit
+==============================================================================
+
+Here is an overview of how to configure and use the new Notification system.
+Configuration takes place in 5 xml files, users.xml, groups.xml,
+notifications.xml, destinationPaths.xml and notificationCommands.xml.  Use of
+each is explained below.
+
+TERMS:
+notification     - the act of contacting a user or group of users via some
+                   contact medium
+notice           - a user/command instance
+destination path - a definition of what users or groups to contact, and when
+                   to escalate if the page is not answered promptly
+target           - In destinationPaths.xml, a user or group to send a
+                   notification to and the command to use to send that
+                   notification.
+escalation       - similar to a target, but is delayed by a specified amount
+                   of time
+path             - a named list of targets and escalations
+duty-schedule    - Indicates when a user is on duty.  Uses the first two
+                   letters of each day, capitalizing the first and military
+                   style timestamps.  (MoWeFr800-1700, TuTh900-1800)
+interval         - The time to wait between notifying users of a group
+                   specified in the target tag of destinationPaths.xml.  The
+                   time units are as follows:
+                   ms - milliseconds
+                   s  - seconds
+                   m  - minutes
+                   h  - hours
+                   d  - days
+delay            - Specified in the same units as an interval, but indicates
+                   the amount of time to wait before processing the targets of
+                   an escalation, as specified in destinationPaths.xml.
+
+QUICK START GUIDE
+
+1)  Make sure there is at least one command listed in
+    notificationCommands.xml.  If there aren't any copy the xml listed below
+    under the explanation for notificationCommands.xml.
+
+2)  Enter at least one user in the users.xml.  This can be done via the admin
+    interface of the Web UI.  If you want to send to a group then make an
+    entry in groups.xml and add all desired users to the group.
+
+3)  Enter a <contact> for each user that will be contacted, with a type
+    attribute that corresponds to a command listed in
+    notificationCommands.xml.  Make sure the info attribute contains the
+    correct information to contact the user via the command, i.e. if the
+    "email" command is being used the set the info attribute to the user's
+    email address.  This can be done via the admin interface of the Web UI.
+
+4)  Set up a destination path in destinationPaths.xml to indicate what user or
+    group to contact.  Set the command attribute to the type attribute from
+    notificationCommands.xml of the command you want to use.  If sending to a
+    group set the desired interval between contacting group members.
+
+5)  Enter a UEI/Destination Path mapping in notifications.xml if there are
+    none listed.  Typically the event
+    "http://uei.opennms.org/nodes/nodeLostService" is
+    notified on.  If you want to not notify based on devices enter the
+    relevant rule (see the README.filters for how to write a rule).  Enter the
+    destination path to use.  Enter a text message to send. This is applicable
+    even if a numeric page is being sent, the text message will still be
+    entered in the database.  Enter a subject if desired for an email message.
+    Enter a numerical message if needed.
+
+6) Start the Notifd service.
+
+7)  Make sure that the status of notifications is set to on.  This can be done
+    in the Web UI via the admin page.
+
+8)  Wait for a notice. If you think that a notice should have been delivered
+    and one hasn't, double check the configuration and then check the
+    notifd.log file (usually in /var/log/opennms) for any apparent errors.
+
+
+CONFIG FILE EXPLAINATIONS
+
+users.xml:
+This file holds the notification information for all users in the system.  In
+order for a user to actually receive a notice, there must be contact
+information listed in this config file (All notices will still be logged to
+the database, so if the information is missing or incorrect the database still
+has record of the notice).
+
+A simple contact for a user is as follows:
+<contact type="email" info="temp.user@opennms.org"/>
+
+The "type" attribute must match up to a type of command in the
+notificationCommands.xml (see below).  In this example, the type is "email",
+thus the "email" command will be used to send the notice to the user.  The
+"info" attribute will hold whatever information is needed to contact the user
+via the command that appears in "type", in this case its the email address.
+If a page was being sent the "info" attribute will probably hold the pin #.
+The "serviceProvider" attribute is optional, and can be used to indicate the
+service provider of the media being used for the notice.  
+
+The <duty-schedule> tag indicates when this user is "on duty" and able to
+receive notifications.  A notice will not be sent to this user if when the
+notice command is being run the user is listed as "off-duty".  If no duty
+schedules are listed for a user then the user is assumed to be "on duty" all
+the time.  A user can have more than one duty-schedule listed and they may
+overlap.
+
+
+groups.xml:
+This file holds a list of users associated with a group name. If Notifd is
+told to contact a group of users it will contact each of the users from the
+group in the order that they are listed.
+
+
+notifications.xml:
+The notifications.xml file contains the following information
+
+   uei:              an event uei 
+
+   rule:             a constraining filter that will try to match the
+                     interface the event concerns.  If the interface falls in
+                     the domain of the rule the notice will be sent.
+
+   destinationPath:  who to contact and how to escalate (see
+                     destinationPaths.xml)
+
+   parameters:       information that needs to be sent via each notice to each
+                     user expanded from the destination path.  This must
+                     include the -tm parameter indicating what to tell the
+                     user about the notice.
+
+When an event is found this file is searched to see if an entry exists for the
+uei, if there is one then a notification will be started.  The text of the
+message being sent is specified in this file as a parameter.  Any other
+information that needs to be included is also specified as a parameter.  Also,
+the nodeid, interface, and service from the event are checked against the
+rule.  If the interface is included in the result set of the rule the
+notification will be sent.  Each notification is named so that it can be
+referenced from the Web UI for configuration.  An single event uei may be
+associated with many notifications, but the first notification found that
+matches the rule will be used.
+
+
+destinationPaths.xml:
+This file defines how and when each user is contacted. It consists of three
+definitions, paths, targets and escalations.  A path is a named list of
+targets and escalations.  A target consists of a user or group to contact, the
+command to use to contact the user or group, and in the case of a group the
+amount of time to wait between contacting the members of the group can be
+specified.  If no interval is specified then all members of the group will be
+contacted at the same time.  The command is specified via a name that is used
+to search the <lookup> entries of a notification command (see
+notificationCommands.xml below).  More than one target can be specified, each
+target will start at the same time.  An escalation contains targets, but also
+specifies to wait a given amount of time prior to starting its targets.  Each
+target listed in an escalation will be started at the same time, after the
+specified delay has passed.
+
+
+notificationCommands.xml:
+This file contains the command line calls to the programs and scripts to
+actually send the notice to the users.  Each command is specified along with
+the arguments that need to be sent, along with directives as to what
+information needs to be pulled from the notification process.  The <name> tag
+indicates the command line call that will be made.  The <lookup> tags indicate
+how the destinationPath command attribute identifies what command to use.  The
+<argument> tags specify the arguments that need to be passed to the command.
+Each argument can specify a <switch> and <substitution>.  The <switch>
+indicates that information needs to be gathered from the notification process.
+The presence of a <substitution> tag will cause the substitution string to be
+placed into the command line before a switch.  If only the substitution or
+switch is specified then only that will appear in the command line.  If the
+streamed attribute of an argument is set to "true" then the information
+requested by the <switch> tag will be sent to the command line via an input
+stream.  The default on all arguments for this attribute is "false".
+
+Below is an example for sending emails via the mail command:
+
+<command type="email">
+    <name>/bin/mail</name>
+    <lookup>email</lookup>
+    <lookup>mail</lookup>
+    <comment>for sending email notifications</comment>
+    <argument streamed="false">
+      	<substitution>-s</substitution>
+        <switch>-subject</switch>
+    </argument>
+		<argument streamed="false">
+  			<switch>-email</switch>
+		</argument>
+		<argument streamed="true">
+  			<switch>-tm</switch>
+    </argument>
+</command>

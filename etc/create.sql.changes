@@ -1,0 +1,93 @@
+These are changes made to the create.sql script.
+
+TABLES:
+
+	distPoller:
+
+		o Removed not null from dpName column (redundant because of pk constraint)
+		o Removed column identifier from pk clause (redundant on column constraints)
+	node:
+
+		o Removed not null from nodeid column (redundant because of pk constraint)
+		o Removed not null from dpName column (redundant because of fk constraint)
+		o Removed column identifier from pk clause (redundant on column constraints)
+		o Changed fk column constraint syntax (removed redundant fk expression)
+		o Removed unique index on column node id (redundant because of pk constraint)
+
+	ipInterface:
+
+		o Removed not null from nodeid column (redundant because of pk constraint)
+		o Changed fk column constraint syntax (removed redundant fk expression)
+		o Added cascading delete on fk to node.nodeID
+
+	snmpInterface:
+
+		o Removed not null from nodeid column (redundant because of pk constraint)
+		o Changed fk column constraint syntax (removed redundant fk expression)
+		o Added cascading delete on fk to node.nodeID
+
+	service:
+
+		o Removed not null from serviceID column (redundant because of pk constraint)
+		o Removed column identifier from pk clause (redundant on column constraints)
+
+	ifservices:
+
+		o Removed not null from nodeID column (redundant because of fk constraint)
+		o Changed nodeID fk column constraint syntax (removed redundant fk expression)
+		o Removed not null from serviceID column (redundant because of fk constraint)
+		o Changed serviceID fk column constraint syntax (removed redundant fk expression)
+		o Added cascading delete on fk to node.nodeID
+		o Added cascading delete on fk to service.serviceID
+		o Added index on nodeID + serviceID
+
+	events:
+
+		o Removed not null from eventID column (redundant because of pk constraint)
+		o Removed column identifier from pk clause (redundant on column constraints)
+		o Changed eventUei column default (defaults to 'uei.opennms.org')
+		o Removed unique index on eventID (redundant because of pk constraint)
+
+	outages:
+
+		o Removed not null from outageID column (redundant because of pk constraint)
+		o Removed column identifier from pk clause (redundant on column constraints)
+		o Changed syntax on all fks to actually be a column constraint
+		o Added cascading delete on both fks to events.eventID
+		o Added cascading delete on fk to node.nodeID
+		o Added cascading delete on fk to service.serviceID
+		o Removed unique index on outageID (redundant because of pk constraint)
+
+
+	vulnerabilities:
+
+		o Removed not null from vulnerabilityID column (redundant because of pk constraint)
+		o Removed column identifier from pk clause (redundant on column constraints)
+		o Removed unique index on vulnerabilityID (redundant because of pk constraint)
+
+
+	vulnplugins:
+
+		o Removed not null from columns pluginID, pluginSubID (see pk constraint)
+		o Created table constraint pk on pluginID and pluginSubID columns
+		o Removed unique index (redundant because of pk)
+
+
+	notifications:
+
+		o Removed not null from textMsg column
+		o Removed not null from notifID column (redundant because of pk constraint)
+		o Removed column identifier from pk clause (redundant on column constraints)
+		o Removed not null from eventID column (redundant because of fk constraint)
+		o Changed eventID fk column constraint syntax (removed redundant fk expression)
+		o Added cascading delete on fk to events.eventID
+		o Removed unique index (redundant because of pk)
+
+
+	usersNotified:
+
+		o Added fk constraint to notifications (notifID) and removed not null
+		o Improved fk syntax... now full column constraint
+		o Added cascading delete on fk to notifcations.notifID
+
+
