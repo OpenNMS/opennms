@@ -44,7 +44,7 @@ public class ManageNodesServlet extends HttpServlet
 	{
 		try
 		{
-			DatabaseConnectionFactory.init();
+                        DatabaseConnectionFactory.init();
 		}
 		catch(Exception e)
 		{
@@ -68,7 +68,7 @@ public class ManageNodesServlet extends HttpServlet
 		
 		if (userSession != null)
 		{
-			allNodes = (java.util.List)userSession.getAttribute("listAll.manage.jsp");
+		  	allNodes = (java.util.List)userSession.getAttribute("listAll.manage.jsp");
 		}
 		
 		//the list of all interfaces marked as managed
@@ -79,7 +79,7 @@ public class ManageNodesServlet extends HttpServlet
 		
 		//the list of interfaces that need to be put into the URL file
 		java.util.List addToURL = new ArrayList();
-		
+
 		// date to set on events sent out
 		String curDate = EventConstants.formatToString(new java.util.Date());
 		
@@ -94,21 +94,21 @@ public class ManageNodesServlet extends HttpServlet
 			{
 				connection.setAutoCommit(false);
 				PreparedStatement stmt = connection.prepareStatement(UPDATE_SERVICE);
-				
+                        
 				for (int j = 0; j < allNodes.size(); j++)
-				{
+                        {
 					ManagedInterface curInterface = (ManagedInterface)allNodes.get(j);
 					String intKey = curInterface.getNodeid()+"-"+curInterface.getAddress();
-					
-					//see if this interface needs added to the url list
+                                
+                                //see if this interface needs added to the url list
 					if (interfaceList.contains(intKey))
-					{
-						addToURL.add(curInterface.getAddress());
-					}
-					
+				{
+					addToURL.add(curInterface.getAddress());
+				}
+				
 					//determine what is managed and unmanged
 					if (interfaceList.contains(intKey) && curInterface.getStatus().equals("unmanaged"))
-					{
+				{
 						//Event newEvent = new Event();
 						//newEvent.setUei("http://uei.opennms.org/products/bluebird/internal/interfaceManaged");
 						//newEvent.setSource("web ui");
@@ -127,20 +127,20 @@ public class ManageNodesServlet extends HttpServlet
 						//newEvent.setNodeid(curNode.getNodeID());
 						//newEvent.setInterface(curInterface.getAddress());
 						//newEvent.setTime(curDate);
-		
+                    
 						//updateInterface(curInterface.getNodeid(), curInterface.getAddress(), new Event(), "F");
 						unmanageInterfacesList.add(curInterface.getAddress());
-					}
-					
-					List interfaceServices = curInterface.getServices();
-					
-					for (int k = 0; k < interfaceServices.size(); k++)
-					{
-						ManagedService curService = (ManagedService)interfaceServices.get(k);
+                                }
+			        
+                                List interfaceServices = curInterface.getServices();
+                                
+                                for (int k = 0; k < interfaceServices.size(); k++)
+                                {
+                                        ManagedService curService = (ManagedService)interfaceServices.get(k);
 						String serviceKey = intKey + "-" + curService.getId();
-						
+                                        
 						if (serviceList.contains(serviceKey) && curService.getStatus().equals("unmanaged"))
-						{
+                                        {
 							//Event newEvent = new Event();
 							//newEvent.setUei("http://uei.opennms.org/products/bluebird/internal/serviceManaged");
 							//newEvent.setSource("web ui");
@@ -172,16 +172,16 @@ public class ManageNodesServlet extends HttpServlet
 							stmt.setInt(4, curService.getId());
 							this.log("DEBUG: executing unmanage service update for " + curInterface.getAddress() + " " + curService.getName());
 							stmt.executeUpdate();
-						}
-					} //end k loop
-				} //end j loop
+                                        }
+                                } //end k loop
+                        } //end j loop
 					
 				if (manageInterfacesList.size() > 0) manageInterfaces(manageInterfacesList, connection);
 				if (unmanageInterfacesList.size() > 0) unmanageInterfaces(unmanageInterfacesList, connection);
-				
-				//update the packages url file
-				writeURLFile(addToURL);
-				
+		
+		//update the packages url file
+		writeURLFile(addToURL);
+		
 				connection.commit();
 			}
 			finally
@@ -204,15 +204,15 @@ public class ManageNodesServlet extends HttpServlet
 	}
 	
 	/**
-	 */
+	*/
 	private void manageInterfaces(List interfaces, Connection connection)
 		throws SQLException
 	{
 		StringBuffer query = new StringBuffer("UPDATE ipinterface SET isManaged = ");
 		query.append("'M'").append(" WHERE ipaddr IN (");
-		
+			
 		for (int i = 0; i < interfaces.size(); i++)
-		{
+			{
 			query.append("'").append((String)interfaces.get(i)).append("'");
 			
 			if (i < interfaces.size()-1) query.append(",");
@@ -226,7 +226,7 @@ public class ManageNodesServlet extends HttpServlet
 	}
 	
 	/**
-	 */
+	*/
 	private void unmanageInterfaces(List interfaces, Connection connection)
 		throws SQLException
 	{
@@ -234,9 +234,9 @@ public class ManageNodesServlet extends HttpServlet
 		query.append("'F'").append(" WHERE ipaddr IN (");
 		
 		for (int i = 0; i < interfaces.size(); i++)
-		{
+	{
 			query.append("'").append((String)interfaces.get(i)).append("'");
-			
+		
 			if (i < interfaces.size()-1) query.append(",");
 		}
 		query.append(")");
@@ -320,7 +320,7 @@ public class ManageNodesServlet extends HttpServlet
 		try
 		{
 			EventProxy eventProxy = new TcpEventProxy();
-			eventProxy.send(event);
+				eventProxy.send(event);
 		}
 		catch(Exception e)
 		{

@@ -368,7 +368,11 @@ public final class Threshd
 				
 				// Attempt to initialize the service thresholder
 				//
-				Map properties = null; // properties not currently used
+				
+				// Store service name in map keyed by "svcName"
+				Map properties = new HashMap(); 
+				properties.put("svcName", thresholder.getService());
+				
 				st.initialize(properties);
 				
 				m_svcThresholders.put(thresholder.getService(), st);

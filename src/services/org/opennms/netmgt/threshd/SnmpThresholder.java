@@ -383,8 +383,7 @@ final class SnmpThresholder
 				stmt = dbConn.prepareStatement(SQL_GET_NODEID);
 				stmt.setString(1, ipAddr.getHostAddress());   // interface address
 				ResultSet rs = stmt.executeQuery();
-				rs.next();
-				try 
+				if (rs.next())
 				{ 
 					nodeId = rs.getInt(1);
 					if(rs.wasNull())
@@ -396,14 +395,6 @@ final class SnmpThresholder
 					if(str!=null)
 						isSnmpPrimary = str.charAt(0);
 				} 
-				// Thrown by ResultSet.getInt() if database query did not return anything
-				catch (NullPointerException npe) 
-				{ 
-					nodeId = -1;
-					primaryIfIndex = -1;
-					isSnmpPrimary = DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE; 
-				}
-				
 				rs.close();
 			}
 			catch (SQLException sqle)
@@ -844,8 +835,12 @@ final class SnmpThresholder
 		//
 		File[] files = directory.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
 		
-		if (files == null)
+		if (files == null || files.length==0)
+		{
+			if (log.isDebugEnabled())
+				log.debug("checkIfDir: no RRD files in dir: " + directory);
 			return;
+		}
 		
 		Map ifDataMap = null;
 		for (int i=0; i<files.length; i++)
@@ -858,6 +853,8 @@ final class SnmpThresholder
 			// Lookup the ThresholdEntity object corresponding
 			// to this datasource.  
 			//
+			if (log.isDebugEnabled())
+				log.debug("checkIfDir: looking up datasource: " + datasource);
 			ThresholdEntity threshold = (ThresholdEntity)thresholdMap.get(datasource);
 			if (threshold != null)
 			{
@@ -1099,7 +1096,17 @@ final class SnmpThresholder
 	}
 	
 	/**
+	 * Creates a new threshold event from the specified parms.
+	 *
+	 * @param nodeId	node identifier of the affected node
+	 * @param primary	IP address of the affected primary SNMP interface
+	 * @param ifDataMap	Map of this node's interface information
+	 * @param dsValue	Data source value which triggered the threshold event
+	 * @param threshold	Configured threshold
+	 * @param uei		Event identifier 
+	 * @param data		source of event's timestamp
 	 * 
+	 * @return new threshold event to be sent to Eventd
 	 */
 	private Event createEvent(Integer nodeId,
 				InetAddress 	primary,
@@ -1135,7 +1142,7 @@ final class SnmpThresholder
 		Event newEvent = new Event();
 		newEvent.setUei(uei);
 		newEvent.setNodeid(nodeId.longValue());
-		newEvent.setService("collectd:snmp");
+		newEvent.setService(this.serviceName());
 		
 		// set the source of the event to the datasource name
 		newEvent.setSource("OpenNMS.Threshd." + threshold.getDsName());

@@ -259,8 +259,13 @@
       <description>Redirect to this sibling URL after changing the parameter set.</description>
     </init-param>    
   </servlet>
+  <servlet>
+    <servlet-name>filterVulnerability</servlet-name>
+    <servlet-class>org.opennms.web.vulnerability.VulnerabilityFilterServlet</servlet-class>
+  </servlet>  
   
-   <servlet>
+  
+  <servlet>
     <servlet-name>queryNotice</servlet-name>
     <servlet-class>org.opennms.web.notification.NoticeQueryServlet</servlet-class>
   </servlet>
@@ -697,11 +702,15 @@
   <servlet-mapping>
     <servlet-name>filterEvent</servlet-name>
     <url-pattern>/event/list</url-pattern>
-  </servlet-mapping>  
+  </servlet-mapping>    
   <servlet-mapping>
     <servlet-name>queryEvent</servlet-name>
     <url-pattern>/event/query</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>filterVulnerability</servlet-name>
+    <url-pattern>/vulnerability/list</url-pattern>
+  </servlet-mapping>    
   <servlet-mapping>
     <servlet-name>acknowledgeNotice</servlet-name>
     <url-pattern>/notification/acknowledge</url-pattern>
@@ -1033,6 +1042,10 @@
     <exception-type>java.lang.SecurityException</exception-type>
     <location>/errors/sealingviolation.jsp</location>
   </error-page>
+  <error-page>
+    <exception-type>org.opennms.web.vulnerability.VulnerabilityIdNotFoundException</exception-type>
+    <location>/errors/vulnerabilityidnotfound.jsp</location>
+  </error-page>  
   
 
   <!-- Note: The order of these security-constraints is significant! -->

@@ -41,6 +41,7 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * <P>This class is designed to be used by the service poller
@@ -106,12 +107,12 @@ final class TcpMonitor
 		if (iface.getType() != iface.TYPE_IPV4)
 			throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
 
-		int retry = getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-		int timeout = getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+		int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
 
 		// Port
 		//
-		int port = getKeyedInteger(parameters, "port", DEFAULT_PORT);
+		int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
 		if(port == DEFAULT_PORT)
 		{
 			throw new RuntimeException("TcpMonitor: required parameter 'port' is not present in supplied properties.");

@@ -43,6 +43,7 @@ import org.opennms.protocols.snmp.*;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.utils.SnmpResponseHandler;
+import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * <P>This class is designed to be used by the service poller
@@ -180,7 +181,7 @@ public final class SnmpMonitor
 		
 		log.debug("initialize: interface: " + ipAddr.getHostAddress() + " initialized.");
 				
-	 	return;
+		return;
 	}
 	
 	/**
@@ -214,10 +215,10 @@ public final class SnmpMonitor
 		
 		// Get configuration parameters
 		//
-		int timeout = getKeyedInteger(parameters, "timeout", peer.getTimeout()); 
-		int retries = getKeyedInteger(parameters, "retries", peer.getRetries());
-		int port = getKeyedInteger(parameters, "port", DEFAULT_PORT);
-		String oid = getKeyedString(parameters, "oid", DEFAULT_OBJECT_IDENTIFIER);
+		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", peer.getTimeout()); 
+		int retries = ParameterMap.getKeyedInteger(parameters, "retries", peer.getRetries());
+		int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
+		String oid = ParameterMap.getKeyedString(parameters, "oid", DEFAULT_OBJECT_IDENTIFIER);
 		
 		// set timeout and retries on SNMP peer object
 		//
