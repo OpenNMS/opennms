@@ -102,12 +102,6 @@ public class NotificationTask extends Thread
 	*/
 	private SortedMap m_notifTree;
 	
-	/**
-	 * If set to true, the message will always be sent, regardless of whether the notice has been ack'd or not
-	 * Defaults to false
-	 */
-	private boolean m_alwaysSend = false;
-
 	/**Constructor, initializes some information
 	   @param someParams the parameters from Notify
 	*/
@@ -187,24 +181,14 @@ public class NotificationTask extends Thread
 	}
 	
 	/**
-	 * If set to true, the message will always be sent, regardless of whether the notice has been ack'd or not
-	 * Defaults to false
-	 * 
-	 * @param alwaysSend
-	 */
-	public void setAlwaysSend(boolean alwaysSend) {
-		m_alwaysSend=alwaysSend;
-	}
-
-	/**
 	*/
 	public void run()
 	{
 		Category log = ThreadCategory.getInstance(getClass());
 		
-                boolean noticeOutstanding = false;
+                boolean responded = false;
                 try { 
-                        noticeOutstanding = NotificationFactory.noticeOutstanding(m_notifyId);
+                        responded = NotificationFactory.noticeOutstanding(m_notifyId);
                 }
                 catch (Exception e)
                 {
@@ -212,7 +196,7 @@ public class NotificationTask extends Thread
                 }
                 
 		//check to see if someone has responded, if so remove all the brothers 
-                if (m_alwaysSend || noticeOutstanding)
+                if (responded)
 		{
 			try
 			{
@@ -305,7 +289,7 @@ public class NotificationTask extends Thread
                         }
                         else if (NotificationFactory.PARAM_EMAIL.equals(aSwitch))
                         {	
-                                value = UserFactory.getInstance().getEmail(m_user.getUserId());
+                                value = getEmail(m_user);
                         }
                         else if (NotificationFactory.PARAM_PAGER_EMAIL.equals(aSwitch))
                         {
@@ -332,4 +316,26 @@ public class NotificationTask extends Thread
 		return value;
 	}
         
+        /**
+         *
+         */
+        private String getEmail(User user)
+        {
+                
+		String value = "";
+		Enumeration contacts = user.enumerateContact();
+		while(contacts != null && contacts.hasMoreElements())
+		{
+			Contact contact = (Contact) contacts.nextElement();
+			if(contact != null)
+			{
+				if(contact.getType().equals("email"))
+				{
+                                        value = contact.getInfo();
+                                        break;
+				}
+			}
+		}
+		return value;
+        }
 }
