@@ -132,7 +132,7 @@ public class ImportAssetsServlet extends HttpServlet
     public List decodeAssetsText( String text ) {
 	List list = new ArrayList();
 
-	ArrayList lines = this.splitfields( text, "\n\r", -1 );
+	ArrayList lines = this.splitfields( text, "\r\n", -1 );
 	int lineCount = lines.size();
 	
 	for( int i=0; i < lineCount; i++ ) {
