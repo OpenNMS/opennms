@@ -57,7 +57,7 @@
 
 
 <% String breadcrumb1 = "<a href='" + java.net.URLEncoder.encode("report/index.jsp") + "'>Reports</a>"; %>
-<% String breadcrumb2 = java.net.URLEncoder.encode("KSC Reports"); %>
+<% String breadcrumb2 = "KSC Reports"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
   <jsp:param name="location" value="KSC Reports" />
