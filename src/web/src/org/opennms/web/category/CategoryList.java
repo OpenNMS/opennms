@@ -51,6 +51,7 @@ import java.net.URLEncoder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -186,13 +187,17 @@ public class CategoryList {
 	return categoryData;
     }
 
-    public boolean opennmsDisconnected()
-	throws IOException, MarshalException, ValidationException {
-	return opennmsDisconnected(getCategoryData());
-    }
-
-    public boolean opennmsDisconnected(Map categoryData)
-	throws IOException, MarshalException, ValidationException {
+    /**
+     * Returns the earliest update time for the categories in categoryData.
+     *
+     * @param   categoryData category data to evaluate.
+     *                       From getCategoryData().
+     * @returns the earliest update time.  If one of the categories has
+     *          no RTC data, -1 is returned.  If no categories exist in
+     *          categoryData, 0 is returned.
+     */
+    public long getEarliestUpdate(Map categoryData) {
+	long earliestUpdate = 0;
 
 	for (Iterator i = categoryData.keySet().iterator(); i.hasNext(); ) {
 	    String sectionName = (String) i.next();
@@ -202,28 +207,49 @@ public class CategoryList {
 		Category category = (Category) j.next();
 		
 		if (category.getLastUpdated() == null) {
-		    return true;
-		} else if (category.getLastUpdated().getTime() +
-			   s_disconnect_time < System.currentTimeMillis()) {
-		    return true;
+		    return -1;
+		} else if (earliestUpdate == 0 ||
+			   earliestUpdate >
+			   category.getLastUpdated().getTime()) {
+		    earliestUpdate = category.getLastUpdated().getTime();
 		}
 	    }
 	}
        
-	return false;
+	return earliestUpdate;
     }
 
-    // XXX This isn't used.  This functionality is in category-box.jsp.
+    public boolean isDisconnected()
+	throws IOException, MarshalException, ValidationException {
+	return isDisconnected(getEarliestUpdate(getCategoryData()));
+    }
+
+    public boolean isDisconnected(long earliestUpdate) {
+	if (earliestUpdate < 1 ||
+	    (earliestUpdate + s_disconnect_time) <
+	    System.currentTimeMillis()) {
+	    return true;
+	} else {
+	    return false;
+	}
+    }
+
+    /*
+      XXX This isn't used.  This functionality is in category-box.jsp.
+      XXX It is marked private so that no one can use it unless they fix
+      XXX its accessability and this comment. :-P
+    */
     private void printBox(JspWriter out, HttpServletResponse response)
 	throws IOException, MarshalException, ValidationException {
 
 	Map categoryData = getCategoryData();
 
-	boolean opennmsDisconnect = opennmsDisconnected(categoryData); 
-
 	out.println("<table width=\"100%\" border=\"1\" cellspacing=\"0\" " +
 		    "cellpadding=\"2\" bordercolor=\"black\" " +
 		    "bgcolor=\"#cccccc\">");
+
+	long earliestUpdate = getEarliestUpdate(categoryData);
+	boolean opennmsDisconnect = isDisconnected(earliestUpdate); 
 
 	for (Iterator i = categoryData.keySet().iterator(); i.hasNext(); ) {
 	    String sectionName = (String) i.next();
@@ -294,10 +320,16 @@ public class CategoryList {
     
 	out.println("<tr bgcolor=\"#999999\">");
 	if (opennmsDisconnect) {
-	    out.println("<td colspan=\"3\"><font color=\"red\">" +
-			"Warning: OpenNMS Disconnect</font></td>");
+	    out.println("<td colspan=\"3\"><font color=\"#bb1111\">" +
+			"OpenNMS Disconnect -- is the OpenNMS daemon " +
+			"running?<br/>Last update: " +
+			(earliestUpdate > 0 ?
+			 new Date(earliestUpdate).toString() :
+			 "one or more categories have never been udpated.") +
+			"</font></td>");
 	} else {
-	    out.println("<td colspan=\"3\">Percentage over last 24 hours</td>");
+	    out.println("<td colspan=\"3\">Percentage over last " +
+			"24 hours</td>");
 	}
 
 	out.println("</tr>");

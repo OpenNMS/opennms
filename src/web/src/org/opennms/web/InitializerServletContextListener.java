@@ -134,7 +134,7 @@ public class InitializerServletContextListener
 
 	public void run() {
 	    try {
-		if (!m_categorylist.opennmsDisconnected()) {
+		if (!m_categorylist.isDisconnected()) {
 		    return;
 		}
 	    } catch (Exception e) {

@@ -49,7 +49,13 @@
 --%>
 
 <%@page language="java" contentType="text/html" session="true"
-	import="org.opennms.web.category.Category,org.opennms.web.category.CategoryList,java.net.URLEncoder,java.util.Iterator,java.util.List,java.util.Map" %>
+	import="org.opennms.web.category.Category,
+		org.opennms.web.category.CategoryList,
+		java.net.URLEncoder,
+		java.util.Date,
+		java.util.Iterator,
+		java.util.List,
+		java.util.Map" %>
 
 <%!
 
@@ -61,10 +67,13 @@
 
 %>
 
-<%	Map categoryData = m_category_list.getCategoryData();  %>
+<%
+	Map categoryData = m_category_list.getCategoryData();
 
-<%	boolean opennmsDisconnect =
-		m_category_list.opennmsDisconnected(categoryData);  %>
+	long earliestUpdate = m_category_list.getEarliestUpdate(categoryData);
+	boolean opennmsDisconnect =
+		m_category_list.isDisconnected(earliestUpdate);
+%>
 
 	<table width="100%" border="1" cellspacing="0" 
 		    cellpadding="2" bordercolor="black"
@@ -73,7 +82,6 @@
 <%
 	for (Iterator i = categoryData.keySet().iterator(); i.hasNext(); ) {
 	    String sectionName = (String) i.next();
-
 %>
 
 	    <tr bgcolor="#999999">
@@ -82,15 +90,14 @@
 	    <td width="30%" align="right"><b>24hr Avail</b></td>
 	    </tr>
 	    
-<% 	    List categories = (List) categoryData.get(sectionName); %>
-
-	    
 <%
+ 	    List categories = (List) categoryData.get(sectionName);
+
 	    for (Iterator j = categories.iterator(); j.hasNext(); ) {
 		Category category = (Category) j.next();
 		String categoryName = category.getName();
-
 %>
+
 		<tr>
 
 		<td><a href="rtc/category.jsp?category=<%=
@@ -119,8 +126,13 @@
 
 <%	if (opennmsDisconnect) { %>
 	    <td colspan="3">
-	      <font color="red">
-	        Warning: OpenNMS Disconnect
+	      <font color="#bb1111">
+	        OpenNMS Disconnect -- is the OpenNMS daemon running?
+		<br/>
+		Last update:
+<%=		(earliestUpdate > 0 ?
+			 new Date(earliestUpdate).toString() :
+			 "one or more categories have never been udpated.") %>
 	      </font>
             </td>
 <%	} else { %>
