@@ -6,7 +6,7 @@ MINIMUM_JAVA=1.4.0
 
 ################################# NOTE #################################
 # java_lint () is run when this library is loaded
-###############################################3########################
+########################################################################
 
 for dir in $OPENNMS_HOME/lib/scripts $PREFIX/tools/infrastructure; do
 	if [ -f $dir/version_compare.sh ]; then
@@ -25,11 +25,21 @@ java_lint () {
 		return 1;
 	fi
 
+	# we want to force 1.4 on MacOSX if it exists, even if
+	# JAVA_HOME is set since /Library/Java/Home is still 1.3
+
+	for jdk in /System/Library/Frameworks/JavaVM.framework/Versions/1.4*/Home; do
+		if [ -d "$jdk" ]; then
+			export JAVA_HOME="$jdk";
+			break;
+		fi
+	done
+
 	if [ -z "$JAVA_HOME" ]; then
 
 		# prefer the Apple JDK, then the newest 1.4 sun JDK, then whatever's left
 		JAVADIR=`ls -1 /usr/java 2>/dev/null | grep 1.4 | sort | tail -1`
-		for jdk in /Library/Java/Home $JAVADIR /usr/java/jdk1.4* /usr/java/j2sdk1.4*; do
+		for jdk in /System/Library/Frameworks/JavaVM.framework/Versions/1.4*/Home /Library/Java/Home $JAVADIR /usr/java/jdk1.4* /usr/java/j2sdk1.4*; do
 			if [ -x "$jdk/bin/java" ]; then
 				export JAVA_HOME="$jdk";
 				break
@@ -37,6 +47,7 @@ java_lint () {
 		done
 
 	fi
+
 	if [ -z "$JAVA_HOME" ]; then
 
 		JAVA_PATH=`which java 2>&1 | grep -v "no java"`

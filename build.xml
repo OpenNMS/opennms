@@ -946,16 +946,19 @@ OpenNMS as part of the post-install.
   <mkdir dir="${root.build}/jicmp"/>
   <javah class="org.opennms.protocols.icmp.IcmpSocket" classpath="${root.build.classes}"
 	outputFile="${root.build}/jicmp/IcmpSocket.h"/>
+  <copy todir="${root.build}/jicmp">
+   <fileset dir="${root.source}/src/services/org/opennms/protocols/icmp" includes="*.c" />
+  </copy>
  </target>
 
- <target name="compile.native.jicmp" depends="init,compile.native.jicmp.osx,compile.native.jicmp.unix" />
+ <target name="compile.native.jicmp" depends="init,compile.native.osx.check,compile.native.jicmp.osx,compile.native.jicmp.unix" />
 
  <target name="compile.native.jicmp.osx" depends="init,compile.native.jicmp.javah" if="isOSX">
   <mkdir dir="${root.build}/jicmp"/>
 
   <!-- generate .so files -->
   <apply executable="${compile.cc}" dir="${root.build}/jicmp" failonerror="true" dest="${root.build}/jicmp">
-   <arg line="-bundle -framework JavaVM -I/System/Library/Frameworks/JavaVM.framework/Headers -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jicmp -I. -D${compile.platform.define} -o"/>
+   <arg line="-bundle -framework JavaVM -I${java.framework}/include -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jicmp -I. -D${compile.platform.define} -o"/>
    <targetfile/>
    <srcfile/>
    <fileset dir="${root.build}/jicmp" includes="*.c"/>
@@ -968,7 +971,7 @@ OpenNMS as part of the post-install.
 
   <!-- generate .o files -->
   <apply executable="${compile.cc}" dir="${root.build}/jicmp" failonerror="true" dest="${root.build}/jicmp">
-   <arg line="${compile.cflags} -fpic -I${env.JAVA_HOME}/include -I/System/Library/Frameworks/JavaVM.framework/Headers -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jicmp -D${compile.platform.define} -c -o"/>
+   <arg line="${compile.cflags} -fPIC -I${java.framework}/include -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jicmp -D${compile.platform.define} -c -o"/>
    <targetfile/>
    <srcfile/>
    <fileset dir="${root.source}/src/services/org/opennms/protocols/icmp" includes="*.c"/>
@@ -1001,7 +1004,7 @@ OpenNMS as part of the post-install.
    <fileset dir="${root.source}/src/services/org/opennms/netmgt/rrd" includes="*.c"/>
   </copy>
   <apply executable="${compile.cc}" dir="${root.build}/jrrd" failonerror="true" dest="${root.build}/jrrd">
-   <arg line="-bundle -framework JavaVM -I/System/Library/Frameworks/JavaVM.framework/Headers -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jrrd -I${compile.rrdtool.include} -I. -L${compile.rrdtool.lib} -D${compile.platform.define} -lrrd -o"/>
+   <arg line="-bundle -framework JavaVM -I${java.framework}/include -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jrrd -I${compile.rrdtool.include} -I. -L${compile.rrdtool.lib} -D${compile.platform.define} -lrrd -o"/>
    <targetfile/>
    <srcfile/>
    <fileset dir="${root.build}/jrrd" includes="*.c"/>
@@ -1014,7 +1017,7 @@ OpenNMS as part of the post-install.
 
   <!-- generate .o files -->
   <apply executable="${compile.cc}" dir="${root.build}/jrrd" failonerror="true" dest="${root.build}/jrrd">
-   <arg line="${compile.cflags} -fpic -I/System/Library/Frameworks/JavaVM.framework/Headers -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jrrd -I${compile.rrdtool.include} -D${compile.platform.define} -c -o"/>
+   <arg line="${compile.cflags} -fPIC -I${java.framework}/include -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jrrd -I${compile.rrdtool.include} -D${compile.platform.define} -c -o"/>
    <targetfile/>
    <srcfile/>
    <fileset dir="${root.source}/src/services/org/opennms/netmgt/rrd" includes="*.c"/>
