@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # install - install a program, script, or datafile
 # This comes from X11R5 (mit/util/scripts/install.sh).

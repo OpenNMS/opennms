@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # postrm script for opennms
 #
 # see: dh_installdeb(1)

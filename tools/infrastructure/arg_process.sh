@@ -39,7 +39,7 @@ check_arg () {
 	esac
 }
  
-if echo "$1" | grep -q -- - 2>/dev/null; then
+if echo "$1" | grep -- - >/dev/null 2>&1; then
 	for ARG
 	do
 		if check_arg "$ARG"; then

@@ -110,7 +110,7 @@ check_java_version () {
 	[ -z "$1" ] && return 1
 
 	if [ -x "$1/bin/java" ]; then
-		if $1/bin/java -version 2>&1 | grep -q "cannot open shared object file"; then
+		if $1/bin/java -version 2>&1 | grep "cannot open shared object file" >/dev/null 2>&1; then
 			cat <<END_SOERROR
 
 Error!  You have the JDK 1.4.0 installed but you are
@@ -139,7 +139,7 @@ is_hotspot_vm () {
 	_rc=1
 	HOTSPOT=false
 	if [ -n "$1" -a -x "$1/bin/java" ] ; then
-		if $1/bin/java -version 2>&1 | grep -q -i HotSpot 2>&1; then
+		if $1/bin/java -version 2>&1 | grep -i HotSpot >/dev/null 2>&1; then
 			if [ "`uname`" != "Darwin" ]; then
 				HOTSPOT=true
 				_rc=0
