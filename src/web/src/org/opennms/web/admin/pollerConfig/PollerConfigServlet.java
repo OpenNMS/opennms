@@ -100,7 +100,7 @@ public class PollerConfigServlet extends HttpServlet {
         String homeDir = Vault.getHomeDir();
         ServletConfig config = this.getServletConfig();
         ServletContext context = config.getServletContext();
-        Enumeration enum = context.getAttributeNames();
+        Enumeration en = context.getAttributeNames();
         try {
             props.load(new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)));
             String[] protocols = BundleLists.parseBundleList(this.props.getProperty("services"));
@@ -133,7 +133,7 @@ public class PollerConfigServlet extends HttpServlet {
         String homeDir = Vault.getHomeDir();
         ServletConfig config = this.getServletConfig();
         ServletContext context = config.getServletContext();
-        Enumeration enum = context.getAttributeNames();
+        Enumeration en = context.getAttributeNames();
         try {
             props.load(new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONF_FILE_NAME)));
             String[] protocols = BundleLists.parseBundleList(this.props.getProperty("services"));

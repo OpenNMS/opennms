@@ -127,9 +127,9 @@ public class RTCCategory extends Category {
 
         boolean found = false;
 
-        Enumeration enum = enumerateService();
-        while (enum.hasMoreElements()) {
-            String svc = (String) enum.nextElement();
+        Enumeration en = enumerateService();
+        while (en.hasMoreElements()) {
+            String svc = (String) en.nextElement();
             if (svc.equals(svcname)) {
                 found = true;
                 break;

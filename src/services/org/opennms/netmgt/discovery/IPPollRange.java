@@ -96,11 +96,11 @@ final class IPPollRange {
          * Creates a poll range generator object.
          * </P>
          * 
-         * @param enum
+         * @param en
          *            The Enumeration to use for address generation.
          */
-        public IPPollRangeGenerator(Enumeration enum) {
-            m_range = enum;
+        public IPPollRangeGenerator(Enumeration en) {
+            m_range = en;
         }
 
         /**

@@ -534,9 +534,9 @@ final class EventWriter {
             List a = new ArrayList();
             List b = new ArrayList();
 
-            Enumeration enum = event.enumerateOperaction();
-            while (enum.hasMoreElements()) {
-                Operaction eoa = (Operaction) enum.nextElement();
+            Enumeration en = event.enumerateOperaction();
+            while (en.hasMoreElements()) {
+                Operaction eoa = (Operaction) en.nextElement();
                 a.add(eoa);
                 b.add(eoa.getMenutext());
             }

@@ -59,11 +59,11 @@ public final class Parameter {
     public static String format(Parms parms) {
         boolean first = true;
 
-        Enumeration enum = parms.enumerateParm();
+        Enumeration en = parms.enumerateParm();
 
         StringBuffer parmbuf = new StringBuffer();
-        while (enum.hasMoreElements()) {
-            Parm parm = (Parm) enum.nextElement();
+        while (en.hasMoreElements()) {
+            Parm parm = (Parm) en.nextElement();
             if (!first)
                 parmbuf.append(Constants.MULTIPLE_VAL_DELIM);
             parmbuf.append(format(parm));

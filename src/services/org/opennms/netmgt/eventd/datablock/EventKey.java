@@ -181,9 +181,9 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable 
                 put(TAG_UEI, new EventMaskValueList(uei));
             }
         } else {
-            Enumeration enum = mask.enumerateMaskelement();
-            while (enum.hasMoreElements()) {
-                org.opennms.netmgt.xml.eventconf.Maskelement maskelement = (org.opennms.netmgt.xml.eventconf.Maskelement) enum.nextElement();
+            Enumeration en = mask.enumerateMaskelement();
+            while (en.hasMoreElements()) {
+                org.opennms.netmgt.xml.eventconf.Maskelement maskelement = (org.opennms.netmgt.xml.eventconf.Maskelement) en.nextElement();
 
                 String name = maskelement.getMename();
 
@@ -235,9 +235,9 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable 
                 put(TAG_UEI, uei);
             }
         } else {
-            Enumeration enum = mask.enumerateMaskelement();
-            while (enum.hasMoreElements()) {
-                org.opennms.netmgt.xml.event.Maskelement maskelement = (org.opennms.netmgt.xml.event.Maskelement) enum.nextElement();
+            Enumeration en = mask.enumerateMaskelement();
+            while (en.hasMoreElements()) {
+                org.opennms.netmgt.xml.event.Maskelement maskelement = (org.opennms.netmgt.xml.event.Maskelement) en.nextElement();
 
                 String name = maskelement.getMename();
                 String value = getMaskElementValue(event, name);

@@ -184,9 +184,9 @@ public class ViewFactory {
                 Membership membership = new Membership();
                 Membership viewmembers = view.getMembership();
                 if (viewmembers != null) {
-                    Enumeration enum = viewmembers.enumerateMember();
-                    while (enum.hasMoreElements()) {
-                        Member member = (Member) enum.nextElement();
+                    Enumeration en = viewmembers.enumerateMember();
+                    while (en.hasMoreElements()) {
+                        Member member = (Member) en.nextElement();
                         if (member.getType().equals("user")) {
                             if (!member.getContent().equals(name)) {
                                 membership.addMember(member);
@@ -374,9 +374,9 @@ public class ViewFactory {
         // clear out the internal structure and reload it
         m_views.clear();
 
-        Enumeration enum = views.enumerateView();
-        while (enum.hasMoreElements()) {
-            View curView = (View) enum.nextElement();
+        Enumeration en = views.enumerateView();
+        while (en.hasMoreElements()) {
+            View curView = (View) en.nextElement();
             m_views.put(curView.getName(), curView);
         }
     }

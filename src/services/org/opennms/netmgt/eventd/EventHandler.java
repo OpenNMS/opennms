@@ -113,9 +113,9 @@ final class EventHandler implements Runnable {
             return;
         }
 
-        Enumeration enum = events.enumerateEvent();
-        while (enum.hasMoreElements()) {
-            Event event = (Event) enum.nextElement();
+        Enumeration en = events.enumerateEvent();
+        while (en.hasMoreElements()) {
+            Event event = (Event) en.nextElement();
 
             if (log.isDebugEnabled()) {
                 // print out the eui, source, and other

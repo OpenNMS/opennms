@@ -158,9 +158,9 @@ public final class EventExpander {
     private static org.opennms.netmgt.xml.event.Mask transform(org.opennms.netmgt.xml.eventconf.Mask src) {
         org.opennms.netmgt.xml.event.Mask dest = new org.opennms.netmgt.xml.event.Mask();
 
-        Enumeration enum = src.enumerateMaskelement();
-        while (enum.hasMoreElements()) {
-            org.opennms.netmgt.xml.eventconf.Maskelement confme = (org.opennms.netmgt.xml.eventconf.Maskelement) enum.nextElement();
+        Enumeration en = src.enumerateMaskelement();
+        while (en.hasMoreElements()) {
+            org.opennms.netmgt.xml.eventconf.Maskelement confme = (org.opennms.netmgt.xml.eventconf.Maskelement) en.nextElement();
 
             // create new mask element
             org.opennms.netmgt.xml.event.Maskelement me = new org.opennms.netmgt.xml.event.Maskelement();
@@ -520,9 +520,9 @@ public final class EventExpander {
                 eConf = eSnmpConf;
             else {
                 boolean snmpEidIsPartOfMask = false;
-                Enumeration enum = eConf.getMask().enumerateMaskelement();
-                while (enum.hasMoreElements()) {
-                    org.opennms.netmgt.xml.eventconf.Maskelement maskelement = (org.opennms.netmgt.xml.eventconf.Maskelement) enum.nextElement();
+                Enumeration en = eConf.getMask().enumerateMaskelement();
+                while (en.hasMoreElements()) {
+                    org.opennms.netmgt.xml.eventconf.Maskelement maskelement = (org.opennms.netmgt.xml.eventconf.Maskelement) en.nextElement();
 
                     String name = maskelement.getMename();
                     if (name.equals(org.opennms.netmgt.eventd.datablock.EventKey.TAG_SNMP_EID)) {
