@@ -233,7 +233,7 @@
     Transport Agent (MTA). This MTA is free to use and was provided by John
     Udell (found here: <ulink url="http://zoe.nu/">http://zoe.nu/</ulink>).
     It's included in the OpenNMS libs as "jmta.jar". This enables OpenNMS to
-    use a Java mailer without needing a relay SMTP host. </para>
+    use a Java mailer without needing a relay SMTP host.</para>
 
     <para>A new flag has been added to the
     <filename>javamail-configuration.properties</filename> file:
@@ -390,11 +390,11 @@
     needed to ensure that the data actually got removed eventually. To do this
     Vacuumd was introduced to provide a mechanism to periodically run database
     maintenance operations. Vacuumd's configuration consists of a set of
-    database statements to be run daily (or which every period is preferable).
+    database statements to be run daily (or whichever period is preferable).
     There are four maintenance operations provided by OpenNMS by default.
-    These are as follows: delete nodes have been marked as deleted, delete
-    interfaces that have been marked as deleted, delete services that have
-    been marked as deleted, and delete any event that is not related to a
+    These are as follows: delete nodes that have been marked as deleted,
+    delete interfaces that have been marked as deleted, delete services that
+    have been marked as deleted, and delete any event that is not related to a
     current outage and is older than 6 weeks.</para>
 
     <para>In order to make sure that Vacuumd properly deletes all the data

@@ -1,3 +1,7 @@
+1.1.6 to 1.2.0
+----------------------------------------------------------------------
+- Added some corrections to the release notes. Thx Scott. Bug 965.
+
 1.1.4 to 1.1.5
 ----------------------------------------------------------------------
 - Added support for ifAlias. Thx Mike and Bill. Bug 598.
