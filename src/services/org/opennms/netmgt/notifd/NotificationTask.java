@@ -162,6 +162,10 @@ public class NotificationTask extends Thread {
     public void setUser(User aUser) {
         m_user = aUser;
     }
+    
+    public User getUser() {
+        return m_user;
+    }
 
     /**
      * Sets the group id that will be inserted into the row in notifications
@@ -173,6 +177,7 @@ public class NotificationTask extends Thread {
     public void setNoticeId(int anId) {
         m_notifyId = anId;
     }
+    
 
     /**
      * This method will construct the command that will be issued to send the
@@ -183,6 +188,10 @@ public class NotificationTask extends Thread {
      */
     public void setCommands(Command[] commands) {
         m_commands = commands;
+    }
+    
+    public Command[] getCommands() {
+        return (Command[])m_commands.clone();
     }
 
     /**
@@ -276,7 +285,7 @@ public class NotificationTask extends Thread {
             if (NotificationManager.PARAM_DESTINATION.equals(aSwitch)) {
                 value = m_user.getUserId();
             } else if (NotificationManager.PARAM_EMAIL.equals(aSwitch)) {
-                value = getEmail(m_user);
+                value = getEmail();
             } else if (NotificationManager.PARAM_PAGER_EMAIL.equals(aSwitch)) {
                 value = m_notifd.getUserManager().getPagerEmail(m_user.getUserId());
             } else if (NotificationManager.PARAM_TEXT_PAGER_PIN.equals(aSwitch)) {
@@ -291,6 +300,10 @@ public class NotificationTask extends Thread {
         }
 
         return value;
+    }
+    
+    public String getEmail() {
+        return getEmail(m_user);
     }
 
     /**

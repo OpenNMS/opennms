@@ -90,6 +90,10 @@ public class NoticeQueue extends TreeMap {
 
         return result;
     }
+    
+    public Object put(long time, Object task) {
+        return put(new Long(time), task);
+    }
 
     public Object remove(Object task) {
         Object result = null;

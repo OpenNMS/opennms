@@ -582,45 +582,60 @@ final class BroadcastEventProcessor implements EventListener {
 
             String targetName = targets[i].getName();
             ThreadCategory.getInstance(getClass()).debug("Processing target " + targetName + ":" + interval);
+            
+            NotificationTask[] tasks = null;
 
-            long curSendTime = 0;
 
             if (m_notifd.getGroupManager().hasGroup((targetName))) {
-                Group group = m_notifd.getGroupManager().getGroup(targetName);
-                String[] users = group.getUser();
-
-                if (users != null && users.length > 0) {
-                    for (int j = 0; j < users.length; j++) {
-                        NotificationTask newTask = makeUserTask(startTime + curSendTime, params, noticeId, users[j], targets[i].getCommand(), targetSiblings);
-
-                        if (newTask != null) {
-                            noticeQueue.put(new Long(startTime + curSendTime), newTask);
-                            targetSiblings.add(newTask);
-
-                            curSendTime += TimeConverter.convertToMillis(interval);
-                        }
-                    }
-                } else {
-                    ThreadCategory.getInstance(getClass()).debug("Not sending notice, no users specified for group " + group.getName());
-                }
+                
+                tasks = makeGroupTasks(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, TimeConverter.convertToMillis(interval));
+                
             } else if (m_notifd.getUserManager().hasUser(targetName)) {
-                NotificationTask newTask = makeUserTask(startTime + curSendTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings);
-
-                if (newTask != null) {
-                    noticeQueue.put(new Long(startTime + curSendTime), newTask);
-                    targetSiblings.add(newTask);
-                }
+                
+                NotificationTask[] userTasks = { makeUserTask(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings) };
+                tasks = userTasks;
             } else if (targetName.indexOf("@") > -1) {
-                NotificationTask newTask = makeEmailTask(startTime + curSendTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings);
+                
+                NotificationTask[] emailTasks = { makeEmailTask(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings) };
+                tasks = emailTasks;
+            }
+             
+            if (tasks != null) {
 
-                if (newTask != null) {
-                    noticeQueue.put(new Long(startTime + curSendTime), newTask);
-                    targetSiblings.add(newTask);
+                for (int index = 0; index < tasks.length; index++) {
+                    NotificationTask task = tasks[index];
+                    if (task != null) {
+                        noticeQueue.put(task.getSendTime(), task);
+                        targetSiblings.add(task);
+                    }
                 }
+                
             } else {
                 Category log = ThreadCategory.getInstance(getClass());
                 log.warn("Unrecognized target '" + targetName + "' contained in destinationPaths.xml. Please check the configuration.");
             }
+            
+        }
+    }
+
+    NotificationTask[] makeGroupTasks(long startTime, Map params, int noticeId, String targetName, String[] command, List targetSiblings, long interval) throws IOException, MarshalException, ValidationException {
+        long curSendTime = 0;
+        Group group = m_notifd.getGroupManager().getGroup(targetName);
+        String[] users = group.getUser();
+        List taskList = new ArrayList(users.length);
+        if (users != null && users.length > 0) {
+            for (int j = 0; j < users.length; j++) {
+                NotificationTask newTask = makeUserTask(startTime + curSendTime, params, noticeId, users[j], command, targetSiblings);
+
+                if (newTask != null) {
+                    taskList.add(newTask);
+                    curSendTime += interval; 
+                }
+            }
+            return (NotificationTask[])taskList.toArray(new NotificationTask[taskList.size()]);
+        } else {
+            ThreadCategory.getInstance(getClass()).debug("Not sending notice, no users specified for group " + group.getName());
+            return null;
         }
     }
 
@@ -638,7 +653,7 @@ final class BroadcastEventProcessor implements EventListener {
     /**
      * 
      */
-    private NotificationTask makeUserTask(long sendTime, Map parameters, int noticeId, String targetName, String[] commandList, List siblings) throws IOException, MarshalException, ValidationException {
+    NotificationTask makeUserTask(long sendTime, Map parameters, int noticeId, String targetName, String[] commandList, List siblings) throws IOException, MarshalException, ValidationException {
         NotificationTask task = null;
 
         try {
@@ -671,7 +686,7 @@ final class BroadcastEventProcessor implements EventListener {
     /**
      * 
      */
-    private NotificationTask makeEmailTask(long sendTime, Map parameters, int noticeId, String address, String[] commandList, List siblings) throws IOException, MarshalException, ValidationException {
+    NotificationTask makeEmailTask(long sendTime, Map parameters, int noticeId, String address, String[] commandList, List siblings) throws IOException, MarshalException, ValidationException {
         NotificationTask task = null;
 
         try {
