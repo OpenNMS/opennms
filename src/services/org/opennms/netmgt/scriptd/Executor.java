@@ -1,4 +1,13 @@
 //
+// This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is Copyright (C) 2002-2003 Blast Internet Services, Inc.  All rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included code and modified
+// code that was published under the GNU General Public License. Copyrights for modified 
+// and included code are below.
+//
+// OpenNMS(R) is a registered trademark of Blast Internet Services, Inc.
+//
 // Copyright (C) 2003 Tavve Software Company.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -20,9 +29,9 @@
 //      http://www.opennms.org/
 //      http://www.sortova.com/
 //
-//
 // Tab Size = 8
 //
+
 package org.opennms.netmgt.scriptd;
 
 import java.lang.*;

@@ -1,6 +1,25 @@
 //
-// Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
-// Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is Copyright (C) 2002-2003 Blast Internet Services, Inc.  All rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included code and modified
+// code that was published under the GNU General Public License. Copyrights for modified 
+// and included code are below.
+//
+// OpenNMS(R) is a registered trademark of Blast Internet Services, Inc.
+//
+// Modifications:
+//
+// 2003 Oct 15: Heavy re-write of reparenting code to fix duplicate IP address issues.
+// 2003 Jul 03: Removed code that was reseting parent ID on rescans (for maps).
+// 2003 Mar 18: Handle null pointer exceptions due to poorly written SNMP agents.
+// 2003 Jan 31: Cleaned up some unused imports.
+// 2002 Oct 03: Added the ability to discover loopback interfaces.
+// 2002 Sep 20: Added the snmpStorageFlag "select" option.
+// 2002 Aug 01: Changed nodelabel behavior.
+// 2002 Jul 08: Fixed null pointer exception in rescans.
+//
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -10,20 +29,20 @@
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// GNU General Public License for more details.                                                            
 //
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
+//       
+// For more information contact: 
 //      OpenNMS Licensing       <license@opennms.org>
 //      http://www.opennms.org/
-//      http://www.sortova.com/
-//
+//      http://www.blast.com/
 //
 // Tab Size = 8
 //
+
 package org.opennms.netmgt.capsd;
 
 import java.lang.*;

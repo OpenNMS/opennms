@@ -35,8 +35,10 @@ What does "JoeSNMP" stand for?
 
 Where do I get the latest copy of the source?
 
+	JoeSNMP is distributed as part of OpenNMS.
+
 	The latest copy of the source can be retrieved from the development CVS
-	tree at cvs.opennms.org.   Note that the most stable releases of the 
+	tree at cvs.sourceforge.net/opennms.   Note that the most stable releases of the 
 	code will be available from the OpenNMS web site 
 	(http://www.opennms.org) and that code in the CVS tree is truly under 
 	development, so it may or may not work at any given point in time.
@@ -46,18 +48,15 @@ Where do I get the latest copy of the source?
 	
     User ID:   anonymous
     Password:  anonymous
-    CVSROOT:   :pserver:anonymous@cvs.opennms.org:/usr/local/cvsroot/bluebird
+    CVSROOT:   :pserver:anonymous@cvs.sourceforge.net:/cvsroot/opennms
 
-    Module(s): jsnmp jcommon
+    Module: opennms
 		
 	Example Checkout:
 	
-    cvs -d :pserver:anonymous@cvs.opennms.org:/usr/local/cvsroot/bluebird login
-    (Logging in to anonymous@cvs.opennms.org)
-    CVS password: *********
     (Issue the following command:)
-    cvs -d :pserver:anonymous@cvs.opennms.org:/usr/local/cvsroot/bluebird 
-	co JoeSNMP jcommon
+    cvs -d :pserver:anonymous@cvs.sourceforge.net:/cvsroot/opennms -z3
+	co opennms
 		
 	Now you have the source in the directories JoeSNMP & jcommon. The next 
 	step is to build the source and code away.

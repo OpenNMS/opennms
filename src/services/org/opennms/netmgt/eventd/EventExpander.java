@@ -1,6 +1,21 @@
 //
-// Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
-// Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is Copyright (C) 2002-2003 Blast Internet Services, Inc.  All rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included code and modified
+// code that was published under the GNU General Public License. Copyrights for modified 
+// and included code are below.
+//
+// OpenNMS(R) is a registered trademark of Blast Internet Services, Inc.
+//
+// Modifications:
+//
+// 2003 Aug 21: Changes made to support ScriptD.
+// 2002 Nov 10: Removed "http://" from UEIs as well as references to bluebird.
+// 2002 Oct 22: Added threshold rearm events.
+// 2002 Oct 21: Default SNMP events no longer hard coded, and event order now functional.
+//
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -10,20 +25,20 @@
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// GNU General Public License for more details.                                                            
 //
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
+//       
+// For more information contact: 
 //      OpenNMS Licensing       <license@opennms.org>
 //      http://www.opennms.org/
-//      http://www.sortova.com/
-//
+//      http://www.blast.com/
 //
 // Tab Size = 8
 //
+
 package org.opennms.netmgt.eventd;
 
 import java.lang.*;

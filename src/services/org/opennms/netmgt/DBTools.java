@@ -1,5 +1,18 @@
 //
-// Copyright (C) 2003 Sortova Consulting Group, Inc.  All rights reserved.
+// This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is Copyright (C) 2002-2003 Blast Internet Services, Inc.  All rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included code and modified
+// code that was published under the GNU General Public License. Copyrights for modified 
+// and included code are below.
+//
+// OpenNMS(R) is a registered trademark of Blast Internet Services, Inc.
+//
+// Modifications:
+//
+// 2003 May 1: Added code to support JDBC poller.
+//
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,8 +31,9 @@
 // For more information contact:
 //      OpenNMS Licensing       <license@opennms.org>
 //      http://www.opennms.org/
-//      http://www.sortova.com/
+//      http://www.blast.com/
 //
+
 package org.opennms.netmgt;
 
 import java.util.regex.Pattern;

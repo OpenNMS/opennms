@@ -1,29 +1,50 @@
-/**
-* Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
-* Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*
-* For more information contact:
-*      OpenNMS Licensing       <license@opennms.org>
-*      http://www.opennms.org/
-*      http://www.sortova.com/
-*
-*
-* Tab Size = 8
-*
+/*
+ This file is part of the OpenNMS(R) Application.
+
+ OpenNMS(R) is Copyright (C) 2002-2003 Blast Internet Services, Inc.  All rights reserved.
+ OpenNMS(R) is a derivative work, containing both original code, included code and modified
+ code that was published under the GNU General Public License. Copyrights for modified 
+ and included code are below.
+
+ OpenNMS(R) is a registered trademark of Blast Internet Services, Inc.
+
+ Modifications:
+
+ 2003 Sep 07: More Darwin tweaks.
+ 2003 Apr 26: Fixes byteswap issues on Solaris x86.
+ 2003 Mar 25: Used unt64_t instead of unsigned long long.
+ 2003 Feb 15: Bugfixes for Darwin.
+ 2003 Feb 11: Bugfixes for Darwin.
+ 2003 Feb 10: Bugfixes for Darwin.
+ 2003 Feb 09: ICMP response time on Darwin.
+ 2003 Feb 02: Initial Darwin port.
+ 2002 Nov 26: Fixed build issues on Solaris.
+ 2002 Nov 13: Added response times for ICMP.
+
+ Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+ For more information contact:
+      OpenNMS Licensing       <license@opennms.org>
+      http://www.opennms.org/
+      http://www.sortova.com/
+
+
+ Tab Size = 8
+
 */
 #include <stdio.h>
 #include <unistd.h>

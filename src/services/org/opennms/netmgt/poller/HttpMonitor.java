@@ -1,6 +1,25 @@
 //
-// Copyright (C) 2002-2003 Sortova Consulting Group, Inc.  All rights reserved.
-// Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is Copyright (C) 2002-2003 Blast Internet Services, Inc.  All rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included code and modified
+// code that was published under the GNU General Public License. Copyrights for modified 
+// and included code are below.
+//
+// OpenNMS(R) is a registered trademark of Blast Internet Services, Inc.
+//
+// Modifications:
+//
+// 2003 Jul 21: Explicitly closed socket.
+// 2003 Jul 18: Enabled retries for monitors.
+// 2003 Jul 02: Fixed a ClassCastException.
+// 2003 Jun 11: Added a "catch" for RRD update errors. Bug #748.
+// 2003 Jan 31: Added the ability to imbed RRA information in poller packages.
+// 2003 Jan 31: Cleaned up some unused imports.
+// 2003 Jan 29: Added response times to certain monitors.
+// 2002 Nov 14: Used non-blocking I/O socket channel classes.
+//
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,12 +38,11 @@
 // For more information contact:
 //      OpenNMS Licensing       <license@opennms.org>
 //      http://www.opennms.org/
-//      http://www.sortova.com/
-//
+//      http://www.blast.com/
 //
 // Tab Size = 8
 //
-//
+
 package org.opennms.netmgt.poller;
 
 import java.lang.*;
