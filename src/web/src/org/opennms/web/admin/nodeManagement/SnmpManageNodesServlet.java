@@ -125,7 +125,7 @@ public class SnmpManageNodesServlet extends HttpServlet {
                         stmt.setInt(3, curInterface.getIfIndex());
                         this.log("DEBUG: executing SNMP Collection Type update to C for nodeid: " + curInterface.getNodeid() + " ifIndex: " + curInterface.getIfIndex());
                         stmt.executeUpdate();
-                    } else if (!interfaceList.contains(intKey) && curInterface.getNodeid() == currNodeId && "C".equals(curInterface.getStatus())) {
+                    } else if (!interfaceList.contains(intKey) && curInterface.getNodeid() == currNodeId && ("C".equals(curInterface.getStatus()) || "S".equals(curInterface.getStatus()))) {
                         stmt.setString(1, "N");
                         stmt.setInt(2, curInterface.getNodeid());
                         stmt.setInt(3, curInterface.getIfIndex());

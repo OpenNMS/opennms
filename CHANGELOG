@@ -1,5 +1,11 @@
 1.2.0 to 1.2.1
 ----------------------------------------------------------------------
+- Added the ability to remove "secondary" status from interfaces
+  via the SNMP Collection Admin UI, and added a direct link
+  from the node admin page to the particular node's configuration
+  page.
+- Applied the patch to help with 30 second outages. Bug 1180. 
+  Thx Tobey
 - Added package name to Interface page for admins. Bug 1044. Thx Bill
 - Extended the varbind matching in Notifications. Bug 1032. Thx Wiktor
 - Added mib2.packets report. Bug 1179. Thx Andy
