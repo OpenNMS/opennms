@@ -153,7 +153,8 @@ public class Installer {
 				"\nUse '-h' for help.");
 	}
 	    
-	checkJava();
+        // Don't bother checking the Java version.  Leave it up to runjava.
+	// checkJava();
 	// XXX Check Tomcat version?
 
 	if (m_update_database || m_update_iplike || m_update_unicode ||
@@ -402,6 +403,8 @@ public class Installer {
     }
 
     // Mac OS X: http://developer.apple.com/technotes/tn2002/tn2110.html
+    // Don't bother checking.  Leave the check up to "runjava".
+   /*	
     public void checkJava() throws Exception {
 	String javaVersion = System.getProperty("java.version");
 	if (!javaVersion.startsWith("1.4")) {
@@ -411,6 +414,7 @@ public class Installer {
 	// XXX if we only run properly on Sun Java at this time, should
 	// XXX we check for that?  Check for specific release verisions?
     }
+    */
 
     public void printDiagnostics() {
 	m_out.println("* using '" + m_user + "' as the PostgreSQL " +
