@@ -4,72 +4,74 @@ $|++;
 
 use strict;
 use vars qw(
-  $DEBUG
-  $VERBOSE
-  $LOG
-  $LOG_FILE
-  $VERSION
-  $REVISION
-  $ERRORS
-  $PWD
-  $OPENNMS_HOME
-  $SOEXT
+	$DEBUG
+	$VERBOSE
+	$LOG
+	$LOG_FILE
+	$VERSION
+	$REVISION
+	$ERRORS
+	$PWD
+	$OPENNMS_HOME
+	$SOEXT
 
-  $PG_USER
-  $PG_PASS
-  $PG_LIBDIR
+	$PG_USER
+	$PG_PASS
+	$PG_LIBDIR
 
-  $USER
-  $PASS
+	$USER
+	$PASS
 
-  $DATABASE
-  $SQL_FILE
+	$DATABASE
+	$SQL_FILE
 
-  %CHANGED
-  %MONTHS
-  @TABLES
-  @SEQUENCES
-  @CFUNCTIONS
-  @FUNCTIONS
-  @LANGS
-  @INDEXES
-  @DROPS
-  %INSERTS
-  $CREATE
-  $FORCE
-  $RPM
-  $NOINSERT
-  $NOSO
-  $NOTOMCAT
-  $NOLDSO
-  $DODROPS
+	%CHANGED
+	%MONTHS
+	@TABLES
+	%SEQMAPPING
+	@SEQUENCES
+	@CFUNCTIONS
+	@FUNCTIONS
+	@LANGS
+	@INDEXES
+	@DROPS
+	%INSERTS
+	$CREATE
+	$FORCE
+	$RPM
+	$NOINSERT
+	$NOSO
+	$TOMCAT
+	$NOLDSO
+	$DODROPS
 
-  $template
-  $psql
-  $database
+	$template
+	$psql
+	$database
 
-  $serverxml
+	$serverxml
 );
 
 use File::Find;
+use DBI;
 
-$OPENNMS_HOME   = '@root.install@';
-$SOEXT          = '@compile.soext@';
-$VERBOSE        = 1;
+$OPENNMS_HOME	= '@root.install@';
+$SOEXT		= '@compile.soext@';
+$VERBOSE	= 1;
 $LOG		= 0;
 $LOG_FILE	= '/tmp/opennms-install.log';
-$VERSION        = '0.6';
-$REVISION       = 1;
-$ERRORS         = 0;
-$FORCE          = 0;
-$RPM            = 0;
-$PG_USER        = 'postgres';
-$PG_PASS        = '';
-$PG_LIBDIR      = undef;
-$USER           = 'opennms';
-$PASS           = 'opennms';
-$DATABASE       = 'opennms';
-%MONTHS         = (
+$VERSION	= '0.6';
+$REVISION	= 1;
+$ERRORS		= 0;
+$FORCE		= 0;
+$RPM		= 0;
+$PG_USER	= 'postgres';
+$PG_PASS	= '';
+$PG_LIBDIR	= undef;
+$USER		= 'opennms';
+$PASS		= 'opennms';
+$DATABASE	= 'opennms';
+%MONTHS		= (
 	'jan' => 1,
 	'feb' => 2,
 	'mar' => 3,
@@ -83,7 +85,7 @@ $DATABASE       = 'opennms';
 	'nov' => 11,
 	'dec' => 12,
 );
-$serverxml      = '/var/tomcat4/conf/server.xml';
+$serverxml = '/var/tomcat4/conf/server.xml';
 
 chomp($PWD = `pwd`);
 
@@ -96,201 +98,101 @@ Configures PostgreSQL tables, users, and other miscellaneous settings.
 
 END
 
-{
-	eval {
-		require DBD::Pg;
-	};
-
-	if (defined $DBD::Pg::VERSION and $DBD::Pg::VERSION eq "0.98") {
-  print <<END;
-*** WARNING ***
-
-This version of DBD::Pg has some weird and nasty bugs in it.  You will
-probably see errors when this installation script runs.  Please upgrade
-your DBD::Pg version and try again.
-END
-	}
-}
-
-if (-f "/etc/debian_version") {
-  print <<END;
-(( Debian detected.  Setting up postgresql permissions. ))
-
-END
-
-  print "- creating root user: ";
-  system("su - postgres -c '/usr/bin/createuser -d -a root'");
-  $PG_USER='root';
-}
-
 my @argv_temp = @ARGV;
 @ARGV = ();
 
 # dig through the command-line arguments; can't use getopt because of the
 # way they're being handled.  ugh.
 while (1) {
-  my $arg = shift(@argv_temp) || last;
+	my $arg = shift(@argv_temp) || last;
 
-  if ($arg =~ /^\-+(.+)$/) {
-    my @args = split(//, $1);
+	if ($arg =~ /^\-+(.+)$/) {
+		my @args = split(//, $1);
 
-    for my $arg (@args) {
-      print_help()  if ($arg eq "h");
-      $VERBOSE  = 0 if ($arg eq "q");
-      $FORCE    = 1 if ($arg eq "c");
-      $NOLDSO   = 1 if ($arg eq "e");
-      $FORCE    = 1 if ($arg eq "f");
-      $NOINSERT = 1 if ($arg eq "i");
-      $RPM      = 1 if ($arg eq "r");
-      $NOSO     = 1 if ($arg eq "s");
-      $NOTOMCAT = 1 if ($arg eq "t");
-      $DEBUG    = 1 if ($arg eq "x");
-      $DODROPS  = 1 if ($arg eq "z");
+		for my $arg (@args) {
+			print_help()	if ($arg eq "h");
+			$VERBOSE	= 0 if ($arg eq "q");
+			$FORCE		= 1 if ($arg eq "c");
+			$NOLDSO	 = 1 if ($arg eq "e");
+			$FORCE		= 1 if ($arg eq "f");
+			$NOINSERT = 1 if ($arg eq "i");
+			$RPM			= 1 if ($arg eq "r");
+			$NOSO		 = 1 if ($arg eq "s");
+			$TOMCAT	 = 1 if ($arg eq "t");
+			$DEBUG		= 1 if ($arg eq "x");
+			$DODROPS	= 1 if ($arg eq "z");
 
-      if ($arg eq "u") {
-        $USER = shift @argv_temp;
-        if ($USER =~ /^\-+/) {
-          print_help();
-        }
-      }
+			if ($arg eq "u") {
+				$USER = shift @argv_temp;
+				if ($USER =~ /^\-+/) {
+					print_help();
+				}
+			}
 
-      if ($arg eq "p") {
-        $PASS = shift @argv_temp;
-        if ($PASS =~ /^\-+/) {
-          print_help();
-        }
-      }
+			if ($arg eq "p") {
+				$PASS = shift @argv_temp;
+				if ($PASS =~ /^\-+/) {
+					print_help();
+				}
+			}
 
-      if ($arg eq "U") {
-        $PG_USER = shift @argv_temp;
-        if ($PG_USER =~ /^\-+/) {
-          print_help();
-        }
-      }
+			if ($arg eq "U") {
+				$PG_USER = shift @argv_temp;
+				if ($PG_USER =~ /^\-+/) {
+					print_help();
+				}
+			}
 
-      if ($arg eq "L") {
-        $LOG = 1;
-        if ($argv_temp[0] !~ /^\-+/ and $argv_temp[0] !~ /\.sql\s*$/) {
-          $LOG_FILE = shift(@argv_temp);
-        }
-      }
+			if ($arg eq "L") {
+				$LOG = 1;
+				if ($argv_temp[0] !~ /^\-+/ and $argv_temp[0] !~ /\.sql\s*$/) {
+					$LOG_FILE = shift(@argv_temp);
+				}
+			}
 
-      if ($arg eq "P") {
-        $PG_PASS = shift @argv_temp;
-        if ($PG_PASS =~ /^\-+/) {
-          print_help();
-        }
-      }
+			if ($arg eq "P") {
+				$PG_PASS = shift @argv_temp;
+				if ($PG_PASS =~ /^\-+/) {
+					print_help();
+				}
+			}
 
-      if ($arg eq "d") {
-        $DATABASE = shift @argv_temp;
-        if ($DATABASE =~ /^\-+/) {
-          print_help();
-        }
-      }
+			if ($arg eq "d") {
+				$DATABASE = shift @argv_temp;
+				if ($DATABASE =~ /^\-+/) {
+					print_help();
+				}
+			}
 
-      if ($arg eq "l") {
-        $PG_LIBDIR = shift @argv_temp;
-        if ($DATABASE =~ /^\-+/) {
-          print_help();
-        }
-      }
+			if ($arg eq "l") {
+				$PG_LIBDIR = shift @argv_temp;
+				if ($DATABASE =~ /^\-+/) {
+					print_help();
+				}
+			}
 
-    }
-  } else {
-    push (@ARGV, $arg);
-  }
+		}
+	} else {
+		push (@ARGV, $arg);
+	}
 
 }
 
 print_help() if (@ARGV == 0);
 
 if ($> != 0) {
-  die "You must be root to run this installation script.\n\n";
+	die "You must be root to run this installation script.\n\n";
 }
 
 if ($LOG) {
-  if ( open(LOG, "| tee $LOG_FILE") ) {
-    select LOG;
-  } else {
-    warn "log file $LOG_FILE was not created: $!";
-  }
+	if ( open(LOG, "| tee $LOG_FILE") ) {
+		select LOG;
+	} else {
+		warn "log file $LOG_FILE was not created: $!";
+	}
 }
 
 my $failed = 0;
-
-# this checks to see of the database connection stuff exists
-eval "use DBI; use DBD::Pg;"; $failed = 1 if ($@);
-
-if ($failed) {
-  if (not $RPM and $VERBOSE) {
-    if(ask_question("I can't access the database without the DBI module installed.\n  Should I try installing it now?", "y")) {
-
-      print "\n";
-
-      $ENV{POSTGRES_INCLUDE} = ask_question('where are your PostgreSQL headers, eg postgres.h?', '/usr/include/pgsql');
-      $ENV{POSTGRES_LIB}     = ask_question("where are your PostgreSQL libs, eg libpq.$SOEXT.2?", '/usr/lib');
-
-      print <<END;
-
-We will now start up the CPAN perl module, which will install
-the files necessary to access the PostgreSQL database from
-perl.  If this is your first time running CPAN, it may ask
-you a number of questions regarding your computer's
-configuration and your preferred location for downloading
-perl modules.  When the questions are complete, it will (if
-necessary) attempt to compile and install the modules
-automatically.
-
-You will need an active internet connection to run CPAN,
-otherwise you will have to install the DBI and DBD::Pg perl
-modules manually (available at http://www.cpan.org/).
-
-END
-
-      exit unless (ask_question('Should I continue?', 'y'));
-
-      print "\n";
-
-      eval "use CPAN;";
-
-      # CPAN automatically downloads and installs perl modules
-
-      my $dbi = CPAN::Shell->expand("Module", "DBI");
-      $dbi->{force_update}++;
-      $dbi->install;
-
-      $dbi = CPAN::Shell->expand("Module", "DBD::Pg");
-      $dbi->{force_update}++;
-      $dbi->install;
-
-      eval "use DBI; use DBD::Pg;";
-      if ($@) {
-        die "Still unable to load DBI and/or DBD::Pg.  Exiting.\n";
-      }
-
-    }
-  } else {
-    die <<END;
-
-No DBI or DBD::Pg module found; unable to connect to the
-database.  Please install the DBI and DBD::Pg modules
-before attempting to use this installation script, or,
-try running this script again without "quiet mode" on,
-and it will walk you through installation.  You must have
-an internet connection to do so.
-
-If you are installing from RPM and are seeing this error,
-you are probably running into an issue related to shell
-filename expansion and RPM's handling of upgrades or
-installs on multiple files.  Please see the FAQ entry on
-the opennms site at:
-
-  http://faq.opennms.org/faq/fom-serve/cache/39.html
-
-END
-  }
-}
 
 chdir($PWD);
 
@@ -310,9 +212,9 @@ $ARGV[0] = "$PWD/$ARGV[0]" unless ($ARGV[0] =~ /^\.?\//);
 $SQL_FILE = $ARGV[0];
 print "- reading table definitions... ";
 if (read_tables($SQL_FILE)) {
-  print "OK\n";
+	print "OK\n";
 } else {
-  print "FAILED\n";
+	print "FAILED\n";
 }
 
 ##############################################################################
@@ -325,69 +227,27 @@ my $match_dir;
 # check for OPENNMS_HOME and make sure there are jar files in there
 
 if (exists $ENV{OPENNMS_HOME}) {
-  @jars = file_match($ENV{OPENNMS_HOME}, 'opennms_.+.jar$', 'f');
-  $match_dir = $ENV{OPENNMS_HOME};
-} else {
-  if (-d $OPENNMS_HOME) {
-	$ENV{OPENNMS_HOME} = $OPENNMS_HOME;
 	@jars = file_match($ENV{OPENNMS_HOME}, 'opennms_.+.jar$', 'f');
-	$match_dir = $OPENNMS_HOME;
-  } else {
-    @jars = file_match($PWD, '.jar$', 'f');
-    $match_dir = $PWD;
-  }
-}
-
-# double-check that the jar files are what we need, if not, 
-# search for the build.sh script and offer to build from source
-
-print "- Searching for OpenNMS directory... ";
-
-if (not grep(/opennms_.+\.jar/, @jars)) {
-  print "failed\n";
-  my ($match) = file_match($PWD, 'build.sh', 'f');
-  print "\n  I was unable to find the OpenNMS jar files, but I did find build.sh\n";
-  if (ask_question("  should I try to run ${match}?", 'n')) {
-    print "\n";
-    my ($basename) = $match =~ /^(.+?)(\/run)?\/build\.sh$/;
-    #update_arch($basename);
-
-    print "\n- building OpenNMS:\n\n";
-    if (system("$match opennms") != 0) {
-      print "\n*** AN ERROR OCCURRED DURING BUILDING! ***\n";
-      $ERRORS++;
-    } else {
-      if (open (DIR, $PWD)) {
-        my @dirs = reverse(sort(grep(/OpenNMS-[\d\.]+/, readdir(DIR))));
-        $ENV{OPENNMS_HOME} = pop(@dirs);
-        close (DIR);
-      } else {
-        print "\n*** Unable to open build directory! ***\n";
-      }
-    }
-  } else {
-    print "\n- skipping OpenNMS build\n";
-  }
+	$match_dir = $ENV{OPENNMS_HOME};
 } else {
-  print "$match_dir\n";
-
-  my ($match)    = file_match($match_dir, 'opennms.sh', 'f');
-  my ($basename) = $match =~ /^(.+?)\/(OpenNMS-[\d\.]+\/?)?(run\/)?opennms\.sh$/;
-  #update_arch($basename);
-
+	if (-d $OPENNMS_HOME) {
+		$ENV{OPENNMS_HOME} = $OPENNMS_HOME;
+		@jars = file_match($ENV{OPENNMS_HOME}, 'opennms_.+.jar$', 'f');
+		$match_dir = $OPENNMS_HOME;
+	} else {
+		@jars = file_match($PWD, '.jar$', 'f');
+		$match_dir = $PWD;
+	}
 }
-  
+
 ##############################################################################
 # check for database and users, create if necessary
 ##############################################################################
 
 {
 
-  $PG_USER = ask_question("what is the name of a user who can create new users in the database?", $PG_USER);
-  $PG_PASS = ask_question("what is " . $PG_USER . "'s password (if any)?", $PG_PASS);
-
-  $ENV{PGUSER} = $PG_USER;
-  $template = DBI->connect('dbi:Pg:dbname=template1', $PG_USER, $PG_PASS) or die(<<END);
+	$ENV{PGUSER} = $PG_USER;
+	$template = DBI->connect('dbi:Pg:dbname=template1', $PG_USER, $PG_PASS) or die(<<END);
 
 *** Unable to connect to the database!! ***
 
@@ -398,19 +258,19 @@ $DBI::errstr
 
 END
 
-  # dbi will return an OK even if the user exists, so we
-  # always do a create, and let it silently fail if they do
+	# dbi will return an OK even if the user exists, so we
+	# always do a create, and let it silently fail if they do
 
-  print "- creating user \"$USER\"... ";
-  eval {
-    stderr_off();
-    $template->do("CREATE USER $USER WITH PASSWORD '$PASS' CREATEDB CREATEUSER") or die($template->errstr);
-    stderr_on();
-  };
+	print "- creating user \"$USER\"... ";
+	eval {
+		stderr_off();
+		$template->do("CREATE USER $USER WITH PASSWORD '$PASS' CREATEDB CREATEUSER") or die($template->errstr);
+		stderr_on();
+	};
 
-  if (scalar $@ and $@ !~ /already exists/) {
-    print "FAILED\n";
-    print <<END;
+	if (scalar $@ and $@ !~ /already exists/) {
+		print "FAILED\n";
+		print <<END;
 
 *** ERROR ***
 I was unable to create a user in the template1
@@ -421,26 +281,26 @@ script again.
 $@
 END
 
-    $ERRORS++;
-  } else {
-    print "OK\n";
-  }
+		$ERRORS++;
+	} else {
+		print "OK\n";
+	}
 
-  if ($VERBOSE) {
-    $DATABASE = ask_question("what should we name the OpenNMS database?", $DATABASE);
-  }
+	if ($VERBOSE) {
+		$DATABASE = ask_question("what should we name the OpenNMS database?", $DATABASE);
+	}
 
-  print "- creating database \"$DATABASE\"... ";
+	print "- creating database \"$DATABASE\"... ";
 
-  eval {
-    stderr_off();
-    $template->do("CREATE DATABASE " . $DATABASE . " WITH ENCODING='UNICODE'") or die("Unable to create $DATABASE database: " . $template->errstr);
-    stderr_on();
-  };
+	eval {
+		stderr_off();
+		$template->do("CREATE DATABASE " . $DATABASE . " WITH ENCODING='UNICODE'") or die("Unable to create $DATABASE database: " . $template->errstr);
+		stderr_on();
+	};
 
-  if ($@ and $@ !~ /database "$DATABASE" already exists/) {
-    print "FAILED\n";
-    print <<END;
+	if ($@ and $@ !~ /database "$DATABASE" already exists/) {
+		print "FAILED\n";
+		print <<END;
 
 *** ERROR ***
 I was unable to create the '$DATABASE' database.
@@ -451,10 +311,10 @@ again.
 $@
 END
 
-    $ERRORS++;
-  } else {
-    print "OK\n";
-  }
+		$ERRORS++;
+	} else {
+		print "OK\n";
+	}
 
 }
 
@@ -463,7 +323,7 @@ END
 ##############################################################################
 
 $ENV{PGUSER} = $PG_USER;
-$database = DBI->connect("dbi:Pg:dbname=$DATABASE", $PG_USER, $PG_PASS) or die(<<END);
+$database = DBI->connect("dbi:Pg:dbname=$DATABASE", $PG_USER, $PG_PASS, { AutoCommit => 1 }) or die(<<END);
 
 *** Unable to connect to the database!! ***
 
@@ -479,44 +339,60 @@ END
 ##############################################################################
 
 for my $sequence (@SEQUENCES) {
-  if ($FORCE) {
-    print "- removing sequence \"$sequence\"... ";
-    eval {
-      $database->do("DROP SEQUENCE $sequence") or die(scalar $database->errstr);
-    };
-    if ($@) {
-      if ($@ =~ /does not exist/) {
-        print "CLEAN\n";
-      } else {
-        $@ =~ s/\r?\n//gs;
-        if ($@ =~ /Relation .+ does not exist/) {
-          print "CLEAN\n";
-        } else {
-          print "FAILED: $@\n";
-          $ERRORS++;
-        }
-      }
-    } else {
-      print "REMOVED\n";
-    }
-  }
 
-  print "- creating sequence \"$sequence\"... ";
-  eval {
-    $database->do("CREATE SEQUENCE $sequence minvalue 1") or die(scalar $database->errstr);
-    $database->do("GRANT ALL ON $sequence TO $USER") or die(scalar $database->errstr);
-  };
+	if (not exists $SEQMAPPING{$sequence}) {
+		print "WARNING: sequence mapping for $sequence not found.  You're probably\n";
+		print "         missing a sequence entry in your .sql file!\n";
+		next;
+	}
 
-  if ($@) {
-    if ($@ =~ /Relation .+ already (at|exists)/) {
-      print "EXISTS\n";
-    } else {
-      print "FAILED ($@)\n";
-      $ERRORS++;
-    }
-  } else {
-    print "OK\n";
-  }
+	my $minvalue;
+	print "- checking \"$sequence\" minimum value... ";
+	my $sth = $database->prepare("SELECT MAX(" . $SEQMAPPING{$sequence}->[0] .  ") AS max FROM " . $SEQMAPPING{$sequence}->[1]);
+	if ($sth->execute() and $sth->rows()) {
+		($minvalue) = $sth->fetchrow_array;
+		$minvalue++;
+	} else {
+		$minvalue = 1;
+	}
+	print $minvalue, "\n";
+
+	print "- removing sequence \"$sequence\"... ";
+	eval {
+		$database->do("DROP SEQUENCE $sequence") or die(scalar $database->errstr);
+	};
+	if ($@) {
+		if ($@ =~ /does not exist/) {
+			print "CLEAN\n";
+		} else {
+			$@ =~ s/\r?\n//gs;
+			if ($@ =~ /Relation .+ does not exist/) {
+				print "CLEAN\n";
+			} else {
+				print "FAILED: $@\n";
+				$ERRORS++;
+			}
+		}
+	} else {
+		print "REMOVED\n";
+	}
+
+	print "- creating sequence \"$sequence\"... ";
+	eval {
+		$database->do("CREATE SEQUENCE $sequence minvalue $minvalue") or die(scalar $database->errstr);
+		$database->do("GRANT ALL ON $sequence TO $USER") or die(scalar $database->errstr);
+	};
+
+	if ($@) {
+		if ($@ =~ /Relation .+ already (at|exists)/) {
+			print "EXISTS\n";
+		} else {
+			print "FAILED ($@)\n";
+			$ERRORS++;
+		}
+	} else {
+		print "OK\n";
+	}
 
 }
 
@@ -526,119 +402,122 @@ for my $sequence (@SEQUENCES) {
 
 for my $table (@TABLES) {
 
-  # $FORCE (if set) will force it to drop and create
-  if ($FORCE or (grep(/^$table$/, @DROPS) and $DODROPS)) {
-    print "- creating table \"$table\"... ";
+	# $FORCE (if set) will force it to drop and create
+	if ($FORCE or (grep(/^$table$/, @DROPS) and $DODROPS)) {
+		print "- creating table \"$table\"... ";
 
-    $table  = lc($table);
-    my $new = get_table_from_sql($table,1);
-    if (not defined $new) {
-      print "FAILED (can't get table)\n";
-      $ERRORS++;
-    }
+		$table  = lc($table);
+		my $new = get_table_from_sql($table,1);
+		if (not defined $new) {
+			print "FAILED (can't get table)\n";
+			$ERRORS++;
+		}
 
-    eval {
-      stderr_off();
-      $database->do("DROP TABLE $table") and print "DROPPED ";
-      stderr_on();
-    };
-    undef $@;
-    eval {
-      $database->do("CREATE TABLE $table ($new)") or die scalar $database->errstr;
-    };
-    if ($@) {
-      $@ =~ s/[\r\n]+$//gs;
-      print "FAILED ($@)\n";
-      $ERRORS++;
-    } else {
-      print "CREATED\n";
-    }
+		eval {
+			stderr_off();
+			$database->do("DROP TABLE $table") and print "DROPPED ";
+			stderr_on();
+		};
+		undef $@;
+		eval {
+			$database->do("CREATE TABLE $table ($new)") or die scalar $database->errstr;
+		};
+		if ($@) {
+			$@ =~ s/[\r\n]+$//gs;
+			print "FAILED ($@)\n";
+			$ERRORS++;
+		} else {
+			print "CREATED\n";
+		}
 
-    print "- giving \"$USER\" permissions on \"$table\"... ";
+		print "- giving \"$USER\" permissions on \"$table\"... ";
 
-    eval {
-      $database->do("GRANT ALL ON $table TO $USER") or die scalar $database->errstr;
-    };
-    if ($@) {
-      $@ =~ s/[\r\n]+$//gs;
-      print "FAILED ($@)\n";
-      $ERRORS++;
-    } else {
-      print "GRANTED\n";
-    }
+		eval {
+			$database->do("GRANT ALL ON $table TO $USER") or die scalar $database->errstr;
+		};
+		if ($@) {
+			$@ =~ s/[\r\n]+$//gs;
+			print "FAILED ($@)\n";
+			$ERRORS++;
+		} else {
+			print "GRANTED\n";
+		}
 
-  } else {
-    print "- checking table $table... ";
+	} else {
+		print "- checking table $table... ";
 
-    $table = lc($table);
+		$table = lc($table);
 
-    my $new = get_table_from_sql($table);
-    if (int(@{$new}) == 0) {
-      print "FAILED\n";
-      $ERRORS++;
-    }
+		my $new = get_table_from_sql($table);
+		if (int(@{$new}) == 0) {
+			print "FAILED\n";
+			$ERRORS++;
+		}
 
-    print int(@{$new}), " tokens, ";
+		print int(@{$new}), " tokens, ";
 
-    my $current = get_table_from_db($table);
-    if (int(@{$current}) == 0) {
-      my $new = get_table_from_sql($table, 1);
-      $database->do("CREATE TABLE $table ($new)") or die("error: " . $database->errstr);
-      $database->do("GRANT ALL ON $table TO $USER") or die ("error: " . $database->errstr);
-      print "CREATED\n";
-      next;
-    }
+		my $current = get_table_from_db($table);
+		if (int(@{$current}) == 0) {
+			my $new = get_table_from_sql($table, 1);
+			$database->do("CREATE TABLE $table ($new)") or die("error: " . $database->errstr);
+			$database->do("GRANT ALL ON $table TO $USER") or die ("error: " . $database->errstr);
+			print "CREATED\n";
+			next;
+		}
 
-    my $col_added = 0;
-    my $col_changed = 0;
-    $database->do("GRANT ALL ON $table TO $USER") or print $database->errstr;
+		my $has_constraints = 0;
+		my $col_added       = 0;
+		my $col_changed     = 0;
+		$database->do("GRANT ALL ON $table TO $USER") or print $database->errstr;
 
-    for my $column (@{$new}) {
+		for my $column (@{$new}) {
 
-      next if ($column->{NAME} eq "");
+			if (exists $column->{CONSTRAINTS} and @{$column->{CONSTRAINTS}} > 0) {
+				$has_constraints++;
+			}
 
-      if (my $work = find_column($current, $column->{NAME})) {
+			next if (not defined $column);
+			next if (not exists $column->{NAME} or not defined $column->{NAME});
+			next if ($column->{NAME} eq "");
 
-        for my $key (keys %{$column}) {
-          if (exists $work->{$key}) {
-            $work   = normalize_column($work);
-            $column = normalize_column($column);
-            if (lc($column->{$key}) ne lc($work->{$key})) {
-              unless ($key =~ /^primary_key$/i or $key =~ /^constraint$/i) {
-                print "$column->{NAME} $key: $column->{$key} != $work->{$key}\n" if ($DEBUG);
-                # key has been changed
-                #change_column($database, $table, $column);
-                $col_changed++;
-              }
-            }
-          }
-        }
+			if (my $work = find_column($current, $column->{NAME})) {
 
-        if ($col_changed) {
-          change_table($database, $table);
-        }
+				for my $key (keys %{$column}) {
+					if (exists $work->{$key}) {
+						$work   = normalize_column($work);
+						$column = normalize_column($column);
+						if (lc($column->{$key}) ne lc($work->{$key})) {
+							print "$column->{NAME} $key: $column->{$key} != $work->{$key}\n" if ($DEBUG);
+							$col_changed++;
+						}
+					}
+				}
 
-      } else {
-        add_column($database, $table, $column);
-	$col_added++;
-      }
+			} else {
+				$col_added++;
+			}
 
-    }
+		}
 
-    my $changed = 'EXISTS';
-    $changed = "$col_changed columns CHANGED"                 if ( $col_changed and !$col_added);
-    $changed = "$col_added columns NEW"                       if (!$col_changed and  $col_added);
-    $changed = "$col_changed columns CHANGED, $col_added NEW" if ( $col_changed and  $col_added);
-    print "$changed\n";
+		if ($has_constraints or $col_changed or $col_added) {
+			change_table($database, $table) or print "unable to change table: " . $database->errstr;
+		}
 
-  }
+		my $changed = 'EXISTS';
+		$changed  = "$col_changed columns CHANGED"                 if ( $col_changed and !$col_added);
+		$changed  = "$col_added columns NEW"                       if (!$col_changed and  $col_added);
+		$changed  = "$col_changed columns CHANGED, $col_added NEW" if ( $col_changed and  $col_added);
+		$changed .= " (has constraints)"                           if ( $has_constraints            );
+		print "$changed\n";
 
-  print "- optimizing table $table... ";
-  if ($database->do("VACUUM ANALYZE $table")) {
-    print "DONE\n";
-  } else {
-    print "FAILED\n";
-  }
+	}
+
+	print "- optimizing table $table... ";
+	if ($database->do("VACUUM ANALYZE $table")) {
+		print "DONE\n";
+	} else {
+		print "FAILED\n";
+	}
 
 }
 
@@ -648,21 +527,23 @@ for my $table (@TABLES) {
 
 for my $index (@INDEXES) {
 
-  print "- creating index \"$index\"... ";
-  eval {
-    $database->do(get_index_from_sql($index)) or die scalar $database->errstr;
-  };
+	print "- creating index \"$index\"... ";
+	eval {
+		stderr_off();
+		$database->do(get_index_from_sql($index)) or die scalar $database->errstr;
+		stderr_on();
+	};
 
-  if ($@) {
-    if ($@ =~ /already exists/) {
-      print "EXISTS\n";
-    } else {
-      print "FAILED ($@)\n";
-      $ERRORS++;
-    }
-  } else {
-    print "OK\n";
-  }
+	if ($@) {
+		if ($@ =~ /already exists/) {
+			print "EXISTS\n";
+		} else {
+			print "FAILED ($@)\n";
+			$ERRORS++;
+		}
+	} else {
+		print "OK\n";
+	}
 
 }
 
@@ -678,21 +559,21 @@ create_functions($database, @CFUNCTIONS);
 
 for my $lang (@LANGS) {
 
-  print "- creating language reference \"$lang\"... ";
-  eval {
-    $database->do("create trusted procedural language '$lang' " . get_language_from_sql($lang)) or die(scalar $database->errstr);
-  };
+	print "- creating language reference \"$lang\"... ";
+	eval {
+		$database->do("create trusted procedural language '$lang' " . get_language_from_sql($lang)) or die(scalar $database->errstr);
+	};
 
-  if ($@) {
-    if ($@ =~ /Language .+ already exists/) {
-      print "EXISTS\n";
-    } else {
-      print "FAILED ($@)\n";
-      $ERRORS++;
-    }
-  } else {
-    print "OK\n";
-  }
+	if ($@) {
+		if ($@ =~ /Language .+ already exists/) {
+			print "EXISTS\n";
+		} else {
+			print "FAILED ($@)\n";
+			$ERRORS++;
+		}
+	} else {
+		print "OK\n";
+	}
 
 }
 
@@ -718,27 +599,31 @@ stderr_on();
 
 unless ($NOINSERT) {
 
-  for my $key (sort keys %INSERTS) {
-    print "- inserting initial table data for \"$key\"... ";
+	for my $key (sort keys %INSERTS) {
+		print "- inserting initial table data for \"$key\"... ";
 
-    eval {
-      for my $row (@{$INSERTS{$key}}) {
-        my $sth = $database->prepare($row) or die "cannot prepare \"$row\": " . $database->errstr;
-        $sth->execute() or die "cannot execute \"$row\": " . $database->errstr;
-      }
-    };
-    if ($@) {
-      $@ =~ s/[\r\n]+//gs;
-      if ($@ =~ /duplicate key/) {
-        print "EXISTS\n";
-      } else {
-        print "FAILED: $@\n";
-        $ERRORS++;
-      }
-    } else {
-      print "OK\n";
-    }
-  }
+		$database->{AutoCommit} = 0;
+		$database->commit;
+		eval {
+			for my $row (@{$INSERTS{$key}}) {
+				my $sth = $database->prepare($row) or die "cannot prepare \"$row\": " . $database->errstr;
+				$sth->execute() or die "cannot execute \"$row\": " . $database->errstr;
+			}
+		};
+		$database->commit;
+		if ($@) {
+			$@ =~ s/[\r\n]+//gs;
+			if ($@ =~ /duplicate key/) {
+				print "EXISTS\n";
+			} else {
+				print "FAILED: $@\n";
+				$ERRORS++;
+			}
+		} else {
+			print "OK\n";
+		}
+		$database->{AutoCommit} = 1;
+	}
 
 }
 
@@ -746,43 +631,43 @@ unless ($NOINSERT) {
 # update tomcat server.xml
 ##############################################################################
 
-unless ($NOTOMCAT) {
+if ($TOMCAT) {
 
-  if (-f $serverxml) {
-    my    $server_in;
+	if (-f $serverxml) {
+		my $server_in;
 
-    print "- checking Tomcat 4 for OpenNMS web UI... ";
-    if (open(FILEIN, $serverxml)) {
-      $server_in .= $_ while (<FILEIN>);
-      close (FILEIN);
+		print "- checking Tomcat 4 for OpenNMS web UI... ";
+		if (open(FILEIN, $serverxml)) {
+			$server_in .= $_ while (<FILEIN>);
+			close (FILEIN);
 
-      if (grep(/opennms/gsi, $server_in)) {
-        if (not grep(/homeDir/gs, $server_in)) {
-          print "UPDATING:\n";
-          if (open(FILEOUT, ">$serverxml")) {
-            $server_in =~ s#userFile\s*=\s*\".*?\"\s*#homeDir="${OPENNMS_HOME}" #gs;
-            $server_in =~ s#<Logger className="org.apache.catalina.logger.FileLogger" prefix="localhost_opennms_log." suffix=".txt" timestamp="true"/>#<Logger className="org.opennms.web.log.Log4JLogger" homeDir="${OPENNMS_HOME}" />#gs;
-            
-            print FILEOUT $server_in;
-            if (close(FILEOUT)) {
-              print "DONE\n";
-            }
-          } else {
-            $ERRORS++;
-            print "FAILED\n";
-          }
-        } else {
-          print "FOUND\n";
-        }
-      } else {
-        print "UPDATING:\n";
+			if (grep(/opennms/gsi, $server_in)) {
+				if (not grep(/homeDir/gs, $server_in)) {
+					print "UPDATING:\n";
+					if (open(FILEOUT, ">$serverxml")) {
+						$server_in =~ s#userFile\s*=\s*\".*?\"\s*#homeDir="${OPENNMS_HOME}" #gs;
+						$server_in =~ s#<Logger className="org.apache.catalina.logger.FileLogger" prefix="localhost_opennms_log." suffix=".txt" timestamp="true"/>#<Logger className="org.opennms.web.log.Log4JLogger" homeDir="${OPENNMS_HOME}" />#gs;
+						
+						print FILEOUT $server_in;
+						if (close(FILEOUT)) {
+							print "DONE\n";
+						}
+					} else {
+						$ERRORS++;
+						print "FAILED\n";
+					}
+				} else {
+					print "FOUND\n";
+				}
+			} else {
+				print "UPDATING:\n";
 
-        print "- adding OpenNMS web UI context to server.xml... ";
+				print "- adding OpenNMS web UI context to server.xml... ";
 
-        if (open(FILEOUT, ">$serverxml")) {
-          for my $line (split(/\r?\n/, $server_in)) {
-            if ($line =~ m#</host>#gsi) {
-              print FILEOUT <<END;
+				if (open(FILEOUT, ">$serverxml")) {
+					for my $line (split(/\r?\n/, $server_in)) {
+						if ($line =~ m#</host>#gsi) {
+							print FILEOUT <<END;
 
         <Context path="/opennms" docBase="opennms" debug="0" reloadable="true">
          <Logger className="org.opennms.web.log.Log4JLogger" homeDir="${OPENNMS_HOME}"/>
@@ -790,29 +675,29 @@ unless ($NOTOMCAT) {
         </Context>
 
 END
-            }
+						}
 
-            print FILEOUT $line, "\n";
-          }
-          if (close(FILEOUT)) {
-            print "DONE\n";
-          } else {
-            $ERRORS++;
-            print "FAILED\n";
-          }
-        } else {
-          $ERRORS++;
-          print "FAILED\n";
-        }
-      }
+						print FILEOUT $line, "\n";
+					}
+					if (close(FILEOUT)) {
+						print "DONE\n";
+					} else {
+						$ERRORS++;
+						print "FAILED\n";
+					}
+				} else {
+					$ERRORS++;
+					print "FAILED\n";
+				}
+			}
 
-    } else {
-      $ERRORS++;
-      print "FAILED\n";
-    }
-  } else {
-    print "*** $serverxml not found ***\n";
-  }
+		} else {
+			$ERRORS++;
+			print "FAILED\n";
+		}
+	} else {
+		print "*** $serverxml not found ***\n";
+	}
 
 }
 
@@ -858,178 +743,192 @@ END
 
 unless ($NOSO) {
 
-  print "- searching for PostgreSQL module directory... ";
+	print "- searching for PostgreSQL module directory... ";
 
-  if (not $RPM) {
+	if (not $RPM) {
 
-    for my $dir ($ENV{OPENNMS_HOME} . "/lib", '/usr/lib/opennms', '/usr/lib/pgsql/opennms') {
-      if (-d $dir and -f "$dir/iplike.$SOEXT") {
-        print "$dir\n";
-        $PG_LIBDIR = $dir;
-      } elsif (my ($pgdir) = file_match($PWD, 'iplike.$SOEXT$', 'f')) {
-        if (not defined $PG_LIBDIR) {
-          ($PG_LIBDIR) = $pgdir =~ /^(.+)\/iplike\.$SOEXT$/;
-          print "$PG_LIBDIR\n";
-        } else {
-          last;
-        }
-      }
-    }
+		for my $dir ($ENV{OPENNMS_HOME} . "/lib", '/usr/lib/opennms', '/usr/lib/pgsql/opennms') {
+			if (-d $dir and -f "$dir/iplike.$SOEXT") {
+				print "$dir\n";
+				$PG_LIBDIR = $dir;
+			} elsif (my ($pgdir) = file_match($PWD, 'iplike.$SOEXT$', 'f')) {
+				if (not defined $PG_LIBDIR) {
+					($PG_LIBDIR) = $pgdir =~ /^(.+)\/iplike\.$SOEXT$/;
+					print "$PG_LIBDIR\n";
+				} else {
+					last;
+				}
+			}
+		}
 
-  } else {
+	} else {
 
-    print "$PG_LIBDIR\n" if (defined $PG_LIBDIR);
+		print "$PG_LIBDIR\n" if (defined $PG_LIBDIR);
 
-  }
+	}
 
-  if (not defined $PG_LIBDIR) {
-    print "FAILED\n";
-    $ERRORS++;
-  } else {
+	if (not defined $PG_LIBDIR) {
+		print "FAILED\n";
+		$ERRORS++;
+	} else {
 
-    print "- checking for stale iplike.so references... ";
-    eval {
-      stderr_off();
-      $psql->do("DROP FUNCTION iplike(text,text)") or die scalar $psql->errstr;
-      stderr_on();
-    };
-    if ($@ eq "") {
-      print "REMOVED\n";
-    } elsif ($@ =~ /does not exist/) {
-      print "CLEAN\n";
-    } else {
-      $@ =~ s/\r?\n//gs;
-      print "FAILED: $@\n";
-      $ERRORS++;
-    }
+		print "- checking for stale iplike.so references... ";
+		eval {
+			stderr_off();
+			$psql->do("DROP FUNCTION iplike(text,text)") or die scalar $psql->errstr;
+			stderr_on();
+		};
+		if ($@ eq "") {
+			print "REMOVED\n";
+		} elsif ($@ =~ /does not exist/) {
+			print "CLEAN\n";
+		} else {
+			$@ =~ s/\r?\n//gs;
+			print "FAILED: $@\n";
+			$ERRORS++;
+		}
 
-    print "- checking for stale eventtime.so references... ";
-    eval {
-      stderr_off();
-      $psql->do("DROP FUNCTION eventtime(text)") or die scalar $psql->errstr;
-      stderr_on();
-    };
-    if ($@ eq "") {
-      print "REMOVED\n";
-    } elsif ($@ =~ /does not exist/) {
-      print "CLEAN\n";
-    } else {
-      $@ =~ s/\r?\n//gs;
-      print "FAILED: $@\n";
-      $ERRORS++;
-    }
+		print "- checking for stale eventtime.so references... ";
+		eval {
+			stderr_off();
+			$psql->do("DROP FUNCTION eventtime(text)") or die scalar $psql->errstr;
+			stderr_on();
+		};
+		if ($@ eq "") {
+			print "REMOVED\n";
+		} elsif ($@ =~ /does not exist/) {
+			print "CLEAN\n";
+		} else {
+			$@ =~ s/\r?\n//gs;
+			print "FAILED: $@\n";
+			$ERRORS++;
+		}
 
-    print "- adding iplike.so database function... ";
-    eval {
-      stderr_off();
-      $psql->do("CREATE FUNCTION iplike(text,text) RETURNS bool AS '$PG_LIBDIR/iplike.$SOEXT' LANGUAGE 'c' WITH(isstrict)") or die scalar $psql->errstr;
-      stderr_on();
-    };
-    if (not $@) {
-      print "OK\n";
-    } else {
-      if ($@ =~ /procedure iplike already exists/i) {
-        print "FAILED (non-fatal: already exists)\n";
-      } else {
-        print "FAILED ($@)\n";
-        $ERRORS++;
-      }
-    }
+		print "- adding iplike.so database function... ";
+		eval {
+			stderr_off();
+			$psql->do("CREATE FUNCTION iplike(text,text) RETURNS bool AS '$PG_LIBDIR/iplike.$SOEXT' LANGUAGE 'c' WITH(isstrict)") or die scalar $psql->errstr;
+			stderr_on();
+		};
+		if (not $@) {
+			print "OK\n";
+		} else {
+			if ($@ =~ /procedure iplike already exists/i) {
+				print "FAILED (non-fatal: already exists)\n";
+			} else {
+				print "FAILED ($@)\n";
+				$ERRORS++;
+			}
+		}
 
-  }
+	}
 
-  my $plpgsql_failed = 0;
-  my $plpgsql_sofile;
-  print "- adding PL/pgSQL call handler... ";
-  for my $dir ('/usr/lib', '/usr/local/lib', '/sw/lib') {
-    for ($SOEXT, 'so') {
-      if (-d "$dir") {
-        if (-f "$dir/pgsql/plpgsql.$_") {
-          $plpgsql_sofile = "$dir/pgsql/plpgsql.$_";
-          last;
-        } elsif (-f "$dir/plpgsql.$_") {
-          $plpgsql_sofile = "$dir/plpgsql.$_";
-          last;
-        }
-      }
-    }
-  }
-  if (defined $plpgsql_sofile) {
-    eval {
-      $psql->do("CREATE FUNCTION plpgsql_call_handler () RETURNS OPAQUE AS '$plpgsql_sofile' LANGUAGE 'C'") or die scalar $psql->errstr;
-    };
+	my $plpgsql_failed = 0;
+	my $plpgsql_sofile;
+	print "- adding PL/pgSQL call handler... ";
+	for my $dir ('/usr/lib', '/usr/local/lib', '/sw/lib/postgresql') {
+		for ($SOEXT, 'so') {
+			if (-d "$dir") {
+				if (-f "$dir/pgsql/plpgsql.$_") {
+					$plpgsql_sofile = "$dir/pgsql/plpgsql.$_";
+					last;
+				} elsif (-f "$dir/plpgsql.$_") {
+					$plpgsql_sofile = "$dir/plpgsql.$_";
+					last;
+				}
+			}
+		}
+	}
+	if (defined $plpgsql_sofile) {
+		eval {
+			$psql->do("CREATE FUNCTION plpgsql_call_handler () RETURNS OPAQUE AS '$plpgsql_sofile' LANGUAGE 'C'") or die scalar $psql->errstr;
+		};
     if ($@ =~ /already exists with same argument/) {
-      print "EXISTS\n";
-    } elsif ($@) {
-      print "FAILED ($@)\n";
-      $plpgsql_failed++;
-      $ERRORS++;
-    } else {
-      print "OK\n";
-    }
-    print "- adding PL/pgSQL language module... ";
-    eval {
-      $psql->do("CREATE TRUSTED PROCEDURAL LANGUAGE 'plpgsql' HANDLER plpgsql_call_handler LANCOMPILER 'PL/pgSQL'") or die scalar $psql->errstr;
-    };
-    if ($@ =~ /already exists/) {
-      print "EXISTS\n";
-    } elsif ($@) {
-      print "FAILED ($@)\n";
-      $plpgsql_failed++;
-      $ERRORS++;
-    } else {
-      print "OK\n";
-    }
-  } else {
-    print "FAILED (unable to locate plpgsql.$SOEXT)\n";
-    $plpgsql_failed++;
-    $ERRORS++;
-  }
-  print "- adding stored procedures... ";
-  if ($plpgsql_failed == 0 and opendir(DIR, $OPENNMS_HOME . "/etc")) {
-    my @procedures = grep(/^get.+\.sql/, readdir(DIR));
-    closedir(DIR);
-    for my $procedure (@procedures) {
-      print "\n  - $procedure... ";
-      if (open(FILE, $OPENNMS_HOME . "/etc/" . $procedure)) {
-        my ($contents, @drop);
-        while (<FILE>) {
-          if (/DROP FUNCTION/i) {
-            push(@drop, $_);
-          } else {
-            $contents .= $_;
-          }
-        }
-        close(FILE);
-        eval {
-          stderr_off();
-          for my $drop (@drop) {
-            $psql->do($drop);
-          }
-          $psql->do($contents) or die scalar $psql->errstr;
-          stderr_on();
-        };
-        if ($@ =~ /already exists/) {
-          print "EXISTS";
-        } elsif ($@) {
-          print "FAILED ($@)";
-          $ERRORS++;
-        } else {
-          print "OK";
-        }
-      } else {
-        print "FAILED ($!)";
-      }
-    }
-    print "\n";
-  } else {
-    if ($plpgsql_failed > 0) {
-      print "FAILED (unable to add PL/PgSQL module)\n";
-    } else {
-      print "FAILED (unable to open $OPENNMS_HOME/etc)\n";
-    }
-    $ERRORS++;
-  }
+			print "EXISTS\n";
+		} elsif ($@) {
+			print "FAILED ($@)\n";
+			$plpgsql_failed++;
+			$ERRORS++;
+		} else {
+			print "OK\n";
+		}
+		print "- adding PL/pgSQL language module... ";
+		eval {
+			stderr_off();
+			$psql->do("CREATE TRUSTED PROCEDURAL LANGUAGE 'plpgsql' HANDLER plpgsql_call_handler LANCOMPILER 'PL/pgSQL'") or die scalar $psql->errstr;
+			stderr_on();
+		};
+		if ($@ =~ /already exists/) {
+			print "EXISTS\n";
+		} elsif ($@) {
+			print "FAILED ($@)\n";
+			$plpgsql_failed++;
+			$ERRORS++;
+		} else {
+			print "OK\n";
+		}
+	} else {
+		print "FAILED (unable to locate plpgsql.$SOEXT)\n";
+		$plpgsql_failed++;
+		$ERRORS++;
+	}
+	print "- adding stored procedures... ";
+	if ($plpgsql_failed == 0 and opendir(DIR, $OPENNMS_HOME . "/etc")) {
+		my @procedures = grep(/^get.+\.sql/, readdir(DIR));
+		closedir(DIR);
+		for my $procedure (@procedures) {
+			print "\n  - $procedure... ";
+			if (open(FILE, $OPENNMS_HOME . "/etc/" . $procedure)) {
+				my ($contents, @drop);
+				while (<FILE>) {
+					if (/DROP FUNCTION/i) {
+            					push(@drop, $_);
+					} else {
+						$contents .= $_;
+					}
+				}
+				close(FILE);
+				stderr_off();
+				eval {
+					for my $drop (@drop) {
+						my $newdrop;
+						if ($drop =~ /drop function\s+([^\(\s]+)\s*\((.+)\)/i) {
+							my $function = $1;
+							my @args = split(/\s*,\s*/, $2);
+							for my $arg (@args) {
+								$arg = parse_column($arg);
+							}
+							@args = clean_column(@args);
+							my $collist = join(',', get_columntype(@args));
+							$collist =~ s#\(\d+\)##g;
+							$drop = "DROP FUNCTION ${function}(${collist})";
+						}
+						$psql->do($newdrop);
+					}
+					$psql->do($contents) or die scalar $psql->errstr;
+				};
+				stderr_on();
+				if ($@ =~ /already exists/) {
+					print "EXISTS";
+				} elsif ($@) {
+					print "FAILED ($@)";
+					$ERRORS++;
+				} else {
+					print "OK";
+				}
+			} else {
+				print "FAILED ($!)";
+			}
+		}
+		print "\n";
+	} else {
+		if ($plpgsql_failed > 0) {
+			print "FAILED (unable to add PL/PgSQL module)\n";
+		} else {
+			print "FAILED (unable to open $OPENNMS_HOME/etc)\n";
+		}
+		$ERRORS++;
+	}
 }
 
 ##############################################################################
@@ -1037,19 +936,19 @@ unless ($NOSO) {
 ##############################################################################
 
 if (-d '/var/run/opennms') {
-  print "- removing /var/run/opennms... done";
-  `rm -rf /var/run/opennms`
+	print "- removing /var/run/opennms... done";
+	`rm -rf /var/run/opennms`
 }
 
 print "\n";
 
 if ($ERRORS) {
-  print <<END;
+	print <<END;
 *** $ERRORS errors occurred! ***
 
 END
 
-  exit $ERRORS;
+	exit $ERRORS;
 }
 
 print <<END;
@@ -1072,47 +971,47 @@ $template->disconnect() if (defined $template);
 # output: n/a
 
 sub create_functions {
-  my $database  = shift;
-  my @functions = @_;
+	my $database  = shift;
+	my @functions = @_;
 
-  for my $function (@functions) {
-    if ($FORCE) {
-      my $function_sql = get_function_from_sql($function);
-      $function_sql =~ m/^\s*(\(.+?\))/;
-      print "- removing function \"$function\" if it exists... ";
-      eval {
-        $database->do("DROP FUNCTION \"$function\" $1;") or die scalar $database->errstr
-      };
-      if ($@) {
-        if ($@ =~ /does not exist/) {
-          print "CLEAN\n";
-        } else {
-          $@ =~ s/\r?\n//gs;
-          print "FAILED: $@\n";
-          $ERRORS++;
-        }
-      } else {
-        print "REMOVED\n";
-      }
-    }
+	for my $function (@functions) {
+		if ($FORCE) {
+			my $function_sql = get_function_from_sql($function);
+			$function_sql =~ m/^\s*(\(.+?\))/;
+			print "- removing function \"$function\" if it exists... ";
+			eval {
+				$database->do("DROP FUNCTION \"$function\" $1;") or die scalar $database->errstr;
+			};
+			if ($@) {
+				if ($@ =~ /does not exist/) {
+					print "CLEAN\n";
+				} else {
+					$@ =~ s/\r?\n//gs;
+					print "FAILED: $@\n";
+					$ERRORS++;
+				}
+			} else {
+				print "REMOVED\n";
+			}
+		}
 
-    print "- creating function \"$function\"... ";
-    eval {
-      $database->do("CREATE FUNCTION \"$function\" " . get_function_from_sql($function)) or die scalar $database->errstr;
-    };
+		print "- creating function \"$function\"... ";
+		eval {
+			$database->do("CREATE FUNCTION \"$function\" " . get_function_from_sql($function)) or die scalar $database->errstr;
+		};
 
-    if ($@) {
-      if ($@ =~ /procedure .+ already (at|exists)/) {
-        print "EXISTS\n";
-      } else {
-        print "FAILED ($@)\n";
-        $ERRORS++;
-      }
-    } else {
-      print "OK\n";
-    }
+		if ($@) {
+			if ($@ =~ /procedure .+ already (at|exists)/) {
+				print "EXISTS\n";
+			} else {
+				print "FAILED ($@)\n";
+				$ERRORS++;
+			}
+		} else {
+			print "OK\n";
+		}
 
-  }
+	}
 }
 
 # update_arch is deprecated, this should be unnecessary as the user can now
@@ -1120,73 +1019,73 @@ sub create_functions {
 # property file
 
 sub update_arch {
-  my $basename = shift;
+	my $basename = shift;
 
-  chomp(my $arch = `uname`);
-  if (open (FILEIN, "$basename/arch/${arch}.properties") and open (FILEOUT, ">$basename/arch/${arch}.properties.new")) {
+	chomp(my $arch = `uname`);
+	if (open (FILEIN, "$basename/arch/${arch}.properties") and open (FILEOUT, ">$basename/arch/${arch}.properties.new")) {
 
-    if (not defined $ENV{POSTGRES_INCLUDE}) {
-      $ENV{POSTGRES_INCLUDE} = ask_question('where are your PostgreSQL headers, eg postgres.h?', '/usr/include/pgsql');
-    }
-    if (not defined $ENV{POSTGRES_LIB}) {
-      $ENV{POSTGRES_LIB}     = ask_question("where are your PostgreSQL libs, eg libpq.$SOEXT.2?", '/usr/lib');
-    }
+		if (not defined $ENV{POSTGRES_INCLUDE}) {
+			$ENV{POSTGRES_INCLUDE} = ask_question('where are your PostgreSQL headers, eg postgres.h?', '/usr/include/pgsql');
+		}
+		if (not defined $ENV{POSTGRES_LIB}) {
+			$ENV{POSTGRES_LIB}     = ask_question("where are your PostgreSQL libs, eg libpq.$SOEXT.2?", '/usr/lib');
+		}
 
-    print "- filtering arch/${arch}.properties... ";
+		print "- filtering arch/${arch}.properties... ";
 
-    while (<FILEIN>) {
-      if (/^\s*compile\.include/) {
-        $_ = "compile.include=-I" . $ENV{POSTGRES_INCLUDE} . " -I/usr/include\n";
-      } elsif (/^\s*compile\.lib/) {
-        $_ = "compile.lib=" . $ENV{POSTGRES_LIB} . "\n";
-      }
+		while (<FILEIN>) {
+			if (/^\s*compile\.include/) {
+				$_ = "compile.include=-I" . $ENV{POSTGRES_INCLUDE} . " -I/usr/include\n";
+			} elsif (/^\s*compile\.lib/) {
+				$_ = "compile.lib=" . $ENV{POSTGRES_LIB} . "\n";
+			}
 
-      print FILEOUT $_;
-    }
+			print FILEOUT $_;
+		}
 
-    close (FILEOUT);
-    close (FILEIN);
+		close (FILEOUT);
+		close (FILEIN);
 
-    unlink("$basename/arch/${arch}.properties");
-    link("$basename/arch/${arch}.properties.new", "$basename/arch/${arch}.properties");
-    unlink("$basename/arch/${arch}.properties.new");
+		unlink("$basename/arch/${arch}.properties");
+		link("$basename/arch/${arch}.properties.new", "$basename/arch/${arch}.properties");
+		unlink("$basename/arch/${arch}.properties.new");
 
-    print "OK\n";
+		print "OK\n";
 
-  } else {
-    print "NOTICE: unable to update \"$basename/arch/${arch}.properties\"\n" unless ($RPM);
-    return;
-  }
+	} else {
+		print "NOTICE: unable to update \"$basename/arch/${arch}.properties\"\n" unless ($RPM);
+		return;
+	}
 
-  return 1;
+	return 1;
 }
 
 {
 
-  my @matches;
-  my $spec;
-  my $type;
+	my @matches;
+	my $spec;
+	my $type;
 
-  sub file_match {
-    my $dir      = shift;
-       $spec     = shift;
-       $type     = shift;
+	sub file_match {
+		my $dir      = shift;
+			 $spec     = shift;
+			 $type     = shift;
 
-    @matches = ();
-    find(\&file_match_wanted, $dir);
+		@matches = ();
+		find(\&file_match_wanted, $dir);
 
-    return @matches;
-  }
+		return @matches;
+	}
 
-  sub file_match_wanted {
-    if (/$spec/) {
-      if (defined $type) {
-        eval "push(\@matches, \$File::Find::name) if (-$type \$File::Find::name);";
-      } else {
-        push(@matches, $File::Find::name);
-      }
-    }
-  }
+	sub file_match_wanted {
+		if (/$spec/) {
+			if (defined $type) {
+				eval "push(\@matches, \$File::Find::name) if (-$type \$File::Find::name);";
+			} else {
+				push(@matches, $File::Find::name);
+			}
+		}
+	}
 
 }
 
@@ -1196,66 +1095,69 @@ sub update_arch {
 # output: sql code; no extra spaces or carriage returns, comments removed, etc.
 
 sub read_tables {
-  my $filename = shift;
+	my $filename = shift;
 
-  $CREATE = undef;
+	$CREATE = undef;
 
-  if (-f "{$filename}.rpmnew") {
-    print "WARNING: ${filename}.rpmnew exists.  Using that instead.\n";
-    system("mv ${filename}.rpmnew ${filename}");
-  }
-  open (SQL, $filename) or return;
-  while (my $line = <SQL>) {
-    next if $line =~ /^\s*--/;
-    next if $line =~ /^\s*$/;
-    next if $line =~ /^\s*\\/;
+	if (-f "{$filename}.rpmnew") {
+		print "WARNING: ${filename}.rpmnew exists.  Using that instead.\n";
+		system("mv ${filename}.rpmnew ${filename}");
+	}
+	open (SQL, $filename) or return;
+	while (my $line = <SQL>) {
+		next if $line =~ /^\s*$/;
+		next if $line =~ /^\s*\\/;
 
-    if ($line =~ /^\s*create\b/i) {
-      if (my ($type, $name) = $line =~ /^\s*create\s+((?:unique )?\w+)\s+["']?(\w+)["']?/i) {
-        $name =~ s/^['"]//;
-        $name =~ s/['"]$//;
-        if ($type =~ /table/i) {
-          push(@TABLES, $name);
-        } elsif ($type =~ /sequence/i) {
-          push(@SEQUENCES, $name);
-        } elsif ($type =~ /function/i) {
-          if ($line =~ /language 'c'/i) {
-            push(@CFUNCTIONS, $name);
-          } else {
-            push(@FUNCTIONS, $name);
-          }
-        } elsif ($type =~ /trusted/i) {
-          my ($type, $name) = $line =~ /^\s*create\s+(trusted procedural language)\s+["']?(\w+)["']?/i;
-          push (@LANGS, $name);
-        } elsif ($type =~ /\bindex\b/i) {
-          my ($type, $name) = $line =~ /^\s*create\s+((?:unique )?index)\s+["']?([\w_]+)["']?/i;
-          push (@INDEXES, $name);
-        } else {
-          warn "Unknown CREATE encountered: CREATE $type $name\n";
-        }
-      }
-    } elsif ($line =~ /^INSERT INTO ["']?([\w_]+)["']?/i) {
-      my $table = $1;
-      chomp($line);
-      push(@{$INSERTS{$table}}, $line);
-      $line = undef;
-    } elsif ($line =~ /^select setval .+$/i) {
-      chomp($line);
-      push(@{$INSERTS{'select_setval'}}, $line);
-    } elsif ($line =~ /^DROP TABLE ["']?([\w_]+)["']?/i) {
-      my $table = $1;
-      push(@DROPS, $table);
-    }
+		if ($line =~ /^\s*--\#\s+install\:\s*(\S+)\s+(\S+)\s+(\S+)\s*$/) {
+			$SEQMAPPING{$1} = [ $2, $3 ];
+		}
+		next if $line =~ /^\s*--/;
+		if ($line =~ /^\s*create\b/i) {
+			if (my ($type, $name) = $line =~ /^\s*create\s+((?:unique )?\w+)\s+["']?(\w+)["']?/i) {
+				$name =~ s/^['"]//;
+				$name =~ s/['"]$//;
+				if ($type =~ /table/i) {
+					push(@TABLES, $name);
+				} elsif ($type =~ /sequence/i) {
+					push(@SEQUENCES, $name);
+				} elsif ($type =~ /function/i) {
+					if ($line =~ /language 'c'/i) {
+						push(@CFUNCTIONS, $name);
+					} else {
+						push(@FUNCTIONS, $name);
+					}
+				} elsif ($type =~ /trusted/i) {
+					my ($type, $name) = $line =~ /^\s*create\s+(trusted procedural language)\s+["']?(\w+)["']?/i;
+					push (@LANGS, $name);
+				} elsif ($type =~ /\bindex\b/i) {
+					my ($type, $name) = $line =~ /^\s*create\s+((?:unique )?index)\s+["']?([\w_]+)["']?/i;
+					push (@INDEXES, $name);
+				} else {
+					warn "Unknown CREATE encountered: CREATE $type $name\n";
+				}
+			}
+		} elsif ($line =~ /^INSERT INTO ["']?([\w_]+)["']?/i) {
+			my $table = $1;
+			chomp($line);
+			push(@{$INSERTS{$table}}, $line);
+			$line = undef;
+		} elsif ($line =~ /^select setval .+$/i) {
+			chomp($line);
+			push(@{$INSERTS{'select_setval'}}, $line);
+		} elsif ($line =~ /^DROP TABLE ["']?([\w_]+)["']?/i) {
+			my $table = $1;
+			push(@DROPS, $table);
+		}
 
-    $CREATE .= $line if (defined $line);
-  }
-  close (SQL);
+		$CREATE .= $line if (defined $line);
+	}
+	close (SQL);
 
 #  $CREATE =~ s/\r?\n/ /gs;
 #  $CREATE =~ s/\s+/ /gs;
 #  $CREATE =~ s/\;/\;\n/gs;
 
-  return 1;
+	return 1;
 }
 
 # subroutine: get_table_from_db
@@ -1264,28 +1166,28 @@ sub read_tables {
 # output: an array reference containing a list of attributes for the columns
 
 sub get_table_from_db {
-  my $table_name = shift;
-  my $attributes = [];
+	my $table_name = shift;
+	my $attributes = [];
 
-  eval {
-    my $tables = $database->prepare("SELECT DISTINCT tablename FROM pg_tables") or return;
-    $tables->execute or die($database->errstr);
+	eval {
+		my $tables = $database->prepare("SELECT DISTINCT tablename FROM pg_tables") or return;
+		$tables->execute or die($database->errstr);
 
-    my $table_exists = 0;
+		my $table_exists = 0;
 
-    while (my ($table) = $tables->fetchrow_array) {
-      next if $table =~ /^pg_/;
-      $table_exists++ if (lc($table) eq lc($table_name));
-    }
+		while (my ($table) = $tables->fetchrow_array) {
+			next if $table =~ /^pg_/;
+			$table_exists++ if (lc($table) eq lc($table_name));
+		}
 
-    return [] if not ($table_exists);
+		return [] if not ($table_exists);
 
-    $attributes = $database->func(lc($table_name), 'table_attributes') or return;
+		$attributes = $database->func(lc($table_name), 'table_attributes') or return;
 
-  };
+	};
 
-  if ($@ ne "") {
-    print "
+	if ($@ ne "") {
+		print "
 
 *** ERROR ***
 An error occurred reading table info for '$table_name'
@@ -1297,12 +1199,18 @@ $@
 
 ";
 
-    return [];
-  }
+		return [];
+	}
 
-  #my @return = map { $_->[0] } sort { $_->[1] cmp $_->[1] } map { $_ = [ $_, lc($_->{NAME}) ] } @{$attributes};
-  #return \@return;
-  return $attributes;
+	#my @return = map { $_->[0] } sort { $_->[1] cmp $_->[1] } map { $_ = [ $_, lc($_->{NAME}) ] } @{$attributes};
+	#return \@return;
+
+	my $index = 0;
+	for my $attr (@{$attributes}) {
+		($attributes->[$index]) = clean_column($attributes->[$index]);
+		$index++;
+	}
+	return($attributes);
 }
 
 sub clean_text {
@@ -1321,19 +1229,19 @@ sub clean_text {
 # output: the sql info about the sequence (minus create sequence _name_)
 
 sub get_sequence_from_sql {
-  my $sequence_name = shift;
-  my $raw           = 1;  # always "raw-mode"
+	my $sequence_name = shift;
+	my $raw           = 1;  # always "raw-mode"
 
-  my $CREATE = clean_text($CREATE);
-  unless ($CREATE =~ /\bcreate sequence\s+$sequence_name\s+(.+?)\;/i) {
-    return;
-  }
+	my $CREATE = clean_text($CREATE);
+	unless ($CREATE =~ /\bcreate sequence\s+$sequence_name\s+(.+?)\;/i) {
+		return;
+	}
 
-  if ($raw) {
-    return $1;
-  }
+	if ($raw) {
+		return $1;
+	}
 
-  return;
+	return;
 }
 
 # subroutine: get_table_from_sql
@@ -1347,45 +1255,68 @@ sub get_sequence_from_sql {
 #   -- see parse_column()
 
 sub get_table_from_sql {
-  my $table_name = shift;
-  my $modifier   = shift;
+	my $table_name = shift;
+	my $modifier   = shift;
 
-  my $CREATE = clean_text($CREATE);
-  unless ($CREATE =~ /\bcreate table\s+['"]?$table_name['"]?\s+\((.+?)\)\;/i) {
-    return [];
-  }
+	my $CREATE = clean_text($CREATE);
+	unless ($CREATE =~ /\bcreate table\s+['"]?$table_name['"]?\s+\((.+?)\)\;/i) {
+		return [];
+	}
 
-  if (defined $modifier and $modifier == 1) {
-    return $1;
-  }
+	if (defined $modifier and $modifier == 1) {
+		return $1;
+	}
 
-  # lex through the sql statement
-  my $create = $1;
-  my $parens = 0;
-  my @return;
-  my $accumulator;
+	# lex through the sql statement
+	my $create = $1;
+	my $parens = 0;
+	my @return;
+	my $accumulator;
 
-  while ($create =~ /\G(.)/gc) {
+	while ($create =~ /\G(.)/gc) {
 
-    if ($1 eq '(') { $parens++; $accumulator .= $1; next; }
-    if ($1 eq ')') { $parens--; $accumulator .= $1; next; }
+		if ($1 eq '(') { $parens++; $accumulator .= $1; next; }
+		if ($1 eq ')') { $parens--; $accumulator .= $1; next; }
 
-    if ($1 eq ',' and not $parens) {
-      $accumulator =~ s/^\s*//;
-      $accumulator =~ s/\s*$//;
-      unless ($accumulator =~ /^constraint /) {
-        my $column = parse_column($accumulator);
-        push(@return, $column);
-      }
-      $accumulator = undef;
-    } else {
-      $accumulator .= $1;
-    }
+		if ($1 eq ',' and not $parens) {
+			$accumulator =~ s/^\s*//;
+			$accumulator =~ s/\s*$//;
 
-  }
+			if ($accumulator =~ /^constraint /i) {
+				my $lastcol = $return[$#return];
+				if ($accumulator =~ /constraint .*primary key \($lastcol->{'NAME'}\)/i) {
+					$lastcol->{'PRIMARY_KEY'} = 1;
+				} else {
+					push(@{$lastcol->{'CONSTRAINTS'}}, $accumulator);
+				}
+			} else {
+				my $column = parse_column($accumulator);
+				push(@return, $column);
+			}
+			$accumulator = undef;
+		} else {
+			$accumulator .= $1;
+		}
 
-  push(@return, parse_column($accumulator));
-  return \@return;
+	}
+
+	$accumulator =~ s/^\s*//;
+	$accumulator =~ s/\s*$//;
+
+	if ($accumulator =~ /^constraint /i) {
+		my $lastcol = $return[$#return];
+		if ($accumulator =~ /constraint .*primary key \($lastcol->{'NAME'}\)/) {
+			$lastcol->{'PRIMARY_KEY'} = 1;
+		} else {
+			push(@{$lastcol->{'CONSTRAINTS'}}, $accumulator);
+		}
+	} else {
+		my $column = parse_column($accumulator);
+		push(@return, $column);
+	}
+
+	@return = (@return);
+	return \@return;
 }
 
 # subroutine: get_function_from_sql
@@ -1394,13 +1325,13 @@ sub get_table_from_sql {
 # output: (always in "raw" mode) the sql code for the function
 
 sub get_function_from_sql {
-  my $function_name = shift;
+	my $function_name = shift;
 
-  if ($CREATE =~ /\bcreate function\s+['"]?$function_name['"]?\s+(.+? language ['"]?\w+["']?)\;/si) {
-    return $1;
-  }
+	if ($CREATE =~ /\bcreate function\s+['"]?$function_name['"]?\s+(.+? language ['"]?\w+["']?)\;/si) {
+		return $1;
+	}
 
-  return;
+	return;
 }
 
 # subroutine: get_language_from_sql
@@ -1409,14 +1340,14 @@ sub get_function_from_sql {
 # output: (always in "raw" mode) the sql code for the language
 
 sub get_language_from_sql {
-  my $language_name = shift;
+	my $language_name = shift;
 
-  my $CREATE = clean_text($CREATE);
-  if ($CREATE =~ /\bcreate trusted procedural language\s+["']?$language_name["']?\s+(.+?)\;/si) {
-    return $1;
-  }
+	my $CREATE = clean_text($CREATE);
+	if ($CREATE =~ /\bcreate trusted procedural language\s+["']?$language_name["']?\s+(.+?)\;/si) {
+		return $1;
+	}
 
-  return;
+	return;
 }
 
 # subroutine: get_index_from_sql
@@ -1425,14 +1356,14 @@ sub get_language_from_sql {
 # output: (always in "raw" mode) the index creation
 
 sub get_index_from_sql {
-  my $index_name = shift;
+	my $index_name = shift;
 
-  my $CREATE = clean_text($CREATE);
-  if ($CREATE =~ /\b(create (unique )?index\s+["']?$index_name["']?\s+.+?)\;/si) {
-    return $1;
-  }
+	my $CREATE = clean_text($CREATE);
+	if ($CREATE =~ /\b(create (unique )?index\s+["']?$index_name["']?\s+.+?)\;/si) {
+		return $1;
+	}
 
-  return;
+	return;
 }
 
 # subroutine: find_column
@@ -1442,19 +1373,17 @@ sub get_index_from_sql {
 # output: the contents of the column if found, an undefined value if not
 
 sub find_column {
-  my $column_list = shift;
-  my $column      = shift;
+	my $column_list = shift;
+	my $column      = shift;
 
-  for my $col (@{$column_list}) {
-    if (lc($col->{NAME}) eq lc($column)) {
-#      print "($col->{TYPE} / $col->{SIZE}) ";
-      return $col;
-#    } else {
-#      print lc($col->{NAME}), " != ", lc($column), " ";
-    }
-  }
+	my @columns = @{$column_list};
+	for my $col (@columns) {
+		if (lc($col->{NAME}) eq lc($column)) {
+			return $col;
+		}
+	}
 
-  return;
+	return;
 }
 
 # subroutine: parse_column
@@ -1464,77 +1393,131 @@ sub find_column {
 # output: the attributes for that column as a hash reference
 
 sub parse_column {
-  my $column = shift;
+	my $column = shift;
 
-  my $return = {
-    CONSTRAINT  => undef,
-    NAME        => undef,
-    NOTNULL     => 0,
-    PRIMARY_KEY => 0,
-    SIZE        => 0,
-    TYPE        => undef,
-  };
+	my $return = {
+		CONSTRAINT  => undef,
+		NAME        => undef,
+		NOTNULL     => 0,
+		PRIMARY_KEY => 0,
+		SIZE        => 0,
+		TYPE        => undef,
+	};
 
-  $column =~ s/\b(constraint \S+ )?primary key\b//i and $return->{PRIMARY_KEY} = 1;
-  $column =~ s/\bnot null\b//i                      and $return->{NOTNULL}     = 1;
-  $column =~ s/^\s*//;
-  $column =~ s/\s*$//;
-  $column =~ s/\s+/ /;
-  #$column =~ s/\bdefault (.+)$//i and $return->{DEFAULT}     = $1;
-  $column =~ s/\s*\bdefault (.+)$//i;
+	$column =~ s/\b(constraint \S+ )?primary key\b//i and $return->{PRIMARY_KEY} = 1;
+	$column =~ s/\bnot null\b//i                      and $return->{NOTNULL}     = 1;
+	$column =~ s/^\s*//;
+	$column =~ s/\s*$//;
+	$column =~ s/\s+/ /;
+	#$column =~ s/\bdefault (.+)$//i and $return->{DEFAULT}     = $1;
+	$column =~ s/\s*\bdefault (.+)$//i;
 
-  my ($col_name, $col_type);
-  if (($col_name, $col_type) = $column =~ /^(\S+)\s+(.+)$/) {
-    $col_name =~ s/^['"]//;
-    $col_name =~ s/['"]$//;
-    $col_type =~ s/^['"]//;
-    $col_type =~ s/['"]$//;
-  } else {
-    $col_name = "";
-    $col_type = "";
-  }
+	my ($col_name, $col_type);
+	if (($col_name, $col_type) = $column =~ /^(\S+)\s+(.+)$/) {
+		$col_name =~ s/^['"]//;
+		$col_name =~ s/['"]$//;
+		$col_type =~ s/^['"]//;
+		$col_type =~ s/['"]$//;
+	} else {
+		$col_type = $column;
+	}
 
-  $return->{NAME} = $col_name;
+	$return->{NAME} = $col_name;
 
-  if ($col_type eq "integer" or $col_type eq "int4") {
-    $return->{TYPE} = 'int4';
-    $return->{SIZE} = 4;
-  } elsif ($col_type =~ /^(int2|smallint)$/) {
-    $return->{TYPE} = 'int2';
-    $return->{SIZE} = 2;
-  } elsif ($col_type =~ /^bool(ean)?$/) {
-    $return->{TYPE} = 'bool';
-    $return->{SIZE} = 1;
-  } elsif ($col_type =~ /^\s*character\s*$/) {
-    $return->{TYPE} = 'bpchar';
-    $return->{SIZE} = 1;
-  } elsif ($col_type =~ /varchar\((\d+)\)/i) {
-    $return->{TYPE} = 'varchar';
-    $return->{SIZE} = $1;
-  } elsif ($col_type =~ /char\((\d+)\)/i) {
-    $return->{TYPE} = 'bpchar';
-    $return->{SIZE} = $1;
-  } elsif ($col_type =~ /character\((\d+)\)/i) {
-    $return->{TYPE} = 'bpchar';
-    $return->{SIZE} = $1;
-  } elsif ($col_type =~ /numeric\((\d+)\,\d+\)/i) {
-    $return->{TYPE} = 'numeric';
-    $return->{SIZE} = $1;
-  } elsif ($col_type =~ /character varying\((\d+)\)/i) {
-    $return->{TYPE} = 'varchar';
-    $return->{SIZE} = $1;
-  } elsif ($col_type =~ /^text$/i) {
-    $return->{TYPE} = $col_type;
-    $return->{SIZE} = -1;
-  } else {
-    $return->{TYPE} = $col_type;
-  }
+	if ($col_type =~ /^int(eger|4)$/) {
+		$return->{TYPE} = 'integer';
+		$return->{SIZE} = 4;
+	} elsif ($col_type =~ /^(float8?|double precision)$/) {
+		$return->{TYPE} = 'double precision';
+		$return->{SIZE} = -1;
+	} elsif ($col_type =~ /^(float4|real)$/) {
+		$return->{TYPE} = 'real';
+		$return->{SIZE} = -1;
+	} elsif ($col_type =~ /^(bigint|int8)$/) {
+		$return->{TYPE} = 'bigint';
+		$return->{SIZE} = 8;
+	} elsif ($col_type =~ /^(int2|smallint)$/) {
+		$return->{TYPE} = 'smallint';
+		$return->{SIZE} = 2;
+	} elsif ($col_type =~ /^bool(ean)?$/) {
+		$return->{TYPE} = 'boolean';
+		$return->{SIZE} = 1;
+	} elsif ($col_type =~ /^\s*character\s*$/) {
+		$return->{TYPE} = 'character';
+		$return->{SIZE} = 1;
+	} elsif ($col_type =~ /(varchar|character varying)\((\d+)\)/i) {
+		$return->{TYPE} = 'character varying';
+		$return->{SIZE} = $2;
+	} elsif ($col_type =~ /^\s*varchar\s*$/) {
+		$return->{TYPE} = 'character varying';
+		$return->{SIZE} = -1;
+	} elsif ($col_type =~ /(char|character)\((\d+)\)/i) {
+		$return->{TYPE} = 'bpchar';
+		$return->{SIZE} = $2;
+	} elsif ($col_type =~ /numeric\((\d+)\,\d+\)/i) {
+		$return->{TYPE} = 'numeric';
+		$return->{SIZE} = $1;
+	} elsif ($col_type =~ /^numeric.*$/) {
+		$return->{TYPE} = 'numeric';
+		$return->{SIZE} = -1;
+	} elsif ($col_type =~ /^text$/i) {
+		$return->{TYPE} = $col_type;
+		$return->{SIZE} = -1;
+	} elsif ($col_type =~ /^timestamp/i) {
+		$return->{TYPE} = 'timestamptz';
+		$return->{SIZE} = 8 unless (exists $return->{SIZE} and int($return->{SIZE}) > 0);
+	} else {
+		$return->{TYPE} = $col_type;
+	}
 
-  return $return;
+	return $return;
+}
+
+sub clean_column {
+	my @return = @_;
+
+	for my $index (0..$#return) {
+		if ($return[$index]->{TYPE} =~ /^int(eger|4)$/) {
+			$return[$index]->{TYPE} = 'integer';
+		} elsif ($return[$index]->{TYPE} =~ /^(float8?|double precision)$/) {
+			$return[$index]->{TYPE} = 'double precision';
+		} elsif ($return[$index]->{TYPE} =~ /^(float4|real)$/) {
+			$return[$index]->{TYPE} = 'real';
+		} elsif ($return[$index]->{TYPE} =~ /^(bigint|int8)$/) {
+			$return[$index]->{TYPE} = 'bigint';
+		} elsif ($return[$index]->{TYPE} =~ /^(int2|smallint)$/) {
+			$return[$index]->{TYPE} = 'smallint';
+		} elsif ($return[$index]->{TYPE} =~ /^bool(ean)?$/) {
+			$return[$index]->{TYPE} = 'boolean';
+		} elsif ($return[$index]->{TYPE} =~ /^\s*character\s*$/) {
+			$return[$index]->{TYPE} = 'character';
+		} elsif ($return[$index]->{TYPE} =~ /(varchar|character varying)\((\d+)\)/i) {
+			$return[$index]->{TYPE} = 'character varying';
+		} elsif ($return[$index]->{TYPE} =~ /^\s*varchar\s*$/) {
+			$return[$index]->{TYPE} = 'character varying';
+		} elsif ($return[$index]->{TYPE} =~ /(char|character)\((\d+)\)/i) {
+			$return[$index]->{TYPE} = 'bpchar';
+		} elsif ($return[$index]->{TYPE} =~ /numeric\((\d+)\,\d+\)/i) {
+			$return[$index]->{TYPE} = 'numeric';
+		} elsif ($return[$index]->{TYPE} =~ /^numeric.*$/) {
+			$return[$index]->{TYPE} = 'numeric';
+		} elsif ($return[$index]->{TYPE} =~ /^text$/i) {
+			$return[$index]->{TYPE} = $return[$index]->{TYPE};
+		} elsif ($return[$index]->{TYPE} =~ /^timestamp/i) {
+			$return[$index]->{TYPE} = 'timestamptz';
+			$return[$index]->{SIZE} = 8 unless (exists $return[$index]->{SIZE} and int($return[$index]->{SIZE}) > 0);
+		}
+	}
+
+	if (@return == 1) {
+		return $return[0];
+	} else {
+		return @return;
+	}
 }
 
 sub print_help {
-  print <<END;
+	print <<END;
 usage: $0 [-h] [-c] [-q] [-u user] [-p pass] /path/to/create.sql
 
    -h    this help
@@ -1550,54 +1533,54 @@ usage: $0 [-h] [-c] [-q] [-u user] [-p pass] /path/to/create.sql
    -l    location of the OpenNMS postgresql libraries
 
 END
-  exit;
+	exit;
 }
 
 sub ask_question {
-  my $question_text = "? " . shift;
-  my $default       = shift;
-  my $return;
+	my $question_text = "? " . shift;
+	my $default       = shift;
+	my $return;
  
-  if ($default =~ /^(y|n)$/i) {
-    # Yes/No Question
+	if ($default =~ /^(y|n)$/i) {
+		# Yes/No Question
  
-    my $prompt;
-    $prompt = "Y/n" if ($default eq "y");
-    $prompt = "y/N" if ($default eq "n");
+		my $prompt;
+		$prompt = "Y/n" if ($default eq "y");
+		$prompt = "y/N" if ($default eq "n");
  
-    print $question_text, "  [$prompt] ";
-    if ($VERBOSE) {
-      chomp($return = <STDIN>);
-    } else {
-      print "\n";
-    }
+		print $question_text, "  [$prompt] ";
+		if ($VERBOSE) {
+			chomp($return = <STDIN>);
+		} else {
+			print "\n";
+		}
  
-    $return = $default if ($return eq "");
+		$return = $default if ($return eq "");
  
-    if ($return =~ /^y/i) {
-      $return = 1;
-    } else {
-      $return = 0;
-    }
+		if ($return =~ /^y/i) {
+			$return = 1;
+		} else {
+			$return = 0;
+		}
  
-  } else {
+	} else {
  
-    $return = $default;
-    $return = "none" if ($default eq "");
+		$return = $default;
+		$return = "none" if ($default eq "");
  
-    print $question_text, "  [$return] ";
-    if ($VERBOSE) {
-      chomp($return = <STDIN>);
-    } else {
-      print "\n";
-      $return = "";
-    }
- 
-    $return = $default if ($return eq "");
- 
-  }
- 
-  return $return;
+		print $question_text, "  [$return] ";
+		if ($VERBOSE) {
+			chomp($return = <STDIN>);
+		} else {
+			print "\n";
+			$return = "";
+		}
+
+		$return = $default if ($return eq "");
+
+	}
+
+	return $return;
 }
 
 # subroutine: change_table
@@ -1606,151 +1589,164 @@ sub ask_question {
 # output: a true value on success, undef otherwise
 
 sub change_table {
-  my $database = shift;
-  my $table    = shift;
-  my $text;
-  my @new_names;
-  my @old_names;
-  my $eventsource_index = -1;
+	my $database = shift;
+	my $table    = shift;
+	my $text;
+	my @new_names;
+	my @old_names;
+	my $eventsource_index = -1;
 
-  return 1 if (exists $CHANGED{$table});
-  $CHANGED{$table} = 1;
+	return 1 if (exists $CHANGED{$table});
+	$CHANGED{$table} = 1;
 
-  print "SCHEMA CHANGED\n";
+	print "SCHEMA DOES NOT MATCH\n";
 
-  my @db_cols   = @{get_table_from_db($table)};
-  my @sql_cols  = @{get_table_from_sql($table)};
-  my @db_names  = sort map { $_->{NAME} } @db_cols;
-  my $columns;
+	my $db_cols   = get_table_from_db($table);
+	my $sql_cols  = get_table_from_sql($table);
+	my @db_cols   = @{$db_cols};
+	my @sql_cols  = @{$sql_cols};
+	my @db_names  = sort map { $_->{NAME} } @db_cols;
+	my $columns;
 
-	  my $revert_table = sub {
-	    my $errormessage = shift;
-	    stderr_on();
-	    $database->do("DROP TABLE $table");
-	    $database->do("CREATE TABLE $table AS SELECT " . join(', ', @db_names) . " FROM temp");
-	    die "FAILED: $errormessage";
-	  };
+	my $revert_table = sub {
+		my $errormessage = shift;
+		stderr_on();
+		$database->do("DROP TABLE $table");
+		$database->do("CREATE TABLE $table AS SELECT " . join(', ', @db_names) . " FROM temp");
+		die "FAILED: $errormessage";
+	};
 
-  for my $column (@sql_cols) {
-    $column->{NAME} = lc($column->{NAME});
-    $columns->{$column->{NAME}} = $column;
-    if ($column->{NOTNULL}) {
-      if ($column->{NAME} eq "eventsource") {
-        $columns->{$column->{NAME}}->{'null_replace'} = 'OpenNMS.Eventd';
-      } elsif ($column->{NAME} eq 'svcregainedeventid' and $table eq 'outages') {
-        $columns->{$column->{NAME}}->{'null_replace'} = 0;
-      } elsif ($column->{NAME} eq 'eventid' and $table eq 'notifications') {
-        $columns->{$column->{NAME}}->{'null_replace'} = 0;
-      } else {
-        $columns->{$column->{NAME}}->{'null_replace'} = '';
-      }
-    }
-  }
+	for my $column (@sql_cols) {
+		$column->{NAME} = lc($column->{NAME});
+		$columns->{$column->{NAME}} = $column;
+		if ($column->{NOTNULL}) {
+			if ($column->{NAME} eq "eventsource") {
+				$columns->{$column->{NAME}}->{'null_replace'} = 'OpenNMS.Eventd';
+			} elsif ($column->{NAME} eq 'svcregainedeventid' and $table eq 'outages') {
+				$columns->{$column->{NAME}}->{'null_replace'} = 0;
+			} elsif ($column->{NAME} eq 'eventid' and $table eq 'notifications') {
+				$columns->{$column->{NAME}}->{'null_replace'} = 0;
+			} else {
+				$columns->{$column->{NAME}}->{'null_replace'} = '';
+			}
+		}
+	}
 
-  for my $column (@db_cols) {
-    $column->{NAME} = lc($column->{NAME});
-    my $name = $column->{NAME};
-    if (exists $columns->{$name}) {
-      if ($columns->{$name}->{TYPE} =~ /timestamp/ and $column->{TYPE} !~ /timestamp/) {
-        $columns->{$name}->{'upgrade_timestamp'} = 1;
-      }
-    }
-  }
+	for my $column (@db_cols) {
+		$column->{NAME} = lc($column->{NAME});
+		my $name = $column->{NAME};
+		if (exists $columns->{$name}) {
+			if ($columns->{$name}->{TYPE} =~ /timestamp/ and $column->{TYPE} !~ /timestamp/) {
+				$columns->{$name}->{'upgrade_timestamp'} = 1;
+			}
+		}
+	}
 
-  $database->do('DROP TABLE temp');
+	# This line throws a harmless error if the table doesn't exist (normally it shouldn't between upgrades)
+	$database->do('DROP TABLE temp');
 
-  print "  - creating temporary table... ";
-  $text = "CREATE TABLE temp AS SELECT " . join(', ', @db_names) . " FROM $table";
-  $database->do($text) or die "FAILED: unable to create temporary table $table (as 'temp'): " . $database->errstr;
-  print "done\n";
+	print "  - creating temporary table... ";
+	$text = "CREATE TABLE temp AS SELECT " . join(', ', @db_names) . " FROM $table";
+	$database->do($text) or die "FAILED: unable to create temporary table $table (as 'temp'): " . $database->errstr;
+	print "done\n";
 
-  $database->do("DROP TABLE $table");
+	$database->do("DROP TABLE $table");
 
-  print "  - creating new '$table' table... ";
-  $text = "CREATE TABLE $table (" . get_table_from_sql($table, 1) . ")";
-  unless ($database->do($text)) {
-    &$revert_table("unable to create new table $table: " . $database->errstr);
-  }
-  print "done\n";
+	print "  - creating new '$table' table... ";
+	$text = "CREATE TABLE $table (" . get_table_from_sql($table, 1) . ")";
+	unless ($database->do($text)) {
+		&$revert_table("unable to create new table $table: " . $database->errstr);
+	}
+	print "done\n";
 
-  # now we need to pull everything from the database and filter
-  # it to update timestamps and other such things
+	# now we need to pull everything from the database and filter
+	# it to update timestamps and other such things
 
-  print "  - transforming data into the new table...";
-  my ($sth, $insert, $order);
-  if ($table eq 'events') {
-    $database->do("INSERT INTO events (eventid, eventuei, eventtime, eventsource, eventdpname,
+	print "  - transforming data into the new table...\n";
+	my ($sth, $insert);
+	my $order = "";
+	if ($table eq 'events') {
+		$database->do("INSERT INTO events (eventid, eventuei, eventtime, eventsource, eventdpname,
 		eventcreatetime, eventseverity, eventlog, eventdisplay) values (0,
 		'http://uei.opennms.org/dummyevent', now(), 'OpenNMS.Eventd', 'localhost',
 		now(), 1, 'Y', 'Y')");
-  }
-  $order = "ORDER BY iflostservice" if ($table eq "outages");
-  unless ($sth = $database->prepare("SELECT " . join(', ', @db_names) . " FROM temp $order")) {
-    &$revert_table("unable to prepare select from temp: " . $database->errstr);
-  }
-  unless ($insert = $database->prepare("INSERT INTO $table (" . join(', ', sort keys %{$columns}) . ') values (' .
-	join(', ', map { '?' } keys %{$columns}) . ')')) {
-    &$revert_table("unable to prepare insert into $table: " . $database->errstr);
-  }
-  $sth->execute();
-  my $num_rows = $sth->rows;
-  my $current_row = 0;
-  if ($num_rows > 0) {
-    while (my $row = $sth->fetchrow_hashref) {
-      for my $key (keys %{$row}) {
-        if ($key ne lc($key)) {
-          $row->{lc($key)} = $row->{$key};
-          delete $row->{$key};
-        }
-      }
-      for my $key (keys %{$columns}) {
-        if ($table eq 'outages' and $key eq 'outageid') {
-          $row->{$key} = $current_row + 1;
-        }
-        if (exists $columns->{$key}->{'null_replace'}) {
-          if (not defined $row->{$key}) {
-            print "$key was NULL but is a NOT NULL column -- replacing with '", $columns->{$key}->{'null_replace'}, "'\n" if ($DEBUG);
-            $row->{$key} = $columns->{$key}->{'null_replace'};
-          }
-        }
-        if (defined $row->{$key}) {
-          if ($columns->{$key}->{'upgrade_timestamp'}) {
-            print "$key is an old-style timestamp\n" if ($DEBUG);
-            my ($day, $month, $year, $hours, $minutes, $seconds) = $row->{$key} =~ /^(\d+)-(...)-(\d\d\d\d) (\d\d):(\d\d):(\d\d)$/;
-            $month = lc($month);
-            $month = $MONTHS{$month};
-            my $newentry = sprintf('%04d-%02d-%02d %02d:%02d:%02d', $year, $month, $day, $hours, $minutes, $seconds);
-            print $row->{$key}, " -> ", $newentry, "\n" if ($DEBUG);
-            $row->{$key} = $newentry;
-          }
-          print $key, " = ", $row->{$key}, "\n" if ($DEBUG);
-        } else {
-          $row->{$key} = undef;
-          print $key, " = undefined\n" if ($DEBUG);
-        }
-      }
-      if (not $insert->execute(map { $row->{$_} } sort keys %{$columns})) {
-	unless (
-          $sth->errstr =~ /key referenced from $table not found in/ or
-          $sth->errstr =~ /Cannot insert a duplicate key into unique index/
-        ) {
-          &$revert_table("can't insert into $table: " . $sth->errstr);
-        }
-      }
-      if (($current_row++ % 20) == 0) {
-        print "\r  - transforming data into the new table... ", sprintf('%3d%%', ($current_row / $num_rows * 100));
-      }
-    }
-  }
-  print "\r  - transforming data into the new table... done     \n";
+	}
+	$order = "ORDER BY iflostservice" if ($table eq "outages");
+	my $dbcmd = "SELECT " . join(', ', @db_names) . " FROM temp $order";
+	print "  - performing select: ", $dbcmd, "\n" if ($DEBUG);
+	unless ($sth = $database->prepare($dbcmd)) {
+		&$revert_table("unable to prepare select from temp: " . $database->errstr);
+	}
+	$dbcmd = "INSERT INTO $table (" . join(', ', sort keys %{$columns}) . ') values (' .  join(', ', map { '?' } keys %{$columns}) . ')';
+	print "  - performing insert: ", $dbcmd, "\n" if ($DEBUG);
+	unless ($insert = $database->prepare($dbcmd)) {
+		&$revert_table("unable to prepare insert into $table: " . $database->errstr);
+	}
+	$sth->execute();
+	$database->{AutoCommit} = 0;
+	my $num_rows = $sth->rows;
+	my $current_row = 0;
+	if ($num_rows > 0) {
+		while (my $row = $sth->fetchrow_hashref) {
+			for my $key (keys %{$row}) {
+				if ($key ne lc($key)) {
+					$row->{lc($key)} = $row->{$key};
+					delete $row->{$key};
+				}
+			}
+			for my $key (keys %{$columns}) {
+				if ($table eq 'outages' and $key eq 'outageid') {
+					$row->{$key} = $current_row + 1;
+				}
+				if (exists $columns->{$key}->{'null_replace'}) {
+					if (not defined $row->{$key}) {
+						print "$key was NULL but is a NOT NULL column -- replacing with '", $columns->{$key}->{'null_replace'}, "'\n" if ($DEBUG);
+						$row->{$key} = $columns->{$key}->{'null_replace'};
+					}
+				}
+				if (defined $row->{$key}) {
+					if ($columns->{$key}->{'upgrade_timestamp'}) {
+						print "$key is an old-style timestamp\n" if ($DEBUG);
+						my ($day, $month, $year, $hours, $minutes, $seconds) = $row->{$key} =~ /^(\d+)-(...)-(\d\d\d\d) (\d\d):(\d\d):(\d\d)$/;
+					$month = lc($month);
+					$month = $MONTHS{$month};
+					my $newentry = sprintf('%04d-%02d-%02d %02d:%02d:%02d', $year, $month, $day, $hours, $minutes, $seconds);
+						print $row->{$key}, " -> ", $newentry, "\n" if ($DEBUG);
+						$row->{$key} = $newentry;
+					}
+					print $key, " = ", $row->{$key}, "\n" if ($DEBUG);
+				} else {
+					$row->{$key} = undef;
+					print $key, " = undefined\n" if ($DEBUG);
+				}
+			}
+			if (not $insert->execute(map { $row->{$_} } sort keys %{$columns})) {
+				unless (
+					$sth->errstr =~ /key referenced from $table not found in/ or
+					$sth->errstr =~ /Cannot insert a duplicate key into unique index/
+				) {
+					&$revert_table("can't insert into $table: " . $sth->errstr);
+				}
+			}
+			if (($current_row++ % 20) == 0) {
+				print "  - transforming data into the new table... ", sprintf('%3d%%', ($current_row / $num_rows * 100)), "\n";
+			}
+		}
+	}
 
-  print "  - dropping temporary table... ";
-  $text = "DROP TABLE temp";
-  $database->do($text) or die "FAILED: " . $database->errstr;
-  print "done\n";
+	# Commit the changes and turn autocommit back on
+	$database->commit;
+	$database->{AutoCommit} = 1;
 
-  print "  - completed updating table... ";
-  return 1;
+	print "  - transforming data into the new table... done     \n";
+
+	print "  - dropping temporary table... ";
+	$text = "DROP TABLE temp";
+	$database->do($text) or die "FAILED: " . $database->errstr;
+	print "done\n";
+
+	print "  - completed updating table... ";
+	return 1;
 }
 
 # subroutine: change_column
@@ -1760,72 +1756,65 @@ sub change_table {
 # output: a true value on success, undef otherwise
 
 sub change_column {
-  my $database = shift;
-  my $table    = shift;
-  my $column   = shift;
+	my $database = shift;
+	my $table    = shift;
+	my $column   = shift;
 
-  # move the old column out of the way
-  my $text = "ALTER TABLE $table RENAME COLUMN $column->{NAME} TO $column->{NAME}_old";
-  $database->do($text) or die "unable to rename column $column->{NAME} in table $table: " . $database->errstr;
+	# move the old column out of the way
+	my $text = "ALTER TABLE $table RENAME COLUMN $column->{NAME} TO $column->{NAME}_old";
+	$database->do($text) or die "unable to rename column $column->{NAME} in table $table: " . $database->errstr;
 
-  $text = "ALTER TABLE $table ADD COLUMN $column->{NAME} ";
+	$text = "ALTER TABLE $table ADD COLUMN $column->{NAME} ";
 
-  if      ($column->{TYPE} eq 'bpchar') {
-    $text .= 'char(' . int($column->{SIZE}) . ')';
-  } elsif ($column->{TYPE} eq 'int4') {
-    $text .= 'int4';
-  } elsif ($column->{TYPE} eq 'varchar') {
-    $text .= 'varchar(' . int($column->{SIZE}) . ')';
-  } elsif ($column->{TYPE} eq 'numeric') {
-    $text .= 'numeric(' . int($column->{SIZE}) . ',2)';
-  } if ($column->{TYPE} =~ /^(var)?char\d+$/) {
-    $text .= $column->{TYPE};
-  } if ($column->{TYPE} =~ /^numeric\d+$/) {
-    $text .= $column->{TYPE};
-  } else {
-    warn "UNKNOWN COLUMN TYPE '$column->{TYPE}' ";
-    $text .= $column->{TYPE};
-  }
+	if ($column->{SIZE} >= 1) {
+		if ($column->{TYPE} eq "numeric") {
+			$text .= $column->{TYPE} . '(' . $column->{SIZE} . ',2)';
+		} else {
+			$text .= $column->{TYPE} . '(' . $column->{SIZE} . ')';
+		}
+	} else {
+		$text .= $column->{TYPE};
+	}
 
-  $text .= " PRIMARY KEY" if ($column->{PRIMARY_KEY});
-  $text .= " NOT NULL"    if ($column->{NOTNULL});
+	$text .= " PRIMARY KEY" if ($column->{PRIMARY_KEY});
+	$text .= " NOT NULL"    if ($column->{NOTNULL});
 
-  if (not $database->do($text)) {
-    my $error = $database->errstr;
-    # put the column back  =)
-    $database->do("ALTER TABLE $table RENAME COLUMN $column->{NAME}_old TO $column->{NAME}") or
+	if (not $database->do($text)) {
+		my $error = $database->errstr;
+		# put the column back  =)
+		$database->do("ALTER TABLE $table RENAME COLUMN $column->{NAME}_old TO $column->{NAME}") or
 	die "unable to add new column $column->{NAME} in table $table: " . $error;
-  }
+	}
 
-  # fill the new column with data
-  $database->do("UPDATE $table SET $column->{NAME} = $column->{NAME}_old") or
+	# fill the new column with data
+	$database->do("UPDATE $table SET $column->{NAME} = $column->{NAME}_old") or
 	die "unable to populate new column with old values: " . $database->errstr;
 
-  # delete the old column
-  my $tabledata = get_table_from_db($table);
-  my $columns;
-  for my $col (map { $_->{NAME} } @{$tabledata}) {
-    if (lc($col) ne lc("$column->{NAME}_old")) {
-      $columns .= ", " if (defined $columns);
-      $columns .= $col;
-    }
-  }
+	# delete the old column
+	my $tabledata = get_table_from_db($table);
+	my $columns;
+	for my $col (map { $_->{NAME} } @{$tabledata}) {
+		if (lc($col) ne lc("$column->{NAME}_old")) {
+			$columns .= ", " if (defined $columns);
+			$columns .= $col;
+		}
+	}
 
-  $database->do("CREATE TABLE temp AS SELECT $columns FROM $table") or die "unable to create temporary table: " . $database->errstr;
-  $database->do("DROP TABLE $table") or die "unable to drop old table: " . $database->errstr;
-  my $new     = get_table_from_sql($table);
-  my $newtext;
-  for my $col (@{$tabledata}) {
-    next if (lc($col->{NAME}) eq lc("$column->{NAME}_old"));
-    $newtext .= ', ' if ($newtext ne '');
-    $newtext .= $col->{NAME} . ' ' . get_columntype($col);
-  }
-  $database->do("CREATE TABLE $table ($newtext)") or die "unable to create new table: " . $database->errstr;
-  $database->do("GRANT ALL ON $table TO $USER") or die(scalar $database->errstr);
-  $database->do("INSERT INTO $table ($columns) SELECT $columns FROM temp") or die "unable to fill new table: " . $database->errstr;
-  $database->do("DROP TABLE temp") or die "unable to drop temporary table: " . $database->errstr;
+	$database->do("CREATE TABLE temp AS SELECT $columns FROM $table") or die "unable to create temporary table: " . $database->errstr;
+	$database->do("DROP TABLE $table") or die "unable to drop old table: " . $database->errstr;
+	my $new     = get_table_from_sql($table);
+	my $newtext;
+	for my $col (@{$tabledata}) {
+		next if (lc($col->{NAME}) eq lc("$column->{NAME}_old"));
+		$newtext .= ', ' if ($newtext ne '');
+		$newtext .= $col->{NAME} . ' ' . get_columntype($col);
+	}
+	$database->do("CREATE TABLE $table ($newtext)") or die "unable to create new table: " . $database->errstr;
+	$database->do("GRANT ALL ON $table TO $USER") or die(scalar $database->errstr);
+	$database->do("INSERT INTO $table ($columns) SELECT $columns FROM temp") or die "unable to fill new table: " . $database->errstr;
+	$database->do("DROP TABLE temp") or die "unable to drop temporary table: " . $database->errstr;
 
-  return 1;
+	return 1;
 }
 
 # subroutine: get_columntype
@@ -1834,29 +1823,29 @@ sub change_column {
 # output: a string of the new column type
 
 sub get_columntype {
-  my $column = shift;
-  my $text;
+	my @return;
 
-  if      ($column->{TYPE} eq 'bpchar') {
-    $text = 'char(' . int($column->{SIZE}) . ')';
-  } elsif ($column->{TYPE} eq 'int4') {
-    $text = 'int4';
-  } elsif ($column->{TYPE} eq 'varchar') {
-    $text = 'varchar(' . int($column->{SIZE}) . ')';
-  } elsif ($column->{TYPE} eq 'numeric') {
-    $text = 'numeric(' . int($column->{SIZE}) . ',2)';
-  } elsif ($column->{TYPE} eq 'timestamp' or $column->{TYPE} eq 'timestamptz') {
-    $text = 'timestamptz';
-  } else {
-    warn "UNKNOWN COLUMN TYPE '$column->{TYPE}' " if ($DEBUG);
-    $text = $column->{TYPE};
-  }
+	for my $column (@_) {
+		my $text;
+		($column) = clean_column($column);
 
-  if ($column->{TYPE} eq 'timestamptz') {
-    $column->{SIZE} = 8 if ($column->{SIZE} == 0);
-  }
+		if ($column->{SIZE} >= 1) {
+			if ($column->{TYPE} eq "numeric") {
+				$text = $column->{TYPE} . '(' . $column->{SIZE} . ',2)';
+			} else {
+				$text = $column->{TYPE} . '(' . $column->{SIZE} . ')';
+			}
+		} else {
+			$text = $column->{TYPE};
+		}
+		push(@return, $text);
+	}
 
-  return $text;
+	if (@return == 1) {
+		return $return[0];
+	} else {
+		return @return;
+	}
 }
 
 # subroutine: get_column
@@ -1865,22 +1854,21 @@ sub get_columntype {
 # output: the matching column object and the index it was found at
 
 sub get_column {
-  my $column_name = shift;
-  my $index = 0;
-  for my $column (@_) {
-    if (lc($column->{NAME}) eq lc($column_name)) {
-      return ($column, $index);
-    }
-    $index++;
-  }
-  return;
+	my $column_name = shift;
+	my $index = 0;
+	for my $column (@_) {
+		if (lc($column->{NAME}) eq lc($column_name)) {
+			return ($column, $index);
+		}
+		$index++;
+	}
+	return;
 }
 
 sub normalize_column {
-  my $column = shift;
+	my $column = shift;
 
-  $column->{TYPE} = get_columntype($column);
-  return $column;
+	return clean_column($column);
 }
 
 # subroutine: add_column
@@ -1890,29 +1878,33 @@ sub normalize_column {
 # output: a true value on success, undef otherwise
 
 sub add_column {
-  my $database = shift;
-  my $table    = shift;
-  my $column   = shift;
+	my $database = shift;
+	my $table    = shift;
+	my $column   = shift;
 
-  my $text   = "ALTER TABLE $table ADD COLUMN $column->{NAME} ";
-     $text  .= get_columntype($column);
-  $text .= " PRIMARY KEY" if ($column->{PRIMARY_KEY});
-  $text .= " NOT NULL"    if ($column->{NOTNULL});
+	my $text   = "ALTER TABLE $table ADD COLUMN $column->{NAME} ";
+		 $text  .= get_columntype($column);
+		 $text  .= " PRIMARY KEY" if ($column->{PRIMARY_KEY});
+		 $text  .= " NOT NULL"    if ($column->{NOTNULL});
 
-  return $database->do($text);
+	my $return = $database->do($text);
+	if (not $return) {
+		print STDERR "error adding column: " . $database->errstr . "\n";
+	}
+	return $return;
 }
 
 sub stderr_off {
-  if (not $DEBUG) {
-    open (OLDERR, ">&STDERR");
-    open (STDERR, ">/dev/null");
-  }
+	if (not $DEBUG) {
+		open (OLDERR, ">&STDERR");
+		open (STDERR, ">/dev/null");
+	}
 }
 
 sub stderr_on {
-  if (not $DEBUG) {
-    close (STDERR);
-    open (STDERR, ">&OLDERR");
-    close (OLDERR);
-  }
+	if (not $DEBUG) {
+		close (STDERR);
+		open (STDERR, ">&OLDERR");
+		close (OLDERR);
+	}
 }

@@ -781,24 +781,39 @@ create table assets (
 --##################################################################
 --# The following commands set up automatic sequencing functionality
 --# for fields which require this.
+--#
+--# DO NOT forget to add an "install" comment so that install.pl
+--# knows to fix and renumber the sequences if need be
 --##################################################################
 
 --# Sequence for the nodeID column in the node table
+--#          sequence, column, table
+--# install: nodeNxtId nodeID   node
 create sequence nodeNxtId minvalue 1;
 
 --# Sequence for the serviceID column in the service table
+--#          sequence,    column,   table
+--# install: serviceNxtId serviceID service
 create sequence serviceNxtId minvalue 1;
 
 --# Sequence for the eventID column in the events table
+--#          sequence,   column, table
+--# install: eventsNxtId eventID events
 create sequence eventsNxtId minvalue 1;
 
 --# Sequence for the outageID column in the outages table
+--#          sequence,   column,  table
+--# install: outageNxtId outageID outages
 create sequence outageNxtId minvalue 1;
 
 --# Sequence for the notifyID column in the notification table
+--#          sequence,   column,  table
+--# install: notifyNxtId notifyID notifications
 create sequence notifyNxtId minvalue 1;
 
 --# Sequence for the vulnerabilityID column in the vulnerabilities table
+--#          sequence, column,         table
+--# install: vulnNxtId vulnerabilityID vulnerabilities
 create sequence vulnNxtId minvalue 1;
 
 --##################################################################
