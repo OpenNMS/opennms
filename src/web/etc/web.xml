@@ -655,6 +655,11 @@
     <servlet-class>org.opennms.web.admin.nodeManagement.ManageNodesServlet</servlet-class>
   </servlet>
   <servlet>
+     <!-- servlet for managing/unmanaging interfaces and services for a single node -->
+     <servlet-name>manageNode</servlet-name>
+     <servlet-class>org.opennms.web.admin.nodeManagement.ManageNodeServlet</servlet-class>
+  </servlet>
+  <servlet>
     <!-- servlet for managing and unmanaging interfaces and services -->
     <servlet-name>snmpManageNodes</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.SnmpManageNodesServlet</servlet-class>
@@ -1156,6 +1161,10 @@
   <servlet-mapping>
     <servlet-name>manageNodes</servlet-name>
     <url-pattern>/admin/manageNodes</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+     <servlet-name>manageNode</servlet-name>
+     <url-pattern>/admin/manageNode</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>snmpManageNodes</servlet-name>

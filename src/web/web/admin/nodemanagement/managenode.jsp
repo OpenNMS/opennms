@@ -198,7 +198,7 @@
   </tr>
 </table>
     
-<FORM METHOD="POST" name="manageAll" action="admin/manageNodes">
+<FORM METHOD="POST" name="manageAll" action="admin/manageNode">
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
   
   <tr>
