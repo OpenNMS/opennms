@@ -801,7 +801,7 @@ public class NotifdTest extends TestCase {
      * see http://bugzilla.opennms.org/cgi-bin/bugzilla/show_bug.cgi?id=1022
      * @throws Exception
      */
-    public void testWicktorBug() throws Exception {
+    public void testWicktorBug_1022_1031() throws Exception {
 
         m_anticipator.anticipateNotification(createMockNotification("High loadavg5 Threshold exceeded", "dhustace@nc.rr.com"));
         m_anticipator.anticipateNotification(createMockNotification("High loadavg5 Threshold exceeded", "matt@opennms.org"));
