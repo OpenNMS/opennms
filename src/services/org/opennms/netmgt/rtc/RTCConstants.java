@@ -85,6 +85,6 @@ public final class RTCConstants
 	 */
 	public final static String	DB_GET_OUTAGE_ENTRIES	= "SELECT ifLostService, ifRegainedService from outages "
 								+"where ( (outages.nodeid = ?) AND (outages.ipaddr = ?) AND (outages.serviceid = ?) AND "
-								+"((ifLostService >= ?) OR (ifRegainedService >= ?) OR (ifRegainedService IS NULL)) )";
+								+"((ifLostService >= ?) OR (ifRegainedService >= ?) OR (ifRegainedService IS NULL)) ) ORDER BY outageid";
 	
 }
