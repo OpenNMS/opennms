@@ -181,7 +181,7 @@ class TrapQueueProcessor
 	}
 
 	/**
-	 * <p>Process a V2 trap and convert it to an event for transmission</p>
+	 * Process a V2 trap and convert it to an event for transmission.
 	 * 
 	 * <p>From RFC2089 ('Mapping SNMPv2 onto SNMPv1'), section 3.3 
 	 * ('Processing an outgoing SNMPv2 TRAP')</p>

@@ -51,7 +51,7 @@ import org.w3c.dom.Element;
  */
 public class GroupsWriter extends XMLWriter
 {
-	/**Default constructor, intializes the member variables
+	/**Default constructor.
 	*/
 	public GroupsWriter(String fileName)
 		throws XMLWriteException
@@ -59,11 +59,11 @@ public class GroupsWriter extends XMLWriter
 		super(fileName);
 	}
 	
-	/**This method creates a new DOM tree document that represents the data
+	/**Creates a new DOM tree document that represents the data
 	   in the collection. This document will be serialized to a file to 
 	   save the configuration.
-	   @param Collection groups, the information to save
-	   @exception XMLWriteException
+	   @param groups the information to save
+	   @throws XMLWriteException if cannot handle the xml
 	*/
 	protected void saveDocument(Collection groups) 
 		throws XMLWriteException

@@ -120,7 +120,7 @@ public class Group implements Cloneable
 	}
 	
 	/**Sets the group name
-	   @param String aName, the name of the group
+	   @param aName the name of the group
 	*/
 	public void setGroupName(String aName)
 	{
@@ -130,7 +130,7 @@ public class Group implements Cloneable
 	}
 	
 	/**Returns the group name
-	   @return String, the name of the group
+	   @return the name of the group
 	*/
 	public String getGroupName()
 	{
@@ -138,7 +138,7 @@ public class Group implements Cloneable
 	}
 	
 	/**Sets the comments for the group
-	   @param String someComments, the comments for the group
+	   @param someComments the comments for the group
 	*/
 	public void setGroupComments(String someComments)
 	{
@@ -146,7 +146,7 @@ public class Group implements Cloneable
 	}
 	
 	/**Returns the comments for the group
-	   @return String, the comments for the group
+	   @return the comments for the group
 	*/
 	public String getGroupComments()
 	{
@@ -154,7 +154,7 @@ public class Group implements Cloneable
 	}
 	
 	/**Returns whether the group has this user in its users list
-	   @return boolean, true if user is in list, false if not
+	   @return true if user is in list, false if not
 	*/
 	public boolean hasUser(String aUser)
 	{
@@ -162,7 +162,7 @@ public class Group implements Cloneable
 	}
 	
 	/**Adds a username to the list of users
-	   @param String aUser, a new username
+	   @param aUser a new username
 	*/
 	public void addUser(String aUser)
 	{
@@ -170,7 +170,7 @@ public class Group implements Cloneable
 	}
 	
 	/**Removes a username from the list of users
-	   @param String aUser, the user to remove
+	   @param aUser the user to remove
 	*/
 	public void removeUser(String aUser)
 	{
@@ -185,7 +185,7 @@ public class Group implements Cloneable
 	}
 	
 	/**Returns the list of users
-	   @return List, the list of users
+	   @return the list of users
 	*/
 	public List getUsers()
 	{
@@ -193,7 +193,7 @@ public class Group implements Cloneable
 	}
 	
 	/**Returns a count of the users in the list
-	   @return int, how many users in this group
+	   @return how many users in this group
 	*/
 	public int getUserCount()
 	{
@@ -201,7 +201,7 @@ public class Group implements Cloneable
 	}
 	
 	/**Returns a String representation of the group, used primarily for debugging.
-	   @return String, a string representation
+	   @return a string representation
 	*/
 	public String toString()
 	{

@@ -76,7 +76,7 @@ import org.opennms.netmgt.rtc.datablock.RTCNodeKey;
 import org.xml.sax.SAXException;
 
 /**
- * <pre>The DataManager contains and maintains all the data for the RTC.
+ * Contains and maintains all the data for the RTC.
  *
  * The basic datablock is a 'RTCNode' that gets added to relevant 'RTCCategory's.
  * it also gets added to a map with different keys for easy lookup
@@ -186,11 +186,11 @@ public class DataManager extends Object
 	}
 
 	/**
-	 * Add a node/ip/service to the specified category 
+	 * Add a node/ip/service to the specified category.
 	 *
 	 * @param nodeid	the nodeid to be added
 	 * @param ip		the interface to be added
-	 * @param service	the service to be added
+	 * @param svcname	the service to be added
 	 * @param cat		the category to which this node is to be added to
 	 * @param knownIPs	the hashtable of IP->list of RTCNodes (used only at startup)
 	 * @param outagesGetStmt the prepared statement to read outages
@@ -343,15 +343,15 @@ public class DataManager extends Object
 	}
 
 	/**
-	 * Delete a node/ip/service to the specified category 
-	 *
-	 * @param nodeid	the nodeid to be added
-	 * @param ip		the interface to be added
-	 * @param service	the service to be added
-	 * @param cat		the category to which this node is to be added to
+	 * Delete a node/ip/service to the specified category.
 	 *
 	 * Note: This will not delete the service, it will just remove the node
 	 * from the category.
+	 *
+	 * @param nodeid	the nodeid to be added
+	 * @param ip		the interface to be added
+	 * @param svcname	the service to be added
+	 * @param cat		the category to which this node is to be added to
 	 */
 	private void delNodeIpSvcToCategory(long nodeid, String ip, String svcname, RTCCategory cat)
 	{
@@ -391,7 +391,7 @@ public class DataManager extends Object
 	}
 
 	/**
-	 * Add the RTCNodes known for an IP to the category
+	 * Add the RTCNodes known for an IP to the category.
 	 *
 	 * @param ipRTCs	the list of RTCNodes related to a particular IP
 	 * @param cat		the category to which the list is to be added
@@ -437,7 +437,9 @@ public class DataManager extends Object
 	}
 
 	/**
-	 * Read the categories from the categories.xml and create the 'RTCCategory's map
+	 * Creates the categories map.
+	 * Reads the categories from the categories.xml and creates 
+	 * the 'RTCCategory's map
 	 */
 	private void createCategoriesMap()
 	{
@@ -489,11 +491,13 @@ public class DataManager extends Object
 	}
 
 	/**
+	 * Poplulates nodes from the database.
 	 * For each category in the categories list, this reads the 
 	 * services and outage tables to get the initial data, creates
 	 * 'RTCNode' objects that are added to the map and and to the
-	 * appropriate category
+	 * appropriate category.
 	 *
+	 * @param dbConn the database connection.
 	 * @throws SQLException if the database read fails due to an SQL error
 	 * @throws FilterParseException if filtering the data against the category rule fails due to the rule being incorrect
 	 * @throws RTCException if the database read or filtering the data against the category rule fails for some reason
@@ -681,13 +685,14 @@ public class DataManager extends Object
 	}
 
 	/**
-	 * Constructor  - it parses categories from the categories.xml and
+	 * Constructor. 
+	 * Parses categories from the categories.xml and
 	 * populates them with 'RTCNode' objects created from data read from
 	 * the database (services and outage tables)
 	 *
-	 * @exception SQLException thrown if there is an error reading initial data from the database
-	 * @exception FilterParseException thrown if a rule in the categories.xml was incorrect
-	 * @exception RTCException thrown if the initialization/data reading does not go through
+	 * @exception SQLException if there is an error reading initial data from the database
+	 * @exception FilterParseException if a rule in the categories.xml was incorrect
+	 * @exception RTCException if the initialization/data reading does not go through
 	 */
 	public DataManager()
 		throws SAXException,
@@ -775,6 +780,7 @@ public class DataManager extends Object
 	}
 
 	/**
+	 * Handles a node gained service event.
 	 * Add a new entry to the map and the categories on a 'serviceGained' event
 	 *
 	 * @param  nodeid	the node id
@@ -914,6 +920,7 @@ public class DataManager extends Object
 	}
 
 	/**
+	 * Handles a node lost service event.
 	 * Add a lost service entry to the right node
 	 *
 	 * @param  nodeid	the node id
@@ -939,7 +946,7 @@ public class DataManager extends Object
 	}
 
 	/**
-	 * Add a lost service entry to the right nodes
+	 * Add a lost service entry to the right nodes.
 	 *
 	 * @param  nodeid	the node id
 	 * @param  ip		the IP address
@@ -968,7 +975,7 @@ public class DataManager extends Object
 	}
 
 	/**
-	 * Add a lost service entry to the right nodes
+	 * Add a lost service entry to the right nodes.
 	 *
 	 * @param  nodeid	the node id
 	 * @param  t		the time at which service was lost
@@ -996,7 +1003,7 @@ public class DataManager extends Object
 	}
 
 	/**
-	 * Add a regained service entry to the right nodes
+	 * Add a regained service entry to the right nodes.
 	 *
 	 * @param  nodeid	the node id
 	 * @param  t		the time at which service was regained
@@ -1024,7 +1031,7 @@ public class DataManager extends Object
 	}
 
 	/**
-	 * Add a regained service entry to the right nodes
+	 * Add a regained service entry to the right nodes.
 	 *
 	 * @param  nodeid	the node id
 	 * @param  ip		the IP address
@@ -1053,7 +1060,7 @@ public class DataManager extends Object
 	}
 
 	/**
-	 * Add a regained service entry to the right node
+	 * Add a regained service entry to the right node.
 	 *
 	 * @param  nodeid	the node id
 	 * @param  ip		the IP address
@@ -1077,11 +1084,11 @@ public class DataManager extends Object
 	}
 
 	/**
-	 * Remove node from the map and the categories on a 'serviceDeleted' event
+	 * Remove node from the map and the categories on a 'serviceDeleted' event.
 	 *
 	 * @param  nodeid	the nodeid on which service was deleted
 	 * @param  ip		the ip on which service was deleted
-	 * @param  service	the service that was deleted
+	 * @param  svcName	the service that was deleted
 	 */
 	public synchronized void serviceDeleted(long nodeid, String ip, String svcName)
 	{
@@ -1143,6 +1150,7 @@ public class DataManager extends Object
 	}
 
 	/**
+	 * Update the categories for a node.
 	 * When SNMP is discovered on a node, we need to recalculate the categories for that node
 	 * in case the filter is based on SNMP information. This method can be used for any
 	 * node that requires the categories to be updated.
@@ -1480,7 +1488,7 @@ public class DataManager extends Object
 	}
 
 	/**
-	 * Get the rtcnode with this nodeid/ip/svcname
+	 * Get the rtcnode with this nodeid/ip/svcname.
 	 *
 	 * @param nodeid	the node id
 	 * @param ip		the interface
@@ -1493,9 +1501,10 @@ public class DataManager extends Object
 	}
 
 	/**
-	 * Get the key
+	 * Get the node from it's key.
 	 *
 	 * @param key		the RTCNodeKey
+	 * @return the node for this key.
 	 */
 	public synchronized RTCNode get(RTCNodeKey key)
 	{

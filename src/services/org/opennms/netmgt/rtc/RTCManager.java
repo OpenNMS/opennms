@@ -49,6 +49,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.RTCConfigFactory;
 
 /**
+ * Maintains calculations for categories.
  * <P>The RTCManager maintains data required so as to calculate
  * availability for the different categories configured in categories.xml</P>
  *
@@ -124,7 +125,7 @@ public final class RTCManager
 	private TimerTask		m_lowTtask;
 	
 	/**
-	 * The low threshold refresh interval - the low threshold at
+	 * The low threshold refresh interval.  The low threshold at
 	 * which data is sent out
 	 */
 	private long			m_lowThresholdInterval=-1;
@@ -135,7 +136,7 @@ public final class RTCManager
 	private TimerTask		m_highTtask;
 
 	/**
-	 * The high threshold refresh interval - the high threshold at
+	 * The high threshold refresh interval.  The high threshold at
 	 * which data is sent out
 	 */
 	private long			m_highThresholdInterval=-1;
@@ -146,7 +147,7 @@ public final class RTCManager
 	private TimerTask		m_userTask;
 
 	/**
-	 * The user refresh interval - the interval at which data is
+	 * The user refresh interval.  The interval at which data is
 	 * sent even if no events are received
 	 */
 	private long			m_userRefreshInterval=-1;
@@ -158,7 +159,7 @@ public final class RTCManager
 
 	/**
 	 * The maximum number of events that are received before a
-	 * resend - note that this or the timers going off, whichever
+	 * resend.  Note that this or the timers going off, whichever
 	 * occurs first triggers a resend
 	 */
 	private int			MAX_EVENTS_BEFORE_RESEND=-1;
@@ -221,6 +222,7 @@ public final class RTCManager
 		}
 
 		/**
+		 * Starts the task.
 		 * When run, simply inform the manager that this has been 
 		 * called by the timer
 		 */
@@ -231,7 +233,7 @@ public final class RTCManager
 	}
 
 	/**
-	 * <P>Called by the timer tasks when run</P>
+	 * Handles a completed task.
 	 *
 	 * <P>If the low threshold or high threshold timers expire, send category
 	 * data out and set both timer(task)s to null so they can be reset when
@@ -239,6 +241,7 @@ public final class RTCManager
 	 *
 	 * <P>If the user refresh timer is the one that expired, send category
 	 * data out and reset the user timer(task)<P>
+	 * @param tt the task that is finishing.
 	 */
 	private synchronized void timerTaskComplete(RTCTimerTask tt)
 	{
@@ -331,10 +334,11 @@ public final class RTCManager
 
 
 	/**
-	 * <P>Reset any of the timer tasks if they need to be reset
+	 * Check the timer tasks.
+	 * Reset any of the timer tasks if they need to be reset
 	 * (indicated by their being set to null on timer task
-	 * completion). If the events counter has exceeded maxEventsBeforeResend,
-	 * send data out and reset timers
+	 * completion). If the events counter has exceeded 
+         * maxEventsBeforeResend, send data out and reset timers
 	 */
 	public synchronized void checkTimerTasksOnEventReceipt()
 	{
@@ -453,7 +457,7 @@ public final class RTCManager
 	}
 
 	/**
-	 * Reset the user timer
+	 * Reset the user timer.
 	 */
 	public synchronized void resetUserTimer()
 	{
@@ -477,7 +481,7 @@ public final class RTCManager
 	}
 
 	/**
-	 * Returns a name/id for this process
+	 * Returns a name/id for this process.
 	 */
 	public String getName()
 	{
@@ -485,7 +489,7 @@ public final class RTCManager
 	}
 
 	/**
-	 * Returns the current status
+	 * Returns the current status.
 	 */
 	public int getStatus()
 	{
@@ -614,14 +618,15 @@ public final class RTCManager
 	}
 
 	/**
-	 * <pre>Read the rtc configuration xml, create and start all the subthreads
+	 * Start the RTCManager.
+	 * Reads the rtc configuration xml, creates and starts all subthreads.
 	 *
-	 * It reads and checks all the configurable properties - if any
+	 * Reads and checks all configurable properties.  If any
 	 * of the required properties is not present/incorrect, throws an
-	 * exception
+	 * exception.
 	 *
-	 * It then creates the DataManager that initializes data from the database
-	 * and then starts the data updatera(s) and the data sender</pre>
+	 * Creates the DataManager which initializes data from the database
+	 * and starts the data updater(s) and the data sender
 	 */
 	public void start()
 	{
@@ -691,7 +696,7 @@ public final class RTCManager
 	}
 
 	/**
-	 * Pauses all the threads
+	 * Pauses all the threads.
 	 */
 	public void pause()
 	{
@@ -709,7 +714,7 @@ public final class RTCManager
 	}
 
 	/**
-	 * Resumes all the threads
+	 * Resumes all the threads.
 	 */
 	public void resume()
 	{
@@ -727,7 +732,7 @@ public final class RTCManager
 	}
 	
 	/**
-	 * Stops all the threads
+	 * Stops all the threads.
 	 */
 	public void stop()
 	{
@@ -792,6 +797,7 @@ public final class RTCManager
 
 
 	/**
+	 * Updates the number of events received.
 	 * Increment the counter that keeps track of number of events
 	 * received since data was last sent out
 	 */
@@ -801,6 +807,7 @@ public final class RTCManager
 	}
 	
 	/**
+	 * Get the data sender.
 	 * @return	the data sender
 	 */
 	public DataSender getDataSender()
@@ -809,6 +816,7 @@ public final class RTCManager
 	}
 
 	/**
+	 * Gets the categories.
 	 * @return the categories 
 	 */
 	public static Map getCategories()
@@ -817,7 +825,8 @@ public final class RTCManager
 	}
 
 	/**
-	 * @return the data
+	 * Gets the data manager.
+	 * @return the data manager
 	 */
 	public static DataManager getDataManager()
 	{
@@ -825,6 +834,7 @@ public final class RTCManager
 	}
 	
 	/**
+	 * Gets the rolling window.
 	 * @return the configured rolling window
 	 */
 	public static long getRollingWindow()
@@ -833,7 +843,8 @@ public final class RTCManager
 	}
 
 	/**
-	 * Return a handle to the RTCManager
+	 * Gets the instance of the RTCmanager.
+	 * @return the RTCManager singleton.
 	 */
 	public static  RTCManager getInstance()
 	{

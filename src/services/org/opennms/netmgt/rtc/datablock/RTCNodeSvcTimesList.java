@@ -42,12 +42,13 @@ import org.apache.log4j.Category;
 import org.opennms.netmgt.config.RTCConfigFactory;
 
 /**
- * <pre>This contains a list of service lost/regained set/pair for the RTCNode
+ * List of service times.
+ * This contains a list of service lost/regained set/pair for the RTCNode.
  *
  * Also maintains the outage/down time each time it is calculated and the time
  * from which this was calculated - this is done so when the  outage time for
- * a window is calculated, the same calculations are not done on the node multiple
- * times
+ * a window is calculated, the same calculations are not done on the node 
+ * multiple times.
  *
  * 'Expired' outages are removed during 'add' and 'getDownTime'  operations.
  *
@@ -67,7 +68,8 @@ public class RTCNodeSvcTimesList extends LinkedList
 	private long	m_outTime;
 
 	/**
-	 * Remove all 'expired' outages - i.e. closed outages that are not in the
+	 * Remove expired outages.
+	 * Remove all closed outages that are not in the
 	 * the last 'rollingWindow'
 	 */
 	private void removeExpiredOutages()
@@ -79,8 +81,11 @@ public class RTCNodeSvcTimesList extends LinkedList
 	}
 
 	/**
-	 * Remove all 'expired' outages - i.e. closed outages that are not in the
-	 * the last 'rollingWindow'
+	 * Remove expired outages.
+	 * Remove closed outages that are not in the
+	 * the last 'rollingWindow' starting from curTime.
+	 * @param curTime the current time to start from.
+	 * @param rollingWindow the rolling window to use.
 	 */
 	private void removeExpiredOutages(long curTime, long rollingWindow)
 	{
@@ -108,9 +113,7 @@ public class RTCNodeSvcTimesList extends LinkedList
 	}
 
 	/**
-	 * Default constructor
-	 *
-	 * @see java.util.LinkedList#LinkedList()
+	 * Default constructor.
 	 */
 	public RTCNodeSvcTimesList()
 	{
@@ -122,7 +125,7 @@ public class RTCNodeSvcTimesList extends LinkedList
 	}
 
 	/**
-	 * Add a new servicetime entry
+	 * Add a new servicetime entry.
 	 *
 	 * @param losttime	time at which service was lost
 	 * @param regainedtime	time at which service was regained

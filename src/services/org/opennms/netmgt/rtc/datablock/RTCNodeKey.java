@@ -136,7 +136,7 @@ public class RTCNodeKey extends Object implements Comparable
 	/**
 	 * Overrides the 'hashCode()' method in the 'Object' superclass
 	 *
-	 * @returns a sum of hashCodes of the inidividual attributes
+	 * @return a sum of hashCodes of the inidividual attributes
 	 */
 	public int hashCode()
 	{
@@ -148,7 +148,7 @@ public class RTCNodeKey extends Object implements Comparable
 	/**
 	 * Overrides the 'equals()' method in the 'Object' superclass
 	 *
-	 * @returns true if all the attributes are equal
+	 * @return true if all the attributes are equal
 	 */
 	public boolean equals(Object o)
 	{

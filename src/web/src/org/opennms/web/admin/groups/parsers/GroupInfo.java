@@ -68,7 +68,7 @@ public class GroupInfo
 	}
 	
 	/**Sets the group name
-	   @param String aName, the name of the group
+	   @param aName the name of the group
 	*/
 	public void setGroupName(String aName)
 	{
@@ -76,7 +76,7 @@ public class GroupInfo
 	}
 	
 	/**Returns the group name
-	   @return String, the name of the group
+	   @return the name of the group
 	*/
 	public String getGroupName()
 	{
@@ -84,7 +84,7 @@ public class GroupInfo
 	}
 	
 	/**Sets the comments for the group
-	   @param String someComments, the comments for the group
+	   @param someComments the comments for the group
 	*/
 	public void setGroupComments(String someComments)
 	{
@@ -92,7 +92,7 @@ public class GroupInfo
 	}
 	
 	/**Returns the comments for the group
-	   @return String, the comments for the group
+	   @return the comments for the group
 	*/
 	public String getGroupComments()
 	{
@@ -100,7 +100,7 @@ public class GroupInfo
 	}
 	
 	/**Adds a username to the list of users
-	   @param String aUser, a new username
+	   @param aUser a new username
 	*/
 	public void addUser(String aUser)
 	{
@@ -108,7 +108,7 @@ public class GroupInfo
 	}
 	
 	/**Removes a username from the list of users
-	   @param String aUser, the user to remove
+	   @param aUser the user to remove
 	*/
 	public void removeUser(String aUser)
 	{
@@ -116,7 +116,7 @@ public class GroupInfo
 	}
 	
 	/**Returns the list of users
-	   @return List, the list of users
+	   @return the list of users
 	*/
 	public List getUsers()
 	{
@@ -124,7 +124,7 @@ public class GroupInfo
 	}
 	
 	/**Returns a count of the users in the list
-	   @return int, how many users in this group
+	   @return how many users in this group
 	*/
 	public int getUserCount()
 	{
@@ -132,7 +132,7 @@ public class GroupInfo
 	}
 	
 	/**Returns a String representation of the group, used primarily for debugging.
-	   @return String, a string representation
+	   @return a string representation
 	*/
 	public String toString()
 	{

@@ -81,7 +81,7 @@ public class EventConfParser extends BBParser
 	}
 	
 	/**This method returns the list of Event objects parsed from the xml file.
-	   @return List, a list of Event objects
+	   @return a list of Event objects
 	*/
 	public List getEventsList()
 	{
@@ -98,9 +98,9 @@ public class EventConfParser extends BBParser
 	/**This method is called from the parse method and overrides the method
 	   in BBParser. It identifies tag names and takes appropriate actions to 
 	   get data from the xml tags.
-	   @param Element el, the current tree element
-	   @param boolean isRoot, true if the element is the root of the tree
-	   @return boolean, true if method was successful, false otherwise
+	   @param el the current tree element
+	   @param isRoot true if the element is the root of the tree
+	   @return true if method was successful, false otherwise
 	*/
 	protected boolean processElement(Element el, boolean isRoot)
 	{
@@ -202,10 +202,10 @@ public class EventConfParser extends BBParser
 		return true;
 	}
 	
-	/**<P>This method is used to process a mask tag</P>
+	/**
+	 * This method is used to process a mask tag.
 	 *
-	 * @param Element, the DOM element to handle.
-	 * @return Event, the event to add the mask elements to
+	 * @param globalElement the DOM element to handle.
 	 */
 	private void processGlobal(Element globalElement)
 	{
@@ -228,10 +228,10 @@ public class EventConfParser extends BBParser
 		}
 	}
 	
-	/**<P>This method is used to process a mask tag</P>
+	/**
+	 * This method is used to process a mask tag.
 	 *
-	 * @param Element, the DOM element to handle.
-	 * @return Event, the event to add the mask elements to
+	 * @param securityElement the DOM element to handle.
 	 */
 	private void processSecurity(Element securityElement)
 	{
@@ -254,10 +254,11 @@ public class EventConfParser extends BBParser
 		}
 	}
 	
-	/**<P>This method is used to process a mask tag</P>
+	/**
+	 * This method is used to process a mask tag.
 	 *
-	 * @param Element, the DOM element to handle.
-	 * @return Event, the event to add the mask elements to
+	 * @param maskElement the DOM element to handle.
+	 * @param event the event to add the mask elements to
 	 */
 	private void processMask(Element maskElement, Event event)
 	{
@@ -282,10 +283,11 @@ public class EventConfParser extends BBParser
 		}
 	}
 	
-	/**<P>This method is used to process a maskelement tag</P>
+	/**
+	 * This method is used to process a maskelement tag.
 	 *
-	 * @param Element, the DOM element to handle.
-	 * @return MaskElement, the MaskElement object to populate
+	 * @param maskElement the DOM element to handle.
+	 * @param element the MaskElement object to populate
 	 */
 	private void processMaskElement(Element maskElement, MaskElement element)
 	{
@@ -312,10 +314,11 @@ public class EventConfParser extends BBParser
 		}
 	}
 	
-	/**<P>This method is used to process an snmp tag</P>
+	/**
+	 * This method is used to process an snmp tag.
 	 *
-	 * @param Element, the DOM element to handle.
-	 * @return Snmp, the parse Snmp object
+	 * @param snmpElement the DOM element to handle.
+	 * @return the parse Snmp object
 	 */
 	private Snmp processSnmp(Element snmpElement)
 	{
@@ -362,10 +365,11 @@ public class EventConfParser extends BBParser
 		return snmp;
 	}
 	
-	/**<P>This method is used to process a correlation tag</P>
+	/**
+	 * This method is used to process a correlation tag.
 	 *
-	 * @param Element, the DOM element to handle.
-	 * @param Correlation, the Correlation object to build
+	 * @param el the DOM element to handle.
+	 * @param correlation the Correlation object to build
 	 */
 	private void processCorrelation(Element el, Correlation correlation)
 	{
@@ -400,10 +404,11 @@ public class EventConfParser extends BBParser
 		}
 	}
 	
-	/**<P>This method is used to process an autoaction</P>
+	/**
+	 * This method is used to process an autoaction.
 	 *
-	 * @param Element, the DOM element to handle.
-	 * @return AutoAction, the parsed auto action information
+	 * @param el the DOM element to handle.
+	 * @return the parsed auto action information
 	 */
 	private AutoAction processAutoAction(Element el)
 	{
@@ -415,10 +420,11 @@ public class EventConfParser extends BBParser
 		return autoAction;
 	}
 	
-	/**<P>This method is used to process an operator action</P>
+	/**
+	 * This method is used to process an operator action.
 	 *
-	 * @param Element, the DOM element to handle.
-	 * @return OperatorAction, the parsed operator action information
+	 * @param el the DOM element to handle.
+	 * @return the parsed operator action information
 	 */
 	private OperatorAction processOperatorAction(Element el)
 	{

@@ -40,6 +40,7 @@ import java.util.List;
 import org.opennms.netmgt.rtc.RTCConstants;
 
 /**
+ * The main unit for the RTCManager.
  * <p>RTCNode is the main data unit for the RTCManager - these
  * datablocks are created initially as data is read from the database
  * and later if a 'nodeGainedService' is received - each node maintains its
@@ -57,22 +58,22 @@ import org.opennms.netmgt.rtc.RTCConstants;
 public class RTCNode extends Object
 {
 	/**
-	 * The node ID
+	 * The node ID.
 	 */
 	private long		m_nodeID;
 
 	/**
-	 * The ip address of the interface of the node
+	 * The ip address of the interface of the node.
 	 */
 	private String		m_ip;
 
 	/**
-	 * The service name
+	 * The service name.
 	 */
 	private String		m_svcName;
 
 	/**
-	 * List of all the  lost/regained service times for this node
+	 * List of the lost/regained service times for this node.
 	 */
 	private RTCNodeSvcTimesList	m_svcTimesList;
 
@@ -82,7 +83,8 @@ public class RTCNode extends Object
 	private List		m_categories;
 
 	/**
-	 * The default constructor - initializes all values
+	 * Default constructor.
+	 * Initializes all values
 	 */
 	public RTCNode()
 	{
@@ -97,7 +99,7 @@ public class RTCNode extends Object
 	}
 
 	/**
-	 * Constructor for this object
+	 * Constructor.
 	 *
 	 * @param nodeid 	the node id
 	 * @param ip		the IP address
@@ -116,7 +118,7 @@ public class RTCNode extends Object
 	}
 
 	/**
-	 * Set the node ID
+	 * Set the node ID.
 	 *
 	 * @param id 	the node ID
 	 */
@@ -126,7 +128,7 @@ public class RTCNode extends Object
 	}
 
 	/**
-	 * Set the service name
+	 * Set the service name.
 	 *
 	 * @param svcName	the service name
 	 */
@@ -136,7 +138,7 @@ public class RTCNode extends Object
 	}
 
 	/**
-	 * Set the IP address
+	 * Set the IP address.
 	 *
 	 * @param ip	the ip address
 	 */
@@ -146,7 +148,7 @@ public class RTCNode extends Object
 	}
 
 	/**
-	 * Add a new 'RTCNodeSvcTime' entry for this node
+	 * Add a new 'RTCNodeSvcTime' entry for this node.
 	 *
 	 * @param losttime	time at which service was lost
 	 * @param regainedtime	time at which service was regained
@@ -157,7 +159,7 @@ public class RTCNode extends Object
 	}
 
 	/**
-	 * Add a new 'RTCNodeSvcTime' entry for this node
+	 * Add a new 'RTCNodeSvcTime' entry for this node.
 	 *
 	 * @param losttime	time at which service was lost
 	 */
@@ -167,7 +169,7 @@ public class RTCNode extends Object
 	}
 
 	/**
-	 * <pre>Add to the category list for this node.
+	 * Add to the category list for this node.
 	 *
 	 * @param catLabel	category label of the category this node has been added to
 	 */
@@ -181,7 +183,7 @@ public class RTCNode extends Object
 	}
 
 	/**
-	 * Remove the said category from the node's context
+	 * Remove a category from the node's context.
 	 *
 	 * @param catLabel	category label of the category this node has been added to
 	 */
@@ -196,6 +198,7 @@ public class RTCNode extends Object
 	}
 
 	/**
+	 * Add a node lost service time.
 	 * Add a losttime entry to the service times list - create a new
 	 * service time entry in the list
 	 *
@@ -226,7 +229,8 @@ public class RTCNode extends Object
 	}
 
 	/**
-	 * Add a regained time entry to the service times list - 
+	 * Add a node regained service time.
+	 * Add a regained time entry to the service times list -
 	 * set the regained time in the last  serice time entry in the list
 	 *
 	 * @param t	the time at which node regained service
@@ -250,7 +254,7 @@ public class RTCNode extends Object
 	}
 	
 	/**
-	 * Return the node ID
+	 * Return the node ID.
 	 *
 	 * @return the node ID
 	 */
@@ -260,7 +264,7 @@ public class RTCNode extends Object
 	}
 
 	/**
-	 * Return the  service name
+	 * Return the  service name.
 	 *
 	 * @return the service name
 	 */
@@ -270,7 +274,7 @@ public class RTCNode extends Object
 	}
 
 	/**
-	 * Return the IP address
+	 * Return the IP address.
 	 *
 	 * @return the IP address
 	 */
@@ -280,7 +284,7 @@ public class RTCNode extends Object
 	}
 
 	/**
-	 * Return the list of service times for this node
+	 * Return the list of service times for this node.
 	 *
 	 * @return the list of service times for this node
 	 */
@@ -290,7 +294,7 @@ public class RTCNode extends Object
 	}
 
 	/**
-	 * Check if this node belongs to the category
+	 * Check if this node belongs to the category.
 	 *
 	 * @param catLabel	category label
 	 *
@@ -309,9 +313,9 @@ public class RTCNode extends Object
 	}
 
 	/**
-	 * Return the list of categories this node belongs to
+	 * Return the list of categories this node belongs to.
 	 *
-	 * Return the list of categories this node belongs to
+	 * @return list of categories for the node.
 	 */
 	public List getCategories()
 	{
@@ -319,6 +323,7 @@ public class RTCNode extends Object
 	}
 	
 	/**
+	 * Get the down time.
 	 * Return the total outage time for this node in the 'rollingWindow' milliseconds since 'curTime' for the category
 	 *
 	 * @param cat		the category in the context which of which downtime is needed
@@ -339,6 +344,7 @@ public class RTCNode extends Object
 	}
 
 	/**
+	 * Get the avaialability.
 	 * Return the total availability for this node in the last 'rollingWindow' milliseconds since 'curTime' for the category
 	 *
 	 * @param cat		the category in the context which of which availability is needed
@@ -366,7 +372,7 @@ public class RTCNode extends Object
 	}
 
 	/**
-	 * Return if the service is currently up/down
+	 * Return if the service is currently up/down.
 	 *
 	 * @return if the service is currently up/down
 	 */
@@ -398,9 +404,10 @@ public class RTCNode extends Object
 	}
 
 	/**
+	 * Compare RTCNodes.
 	 * Overrides the 'equals()' method in the superclass
 	 *
-	 * @returns true if all the attributes are equal
+	 * @return true if all the attributes are equal
 	 */
 	public boolean equals(Object o)
 	{
@@ -425,6 +432,7 @@ public class RTCNode extends Object
 	}
 
 	/**
+	 * String represenatation.
 	 * Returns a string representation of this object that has the
 	 * nodeid/ip/servicename details
 	 *
