@@ -45,6 +45,7 @@
 <%!
     protected int telnetServiceId;
     protected int httpServiceId;
+    protected int dellServiceId;
     protected PerformanceModel perfModel;
     protected ResponseTimeModel rtModel;
     
@@ -73,6 +74,13 @@
         }
         catch( Exception e ) {
             throw new ServletException( "Could not determine the HTTP service ID", e );
+        }
+
+        try {
+            this.dellServiceId = NetworkElementFactory.getServiceIdFromName("Dell-OpenManage");
+        }
+        catch( Exception e ) {
+            throw new ServletException( "Could not determine the Dell-OpenManage service ID", e );
         }
 
         try {
@@ -148,6 +156,23 @@
         }
     }
 
+    //find the Dell-OpenManage interfaces, if any
+    String dellIp = null;
+    Service[] dellServices = NetworkElementFactory.getServicesOnNode(nodeId, this.dellServiceId);
+
+    if( dellServices != null && dellServices.length > 0 ) {
+        ArrayList ips = new ArrayList();
+        for( int i=0; i < dellServices.length; i++ ) {
+            ips.add(InetAddress.getByName(dellServices[i].getIpAddress()));
+        }
+
+        InetAddress lowest = IPSorter.getLowestInetAddress(ips);
+
+        if( lowest != null ) {
+            dellIp = lowest.getHostAddress();
+        }
+    }
+
 %>
 
 <html>
@@ -187,6 +212,10 @@
 
         <% if( httpIp != null ) { %>
           &nbsp;&nbsp;&nbsp;<a href="http://<%=httpIp%>">HTTP</a>
+        <% } %>
+
+        <% if( dellIp != null ) { %>
+          &nbsp;&nbsp;&nbsp;<a href="https://<%=dellIp%>:1311">OpenManage</a>
         <% } %>
 
         <% if(this.rtModel.isQueryableNode(nodeId)) { %>
