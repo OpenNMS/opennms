@@ -958,7 +958,7 @@ OpenNMS as part of the post-install.
 
   <!-- generate .so files -->
   <apply executable="${compile.cc}" dir="${root.build}/jicmp" failonerror="true" dest="${root.build}/jicmp">
-   <arg line="-dynamiclib -framework JavaVM -I${java.framework}/include -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jicmp -I. -D${compile.platform.define} -o"/>
+   <arg line="-dynamiclib -install_name ${root.install}/lib/libjicmp.${compile.jniext} -framework JavaVM -I${java.framework}/include -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jicmp -I. -D${compile.platform.define} -o"/>
    <targetfile/>
    <srcfile/>
    <fileset dir="${root.build}/jicmp" includes="*.c"/>
@@ -1004,7 +1004,7 @@ OpenNMS as part of the post-install.
    <fileset dir="${root.source}/src/services/org/opennms/netmgt/rrd" includes="*.c"/>
   </copy>
   <apply executable="${compile.cc}" dir="${root.build}/jrrd" failonerror="true" dest="${root.build}/jrrd">
-   <arg line="-dynamiclib -framework JavaVM -I${java.framework}/include -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jrrd -I${compile.rrdtool.include} -I. -L${compile.rrdtool.lib} -D${compile.platform.define} -lrrd -o"/>
+   <arg line="-dynamiclib -framework JavaVM -install_name ${root.install}/lib/libjrrd.${compile.jniext} -I${java.framework}/include -I${env.JAVA_HOME}/include -I${env.JAVA_HOME}/${compile.platform} -I${env.JAVA_HOME}/include/${compile.platform} -I${root.build}/jrrd -I${compile.rrdtool.include} -I. -L${compile.rrdtool.lib} -D${compile.platform.define} -lrrd -o"/>
    <targetfile/>
    <srcfile/>
    <fileset dir="${root.build}/jrrd" includes="*.c"/>
