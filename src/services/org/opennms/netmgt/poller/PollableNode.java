@@ -38,11 +38,8 @@
 package org.opennms.netmgt.poller;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -68,11 +65,6 @@ public class PollableNode extends PollableAggregate {
     private int m_nodeId;
 
     /**
-     * Map of 'PollableInterface' objects keyed by IP address
-     */
-    private Map m_interfaces;
-
-    /**
      * Used to lock access to the PollableNode during a poll()
      */
     private Object m_lock;
@@ -91,12 +83,9 @@ public class PollableNode extends PollableAggregate {
         m_poller = poller;
 
         m_nodeId = nodeId;
-        m_interfaces = Collections.synchronizedMap(new HashMap());
 
         m_lock = new Object();
         m_isLocked = false;
-
-        setStatusChanged(false);
 
         m_isDeleted = false;
     }
@@ -106,11 +95,11 @@ public class PollableNode extends PollableAggregate {
     }
 
     public Collection getInterfaces() {
-        return m_interfaces.values();
+        return getMembers();
     }
 
     public synchronized void addInterface(PollableInterface pInterface) {
-        m_interfaces.put(pInterface.getAddress().getHostAddress(), pInterface);
+        addMember(pInterface.getAddress().getHostAddress(), pInterface);
 
         PollStatus oldStatus = getStatus();
         this.recalculateStatus();
@@ -120,33 +109,22 @@ public class PollableNode extends PollableAggregate {
     }
 
     public synchronized void deleteAllInterfaces() {
-        m_interfaces.clear();
+        deleteMembers();
     }
 
     public PollableInterface findInterface(String ipAddress) {
-        return (PollableInterface) m_interfaces.get(ipAddress);
+        return (PollableInterface) findMember(ipAddress);
     }
 
     public synchronized void removeInterface(PollableInterface pInterface) {
-        m_interfaces.remove(pInterface.getAddress().getHostAddress());
+        String key = pInterface.getAddress().getHostAddress();
+        removeMember(key);
         PollStatus oldStatus = getStatus();
         this.recalculateStatus();
         PollStatus newStatus = getStatus();
         if (oldStatus != newStatus)
             setStatusChanged(true);
         
-    }
-
-    public synchronized void resetStatusChanged() {
-        super.resetStatusChanged();
-
-        // Iterate over interface list and reset each interface's
-        // status changed flag
-        Iterator i = m_interfaces.values().iterator();
-        while (i.hasNext()) {
-            PollableInterface pIf = (PollableInterface) i.next();
-            pIf.resetStatusChanged();
-        }
     }
 
     public void markAsDeleted() {
@@ -172,7 +150,7 @@ public class PollableNode extends PollableAggregate {
         // in order to determine the current status of the node.
         //
         boolean allInterfacesDown = true;
-        Iterator iter = m_interfaces.values().iterator();
+        Iterator iter = getMembers().iterator();
         while (iter.hasNext()) {
             PollableInterface pIf = (PollableInterface) iter.next();
             if (pIf.getStatus() == PollStatus.STATUS_UNKNOWN)
@@ -233,92 +211,12 @@ public class PollableNode extends PollableAggregate {
         }
     }
 
-    public void generateEvents() {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        // Create date object which will serve as the source
-        // for the time on all generated events
-        Date date = new Date();
-
-        if (statusChanged() && getStatus() == PollStatus.STATUS_DOWN) {
-            sendEvent(createDownEvent(date));
-            resetStatusChanged();
-        } else if (statusChanged() && getStatus() == PollStatus.STATUS_UP) {
-            sendEvent(createUpEvent(date));
-            resetStatusChanged();
-
-            // iterate over the node's interfaces
-            // if interface status is DOWN
-            // generate interfaceDown event
-            // else if interface status is UP
-            // iterate over interface's services
-            // if service status is DOWN
-            // generate serviceDown event
-            //
-            Iterator i = m_interfaces.values().iterator();
-            while (i.hasNext()) {
-                PollableInterface pIf = (PollableInterface) i.next();
-                if (pIf.getStatus() == PollStatus.STATUS_DOWN) {
-                    sendEvent(pIf.createDownEvent(date));
-                    pIf.resetStatusChanged();
-                } else if (pIf.getStatus() == PollStatus.STATUS_UP) {
-                    sendEventsForDownServices(pIf, date);
-                }
-            }
-        } else if (getStatus() == PollStatus.STATUS_UP) {
-            //
-            Iterator i = m_interfaces.values().iterator();
-            while (i.hasNext()) {
-                PollableInterface pIf = (PollableInterface) i.next();
-                if (pIf.statusChanged() && pIf.getStatus() == PollStatus.STATUS_DOWN) {
-                    sendEvent(pIf.createDownEvent(date));
-                    pIf.resetStatusChanged();
-                } else if (pIf.statusChanged() && pIf.getStatus() == PollStatus.STATUS_UP) {
-                    sendEvent(pIf.createUpEvent(date));
-                    pIf.resetStatusChanged();
-
-                    sendEventsForDownServices(pIf, date);
-                } else {
-                    sendEventsForChangedServices(pIf, date);
-                }
-            }
-        }
-
-    }
-    
-    private Event createUpEvent(Date date) {
+    public Event createUpEvent(Date date) {
         return getPoller().createEvent(EventConstants.NODE_UP_EVENT_UEI, m_nodeId, null, null, date);
     }
 
-    private Event createDownEvent(Date date) {
+    public Event createDownEvent(Date date) {
         return getPoller().createEvent(EventConstants.NODE_DOWN_EVENT_UEI, m_nodeId, null, null, date);
-    }
-
-    // Behavior A for services
-    private void sendEventsForChangedServices(PollableInterface pIf, Date date) {
-        Iterator s = pIf.getServices().iterator();
-        while (s.hasNext()) {
-            PollableService pSvc = (PollableService) s.next();
-            if (pSvc.statusChanged() && pSvc.getStatus() == PollStatus.STATUS_DOWN) {
-                sendEvent(pSvc.createDownEvent(date));
-                pSvc.resetStatusChanged();
-            } else if (pSvc.statusChanged() && pSvc.getStatus() == PollStatus.STATUS_UP) {
-                sendEvent(pSvc.createUpEvent(date));
-                pSvc.resetStatusChanged();
-            }
-        }
-    }
-
-    // Behavior B for services
-    private void sendEventsForDownServices(PollableInterface pIf, Date date) {
-        Iterator s = pIf.getServices().iterator();
-        while (s.hasNext()) {
-            PollableService pSvc = (PollableService) s.next();
-            if (pSvc.getStatus() == PollStatus.STATUS_DOWN) {
-                sendEvent(pSvc.createDownEvent(date));
-                pSvc.resetStatusChanged();
-            }
-        }
     }
 
     /**
@@ -339,19 +237,15 @@ public class PollableNode extends PollableAggregate {
         PollableInterface pInterface = pSvc.getInterface();
         
         // Poll the service via the PollableInterface object
-        PollStatus ifStatus = pollElement(pInterface, pSvc);
+        PollStatus ifStatus = pInterface.poll(pSvc);
         
         // If interface status changed and is different from the node status
         if (ifStatus != getStatus() && pInterface.statusChanged()) {
         
             log.debug("poll: requested interface is "+ifStatus+"; testing remaining interfaces");
         
-            // the order below is important because if we switch the order 
-            // the remaining interfaces won't be polled it the interfaces is down
-            boolean allInterfacesDown = pollRemainingInterfaces(pInterface) && ifStatus.isDown();
-        
             // update the nodes status
-            PollStatus newStatus = (allInterfacesDown ? PollStatus.STATUS_DOWN : PollStatus.STATUS_UP);
+            PollStatus newStatus = pollRemainingInterfaces(pInterface);
             updateStatus(newStatus);
         
         }
@@ -359,7 +253,7 @@ public class PollableNode extends PollableAggregate {
         // Call generateEvents() which will inspect the current status
         // of the N/I/S tree and generate any events necessary to keep
         // RTC and OutageManager in sync.
-        generateEvents();
+        generateEvents(new Date());
 
         if (log.isDebugEnabled())
             log.debug("poll: poll of nodeid " + m_nodeId + " completed, status=" + getStatus());
@@ -367,25 +261,14 @@ public class PollableNode extends PollableAggregate {
         return getStatus();
     }
 
-    private PollStatus pollElement(PollableInterface pInterface, PollableService pSvc) {
-        return pInterface.poll(pSvc);
-    }
-
-    public void updateStatus(PollStatus newStatus) {
-        if (getStatus() != newStatus) {
-            setStatus(newStatus);
-            setStatusChanged(true);
-        }
-    }
-
-    private boolean pollRemainingInterfaces(PollableInterface pInterface) {
+    private PollStatus pollRemainingInterfaces(PollableInterface pInterface) {
         
         Category log = ThreadCategory.getInstance(getClass());
 
-        boolean allInterfacesDown = true;
+        PollStatus allIfStatus = pInterface.getStatus();
 
         // Iterate over list of interfaces
-        Iterator iter = m_interfaces.values().iterator();
+        Iterator iter = getMembers().iterator();
         while (iter.hasNext()) {
             PollableInterface pIf = (PollableInterface) iter.next();
             
@@ -397,13 +280,13 @@ public class PollableNode extends PollableAggregate {
                 
                 if (ifStatus == PollStatus.STATUS_UP) {
                     // we don't return early because we want to poll ALL the interfaces
-                    allInterfacesDown = false;
+                    allIfStatus = PollStatus.STATUS_UP;
                     log.debug("poll: (node outage) not a node outage - at least one interface is up");
                 }
             }
         }
 
-        return allInterfacesDown;
+        return allIfStatus;
     }
 
     private PollStatus pollInterface(PollableInterface pIf) {
@@ -419,7 +302,7 @@ public class PollableNode extends PollableAggregate {
             // can't find a critical service to just pick a service
             svc = (PollableService) pIf.getServices().iterator().next();
         }
-        return pollElement(pIf, svc);
+        return pIf.poll(svc);
     }
 
     Poller getPoller() {

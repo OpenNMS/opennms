@@ -43,6 +43,7 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * Represents a collection of nodes each with interfaces and services
@@ -263,5 +264,8 @@ public class PollableNetwork extends PollableAggregate {
     public List getPollableServices() {
         return m_pollableServices;
     }
+    
+    public Event createUpEvent(Date d) { return null; }
+    public Event createDownEvent(Date d) { return null; }
 
 }

@@ -31,6 +31,8 @@
 //
 package org.opennms.netmgt.poller;
 
+import java.util.Date;
+
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -51,6 +53,20 @@ abstract public class PollableElement {
      * Set by poll() method.
      */
     private boolean m_statusChanged;
+    /**
+     * When the last status change occured.
+     * 
+     * Set by the poll() method.
+     */
+    private long m_statusChangeTime;
+
+    public PollableElement(PollStatus status) {
+        m_status = status;
+        m_statusChanged = false;
+        m_statusChangeTime = 0L;
+    }
+    
+    abstract Poller getPoller();
 
     /**
      * @return Returns the status.
@@ -66,13 +82,6 @@ abstract public class PollableElement {
         m_status = status;
     }
 
-    public PollableElement(PollStatus status) {
-        m_status = status;
-        m_statusChanged = false;
-    }
-    
-    abstract Poller getPoller();
-
     public void setStatusChanged() {
         setStatusChanged(true);
     }
@@ -85,13 +94,37 @@ abstract public class PollableElement {
         return m_statusChanged;
     }
 
+    protected void setStatusChanged(boolean statusChangedFlag) {
+        m_statusChanged = statusChangedFlag;
+    }
+    
     public int sendEvent(Event e) {
         getPoller().getEventManager().sendNow(e);
         return e.getDbid();
     }
+    
+    abstract public Event createDownEvent(Date date);
+    
+    abstract public Event createUpEvent(Date date);
 
-    protected void setStatusChanged(boolean statusChangedFlag) {
-        m_statusChanged = statusChangedFlag;
+    abstract protected void generateEvents(Date date);
+    
+    abstract protected void generateLingeringDownEvents(Date date);
+
+    public long getStatusChangeTime() {
+        return m_statusChangeTime;
+    }
+
+    public void setStatusChangeTime(long statusChangeTime) {
+        m_statusChangeTime = statusChangeTime;
+    }
+
+    protected void updateStatus(PollStatus newStatus) {
+        if (getStatus() != newStatus) {
+            setStatus(newStatus);
+            setStatusChanged(true);
+            setStatusChangeTime(System.currentTimeMillis());
+        }
     }
 
 }

@@ -81,13 +81,6 @@ final class PollableService extends PollableElement {
     private boolean m_unresponsive;
 
     /**
-     * When the last status change occured.
-     * 
-     * Set by the poll() method.
-     */
-    private long m_statusChangeTime;
-
-    /**
      * Deletion flag...set to indicate that the service/interface/node tuple
      * represented by this PollableService object has been deleted and should no
      * longer be polled.
@@ -127,9 +120,6 @@ final class PollableService extends PollableElement {
         m_schedule = new Schedule(this, svcConfig);
         m_schedule.setLastPoll(0L);
 
-        // Set status change values.
-        setStatusChangeTime(0L);
-
         if (getStatus() == PollStatus.STATUS_DOWN) {
             if (svcLostDate == null)
                 throw new IllegalArgumentException("The svcLostDate parm cannot be null if status is UNAVAILABLE!");
@@ -145,13 +135,6 @@ final class PollableService extends PollableElement {
      */
     public String getServiceName() {
         return m_schedule.getServiceName();
-    }
-
-    public void updateStatus(PollStatus status) {
-        if (getStatus() != status) {
-            setStatus(status);
-            setStatusChangeTime(System.currentTimeMillis());
-        }
     }
 
     public void markAsDeleted() {
@@ -417,14 +400,6 @@ final class PollableService extends PollableElement {
         return m_schedule;
     }
 
-    public void setStatusChangeTime(long statusChangeTime) {
-        m_statusChangeTime = statusChangeTime;
-    }
-
-    public long getStatusChangeTime() {
-        return m_statusChangeTime;
-    }
-
     public String toString() {
         return getNodeId() + ":" + getIpAddr() + ":" + getServiceName();
         
@@ -631,6 +606,29 @@ final class PollableService extends PollableElement {
      */
     public Event createUpEvent(Date date) {
         return getPoller().createEvent(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getServiceName(), date);
+    }
+
+    /**
+     * @param date
+     */
+    public void generateLingeringDownEvents(Date date) {
+        if (getStatus() == PollStatus.STATUS_DOWN) {
+            sendEvent(createDownEvent(date));
+            resetStatusChanged();
+        }
+    }
+
+    /**
+     * @param date
+     */
+    public void generateEvents(Date date) {
+        if (statusChanged() && getStatus() == PollStatus.STATUS_DOWN) {
+            sendEvent(createDownEvent(date));
+            resetStatusChanged();
+        } else if (statusChanged() && getStatus() == PollStatus.STATUS_UP) {
+            sendEvent(createUpEvent(date));
+            resetStatusChanged();
+        }
     }
 
 }

@@ -42,6 +42,7 @@
 package org.opennms.netmgt.poller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -305,8 +306,9 @@ final class PollerEventProcessor implements EventListener {
 
             pIf.setNode(newPNode);
             
-            oldPNode.generateEvents();
-            newPNode.generateEvents();
+            Date date = new Date();
+            oldPNode.generateEvents(date);
+            newPNode.generateEvents(date);
             
         } catch (InterruptedException iE) {
             log.error("interfaceReparentedHandler: thread interrupted...failed to obtain required node locks");

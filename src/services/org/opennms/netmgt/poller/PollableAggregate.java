@@ -31,6 +31,13 @@
 //
 package org.opennms.netmgt.poller;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 /**
  * Represents an aggregate network element such as an interface containing svcs or
  * a node containing interfaces
@@ -39,12 +46,93 @@ package org.opennms.netmgt.poller;
 abstract public class PollableAggregate extends PollableElement {
 
     /**
+     * Map of 'PollableService' objects keyed by service name
+     */
+    protected Map m_members;
+
+    /**
      * @param status
      */
     public PollableAggregate(PollStatus status) {
         super(status);
+        m_members = Collections.synchronizedMap(new HashMap());
     }
 
-    abstract Poller getPoller();
+    protected void generateMemberEvents(Date date) {
+        Iterator it = m_members.values().iterator();
+        while (it.hasNext()) {
+            PollableElement member = (PollableElement) it.next();
+            member.generateEvents(date);
+        }
+    }
+    
+    private void generateLingeringMemberEvents(Date date) {
+        Iterator it = m_members.values().iterator();
+        while (it.hasNext()) {
+            PollableElement member = (PollableElement) it.next();
+            member.generateLingeringDownEvents(date);
+        }
+    }
+
+    /**
+     * @param date
+     */
+    public void generateEvents(Date date) {
+        if (statusChanged() && getStatus() == PollStatus.STATUS_DOWN) {
+            sendEvent(createDownEvent(date));
+            resetStatusChanged();
+        } else if (statusChanged() && getStatus() == PollStatus.STATUS_UP) {
+            sendEvent(createUpEvent(date));
+            resetStatusChanged();
+    
+            generateLingeringMemberEvents(date);
+        } else if (getStatus() == PollStatus.STATUS_UP) {
+            generateMemberEvents(date);
+        }
+    }
+
+    /**
+     * @param date
+     */
+    public void generateLingeringDownEvents(Date date) {
+        if (getStatus() == PollStatus.STATUS_DOWN) {
+            sendEvent(createDownEvent(date));
+            resetStatusChanged();
+        } else if (getStatus() == PollStatus.STATUS_UP) {
+            generateLingeringMemberEvents(date);
+        }
+    }
+
+    protected void removeMember(String key) {
+        m_members.remove(key);
+    }
+
+    protected PollableElement findMember(String key) {
+        return (PollableElement)m_members.get(key);
+    }
+
+    protected void deleteMembers() {
+        m_members.clear();
+    }
+
+    protected void addMember(String key, PollableElement member) {
+        m_members.put(key, member);
+    }
+
+    protected Collection getMembers() {
+        return m_members.values();
+    }
+
+    public synchronized void resetStatusChanged() {
+        super.resetStatusChanged();
+    
+        // Iterate over service list and reset each services's
+        // status changed flag
+        Iterator it = getMembers().iterator();
+        while (it.hasNext()) {
+            PollableElement member = (PollableElement) it.next();
+            member.resetStatusChanged();
+        }
+    }
 
 }
