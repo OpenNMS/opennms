@@ -124,7 +124,7 @@ attempt or an SNMP request failed due to incorrect community string.</text-messa
         <uei>uei.opennms.org/nodes/serviceDeleted</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Admin</destinationPath>
-        <text-message>Due to extended downtime, the %service% service on
+        <text-message>Due to extended downtime or operator action, the %service% service on
 interface %interfaceresolve% (%interface%) on node %nodelabel% 
 has been deleted from OpenNMS&apos;s polling database.</text-message>
         <subject>Notice #%noticeid%: %interfaceresolve% (%interface%) on node %nodelabel%&apos;s %service% service deleted.</subject>
@@ -157,7 +157,7 @@ network.  The new information is included:    System Name:
         <uei>uei.opennms.org/nodes/interfaceDeleted</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Admin</destinationPath>
-        <text-message>Due to extended downtime, the interface %interfaceresolve% (%interface%) 
+        <text-message>Due to extended downtime or operator action, the interface %interfaceresolve% (%interface%) 
 on node %nodelabel% has been deleted from OpenNMS&apos;s polling database.</text-message>
         <subject>Notice #%noticeid%: [OpenNMS] %interfaceresolve% (%interface%) on node %nodelabel% deleted.</subject>
         <numeric-message>111-%noticeid%</numeric-message>
