@@ -15,8 +15,7 @@
       <para>Add the following to /etc/apt/sources.list and update, (i.e.
       "apt-get update"):</para>
 
-      <para><computeroutput>deb http://debian.opennms.org/ debian/opennms
-      stable</computeroutput></para>
+      <para><programlisting>deb http://debian.opennms.org/ debian/opennms stable</programlisting></para>
 
       <para>Then obtain and install a suitable version of java.</para>
 
@@ -40,15 +39,13 @@
               dpkg, APT will not be there to pull it in so install it
               first.</para>
 
-              <para><computeroutput>[root@host /root]# apt-get install
-              java-common</computeroutput></para>
+              <para><programlisting><computeroutput># </computeroutput><command>apt-get install java-common</command></programlisting></para>
             </listitem>
 
             <listitem>
               <para>Next, install the sun-jdk1.4-installer package</para>
 
-              <para><computeroutput>[root@host /root]# apt-get install
-              sun-jdk1.4-installer</computeroutput></para>
+              <para><programlisting><computeroutput># </computeroutput><command>apt-get install sun-jdk1.4-installer</command></programlisting></para>
             </listitem>
 
             <listitem>
@@ -57,9 +54,10 @@
             </listitem>
 
             <listitem>
-              <para>Then run the following command to build the package:</para>
+              <para>Then run the following command to build the
+              package:</para>
 
-              <para><programlisting>[root@host /root]# build-sun-jdk14 ./j2sdk-1_4_2_05-linux-i586.bin</programlisting></para>
+              <para><programlisting><computeroutput># </computeroutput><command>build-sun-jdk14 ./j2sdk-1_4_2_05-linux-i586.bin</command></programlisting></para>
 
               <para>where <filename>j2sdk-1_4_2_05-linux-i586.bin</filename>
               is the binary file you downloaded from Sun.</para>
@@ -68,11 +66,11 @@
             <listitem>
               <para>And finally install the package:</para>
 
-              <para><programlisting>[root@host /root]# dpkg -i j2sdk-1_4_2_05-linux-i586.deb</programlisting></para>
+              <para><programlisting><computeroutput># </computeroutput><command>dpkg -i j2sdk-1_4_2_05-linux-i586.deb</command></programlisting></para>
 
               <para>where <filename>j2sdk-1_4_2_05-linux-i586.deb</filename>
               is the Debian package that was just created by
-	      <filename>build-sun-jdk14</filename>.</para>
+              <filename>build-sun-jdk14</filename>.</para>
             </listitem>
           </itemizedlist>
         </listitem>
@@ -82,31 +80,27 @@
           packages dependencies by installing the java-virtual-machine meta
           package.</para>
 
-          <para><computeroutput>[root@host /root]# apt-get install
-          java-virtual-machine</computeroutput></para>
+          <para><programlisting><computeroutput># </computeroutput><command>apt-get install java-virtual-machine</command></programlisting></para>
         </listitem>
       </orderedlist>
 
       <para>Then, install OpenNMS:</para>
 
-      <para><computeroutput>[root@host /root]# apt-get install
-      opennms</computeroutput></para>
+      <para><programlisting><computeroutput># </computeroutput><command>apt-get install opennms</command></programlisting></para>
 
       <para>Optionally install the documentation and/or contrib
       packages</para>
 
-      <para><computeroutput>[root@host /root]# apt-get install opennms-doc
-      opennms-contrib</computeroutput></para>
+      <para><programlisting><computeroutput># </computeroutput><command>apt-get install opennms-doc opennms-contrib</command></programlisting></para>
     </section>
 
     <section>
       <title>Sid</title>
 
-      <para>Add the following to /etc/apt/sources.list and update, (i.e.
-      "apt-get update"):</para>
+      <para>Add the following to <filename>/etc/apt/sources.list</filename>
+      and update, (i.e. "<code>apt-get update</code>"):</para>
 
-      <para><computeroutput>deb http://debian.opennms.org/ debian/opennms
-      unstable</computeroutput></para>
+      <para><programlisting>deb http://debian.opennms.org/ debian/opennms unstable</programlisting></para>
 
       <para>Then obtain and install a suitable version of java.</para>
 
@@ -117,39 +111,40 @@
 
       <orderedlist>
         <listitem>
-          <para>Use the sun-jdk1.4-installer package and build script to
-          download the j2sdk from Sun and build your own j2sdk1.4 package,
-          (recommended).</para>
+          <para>Use the <code>sun-jdk1.4-installer</code> package and build
+          script to download the <code>j2sdk</code> from Sun and build your
+          own <code>j2sdk1.4</code> package
+          (<emphasis>recommended</emphasis>).</para>
 
           <para>Building and installing a j2sdk1.4 package:</para>
 
           <itemizedlist>
             <listitem>
-              <para>The java-common package is a dependency for the j2sdk1.4
-              package you will be creating, and since it will be installed by
-              dpkg, APT will not be there to pull it in so install it
-              first.</para>
+              <para>The <code>java-common</code> package is a dependency for
+              the <code>j2sdk1.4</code> package you will be creating, and
+              since it will be installed by dpkg, APT will not be there to
+              pull it in so install it first:</para>
 
-              <para><computeroutput>[root@host /root]# apt-get install
-              java-common</computeroutput></para>
+              <para><programlisting><computeroutput># </computeroutput><command>apt-get install java-common</command></programlisting></para>
             </listitem>
 
             <listitem>
-              <para>Next, install the sun-jdk1.4-installer package</para>
+              <para>Next, install the <code>sun-jdk1.4-installer</code>
+              package:</para>
 
-              <para><computeroutput>[root@host /root]# apt-get install
-              sun-jdk1.4-installer</computeroutput></para>
+              <para><programlisting><computeroutput># </computeroutput><command>apt-get install sun-jdk1.4-installer</command></programlisting></para>
             </listitem>
 
             <listitem>
-              <para>Download the 1.4.2 SDK from Sun, get the non-RPM binary
-              package</para>
+              <para>Download the 1.4.2 SDK from Sun. Get the non-RPM binary
+              package.</para>
             </listitem>
 
             <listitem>
-              <para>Then run the following command to build the package:</para>
+              <para>Then run the following command to build the
+              package:</para>
 
-              <para><programlisting>[root@host /root]# build-sun-jdk14 ./j2sdk-1_4_2_05-linux-i586.bin</programlisting></para>
+              <para><programlisting><computeroutput># </computeroutput><command>build-sun-jdk14 ./j2sdk-1_4_2_05-linux-i586.bin</command></programlisting></para>
 
               <para>where <filename>j2sdk-1_4_2_05-linux-i586.bin</filename>
               is the binary file you downloaded from Sun.</para>
@@ -158,38 +153,38 @@
             <listitem>
               <para>And finally install the package:</para>
 
-              <para><programlisting>[root@host /root]# dpkg -i j2sdk-1_4_2_05-linux-i586.deb</programlisting></para>
+              <para><programlisting><computeroutput># </computeroutput><command>dpkg -i j2sdk-1_4_2_05-linux-i586.deb</command></programlisting></para>
 
               <para>where <filename>j2sdk-1_4_2_05-linux-i586.deb</filename>
               is the Debian package that was just created by
-	      <filename>build-sun-jdk14</filename>.</para>
+              <filename>build-sun-jdk14</filename>.</para>
             </listitem>
           </itemizedlist>
         </listitem>
 
         <listitem>
           <para>Obtain and install and your own version and meet the OpenNMS
-          packages dependencies by installing the java-virtual-machine meta
-          package.</para>
+          packages dependencies by installing the
+          <code>java-virtual-machine</code> meta-package.</para>
 
-          <para><computeroutput>[root@host /root]# apt-get install
-          java-virtual-machine</computeroutput></para>
+          <para><programlisting><computeroutput># </computeroutput><command>apt-get install java-virtual-machine</command></programlisting></para>
         </listitem>
       </orderedlist>
 
       <para>Then, install OpenNMS:</para>
 
-      <para><computeroutput>[root@host /root]# apt-get install
-      opennms</computeroutput> Optionally install the documentation and/or
-      contrib packages</para>
+      <para><programlisting><computeroutput># </computeroutput><command>apt-get install opennms</command></programlisting></para>
 
-      <para><computeroutput>[root@host /root]# apt-get install opennms-doc
-      opennms-contrib</computeroutput></para>
+      <para>Optionally install the documentation and/or contrib
+      packages</para>
+
+      <para><programlisting><computeroutput># </computeroutput><command>apt-get install opennms-doc opennms-contrib</command></programlisting></para>
 
       <para>Note: Recent versions of the Tomcat package in Sid, (unstable),
       use jikes as the compiler instead of the javac from your toolkit. Open
       up <filename>/etc/tomcat4/web.xml</filename> in your favorite editor and
-      comment out the <filename>compiler init param</filename> section.</para>
+      comment out the "<filename>compiler init param</filename>"
+      section.</para>
     </section>
   </section>
 
@@ -212,18 +207,18 @@
       <title>Fedora Core 2</title>
 
       <para>The Tomcat4 package that ships with Fedora Core 2 does not appear
-      to reliably run, even when the OpenNMS web app is not installed.  For
-      now, we suggest using the tomcat4 packages on the
-      <ulink url="ftp://ftp.opennms.org/pub/dependencies/tomcat4/">OpenNMS
-      FTP site</ulink>.  You'll want to install both packages,
-      <filename>tomcat4-4.1.18-full.1jpp.noarch.rpm</filename> and 
+      to reliably run, even when the OpenNMS web app is not installed. For
+      now, we suggest using the tomcat4 packages on the <ulink
+      url="ftp://ftp.opennms.org/pub/dependencies/tomcat4/">OpenNMS FTP
+      site</ulink>. You'll want to install both packages,
+      <filename>tomcat4-4.1.18-full.1jpp.noarch.rpm</filename> and
       <filename>tomcat4-webapps-4.1.18-full.1jpp.noarch.rpm</filename>.</para>
 
-      <para>There is a bug in some kernels that can cause Java processes,
-      and even the entire kernel to hang.  It is documented in <ulink
+      <para>There is a bug in some kernels that can cause Java processes, and
+      even the entire kernel to hang. It is documented in <ulink
       url="https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=121902">Red
-      Hat bug #121902</ulink>.  You should make sure you are running at least
-      a 2.6.6-422 kernel.</para>
+      Hat bug #121902</ulink>. You should make sure you are running at least a
+      2.6.6-422 kernel.</para>
     </section>
   </section>
 
@@ -324,26 +319,23 @@
       <para>You will want to set up the following environment
       variables:</para>
 
-      <para><computeroutput>JAVA_HOME=/usr/java/j2sdk1.4.2_02
-      </computeroutput> (or whatever your Java home dir is)</para>
-
-      <para><computeroutput>LD_LIBRARY_PATH=/usr/local/lib:/usr/local/ssl/lib/:/usr/local/pgsql/lib:/usr/local/opennms/lib:/usr/local/pgsql/include/server/lib:/usr/local/pgsql/include/internal/lib</computeroutput></para>
-
-      <para><computeroutput>POSTGRES_LIB=/usr/local/pgsql/lib</computeroutput></para>
-
-      <para><computeroutput>PERL5LIB=/usr/local/lib/perl5</computeroutput></para>
+      <programlisting><computeroutput># </computeroutput><command><computeroutput>JAVA_HOME=/usr/java/j2sdk1.4.2_02</computeroutput></command><remark><command><computeroutput>  </computeroutput></command>(or whatever your Java home dir is)</remark>
+<computeroutput># </computeroutput><command>LD_LIBRARY_PATH=/usr/local/lib:/usr/local/ssl/lib/:/usr/local/pgsql/lib:/usr/local/opennms/lib:/usr/local/pgsql/include/server/lib:/usr/local/pgsql/include/internal/lib
+</command><computeroutput># </computeroutput><command>POSTGRES_LIB=/usr/local/pgsql/lib
+</command><computeroutput># <command>PERL5LIB=/usr/local/lib/perl5</command><computeroutput>
+# </computeroutput><command>export JAVA_HOME LD_LIBRARY_PATH POSTGRES_LIB PERL5LIB</command></computeroutput></programlisting>
     </section>
 
     <section>
       <title>Creating the Database</title>
 
-      <para>You will need to create an opennms database.</para>
+      <para>You will need to create an <code>opennms</code> database.</para>
 
-      <para>As the postgres user, go to the /usr/local/pgsql/bin directory,
-      and run the following command:</para>
+      <para>As the <code>postgres</code> user, go to the
+      <filename>/usr/local/pgsql/bin</filename> directory, and run the
+      following command:</para>
 
-      <para><computeroutput>./initdb -D /usr/local/pgsql/data -E
-      ""</computeroutput></para>
+      <para><programlisting><computeroutput># </computeroutput><command>./initdb -D /usr/local/pgsql/data -E ""</command></programlisting></para>
 
       <para>This will create the database. Following the instructions in the
       section above, modify the <filename>pg_hba.conf</filename> and
@@ -351,14 +343,13 @@
 
       <para>Then you'll need to start the database:</para>
 
-      <para><computeroutput>./pg_ctl -D /usr/local/pgsql/data/
-      start</computeroutput></para>
+      <para><programlisting><computeroutput># </computeroutput><command>./pg_ctl -D /usr/local/pgsql/data start</command></programlisting></para>
 
-      <para>Now you are finished as the postgres user.</para>
+      <para>Now you are finished as the <code>postgres</code> user.</para>
 
       <para>As root, initialize the OpenNMS database:</para>
 
-      <para><computeroutput>/usr/local/opennms/bin/install -disU</computeroutput></para>
+      <para><programlisting><computeroutput># </computeroutput><command>/usr/local/opennms/bin/install -disU</command></programlisting></para>
     </section>
 
     <section>
@@ -368,20 +359,18 @@
       /usr/local/opennms/etc (particularly the discovery configuration file),
       run:</para>
 
-      <para><computeroutput>/usr/local/opennms/bin/opennms.sh
-      start</computeroutput></para>
+      <para><programlisting><computeroutput># </computeroutput><command><command>/usr/local/opennms/bin/opennms.sh start</command></command></programlisting></para>
 
       <para>and then start Tomcat4 (restart it if it is already
       running):</para>
 
-      <para><computeroutput>/usr/local/tomcat/bin/startup.sh</computeroutput></para>
+      <para><programlisting><computeroutput># </computeroutput><command>/usr/local/tomcat/bin/startup.sh</command></programlisting></para>
 
       <para><emphasis role="bold">Note: </emphasis>The shell you start this in
       will behave like a console, and you may get some JMX messages
       like:</para>
 
-      <para><computeroutput>DEBUG: pq_recvbuf: unexpected EOF on client
-      connection</computeroutput></para>
+      <para><programlisting>DEBUG: pq_recvbuf: unexpected EOF on client connection</programlisting></para>
 
       <para>Just ignore them.</para>
     </section>
@@ -395,10 +384,10 @@
     <section>
       <title>SuSE Linux Pro 9</title>
 
-      <para>SuSE 9 ships with Tomcat 5, which will not work with OpenNMS.
-      You will need to install Tomcat 4 from an older release of SuSE.  The
-      Tomcat 4 packages for SuSE 8.1 seem to work just fine.  They are
-      available on <ulink
+      <para>SuSE 9 ships with Tomcat 5, which will not work with OpenNMS. You
+      will need to install Tomcat 4 from an older release of SuSE. The Tomcat
+      4 packages for SuSE 8.1 seem to work just fine. They are available on
+      <ulink
       url="ftp://ftp.suse.com/pub/projects/apache/jakarta-tomcat/8.1-i386/">SuSE's
       FTP site</ulink>.</para>
     </section>

@@ -57,7 +57,7 @@
     <filename>java</filename> in <filename>/bin/java</filename>. Be sure to
     symbolically link it for now:</para>
 
-    <para><programlisting>ln -s /usr/java/j2sdk1.4.2_04/bin/java /bin/java</programlisting></para>
+    <para><programlisting><computeroutput># </computeroutput><command>ln -s /usr/java/j2sdk1.4.2_04/bin/java /bin/java</command></programlisting></para>
 
     <para>replacing the first path with your path, if different.</para>
 
@@ -163,7 +163,8 @@ TOMCAT_USER="tomcat"
 
     <orderedlist>
       <listitem>
-        <para>The Easier Way: Just set the Tomcat user to "root":</para>
+        <para>The Easier Way: Just set the Tomcat user to
+        "<code>root</code>":</para>
 
         <para><programlisting>TOMCAT_USER="root"</programlisting></para>
 
@@ -172,52 +173,56 @@ TOMCAT_USER="tomcat"
       </listitem>
 
       <listitem>
-        <para>The Harder Way: You add the "tomcat" and "root" users to the
-        "tomcat4" group, and then change permissions so that the "tomcat4"
-        group can write to the OpenNMS "etc" and "logs" directory. You have to
-        do this <emphasis role="bold">after</emphasis> the OpenNMS software is
-        installed.</para>
+        <para>The Harder Way: You add the "<code>tomcat</code>" and
+        "<code>root</code>" users to the "<code>tomcat4</code>" group, and
+        then change permissions so that the "<code>tomcat4</code>" group can
+        write to the OpenNMS "<filename>etc</filename>" and
+        "<filename>logs</filename>" directory. You have to do this <emphasis
+        role="bold">after</emphasis> the OpenNMS software is installed.</para>
 
         <itemizedlist>
           <listitem>
-            <para>The "tomcat" user should have been created on installation -
-            verify this by looking in <filename>/etc/passwd</filename></para>
+            <para>The "<code>tomcat</code>" user should have been created on
+            installation - verify this by looking in
+            <filename>/etc/passwd</filename></para>
           </listitem>
 
           <listitem>
-            <para>Edit /etc/group and add "tomcat" and "root" as members of
-            the "tomcat4" group. It should look something like:</para>
+            <para>Edit <filename>/etc/group</filename> and add
+            "<code>tomcat</code>" and "<code>root</code>" as members of the
+            "<code>tomcat4</code>" group. It should look something
+            like:</para>
 
-            <para><varname>tomcat4:x:91:tomcat,root</varname></para>
+            <para><programlisting><code>tomcat4:x:91:tomcat,root</code></programlisting></para>
           </listitem>
 
           <listitem>
-            <para>Locate the OpenNMS "etc" directory. It is usually in
-            /opt/OpenNMS/etc or /etc/opennms. It will have a number of files
-            with an <varname>.xml</varname> extension, such as
-            <varname>capsd-configuration.xml</varname>. Run the
+            <para>Locate the OpenNMS "<filename>etc</filename>" directory. It
+            is usually in <filename>/opt/OpenNMS/etc</filename> or
+            <filename>/etc/opennms</filename>. It will have a number of files
+            with an "<filename>.xml</filename>" extension, such as
+            <filename>capsd-configuration.xml</filename>. Run the
             commands:</para>
 
-            <para><command>chgrp -R [opennms_etc_dir]</command></para>
+            <para><programlisting><computeroutput># </computeroutput><command>chgrp -R $OPENNMS_HOME/etc
+</command><computeroutput># </computeroutput><command>chmod -R g+w $OPENNMS_HOME/etc</command></programlisting></para>
 
-            <para><command>chmod -R g+w [opennms_etc_dir]</command></para>
-
-            <para>where <varname>[opennms_etc_dir]</varname> is the OpenNMS
-            "etc" directory.</para>
+            <para>where <varname>$OPENNMS_HOME/etc</varname> is the OpenNMS
+            "<filename>etc</filename>" directory.</para>
           </listitem>
 
           <listitem>
-            <para>Locate the OpenNMS "logs" directory. This is usually
-            <filename>/var/log/opennms</filename>, and can be found by looking
-            in the log4j.properties file in the OpenNMS "etc" directory (find
-            an instance of "File"). Run the commands:</para>
+            <para>Locate the OpenNMS "<filename>logs</filename>" directory.
+            This is usually <filename>/var/log/opennms</filename>, and can be
+            found by looking in the <filename>log4j.properties</filename> file
+            in the OpenNMS "<filename>etc</filename>" directory (find an
+            instance of "File"). Run the commands:</para>
 
-            <para><command>chgrp -R [opennms_logs_dir]</command></para>
+            <para><programlisting><computeroutput># </computeroutput><command>chgrp -R $OPENNMS_HOME/logs
+</command><computeroutput># </computeroutput><command>chmod -R g+w $OPENNMS_HOME/logs</command></programlisting></para>
 
-            <para><command>chmod -R g+w [opennms_logs_dir]</command></para>
-
-            <para>where <varname>[opennms_logs_dir]</varname> is the OpenNMS
-            "logs" directory.</para>
+            <para>where <varname>$OPENNMS_HOME/logs</varname> is the OpenNMS
+            "<filename>logs</filename>" directory.</para>
           </listitem>
         </itemizedlist>
       </listitem>
@@ -261,15 +266,14 @@ TOMCAT_USER="tomcat"
     second, the installation process must be able to create the
     database.</para>
 
-    <para>OpenNMS requires version 7.2 or later of PostgreSQL.  If you are
-    using a version of PostgreSQL prior to 7.4, the server error messages
-    are required to be in English (the 'C' locale).  In particular, the
-    parameter <filename>lc_messages</filename> must be set to
-    <filename>'C'</filename>.  This is set in
-    <filename>postgresql.conf</filename> in he PostgreSQL data directory and
-    it requires the database be restarted if you change the setting.  See the
-    section below on <filename>pg_hba.conf</filename> for details on the
-    location of the <filename>data</filename> directory.</para>
+    <para>OpenNMS requires version 7.2 or later of PostgreSQL. If you are
+    using a version of PostgreSQL prior to 7.4, the server error messages are
+    required to be in English (the 'C' locale). In particular, the parameter
+    <filename>lc_messages</filename> must be set to <filename>'C'</filename>.
+    This is set in <filename>postgresql.conf</filename> in he PostgreSQL data
+    directory and it requires the database be restarted if you change the
+    setting. See the section below on <filename>pg_hba.conf</filename> for
+    details on the location of the <filename>data</filename> directory.</para>
 
     <para>The minimum packages you will need to install should be:</para>
 
@@ -350,11 +354,10 @@ TOMCAT_USER="tomcat"
       database (do not add the last line if your system does not support
       IPv6):</para>
 
-      <para><computeroutput># TYPE  DATABASE  USER   IP-ADDRESS   IP-MASK           METHOD
-
-local   all       all                                   trust
-host    all       all    127.0.0.1    255.255.255.255   trust
-host    all       all    ::1          ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff    trust</computeroutput></para>
+      <para><programlisting># TYPE DATABASE USER IP-ADDRESS IP-MASK METHOD
+local all all
+trust host all all 127.0.0.1 255.255.255.255
+trust host all all ::1 ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff trust</programlisting></para>
 
       <para>Make sure that no other lines are uncommented in this file.</para>
 

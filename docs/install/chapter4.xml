@@ -6,21 +6,22 @@
     <title>Basic Locations for OpenNMS Data</title>
 
     <para>Upgrades from a previous version of OpenNMS to a current one usually
-    just involve installing a new package for your particular distribution.
-    </para>
+    just involve installing a new package for your particular
+    distribution.</para>
 
     <para>For RPM-based distributions, this is pretty simple using the
-    <computeroutput>rpm -Uvh [package name]</computeroutput> command.</para>
+    "<computeroutput>rpm -Uvh [package name]</computeroutput>" command.</para>
 
     <para>OpenNMS stores data in three locations: the
     <filename>$OPENNMS_HOME/etc</filename> directory, the PostgreSQL database,
     and in RRD files (which live in
     <filename>$OPENNMS_HOME/share</filename>).</para>
 
-    <para>If the default structure of a file in "etc" has changed between
-    versions, RPM will create a "<filename>.rpmnew</filename>" version of that
-    file. You will need to look at the changes between your file and the new
-    one and merge them manually, at the moment.</para>
+    <para>If the default structure of a file in
+    <filename>$OPENNMS_HOME/etc</filename> has changed between versions, RPM
+    will create a "<filename><filename>.rpmnew</filename></filename>" version
+    of that file. You will need to look at the changes between your file and
+    the new one and merge them manually, at the moment.</para>
 
     <para>In addition, the OpenNMS installer may attempt to make changes to
     the database. These should be automatic, but as with the best laid plans
@@ -51,17 +52,17 @@
         <filename>pg_dumpall </filename>command you can dump the entire
         contents of the database to a file:</para>
 
-        <para><programlisting>pg_dumpall &gt; old_data</programlisting></para>
+        <para><programlisting><computeroutput># </computeroutput><command>pg_dumpall &gt; old_data</command></programlisting></para>
 
         <para>will copy all of the data to a file called
         <filename>old_data</filename>. You will want to run this as the
         "postgres" user:</para>
 
-        <para><programlisting>sudo -u postgres pg_dumpall &gt; old_data</programlisting></para>
+        <para><programlisting><computeroutput># </computeroutput><command>sudo -u postgres pg_dumpall &gt; old_data</command></programlisting></para>
 
         <para>To restore, run the command:</para>
 
-        <para><programlisting>sudo -u postgres psql -U postgres -f old_data template1</programlisting></para>
+        <para><programlisting><computeroutput># </computeroutput><command>sudo -u postgres psql -U postgres -f old_data template1</command></programlisting></para>
       </listitem>
     </orderedlist>
 
