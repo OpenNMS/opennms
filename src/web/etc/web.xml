@@ -313,7 +313,7 @@
     <servlet-class>org.opennms.web.asset.ImportAssetsServlet</servlet-class>
     <init-param>
       <param-name>redirect.success</param-name>
-      <param-value><![CDATA[../../asset/nodelist.jsp?column=address1&searchvalue=]]></param-value>
+      <param-value>../../asset/nodelist.jsp?column=address1&amp;searchvalue=</param-value>
       <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
