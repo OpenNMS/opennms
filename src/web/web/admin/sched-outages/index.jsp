@@ -63,7 +63,7 @@ if(deleteName!=null) {
 <body>
 <% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
 <% String breadcrumb2 = "Manage Scheduled Outages"; %>
-<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
+<jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Manage scheduled outages" />
   <jsp:param name="location" value="admin" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />

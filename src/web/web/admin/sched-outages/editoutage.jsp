@@ -439,7 +439,7 @@ function outageTypeChanged(selectElement) {
 <% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
 <% String breadcrumb2 = "<a href='admin/sched-outages/index.jsp'>Manage Scheduled Outages</a>"; %>
 <% String breadcrumb3 = "Edit Outages"; %>
-<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
+<jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Edit outage" />
   <jsp:param name="location" value="admin" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />

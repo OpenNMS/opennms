@@ -50,7 +50,7 @@
 
 <% String breadcrumb1 = "<a href='event/index.jsp'>Events</a>"; %>
 <% String breadcrumb2 = "Advanced Event Search"; %>
-<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
+<jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Advanced Event Search" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
@@ -91,7 +91,7 @@
 
 <br />
 
-<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" />
+<jsp:include page="/includes/footer.jsp" flush="false" />
 
 </body>
 </html>

@@ -110,7 +110,7 @@
 <% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
 <% String breadcrumb2 = "<a href='admin/userGroupView/index.jsp'>Users, Groups, and Views</a>"; %>
 <% String breadcrumb3 = "View List"; %>
-<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
+<jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="View Configuration" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
@@ -181,7 +181,7 @@
 </FORM>
 
 <br>
-<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" >
+<jsp:include page="/includes/footer.jsp" flush="false" >
 </jsp:include>
 </body>
 </html>

@@ -152,7 +152,7 @@
 <% String breadcrumb2 = "<a href='admin/notification/index.jsp'>Configure Notifications</a>"; %>
 <% String breadcrumb3 = "<a href='admin/notification/destinationPaths.jsp'>Destination Paths</a>"; %>
 <% String breadcrumb4 = "Path Outline"; %>
-<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
+<jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Path Outline" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
@@ -243,7 +243,7 @@
 
 <br>
 
-<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" />
+<jsp:include page="/includes/footer.jsp" flush="false" />
 
 </body>
 </html>

@@ -120,7 +120,7 @@
 
 <% String breadcrumb1 = "<a href='report/index.jsp'>Reports</a>"; %>
 <% String breadcrumb2 = "KSC and Node Reports"; %>
-<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
+<jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Key SNMP Customized Performance Reports and Node Reports" />
   <jsp:param name="location" value="KSC and Node Reports" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
@@ -295,7 +295,7 @@
 <% } // end if (graph_count <=0) %>
 
 <br>
-<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" >
+<jsp:include page="/includes/footer.jsp" flush="false" >
   <jsp:param name="location" value="KSC and Node Reports" />
 </jsp:include>
 

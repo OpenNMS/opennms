@@ -72,7 +72,7 @@
   <% String breadcrumb1 = "<a href='element/index.jsp'>Search</a>"; %>
   <% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
   <% String breadcrumb3 = "Rescan"; %>
-  <jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
+  <jsp:include page="/includes/header.jsp" flush="false" >
     <jsp:param name="title" value="Rescan" />
     <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
     <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
@@ -84,7 +84,7 @@
   <% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
   <% String breadcrumb3 = "<a href='element/interface.jsp?node=" + nodeId + "&intf=" + ipAddr  + "'>Interface</a>"; %>
   <% String breadcrumb4 = "Rescan"; %>
-  <jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
+  <jsp:include page="/includes/header.jsp" flush="false" >
     <jsp:param name="title" value="Rescan" />
     <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
     <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
@@ -140,7 +140,7 @@
 
 <br>
 
-<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" />
+<jsp:include page="/includes/footer.jsp" flush="false" />
 
 </body>
 </html>

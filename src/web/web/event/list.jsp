@@ -167,7 +167,7 @@
 
 <% String breadcrumb1 = "<a href= 'event/index.jsp' title='Events System Page'>Events</a>"; %>
 <% String breadcrumb2 = "List"; %>
-<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
+<jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Event List" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
@@ -208,7 +208,7 @@
           
             <% if( eventCount > 0 ) { %>
               <% String baseUrl = this.makeLink(parms); %>
-              <jsp:include page="/WEB-INF/jspf/resultsIndex.jspf" flush="false" >
+              <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
                 <jsp:param name="count"    value="<%=eventCount%>" />
                 <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
                 <jsp:param name="limit"    value="<%=parms.limit%>"      />
@@ -408,8 +408,8 @@
 
 <br>
 
-<jsp:include page="/WEB-INF/jspf/bookmark.jspf" flush="false" />
-<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" />
+<jsp:include page="/includes/bookmark.jsp" flush="false" />
+<jsp:include page="/includes/footer.jsp" flush="false" />
 
 </body>
 </html>

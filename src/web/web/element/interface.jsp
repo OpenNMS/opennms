@@ -178,7 +178,7 @@ function doDelete() {
 <% String breadcrumb1 = "<a href='element/index.jsp'>Search</a>"; %>
 <% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
 <% String breadcrumb3 = "Interface"; %>
-<jsp:include page="/WEB-INF/jspf/header.jspf" flush="false" >
+<jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Interface" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
@@ -356,7 +356,7 @@ function doDelete() {
             <br>
 
             <!-- Availability box -->
-            <jsp:include page="/WEB-INF/jspf/interfaceAvailability-box.jspf" flush="false" />
+            <jsp:include page="/includes/interfaceAvailability-box.jsp" flush="false" />
             <br>
             
           </td>
@@ -369,7 +369,7 @@ function doDelete() {
             <!-- events list box -->
             <% String eventHeader = "<a href='" + eventUrl + "'>Recent Events</a>"; %>
             <% String moreEventsUrl = eventUrl; %>
-            <jsp:include page="/WEB-INF/jspf/eventlist.jspf" flush="false" >
+            <jsp:include page="/includes/eventlist.jsp" flush="false" >
               <jsp:param name="node" value="<%=nodeId%>" />
               <jsp:param name="ipAddr" value="<%=ipAddr%>" />
               <jsp:param name="throttle" value="5" />
@@ -379,7 +379,7 @@ function doDelete() {
             <br>
             
             <!-- Recent outages box -->
-            <jsp:include page="/WEB-INF/jspf/interfaceOutages-box.jspf" flush="false" />
+            <jsp:include page="/includes/interfaceOutages-box.jsp" flush="false" />
             
           </td>
 
@@ -394,7 +394,7 @@ function doDelete() {
 
 <br>
 
-<jsp:include page="/WEB-INF/jspf/footer.jspf" flush="false" />
+<jsp:include page="/includes/footer.jsp" flush="false" />
 
 </body>
 </html>
