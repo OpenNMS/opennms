@@ -1,0 +1,8 @@
+
+<Context path="/opennms" docBase="@install.servlet.dir@"
+        debug="0" reloadable="true">
+
+  <Logger className="org.opennms.web.log.Log4JLogger" homeDir="@install.dir@" />
+  <Realm className="org.opennms.web.authenticate.OpenNMSTomcatRealm" homeDir="@install.dir@" />
+
+</Context>

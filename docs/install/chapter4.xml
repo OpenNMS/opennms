@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter>
+  <title>Upgrading OpenNMS from Previous Versions</title>
+
+  <section>
+    <title>Basic Locations for OpenNMS Data</title>
+
+    <para>Upgrades from a previous version of OpenNMS to a current one usually
+    just involve installing a new package for your particular distribution.
+    </para>
+
+    <para>For RPM-based distributions, this is pretty simple using the
+    <computeroutput>rpm -Uvh [package name]</computeroutput> command.</para>
+
+    <para>OpenNMS stores data in three locations: the
+    <filename>$OPENNMS_HOME/etc</filename> directory, the PostgreSQL database,
+    and in RRD files (which live in
+    <filename>$OPENNMS_HOME/share</filename>).</para>
+
+    <para>If the default structure of a file in "etc" has changed between
+    versions, RPM will create a "<filename>.rpmnew</filename>" version of that
+    file. You will need to look at the changes between your file and the new
+    one and merge them manually, at the moment.</para>
+
+    <para>In addition, the OpenNMS installer may attempt to make changes to
+    the database. These should be automatic, but as with the best laid plans
+    things may go wrong.</para>
+
+    <para>Finally, the installer should not touch the RRD files. Unless you
+    are moving from RRDTool to jRobin, you should not have to worry about
+    them.</para>
+  </section>
+
+  <section>
+    <title>Before Upgrading - Make a Backup</title>
+
+    <para>Things can go wrong on upgrades, so it is always a good idea to make
+    a backup of important information before attempting the upgrade.</para>
+
+    <para>For OpenNMS, you should do two things:</para>
+
+    <orderedlist>
+      <listitem>
+        <para>Copy the contents of the <filename>$OPENNMS_HOME/etc</filename>
+        directory to a safe location. Should an issue arise with any new
+        files, you will want to be able to recover your originals.</para>
+      </listitem>
+
+      <listitem>
+        <para>Make a backup of the postgres database. Using the
+        <filename>pg_dumpall </filename>command you can dump the entire
+        contents of the database to a file:</para>
+
+        <para><programlisting>pg_dumpall &gt; old_data</programlisting></para>
+
+        <para>will copy all of the data to a file called
+        <filename>old_data</filename>. You will want to run this as the
+        "postgres" user:</para>
+
+        <para><programlisting>sudo -u postgres pg_dumpall &gt; old_data</programlisting></para>
+
+        <para>To restore, run the command:</para>
+
+        <para><programlisting>sudo -u postgres psql -U postgres -f old_data template1</programlisting></para>
+      </listitem>
+    </orderedlist>
+
+    <para>As mentioned earlier, there should be no need to backup the RRD
+    files during an upgrade.</para>
+  </section>
+</chapter>

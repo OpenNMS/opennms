@@ -1,0 +1,1539 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="chap2">
+  <title>What's New?</title>
+
+  <subtitle>Changes in This OpenNMS</subtitle>
+
+  <para>OpenNMS 1.1.0 represents a refinement of the functionality introduced
+  in 1.0.0. The 1.1 tree is a development, or "unstable" tree, implementing a
+  number of new features but without the testing that went into 1.0. When 1.1
+  is mature enough, it will become 1.2, the next production or "stable"
+  release. This release, 1.1.4, is a major step toward that next stable
+  release.</para>
+
+  <sect1>
+    <title>Changes in OpenNMS 1.1.4</title>
+
+    <para>Longtime users of OpenNMS will be pleasantly surprised at the speed
+    enhancements of this release. Most of the new code changes focused on
+    performance or our goal of making OpenNMS more purely Java (eliminating
+    the need for JNI calls to C++ code and perl).</para>
+
+    <bridgehead>Data Collection Queuing System</bridgehead>
+
+    <para>A new queuing system for writing the data collection RRD files has
+    been added. Experimental tests have shown that the I/O subsystem is the
+    bottle neck for Data Collector performance.</para>
+
+    <para>In order to increase the capacity of our data collector we have
+    added an intelligent queuing system for all of our RRD Output. This
+    improves performance for us in two ways. One is that it frees up the data
+    collection threads to get back to the work of data collection right away.
+    As a side benefit it also frees up the polling threads that output RRD
+    data related to latency. This makes the data much more accurate.</para>
+
+    <para>The second way that the queuing system provides performance
+    improvements is by queuing collected data on a per file basis. Since
+    writing a few extra bytes to an RRD file while its open anyway adds very
+    little to the update time, this causes the average update cost per data
+    point to go down the further the collector gets behind. What this means is
+    that you will not lose any data points if the collector is configured to
+    collect more than you I/O system can read/write without queuing. It just
+    means that the data that is in the files is behind the actual
+    collection.</para>
+
+    <para>A last way the queuing system improves data collector performance is
+    by giving priority to non-zero data. On many networks, as much as 60% of
+    the collected data is zero valued. In most situations, data that has
+    remained zero for a long period of time is unimportant data. For this
+    reason we give files with non-zero data points priority over files that
+    have only zero data points. Monitored interfaces that have only zero
+    ifErrors or ifDiscards, for example, will not hold up writing of the data
+    for systems that have positive ifErrors and ifDiscards. Please see
+    <filename>$OPENNMS_HOME/etc/rrd-configuration.properties</filename> for
+    configurations details.</para>
+
+    <para>Thanks to Rackspace and Eric Evans for providing equipment to help
+    us implement this and to General Electric's John Lee and Neeraj Malve for
+    helping to test this.</para>
+
+    <bridgehead>JRobin Support</bridgehead>
+
+    <para>Though the Collection Queuing above provides a great deal of
+    performance benefit, for very high capacity data collection environments
+    it was not sufficient. We have found the JRobin 1.4.0 provides performs
+    better than RRDTool in our environment. The primary reason for this is
+    that JRobin reads a much smaller amount of data on an RRD Open than
+    RRDTool does. This increases throughput on systems like ours that max out
+    the I/O subsystem doing an open, update, and close on a huge number of
+    RRDs. An additional benefit of JRobin is that it is multi-thread enabled
+    (unlike our libjrrd.so shared library that interacts with RRDTool) however
+    this does not impact performance very much because the contention is not
+    the bottle neck. In fact, on some systems that have 
+    as many as 100 data collection threads,
+    we found that have as few as 2-10 RRD write threads were sufficient to 
+    populate the RRD files.</para>
+
+    <para>The only unfortunate part of using JRobin is that the file format
+    for JRobin is not the same as for RRDTool. This means other tools you
+    may be using will not work with JRobin RRD files and
+    will have to converted or replaced. JRobin does have some tools available
+    and you should check out their website at www.jrobin.org to see what is
+    available. Additionally, JRobin supports programmatically all of the
+    features of RRDTool, so it should be easy to write a compatible tool. If
+    you do so, please consider contributing it either to us or to the JRobin
+    team.</para>
+
+    <para>The last benefit of JRobin is that is helps us to reach our goal of
+    a 100% Pure Java version of OpenNMS that can work 'out of the box' on
+    any system.</para>
+
+    <para>Thanks go to the JRobin team for providing this excellent RRD
+    implementation. Thanks also to Rackspace for providing the equipment to
+    let us implement this.</para>
+
+    <bridgehead>Filter Parser Performance Enhancements</bridgehead>
+
+    <para>Thanks to Chris Fedde of On Command, we have found that the SQL
+    queries produced by our filtering code were, at times, extremely
+    inefficient. On a moderately sized network of only 15K interfaces the
+    queries used to define categories could take as long as three minutes on a
+    4 CPU system. As a result of this, we have reworked the filter parser and
+    now produce much better queries. The equivalent query would now only take
+    about a second on the same system. Thanks a lot to Ted Kaczmarek and
+    Alexander Hoogerhuis for helping us test it.</para>
+
+    <bridgehead>Delete Node, Interface and Service Improvements</bridgehead>
+
+    <para>There have been a large number of bugs reported with respect to
+    deleting nodes from the OpenNMS GUI. This code has been completely
+    overhauled in OpenNMS 1.1.4. The new strategy has been to mark a
+    node/interface/service deleted rather than
+    actually deleting it. (The node completely removed from the database by
+    Vacuumd discussed below.) This allows any web pages that are currently
+    viewing the node to react properly. Additionally, deletes now happen as 
+    database transactions providing for performance and data integrity 
+    (i.e. no orphaned interface records)
+    and you are not left with a half-deleted node.</para>
+
+    <para>In addition to overhauling node deletion, we have also added the
+    ability to delete interfaces and services. Administrators have a delete 
+    link at the top of service and interface detail pages.</para>
+
+    <para>All the users of OpenNMS helped by writing defects and
+    complaining about this bug. Special thanks to Ted Kaczmarek, Jonathan
+    Sartin, and Mike Huot for their help testing and characterizing these
+    problems and their solution.</para>
+
+    <bridgehead>Vacuumd</bridgehead>
+
+    <para>Since nodes, interfaces and services are only marked deleted and not
+    actually removed from the database when a delete occurs, some way was
+    needed to ensure that the data actually got removed eventually. To do this
+    Vacuumd was introduced to provide a mechanism to periodically run database
+    maintenance operations. Vacuumd's configuration consists of a set of
+    database statements to be run daily (or which every period is preferable).
+    There are four maintenance operations provided by OpenNMS by default.
+    These are as follows: delete nodes have been marked as deleted, delete
+    interfaces that have been marked as deleted, delete services that have
+    been marked as deleted, and delete any event that is not related to a
+    current outage and is older than 6 weeks.</para>
+
+    <para>In order to make sure that Vacuumd properly deletes all the data
+    associated with the nodes, interfaces, services or other entries that it
+    deletes we have added cascading delete constraints to the database. With
+    these if you do a 'DELETE FROM nodes WHERE nodeid=11', for example. You
+    delete all the related information, its interfaces, the services on those
+    interfaces, the outages related to the node, the events, etc.,
+    etc..</para>
+
+    <bridgehead>Database Connection 'Leak' Found</bridgehead>
+
+    <para>Though not an actual leak because the connections are garbage
+    collected, we found a problem in the code where database connections were
+    being dropped and left for the garbage collector to clean up. This
+    problem, which occurred primarily during discovery, would result in an
+    abnormally large number of outstanding connections to the database to be
+    cleaned up by the garbage collector. Discovery of large networks 
+    caused the number of connections to the database to easily grow beyond
+    the number allowed. Thanks to Chris Fedde and
+    OnCommand for helping us track down this problem.</para>
+
+    <bridgehead>JavaMail</bridgehead>
+
+    <para>An OpenNMS objective to become a 100% Java application, requires
+    elimination the following dependencies.</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>/bin/mail</para>
+      </listitem>
+
+      <listitem>
+        <para>Perl</para>
+      </listitem>
+
+      <listitem>
+        <para>Metamail package</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>These dependencies are used for two functions of the OpenNMS
+    application: Notification and Availability reporting.</para>
+
+    <para>Installing a fresh copy of OpenNMS will now use the Java Mail API by
+    default. Upgrade installs will create two new files that the user will
+    have to merge into their existing configurations:
+    d<filename>estinationPaths.xml.rpmnew</filename> and
+    <filename>notficationCommands.xml.rpmnew</filename>.</para>
+
+    <para>The <filename>javamail-configuration.properties</filename> file
+    should be modified to specify the sender's address and the SMTP server
+    address. This file also provides support for SMTP servers requiring user and
+    password authentication.</para>
+
+    <para>There are also major changes to the
+    <filename>notificationCommands.xml</filename> file. The schema definition
+    for this file has changed requiring that the &lt;command&gt; tag now has
+    an attribute called 'binary' and a value of either "true" or "false". This
+    flag indicates to the OpenNMS notification processes that the command
+    definition is either a system command (as it always has been prior to this
+    release) or an OpenNMS Java class (see deveolper notes below). The 1.1.4
+    version of this file now has added the following new command
+    definitions:</para>
+
+    <para><programlisting>&lt;command binary="false"&gt;
+&lt;name&gt;javaPagerEmail&lt;/name&gt;
+&lt;execute&gt;org.opennms.netmgt.notifd.JavaMailNotificationStrategy&lt;/execute&gt;
+&lt;comment&gt;class for sending pager email notifications&lt;/comment&gt;
+&lt;argument streamed="false"&gt;
+&lt;switch&gt;-subject&lt;/switch&gt;
+&lt;/argument&gt;
+&lt;argument streamed="false"&gt;
+&lt;switch&gt;-pemail&lt;/switch&gt;
+&lt;/argument&gt;
+&lt;argument streamed="false"&gt;
+&lt;switch&gt;-tm&lt;/switch&gt;
+&lt;/argument&gt;
+&lt;/command&gt;
+
+&lt;command binary="false"&gt;
+&lt;name&gt;javaEmail&lt;/name&gt;
+&lt;execute&gt;org.opennms.netmgt.notifd.JavaMailNotificationStrategy&lt;/execute&gt;
+&lt;comment&gt;class for sending email notifications&lt;/comment&gt;
+&lt;argument streamed="false"&gt;
+&lt;switch&gt;-subject&lt;/switch&gt;
+&lt;/argument&gt;
+&lt;argument streamed="false"&gt;
+&lt;switch&gt;-email&lt;/switch&gt;
+&lt;/argument&gt;
+&lt;argument streamed="false"&gt;
+&lt;switch&gt;-tm&lt;/switch&gt;
+&lt;/argument&gt;
+&lt;/command&gt;</programlisting></para>
+
+    <para>Notice a few changes:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>The <computeroutput>&lt;command&gt; </computeroutput>tag now has
+        an attribute called 'binary' that when set to "true" will cause the
+        notification process to attempt to execute a system command specified
+        in the &lt;execute&gt; tag. When not set or set to anything other than
+        "true", the notification process assumes it is an OpenNMS notification
+        class and will instantiate it and execute its 'send()' method. By
+        convention, the "binary" attribute will be set to "false" when new
+        notification classes are implemented.</para>
+      </listitem>
+
+      <listitem>
+        <para>The <computeroutput>&lt;substitution&gt;
+        </computeroutput>arguments are not used for notification classes but
+        are still supported for notification commands. These "substitution"
+        arguments (allthough not gramatially intuitive) are passed to system
+        commands as a command line argument when the 'binary' attribute is set
+        to "true" and is otherwise ignored.</para>
+      </listitem>
+
+      <listitem>
+        <para>The <computeroutput>&lt;execute&gt;</computeroutput> tag now
+        allows the specification of an OpenNMS Java class name. This class
+        name must implement the NotificationStrategy interface (see developer
+        notes below). The new JavaMailNotificationStrategy class excepts the
+        following <computeroutput>&lt;switch&gt;</computeroutput> tags:
+        -subject, -email, -pemail, -tm.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>The <filename>destinationPaths.xml</filename> file has changed
+    making the default email and pager email notifications use the new Java
+    Mail API. All 'email' and 'pagerEmail' <computeroutput>&lt;command&gt;
+    </computeroutput>tags have been changed to the new 'javaEmail' and
+    'javaPagerEmail' commands in
+    <filename>$OPENNMS_HOME/etc/notificationCommands.xml</filename>.</para>
+
+    <bridgehead>Installer / Build System Improvements</bridgehead>
+
+    <para>Thanks so much to new OpenNMS committer DJ Gregor for all his hard
+    work on improving the OpenNMS build and install code. Thanks to DJ's
+    efforts the installer has improved greatly and is now written completely
+    in Java removing (along with the JavaMail feature and Dave Hustace)
+    OpenNMS's dependency on Perl.</para>
+
+    <para>That said, we do expect some issues with this, as the installer does
+    do a lot of database checks and conversions, and some users have large
+    databases.</para>
+
+    <bridgehead>Using A Parameter for Notifications</bridgehead>
+
+    <para>Some notifications, like one based on a highThresholdExceeded event,
+    would benefit from being able to key off of not only the event UEI, but a
+    value within the event itself.</para>
+
+    <para>With 1.1.4, the ability has been added to key off the parameter name
+    and to match it with a particular value.</para>
+
+    <programlisting>    &lt;notification name="HighThreshold" status="on"&gt;
+        &lt;uei&gt;uei.opennms.org/threshold/highThresholdExceeded&lt;/uei&gt;
+        &lt;description&gt;A high threshold event&lt;/description&gt;
+        &lt;rule&gt;(IPADDR IPLIKE *.*.*.*)&lt;/rule&gt;
+        &lt;destinationPath&gt;Email-Admin&lt;/destinationPath&gt;
+        &lt;text-message&gt;A high threshold was reached on data source %parm[#1]% with %parm[#2]% and %parm[#3]% and %parm[#4]%.&lt;/text-message&gt;
+        &lt;subject&gt;Notice #%noticeid%&lt;/subject&gt;
+        &lt;varbind&gt;
+            &lt;vbname&gt;ds&lt;/vbname&gt;
+            &lt;vbvalue&gt;cpu&lt;/vbvalue&gt;
+        &lt;/varbind&gt;
+    &lt;/notification&gt;</programlisting>
+
+    <para>This will cause the notification to match if it is a high threshold
+    event involving the data source name of "cpu" only.</para>
+
+    <para>Note that you must use the name of the parameter, and you can only
+    use one. There is a TODO to add the ability to use more than one parameter
+    for the match and to use a particular parameter number instead of just the
+    name.</para>
+
+    <bridgehead>Other Improvements/Changes/Bug Fixes</bridgehead>
+
+    <para>Here is a small list of other improvements in 1.1.4:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>The OpenNMS Group is partnering with the creators of the SNMP
+        Informant Windows SNMP agent (formally SNMP4PC), and so a number of
+        SNMP Informant data collections and reports have been added.</para>
+      </listitem>
+
+      <listitem>
+        <para>A bug was fixed with respect to the RTC Categories section which
+        could cause the services of new nodes to be counted more than
+        once.</para>
+      </listitem>
+
+      <listitem>
+        <para>To make better use of Bill Ayres' displayCategory field in the
+        Assets table, a new event was created that will update RTC when the
+        Assets table is changed (which will cause such changes to be reflected
+        without a restart).</para>
+      </listitem>
+
+      <listitem>
+        <para>Also to make this work better, new nodes are created with an
+        empty asset record. Thus queries like <computeroutput>displayCategory
+        != "test"</computeroutput> will work.</para>
+      </listitem>
+
+      <listitem>
+        <para>Michael Huot added some code that causes the webUI to turn to
+        light blue, similar to "Calculating ..." when the webUI loses
+        connectivity with OpenNMS. Code has also been added so the webUI will
+        attempt to reconnect to OpenNMS when this happens. This should remove
+        the dependency on needing to restart Tomcat after restarting
+        OpenNMS.</para>
+      </listitem>
+
+      <listitem>
+        <para>RPM dependencies have been fixed (bug #906). A packaging error
+        caused previous releases to only include a subset of package
+        dependencies. Some dependencies have also been fixed for Mandrake
+        distributions (bug #933).</para>
+      </listitem>
+
+      <listitem>
+        <para>A generalized solution has been implemented for choosing a
+        proper Java Runtime Environment at runtime. See
+        <filename>$OPENNMS_HOME/bin/runjava -h</filename> for details.</para>
+      </listitem>
+
+      <listitem>
+        <para>The OpenNMS startup script was rewritten to be more
+        cross-platform friendly and uses the JRE chosen by
+        <filename>runjava</filename>.</para>
+      </listitem>
+
+      <listitem>
+        <para>Upgraded to the latest PostgreSQL JDBC driver,
+        <filename>pg74.215.jdbc3.jar</filename>.</para>
+      </listitem>
+
+      <listitem>
+        <para>WebUI to OpenNMS communication has been changed to use a
+        separate connection for each request, instead of a single connection
+        that persists until Tomcat is restarted (or the webapp is reloaded).
+        This eliminates exceptions that are thrown when certain administrative
+        actions are performed (e.g.: adding a new node through the webUI) if
+        OpenNMS is restarted without restarting Tomcat. See bug #897.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para></para>
+  </sect1>
+
+  <sect1>
+    <title>Changes in OpenNMS 1.1.3 and above</title>
+
+    <para>A tremendous amount of work has been done "under the covers" to
+    OpenNMS, and the following features were added in 1.1.3:</para>
+
+    <bridgehead>Support for Duplicate IP Addresses</bridgehead>
+
+    <para>Prior to this release, the algorithm that OpenNMS used to determine
+    if a particular interface belonged to a particular node was simple. An
+    SNMP walk was done on the device, and all of the IP addresses on that
+    device were associated with the node. If that walk discovered a
+    "duplicate" address, say from a private network or some backup link, it
+    would assume that all of the addresses on that device belonged to the
+    device that was discovered with that IP address first.</para>
+
+    <para>This could result in "merged" nodes, especially in environments with
+    HSRP.</para>
+
+    <para>This release now supports duplicate IP addresses. The nodes will not
+    be merged and an event will be generated.</para>
+
+    <para>Note that networks are not supposed to have duplicate IP addresses.
+    In other words, if there are two "10.1.1.1" addresses on a network, and
+    OpenNMS sends a "ping" to 10.1.1.1, it will assume that a response means
+    that interface 10.1.1.1 is "up", regardless of which "10.1.1.1" interface
+    responds.</para>
+
+    <para>Since this feature was mainly written to support inactive or
+    unreachable interfaces that were discovered by SNMP, this behavior should
+    not present a problem, although it does have the added benefit of being
+    able to monitor highly available IP addresses.</para>
+
+    <para>For example, if your website lives at 10.1.1.1, which lives on two
+    devices, as long as an HTTP request to 10.1.1.1 is answered (by either
+    machine) OpenNMS will mark the service as up.</para>
+
+    <bridgehead>New Asset Configuration "Categories"</bridgehead>
+
+    <para>The rules uses in categories and filter rules, usually along the
+    lines of <programlisting>&lt;rule&gt;IPADDR IPLIKE *.*.*.*&lt;/rule&gt;</programlisting>
+    are actually quite flexible, and can be built on almost anything in the
+    database. However it would be nice to easily place a particular device
+    into a category for display on the main page, notifications, etc..</para>
+
+    <para>There are four categories:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Display Category (database field displayCategory): This is to be
+        used for grouping devices into a particular category.</para>
+      </listitem>
+
+      <listitem>
+        <para>Poller Category (database field pollerCategory): This is to be
+        used to define devices in a particular poller package.</para>
+      </listitem>
+
+      <listitem>
+        <para>Notification Category (database field notifyCategory): This
+        could be something like "serverAdmin" or "networkAdmin" to be used for
+        directing notifications.</para>
+      </listitem>
+
+      <listitem>
+        <para>Threshold Category (database field thresholdCategory): This is
+        to be used to define devices in a particular thresholding
+        package.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>Note that there is no "hard coded" meaning to these categories, you
+    could use "poller" for "threshold" etc.. They are just labeled for
+    convenience.</para>
+
+    <para>How would you use them? Well, you would need to modify the
+    &lt;filter&gt; or &lt;rule&gt; tags in the configuration files. Suppose
+    you had two types of polling packages, like "Gold" and "Silver". You would
+    then have a filter like &lt;filter&gt;pollerCategory ==
+    "Gold"&lt;/filter&gt; for that package. By just adding the name "Gold" or
+    "Silver" to the proper category on the asset screen you can place a
+    particular device into that poller package.</para>
+
+    <para>Note that once you have sorted all of your devices, you will need to
+    restart OpenNMS for the poller to reload the proper configuration.</para>
+
+    <bridgehead>Added an XML RPC daemon</bridgehead>
+
+    <para>One user of OpenNMS has integrated it into their
+    provisioning/billing/support package. They use multiple instances of
+    OpenNMS to poll the services on their network, and all of these instances
+    talk to a single database. By sending events to
+    <filename>eventd</filename>, they can affect changes in how these devices
+    are polled (without a restart).</para>
+
+    <para>In order to alert this system to events from OpenNMS, like
+    "nodeLostService", we send events out via
+    <filename>xmlrpcd</filename>.</para>
+
+    <para>Unfortunately, there is not time to describe in detail how this
+    system works, but it will be documented as soon as possible (the hope is
+    by 1.2).</para>
+
+    <bridgehead>Support for Java 1.4.2</bridgehead>
+
+    <para>People who used previous versions of OpenNMS on Java 1.4.2 found out
+    that it would use up all of the resources on the system and then die. This
+    turned out to be due to a very obscure bug in Java. The code was
+    re-written to avoid this and now we recommend that OpenNMS is run on
+    1.4.2.</para>
+
+    <bridgehead>MIB Compiler for Data Collection</bridgehead>
+
+    <para>John Rodriguez has created a great MIB Compiler to convert native
+    MIB information into a format that can be used by
+    datacollection-config.xml.</para>
+
+    <para>We hope to import into the webUI in the future. But for now it is
+    located in the <filename>contrib</filename> directory under
+    <filename>mibparser</filename>.</para>
+
+    <para>In that directory is the complete code (in Java) as well as a
+    helpful README. In a nutshell this is how you would use it.</para>
+
+    <para>Change into the dist directory and run the parseMib.sh wrapper
+    script. The format is:</para>
+
+    <para><computeroutput> Usage: parseMib.sh &lt;MIB File 1&gt; [&lt;MIB file
+    2&gt;...] Example: parseMib.sh RFC-1213.my</computeroutput></para>
+
+    <para>Thus:</para>
+
+    <para><programlisting>$ ./parseMib.sh /usr/share/snmp/mibs/RFC1213-MIB.txt 
+    Looking for a good java...
+    Using java in user's path...
+    Checking Java version for 1.4+...
+    Version is: java version "1.4.2_04"
+Java(TM) 2 Runtime Environment, Standard Edition (build 1.4.2_04-b05)
+Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
+    Checking for JAVA_HOME...
+    JAVA_HOME not set, trying to find it...
+    JAVA_HOME set to: .
+    Calling parser...</programlisting></para>
+
+    <para>will generate output that is very familiar to people used to
+    modifying datacollection-config.xml. For example:</para>
+
+    <para><programlisting>&lt;mibObj oid=".1.3.6.1.2.1.11.1" instance="0" alias="snmpInPkts" type="Counter" /&gt;
+&lt;mibObj oid=".1.3.6.1.2.1.11.2" instance="0" alias="snmpOutPkts" type="Counter" /&gt;
+&lt;mibObj oid=".1.3.6.1.2.1.11.3" instance="0" alias="snmpInBadVersions" type="Counter" /&gt;
+&lt;mibObj oid=".1.3.6.1.2.1.11.4" instance="0" alias="snmpInBadCommunityNamesTOOLONG" type="Counter" /&gt;
+&lt;mibObj oid=".1.3.6.1.2.1.11.5" instance="0" alias="snmpInBadCommunityUsesTOOLONG" type="Counter" /&gt;
+&lt;mibObj oid=".1.3.6.1.2.1.11.6" instance="0" alias="snmpInASNParseErrs" type="Counter" /&gt;
+&lt;mibObj oid=".1.3.6.1.2.1.11.8" instance="0" alias="snmpInTooBigs" type="Counter" /&gt;
+&lt;mibObj oid=".1.3.6.1.2.1.11.9" instance="0" alias="snmpInNoSuchNames" type="Counter" /&gt;</programlisting></para>
+
+    <para>This could be put into a new MIB group,
+    <filename>snmp-stats</filename> or some such, directly without having to
+    explore the MIB by hand.</para>
+
+    <para>I love this app.</para>
+
+    <para>There are some caveats. In using this I have sometimes seen errors
+    where the MIB compiler could not find a referenced variable because it is
+    defined in another MIB file. Simply list it first in the list of MIBs to
+    parse.</para>
+
+    <para>I have also come across some MIBs that define custom object types
+    and the parser does not handle it all that well. It is often possible just
+    to delete the offending line from the MIB file (after making a copy of
+    course) and try it again.</para>
+
+    <para>OpenNMS can only handle numeric data types, or DisplayStrings that
+    can be converted into numbers, so keep that in mind when choosing which
+    values to collect.</para>
+
+    <para>We use RRDTool, and RRDTool has a 19 character limit on filenames
+    (the part before <filename>.rrd</filename>). Since the "alias" field
+    becomes the file name, you cannot have an alias longer than 19 characters.
+    The parser will append "TOOLONG" to overlength aliases, and you can edit
+    them by hand (it would be possible to truncate the name, but you cannot
+    have duplicate aliases and that might occur).</para>
+
+    <para>Finally, OpenNMS can handle a numeric instance (0, 1, 2, ... etc.)
+    or an instance of "ifIndex". So an instance of
+    "<filename>tcpConnState</filename>" would cause an error.</para>
+
+    <bridgehead>New Build System</bridgehead>
+
+    <para>Our goal is to make OpenNMS as pure Java as possible. However, for a
+    variety of reasons we cannot do that yet. When OpenNMS was started,
+    <filename>ant</filename> (the program used to build other Java programs)
+    had limitations that had to be worked around. This resulted in a workable,
+    but somewhat confusing, build system.</para>
+
+    <para>DJ Gregor (building on work started by Edwin Buck) rebuilt the build
+    system, making it almost pure <filename>ant</filename>. This was great for
+    those doing development, so hats off to Deej and Edwin.</para>
+
+    <bridgehead>New NTP Poller</bridgehead>
+
+    <para>Mike Huot has written a new NTP poller. You will notice it in
+    capsd-configuration.xml and poller-configuration.xml. Hat off to
+    Mike.</para>
+
+    <bridgehead>Nice Little Things</bridgehead>
+
+    <para>Small additions that deserve mention:<itemizedlist>
+        <listitem>
+          <para>APC data collection was added.</para>
+        </listitem>
+
+        <listitem>
+          <para>Added "maxval" and "minval" attributed to the
+          <filename>mibObj</filename> definition in
+          <filename>datacollection-config.xml</filename> to help eliminate
+          spikes.</para>
+        </listitem>
+
+        <listitem>
+          <para>Started improving start up times on large systems.</para>
+        </listitem>
+
+        <listitem>
+          <para>Added a sort to KSC reports.</para>
+        </listitem>
+
+        <listitem>
+          <para>Added an initial delay to notification paths.</para>
+        </listitem>
+      </itemizedlist></para>
+
+    <bridgehead>Bug Fixes</bridgehead>
+
+    <para>We have lots of bug fixes. I am really tired. Check out the <ulink
+    url="http://cvs.sourceforge.net/viewcvs.py/opennms/opennms/CHANGELOG?rev=1.97&amp;view=auto">CHANGELOG</ulink>.</para>
+  </sect1>
+
+  <sect1 id="chap2sect1">
+    <title>Changes in OpenNMS 1.1.2 and Above</title>
+
+    <para>The following features were added in 1.1.2:</para>
+
+    <bridgehead>Poller Improvements</bridgehead>
+
+    <para>There are three new pollers available:</para>
+
+    <para><emphasis role="bold">Ssh:</emphasis> Previously, the SSH service
+    was polled and discovered using the generic TCP class. This worked fine,
+    except that SSH expects a version to be sent with the query. This causes
+    numerous logs, thus the TCP class was modified into an SSH class that
+    sends the correct version string.</para>
+
+    <para><emphasis role="bold">JDBC:</emphasis> The database pollers also use
+    the TCP class to connect to well known ports. Jose Nunez Vicente Zuleta
+    created a poller that uses the particular JDBC database driver to make a
+    connection, get the system catelogs, and if successful, mark the database
+    service as "up". Since this requires a valid username and password that
+    can access the database, it is not the default class, but it is pretty
+    simple to set up.</para>
+
+    <para>In order to automatically detect and monitor databases, a few
+    changes need to be made to both the network and the OpenNMS configuration.
+    First, be sure that the username and password you plan to use actually
+    works from the OpenNMS server. This will involve changes to pg_hba.conf
+    for PostgreSQL, and I am not sure about others.</para>
+
+    <para>Second, you will need to insure that you have a jar file with the
+    JDBC driver for your particular database. Copy it to $OPENNMS_HOME/lib
+    (the one for PostgreSQL is already included).</para>
+
+    <para>Okay, now you need to modify the capsd configuration to discover the
+    service and modify the poller configuration to poll the service.</para>
+
+    <para>capsd: Here is an example for Sybase:</para>
+
+    <para><programlisting>&lt;protocol-plugin protocol="Sybase-JDBC" class-name="org.opennms.netmgt.capsd.JDBCPlugin" scan="on"&gt;
+        &lt;property key="user" value="sa"/&gt;
+        &lt;property key="password" value="XXXX"/&gt;
+        &lt;property key="retry" value="3"/&gt;
+        &lt;property key="timeout" value="5000"/&gt;
+        &lt;property key="driver" value="com.sybase.jdbc2.jdbc.SybDriver"/&gt;
+        &lt;!-- jdbc:sybase:Tds::/ --&gt;
+        &lt;property key="url" value="jdbc:sybase:Tds:OPENNMS_JDBC_HOSTNAME:4100/tempdb"/&gt;
+&lt;/protocol-plugin&gt;</programlisting></para>
+
+    <para>and one for MySql:<programlisting>&lt;protocol-plugin protocol="MySQL-JDBC" class-name="org.opennms.netmgt.capsd.JDBCPlugin" scan="on"&gt;
+        &lt;property key="user" value="root"/&gt;
+        &lt;property key="password" value="XXXX"/&gt;
+        &lt;property key="retry" value="3"/&gt;
+        &lt;property key="timeout" value="5000"/&gt;
+        &lt;property key="driver" value="org.gjt.mm.mysql.Driver"/&gt;
+        &lt;!-- jdbc:mysql://[&lt;:3306&gt;]/ --&gt;
+        &lt;property key="url" value="jdbc:mysql://OPENNMS_JDBC_HOSTNAME:3306/mysql"/&gt;
+&lt;/protocol-plugin&gt;</programlisting></para>
+
+    <para>and one for PostgreSQL:</para>
+
+    <programlisting>&lt;protocol-plugin protocol="PostgreSQL-JDBC" class-name="org.opennms.netmgt.capsd.JDBCPlugin" scan="on"&gt;
+        &lt;property key="user" value="opennms"/&gt;
+        &lt;property key="password" value="opennms"/&gt;
+        &lt;property key="retry" value="3"/&gt;
+        &lt;property key="timeout" value="5000"/&gt;
+        &lt;property key="driver" value="org.postgresql.Driver"/&gt;
+        &lt;!-- jdbc:postgresql:[[:&lt;5432&gt;/]] --&gt;
+        &lt;property key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/&gt; 
+&lt;/protocol-plugin&gt;</programlisting>
+
+    <para>Note that the service names for all three of these examples have
+    "-JDBC" added to the end of their names. This means you can run them
+    separately from the standard database protocols, or if you like, you can
+    completely replace the standard protocols. In fact, if you wish, you can
+    use the standard port check in capsd, and then use the JDBC poller
+    configuration to do the actual polling.</para>
+
+    <para>Here are the poller configuration examples:</para>
+
+    <programlisting>    &lt;service name="Sybase-JDBC" user-defined="false" interval="6000" status="on"&gt;
+        &lt;parameter key="user" value="sa"/&gt;
+        &lt;parameter key="password" value="XXXX"/&gt;
+        &lt;parameter key="timeout" value="3000"/&gt;
+        &lt;parameter key="driver" value="com.sybase.jdbc2.jdbc.SybDriver"/&gt;
+        &lt;!-- jdbc:sybase:Tds::/ --&gt;
+        &lt;parameter key="url" value="jdbc:sybase:Tds:OPENNMS_JDBC_HOSTNAME:4100/tempdb"/&gt;
+    &lt;/service&gt;</programlisting>
+
+    <programlisting>    &lt;service name="MySQL-JDBC" user-defined="false" interval="6000" status="on"&gt;
+        &lt;parameter key="user" value="root"/&gt;
+        &lt;parameter key="password" value="XXXX"/&gt;
+        &lt;parameter key="timeout" value="3000"/&gt;
+        &lt;parameter key="driver" value="org.gjt.mm.mysql.Driver"/&gt;
+        &lt;!-- jdbc:mysql://[&lt;:3306&gt;]/ --&gt;
+        &lt;parameter key="url" value="jdbc:mysql:// OPENNMS_JDBC_HOSTNAME:3306/mysql"/&gt;
+    &lt;/service&gt;</programlisting>
+
+    <programlisting>   &lt;service name="PostgreSQL-JDBC" user-defined="false" interval="9000" status="on"&gt;
+        &lt;parameter key="user" value="opennms"/&gt;
+        &lt;parameter key="password" value="opennms"/&gt;
+        &lt;parameter key="timeout" value="9000"/&gt;
+        &lt;parameter key="driver" value="org.postgresql.Driver"/&gt;
+        &lt;!-- jdbc:postgresql:[[:&lt;5432&gt;/]] --&gt;
+        &lt;parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/&gt;
+    &lt;/service&gt;</programlisting>
+
+    <para>One more thing in the poller-configuration file, you will need to
+    add &lt;monitor&gt; tags at the bottom:</para>
+
+    <programlisting>  &lt;monitor service="Sybase-JDBC" class-name="org.opennms.netmgt.poller.JDBCMonitor"/&gt;
+  &lt;monitor service="MySQL-JDBC" class-name="org.opennms.netmgt.poller.JDBCMonitor"/&gt;
+  &lt;monitor service="PostgreSQL-JDBC" class-name="org.opennms.netmgt.poller.JDBCMonitor"/&gt;</programlisting>
+
+    <para>Hats off to Jose for this work.</para>
+
+    <para><emphasis role="bold">General Purpose Script Poller:</emphasis> Bill
+    Ayres has written a poller that will execute a script, and based on the
+    response from that script it will mark the service as being "up" or
+    "down", called the "General Purpose" or "Gp" Poller. He has used it to
+    monitor RADIUS servers, for example.</para>
+
+    <para>GpPlugin and GpMonitor work much like TcpPlugin and TcpMonitor in
+    that you can use them to define as many custom services as you need, each
+    with a unique service name.</para>
+
+    <para>GpPlugin and GpMonitor call an external script or program to test a
+    particular service. The script will be passed the IP address of the
+    interface OpenNMS is testing ( as --hostname [IP Address]), followed by
+    the timeout (as --timeout [timeout]), followed by any optional arguments
+    that may need to passed.</para>
+
+    <para>The script is expected to return a string as standard output which
+    is then compared to the banner property or parameter to determine success
+    or failure of the test.</para>
+
+    <para>The timeout is implemented in GpPlugin and GpMonitor. However, some
+    scripts may want to know how long OpenNMS is going to wait for a reply, so
+    the timeout value is passed to the script, and can be ignored by the
+    script if it is not needed.</para>
+
+    <para>GpPlugin and GpMonitor also check the exit status of the script or
+    program. If it is not zero, then the test fails. They will also gather and
+    log any standard error output from the script, but the presence of error
+    output does not prevent the test from succeeding if the banner matches the
+    standard output.</para>
+
+    <para>Example poller parameters are shown below. All of these are optional
+    except script, which is required, and will cause an exception to be logged
+    if it is missing.</para>
+
+    <para>Example plugin properties are also shown below. All of these are
+    optional except script, which is required, and will cause an exception to
+    be logged if it is missing.</para>
+
+    <para>These programs use the exec method from Java's Runtime class. Exec
+    is known to have pitfalls. (See <ulink
+    url="http://www.javaworld.com/javaworld/jw-12-2000/jw-1229-traps.html">When
+    Runtime.exec() won't</ulink>) Also, exec does not have a built-in timeout
+    feature. In deciding what to do about these shortcomings, Bill discovered
+    that Scott McCrory has already done it with his ExecRunner class.
+    ExecRunner and StreamGobbler are at <ulink
+    url="http://sourceforge.net/">SourceForge</ulink> as part of <ulink
+    url="http://spumoni.sourceforge.net/">Spumoni</ulink>.</para>
+
+    <para>One more word about the timeout. ExecRunner expects the timeout in
+    integer seconds, not milliseconds, and a value of zero means wait
+    indefinitely. To avoid confusion, Bill maintained the OpenNMS practice of
+    specifying the timeout in milliseconds. Before passing it on to
+    ExecRunner, it gets converted to seconds in the following manner: Zero
+    remains zero, 1 thru 1999 gets converted to 1 second, 2000 thru 2999 -&gt;
+    2 seconds, 3000 thru 3999 -&gt; 3 seconds, etc..</para>
+
+    <para>Included in contrib is a simple perl test script,
+    <filename>gptest.pl</filename>, that is handy for testing, since it is
+    easy to edit and change its behaviour.</para>
+
+    <para>To implement Gp, add the following entries, substituting your
+    information as needed.</para>
+
+    <para>For capsd configuration:</para>
+
+    <programlisting>&lt;protocol-plugin protocol="GPtest" class-name="org.opennms.netmgt.capsd.GpPlugin" scan="on" user-defined="true"&gt;
+   &lt;property key="script" value="/opt/OpenNMS/contrib/gptest.pl"/&gt;
+   &lt;property key="banner" value="success"/&gt;
+   &lt;property key="args" value="caps-arg1 caps-arg2"/&gt;
+   &lt;property key="timeout" value="3000"/&gt;
+   &lt;property key="retry" value="1"/&gt;
+&lt;/protocol-plugin&gt;</programlisting>
+
+    <para>And for poller configuration:</para>
+
+    <programlisting>&lt;service name="GPtest" interval="300000" user-defined="false" status="on"&gt;
+   &lt;parameter key="script" value="/opt/OpenNMS/contrib/gptest.pl"/&gt;
+   &lt;parameter key="banner" value="successful"/&gt;
+   &lt;parameter key="args" value="poll-arg1 poll-arg2"/&gt;
+   &lt;parameter key="retry" value="1"/&gt;
+   &lt;parameter key="timeout" value="2000"/&gt;
+   &lt;parameter key="rrd-repository" value="/var/opennms/rrd/response"/&gt;
+   &lt;parameter key="ds-name" value="GPtest"/&gt;
+&lt;/service&gt;</programlisting>
+
+    <para>and the monitor service entry:</para>
+
+    <programlisting>&lt;monitor service="GPtest"   class-name="org.opennms.netmgt.poller.GpMonitor"/&gt;</programlisting>
+
+    <para>Hats off to Bill for this work, and to Scott for ExecRunner.</para>
+
+    <bridgehead>Script Daemon</bridgehead>
+
+    <para>Speaking of scripts, Jim Doble has written a daemon that will
+    execute scripts based on events received or generated by OpenNMS, called
+    ScriptD. This process, governed as usual from a configuration file, allows
+    one to generally or specifically execute actions based on events in
+    OpenNMS.</para>
+
+    <para>The scripting language, as I understand it, is <ulink
+    url="http://www.beanshell.org/">beanshell</ulink>. As Jim writes:
+    <quote>You will notice that BeanShell is a lot like Java, but with some
+    relaxed syntax. For example you do not have to define types for your
+    variables, and attributes for which there are simple get methods can be
+    accessed as properties (i.e. you can say event.uei or event.getUei()
+    interchangably.) </quote></para>
+
+    <para>There are 4 types of scripts that can be run: start-script,
+    reload-script, stop-script, and event-script. When ScriptD starts it will
+    run all of the commands in the <varname>&lt;start-script&gt;</varname>
+    tags. Likewise, when ScriptD stops, it will run all of the commands in the
+    <varname>&lt;stop-script&gt;</varname> tags. Also, there is a new event,
+    <varname>uei.opennms.org/internal/reloadScriptConfig</varname>, which when
+    received will run all of the <varname>&lt;reload-script&gt;</varname>
+    tags.</para>
+
+    <para>The final script type, <varname>&lt;event-script&gt;</varname> gets
+    run when events are received. Event scripts can have one or more UEI
+    elements, which specify the UEI's for which that script should run. If no
+    UEI element is present, the script will run for all events.</para>
+
+    <para>The scripts can make use of the <varname>SnmpTrapHelper</varname>
+    class, which is a utility to make it easier to manipulate traps from a
+    script.</para>
+
+    <para>There is an example <filename>scriptd-configuration.xml
+    </filename>file included in the <filename>$OPENNMS_HOME/etc</filename>
+    directory.</para>
+
+    <para>If you want to forward all SNMP traps to another machine as an SNMP
+    trap, you would use the following event script:</para>
+
+    <programlisting>        &lt;event-script language="beanshell"&gt;
+
+                event = bsf.lookupBean("event");
+
+                if (event.snmp != null) {
+                        log.debug("forwarding a trap");
+                        snmpTrapHelper.forwardTrap(event, "10.1.1.1", 162);
+                }
+
+        &lt;/event-script&gt;</programlisting>
+
+    <para>This will forward the trap to 10.1.1.1, port 162. Note that the
+    event will have SNMP information if the event is indeed an SNMP trap.
+    Since internal OpenNMS events do not, you could use that to forward
+    OpenNMS events as an SNMP trap to another system:</para>
+
+    <programlisting>&lt;event-script language="beanshell"&gt;
+
+        event = bsf.lookupBean("event");
+
+        if (event.snmp == null)
+        {
+
+                try {
+
+                log.debug("Forwarding an OpenNMS event.");
+
+                SnmpPduTrap trap = snmpTrapHelper.createV1Trap(".1.3.6.1.4.1.5813.1", "10.1.1.16", 6, 1, 0);
+
+                t_dbid = new Integer(event.dbid).toString();
+                if (t_dbid != null)
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.1", "OctetString", "text", t_dbid);
+                else
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.1", "OctetString", "text", "null");
+                if (event.distPoller != null)
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.2", "OctetString", "text", event.distPoller);
+                else
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.2", "OctetString", "text", "null");
+                if (event.creationTime != null)
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.3", "OctetString", "text", event.creationTime);
+                else
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.3", "OctetString", "text", "null");
+                if (event.masterStation != null)
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.4", "OctetString", "text", event.masterStation);
+                else
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.4", "OctetString", "text", "null");
+                if (event.uei != null)
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.6", "OctetString", "text", event.uei);
+                else
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.6", "OctetString", "text", "null");
+                if (event.source != null)
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.7", "OctetString", "text", event.source);
+                else
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.7", "OctetString", "text", "null");
+                t_nodeid = new Long(event.nodeid).toString();
+                if (t_nodeid != null)
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.8", "OctetString", "text", t_nodeid);
+                else
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.8", "OctetString", "text", "null");
+                if (event.time != null)
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.9", "OctetString", "text", event.time);
+                else
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.9", "OctetString", "text", "null");
+                if (event.host != null)
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.10", "OctetString", "text", event.host);
+                else
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.10", "OctetString", "text", "null");
+                t_interface = event.getInterface();
+                if (t_interface != null)
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.11", "OctetString", "text", t_interface);
+                else
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.11", "OctetString", "text", "null");
+                if (event.snmphost != null)
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.12", "OctetString", "text", event.snmphost);
+                else
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.12", "OctetString", "text", "forge.opennms.com");
+                if (event.service != null)
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.13", "OctetString", "text", event.service);
+                else
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.13", "OctetString", "text", "null");
+                if (event.descr != null)
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.16", "OctetString", "text", event.descr);
+                else
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.16", "OctetString", "text", "null");
+                if (event.severity != null)
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.18", "OctetString", "text", event.severity);
+                else
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.18", "OctetString", "text", "null");
+                if (event.pathoutage != null)
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.19", "OctetString", "text", event.pathoutage);
+                else
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.19", "OctetString", "text", "null");
+                if (event.operinstruct != null)
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.20", "OctetString", "text", event.operinstruct);
+                else
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.20", "OctetString", "text", "null");
+
+                snmpTrapHelper.sendTrap("public", trap, "10.1.1.15", 162);
+
+                }
+
+                catch (e) {
+                    sw = new StringWriter();
+                    pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    log.debug(sw.toString());
+                }
+        }
+
+        &lt;/event-script&gt;</programlisting>
+
+    <para>This will send an newly defined OpenNMS trap with the important
+    event information embedded as varbinds.</para>
+
+    <para>If you wanted to limit the forwarded OpenNMS events to
+    <varname>nodeLostService</varname> and
+    <varname>nodeRegainedService</varname>, you can add a
+    <varname>&lt;uei&gt;</varname> tag:</para>
+
+    <programlisting>        &lt;event-script language="beanshell"&gt;
+                &lt;uei name="uei.opennms.org/nodes/nodeLostService"/&gt;
+                &lt;uei name="uei.opennms.org/nodes/nodeRegainedService"/&gt;
+</programlisting>
+
+    <para>To the first part of the <varname>&lt;event-script&gt;</varname>
+    tag.</para>
+
+    <para>Hats off to Jim for this work.</para>
+
+    <bridgehead>Maps</bridgehead>
+
+    <para>Okay, let us get this out in the open. I do not care for maps in
+    network management. Yes, they are nice looking, but truely useful maps
+    cannot be automated, and the manual process of generating maps takes more
+    time than they are worth.</para>
+
+    <para>That said, my opinions do not mean much in this project (grin) and
+    if someone is willing to put in some work and write solid code I am more
+    than willing to accept it. Thus, Derek Glidden decided to go and write a
+    mapping system for OpenNMS.</para>
+
+    <para>This will display the nodes as icons, and the current availability
+    is displayed in color underneath it. You can view it in a tree mode or
+    just as a list of icons, and the image will automatically refresh. The
+    parenting relationships have to be manually set.</para>
+
+    <para>The image is built and displayed using Scalable Vector Graphics
+    (SVG). I think this is a great decision, but the downside is that the only
+    SVG viewer I was able to get to work was from Adobe for Internet Explorer
+    on Windows. I was not able to get SVG to work with Mozilla or Safari (on
+    Mac). Using the system on IE was very clean and fast.</para>
+
+    <para>There is the option to convert the SVG image to a PNG image. This is
+    extremely processor intensive, takes a long time on a network of any size,
+    and often fails. It is not recommended.</para>
+
+    <para>Scared yet? (grin)</para>
+
+    <para>For these reasons I am treating the current map implementation as
+    contributed code (i.e. not supported). It is hoped, however, that Derek
+    and others will work to make more improvements to the system.</para>
+
+    <para>Okay, to get started, read the <filename>map.disable</filename> file
+    in <filename>$OPENNMS_HOME/etc</filename>. You will need to copy this file
+    to <filename>map.enable</filename>. This will add a "Map" menu item in the
+    WebUI.</para>
+
+    <para>You will also have to make some changes to the tomcat4
+    configuration. First, you need to set <varname>headless</varname> equal to
+    <varname>true</varname>, and second you should probably increase the
+    memory available to Tomcat (especially if you are trying to use the SVG to
+    PNG transcoder). <varname>OutOfMemory</varname> exceptions in Tomcat are
+    indicative of a too small memory setting when trying to render the
+    map.</para>
+
+    <para>I know this whole things sounds a bit negative, but that is no
+    reflection on Derek's work. He wrote very clean code and I like the
+    architecture (SVG especially) that he came up with. The icons are cool,
+    too. So hats off to Derek.</para>
+
+    <para>But I am bracing myself for the onslaught of questions like
+    <quote>"Can I add a background?"</quote>, <quote>"Can I change the icons
+    based on systemOID?"</quote>, and <quote>"Can I make submaps?"</quote>.
+    Patience, please.</para>
+
+    <bridgehead>Nice Little Things</bridgehead>
+
+    <para>The following little changes and improvements have been made:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Added RFC2325 to the data collection configuration</para>
+      </listitem>
+
+      <listitem>
+        <para>Added a "bits" report (to replace bytes) and made it the default
+        report for KSC reports.</para>
+      </listitem>
+
+      <listitem>
+        <para>Added the ability to define a "null" filter (can speed up
+        OpenNMS starting)</para>
+      </listitem>
+
+      <listitem>
+        <para>Added new Cisco and UCD-SNMP reports (Thanks Tony and
+        Stuart)</para>
+      </listitem>
+
+      <listitem>
+        <para>Added new trap definitions for IBM and Intel</para>
+      </listitem>
+    </itemizedlist>
+
+    <bridgehead>Bugs</bridgehead>
+
+    <para>As we move toward the next stable release of OpenNMS, a number of
+    bugs have been fixed, including:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Added a check to handle null terminated strings in traps (Thanks
+        Dave W.)</para>
+      </listitem>
+
+      <listitem>
+        <para>Corrected issues with day/week/month/year buttons in WebUI on
+        various browsers</para>
+      </listitem>
+
+      <listitem>
+        <para>Changed the open count in notifications to reflect those for the
+        user instead of the system</para>
+      </listitem>
+
+      <listitem>
+        <para>Fixed a typo in <filename>mail.pl</filename> in the
+        <filename>contrib</filename> directory</para>
+      </listitem>
+
+      <listitem>
+        <para>Added a small fix to the HTTP and HTTPS monitors that could
+        cause a <varname>ClassCastException</varname> (Thanks Jim)</para>
+      </listitem>
+
+      <listitem>
+        <para>Added an ORDER BY statement to insure that categories reflect
+        the correct values.</para>
+      </listitem>
+
+      <listitem>
+        <para>Added code to explicitly close sockets in plugins and monitors
+        (see the Known Issues below for Java 1.4.2)</para>
+      </listitem>
+
+      <listitem>
+        <para>Bug 708: Fixed issues with viewing events when nodes are
+        deleted</para>
+      </listitem>
+
+      <listitem>
+        <para>Bug 715: Added security roles to <filename>web.xml</filename>
+        (Thanks DJ)</para>
+      </listitem>
+
+      <listitem>
+        <para>Bug 741: Fixed issues with the SNMP admin page and null
+        <varname>issnmpprimary</varname> values.</para>
+      </listitem>
+
+      <listitem>
+        <para>Bug 748: Added code to catch <varname>rrdUpdate</varname>
+        exceptions that could cause false <varname>nodeDown</varname>
+        events</para>
+      </listitem>
+
+      <listitem>
+        <para>Bug 752: Fixed a bug that caused certain rules to match all
+        events</para>
+      </listitem>
+    </itemizedlist>
+  </sect1>
+
+  <sect1 id="chap2sect2">
+    <title>Changes in OpenNMS 1.1.1 and Above</title>
+
+    <para>The following features were added in 1.1.1:</para>
+
+    <bridgehead>Trap Handling</bridgehead>
+
+    <para>SNMP Traps will now be associated with nodes if the IP address in
+    the trap matches a known IP address in the database.</para>
+
+    <para>If the IP Address is not known, OpenNMS will generate a newSuspect
+    event to attempt to discover the device. This behavior can be disabled in
+    the trapd-configuration.xml file.</para>
+
+    <para>Added new trap definitions for Dell OpenManage, Foundry Networks and
+    ADIC. Also added an updated mib2opennms program which improves the look of
+    the output.</para>
+
+    <bridgehead>Reports</bridgehead>
+
+    <para>Added a new custom reporting module which allows one to create and
+    save custom performance reports. It is called the Key SNMP Custom (KSC)
+    Reporting Tool.</para>
+
+    <para>Added buttons on the standard Performance and Response Time pages to
+    allow the range to be changed between the last Day/Week/Month/Year.</para>
+
+    <bridgehead>Response Time</bridgehead>
+
+    <para>Added the ability to collect response time on the following pollers:
+    Citrix, FTP, HTTPS, IMAP, POP3, SMTP and TCP.</para>
+
+    <para>The RRAs for Response Time data are now part of the poller
+    configuration file.</para>
+
+    <bridgehead>Web Improvements</bridgehead>
+
+    <para>There is now a Response Time link on the node and interface
+    pages.</para>
+
+    <para>If a node or interface supports HTTP, there is now a link to that
+    service.</para>
+
+    <para>Added a two minute refresh to the event listing page.</para>
+
+    <bridgehead>Other Features</bridgehead>
+
+    <para>Added non-blocking I/O to the HTTPS service. Now all monitors and
+    plug-ins should be non-blocking.</para>
+
+    <para>If you set the IP Address in a poll-outages calendar to "match-any"
+    it will match all addresses in the poller package that uses that
+    calendar.</para>
+
+    <para>Increased the size of the contactinfo field in the usersnotified
+    table, and changed create.sql to make this easier.</para>
+
+    <bridgehead>Fixed Bugs</bridgehead>
+
+    <para>Fixed numerous bugs, including 650 where "down" events could be
+    written to the database after the corresponding "up" event. See the
+    CHANGELOG for a full list.</para>
+
+    <bridgehead>Tomcat4</bridgehead>
+
+    <para>For a variety of reasons, OpenNMS 1.1.1 and beyond will require
+    Tomcat4 version 4.1.18 or higher.</para>
+  </sect1>
+
+  <sect1 id="chap2sect3">
+    <title>Changes in OpenNMS 1.1.0 and Above</title>
+
+    <para>There were many changes to OpenNMS between 1.0 and 1.1. Here are a
+    few listed by functional area.</para>
+
+    <bridgehead>Events and Event Handling</bridgehead>
+
+    <para>The events and notifications part of OpenNMS saw the most changes
+    with 1.1.0. First, there was a new tag added to the
+    <filename>eventconf.xml</filename> file called &lt;event-file&gt;. This
+    allows for external files to be included in the event
+    configuration.</para>
+
+    <para>Also, the order in which events appear is now strictly enforced.
+    When trying to match an event with an event definition, OpenNMS takes the
+    first match. The events in the <filename>eventconf.xml</filename> are read
+    first, followed by the files identified by &lt;event-file&gt; tags (in the
+    order in which they are listed). In the configuration that ships with
+    OpenNMS, the file with the default events is loaded last. Be sure to add
+    any custom files before that one.</para>
+
+    <para>Prior to this release, the SNMP generic traps 0-5 (coldStart,
+    warmStart, linkDown, etc.) were hard-coded. Now they must be defined (and
+    that definition is included in the default events file), but this allows
+    for generic traps other than type 6 to be configured differently for, say,
+    different hosts.</para>
+
+    <para>Speaking of event files, over 2750 events were added out of the box,
+    including those from vendors such as Cisco, HP and 3Com. Please let us
+    know if anything is misconfigured or if we need to add some events.</para>
+
+    <para>The ability to configure events based on parameters (varbinds) was
+    also added. This is best demonstrated with an example. In the new HP event
+    definitions there is an event called hpicfFaultFinderTrap. It is defined
+    as: <programlisting>&lt;event&gt; 
+    &lt;mask&gt;
+        &lt;maskelement&gt; 
+            &lt;mename&gt;id&lt;/mename&gt;
+            &lt;mevalue&gt;.1.3.6.1.4.1.11.2.14.12.1&lt;/mevalue&gt;
+        &lt;/maskelement&gt; 
+        &lt;maskelement&gt;
+            &lt;mename&gt;generic&lt;/mename&gt;
+            &lt;mevalue&gt;6&lt;/mevalue&gt; &lt;/maskelement&gt;
+        &lt;maskelement&gt; 
+            &lt;mename&gt;specific&lt;/mename&gt;
+            &lt;mevalue&gt;5&lt;/mevalue&gt; 
+        &lt;/maskelement&gt;
+    &lt;/mask&gt;
+    &lt;uei&gt;uei.opennms.org/vendor/HP/traps/hpicfFaultFinderTrap&lt;/uei&gt;
+    &lt;event-label&gt;HP-ICF-FAULT-FINDER-MIB defined trap event: hpicfFaultFinderTrap&lt;/event-label&gt; 
+    &lt;descr&gt;
+      &lt;p&gt;This notification is sent whenever the Fault Finder creates
+      an entry in the hpicfFfLogTable.&lt;/p&gt; 
+      &lt;table&gt;
+          &lt;tr&gt; 
+          &lt;td&gt;&lt;b&gt;hpicfFfLogFaultType&lt;/b&gt;&lt;/td&gt; 
+          &lt;td&gt;%parm[#1]%&lt;/td&gt; 
+          &lt;td&gt;&lt;p&gt; badDriver(1) badXcvr(2)
+              badCable(3) tooLongCable(4) overBandwidth(5) bcastStorm(6) partition(7)
+              misconfiguredSQE(8) polarityReversal(9) networkLoop(10) lossOfLink(11)
+              portSecurityViolation(12) backupLinkTransition(13) meshingFault(14)
+              fanFault(15) rpsFault(16) stuck10MbFault(17) lossOfStackMember(18)
+              hotSwapReboot(19) &lt;/p&gt;&lt;/td&gt; 
+          &lt;/tr&gt; 
+          &lt;tr&gt;
+          &lt;td&gt;&lt;b&gt; hpicfFfLogAction&lt;/b&gt;&lt;/td&gt;
+          &lt;td&gt;%parm[#2]% &lt;/td&gt; 
+          &lt;td&gt;&lt;p;&gt; none(1)
+              warn(2) warnAndDisable(3) warnAndSpeedReduce(4)
+              warnAndSpeedReduceAndDisable(5) &lt;/p&gt;&lt;/td;&gt; 
+          &lt;/tr&gt;
+          &lt;tr&gt; 
+          &lt;td&gt;&lt;b&gt;hpicfFfLogSeverity&lt;/b&gt;&lt;/td&gt; 
+          &lt;td&gt;%parm[#3]%&lt;/td&gt; 
+          &lt;td&gt;&lt;p&gt; informational(1) medium(2)
+              critical(3) &lt;/p&gt;&lt;/td;&gt; 
+          &lt;/tr&gt; 
+          &lt;tr&gt;
+          &lt;td&gt;&lt;b&gt; hpicfFfFaultInfoURL&lt;/b&gt;&lt;/td&gt;
+          &lt;td&gt;%parm[#4]%&lt;/td&gt;
+          &lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;
+          &lt;/tr&gt; 
+       &lt;/table&gt; 
+    &lt;/descr&gt; 
+    &lt;logmsg dest='logndisplay'&gt;&lt;p&gt;HP Event: ICF Hub Fault Found.&lt;/p&gt;&lt;/logmsg&gt;
+    &lt;severity&gt;Warning&lt;/severity&gt; 
+&lt;/event&gt;
+      </programlisting></para>
+
+    <para>Note that the third parameter denotes the severity of the event. By
+    default this event has a severity of Warning, but what if it was desired
+    to make the "critical" event a severity of Major? Using the new varbind
+    extension to the mask tag: <programlisting>&lt;event&gt; 
+    &lt;mask&gt; 
+        &lt;maskelement&gt;
+            &lt;mename&gt;id&lt;/mename&gt;
+            &lt;mevalue&gt;.1.3.6.1.4.1.11.2.14.12.1&lt;/mevalue&gt;
+        &lt;/maskelement&gt; &lt;maskelement&gt;
+            &lt;mename&gt;generic&lt;/mename&gt;
+            &lt;mevalue&gt;6&lt;/mevalue&gt; 
+        &lt;/maskelement&gt;
+        &lt;maskelement&gt; &lt;mename&gt;specific&lt;/mename&gt;
+            &lt;mevalue&gt;5&lt;/mevalue&gt; 
+        &lt;/maskelement&gt;
+        &lt;varbind&gt; 
+            &lt;vbnumber&gt;specific&lt;/vbnumber&gt;
+            &lt;vbvalue&gt;5&lt;/vbvalue&gt; 
+        &lt;/varbind&gt; 
+    &lt;/mask&gt;
+    &lt;uei&gt;uei.opennms.org/vendor/HP/traps/hpicfFaultFinderTrap&lt;/uei&gt;
+    &lt;event-label&gt;HP-ICF-FAULT-FINDER-MIB defined trap event: hpicfFaultFinderTrap&lt;/event-label&gt;
+    &lt;descr&gt;
+        &lt;p&gt;This notification is sent whenever the Fault
+           Finder creates an entry in the
+           hpicfFfLogTable.&lt;/p&gt;
+        &lt;table&gt;
+            &lt;tr&gt;
+            &lt;td&gt;&lt;b&gt;hpicfFfLogFaultType&lt;/b&gt;&lt;/td&gt;
+            &lt;td&gt;%parm[#1]%&lt;/td&gt;
+            &lt;td&gt;&lt;p&gt; badDriver(1) badXcvr(2)
+                badCable(3) tooLongCable(4) overBandwidth(5) bcastStorm(6) partition(7)
+                misconfiguredSQE(8) polarityReversal(9) networkLoop(10) lossOfLink(11)
+                portSecurityViolation(12) backupLinkTransition(13) meshingFault(14)
+                fanFault(15) rpsFault(16) stuck10MbFault(17) lossOfStackMember(18)
+                hotSwapReboot(19)&lt;/p&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+            &lt;td&gt;&lt;b&gt;hpicfFfLogAction&lt;/b&gt;&lt;/td&gt;
+            &lt;td&gt;%parm[#2]%&lt;/td&gt;
+            &lt;td&gt;&lt;p&gt; none(1) warn(2) warnAndDisable(3)
+                warnAndSpeedReduce(4) warnAndSpeedReduceAndDisable(5)&lt;/p&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+            &lt;td&gt;&lt;b&gt;hpicfFfLogSeverity&lt;/b&gt;&lt;/td&gt;
+            &lt;td&gt;%parm[#3]%&lt;/td&gt;
+            &lt;td&gt;&lt;p;&gt; informational(1) medium(2)
+                critical(3)&lt;/p&gt;&lt;/td;&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+            &lt;td&gt;&lt;b&gt;hpicfFfFaultInfoURL&lt;/b&gt;&lt;/td&gt;
+            &lt;td&gt;%parm[#4]%&lt;/td&gt;
+            &lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;
+            &lt;/tr&gt;
+        &lt;/table&gt;
+    &lt;/descr&gt; 
+    &lt;logmsg dest='logndisplay'&gt;&lt;p&gt;HP Event: ICF Hub Fault Found.&lt;/p&gt;&lt;/logmsg&gt;
+    &lt;severity&gt;Major&lt;/severity&gt; &lt;/event&gt;
+      </programlisting></para>
+
+    <para>This event, when added before the previous event since it is more
+    specific, will try to match on the enterprise id, the generic trap value
+    of 6, the specific trap value of 5 <emphasis>and</emphasis> the value of
+    the third parameter, or varbind, of 3.</para>
+
+    <para>There was also the addition of a low and high threshold rearm
+    events. When a threshold is exceeded in consecutive polls equal to the
+    trigger number, the threshold event is generated. Another event will not
+    be generated until the polled value drops below the rearm number. The
+    rearm event is thus similar to a "cleared" event. Since the first
+    parameter passed with the threshold event is the data source name, using
+    the "varbind" tag above, each data source can now have its own
+    event.</para>
+
+    <para>One of the more noticeable changes is that the Unique Event
+    Identifier no longer contains "http://". The original intent was that the
+    UEI would act something like an XML namespace, but in practice it is just
+    a label, so the "http://" was removed to avoid confusion.</para>
+
+    <para>Notifications also received some attention with this release. Due to
+    popular demand, the tags %nodelabel% and %interfaceresolve% are now
+    available. The former will display the label of the nodeid associated with
+    the event, and the latter will attempt to resolve the name associated with
+    the IP Address of the interface of the event.</para>
+
+    <para>In <filename>notifd-configuration.xml</filename> there are now two
+    new attributes. In the global properties, there is "match-all". By
+    default, this is set to false, which means that the first notification
+    that matches an event will be the only notification sent. If it is set to
+    true, then all notifications that match a given event will be sent.
+    (Thanks Nick) In the auto-acknowledge section, there is a new attribute
+    called "clear". By adding "clear=true" to the auto-acknowledge tag, both
+    the event being auto acknowledged <emphasis>and</emphasis> the event that
+    caused the acknowledgement will be acknowledged. Thus the "up" event that
+    clears a "down" will also be cleared.</para>
+
+    <para>In addition to these enhancements, various bugs were fixed.
+    Notification rules now actually work, and you can filter node level events
+    via IP address. Also, threshold events can now generate
+    notifications.</para>
+
+    <bridgehead>Polling</bridgehead>
+
+    <para>The biggest change to polling would have to be the addition of
+    response time information for DHCP, DNS, HTTP and ICMP based pollers.
+    Similar to data collection, the response time information can be graphed
+    and it can have threshold alarms placed on it.</para>
+
+    <para>Also, all of the plugins and monitors (except HTTPS) have been
+    re-written to use the non-blocking I/O available in the 1.4 JDK.</para>
+
+    <bridgehead>Discovery</bridgehead>
+
+    <para>There has been some discussion on how OpenNMS determines node
+    labels. Currently, this is set to the resolved SNMP Primary Interface IP
+    Address. However, it is common practice on routers to have a
+    software-loopback address. OpenNMS will now discover such interfaces (as
+    long as they do not have an address that starts with 127) and mark them as
+    the primary SNMP Interface. Note that no services will be polled on such
+    interfaces.</para>
+
+    <bridgehead>The Web User Interface</bridgehead>
+
+    <para>A few changes were made to the WebUI. There is now a
+    webui-colors.xml file that will allow for dynamic changes to the
+    background colors used in the categories list on the main page (more pages
+    to follow). Also under "Admin" the ability to delete nodes was
+    added.</para>
+
+    <para>In addition, there is a new Admin page that will allow one to choose
+    which non-IP interfaces will be used in data collection. By setting the
+    snmpStorageFlag in <filename>datacollection-config.xml</filename> to
+    "select" (now the default), OpenNMS will only store data from those
+    interfaces that could serve as a primary SNMP interface. One can then
+    select which other interfaces to collect on using the GUI. The previous
+    values of snmpStorageFlag ("primary" and "all") still work.</para>
+
+    <para>Also, the "Destination Path" interface now has the ability to choose
+    NOT to include a service (thanks Nick) which will create a rule like
+    "match the events where service is NOT FTP", and by placing the mouse over
+    the categories on the main page, the last time the category was updated
+    should be displayed.</para>
+
+    <bridgehead>Fixed Service Deletion in Downtime Model</bridgehead>
+
+    <para>The poller downtime model allows for a service to be deleted if it
+    has been down for a certain amount of time. This did not work correctly
+    and has been fixed.</para>
+
+    <bridgehead>Reduced the Amount of Data Initially Collected from the
+    ifTable</bridgehead>
+
+    <para>During discovery, the ifTable is collected from each device that is
+    found to support SNMP. On some HP switches, this would fail due to a
+    limitation on the SNMP maximum packet size. All non-essential ifTable
+    elements were removed from the request that appears to resolve the
+    problem.</para>
+
+    <bridgehead>Removed Spaces in Notification Path Names</bridgehead>
+
+    <para>Spaces in Notification Path names have been known to cause problems.
+    The Web UI was modified to disallow spaces in path names. Bug 657.</para>
+
+    <bridgehead>Fixed the AM/PM Ordering on Performance Report
+    UI.</bridgehead>
+
+    <para>In the Custom Performance Report Web UI, 11 PM was followed by 12
+    PM, when it should have been 12 AM. This has been corrected. Bug
+    515.</para>
+
+    <bridgehead>Added a "contrib" Directory</bridgehead>
+
+    <para>The "contrib" directory now contains code, such as nifty utilities,
+    that exists outside of the main OpenNMS source but may prove useful. One
+    such example is Tomas Carlsson's "mib2opennms" program. These programs are
+    not supported.</para>
+
+    <bridgehead>Removed Duplicate Entries in
+    <filename>capsd-configuration.xml</filename></bridgehead>
+
+    <para>Both LDAP and Citrix protocol plug-ins were listed twice. This would
+    slow down the capabilities scan considerably.</para>
+
+    <bridgehead>Updated Data Collection and Graphing</bridgehead>
+
+    <para>Added new entries to <filename>datacollection-config.xml</filename>
+    and <filename>snmp-graph.properties</filename>.</para>
+
+    <bridgehead>Bugfixes</bridgehead>
+
+    <para>Many bugfixes, including allowing Threshold events to generate
+    notifications, AdminStatus and OperStatus values causing exceptions, and
+    rescans with certain devices.</para>
+  </sect1>
+
+  <sect1 id="chap2sect4">
+    <title>Changes in OpenNMS 1.0.0 and Above</title>
+
+    <para>The following major changes occurred between 0.9.9 and 1.0.0:</para>
+
+    <bridgehead>"OpenSSH" service is now "SSH"</bridgehead>
+
+    <para>The OpenSSH service has been renamed to "SSH" and changed to detect
+    common versions of SSH servers other than OpenSSH. Upgrades will retain
+    the "OpenSSH" service as well for the sake of reports.</para>
+
+    <bridgehead>"Service Unresponsive" support</bridgehead>
+
+    <para>There is now the possibility of having a state between "up" and
+    "down" that flags a service as being unresponsive. This state can be
+    reached when the service's port can be connected to, but it does not
+    respond in a reasonable amount of time.</para>
+
+    <bridgehead>Bugfixes</bridgehead>
+
+    <para>Many small bugfixes, including the "Calculating..." problem if RTC
+    has not come up yet when tomcat starts.</para>
+  </sect1>
+</chapter>
