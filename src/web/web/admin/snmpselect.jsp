@@ -300,7 +300,12 @@
 		}
           	row.append("<tr>\n");
           	row.append("<td width=\"5%\" align=\"center\">");
-	  	row.append(curInterface.getIfIndex());
+                int ifIndex = curInterface.getIfIndex();
+                if ( ifIndex > 0 ) {
+                  row.append(ifIndex);
+                } else {
+                  row.append("&nbsp");
+                }
           	row.append("</td>\n");
           	row.append("<td width=\"10%\" align=\"center\">");
 	  	row.append(curInterface.getAddress());

@@ -255,7 +255,14 @@ function doDelete() {
               </tr>
               <tr>
                 <td>Interface Index</td> 
-                <td><%=intf_db.getIfIndex()%></td>
+                <td>
+                  <% int ifIndex = intf_db.getIfIndex(); %>
+                  <% if( ifIndex > 0 ) {  %>
+                    <%=ifIndex%>
+                  <% } else { %>
+                    &nbsp;
+                  <% } %>
+                </td>
               </tr>
               <tr> 
                 <td>Last Service Scan</td>
