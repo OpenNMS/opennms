@@ -15,11 +15,14 @@ Build file for OpenNMS' sablecc-generated Java files.
 
  <!-- Generates Sablecc java files if necessary -->
  <target name="sablecc.filter.sources.generate"
-	 depends="sablecc.filter.sources.uptodate"
+	 depends="sablecc.filter.sources.uptodate, clean.imports"
 	 unless="sablecc.filter.sources.uptodate">
   <sablecc src="${services.source.dir}/${sablecc.filter.dir}/"
 	   outputdirectory="${build.sablecc.source.dir}"
 	   includes="filter.grammar"/>
+  </target>
+   
+<target name="clean.imports" if="build.clean.imports">   
   <echo>Cleaning imports for generated source...</echo>
   <cleanimports srcdir="${build.sablecc.source.dir}" />
  </target>

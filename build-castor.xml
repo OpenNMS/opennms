@@ -32,10 +32,13 @@ Build file for OpenNMS' castor-generated Java files.
    castor.threshd.sources.generate,              castor.vulnscand.sources.generate,
    castor.xmlrpcd.sources.generate,              castor.users.sources.generate,
    castor.views.sources.generate,                castor.viewsdisplay.sources.generate,
-   castor.webuiColors.sources.generate">
-     <echo>Cleaning imports for generated sources... </echo>
-      <cleanimports srcdir="${build.castor.source.dir}" />
+   castor.webuiColors.sources.generate, clean.imports">
    </target>
+ 
+   <target name="clean.imports" if="build.clean.imports">
+    <echo>Cleaning imports for generated sources... </echo>
+     <cleanimports srcdir="${build.castor.source.dir}" />
+   </target>   
 
  <!-- this doesn't work... not sure if I can easily get something like this
       to work...
