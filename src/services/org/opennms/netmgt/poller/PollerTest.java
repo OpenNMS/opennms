@@ -31,9 +31,13 @@
 //
 package org.opennms.netmgt.poller;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventIpcManager;
@@ -48,6 +52,7 @@ import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.mock.PollAnticipator;
+import org.opennms.netmgt.mock.Querier;
 import org.opennms.netmgt.outage.OutageManager;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -67,7 +72,9 @@ public class PollerTest extends TestCase {
 
     private boolean m_daemonsStarted = false;
 
-    private OutageAnticipator m_anticipator;
+    private EventAnticipator m_anticipator;
+
+    private OutageAnticipator m_outageAnticipator;
     
     //
     // SetUp and TearDown
@@ -102,11 +109,13 @@ public class PollerTest extends TestCase {
         m_pollerConfig.setDefaultPollInterval(1000L);
         m_pollerConfig.populatePackage(m_network);
         
-        m_anticipator = new OutageAnticipator();
+        m_anticipator = new EventAnticipator();
+        m_outageAnticipator = new OutageAnticipator(m_db);
         
         m_eventMgr = new MockEventIpcManager();
         m_eventMgr.setEventWriter(m_db);
         m_eventMgr.setEventAnticipator(m_anticipator);
+        m_eventMgr.addEventListener(m_outageAnticipator);
         
         m_poller = new Poller();
         m_poller.setEventManager(m_eventMgr);
@@ -150,54 +159,52 @@ public class PollerTest extends TestCase {
         // Bring Down the HTTP service and expect nodeLostService Event
         //
 
-        // expect node lost service for HTTP
-        m_anticipator.reset();
-        anticipateSvcStatusChanged(httpService, m_anticipator, ServiceMonitor.SERVICE_UNAVAILABLE);
+        resetAnticipated();
+        anticipateDown(httpService);
 
         // bring down the HTTP service
         httpService.bringDown();
 
-        // make sure the down events are received
-        assertEquals(0, m_anticipator.waitForAnticipated(10000).size());
-        assertEquals(0, m_anticipator.unanticipatedEvents().size());
+        verifyAnticipated(10000);
 
         //
-        // Bring Down the ICMP (on the only if on the node) now expect nodeDown
+        // Bring Down the ICMP (on the only interface on the node) now expect nodeDown
         // only.
         //
 
-        // expect node down event
-        m_anticipator.reset();
-        anticipateNodeStatusChanged(node, m_anticipator, ServiceMonitor.SERVICE_UNAVAILABLE);
+        resetAnticipated();
+        anticipateDown(node);
 
         // bring down the ICMP service
         icmpService.bringDown();
 
         // make sure the down events are received
-        assertEquals(0, m_anticipator.waitForAnticipated(10000).size());
-        assertEquals(0, m_anticipator.unanticipatedEvents().size());
+        verifyAnticipated(10000);
 
         //
         // Bring up both the node and the httpService at the same time. Expect
         // both a nodeUp and a nodeRegainedService
         //
 
-        // expect node up event and node regained service
-        m_anticipator.reset();
-        anticipateNodeStatusChanged(node, m_anticipator, ServiceMonitor.SERVICE_AVAILABLE);
+        resetAnticipated();
+        anticipateUp(node);
 
         // FIXME: Bug 709: The following event never occurs. We sent a
         // nodeLostService earlier we should send a nodeGainedService
-        // anticipateSvcStatusChanged(httpService, anticipator,
-        // ServiceMonitor.SERVICE_AVAILABLE);
+        // anticipateSvcUp(httpService);
 
         // bring up all the services on the node
         node.bringUp();
 
         // make sure the down events are received
-        assertEquals(0, m_anticipator.waitForAnticipated(10000).size());
-        assertEquals(0, m_anticipator.unanticipatedEvents().size());
+        verifyAnticipated(10000);
 
+    }
+
+    private void resetAnticipated() {
+        // expect node lost service for HTTP
+        m_anticipator.reset();
+        m_outageAnticipator.reset();
     }
 
     public void testCritSvcStatusPropagation() {
@@ -205,19 +212,13 @@ public class PollerTest extends TestCase {
 
         MockNode node = m_network.getNode(1);
 
-        //
-        // Set critical svc for all interfaces to down and see if we get Node
-        // down event
-        //
-
-        anticipateNodeStatusChanged(node, m_anticipator, ServiceMonitor.SERVICE_UNAVAILABLE);
+        anticipateDown(node);
 
         startDaemons();
 
         bringDownCritSvcs(node);
 
-        assertEquals(0, m_anticipator.waitForAnticipated(2000L).size());
-        assertEquals(0, m_anticipator.unanticipatedEvents().size());
+        verifyAnticipated(2000);
 
 
     }
@@ -304,13 +305,13 @@ public class PollerTest extends TestCase {
         MockInterface node1Iface = m_network.getInterface(1, "192.168.1.1");
         MockInterface reparentedIface = m_network.getInterface(1, "192.168.1.2");
         MockInterface node2Iface = m_network.getInterface(2, "192.168.1.3");
+        
 
         Event reparentEvent = MockUtil.createReparentEvent("Test", "192.168.1.2", 1, 2);
 
         // we are going to repart to node 2 so when we bring down its only
-        // current interface
-        // we expect an interface down not the whole node.
-        anticipateInterfaceStatusChanged(node2Iface, m_anticipator, ServiceMonitor.SERVICE_UNAVAILABLE);
+        // current interface we expect an interface down not the whole node.
+        anticipateDown(node2Iface);
 
         startDaemons();
 
@@ -322,22 +323,21 @@ public class PollerTest extends TestCase {
         // System.err.println("Bring Down:"+node2Iface);
         node2Iface.bringDown();
 
-        assertEquals(0, m_anticipator.waitForAnticipated(2000).size());
-        assertEquals(0, m_anticipator.unanticipatedEvents().size());
+        verifyAnticipated(2000);
 
         // FIXME: the event below is the CORRECT answer but the Poller isn't
-        // doing
-        // that. I'm going to test for the INCORRECT answer so I can tell if I
-        // change the behavior during refactoring.
-        // we now bring down the reparented interface and we should get node2
-        // down
+        // doing that. I'm going to test for the INCORRECT answer so I can tell if I
+        // change the behavior during refactoring. We now bring down the reparented 
+        // interface and we should get node2 down
         // m_anticipator.reset();
-        // m_anticipator.anticipateOutageOpened(MockUtil.createNodeDownEvent("Test", node2));
+        // m_anticipator.anticipateEvent(node2.createDownEvent());
 
-        // FIXME: BEGIN INCORRECT BEHAVIOR HERE
-        m_anticipator.reset();
-        m_anticipator.anticipateOutageOpened(MockUtil.createNodeDownEvent("Test", node1));
-        m_anticipator.anticipateOutageOpened(MockUtil.createNodeLostServiceEvent("Test", m_network.getService(2, "192.168.1.2", "ICMP")));
+        // Critical service on the reparented interface
+        MockService icmpService = m_network.getService(2, "192.168.1.2", "ICMP");
+
+        resetAnticipated();
+        m_anticipator.anticipateEvent(node1.createDownEvent());
+        m_anticipator.anticipateEvent(icmpService.createDownEvent());
         // FIXME: END INCORRECT BEHAVIOR HERE
 
         // System.err.println("Bring Down:"+reparentedIface);
@@ -345,10 +345,7 @@ public class PollerTest extends TestCase {
 
         sleep(5000);
 
-        // MockUtil.printEvents("Anticipated",
-        // anticipator.waitForAnticipated(2000));
-        assertEquals(0, m_anticipator.waitForAnticipated(3000).size());
-        assertEquals(0, m_anticipator.unanticipatedEvents().size());
+        verifyAnticipated(3000);
 
     }
 
@@ -362,21 +359,19 @@ public class PollerTest extends TestCase {
 
         startDaemons();
 
-        m_anticipator.reset();
-        anticipateSvcStatusChanged(node, m_anticipator, ServiceMonitor.SERVICE_UNAVAILABLE);
+        resetAnticipated();
+        anticipateServicesDown(node);
 
         node.bringDown();
 
-        assertEquals(0, m_anticipator.waitForAnticipated(10000).size());
-        assertEquals(0, m_anticipator.unanticipatedEvents().size());
+        verifyAnticipated(10000);
 
-        m_anticipator.reset();
-        anticipateSvcStatusChanged(node, m_anticipator, ServiceMonitor.SERVICE_AVAILABLE);
+        resetAnticipated();
+        anticipateServicesUp(node);
 
         node.bringUp();
 
-        assertEquals(0, m_anticipator.waitForAnticipated(10000).size());
-        assertEquals(0, m_anticipator.unanticipatedEvents().size());
+        verifyAnticipated(10000);
 
 
     }
@@ -391,27 +386,23 @@ public class PollerTest extends TestCase {
         // start the poller
         startDaemons();
 
-        // setup expected events
-        m_anticipator.reset();
-        anticipateNodeStatusChanged(node, m_anticipator, ServiceMonitor.SERVICE_UNAVAILABLE);
+        resetAnticipated();
+        anticipateDown(node);
 
         // brind down the node (duh)
         node.bringDown();
 
         // make sure the correct events are recieved
-        assertEquals(0, m_anticipator.waitForAnticipated(10000).size());
-        assertEquals(0, m_anticipator.unanticipatedEvents().size());
+        verifyAnticipated(10000);
 
-        // setup excpeted node up events
-        m_anticipator.reset();
-        anticipateNodeStatusChanged(node, m_anticipator, ServiceMonitor.SERVICE_UNAVAILABLE);
+        resetAnticipated();
+        anticipateUp(node);
 
         // bring the node back up
         node.bringUp();
 
         // make sure the up events are received
-        assertEquals(0, m_anticipator.waitForAnticipated(10000).size());
-        assertEquals(0, m_anticipator.unanticipatedEvents().size());
+        verifyAnticipated(10000);
 
 
     }
@@ -463,8 +454,8 @@ public class PollerTest extends TestCase {
         // after reparenting we should got the old owner go down while the other
         // comes up.
         //
-        anticipateNodeStatusChanged(node2, m_anticipator, ServiceMonitor.SERVICE_UNAVAILABLE);
-        anticipateInterfaceStatusChanged(node1Iface, m_anticipator, ServiceMonitor.SERVICE_UNAVAILABLE);
+        anticipateDown(node2);
+        anticipateDown(node1Iface);
 
         // bring down both nodes but bring iface back up
         node1.bringDown();
@@ -475,27 +466,21 @@ public class PollerTest extends TestCase {
 
         startDaemons();
 
-        assertEquals(0, m_anticipator.waitForAnticipated(2000).size());
-        assertEquals(0, m_anticipator.unanticipatedEvents().size());
+        verifyAnticipated(2000);
 
-        m_anticipator.reset();
+        resetAnticipated();
 
         // FIXME: should I expect this to send new events saying that the old
-        // node is now down
-        // and the new node is now up? YES I SHOULD
+        // node is now down and the new node is now up? YES I SHOULD
         // after moving the interface we expect node down on node1 and node up
         // on node2;
-        // anticipateNodeStatusChanged(node1, anticipator,
-        // ServiceMonitor.SERVICE_UNAVAILABLE);
-        // anticipateNodeStatusChanged(node2, anticipator,
-        // ServiceMonitor.SERVICE_AVAILABLE);
+        // anticipateNodeDown(node1);
+        // anticipateNodeUp(node2);
 
         reparentedIface.moveTo(node2);
         m_eventMgr.sendEventToListeners(reparentEvent);
 
-        assertEquals(0, m_anticipator.waitForAnticipated(2000).size());
-        assertEquals(0, m_anticipator.unanticipatedEvents().size());
-
+        verifyAnticipated(2000);
 
     }
 
@@ -530,12 +515,11 @@ public class PollerTest extends TestCase {
 
         assertEquals(0, anticipator.waitForAnticipated(10000).size());
 
-        anticipateSvcStatusChanged(element, m_anticipator, ServiceMonitor.SERVICE_UNAVAILABLE);
+        anticipateDown(element);
 
         element.bringDown();
 
-        assertEquals(0, m_anticipator.waitForAnticipated(10000).size());
-        assertEquals(0, m_anticipator.unanticipatedEvents().size());
+        verifyAnticipated(10000);
 
     }
 
@@ -589,55 +573,45 @@ public class PollerTest extends TestCase {
         }
     }
 
-
-
-    private void anticipateInterfaceStatusChanged(MockElement element, final OutageAnticipator anticipator, final int newStatus) {
-        final String uei = (newStatus == ServiceMonitor.SERVICE_AVAILABLE ? EventConstants.INTERFACE_UP_EVENT_UEI : EventConstants.INTERFACE_DOWN_EVENT_UEI);
-        MockVisitor eventCreator = new MockVisitorAdapter() {
-            public void visitInterface(MockInterface iface) {
-                if (iface.getPollStatus() != newStatus) {
-                    Event event = MockUtil.createInterfaceEvent("Test", uei, iface);
-                    if (newStatus == ServiceMonitor.SERVICE_AVAILABLE)
-                        anticipator.anticipateOutageClosed(event);
-                    else
-                        anticipator.anticipateOutageOpened(event);
-                }
-            }
-        };
-        element.visit(eventCreator);
+    private void verifyAnticipated(long millis) {
+        // make sure the down events are received
+        assertEquals(0, m_anticipator.waitForAnticipated(millis).size());
+        assertEquals(0, m_anticipator.unanticipatedEvents().size());
+        //assertTrue(m_outageAnticipator.checkAnticipated());
     }
 
-    private void anticipateNodeStatusChanged(MockElement element, final OutageAnticipator anticipator, final int newStatus) {
-        final String uei = (newStatus == ServiceMonitor.SERVICE_AVAILABLE ? EventConstants.NODE_UP_EVENT_UEI : EventConstants.NODE_DOWN_EVENT_UEI);
-        MockVisitor eventCreator = new MockVisitorAdapter() {
-            public void visitNode(MockNode node) {
-                if (node.getPollStatus() != newStatus) {
-                    Event event = MockUtil.createNodeEvent("Test", uei, node);
-                    if (newStatus == ServiceMonitor.SERVICE_AVAILABLE)
-                        anticipator.anticipateOutageClosed(event);
-                    else
-                        anticipator.anticipateOutageOpened(event);
-                }
-            }
-        };
-        element.visit(eventCreator);
-
+    private void anticipateUp(MockElement element) {
+        if (element.getPollStatus() != ServiceMonitor.SERVICE_AVAILABLE) {
+            Event event = element.createUpEvent();
+            m_anticipator.anticipateEvent(event);
+            m_outageAnticipator.anticipateOutageClosed(element, event);
+        }
     }
 
-    private void anticipateSvcStatusChanged(MockElement element, final OutageAnticipator anticipator, final int newStatus) {
-        final String uei = (newStatus == ServiceMonitor.SERVICE_AVAILABLE ? EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI : EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
+    private void anticipateDown(MockElement element) {
+        if (element.getPollStatus() != ServiceMonitor.SERVICE_UNAVAILABLE) {
+            Event event = element.createDownEvent();
+            m_anticipator.anticipateEvent(event);
+            m_outageAnticipator.anticipateOutageOpened(element, event);
+        }
+    }
+
+    private void anticipateServicesUp(MockElement node) {
         MockVisitor eventCreator = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
-                if (svc.getPollStatus() != newStatus) {
-                    Event event = MockUtil.createServiceEvent("Test", uei, svc);
-                    if (newStatus == ServiceMonitor.SERVICE_AVAILABLE)
-                        anticipator.anticipateOutageClosed(event);
-                    else
-                        anticipator.anticipateOutageOpened(event);
-                }
+                anticipateUp(svc);
             }
         };
-        element.visit(eventCreator);
+        node.visit(eventCreator);
+    }
+
+    private void anticipateServicesDown(MockElement node) {
+        MockVisitor eventCreator = new MockVisitorAdapter() {
+            public void visitService(MockService svc) {
+                anticipateDown(svc);
+            }
+        };
+        node.visit(eventCreator);
     }
 
     private void bringDownCritSvcs(MockElement element) {
@@ -651,6 +625,44 @@ public class PollerTest extends TestCase {
         element.visit(markCritSvcDown);
 
     }
+    
+    
+    class OutageChecker extends Querier { 
+        private Event m_lostSvcEvent;
+        private Timestamp m_lostSvcTime;
+        private MockService m_svc;
+        private Event m_regainedSvcEvent;
+        private Timestamp m_regainedSvcTime;
+        OutageChecker(MockService svc, Event lostSvcEvent) throws Exception {
+            this(svc, lostSvcEvent, null);
+        }
+        OutageChecker(MockService svc, Event lostSvcEvent, Event regainedSvcEvent) {
+            super(m_db, "select * from outages where nodeid = ? and ipAddr = ? and serviceId = ?");
+            
+            m_svc = svc;
+            m_lostSvcEvent = lostSvcEvent;
+            m_lostSvcTime = m_db.convertEventTimeToTimeStamp(m_lostSvcEvent.getTime());
+            m_regainedSvcEvent = regainedSvcEvent;
+            if (m_regainedSvcEvent != null)
+                m_regainedSvcTime = m_db.convertEventTimeToTimeStamp(m_regainedSvcEvent.getTime());
+        }
+       public void processRow(ResultSet rs) throws SQLException {
+            assertEquals(m_svc.getNodeId(), rs.getInt("nodeId"));
+            assertEquals(m_svc.getIpAddr(), rs.getString("ipAddr"));
+            assertEquals(m_svc.getId(), rs.getInt("serviceId"));
+            assertEquals(m_lostSvcEvent.getDbid(), rs.getInt("svcLostEventId"));
+            assertEquals(m_lostSvcTime, rs.getTimestamp("ifLostService"));
+            assertEquals(getRegainedEventId(), rs.getObject("svcRegainedEventId"));
+            assertEquals(m_regainedSvcTime, rs.getTimestamp("ifRegainedService"));
+        }
+       private Integer getRegainedEventId() {
+           if (m_regainedSvcEvent == null)
+               return null;
+           return new Integer(m_regainedSvcEvent.getDbid());
+       }
+    };
+    
+
 
     // TODO: test multiple polling packages
 
@@ -659,5 +671,7 @@ public class PollerTest extends TestCase {
     // TODO: test two packages both with the crit service and status propagation
 
     // TODO: how does unmanaging a node/iface/service work with the poller
+    
+    // TODO: test over lapping poll outages
 
 }

@@ -36,6 +36,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.xml.event.Event;
+
 /**
  * A test network configuration
  * 
@@ -44,6 +46,12 @@ import java.util.Map;
  */
 public class MockNetwork extends MockContainer {
 
+    public Event createDownEvent() {
+        throw new UnsupportedOperationException("Cannot generate down event for the network");
+    }
+    public Event createUpEvent() {
+        throw new UnsupportedOperationException("Cannot generate up event for the network");
+    }
     private MockInterface m_currentInterface;
 
     private MockNode m_currentNode;

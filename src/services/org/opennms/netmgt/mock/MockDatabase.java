@@ -37,7 +37,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.hsqldb.Server;
 import org.opennms.netmgt.EventConstants;
@@ -322,6 +325,10 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
         return countOutagesForService(svc, null);
     }
     
+    public int countOpenOutagesForService(MockService svc) {
+        return countOutagesForService(svc, "ifRegainedService is null");
+    }
+    
     public int countOutagesForService(MockService svc, String criteria) {
         String critSql = (criteria == null ? "" : " and "+criteria);
         Object[] values = { new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()) };
@@ -411,8 +418,25 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
         return result.charAt(0);
     }
     
+    public int countOutages() {
+        return countOutages(null);
+    }
+    
+    public int countOpenOutages() {
+        return countOutages("ifRegainedService is null");
+    }
+    
+    public int countOutages(String criteria) {
+        String critSql = (criteria == null ? "" : " where "+criteria);
+        return countRows("select * from outages"+critSql);
+    }
+    
     public int countOutagesForInterface(MockInterface iface) {
         return countOutagesForInterface(iface, null);
+    }
+    
+    public int countOpenOutagesForInterface(MockInterface iface) {
+        return countOutagesForInterface(iface, "ifRegainedService is null");
     }
 
     public int countOutagesForInterface(MockInterface iface, String criteria) {
@@ -420,5 +444,47 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
         Object[] values = { new Integer(iface.getNodeId()), iface.getIpAddr() };
         return countRows("select * from outages where nodeId = ? and ipAddr = ? "+critSql, values);
     }
+    
+    public boolean hasOpenOutage(MockService svc) {
+        return countOpenOutagesForService(svc) > 0;
+    }
+    
+    public Collection getOutages() {
+        return getOutages(null, new Object[0]);
+    }
+    
+    public Collection getOutages(String criteria, Object[] values) {
+        String critSql = (criteria == null ? "" : " where "+criteria);
+        final List outages = new LinkedList();
+        Querier loadExisting = new Querier(this, "select * from outages"+critSql) {
+            public void processRow(ResultSet rs) throws SQLException {
+                Outage outage = new Outage(rs.getInt("nodeId"), rs.getString("ipAddr"), rs.getInt("serviceId"));
+                outage.setLostEvent(rs.getInt("svcLostEventID"), rs.getTimestamp("ifLostService"));
+                boolean open = (rs.getObject("ifRegainedService") == null);
+                if (!open) {
+                    outage.setRegainedEvent(rs.getInt("svcRegainedEventID"), rs.getTimestamp("ifRegainedService"));
+                }
+                outages.add(outage);
+            }
+        };
+        loadExisting.execute(values);
+        return outages;
+    }
+    
+    public Collection getOpenOutages(MockService svc) {
+        Object[] values = { new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()) };
+        return getOutages("nodeId = ? and ipAddr = ? and serviceID = ? and ifRegainedService is null", values);
+    }
+    
+    public Collection getOutages(MockService svc) {
+        Object[] values = { new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()) };
+        return getOutages("nodeId = ? and ipAddr = ? and serviceID = ?", values);
+    }
+    
+    public Collection getClosedOutages(MockService svc) {
+        Object[] values = { new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()) };
+        return getOutages("nodeId = ? and ipAddr = ? and serviceID = ? and ifRegainedService is not null", values);
+    }
+    
 
 }

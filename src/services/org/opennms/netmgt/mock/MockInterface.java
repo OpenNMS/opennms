@@ -35,6 +35,7 @@ package org.opennms.netmgt.mock;
 import java.util.List;
 
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * @author brozow
@@ -135,6 +136,20 @@ public class MockInterface extends MockContainer {
         super.visit(v);
         v.visitInterface(this);
         visitMembers(v);
+    }
+
+    /**
+     * @return
+     */
+    public Event createDownEvent() {
+        return MockUtil.createInterfaceDownEvent("Test", this);
+    }
+
+    /**
+     * @return
+     */
+    public Event createUpEvent() {
+        return MockUtil.createInterfaceUpEvent("Test", this);
     }
 
 }

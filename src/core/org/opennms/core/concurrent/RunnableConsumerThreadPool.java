@@ -81,11 +81,6 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
     private int m_maxSize;
 
     /**
-     * The thread group that all pool threads belong to.
-     */
-    private ThreadGroup m_tGroup;
-
-    /**
      * The log4j prefix used when starting up a new fiber!
      */
     private String m_log4jPrefix;
@@ -99,6 +94,11 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
      * The set of listeners to call when a Runnable completes successfully.
      */
     private List m_completedListeners;
+
+    /**
+     * The thread group that all pool threads belong to.
+     */
+    private ThreadGroup m_tGroup;
 
     /**
      * The set of listeners to call when a Runnable fails to complete

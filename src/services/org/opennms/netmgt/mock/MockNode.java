@@ -32,6 +32,8 @@
 
 package org.opennms.netmgt.mock;
 
+import org.opennms.netmgt.xml.event.Event;
+
 /**
  * @author brozow
  * 
@@ -97,5 +99,21 @@ public class MockNode extends MockContainer {
         v.visitNode(this);
         visitMembers(v);
     }
+
+    /**
+     * @return
+     */
+    public Event createUpEvent() {
+        return MockUtil.createNodeUpEvent("Test", this);
+    }
+
+    /**
+     * @return
+     */
+    public Event createDownEvent() {
+        return MockUtil.createNodeDownEvent("Test", this);
+    }
+    
+    
 
 }

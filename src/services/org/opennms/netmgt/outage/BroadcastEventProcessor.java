@@ -68,6 +68,8 @@ final class BroadcastEventProcessor implements EventListener {
      */
     private OutageManager m_outageMgr;
 
+    private boolean m_eventListenerRegistered = false;
+
     /**
      * Constructor
      * 
@@ -84,6 +86,9 @@ final class BroadcastEventProcessor implements EventListener {
      * eventd
      */
     public void start() {
+        
+        if (m_eventListenerRegistered) return;
+        
         // Create the selector for the ueis this service is interested in
         //
         List ueiList = new ArrayList();
@@ -110,6 +115,7 @@ final class BroadcastEventProcessor implements EventListener {
         ueiList.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
 
         getEventMgr().addEventListener(this, ueiList);
+        m_eventListenerRegistered  = true;
     }
 
     /**
@@ -124,6 +130,7 @@ final class BroadcastEventProcessor implements EventListener {
      */
     public void close() {
         getEventMgr().removeEventListener(this);
+        m_eventListenerRegistered = false;
     }
 
     /**

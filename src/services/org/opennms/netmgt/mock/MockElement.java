@@ -33,6 +33,7 @@
 package org.opennms.netmgt.mock;
 
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * @author brozow
@@ -106,5 +107,9 @@ abstract public class MockElement {
     public void visit(MockVisitor v) {
         v.visitElement(this);
     }
+    
+    abstract public Event createDownEvent();
+    
+    abstract public Event createUpEvent();
 
 }

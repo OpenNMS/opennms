@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * @author brozow
@@ -55,6 +56,8 @@ public class MockService extends MockElement {
     private String m_svcName;
 
     private List m_triggers = new ArrayList();
+
+    private Event m_outageEvent;
 
    public MockService(MockInterface iface, String svcName, int serviceId) {
         super(iface);
@@ -162,6 +165,27 @@ public class MockService extends MockElement {
     
     public String toString() {
         return "Svc["+getNodeLabel()+"/"+getIpAddr()+"/"+getName()+"]";
+    }
+
+    /**
+     * @return
+     */
+    public Event createDownEvent() {
+        return MockUtil.createNodeLostServiceEvent("Test", this);
+    }
+
+    /**
+     * @return
+     */
+    public Event createUpEvent() {
+        return MockUtil.createNodeRegainedServiceEvent("Test", this);
+    }
+
+    /**
+     * @param outageOpened
+     */
+    public void setOutageEvent(Event outageOpened) {
+        m_outageEvent = outageOpened;
     }
 
 }

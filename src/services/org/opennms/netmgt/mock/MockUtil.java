@@ -32,6 +32,8 @@
 
 package org.opennms.netmgt.mock;
 
+import java.sql.Timestamp;
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -39,7 +41,9 @@ import java.util.Properties;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.PropertyConfigurator;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.outage.BasicNetwork;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -155,6 +159,20 @@ public class MockUtil {
         addEventParm(event, EventConstants.PARM_NEW_NODEID, newNode);
         return event;
     }
+    
+    public static Timestamp convertEventTimeIntoTimestamp(String eventTime) {
+        Timestamp timestamp = null;
+        try {
+            Date date = EventConstants.parseToDate(eventTime);
+            timestamp = new Timestamp(date.getTime());
+        } catch (ParseException e) {
+            ThreadCategory.getInstance(BasicNetwork.class).warn("Failed to convert event time " + eventTime + " to timestamp.", e);
+    
+            timestamp = new Timestamp((new Date()).getTime());
+        }
+        return timestamp;
+    }
+
 
     public static boolean eventsMatch(Event e1, Event e2) {
         if (e1 == e2)
@@ -227,5 +245,6 @@ public class MockUtil {
         if (MockUtil.printEnabled())
             System.err.println(string);
     }
+    
 
 }
