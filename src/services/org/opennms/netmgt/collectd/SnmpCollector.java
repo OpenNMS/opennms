@@ -33,6 +33,7 @@ import java.net.UnknownHostException;
 import java.net.SocketException;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.HashMap;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -104,6 +105,12 @@ final class SnmpCollector
 	 */
 	private static final String SQL_GET_NODEID  	= "SELECT nodeid,ifindex,issnmpprimary FROM ipinterface WHERE ipaddr=? AND ismanaged!='D'";
 	
+	/**
+	 * SQL statement to retrieve interface's 'issnmpprimary' table information.
+	 */
+	private static final String SQL_GET_ISSNMPPRIMARY  	= "SELECT ifindex,issnmpprimary FROM ipinterface WHERE nodeid=?";
+	
+	/** 
 	/** 
 	 * SQL statement to retrieve node's system object id.
 	 */
@@ -144,6 +151,7 @@ final class SnmpCollector
 	 */
 	private static String	SNMP_STORAGE_PRIMARY = "primary";
 	private static String	SNMP_STORAGE_ALL     = "all";
+	private static String	SNMP_STORAGE_SELECT  = "select";
 
 	private static final String	RRD_ERROR = "RRD_ERROR";
 	
@@ -210,6 +218,7 @@ final class SnmpCollector
 	 * to be followed.  Two possible values: 
 	 * 	SNMP_STORAGE_PRIMARY 	= "primary"
 	 * 	SNMP_STORAGE_ALL 	= "all" 
+	 * 	SNMP_STORAGE_SELECT 	= "select" 
 	 */
 	static String SNMP_STORAGE_KEY = "org.opennms.netmgt.collectd.SnmpCollector.snmpStorage";
 	
@@ -727,11 +736,29 @@ final class SnmpCollector
 			// 	   interface as well as the corresponding RRD data source list.
 			//	2. Create the RRD file to hold data retrieved for the interface.
 			//	3. Add the interface to the interface map for retrieval during the poll.
+			PreparedStatement stmt1 = null;
 			try 
 			{
 				stmt = dbConn.prepareStatement(SQL_GET_SNMP_INFO);
 				stmt.setInt(1, nodeID);
 				ResultSet rs = stmt.executeQuery();
+
+                                stmt1 = dbConn.prepareStatement(SQL_GET_ISSNMPPRIMARY);
+                                stmt1.setInt(1, nodeID);   // interface address
+                                ResultSet rs1 = stmt1.executeQuery();
+
+                                if (log.isDebugEnabled())
+                                        log.debug("initialize: Attempting to get issnmpprimary information for node: " + nodeID);
+
+				HashMap snmppriMap = new HashMap();
+
+                                while (rs1.next())
+                                {
+					String snmppriIfIndex = rs1.getString(1);
+					String snmppriCollType = rs1.getString(2);
+					snmppriMap.put(snmppriIfIndex, snmppriCollType);
+                                }
+                                rs1.close();
 
 				while (rs.next()) 
 				{
@@ -799,7 +826,10 @@ final class SnmpCollector
 					
 					// Create new IfInfo object
 					//
-					IfInfo ifInfo = new IfInfo(index, type, label);
+
+					String collType = (String)snmppriMap.get(rs.getString(1));
+
+					IfInfo ifInfo = new IfInfo(index, type, label, collType);
 					
 					if (index == primaryIfIndex)
 					{
@@ -1580,10 +1610,22 @@ final class SnmpCollector
 						continue;
 					}
 				}
+
+				IfInfo ifInfo = (IfInfo)ifMap.get(new Integer(ifIndex));
+
+				if (snmpStorage.equals(SNMP_STORAGE_SELECT))
+				{
+					if (ifInfo.getCollType().equals("N"))
+					{
+						if(log.isDebugEnabled())
+							log.debug("updateRRDs: selectively storing SNMP data for primary interface (" + primaryIfIndex + "), skipping ifIndex: " + ifIndex);
+						continue;
+					}
+				}
+				
 				
 				// Use ifIndex to lookup the IfInfo object from the interface map
 				//
-				IfInfo ifInfo = (IfInfo)ifMap.get(new Integer(ifIndex));
 				if (ifInfo.getDsList() == null)
 					throw new RuntimeException("Data Source list not available for primary IP addr " + ipaddr.getHostAddress() + " and ifIndex " + ifInfo.getIndex());
 				

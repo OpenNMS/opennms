@@ -566,7 +566,12 @@ final class RescanProcessor
 		int status = snmpc.getAdminStatus(ifIndex);
 		if(status != -1)
 			dbIpIfEntry.setStatus(status);			
-		dbIpIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
+
+		// Removed the following update to insure that the issnmpprimary field was not
+		// over-written during a rescan. Since it should already be set, there is no
+		// need to re-set it.
+
+		// dbIpIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
 		
 		// Update the database
 		dbIpIfEntry.store(dbc);

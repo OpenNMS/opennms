@@ -45,7 +45,7 @@
 			<attribute name="snmpStorageFlag" type="string" use="required">
 				<simpleType>
 					<restriction base="string">
-						<pattern value="(all|primary)"/>
+						<pattern value="(all|primary|select)"/>
 					</restriction>
 				</simpleType>
 			</attribute>

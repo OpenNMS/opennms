@@ -41,16 +41,18 @@ final class IfInfo
 	private int	m_index;
 	private int 	m_type;
 	private String	m_label;
+	private String	m_collType;
 	private boolean m_isPrimary;
 	
 	private List	m_oidList;
 	private List	m_dsList;
 	
-	public IfInfo(int ifIndex, int ifType, String ifLabel)
+	public IfInfo(int ifIndex, int ifType, String ifLabel, String collType)
 	{
 		m_index = ifIndex;
 		m_type = ifType;
 		m_label = ifLabel;
+		m_collType = collType;
 		m_isPrimary = false;
 		m_oidList = null;
 		m_dsList = null;
@@ -84,6 +86,11 @@ final class IfInfo
 	public String getLabel()
 	{
 		return m_label;
+	}
+	
+	public String getCollType()
+	{
+		return m_collType;
 	}
 	
 	public boolean getIsPrimary()
