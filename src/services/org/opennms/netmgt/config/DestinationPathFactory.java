@@ -97,10 +97,8 @@ public class DestinationPathFactory extends DestinationPathManager {
      * 
      */
     public static synchronized DestinationPathFactory getInstance() {
-        if (!initialized)
-            return null;
 
-        if (instance == null) {
+        if (instance == null || !initialized) {
             instance = new DestinationPathFactory();
         }
 
