@@ -419,7 +419,6 @@ FUNCTIONS_LOADED=0
 if [ -f /etc/SuSE-release ]; then
     . /etc/rc.status
     rc_reset
-    . /usr/bin/setJava --version 1.4 --devel
 else
     # Source function library.
     for dir in @install.init.dir@ /etc /etc/rc.d; do
