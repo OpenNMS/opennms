@@ -289,7 +289,7 @@ public class NotificationTask extends Thread {
             if (NotificationManager.PARAM_DESTINATION.equals(aSwitch)) {
                 value = m_user.getUserId();
             } else if (NotificationManager.PARAM_EMAIL.equals(aSwitch)) {
-                value = m_notifd.getUserManager().getEmail(m_user.getUserId());
+		value = getEmail();
             } else if (NotificationManager.PARAM_PAGER_EMAIL.equals(aSwitch)) {
                 value = m_notifd.getUserManager().getPagerEmail(m_user.getUserId());
             } else if (NotificationManager.PARAM_XMPP_ADDRESS.equals(aSwitch)) {
@@ -306,6 +306,10 @@ public class NotificationTask extends Thread {
         }
 
         return value;
+    }
+
+    public String getEmail() throws IOException, MarshalException, ValidationException {
+	return m_notifd.getUserManager().getEmail(m_user.getUserId());
     }
     
 }

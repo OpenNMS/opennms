@@ -41,6 +41,7 @@ import java.util.Map;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.TimeConverter;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.groups.Group;
@@ -199,7 +200,7 @@ public class NotificationsTestCase extends TestCase {
                 "    </notification>" +
                 "    <notification name=\"nodeTimeTest\" status=\"on\">\n" + 
                 "        <uei>uei.opennms.org/tests/nodeTimeTest</uei>\n" + 
-	        "        <description>test for properly formatted timestamp in notifications</description\n" +
+	        "        <description>test for properly formatted timestamp in notifications</description>\n" +
                 "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
                 "        <destinationPath>NoEscalate</destinationPath>\n" + 
                 "        <text-message>Timestamp: %time%.</text-message>\n" + 
@@ -548,7 +549,7 @@ public class NotificationsTestCase extends TestCase {
     }
 
     protected void verifyAnticipated(long lastNotifyTime, long waitTime, long sleepTime) {
-	m_anticipator.verifyAnticipated(lastNotifytime, waitTime, sleepTime);
+	m_anticipator.verifyAnticipated(lastNotifyTime, waitTime, sleepTime);
     }
 
     protected void sleep(long millis) {

@@ -123,7 +123,7 @@ public class NotifdTest extends NotificationsTestCase {
         m_anticipator.reset();
         
         Date upDate = new Date();
-        anticipateNotificationsForGroup("RESOLVED: node 1 down.", "RESOLVED: all services are down on node 1.", "InitialGroup", upDate, 0);
+        anticipateNotificationsForGroup("RESOLVED: node 1 down.", "RESOLVED: All services are down on node 1.", "InitialGroup", upDate, 0);
         long finishedUps = anticipateNotificationsForGroup("node 1 up.", "The node which was previously down is now up.", "UpGroup", upDate, 0);
 
         //bring node back up now
@@ -171,7 +171,7 @@ public class NotifdTest extends NotificationsTestCase {
         Date now = new Date();
 
         anticipateNotificationsForGroup("interface 192.168.1.1 down.", "All services are down on interface 192.168.1.1, dot1 interface alias.", "InitialGroup", now, 0);
-        long endTime = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "All services are down on interface 192.168.1.1, dot1 interface alias", "EscalationGroup", now.getTime()+2500, 0);
+        long endTime = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "All services are down on interface 192.168.1.1, dot1 interface alias.", "EscalationGroup", now.getTime()+2500, 0);
 
         m_eventMgr.sendEventToListeners(iface.createDownEvent(now));
 
@@ -273,7 +273,7 @@ public class NotifdTest extends NotificationsTestCase {
         Date date = new Date();
         Event upEvent = iface.createUpEvent(date);
         anticipateNotificationsForGroup("RESOLVED: interface 192.168.1.1 down.", "RESOLVED: All services are down on interface 192.168.1.1, dot1 interface alias.", "InitialGroup", date, 0);
-        long endTime = anticipateNotificationsForGroup("interface 192.168.1.1 up.", "The interface which was previously down is up.", "UpGroup", date, 0);
+        long endTime = anticipateNotificationsForGroup("interface 192.168.1.1 up.", "The interface which was previously down is now up.", "UpGroup", date, 0);
         m_eventMgr.sendEventToListeners(upEvent);
         verifyAnticipated(endTime, 500, 5000);
     }
@@ -380,7 +380,7 @@ public class NotifdTest extends NotificationsTestCase {
         MockNode node = m_network.getNode(1);
 
         Date downDate = new Date();
-        long finishedDowns = anticipateNotificationsForRole("notification test", "oncall", downDate, 0);
+        long finishedDowns = anticipateNotificationsForRole("notification test", "Notification Test", "oncall", downDate, 0);
 
         m_eventMgr.sendEventToListeners(MockUtil.createNodeEvent("Test", "uei.opennms.org/test/roleTestEvent", node));
 
