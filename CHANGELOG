@@ -1,5 +1,6 @@
 1.0.0 to 1.1.0
 ----------------------------------------------------------------------
+- Fixed some typos and bad URLs in error messages. Bug 662
 - Changed all references to Hashtable (deprecated) to HashMap
 - Fixed multipart message mistake. Bug 591
 - Added the ability to associate events in eventconf.xml with 
