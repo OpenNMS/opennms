@@ -239,6 +239,7 @@ public class SQLTranslation extends DepthFirstAdapter {
         String[] joinTableNames = m_schemaFactory.getJoinTablesForTable(t);
         for(int i = 0; i < joinTableNames.length; i++) {
             Table joinTable = m_schemaFactory.getTableByName(joinTableNames[i]);
+            if (joinTable == null) throw new FilterParseException("Unable to locate visable table for "+joinTableNames[i]+" referrenced in join for table "+t.getName());
             if (!m_tables.contains(joinTable)) {
                 if (m_tables.size() == 0)
                     m_from.append(joinTable.getName());
