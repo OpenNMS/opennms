@@ -87,7 +87,7 @@ public class SnmpManageNodesServlet extends HttpServlet {
         java.util.List allInterfaces = null;
 
         if (userSession != null) {
-            allInterfaces = (java.util.List) userSession.getAttribute("listAllinterfaces.snmpmanage.jsp");
+            allInterfaces = (java.util.List) userSession.getAttribute("listInterfacesForNode.snmpselect.jsp");
         }
 
         // the list of all interfaces marked as managed
@@ -149,7 +149,7 @@ public class SnmpManageNodesServlet extends HttpServlet {
             sendSNMPRestartEvent(currNodeId, primeInt);
 
         // forward the request for proper display
-        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/index.jsp");
+        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/snmpGetNodes");
         dispatcher.forward(request, response);
     }
 

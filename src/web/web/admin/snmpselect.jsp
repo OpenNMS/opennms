@@ -56,20 +56,20 @@
 
     int nodeId = Integer.parseInt( nodeIdString );
 
+    String nodeLabel = request.getParameter( "nodelabel" );
+
+    if( nodeLabel == null ) {
+        throw new org.opennms.web.MissingParameterException( "nodelabel" );
+    }
+
     HttpSession userSession = request.getSession(false);
-    List nodes = null;
     List interfaces = null;
-    Integer lineItems= new Integer(0);
-    Integer lineIntItems= new Integer(0);
     
     interfaceIndex = 0;
     
     if (userSession != null)
     {
-  	nodes = (List)userSession.getAttribute("listAllnodes.snmpmanage.jsp");
-        lineItems = (Integer)userSession.getAttribute("lineNodeItems.snmpmanage.jsp");
-  	interfaces = (List)userSession.getAttribute("listAllinterfaces.snmpmanage.jsp");
-        lineIntItems = (Integer)userSession.getAttribute("lineIntItems.snmpmanage.jsp");
+  	interfaces = (List)userSession.getAttribute("listInterfacesForNode.snmpselect.jsp");
     }
 %>
 
@@ -173,7 +173,7 @@
       	<td>&nbsp;</td>
       	</tr>
 
-   	<%=listNodeName(nodes, nodeId, nodes.size())%>
+   	<%=listNodeName(nodeId, nodeLabel)%>
       
    	<tr>
         	<td align="left" valign="top">
@@ -186,6 +186,7 @@
               			<td width="5%" align="center"><b>ifType</b></td>
               			<td width="10%" align="center"><b>ifDescription</b></td>
               			<td width="10%" align="center"><b>ifName</b></td>
+              			<td width="10%" align="center"><b>ifAlias</b></td>
               			<td width="10%" align="center"><b>SNMP Status</b></td>
               			<td width="5%" align="center"><b>Collect?</b></td>
             		</tr>
@@ -228,29 +229,19 @@
 </html>
 
 <%!
-      public String listNodeName(List nodes, int intnodeid, int nodesize)
-      	throws java.sql.SQLException
+      public String listNodeName(int intnodeid, String nodelabel)
       {
          StringBuffer nodename = new StringBuffer();
                 
-         for (int i = 0; i < nodesize; i++)
-	 {
-         	SnmpManagedNode curNode = (SnmpManagedNode)nodes.get(i);
-		int curnodeid = curNode.getNodeID();
-		if (curnodeid == intnodeid)
-		{
-	 		String curNodeLabel = curNode.getNodeLabel(); 
-         		nodename.append("<tr><td>");
-         		nodename.append("<B>Node ID</B>: ");
-         		nodename.append(intnodeid);
-         		nodename.append("</td></tr>\n");
-         		nodename.append("<tr><td>");
-         		nodename.append("<B>Node Label</B>: ");
-         		nodename.append(curNodeLabel);
-      	 		nodename.append("</td></tr>\n");
-         		nodename.append("<tr><td>&nbsp;</td></tr>\n");
-		}
-	}
+         nodename.append("<tr><td>");
+         nodename.append("<B>Node ID</B>: ");
+         nodename.append(intnodeid);
+         nodename.append("</td></tr>\n");
+         nodename.append("<tr><td>");
+         nodename.append("<B>Node Label</B>: ");
+         nodename.append(nodelabel);
+      	 nodename.append("</td></tr>\n");
+         nodename.append("<tr><td>&nbsp;</td></tr>\n");
           
          return nodename.toString();
       }
@@ -321,6 +312,9 @@
           	row.append("</td>\n");
           	row.append("<td width=\"10%\" align=\"center\">");
 	  	row.append(curInterface.getIfName());
+          	row.append("</td>\n");
+          	row.append("<td width=\"10%\" align=\"center\">");
+	  	row.append(curInterface.getIfAlias());
           	row.append("</td>\n");
           	row.append("<td width=\"10%\" align=\"center\">");
 	  	row.append(collstatus);

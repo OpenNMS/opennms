@@ -668,6 +668,11 @@
     <servlet-class>org.opennms.web.admin.nodeManagement.SnmpGetNodesServlet</servlet-class>
   </servlet>
   <servlet>
+    <!-- servlet for grabbing SNMP interface information -->
+    <servlet-name>snmpGetInterfaces</servlet-name>
+    <servlet-class>org.opennms.web.admin.nodeManagement.SnmpGetInterfacesServlet</servlet-class>
+  </servlet>
+  <servlet>
     <!-- servlet for grabbing node, interface and service information -->
     <servlet-name>getNodes</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.GetNodesServlet</servlet-class>
@@ -1184,6 +1189,10 @@
   <servlet-mapping>
     <servlet-name>snmpGetNodes</servlet-name>
     <url-pattern>/admin/snmpGetNodes</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>snmpGetInterfaces</servlet-name>
+    <url-pattern>/admin/snmpGetInterfaces</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>getNodes</servlet-name>

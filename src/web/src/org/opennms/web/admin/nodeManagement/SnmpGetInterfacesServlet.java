@@ -62,10 +62,9 @@ import org.opennms.netmgt.config.DatabaseConnectionFactory;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class SnmpGetNodesServlet extends HttpServlet {
-    private static final String SNMP_SERVICE_QUERY = "SELECT serviceid FROM service WHERE servicename = 'SNMP'";
+public class SnmpGetInterfacesServlet extends HttpServlet {
 
-    private static final String NODE_QUERY = "SELECT nodeid, nodelabel FROM node WHERE nodeid IN (SELECT nodeid FROM ifservices WHERE serviceid = ? ) AND nodeid IN (SELECT nodeid FROM ipinterface Where ismanaged != 'D') ORDER BY nodelabel, nodeid";
+    private static final String INTERFACE_QUERY = "SELECT ipinterface.nodeid, ipinterface.ipaddr, ipinterface.ifindex, ipinterface.iphostname, ipinterface.issnmpprimary, snmpinterface.snmpifdescr, snmpinterface.snmpiftype, snmpinterface.snmpifname, snmpinterface.snmpifalias FROM ipinterface, snmpinterface WHERE ipinterface.nodeid=snmpinterface.nodeid AND ipinterface.ifindex=snmpinterface.snmpifindex AND ipinterface.nodeid=?;";
 
     public void init() throws ServletException {
         try {
@@ -74,53 +73,58 @@ public class SnmpGetNodesServlet extends HttpServlet {
         }
     }
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession user = request.getSession(true);
 
+        String nodeIdString = request.getParameter( "node" );
+
+        if( nodeIdString == null ) {
+            throw new org.opennms.web.MissingParameterException( "node" );
+        }
+
+        int nodeid = Integer.parseInt( nodeIdString );
+
         try {
-            user.setAttribute("listAllnodes.snmpmanage.jsp", getAllNodes(user));
+            user.setAttribute("listInterfacesForNode.snmpselect.jsp", getNodeInterfaces(user,nodeid));
         } catch (SQLException e) {
             throw new ServletException(e);
         }
 
         // forward the request for proper display
-        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/snmpmanage.jsp");
+        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/snmpselect.jsp");
         dispatcher.forward(request, response);
     }
 
-    private List getAllNodes(HttpSession userSession) throws SQLException {
+    private List getNodeInterfaces(HttpSession userSession, int nodeid) throws SQLException {
         Connection connection = null;
-        List allNodes = new ArrayList();
+        List nodeInterfaces = new ArrayList();
         int lineCount = 0;
 
         try {
             connection = DatabaseConnectionFactory.getInstance().getConnection();
-            int snmpServNum = 0;
-            Statement servstmt = connection.createStatement();
-            ResultSet snmpserv = servstmt.executeQuery(SNMP_SERVICE_QUERY);
-            if (snmpserv != null) {
-                while (snmpserv.next()) {
-                    snmpServNum = snmpserv.getInt(1);
+
+            PreparedStatement interfaceSelect = connection.prepareStatement(INTERFACE_QUERY);
+            interfaceSelect.setInt(1, nodeid);
+
+            ResultSet interfaceSet = interfaceSelect.executeQuery();
+
+            if (interfaceSet != null) {
+                while (interfaceSet.next()) {
+                    lineCount++;
+                    SnmpManagedInterface newInterface = new SnmpManagedInterface();
+                    nodeInterfaces.add(newInterface);
+                    newInterface.setNodeid(interfaceSet.getInt(1));
+                    newInterface.setAddress(interfaceSet.getString(2));
+                    newInterface.setIfIndex(interfaceSet.getInt(3));
+                    newInterface.setIpHostname(interfaceSet.getString(4));
+                    newInterface.setStatus(interfaceSet.getString(5));
+                    newInterface.setIfDescr(interfaceSet.getString(6));
+                    newInterface.setIfType(interfaceSet.getInt(7));
+                    newInterface.setIfName(interfaceSet.getString(8));
+                    newInterface.setIfAlias(interfaceSet.getString(9));
                 }
             }
-            this.log("DEBUG: The SNMP service number is: " + snmpServNum);
-
-            PreparedStatement stmt = connection.prepareStatement(NODE_QUERY);
-            stmt.setInt(1, snmpServNum);
-            ResultSet nodeSet = stmt.executeQuery();
-
-            if (nodeSet != null) {
-                while (nodeSet.next()) {
-                    SnmpManagedNode newNode = new SnmpManagedNode();
-                    newNode.setNodeID(nodeSet.getInt(1));
-                    newNode.setNodeLabel(nodeSet.getString(2));
-                    allNodes.add(newNode);
-
-                }
-            }
-            userSession.setAttribute("lineNodeItems.snmpmanage.jsp", new Integer(lineCount));
-
-            nodeSet.close();
+            interfaceSelect.close();
         } finally {
             if (connection != null) {
                 try {
@@ -130,7 +134,7 @@ public class SnmpGetNodesServlet extends HttpServlet {
             }
         }
 
-        return allNodes;
-    }
+        return nodeInterfaces;
 
+    }
 }
