@@ -110,7 +110,7 @@ public final class Poller implements PausableFiber {
     public synchronized void init() {
 
         // get the category logger
-        Category log = ThreadCategory.getInstance();
+        Category log = ThreadCategory.getInstance(getClass());
         
         // set the DbConnectionFactory in the QueryManager
         m_queryMgr.setDbConnectionFactory(m_dbConnectionFactory);
@@ -180,15 +180,15 @@ public final class Poller implements PausableFiber {
 
     private void createScheduler() {
 
-        Category log = ThreadCategory.getInstance();
+        Category log = ThreadCategory.getInstance(getClass());
         // Create a scheduler
         //
         try {
-            log.debug("start: Creating poller scheduler");
+            log.debug("init: Creating poller scheduler");
 
             m_scheduler = new Scheduler("Poller", getPollerConfig().getThreads());
         } catch (RuntimeException e) {
-            log.fatal("start: Failed to create poller scheduler", e);
+            log.fatal("init: Failed to create poller scheduler", e);
             throw e;
         }
     }
@@ -205,7 +205,7 @@ public final class Poller implements PausableFiber {
         m_status = STARTING;
 
         // get the category logger
-        Category log = ThreadCategory.getInstance();
+        Category log = ThreadCategory.getInstance(getClass());
 
         // start the scheduler
         //
@@ -240,7 +240,7 @@ public final class Poller implements PausableFiber {
         }
         m_scheduler = null;
         m_status = STOPPED;
-        Category log = ThreadCategory.getInstance();
+        Category log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled())
             log.debug("stop: Poller stopped");
     }
@@ -253,7 +253,7 @@ public final class Poller implements PausableFiber {
         m_scheduler.pause();
         m_status = PAUSED;
 
-        Category log = ThreadCategory.getInstance();
+        Category log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled())
             log.debug("pause: Poller paused");
     }
@@ -266,7 +266,7 @@ public final class Poller implements PausableFiber {
         m_scheduler.resume();
         m_status = RUNNING;
 
-        Category log = ThreadCategory.getInstance();
+        Category log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled())
             log.debug("resume: Poller resumed");
     }

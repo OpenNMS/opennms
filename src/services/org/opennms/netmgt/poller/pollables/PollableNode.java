@@ -124,4 +124,10 @@ public class PollableNode extends PollableContainer {
         return this;
     }
 
+    public PollStatus doPoll(PollableElement elem) {
+        synchronized (getTreeLock()) {
+            resetStatusChanged();
+            return poll(elem);
+        }
+    }
 }

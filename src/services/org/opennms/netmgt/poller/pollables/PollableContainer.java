@@ -182,7 +182,7 @@ abstract public class PollableContainer extends PollableElement {
 
 
     protected PollStatus poll(PollableElement elem) {
-        synchronized (getTreeLock()) {
+        synchronized (elem.getTreeLock()) {
             PollableElement member = findMemberWithDescendent(elem);
             PollStatus memberStatus = member.poll(elem);
             if (memberStatus.isUp() != getStatus().isUp() && member.isStatusChanged()) {

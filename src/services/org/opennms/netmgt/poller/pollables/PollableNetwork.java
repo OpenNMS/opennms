@@ -157,4 +157,33 @@ public class PollableNetwork extends PollableContainer {
         
     }
 
+    public void delete() {
+        throw new UnsupportedOperationException("Can't delete the entire network");
+    }
+    public PollStatus poll(PollableElement elem) {
+        PollableElement member = findMemberWithDescendent(elem);
+        return member.poll(elem);
+    }
+
+    public void processStatusChange(Date date) {
+        // no need to process status changes for the network itself
+        processMemberStatusChanges(date);
+    }
+    public void recalculateStatus() {
+        Iter iter = new Iter() {
+            public void forEachElement(PollableElement elem) {
+                elem.recalculateStatus();
+            }
+        };
+        forEachMember(iter);
+    }
+    public void resetStatusChanged() {
+        super.resetStatusChanged();
+        Iter iter = new Iter() {
+            public void forEachElement(PollableElement elem) {
+                elem.resetStatusChanged();
+            }
+        };
+        forEachMember(iter);
+    }
 }

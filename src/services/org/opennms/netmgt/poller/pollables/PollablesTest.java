@@ -703,9 +703,6 @@ public class PollablesTest extends TestCase {
         m_network.recalculateStatus();
         
         PollableVisitor upChecker = new PollableVisitorAdaptor() {
-            public void visitNetwork(PollableNetwork network) {
-                assertUp(network);
-            }
             public void visitNode(PollableNode node) {
                 if (node == pDot1Icmp.getNode())
                     assertUp(node);

@@ -46,7 +46,7 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.poller.Poller;
 
 public class Pollerd implements PollerdMBean {
-    public final static String LOG4J_CATEGORY = "OpenNMS.Poller";
+    public final static String LOG4J_CATEGORY = "OpenNMS.Pollers";
 
     public void init() {
         // Set the category prefix
@@ -96,6 +96,7 @@ public class Pollerd implements PollerdMBean {
     public int getStatus() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        Category log = ThreadCategory.getInstance();
 
         return getPoller().getStatus();
     }
