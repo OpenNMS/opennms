@@ -385,7 +385,8 @@ final class SuspectEventProcessor
 		if(smbc != null)
 		{
 			// Netbios Name and Domain
-			if(smbc.getNbtName() != null)
+			// Note: only override if the label source is not HOSTNAME
+			if(smbc.getNbtName() != null && entryNode.getLabelSource() != DbNodeEntry.LABEL_SOURCE_HOSTNAME)
 			{
 				entryNode.setLabel(smbc.getNbtName());
 				entryNode.setLabelSource(DbNodeEntry.LABEL_SOURCE_NETBIOS);

@@ -1,0 +1,164 @@
+Changes since version 1.44 (2001-08-14)
+
+Changes to xsl/*
+
+  | 2001-09-29  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* VERSION: Version 1.45 released.
+  | 
+
+Changes to xsl/common/*
+
+  | 2001-09-25  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* common.xsl: Support automatic collation of year ranges in
+  | 	  copyright
+  | 
+  | 	* l10n.xsl: Fix gentext.nav.* templates
+  | 
+  | 2001-09-22  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* gentext.xsl: Rewrote substitute-markup to support %p
+  | 
+  | 	* gentext.xsl, labels.xsl: Bug #463033: allow xref to list
+  | 	  items (in orderedlists) and varlistentrys
+  | 
+  | 	* titles.xsl: Support title.markup for legal notices
+  | 
+  | 2001-08-29  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* common.xsl: Fix orderedlist numerations
+  | 
+
+Changes to xsl/docsrc/*
+
+  | 2001-09-29  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* extensions.xml: Improved instructions for using Saxon/Xalan
+  | 	  extensions
+  | 
+
+Changes to xsl/extensions/*
+
+  | 2001-09-26  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* Makefile: Bug #465146: use in extensions/Makefile
+  | 
+  | 2001-09-22  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* Makefile: Support Saxon 6.4.4
+  | 
+
+Changes to xsl/fo/*
+
+  | 2001-09-25  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* param.xsl, titlepage.xsl: Support automatic collation of
+  | 	  year ranges in copyright
+  | 
+  | 2001-09-24  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* lists.xsl: Whitespace changes
+  | 
+  | 2001-09-23  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* lists.xsl: Patch #460123, fix for <step>s 2 ff. in
+  | 	  <procedure>
+  | 
+  | 2001-09-22  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* xref.xsl: Bug #462830: allow %p in templates
+  | 
+  | 	* xref.xsl: Bug #463033: allow xref to list items (in
+  | 	  orderedlists) and varlistentrys
+  | 
+  | 2001-09-09  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* formal.xsl: Added keep-together.within-column
+  | 
+  | 2001-08-29  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* lists.xsl: Fix orderedlist numerations
+  | 
+
+Changes to xsl/html/*
+
+  | 2001-09-26  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* admon.xsl, biblio.xsl, block.xsl, callout.xsl,
+  | 	  component.xsl, division.xsl, ebnf.xsl, formal.xsl,
+  | 	  glossary.xsl, graphics.xsl, html.xsl, index.xsl, inline.xsl,
+  | 	  lists.xsl, qandaset.xsl, refentry.xsl, sections.xsl,
+  | 	  synop.xsl, table.xsl, verbatim.xsl, xref.xsl: Bug #464487:
+  | 	  use (new) anchor template to consistently generate HTML
+  | 	  anchors (usually conditionally, in other words, only for
+  | 	  elements that actually have an ID)
+  | 
+  | 2001-09-25  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* chunk-common.xsl: Fix gentext.nav.* templates
+  | 
+  | 	* param.xsl, titlepage.xsl: Support automatic collation of
+  | 	  year ranges in copyright
+  | 
+  | 2001-09-24  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* refentry.xsl, synop.xsl: Added some paras to improve spacing
+  | 
+  | 	* verbatim.xsl: Implemented changes suggested by Paul Winder,
+  | 	  Sam Brow, and John Dreystadt of Arbortext to make
+  | 	  'make-verbatim' less memory intensive; also added paras to
+  | 	  literallayout and address divs for better spacing in NS6
+  | 
+  | 2001-09-22  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* changebars.xsl: sgmltag is an inline
+  | 
+  | 	* chunk-common.xsl: Feature request #439053: support
+  | 	  generate.legalnotice.link
+  | 
+  | 	* xref.xsl: Bug #462830: allow %p in templates
+  | 
+  | 	* xref.xsl: Bug #463033: allow xref to list items (in
+  | 	  orderedlists) and varlistentrys
+  | 
+  | 2001-09-09  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* onechunk.xsl: New file.
+  | 
+  | 2001-08-29  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* lists.xsl: Fix orderedlist numerations
+  | 
+  | 2001-08-25  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* sections.xsl: Bug #451005: no id anchor for bridgehead
+  | 
+
+Changes to xsl/doc/*
+
+  | 2001-09-09  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* Makefile: Add titlepage templates
+  | 
+
+Changes to xsl/htmlhelp/*
+
+  | 2001-08-23  Jirka Kosek <kosek@users.sourceforge.net>
+  | 
+  | 	* htmlhelp-common.xsl: Synchronized puncation generation in
+  | 	  ToC with rest of stylesheets.
+  | 
+  | 2001-08-21  Jirka Kosek <kosek@users.sourceforge.net>
+  | 
+  | 	* htmlhelp-common.xsl: Fixed presentation of secondary
+  | 	  indexterms in index pane
+  | 
+
+Changes to xsl/doc/template/*
+
+  | 2001-09-09  Norman Walsh <nwalsh@users.sourceforge.net>
+  | 
+  | 	* .cvsignore, Makefile: New file.
+  | 
+
