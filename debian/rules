@@ -126,11 +126,15 @@ install: build
 	##
 	## Setup the opennms-common package
 	##
-
 	cp $(CURDIR)/debian/opennms-common.overrides \
 		$(ONMSCOM)/usr/share/lintian/overrides/opennms-common
 	mv $(TMP)/usr/share/opennms/bin/* \
 		$(ONMSCOM)/usr/share/opennms/bin/
+	sed -e 's/opt\/OpenNMS/usr\/share\/opennms/g' \
+		$(ONMSCOM)/usr/share/opennms/bin/opennms.sh > \
+		$(ONMSCOM)/usr/share/opennms/bin/opennms.sh.tmp
+	mv $(ONMSCOM)/usr/share/opennms/bin/opennms.sh.tmp \
+		$(ONMSCOM)/usr/share/opennms/bin/opennms.sh
 	mv $(TMP)/usr/share/opennms/lib/scripts/* \
 		$(ONMSCOM)/usr/share/opennms/lib/scripts/
 	mv $(TMP)/usr/share/opennms/lib/updates/* \
@@ -215,23 +219,29 @@ install: build
 
 	mv $(TMP)/usr/share/java/webapps/opennms \
 		$(ONMSWEB)/usr/share/java/webapps/
-	mv $(ONMSWEB)/usr/share/java/webapps/opennms/WEB-INF/web.xml \
-		$(ONMSWEB)/etc/opennms/
+#	mv $(ONMSWEB)/usr/share/java/webapps/opennms/WEB-INF/web.xml \
+#		$(ONMSWEB)/etc/opennms/
 	cp $(CURDIR)/debian/opennms-webapp.overrides \
 		$(ONMSWEB)/usr/share/lintian/overrides/opennms-webapp
 	cp $(CURDIR)/debian/tomcat.policy \
 		$(ONMSWEB)/etc/tomcat4/policy.d/opennms.policy
 
 	# Fix tomcat port number for Debian standard tomcat4 8180
+#	sed -e 's/localhost:8080/localhost:8180/g' \
+#		$(ONMSWEB)/etc/opennms/web.xml > \
+#		$(ONMSWEB)/etc/opennms/web.xml.tmp
+#	mv $(ONMSWEB)/etc/opennms/web.xml.tmp $(ONMSWEB)/etc/opennms/web.xml
 	sed -e 's/localhost:8080/localhost:8180/g' \
-		$(ONMSWEB)/etc/opennms/web.xml > \
-		$(ONMSWEB)/etc/opennms/web.xml.tmp
-	mv $(ONMSWEB)/etc/opennms/web.xml.tmp $(ONMSWEB)/etc/opennms/web.xml
+		$(ONMSWEB)/usr/share/java/webapps/opennms/WEB-INF/web.xml > \
+		$(ONMSWEB)/usr/share/java/webapps/opennms/WEB-INF/web.xml.tmp
+	mv $(ONMSWEB)/usr/share/java/webapps/opennms/WEB-INF/web.xml.tmp \
+		$(ONMSWEB)/usr/share/java/webapps/opennms/WEB-INF/web.xml
+
 
 	# Fix permissions and ownership
 	chgrp -R nogroup $(ONMSWEB)/etc/opennms
 	chmod 2775 $(ONMSWEB)/etc/opennms
-	chmod 660 $(ONMSWEB)/etc/opennms/web.xml
+	chmod 660 $(ONMSWEB)/usr/share/java/webapps/opennms/WEB-INF/web.xml
 	chmod 644 $(ONMSWEB)/etc/tomcat4/policy.d/opennms.policy
 
 	##

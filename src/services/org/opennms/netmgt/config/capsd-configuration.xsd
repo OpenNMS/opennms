@@ -50,6 +50,22 @@
 					</restriction>
 				</simpleType>
 			</attribute>
+			
+			<!-- Flag which indicates if an external XMLRPC server has to be notified with
+                             any event process errors
+                        -->
+			<attribute name="xmlrpc" type="string" use="optional" default="false">
+				<simpleType>
+					<restriction base="string">
+						<pattern value="(true|false)"/>
+					</restriction>
+				</simpleType>
+			</attribute>
+			
+			<!-- The URL of the external xmlrpc server which listens any error notification
+                             from the NMS during processing an event.
+			-->
+			<attribute name="xmlrpcServerUrl" type="string" use="optional"/>
 		</complexType>
 	</element>
 

@@ -44,6 +44,7 @@ import org.opennms.netmgt.utils.IPSorter;
 
 // castor classes generated from the poller-configuration.xsd
 import org.opennms.netmgt.config.poller.*;
+import org.opennms.netmgt.config.server.*;
 
 /**
  * <p>This is the singleton class used to load the configuration for
@@ -83,6 +84,17 @@ public final class PollerConfigFactory
 	 * configured in each - so as to avoid file reads
 	 */
 	private Map				m_urlIPMap;
+
+        /** 
+         * A boolean flag to indicate If a filter rule agiant the local 
+         * OpenNMS server has to be used.
+         */
+        private static boolean                  m_verifyServer;
+
+        /**
+         * The name of the local OpenNMS server
+         */
+        private static String                   m_localServer;
 
 	/**
 	 * Go through the poller configuration and build a mapping of each configured
@@ -163,6 +175,10 @@ public final class PollerConfigFactory
 		ThreadCategory.getInstance(PollerConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
 		
 		m_singleton = new PollerConfigFactory(cfgFile.getPath());
+
+                OpennmsServerConfigFactory.init();
+                m_verifyServer = OpennmsServerConfigFactory.getInstance().verifyServer();
+                m_localServer = OpennmsServerConfigFactory.getInstance().getServerName();
 
 		m_loaded = true;
 	}
@@ -248,6 +264,32 @@ public final class PollerConfigFactory
 		return bRet;
 	}
 
+        /**
+         * <p>This method returns the boolean flag xmlrpc to indicate
+         * if notification to external xmlrpc server is needed.</p>
+         *
+         * @return      true if need to notify an external xmlrpc server
+         */
+        public synchronized boolean getXmlrpc()
+        {
+                String flag = m_config.getXmlrpc();
+                if (flag.equals("true"))
+                        return true;
+                else
+                        return false;
+        }
+        
+        /**
+         * <p> this method returns the external xmlrpc server URL as a 
+         * string.</p>
+         *
+         * @return      the xmlrpc server URL.
+         */
+        public synchronized String getXmlrpcServerUrl()
+        {
+                return m_config.getXmlrpcServerUrl();
+        }
+         
 	/**
 	 * <p>This method returns the configured critical service name</p>
 	 *
@@ -337,10 +379,19 @@ public final class PollerConfigFactory
 		// check if interface passes the package filter
 		//
 		Filter filter = new Filter();
+                StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
 		boolean filterPassed = false;
 		try
 		{
-			filterPassed = filter.isValid(iface, pkg.getFilter().getContent());
+                        if (m_verifyServer)
+                        {
+                                filterRules.append(" & (serverName == ");
+                                filterRules.append('\"');
+                                filterRules.append(m_localServer);
+                                filterRules.append('\"');
+                                filterRules.append(")");
+                        }
+			filterPassed = filter.isValid(iface, filterRules.toString());
 		}
 		catch (Throwable t)
 		{
@@ -355,7 +406,7 @@ public final class PollerConfigFactory
 
 		if (log.isDebugEnabled())
 			log.debug("interfaceInPackage: Interface " + iface + " passed filter "
-				  + pkg.getFilter().getContent() + " for package "
+				  + filterRules.toString() + " for package "
 				  + pkg.getName() + "?: " + filterPassed);
 
 		if (!filterPassed)

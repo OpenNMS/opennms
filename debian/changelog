@@ -1,3 +1,15 @@
+opennms (1.1.1-7RS) stable; urgency=low
+
+  * Building for production environment
+
+ -- Eric Evans <eevans@rackspace.com>  Fri, 30 Oct 2003 15:51:00 -0600
+
+opennms (1.1.1-6RS) unstable; urgency=low
+
+  * For building off of RACKSPACE_BRANCH in CVS
+
+ -- Eric Evans <eevans@rackspace.com>  Fri, 15 Aug 2003 13:52:00 -0600
+
 opennms (1.1.1-5) unstable; urgency=low
 
   * The "Tax Man Cometh" release!

@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <?castor class-name="org.opennms.netmgt.poller.PollerConfiguration"?>
-<poller-configuration threads="30" serviceUnresponsiveEnabled="false">
+<poller-configuration threads="30" 
+        serviceUnresponsiveEnabled="false"
+        xmlrpc="true"
+        xmlrpcServerUrl="@install.xmlrpc.server@">
 	<node-outage status="on" 
 	             pollAllIfNoCriticalServiceDefined="true">
 		<critical-service name="ICMP"/>

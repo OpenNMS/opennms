@@ -33,8 +33,8 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
-// castor classes generated from the outage-configuration.xsd
-import org.opennms.netmgt.config.outage.*;
+// castor classes generated from the opennms-server.xsd
+import org.opennms.netmgt.config.server.*;
 
 import org.opennms.netmgt.ConfigFileConstants;
 
@@ -46,20 +46,20 @@ import org.opennms.netmgt.ConfigFileConstants;
  * <em>init()</em> is called before calling any other method to ensure
  * the config is loaded before accessing other convenience methods</p>
  *
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
+ * @author <a href="mailto:jamesz@blast.com">James Zuo</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
-public final class OutageManagerConfigFactory
+public final class OpennmsServerConfigFactory
 {
 	/**
 	 * The singleton instance of this factory
 	 */
-	private static OutageManagerConfigFactory	m_singleton=null;
+	private static OpennmsServerConfigFactory	m_singleton=null;
 
 	/**
 	 * The config class loaded from the config file
 	 */
-	private OutageConfiguration			m_config;
+	private LocalServer			m_config;
 
 	/**
 	 * This member is set to true if the configuration file
@@ -77,14 +77,14 @@ public final class OutageManagerConfigFactory
 	 * @exception org.exolab.castor.xml.ValidationException Thrown if 
 	 *	the contents do not match the required schema.
 	 */
-	private OutageManagerConfigFactory(String configFile)
+	private OpennmsServerConfigFactory(String configFile)
 		throws 	IOException,
 			MarshalException, 
 			ValidationException
 	{
 		InputStream cfgIn = new FileInputStream(configFile);
 
-		m_config = (OutageConfiguration) Unmarshaller.unmarshal(OutageConfiguration.class, new InputStreamReader(cfgIn));
+		m_config = (LocalServer) Unmarshaller.unmarshal(LocalServer.class, new InputStreamReader(cfgIn));
 		cfgIn.close();
 
 	}
@@ -112,9 +112,9 @@ public final class OutageManagerConfigFactory
 			return;
 		}
 
-		File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OUTAGE_MANAGER_CONFIG_FILE_NAME);
+		File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_SERVER_CONFIG_FILE_NAME);
 
-		m_singleton = new OutageManagerConfigFactory(cfgFile.getPath());
+		m_singleton = new OpennmsServerConfigFactory(cfgFile.getPath());
 
 		m_loaded = true;
 	}
@@ -148,7 +148,7 @@ public final class OutageManagerConfigFactory
 	 * @throws java.lang.IllegalStateException Thrown if the factory
 	 * 	has not yet been initialized.
 	 */
-	public static synchronized OutageManagerConfigFactory getInstance()
+	public static synchronized OpennmsServerConfigFactory getInstance()
 	{
 		if(!m_loaded)
 			throw new IllegalStateException("The factory has not been initialized");
@@ -157,43 +157,28 @@ public final class OutageManagerConfigFactory
 	}
 
 	/**
-	 * <p>Return the number of writer threads to be started</p>
+	 * <p>Return the local opennms server name</p>
 	 *
-	 * @return the number of writer threads to be started
+	 * @return the name of the local opennms server
 	 */
-	public synchronized int getWriters()
+	public synchronized String getServerName()
 	{
-		return m_config.getWriters();
+		return m_config.getServerName();
 	}
 
-	/**
-	 * <p>Return the SQL statemet to get the next outage ID</p>
-	 *
-	 * @return the SQL statemet to get the next outage ID
-	 */
-	public synchronized String getGetNextOutageID()
-	{
-		return m_config.getGetNextOutageID();
-	}
-	
         /**
-	 * <p>Return the boolean xmlrpc as string to indicate if 
-         * notification to external xmlrpc server is needed.</p>
+	 * <p>Return the boolean flag verify server to determine if poller what to use
+         * server to restrict services to poll.</p>
 	 *
-	 * @return boolean flag as a string value
+	 * @return boolean flag 
 	 */
-	public synchronized String getXmlrpc()
+	public synchronized boolean verifyServer()
 	{
-		return m_config.getXmlrpc();
+		String flag = m_config.getVerifyServer();
+                if (flag.equals("true"))
+                        return true;
+                else
+                        return false;
 	}
 
-	/**
-	 * <p>Return the xmlrpc server URL as a string</p>
-	 *
-	 * @return the xmlrpc server URL
-	 */
-	public synchronized String getXmlrpcServerUrl()
-	{
-		return m_config.getXmlrpcServerUrl();
-        }
 }

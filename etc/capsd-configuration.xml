@@ -5,7 +5,9 @@
 	management-policy="managed"
 	max-suspect-thread-pool-size = "6"
 	max-rescan-thread-pool-size = "3"
-	abort-protocol-scans-if-no-route = "false">
+	abort-protocol-scans-if-no-route = "false"
+        xmlrpc="true"
+        xmlrpcServerUrl="@install.xmlrpc.server@">
 	<protocol-plugin protocol="ICMP" class-name="org.opennms.netmgt.capsd.IcmpPlugin" scan="on" user-defined="false">
 		<property key="timeout" value="2000"/>
 		<property key="retry" value="2"/>

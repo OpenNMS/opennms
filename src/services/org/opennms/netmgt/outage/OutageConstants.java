@@ -182,4 +182,8 @@ public final class OutageConstants
          */
         public static final String DB_INS_CACHE_HIT = "INSERT INTO outages (outageID, svcLostEventID, nodeID, ipAddr, serviceID, ifLostService, svcRegainedEventID, ifRegainedService) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
+        /**
+         * The sql statement used to retrieve the nodeLabel for a nodeid
+         */
+        public static final String DB_GET_NODE_LABEL = "SELECT nodelabel FROM NODE WHERE nodeid = ?";
 }

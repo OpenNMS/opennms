@@ -32,6 +32,7 @@ import java.util.*;
 import java.sql.*;
 import java.text.ParseException;
 
+import org.apache.xmlrpc.XmlRpcException;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -95,6 +96,9 @@ public final class OutageWriter implements Runnable
 	// Control whether or not an event is generated following 
 	// database modifications to notify other OpenNMS processes
 	private boolean			m_generateNodeDeletedEvent;
+
+        private boolean                 m_xmlrpc = false;
+        private String                  m_xmlrpcServerUrl = null;
 	
 	/**
 	 * A class to hold SNMP/SNMPv2 entries for a node from the ifservices table
@@ -382,6 +386,30 @@ public final class OutageWriter implements Runnable
                                         newOutageWriter.setString(4, ipAddr);
                                         newOutageWriter.setLong  (5, serviceID);
                                         newOutageWriter.setTimestamp(6, convertEventTimeIntoTimestamp(eventTime));
+
+                                        // Notify the external xmlrpc server when needed
+                                        if (m_xmlrpc && m_xmlrpcServerUrl != null) 
+                                        {
+                                                if (log.isDebugEnabled())
+                                                        log.debug("handleNodeLostService: Notify external xmlrpc server...");
+                                                
+                                                try
+                                                {
+                                                        XmlRpcNotifier notifier = new XmlRpcNotifier(m_xmlrpcServerUrl, m_event);
+                                                        String reply = notifier.sendServiceDownEvent();
+                                                        if (log.isDebugEnabled())
+                                                                log.debug("handleNodeLostService: The reply from the xmlrpc server is: "
+                                                                        + "\n\t\t" + reply);
+
+                                                        
+                                                } catch (XmlRpcException xe)
+                                                {
+                                                        log.warn("handleNodeLostService: Failed to notify xmlrpc server.", xe);
+                                                } catch (IOException ioe)
+                                                {
+                                                        log.warn("handleNodeLostService: Failed to notify xmlrpc server.", ioe);
+                                                } 
+                                        }
                                 }
                                 else
                                 {
@@ -400,9 +428,47 @@ public final class OutageWriter implements Runnable
                                         newOutageWriter.setTimestamp(6, convertEventTimeIntoTimestamp(eventTime));
                                         newOutageWriter.setLong  (7, regainedEvent.getEventId());
                                         newOutageWriter.setTimestamp(8, convertEventTimeIntoTimestamp(regainedEvent.getEventTime()));
+                                        
+                                        // Notify the external xmlrpc server when needed
+                                        if (m_xmlrpc && m_xmlrpcServerUrl != null) 
+                                        {
+                                                if (log.isDebugEnabled())
+                                                        log.debug("handleNodeLostService: Notify external xmlrpc server...");
+                                                
+                                                try
+                                                {
+                                                        XmlRpcNotifier notifier = new XmlRpcNotifier(m_xmlrpcServerUrl, m_event);
+                                                        String reply = notifier.sendServiceDownEvent();
+                                                        if (log.isDebugEnabled())
+                                                                log.debug("handleNodeLostService: The reply from the xmlrpc server is: "
+                                                                        + "\n\t\t" + reply);
+
+                                                        // the regained service event is in the cache, create a 
+                                                        // regained service event and notify the xmlrpc server.
+                                                        Event regainedServiceEvent = new Event();
+                                                        regainedServiceEvent.setNodeid(m_event.getNodeid());
+                                                        regainedServiceEvent.setInterface(m_event.getInterface());
+                                                        regainedServiceEvent.setService(m_event.getService());
+                                                        regainedServiceEvent.setHost(m_event.getHost());
+                                                        regainedServiceEvent.setTime(regainedEvent.getEventTime());
+                                                        notifier = new XmlRpcNotifier(m_xmlrpcServerUrl, regainedServiceEvent);
+                                                        reply = notifier.sendServiceUpEvent();
+                                                        
+                                                        if (log.isDebugEnabled())
+                                                                log.debug("handleNodeLostService: The reply from the xmlrpc server is: "
+                                                                        + "\n\t\t" + reply);
+
+                                                        
+                                                } catch (XmlRpcException xe)
+                                                {
+                                                        log.warn("handleNodeLostService: Failed to notify xmlrpc server.", xe);
+                                                } catch (IOException ioe)
+                                                {
+                                                        log.warn("handleNodeLostService: Failed to notify xmlrpc server.", ioe);
+                                                }
+                                        }
                                 }
 
-			
 				// execute
 				newOutageWriter.executeUpdate();
 
@@ -646,6 +712,30 @@ public final class OutageWriter implements Runnable
 				log.warn("Exception closing JDBC connection", e);
 			}
 		}
+                
+                // Notify the xmlrpc server the interfaceDown event when 
+                // needed
+                if (m_xmlrpc && m_xmlrpcServerUrl != null)
+                {
+                        if (log.isDebugEnabled())
+                                log.debug("handleInterfaceDown: Notify external xmlrpc server...");
+                        
+                        try
+                        {
+                                XmlRpcNotifier notifier = new XmlRpcNotifier(m_xmlrpcServerUrl, m_event);
+                                String reply = notifier.sendInterfaceDownEvent();
+                                if (log.isDebugEnabled())
+                                        log.debug("handleInterfaceDown: The reply from the xmlrpc server is: "
+                                                + "\n\t\t" + reply);
+                                
+                        } catch (XmlRpcException xe)
+                        {
+                                log.warn("handleInterfaceDown: Failed to notify xmlrpc server.", xe);
+                        } catch (IOException ioe)
+                        {
+                                log.warn("handleInterfaceDown: Failed to notify xmlrpc server.", ioe);
+                        }
+                }
 	}
 
 	/**
@@ -842,6 +932,30 @@ public final class OutageWriter implements Runnable
 				log.warn("Exception closing JDBC connection", e);
 			}
 		}
+                
+                // Notify the xmlrpc server the nodeDown event when 
+                // needed
+                if (m_xmlrpc && m_xmlrpcServerUrl != null)
+                {
+                        if (log.isDebugEnabled())
+                                log.debug("handleNodeDown: Notify external xmlrpc server...");
+                        
+                        try
+                        {
+                                XmlRpcNotifier notifier = new XmlRpcNotifier(m_xmlrpcServerUrl, m_event);
+                                String reply = notifier.sendNodeDownEvent();
+                                if (log.isDebugEnabled())
+                                        log.debug("handleNodeDown: The reply from the xmlrpc server is: "
+                                                + "\n\t\t" + reply);
+                                
+                        } catch (XmlRpcException xe)
+                        {
+                                log.warn("handleNodeDown: Failed to notify xmlrpc server.", xe);
+                        } catch (IOException ioe)
+                        {
+                                log.warn("handleNodeDown: Failed to notify xmlrpc server.", ioe);
+                        }
+                }
 	}
 
 	/**
@@ -944,6 +1058,30 @@ public final class OutageWriter implements Runnable
 				log.warn("Exception closing JDBC connection", e);
 			}
 		}
+                
+                // Notify the xmlrpc server the nodeUp event when 
+                // needed
+                if (m_xmlrpc && m_xmlrpcServerUrl != null)
+                {
+                        if (log.isDebugEnabled())
+                                log.debug("handleNodeUp: Notify external xmlrpc server...");
+                        
+                        try
+                        {
+                                XmlRpcNotifier notifier = new XmlRpcNotifier(m_xmlrpcServerUrl, m_event);
+                                String reply = notifier.sendNodeUpEvent();
+                                if (log.isDebugEnabled())
+                                        log.debug("handleNodeUp: The reply from the xmlrpc server is: "
+                                                + "\n\t\t" + reply);
+                                
+                        } catch (XmlRpcException xe)
+                        {
+                                log.warn("handleNodeUp: Failed to notify xmlrpc server.", xe);
+                        } catch (IOException ioe)
+                        {
+                                log.warn("handleNodeUp: Failed to notify xmlrpc server.", ioe);
+                        }
+                }
 	}
 
 	/**
@@ -1042,6 +1180,30 @@ public final class OutageWriter implements Runnable
 				log.warn("Exception closing JDBC connection", e);
 			}
 		}
+                
+                // Notify the xmlrpc server the interfaceUp event when 
+                // needed
+                if (m_xmlrpc && m_xmlrpcServerUrl != null)
+                {
+                        if (log.isDebugEnabled())
+                                log.debug("handleInterfaceUp: Notify external xmlrpc server...");
+                        
+                        try
+                        {
+                                XmlRpcNotifier notifier = new XmlRpcNotifier(m_xmlrpcServerUrl, m_event);
+                                String reply = notifier.sendInterfaceUpEvent();
+                                if (log.isDebugEnabled())
+                                        log.debug("handleInterfaceUp: The reply from the xmlrpc server is: "
+                                                + "\n\t\t" + reply);
+                                
+                        } catch (XmlRpcException xe)
+                        {
+                                log.warn("handleInterfaceUp: Failed to notify xmlrpc server.", xe);
+                        } catch (IOException ioe)
+                        {
+                                log.warn("handleInterfaceUp: Failed to notify xmlrpc server.", ioe);
+                        }
+                }
 	}
 
 	/**
@@ -1107,6 +1269,30 @@ public final class OutageWriter implements Runnable
                                         catch (SQLException sqle)
                                         {
                                                 log.warn("SQL exception during rollback, reason", sqle);
+                                        }
+                                }
+                                
+                                // Notify the xmlrpc server the nodeRegainedService event when 
+                                // needed
+                                if (m_xmlrpc && m_xmlrpcServerUrl != null)
+                                {
+                                        if (log.isDebugEnabled())
+                                                log.debug("handleNodeRegainedService: Notify external xmlrpc server...");
+                                        
+                                        try
+                                        {
+                                                XmlRpcNotifier notifier = new XmlRpcNotifier(m_xmlrpcServerUrl, m_event);
+                                                String reply = notifier.sendServiceUpEvent();
+                                                if (log.isDebugEnabled())
+                                                        log.debug("handleNodeRegainedService: The reply from the xmlrpc server is: "
+                                                                + "\n\t\t" + reply);
+                                                
+                                        } catch (XmlRpcException xe)
+                                        {
+                                                log.warn("handleNodeRegainedService: Failed to notify xmlrpc server.", xe);
+                                        } catch (IOException ioe)
+                                        {
+                                                log.warn("handleNodeRegainedService: Failed to notify xmlrpc server.", ioe);
                                         }
                                 }
                         }
@@ -1988,7 +2174,7 @@ public final class OutageWriter implements Runnable
 		return newEvent;
 	}
 
-	/**
+        /**
 	 * <p>Read the event UEI, nodeid, interface and service - depending
 	 * on the UEI, read event parms, if necessary, and process as appropriate</p>
 	 */
@@ -2017,7 +2203,15 @@ public final class OutageWriter implements Runnable
 				log.debug("Event received with null UEI, ignoring event");
 			return;
 		}
-		
+                
+                // Show the xmlrpc server URL in logs
+                //
+                if (m_xmlrpc)
+                {
+			if (log.isDebugEnabled())
+				log.debug("The xmlrpc server URL is: " + m_xmlrpcServerUrl);
+		}
+                
 		// get eventid
 		long eventID = -1;
 		if (m_event.hasDbid())
@@ -2112,7 +2306,12 @@ public final class OutageWriter implements Runnable
 	public OutageWriter(Event event)
 	{
 		m_event = event;
+                m_xmlrpc = OutageManagerConfigFactory.getInstance().getXmlrpc().equals("true");
+                if (m_xmlrpc)
+                        m_xmlrpcServerUrl = OutageManagerConfigFactory.getInstance().getXmlrpcServerUrl();
+                 
 	}
+
 
 	/**
 	 * <p>Process the event depending on the UEI</p>
