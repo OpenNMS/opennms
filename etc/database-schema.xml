@@ -22,6 +22,7 @@
 		<column name="nodeSysDescription"/>
 		<column name="nodeSysLocation"/>
 		<column name="nodeSysContact"/>
+		<column name="nodeLabel"/>
 	</table>
 
 	<table name="ipInterface" key="primary">
