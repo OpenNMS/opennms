@@ -23,28 +23,31 @@ build_classpath () {
 		local TYPE=`echo "$target" | awk -F: '{print $1}'`
 		local VAR=` echo "$target" | sed -e "s#^${TYPE}:##"`
 
-#		echo "TYPE = $TYPE" >> /tmp/classpath.$$
-#		echo "VAR  = $VAR"  >> /tmp/classpath.$$
-
+		VAR=`echo $VAR | sed -e "s,$OPENNMS_HOME/,./,g"`
 		if [ -n "$VAR" ]; then
-			if [ "$TYPE" = "dir" ]; then
-				CP="$CP:$VAR"
-			fi
-
-			if [ "$TYPE" = "jar" ]; then
-				CP="$CP:`find_jarfile $VAR`"
-			fi
-
-			if [ "$TYPE" = "jardir" ]; then
-				for jar in $VAR/*.jar; do
-					CP="$CP:$jar"
-				done
-			fi
-
-			if [ "$TYPE" = "cp" ]; then
-				CP="$CP:$VAR"
-			fi
-
+			case "$TYPE" in
+				dir)
+					CP="$CP:$VAR"
+					;;
+				jar)
+					CP="$CP:`find_jarfile $VAR`"
+					;;
+				jardir)
+					# some shells just put the "*.jar" literally in
+					# if there's no files :P
+					if [ `ls $VAR/*.jar 2>/dev/null | wc -l` -gt 0 ]; then
+						for jar in $VAR/*.jar; do
+							CP="$CP:$jar"
+						done
+					fi
+					;;
+				cp)
+					CP="$CP:$VAR"
+					;;
+				*)
+					echo "build_classpath: unknown type: $TYPE"
+					;;
+			esac
 		fi
 
 	done

@@ -44,6 +44,8 @@ OPENNMS_PIDFILE="@root.install.pid@"
 OPENNMS_INITDIR="@root.install.initdir@"
 START_TIMEOUT="180" # number of seconds before timing out on startupp
  
+pushd "$OPENNMS_HOME" >/dev/null 2>&1
+
 umask 002
 
 # workaround for doing a status
@@ -66,9 +68,8 @@ done
 # define needed for grep to find opennms easily
 JAVA_CMD="$JAVA_HOME/bin/java"
 
-APP_CLASSPATH=`build_classpath dir:$OPENNMS_HOME/lib/updates \
-	jardir:$OPENNMS_HOME/lib/updates "cp:$CLASSPATH_OVERRIDE" \
-	dir:$OPENNMS_HOME/etc jardir:$OPENNMS_HOME/lib "cp:$CLASSPATH"`
+APP_CLASSPATH=`build_classpath "cp:$CLASSPATH_OVERRIDE" \
+	dir:$OPENNMS_HOME/etc jardir:$OPENNMS_HOME/lib`
 
 add_ld_path "$OPENNMS_HOME/lib"
 
@@ -292,5 +293,7 @@ case "$COMMAND" in
 		exit 1
 		;;
 esac
+
+popd >/dev/null 2>&1
 
 exit 0
