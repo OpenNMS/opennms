@@ -1,7 +1,7 @@
 %{!?version:%define version @product.version@}
 %{!?release:%define release @product.release.stamp@}
 %{!?instprefix:%define instprefix @rpm.install.dir@}
-%{!?packagedir:%define packagedir @ant.project.name@-@product.version@-@product.release@}
+%{!?packagedir:%define packagedir @ant.project.name@-%version-%release}
 %{!?dbuser:%define dbuser @rpm.database.user@}
 %{!?dbpass:%define dbpass @rpm.database.password@}
 %{!?dbname:%define dbname @rpm.database.name@}
@@ -24,116 +24,124 @@
 %if "%{platform}" == "linux-i386-centos-3"
 %define	initdir		/etc
 %define psql_service	rhdb
-%define tomcat_service	tomcat4
 %define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_centos3
 %endif
 
 %if "%{platform}" == "linux-i386-fedora-1"
 %define	initdir		/etc
 %define	psql		/usr/bin/psql
 %define psql_service	postgresql
-%define tomcat_service	tomcat4
 %define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_fc1
 %endif
 
 %if "%{platform}" == "linux-i386-fedora-2"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define tomcat_service	tomcat4
 %define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_fc2
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-7"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define tomcat_service	tomcat4
 %define requires	postgresql-server >= 7.2, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_mdk7
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-8"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define tomcat_service	tomcat4
 %define requires	postgresql-server >= 7.2, libstdc++2.10, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_mdk8
 %endif
 
-%if "%{platform}" == "linux-i386-mandrake-9"
+%if "%{platform}" == "linux-i386-mandrake-90"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define tomcat_service	tomcat4
 %define requires	postgresql-server >= 7.2, libstdc++2.10, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_mdk90
+%endif
+
+%if "%{platform}" == "linux-i386-mandrake-92"
+%define	initdir		/etc
+%define psql_service	postgresql
+%define requires	postgresql-server >= 7.2, libstdc++2.10, metamail, j2sdk >= 1.4.2
+%define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_mdk92
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-10"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define tomcat_service	tomcat4
 %define requires	postgresql-server >= 7.2, libstdc++2.10, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_mdk10
 %endif
 
 %if "%{platform}" == "linux-i386-redhat-7"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define tomcat_service	tomcat4
 %define requires        postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_rhl7
 %endif
 
 %if "%{platform}" == "linux-i386-redhat-8"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define tomcat_service	tomcat4
 %define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_rhl8
 %endif
 
 %if "%{platform}" == "linux-i386-redhat-9"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define tomcat_service	tomcat4
 %define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_rhl9
 %endif
 
 %if "%{platform}" == "linux-i386-rhel-3"
 %define	initdir		/etc
 %define psql_service	rhdb
-%define tomcat_service	tomcat4
 %define requires	postgresql-server >= 7.2, compat-libstdc++, metamail, j2sdk >= 1.4.2
 %define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_rhel3
 %endif
 
 %if "%{platform}" == "linux-i386-suse-7"
 %define	initdir		/etc/rc.d
 %define psql_service	postgres
-%define tomcat_service	tomcat
 %define requires        postgres >= 7.2, metamail, java2 >= 1.4.2
 %define webapp_requires tomcat >= 4.1.18, tomcat < 5
+%define release_pkg     %{release}_suse7
 %endif
 
 %if "%{platform}" == "linux-i386-suse-8"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define tomcat_service	tomcat
 %define tomcatdir	/opt/jakarta/tomcat
 %define requires	postgresql >= 7.2, postgresql-server >= 7.2, metamail, java2 >= 1.4.2
 %define webapp_requires tomcat >= 4.1.18, tomcat < 5
+%define release_pkg     %{release}_suse8
 %endif
 
 %if "%{platform}" == "linux-i386-suse-9"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define tomcat_service	tomcat
 %define tomcatdir	/opt/jakarta/tomcat
 %define requires	postgresql >= 7.2, postgresql-server >= 7.2, metamail, java2 >= 1.4.2
 %define webapp_requires tomcat >= 4.1.18, tomcat < 5
+%define release_pkg     %{release}_suse9
 %endif
 
 %if "%{buildtests}" == "true"
@@ -155,7 +163,7 @@
 Name:			@ant.project.name@
 Summary:		Enterprise-level network management platform
 Serial:			1
-Release:		%release
+Release:		%release_pkg
 Version:		%version
 Copyright:		LGPL/GPL
 Group:			Applications/System
@@ -166,8 +174,7 @@ BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
 AutoReqProv:		no
 
-Requires:		rrdtool
-Requires:               %{requires}
+Requires:		rrdtool, curl, %{requires}
 
 %description
 OpenNMS is a network management package.
@@ -186,8 +193,7 @@ for OpenNMS.
 %package webapp
 Summary:	Web interface servlet for the OpenNMS network management platform
 Group:		Applications/System
-Requires:	rrdtool, %{name} = 1:%{version}-%{release}
-Requires:       %{webapp_requires}
+Requires:	rrdtool, %{name} = 1:%{version}-%{release}, %{webapp_requires}
 
 %description webapp
 The web UI for OpenNMS.
@@ -230,9 +236,11 @@ sh ./build.sh $COMPILER_FLAG -Dinstall.prefix=$RPM_BUILD_ROOT \
     -Dinstall.dir=%{instprefix} -Dinstall.init.dir=%{initdir}/init.d \
     -Dinstall.servlet.dir=%{tomcatdir}/webapps/%{name} \
     -Dinstall.share.dir=%{sharedir} -Dinstall.postgresql.dir=%{pglibdir} \
+    -Dinstall.postgresql.service=%{psql_service} \
     -Dinstall.logs.dir=%{logdir} -Dinstall.pid.file=%{pidfile} \
     -Dfilter.overwrite="yes" -Disrpm="true" \
     $EXTRA_TARGETS install || exit $?
+echo "=== INSTALL COMPLETED ==="
 
 mkdir -p $RPM_BUILD_ROOT%{instprefix}
 mkdir -p $RPM_BUILD_ROOT%{instprefix}/etc
@@ -333,45 +341,54 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 
-. %{profiledir}/%{name}.sh
+echo -e "- executing runjava to choose a Java Runtime Environment... \c"
+%{instprefix}/bin/runjava -q -s
+if [ $? -ne 0 ]; then
+    echo "A suitable Java Runtime Environment could not be found." >&2
+    echo "Please set and export the JAVA_HOME environment variable to" >&2
+    echo "point where your JDK is installed." >&2
+    exit 1
+fi
+echo "done"
 
+#. %{profiledir}/%{name}.sh
+
+# XXX why do we do this?
+echo "- restarting postgres..."
 "%{initdir}/init.d/%{psql_service}" stop
-"%{initdir}/init.d/%{psql_service}" start
+"%{initdir}/init.d/%{psql_service}" start || exit 1
+echo "- restarting postgres... done"
 
-# run the post-install script
-
-echo -e "- running the post-install..."
-
+echo -e "- moving *.sql.rpmnew files (if any)... \c"
 if [ `ls %{instprefix}/etc/*.sql.rpmnew 2>/dev/null | wc -l` -gt 0 ]; then
 	for i in %{instprefix}/etc/*.sql.rpmnew; do
 		mv $i ${i%%%%.rpmnew}
 	done
 fi
+echo "done"
 
-$JAVA_HOME/bin/java -jar %{instprefix}/lib/opennms_install.jar -disU -r \
-    >> %{logdir}/install.log
-ret=$?
-if [ $ret -ne 0 ]; then
-    echo "Error running installer, see previous error message and" >&2
-    echo "%{logdir}/install.log for details." >&2
+echo -e "- running the installer... \c"
+%{instprefix}/bin/install -r -disU >> %{logdir}/install.log 2>&1
+if [ $? -ne 0 ]; then
+    echo "Error running installer, see %{logdir}/install.log for details." >&2
+    exit 1
 fi
+echo "done"
 
 
 # add the OpenNMS init
 
-echo -e "- adding OpenNMS init... \c"
-
+echo -e "- adding OpenNMS init script using 'chkconfig'... \c"
 if [ -x /sbin/chkconfig ]; then
-	/sbin/chkconfig --add opennms
+    /sbin/chkconfig --add opennms > /dev/null
 else
-	if [ -x `which chkconfig 2>&1` ]; then
-		`which chkconfig` --add opennms
-	fi
+    if [ -x `which chkconfig 2>&1` ]; then
+	`which chkconfig` --add opennms > /dev/null
+    fi
 fi
-
 echo "done"
 
-echo -e "- checking for old update files..."
+echo -e "- checking for old update files... \c"
 
 JAR_UPDATES=`find %{instprefix}/lib/updates -name \*.jar   -exec rm -rf {} \; -print 2>/dev/null | wc -l`
 CLASS_UPDATES=`find %{instprefix}/lib/updates -name \*.class -exec rm -rf {} \; -print 2>/dev/null | wc -l`
@@ -388,34 +405,46 @@ else
 fi
 
 %preun
-if [ $1 = 0 ]; then
-	if [ -f /var/lock/subsys/opennms ]; then
-		%{initdir}/init.d/opennms stop
-	fi
-	if [ -x /sbin/chkconfig ]; then
-		/sbin/chkconfig --del opennms
-	else
-		if [ -x `which chkconfig 2>&1` ]; then
-			`which chkconfig` --del opennms
-		fi
-	fi
+
+if [ $1 != 0 ]; then
+    # Do nothing
+    exit 0
 fi
 
-%pre webapp
-if [ -f /var/lock/subsys/${tomcat_service} ]; then
-	%{initdir}/init.d/${tomcat_service} stop >/dev/null 2>&1
-	echo > /tmp/tomcat.restart
+echo "- Stopping OpenNMS... "
+%{initdir}/init.d/opennms stop
+echo "- Stopping OpenNMS... done"
+
+echo -e "- adding OpenNMS init script using 'chkconfig'... \c"
+if [ -x /sbin/chkconfig ]; then
+    /sbin/chkconfig --del opennms > /dev/null
+else
+    if [ -x `which chkconfig 2>&1` ]; then
+	`which chkconfig` --del opennms > /dev/null
+    fi
 fi
+echo "done"
+
+%pre webapp
+
+echo -e "- executing runjava to check the Java Runtime Environment... \c"
+%{instprefix}/bin/runjava -c || exit 1
+echo "done"
+
+echo -e "- clearing out the Tomcat work directory... \c"
 rm -rf %{tomcatdir}/work/* >/dev/null 2>&1 || :
+echo "done"
 
 %post webapp
 
-$JAVA_HOME/bin/java -jar %{instprefix}/lib/opennms_install.jar -S %{tomcatdir}/conf/server.xml
-
-if [ -f /tmp/tomcat.restart ]; then
-	rm -rf /tmp/tomcat.restart || :
-	%{initdir}/init.d/${tomcat_service} start >/dev/null 2>&1 || :
+echo -e "- executing the installer for the webapp... \c"
+%{instprefix}/bin/install -r -S %{tomcatdir}/conf/server.xml \
+    >> %{logdir}/install.log 2>&1
+if [ $? -ne 0 ]; then
+    echo "Error running installer, see %{logdir}/install.log for details." >&2
+    exit 1
 fi
+echo "done"
 
 %changelog
 * Fri Nov 16 2001 Ben Reed <ben@opennms.org>

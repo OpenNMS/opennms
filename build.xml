@@ -114,6 +114,7 @@ your distribution.
   <!-- install.prefix: a prefix used for installation in or chroot -->
   <property name="install.prefix" value=""/>
 
+  <property name="install.postgresql.service" value="postgresql"/>
   <property name="install.database.name" value="${database.name}"/>
   <property name="install.database.user" value="${database.user}"/>
   <property name="install.database.password" value="${database.password}"/>
@@ -348,6 +349,8 @@ your distribution.
     <filter token="install.database.url" value="${install.database.url}"/>
     <filter token="install.database.user" value="${install.database.user}"/>
     <filter token="install.perl.bin" value="${install.perl.bin}"/>
+    <filter token="install.postgresql.service"
+	    value="${install.postgresql.service}"/>
     <filter token="install.rrdtool.bin" value="${install.rrdtool.bin}"/>
     <filter token="install.tomcat.serverlibs"
 	    value="${install.tomcat.serverlibs}"/>
@@ -774,11 +777,15 @@ your distribution.
   </chmod>
  </target>
 
- <target name="install.init" depends="prep">
-  <copy file="tools/packages/opennms/opennms.init"
-	tofile="${install.prefix}${install.init.dir}/${ant.project.name}"
-	filtering="yes"
-	overwrite="${filter.overwrite}" />
+ <target name="install.init" depends="prep, install.bin">
+   <mkdir dir="${install.prefix}${install.init.dir}"/>
+   <exec executable="ln" dir="${install.prefix}${install.init.dir}"
+	failonerror="true">
+    <arg value="-sf"/>
+    <arg value="${install.bin.dir}/opennms.sh"/>
+    <arg value="${install.prefix}${install.init.dir}/${ant.project.name}"/>
+  </exec>
+
  </target>
 
  <target name="install.etc" depends="prep,copy.etc">
