@@ -4,6 +4,12 @@
 - fixed issue with capsd pulling all of the ifTable for interface.
   Could cause issues with some HP switches.
 - Bug 664: Notifications not filtering on services.
+- Bug 666: Generic SNMP Traps are hard-coded and cannot be 
+  managed via eventconf.xml. This fix also included a change
+  that fixes and enforces the order of events in eventconf.xml.
+  Care must be taken so that the most specific mask matches are
+  listed  before more generic ones. But this fix insures that the
+  correct wildcards and exact matches work as ordered.
 
 1.0.0 to 1.0.1
 ----------------------------------------------------------------------
