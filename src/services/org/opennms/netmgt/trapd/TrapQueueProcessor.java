@@ -430,7 +430,7 @@ class TrapQueueProcessor
 					for(int x = 0; x < data.length; x++)
 					{
 						byte b = data[x];
-						if((b < 32 && b != 10 && b != 13) ||  b == 127)
+						if((b < 32 && b != 10 && b != 13 && b != 0) ||  b == 127)
 						{
 							asHex = true;
 							break;
@@ -619,7 +619,7 @@ class TrapQueueProcessor
 				for(int x = 0; x < data.length; x++)
 				{
 					byte b = data[x];
-					if((b < 32 && b != 9 && b != 10 && b != 13) ||  b == 127)
+					if((b < 32 && b != 9 && b != 10 && b != 13 && b != 0) ||  b == 127)
 					{
 						asHex = true;
 						break;
