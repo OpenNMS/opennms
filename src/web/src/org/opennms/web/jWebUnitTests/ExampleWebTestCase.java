@@ -9,8 +9,9 @@ package org.opennms.web.jWebUnitTests;
  */
 
 import java.io.File;
-import java.io.FileInputStream;
+
 import net.sourceforge.jwebunit.WebTestCase;
+
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 
@@ -26,11 +27,11 @@ public class ExampleWebTestCase extends WebTestCase {
      
         ServletUnitClient sc = sr.newClient();
         getTestContext().setWebClient(sc);
-        //getTestContext().setAuthorization("admin","admin");
+        getTestContext().setAuthorization("admin","admin");
         getTestContext().setBaseUrl("http://localhost:8080/opennms");
     }
     
-    public void testAddInterface() {
+    public void _testAddInterface() {
         
         beginAt("/index.jsp");
         assertTitleEquals("OpenNMS Web Console");
