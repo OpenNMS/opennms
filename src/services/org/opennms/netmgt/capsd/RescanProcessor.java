@@ -1551,7 +1551,7 @@ final class RescanProcessor
 			for (int i = 0; i < tmpIfArray.length; i++)
 			{
 			        InetAddress addr = tmpIfArray[i].getIfAddress();
-				int index = tmpIfArray[i].getIfIndex();
+				int ifIndex = tmpIfArray[i].getIfIndex();
   				
                                 // Skip non-IP or loopback interfaces
        				if (addr.getHostAddress().equals("0.0.0.0") || 
@@ -1559,38 +1559,21 @@ final class RescanProcessor
        				{
        					continue;
        				}
-							
-                                InetAddress[] updateIfs = snmpc.getIfAddressAndMask(index);
-                                if (updateIfs == null)
+				
+                                int indexFromSnmpc = snmpc.getIfIndex(addr);
+                                if ( ifIndex != indexFromSnmpc)
                                 {
 				        if (log.isDebugEnabled())
 					        log.debug("isDuplicateNode: Interface/ifindex: " + addr.getHostAddress() 
-                                                        + "/" + index
+                                                        + "/" + ifIndex
                                                         + " is not in the ipAddrTable of the updating node.");
                                         return false;
 			        }
                                 else
                                 {       
-                                        boolean match = false;
-                                        for (int inx = 0; inx < updateIfs.length; inx ++)
-                                        {
-                                                if (updateIfs[inx].getHostAddress().equals(addr.getHostAddress()))
-                                                {
-				                        if (log.isDebugEnabled())
-					                        log.debug("isDuplicateNode: Interface: " + addr.getHostAddress()
-                                                                        + " found a match in the ipAddrTable of the updating node.");
-                                                        match = true;
-                                                        break;
-                                                }
-                                        }
-
-                                        if (!match)
-                                        {
-				                if (log.isDebugEnabled())
-					                log.debug("isDuplicateNode: Interface: " + addr.getHostAddress()
-                                                                + " is not in the ipAddrTable of the updating node.");
-                                                return false;
-                                        }
+			                if (log.isDebugEnabled())
+					        log.debug("isDuplicateNode: Interface: " + addr.getHostAddress()
+                                                        + " found a match in the ipAddrTable of the updating node.");
                                 }
                         }
 			
