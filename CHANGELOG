@@ -1,5 +1,7 @@
 1.1.0 to 1.1.1
 ----------------------------------------------------------------------
+- Increased the size of the contactinfo field in the usersnotified
+  table from 32 to 64 characters. Bug 671
 - Added an HTTP button for nodes and interfaces with the HTTP
   service. Bug 469
 - Added Response Time links to node and interface pages. Bug 684
