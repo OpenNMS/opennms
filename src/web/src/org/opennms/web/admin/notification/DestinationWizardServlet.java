@@ -391,6 +391,7 @@ public class DestinationWizardServlet extends HttpServlet
                 Path newPath = new Path();
                 
                 newPath.setName(oldPath.getName());
+                newPath.setInitialDelay(oldPath.getInitialDelay());
                 
                 Collection targets = oldPath.getTargetCollection();
                 Iterator it = targets.iterator();
