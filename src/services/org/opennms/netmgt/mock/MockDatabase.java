@@ -208,6 +208,36 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
                 "           constraint fk_notifID2 foreign key (notifyID) references notifications (notifyID) ON DELETE CASCADE" + 
                 ");");
         
+        //TODO: Create alarms table
+        
+        update("create table alarms (\n" +
+        "   alarmID             INTEGER NOT NULL,\n" +
+        "   eventUei            VARCHAR(256) NOT NULL,\n" +
+        "   dpName              VARCHAR(12) NOT NULL,\n" +
+        "   nodeID              INTEGER,\n" +
+        "   serviceID           INTEGER NOT NULL,\n" +
+        "   reductionKey        VARCHAR(256),\n" +
+        "   counter             INTEGER NOT NULL,\n" +
+        "   severity                INTEGER NOT NULL,\n" +
+        "   lastEventID         INTEGER,\n" +
+        "   firstEventTime      TIMESTAMP NOT NULL,\n" +
+        "   lastEventTime       TIMESTAMP NOT NULL,\n" +
+        "   description         VARCHAR(4000),\n" +
+        "   logMsg              VARCHAR(256),\n" +
+        "   operInstruct            VARCHAR(1024),\n" +
+        "   tticketID           VARCHAR(128),\n" +
+        "   tticketState            INTEGER,\n" +
+        "   mouseOverText       VARCHAR(64),\n" +
+        "   suppressedUntil     TIMESTAMP,\n" +
+        "   suppressedUser      TIMESTAMP,\n" +
+        "   suppressedTime      TIMESTAMP,\n" +
+        "   alarmAckUser            VARCHAR(256),\n" +
+        "   alarmAckTime            TIMESTAMP,\n" +
+        "             CONSTRAINT pk_alarmID primary key (alarmID),"+
+        "             CONSTRAINT fk_nodeIDak FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,"+
+        "             CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID)  REFERENCES events (eventID) ON DELETE CASCADE"+
+        ");");
+        
         update("create sequence outageNxtId start with 1");
         update("create sequence eventNxtId start with 1");
         update("create sequence notifNxtId start with 1");
