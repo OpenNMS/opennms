@@ -642,11 +642,14 @@ final class RescanProcessor
 			// physical address
 			StringBuffer sbuf = new StringBuffer();
 			SnmpOctetString ostr = (SnmpOctetString)ifte.get(IfTableEntry.IF_PHYS_ADDR);
-			byte[] bytes = ostr.getString();
-			for(int i = 0; i < bytes.length; i++)
-			{
-				sbuf.append(Integer.toHexString(((int)bytes[i] >> 4) & 0xf));
-				sbuf.append(Integer.toHexString((int)bytes[i] & 0xf));
+                        if ( ostr != null && ostr.getLength() > 0)
+                        {
+				byte[] bytes = ostr.getString();
+				for(int i = 0; i < bytes.length; i++)
+				{
+					sbuf.append(Integer.toHexString(((int)bytes[i] >> 4) & 0xf));
+					sbuf.append(Integer.toHexString((int)bytes[i] & 0xf));
+				}
 			}
 			
 			String physAddr = sbuf.toString().trim();
@@ -1311,11 +1314,14 @@ final class RescanProcessor
 				// physical address
 				StringBuffer sbuf = new StringBuffer();
 				SnmpOctetString ostr = (SnmpOctetString)ifte.get(IfTableEntry.IF_PHYS_ADDR);
-				byte[] bytes = ostr.getString();
-				for(int i = 0; i < bytes.length; i++)
-				{
-					sbuf.append(Integer.toHexString(((int)bytes[i] >> 4) & 0xf));
-					sbuf.append(Integer.toHexString((int)bytes[i] & 0xf));
+                                if ( ostr != null && ostr.getLength() > 0)
+                                {
+					byte[] bytes = ostr.getString();
+					for(int i = 0; i < bytes.length; i++)
+					{
+						sbuf.append(Integer.toHexString(((int)bytes[i] >> 4) & 0xf));
+						sbuf.append(Integer.toHexString((int)bytes[i] & 0xf));
+					}
 				}
 				
 				String physAddr = sbuf.toString().trim();
