@@ -209,7 +209,12 @@ public class NotificationTask extends Thread
 						NotificationFactory.updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), UserFactory
 								.getInstance().getContactInfo(m_user.getUserId(), m_commands[i].getName()));
 
-						if (m_commands[i].getBinary() == "true") {
+						String binaryCommand = m_commands[i].getBinary();
+						if (binaryCommand == null) {
+							log.error("binary flag not set for command: "+m_commands[i].getExecute()+".  Guessing false.");
+							binaryCommand = "false";
+						}
+						if (binaryCommand.equals("true")) {
 							command = new CommandExecutor();
 						} else {
 							command = new ClassExecutor();
