@@ -16,6 +16,9 @@
    String services[] = request.getParameterValues("services");
    if (services==null)
       services = new String[0];
+   String notServices[] = request.getParameterValues("notServices");
+   if (notServices==null)
+      notServices = new String[0];
 %>
 
 <html>
@@ -85,7 +88,7 @@
               <b>Services Associated with the Interfaces</b>
             </td>
           </tr>
-          <%=buildInterfaceTable(newRule, services)%>
+          <%=buildInterfaceTable(newRule, services, notServices)%>
         </table>
         <table 
         <table width="100%" cellspacing="2" cellpadding="2" border="0">
@@ -112,7 +115,7 @@
 </html>
 
 <%!
-  public String buildInterfaceTable(String rule, String[] serviceList)
+  public String buildInterfaceTable(String rule, String[] serviceList, String[] notServiceList)
       throws FilterParseException
   {
           StringBuffer buffer = new StringBuffer();
@@ -128,7 +131,7 @@
               buffer.append("<tr><td width=\"50%\" valign=\"top\">").append(key).append("</td>");
               buffer.append("<td width=\"50%\">");
               
-              if (serviceList.length!=0)
+              if (serviceList.length!=0 || notServiceList.length!=0)
               {
                   Map services = (Map)interfaces.get(key);
                   Iterator j = services.keySet().iterator();
@@ -141,6 +144,7 @@
               {
                   buffer.append("All services");
               }
+              
               buffer.append("</td>");
                   
               buffer.append("</tr>");

@@ -125,11 +125,30 @@ public class NotificationWizardServlet extends HttpServlet
                                 rule.append(" )");
                         }
                         
+                        String notServices[] = request.getParameterValues("notServices");
+                        if (notServices!=null)
+                        {
+                                rule.append(" & ").append(" (");
+                                
+                                for (int i = 0; i < notServices.length; i++)
+                                {
+                                        rule.append("!is").append(notServices[i]);
+                                        if (i < notServices.length-1)
+                                                rule.append(" & ");
+                                }
+                                
+                                rule.append(" )");
+                        }
+                        
                         Map params = new HashMap();
                         params.put("newRule", rule.toString());
                         if (services!=null) 
                         {
                                 params.put("services", services);
+                        }
+                        if (notServices!=null)
+                        {
+                                params.put("notServices", notServices);
                         }
                         params.put("ipaddr", request.getParameter("ipaddr"));
                         

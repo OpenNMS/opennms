@@ -106,6 +106,15 @@
           </td>
         </tr>
         <tr>
+          <td valign="top" align="left">
+              <br>&nbsp;
+              <p>Select each service you would like to do a NOT filter on in conjunction with the TCP/IP address. Highlighting
+                 multiple items ANDs them--for example, highlighting HTTP and FTP will match events NOT on HTTP AND NOT on FTP.
+              </p>
+              "NOT" Services:<br><select size="10" multiple name="notServices"><%=buildNotServiceOptions(newRule)%></select>
+          </td>
+        </tr>
+        <tr>
           <td colspan="2">
             <input type="reset" value="Reset Address and Services"/>
           </td>
@@ -144,7 +153,9 @@
         
         for (int i = 0; i < services.size(); i++)
         {
-            if (rule.indexOf((String)services.get(i))>0)
+            int serviceIndex = rule.indexOf((String)services.get(i));
+            //check for !is<service name>
+            if (serviceIndex>0 && rule.charAt(serviceIndex-3) != '!')
             {
                 buffer.append("<option selected VALUE='" + services.get(i) + "'>" + services.get(i) + "</option>");
             }
@@ -156,7 +167,32 @@
         
         return buffer.toString();
     }
-    
+
+    public String buildNotServiceOptions(String rule)
+        throws SQLException
+    {
+        List services = NotificationFactory.getInstance().getServiceNames();
+        StringBuffer buffer = new StringBuffer();
+        
+        for (int i = 0; i < services.size(); i++)
+        {
+            //find services in the rule, but start looking after the first "!" (not), to avoid
+            //the first service listing
+            int serviceIndex = rule.indexOf((String)services.get(i), rule.indexOf("!"));
+            //check for !is<service name>
+            if (serviceIndex>0 && rule.charAt(serviceIndex-3) == '!')
+            {
+                buffer.append("<option selected VALUE='" + services.get(i) + "'>" + services.get(i) + "</option>");
+            }
+            else
+            {
+                buffer.append("<option VALUE='" + services.get(i) + "'>" + services.get(i) + "</option>");
+            }
+        }
+        
+        return buffer.toString();
+    }
+
     public String getIpaddr(String rule)
         throws org.apache.regexp.RESyntaxException
     {
