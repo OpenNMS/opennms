@@ -44,7 +44,6 @@ package org.opennms.netmgt.poller;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -274,13 +273,9 @@ final class PollerEventProcessor implements EventListener {
                 log.error("interfaceReparentedHandler: Cannot locate interface with ipAddr "+ipAddr+" to reparent.");
                 return;
             }
-
+            
             iface.reparentTo(newNode);
             
-            // process the status changes related to the 
-            Date date = new Date();
-            oldNode.processStatusChange(date);
-            newNode.processStatusChange(date);
             
         } catch (NumberFormatException nfe) {
             log.error("interfaceReparentedHandler: failed converting old/new nodeid parm to integer, unable to process.");
@@ -469,6 +464,7 @@ final class PollerEventProcessor implements EventListener {
           log.error("Interface " + nodeId + "/" + event.getInterface() + " does not exist in pollable node map, unable to delete node.");
           return;
         }
+        
         svc.delete();
 
     }

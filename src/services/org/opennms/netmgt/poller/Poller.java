@@ -327,7 +327,7 @@ public final class Poller implements PausableFiber {
     public void scheduleService(int nodeId, String ipAddr, String svcName) {
         Category log = ThreadCategory.getInstance(getClass());
         try {
-            int matchCount = scheduleMatchingServices("nodeId = "+nodeId+" AND ipAddr = '"+ipAddr+"' AND serviceName = '"+svcName+"'");
+            int matchCount = scheduleMatchingServices("ifServices.nodeId = "+nodeId+" AND ifServices.ipAddr = '"+ipAddr+"' AND service.serviceName = '"+svcName+"'");
             if (matchCount <= 0)
                 log.error("Attempt to schedule service "+nodeId+"/"+ipAddr+"/"+svcName+" found no active service");
         } catch (Exception e) {

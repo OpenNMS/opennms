@@ -173,6 +173,10 @@ public class PollableInterface extends PollableContainer {
         synchronized(firstLock) {
             synchronized(secondLock) {
                 
+                oldNode.resetStatusChanged();
+                newNode.resetStatusChanged();
+                
+                
                 getContext().reparentOutages(getIpAddr(), getNodeId(), newNode.getNodeId());
                 oldNode.removeMember(this);
                 newNode.addMember(this);
@@ -195,8 +199,14 @@ public class PollableInterface extends PollableContainer {
                     } 
                 }
                 
+                
+                // process the status changes related to the 
+                Date date = new Date();
                 oldNode.recalculateStatus();
+                oldNode.processStatusChange(date);
                 newNode.recalculateStatus();
+                newNode.processStatusChange(date);
+
             }
         }
     }

@@ -674,9 +674,6 @@ public class PollablesTest extends TestCase {
         anticipateDown(mDot3);
 
         pDot2.reparentTo(pNode2);
-        Date date = new Date();
-        pNode1.processStatusChange(date);
-        pNode2.processStatusChange(date);
         
         verifyAnticipated();
 
