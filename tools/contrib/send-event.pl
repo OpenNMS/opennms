@@ -64,7 +64,7 @@ $PORT_TO  = 5817;
 
 # UEI
 if (defined $UEI) {
-	unless (grep(m#://#, $UEI)) {
+	unless (grep(m#uei#, $UEI)) {
 		print "*** \"$UEI\" does not appear to be a valid UEI\n\n";
 		print get_help();
 		exit 1;
