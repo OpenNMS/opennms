@@ -259,7 +259,7 @@ public class EventConfData extends Object
 			if (eventEID != null)
 			{
 				EventKey snmpKey = new EventKey();
-				snmpKey.put(snmpKey.TAG_SNMP_EID, new EventMaskValueList(eventEID));
+				snmpKey.put(EventKey.TAG_SNMP_EID, new EventMaskValueList(eventEID));
 				
 				m_eventMap.put(snmpKey, event);
 
@@ -366,7 +366,7 @@ public class EventConfData extends Object
 	public synchronized org.opennms.netmgt.xml.eventconf.Event getEventBySnmp(String eid)
 	{
 		EventKey key = new EventKey();
-		key.put(key.TAG_SNMP_EID, new EventMaskValueList(eid));
+		key.put(EventKey.TAG_SNMP_EID, new EventMaskValueList(eid));
 
 		return (org.opennms.netmgt.xml.eventconf.Event)m_eventMap.get(key);
 	}
@@ -379,7 +379,7 @@ public class EventConfData extends Object
 	public synchronized org.opennms.netmgt.xml.eventconf.Event getEventByUEI(String uei)
 	{
 		EventKey key = new EventKey();
-		key.put(key.TAG_UEI, new EventMaskValueList(uei));
+		key.put(EventKey.TAG_UEI, new EventMaskValueList(uei));
 
 		return (org.opennms.netmgt.xml.eventconf.Event)m_eventMap.get(key);
 	}

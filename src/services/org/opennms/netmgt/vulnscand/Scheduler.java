@@ -159,7 +159,7 @@ final class Scheduler
 		// them in the appropriate level
 
 		VulnscandConfigFactory configFactory = VulnscandConfigFactory.getInstance();
-		VulnscandConfiguration config = configFactory.getConfiguration();
+		VulnscandConfiguration config = VulnscandConfigFactory.getConfiguration();
 
 		// If the status of the daemon is "true" (meaning "on")...
 		if (config.getStatus())

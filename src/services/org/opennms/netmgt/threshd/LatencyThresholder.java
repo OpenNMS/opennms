@@ -57,6 +57,7 @@ import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.rrd.Interface;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.utils.RrdFileConstants;
@@ -721,7 +722,7 @@ final class LatencyThresholder
 		if (log.isDebugEnabled()) 
 			log.debug("fetch: Issuing RRD command: " + fetchCmd);
 	
-		String[] fetchStrings = fetchStrings = m_rrdInterface.launch(fetchCmd);
+		String[] fetchStrings = fetchStrings = Interface.launch(fetchCmd);
 	
 		// Sanity check the returned string array
 		if (fetchStrings == null)

@@ -353,7 +353,7 @@ final class RescanProcessor
 		
 		// Only update node label/source if original node entry is 
 		// not set to user-defined.
-		if (dbNodeEntry.getLabelSource() != dbNodeEntry.LABEL_SOURCE_USER)
+		if (dbNodeEntry.getLabelSource() != DbNodeEntry.LABEL_SOURCE_USER)
 		{
 			dbNodeEntry.updateLabel(currNodeEntry.getLabel());
 			dbNodeEntry.updateLabelSource(currNodeEntry.getLabelSource());
@@ -886,7 +886,7 @@ final class RescanProcessor
                         	return;
 			}
                 
-                	List ipAddrList = ipAddrTable.getIpAddresses(ipAddrTable.getEntries());
+                	List ipAddrList = IpAddrTable.getIpAddresses(ipAddrTable.getEntries());
 			// This list can contain lots of duplicates. Keep track of what has been tried
 			List addrsDone = new ArrayList();
 			
@@ -2830,7 +2830,7 @@ final class RescanProcessor
 			return false;
 		}
                 
-                List ipAddrList = ipAddrTable.getIpAddresses(ipAddrTable.getEntries());
+                List ipAddrList = IpAddrTable.getIpAddresses(ipAddrTable.getEntries());
                 
 		// Loop through the interface table entries until there are no more
 		// entries or we've found a match

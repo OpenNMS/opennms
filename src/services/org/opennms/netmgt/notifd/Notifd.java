@@ -116,9 +116,9 @@ public final class Notifd
                 {
                         NotifdConfigFactory.reload();
                         
-                        ThreadCategory.getInstance(getClass()).info("Notification status = " + NotifdConfigFactory.getInstance().getPrettyStatus());
+                        ThreadCategory.getInstance(getClass()).info("Notification status = " + NotifdConfigFactory.getPrettyStatus());
                         
-                        Queue queues[] = NotifdConfigFactory.getInstance().getConfiguration().getQueue();
+                        Queue queues[] = NotifdConfigFactory.getConfiguration().getQueue();
                         for (int i = 0; i < queues.length; i++)
                         {
                                 NoticeQueue curQueue = new NoticeQueue();

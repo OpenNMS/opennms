@@ -362,7 +362,7 @@ public class NotificationFactory
 		{
 			connection = DatabaseConnectionFactory.getInstance().getConnection();
 			Statement stmt = connection.createStatement();
-			ResultSet results = stmt.executeQuery(NotifdConfigFactory.getInstance().getConfiguration().getNextNotifId());
+			ResultSet results = stmt.executeQuery(NotifdConfigFactory.getConfiguration().getNextNotifId());
                         
 			results.next();
                         
@@ -393,7 +393,7 @@ public class NotificationFactory
 		try
 		{
 			connection = DatabaseConnectionFactory.getInstance().getConnection();
-			PreparedStatement statement = connection.prepareStatement(NotifdConfigFactory.getInstance().getConfiguration().getOutstandingNoticesSql());
+			PreparedStatement statement = connection.prepareStatement(NotifdConfigFactory.getConfiguration().getOutstandingNoticesSql());
 			
 			statement.setInt(1, noticeId);
 			
@@ -481,7 +481,7 @@ public class NotificationFactory
 				while (results.next())
 				{
 					int notifID = results.getInt(1);
-					PreparedStatement update = connection.prepareStatement(NotifdConfigFactory.getInstance().getConfiguration().getAcknowledgeUpdateSql());
+					PreparedStatement update = connection.prepareStatement(NotifdConfigFactory.getConfiguration().getAcknowledgeUpdateSql());
                                 
 					update.setString(1, "auto-acknowledged");
 					update.setTimestamp(2, new Timestamp((new Date()).getTime()));

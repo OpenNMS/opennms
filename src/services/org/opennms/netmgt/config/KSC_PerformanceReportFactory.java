@@ -100,8 +100,8 @@ public class KSC_PerformanceReportFactory
 		if (instance == null)
 		{
 			instance = new KSC_PerformanceReportFactory();
-			instance.reload();
-			instance.initialized = true;
+			KSC_PerformanceReportFactory.reload();
+			KSC_PerformanceReportFactory.initialized = true;
 		}
 	}
 	
@@ -215,7 +215,7 @@ public class KSC_PerformanceReportFactory
             working_index=index; 
             if ((working_index < 0) || (working_index >= total_reports)) { 
                 // out of range... assume new report needs to be created 
-                working_report = this.getNewReport(); 
+                working_report = KSC_PerformanceReportFactory.getNewReport(); 
                 working_index=-1;
             }
             else {
@@ -237,7 +237,7 @@ public class KSC_PerformanceReportFactory
                 m_config.setReport(working_index, working_report);
             }
             // Create a new and unique instance of a report for screwing around with as the working report
-            working_report = this.getNewReport(); 
+            working_report = KSC_PerformanceReportFactory.getNewReport(); 
             working_index=-1;
         } 
       
@@ -292,7 +292,7 @@ public class KSC_PerformanceReportFactory
             graph_index=index; 
             if ((graph_index < 0) || (graph_index >= total_graphs)) { 
                 // out of range... assume new report needs to be created 
-                working_graph = this.getNewGraph(); 
+                working_graph = KSC_PerformanceReportFactory.getNewGraph(); 
                 graph_index=-1;
             }
             else {
@@ -330,7 +330,7 @@ public class KSC_PerformanceReportFactory
             }
 
             // Create a new and unique instance of a report for screwing around with as the working report
-            working_graph = this.getNewGraph(); 
+            working_graph = KSC_PerformanceReportFactory.getNewGraph(); 
             graph_index=-1;
         } 
 

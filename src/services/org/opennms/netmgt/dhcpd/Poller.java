@@ -420,7 +420,7 @@ final class Poller
 		int temp;
 		int i = 0;
 		while (i < 6) {
-			temp = tempInt.parseInt(token.nextToken(), 16);
+			temp = Integer.parseInt(token.nextToken(), 16);
 			s_hwAddress[i] = (byte) temp;
 			i++;
 		}

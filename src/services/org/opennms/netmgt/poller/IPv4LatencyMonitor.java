@@ -254,7 +254,7 @@ abstract class IPv4LatencyMonitor
 				log.debug("createRRD: issuing RRD create command: " + cmd);
 			
 			// Issue the RRD 'create' command
-			String[] results = rrdJniInterface.launch(cmd);
+			String[] results = Interface.launch(cmd);
 		    
 			if (log.isDebugEnabled())
 				log.debug("createRRD: RRD create command completed for " + addr.getHostAddress());
@@ -310,7 +310,7 @@ abstract class IPv4LatencyMonitor
 			log.debug("updateRRD: issuing RRD update command: " + cmd);
 
 		// Issue the RRD 'create' command
-		String[] results = rrdJniInterface.launch(cmd);
+		String[] results = Interface.launch(cmd);
 		
 		if (log.isDebugEnabled())
 			log.debug("updateRRD: RRD update command completed for " + addr.getHostAddress());

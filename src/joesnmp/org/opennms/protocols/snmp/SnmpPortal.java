@@ -303,7 +303,7 @@ public class SnmpPortal
 			{
 				public void run()
 				{
-					while(!m_isClosing && Thread.currentThread().interrupted() == false)
+					while(!m_isClosing && Thread.interrupted() == false)
 					{
 						byte[] buf = null;
 						synchronized(usedBuffers)

@@ -194,7 +194,7 @@ public final class Interface
 			
 			// issue rrd command
 			System.out.println("issuing RRD cmd: " + cmd);
-			Interface.getInstance().launch(cmd);
+			Interface.launch(cmd);
 			System.out.println("command completed.");
 		}
 		catch (Throwable t)

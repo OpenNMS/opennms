@@ -1451,7 +1451,7 @@ final class SnmpCollector
 			if (log.isDebugEnabled())
 				log.debug("createRRD: issuing RRD create command: " + cmd);
 
-			String[] results = m_rrdInterface.launch(cmd);
+			String[] results = Interface.launch(cmd);
 		    
 			// Sanity check results array
 			if (results == null)
@@ -1564,7 +1564,7 @@ final class SnmpCollector
 					// Issue the RRD update
 					if (log.isDebugEnabled())
 						log.debug("updateRRDs: Issuing RRD update command: " + cmd);
-					String[] results = m_rrdInterface.launch(cmd);
+					String[] results = Interface.launch(cmd);
 					if (log.isDebugEnabled())
 						log.debug("updateRRDs: RRD update command completed.");
 					
@@ -1690,7 +1690,7 @@ final class SnmpCollector
 						if (log.isDebugEnabled())
 							log.debug("updateRRDs: Issuing RRD update command: " + cmd);
 						
-						String[] results = m_rrdInterface.launch(cmd);
+						String[] results = Interface.launch(cmd);
 						
 						if (log.isDebugEnabled())
 							log.debug("updateRRDs: RRD update command completed.");

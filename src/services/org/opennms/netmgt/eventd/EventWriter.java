@@ -263,7 +263,7 @@ final class EventWriter
 
 		// ask persistd
 		//
-		int id = Eventd.getInstance().getServiceID(name);
+		int id = Eventd.getServiceID(name);
 		if (id != -1)
 			return id;
 		
@@ -283,7 +283,7 @@ final class EventWriter
 		// inform persistd about the new find
 		//
 		if (id != -1)
-			Eventd.getInstance().addServiceMapping(name, id);
+			Eventd.addServiceMapping(name, id);
 
 		//
 		// return the id to the caller

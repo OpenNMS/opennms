@@ -74,7 +74,7 @@ final class DataUpdater implements Runnable
 			return;
 		}
 
-		DataManager dataMgr = RTCManager.getInstance().getDataManager();
+		DataManager dataMgr = RTCManager.getDataManager();
 		dataMgr.nodeGainedService(nodeid, ip, svcName);
 		if(log.isDebugEnabled())
 			log.debug(m_event.getUei() + " added " + nodeid + ": " + ip + ": " + svcName + " to data store");
@@ -94,7 +94,7 @@ final class DataUpdater implements Runnable
 			return;
 		}
 
-		DataManager dataMgr = RTCManager.getInstance().getDataManager();
+		DataManager dataMgr = RTCManager.getDataManager();
 		dataMgr.nodeLostService(nodeid, ip, svcName, eventTime);
 
 		if(log.isDebugEnabled())
@@ -114,7 +114,7 @@ final class DataUpdater implements Runnable
 			return;
 		}
 
-		DataManager dataMgr = RTCManager.getInstance().getDataManager();
+		DataManager dataMgr = RTCManager.getDataManager();
 		dataMgr.interfaceDown(nodeid, ip, eventTime);
 
 		if(log.isDebugEnabled())
@@ -134,7 +134,7 @@ final class DataUpdater implements Runnable
 			return;
 		}
 
-		DataManager dataMgr = RTCManager.getInstance().getDataManager();
+		DataManager dataMgr = RTCManager.getDataManager();
 		dataMgr.nodeDown(nodeid, eventTime);
 
 		if(log.isDebugEnabled())
@@ -154,7 +154,7 @@ final class DataUpdater implements Runnable
 			return;
 		}
 
-		DataManager dataMgr = RTCManager.getInstance().getDataManager();
+		DataManager dataMgr = RTCManager.getDataManager();
 		dataMgr.nodeUp(nodeid, eventTime);
 
 		if(log.isDebugEnabled()) 
@@ -174,7 +174,7 @@ final class DataUpdater implements Runnable
 			return;
 		}
 
-		DataManager dataMgr = RTCManager.getInstance().getDataManager();
+		DataManager dataMgr = RTCManager.getDataManager();
 		dataMgr.interfaceUp(nodeid, ip, eventTime);
 
 		if(log.isDebugEnabled()) 
@@ -194,7 +194,7 @@ final class DataUpdater implements Runnable
 			return;
 		}
 
-		DataManager dataMgr = RTCManager.getInstance().getDataManager();
+		DataManager dataMgr = RTCManager.getDataManager();
 		dataMgr.nodeRegainedService(nodeid, ip, svcName, eventTime);
 
 		if(log.isDebugEnabled()) 
@@ -214,7 +214,7 @@ final class DataUpdater implements Runnable
 			return;
 		}
 
-		DataManager dataMgr = RTCManager.getInstance().getDataManager();
+		DataManager dataMgr = RTCManager.getDataManager();
 		dataMgr.serviceDeleted(nodeid, ip, svcName);
 
 		if(log.isDebugEnabled())
@@ -294,7 +294,7 @@ final class DataUpdater implements Runnable
 		}
 		else
 		{
-			DataManager dataMgr = RTCManager.getInstance().getDataManager();
+			DataManager dataMgr = RTCManager.getDataManager();
 			dataMgr.interfaceReparented(ip, oldNodeId, newNodeId);
 			if(log.isDebugEnabled()) 
 				log.debug(m_event.getUei() + " reparented ip: " + ip + " from " + oldNodeId + " to " + newNodeId);

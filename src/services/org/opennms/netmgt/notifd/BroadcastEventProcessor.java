@@ -202,7 +202,7 @@ final class BroadcastEventProcessor
 	{
 		try
                 {
-		Collection ueis = NotifdConfigFactory.getInstance().getConfiguration().getAutoAcknowledgeCollection();
+		Collection ueis = NotifdConfigFactory.getConfiguration().getAutoAcknowledgeCollection();
 		
 		//see if this event has an auto acknowledge for a notice
 		Iterator i = ueis.iterator();
@@ -264,7 +264,7 @@ final class BroadcastEventProcessor
 		try
 		{
 			//check the database to see if notices were turned off for this service
-			String notify = NotificationFactory.getInstance().getServiceNoticeStatus(nodeID,
+			String notify = NotificationFactory.getServiceNoticeStatus(nodeID,
 								          	                 ipAddr,
 										                 service);
 			if ("Y".equals(notify))
@@ -329,7 +329,7 @@ final class BroadcastEventProcessor
                                                 int noticeId = 0;
 
                                                 try {
-                                                        noticeId = NotificationFactory.getInstance().getNoticeId();
+                                                        noticeId = NotificationFactory.getNoticeId();
                                                 } catch (Exception e)
                                                 {
                                                         log.error("Failed to get a unique id # for notification, exiting this notification", e);

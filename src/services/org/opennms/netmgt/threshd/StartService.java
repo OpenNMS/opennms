@@ -38,6 +38,8 @@
 
 package org.opennms.netmgt.threshd;
 
+import org.opennms.core.fiber.Fiber;
+
 
 /**
  * This class is used to launch/start the thresholding daemon service
@@ -60,7 +62,7 @@ public final class StartService
 	{
 		Threshd svc = Threshd.getInstance();
 		int status = svc.getStatus();
-		if (status == svc.START_PENDING || status == svc.STOPPED)
+		if (status == Fiber.START_PENDING || status == Fiber.STOPPED)
 		{
 			svc.start();
 		}

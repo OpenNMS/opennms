@@ -146,19 +146,19 @@ public class MapNode {
     }
 
     public int getBaseX() {
-        return (this.x * this.defaultNodeWidth) + (this.x + 1 * this.widthBuffer);
+        return (this.x * MapNode.defaultNodeWidth) + (this.x + 1 * MapNode.widthBuffer);
     }
 
     public int getBaseY() {
-        return (this.y * this.defaultNodeHeight) + (this.y + 1 * this.heightBuffer);
+        return (this.y * MapNode.defaultNodeHeight) + (this.y + 1 * MapNode.heightBuffer);
     }
 
     public int getCenterX() {
-        return getBaseX() + (this.defaultNodeWidth / 2);
+        return getBaseX() + (MapNode.defaultNodeWidth / 2);
     }
 
     public int getCenterY() {
-        return getBaseY() + (this.defaultNodeHeight / 2);
+        return getBaseY() + (MapNode.defaultNodeHeight / 2);
     }
 
     public String getLineFromX() {

@@ -439,7 +439,7 @@ final class TcpRecordHandler
 		{
 			// check to see if the thread is interrupted
 			//
-			if(m_context.interrupted())
+			if(Thread.interrupted())
 			{
 				if(log.isDebugEnabled())
 					log.debug("Thread Interrupted");

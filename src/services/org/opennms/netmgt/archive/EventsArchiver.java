@@ -502,8 +502,8 @@ public class EventsArchiver
 		// with 'SocketAppender's or 'AsyncAppender's, these appenders
 		// should be closed explictly before shutdown()
 		//
-		m_archCat.shutdown();
-		m_logCat.shutdown();
+		Category.shutdown();
+		//m_logCat.shutdown();
 	}
 
 	/**

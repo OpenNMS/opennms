@@ -784,7 +784,7 @@ class NessusScan
 						stmt.setInt(1, vulnId);
 
 						// Match the interface to a node in the database
-						int nodeId = VulnscandConfigFactory.getInstance().getInterfaceDbNodeId(conn, config.targetAddress);
+						int nodeId = VulnscandConfigFactory.getInterfaceDbNodeId(conn, config.targetAddress);
 						if (nodeId > 0) stmt.setInt(2, nodeId);
 						else stmt.setNull(2, Types.INTEGER);
 
@@ -974,7 +974,7 @@ class NessusScan
 						stmt.setInt(1, vulnId);
 
 						// Match the interface to a node in the database
-						int nodeId = VulnscandConfigFactory.getInstance().getInterfaceDbNodeId(conn, config.targetAddress);
+						int nodeId = VulnscandConfigFactory.getInterfaceDbNodeId(conn, config.targetAddress);
 						if (nodeId > 0) stmt.setInt(2, nodeId);
 						else stmt.setNull(2, Types.INTEGER);
 
