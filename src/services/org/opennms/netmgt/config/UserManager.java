@@ -243,8 +243,14 @@ public abstract class UserManager {
      */
     public String getContactInfo(String userID, String command) throws IOException, MarshalException, ValidationException {
         update();
-    
+        
         User user = (User) m_users.get(userID);
+        return getContactInfo(user, command);
+    }
+    
+    public String getContactInfo(User user, String command) throws IOException, MarshalException, ValidationException {
+        update();
+        
         if (user == null)
             return "";
         String value = "";
@@ -274,6 +280,12 @@ public abstract class UserManager {
         update();
     
         User user = (User) m_users.get(userID);
+        return getContactServiceProvider(user, command);
+    }
+    
+    public String getContactServiceProvider(User user, String command) throws IOException, MarshalException, ValidationException {
+        update();
+        
         if (user == null)
             return "";
         String value = "";

@@ -214,11 +214,8 @@ public class NotificationTask extends Thread {
                     String cntct = "";
 
                     for (int i = 0; i < m_commands.length; i++) {
-                        if (m_user.getUserId().equals("email-address")) {
-                            cntct = m_user.getContact()[0].getInfo();
-                        } else {
-                            cntct = m_notifd.getUserManager().getContactInfo(m_user.getUserId(), m_commands[i].getName());
-                        }
+                        
+                        cntct = getContactInfo(m_commands[i].getName());
                         try {
                             m_notifd.getNotificationManager().updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), cntct);
                         } catch (SQLException e) {
@@ -260,6 +257,11 @@ public class NotificationTask extends Thread {
                 // m_notifTree.remove(task);
             }
         }
+    }
+
+    private String getContactInfo(String cmdName) throws IOException, MarshalException, ValidationException {
+        
+        return m_notifd.getUserManager().getContactInfo(m_user, cmdName);
     }
 
     /**
@@ -309,7 +311,7 @@ public class NotificationTask extends Thread {
     }
 
     public String getEmail() throws IOException, MarshalException, ValidationException {
-	return m_notifd.getUserManager().getEmail(m_user.getUserId());
+        return getContactInfo("email");
     }
     
 }

@@ -1254,7 +1254,6 @@ public class EventdTest extends TestCase {
         sleep(1000);
         assertEquals(2, m_db.countRows("select * from alarms"));
         
-        System.setProperty("mock.debug", "true");
         MockUtil.println("Going for the print of the counter column");
 
         //TODO: Change this to use Querier class
