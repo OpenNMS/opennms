@@ -1,6 +1,7 @@
 1.1.6 to 1.2.0
 ----------------------------------------------------------------------
-- Added some corrections to the release notes. Thx Scott. Bug 965.
+- Added a dependency for a lib required by Java on FC3. Bug 1068
+- Added some corrections to the release notes. Thx Scott. Bug 965
 
 1.1.4 to 1.1.5
 ----------------------------------------------------------------------
