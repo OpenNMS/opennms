@@ -255,7 +255,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
         Category log = ThreadCategory.getInstance(getClass());
 
         if (log.isDebugEnabled()) {
-            log.debug("schedule: Adding ready runnable at interval " + interval);
+            log.debug("schedule: Adding ready runnable "+runnable+" at interval " + interval);
         }
 
         Long key = new Long(interval);
@@ -276,11 +276,11 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
             }
         } catch (InterruptedException ie) {
             if (log.isInfoEnabled())
-                log.info("schedule: failed to add new ready runnable instance to scheduler", ie);
+                log.info("schedule: failed to add new ready runnable instance "+runnable+" to scheduler", ie);
             Thread.currentThread().interrupt();
         } catch (FifoQueueException ex) {
             if (log.isInfoEnabled())
-                log.info("schedule: failed to add new ready runnable instance to scheduler", ex);
+                log.info("schedule: failed to add new ready runnable instance "+runnable+" to scheduler", ex);
             throw new UndeclaredThrowableException(ex);
         }
     }
@@ -495,7 +495,7 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
                             readyRun = (ReadyRunnable) in.peek();
                             if (readyRun != null && readyRun.isReady()) {
                                 if (log.isDebugEnabled()) {
-                                    log.debug("run: found ready runnable");
+                                    log.debug("run: found ready runnable "+readyRun);
                                 }
 
                                 // Pop the interface/readyRunnable from the

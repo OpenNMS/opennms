@@ -31,6 +31,8 @@
 //
 package org.opennms.netmgt.scheduler;
 
+import org.opennms.core.utils.ThreadCategory;
+
 
 /**
  * Represents a Schedule 
@@ -61,13 +63,19 @@ public class Schedule {
         }
 
         public void run() {
-            if (isExpired()) return;
+            if (isExpired()) {
+                ThreadCategory.getInstance(getClass()).debug("Schedule "+this+" expired.  No need to run.");
+                return;
+            }
             
             if (!m_interval.scheduledSuspension())
                 Schedule.this.run();
 
             // if it is expired by the current run then don't reschedule
-            if (isExpired()) return;
+            if (isExpired()) {
+                ThreadCategory.getInstance(getClass()).debug("Schedule "+this+" expired.  No need to reschedule.");
+                return;
+            }
             
             long interval = m_interval.getInterval();
             if (interval >= 0 && m_scheduled)
