@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2004 Mar 23: Fixed an omission with RRD and null banners.
 // 2003 Jul 21: Explicitly closed socket.
 // 2003 Jul 18: Enabled retries for monitors.
 // 2003 Jun 11: Added a "catch" for RRD update errors. Bug #748.
@@ -188,6 +189,18 @@ final class TcpMonitor
 				if (strBannerMatch == null || strBannerMatch.equals("*"))
 				{
 					serviceStatus = SERVICE_AVAILABLE;
+                        		// Store response time in RRD
+                        		if (responseTime >= 0 && rrdPath != null)
+                        		{
+                                		try
+                                		{
+                                        		this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime, pkg);
+                                		}
+                                		catch(RuntimeException rex)
+                                		{
+                                        		log.debug("There was a problem writing the RRD:" + rex);
+                                		}
+                        		}
 					break;
 				}
 
