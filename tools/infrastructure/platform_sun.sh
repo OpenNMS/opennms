@@ -15,6 +15,7 @@ if [ `uname` = 'SunOS' ]; then
 	DEFINES="$DEFINES -Dcompile.ld.shared=-G -Dcompile.platform.define=__SOLARIS__"
 	DEFINES="$DEFINES -Dcompile.postgresql.include=/usr/local/pgsql/include"
 	DEFINES="$DEFINES -Dcompile.postgresql.lib=/usr/local/pgsql/lib"
-	DEFINES="$DEFINES -Dcompile.rrdtool.include=/usr/local/rrdtool-1.0.37/include"
-	DEFINES="$DEFINES -Dcompile.rrdtool.lib=/usr/local/rrdtool-1.0.37/lib"
+        DEFINES="$DEFINES -Dcompile.rrdtool.include=/usr/local/include"
+        DEFINES="$DEFINES -Dcompile.rrdtool.lib=/usr/local/lib"
+
 fi
