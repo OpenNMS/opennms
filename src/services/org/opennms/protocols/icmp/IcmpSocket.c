@@ -32,6 +32,7 @@
 #include <sys/socket.h>
 #if defined(__DARWIN__) || defined(__SOLARIS__)
 #include <netinet/in_systm.h>
+#include <architecture/byte_order.h>
 #endif
 #include <netinet/in.h>
 #include <netinet/ip.h>
@@ -160,17 +161,18 @@ typedef struct icmphdr icmphdr_t;
 /**
  * Macros for doing byte swapping
  */
+
 #if defined(__LITTLE_ENDIAN) || defined(_LITTLE_ENDIAN) || defined(LITTLE_ENDIAN)
 # ifndef ntohll
 #  if defined(__DARWIN__)
-#   define ntohll(_x_) ntohl(_x_)
+#   define ntohll(_x_) NXSwapLongLong(_x_)
 #  else
 #   define ntohll(_x_) __bswap_64(_x_)
 #  endif
 # endif
 # ifndef htonll
 #  if defined(__DARWIN__)
-#   define htonll(_x_) htonl(_x_)
+#   define htonll(_x_) NXSwapLongLong(_x_)
 #  else
 #   define htonll(_x_) __bswap_64(_x_)
 #  endif
