@@ -106,10 +106,18 @@ final class RescanProcessor
 	 * SQL statements used to reparent an interface and its associated
 	 * services under a new parent nodeid
 	 */
+	final static String 	SQL_DB_REPARENT_IP_INTERFACE_LOOKUP	= "SELECT ipaddr, ifindex FROM ipinterface "
+                                                                        + "WHERE nodeID=? AND ipaddr=? AND isManaged!='D'";
+	final static String 	SQL_DB_REPARENT_IP_INTERFACE_DELETE	= "DELETE FROM ipinterface "
+                                                                        + "WHERE nodeID=? AND ipaddr=?";
 	final static String 	SQL_DB_REPARENT_IP_INTERFACE	= "UPDATE ipinterface SET nodeID=? WHERE nodeID=? AND ipaddr=? AND isManaged!='D'";
 	final static String 	SQL_DB_REPARENT_SNMP_IF_LOOKUP	= "SELECT ipaddr FROM snmpinterface WHERE nodeID=? AND snmpifindex=?";
 	final static String 	SQL_DB_REPARENT_SNMP_IF_DELETE	= "DELETE FROM snmpinterface WHERE nodeID=? AND snmpifindex=?";
 	final static String 	SQL_DB_REPARENT_SNMP_INTERFACE	= "UPDATE snmpinterface SET nodeID=? WHERE nodeID=? AND snmpifindex=?";
+	final static String 	SQL_DB_REPARENT_IF_SERVICES_LOOKUP	= "SELECT serviceid FROM ifservices "
+                                                                        + "WHERE nodeID=? AND ipaddr=? AND ifindex = ? "
+                                                                        + "AND status!='D'";
+	final static String 	SQL_DB_REPARENT_IF_SERVICES_DELETE	= "DELETE FROM ifservices WHERE nodeID=? AND ipaddr=? ";
 	final static String 	SQL_DB_REPARENT_IF_SERVICES	= "UPDATE ifservices SET nodeID=? WHERE nodeID=? AND ipaddr=? AND status!='D'";
 
         /**
@@ -1693,28 +1701,61 @@ final class RescanProcessor
 		throws SQLException
 	{
 		Category log = ThreadCategory.getInstance(getClass());
+
+                String ipaddr = ifAddr.getHostAddress();
 		
 		// Reparent the interface
 		//
+		PreparedStatement ifLookupStmt = dbc.prepareStatement(SQL_DB_REPARENT_IP_INTERFACE_LOOKUP);
+		PreparedStatement ifDeleteStmt = dbc.prepareStatement(SQL_DB_REPARENT_IP_INTERFACE_DELETE);
 		PreparedStatement ipInterfaceStmt = dbc.prepareStatement(SQL_DB_REPARENT_IP_INTERFACE);
 		PreparedStatement snmpIfLookupStmt = dbc.prepareStatement(SQL_DB_REPARENT_SNMP_IF_LOOKUP);
 		PreparedStatement snmpIfDeleteStmt = dbc.prepareStatement(SQL_DB_REPARENT_SNMP_IF_DELETE);
 		PreparedStatement snmpInterfaceStmt = dbc.prepareStatement(SQL_DB_REPARENT_SNMP_INTERFACE);
+		PreparedStatement ifServicesLookupStmt = dbc.prepareStatement(SQL_DB_REPARENT_IF_SERVICES_LOOKUP);
+		PreparedStatement ifServicesDeleteStmt = dbc.prepareStatement(SQL_DB_REPARENT_IF_SERVICES_DELETE);
 		PreparedStatement ifServicesStmt = dbc.prepareStatement(SQL_DB_REPARENT_IF_SERVICES);
 		
 		try
 		{
-			log.debug("reparentInterfaces: reparenting address/ifIndex/nodeID: " + ifAddr.getHostAddress() + "/" + ifIndex + "/" + newNodeId);
+			log.debug("reparentInterfaces: reparenting address/ifIndex/nodeID: " 
+                                + ipaddr + "/" + ifIndex + "/" + newNodeId);
 			
-			// Update the 'ipInterface' table entry so that this
-			// interface's nodeID is set to the value of reparentNodeID
-			ipInterfaceStmt.setInt(1, newNodeId);
-			ipInterfaceStmt.setInt(2, oldNodeId);
-			ipInterfaceStmt.setString(3, ifAddr.getHostAddress());
+			// Look for matching nodeid/ifindex for the entry to be reparented
+			boolean ifAlreadyExists = false;
+			ifLookupStmt.setInt(1, newNodeId);
+			ifLookupStmt.setString(2, ipaddr);
+			ResultSet rs = ifLookupStmt.executeQuery();
+			if (rs.next())
+			{
+				// Looks like we got a match so just delete
+				// the entry from the old node
+				log.debug("interface with ifindex " + ifIndex + " already exists under new node " 
+                                        + newNodeId + " in ipinterface table, deleting from under old node " + oldNodeId);
+				ifAlreadyExists = true;
+				
+				ifDeleteStmt.setInt(1, oldNodeId);
+				ifDeleteStmt.setString(2, ipaddr);
+				
+				ifDeleteStmt.executeUpdate();
+			}
+			
+			if (ifAlreadyExists == false)
+			{
+				// Update the 'ipinterface' table entry so that this
+				// interface's nodeID is set to the value of reparentNodeID
+				//
+				log.debug("interface with ifindex " + ifIndex 
+                                        + " does not yet exist under new node " + newNodeId + " in ipinterface table, reparenting.");
+				
+			        ipInterfaceStmt.setInt(1, newNodeId);
+			        ipInterfaceStmt.setInt(2, oldNodeId);
+			        ipInterfaceStmt.setString(3, ipaddr);
 					
-			// execute and log
-			ipInterfaceStmt.executeUpdate();
-			
+			        // execute and log
+			        ipInterfaceStmt.executeUpdate();
+			}
+                        
 			// SNMP interface
 			//
 			// NOTE:  Only reparent SNMP interfaces if we have valid ifIndex
@@ -1734,12 +1775,13 @@ final class RescanProcessor
 				boolean alreadyExists = false;
 				snmpIfLookupStmt.setInt(1, newNodeId);
 				snmpIfLookupStmt.setInt(2, ifIndex);
-				ResultSet rs = snmpIfLookupStmt.executeQuery();
+				rs = snmpIfLookupStmt.executeQuery();
 				if (rs.next())
 				{
 					// Looks like we got a match so just delete
 					// the entry from the old node
-					log.debug("interface with ifindex " + ifIndex + " already exists under new node " + newNodeId + ", deleting from under old node " + oldNodeId);
+					log.debug("interface with ifindex " + ifIndex + " already exists under new node " 
+                                                + newNodeId + " in snmpinterface table, deleting from under old node " + oldNodeId);
 					alreadyExists = true;
 					
 					snmpIfDeleteStmt.setInt(1, oldNodeId);
@@ -1753,7 +1795,8 @@ final class RescanProcessor
 					// Update the 'snmpinterface' table entry so that this
 					// interface's nodeID is set to the value of reparentNodeID
 					//
-					log.debug("interface with ifindex " + ifIndex + " does not yet exist under new node " + newNodeId + ", reparenting.");
+					log.debug("interface with ifindex " + ifIndex + " does not yet exist under new node " 
+                                                + newNodeId + " in snmpinterface table, reparenting.");
 					
 					snmpInterfaceStmt.setInt(1, newNodeId);
 					snmpInterfaceStmt.setInt(2, oldNodeId);
@@ -1764,32 +1807,69 @@ final class RescanProcessor
 				}
 			}
 			
-			// Update the 'nodeID' field of all 'ifservices' table entries for 
-			// the reparented interfaces.
-			ifServicesStmt.setInt(1, newNodeId);
-			ifServicesStmt.setInt(2, oldNodeId);
-			ifServicesStmt.setString(3, ifAddr.getHostAddress());
+			// Look for matching nodeid/ifindex for the entry to be reparented
+			boolean ifsAlreadyExists = false;
+			ifServicesLookupStmt.setInt(1, newNodeId);
+			ifServicesLookupStmt.setString(2, ipaddr);
+			ifServicesLookupStmt.setInt(3, ifIndex);
+			rs = ifServicesLookupStmt.executeQuery();
+			if (rs.next())
+			{
+				// Looks like we got a match so just delete
+				// the entry from the old node
+				log.debug("interface with ifindex " + ifIndex + " already exists under new node " 
+                                        + newNodeId + " in ifservices table, deleting from under old node " + oldNodeId);
+				ifsAlreadyExists = true;
+				
+				ifServicesDeleteStmt.setInt(1, oldNodeId);
+				ifServicesDeleteStmt.setString(2, ipaddr);
+				
+				ifServicesDeleteStmt.executeUpdate();
+			}
+			
+			if (ifsAlreadyExists == false)
+			{
+				// Update the 'snmpinterface' table entry so that this
+				// interface's nodeID is set to the value of reparentNodeID
+				//
+				log.debug("interface with ifindex " + ifIndex + " does not yet exist under new node " 
+                                        + newNodeId + " in ifservices table, reparenting.");
+				
+			        // Update the 'nodeID' field of all 'ifservices' table entries for 
+		        	// the reparented interfaces.
+			        ifServicesStmt.setInt(1, newNodeId);
+		        	ifServicesStmt.setInt(2, oldNodeId);
+		        	ifServicesStmt.setString(3, ipaddr);
 					
-			// execute and log
-			ifServicesStmt.executeUpdate();
-					
-			log.debug("reparentInterface: reparented " + ifAddr.getHostAddress() + 
+			        // execute and log
+			        ifServicesStmt.executeUpdate();
+			}
+
+			log.debug("reparentInterface: reparented " + ipaddr + 
 						" : ifIndex: " + ifIndex +
 						" : oldNodeID: " + oldNodeId + 
 						" newNodeID: " + newNodeId);
 		}	
 		catch(SQLException sqlE)
 		{
-			log.error("SQLException while reparenting addr/ifindex/nodeid " + ifAddr.getHostAddress() + "/" + ifIndex + "/" + oldNodeId);
+			log.error("SQLException while reparenting addr/ifindex/nodeid " + ipaddr + "/" + ifIndex + "/" + oldNodeId);
 			throw sqlE;
 		}
 		finally
 		{
-			ipInterfaceStmt.close();
-			snmpIfLookupStmt.close();
-			snmpIfDeleteStmt.close(); 
-			snmpInterfaceStmt.close();
-			ifServicesStmt.close();
+                        try 
+                        {
+			        ifLookupStmt.close();
+                                ifDeleteStmt.close();
+                                ipInterfaceStmt.close();
+			        snmpIfLookupStmt.close();
+			        snmpIfDeleteStmt.close(); 
+			        snmpInterfaceStmt.close();
+                                ifServicesLookupStmt.close();
+                                ifServicesDeleteStmt.close();
+			        ifServicesStmt.close();
+                        }
+                        catch (SQLException e) {}
 		}
 	}
 	
