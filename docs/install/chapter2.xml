@@ -69,9 +69,9 @@
             </listitem>
 
             <listitem>
-              <para>Download the Java 1.4.2 SDK from Sun. Make sure that you
-              get the non-RPM binary package (the "<filename>.bin</filename>"
-              package).</para>
+              <para>Download the Java 1.4 SDK from Sun.  We suggest 1.4.2 or
+              later.  Make sure that you get the non-RPM binary package (the
+              "<filename>.bin</filename>" package).</para>
             </listitem>
 
             <listitem>
@@ -116,7 +116,7 @@
       </note>
 
       <para>You will need to use Sun's Java 2 Platform, Standard Edition,
-      version 1.4.2 or later. You can <ulink
+      version 1.4 or later.  We suggest using 1.4.2 or later.  You can <ulink
       url="http://java.sun.com/j2se/1.4.2/download.html">download it</ulink>
       from Sun's <ulink url="http://java.sun.com/">Java</ulink> website. Step
       through the licensing process and then download the proper version of
