@@ -27,7 +27,9 @@ java_lint () {
 
 	if [ -z "$JAVA_HOME" ]; then
 
-		for jdk in /Library/Java/Home /usr/java/jdk1.4* /usr/java/j2sdk1.4* /opt/IBMJava2-13 /usr/java/jdk1.3.1_* /usr/java/jdk1.3.1* /usr/java/j2sdk1.3.1* /usr/lib/j2sdk1.3*; do
+		# prefer the Apple JDK, then the newest 1.4 sun JDK, then whatever's left
+		JAVADIR=`ls -1 /usr/java 2>/dev/null | grep 1.4 | sort | tail -1`
+		for jdk in /Library/Java/Home $JAVADIR /usr/java/jdk1.4* /usr/java/j2sdk1.4*; do
 			if [ -x "$jdk/bin/java" ]; then
 				export JAVA_HOME="$jdk";
 				break
