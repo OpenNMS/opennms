@@ -167,11 +167,11 @@
         </protocol-plugin>
 	<protocol-plugin protocol="RadiusAuth" class-name="org.opennms.netmgt.capsd.RadiusAuthPlugin" scan="on" user-defined="false">
                  <property key="timeout" value="3000"/>
-                 <property key="user" value="test"/>
+                 <property key="user" value="TEST"/>
                  <property key="password" value="test"/>
                  <property key="secret" value="opennms"/>
                  <property key="retry" value="2"/>
-    </protocol-plugin>
+    	</protocol-plugin>
 	<smb-config>
 		<smb-auth user="guest" password="guest" type="domain">WORKGROUP</smb-auth>
 	</smb-config>

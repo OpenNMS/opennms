@@ -174,13 +174,13 @@
 			<parameter key="ds-name" value="pop3"/>
 		</service>
 		<service name="RadiusAuth" interval="300000" user-defined="false" status="on">
-             <parameter key="retry" value="3"/>
-             <parameter key="timeout" value="3000"/>
-             <parameter key="user" value="TEST"/>
-             <parameter key="password" value="test"/>
-             <parameter key="secret" value="opennms"/>
-             <parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
-             <parameter key="ds-name" value="radiusauth"/>
+             		<parameter key="retry" value="3"/>
+             		<parameter key="timeout" value="3000"/>
+             		<parameter key="user" value="TEST"/>
+             		<parameter key="password" value="test"/>
+             		<parameter key="secret" value="opennms"/>
+             		<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
+             		<parameter key="ds-name" value="radiusauth"/>
 		</service>
 		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
 
@@ -191,10 +191,10 @@
 
 	</package>
 
-    <monitor service="DominoIIOP" 	class-name="org.opennms.netmgt.poller.monitors.DominoIIOPMonitor"/>
-    <monitor service="ICMP" 	class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/>
-    <monitor service="Citrix" 	class-name="org.opennms.netmgt.poller.monitors.CitrixMonitor"/>
-    <monitor service="LDAP" 	class-name="org.opennms.netmgt.poller.monitors.LdapMonitor"/>
+    	<monitor service="DominoIIOP" 	class-name="org.opennms.netmgt.poller.monitors.DominoIIOPMonitor"/>
+    	<monitor service="ICMP" 	class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/>
+    	<monitor service="Citrix" 	class-name="org.opennms.netmgt.poller.monitors.CitrixMonitor"/>
+    	<monitor service="LDAP" 	class-name="org.opennms.netmgt.poller.monitors.LdapMonitor"/>
 	<monitor service="HTTP" 	class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
 	<monitor service="HTTP-MGMT" 	class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
 	<monitor service="HTTP-8080"    class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>

@@ -20,7 +20,7 @@ level agreements, but may be an indicator of other problems on that node.
         <subject>Notice #%noticeid%: %service% service on %interfaceresolve% (%interface%) on node %nodelabel% is unresponsive.</subject>
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
-    <notification name="serviceResponsive" status="on">
+    <notification name="serviceResponsive" status="off">
         <uei>uei.opennms.org/nodes/serviceResponsive</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Admin</destinationPath>
@@ -54,7 +54,7 @@ be impacted until this outage is resolved.
         <subject>Notice #%noticeid%: node %nodelabel% down.</subject>
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
-    <notification name="interfaceUp" status="on">
+    <notification name="interfaceUp" status="off">
         <uei>uei.opennms.org/nodes/interfaceUp</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Admin</destinationPath>
@@ -63,7 +63,7 @@ on node %nodelabel% which was previously down is now up.</text-message>
         <subject>Notice #%noticeid%: Interface %interfaceresolve% (%interface%) on node %nodelabel% has been cleared</subject>
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
-    <notification name="nodeUp" status="on">
+    <notification name="nodeUp" status="off">
         <uei>uei.opennms.org/nodes/nodeUp</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Admin</destinationPath>
@@ -81,7 +81,7 @@ on node %nodelabel% failed at %time%.
         <subject>Notice #%noticeid%: %service% down on %interfaceresolve% (%interface%) on node %nodelabel%.</subject>
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
-    <notification name="nodeRegainedService" status="on">
+    <notification name="nodeRegainedService" status="off">
         <uei>uei.opennms.org/nodes/nodeRegainedService</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>Email-Admin</destinationPath>

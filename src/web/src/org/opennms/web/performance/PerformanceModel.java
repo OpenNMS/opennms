@@ -307,8 +307,13 @@ public class PerformanceModel extends Object {
         // Otherwise, add the extended information to the description
         else {
             String parenString = new String();
+            
+            if (intfMap.get("snmpifalias") != null) {
+                parenString += (String) intfMap.get("snmpifalias");
+            }
             if ((intfMap.get("ipaddr") != null) && !((String) intfMap.get("ipaddr")).equals("0.0.0.0")) {
-                parenString += (String) intfMap.get("ipaddr");
+                String ipaddr = (String) intfMap.get("ipaddr");
+                parenString += ((parenString.equals("")) ? ipaddr : (", " + ipaddr));
             }
             if ((intfMap.get("snmpifspeed") != null) && (Integer.parseInt((String) intfMap.get("snmpifspeed")) != 0)) {
                 String speed = Util.getHumanReadableIfSpeed(Integer.parseInt((String) intfMap.get("snmpifspeed")));
@@ -328,7 +333,7 @@ public class PerformanceModel extends Object {
 
             // Add the extended information in parenthesis after the ifLabel,
             // if such information was found
-            descr = descr + ((parenString.equals("")) ? "" : (" (" + parenString + ")"));
+            descr = Util.htmlify(descr + ((parenString.equals("")) ? "" : (" (" + parenString + ")")));
         }
 
         return descr;
