@@ -104,9 +104,14 @@
       <tr>
         <td colspan="3"> 
 	<P>The nodes present in the system are listed below. To permanently delete a node (and all associated
-	   interfaces, services, outages, events and notifications), check the box beside the node's ID and
+	   interfaces, services, outages, events and notifications), check the "Delete?" box beside the node's ID and
            select "Delete Nodes". You may check more than one.
         </P>
+	<P>Checking the "Data?" box will delete the SNMP performance and response time directories from the system as well.
+	   Note that it is possible for the directory to be deleted <i>before</i> the fact that the node has been removed has
+           fully propagated through the system. Thus the system may recreate the directory for a single update after
+           this action. In that case, the directory will need to be removed manually.
+	</P>
         <P><b>Note:</b> If the IP address of any of the node's interfaces is still configured for discovery,
 	   the node will be discovered again. To prevent this, either remove the IP address from the
 	   discovery range or unmanage the device instead of deleting it.
@@ -138,6 +143,7 @@
           <table border="1" cellspacing="0" cellpadding="2" bordercolor="black">
             <tr bgcolor="#999999">
               <td width="5%" align="center"><b>Delete?</b></td>
+              <td width="5%" align="center"><b>Data?</b></td>
               <td width="5%" align="center"><b>Node ID</b></td>
               <td width="10%" align="center"><b>Node Label</b></td>
             </tr>
@@ -158,6 +164,7 @@
           <table border="1" cellspacing="0" cellpadding="2" bordercolor="black">
             <tr bgcolor="#999999">
               <td width="5%" align="center"><b>Delete?</b></td>
+              <td width="5%" align="center"><b>Data?</b></td>
               <td width="5%" align="center"><b>Node ID</b></td>
               <td width="10%" align="center"><b>Node Label</b></td>
             </tr>
@@ -209,6 +216,9 @@
           row.append("<tr>\n");
           row.append("<td width=\"5%\" align=\"center\">");
           row.append("<input type=\"checkbox\" name=\"nodeCheck\" value=\""+ nodeid +"\" >");
+          row.append("</td>\n");
+          row.append("<td width=\"5%\" align=\"center\">");
+          row.append("<input type=\"checkbox\" name=\"nodeData\" value=\""+ nodeid +"\" >");
           row.append("</td>\n");
           row.append("<td width=\"5%\" align=\"center\">");
 	  row.append(nodeid);

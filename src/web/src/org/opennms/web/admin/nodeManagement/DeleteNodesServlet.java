@@ -44,13 +44,89 @@ public class DeleteNodesServlet extends HttpServlet
 
 
 	}
+    	public static final String RRDTOOL_SNMP_GRAPH_PROPERTIES_FILENAME = "/etc/snmp-graph.properties";
+    	public static final String RRDTOOL_RT_GRAPH_PROPERTIES_FILENAME = "/etc/response-graph.properties";
+
+    	protected Properties snmpProps;
+    	protected File snmpRrdDirectory;
+    	protected Properties rtProps;
+    	protected File rtRrdDirectory;
+
+
         public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
         {
                 HttpSession userSession = request.getSession(false);
 
                 //the list of all nodes marked for deletion
                 java.util.List nodeList = getList(request.getParameterValues("nodeCheck"));
+                java.util.List nodeDataList = getList(request.getParameterValues("nodeData"));
 
+		//get the directories storing the response time and SNMP data
+        	this.snmpProps = new java.util.Properties();
+        	this.snmpProps.load( new FileInputStream( Vault.getHomeDir() + RRDTOOL_SNMP_GRAPH_PROPERTIES_FILENAME ));
+
+        	this.snmpRrdDirectory = new File( this.snmpProps.getProperty( "command.input.dir" ));
+
+                this.rtProps = new java.util.Properties();
+                this.rtProps.load( new FileInputStream( Vault.getHomeDir() + RRDTOOL_RT_GRAPH_PROPERTIES_FILENAME ));
+
+                this.rtRrdDirectory = new File( this.rtProps.getProperty( "command.input.dir" ));
+
+
+		//delete data directories if desired
+                for (int j = 0; j < nodeDataList.size(); j++)
+                {
+			//SNMP RRD directory
+        		File nodeDir = new File(this.snmpRrdDirectory, (String)nodeDataList.get(j));
+
+        		if(nodeDir.exists() && nodeDir.isDirectory()) 
+			{
+                        	this.log("DEBUG: Attempting to Delete Node Data Directory: " + nodeDir.getAbsolutePath());
+				if(deleteDir(nodeDir))
+                        		this.log("DEBUG: Node Data Directory Deleted Successfully");
+			}
+        		StringBuffer select = new StringBuffer("SELECT DISTINCT ipaddr FROM ipinterface WHERE nodeid=");
+
+        		select.append((String)nodeDataList.get(j));
+			
+			try
+			{
+        			Connection conn = Vault.getDbConnection();
+        			ArrayList intfs = new ArrayList();
+
+        			try
+        			{
+            				Statement stmt = conn.createStatement();
+            				ResultSet rs = stmt.executeQuery(select.toString());
+
+            				while( rs.next() )
+            				{
+                				String ipAddr = rs.getString("ipaddr");
+						//Response Time RRD directory
+                				File intfDir = new File(this.rtRrdDirectory, ipAddr);
+
+                				if(intfDir.exists() && intfDir.isDirectory())
+                				{
+                                			this.log("DEBUG: Attempting to Delete Node Response Time Data Directory: " + intfDir.getAbsolutePath());
+                                			if(deleteDir(intfDir))
+                                        			this.log("DEBUG: Node Response Time Data Directory Deleted Successfully");
+                				}
+            				}
+            				rs.close();
+            				stmt.close();
+        			}
+        			finally
+        			{
+            				Vault.releaseDbConnection(conn);
+        			}
+        		}
+                	catch (SQLException e)
+                	{
+                       		throw new ServletException("There was a problem with the database connection: " + e.getMessage(), e);
+                	}
+		}
+
+		// Now, Delete the node from the database
                 try
                 {
                         Connection connection = Vault.getDbConnection();
@@ -146,7 +222,6 @@ public class DeleteNodesServlet extends HttpServlet
                 }
 
 
-
                 //forward the request for proper display
                 RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/deleteNodesFinish.jsp");
                 dispatcher.forward( request, response );
@@ -209,5 +284,23 @@ public class DeleteNodesServlet extends HttpServlet
 		
 		return newList;
 	}
+    	// Deletes all files and subdirectories under dir.
+    	// Returns true if all deletions were successful.
+    	// If a deletion fails, the method stops attempting to delete and returns false.
+    	public static boolean deleteDir(File dir) {
+        if (dir.isDirectory()) {
+        	String[] children = dir.list();
+            	for (int i=0; i<children.length; i++) {
+                	boolean success = deleteDir(new File(dir, children[i]));
+                	if (!success) {
+                    		return false;
+                	}
+            	}
+        }
+    
+        // The directory is now empty so delete it
+        return dir.delete();
+    }
+
 	
 }
