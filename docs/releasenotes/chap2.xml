@@ -14,50 +14,165 @@
   <section>
     <title>Changes in OpenNMS 1.2.1</title>
 
-    <bridgehead>New Features</bridgehead>
+    <section>
+      <title>New Features</title>
 
-    <para><emphasis>XMPP Support:</emphasis> Chris Abernethy contributed some
-    code to allow notifications using the XMPP instant messaging protocol.
-    This is most commonly associated with the Jabber open-source messaging
-    project.</para>
+      <bridgehead>XMPP Support</bridgehead>
 
-    <para>Edit the <filename>xmpp-configuration.properties</filename> file to
-    include the username and password of the user you want to use as the
-    originator of the notice. Also include the server you wish to connect to
-    in order to send the notice.</para>
+      <para>Chris Abernethy contributed some code to allow notifications using
+      the XMPP instant messaging protocol. This is most commonly associated
+      with the Jabber open-source messaging project.</para>
 
-    <para>Finally, add an XMPP Address to each user that should receive the
-    notification, such as "myname@jabber.org".</para>
+      <para>Edit the <filename>xmpp-configuration.properties</filename> file
+      to include the username and password of the user you want to use as the
+      originator of the notice. Also include the server you wish to connect to
+      in order to send the notice.</para>
 
-    <para>If your destination path command includes xmppMessage, then the
-    notification text will be sent via XMPP to the user's XMPP address. Note:
-    be sure that the user has allowed messages from the OpenNMS XMPP user.
-    When I first tested this, I was blocking all messages from people not on
-    my "buddy" list and I never received the notice. </para>
+      <para>Finally, add an XMPP Address to each user that should receive the
+      notification, such as "myname@jabber.org".</para>
 
-    <para>This was enhancement bug 1168.</para>
+      <para>If your destination path command includes xmppMessage, then the
+      notification text will be sent via XMPP to the user's XMPP address.
+      Note: be sure that the user has allowed messages from the OpenNMS XMPP
+      user. When I first tested this, I was blocking all messages from people
+      not on my "buddy" list and I never received the notice.</para>
 
-    <bridgehead>Bug Fixes</bridgehead>
+      <para>This was enhancement bug 1168.</para>
 
-    <itemizedlist>
-      <listitem>
-        <para>There was an issue with SNMP version 2 data collection on large
-        devices (i.e. lots of interfaces) where the ifIndex values weren't
-        contiguous. This has been corrected. Bug 1141.</para>
-      </listitem>
+      <bridgehead>Support for Labels in SNMP Performance Reports</bridgehead>
 
-      <listitem>
-        <para>Added the notifd "RESOLVED" string to the body of notifications
-        (in addition to just the subject).</para>
-      </listitem>
+      <para>Craig Miskell contributed some code that allows for text strings
+      to be collected via SNMP and used to label SNMP Performance
+      reports.</para>
 
-      <listitem>
-        <para>Many people reported issues with 1.2.0 errors with the new
-        ifAlias field. It was too small to hold the entire string associated
-        with some interfaces, so the size of this field has been increased to
-        256.</para>
-      </listitem>
-    </itemizedlist>
+      <para>For example, the Net-SNMP agents allows one to collect on disk
+      statistics:</para>
+
+      <programlisting>disk /
+disk /boot
+disk /opt/distros</programlisting>
+
+      <para>This will create a table where the first row is disk space on
+      root, the second row is the disk space on /boot, etc.</para>
+
+      <para>The problem is that this configuration:</para>
+
+      <programlisting>disk /boot
+disk /
+disk /opt/distros</programlisting>
+
+      <para>Is also valid, but the /boot parition is now index one, and / is
+      index two.</para>
+
+      <para>Previously, one had to be a little saavy about how to configure
+      the order of disk volumes, but now the disk label can just be collected
+      and displayed.</para>
+
+      <para>For example, we currently collect on the first instance of the
+      Net-SNMP disk table, and just assume it's root:</para>
+
+      <programlisting>&lt;group  name = "net-snmp-root-disk" ifType = "ignore"&gt;
+        &lt;mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="1" alias="ns-disk-root-tot"    type="gauge"/&gt;
+        &lt;mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="1" alias="ns-disk-root-avail"    type="gauge"/&gt;
+        &lt;mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="1" alias="ns-disk-root-used"    type="gauge"/&gt;
+        &lt;mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="1" alias="ns-disk-root-pct"    type="gauge"/&gt;
+&lt;/group&gt;</programlisting>
+
+      <para>To use this feature, we convert it to something more generic, disk
+      1 instead of root:</para>
+
+      <programlisting>&lt;mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="1" alias="ns-disk-1-name"    type="string"/&gt;
+&lt;mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="1" alias="ns-disk-1-tot"    type="gauge"/&gt;
+&lt;mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="1" alias="ns-disk-1-avail"    type="gauge"/&gt;
+&lt;mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="1" alias="ns-disk-1-used"    type="gauge"/&gt;
+&lt;mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="1" alias="ns-disk-1-pct"    type="gauge"/&gt;</programlisting>
+
+      <para>Note the new first line. The ".2" OID in this table is the disk
+      label, which we now collect. It gets stored in a file called
+      <filename>$OPENNMS_HOME/share/rrd/snmp/$NODEID/strings.properties</filename>,
+      where the <varname>$NODEID</varname> is the node number of the device
+      being collected.</para>
+
+      <para>A sample string.properties file looks like this:</para>
+
+      <programlisting>#Wed Mar 16 17:46:25 EST 2005
+ns-disk-3-name=/opt/distros
+ns-disk-2-name=/boot
+ns-disk-1-name=/</programlisting>
+
+      <para>Once the <filename>datacollection-config.xml </filename>file is
+      changed, and OpenNMS is restarted, collectd will begin storing the
+      collected strings.</para>
+
+      <para>So, how are they used? To display them in reports, edit the
+      <filename>snmp-graph.properties</filename> file. Everything in this file
+      that is in "curly braces" is something that OpenNMS supplied to RRDTool
+      (or jRobin).</para>
+
+      <programlisting>report.netsnmp.disk1percent.name=Percentage Disk Space on 1
+report.netsnmp.disk1percent.columns=ns-disk-1-pct
+report.netsnmp.disk1percent.type=node
+report.netsnmp.disk1percent.propertiesValues=ns-disk-1-name
+report.netsnmp.disk1percent.command=--title="Percentage Disk Space on {ns-disk-1-name}" \
+ DEF:dpercent={rrd1}:ns-disk-1-pct:AVERAGE \
+ LINE2:dpercent#0000ff:"% Disk Space Used" \
+ GPRINT:dpercent:AVERAGE:"Avg  \\: %8.2lf %s" \
+ GPRINT:dpercent:MIN:"Min  \\: %8.2lf %s" \
+ GPRINT:dpercent:MAX:"Max  \\: %8.2lf %s\n"</programlisting>
+
+      <para>Note the new "properitesValues" line. This line will look for the
+      value(s) listed in the appropriate
+      <filename>strings.properties</filename> file, such as
+      <varname>ns-disk-1-name</varname>. Then putting that value in curly
+      braces, as in {ns-disk-1-name} will cause OpenNMS to replace it with the
+      proper value.</para>
+
+      <para>By default, OpenNMS now collects on the first 5 disks defined by
+      Net-SNMP and disks 2 through 4 as defined by the host-resources MIB.
+      Please feel free to improve on this configurations, and post your diff
+      as an enchancement bug on <ulink
+      url="http://bugzilla.opennms.org">http://bugzilla.opennms.org</ulink>
+      for inclusion in a future release.</para>
+
+      <para>Some caveats: Currently this only works for node level
+      information. Also, the labels can't be used in notifications or events,
+      so if you get a highThreshold alert on disk usage, you won't be able to
+      tell exactly which disk (but it should be easy to look up).</para>
+
+      <para>Many thanks to Craig for this work.</para>
+    </section>
+
+    <section>
+      <title>Bug Fixes</title>
+
+      <para>The following is a list of bug fixes included in this
+      release:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>There was an issue with SNMP version 2 data collection on
+          large devices (i.e. lots of interfaces) where the ifIndex values
+          weren't contiguous. This has been corrected. Bug 1141.</para>
+        </listitem>
+
+        <listitem>
+          <para>Added the notifd "RESOLVED" string to the body of
+          notifications (in addition to just the subject).</para>
+        </listitem>
+
+        <listitem>
+          <para>Many people reported issues with 1.2.0 errors with the new
+          ifAlias field. It was too small to hold the entire string associated
+          with some interfaces, so the size of this field has been increased
+          to 256.</para>
+        </listitem>
+
+        <listitem>
+          <para>Greatly improved the execution speed of "Configure SNMP Data
+          Collection per Interface" in the Admin webUI.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
   </section>
 
   <section>
@@ -181,7 +296,7 @@
     The resolution-prefix can be changed to suit non-English languages or user
     preference.</para>
 
-    <para>A New RADIUS Poller</para>
+    <bridgehead>A New RADIUS Poller</bridgehead>
 
     <para>Jonathan Sartin (OGP) has written a new poller to poll RADIUS
     servers. The relavent configuration in capsd is:</para>
