@@ -95,7 +95,10 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
 
     public PollStatus poll() {
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(m_service.getSvcName());
-        return PollStatus.getPollStatus(monitor.poll(m_service.getNetInterface(), getParameters(), m_pkg));
+        ThreadCategory.getInstance(getClass()).debug("Polling "+m_service+" using pkg "+m_pkg.getName());
+        PollStatus result = PollStatus.getPollStatus(monitor.poll(m_service.getNetInterface(), getParameters(), m_pkg));
+        ThreadCategory.getInstance(getClass()).debug("Finish polling "+m_service+" using pkg "+m_pkg.getName()+" result ="+result);
+        return result;
     }
 
     /**

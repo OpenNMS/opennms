@@ -33,6 +33,7 @@ package org.opennms.netmgt.poller.pollables;
 
 import java.util.Date;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -83,6 +84,8 @@ abstract public class PollableElement {
     }
     public void updateStatus(PollStatus newStatus) {
         if (getStatus() != newStatus) {
+            
+            ThreadCategory.getInstance(getClass()).info("Changing status of PollableElement "+this+" from "+getStatus()+" to "+newStatus);
             setStatus(newStatus);
             setStatusChanged(true);
         }

@@ -474,7 +474,7 @@ public class DefaultQueryManager implements QueryManager {
     
     public void openOutage(String outageIdSQL, int nodeId, String ipAddr, int serviceId, int dbId, String time) {
         try {
-            ThreadCategory.getInstance(getClass()).debug("opening outage for "+nodeId+":"+ipAddr+":"+serviceId+" with cause "+dbId+":"+time);
+            ThreadCategory.getInstance(getClass()).info("opening outage for "+nodeId+":"+ipAddr+":"+serviceId+" with cause "+dbId+":"+time);
 
             String sql = "insert into outages (outageId, svcLostEventId, nodeId, ipAddr, serviceId, ifLostService) values (" +
             "("+outageIdSQL+"), " +
@@ -496,7 +496,7 @@ public class DefaultQueryManager implements QueryManager {
     
     public void resolveOutage(int nodeId, String ipAddr, int serviceId, int dbId, String time) {
         try {
-            ThreadCategory.getInstance(getClass()).debug("resolving outage for "+nodeId+":"+ipAddr+":"+serviceId+" with resolution "+dbId+":"+time);
+            ThreadCategory.getInstance(getClass()).info("resolving outage for "+nodeId+":"+ipAddr+":"+serviceId+" with resolution "+dbId+":"+time);
 
             String sql = "update outages set svcRegainedEventId=?, ifRegainedService=? where nodeId = ? and ipAddr = ? and serviceId = ? and ifRegainedService is null";
             
@@ -516,6 +516,7 @@ public class DefaultQueryManager implements QueryManager {
     
     public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
         try {
+            ThreadCategory.getInstance(getClass()).info("reparenting outages for "+oldNodeId+":"+ipAddr+" to new node "+newNodeId);
             String sql = "update outages set nodeId = ? where nodeId = ? and ipaddr = ?";
             
             Object[] values = {

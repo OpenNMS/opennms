@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
@@ -96,6 +97,7 @@ public class DefaultPollContext implements PollContext, EventListener {
         synchronized (m_pendingPollEvents) {
             m_pendingPollEvents.add(pollEvent);
         }
+        ThreadCategory.getInstance(getClass()).info("Sending "+event.getUei()+" for element "+event.getNodeid()+":"+event.getInterface()+":"+event.getService());
         m_poller.getEventManager().sendNow(event);
         return pollEvent;
     }
