@@ -553,8 +553,10 @@ your distribution.
    
     <fail unless="compile.check.postgresql.include">
       Could not find postgres.h include file in ${build.postgresql.include.dir}.
-      Set the build.postgresql.include.dir property to the directory that
-      contains postgres.h.  See README.build for details.
+      Please make sure that you have the PostgreSQL development files installed
+      or, if they are installed in a non-standard location, you may need to
+      set the build.postgresql.include.dir property to the directory that
+      contains postgres.h.  See README.build for details on setting properties.
     </fail>
 
     <condition property="compile.check.rrdtool.include">
@@ -563,8 +565,10 @@ your distribution.
    
     <fail unless="compile.check.rrdtool.include">
       Could not find rrd.h include file in ${build.rrdtool.include.dir}.
-      Set the build.rrdtool.include.dir property to the directory that
-      contains rrd.h.  See README.build for details.
+      Please make sure that you have the rrdtool development files installed
+      or, if they are installed in a non-standard location, you may need
+      to set the build.rrdtool.include.dir property to the directory that
+      contains rrd.h.  See README.build for details on setting properties.
     </fail>
 
     <condition property="compile.check.rrdtool.lib">
@@ -576,8 +580,11 @@ your distribution.
    
     <fail unless="compile.check.rrdtool.lib">
       Could not find librrd.a or librrd.so library in ${build.rrdtool.lib.dir}.
-      Set the build.rrdtool.lib.dir property to the directory that contains
-      librrd.a or librrd.so.  See README.build for details.
+      Please make sure that you have the rrdtool development files installed
+      or, if they are installed in a non-standard location, you may need
+      to set the build.rrdtool.lib.dir property to the directory that
+      contains librrd.a or librrd.so.  See README.build for details on setting
+      properties.
     </fail>
   </target>
  
@@ -728,7 +735,8 @@ your distribution.
  <target name="rpm.check">
    <fail unless="rpm.platform">
      You must set the rpm.platform property to one of the platforms listed in
-     tools/packages/opennms/opennms.spec.in.  See README.build for details.
+     tools/packages/opennms/opennms.spec.in.  See README.build for details on
+     setting properties.
    </fail>
  </target>
 
@@ -1293,7 +1301,7 @@ OpenNMS as part of the post-install.
   <fail unless="continue.build" >
      Unit Tests Failed.  Check the test results in ${test.xml.dir}.
      To ignore failed tests, set the ignoreFailedTests property to true.
-     See README.build for details.
+     See README.build for details on setting properties.
   </fail>
 </target>
 
@@ -1301,7 +1309,7 @@ OpenNMS as part of the post-install.
         description="Run a single unit test class">
   <fail unless="test.class">
     You need to define the test.class property to indicate which test
-    to run.  See README.build for details.
+    to run.  See README.build for details on setting properties.
   </fail>
   <junit errorProperty="test.failed" failureProperty="test.failed">
      <classpath>
@@ -1327,7 +1335,7 @@ OpenNMS as part of the post-install.
   <fail unless="continue.build" >
      Unit Tests Failed.  Check the test results in ${test.xml.dir}.
      To ignore failed tests, set the ignoreFailedTests property to true.
-     See README.build for details.
+     See README.build for details on setting properties.
   </fail>
 </target>
 
