@@ -37,7 +37,6 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.rtc.RTCManager;
 import org.opennms.netmgt.rtc.DataManager;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
-import org.opennms.netmgt.rtc.datablock.RTCNode;
 
 // castor generated classes
 import org.opennms.netmgt.xml.rtc.*;

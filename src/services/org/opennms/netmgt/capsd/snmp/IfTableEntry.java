@@ -271,7 +271,9 @@ public final class IfTableEntry
 		}
 		Category log = ThreadCategory.getInstance(IfTableEntry.class);
 		if(log.isDebugEnabled())
+		{
 			log.debug("snmpReceivedPdu: generating next SNMPv1 request with id: " + pdu.getRequestId());
+		}
 
 		return pdu;
 	}
@@ -296,7 +298,9 @@ public final class IfTableEntry
 
 		Category log = ThreadCategory.getInstance(IfTableEntry.class);
 		if(log.isDebugEnabled())
+		{
 			log.debug("snmpReceivedPdu: generating next SNMPv2 request with id: " + pdu.getRequestId());
+		}
 		return pdu;
 	}
 	

@@ -28,10 +28,6 @@ package org.opennms.netmgt.capsd;
 
 import java.lang.*;
 
-import java.io.StringReader;
-
-import java.util.Properties;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -43,7 +39,6 @@ import java.sql.SQLException;
 import org.apache.log4j.Category;
 
 import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.EventConstants;
@@ -115,8 +110,6 @@ final class BroadcastEventProcessor
 	 */
 	BroadcastEventProcessor(FifoQueue suspectQ, Scheduler scheduler)
 	{
-		Category log = ThreadCategory.getInstance(getClass());
-
 		// Suspect queue
 		//
 		m_suspectQ = suspectQ;
@@ -154,10 +147,14 @@ final class BroadcastEventProcessor
 
 		String eventUei = event.getUei();
 		if (eventUei == null)
+		{
 			return;
+		}
 		
 		if (log.isDebugEnabled())
+		{
 			log.debug("Received event: " + eventUei);
+		}
 
 		if(eventUei.equals(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI))
 		{
@@ -165,7 +162,9 @@ final class BroadcastEventProcessor
 			try
 			{
 				if (log.isDebugEnabled())
+				{
 					log.debug("onMessage: Adding interface to suspectInterface Q: " + event.getInterface());
+				}
 				m_suspectQ.add(new SuspectEventProcessor(event.getInterface()));
 			}
 			catch(Exception ex)

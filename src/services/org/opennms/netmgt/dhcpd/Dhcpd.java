@@ -33,11 +33,8 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.net.Socket;
 import java.net.ServerSocket;
-import java.net.DatagramSocket;
-import java.net.DatagramPacket;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -51,7 +48,6 @@ import org.opennms.netmgt.config.DhcpdConfigFactory;
 
 import org.apache.log4j.Category;
 
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 

@@ -210,7 +210,9 @@ public final class IfTable
 		m_ifNumberRequestId = pdu.getRequestId();
 		Category log = ThreadCategory.getInstance(getClass());
 		if(log.isDebugEnabled())
+		{
 			log.debug("<ctor>: ifNumber retrieval pdu request id: " + m_ifNumberRequestId);
+		}
 
 		session.send(pdu, this);
 	}
@@ -260,14 +262,15 @@ public final class IfTable
 	public void snmpReceivedPdu(SnmpSession session, int command, SnmpPduPacket pdu)
 	{
 		boolean doNotify = true;
-		boolean done = false;
 
 		// lookup the category
 		//
 		Category log = ThreadCategory.getInstance(getClass());
 		
 		if(log.isDebugEnabled())
+		{
 			log.debug("snmpReceivedPdu: got SNMP response, current version: " + ((m_version==SnmpSMI.SNMPV1)?"SNMPv1":"SNMPv2"));
+		}
 			
 		// handle the command.
 		//
@@ -319,9 +322,13 @@ public final class IfTable
 						m_tempStorage = new SnmpVarBind[m_ifNumber * IfTableEntry.getElementListSize()];
 						SnmpPduPacket nxt = null;
 						if (m_version == SnmpSMI.SNMPV2)
+						{
 							nxt = IfTableEntry.getBulkPdu(m_ifNumber);
+						}
 						else
+						{
 							nxt = IfTableEntry.getNextPdu();
+						}
 					
 						session.send(nxt, this);
 						doNotify = false;
@@ -330,7 +337,9 @@ public final class IfTable
 				else if (m_version == SnmpSMI.SNMPV2) // Handle SNMPv2 GetBulk responses...
 				{
 					if (log.isDebugEnabled())
+					{
 						log.debug("snmpReceivedPdu: got SNMPv2 GetBulk response...");
+					}
 					
 					int numVarBinds = pdu.getLength();
 					
@@ -511,7 +520,9 @@ public final class IfTable
 	{
 		Category log = ThreadCategory.getInstance(getClass());
 		if(log.isDebugEnabled())
+		{
 			log.debug("snmpInternal error: " + error + " for: " + session.getPeer().getPeer());
+		}
 
 		m_error = true;
 		synchronized(this)
@@ -542,7 +553,9 @@ public final class IfTable
 	{
 		Category log = ThreadCategory.getInstance(getClass());
 		if (log.isDebugEnabled())
+		{
 			log.debug("snmpTimeoutError for: " + session.getPeer().getPeer());
+		}
 
 		m_error = true;
 		synchronized(this)
@@ -580,7 +593,9 @@ public final class IfTable
 		// is enough data.
 		//
 		if (physAddr == null || physAddr.length == 0)
+		{
 			return null;
+		}
 
 		//
 		// Convert the actual data

@@ -28,20 +28,11 @@ package org.opennms.netmgt.outage;
 
 import java.lang.*;
 
-import java.io.StringReader;
-import java.io.IOException;
-
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Properties;
-import java.util.Enumeration;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.MarshalException;
 
 import org.opennms.netmgt.xml.event.Event;
 

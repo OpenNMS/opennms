@@ -30,8 +30,6 @@ package org.opennms.netmgt.capsd;
 import java.lang.*;
 import java.net.InetAddress;
 import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;

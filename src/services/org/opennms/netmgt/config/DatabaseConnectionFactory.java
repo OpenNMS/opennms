@@ -43,7 +43,6 @@ import java.sql.SQLWarning;
 import java.sql.DriverManager;
 
 import java.util.LinkedList;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.xml.sax.InputSource;
@@ -62,7 +61,6 @@ import org.exolab.castor.jdo.conf.Param;
 import org.opennms.netmgt.ConfigFileConstants;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 
 /**

@@ -29,13 +29,8 @@ package org.opennms.netmgt.dhcpd;
 import java.lang.*;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.InterruptedIOException;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.net.Socket;
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 

@@ -415,7 +415,6 @@ public final class PollOutagesConfigFactory
 		boolean inOutage = false;
 
 		// flag indicating that day(which is optional) was not specified in the time
-		boolean dayNotSpecified = true;
 
 		Enumeration enum = out.enumerateTime();
 		while(enum.hasMoreElements() && !inOutage)

@@ -28,9 +28,6 @@ package org.opennms.netmgt.threshd;
 
 import java.lang.*;
 
-import java.util.Map;
-import java.util.HashMap;
-
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 

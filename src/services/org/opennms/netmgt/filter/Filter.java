@@ -26,7 +26,6 @@ package org.opennms.netmgt.filter;
 import java.lang.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.URL;
 
 import java.io.PushbackReader;
 import java.io.StringReader;
@@ -36,20 +35,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.ArrayList;
-import java.util.MissingResourceException;
 
 import java.sql.Connection;
 import java.sql.Statement;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.exolab.castor.jdo.conf.Database;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.exolab.castor.xml.MarshalException;
-
-import org.xml.sax.InputSource;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;

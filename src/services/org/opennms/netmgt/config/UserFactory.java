@@ -38,13 +38,8 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.config.users.*;
 import org.opennms.netmgt.*;
-
-import org.opennms.core.resource.Vault;
 
 public class UserFactory
 {
@@ -573,7 +568,6 @@ public class UserFactory
                 Users users = new Users();
                 Collection collUsers = (Collection)m_users.values();
                 Iterator iter = collUsers.iterator();
-                List userLst = new ArrayList();
                 while(iter != null && iter.hasNext())
                 {
                         User tmpUser = (User) iter.next();

@@ -28,29 +28,16 @@ package org.opennms.netmgt.discovery;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.net.URL;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Comparator;
-import java.util.Collections;
 import java.util.List;
 import java.util.Iterator;
-import java.util.MissingResourceException;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import org.xml.sax.InputSource;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;

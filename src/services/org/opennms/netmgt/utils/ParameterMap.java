@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import java.util.StringTokenizer;
 

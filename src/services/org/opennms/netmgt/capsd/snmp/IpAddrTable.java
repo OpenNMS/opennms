@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2002 Sortova Consulting Group, Inc.  All rights reserved.
+// Copyright (C) 2002-2003 Sortova Consulting Group, Inc.  All rights reserved.
 // Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -208,12 +208,13 @@ public class IpAddrTable
 	public void snmpReceivedPdu(SnmpSession session, int command, SnmpPduPacket pdu)
 	{	
 		boolean doNotify = true;
-		boolean more_obj = true;
 
 		Category log = ThreadCategory.getInstance(getClass());
 
 		if(log.isDebugEnabled())
+		{
 			log.debug("snmpReceivedPdu: got SNMP response, current version: " + ((m_version==SnmpSMI.SNMPV1)?"SNMPv1":"SNMPv2"));
+		}
 
 		if(command != SnmpPduPacket.RESPONSE)
 		{
@@ -373,7 +374,9 @@ public class IpAddrTable
 	{
 		Category log = ThreadCategory.getInstance(getClass());
 		if (log.isDebugEnabled())
+		{
 			log.debug("snmpInternalError: " + error + " for: " + session.getPeer().getPeer());
+		}
 
 		m_error = true;
 
@@ -405,7 +408,9 @@ public class IpAddrTable
 	{
 		Category log = ThreadCategory.getInstance(getClass());
 		if (log.isDebugEnabled())
+		{
 			log.debug("snmpTimeoutError for: " + session.getPeer().getPeer());
+		}
 
 		m_error = true;
 
@@ -452,7 +457,9 @@ public class IpAddrTable
 			SnmpInt32 snmpIpAddrIndex = (SnmpInt32)ipAddrEntry.get(IpAddrTableEntry.IP_ADDR_IF_INDEX);
 			
 			if (snmpIpAddrIndex == null)
+			{
 				continue;
+			}
 
 			int ipAddrIndex = snmpIpAddrIndex.getValue();
 
@@ -544,8 +551,6 @@ public class IpAddrTable
 	 */
 	public static int getIfIndex(List ipAddrEntries, String ipAddress)
 	{
-		Category log = ThreadCategory.getInstance(IpAddrTable.class);
-
 		if (ipAddress == null)
 		{
 			return -1;
@@ -584,7 +589,9 @@ public class IpAddrTable
 	public static String getNetmask(List ipAddrEntries, int ifIndex)
 	{
 		if (ifIndex == -1)
+		{
 			return null;
+		}
 
 		Iterator iter = ipAddrEntries.iterator();
 		while(iter.hasNext())
@@ -592,16 +599,22 @@ public class IpAddrTable
 			IpAddrTableEntry ipAddrEntry = (IpAddrTableEntry)iter.next();
 			SnmpInt32 snmpIpAddrIndex = (SnmpInt32)ipAddrEntry.get(IpAddrTableEntry.IP_ADDR_IF_INDEX);
 			if (snmpIpAddrIndex == null)
+			{
 				continue;
+			}
 
 			int ipAddrIndex = snmpIpAddrIndex.getValue();
 			if(ipAddrIndex ==  ifIndex)
 			{
 				SnmpIPAddress snmpAddr = (SnmpIPAddress)ipAddrEntry.get(IpAddrTableEntry.IP_ADDR_ENT_NETMASK);
 				if (snmpAddr != null)
+				{
 					return snmpAddr.toString();
+				}
 				else
+				{
 					return null;
+				}
 			}
 		}
 		

@@ -27,7 +27,6 @@
 
 package org.opennms.netmgt.rtc;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.*;
 import java.util.*;
 import java.io.InputStream;

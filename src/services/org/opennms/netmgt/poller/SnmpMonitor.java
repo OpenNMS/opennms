@@ -32,7 +32,6 @@ import java.io.*;
 import java.lang.*;
 import java.lang.reflect.UndeclaredThrowableException;
 
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 

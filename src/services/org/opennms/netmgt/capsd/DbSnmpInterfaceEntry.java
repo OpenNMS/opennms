@@ -33,7 +33,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import java.sql.Connection;
-import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.sql.ResultSet;

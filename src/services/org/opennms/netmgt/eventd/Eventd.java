@@ -30,15 +30,11 @@ import java.lang.*;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Properties;
 import java.util.Map;
 import java.util.HashMap;
 
 import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.FileNotFoundException;
 
 import java.net.InetAddress;
@@ -47,12 +43,10 @@ import java.net.UnknownHostException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.sql.DataSource;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 

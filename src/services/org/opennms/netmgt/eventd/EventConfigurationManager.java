@@ -27,9 +27,6 @@
 package org.opennms.netmgt.eventd;
 
 import java.lang.*;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.io.IOException;
 import java.io.InputStreamReader;

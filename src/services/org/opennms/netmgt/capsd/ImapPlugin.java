@@ -38,7 +38,6 @@ import java.io.InputStreamReader;
 import java.nio.channels.SocketChannel;
 import org.opennms.netmgt.utils.SocketChannelUtil;
 
-import java.net.Socket;
 import java.net.InetAddress;
 import java.net.NoRouteToHostException;
 import java.net.ConnectException;

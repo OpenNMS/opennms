@@ -32,11 +32,7 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
-import org.apache.log4j.Category;
-
-import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.PropertyConstants;
 import org.opennms.netmgt.xml.eventconf.*;
 
 /**

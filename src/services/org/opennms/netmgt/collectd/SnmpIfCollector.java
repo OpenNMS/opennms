@@ -36,7 +36,6 @@ import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.protocols.snmp.*;
 import org.opennms.netmgt.utils.Signaler;
-import org.opennms.netmgt.config.DataCollectionConfigFactory;
 
 /**
  * <P>The SnmpIfCollector class is responsible for performing the actual

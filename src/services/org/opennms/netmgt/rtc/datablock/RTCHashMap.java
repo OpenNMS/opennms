@@ -30,9 +30,6 @@ package org.opennms.netmgt.rtc.datablock;
 import java.sql.*;
 import java.util.*;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.rtc.*;
 
 /**

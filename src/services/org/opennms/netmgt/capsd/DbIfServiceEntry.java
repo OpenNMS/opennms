@@ -36,7 +36,6 @@ import java.util.Date;
 
 import java.sql.Timestamp;
 import java.sql.Connection;
-import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.sql.ResultSet;
@@ -437,8 +436,6 @@ public final class DbIfServiceEntry
 	{
 		if(!m_fromDb)
 			throw new IllegalStateException("The record does not exists in the database");
-
-		Category log = ThreadCategory.getInstance(getClass());
 
 		// create the Prepared statment and then
 		// start setting the result values
@@ -958,9 +955,13 @@ public final class DbIfServiceEntry
 		if(m_changed != 0 || m_fromDb == false)
 		{
 			if(m_fromDb)
+			{
 				update(db);
+			}
 			else
+			{
 				insert(db);
+			}
 		}
 	}
 
@@ -1006,7 +1007,9 @@ public final class DbIfServiceEntry
 			try
 			{
 				if(db != null)
+				{
 					db.close();
+				}
 			}
 			catch(SQLException e)
 			{
@@ -1033,7 +1036,9 @@ public final class DbIfServiceEntry
 	{
 		DbIfServiceEntry entry = new DbIfServiceEntry(nid, addr, sid, true);
 		if(!entry.load(db))
+		{
 			entry = null;
+		}
 		return entry;
 	}
 

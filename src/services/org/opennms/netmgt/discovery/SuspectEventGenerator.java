@@ -100,8 +100,6 @@ final class SuspectEventGenerator
 	 */
 	SuspectEventGenerator(FifoQueue replyQ, long ttl)
 	{
-		Category log = ThreadCategory.getInstance(getClass());
-		
 		m_name    = "Discovery:SuspectEventGenerator";
 		m_replies = replyQ;
 		m_ttl     = ttl;

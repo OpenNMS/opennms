@@ -28,8 +28,6 @@
 package org.opennms.netmgt.eventd.db;
 
 import java.lang.*;
-import java.util.List;
-import java.util.Iterator;
 
 import org.opennms.netmgt.xml.event.*;
 

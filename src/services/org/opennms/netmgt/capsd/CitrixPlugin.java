@@ -38,18 +38,14 @@ import java.io.InputStreamReader;
 import java.nio.channels.SocketChannel;
 import org.opennms.netmgt.utils.SocketChannelUtil;
 
-import java.net.Socket;
 import java.net.InetAddress;
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
 
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.apache.regexp.RE;
-import org.apache.regexp.RESyntaxException;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
@@ -109,7 +105,9 @@ public final class CitrixPlugin
 		
 		//don't let the user set the timeout to 0, an infinite loop will occur if the server is down
 		if (timeout==0)
+		{
 			timeout=10;
+		}
 		
 		boolean isAServer = false;
 		for (int attempts=0; attempts <= retries && !isAServer; attempts++)
@@ -177,7 +175,9 @@ public final class CitrixPlugin
 				try
 				{
                                         if(sChannel != null)
+					{
                                                 sChannel.close();
+					}
 				}
 				catch(IOException e) { }
 			}
@@ -246,7 +246,9 @@ public final class CitrixPlugin
 
 		boolean result = isServer(address, port, retries, timeout);
 		if(result && qualifiers != null && !qualifiers.containsKey("port"))
+		{
 			qualifiers.put("port", new Integer(port));
+		}
 
 		return result;
 	}

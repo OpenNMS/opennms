@@ -28,7 +28,6 @@ package org.opennms.netmgt.poller;
 import java.net.*;
 import java.util.*;
 
-import org.apache.log4j.Priority;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 

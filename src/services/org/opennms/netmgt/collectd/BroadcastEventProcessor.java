@@ -28,31 +28,17 @@ package org.opennms.netmgt.collectd;
 
 import java.lang.*;
 
-import java.io.StringReader;
-import java.io.File;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
-import java.util.Properties;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Iterator;
-import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.MarshalException;
-
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueException;
-
-import org.opennms.netmgt.config.CollectdConfigFactory;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -109,8 +95,6 @@ final class BroadcastEventProcessor
 	 */
 	BroadcastEventProcessor(List collectableServices)
 	{
-		Category log = ThreadCategory.getInstance(getClass());
-		
 		// Set the configuration for this event 
 		// receiver.
 		//
@@ -392,8 +376,6 @@ final class BroadcastEventProcessor
 	 */
 	private void nodeGainedServiceHandler(Event event)
 	{
-		Category log = ThreadCategory.getInstance(getClass());
-
 		// Currently only support SNMP data collection.
 		//
 		if (!event.getService().equals("SNMP"))
@@ -597,7 +579,6 @@ final class BroadcastEventProcessor
 		// SnmpMonitor.NodeInfo attribute to reflect the new nodeId.  All
 		// subsequent collections will then be updating the appropriate RRDs.
 		//
-		boolean isPrimarySnmpInterface = false;
 		synchronized(m_collectableServices)
 		{
 			CollectableService cSvc = null;

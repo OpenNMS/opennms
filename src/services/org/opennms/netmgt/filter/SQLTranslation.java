@@ -27,23 +27,15 @@ import java.lang.*;
 import java.io.IOException;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.URL;
 
-import java.util.MissingResourceException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Iterator;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.exolab.castor.xml.MarshalException;
-
-import org.xml.sax.InputSource;
 
 import org.opennms.netmgt.filter.node.*;
 import org.opennms.netmgt.filter.analysis.*;

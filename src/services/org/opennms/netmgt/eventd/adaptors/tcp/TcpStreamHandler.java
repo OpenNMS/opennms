@@ -28,11 +28,6 @@ package org.opennms.netmgt.eventd.adaptors.tcp;
 
 import java.lang.*;
 
-import java.lang.reflect.UndeclaredThrowableException;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -41,13 +36,9 @@ import java.io.OutputStreamWriter;
 import java.io.PipedOutputStream;
 import java.io.PipedInputStream;
 import java.io.IOException;
-import java.io.EOFException;
-import java.io.InterruptedIOException;
-import java.io.UnsupportedEncodingException;
 
 import java.net.Socket;
 import java.net.InetAddress;
-import java.net.SocketException;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -73,7 +64,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
-import org.opennms.netmgt.eventd.adaptors.EventReceiver;
 
 /**
  * Provides the logic and context of execution necessary to actually process a 

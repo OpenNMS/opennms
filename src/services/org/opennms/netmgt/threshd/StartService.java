@@ -28,10 +28,6 @@ package org.opennms.netmgt.threshd;
 
 import java.lang.*;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
-
 /**
  * This class is used to launch/start the thresholding daemon service
  * in a Java Virtual Machine. It contains the method 

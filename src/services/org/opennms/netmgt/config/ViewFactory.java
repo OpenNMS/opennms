@@ -38,15 +38,10 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
-import org.apache.log4j.Category;
 import org.apache.regexp.*;
-
-import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.config.views.*;
 import org.opennms.netmgt.*;
-
-import org.opennms.core.resource.Vault;
 
 public class ViewFactory
 {

@@ -41,9 +41,6 @@ import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import java.text.ParseException;
-
-import org.opennms.core.fiber.Fiber;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;

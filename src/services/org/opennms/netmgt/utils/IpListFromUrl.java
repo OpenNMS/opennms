@@ -24,12 +24,10 @@
 package org.opennms.netmgt.utils;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.io.*;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**

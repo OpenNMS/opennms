@@ -36,7 +36,6 @@ import java.util.Date;
 
 import java.sql.Timestamp;
 import java.sql.Connection;
-import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.sql.ResultSet;
@@ -44,7 +43,6 @@ import java.sql.SQLException;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -439,9 +437,6 @@ public final class DbIpInterfaceEntry
 	{
 		if(!m_fromDb)
 			throw new IllegalStateException("The record does not exists in the database");
-
-		Category log = ThreadCategory.getInstance(getClass());
-
 
 		// create the Prepared statment and then
 		// start setting the result values

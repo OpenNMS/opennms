@@ -27,8 +27,6 @@
 package org.opennms.netmgt.poller;
 
 import java.lang.*;
-import java.io.File;
-import java.io.IOException;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -36,13 +34,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Calendar;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Iterator;
-import java.util.ListIterator;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -411,8 +405,6 @@ final class PollableService
 	 */
 	void reschedule(boolean reUseInterval)
 	{
-		Category log = ThreadCategory.getInstance(getClass());
-		
 		// Determine interval at which to reschedule the interface
 		// 
 		long interval = 0L;

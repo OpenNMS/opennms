@@ -25,45 +25,23 @@
 package org.opennms.netmgt.eventd.adaptors.udp;
 
 import java.lang.*;
-import java.lang.reflect.UndeclaredThrowableException;
 
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.io.InterruptedIOException;
 
 import java.net.DatagramSocket;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.SocketException;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
 
 import javax.management.ObjectName;
 import javax.management.MalformedObjectNameException;
-import javax.management.JMException;
-import javax.management.JMRuntimeException;
 import javax.management.InstanceNotFoundException;
-import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
 
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.EventReceipt;
-import org.opennms.netmgt.xml.event.Log;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.apache.log4j.Category;
-
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
 import org.opennms.netmgt.eventd.adaptors.EventHandler;

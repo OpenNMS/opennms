@@ -29,8 +29,6 @@
 package org.opennms.netmgt.ping;
 
 import java.lang.*;
-import java.net.InetAddress;
-import java.net.DatagramPacket;
 
 import org.opennms.protocols.icmp.ICMPHeader;
 import org.opennms.protocols.ip.OC16ChecksumProducer;

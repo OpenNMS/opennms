@@ -33,21 +33,10 @@ import java.lang.reflect.UndeclaredThrowableException;
 
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.net.URL;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Properties;
-import java.util.Random;
 import java.util.Map;
-import java.util.HashMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -63,11 +52,8 @@ import org.opennms.core.fiber.PausableFiber;
 
 import org.opennms.netmgt.xml.event.*;
 
-import org.opennms.protocols.ip.IPv4Address;
 import org.opennms.protocols.snmp.*;
 
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.TrapdConfigFactory;
 
 /**

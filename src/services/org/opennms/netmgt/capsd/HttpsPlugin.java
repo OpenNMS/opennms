@@ -40,16 +40,10 @@ import java.net.Socket;
 import java.net.InetAddress;
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
-import java.net.URL;
-import java.net.URLConnection;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.security.*;
-import java.security.cert.X509Certificate;
 
 import javax.net.ssl.*;
 import javax.security.cert.*;

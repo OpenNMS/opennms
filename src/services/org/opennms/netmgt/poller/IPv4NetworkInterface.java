@@ -29,29 +29,8 @@ package org.opennms.netmgt.poller;
 import java.lang.*;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Calendar;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.ListIterator;
-
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.netmgt.EventConstants;
-
-// Castor generated
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Value;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Parm;
-
-import org.opennms.netmgt.config.PollerConfigFactory;
 
 // castor classes generated from the poller-configuration.xsd
 import org.opennms.netmgt.config.poller.*;

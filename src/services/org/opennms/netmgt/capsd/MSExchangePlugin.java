@@ -38,7 +38,6 @@ import java.io.InputStreamReader;
 import java.nio.channels.SocketChannel;
 import org.opennms.netmgt.utils.SocketChannelUtil;
 
-import java.net.Socket;
 import java.net.InetAddress;
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
@@ -73,21 +72,6 @@ public final class MSExchangePlugin
 	 * The banner string to look for.
 	 */
 	private static final String 	BANNER_STRING = "Microsoft Exchange";
-	
-	/**
-	 * The key to lookup the post office protocol version 3 port.
-	 */
-	private static final String 	POP3_PORT_KEY = "pop3Port";
-
-	/**
-	 * The key to lookup the IMAP port.
-	 */
-	private static final String 	IMAP_PORT_KEY = "imapPort";
-
-	/**
-	 * The key to lookup the MAPI port
-	 */
-	private static final String 	MAPI_PORT_KEY = "mapiPort";
 	
 	/**
 	 * <P>The default port on which to check for POP3 service.</P>
@@ -126,10 +110,6 @@ public final class MSExchangePlugin
 	 */
 	private final static int 	IMAP_INDEX		= 1;
 
-	/**
-	 * The array location for MAPI information.
-	 */
-	private final static int	MAPI_INDEX		= 2;
 
 	private boolean isServer(InetAddress host, int port, int retries, int timeout)
 	{

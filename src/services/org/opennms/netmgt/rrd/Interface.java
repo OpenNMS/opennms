@@ -29,7 +29,6 @@ package org.opennms.netmgt.rrd;
 import java.lang.SecurityException;
 import java.lang.UnsatisfiedLinkError;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 /**

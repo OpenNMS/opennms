@@ -29,22 +29,14 @@ package org.opennms.netmgt.scheduler;
 import java.lang.*;
 import java.lang.reflect.UndeclaredThrowableException;
 
-import java.io.File;
-import java.io.IOException;
-
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
-import java.util.LinkedList;
-
-import java.net.InetAddress;
 
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.queue.FifoQueueException;
-import org.opennms.core.fiber.Fiber;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 

@@ -33,17 +33,11 @@ import java.util.*;
 import java.io.*;
 
 import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.config.viewsdisplay.*;
 import org.opennms.netmgt.*;
-
-import org.opennms.core.resource.Vault;
 
 public class ViewsDisplayFactory
 {

@@ -32,7 +32,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.net.MalformedURLException;
 import java.net.NoRouteToHostException;
 
 import java.util.List;
@@ -47,7 +46,6 @@ import jcifs.smb.*;
 import org.opennms.protocols.snmp.SnmpSMI;
 import org.opennms.protocols.snmp.SnmpPeer;
 import org.opennms.protocols.snmp.SnmpInt32;
-import org.opennms.protocols.snmp.SnmpIPAddress;
 import org.opennms.netmgt.capsd.snmp.*;
 
 import org.apache.log4j.Category;

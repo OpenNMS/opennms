@@ -35,21 +35,11 @@ import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Date;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.ArrayList;
 import java.util.Iterator;
 
-import java.sql.Connection;
-import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.sql.DataSource;
-
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 
 import org.apache.log4j.Priority;
 import org.apache.log4j.Category;
@@ -57,16 +47,12 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.rrd.Interface;
-import org.opennms.netmgt.PropertyConstants;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import org.opennms.netmgt.capsd.DbIpInterfaceEntry;
 
 // Castor generated
 import org.opennms.netmgt.xml.event.Log;

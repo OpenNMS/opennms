@@ -28,28 +28,19 @@ package org.opennms.netmgt.threshd;
 
 import java.lang.*;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Calendar;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.ListIterator;
 import java.util.Iterator;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.PropertyConstants;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
@@ -57,9 +48,6 @@ import org.opennms.netmgt.poller.IPv4NetworkInterface;
 
 // Castor generated
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Value;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Parm;
 
 // castor classes generated from the threshd-configuration.xsd
 import org.opennms.netmgt.config.threshd.*;

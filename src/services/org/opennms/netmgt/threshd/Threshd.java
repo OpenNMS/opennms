@@ -35,7 +35,6 @@ import java.net.UnknownHostException;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.TreeMap;
 import java.util.Enumeration;
@@ -44,29 +43,17 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.HashMap;
-import java.util.Date;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.text.ParseException;
 
-import java.sql.Timestamp;
-import java.sql.Connection;
-import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.sql.DataSource;
-
-import org.xml.sax.InputSource;
 
 import org.apache.log4j.Priority;
 import org.apache.log4j.Category;
 
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
-import org.opennms.core.fiber.Fiber;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 

@@ -28,31 +28,24 @@
 //
 package org.opennms.netmgt.config;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.HashMap;
 import java.io.*;
 import java.net.InetAddress;
-import java.net.URL;
-import java.net.UnknownHostException;
 
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
-import org.xml.sax.InputSource;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.collectd.MibObject;
-import org.opennms.netmgt.collectd.RRDDataSource;
 
 // castor classes generated from the datacollection-config.xsd 
 import org.opennms.netmgt.config.collectd.*;
@@ -569,7 +562,6 @@ public final class DataCollectionConfigFactory
 				}
 				else
 				{
-					int currIndex = 0;
 					int tmpIndex = groupIfType.indexOf(ifTypeStr);
 					while (tmpIndex != -1)
 					{
@@ -634,8 +626,6 @@ public final class DataCollectionConfigFactory
 	 */
 	static void processObjectList(List objectList, List mibObjectList)
 	{
-		Category log = ThreadCategory.getInstance(DataCollectionConfigFactory.class);
-		
 		Iterator i = objectList.iterator();
 		while(i.hasNext())
 		{

@@ -412,7 +412,9 @@ public final class SystemGroup extends java.util.TreeMap
 	{
 		Category log = ThreadCategory.getInstance(getClass());
 		if(log.isEnabledFor(Priority.WARN))
+		{
 			log.warn("snmpInternalError: The session experienced an internal error, error = " + error);
+		}
 
 		m_error = true;
 
@@ -445,7 +447,9 @@ public final class SystemGroup extends java.util.TreeMap
 	{
 		Category log = ThreadCategory.getInstance(getClass());
 		if(log.isEnabledFor(Priority.WARN))
+		{
 			log.warn("snmpTimeoutError: The session timed out communicating with the agent.");
+		}
 
 		m_error = true;
 
@@ -490,18 +494,24 @@ public final class SystemGroup extends java.util.TreeMap
 	{
 		// Valid SnmpOctetString object
 		if (octetString == null)
+		{
 			return null;
+		}
 		
 		byte bytes[] = octetString.getString();
 		
 		// Sanity check
 		if (bytes == null || bytes.length == 0)
+		{
 			return null;
+		}
 			
 		// Check for special case where byte array contains a single
 		// ASCII null character
 		if (bytes.length == 1 && bytes[0] == 0)
+		{
 			return null;
+		}
 			
 		// Replace all unprintable chars (chars outside of
 		// decimal range 32 - 126 inclusive) with an 
@@ -510,7 +520,9 @@ public final class SystemGroup extends java.util.TreeMap
 		for (int i=0; i<bytes.length; i++)
 		{
 			if (bytes[i] < 32 || bytes[i] > 126)
+			{
 				bytes[i] = 46; // ASCII period '.'
+			}
 		}
 		
 		// Create string, trim any white-space and return

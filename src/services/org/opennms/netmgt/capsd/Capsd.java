@@ -34,27 +34,14 @@ import java.sql.*;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.apache.xerces.parsers.SAXParser;
 
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Marshaller;
 
 import org.opennms.core.fiber.PausableFiber;
-import org.opennms.core.fiber.Fiber;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
-
-import org.opennms.netmgt.xml.event.Events;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Log;
-
-import org.opennms.netmgt.EventConstants;
 
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.CapsdConfigFactory;
@@ -85,11 +72,6 @@ public class Capsd implements PausableFiber
 	 * The log4j category used to log messages.
 	 */
 	private static final String 	LOG4J_CATEGORY		= "OpenNMS.Capsd";
-
-	/**
-	 * The prefix for the fiber name.
-	 */
-	private static final String	FIBER_NAME 		= "Capsd";
 	
 	/**
 	 * Singleton instance of the Capsd class
@@ -114,11 +96,6 @@ public class Capsd implements PausableFiber
 	 */
 	private static String 			m_address = null;
 	
-	/** 
-	 * SuspectEventProcessor thread
-	 */
-	private SuspectEventProcessor		m_suspectEventProcessor;
-
 	/**
 	 * Rescan scheduler thread
 	 */
@@ -333,13 +310,19 @@ public class Capsd implements PausableFiber
 		{
 			conn = DatabaseConnectionFactory.getInstance().getConnection();
 			if (log.isDebugEnabled())
+			{
 				log.debug("init: Loading services into database...");
+			}
 			CapsdConfigFactory.getInstance().syncServices(conn);
 			if (log.isDebugEnabled())
+			{
 				log.debug("init: Syncing management state...");
+			}
 			CapsdConfigFactory.getInstance().syncManagementState(conn);
 			if (log.isDebugEnabled())
+			{
 				log.debug("init: Syncing primary SNMP interface state...");
+			}
 			CapsdConfigFactory.getInstance().syncSnmpPrimaryState(conn);
 		}
 		catch (SQLException sqlE)
@@ -357,7 +340,9 @@ public class Capsd implements PausableFiber
 			try
 			{
 				if(conn != null)
+				{
 					conn.close();
+				}
 			}
 			catch(Exception e) { }
 		}
@@ -378,7 +363,9 @@ public class Capsd implements PausableFiber
 		// Create the rescan scheduler
 		//
 		if(log.isDebugEnabled())
+		{
 			log.debug("init: Creating rescan scheduler");
+		}
 		try
 		{
 			// During instantiation, the scheduler will load the
@@ -401,7 +388,9 @@ public class Capsd implements PausableFiber
 		try
 		{
 			if(log.isDebugEnabled())
+			{
 				log.debug("init: Creating event broadcast event receiver");
+			}
 
 			m_receiver = new BroadcastEventProcessor(m_suspectRunner.getRunQueue(), m_scheduler);
 		}
@@ -424,14 +413,18 @@ public class Capsd implements PausableFiber
 		// Start the suspect event and rescan thread pools
 		//
 		if(log.isDebugEnabled())
+		{
 			log.debug("start: Starting runnable thread pools...");
+		}
 		m_suspectRunner.start();
 		m_rescanRunner.start();
 		
 		// Start the rescan scheduler
 		//
 		if(log.isDebugEnabled())
+		{
 			log.debug("start: Starting rescan scheduler");
+		}
 		m_scheduler.start();
 		
 		m_status = RUNNING;
@@ -451,13 +444,17 @@ public class Capsd implements PausableFiber
 		m_status = PAUSED;
 
 		if(log.isDebugEnabled())
+		{
 			log.debug("pause: Finished pausing all threads");
+		}
 	}
 	
 	public void resume()
 	{
 		if(m_status != PAUSED)
+		{
 			return;
+		}
 
 		m_status = RESUME_PENDING;
 
@@ -468,7 +465,9 @@ public class Capsd implements PausableFiber
 		m_status = RUNNING;
 
 		if(log.isDebugEnabled())
+		{
 			log.debug("pause: Finished resuming all threads");
+		}
 	}
 	
 	/**

@@ -28,7 +28,6 @@
 package org.opennms.netmgt.config;
 
 import java.lang.*;
-import java.lang.reflect.UndeclaredThrowableException;
 
 import java.io.*;
 
@@ -44,9 +43,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.HashMap;
 import java.util.Enumeration;
-import java.util.MissingResourceException;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -54,8 +51,6 @@ import java.sql.ResultSet;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.xml.sax.InputSource;
 
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
@@ -494,7 +489,6 @@ public final class CapsdConfigFactory
 			IpManagement mgt = (IpManagement)e.nextElement();
 			
 			Enumeration f = mgt.enumerateIncludeUrl();
-			boolean match = false;
 			while(f.hasMoreElements())
 			{
 				String url = f.nextElement().toString();
@@ -1475,7 +1469,6 @@ public final class CapsdConfigFactory
 	 */
 	public SmbAuth getSmbAuth(String target)
 	{
-		Category log = ThreadCategory.getInstance(CapsdConfigFactory.class);
 		SmbConfig cfg = m_config.getSmbConfig();
 		if(cfg != null)
 		{
@@ -1734,8 +1727,6 @@ public final class CapsdConfigFactory
 		throws SQLException
 	{
 		Category log = ThreadCategory.getInstance(CapsdConfigFactory.class);
-		
-		boolean result = false;
 		
 		log.debug("getInterfaceDbNodeId: attempting to lookup interface " + ifAddress.getHostAddress() + " in the database.");
 		

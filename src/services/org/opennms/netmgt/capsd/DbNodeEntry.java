@@ -38,7 +38,6 @@ import java.util.ArrayList;
 
 import java.sql.Timestamp;
 import java.sql.Connection;
-import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.sql.ResultSet;
@@ -747,9 +746,6 @@ final class DbNodeEntry
 	{
 		if(!m_fromDb)
 			throw new IllegalStateException("The record does not exists in the database");
-
-		Category log = ThreadCategory.getInstance(getClass());
-
 
 		// create the Prepared statment and then
 		// start setting the result values

@@ -30,12 +30,9 @@
 package org.opennms.netmgt.ping;
 
 import java.lang.*;
-import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.InetAddress;
 
 import org.opennms.protocols.icmp.IcmpSocket;
-import org.opennms.protocols.icmp.ICMPHeader;
 
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;

@@ -31,9 +31,6 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.config.destinationPaths.*;
 import org.opennms.netmgt.*;
 

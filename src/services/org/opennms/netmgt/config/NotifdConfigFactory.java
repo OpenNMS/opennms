@@ -24,7 +24,6 @@
 package org.opennms.netmgt.config;
 
 import java.util.*;
-import java.util.Date;
 import java.io.*;
 
 import org.exolab.castor.xml.Unmarshaller;

@@ -448,8 +448,6 @@ public final class CollectdConfigFactory
 	{
 		Category log = ThreadCategory.getInstance(CollectdConfigFactory.class);
 		
-		CapsdConfigFactory cFactory = CapsdConfigFactory.getInstance();
-
 		InetAddress primaryIf = null;
 		
 		// For now hard-coding primary interface address selection method to MIN

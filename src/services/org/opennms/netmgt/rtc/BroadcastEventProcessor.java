@@ -28,13 +28,8 @@ package org.opennms.netmgt.rtc;
 
 import java.lang.*;
 
-import java.io.StringReader;
-import java.io.IOException;
-
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Properties;
-import java.util.Enumeration;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;

@@ -33,14 +33,11 @@ import java.lang.reflect.UndeclaredThrowableException;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.FileNotFoundException;
 
 import java.nio.channels.SocketChannel;
 import org.opennms.netmgt.utils.SocketChannelUtil;
 
-import java.net.Socket;
 import java.net.InetAddress;
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
@@ -49,8 +46,6 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.apache.regexp.RE;
-import org.apache.regexp.RESyntaxException;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**

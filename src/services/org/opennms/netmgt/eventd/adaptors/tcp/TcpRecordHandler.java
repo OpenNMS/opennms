@@ -31,22 +31,15 @@ import java.lang.*;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.PipedOutputStream;
-import java.io.PipedInputStream;
 import java.io.IOException;
 import java.io.EOFException;
 import java.io.InterruptedIOException;
 
 import java.net.Socket;
 import java.net.InetAddress;
-import java.net.SocketException;
 
 import java.util.List;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Iterator;
-import java.util.Arrays;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;

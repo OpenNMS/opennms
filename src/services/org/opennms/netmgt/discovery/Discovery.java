@@ -33,8 +33,6 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.LinkedList;
@@ -42,9 +40,7 @@ import java.util.List;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
-import javax.naming.NamingException;
 
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
@@ -53,11 +49,7 @@ import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueImpl;
-import org.opennms.core.queue.FifoQueueException;
-import org.opennms.core.fiber.Fiber;
 import org.opennms.core.fiber.PausableFiber;
-
-import org.opennms.netmgt.ping.Reply;
 
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
@@ -484,7 +476,6 @@ public final class Discovery
 		m_status = STARTING;
 
 		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		Category log = ThreadCategory.getInstance();
 
 		try
 		{

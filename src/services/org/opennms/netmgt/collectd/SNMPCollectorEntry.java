@@ -29,8 +29,6 @@
 package org.opennms.netmgt.collectd;
 
 import java.util.List;
-import java.util.TreeMap;
-import org.opennms.netmgt.utils.Signaler;
 import org.opennms.protocols.snmp.*;
 
 import org.apache.log4j.Priority;

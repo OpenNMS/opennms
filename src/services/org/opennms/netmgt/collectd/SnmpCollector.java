@@ -36,21 +36,14 @@ import java.net.SocketException;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.HashMap;
-import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.ArrayList;
 import java.util.Iterator;
 
-import java.sql.Connection;
-import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.sql.DataSource;
 
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
@@ -63,14 +56,12 @@ import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.rrd.Interface;
-import org.opennms.netmgt.PropertyConstants;
 import org.opennms.netmgt.utils.BarrierSignaler;
 import org.opennms.netmgt.utils.SnmpResponseHandler;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.AlphaNumeric;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
@@ -80,9 +71,6 @@ import org.opennms.netmgt.capsd.DbIpInterfaceEntry;
 
 // Castor generated
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Value;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Parm;
 
 // castor classes generated from the collectd-configuration.xsd
 import org.opennms.netmgt.config.collectd.*;

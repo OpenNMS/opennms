@@ -31,7 +31,6 @@ import java.io.*;
 import java.util.*;
 import java.sql.*;
 
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
@@ -107,11 +106,6 @@ public class EventsArchiver
 	 * The column name for eventID in the events table
 	 */
 	private static final String	EVENT_ID	= "eventID";
-
-	/**
-	 * The column name for eventUei in the events table
-	 */
-	private static final String	EVENT_UEI	= "eventUei";
 
 	/**
 	 * The column name for 'eventLog' in the events table
@@ -367,7 +361,9 @@ public class EventsArchiver
 				{
 					ret = removeEvent(eventID);
 					if (ret)
+					{
 						remCount++;
+					}
 				}
 
 				// log = Y, display = N, archive event, then delete

@@ -37,13 +37,10 @@ import java.net.InetAddress;
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
 import java.security.*;
-import java.security.cert.X509Certificate;
 
 import javax.net.ssl.*;
 import javax.security.cert.*;
@@ -196,7 +193,6 @@ final class HttpsMonitor
 				{
 					//set up the certificate validation. USING THIS SCHEME WILL ACCEPT ALL CERTIFICATES
 					SSLSocketFactory sslSF = null;
-					javax.net.ssl.KeyManager[] km = null;
 					TrustManager[] tm = {new RelaxedX509TrustManager()};
 					SSLContext sslContext = SSLContext.getInstance("SSL");
 					sslContext.init(null, tm, new java.security.SecureRandom());

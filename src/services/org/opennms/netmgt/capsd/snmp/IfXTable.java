@@ -254,7 +254,6 @@ public final class IfXTable implements SnmpHandler
 	public void snmpReceivedPdu(SnmpSession session, int command, SnmpPduPacket pdu)
 	{
 		boolean doNotify = true;
-		boolean done = false;
 	
 		// lookup the category
 		//
@@ -303,9 +302,13 @@ public final class IfXTable implements SnmpHandler
 						tempStorage = new SnmpVarBind[m_ifNumber * IfXTableEntry.getElementListSize()];
 						SnmpPduPacket nxt = null;
 						if (m_version == SnmpSMI.SNMPV2)
+						{
 							nxt = IfXTableEntry.getBulkPdu(m_ifNumber);
+						}
 						else
+						{
 							nxt = IfXTableEntry.getNextPdu();
+						}
 						
 						session.send(nxt, this);
 						doNotify = false;
@@ -315,7 +318,9 @@ public final class IfXTable implements SnmpHandler
 			    	else if (m_version == SnmpSMI.SNMPV2) 
 			    	{
 					if (log.isDebugEnabled())
+					{
 						log.debug("snmpReceivedPdu: Handling GETBULK packet");
+					}
 					int length = pdu.getLength();
 					
 					for (int y = 0; y < pdu.getLength(); y++) 
@@ -510,7 +515,9 @@ public final class IfXTable implements SnmpHandler
 		Category log = ThreadCategory.getInstance(getClass());
 
 		if(log.isDebugEnabled())
+		{
 			log.debug("snmpInternal: error " + error + " for: " + session.getPeer().getPeer());
+		}
 		m_error = true;
 
 		synchronized(this)
@@ -542,7 +549,9 @@ public final class IfXTable implements SnmpHandler
 		Category log = ThreadCategory.getInstance(getClass());
 
 		if(log.isDebugEnabled())
+		{
 			log.debug("snmpTimeoutError: for " + session.getPeer().getPeer());
+		}
 
 		m_error = true;
 
@@ -581,7 +590,9 @@ public final class IfXTable implements SnmpHandler
 		// is enough data.
 		//
 		if (physAddr == null || physAddr.length == 0)
+		{
 			return null;
+		}
 
 		//
 		// Convert the actual data

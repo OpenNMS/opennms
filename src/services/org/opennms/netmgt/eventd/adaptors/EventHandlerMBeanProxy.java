@@ -34,7 +34,6 @@ import java.util.List;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
-import javax.management.JMException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
 
@@ -42,7 +41,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
 
 import org.opennms.core.utils.ThreadCategory;
-import org.apache.log4j.Category;
 
 
 /**

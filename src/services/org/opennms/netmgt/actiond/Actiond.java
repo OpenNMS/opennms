@@ -31,14 +31,11 @@ import java.lang.*;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.fiber.PausableFiber;
 
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
@@ -163,7 +160,9 @@ public final class Actiond
 		{
 			m_status = STARTING;
 			if(m_execution == null)
+			{
 				 init();
+			}
 
 			m_execution.start();
 			m_status = RUNNING;
@@ -196,7 +195,9 @@ public final class Actiond
 		catch(Exception e) { }
 
 		if(m_eventReader != null)
+		{
 			m_eventReader.close();
+		}
 
 		m_eventReader = null;
 		m_execution   = null;
@@ -229,7 +230,9 @@ public final class Actiond
 	public synchronized void pause()
 	{
 		if(m_status != RUNNING)
+		{
 			return;
+		}
 
 		m_status = PAUSE_PENDING;
 
@@ -243,7 +246,9 @@ public final class Actiond
 	public synchronized void resume()
 	{
 		if(m_status != PAUSED)
+		{
 			return;
+		}
 
 		m_status = RESUME_PENDING;
 

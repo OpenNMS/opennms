@@ -28,18 +28,12 @@ package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.net.URL;
-
-import java.io.IOException;
 
 import java.text.ParseException;
 
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Comparator;
-import java.util.Collections;
-import java.util.List;
-import java.util.MissingResourceException;
 import java.util.Date;
 
 import java.sql.Timestamp;
@@ -48,11 +42,6 @@ import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
-
-import org.xml.sax.InputSource;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;

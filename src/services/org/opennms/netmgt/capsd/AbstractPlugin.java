@@ -31,8 +31,6 @@ import java.lang.*;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.opennms.core.utils.ThreadCategory;
-
 /**
  * <p>This class provides a basic implementation for most of the interface
  * methods of the <code>Plugin</code> class. Since most plugins do not

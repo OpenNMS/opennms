@@ -403,8 +403,6 @@ final class Poller
 	// 
 	private static void setHwAddress(String hwAddressStr) 
 	{
-		Category log = ThreadCategory.getInstance(Poller.class);
-
 		// initialize the address
 		//
 		s_hwAddress = DEFAULT_ADDRESS;

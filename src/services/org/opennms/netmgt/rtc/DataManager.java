@@ -34,7 +34,6 @@ import java.util.*;
 
 import org.xml.sax.*;
 
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.exolab.castor.xml.MarshalException;
 

@@ -29,16 +29,11 @@ package org.opennms.netmgt.discovery;
 
 import java.lang.*;
 
-import java.io.FileNotFoundException;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.MissingResourceException;
-
-import java.net.UnknownHostException;
-import java.net.InetAddress;
 
 import java.sql.SQLException;
 

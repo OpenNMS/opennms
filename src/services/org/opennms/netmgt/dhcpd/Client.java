@@ -159,8 +159,6 @@ final class Client
 			//
 			while(m_keepListening)
 			{
-				boolean error = false;
-				
 				try
 				{
 					DatagramPacket pkt = new DatagramPacket(dgbuf, dgbuf.length);

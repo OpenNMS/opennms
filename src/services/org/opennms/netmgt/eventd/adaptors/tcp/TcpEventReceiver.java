@@ -29,46 +29,18 @@ package org.opennms.netmgt.eventd.adaptors.tcp;
 import java.lang.*;
 import java.lang.reflect.UndeclaredThrowableException;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PipedOutputStream;
-import java.io.PipedInputStream;
 import java.io.IOException;
-import java.io.EOFException;
-import java.io.InterruptedIOException;
-import java.io.UnsupportedEncodingException;
-
-import java.net.Socket;
-import java.net.ServerSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Iterator;
-import java.util.Arrays;
 
 import javax.management.MalformedObjectNameException;
 import javax.management.InstanceNotFoundException;
 import javax.management.ObjectName;
 
-import org.opennms.netmgt.xml.event.Log;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.EventReceipt;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.core.fiber.Fiber;
 
 import org.apache.log4j.Category;
-
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 
 import org.opennms.netmgt.eventd.adaptors.EventHandler;
 import org.opennms.netmgt.eventd.adaptors.EventHandlerMBeanProxy;

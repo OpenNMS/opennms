@@ -31,15 +31,12 @@ import java.io.InterruptedIOException;
 
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
-import java.net.InetAddress;
 import java.net.SocketException;
 
 import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.eventd.adaptors.EventReceiver;
-import org.opennms.netmgt.eventd.adaptors.EventHandler;
 
 /**
  *

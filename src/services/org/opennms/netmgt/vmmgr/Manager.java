@@ -29,15 +29,10 @@ package org.opennms.netmgt.vmmgr;
 import java.lang.*;
 
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.net.InetAddress;
 import java.io.InputStream;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 
-import java.util.Set;
 import java.util.Iterator;
 import java.util.BitSet;
 import java.util.List;
@@ -50,14 +45,11 @@ import javax.management.ObjectInstance;
 import javax.management.Attribute;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.Invoke;
-import org.opennms.netmgt.config.service.Value;
 import org.opennms.netmgt.config.service.Argument;
 
 /**

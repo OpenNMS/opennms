@@ -32,16 +32,7 @@ import java.util.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.resource.*;

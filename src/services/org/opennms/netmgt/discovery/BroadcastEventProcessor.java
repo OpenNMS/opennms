@@ -28,13 +28,8 @@ package org.opennms.netmgt.discovery;
 
 import java.lang.*;
 
-import java.io.StringReader;
-
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import java.util.Properties;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.ArrayList;
 

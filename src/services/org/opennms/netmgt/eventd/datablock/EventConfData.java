@@ -27,7 +27,6 @@
 package org.opennms.netmgt.eventd.datablock;
 
 import java.util.*;
-import java.io.Serializable;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;

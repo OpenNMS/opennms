@@ -34,8 +34,6 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.core.resource.Vault;
-// Used to get the URL-safe ifLabel
-import org.opennms.netmgt.poller.SnmpMonitor;
 
 
 /**

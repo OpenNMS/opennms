@@ -27,9 +27,6 @@ import java.lang.*;
 
 import jcifs.netbios.*;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
 // castor classes generated from the capsd-configuration.xsd
 import org.opennms.netmgt.config.capsd.*;
 

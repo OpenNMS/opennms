@@ -39,9 +39,6 @@ import org.opennms.core.queue.FifoQueueException;
 
 import org.opennms.core.fiber.PausableFiber;
 
-import org.opennms.netmgt.xml.event.Autoaction;
-import org.opennms.netmgt.xml.event.Tticket;
-
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -206,7 +203,9 @@ final class Executor
 			//
 			long waitPeriod = m_maxWait/5;
 			if(waitPeriod > 15000)
+			{
 				waitPeriod = 15000;
+			}
 
 			Category log = ThreadCategory.getInstance(Executor.class);
 
@@ -232,7 +231,9 @@ final class Executor
 							int rc = dp.getProcess().exitValue();
 
 							if(log.isDebugEnabled())
+							{
 								log.debug("Process " + dp + " completed, rc = " + rc);
+							}
 
 							i.remove();
 							continue;
@@ -346,7 +347,9 @@ final class Executor
 				String arg = buf.toString().trim();
 				
 				if (log.isDebugEnabled())
+				{
 					log.debug("getExecArgument: adding argument: " + arg);
+				}
 				
 				args.add(arg);
 				buf.delete(0, buf.length());
@@ -354,7 +357,9 @@ final class Executor
 				// trim off the remaining white space
 				//
 				while(chars[x+1] == ' ')
+				{
 					x++;
+				}
 			}
 			else 
 			{
@@ -365,7 +370,9 @@ final class Executor
 		// Add remaining argument
 		//
 		if(buf.length() > 0)
+		{
 			args.add(buf.toString());
+		}
 		buf = null;
 
 		// Convert to string array
@@ -421,7 +428,9 @@ final class Executor
 				// if stopped or stop pending then break out
 				//
 				if(m_status == STOP_PENDING || m_status == STOPPED)
+				{
 					break;
+				}
 
 				// if paused or pause pending then block
 				//
@@ -443,7 +452,9 @@ final class Executor
 				// if resume pending then change to running
 				//
 				if(m_status == RESUME_PENDING)
+				{
 					m_status = RUNNING;
+				}
 			}
 
 			// check to see if we can execute more
@@ -477,7 +488,9 @@ final class Executor
 			{
 				cmd = (String) m_execQ.remove(1000);
 				if(cmd == null)   // status check time
+				{
 					continue; // goto top of loop
+				}
 			}
 			catch(InterruptedException ex)
 			{
@@ -493,7 +506,9 @@ final class Executor
 			// start a new process
 			//
 			if (log.isDebugEnabled())
+			{
 				log.debug("Parsing cmd args: " + cmd);
+			}
 				
 			String[] execArgs = getExecArguments(cmd);
 			if(execArgs != null && execArgs.length > 0)
@@ -550,7 +565,9 @@ final class Executor
 	public synchronized void start()
 	{
 		if(m_worker != null)
+		{
 			throw new IllegalStateException("The fiber has already be run");
+		}
 
 		m_status = STARTING;
 
@@ -574,16 +591,24 @@ final class Executor
 	public synchronized void stop()
 	{
 		if(m_worker == null)
+		{
 			throw new IllegalStateException("The fiber has never been run");
+		}
 
 		if(m_status != STOPPED)
+		{
 			m_status = STOP_PENDING;
+		}
 
 		if(m_reaper.isAlive())
+		{
 			m_reaper.interrupt();
+		}
 
 		if(m_worker.isAlive())
+		{
 			m_worker.interrupt();
+		}
 
 		notifyAll();
 	}
@@ -601,7 +626,9 @@ final class Executor
 	public synchronized void pause()
 	{
 		if(m_worker == null || !m_worker.isAlive())
+		{
 			throw new IllegalStateException("The fiber is not running");
+		}
 
 		if(m_status == RUNNING || m_status == RESUME_PENDING)
 		{
@@ -623,7 +650,9 @@ final class Executor
 	public synchronized void resume()
 	{
 		if(m_worker == null || !m_worker.isAlive())
+		{
 			throw new IllegalStateException("The fiber is not running");
+		}
 
 		if(m_status == PAUSED || m_status == PAUSE_PENDING)
 		{

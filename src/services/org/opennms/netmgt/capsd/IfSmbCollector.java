@@ -31,7 +31,6 @@ import java.lang.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.net.MalformedURLException;
-import java.util.Iterator;
 
 import jcifs.netbios.*;
 import jcifs.smb.*;

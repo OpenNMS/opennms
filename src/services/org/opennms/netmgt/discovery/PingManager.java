@@ -39,7 +39,6 @@ import org.opennms.core.concurrent.QuantumSemaphore;
 
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueImpl;
-import org.opennms.core.queue.FifoQueueException;
 
 import org.opennms.netmgt.ping.Packet;
 import org.opennms.netmgt.ping.Reply;

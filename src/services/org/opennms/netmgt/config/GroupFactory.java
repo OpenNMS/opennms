@@ -37,13 +37,8 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
 import org.opennms.netmgt.config.groups.*;
 import org.opennms.netmgt.*;
-
-import org.opennms.core.resource.Vault;
 
 public class GroupFactory
 {
@@ -247,7 +242,6 @@ public class GroupFactory
                 Groups groups = new Groups();
                 Collection collgroups = (Collection)m_groups.values();
                 Iterator iter = collgroups.iterator();
-                List groupLst = new ArrayList();
                 while(iter != null && iter.hasNext())
                 {
                         Group grp = (Group) iter.next();

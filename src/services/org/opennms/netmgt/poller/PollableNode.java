@@ -30,7 +30,6 @@ import java.net.*;
 import java.util.*;
 import java.sql.*;
 
-import org.apache.log4j.Priority;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
@@ -691,7 +690,6 @@ public class PollableNode
 		PollableInterface pInterface = pSvc.getInterface();
 		
 		int ifStatus = Pollable.STATUS_UNKNOWN;
-		String curPkgName = pSvc.getPackage().getName();
 		
 		// Get critical service
 		String criticalSvc = PollerConfigFactory.getInstance().getCriticalService();

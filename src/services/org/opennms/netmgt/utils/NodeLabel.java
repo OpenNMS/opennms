@@ -29,7 +29,6 @@ package org.opennms.netmgt.utils;
 import java.io.*;
 import java.util.*;
 import java.sql.*;
-import java.net.UnknownHostException;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;

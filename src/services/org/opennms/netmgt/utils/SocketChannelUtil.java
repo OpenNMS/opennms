@@ -27,7 +27,6 @@ import java.lang.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketException;
 import java.nio.channels.SocketChannel;
 /**
  * Class to obtain a connected SocketChannel object.

@@ -29,19 +29,15 @@
 package org.opennms.netmgt.config;
 
 import java.lang.*;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.io.*;
 import java.util.*;
 
 import java.net.InetAddress;
-import java.net.URL;
 import java.net.UnknownHostException;
 
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
-import org.xml.sax.InputSource;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;

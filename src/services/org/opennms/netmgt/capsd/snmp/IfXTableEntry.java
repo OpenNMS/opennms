@@ -310,7 +310,9 @@ public final class IfXTableEntry extends java.util.TreeMap
 		}
 
 		if (log.isDebugEnabled())
+		{
 			log.debug("snmpReceivedPdu: generating next SNMPv1 request with id: " + pdu.getRequestId());
+		}
 
 		return pdu;
 	}
@@ -337,7 +339,9 @@ public final class IfXTableEntry extends java.util.TreeMap
 		pdu.addVarBind(new SnmpVarBind(oid));
 
 		if (log.isDebugEnabled())
+		{
 			log.debug("snmpReceivedPdu: generating next SNMPv2 request with id: " + pdu.getRequestId());
+		}
 
 		return pdu;
 	}
@@ -358,7 +362,9 @@ public final class IfXTableEntry extends java.util.TreeMap
 		SnmpObjectId oid = new SnmpObjectId(endoid);
 
 		if (log.isDebugEnabled())
+		{
 			log.debug("stop_oid:  Stopping OID = " + oid.toString());
+		}
 
 		return oid;
 	}

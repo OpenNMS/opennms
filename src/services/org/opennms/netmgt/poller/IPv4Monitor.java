@@ -32,10 +32,6 @@ import java.io.*;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
-import org.opennms.core.utils.ThreadCategory;
-
 /**
  * <p>This class provides a basic implementation for most of the interface
  * methods of the <code>ServiceMonitor</code> class. Since most pollers do not

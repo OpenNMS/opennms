@@ -34,7 +34,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 

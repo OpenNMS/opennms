@@ -29,15 +29,10 @@
 package org.opennms.netmgt.config;
 
 import java.lang.*;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.io.IOException;
 import java.io.FileInputStream;
 import java.io.File;
 import java.util.Enumeration;
-
-import java.net.InetAddress;
-import java.net.URL;
-import java.net.UnknownHostException;
 
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;

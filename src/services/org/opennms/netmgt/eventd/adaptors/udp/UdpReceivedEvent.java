@@ -26,7 +26,6 @@ package org.opennms.netmgt.eventd.adaptors.udp;
 import java.lang.*;
 
 import java.io.StringReader;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import java.net.DatagramPacket;
@@ -37,9 +36,6 @@ import java.util.ArrayList;
 
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
-import org.opennms.core.utils.ThreadCategory;
-
-import org.apache.log4j.Category;
 
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.MarshalException;

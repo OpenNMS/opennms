@@ -28,14 +28,9 @@ package org.opennms.netmgt.capsd;
 
 import java.lang.*;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.io.ByteArrayOutputStream;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -46,23 +41,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Date;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueException;
-import org.opennms.core.fiber.Fiber;
-import org.opennms.core.fiber.PausableFiber;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.capsd.snmp.*;
 import org.opennms.protocols.snmp.*;
-
-import org.opennms.netmgt.discovery.IPAddressRange;
 
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.CapsdConfigFactory;
@@ -181,8 +167,6 @@ final class SuspectEventProcessor
 		{
 			IfTableEntry ifEntry = (IfTableEntry)iter.next();
 				
-			Object[] my_oids = ifEntry.keySet().toArray();
-			
 			if (ifEntry.containsKey("ifIndex") != true) {
 			    log.debug("getExistingNodeEntry:  Breaking from loop");
 			    break;
@@ -1249,7 +1233,6 @@ final class SuspectEventProcessor
 
 		IfCollector collector = new IfCollector(ifaddr, true);
 		collector.run();
-		Date now = new Date();
 
 		// Track changes to primary SNMP interface
 		InetAddress oldSnmpPrimaryIf = null;
@@ -1807,8 +1790,6 @@ final class SuspectEventProcessor
 		//
 		if(collector.hasSnmpCollection() && !collector.getSnmpCollector().failed())
 		{
-			IfSnmpCollector snmpc = collector.getSnmpCollector();
-
 			Map extraTargets = collector.getAdditionalTargets();
 			Iterator iter = extraTargets.keySet().iterator();
 			while(iter.hasNext())

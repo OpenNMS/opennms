@@ -41,7 +41,6 @@ import java.io.BufferedOutputStream;
 import java.net.Socket;
 import java.net.InetAddress;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 import org.opennms.netmgt.xml.event.Log;

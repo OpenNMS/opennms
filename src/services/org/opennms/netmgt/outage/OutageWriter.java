@@ -35,13 +35,8 @@ import java.text.ParseException;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.MarshalException;
-
 import org.opennms.netmgt.config.OutageManagerConfigFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 

@@ -28,14 +28,9 @@ package org.opennms.netmgt.capsd;
 
 import java.lang.*;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.io.ByteArrayOutputStream;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -49,23 +44,14 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.Date;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueException;
-import org.opennms.core.fiber.Fiber;
-import org.opennms.core.fiber.PausableFiber;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.capsd.snmp.*;
 import org.opennms.protocols.snmp.*;
-
-import org.opennms.netmgt.discovery.IPAddressRange;
 
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.CapsdConfigFactory;
@@ -209,10 +195,6 @@ final class RescanProcessor
 		// 'node***Changed' events following the update.
 		//
 		DbNodeEntry originalDbNodeEntry = DbNodeEntry.clone(dbNodeEntry);
-		
-		// Get primary SNMP interface associated with existing node (from the DB)
-		//
-		DbIpInterfaceEntry dbPrimarySnmpIf = DbNodeEntry.getPrimarySnmpInterface(dbIpInterfaces);
 		
 		// Create node which represents the most recently retrieved 
 		// information in the collector for this node
@@ -370,8 +352,6 @@ final class RescanProcessor
 				      Map         collectorMap)
 		throws SQLException
 	{
-		Category log = ThreadCategory.getInstance(getClass());
-
 		// Reset modification flags.  These flags are set by
 		// the updateInterface() method when changes have been
 		// detected which warrant further action (such as 
@@ -1557,7 +1537,6 @@ final class RescanProcessor
 		//
 		Collection values = collectorMap.values();
 		Iterator iter = values.iterator();
-		List alreadyTested = new ArrayList();
 		while(iter.hasNext())
 		{
 			IfCollector ifc = (IfCollector)iter.next();
@@ -1639,7 +1618,6 @@ final class RescanProcessor
 		//
 		Collection values = collectorMap.values();
 		Iterator iter = values.iterator();
-		List alreadyTested = new ArrayList();
 		while(iter.hasNext())
 		{
 			IfCollector ifc = (IfCollector)iter.next();
@@ -1705,7 +1683,6 @@ final class RescanProcessor
 		// For now hard-coding primary interface address selection method to MIN
 		String method = SELECT_METHOD_MIN;
 		
-		List ifList = new ArrayList();
 		Collection values = collectorMap.values();
 		Iterator iter = values.iterator();
 		InetAddress primaryIf = null;
@@ -2044,8 +2021,6 @@ final class RescanProcessor
 		{
 			IfTableEntry ifEntry = (IfTableEntry)iter.next();
 				
-			Object[] my_oids = ifEntry.keySet().toArray();
-			
 			if (ifEntry.containsKey("ifIndex") != true) {
 			    log.debug("isInterfaceAlias:  Breaking from loop");
 			    break;

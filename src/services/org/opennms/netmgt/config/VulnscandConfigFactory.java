@@ -28,18 +28,14 @@
 package org.opennms.netmgt.config;
 
 import java.lang.*;
-import java.lang.reflect.UndeclaredThrowableException;
 
 import java.io.*;
 
-import java.net.URL;
-import java.net.MalformedURLException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import java.util.*;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -48,8 +44,6 @@ import java.sql.ResultSet;
 import org.apache.regexp.RE;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-
-import org.xml.sax.InputSource;
 
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
@@ -351,8 +345,6 @@ public final class VulnscandConfigFactory
 		throws SQLException
 	{
 		Category log = ThreadCategory.getInstance(VulnscandConfigFactory.class);
-
-		boolean result = false;
 
 		log.debug("getInterfaceDbNodeId: attempting to lookup interface " + ifAddress.getHostAddress() + " in the database.");
 

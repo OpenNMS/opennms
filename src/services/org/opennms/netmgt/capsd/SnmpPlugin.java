@@ -34,9 +34,6 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.protocols.snmp.SnmpSession;
-import org.opennms.protocols.snmp.SnmpSyntax;
-import org.opennms.protocols.snmp.SnmpHandler;
-import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpPduBulk;
 import org.opennms.protocols.snmp.SnmpPduPacket;
 import org.opennms.protocols.snmp.SnmpPduRequest;
@@ -47,7 +44,6 @@ import org.opennms.protocols.snmp.SnmpSMI;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.utils.SnmpResponseHandler;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
