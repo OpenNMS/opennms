@@ -102,7 +102,6 @@ public class Eventd implements EventdMBean {
         }
         
         e.setConfigManager(EventdConfigFactory.getInstance());
-        e.setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
         
         EventIpcManager ipcMgr = new EventIpcManagerDefaultImpl(EventdConfigFactory.getInstance());
         EventIpcManagerFactory.setIpcManager(ipcMgr);

@@ -53,7 +53,7 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DbConnectionFactory;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
 import org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver;
@@ -136,7 +136,7 @@ public final class Eventd implements PausableFiber, org.opennms.netmgt.eventd.ad
 
     private EventdConfigManager m_eFactory;
 
-    private DbConnectionFactory m_dbConnectionFactory;
+//    private DbConnectionFactory m_dbConnectionFactory;
 
     static {
         // map of service names to service identifer
@@ -210,7 +210,7 @@ public final class Eventd implements PausableFiber, org.opennms.netmgt.eventd.ad
         //
         java.sql.Connection tempConn = null;
         try {
-            tempConn = m_dbConnectionFactory.getConnection();
+            tempConn = DatabaseConnectionFactory.getInstance().getConnection();
 
             // create the service table map
             //
@@ -402,13 +402,6 @@ public final class Eventd implements PausableFiber, org.opennms.netmgt.eventd.ad
         
     }
     
-    /**
-     * @param dbConnectionFactory
-     */
-    public void setDbConnectionFactory(DbConnectionFactory dbConnectionFactory) {
-        m_dbConnectionFactory = dbConnectionFactory;    
-    }
-
     public EventIpcManager getEventIpcManager() {
         return m_eventIpcManager;
     }
@@ -416,13 +409,5 @@ public final class Eventd implements PausableFiber, org.opennms.netmgt.eventd.ad
     public void setEventIpcManager(EventIpcManager manager) {
         m_eventIpcManager = manager;
     }
-
-    /**
-     * @return Returns the dbConnectionFactory.
-     */
-    public DbConnectionFactory getDbConnectionFactory() {
-        return m_dbConnectionFactory;
-    }
-    
     
 }
