@@ -222,7 +222,7 @@ Options:
          --help, -h        this help message
 
          --timezone, -t    the time zone you are in
-         --service, -s     service name (from services.xml)
+         --service, -s     service name 
          --nodeid, -n      node identifier (numeric)
          --interface, -i   IP address of the interface
          --descr, -d       a description for the event browser
@@ -236,6 +236,13 @@ Options:
                            7 = Critical
 	--parm, -p         an event parameter (ie:
                            --parm 'url http://www.google.com/')
+Example:
+
+        Force discovery of a node
+
+        send-event.pl \\
+        uei.opennms.org/internal/discovery/newSuspect \\
+        --interface 172.16.1.1
 
 END
 }
