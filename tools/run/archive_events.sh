@@ -37,7 +37,7 @@ JAVA_CMD="$JAVA_HOME/bin/java"
 APP_CLASSPATH=`build_classpath dir:$OPENNMS_HOME/lib/updates \
 	jardir:$OPENNMS_HOME/lib/updates "cp:$CLASSPATH_OVERRIDE" \
 	dir:$OPENNMS_HOME/etc jardir:$OPENNMS_HOME/lib "cp:$CLASSPATH"`
-APP_VM_PARMS="-Dopennms.home='$OPENNMS_HOME' -Dlog4j.configuration='$LOG4J_CONFIG'"
+APP_VM_PARMS="-Dopennms.home=$OPENNMS_HOME -Dlog4j.configuration=$LOG4J_CONFIG"
 APP_CLASS="org.opennms.netmgt.archive.EventsArchiver"
 
 if [ -z "$NOEXECUTE" ]; then
