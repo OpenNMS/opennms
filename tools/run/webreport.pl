@@ -60,7 +60,7 @@ print "---\n" ;
 print "Content-type: application/octet-stream; name=\"$filename\"\n" ;
 print "Content-Transfer-Encoding: base64\n" ;
 print "Content-Disposition: attachment; filename=\"$filename\"\n\n" ;
-print `mimencode $sendfile`, "\n";
+print `mimencode $sendfile`, "-----\n";
 select STDOUT;
 close (SENDMAIL);
 

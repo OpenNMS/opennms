@@ -1,5 +1,6 @@
 1.0.0 to 1.1.0
 ----------------------------------------------------------------------
+- Fixed multipart message mistake. Bug 591
 - Added the ability to associate events in eventconf.xml with 
   specific parameters (varbinds). Bug 626
 - Modified eventconf.xml to allow for event definition files to be
