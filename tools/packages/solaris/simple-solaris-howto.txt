@@ -49,4 +49,8 @@ Some notes:
    # ln -s ../../../opennms/lib/castor*.jar .
    # ln -s ../../../opennms/lib/log4j*.jar .
    # ln -s ../../../opennms/lib/opennms_*.jar .
+   # cd ../..
+   # mkdir webapps
+   # cd webapps
+   # ln -s ../../opennms/webapps/opennms ./opennms
 
