@@ -9,7 +9,7 @@
 		</author>
 	</authorgroup> 
 	<pubdate>2001</pubdate>
-	<pubsnumber>Revision: @product.version@</pubsnumber>
+	<pubsnumber>Revision: @opennms.version@</pubsnumber>
 	<!-- 
 	<legalnotice>
 	<para>All rights reserved. No part of the contents of this book may be reproduced
