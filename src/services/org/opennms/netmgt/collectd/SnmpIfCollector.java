@@ -487,10 +487,14 @@ public class SnmpIfCollector implements SnmpHandler {
         if (log.isDebugEnabled())
             log.debug("getNextSnmpV2Pdu: ("+m_primaryIf+") responseCount: " + m_responses + " maxReps: " + (m_numInterfaces - m_responses));
 
-        if (m_responses == 0)
+        if (m_responses == 0) {
             index = new Integer(0);
-        else
-            index = new Integer(m_indexArray[m_responses - 1]);
+        }
+        else {
+            // get the last varbind retrieved and use the ifIndex for its instance
+            SnmpVarBind vb = (SnmpVarBind)m_responseVbList.get(m_responseVbList.size()-1);
+            index = new Integer(vb.getName().getLastIdentifier());
+        }
 
         if (log.isDebugEnabled())
             log.debug("getNextSnmpV2Pdu: ("+m_primaryIf+") starting_ifindex: " + index);
@@ -748,11 +752,7 @@ public class SnmpIfCollector implements SnmpHandler {
                                 SnmpVarBind vb = (SnmpVarBind) r.next();
 
                                 // Extract the "instance" id from the current
-                                // SnmpVarBind's object id
-                                String from_oid = vb.getName().toString();
-                                SnmpObjectId id = new SnmpObjectId(from_oid);
-                                int[] ids = id.getIdentifiers();
-                                int instance_id = ids[ids.length - 1];
+                                int instance_id = vb.getName().getLastIdentifier();
                                 String instance = Integer.toString(instance_id);
 
                                 // If current index matches instance id of OID
