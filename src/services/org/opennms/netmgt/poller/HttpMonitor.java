@@ -244,7 +244,7 @@ final class HttpMonitor
 						{
 							serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;	
 						}
-						else if(!bStrictResponse && rVal > 99 && rVal < 500 && url == DEFAULT_URL)
+						else if(!bStrictResponse && rVal > 99 && rVal < 500 && (url.equals(DEFAULT_URL)))
 						{
 							serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
 						}
@@ -313,7 +313,7 @@ final class HttpMonitor
 					// Connection Refused. Continue to retry.
 					//
 					e.fillInStackTrace();
-					log.debug("Connection exception for " + ipv4Addr + ":" + ports[portIndex], e);
+					log.debug("Connection exception for " + ipv4Addr + ":" + ports[portIndex]);
 
 				}
 				catch(IOException e)

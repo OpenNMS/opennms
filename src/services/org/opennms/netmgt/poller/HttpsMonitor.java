@@ -274,6 +274,22 @@ final class HttpsMonitor
                                         			}
 							}
 						}
+						else if(!bStrictResponse && rVal > 99 && rVal < 500 && (url.equals(DEFAULT_URL)))
+						{
+							serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
+                                        		// Store response time in RRD
+                                  	   	 	if (responseTime >= 0 && rrdPath != null)
+							{
+                                        			try
+                                        			{
+                                                			this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime, pkg);
+                                        			}
+                                        			catch(RuntimeException rex)
+                                        			{
+                                                			log.debug("There was a problem writing the RRD:" + rex);
+                                        			}
+							}
+						}
 						else if(!bStrictResponse && rVal > 99 && rVal < 400)
 						{
 							serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
@@ -344,7 +360,7 @@ final class HttpsMonitor
 					// Connection Refused!!  Continue to retry.
 					//
 					e.fillInStackTrace();
-					log.debug("Connection exception for " + ipv4Addr + ":" + ports[portIndex], e);
+					log.debug("Connection exception for " + ipv4Addr + ":" + ports[portIndex]);
 
 				}
 				catch(IOException e)
