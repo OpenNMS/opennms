@@ -324,10 +324,10 @@ final public class SnmpMonitor extends IPv4Monitor {
                 try {
                     status = (meetsCriteria(handler.getResult().getValue(), operator, operand) ? SERVICE_AVAILABLE : SERVICE_UNAVAILABLE);
                 } catch (NumberFormatException e) {
-                    log.error("Number operator used on a non-number " + e.getMessage());
+                    log.warn("Number operator used on a non-number " + e.getMessage());
                     status = SERVICE_AVAILABLE;
                 } catch (IllegalArgumentException e) {
-                    log.error("Invalid Snmp Criteria: " + e.getMessage());
+                    log.warn("Invalid Snmp Criteria: " + e.getMessage());
                     status = SERVICE_UNAVAILABLE;
                 }
             } else {

@@ -451,10 +451,11 @@ public class AvailCalculations extends Object {
 
         // For each monitored service, get all individual outages.
         //
-        TreeMap treeMap = new TreeMap();
+        TreeMap treeMap = null;
         Set serviceNames = m_services.keySet();
         Iterator iterator = serviceNames.iterator();
         while (iterator.hasNext()) {
+            treeMap = new TreeMap();
             String service = (String) iterator.next();
             Map ifSvcOutageList = (Map) m_services.get(service);
             Set keysIfServices = ifSvcOutageList.keySet();

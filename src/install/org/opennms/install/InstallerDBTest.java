@@ -5,6 +5,7 @@
 package org.opennms.install;
 
 import java.io.ByteArrayOutputStream;
+import java.io.StringReader;
 import java.io.PrintStream;
 
 import java.sql.SQLException;
@@ -13,9 +14,9 @@ import java.sql.Statement;
 import junit.framework.TestCase;
 
 public class InstallerDBTest extends TestCase {
-	private static final String m_constraint = "fk_nodeid6";
+	private static final String s_constraint = "fk_nodeid6";
 
-	private static final String m_runProperty = "mock.rundbtests";
+	private static final String s_runProperty = "mock.rundbtests";
 
 	private String m_testDatabase;
 
@@ -38,7 +39,7 @@ public class InstallerDBTest extends TestCase {
 		m_installer.m_pg_pass = "";
 		m_installer.m_create_sql = "etc/create.sql";
 		m_installer.m_fix_constraint = true;
-		m_installer.m_fix_constraint_name = m_constraint;
+		m_installer.m_fix_constraint_name = s_constraint;
 
 		// Create test database.
 		m_installer.databaseConnect("template1");
@@ -75,7 +76,7 @@ public class InstallerDBTest extends TestCase {
 	}
 
 	public boolean isDBTestEnabled() {
-		String property = System.getProperty(m_runProperty);
+		String property = System.getProperty(s_runProperty);
 		return "true".equals(property);
 	}
 
@@ -270,6 +271,86 @@ public class InstallerDBTest extends TestCase {
 				+ " is on column "
 				+ "dpname of table node, but column does not " + "exist");
 	}
+	
+	public void testConstraintAfterConstrainedColumn() throws Exception {
+		String s_create_sql =
+			"			create table distPoller (\n" +
+			"					dpName			varchar(12),\n" +
+			"								constraint pk_dpName primary key (dpName),\n" +
+			"					dpIP			varchar(16) not null,\n" +
+			"					dpComment		varchar(256),\n" +
+			"					dpDiscLimit		numeric(5,2),\n" +
+			"					dpLastNodePull		timestamp without time zone,\n" + 
+			"					dpLastEventPull		timestamp without time zone,\n" +
+			"					dpLastPackagePush	timestamp without time zone,\n" +
+			"					dpAdminState 		integer,\n" +
+			"					dpRunState		integer );\n";
+
+		if (!isDBTestEnabled()) {
+			return;
+		}
+		
+		m_installer.readTables(new StringReader(s_create_sql));
+		m_installer.getTableColumnsFromSQL("distpoller");
+	}
+	
+	public void testConstraintAtEndOfTable() throws Exception {
+		String s_create_sql =
+			"			create table distPoller (\n" +
+			"					dpName			varchar(12),\n" +
+			"					dpIP			varchar(16) not null,\n" +
+			"					dpComment		varchar(256),\n" +
+			"					dpDiscLimit		numeric(5,2),\n" +
+			"					dpLastNodePull		timestamp without time zone,\n" + 
+			"					dpLastEventPull		timestamp without time zone,\n" +
+			"					dpLastPackagePush	timestamp without time zone,\n" +
+			"					dpAdminState 		integer,\n" +
+			"					dpRunState		integer,\n" +
+			"								constraint pk_dpName primary key (dpName) );\n";
+
+		if (!isDBTestEnabled()) {
+			return;
+		}
+		
+		m_installer.readTables(new StringReader(s_create_sql));
+		m_installer.getTableColumnsFromSQL("distpoller");
+	}
+	
+	public void testConstraintOnBogusColumn() throws Exception {
+		String s_create_sql =
+			"			create table distPoller (\n" +
+			"					dpName			varchar(12),\n" +
+			"					dpIP			varchar(16) not null,\n" +
+			"					dpComment		varchar(256),\n" +
+			"					dpDiscLimit		numeric(5,2),\n" +
+			"					dpLastNodePull		timestamp without time zone,\n" + 
+			"					dpLastEventPull		timestamp without time zone,\n" +
+			"					dpLastPackagePush	timestamp without time zone,\n" +
+			"					dpAdminState 		integer,\n" +
+			"					dpRunState		integer,\n" +
+			"								constraint pk_dpName primary key (dpNameBogus) );\n";
+		String errorSubstring = "constraint does not reference a column in the table: constraint pk_dpname primary key (dpnamebogus)";
+
+		if (!isDBTestEnabled()) {
+			return;
+		}
+		
+		m_installer.readTables(new StringReader(s_create_sql));
+		try {
+			m_installer.getTableColumnsFromSQL("distpoller");
+		} catch (Exception e) {
+			if (e.getMessage().indexOf(errorSubstring) >= 0) {
+				// Received expected error, so the test is successful.
+				return;
+			} else {
+				fail("Expected an exception matching \"" + errorSubstring
+						+ "\", but instead received an unexpected Exception: "
+						+ e.toString());
+			}
+		}
+		
+		fail("Did not receive expected exception: " + errorSubstring);
+	}
 
 	public void doTestBogusConstraint(String constraint, String errorSubstring)
 			throws Exception {
@@ -295,7 +376,7 @@ public class InstallerDBTest extends TestCase {
 			boolean fixConstraint) throws Exception {
 		final String errorSubstring = "Table events contains " + badRows
 				+ " rows (out of 2) that violate new constraint "
-				+ m_constraint;
+				+ s_constraint;
 
 		setupBug931((badRows != 0) || fixConstraint, dropForeignTable);
 

@@ -2,10 +2,11 @@
 #  $Id$
 #
 %{!?version:%define version @product.version@}
-%{!?release:%define release @product.release.stamp@}
+%{!?plain_release:%define plain_release @product.release.stamp@}
+%{!?release:%define release %{plain_release}}
 %{!?releasenumber:%define releasenumber @product.release@}
 %{!?instprefix:%define instprefix @rpm.install.dir@}
-%{!?packagedir:%define packagedir @ant.project.name@-%version-%release}
+%{!?packagedir:%define packagedir @ant.project.name@-%version-%{releasenumber}}
 %{!?dbuser:%define dbuser @rpm.database.user@}
 %{!?dbpass:%define dbpass @rpm.database.password@}
 %{!?dbname:%define dbname @rpm.database.name@}
@@ -145,6 +146,15 @@
 %define platform_match	true
 %endif
 
+%if "%{platform}" == "linux-i386-rhel-4"
+%define	initdir		/etc
+%define psql_service	rhdb
+%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
+%define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_rhel4
+%define platform_match	true
+%endif
+
 %if "%{platform}" == "linux-i386-suse-7"
 %define	initdir		/etc/rc.d
 %define psql_service	postgres
@@ -200,7 +210,7 @@ Version:		%version
 Copyright:		LGPL/GPL
 Group:			Applications/System
 
-Source:			%{name}-source-%{version}-%{release}.tar.gz
+Source:			%{name}-source-%{version}-%{plain_release}.tar.gz
 URL:			ftp://opennms.org/pub/releases/OpenNMS/
 BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
@@ -233,7 +243,7 @@ The web UI for OpenNMS.
 %prep
 
 %if %{standalone}
-tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{release}.tar.gz -C $RPM_BUILD_DIR
+tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{plain_release}.tar.gz -C $RPM_BUILD_DIR
 %define setupdir %{packagedir}/source
 %else
 %define setupdir @root.source@
@@ -283,7 +293,7 @@ mkdir -p $RPM_BUILD_ROOT%{_bindir}
 cat > $RPM_BUILD_ROOT%{_bindir}/opennms <<EOF
 #!/bin/sh -
 
-exec %{instprefix}/bin/opennms.sh "$@"
+exec %{instprefix}/bin/opennms.sh "\$@"
 EOF
 
 ### XXX is this needed?  (Most of) the current scripts don't use OPENNMS_HOME.
@@ -323,6 +333,17 @@ pushd $RPM_BUILD_ROOT
 find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
     sort > %{_tmppath}/files.etc
+find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
+    sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+    sort >> %{_tmppath}/files.etc
+
+find $RPM_BUILD_ROOT%{webappsdir} ! -type d | \
+    sed -e "s,^$RPM_BUILD_ROOT,," | \
+    grep -v '/WEB-INF/web\.xml$' | \
+    sort > %{_tmppath}/files.webapp
+find $RPM_BUILD_ROOT%{webappsdir} -type d | \
+    sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+    sort >> %{_tmppath}/files.webapp
 popd
 
 %clean
@@ -338,7 +359,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root)	%{profiledir}/%{name}.sh
 %attr(755,root,root)	%{_bindir}/*
 %attr(755,root,root)	%{instprefix}/bin
-%dir			%{instprefix}/etc
 			%{instprefix}/contrib
 %if "%builddocs" == "1"
 %attr(755,root,root)	%{instprefix}/docs
@@ -355,9 +375,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_docdir}/%{name}-%{version}
 %endif
 
-%files webapp
+%files webapp -f %{_tmppath}/files.webapp
 %defattr(644 root root 755)
-%{webappsdir}
 %config %{servletdir}/WEB-INF/web.xml
 
 

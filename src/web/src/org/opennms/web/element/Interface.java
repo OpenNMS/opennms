@@ -67,6 +67,8 @@ public class Interface {
     
     String m_snmpIfAlias;
 
+    String m_isSnmpPrimary;
+
     public int getNodeId() {
         return m_nodeId;
     }
@@ -141,6 +143,10 @@ public class Interface {
 
     public String getSnmpIfAlias() {
         return m_snmpIfAlias;
+    }
+
+    public String getIsSnmpPrimary() {
+        return m_isSnmpPrimary;
     }
 
 }

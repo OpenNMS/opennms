@@ -148,6 +148,7 @@
         StringBuffer buffer = new StringBuffer();
         
         List excludeList = getExcludeList();
+	TreeMap sortedMap = new TreeMap();
 
         Iterator i = events.iterator();
 
@@ -155,25 +156,27 @@
         {
             Event e = (Event)i.next();
             String uei = e.getUei();
-            System.out.println(uei);
+            //System.out.println(uei);
 
             String label = e.getEventLabel();
-            System.out.println(label);
+            //System.out.println(label);
 
             String trimmedUei = stripUei(uei);
-            System.out.println(trimmedUei);
+            //System.out.println(trimmedUei);
             
-            if (!excludeList.contains(trimmedUei))
-            {
-            if (uei.equals(notice.getUei()))
-            {
-                    buffer.append("<option selected VALUE=" + uei + ">" + label + "</option>");
+            if (!excludeList.contains(trimmedUei)) {
+		sortedMap.put(label,uei);
             }
-            else
-            {
-                    buffer.append("<option value=" + uei + ">" + label + "</option>");
-                }
-            }
+	}
+	i=sortedMap.keySet().iterator();
+	while(i.hasNext()) {
+		String label=(String)i.next();
+		String uei=(String)sortedMap.get(label);
+		if (uei.equals(notice.getUei())) {
+			buffer.append("<option selected VALUE=" + uei + ">" + label + "</option>");
+		} else {
+			buffer.append("<option value=" + uei + ">" + label + "</option>");
+		}
         }
         
         return buffer.toString();

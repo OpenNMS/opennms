@@ -280,7 +280,16 @@
         Map allUsers = null;
         
         try {
-          allUsers = new TreeMap(UserFactory.getInstance().getUsers());
+	  allUsers = new TreeMap(new Comparator() {
+		public int compare(Object o1, Object o2) {
+			if(o1 instanceof String && o2 instanceof String) {
+				return ((String)o1).compareToIgnoreCase((String)o2);
+			} 
+			throw new RuntimeException("Non string comparision for a string comparator");	
+		}
+ 
+	  });
+          allUsers.putAll(UserFactory.getInstance().getUsers());
         Collection targetNames = getTargetNames(targets);
         
         Iterator i = allUsers.keySet().iterator();
