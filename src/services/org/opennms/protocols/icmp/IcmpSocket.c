@@ -52,7 +52,7 @@
 #include <jni_md.h>
 
 #if defined(__DARWIN__)
-typedef int socklen_t;
+typedef int32_t socklen_t;
 typedef struct ip iphdr_t;
 typedef struct icmp icmphdr_t;
 #define ihl ip_hl

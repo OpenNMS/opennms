@@ -11,12 +11,11 @@ CustomMirror: <<
 #Source: ftp://ftp.opennms.org/pub/releases/OpenNMS/1.1/source/%n-source-%v-1.tar.gz
 #SourceDirectory: %n-%v-1/source
 Source: opennms-1.1.2-cvs.tar.bz2
-Source-MD5: 42532739d9a579dc7cc925220c506ceb
 SourceDirectory: %n
 #PatchScript: sed -e 's,@PREFIX@,%p,g' %a/%f.patch | patch -p0
 
-BuildDepends: ant (>= 1.5), postgresql73-dev | postgresql73-ssl-dev, tomcat (>= 4.1.18-4), commons-logging (>= 1.0.3), rrdtool (>= 1.0.40-2), passwd (>= 20030202-1)
-Depends: postgresql | postgresql-ssl, tomcat (>= 4.1.18-4), commons-logging (>= 1.0.3), rrdtool (>= 1.0.40-2), daemonic, passwd (>= 20030202-1), dbd-pg-pm (>= 1.21), getopt-mixed-pm
+BuildDepends: ant (>= 1.5), postgresql73-dev (>= 7.3.4-1) | postgresql73-ssl-dev (>= 7.3.4-1), tomcat (>= 4.1.18-4), commons-logging (>= 1.0.3), rrdtool (>= 1.0.40-2), passwd (>= 20030202-1)
+Depends: postgresql (>= 7.3.4-1) | postgresql-ssl (>= 7.3.4-1), tomcat (>= 4.1.18-4), commons-logging (>= 1.0.3), rrdtool (>= 1.0.45-2), rrdtool-bin (>= 1.0.45-2), daemonic, passwd (>= 20030202-1), dbd-pg-pm (>= 1.21), getopt-mixed-pm
 ConfFiles: <<
   %p/var/opennms/etc/AvailabilityReports.xsl
   %p/var/opennms/etc/PDFAvailReport.xsl
@@ -118,7 +117,7 @@ CompileScript: <<
   export CLASSPATH=""
   rm -rf work dist
   sed -e 's:@PREFIX@:%p:g' -e 's:@DESTDIR@:%d:g' < tools/packages/fink/build.properties > build.properties
-  sh ./build.sh compile
+  sh ./build.sh compile jar
 <<
 InstallScript: <<
 #!/bin/sh
@@ -144,17 +143,22 @@ InstallScript: <<
     ln -sf %p/var/opennms/lib/$jar %i/var/tomcat4/server/lib/
   done
 
+  install -d -m 755 "%i/var/run"
+  perl -pi -e 's,/var/lock/subsys/opennms,%p/var/run/opennms.lock,g' %i/bin/opennms
+
   # make a config to add to tomcat for startup
-  install -d -m 755 %i/var/tomcat4/conf
-  cat <<END > %i/var/tomcat4/conf/opennms.conf
+  install -d -m 755 "%i/var/tomcat4/conf"
+  cat <<END > "%i/var/tomcat4/conf/opennms.conf"
 CLASSPATH="%p/var/opennms/etc:$CLASSPATH" export CLASSPATH
 DYLD_LIBRARY_PATH="%p/var/opennms/lib:$DYLD_LIBRARY_PATH" export DYLD_LIBRARY_PATH
 END
 
   # fix ownership so tomcat can write to log dirs
-  chown -R opennms:tomcat %i/var/opennms %i/var/log/opennms %i/var/tomcat4/webapps/opennms %i/var/tomcat4/conf/*
-  chmod -R g+w %i/var/opennms/etc %i/var/log/opennms %i/var/tomcat4/conf/*
-  chmod g+s %i/var/log/opennms %i/var/opennms/etc
+  chown -R opennms:tomcat "%i/var/opennms" "%i/var/log/opennms" "%i/var/tomcat4/webapps/opennms" "%i/var/tomcat4/conf"/*
+  chmod -R g+w "%i/var/opennms/etc" "%i/var/log/opennms" "%i/var/tomcat4/conf"/*
+  chmod g+s "%i/var/log/opennms" "%i/var/opennms/etc"
+  install -d -m 755 "%i/etc/profile.d"
+  chmod 755 "%i/bin"/* "%i/var/opennms/bin"/*
 
 <<
 DaemonicFile: <<

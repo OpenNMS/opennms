@@ -24,8 +24,9 @@ RESTART_TOMCAT=0
 ulimit -s 8192
 ulimit -n 10240
 if [ `uname` = "Darwin" ]; then
-	ulimit -u 512
-	ulimit -v 64000
+	for flag in "-d" "-f" "-l" "-m" "-n" "-s" "-u" "-v"; do
+		ulimit $flag unlimited >/dev/null 2>&1 || :
+	done
 fi
 
 PWD_CMD=`which pwd 2>&1 | grep -v "no pwd in" | grep -v "shell built-in command"`

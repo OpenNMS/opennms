@@ -5,9 +5,8 @@
 # processname: opennms.sh
 # pidfile: @root.install.pid@
 
-CONTACT=ben@opennms.org
 RETVAL=0
-LOGFILE=/var/log/opennms/output.log
+LOGFILE=@root.install.logs@/output.log
 
 FUNCTIONS_LOADED=0
 # Source function library.
@@ -19,17 +18,23 @@ for dir in @root.install.initdir@ /etc /etc/rc.d; do
 done
 
 if [ "$FUNCTIONS_LOADED" = "0" ]; then
-	echo "$0: unable to find init.d functions!"
-	exit 1
+	daemon() {
+		"$@" &
+		echo ""
+	}
 fi
 
 # Check for OPENNMS_HOME
 
 if test -z "$OPENNMS_HOME"; then
-	export OPENNMS_HOME=@root.install@
+	export OPENNMS_HOME="@root.install@"
 fi
 
 # Check for JAVA_HOME
+
+if [ -d /Library/Java/Home ]; then
+	export JAVA_HOME="/Library/Java/Home"
+fi
 
 if test -z "$JAVA_HOME"; then
 
@@ -47,7 +52,7 @@ fi
 start(){
 	export REDIRECT=$LOGFILE
 	echo -n $"Starting OpenNMS: "
-	daemon /opt/OpenNMS/bin/opennms.sh start
+	daemon @root.install@/bin/opennms.sh start
 	RETVAL=$?
 	echo
 	touch /var/lock/subsys/opennms
@@ -56,11 +61,11 @@ start(){
 
 stop(){
 	echo -n $"Stopping OpenNMS: "
-	daemon /opt/OpenNMS/bin/opennms.sh stop
+	daemon @root.install@/bin/opennms.sh stop
 	RETVAL=$?
 	echo
 	sleep 10
-	/opt/OpenNMS/bin/opennms.sh kill >/dev/null 2>&1
+	@root.install@/bin/opennms.sh kill >/dev/null 2>&1
 	rm -f /var/lock/subsys/opennms
 	return $RETVAL
 }
@@ -71,7 +76,7 @@ restart(){
 }
 
 status(){
-	/opt/OpenNMS/bin/opennms.sh status
+	@root.install@/bin/opennms.sh status
 	RETVAL=$?
 	echo
 	return $RETVAL
