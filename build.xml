@@ -277,6 +277,12 @@ your distribution.
     <include name="jcifs.jar" />
     <include name="ldap.jar" />
     <include name="jrobin*.jar" />
+  	<include name="activation.jar" />
+  	<include name="imap.jar" />
+  	<include name="jmta.jar" />
+  	<include name="mailapi.jar" />
+  	<include name="pop3.jar" />
+  	<include name="smtp.jar" />
   </patternset>
 
   <!-- The includes in this patternset need to match the directories in
