@@ -9,6 +9,7 @@
 		</security>
 	</global>
         <event-file>@root.install@/etc/events/3Com.events.xml</event-file>
+        <event-file>@root.install@/etc/events/ADIC-v2.events.xml</event-file>
         <event-file>@root.install@/etc/events/APC.events.xml</event-file>
         <event-file>@root.install@/etc/events/Brocade.events.xml</event-file>
         <event-file>@root.install@/etc/events/CIM.events.xml</event-file>
