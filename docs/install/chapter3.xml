@@ -218,6 +218,12 @@
       FTP site</ulink>.  You'll want to install both packages,
       <filename>tomcat4-4.1.18-full.1jpp.noarch.rpm</filename> and 
       <filename>tomcat4-webapps-4.1.18-full.1jpp.noarch.rpm</filename>.</para>
+
+      <para>There is a bug that in the pre-2.6.8 kernels that can cause Java
+      processes, and even the entire kernel to hang.  It is <ulink
+      url="https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=121902">Red
+      Hat bug #121902</ulink>.  You should make sure you are running at least
+      a 2.6.8 kernel.</para>
     </section>
   </section>
 
