@@ -29,7 +29,7 @@ java_lint () {
 	# JAVA_HOME is set since /Library/Java/Home is still 1.3
 
 	for jdk in /System/Library/Frameworks/JavaVM.framework/Versions/1.4*/Home; do
-		if [ -d "$jdk" ]; then
+		if [ -d "$jdk" ] && [ -d "$jdk/bin" ]; then
 			export JAVA_HOME="$jdk";
 			break;
 		fi

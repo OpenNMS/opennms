@@ -187,6 +187,9 @@ ${print.headertext}
  <target name="info" depends="init" description="print detailed information about your build parameters">
   <antcall target="print.debug"><param name="debug" value="true"/></antcall>
  </target>
+    
+ <target name="sources" description ="generate the generated sources" depends="init,compile.java.sablecc.preproc,compile.java.castor.preproc"/>
+  
 
  <target name="install"
 	depends="install.lib,install.servlet,install.init,install.etc,install.usr.bin,install.bin,install.logs,install.share,install.contrib"
