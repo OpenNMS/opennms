@@ -155,7 +155,8 @@
 			args: %parm[all]%
 		</logmsg>
 		<severity>Normal</severity>
-	</event>
+         <reductionKey>%source%:%snmphost%:%id%:%generic%:%specific%</reductionKey>
+    </event>
 	<event>
 		<uei>uei.opennms.org/default/trap</uei>
 		<event-label>OpenNMS-defined default event: trap</event-label>

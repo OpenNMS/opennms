@@ -110,7 +110,7 @@ final class EventHandler implements Runnable {
             return;
         }
 
-        // create an EventWriter
+        // create an EventWriters
         EventWriter eventWriter = null;
         AlarmWriter alarmWriter = null;
         try {
@@ -153,11 +153,11 @@ final class EventHandler implements Runnable {
 
             try {
                 // look up eventconf match and expand event
-                EventExpander.expandEvent(event);
+                EventExpander.expandEvent(event, m_dbConnectionFactory);
 
                 // add to database
                 eventWriter.persistEvent(m_eventLog.getHeader(), event);
-//                alarmWriter.persistAlarm(m_eventLog.getHeader(), event);
+                alarmWriter.persistAlarm(m_eventLog.getHeader(), event);
 
                 // send event to interested listeners
                 EventIpcManagerFactory.getIpcManager().broadcastNow(event);

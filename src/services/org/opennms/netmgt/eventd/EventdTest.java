@@ -31,6 +31,12 @@
 
 package org.opennms.netmgt.eventd;
 
+import java.io.Reader;
+import java.io.StringReader;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 import junit.framework.TestCase;
 
 import org.opennms.netmgt.config.EventdConfigManager;
@@ -43,12 +49,16 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
 public class EventdTest extends TestCase {
     
+    /*
+     * changed ports from default because tests will fail if opennms 
+     * is running.
+     */
     private static String MOCK_EVENT_CONFIG = "<EventdConfiguration\n" + 
-            "   TCPPort=\"5817\"\n" + 
-            "   UDPPort=\"5817\"\n" + 
+            "   TCPPort=\"5827\"\n" + 
+            "   UDPPort=\"5827\"\n" + 
             "   receivers=\"5\"\n" + 
-            "   getNextEventID=\"SELECT max(\'eventId\') from events\"\n" + 
-            "   getNextAlarmID=\"SELECT max(\'alarmId\') from alarms\"\n" + 
+            "   getNextEventID=\"SELECT max(eventId)+1 from events\"\n" + 
+            "   getNextAlarmID=\"SELECT max(alarmId)+1 from alarms\"\n" + 
             "   socketSoTimeoutRequired=\"yes\"\n" + 
             "   socketSoTimeoutPeriod=\"3000\">\n" + 
             "</EventdConfiguration>";
@@ -713,7 +723,8 @@ public class EventdTest extends TestCase {
             "       <logmsg dest=\'logndisplay\'>\n" + 
             "           Node %parm[nodelabel]% is down.\n" + 
             "       </logmsg>\n" + 
-            "       <severity>Critical</severity>\n" + 
+            "       <severity>Critical</severity>\n" +
+            "       <reductionKey>%uei%:%dpname%:%nodeid%</reductionKey>"+
             "   </event>\n" + 
             "   <event>\n" + 
             "       <uei>uei.opennms.org/nodes/nodeGainedInterface</uei>\n" + 
@@ -1166,6 +1177,9 @@ public class EventdTest extends TestCase {
         m_eventdConfigMgr = new MockEventConfigManager(MOCK_EVENT_CONFIG);
         m_eventd.setConfigManager(m_eventdConfigMgr);
         m_eventd.setDbConnectionFactory(m_db);
+        
+        Reader rdr = new StringReader(MOCK_EVENT_CONF);
+        EventConfigurationManager.loadConfiguration(rdr);
 
         m_eventdIpcMgr = new EventIpcManagerDefaultImpl(m_eventdConfigMgr);
         EventIpcManagerFactory.setIpcManager(m_eventdIpcMgr);
@@ -1183,8 +1197,6 @@ public class EventdTest extends TestCase {
         
     public void testPersistEvent() throws Exception {
         
-        MockUtil.setupLogging(true);
-        
         assertEquals(0, m_db.countRows("select * from events"));
         
         MockNode node = m_network.getNode(1);
@@ -1198,7 +1210,70 @@ public class EventdTest extends TestCase {
         assertEquals(1, m_db.countRows("select * from events"));
         
     }
+    
+    public void testPersistAlarm() throws Exception {
+        
+        //there should be no alarms in the alarms table
+        assertEquals(0, m_db.countRows("select * from alarms"));
+        
+        MockNode node = m_network.getNode(1);
+        Event e = MockUtil.createNodeDownEvent("Test", node);
+        Logmsg logmsg = new Logmsg();
+        logmsg.setDest("logndisplay");
+        logmsg.setContent("testing");
+        e.setLogmsg(logmsg);
+        m_eventd.processEvent(e);
+        sleep(1000);
+        
+        //this should be the first occurrence of this alarm
+        //there should be 1 alarm now
+        assertEquals(1, m_db.countRows("select * from alarms"));
 
+        //this should be the second occurrence and shouldn't create another row
+        //there should still be only 1 alarm
+        e = MockUtil.createNodeDownEvent("Test", node);
+        logmsg = new Logmsg();
+        logmsg.setDest("logndisplay");
+        logmsg.setContent("testing");
+        e.setLogmsg(logmsg);
+        m_eventd.processEvent(e);
+        sleep(1000);        
+        assertEquals(1, m_db.countRows("select * from alarms"));
+        
+        //this should be a new alarm because of the new key
+        //there should now be 2 alarms
+        e = MockUtil.createNodeDownEvent("Test", node);
+        logmsg = new Logmsg();
+        logmsg.setDest("logndisplay");
+        logmsg.setContent("testing");
+        e.setLogmsg(logmsg);
+        e.setReductionKey("DontReduceThis");
+        m_eventd.processEvent(e);
+        sleep(1000);
+        assertEquals(2, m_db.countRows("select * from alarms"));
+        
+        System.setProperty("mock.debug", "true");
+        MockUtil.println("Going for the print of the counter column");
+
+        //TODO: Change this to use Querier class
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = m_db.getConnection();
+            stmt = conn.prepareStatement("select reductionKey, sum(counter) from alarms group by reductionKey");
+            ResultSet rs = stmt.executeQuery();
+            
+            //should be 2 rows
+            while( rs.next()) {
+                MockUtil.println("count for reductionKey: "+rs.getString(1)+" is: "+rs.getObject(2));
+            }
+            
+        } finally {
+            stmt.close();
+            conn.close();
+        }
+    }
+    
     private void sleep(long millis) {
         try {
             Thread.sleep(millis);

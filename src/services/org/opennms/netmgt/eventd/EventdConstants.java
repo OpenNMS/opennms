@@ -54,6 +54,37 @@ public final class EventdConstants {
     public final static String SQL_DB_INS_EVENT = "INSERT into events (eventID, eventUei, nodeID, eventTime, eventHost, ipAddr, eventDpName, eventSnmpHost, serviceID, eventSnmp, eventParms, eventCreateTime, eventDescr, eventLoggroup, eventLogmsg, eventLog, eventDisplay, eventSeverity, eventPathOutage, eventCorrelation, eventSuppressedCount, eventOperInstruct, eventAutoAction, eventOperAction, eventOperActionMenuText, eventNotification, eventTticket, eventTticketState, eventForward, eventMouseOverText, eventAckUser, eventAckTime, eventSource) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     /**
+     * The SQL query to test for alarm reduction
+     */
+    public final static String SQL_DB_ALARM_REDUCTION_QUERY = "" +
+            "SELECT * " +
+            "  FROM alarms " +
+            " WHERE reductionKey = ?";
+
+    /**
+     * The SQL insertion string used by eventd to update an event as an alarm
+     * in the database.
+     */
+    public final static String SQL_DB_ALARM_UPDATE_EVENT = "" +
+            "UPDATE ALARMS " +
+            "   SET counter = counter+1, lastEventID = ?, lastEventTime = ? " +
+            " WHERE reductionKey = ?";
+
+    /**
+     * The SQL insertion string used by eventd to store the event information as an alarm
+     * into the database.
+     */
+    public final static String SQL_DB_ALARM_INS_EVENT = "" +
+            "INSERT" +
+            "  INTO alarms (alarmID, eventUei, dpName, nodeID, " +
+            "               serviceID, reductionKey, counter, severity, " +
+            "               lastEventID, firstEventTime, lastEventTime, " +
+            "               description, logMsg, operInstruct, tticketID, " +
+            "               tticketState, mouseOverText, suppressedUntil, " +
+            "               suppressedUser, suppressedTime, alarmAckUser, alarmAckTime) " +
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+    /**
      * The SQL string used by eventd to update number of duplicate events in
      * case of duplicate event suppression.
      */

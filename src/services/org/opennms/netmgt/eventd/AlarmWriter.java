@@ -54,15 +54,43 @@ import org.opennms.netmgt.xml.event.Header;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-final class AlarmWriter extends PersistEvents {
+final class AlarmWriter extends Persist {
 
     /**
      * Constructor
      * @param connectionFactory 
      */
     public AlarmWriter(DbConnectionFactory connectionFactory, String getNextAlarmIdStr) throws SQLException {
-        super(connectionFactory, getNextAlarmIdStr);
+        super(connectionFactory);
+        //
+        // prepare the SQL statement
+        //
+        m_getSvcIdStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_SVCNAME_TO_SVCID);
+        m_getHostNameStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME);
+        m_getNextIdStmt = m_dbConn.prepareStatement(getNextAlarmIdStr);
+        m_insStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_ALARM_INS_EVENT);
+        m_reductionQuery = m_dbConn.prepareStatement(EventdConstants.SQL_DB_ALARM_REDUCTION_QUERY);
+        m_upDateStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_ALARM_UPDATE_EVENT);
+        // set the database for rollback support
+        //
+        try {
+            m_dbConn.setAutoCommit(false);
+        } catch (SQLException se) {
+            ThreadCategory.getInstance(AlarmWriter.class).warn("Unable to set auto commit mode");
+        }
     }
+    
+    public void close() {
+        try {
+            m_getSvcIdStmt.close();
+            m_getHostNameStmt.close();
+            m_getNextIdStmt.close();
+            m_insStmt.close();
+        } catch (SQLException sqle) {
+            ThreadCategory.getInstance(AlarmWriter.class).warn("SQLException while closing prepared statements", sqle);
+        }
+    }
+
 
     /**
      * The method that inserts the event into the database
@@ -74,14 +102,14 @@ final class AlarmWriter extends PersistEvents {
      */
     public void persistAlarm(Header eventHeader, Event event) throws SQLException {
         if (event != null) {
-            Category log = ThreadCategory.getInstance(EventWriter.class);
+            Category log = ThreadCategory.getInstance(AlarmWriter.class);
 
             // Check value of <logmsg> attribute 'dest', if set to
             // "donotpersist" then simply return, the uei is not to be
             // persisted to the database
             String logdest = event.getLogmsg().getDest();
-            if (logdest.equals("donotpersist")) {
-                log.debug("AlarmWriter: uei '" + event.getUei() + "' marked as 'doNotPersist'.");
+            if (logdest.equals("donotpersist") || event.getReductionKey() == null) {
+                log.debug("AlarmWriter: uei '" + event.getUei() + "' marked as 'doNotPersist' or reductionKey is null.");
                 return;
             } else {
                 if (log.isDebugEnabled()) {
@@ -90,7 +118,15 @@ final class AlarmWriter extends PersistEvents {
             }
 
             try {
-                add(eventHeader, event);
+                if (!isReductionNeeded(eventHeader, event)) {
+                    if (log.isDebugEnabled())
+                        log.debug("AlarmWriter not reducing event for: " +event.getDbid()+ ": "+ event.getUei());
+                    insertAlarm(eventHeader, event);
+                } else {
+                    if (log.isDebugEnabled())
+                        log.debug("AlarmWriter is reducing event for: " +event.getDbid()+ ": "+ event.getUei());
+                    updateAlarm(eventHeader, event);
+                }
 
                 // commit
                 m_dbConn.commit();

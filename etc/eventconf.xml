@@ -582,6 +582,7 @@
 			Interface %interface% is down.
 		</logmsg>
 		<severity>Major</severity>
+		<reductionKey>%uei%:%dpname%:%nodeid%:%interface%</reductionKey>
 	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/interfaceIPHostNameChanged</uei>
@@ -650,6 +651,7 @@
 			Interface %interface% is up.
 		</logmsg>
 		<severity>Cleared</severity>
+		<reductionKey>%uei%:%dpname%:%nodeid%:%interface%</reductionKey>
 	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/nodeAdded</uei>
@@ -701,6 +703,7 @@
 			Node %parm[nodelabel]% is down.
 		</logmsg>
 		<severity>Critical</severity>
+		<reductionKey>%uei%:%dpname%:%nodeid%</reductionKey>
 	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/nodeGainedInterface</uei>
@@ -806,6 +809,7 @@
 			%service% outage identified on interface %interface%.
 		</logmsg>
 		<severity>Major</severity>
+		<reductionKey>%uei%:%dpname%:%nodeid%:%interface%:%service%</reductionKey>
 	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/nodeRegainedService</uei>
@@ -824,6 +828,7 @@
 			cleared. Service is restored.
 		</logmsg>
 		<severity>Cleared</severity>
+		<reductionKey>%uei%:%dpname%:%nodeid%:%interface%:%service%</reductionKey>
 	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/nodeUp</uei>
@@ -839,6 +844,7 @@
 			Node %parm[nodelabel]% is up.
 		</logmsg>
 		<severity>Cleared</severity>
+		<reductionKey>%uei%:%dpname%:%nodeid%</reductionKey>
 	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/primarySnmpInterfaceChanged</uei>

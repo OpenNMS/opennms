@@ -46,7 +46,8 @@ import java.sql.Statement;
 import java.util.Enumeration;
 
 import org.opennms.core.utils.Base64;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+//import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -89,6 +90,11 @@ public final class EventUtil {
      * The event time xml tag
      */
     static final String TAG_TIME = "time";
+
+    /**
+     * The event nodeid xml tag
+     */
+    static final String TAG_DPNAME = "dpname";
 
     /**
      * The event nodeid xml tag
@@ -243,6 +249,8 @@ public final class EventUtil {
      */
     final static char ATTRIB_DELIM = ',';
 
+    private static DbConnectionFactory m_dbConn;
+
     /**
      * Converts the value of a parm ('Value') of the instance to a string
      */
@@ -394,6 +402,8 @@ public final class EventUtil {
             }
         } else if (parm.equals(TAG_SOURCE)) {
             retParmVal = event.getSource();
+        } else if (parm.equals(TAG_DPNAME)) {
+            retParmVal = event.getDistPoller();
         } else if (parm.equals(TAG_NODEID)) {
             retParmVal = Long.toString(event.getNodeid());
         } else if (parm.equals(TAG_NODELABEL)) {
@@ -729,7 +739,7 @@ public final class EventUtil {
         Statement stmt = null;
         try {
             // Get datbase connection from the factory
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = m_dbConn.getConnection();
 
             // Issue query and extract nodeLabel from result set
             stmt = dbConn.createStatement();
@@ -758,6 +768,11 @@ public final class EventUtil {
         }
 
         return nodeLabel;
+    }
+
+    public static String expandParms(String reductionKey, Event event, DbConnectionFactory conn) {
+        m_dbConn = conn;
+        return expandParms(reductionKey, event);
     }
 
 }

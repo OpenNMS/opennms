@@ -64,7 +64,7 @@ import org.opennms.netmgt.xml.event.Header;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-final class EventWriter extends PersistEvents {
+final class EventWriter extends Persist {
 
     /**
      * Constructor
@@ -72,8 +72,34 @@ final class EventWriter extends PersistEvents {
      * @param getNextEventIdStr
      */
     public EventWriter(DbConnectionFactory connectionFactory, String getNextEventIdStr) throws SQLException {
-        super(connectionFactory, getNextEventIdStr);
+        super(connectionFactory);
+        //
+        // prepare the SQL statement
+        //
+        m_getSvcIdStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_SVCNAME_TO_SVCID);
+        m_getHostNameStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME);
+        m_getNextIdStmt = m_dbConn.prepareStatement(getNextEventIdStr);
+        m_insStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_INS_EVENT);
+        // set the database for rollback support
+        //
+        try {
+            m_dbConn.setAutoCommit(false);
+        } catch (SQLException se) {
+            ThreadCategory.getInstance(EventWriter.class).warn("Unable to set auto commit mode");
+        }
     }
+    
+    public void close() {
+        try {
+            m_getSvcIdStmt.close();
+            m_getHostNameStmt.close();
+            m_getNextIdStmt.close();
+            m_insStmt.close();
+        } catch (SQLException sqle) {
+            ThreadCategory.getInstance(EventWriter.class).warn("SQLException while closing prepared statements", sqle);
+        }
+    }
+
 
     /**
      * The method that inserts the event into the database
@@ -101,7 +127,7 @@ final class EventWriter extends PersistEvents {
             }
 
             try {
-                add(eventHeader, event);
+                insertEvent(eventHeader, event);
 
                 // commit
                 m_dbConn.commit();

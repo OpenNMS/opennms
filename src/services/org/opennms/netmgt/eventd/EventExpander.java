@@ -43,6 +43,7 @@ package org.opennms.netmgt.eventd;
 
 import java.util.Enumeration;
 
+import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
@@ -136,6 +137,8 @@ public final class EventExpander {
                                                             // Neighbor Loss
             DEFAULT_TRAP_UEI // generic = 6, Enterprise Specific Trap
     };
+
+    private static DbConnectionFactory m_dbConn;
 
     /**
      * private constructor
@@ -598,7 +601,7 @@ public final class EventExpander {
             tticket.setContent(strRet);
         }
     }
-
+    
     /**
      * Expand the element values if they have parms in one of the following
      * formats
@@ -651,6 +654,16 @@ public final class EventExpander {
         if (event.getTticket() != null) {
             expandParms(event.getTticket(), event);
         }
+        
+        // reductionKey
+        if (event.getReductionKey() != null) {
+            strRet = EventUtil.expandParms(event.getReductionKey(), event, m_dbConn);
+            if (strRet != null) {
+                event.setReductionKey(strRet);
+                strRet = null;
+            }
+        }
+
     }
 
     /**
@@ -802,10 +815,27 @@ public final class EventExpander {
             if (e.getMouseovertext() == null && econf.getMouseovertext() != null)
                 e.setMouseovertext(econf.getMouseovertext());
 
+            // Copy the reductionKey
+            if (EventConfigurationManager.isSecureTag("reductionKey"))
+                e.setReductionKey(null);
+            if (e.getReductionKey() == null && econf.getReductionKey() != null)
+                e.setReductionKey(econf.getReductionKey());
+
         } // end fill of event using econf
 
         // do the event parm expansion
-        expandParms(e);
+        expandParms(e, m_dbConn);
 
     } // end expandEvent()
+
+    private static void expandParms(Event e, DbConnectionFactory conn) {
+        m_dbConn = conn;
+        expandParms(e);
+        
+    }
+
+    public static void expandEvent(Event event, DbConnectionFactory dbConnectionFactory) {
+        m_dbConn = dbConnectionFactory;
+        expandEvent(event);
+    }
 }

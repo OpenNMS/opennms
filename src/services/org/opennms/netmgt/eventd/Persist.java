@@ -78,7 +78,7 @@ import org.opennms.netmgt.xml.event.Operaction;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-class PersistEvents {
+class Persist {
     //
     // Field sizes in the events table
     //
@@ -142,22 +142,24 @@ class PersistEvents {
     /**
      * SQL statement to get service id for a service name
      */
-    private PreparedStatement m_getSvcIdStmt;
+    protected PreparedStatement m_getSvcIdStmt;
 
     /**
      * SQL statement to get hostname for an ip from the ipinterface table
      */
-    private PreparedStatement m_getHostNameStmt;
+    protected PreparedStatement m_getHostNameStmt;
 
     /**
      * SQL statement to get next event id from sequence
      */
-    private PreparedStatement m_getNextEventIdStmt;
+    protected PreparedStatement m_getNextIdStmt;
 
     /**
      * SQL statement to get insert an event into the db
      */
-    private PreparedStatement m_eventInsStmt;
+    protected PreparedStatement m_insStmt;
+    protected PreparedStatement m_reductionQuery;
+    protected PreparedStatement m_upDateStmt;
 
     /**
      * Sets the statement up for a String value.
@@ -344,6 +346,162 @@ class PersistEvents {
         //
         return hostname;
     }
+    
+    protected boolean isReductionNeeded(Header eventHeader, Event event) throws SQLException {
+        
+        Category log = ThreadCategory.getInstance(AlarmWriter.class);
+                
+        if (log.isDebugEnabled()) {
+            log.debug("Persist.isReductionNeeded: reductionKey: "+event.getReductionKey());
+        }
+
+        m_reductionQuery.setString(1, event.getReductionKey());
+
+        ResultSet rs = m_reductionQuery.executeQuery();
+        int count = 0;
+        while (rs.next()) {
+            count++;
+        }
+        
+        return (count > 0 ? true : false);
+    }
+    
+    protected void updateAlarm(Header eventHeader, Event event) throws SQLException {
+
+        Category log = ThreadCategory.getInstance(Persist.class);
+
+        m_upDateStmt.setInt(1, event.getDbid());
+        
+        java.sql.Timestamp eventTime = getEventTime(event, log);
+        m_upDateStmt.setTimestamp(2, eventTime);
+        m_upDateStmt.setString(3, event.getReductionKey());
+
+        if (log.isDebugEnabled())
+            log.debug("Persist.updateAlarm: reducing event: "+event.getDbid()+ "into alarm: ");
+        
+        m_upDateStmt.executeUpdate();
+        
+    }
+    
+    /**
+     * Insert values into the ALARMS table
+     * 
+     * @exception java.sql.SQLException
+     *                Thrown if there is an error adding the event to the
+     *                database.
+     * @exception java.lang.NullPointerException
+     *                Thrown if a required resource cannot be found in the
+     *                properties file.
+     */
+    protected void insertAlarm(Header eventHeader, Event event) throws SQLException {
+        int alarmID = -1;
+        Category log = ThreadCategory.getInstance(AlarmWriter.class);
+        
+        alarmID = getNextId();
+        if (log.isDebugEnabled()) log.debug("AlarmWriter: DBID: "+ alarmID);
+
+        //Column 1, alarmId
+        m_insStmt.setInt(1, alarmID);
+        
+        //Column 2, eventUie
+        m_insStmt.setString(2, Constants.format(event.getUei(), EVENT_UEI_FIELD_SIZE));
+        
+        //Column 3, dpName
+        m_insStmt.setString(3, (eventHeader != null) ? Constants.format(eventHeader.getDpName(), EVENT_DPNAME_FIELD_SIZE) : "undefined");
+        
+        // Column 4, nodeID
+        int nodeid = (int) event.getNodeid();
+        m_insStmt.setInt(4, event.hasNodeid() ? nodeid : -1);
+        
+        //Column 5, serviceId
+        //
+        // convert the service name to a service id
+        //
+        int svcId = -1;
+        if (event.getService() != null) {
+            try {
+                svcId = getServiceID(event.getService());
+            } catch (SQLException sqlE) {
+                log.warn("AlarmWriter.insertAlarm: Error converting service name \"" + event.getService() + "\" to an integer identifier, storing -1", sqlE);
+            }
+        }
+        m_insStmt.setInt(5, svcId);
+
+        //Column 6, reductionKey
+        m_insStmt.setString(6, event.getReductionKey());
+        
+        //Column 7, counter
+        m_insStmt.setInt(7, 1);
+        
+        //Column 8, serverity
+        set(m_insStmt, 8, Constants.getSeverity(event.getSeverity()));
+
+        //Column 9, lastEventId
+        m_insStmt.setInt(9, event.getDbid());
+        
+        java.sql.Timestamp eventTime = getEventTime(event, log);
+        m_insStmt.setTimestamp(10, eventTime);
+        
+        //Column 11, lastEventTime
+        m_insStmt.setTimestamp(11, eventTime);
+        
+        //Column 12, description
+        set(m_insStmt, 12, Constants.format(event.getDescr(), EVENT_DESCR_FIELD_SIZE));
+
+        //Column 13, logMsg
+        if (event.getLogmsg() != null) {
+            // set log message
+            set(m_insStmt, 13, Constants.format(event.getLogmsg().getContent(), EVENT_LOGMSG_FIELD_SIZE));
+        } else {
+            m_insStmt.setNull(13, Types.VARCHAR);
+        }
+
+        //Column 14, operInstruct
+        set(m_insStmt, 14, Constants.format(event.getOperinstruct(), EVENT_OPERINSTRUCT_FIELD_SIZE));
+        
+        //Column 15, tticketId
+        //Column 16, tticketState
+        if (event.getTticket() != null) {
+            set(m_insStmt, 15, Constants.format(event.getTticket().getContent(), EVENT_TTICKET_FIELD_SIZE));
+            int ttstate = 0;
+            if (event.getTticket().getState().equals("on"))
+                ttstate = 1;
+            set(m_insStmt, 16, ttstate);
+        } else {
+            m_insStmt.setNull(15, Types.VARCHAR);
+            m_insStmt.setNull(16, Types.INTEGER);
+        }
+
+        //Column 17, mouseOverText
+        set(m_insStmt, 17, Constants.format(event.getMouseovertext(), EVENT_MOUSEOVERTEXT_FIELD_SIZE));
+
+        //Column 18, suppressedUntil
+        //FIXME:
+        m_insStmt.setTimestamp(18, eventTime);
+        
+        //Column 19, suppressedUser
+        m_insStmt.setString(19, null);
+        
+        //Column 20, suppressedTime
+        //FIXME:
+        m_insStmt.setTimestamp(20, eventTime);
+        
+        //Column 21, alarmAckUser
+        m_insStmt.setString(21, null);
+        
+        //Column 22, alarmAckTime
+        m_insStmt.setTimestamp(22, eventTime);
+        
+        if (log.isDebugEnabled())
+            log.debug("m_insStmt is: "+m_insStmt.toString());
+
+        m_insStmt.executeUpdate();
+
+        if (log.isDebugEnabled())
+            log.debug("SUCCESSFULLY added " + event.getUei() + " related  data into the ALARMS table");
+   
+    }
+
 
     /**
      * Insert values into the EVENTS table
@@ -355,21 +513,16 @@ class PersistEvents {
      *                Thrown if a required resource cannot be found in the
      *                properties file.
      */
-    protected void add(Header eventHeader, Event event) throws SQLException {
+    protected void insertEvent(Header eventHeader, Event event) throws SQLException {
         int eventID = -1;
 
         Category log = ThreadCategory.getInstance(EventWriter.class);
 
         // events next id from sequence
         //
-
-        // Execute the statementto get the next event id
+        // Execute the statement to get the next event id
         //
-        ResultSet rs = m_getNextEventIdStmt.executeQuery();
-        rs.next();
-        eventID = rs.getInt(1);
-        rs.close();
-        rs = null;
+        eventID = getNextId();
 
         if (log.isDebugEnabled())
             log.debug("EventWriter: DBID: " + eventID);
@@ -383,146 +536,121 @@ class PersistEvents {
         //
 
         // eventID
-        m_eventInsStmt.setInt(1, eventID);
+        m_insStmt.setInt(1, eventID);
 
         // eventUEI
-        m_eventInsStmt.setString(2, Constants.format(event.getUei(), EVENT_UEI_FIELD_SIZE));
+        m_insStmt.setString(2, Constants.format(event.getUei(), EVENT_UEI_FIELD_SIZE));
 
         // nodeID
         int nodeid = (int) event.getNodeid();
-        set(m_eventInsStmt, 3, event.hasNodeid() ? nodeid : -1);
+        set(m_insStmt, 3, event.hasNodeid() ? nodeid : -1);
 
         // eventTime
-        java.sql.Timestamp eventTime = null;
-        try {
-            java.util.Date date = EventConstants.parseToDate(event.getTime());
-            eventTime = new java.sql.Timestamp(date.getTime());
-            m_eventInsStmt.setTimestamp(4, eventTime);
-        } catch (java.text.ParseException pe) {
-            log.warn("Failed to convert time " + event.getTime() + " to java.sql.Timestamp, Setting current time instead", pe);
-
-            eventTime = new java.sql.Timestamp((new java.util.Date()).getTime());
-            m_eventInsStmt.setTimestamp(4, eventTime);
-        }
-
+        java.sql.Timestamp eventTime = getEventTime(event, log);
+        m_insStmt.setTimestamp(4, eventTime);
+        
         //
         // Resolve the event host to a hostname using
         // the ipinterface table
         //
-        String hostname = event.getHost();
-        if (hostname != null) {
-            try {
-                hostname = getHostName(hostname);
-            } catch (SQLException sqlE) {
-                // hostname can be null - so do nothing
-                // use the IP
-                hostname = event.getHost();
-            }
-        }
+        String hostname = getEventHost(event);
 
         // eventHost
-        set(m_eventInsStmt, 5, Constants.format(hostname, EVENT_HOST_FIELD_SIZE));
+        set(m_insStmt, 5, Constants.format(hostname, EVENT_HOST_FIELD_SIZE));
 
         // ipAddr
-        set(m_eventInsStmt, 6, Constants.format(event.getInterface(), EVENT_INTERFACE_FIELD_SIZE));
+        set(m_insStmt, 6, Constants.format(event.getInterface(), EVENT_INTERFACE_FIELD_SIZE));
 
         // eventDpName
-        m_eventInsStmt.setString(7, (eventHeader != null) ? Constants.format(eventHeader.getDpName(), EVENT_DPNAME_FIELD_SIZE) : "undefined");
+        m_insStmt.setString(7, (eventHeader != null) ? Constants.format(eventHeader.getDpName(), EVENT_DPNAME_FIELD_SIZE) : "undefined");
 
         // eventSnmpHost
-        set(m_eventInsStmt, 8, Constants.format(event.getSnmphost(), EVENT_SNMPHOST_FIELD_SIZE));
+        set(m_insStmt, 8, Constants.format(event.getSnmphost(), EVENT_SNMPHOST_FIELD_SIZE));
 
         //
         // convert the service name to a service id
         //
-        int svcId = -1;
-        if (event.getService() != null) {
-            try {
-                svcId = getServiceID(event.getService());
-            } catch (SQLException sqlE) {
-                log.warn("EventWriter.add: Error converting service name \"" + event.getService() + "\" to an integer identifier, storing -1", sqlE);
-            }
-        }
+        int svcId = getEventServiceId(event, log);
 
         // service identifier
-        set(m_eventInsStmt, 9, svcId);
+        set(m_insStmt, 9, svcId);
 
         // eventSnmp
         if (event.getSnmp() != null)
-            m_eventInsStmt.setString(10, SnmpInfo.format(event.getSnmp(), EVENT_SNMP_FIELD_SIZE));
+            m_insStmt.setString(10, SnmpInfo.format(event.getSnmp(), EVENT_SNMP_FIELD_SIZE));
         else
-            m_eventInsStmt.setNull(10, Types.VARCHAR);
+            m_insStmt.setNull(10, Types.VARCHAR);
 
         // eventParms
-        set(m_eventInsStmt, 11, (event.getParms() != null) ? Parameter.format(event.getParms()) : null);
+        set(m_insStmt, 11, (event.getParms() != null) ? Parameter.format(event.getParms()) : null);
 
         // eventCreateTime
         java.sql.Timestamp eventCreateTime = new java.sql.Timestamp((new java.util.Date()).getTime());
-        m_eventInsStmt.setTimestamp(12, eventCreateTime);
+        m_insStmt.setTimestamp(12, eventCreateTime);
 
         // eventDescr
-        set(m_eventInsStmt, 13, Constants.format(event.getDescr(), EVENT_DESCR_FIELD_SIZE));
+        set(m_insStmt, 13, Constants.format(event.getDescr(), EVENT_DESCR_FIELD_SIZE));
 
         // eventLoggroup
-        set(m_eventInsStmt, 14, (event.getLoggroupCount() > 0) ? Constants.format(event.getLoggroup(), EVENT_LOGGRP_FIELD_SIZE) : null);
+        set(m_insStmt, 14, (event.getLoggroupCount() > 0) ? Constants.format(event.getLoggroup(), EVENT_LOGGRP_FIELD_SIZE) : null);
 
         // eventLogMsg
         // eventLog
         // eventDisplay
         if (event.getLogmsg() != null) {
             // set log message
-            set(m_eventInsStmt, 15, Constants.format(event.getLogmsg().getContent(), EVENT_LOGMSG_FIELD_SIZE));
+            set(m_insStmt, 15, Constants.format(event.getLogmsg().getContent(), EVENT_LOGMSG_FIELD_SIZE));
             String logdest = event.getLogmsg().getDest();
             // if 'logndisplay' set both log and display
             // column to yes
             if (logdest.equals("logndisplay")) {
-                set(m_eventInsStmt, 16, MSG_YES);
-                set(m_eventInsStmt, 17, MSG_YES);
+                set(m_insStmt, 16, MSG_YES);
+                set(m_insStmt, 17, MSG_YES);
             }
             // if 'logonly' set log column to true
             else if (logdest.equals("logonly")) {
-                set(m_eventInsStmt, 16, MSG_YES);
-                set(m_eventInsStmt, 17, MSG_NO);
+                set(m_insStmt, 16, MSG_YES);
+                set(m_insStmt, 17, MSG_NO);
             }
             // if 'displayonly' set display column to true
             else if (logdest.equals("displayonly")) {
-                set(m_eventInsStmt, 16, MSG_NO);
-                set(m_eventInsStmt, 17, MSG_YES);
+                set(m_insStmt, 16, MSG_NO);
+                set(m_insStmt, 17, MSG_YES);
             }
             // if 'suppress' set both log and display to false
             else if (logdest.equals("suppress")) {
-                set(m_eventInsStmt, 16, MSG_NO);
-                set(m_eventInsStmt, 17, MSG_NO);
+                set(m_insStmt, 16, MSG_NO);
+                set(m_insStmt, 17, MSG_NO);
             }
         } else {
-            m_eventInsStmt.setNull(15, Types.VARCHAR);
+            m_insStmt.setNull(15, Types.VARCHAR);
 
             // If this is an event that had no match in the event conf
             // mark it as to be logged and displayed so that there
             // are no events that slip through the system
             // without the user knowing about them
 
-            set(m_eventInsStmt, 16, MSG_YES);
-            set(m_eventInsStmt, 17, MSG_YES);
+            set(m_insStmt, 16, MSG_YES);
+            set(m_insStmt, 17, MSG_YES);
         }
 
         // eventSeverity
-        set(m_eventInsStmt, 18, Constants.getSeverity(event.getSeverity()));
+        set(m_insStmt, 18, Constants.getSeverity(event.getSeverity()));
 
         // eventPathOutage
-        set(m_eventInsStmt, 19, (event.getPathoutage() != null) ? Constants.format(event.getPathoutage(), EVENT_PATHOUTAGE_FIELD_SIZE) : null);
+        set(m_insStmt, 19, (event.getPathoutage() != null) ? Constants.format(event.getPathoutage(), EVENT_PATHOUTAGE_FIELD_SIZE) : null);
 
         // eventCorrelation
-        set(m_eventInsStmt, 20, (event.getCorrelation() != null) ? org.opennms.netmgt.eventd.db.Correlation.format(event.getCorrelation(), EVENT_CORRELATION_FIELD_SIZE) : null);
+        set(m_insStmt, 20, (event.getCorrelation() != null) ? org.opennms.netmgt.eventd.db.Correlation.format(event.getCorrelation(), EVENT_CORRELATION_FIELD_SIZE) : null);
 
         // eventSuppressedCount
-        m_eventInsStmt.setNull(21, Types.INTEGER);
+        m_insStmt.setNull(21, Types.INTEGER);
 
         // eventOperInstruct
-        set(m_eventInsStmt, 22, Constants.format(event.getOperinstruct(), EVENT_OPERINSTRUCT_FIELD_SIZE));
+        set(m_insStmt, 22, Constants.format(event.getOperinstruct(), EVENT_OPERINSTRUCT_FIELD_SIZE));
 
         // eventAutoAction
-        set(m_eventInsStmt, 23, (event.getAutoactionCount() > 0) ? AutoAction.format(event.getAutoaction(), EVENT_AUTOACTION_FIELD_SIZE) : null);
+        set(m_insStmt, 23, (event.getAutoactionCount() > 0) ? AutoAction.format(event.getAutoaction(), EVENT_AUTOACTION_FIELD_SIZE) : null);
 
         // eventOperAction / eventOperActionMenuText
         if (event.getOperactionCount() > 0) {
@@ -536,101 +664,140 @@ class PersistEvents {
                 b.add(eoa.getMenutext());
             }
 
-            set(m_eventInsStmt, 24, OperatorAction.format(a, EVENT_OPERACTION_FIELD_SIZE));
-            set(m_eventInsStmt, 25, Constants.format(b, EVENT_OPERACTION_MENU_FIELD_SIZE));
+            set(m_insStmt, 24, OperatorAction.format(a, EVENT_OPERACTION_FIELD_SIZE));
+            set(m_insStmt, 25, Constants.format(b, EVENT_OPERACTION_MENU_FIELD_SIZE));
         } else {
-            m_eventInsStmt.setNull(24, Types.VARCHAR);
-            m_eventInsStmt.setNull(25, Types.VARCHAR);
+            m_insStmt.setNull(24, Types.VARCHAR);
+            m_insStmt.setNull(25, Types.VARCHAR);
         }
 
         // eventNotification, this column no longer needed
-        m_eventInsStmt.setNull(26, Types.VARCHAR);
+        m_insStmt.setNull(26, Types.VARCHAR);
 
         // eventTroubleTicket / eventTroubleTicket state
         if (event.getTticket() != null) {
-            set(m_eventInsStmt, 27, Constants.format(event.getTticket().getContent(), EVENT_TTICKET_FIELD_SIZE));
+            set(m_insStmt, 27, Constants.format(event.getTticket().getContent(), EVENT_TTICKET_FIELD_SIZE));
             int ttstate = 0;
             if (event.getTticket().getState().equals("on"))
                 ttstate = 1;
 
-            set(m_eventInsStmt, 28, ttstate);
+            set(m_insStmt, 28, ttstate);
         } else {
-            m_eventInsStmt.setNull(27, Types.VARCHAR);
-            m_eventInsStmt.setNull(28, Types.INTEGER);
+            m_insStmt.setNull(27, Types.VARCHAR);
+            m_insStmt.setNull(28, Types.INTEGER);
         }
 
         // eventForward
-        set(m_eventInsStmt, 29, (event.getForwardCount() > 0) ? org.opennms.netmgt.eventd.db.Forward.format(event.getForward(), EVENT_FORWARD_FIELD_SIZE) : null);
+        set(m_insStmt, 29, (event.getForwardCount() > 0) ? org.opennms.netmgt.eventd.db.Forward.format(event.getForward(), EVENT_FORWARD_FIELD_SIZE) : null);
 
         // event mouseOverText
-        set(m_eventInsStmt, 30, Constants.format(event.getMouseovertext(), EVENT_MOUSEOVERTEXT_FIELD_SIZE));
+        set(m_insStmt, 30, Constants.format(event.getMouseovertext(), EVENT_MOUSEOVERTEXT_FIELD_SIZE));
 
         // eventAckUser
         if (event.getAutoacknowledge() != null && event.getAutoacknowledge().getState().equals("on")) {
 
-            set(m_eventInsStmt, 31, Constants.format(event.getAutoacknowledge().getContent(), EVENT_ACKUSER_FIELD_SIZE));
+            set(m_insStmt, 31, Constants.format(event.getAutoacknowledge().getContent(), EVENT_ACKUSER_FIELD_SIZE));
 
             // eventAckTime - if autoacknowledge is present,
             // set time to event create time
-            set(m_eventInsStmt, 32, eventCreateTime);
+            set(m_insStmt, 32, eventCreateTime);
         } else {
-            m_eventInsStmt.setNull(31, Types.INTEGER);
-            m_eventInsStmt.setNull(32, Types.TIMESTAMP);
+            m_insStmt.setNull(31, Types.INTEGER);
+            m_insStmt.setNull(32, Types.TIMESTAMP);
         }
 
         // eventSource
-        set(m_eventInsStmt, 33, Constants.format(event.getSource(), EVENT_SOURCE_FIELD_SIZE));
+        set(m_insStmt, 33, Constants.format(event.getSource(), EVENT_SOURCE_FIELD_SIZE));
 
         // execute
-        m_eventInsStmt.executeUpdate();
+        m_insStmt.executeUpdate();
 
         if (log.isDebugEnabled())
             log.debug("SUCCESSFULLY added " + event.getUei() + " related  data into the EVENTS table");
     }
 
     /**
-     * Constructor
-     * @param connectionFactory 
-     * @param getNextEventIdStr
+     * @param event
+     * @param log
+     * @return
      */
-    public PersistEvents(DbConnectionFactory connectionFactory, String getNextEventIdStr) throws SQLException {
-        // Get a database connection
-        m_dbConn = connectionFactory.getConnection();
-
-        //
-        // prepare the SQL statement
-        //
-        m_getSvcIdStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_SVCNAME_TO_SVCID);
-        m_getHostNameStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME);
-        m_getNextEventIdStmt = m_dbConn.prepareStatement(getNextEventIdStr);
-        m_eventInsStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_INS_EVENT);
-        // set the database for rollback support
-        //
-        try {
-            m_dbConn.setAutoCommit(false);
-        } catch (SQLException se) {
-            ThreadCategory.getInstance(EventWriter.class).warn("Unable to set auto commit mode");
+    private int getEventServiceId(Event event, Category log) {
+        int svcId = -1;
+        if (event.getService() != null) {
+            try {
+                svcId = getServiceID(event.getService());
+            } catch (SQLException sqlE) {
+                log.warn("EventWriter.add: Error converting service name \"" + event.getService() + "\" to an integer identifier, storing -1", sqlE);
+            }
         }
+        return svcId;
     }
 
     /**
-     * Close all the prepared statements
+     * @param event
+     * @return
+     */
+    private String getEventHost(Event event) {
+        String hostname = event.getHost();
+        if (hostname != null) {
+            try {
+                hostname = getHostName(hostname);
+            } catch (SQLException sqlE) {
+                // hostname can be null - so do nothing
+                // use the IP
+                hostname = event.getHost();
+            }
+        }
+        return hostname;
+    }
+
+    /**
+     * @param event
+     * @param log
+     * @return
+     */
+    private java.sql.Timestamp getEventTime(Event event, Category log) {
+        java.sql.Timestamp eventTime = null;
+        try {
+            java.util.Date date = EventConstants.parseToDate(event.getTime());
+            eventTime = new java.sql.Timestamp(date.getTime());
+        } catch (java.text.ParseException pe) {
+            log.warn("Failed to convert time " + event.getTime() + " to java.sql.Timestamp, Setting current time instead", pe);
+            eventTime = new java.sql.Timestamp((new java.util.Date()).getTime());
+        }
+        return eventTime;
+    }
+
+    /**
+     * Constructor
+     * @param connectionFactory 
+     */
+    public Persist(DbConnectionFactory connectionFactory) throws SQLException {
+        // Get a database connection
+        m_dbConn = connectionFactory.getConnection();
+    }
+
+    /**
+     * Close all the connection statements
      */
     public void close() {
         try {
-            m_getSvcIdStmt.close();
-            m_getHostNameStmt.close();
-            m_getNextEventIdStmt.close();
-            m_eventInsStmt.close();
-        } catch (SQLException sqle) {
-            ThreadCategory.getInstance(EventWriter.class).warn("SQLException while closing prepared statements", sqle);
-        } finally {
-            try {
-                m_dbConn.close();
-            } catch (SQLException e) {
-                ThreadCategory.getInstance(EventWriter.class).warn("SQLException while closing database connection", e);
-            }
+            m_dbConn.close();
+        } catch (SQLException e) {
+            ThreadCategory.getInstance(EventWriter.class).warn("SQLException while closing database connection", e);
         }
     }
+    
+    private int getNextId() throws SQLException {
+        int id;
+        // Get the next id from sequence specified in 
+        ResultSet rs = m_getNextIdStmt.executeQuery();
+        rs.next();
+        id = rs.getInt(1);
+        rs.close();
+        rs = null;
+        return id;
+    }
+
 
 }
