@@ -34,9 +34,11 @@
 package org.opennms.netmgt.notifd.mock;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.utils.Argument;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.notifd.NotificationStrategy;
 /**
@@ -46,6 +48,8 @@ import org.opennms.netmgt.notifd.NotificationStrategy;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class MockNotificationStrategy implements NotificationStrategy {
+    
+    private static NotificationAnticipator s_anticpator = null;
     
     static {
         MockUtil.println("Static initializer on "+ MockNotificationStrategy.class.getName());
@@ -61,11 +65,36 @@ public class MockNotificationStrategy implements NotificationStrategy {
      * @see org.opennms.netmgt.notifd.NotificationStrategy#send(java.util.List)
      */
     public int send(List arguments) {
-        
         MockUtil.println("Message sent with arguments:"+arguments);
         
-        return 0;
+        MockNotification notification = new MockNotification();
+        Iterator it = arguments.iterator();
+        while (it.hasNext()) {
+            Argument arg = (Argument) it.next();
+            if (arg.getSwitch().equals("-subject")) {
+                notification.setSubject(arg.getValue());
+            } else if (arg.getSwitch().equals("-email")) {
+                notification.setEmail(arg.getValue());
+            }
+        }
 
+        NotificationAnticipator anticipator = getAnticpator();
+        
+        if (anticipator != null) {
+            anticipator.notificationReceived(notification);
+        } else {
+            throw new NullPointerException("anticipator is null");
+        }
+
+        return 0;
+        
     }
 
+    public static NotificationAnticipator getAnticpator() {
+        return s_anticpator;
+    }
+
+    public static void setAnticpator(NotificationAnticipator anticpator) {
+        s_anticpator = anticpator;
+    }
 }

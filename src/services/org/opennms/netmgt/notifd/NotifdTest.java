@@ -45,9 +45,12 @@ import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.notifd.mock.MockDestinationPathManager;
 import org.opennms.netmgt.notifd.mock.MockGroupManager;
 import org.opennms.netmgt.notifd.mock.MockNotifdConfigManager;
+import org.opennms.netmgt.notifd.mock.MockNotification;
 import org.opennms.netmgt.notifd.mock.MockNotificationCommandManager;
 import org.opennms.netmgt.notifd.mock.MockNotificationManager;
+import org.opennms.netmgt.notifd.mock.MockNotificationStrategy;
 import org.opennms.netmgt.notifd.mock.MockUserManager;
+import org.opennms.netmgt.notifd.mock.NotificationAnticipator;
 /**
  * @author david
  *
@@ -65,7 +68,7 @@ public class NotifdTest extends TestCase {
     private NotificationCommandManager m_notificationCommandManger;
     private MockDestinationPathManager m_destinationPathManager;
 
-    private static final String NOTIFD_CONFIG_MANAGER = "<?xml version=\"1.0\"?>\n" + 
+    private static String NOTIFD_CONFIG_MANAGER = "<?xml version=\"1.0\"?>\n" + 
             "<notifd-configuration \n" + 
             "        status=\"on\"\n" + 
             "        pages-sent=\"SELECT * FROM notifications\"\n" + 
@@ -164,7 +167,7 @@ public class NotifdTest extends TestCase {
             "been created and service level availability calculations will \n" + 
             "be impacted until this outage is resolved.  \n" + 
             "   </text-message>\n" + 
-            "        <subject>Notice #%noticeid%: node %nodeid% down.</subject>\n" + 
+            "        <subject>node %nodeid% down.</subject>\n" + 
             "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
             "    </notification>\n" + 
             "    <notification name=\"interfaceUp\" status=\"on\">\n" + 
@@ -180,8 +183,8 @@ public class NotifdTest extends TestCase {
             "        <uei>uei.opennms.org/nodes/nodeUp</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
             "        <destinationPath>Email-Mock</destinationPath>\n" + 
-            "        <text-message>The node %nodelabel% which was previously down is now up.</text-message>\n" + 
-            "        <subject>Notice #%noticeid%: Node %nodelabel% has been cleared.</subject>\n" + 
+            "        <text-message>The node which was previously down is now up.</text-message>\n" + 
+            "        <subject>node %nodeid% up.</subject>\n" + 
             "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
             "    </notification>\n" + 
             "    <notification name=\"nodeLostService\" status=\"on\">\n" + 
@@ -300,16 +303,19 @@ public class NotifdTest extends TestCase {
             "        </group>\n" + 
             "        <group>\n" + 
             "            <name>Management</name>\n" + 
-            "            <comments>The management group</comments>\n" + 
+            "            <comments>The management group</comments>\n" +
+            "            <user>admin</user>" + 
+            "            <user>brozow</user>" + 
             "        </group>\n" + 
             "        <group>\n" + 
             "            <name>Reporting</name>\n" + 
             "            <comments>The reporting group</comments>\n" + 
             "        </group>\n" + 
-            "   <group>\n" + 
-            "       <name>Admin</name>\n" + 
-            "            <comments>The administrators</comments>\n" + 
-            "       <user>admin</user>\n" + 
+            "        <group>\n" + 
+            "           <name>Admin</name>\n" + 
+            "           <comments>The administrators</comments>\n" + 
+            "           <user>admin</user>\n" + 
+            "           <user>brozow</user>\n" +
             "        </group>\n" + 
             "    </groups>\n" + 
             "</groupinfo>\n" + 
@@ -323,11 +329,19 @@ public class NotifdTest extends TestCase {
             "   </header>\n" + 
             "   <users>\n" + 
             "       <user>\n" + 
+            "           <user-id>brozow</user-id>\n" + 
+            "           <full-name>Mathew Brozowski</full-name>\n" + 
+            "           <user-comments>Test User</user-comments>\n" +
+            "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
+            "           <contact type=\"email\" info=\"matt@opennms.org\"/>\n" + 
+            "       </user>\n" + 
+            "       <user>\n" + 
             "           <user-id>admin</user-id>\n" + 
             "           <full-name>Administrator</full-name>\n" + 
-            "           <user-comments>Default administrator, do not delete</user-comments>\n" + 
-            "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" + 
-            "                </user>\n" + 
+            "           <user-comments>Default administrator, do not delete</user-comments>\n" +
+            "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
+            "           <contact type=\"email\" info=\"dhustace@nc.rr.com\"/>\n" + 
+            "       </user>\n" + 
             "       <user>\n" + 
             "           <user-id>tempuser</user-id>\n" + 
             "           <full-name>Temporary User</full-name>\n" + 
@@ -349,9 +363,9 @@ public class NotifdTest extends TestCase {
             "        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
             "        <mstation>localhost</mstation>\n" + 
             "    </header>\n" + 
-            "    <path name=\"Email-Mock\" initial-delay=\"0m\">\n" + 
+            "    <path name=\"Email-Mock\" initial-delay=\"0s\">\n" + 
             "        <target>\n" + 
-            "            <name>david@opennms.org</name>\n" + 
+            "            <name>Management</name>\n" + 
             "            <command>mockNotifier</command>\n" + 
             "        </target>\n" + 
             "    </path>\n" + 
@@ -571,7 +585,7 @@ public class NotifdTest extends TestCase {
             "            <switch>-subject</switch>\n" + 
             "        </argument>\n" + 
             "        <argument streamed=\"false\">\n" + 
-            "            <switch>-pemail</switch>\n" + 
+            "            <switch>-email</switch>\n" + 
             "        </argument>\n" + 
             "        <argument streamed=\"false\">\n" + 
             "            <switch>-tm</switch>\n" + 
@@ -738,10 +752,67 @@ public class NotifdTest extends TestCase {
      */
     protected void tearDown() throws Exception {
         super.tearDown();
-        // FIXME: commented this out so the build worked
         m_notifd.stop();
         m_db.drop();
         assertTrue(MockUtil.noWarningsOrHigherLogged());
+    }
+    
+    /**
+     * see http://bugzilla.opennms.org/cgi-bin/bugzilla/show_bug.cgi?id=731
+     * @throws Exception
+     */
+    public void testBug731() throws Exception {
+        assertEquals(0L,0L);
+    }
+    
+    /**
+     * see http://bugzilla.opennms.org/cgi-bin/bugzilla/show_bug.cgi?id=1022
+     * @throws Exception
+     */
+    public void testWicktorBug() throws Exception {
+        
+        //setup the notifications that Wicktor discussed
+        String notifications = "<?xml version=\\\"1.0\\\"?>\\n\" + \n" + 
+                "            \"<notifications xmlns=\\\"http://xmlns.opennms.org/xsd/notifications\\\">\\n\" + \n" + 
+                "            \"    <header>\\n\" + \n" + 
+                "            \"        <rev>1.2</rev>\\n\" + \n" + 
+                "            \"        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\\n\" + \n" + 
+                "            \"        <mstation>localhost</mstation>\\n\" + \n" + 
+                "            \"    </header>\\n" +
+                "     <notification name=\"SNMP High disk Threshold Exceeded\" status=\"on\">\n" + 
+                "        <uei>uei.opennms.org/threshold/highThresholdExceeded</uei>\n" + 
+                "        <description>high disk threshold exceeded on snmp\n" + 
+                "interface</description>\n" + 
+                "        <rule>(IPADDR IPLIKE *.*.*.*) &amp; (isSNMP )</rule>\n" + 
+                "        <destinationPath>Email-Network/Systems</destinationPath>\n" + 
+                "        <text-message>High disk Threshold exceeded on %interface%, %parm[ds]%\n" + 
+                "with %parm[value]%%%</text-message>\n" + 
+                "        <subject>Notice #%noticeid%, High disk Threshold exceeded</subject>\n" + 
+                "        <varbind>\n" + 
+                "            <vbname>ds</vbname>\n" + 
+                "            <vbvalue>dsk-usr-pcent</vbvalue>\n" + 
+                "        </varbind>\n" + 
+                "    </notification>\n" + 
+                "    <notification name=\"SNMP High loadavg5 Threshold Exceeded\" status=\"on\">\n" + 
+                "        <uei>uei.opennms.org/threshold/highThresholdExceeded</uei>\n" + 
+                "        <description>high loadavg5 threshold exceeded on snmp\n" + 
+                "interface</description>\n" + 
+                "        <rule>(IPADDR IPLIKE *.*.*.*) &amp; (isSNMP )</rule>\n" + 
+                "        <destinationPath>Email-Network/Systems</destinationPath>\n" + 
+                "        <text-message>High loadavg5 Threshold exceeded on %interface%,\n" + 
+                "%parm[ds]% with %parm[value]%%%</text-message>\n" + 
+                "        <subject>Notice #%noticeid%, High loadavg5 Threshold\n" + 
+                "exceeded</subject>\n" + 
+                "        <varbind>\n" + 
+                "            <vbname>ds</vbname>\n" + 
+                "            <vbvalue>loadavg5</vbvalue>\n" + 
+                "        </varbind>\n" + 
+                "    </notification>" +
+                "</notifications>";
+        
+        m_notificationManager = new MockNotificationManager(m_notifdConfig, m_db, NOTIFICATION_MANAGER);
+        m_notifd.setNotificationManager(m_notificationManager);
+        
     }
 
     public void testNotifdStatus() throws Exception {
@@ -759,19 +830,87 @@ public class NotifdTest extends TestCase {
 
     }
     
-    public void testMockNotification() throws Exception {
-        
+    public void testMockNotificationBasic() throws Exception {
+
         MockNode node = m_network.getNode(1);
+        NotificationAnticipator na = new NotificationAnticipator();
+        MockNotificationStrategy.setAnticpator(na);
+
+        String subject;
+        String email;
+        MockNotification notification;
+
+        notification = createMockNotification("node 1 down.", "dhustace@nc.rr.com");
+        na.anticipateNotification(notification);
+
+        notification = createMockNotification("node 1 down.", "matt@opennms.org");
+        na.anticipateNotification(notification);
+
+        //bring node down now
         m_eventMgr.sendNow(node.createDownEvent());
-        sleep(3000);
+
+        assertEquals("Expected notifications not forthcoming.", 0, na.waitForAnticipated(3000).size());
+        sleep(1000);
+        assertEquals("Unexpected notifications forthcoming.", 0, na.getUnanticipated().size());
         
+        na.reset();
+        
+        notification = createMockNotification("node 1 up.", "dhustace@nc.rr.com");
+        na.anticipateNotification(notification);
+
+        notification = createMockNotification("node 1 up.", "matt@opennms.org");
+        na.anticipateNotification(notification);
+        
+        //bring node back up now
+        m_eventMgr.sendNow(node.createUpEvent());
+
+        assertEquals("Expected notifications not forthcoming.", 0, na.waitForAnticipated(3000).size());
+        sleep(1000);
+        assertEquals("Unexpected notifications forthcoming.", 0, na.getUnanticipated().size());
+
     }
     
+    public void testMockNotificationInitialDelay() throws Exception {
+
+        m_destinationPathManager.getPath("Email-Mock").setInitialDelay("10s");
+        
+        MockNode node = m_network.getNode(1);
+        NotificationAnticipator na = new NotificationAnticipator();
+        MockNotificationStrategy.setAnticpator(na);
+
+        MockNotification notification = new MockNotification();
+        
+        notification = createMockNotification("node 1 down.", "dhustace@nc.rr.com");
+        na.anticipateNotification(notification);
+
+        notification = createMockNotification("node 1 down.", "matt@opennms.org");
+        na.anticipateNotification(notification);
+
+        m_eventMgr.sendNow(node.createDownEvent());
+
+        assertEquals("Expected notifications not forthcoming.", 2, na.waitForAnticipated(3000).size());
+        sleep(1000);
+        assertEquals("Unexpected notifications forthcoming.", 0, na.getUnanticipated().size());
+
+        assertEquals("Expected notifications not forthcoming.", 0, na.waitForAnticipated(10000).size());
+        sleep(1000);
+        assertEquals("Unexpected notifications forthcoming.", 0, na.getUnanticipated().size());
+
+    }
+
     private void sleep(long millis) {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
         }
+    }
+
+    private MockNotification createMockNotification(String subject, String email) {
+        MockNotification notification;
+        notification = new MockNotification();
+        notification.setSubject(subject);
+        notification.setEmail(email);
+        return notification;
     }
 
 }
