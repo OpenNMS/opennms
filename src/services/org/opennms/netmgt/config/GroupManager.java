@@ -75,7 +75,7 @@ public abstract class GroupManager {
      * @throws MarshalException
      * @throws ValidationException
      */
-    protected synchronized void loadConfig(Reader reader) throws MarshalException, ValidationException {
+    protected synchronized void parseXml(Reader reader) throws MarshalException, ValidationException {
         Groupinfo groupinfo = (Groupinfo) Unmarshaller.unmarshal(Groupinfo.class, reader);
         Groups groups = groupinfo.getGroups();
         m_groups = new HashMap();
@@ -190,14 +190,14 @@ public abstract class GroupManager {
         StringWriter stringWriter = new StringWriter();
         Marshaller.marshal(groupinfo, stringWriter);
         String data = stringWriter.toString();
-        saveConfig(data);
+        saveXml(data);
     }
 
     /**
      * @param data
      * @throws IOException
      */
-    protected abstract void saveConfig(String data) throws IOException;
+    protected abstract void saveXml(String data) throws IOException;
 
     /**
      * Adds a new user and overwrites the "groups.xml"

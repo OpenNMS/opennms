@@ -35,6 +35,7 @@ package org.opennms.netmgt.notifd;
 
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.notifd.mock.MockNotifdConfigManager;
 
 import junit.framework.TestCase;
 /**
@@ -47,6 +48,52 @@ public class NotifdTest extends TestCase {
 
     private Notifd m_notifd;
     private MockEventIpcManager m_eventMgr;
+    private MockNotifdConfigManager m_notifdConfig;
+    private static final String m_configString = "<?xml version=\"1.0\"?>\n" + 
+            "<notifd-configuration \n" + 
+            "        status=\"off\"\n" + 
+            "        pages-sent=\"SELECT * FROM notifications\"\n" + 
+            "        next-notif-id=\"SELECT nextval(\'notifynxtid\')\"\n" + 
+            "        next-group-id=\"SELECT nextval(\'notifygrpid\')\"\n" + 
+            "        service-id-sql=\"SELECT serviceID from service where serviceName = ?\"\n" + 
+            "        outstanding-notices-sql=\"SELECT notifyid FROM notifications where notifyId = ? AND respondTime is not null\"\n" + 
+            "        acknowledge-id-sql=\"SELECT notifyid FROM notifications WHERE eventuei=? AND nodeid=? AND interfaceid=? AND serviceid=?\"\n" + 
+            "        acknowledge-update-sql=\"UPDATE notifications SET answeredby=?, respondtime=? WHERE notifyId=?\"\n" + 
+            "   match-all=\"false\">\n" + 
+            "        \n" + 
+            "   <auto-acknowledge uei=\"uei.opennms.org/nodes/serviceResponsive\" \n" + 
+            "                          acknowledge=\"uei.opennms.org/nodes/serviceUnresponsive\">\n" + 
+            "                          <match>nodeid</match>\n" + 
+            "                          <match>interfaceid</match>\n" + 
+            "                          <match>serviceid</match>\n" + 
+            "        </auto-acknowledge>\n" + 
+            "   \n" + 
+            "        <auto-acknowledge uei=\"uei.opennms.org/nodes/nodeRegainedService\" \n" + 
+            "                          acknowledge=\"uei.opennms.org/nodes/nodeLostService\">\n" + 
+            "                          <match>nodeid</match>\n" + 
+            "                          <match>interfaceid</match>\n" + 
+            "                          <match>serviceid</match>\n" + 
+            "        </auto-acknowledge>\n" + 
+            "        \n" + 
+            "        <auto-acknowledge uei=\"uei.opennms.org/nodes/interfaceUp\" \n" + 
+            "                          acknowledge=\"uei.opennms.org/nodes/interfaceDown\">\n" + 
+            "                          <match>nodeid</match>\n" + 
+            "                          <match>interfaceid</match>\n" + 
+            "        </auto-acknowledge>\n" + 
+            "        \n" + 
+            "        <auto-acknowledge uei=\"uei.opennms.org/nodes/nodeUp\" \n" + 
+            "                          acknowledge=\"uei.opennms.org/nodes/nodeDown\">\n" + 
+            "                          <match>nodeid</match>\n" + 
+            "        </auto-acknowledge>\n" + 
+            "        \n" + 
+            "        <queue>\n" + 
+            "                <queue-id>default</queue-id>\n" + 
+            "                <interval>20s</interval>\n" + 
+            "                <handler-class>\n" + 
+            "                        <name>org.opennms.netmgt.notifd.DefaultQueueHandler</name>\n" + 
+            "                </handler-class>\n" + 
+            "        </queue>\n" + 
+            "</notifd-configuration>";
 
     /*
      * @see TestCase#setUp()
@@ -59,9 +106,11 @@ public class NotifdTest extends TestCase {
         
         m_eventMgr = new MockEventIpcManager();
         
+        m_notifd = new Notifd();
+        m_notifdConfig = new MockNotifdConfigManager(m_configString);
         // FIXME: Needed to comment these out so the build worked
-        //m_notifd = new Notifd();
-        //m_notifd.setEventManager(m_eventMgr);
+        m_notifd.setEventManager(m_eventMgr);
+        m_notifd.setConfigManager(m_notifdConfig);
         //m_notifd.init();
         //m_notifd.start();
     }
@@ -72,7 +121,7 @@ public class NotifdTest extends TestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
         // FIXME: commented this out so the build worked
-        //m_notifd.stop();
+        m_notifd.stop();
         assertTrue(MockUtil.noWarningsOrHigherLogged());
     }
 

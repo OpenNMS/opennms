@@ -45,30 +45,22 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
+import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
  */
-public class NotifdConfigFactory {
+public class NotifdConfigFactory extends NotifdConfigManager {
     /**
      * Singleton instance
      */
     private static NotifdConfigFactory instance;
-
-    /**
-     * Input stream for the general Notifd configuration xml
-     */
-    protected static InputStream configIn;
 
     /**
      * Boolean indicating if the init() method has been called
@@ -78,17 +70,12 @@ public class NotifdConfigFactory {
     /**
      * 
      */
-    private static NotifdConfiguration configuration;
+    private File m_notifdConfFile;
 
     /**
      * 
      */
-    private static File m_notifdConfFile;
-
-    /**
-     * 
-     */
-    private static long m_lastModified;
+    private long m_lastModified;
 
     /**
      * 
@@ -101,11 +88,7 @@ public class NotifdConfigFactory {
      */
     static synchronized public NotifdConfigFactory getInstance() {
         if (!initialized)
-            return null;
-
-        if (instance == null) {
-            instance = new NotifdConfigFactory();
-        }
+            throw new IllegalStateException("init() not called.");
 
         return instance;
     }
@@ -115,58 +98,26 @@ public class NotifdConfigFactory {
      */
     public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         if (!initialized) {
-            reload();
+            instance = new NotifdConfigFactory();
+            instance.reload();
             initialized = true;
         }
     }
 
     /**
-     * 
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws MarshalException
+     * @throws ValidationException
      */
-    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+    public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         m_notifdConfFile = ConfigFileConstants.getFile(ConfigFileConstants.NOTIFD_CONFIG_FILE_NAME);
 
         InputStream configIn = new FileInputStream(m_notifdConfFile);
         m_lastModified = m_notifdConfFile.lastModified();
 
-        configuration = (NotifdConfiguration) Unmarshaller.unmarshal(NotifdConfiguration.class, new InputStreamReader(configIn));
-        configIn.close();
-    }
-
-    /**
-     * 
-     */
-    public static NotifdConfiguration getConfiguration() throws IOException, MarshalException, ValidationException {
-        if (!initialized)
-            return null;
-
-        updateFromFile();
-
-        return configuration;
-    }
-
-    /**
-     * 
-     */
-    public static String getNotificationStatus() throws IOException, MarshalException, ValidationException {
-        if (!initialized)
-            return null;
-
-        updateFromFile();
-
-        return configuration.getStatus();
-    }
-
-    /**
-     * 
-     */
-    public static boolean getNotificationMatch() throws IOException, MarshalException, ValidationException {
-        if (!initialized)
-            return false;
-
-        updateFromFile();
-
-        return configuration.getMatchAll();
+        Reader reader = new InputStreamReader(configIn);
+        parseXml(reader);
     }
 
     /**
@@ -180,7 +131,7 @@ public class NotifdConfigFactory {
 
         String status = "Unknown";
 
-        status = getNotificationStatus();
+        status = NotifdConfigFactory.getInstance().getNotificationStatus();
 
         if (status.equals("on"))
             status = "On";
@@ -227,30 +178,24 @@ public class NotifdConfigFactory {
     }
 
     /**
-     * 
+     * @param xml
+     * @throws IOException
      */
-    public synchronized void saveCurrent() throws MarshalException, ValidationException, IOException {
-        // marshall to a string first, then write the string to the file. This
-        // way the original config
-        // isn't lost if the xml from the marshall is hosed.
-        StringWriter stringWriter = new StringWriter();
-        Marshaller.marshal(configuration, stringWriter);
-        if (stringWriter.toString() != null) {
+    protected void saveXml(String xml) throws IOException {
+        if (xml != null) {
             FileWriter fileWriter = new FileWriter(m_notifdConfFile);
-            fileWriter.write(stringWriter.toString());
+            fileWriter.write(xml);
             fileWriter.flush();
             fileWriter.close();
         }
-
-        reload();
     }
 
     /**
      * 
      */
-    private static void updateFromFile() throws IOException, MarshalException, ValidationException {
+    protected void update() throws IOException, MarshalException, ValidationException {
         if (m_lastModified != m_notifdConfFile.lastModified()) {
-            reload();
+            NotifdConfigFactory.getInstance().reload();
         }
     }
 }

@@ -45,7 +45,8 @@ import java.util.Map;
 
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.NotifdConfigFactory;
+import org.opennms.netmgt.config.DbConnectionFactory;
+import org.opennms.netmgt.config.NotifdConfigManager;
 import org.opennms.netmgt.config.notifd.Queue;
 import org.opennms.netmgt.eventd.EventIpcManager;
 
@@ -93,15 +94,14 @@ public final class Notifd implements PausableFiber {
 
     private EventIpcManager m_eventManager;
 
+    private NotifdConfigManager m_configManager;
+
+    private DbConnectionFactory m_dbConnectionFactory;
+
     /**
      * Constructs a new Notifd service daemon.
      */
     Notifd() {
-        try {
-            NotifdConfigFactory.init();
-        } catch (Throwable t) {
-            ThreadCategory.getInstance(getClass()).warn("start: Failed to init NotifdConfigFactory.", t);
-        }
     }
 
     public synchronized void init() {
@@ -111,11 +111,10 @@ public final class Notifd implements PausableFiber {
         m_queueHandlers = new HashMap();
         m_eventReader = null;
         try {
-            NotifdConfigFactory.reload();
 
-            ThreadCategory.getInstance(getClass()).info("Notification status = " + NotifdConfigFactory.getPrettyStatus());
+            ThreadCategory.getInstance(getClass()).info("Notification status = " + getConfigManager().getNotificationStatus());
 
-            Queue queues[] = NotifdConfigFactory.getConfiguration().getQueue();
+            Queue queues[] = getConfigManager().getConfiguration().getQueue();
             for (int i = 0; i < queues.length; i++) {
                 NoticeQueue curQueue = new NoticeQueue();
 
@@ -136,12 +135,22 @@ public final class Notifd implements PausableFiber {
         // start the event reader
         //
         try {
-            NotifdConfigFactory.init();
             m_eventReader = new BroadcastEventProcessor(this, m_noticeQueues);
         } catch (Exception ex) {
             ThreadCategory.getInstance(getClass()).error("Failed to setup event receiver", ex);
             throw new UndeclaredThrowableException(ex);
         }
+    }
+
+    /**
+     * @return
+     */
+    public NotifdConfigManager getConfigManager() {
+        return m_configManager;
+    }
+    
+    public void setConfigManager(NotifdConfigManager configManager ) {
+        m_configManager = configManager;
     }
 
     /**
@@ -260,5 +269,13 @@ public final class Notifd implements PausableFiber {
      */
     public void setEventManager(EventIpcManager eventManager) {
         m_eventManager = eventManager;
+    }
+
+    /**
+     * @param dbConnectionFactory
+     */
+    public void setDbConnectionFactory(DbConnectionFactory dbConnectionFactory) {
+        m_dbConnectionFactory = dbConnectionFactory;
+        
     }
 }

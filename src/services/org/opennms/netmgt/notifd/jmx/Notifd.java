@@ -34,25 +34,56 @@
 
 package org.opennms.netmgt.notifd.jmx;
 
+import java.io.IOException;
+
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
 public class Notifd implements NotifdMBean {
     public void init() {
         EventIpcManagerFactory.init();
-        org.opennms.netmgt.notifd.Notifd.getInstance().setEventManager(EventIpcManagerFactory.getInstance().getManager());
-        org.opennms.netmgt.notifd.Notifd.getInstance().init();
+
+        try {
+            NotifdConfigFactory.init();
+        } catch (Throwable t) {
+            ThreadCategory.getInstance(getClass()).warn("start: Failed to init NotifdConfigFactory.", t);
+        }
+        
+        try {
+            DatabaseConnectionFactory.init();
+        } catch (Exception e) {
+            ThreadCategory.getInstance(getClass()).warn("start: Failed to init database connection factory.", e);
+        }
+
+        getNotifd().setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
+        getNotifd().setEventManager(EventIpcManagerFactory.getInstance().getManager());
+        
+        getNotifd().setConfigManager(NotifdConfigFactory.getInstance());
+        getNotifd().init();
+        
+    }
+
+    /**
+     * @return
+     */
+    private org.opennms.netmgt.notifd.Notifd getNotifd() {
+        return org.opennms.netmgt.notifd.Notifd.getInstance();
     }
 
     public void start() {
-        org.opennms.netmgt.notifd.Notifd.getInstance().start();
+        getNotifd().start();
     }
 
     public void stop() {
-        org.opennms.netmgt.notifd.Notifd.getInstance().stop();
+        getNotifd().stop();
     }
 
     public int getStatus() {
-        return org.opennms.netmgt.notifd.Notifd.getInstance().getStatus();
+        return getNotifd().getStatus();
     }
 
     public String status() {

@@ -57,7 +57,6 @@ import org.opennms.core.utils.ClassExecutor;
 import org.opennms.core.utils.CommandExecutor;
 import org.opennms.core.utils.ExecutorStrategy;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.notificationCommands.Argument;
@@ -123,7 +122,6 @@ public class NotificationTask extends Thread {
         m_siblings = siblings;
 
         try {
-            DatabaseConnectionFactory.init();
             UserFactory.init();
             NotificationFactory.init();
         } catch (Exception e) {
@@ -200,7 +198,7 @@ public class NotificationTask extends Thread {
 
         boolean responded = false;
         try {
-            responded = NotificationFactory.noticeOutstanding(m_notifyId);
+            responded = NotificationFactory.getInstance().noticeOutstanding(m_notifyId);
         } catch (Exception e) {
             log.error("Unable to get response status on notice #" + m_notifyId, e);
         }
@@ -215,7 +213,7 @@ public class NotificationTask extends Thread {
 
                     for (int i = 0; i < m_commands.length; i++) {
                         try {
-                            NotificationFactory.updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), UserFactory.getInstance().getContactInfo(m_user.getUserId(), m_commands[i].getName()));
+                            NotificationFactory.getInstance().updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), UserFactory.getInstance().getContactInfo(m_user.getUserId(), m_commands[i].getName()));
                         } catch (SQLException e) {
                             log.error("Could not insert notice info into database, aborting send notice...", e);
                             continue;

@@ -214,7 +214,7 @@ public class NotificationFactory {
         Notification[] notif = null;
         // boolean matchAll =
         // NotifdConfigFactory.getInstance().getConfiguration().getNextNotifId()
-        boolean matchAll = NotifdConfigFactory.getNotificationMatch();
+        boolean matchAll = NotifdConfigFactory.getInstance().getNotificationMatch();
         // ThreadCategory.getInstance(getClass()).debug("Notification Event
         // Match All = " + matchAll);
 
@@ -340,7 +340,7 @@ public class NotificationFactory {
      * @return int, the sequence id from the database, 0 by default if there is
      *         database trouble
      */
-    public static synchronized int getNoticeId() throws SQLException, IOException, MarshalException, ValidationException {
+    public synchronized int getNoticeId() throws SQLException, IOException, MarshalException, ValidationException {
         int id = 0;
 
         Connection connection = null;
@@ -348,7 +348,7 @@ public class NotificationFactory {
         try {
             connection = DatabaseConnectionFactory.getInstance().getConnection();
             Statement stmt = connection.createStatement();
-            ResultSet results = stmt.executeQuery(NotifdConfigFactory.getConfiguration().getNextNotifId());
+            ResultSet results = stmt.executeQuery(NotifdConfigFactory.getInstance().getConfiguration().getNextNotifId());
 
             results.next();
 
@@ -371,13 +371,13 @@ public class NotificationFactory {
      * This method returns a boolean indicating if the page has been responded
      * to by any member of the group the page was sent to.
      */
-    public static boolean noticeOutstanding(int noticeId) throws IOException, MarshalException, ValidationException {
+    public boolean noticeOutstanding(int noticeId) throws IOException, MarshalException, ValidationException {
         boolean response = false;
 
         Connection connection = null;
         try {
             connection = DatabaseConnectionFactory.getInstance().getConnection();
-            PreparedStatement statement = connection.prepareStatement(NotifdConfigFactory.getConfiguration().getOutstandingNoticesSql());
+            PreparedStatement statement = connection.prepareStatement(NotifdConfigFactory.getInstance().getConfiguration().getOutstandingNoticesSql());
 
             statement.setInt(1, noticeId);
 
@@ -453,7 +453,7 @@ public class NotificationFactory {
             if (results != null) {
                 while (results.next()) {
                     int notifID = results.getInt(1);
-                    PreparedStatement update = connection.prepareStatement(NotifdConfigFactory.getConfiguration().getAcknowledgeUpdateSql());
+                    PreparedStatement update = connection.prepareStatement(NotifdConfigFactory.getInstance().getConfiguration().getAcknowledgeUpdateSql());
 
                     update.setString(1, "auto-acknowledged");
                     update.setTimestamp(2, new Timestamp((new Date()).getTime()));
@@ -512,7 +512,7 @@ public class NotificationFactory {
     /**
      * 
      */
-    public static String getServiceNoticeStatus(String nodeID, String ipaddr, String service) throws SQLException {
+    public String getServiceNoticeStatus(String nodeID, String ipaddr, String service) throws SQLException {
         String notify = "Y";
 
         String query = "SELECT notify FROM ifservices, service WHERE nodeid=? AND ipaddr=? AND ifservices.serviceid=service.serviceid AND service.servicename=?";
@@ -547,7 +547,7 @@ public class NotificationFactory {
     /**
      * 
      */
-    public static void updateNoticeWithUserInfo(String userId, int noticeId, String media, String contactInfo) throws SQLException {
+    public void updateNoticeWithUserInfo(String userId, int noticeId, String media, String contactInfo) throws SQLException {
         Connection connection = null;
         try {
             connection = DatabaseConnectionFactory.getInstance().getConnection();
@@ -577,7 +577,7 @@ public class NotificationFactory {
      * This method inserts a row into the notifications table in the database.
      * This row indicates that the page has been sent out.
      */
-    public static void insertNotice(int notifyId, Map params) throws SQLException {
+    public void insertNotice(int notifyId, Map params) throws SQLException {
         Connection connection = null;
         try {
             connection = DatabaseConnectionFactory.getInstance().getConnection();
@@ -645,7 +645,7 @@ public class NotificationFactory {
      *            the name of the service
      * @return the serviceID of the service
      */
-    private static int getServiceId(String service) throws SQLException {
+    private int getServiceId(String service) throws SQLException {
         int serviceID = 0;
 
         Connection connection = null;
@@ -829,7 +829,7 @@ public class NotificationFactory {
     /**
      * 
      */
-    private static void updateFromFile() throws IOException, MarshalException, ValidationException {
+    private void updateFromFile() throws IOException, MarshalException, ValidationException {
         if (m_lastModified != m_noticeConfFile.lastModified()) {
             reload();
         }

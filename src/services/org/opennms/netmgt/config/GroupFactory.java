@@ -124,14 +124,14 @@ public class GroupFactory extends GroupManager {
 
         Reader reader = new InputStreamReader(configIn);
 
-        getInstance().loadConfig(reader);
+        getInstance().parseXml(reader);
     }
 
     /**
      * @param data
      * @throws IOException
      */
-    protected void saveConfig(String data) throws IOException {
+    protected void saveXml(String data) throws IOException {
         if (data != null) {
             FileWriter fileWriter = new FileWriter(m_groupsConfFile);
             fileWriter.write(data);

@@ -61,10 +61,9 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.GroupFactory;
-import org.opennms.netmgt.config.NotifdConfigFactory;
+import org.opennms.netmgt.config.NotifdConfigManager;
 import org.opennms.netmgt.config.NotificationCommandFactory;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.UserFactory;
@@ -137,7 +136,6 @@ final class BroadcastEventProcessor implements EventListener {
 
         // initialize the factory instances
         try {
-            DatabaseConnectionFactory.init();
             GroupFactory.init();
             UserFactory.init();
             NotificationFactory.init();
@@ -179,7 +177,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         String status = "off";
         try {
-            status = NotifdConfigFactory.getNotificationStatus();
+            status = getConfigManager().getNotificationStatus();
         } catch (Exception e) {
             ThreadCategory.getInstance(getClass()).error("error getting notifd status, assuming status = 'off' for now: ", e);
         }
@@ -201,7 +199,7 @@ final class BroadcastEventProcessor implements EventListener {
      */
     private void automaticAcknowledge(Event event) {
         try {
-            Collection ueis = NotifdConfigFactory.getConfiguration().getAutoAcknowledgeCollection();
+            Collection ueis = getConfigManager().getConfiguration().getAutoAcknowledgeCollection();
 
             // see if this event has an auto acknowledge for a notice
             Iterator i = ueis.iterator();
@@ -233,6 +231,13 @@ final class BroadcastEventProcessor implements EventListener {
     }
 
     /**
+     * @return
+     */
+    private NotifdConfigManager getConfigManager() {
+        return m_notifd.getConfigManager();
+    }
+
+    /**
      * This method determines if the notice should continue based on the status
      * of the notify
      */
@@ -253,7 +258,7 @@ final class BroadcastEventProcessor implements EventListener {
         try {
             // check the database to see if notices were turned off for this
             // service
-            String notify = NotificationFactory.getServiceNoticeStatus(nodeID, ipAddr, service);
+            String notify = NotificationFactory.getInstance().getServiceNoticeStatus(nodeID, ipAddr, service);
             if ("Y".equals(notify)) {
                 continueNotice = true;
                 ThreadCategory.getInstance(getClass()).debug("notify status for service " + service + " on interface/node " + ipAddr + "/" + nodeID + " is 'Y', continuing...");
@@ -313,7 +318,7 @@ final class BroadcastEventProcessor implements EventListener {
                         int noticeId = 0;
 
                         try {
-                            noticeId = NotificationFactory.getNoticeId();
+                            noticeId = NotificationFactory.getInstance().getNoticeId();
                         } catch (Exception e) {
                             log.error("Failed to get a unique id # for notification, exiting this notification", e);
                             return;
@@ -360,7 +365,7 @@ final class BroadcastEventProcessor implements EventListener {
                         }
 
                         try {
-                            NotificationFactory.insertNotice(noticeId, paramMap);
+                            NotificationFactory.getInstance().insertNotice(noticeId, paramMap);
                         } catch (SQLException e) {
                             log.error("Failed to enter notification into database, exiting this notification", e);
                             return;
