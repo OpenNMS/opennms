@@ -352,6 +352,7 @@ final class Poller {
             }
 
             p.m_outs.writeObject(getDisconnectRequest());
+            // FIXME: Do I need a p.close() here?
         } catch (IOException ex) {
             log.error("IO Exception caught.", ex);
             p.close();
