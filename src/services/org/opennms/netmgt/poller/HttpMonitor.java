@@ -226,7 +226,7 @@ final class HttpMonitor
 						{
 							serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;	
 						}
-						else if(!bStrictResponse && rVal > 99 && rVal < 500)
+						else if(!bStrictResponse && rVal > 99 && rVal < 400)
 						{
 							serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
 						}

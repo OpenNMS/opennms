@@ -95,7 +95,7 @@ public final class OutageWriter implements Runnable
 	// Control whether or not an event is generated following 
 	// database modifications to notify other OpenNMS processes
 	private boolean			m_generateNodeDeletedEvent;
-	
+
 	/**
 	 * A class to hold SNMP/SNMPv2 entries for a node from the ifservices table
 	 * A list of this class is maintained on SNMP delete so as to be able to
@@ -402,7 +402,6 @@ public final class OutageWriter implements Runnable
                                         newOutageWriter.setTimestamp(8, convertEventTimeIntoTimestamp(regainedEvent.getEventTime()));
                                 }
 
-			
 				// execute
 				newOutageWriter.executeUpdate();
 
@@ -1988,7 +1987,7 @@ public final class OutageWriter implements Runnable
 		return newEvent;
 	}
 
-	/**
+        /**
 	 * <p>Read the event UEI, nodeid, interface and service - depending
 	 * on the UEI, read event parms, if necessary, and process as appropriate</p>
 	 */
@@ -2017,7 +2016,7 @@ public final class OutageWriter implements Runnable
 				log.debug("Event received with null UEI, ignoring event");
 			return;
 		}
-		
+                
 		// get eventid
 		long eventID = -1;
 		if (m_event.hasDbid())
@@ -2113,6 +2112,7 @@ public final class OutageWriter implements Runnable
 	{
 		m_event = event;
 	}
+
 
 	/**
 	 * <p>Process the event depending on the UEI</p>

@@ -60,10 +60,15 @@
 		<column name="lastGood"/>
 		<column name="lastFail"/>
 	</table>
-	<table name="customCat">
+	<table name="serverMap">
      		<join column="ipAddr" table="ipInterface" table-column="ipAddr"/>
      		<column name="ipAddr" visable="false"/>
-     		<column name="custCategory"/>
+     		<column name="serverName"/>
+	</table>
+	<table name="serviceMap">
+     		<join column="ipAddr" table="ipInterface" table-column="ipAddr"/>
+     		<column name="ipAddr" visable="false"/>
+     		<column name="serviceMapName"/>
 	</table>
 
 

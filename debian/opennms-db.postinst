@@ -19,10 +19,19 @@ case "$1" in
 			/etc/postgresql/pg_hba.conf > $TMPFILE
 		cp $TMPFILE /etc/postgresql/pg_hba.conf
 	fi
+	# Add a local entry for all databases, (trust), needed by the
+	# install script.
+	if ! grep -E -q "^local[[:space:]]+all[[:space:]]+trust" \
+		/etc/postgresql/pg_hba.conf; then
+		sed -e "/^local[[:space:]]*all/i\\" \
+			-e "local all trust" \
+			/etc/postgresql/pg_hba.conf > $TMPFILE
+		cp $TMPFILE /etc/postgresql/pg_hba.conf
+	fi
 	# Add the host entry if needed
 	if ! grep -q "^host opennms" /etc/postgresql/pg_hba.conf; then
-		sed -e "/^host/i\\" \
-			-e "host opennms opennms 127.0.0.1 255.0.0.0 password" \
+		sed -e "/^host.*ident sameuser/i\\" \
+			-e "host opennms 127.0.0.1 255.0.0.0 password" \
 			/etc/postgresql/pg_hba.conf > $TMPFILE
 		cp $TMPFILE /etc/postgresql/pg_hba.conf
 	fi
@@ -39,9 +48,9 @@ case "$1" in
 	# older major/minor version (not an older minor release) or a fresh
 	# install.  Don't use -t since we do tomcat4 install in the webapp pkg.
 	if dpkg --compare-versions ${2:-0} lt $VERSION; then
-		su - postgres -c "/usr/share/opennms-db/install.pl -r -q \
+		/usr/share/opennms-db/install.pl -r -q \
 			-l $PG_DIR -U $PG_USER -u opennms -p opennms \
-			-d opennms /etc/opennms/create.sql"
+			-d opennms /etc/opennms/create.sql
 	fi
 
 	echo ""

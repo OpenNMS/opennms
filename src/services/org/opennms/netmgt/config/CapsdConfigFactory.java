@@ -120,6 +120,19 @@ public final class CapsdConfigFactory
 	 * from the 'ipInterface' table.
 	 */
 	final static String	SQL_DB_RETRIEVE_IP_INTERFACE = "SELECT nodeid,ipaddr,ismanaged FROM ipinterface WHERE ipaddr!='0.0.0.0' AND isManaged!='D' AND isManaged!='F'";
+        
+        /**
+	 * The SQL statement used to retrieve all non-deleted/non-forced unamanaged IP interfaces
+	 * from the 'ipInterface' table with the local OpenNMS server restriction.
+	 */
+	final static String	SQL_DB_RETRIEVE_IP_INTERFACE_IN_LOCAL_SERVER = 
+                "SELECT ip.nodeid, ip.ipaddr, ip.ismanaged " +
+                "FROM ipinterface ip, servermap s " +
+                "WHERE ip.ipaddr = s.ipaddr " + 
+                "AND ip.ipaddr!='0.0.0.0' " + 
+                "AND ip.isManaged!='D' " +
+                "AND ip.isManaged!='F' " +
+                "AND s.servername = ?";
 	
 	/** 
 	 * SQL statement to retrieve all non-deleted IP addresses from the ipInterface table 
@@ -749,6 +762,9 @@ public final class CapsdConfigFactory
 	{
 		Category log = ThreadCategory.getInstance();
 
+                boolean verifyServer = OpennmsServerConfigFactory.getInstance().verifyServer();
+                String localServer = OpennmsServerConfigFactory.getInstance().getServerName();
+
 		if (conn == null)
 		{
 			log.error("CapsdConfigFactory.syncManagementState: Sync failed...must have valid database connection.");
@@ -772,7 +788,15 @@ public final class CapsdConfigFactory
 		//
 		
 		//prepare the SQL statement to query the database
-		PreparedStatement ipRetStmt = conn.prepareStatement(SQL_DB_RETRIEVE_IP_INTERFACE);
+		PreparedStatement ipRetStmt = null;
+
+                if (verifyServer)
+                {
+                        ipRetStmt = conn.prepareStatement(SQL_DB_RETRIEVE_IP_INTERFACE_IN_LOCAL_SERVER);
+                        ipRetStmt.setString(1, localServer);
+                }
+                else
+                        conn.prepareStatement(SQL_DB_RETRIEVE_IP_INTERFACE);
 		
 		ArrayList ifList = new ArrayList();
 		ResultSet result = null;
@@ -1820,4 +1844,15 @@ public final class CapsdConfigFactory
 			
 		return abortFlag;
 	}
+
+        /**
+         * Return the boolean xmlrpc as string to indicate if
+         * notification to external xmlrpc server is needed.
+         *
+         * @return boolean flag as a string value
+         */
+         public String getXmlrpc()
+         {
+                return m_config.getXmlrpc();
+         }
 }
