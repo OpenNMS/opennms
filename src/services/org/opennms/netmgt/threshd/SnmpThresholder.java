@@ -933,7 +933,7 @@ final class SnmpThresholder
 								// Done with the database so close the connection
 								try
 								{
-									dbConn.close();
+									if (dbConn != null) dbConn.close();
 								}
 								catch (SQLException sqle)
 								{

@@ -219,8 +219,9 @@ public class Vacuumd implements PausableFiber, Runnable {
                 } else {
                     dbConn.rollback();
                 }
-                dbConn.close();
             } catch (SQLException ex) {
+            } finally {
+                if (dbConn != null) try { dbConn.close(); } catch (Exception e) {}                
             }
         }
 

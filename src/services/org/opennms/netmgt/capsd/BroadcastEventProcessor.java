@@ -1243,8 +1243,9 @@ final class BroadcastEventProcessor implements EventListener {
                 } else {
                     dbConn.rollback();
                 }
-                dbConn.close();
             } catch (SQLException ex) {
+            } finally {
+                if (dbConn != null) try { dbConn.close(); } catch (SQLException ex) {}
             }
         }
     }
@@ -1298,8 +1299,9 @@ final class BroadcastEventProcessor implements EventListener {
                 } else {
                     dbConn.rollback();
                 }
-                dbConn.close();
             } catch (SQLException ex) {
+            } finally {
+                if (dbConn != null) try { dbConn.close(); } catch (SQLException ex) {}
             }
         }
 
@@ -1349,8 +1351,9 @@ final class BroadcastEventProcessor implements EventListener {
                 } else {
                     dbConn.rollback();
                 }
-                dbConn.close();
             } catch (SQLException ex) {
+            } finally {
+                if (dbConn != null) try { dbConn.close(); } catch (SQLException ex) {}
             }
         }
 
@@ -1407,8 +1410,9 @@ final class BroadcastEventProcessor implements EventListener {
                 } else {
                     dbConn.rollback();
                 }
-                dbConn.close();
             } catch (SQLException ex) {
+            } finally {
+                if (dbConn != null) try { dbConn.close(); } catch (SQLException ex) {}
             }
         }
     }
@@ -1466,8 +1470,9 @@ final class BroadcastEventProcessor implements EventListener {
                 } else {
                     dbConn.rollback();
                 }
-                dbConn.close();
             } catch (SQLException ex) {
+            } finally {
+                if (dbConn != null) try { dbConn.close(); } catch (SQLException ex) {}
             }
         }
     }
@@ -1524,8 +1529,9 @@ final class BroadcastEventProcessor implements EventListener {
                 } else {
                     dbConn.rollback();
                 }
-                dbConn.close();
             } catch (SQLException ex) {
+            } finally {
+                if (dbConn != null) try { dbConn.close(); } catch (SQLException ex) {}
             }
         }
     }
@@ -1712,8 +1718,9 @@ final class BroadcastEventProcessor implements EventListener {
                 } else {
                     dbConn.rollback();
                 }
-                dbConn.close();
             } catch (SQLException ex) {
+            } finally {
+                if (dbConn != null) try { dbConn.close(); } catch (SQLException ex) {}
             }
         }
 
@@ -1772,8 +1779,9 @@ final class BroadcastEventProcessor implements EventListener {
                 } else {
                     dbConn.rollback();
                 }
-                dbConn.close();
             } catch (SQLException ex) {
+            } finally {
+                if (dbConn != null) try { dbConn.close(); } catch (SQLException ex) {}
             }
         }
 

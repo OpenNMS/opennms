@@ -696,12 +696,20 @@ final class EventWriter
 			m_getHostNameStmt.close();
 			m_getNextEventIdStmt.close();
 			m_eventInsStmt.close();
-			m_dbConn.close();
 		}
 		catch (SQLException sqle)
 		{
-			ThreadCategory.getInstance(EventWriter.class).warn("SQLException while closing prepared statements/database connection", sqle);
+			ThreadCategory.getInstance(EventWriter.class).warn("SQLException while closing prepared statements", sqle);
 		}
+        finally
+        {
+           try { 
+               m_dbConn.close(); 
+           }
+           catch (SQLException e) {
+            ThreadCategory.getInstance(EventWriter.class).warn("SQLException while closing database connection", e);
+           }
+        }
 	}
 
 	/**

@@ -258,11 +258,13 @@ final class Scheduler
 		{
 			try
 			{
-				interfaces.close();
-				selectInterfaces.close();
-				connection.close();
+				if (interfaces != null) interfaces.close();
+				if (selectInterfaces != null) selectInterfaces.close();
 			}
 			catch (Exception ex) { }
+            finally {
+                try { if (connection != null) connection.close(); } catch (Exception e) {}
+            }
 		}
 		return retval;
 	}
