@@ -50,9 +50,6 @@ import java.io.Reader;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.xml.event.Event;
 
 /**
  */
@@ -124,6 +121,9 @@ public class NotifdConfigFactory extends NotifdConfigManager {
      * Gets a nicely formatted string for the Web UI to display
      * 
      * @return On, Off, or Unknown depending on status
+     * 
+     * TODO: Pull up into base class but keep this reference for the
+     * webapp until singleton is removed.
      */
     public static String getPrettyStatus() throws IOException, MarshalException, ValidationException {
         if (!initialized)
@@ -143,6 +143,9 @@ public class NotifdConfigFactory extends NotifdConfigManager {
 
     /**
      * Turns the notifd service on
+     * TODO: this was pulled up into the base class but is still here
+     * because of a reference from the webapp.  Fix up by renaming the
+     * method in the base class can calling that method from here.
      */
     public void turnNotifdOn() throws MarshalException, ValidationException, IOException {
         sendEvent("uei.opennms.org/internal/notificationsTurnedOn");
@@ -153,28 +156,15 @@ public class NotifdConfigFactory extends NotifdConfigManager {
 
     /**
      * Turns the notifd service off
+     * TODO: this was pulled up into the base class but is still here
+     * because of a reference from the webapp.  Fix up by renaming the
+     * method in the base class can calling that method from here.
      */
     public void turnNotifdOff() throws MarshalException, ValidationException, IOException {
         sendEvent("uei.opennms.org/internal/notificationsTurnedOff");
         configuration.setStatus("off");
 
         saveCurrent();
-    }
-
-    /**
-     * 
-     */
-    private void sendEvent(String uei) {
-        Event event = new Event();
-        event.setUei(uei);
-        event.setSource("NotifdConfigFactory");
-
-        event.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        try {
-            EventIpcManagerFactory.getInstance().getManager().sendNow(event);
-        } catch (Throwable t) {
-        }
     }
 
     /**

@@ -41,7 +41,10 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.notifd.NotifdConfiguration;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * @author david
@@ -99,6 +102,26 @@ public abstract class NotifdConfigManager {
     }
 
     /**
+     * Turns the notifd service on
+     */
+    public void turnNotifdOn() throws MarshalException, ValidationException, IOException {
+        sendEvent("uei.opennms.org/internal/notificationsTurnedOn");
+        configuration.setStatus("on");
+
+        saveCurrent();
+    }
+
+    /**
+     * Turns the notifd service off
+     */
+    public void turnNotifdOff() throws MarshalException, ValidationException, IOException {
+        sendEvent("uei.opennms.org/internal/notificationsTurnedOff");
+        configuration.setStatus("off");
+
+        saveCurrent();
+    }
+
+    /**
      * @return
      * @throws IOException
      * @throws MarshalException
@@ -128,5 +151,21 @@ public abstract class NotifdConfigManager {
      * @throws IOException
      */
     protected abstract void saveXml(String xml) throws IOException;
+
+    /**
+     * 
+     */
+    protected void sendEvent(String uei) {
+        Event event = new Event();
+        event.setUei(uei);
+        event.setSource("NotifdConfigFactory");
+    
+        event.setTime(EventConstants.formatToString(new java.util.Date()));
+    
+        try {
+            EventIpcManagerFactory.getInstance().getManager().sendNow(event);
+        } catch (Throwable t) {
+        }
+    }
 
 }

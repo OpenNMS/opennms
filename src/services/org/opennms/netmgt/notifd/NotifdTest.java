@@ -33,6 +33,10 @@
 
 package org.opennms.netmgt.notifd;
 
+import java.io.IOException;
+
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.mock.MockEventIpcManager;
@@ -698,7 +702,31 @@ public class NotifdTest extends TestCase {
         assertTrue(MockUtil.noWarningsOrHigherLogged());
     }
 
-    public void testNotifdBaseTest() {
+    public void testNotifdStatus() {
+        
+        try {
+            
+            //test for off status passed in config XML string
+            assertEquals(m_notifdConfig.getNotificationStatus(), "off");
+            
+            //test for on status set here
+            m_notifdConfig.turnNotifdOn();
+            assertEquals(m_notifdConfig.getNotificationStatus(), "on");
+            
+            //test for off status set here
+            m_notifdConfig.turnNotifdOff();
+            assertEquals(m_notifdConfig.getNotificationStatus(), "off");
+
+        } catch (MarshalException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
     }
 }
