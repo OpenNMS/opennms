@@ -35,7 +35,6 @@ package org.opennms.web.category;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.URLDecoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
@@ -47,6 +46,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.web.Util;
 
 
 public class RTCPostServlet extends HttpServlet
@@ -88,7 +88,7 @@ public class RTCPostServlet extends HttpServlet
         
         //since these category names can contain spaces, etc, 
         //we have to URL encode them in the URL
-        String categoryName = URLDecoder.decode(pathInfo);
+        String categoryName = Util.decode(pathInfo);
 
         org.opennms.netmgt.xml.rtc.Category category = null;
     

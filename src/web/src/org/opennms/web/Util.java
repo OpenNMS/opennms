@@ -39,6 +39,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -138,6 +139,25 @@ public abstract class Util extends Object
         return( hostname );
     }
 
+    /**
+     * Encapsulate the deprecated encode method to fix it in one place.
+     * 
+     * @param string string to be encoded
+     * @return encoded string
+     */
+    public static String encode(String string) {
+    		return URLEncoder.encode(string);
+    }
+    
+    /**
+     * Encapsulate the deprecated decode method to fix it in one place.
+     * 
+     * @param string string to be decoded
+     * @return decoded string
+     */
+    public static String decode(String string) {
+    		return URLDecoder.decode(string);
+    }
 
     /**
      * Convenience method for resolving the human-readable hostname for
@@ -401,7 +421,7 @@ public abstract class Util extends Object
                     buffer.append( "&" );
                     buffer.append( name );
                     buffer.append( "=" );
-                    buffer.append( URLEncoder.encode(values[i]) );
+                    buffer.append( Util.encode(values[i]) );
                 }
             }
         }
@@ -421,7 +441,7 @@ public abstract class Util extends Object
                     buffer.append( "&" );
                     buffer.append( name );
                     buffer.append( "=" );
-                    buffer.append( URLEncoder.encode(values[i]) );
+                    buffer.append( Util.encode(values[i]) );
                 }
             }
         }

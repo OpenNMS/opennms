@@ -33,7 +33,6 @@
 package org.opennms.web.admin.notification.noticeWizard;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -49,6 +48,7 @@ import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Parameter;
 import org.opennms.netmgt.filter.Filter;
 import org.opennms.netmgt.filter.FilterParseException;
+import org.opennms.web.Util;
 /**
  * A servlet that handles the data comming in from the notification wizard jsps.
  *
@@ -336,13 +336,13 @@ public class NotificationWizardServlet extends HttpServlet
                                 String[] list = (String[])value;
                                 for (int j = 0; j < list.length; j++)
                                 {
-                                        buffer.append( separator ).append( key ).append( "=" ).append( URLEncoder.encode( list[j] ) );
+                                        buffer.append( separator ).append( key ).append( "=" ).append( Util.encode( list[j] ) );
                                         separator = "&";
                                 }
                         }
                         else
                         {
-                                buffer.append( separator ).append( key ).append( "=" ).append( URLEncoder.encode( (String)value ) );
+                                buffer.append( separator ).append( key ).append( "=" ).append( Util.encode( (String)value ) );
                         }
                         separator = "&";
                 }

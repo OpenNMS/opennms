@@ -33,7 +33,6 @@
 package org.opennms.web.admin.notification;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -378,7 +377,7 @@ public class DestinationWizardServlet extends HttpServlet
                 while(i.hasNext())
                 {
                         String key = (String)i.next();
-                        buffer.append( separator ).append( key ).append( "=" ).append( URLEncoder.encode( (String)map.get(key) ) );
+                        buffer.append( separator ).append( key ).append( "=" ).append( Util.encode( (String)map.get(key) ) );
                         separator = "&";
                 }
                 

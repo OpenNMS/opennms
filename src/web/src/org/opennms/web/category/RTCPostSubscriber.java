@@ -49,6 +49,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
+import org.opennms.web.Util;
 
 
 /**
@@ -183,10 +184,10 @@ public class RTCPostSubscriber extends Object
         String baseUrl = Vault.getProperty("opennms.rtc-client.http-post.base-url");
 
         if( baseUrl.endsWith("/") ) {
-            this.url = baseUrl + java.net.URLEncoder.encode(categoryName);                
+            this.url = baseUrl + Util.encode(categoryName);                
         }
         else {
-            this.url = baseUrl + "/" + java.net.URLEncoder.encode(categoryName);
+            this.url = baseUrl + "/" + Util.encode(categoryName);
         }
         
         log.debug("RTCPostSubscriber initialized: url=" + this.url + ", user=" + this.username);

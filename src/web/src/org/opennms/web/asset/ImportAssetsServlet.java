@@ -35,7 +35,6 @@
 package org.opennms.web.asset;
 
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -54,6 +53,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.web.MissingParameterException;
+import org.opennms.web.Util;
 
 
 /**
@@ -148,43 +148,43 @@ public class ImportAssetsServlet extends HttpServlet
 
 		//ignore tokens.get(0) = node label (for display only)
 		asset.setNodeId( Integer.parseInt( (String)tokens.get(1) ));
-		asset.setCategory( URLDecoder.decode( (String)tokens.get(2) ));
-		asset.setManufacturer( URLDecoder.decode( (String)tokens.get(3) ));
-		asset.setVendor( URLDecoder.decode( (String)tokens.get(4) ));
-		asset.setModelNumber( URLDecoder.decode( (String)tokens.get(5) ));
-		asset.setSerialNumber( URLDecoder.decode( (String)tokens.get(6) ));
-		asset.setDescription( URLDecoder.decode( (String)tokens.get(7) ));
-		asset.setCircuitId( URLDecoder.decode( (String)tokens.get(8) ));
-		asset.setAssetNumber( URLDecoder.decode( (String)tokens.get(9) ));
-		asset.setOperatingSystem( URLDecoder.decode( (String)tokens.get(10) ));
-		asset.setRack( URLDecoder.decode( (String)tokens.get(11) ));
-		asset.setSlot( URLDecoder.decode( (String)tokens.get(12) ));
-		asset.setPort( URLDecoder.decode( (String)tokens.get(13) ));
-		asset.setRegion( URLDecoder.decode( (String)tokens.get(14) ));
-		asset.setDivision( URLDecoder.decode( (String)tokens.get(15) ));
-		asset.setDepartment( URLDecoder.decode( (String)tokens.get(16) ));
-		asset.setAddress1( URLDecoder.decode( (String)tokens.get(17) ));
-		asset.setAddress2( URLDecoder.decode( (String)tokens.get(18) ));
-		asset.setCity( URLDecoder.decode( (String)tokens.get(19) ));
-		asset.setState( URLDecoder.decode( (String)tokens.get(20) ));
-		asset.setZip( URLDecoder.decode( (String)tokens.get(21) ));
-		asset.setBuilding( URLDecoder.decode( (String)tokens.get(22) ));
-		asset.setFloor( URLDecoder.decode( (String)tokens.get(23) ));
-		asset.setRoom( URLDecoder.decode( (String)tokens.get(24) ));
-		asset.setVendorPhone( URLDecoder.decode( (String)tokens.get(25) ));
-		asset.setVendorFax( URLDecoder.decode( (String)tokens.get(26) ));
-		asset.setDateInstalled( URLDecoder.decode( (String)tokens.get(27) ));
-		asset.setLease( URLDecoder.decode( (String)tokens.get(28) ));
-		asset.setLeaseExpires( URLDecoder.decode( (String)tokens.get(29) ));
-		asset.setSupportPhone( URLDecoder.decode( (String)tokens.get(30) ));
-		asset.setMaintContract( URLDecoder.decode( (String)tokens.get(31) ));
-		asset.setVendorAssetNumber( URLDecoder.decode( (String)tokens.get(32) ));
-		asset.setMaintContractExpires( URLDecoder.decode( (String)tokens.get(33) ));
-		asset.setDisplayCategory( URLDecoder.decode( (String)tokens.get(34) ));
-		asset.setNotifyCategory( URLDecoder.decode( (String)tokens.get(35) ));
-		asset.setPollerCategory( URLDecoder.decode( (String)tokens.get(36) ));
-		asset.setThresholdCategory( URLDecoder.decode( (String)tokens.get(37) ));
-		asset.setComments( URLDecoder.decode( (String)tokens.get(38) ));
+		asset.setCategory( Util.decode( (String)tokens.get(2) ));
+		asset.setManufacturer( Util.decode( (String)tokens.get(3) ));
+		asset.setVendor( Util.decode( (String)tokens.get(4) ));
+		asset.setModelNumber( Util.decode( (String)tokens.get(5) ));
+		asset.setSerialNumber( Util.decode( (String)tokens.get(6) ));
+		asset.setDescription( Util.decode( (String)tokens.get(7) ));
+		asset.setCircuitId( Util.decode( (String)tokens.get(8) ));
+		asset.setAssetNumber( Util.decode( (String)tokens.get(9) ));
+		asset.setOperatingSystem( Util.decode( (String)tokens.get(10) ));
+		asset.setRack( Util.decode( (String)tokens.get(11) ));
+		asset.setSlot( Util.decode( (String)tokens.get(12) ));
+		asset.setPort( Util.decode( (String)tokens.get(13) ));
+		asset.setRegion( Util.decode( (String)tokens.get(14) ));
+		asset.setDivision( Util.decode( (String)tokens.get(15) ));
+		asset.setDepartment( Util.decode( (String)tokens.get(16) ));
+		asset.setAddress1( Util.decode( (String)tokens.get(17) ));
+		asset.setAddress2( Util.decode( (String)tokens.get(18) ));
+		asset.setCity( Util.decode( (String)tokens.get(19) ));
+		asset.setState( Util.decode( (String)tokens.get(20) ));
+		asset.setZip( Util.decode( (String)tokens.get(21) ));
+		asset.setBuilding( Util.decode( (String)tokens.get(22) ));
+		asset.setFloor( Util.decode( (String)tokens.get(23) ));
+		asset.setRoom( Util.decode( (String)tokens.get(24) ));
+		asset.setVendorPhone( Util.decode( (String)tokens.get(25) ));
+		asset.setVendorFax( Util.decode( (String)tokens.get(26) ));
+		asset.setDateInstalled( Util.decode( (String)tokens.get(27) ));
+		asset.setLease( Util.decode( (String)tokens.get(28) ));
+		asset.setLeaseExpires( Util.decode( (String)tokens.get(29) ));
+		asset.setSupportPhone( Util.decode( (String)tokens.get(30) ));
+		asset.setMaintContract( Util.decode( (String)tokens.get(31) ));
+		asset.setVendorAssetNumber( Util.decode( (String)tokens.get(32) ));
+		asset.setMaintContractExpires( Util.decode( (String)tokens.get(33) ));
+		asset.setDisplayCategory( Util.decode( (String)tokens.get(34) ));
+		asset.setNotifyCategory( Util.decode( (String)tokens.get(35) ));
+		asset.setPollerCategory( Util.decode( (String)tokens.get(36) ));
+		asset.setThresholdCategory( Util.decode( (String)tokens.get(37) ));
+		asset.setComments( Util.decode( (String)tokens.get(38) ));
 
 		list.add( asset );
 	    }
