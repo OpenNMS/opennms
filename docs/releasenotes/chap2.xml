@@ -8,7 +8,7 @@
   in 1.0.0. The 1.1 tree is a development, or "unstable" tree, implementing a
   number of new features but without the testing that went into 1.0. When 1.1
   is mature enough, it will become 1.2, the next production or "stable"
-  release. This release, 1.1.3, is a major step toward that next stable
+  release. This release, 1.1.4, is a major step toward that next stable
   release.</para>
 
   <sect1>
@@ -25,7 +25,7 @@
     been added. Experimental tests have shown that the I/O subsystem is the
     bottle neck for Data Collector performance.</para>
 
-    <para>In order to increase the capacity or our data collector we have
+    <para>In order to increase the capacity of our data collector we have
     added an intelligent queuing system for all of our RRD Output. This
     improves performance for us in two ways. One is that it frees up the data
     collection threads to get back to the work of data collection right away.
@@ -33,12 +33,12 @@
     data related to latency. This makes the data much more accurate.</para>
 
     <para>The second way that the queuing system provides performance
-    improvements is by queuing collected data up on a per file basis. Since
+    improvements is by queuing collected data on a per file basis. Since
     writing a few extra bytes to an RRD file while its open anyway adds very
     little to the update time, this causes the average update cost per data
     point to go down the further the collector gets behind. What this means is
-    that you will not lose any data points if you collector is configured to
-    collect more than you I/O system can keep up with immediately. It just
+    that you will not lose any data points if the collector is configured to
+    collect more than you I/O system can read/write without queuing. It just
     means that the data that is in the files is behind the actual
     collection.</para>
 
@@ -47,7 +47,7 @@
     the collected data is zero valued. In most situations, data that has
     remained zero for a long period of time is unimportant data. For this
     reason we give files with non-zero data points priority over files that
-    have only zero data points. This way your systems that have only zero
+    have only zero data points. Monitored interfaces that have only zero
     ifErrors or ifDiscards, for example, will not hold up writing of the data
     for systems that have positive ifErrors and ifDiscards. Please see
     <filename>$OPENNMS_HOME/etc/rrd-configuration.properties</filename> for
@@ -69,23 +69,24 @@
     RRDs. An additional benefit of JRobin is that it is multi-thread enabled
     (unlike our libjrrd.so shared library that interacts with RRDTool) however
     this does not impact performance very much because the contention is not
-    the bottle neck. In fact on system that have 100 data collection threads
-    we found that have as few as 2-10 RRD write threads was sufficient to keep
-    up.</para>
+    the bottle neck. In fact, on some systems that have 
+    as many as 100 data collection threads,
+    we found that have as few as 2-10 RRD write threads were sufficient to 
+    populate the RRD files.</para>
 
     <para>The only unfortunate part of using JRobin is that the file format
-    for JRobin is not the same as for RRDTool. This means other tools that you
-    have that are using the RRD files will not work with JRobin RRD files and
+    for JRobin is not the same as for RRDTool. This means other tools you
+    may be using will not work with JRobin RRD files and
     will have to converted or replaced. JRobin does have some tools available
     and you should check out their website at www.jrobin.org to see what is
     available. Additionally, JRobin supports programmatically all of the
     features of RRDTool, so it should be easy to write a compatible tool. If
     you do so, please consider contributing it either to us or to the JRobin
-    team..</para>
+    team.</para>
 
     <para>The last benefit of JRobin is that is helps us to reach our goal of
-    a 100% Pure Java version of OpenNMS that can work write 'of the box' for
-    new users.</para>
+    a 100% Pure Java version of OpenNMS that can work 'out of the box' on
+    any system.</para>
 
     <para>Thanks go to the JRobin team for providing this excellent RRD
     implementation. Thanks also to Rackspace for providing the equipment to
@@ -93,11 +94,11 @@
 
     <bridgehead>Filter Parser Performance Enhancements</bridgehead>
 
-    <para>Thanks to Chris Fedde of OnCommand, we have found that the SQL
-    queries produced by our filtering code were at times extremely
+    <para>Thanks to Chris Fedde of On Command, we have found that the SQL
+    queries produced by our filtering code were, at times, extremely
     inefficient. On a moderately sized network of only 15K interfaces the
     queries used to define categories could take as long as three minutes on a
-    4 CPU system. As a result of this we have reworked the filter parser and
+    4 CPU system. As a result of this, we have reworked the filter parser and
     now produce much better queries. The equivalent query would now only take
     about a second on the same system. Thanks a lot to Ted Kaczmarek and
     Alexander Hoogerhuis for helping us test it.</para>
@@ -107,23 +108,19 @@
     <para>There have been a large number of bugs reported with respect to
     deleting nodes from the OpenNMS GUI. This code has been completely
     overhauled in OpenNMS 1.1.4. The new strategy has been to mark a
-    node/interface/service deleted when a node gets deleted rather than
+    node/interface/service deleted rather than
     actually deleting it. (The node completely removed from the database by
     Vacuumd discussed below.) This allows any web pages that are currently
-    viewing the node to react properly. In addition to this the code was
-    changed so that any deletion that occurs as a result of a single operation
-    (for example, deleting an node, deleted its interfaces, which deletes its
-    services) happens within a single transaction. This means that if a
-    failure occurs for any of these, then the entire transaction is aborted,
-    and you are not left with a half deleted node.</para>
+    viewing the node to react properly. Additionally, deletes now happen as 
+    database transactions providing for performance and data integrity 
+    (i.e. no orphaned interface records)
+    and you are not left with a half-deleted node.</para>
 
     <para>In addition to overhauling node deletion, we have also added the
-    ability to delete interfaces and services. If you visit the page for an
-    interface or a service as administrator, you will see a Delete link at the
-    top of the page. This enables you to delete the interface or service you
-    are viewing.</para>
+    ability to delete interfaces and services. Administrators have a delete 
+    link at the top of service and interface detail pages.</para>
 
-    <para>I think all the users of OpenNMS helped by writing defects and
+    <para>All the users of OpenNMS helped by writing defects and
     complaining about this bug. Special thanks to Ted Kaczmarek, Jonathan
     Sartin, and Mike Huot for their help testing and characterizing these
     problems and their solution.</para>
@@ -157,8 +154,9 @@
     being dropped and left for the garbage collector to clean up. This
     problem, which occurred primarily during discovery, would result in an
     abnormally large number of outstanding connections to the database to be
-    created. During discovery on large networks this can easily exceed the
-    configured limit on connections to PostgreSQL. Thanks to Chris Fedde and
+    cleaned up by the garbage collector. Discovery of large networks 
+    caused the number of connections to the database to easily grow beyond
+    the number allowed. Thanks to Chris Fedde and
     OnCommand for helping us track down this problem.</para>
 
     <bridgehead>JavaMail</bridgehead>
@@ -191,7 +189,7 @@
 
     <para>The <filename>javamail-configuration.properties</filename> file
     should be modified to specify the sender's address and the SMTP server
-    address. This file also provides support SMTP servers requiring user and
+    address. This file also provides support for SMTP servers requiring user and
     password authentication.</para>
 
     <para>There are also major changes to the
@@ -292,7 +290,7 @@
     would benefit from being able to key off of not only the event UEI, but a
     value within the event itself.</para>
 
-    <para>With 1.1.4, the ability has been added to key of the parameter name
+    <para>With 1.1.4, the ability has been added to key off the parameter name
     and to match it with a particular value.</para>
 
     <programlisting>    &lt;notification name="HighThreshold" status="on"&gt;
