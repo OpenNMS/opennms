@@ -323,7 +323,7 @@
 			<systemDef name = "Enterprise">
 				<sysoidMask>.1.3.6.1.4.1.</sysoidMask>
 				<collect>
-					<includeGroup>mib2-interfaces-snmp</includeGroup>
+					<includeGroup>mib2-interfaces</includeGroup>
 				</collect>
 			</systemDef>		
 
