@@ -246,7 +246,10 @@ public class SnmpSession extends Object {
                     req.m_expired = true; // mark it as expired
                     req.m_handler.snmpReceivedPdu(req.m_session, ((SnmpPduRequest) pdu).getCommand(), (SnmpPduRequest) pdu);
                 } else {
-                    m_defHandler.snmpReceivedPdu(null, cmd, pdu);
+                    if (m_defHandler != null)
+                        m_defHandler.snmpReceivedPdu(null, cmd, pdu);
+                    else
+                        
                 }
             }
         }
