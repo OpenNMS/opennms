@@ -226,58 +226,46 @@ abstract public class PollableContainer extends PollableElement {
         };
         forEachMember(iter);
     }
+
     
     
-    protected void processComingUp(Date date) {
-        PollEvent cause = getCause();
-        super.processComingUp(date);
-        processMemberLingeringStatusChanges(cause, date);
+    protected void processResolution(PollEvent resolvedCause, PollEvent resolution) {
+        super.processResolution(resolvedCause, resolution);
+        processLingeringMemberCauses(resolvedCause, resolution);
     }
-    /**
-     * @param date
-     */
-    private void processMemberLingeringStatusChanges(final PollEvent cause, final Date date) {
+
+    private void processLingeringMemberCauses(final PollEvent resolvedCause, final PollEvent resolution) {
         Iter iter = new Iter() {
             public void forEachElement(PollableElement elem) {
-                elem.processLingeringStatusChanges(cause, date);
+                elem.processLingeringCauses(resolvedCause, resolution);
             }
             
         };
         forEachMember(iter);
-        
     }
-
-    protected void processGoingDown(Date date) {
-        super.processGoingDown(date);
+    
+    
+    protected void processCause(final PollEvent cause) {
+        super.processCause(cause);
+        Iter iter = new Iter() {
+            public void forEachElement(PollableElement elem) {
+                elem.processCause(cause);
+            }
+            
+        };
+        forEachMember(iter);
     }
-    public void processLingeringStatusChanges(PollEvent cause, Date date) {
-        super.processLingeringStatusChanges(cause, date);
-        if (getStatus().isUp())
-            processMemberLingeringStatusChanges(getCause(), date);
-    }
- 
-    protected void createOutage(final PollEvent cause) {
-        if (!hasOpenOutage()) {
-            Iter iter = new Iter() {
-                public void forEachElement(PollableElement member) {
-                    member.createOutage(cause);
-                }
-                
-            };
-            forEachMember(iter);
-        }
-        super.createOutage(cause);
-    }
-    protected void resolveOutage(final PollEvent resolution) {
-        if (hasOpenOutage()) {
-            Iter iter = new Iter() {
-                public void forEachElement(PollableElement member) {
-                    member.resolveOutage(resolution);
-                }
-                
-            };
-            forEachMember(iter);
-        }
-        super.resolveOutage(resolution);
+    
+    
+    protected void resolveAllOutages(final PollEvent resolvedCause, final PollEvent resolution) {
+        super.resolveAllOutages(resolvedCause, resolution);
+        Iter iter = new Iter() {
+            public void forEachElement(PollableElement elem) {
+                if (!hasOpenOutage())
+                    elem.resolveAllOutages(resolvedCause, resolution);
+            }
+            
+        };
+        forEachMember(iter);
     }
 }

@@ -920,8 +920,7 @@ public class PollablesTest extends TestCase {
         
     }
     
-    // TODO: make this work
-    public void xxtestIndependentOutageEvents() throws Exception {
+    public void testIndependentOutageEventsUpTogether() throws Exception {
         anticipateDown(mDot1Smtp);
         
         mDot1Smtp.bringDown();
@@ -955,6 +954,52 @@ public class PollablesTest extends TestCase {
 
 
     }
+    
+    public void testIndependentOutageEventsUpSeparately() throws Exception {
+        anticipateDown(mDot1Smtp);
+        
+        mDot1Smtp.bringDown();
+        
+        pDot1Smtp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+
+        verifyAnticipated();
+        
+        anticipateDown(mNode1);
+
+        mNode1.bringDown();
+        
+        pDot1Icmp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+        
+        anticipateUp(mNode1);
+        m_outageAnticipator.deanticipateOutageClosed(mDot1Smtp, mNode1.createUpEvent());
+        
+        mNode1.bringUp();
+        mDot1Smtp.bringDown();
+        
+        pDot1Icmp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+
+        anticipateUp(mDot1Smtp);
+
+        mDot1Smtp.bringUp();
+        
+        pDot1Smtp.doPoll();
+        
+        m_network.processStatusChange(new Date());
+        
+        verifyAnticipated();
+    }
+    
+    
 
     /**
      * 

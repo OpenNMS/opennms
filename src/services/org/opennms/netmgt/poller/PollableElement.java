@@ -104,8 +104,10 @@ abstract public class PollableElement {
      * @return
      */
     public PollStatus doPoll(PollableElement elem) {
-        if (getParent() == null)
+        if (getParent() == null) {
+            resetStatusChanged();
             return poll(elem);
+        }
         else
             return getParent().doPoll(elem);
     }
@@ -145,10 +147,7 @@ abstract public class PollableElement {
      * @param cause TODO
      */
     protected void createOutage(PollEvent cause) {
-        if (!hasOpenOutage())
-            m_cause = cause;
-    
-        resetStatusChanged();
+        m_cause = cause;
     }
 
     /**
@@ -156,15 +155,17 @@ abstract public class PollableElement {
      * @param e
      */
     protected void resolveOutage(PollEvent resolution) {
-        if (hasOpenOutage())
-            m_cause = null;
-        resetStatusChanged();
+        m_cause = null;
     }
     
     protected boolean hasOpenOutage() {
         return m_cause != null;
     }
     
+    public PollEvent getCause() {
+        return m_cause;
+    }
+
     /**
      * @param date
      * 
@@ -180,28 +181,39 @@ abstract public class PollableElement {
     protected void processComingUp(Date date) {
         Event upEvent = getContext().sendEvent(createUpEvent(date));
         PollEvent resolution = new PollEvent(upEvent, date);
+        processResolution(getCause(), resolution);
+    }
+
+    protected void processResolution(PollEvent cause, PollEvent resolution) {
         resolveOutage(resolution);
     }
 
     protected void processGoingDown(Date date) {
         Event downEvent = getContext().sendEvent(createDownEvent(date));
         PollEvent cause = new PollEvent(downEvent, date);
-        createOutage(cause);
+        processCause(cause);
     }
 
-    /**
-     * @param date
-     */
-    public void processLingeringStatusChanges(PollEvent cause, Date date) {
-        if (getStatus().isDown()) {
-            Event downEvent = getContext().sendEvent(createDownEvent(date));
-            PollEvent newCause = new PollEvent(downEvent, date);
-            createOutage(newCause);
+    protected void processCause(PollEvent cause) {
+        if (!hasOpenOutage())
+            createOutage(cause);
+    }
+
+    protected void resolveAllOutages(PollEvent resolvedCause, PollEvent resolution) {
+        if (resolvedCause.equals(getCause()))
+            resolveOutage(resolution);
+    }
+    
+    protected void processLingeringCauses(PollEvent resolvedCause, PollEvent resolution) {
+        if (getStatus().isDown() && resolvedCause.equals(getCause())) {
+            resolveAllOutages(resolvedCause, resolution);
+            processGoingDown(resolution.getDate());
+        } else if (getStatus().isUp() && resolvedCause.equals(getCause())) {
+            processResolution(resolvedCause, resolution);
+        } else if (getStatus().isUp() && !resolvedCause.equals(getCause())) {
+            processComingUp(resolution.getDate());
         }
     }
     
-    public PollEvent getCause() {
-        return m_cause;
-    }
 
 }

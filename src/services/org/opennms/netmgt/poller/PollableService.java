@@ -151,18 +151,14 @@ public class PollableService extends PollableElement {
         return getContext().createEvent(EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), date);
     }
 
-    protected void createOutage(PollEvent cause) {
-        if (!hasOpenOutage()) {
-            getContext().openOutage(this, cause.getEvent());
-        }
+    public void createOutage(PollEvent cause) {
         super.createOutage(cause);
+        getContext().openOutage(this, cause.getEvent());
     }
     protected void resolveOutage(PollEvent resolution) {
-        if (hasOpenOutage()) {
-            getContext().resolveOutage(this, resolution.getEvent());
-        }
         super.resolveOutage(resolution);
+        getContext().resolveOutage(this, resolution.getEvent());
     }
-    
+
     public String toString() { return getInterface()+":"+getSvcName(); }
 }
