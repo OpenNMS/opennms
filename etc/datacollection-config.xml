@@ -616,6 +616,7 @@
 					<includeGroup>mib2-host-resources-storage</includeGroup> 
 					<includeGroup>mib2-host-resources-system</includeGroup> 
 					<includeGroup>mib2-host-resources-memory</includeGroup> 
+					<includeGroup>net-snmp-root-disk</includeGroup> 
 					<includeGroup>ucd-loadavg</includeGroup> 
 					<includeGroup>ucd-memory</includeGroup> 
 					<includeGroup>ucd-sysstat</includeGroup> 
@@ -628,6 +629,7 @@
 					<includeGroup>mib2-host-resources-storage</includeGroup> 
 					<includeGroup>mib2-host-resources-system</includeGroup> 
 					<includeGroup>mib2-host-resources-memory</includeGroup> 
+					<includeGroup>net-snmp-root-disk</includeGroup> 
 					<includeGroup>ucd-loadavg</includeGroup> 
 					<includeGroup>ucd-memory</includeGroup> 
 					<includeGroup>ucd-sysstat</includeGroup> 
