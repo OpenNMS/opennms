@@ -34,6 +34,9 @@ import java.io.InterruptedIOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import java.nio.channels.SocketChannel;
+import org.opennms.netmgt.utils.SocketChannelUtil;
+
 import java.net.Socket;
 import java.net.InetAddress;
 import java.net.ConnectException;
@@ -167,17 +170,22 @@ public class HttpPlugin
 		{
 			log.debug(getClass().getName()+".isServer: attempt " + attempts + " to connect " + host.getHostAddress() + ":" + port + ", timeout=" + timeout);
 
-			Socket  portal    = null; 
+                        SocketChannel sChannel = null;
 			try
 			{
 				// create a connected socket
 				//
-				portal = new Socket(host, port);
-				portal.setSoTimeout(timeout);	
+                                sChannel = SocketChannelUtil.getConnectedSocketChannel(host, port, timeout);
+                                if (sChannel == null)
+                                {
+                                        log.debug("HttpPlugin: did not connect to host within timeout: " + timeout +" attempt: " + attempts);
+                                        continue;
+                                }
+                                log.debug("HttpPlugin: connected to host: " + host + " on port: " + port);
 
-				BufferedReader lineRdr = new BufferedReader(new InputStreamReader(portal.getInputStream()));
+                                BufferedReader lineRdr = new BufferedReader(new InputStreamReader(sChannel.socket().getInputStream()));
 				
-				portal.getOutputStream().write(QUERY_STRING.getBytes());
+				sChannel.socket().getOutputStream().write(QUERY_STRING.getBytes());
 				String line = null;
 				StringBuffer response = new StringBuffer();
 				while( (line=lineRdr.readLine())!=null)
@@ -237,8 +245,8 @@ public class HttpPlugin
 			{
 				try
 				{
-					if(portal != null)
-						portal.close();
+					if(sChannel != null)
+						sChannel.close();
 				}
 				catch(IOException e) { }
 			}

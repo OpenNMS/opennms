@@ -34,6 +34,9 @@ import java.io.InterruptedIOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import java.nio.channels.SocketChannel;
+import org.opennms.netmgt.utils.SocketChannelUtil;
+
 import java.net.Socket;
 import java.net.InetAddress;
 import java.net.ConnectException;
@@ -101,13 +104,19 @@ public final class TcpPlugin
 		boolean isAServer = false;
 		for (int attempts=0; attempts <= retries && !isAServer; attempts++)
 		{
-			Socket  portal    = null;
+                        SocketChannel sChannel = null;
 			try
 			{
 				// create a connected socket
 				//
-				portal = new Socket(host, port);
-				portal.setSoTimeout(timeout); // 3 second blocking time!
+                                sChannel = SocketChannelUtil.getConnectedSocketChannel(host, port, timeout);
+                                if (sChannel == null)
+                                {
+                                        log.debug("TcpPlugin: did not connect to host within timeout: " + timeout +" attempt: " + attempts);
+                                        continue;
+                                }
+                                log.debug("TcpPlugin: connected to host: " + host + " on port: " + port);
+
 			
 				// If banner matching string is null or wildcard ("*") then we 
 				// only need to test connectivity and we've got that!
@@ -120,7 +129,8 @@ public final class TcpPlugin
 				{
 					// get a line reader
 					//
-					BufferedReader lineRdr = new BufferedReader(new InputStreamReader(portal.getInputStream()));
+	                                BufferedReader lineRdr = new BufferedReader(new InputStreamReader(sChannel.socket().getInputStream()));
+
 				
 					// Read the server's banner line ouptput and validate it against
 					// the bannerMatch parameter to determine if this interface supports the service.
@@ -183,8 +193,8 @@ public final class TcpPlugin
 			{
 				try
 				{
-					if(portal != null)
-						portal.close();
+                                        if(sChannel != null)
+                                                sChannel.close();
 				}
 				catch(IOException e) { }
 			}

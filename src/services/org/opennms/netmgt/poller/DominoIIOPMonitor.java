@@ -30,6 +30,10 @@ import java.lang.*;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+
+import java.nio.channels.SocketChannel;
+import org.opennms.netmgt.utils.SocketChannelUtil;
 
 import java.net.Socket;
 import java.net.InetAddress;
@@ -142,7 +146,17 @@ final class DominoIIOPMonitor
 		//
 		try {
 			String IOR = retrieveIORText(ipv4Addr.getHostAddress(), IORport);
-		} catch (Exception e)
+		} 
+                catch(FileNotFoundException e)
+                {
+                        // This is an expected exception
+                        //
+			if(log.isDebugEnabled())
+				log.debug("DominoIIOPMonitor: failed to get the corba IOR from " + ipv4Addr, e);
+			return serviceStatus;
+                }
+
+		catch (Exception e)
 		{
 			if(log.isDebugEnabled())
 				log.debug("DominoIIOPMonitor: failed to get the corba IOR from " + ipv4Addr, e);
@@ -164,14 +178,20 @@ final class DominoIIOPMonitor
 		//SO LETS DO IT THE OLD FASHIONED WAY
 		for (int attempts=0; attempts <= retry && serviceStatus != SERVICE_AVAILABLE; attempts++)
 		{
-			Socket portal = null;
+                        SocketChannel sChannel = null;
 			try
 			{
 				//
 				// create a connected socket
 				//
-				portal = new Socket(ipv4Addr, port);
-				portal.setSoTimeout(timeout);
+                                sChannel = SocketChannelUtil.getConnectedSocketChannel(ipv4Addr, port, timeout);
+                                if (sChannel == null)
+                                {
+                                        log.debug("DominoIIOPMonitor: did not connect to host within timeout: " + timeout +" attempt: " + attempts);
+                                        continue;
+                                }
+                                log.debug("DominoIIOPMonitor: connected to host: " + ipv4Addr + " on port: " + port);
+
 				
 				//got here so its up...
 				serviceStatus = SERVICE_AVAILABLE;
@@ -182,6 +202,13 @@ final class DominoIIOPMonitor
 				if(log.isEnabledFor(Priority.WARN))
 					log.warn("DominoIIOPMonitor: No route to host exception for address " + ipv4Addr.getHostAddress(), e);
 				break; // Break out of for(;;)
+			}
+			catch(InterruptedException e)
+			{
+				// Ignore
+				e.fillInStackTrace();
+				if(log.isDebugEnabled())
+					log.debug("DominoIIOPMonitor: Interrupted exception for address: " + ipv4Addr, e);
 			}
 			catch(ConnectException e)
 			{
@@ -202,8 +229,8 @@ final class DominoIIOPMonitor
 				try
 				{
 					// Close the socket
-					if(portal != null)
-						portal.close();
+                                        if(sChannel != null)
+                                                sChannel.close();
 				}
 				catch(IOException e) 
 				{

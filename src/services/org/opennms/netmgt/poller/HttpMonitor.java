@@ -31,6 +31,9 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import java.nio.channels.SocketChannel;
+import org.opennms.netmgt.utils.SocketChannelUtil;
+
 import java.net.Socket;
 import java.net.InetAddress;
 import java.net.ConnectException;
@@ -166,28 +169,35 @@ final class HttpMonitor
 
 			for (int attempts=0; attempts <= retry && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; attempts++)
 			{
-				Socket portal = null;
+                        	SocketChannel sChannel = null;
 				try
 				{
 					//
 					// create a connected socket
 					//
-					portal = new Socket(ipv4Addr, currentPort);
+                                	sChannel = SocketChannelUtil.getConnectedSocketChannel(ipv4Addr, currentPort, timeout);
+                                	if (sChannel == null)
+                                	{
+                                        	log.debug("HttpMonitor: did not connect to host within timeout: " + timeout +" attempt: " + attempts);
+                                        	continue;
+                                	}
+                                	log.debug("HttpMonitor: connected to host: " + ipv4Addr + " on port: " + currentPort);
+
 					// We're connected, so upgrade status to unresponsive
 					serviceStatus = SERVICE_UNRESPONSIVE;
-					portal.setSoTimeout(timeout);
 					
 					//
 					// Issue HTTP 'GET' command and check the return code in the response
 					//
 					long sentTime = System.currentTimeMillis();
-					portal.getOutputStream().write(cmd.getBytes());
+                                        sChannel.socket().getOutputStream().write(cmd.getBytes());
+
 
 					//
 					// Get a buffered input stream that will read a line
 					// at a time
 					//
-					BufferedReader lineRdr = new BufferedReader(new InputStreamReader(portal.getInputStream()));
+	                                BufferedReader lineRdr = new BufferedReader(new InputStreamReader(sChannel.socket().getInputStream()));
 					String line = lineRdr.readLine();
 					responseTime = System.currentTimeMillis() - sentTime;
 					if (line == null)
@@ -271,6 +281,13 @@ final class HttpMonitor
 					portIndex = ports.length; // Will cause outer for(;;) to terminate
 					break; 			  // Break out of inner for(;;)
 				}
+                        	catch(InterruptedException e)
+                        	{
+                                	// Ignore
+                                	e.fillInStackTrace();
+                                	if(log.isDebugEnabled())
+                                	        log.debug("HttpMonitor: Interrupted exception for address: " + ipv4Addr, e);
+                        	}
 				catch(ConnectException e)
 				{
 					// Connection Refused!!  No need to perform retries for this port.
@@ -292,8 +309,8 @@ final class HttpMonitor
 					try
 					{
 						// Close the socket
-						if(portal != null)
-							portal.close();
+                                        if(sChannel != null)
+                                                sChannel.close();
 					}
 					catch(IOException e) 
 					{ 

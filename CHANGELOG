@@ -1,5 +1,7 @@
 1.0.0 to 1.1.0
 ----------------------------------------------------------------------
+- Changed most capsd plugins and poller service monitors to 
+  use non-blocking I/O in case of NoRouteToHost.
 - Added the ability to choose NOT to notify on a given service
   via the WebUI. (Thx Nick W).
 - Added two new fields for notifications: %nodelabel% will return

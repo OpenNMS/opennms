@@ -33,6 +33,9 @@ import java.io.InterruptedIOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import java.nio.channels.SocketChannel;
+import org.opennms.netmgt.utils.SocketChannelUtil;
+
 import java.net.Socket;
 import java.net.InetAddress;
 import java.net.ConnectException;
@@ -101,17 +104,21 @@ public final class Pop3Plugin
 		boolean isAServer = false;
 		for (int attempts=0; attempts <= retries && !isAServer; attempts++)
 		{
-			Socket  portal    = null;
+                        SocketChannel sChannel = null;
 			try
 			{
-				// create a connected socket
-				//
-				portal = new Socket(host, port);
-				portal.setSoTimeout(timeout); // 3 second blocking time!
+                                sChannel = SocketChannelUtil.getConnectedSocketChannel(host, port, timeout);
+                                if (sChannel == null)
+                                {
+                                        log.debug("Pop3Plugin: did not connect to host within timeout: " + timeout +" attempt: " + attempts);
+                                        continue;
+                                }
+                                log.debug("Pop3Plugin: connected to host: " + host + " on port: " + port);
 
-				// get a line, by line reader
-				//
-				BufferedReader lineRdr = new BufferedReader(new InputStreamReader(portal.getInputStream()));
+                                // Allocate a line reader
+                                //
+                                BufferedReader lineRdr = new BufferedReader(new InputStreamReader(sChannel.socket().getInputStream()));
+
 			
 				// Tokenize the Banner Line, and check the first 
 				// line for a valid return.
@@ -124,7 +131,7 @@ public final class Pop3Plugin
 					// POP3 server should recoginize the QUIT command
 					//
 					String cmd = "QUIT\r\n";
-					portal.getOutputStream().write(cmd.getBytes());
+                                        sChannel.socket().getOutputStream().write(cmd.getBytes());
 					
 					//
 					// Token the response to the QUIT command
@@ -172,8 +179,8 @@ public final class Pop3Plugin
 			{
 				try
 				{
-					if(portal != null)
-						portal.close();
+                                        if(sChannel != null)
+                                                sChannel.close();
 				}
 				catch(IOException e) { }
 			}

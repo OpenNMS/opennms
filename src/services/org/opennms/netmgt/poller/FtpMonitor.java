@@ -30,6 +30,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 
+import java.nio.channels.SocketChannel;
+import org.opennms.netmgt.utils.SocketChannelUtil;
+
 import java.net.Socket;
 import java.net.InetAddress;
 import java.net.ConnectException;
@@ -154,18 +157,24 @@ final class FtpMonitor
 		int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
 		for (int attempts=0; attempts <= retry && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; attempts++)
 		{
-			Socket portal = null;
+                        SocketChannel sChannel = null;
 			try
 			{
 				//
 				// create a connected socket
 				//
-				portal = new Socket(ipv4Addr, port);
+                                sChannel = SocketChannelUtil.getConnectedSocketChannel(ipv4Addr, port, timeout);
+                                if (sChannel == null)
+                                {
+                                        log.debug("FtpMonitor: did not connect to host within timeout: " + timeout +" attempt: " + attempts);
+                                        continue;
+                                }
+                                log.debug("FtpMonitor: connected to host: " + ipv4Addr + " on port: " + port);
 				// We're connected, so upgrade status to unresponsive
 				serviceStatus = SERVICE_UNRESPONSIVE;
-				portal.setSoTimeout(timeout);
 
-				BufferedReader lineRdr = new BufferedReader(new InputStreamReader(portal.getInputStream()));
+                                BufferedReader lineRdr = new BufferedReader(new InputStreamReader(sChannel.socket().getInputStream()));
+
 				
 				// Tokenize the Banner Line, and check the first 
 				// line for a valid return.
@@ -232,7 +241,7 @@ final class FtpMonitor
 						// send the use string
 						//
 						String cmd = "user " + userid + "\r\n";
-						portal.getOutputStream().write(cmd.getBytes());
+	                                        sChannel.socket().getOutputStream().write(cmd.getBytes());
 
 						// get the response code.
 						//
@@ -254,7 +263,7 @@ final class FtpMonitor
 							// send the password
 							//
 							cmd = "pass " + password + "\r\n";
-							portal.getOutputStream().write(cmd.getBytes());
+	                                        	sChannel.socket().getOutputStream().write(cmd.getBytes());
 		
 							// get the response...check for multi-line response
 							//
@@ -317,7 +326,7 @@ final class FtpMonitor
 						// FTP should recognize the QUIT command
 						//
 						String cmd = "QUIT\r\n";
-						portal.getOutputStream().write(cmd.getBytes());
+	                                        sChannel.socket().getOutputStream().write(cmd.getBytes());
 					
 						// get the returned string, tokenize, and 
 						// verify the correct output.
@@ -398,6 +407,13 @@ final class FtpMonitor
 				log.warn("FtpMonitor.poll: No route to host exception for address: " + ipv4Addr, e);
 				break; // Break out of for(;;)
 			}
+                        catch(InterruptedException e)
+                        {
+                                // Ignore
+                                e.fillInStackTrace();
+                                if(log.isDebugEnabled())
+                                        log.debug("FtpMonitor: Interrupted exception for address: " + ipv4Addr, e);
+                        }
 			catch(ConnectException e)
 			{
 				// Ignore
@@ -415,8 +431,8 @@ final class FtpMonitor
 				try
 				{
 					// Close the socket
-					if(portal != null)
-						portal.close();
+                                        if(sChannel != null)
+                                                sChannel.close();
 				}
 				catch(IOException e) 
 				{

@@ -32,6 +32,9 @@ import java.io.InterruptedIOException;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 
+import java.nio.channels.SocketChannel;
+import org.opennms.netmgt.utils.SocketChannelUtil;
+
 import java.net.*;
 
 import java.util.Map;
@@ -147,14 +150,20 @@ final class LdapMonitor
 		//a no way to route to the address, don't iterate through the retries, as a
 		//NoRouteToHost exception will only be thrown after about 5 minutes, thus tying
 		//up the thread
-		Socket portal = null;
+                SocketChannel sChannel = null;
 		try
 		{
-			portal = new Socket(InetAddress.getByName(address), ldapPort);
+                        sChannel = SocketChannelUtil.getConnectedSocketChannel((InetAddress)iface.getAddress(), ldapPort, timeout);
+                        if (sChannel == null)
+                        {
+                                log.debug("LdapMonitor: did not connect to host within timeout: " + timeout);
+                        }
+                        log.debug("LdapMonitor: connected to host: " + address + " on port: " + ldapPort);
+
 			// We're connected, so upgrade status to unresponsive
 			serviceStatus = SERVICE_UNRESPONSIVE;
-			portal.setSoTimeout(timeout);
-			portal.close();
+                        if(sChannel != null)
+                                sChannel.close();
 			
 			//lets detect the service
 			LDAPConnection lc = new LDAPConnection(new TimeoutLDAPSocket(timeout));
@@ -230,6 +239,13 @@ final class LdapMonitor
 				{ log.debug(e); }
 			}
 		}
+                catch(InterruptedException e)
+                {
+                        // Ignore
+                        e.fillInStackTrace();
+                        if(log.isDebugEnabled())
+                                log.debug("LdapMonitor: Interrupted exception for address: " + address, e);
+                }
 		catch(ConnectException e)
 		{
 			// Connection refused!!  No need to perform retries.
@@ -251,15 +267,6 @@ final class LdapMonitor
 		catch(Throwable t)
 		{
 			log.warn(getClass().getName()+": An undeclared throwable exception caught contacting host " + address, t);
-		}
-		finally
-		{
-			try
-			{
-				if(portal != null)
-					portal.close();
-			}
-			catch(IOException e) { }
 		}
 		
 		return serviceStatus;

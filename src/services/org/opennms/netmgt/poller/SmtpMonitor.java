@@ -30,6 +30,9 @@ import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import java.nio.channels.SocketChannel;
+import org.opennms.netmgt.utils.SocketChannelUtil;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.net.Socket;
@@ -169,19 +172,26 @@ final class SmtpMonitor
 		int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
 		for (int attempts=0; attempts <= retry && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; attempts++)
 		{
-			Socket portal = null;
+                SocketChannel sChannel = null;
 			try
 			{
 				String localName = InetAddress.getLocalHost().getHostName();
 
 				// create a connected socket
 				//
-				portal = new Socket(ipv4Addr, port);
+                                sChannel = SocketChannelUtil.getConnectedSocketChannel(ipv4Addr, port, timeout);
+                                if (sChannel == null)
+                                {
+                                        log.debug("SmtpMonitor: did not connect to host within timeout: " + timeout +" attempt: " + attempts);
+                                        continue;
+                                }
+                                log.debug("SmtpMonitor: connected to host: " + ipv4Addr + " on port: " + port);
+
 				// We're connected, so upgrade status to unresponsive
 				serviceStatus = SERVICE_UNRESPONSIVE;
-				portal.setSoTimeout(timeout);
 
-				BufferedReader rdr = new BufferedReader(new InputStreamReader(portal.getInputStream()));
+                                BufferedReader rdr = new BufferedReader(new InputStreamReader(sChannel.socket().getInputStream()));
+
 				
 				//
 				// Tokenize the Banner Line, and check the first 
@@ -230,7 +240,8 @@ final class SmtpMonitor
 					// Send the HELO command
 					//
 					String cmd = "HELO " + LOCALHOST_NAME + "\r\n";
-					portal.getOutputStream().write(cmd.getBytes());
+                                        sChannel.socket().getOutputStream().write(cmd.getBytes());
+
 					
 					//
 					// get the returned string, tokenize, and 
@@ -273,7 +284,8 @@ final class SmtpMonitor
 					if(rc == 250)
 					{
 						cmd = "QUIT\r\n";
-						portal.getOutputStream().write(cmd.getBytes());
+	                                        sChannel.socket().getOutputStream().write(cmd.getBytes());
+
 					
 						//
 						// get the returned string, tokenize, and 
@@ -341,6 +353,13 @@ final class SmtpMonitor
 					log.warn("poll: No route to host exception for address " + ipv4Addr.getHostAddress(), e);
 				break; // Break out of for(;;)
 			}
+                        catch(InterruptedException e)
+                        {
+                                // Ignore
+                                e.fillInStackTrace();
+                                if(log.isDebugEnabled())
+                                        log.debug("SmtpMonitor: Interrupted exception for address: " + ipv4Addr, e);
+                        }
 			catch(ConnectException e)
 			{
 				// Ignore
@@ -360,8 +379,8 @@ final class SmtpMonitor
 				try
 				{
 					// Close the socket
-					if(portal != null)
-						portal.close();
+                                        if(sChannel != null)
+                                                sChannel.close();
 				}
 				catch(IOException e) 
 				{ 

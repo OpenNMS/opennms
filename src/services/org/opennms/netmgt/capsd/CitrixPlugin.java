@@ -33,6 +33,9 @@ import java.io.InterruptedIOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import java.nio.channels.SocketChannel;
+import org.opennms.netmgt.utils.SocketChannelUtil;
+
 import java.net.Socket;
 import java.net.InetAddress;
 import java.net.ConnectException;
@@ -109,17 +112,22 @@ public final class CitrixPlugin
 		boolean isAServer = false;
 		for (int attempts=0; attempts <= retries && !isAServer; attempts++)
 		{
-			Socket portal = null;
+			SocketChannel sChannel = null;
 			try
 			{
 				// create a connected socket
 				//
-				portal = new Socket(host, port);
-				portal.setSoTimeout(timeout); // 3 second blocking time!
+                                sChannel = SocketChannelUtil.getConnectedSocketChannel(host, port, timeout);
+                                if (sChannel == null)
+                                {
+                                        log.debug("CitrixPlugin: did not connect to host within timeout: " + timeout +" attempt: " + attempts);
+                                        continue;
+                                }
+                                log.debug("CitrixPlugin: connected to host: " + host + " on port: " + port);
 
 				// Allocate a line reader
 				//
-				BufferedReader reader = new BufferedReader(new InputStreamReader(portal.getInputStream()));
+				BufferedReader reader = new BufferedReader(new InputStreamReader(sChannel.socket().getInputStream()));
 				StringBuffer buffer = new StringBuffer();
 				while(!isAServer)
 				{
@@ -166,8 +174,8 @@ public final class CitrixPlugin
 			{
 				try
 				{
-					if(portal != null)
-						portal.close();
+                                        if(sChannel != null)
+                                                sChannel.close();
 				}
 				catch(IOException e) { }
 			}

@@ -34,6 +34,9 @@ import java.io.InterruptedIOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import java.nio.channels.SocketChannel;
+import org.opennms.netmgt.utils.SocketChannelUtil;
+
 import java.net.Socket;
 import java.net.InetAddress;
 import java.net.ConnectException;
@@ -131,13 +134,14 @@ public final class LdapPlugin
 		//a no way to route to the address, don't iterate through the retries, as a
 		//NoRouteToHost exception will only be thrown after about 5 minutes, thus tying
 		//up the thread
-		Socket portal = null;
+                SocketChannel sChannel = null;
+
 		try
 		{
-			portal = new Socket(host.getHostAddress(), port);
-			portal.setSoTimeout(timeout);
-			portal.close();
-			
+                        sChannel = SocketChannelUtil.getConnectedSocketChannel(host, port, timeout);
+                        if(sChannel != null)
+                                sChannel.close();
+
 			//now go ahead and attempt to determin if LDAP is on this host
 			for (int attempts=0; attempts <= retries && !isAServer; attempts++)
 			{
@@ -174,15 +178,6 @@ public final class LdapPlugin
 		catch(Throwable t)
 		{
 			log.warn(getClass().getName()+": An undeclared throwable exception caught contacting host " + host.getHostAddress(), t);
-		}
-		finally
-		{
-			try
-			{
-				if(portal != null)
-					portal.close();
-			}
-			catch(IOException e) { }
 		}
 
 		return isAServer;

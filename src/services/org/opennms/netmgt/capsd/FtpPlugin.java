@@ -33,6 +33,9 @@ import java.io.InterruptedIOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import java.nio.channels.SocketChannel;
+import org.opennms.netmgt.utils.SocketChannelUtil;
+
 import java.net.Socket;
 import java.net.InetAddress;
 import java.net.ConnectException;
@@ -54,9 +57,10 @@ import org.opennms.netmgt.utils.ParameterMap;
  * interface that allows it to be used along with other
  * plugins by the daemon.</P>
  *
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus</A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
  * @author <A HREF="mailto:weave@opennms.org">Weave</A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS</A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS</A>
  *
  *
  */
@@ -127,17 +131,22 @@ public final class FtpPlugin
 		boolean isAServer = false;
 		for (int attempts=0; attempts <= retries && !isAServer; attempts++)
 		{
-			Socket portal = null;
+			SocketChannel sChannel = null;
 			try
 			{
 				// create a connected socket
 				//
-				portal = new Socket(host, port);
-				portal.setSoTimeout(timeout); // 3 second blocking time!
+				sChannel = SocketChannelUtil.getConnectedSocketChannel(host, port, timeout);
+				if (sChannel == null)
+				{
+					log.debug("FtpPlugin: did not connect to host within timeout: " + timeout +" attempt: " + attempts);
+					continue;
+				}
+				log.debug("FtpPlugin: connected to host: " + host + " on port: " + port);
 
 				// Allocate a line reader
 				//
-				BufferedReader lineRdr = new BufferedReader(new InputStreamReader(portal.getInputStream()));
+				BufferedReader lineRdr = new BufferedReader(new InputStreamReader(sChannel.socket().getInputStream()));
 			
 				// Read responses from the server. The initial line should just
 				// be a banner, but go ahead and check for multiline response
@@ -170,8 +179,8 @@ public final class FtpPlugin
 					// FTP should recoginize the QUIT command
 					//
 					String cmd = "QUIT\r\n";
-					portal.getOutputStream().write(cmd.getBytes());
-					
+					sChannel.socket().getOutputStream().write(cmd.getBytes());
+	
 					// Response from QUIT command may be a multi-line response.
 					// We are expecting to get a response with an integer return
 					// code in the first token.  We can't ge sure that the first
@@ -244,8 +253,8 @@ public final class FtpPlugin
 			{
 				try
 				{
-					if(portal != null)
-						portal.close();
+					if(sChannel != null)
+						sChannel.close();
 				}
 				catch(IOException e) { }
 			}

@@ -33,6 +33,9 @@ import java.io.InterruptedIOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import java.nio.channels.SocketChannel;
+import org.opennms.netmgt.utils.SocketChannelUtil;
+
 import java.net.Socket;
 import java.net.InetAddress;
 import java.net.NoRouteToHostException;
@@ -121,17 +124,26 @@ public final class ImapPlugin
 		boolean isAServer = false;
 		for (int attempts=0; attempts <= retries && !isAServer; attempts++)
 		{
-			Socket  portal    = null;
+
+                        SocketChannel sChannel = null;
 			try
 			{
 				//
 				// create a connected socket
 				//
-				portal = new Socket(host, port);
-				portal.setSoTimeout(timeout); // blocking time!
-
-				BufferedReader lineRdr = new BufferedReader(new InputStreamReader(portal.getInputStream()));
 			
+                                sChannel = SocketChannelUtil.getConnectedSocketChannel(host, port, timeout);
+                                if (sChannel == null)
+                                {
+                                        log.debug("ImapPlugin: did not connect to host within timeout: " + timeout +" attempt: " + attempts);
+                                        continue;
+                                }
+                                log.debug("ImapPlugin: connected to host: " + host + " on port: " + port);
+
+                                // Allocate a line reader
+                                //
+                                BufferedReader lineRdr = new BufferedReader(new InputStreamReader(sChannel.socket().getInputStream()));
+
 				//
 				// Check the banner line for a valid return.
 				//
@@ -141,7 +153,7 @@ public final class ImapPlugin
 					//
 					// Send the LOGOUT
 					//
-					portal.getOutputStream().write(IMAP_LOGOUT_REQUEST.getBytes());
+                                        sChannel.socket().getOutputStream().write(IMAP_LOGOUT_REQUEST.getBytes());
 								
 					//
 					// get the returned string, tokenize, and 
@@ -194,8 +206,8 @@ public final class ImapPlugin
 			{
 				try
 				{
-					if(portal != null)
-						portal.close();
+                                        if(sChannel != null)
+                                                sChannel.close();
 				}
 				catch(IOException e) { }
 			}

@@ -407,6 +407,8 @@ public final class EventUtil
                        	}
 			if (nodeLabel != null)
 				retParmVal = nodeLabel;
+			else
+				retParmVal = "Unknown";
 		}
 		else if (parm.equals(TAG_TIME))
 		{

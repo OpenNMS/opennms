@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.FileNotFoundException;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -216,6 +217,11 @@ public final class Eventd
 			EventdConfigFactory.reload();
 			eFactory = EventdConfigFactory.getInstance();
 		}
+                catch(FileNotFoundException ex)
+                {
+                        log.error("Failed to load eventd configuration. File Not Found:", ex);
+                        throw new UndeclaredThrowableException(ex);
+                }
 		catch(MarshalException ex)
 		{
 			log.error("Failed to load eventd configuration", ex);

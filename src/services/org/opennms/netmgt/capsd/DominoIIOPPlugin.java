@@ -33,6 +33,10 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.FileNotFoundException;
+
+import java.nio.channels.SocketChannel;
+import org.opennms.netmgt.utils.SocketChannelUtil;
 
 import java.net.Socket;
 import java.net.InetAddress;
@@ -115,7 +119,14 @@ public final class DominoIIOPPlugin
 			//
 			try {
 				String IOR = retrieveIORText(host.getHostAddress(), iorPort);
-			} catch (Exception e)
+			} 
+			catch(FileNotFoundException e)
+			{
+                                // This is an expected exception
+                                //
+                                isAServer = false;
+			}
+			catch (Exception e)
 			{
 				if(log.isDebugEnabled())
 					log.debug("DominoIIOPMonitor: failed to get the corba IOR from " + host.getHostAddress(), e);
@@ -123,15 +134,20 @@ public final class DominoIIOPPlugin
 				break;
 			}
 			
-			Socket  portal    = null;
+                        SocketChannel sChannel = null;
 			try
 			{
 				//
 				// create a connected socket
 				//
-				portal = new Socket(host, port);
-				portal.setSoTimeout(timeout);
-				
+                                sChannel = SocketChannelUtil.getConnectedSocketChannel(host, port, timeout);
+                                if (sChannel == null)
+                                {
+                                        log.debug("DominoIIOPPlugin: did not connect to host within timeout: " + timeout +" attempt: " + attempts);
+                                        continue;
+                                }
+                                log.debug("DominoIIOPPlugin: connected to host: " + host + " on port: " + port);
+	
 				isAServer = true;
 			}
 			catch(ConnectException e)
@@ -172,8 +188,8 @@ public final class DominoIIOPPlugin
 			{
 				try
 				{
-					if(portal != null)
-						portal.close();
+					if(sChannel != null)
+						sChannel.close();
 				}
 				catch(IOException e) { }
 			}

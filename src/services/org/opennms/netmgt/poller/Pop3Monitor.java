@@ -30,6 +30,9 @@ import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import java.nio.channels.SocketChannel;
+import org.opennms.netmgt.utils.SocketChannelUtil;
+
 import java.net.Socket;
 import java.net.InetAddress;
 import java.net.NoRouteToHostException;
@@ -116,17 +119,24 @@ final class Pop3Monitor
 		int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
 		for (int attempts=0; attempts <= retry && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; attempts++)
 		{
-			Socket portal = null;
+                        SocketChannel sChannel = null;
 			try
 			{
 				//
 				// create a connected socket
 				//
-				portal = new Socket(ipv4Addr, port);
+                                sChannel = SocketChannelUtil.getConnectedSocketChannel(ipv4Addr, port, timeout);
+                                if (sChannel == null)
+                                {
+                                        log.debug("Pop3Monitor: did not connect to host within timeout: " + timeout +" attempt: " + attempts);
+                                        continue;
+                                }
+                                log.debug("Pop3Monitor: connected to host: " + ipv4Addr + " on port: " + port);
+
 				// We're connected, so upgrade status to unresponsive
 				serviceStatus = SERVICE_UNRESPONSIVE;
-				portal.setSoTimeout(timeout);
-				BufferedReader rdr = new BufferedReader(new InputStreamReader(portal.getInputStream()));
+                                BufferedReader rdr = new BufferedReader(new InputStreamReader(sChannel.socket().getInputStream()));
+
 				
 				//
 				// Tokenize the Banner Line, and check the first 
@@ -145,7 +155,8 @@ final class Pop3Monitor
 					// POP3 server should recoginize the QUIT command
 					//
 					String cmd = "QUIT\r\n";
-					portal.getOutputStream().write(cmd.getBytes());
+                                        sChannel.socket().getOutputStream().write(cmd.getBytes());
+
 					
 					//
 					// Parse the response to the QUIT command
@@ -173,6 +184,13 @@ final class Pop3Monitor
 					log.warn("poll: No route to host exception for address " + ipv4Addr.getHostAddress(), e);
 				break; // Break out of for(;;)
 			}
+                        catch(InterruptedException e)
+                        {
+                                // Ignore
+                                e.fillInStackTrace();
+                                if(log.isDebugEnabled())
+                                        log.debug("Pop3Monitor: Interrupted exception for address: " + ipv4Addr, e);
+                        }
 			catch(ConnectException e)
 			{
 				// Ignore
@@ -190,8 +208,9 @@ final class Pop3Monitor
 				try
 				{
 					// Close the socket
-					if(portal != null)
-						portal.close();
+                                        if(sChannel != null)
+                                                sChannel.close();
+
 				}
 				catch(IOException e) 
 				{ 

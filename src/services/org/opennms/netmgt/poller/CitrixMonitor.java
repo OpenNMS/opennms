@@ -31,6 +31,9 @@ import java.io.InterruptedIOException;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 
+import java.nio.channels.SocketChannel;
+import org.opennms.netmgt.utils.SocketChannelUtil;
+
 import java.net.Socket;
 import java.net.InetAddress;
 import java.net.ConnectException;
@@ -123,19 +126,25 @@ final class CitrixMonitor
 		int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
 		for (int attempts=0; attempts <= retry && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; attempts++)
 		{
-			Socket portal = null;
+                        SocketChannel sChannel = null;
 			try
 			{
 				// create a connected socket
 				//
-				portal = new Socket(host, port);
+                                sChannel = SocketChannelUtil.getConnectedSocketChannel(ipv4Addr, port, timeout);
+                                if (sChannel == null)
+                                {
+                                        log.debug("CitrixMonitor: did not connect to host within timeout: " + timeout +" attempt: " + attempts);
+                                        continue;
+                                }
+                                log.debug("CitrixMonitor: connected to host: " + host + " on port: " + port);
+
 				// We're connected, so upgrade status to unresponsive
-				serviceStatus = SERVICE_UNRESPONSIVE;
-				portal.setSoTimeout(timeout); 
 
 				// Allocate a line reader
 				//
-				BufferedReader reader = new BufferedReader(new InputStreamReader(portal.getInputStream()));
+                                BufferedReader reader = new BufferedReader(new InputStreamReader(sChannel.socket().getInputStream()));
+
 				StringBuffer buffer = new StringBuffer();
 				
 				// Not an infinite loop...socket timeout will break this out
@@ -191,8 +200,8 @@ final class CitrixMonitor
 			{
 				try
 				{
-					if(portal != null)
-						portal.close();
+                                        if(sChannel != null)
+                                                sChannel.close();
 				}
 				catch(IOException e) { }
 			}
