@@ -168,4 +168,14 @@ public abstract class NotifdConfigManager {
         }
     }
 
+    /**
+     * @return
+     * @throws IOException
+     * @throws MarshalException
+     * @throws ValidationException
+     */
+    public String getNextNotifIdSql() throws IOException, MarshalException, ValidationException {
+        return getConfiguration().getNextNotifId();
+    }
+
 }

@@ -33,55 +33,39 @@
 
 package org.opennms.netmgt.notifd.mock;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.DbConnectionFactory;
-import org.opennms.netmgt.config.NotifdConfigManager;
-import org.opennms.netmgt.config.NotificationManager;
+import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.notifd.NotificationStrategy;
 /**
  * @author david
  *
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class MockNotificationManager extends NotificationManager {
+public class MockNotificationStrategy implements NotificationStrategy {
     
-    private String m_mgrString;
+    static {
+        MockUtil.println("Static initializer on "+ MockNotificationStrategy.class.getName());
+    }
+    
+    public MockNotificationStrategy(){
+        MockUtil.println("Created a "+ MockNotificationStrategy.class.getName());        
+    }
+    
+    Map notificationsSent = new HashMap();
 
-    public MockNotificationManager(NotifdConfigManager configManager, DbConnectionFactory db, String mgrString) throws MarshalException, ValidationException {
-        super(configManager, db);
-        Reader reader = new StringReader(mgrString);
-        m_mgrString = mgrString;
-        parseXML(reader);
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.notifd.NotificationStrategy#send(java.util.List)
+     */
+    public int send(List arguments) {
         
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.NotificationManager#saveXML(java.lang.String)
-     */
-    protected void saveXML(String xmlString) throws IOException {
-        // TODO Auto-generated method stub
-
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.NotificationManager#update()
-     */
-    protected void update() throws IOException, MarshalException,
-            ValidationException {
-        // TODO Auto-generated method stub
-
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.config.NotificationManager#getInterfaceFilter(java.lang.String)
-     */
-    protected String getInterfaceFilter(String rule) {
+        MockUtil.println("Message sent with arguments:"+arguments);
         
-        return "SELECT DISTINCT ipaddr, servicename, nodeid FROM ifservices, service WHERE ifservices.serviceid = service.serviceid";
+        return 0;
+
     }
+
 }

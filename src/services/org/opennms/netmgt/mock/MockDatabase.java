@@ -177,8 +177,35 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
                    "constraint fk_serviceID2 foreign key (serviceID) references service (serviceID) ON DELETE CASCADE" +
         ")");
         
+        update("create table notifications (" + 
+                "       textMsg      varchar(4000) not null," + 
+                "       numericMsg   varchar(256)," + 
+                "       notifyID        integer," + 
+                "       pageTime     timestamp," + 
+                "       respondTime  timestamp," + 
+                "       answeredBy   varchar(256)," + 
+                "       nodeID      integer," + 
+                "       interfaceID  varchar(16)," + 
+                "       serviceID    integer," + 
+                "       eventID      integer," + 
+                "       eventUEI     varchar(256) not null," + 
+                "                   constraint pk_notifyID primary key (notifyID)," + 
+                "                   constraint fk_nodeID7 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE," + 
+                "                   constraint fk_eventID3 foreign key (eventID) references events (eventID) ON DELETE CASCADE" + 
+                "       )");
+        
+        update("create table usersNotified (\n" + 
+                "        userID          varchar(256) not null," + 
+                "        notifyID        integer," + 
+                "        notifyTime      timestamp," + 
+                "        media           varchar(32)," + 
+                "        contactinfo     varchar(64)," + 
+                "           constraint fk_notifID2 foreign key (notifyID) references notifications (notifyID) ON DELETE CASCADE" + 
+                ");");
+        
         update("create sequence outageNxtId start with 1");
         update("create sequence eventNxtId start with 1");
+        update("create sequence notifNxtId start with 1");
         update("create table seqQueryTable (row integer)");
         update("insert into seqQueryTable (row) values (0)");
         
@@ -484,6 +511,13 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     public Collection getClosedOutages(MockService svc) {
         Object[] values = { new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()) };
         return getOutages("nodeId = ? and ipAddr = ? and serviceID = ? and ifRegainedService is not null", values);
+    }
+
+    /**
+     * @return
+     */
+    public String getNextNotifIdSql() {
+        return "select next value for notifNxtId from seqQueryTable;";
     }
     
 

@@ -91,14 +91,16 @@ public abstract class NotificationManager {
     public static final String PARAM_PAGER_EMAIL = "-pemail";
     public static final String PARAM_TEXT_PAGER_PIN = "-tp";
     public static final String PARAM_NUM_PAGER_PIN = "-np";
-    private NotifdConfigManager m_configManager;
+    NotifdConfigManager m_configManager;
+    private DbConnectionFactory m_dbConnectionFactory;
     /**
      * @param configIn
      * @throws MarshalException
      * @throws ValidationException
      */
-    protected NotificationManager(NotifdConfigManager configManager) {
+    protected NotificationManager(NotifdConfigManager configManager, DbConnectionFactory dcf) {
         m_configManager = configManager;
+        m_dbConnectionFactory = dcf;
     }
 
     public synchronized void parseXML(Reader reader) throws MarshalException, ValidationException {
@@ -173,15 +175,11 @@ public abstract class NotificationManager {
     
             // Get the Notification Rule
     
-            Filter filter = new Filter(notif.getRule());
-    
-            // Select the Interfaces and Services that match the rule
-    
-            String sql = filter.getInterfaceWithServiceStatement();
+            String sql = getInterfaceFilter(notif.getRule());
     
             ThreadCategory.getInstance(getClass()).debug("getSQL Returned SQL for Notification: " + notif.getName() + ": " + sql);
     
-            connection = DatabaseConnectionFactory.getInstance().getConnection();
+            connection = getConnection();
             Statement stmt = connection.createStatement();
             ResultSet rows = stmt.executeQuery(sql);
     
@@ -248,6 +246,27 @@ public abstract class NotificationManager {
         return result;
     }
     /**
+     * @param rule
+     * @return
+     */
+    protected String getInterfaceFilter(String rule) {
+        Filter filter = new Filter(rule);
+   
+        // Select the Interfaces and Services that match the rule
+   
+        String sql = filter.getInterfaceWithServiceStatement();
+        return sql;
+    }
+
+    /**
+     * @return
+     * @throws SQLException
+     */
+    private Connection getConnection() throws SQLException {
+        return m_dbConnectionFactory.getConnection();
+    }
+
+    /**
      * This method wraps the call to the database to get a sequence notice ID
      * from the database.
      * 
@@ -260,9 +279,9 @@ public abstract class NotificationManager {
         Connection connection = null;
     
         try {
-            connection = DatabaseConnectionFactory.getInstance().getConnection();
+            connection = getConnection();
             Statement stmt = connection.createStatement();
-            ResultSet results = stmt.executeQuery(getConfigManager().getConfiguration().getNextNotifId());
+            ResultSet results = stmt.executeQuery(m_configManager.getNextNotifIdSql());
     
             results.next();
     
@@ -289,7 +308,7 @@ public abstract class NotificationManager {
     
         Connection connection = null;
         try {
-            connection = DatabaseConnectionFactory.getInstance().getConnection();
+            connection = getConnection();
             PreparedStatement statement = connection.prepareStatement(getConfigManager().getConfiguration().getOutstandingNoticesSql());
     
             statement.setInt(1, noticeId);
@@ -330,7 +349,7 @@ public abstract class NotificationManager {
         // get the notification id and see if only one is returned
         Connection connection = null;
         try {
-            connection = DatabaseConnectionFactory.getInstance().getConnection();
+            connection = getConnection();
             StringBuffer sql = new StringBuffer("SELECT notifyid FROM notifications WHERE eventuei=? AND respondTime is null ");
     
             for (int i = 0; i < matchList.length; i++) {
@@ -396,7 +415,7 @@ public abstract class NotificationManager {
         List allNodes = new ArrayList();
     
         try {
-            connection = DatabaseConnectionFactory.getInstance().getConnection();
+            connection = getConnection();
     
             Statement stmt = connection.createStatement();
             ResultSet rset = stmt.executeQuery(NODE_QUERY);
@@ -429,7 +448,7 @@ public abstract class NotificationManager {
         java.sql.Connection connection = null;
     
         try {
-            connection = DatabaseConnectionFactory.getInstance().getConnection();
+            connection = getConnection();
     
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, Integer.parseInt(nodeID));
@@ -459,7 +478,7 @@ public abstract class NotificationManager {
     public void updateNoticeWithUserInfo(String userId, int noticeId, String media, String contactInfo) throws SQLException {
         Connection connection = null;
         try {
-            connection = DatabaseConnectionFactory.getInstance().getConnection();
+            connection = getConnection();
             PreparedStatement insert = connection.prepareStatement("INSERT INTO usersNotified (userid, notifyid, notifytime, media, contactinfo) values (?,?,?,?,?)");
     
             insert.setString(1, userId);
@@ -488,7 +507,7 @@ public abstract class NotificationManager {
     public void insertNotice(int notifyId, Map params) throws SQLException {
         Connection connection = null;
         try {
-            connection = DatabaseConnectionFactory.getInstance().getConnection();
+            connection = getConnection();
             PreparedStatement statement = connection.prepareStatement("INSERT INTO notifications (textmsg, numericmsg, notifyid, pagetime, nodeid, interfaceid, serviceid, eventid, eventuei) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
             // notifications textMsg field
@@ -557,7 +576,7 @@ public abstract class NotificationManager {
     
         Connection connection = null;
         try {
-            connection = DatabaseConnectionFactory.getInstance().getConnection();
+            connection = getConnection();
     
             PreparedStatement statement = connection.prepareStatement("SELECT serviceID from service where serviceName = ?");
             statement.setString(1, service);
@@ -602,7 +621,7 @@ public abstract class NotificationManager {
         Connection connection = null;
         List services = new ArrayList();
         try {
-            connection = DatabaseConnectionFactory.getInstance().getConnection();
+            connection = getConnection();
     
             Statement stmt = connection.createStatement();
             ResultSet rset = stmt.executeQuery("SELECT servicename FROM service");

@@ -88,7 +88,7 @@ public class NotificationFactory extends NotificationManager {
      * 
      */
     private NotificationFactory() {
-        super(NotifdConfigFactory.getInstance());
+        super(NotifdConfigFactory.getInstance(), DatabaseConnectionFactory.getInstance());
     }
 
     /**

@@ -37,7 +37,10 @@ import junit.framework.TestCase;
 
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
+import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.notifd.mock.MockDestinationPathManager;
 import org.opennms.netmgt.notifd.mock.MockGroupManager;
@@ -62,9 +65,9 @@ public class NotifdTest extends TestCase {
     private NotificationCommandManager m_notificationCommandManger;
     private MockDestinationPathManager m_destinationPathManager;
 
-    private static final String m_configString = "<?xml version=\"1.0\"?>\n" + 
+    private static final String NOTIFD_CONFIG_MANAGER = "<?xml version=\"1.0\"?>\n" + 
             "<notifd-configuration \n" + 
-            "        status=\"off\"\n" + 
+            "        status=\"on\"\n" + 
             "        pages-sent=\"SELECT * FROM notifications\"\n" + 
             "        next-notif-id=\"SELECT nextval(\'notifynxtid\')\"\n" + 
             "        next-group-id=\"SELECT nextval(\'notifygrpid\')\"\n" + 
@@ -101,7 +104,7 @@ public class NotifdTest extends TestCase {
             "        \n" + 
             "        <queue>\n" + 
             "                <queue-id>default</queue-id>\n" + 
-            "                <interval>20s</interval>\n" + 
+            "                <interval>2s</interval>\n" + 
             "                <handler-class>\n" + 
             "                        <name>org.opennms.netmgt.notifd.DefaultQueueHandler</name>\n" + 
             "                </handler-class>\n" + 
@@ -118,7 +121,7 @@ public class NotifdTest extends TestCase {
             "    <notification name=\"serviceUnresponsive\" status=\"on\">\n" + 
             "        <uei>uei.opennms.org/nodes/serviceUnresponsive</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <destinationPath>Email-Mock</destinationPath>\n" + 
             "        <text-message>The %service% poll to interface %interfaceresolve% (%interface%) \n" + 
             "on node %nodelabel% successfully \n" + 
             "completed a connection to the service listener on the \n" + 
@@ -133,7 +136,7 @@ public class NotifdTest extends TestCase {
             "    <notification name=\"serviceResponsive\" status=\"on\">\n" + 
             "        <uei>uei.opennms.org/nodes/serviceResponsive</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <destinationPath>Email-Mock</destinationPath>\n" + 
             "        <text-message>The %service% service on %interfaceresolve% (%interface%) \n" + 
             "on node %nodelabel% has recovered from a previously \n" + 
             "UNRESPONSIVE state.  Synthetic transactions to this service \n" + 
@@ -144,7 +147,7 @@ public class NotifdTest extends TestCase {
             "    <notification name=\"interfaceDown\" status=\"on\">\n" + 
             "        <uei>uei.opennms.org/nodes/interfaceDown</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <destinationPath>Email-Mock</destinationPath>\n" + 
             "        <text-message>All services are down on interface %interfaceresolve% (%interface%) \n" + 
             "on node %nodelabel%.  New Outage records have been created \n" + 
             "and service level availability calculations will be impacted \n" + 
@@ -156,18 +159,18 @@ public class NotifdTest extends TestCase {
             "    <notification name=\"nodeDown\" status=\"on\">\n" + 
             "        <uei>uei.opennms.org/nodes/nodeDown</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Admin</destinationPath>\n" + 
-            "        <text-message>All services are down on node %nodelabel%.  New Outage records have \n" + 
+            "        <destinationPath>Email-Mock</destinationPath>\n" + 
+            "        <text-message>All services are down on node %nodeid%.  New Outage records have \n" + 
             "been created and service level availability calculations will \n" + 
             "be impacted until this outage is resolved.  \n" + 
             "   </text-message>\n" + 
-            "        <subject>Notice #%noticeid%: node %nodelabel% down.</subject>\n" + 
+            "        <subject>Notice #%noticeid%: node %nodeid% down.</subject>\n" + 
             "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
             "    </notification>\n" + 
             "    <notification name=\"interfaceUp\" status=\"on\">\n" + 
             "        <uei>uei.opennms.org/nodes/interfaceUp</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <destinationPath>Email-Mock</destinationPath>\n" + 
             "        <text-message>The interface %interfaceresolve% (%interface%) \n" + 
             "on node %nodelabel% which was previously down is now up.</text-message>\n" + 
             "        <subject>Notice #%noticeid%: Interface %interfaceresolve% (%interface%) on node %nodelabel% has been cleared</subject>\n" + 
@@ -176,7 +179,7 @@ public class NotifdTest extends TestCase {
             "    <notification name=\"nodeUp\" status=\"on\">\n" + 
             "        <uei>uei.opennms.org/nodes/nodeUp</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <destinationPath>Email-Mock</destinationPath>\n" + 
             "        <text-message>The node %nodelabel% which was previously down is now up.</text-message>\n" + 
             "        <subject>Notice #%noticeid%: Node %nodelabel% has been cleared.</subject>\n" + 
             "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
@@ -184,7 +187,7 @@ public class NotifdTest extends TestCase {
             "    <notification name=\"nodeLostService\" status=\"on\">\n" + 
             "        <uei>uei.opennms.org/nodes/nodeLostService</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <destinationPath>Email-Mock</destinationPath>\n" + 
             "        <text-message>The %service% service poll on interface %interfaceresolve% (%interface%) \n" + 
             "on node %nodelabel% failed at %time%. \n" + 
             "   </text-message>\n" + 
@@ -194,7 +197,7 @@ public class NotifdTest extends TestCase {
             "    <notification name=\"nodeRegainedService\" status=\"on\">\n" + 
             "        <uei>uei.opennms.org/nodes/nodeRegainedService</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <destinationPath>Email-Mock</destinationPath>\n" + 
             "        <text-message>%service% service restored on interface %interfaceresolve% (%interface%) \n" + 
             "on node %nodelabel%.</text-message>\n" + 
             "        <subject>Notice #%noticeid%: %interfaceresolve% (%interface%) on node %nodelabel%&apos;s %service% service restored.</subject>\n" + 
@@ -203,7 +206,7 @@ public class NotifdTest extends TestCase {
             "    <notification name=\"coldStart\" status=\"on\">\n" + 
             "        <uei>uei.opennms.org/generic/traps/SNMP_Cold_Start</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <destinationPath>Email-Mock</destinationPath>\n" + 
             "        <text-message>An SNMP coldStart trap has been received from\n" + 
             "interface %snmphost%.  This indicates that the box has been\n" + 
             "powered up.</text-message>\n" + 
@@ -213,7 +216,7 @@ public class NotifdTest extends TestCase {
             "    <notification name=\"warmStart\" status=\"on\">\n" + 
             "        <uei>uei.opennms.org/generic/traps/SNMP_Warm_Start</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <destinationPath>Email-Mock</destinationPath>\n" + 
             "        <text-message>An SNMP warmStart trap has been received from\n" + 
             "interface %snmphost%.  This indicates that the box has been rebooted.</text-message>\n" + 
             "        <subject>Notice #%noticeid%: %snmphost% rebooted.</subject>\n" + 
@@ -222,7 +225,7 @@ public class NotifdTest extends TestCase {
             "    <notification name=\"authenticationFailure\" status=\"on\">\n" + 
             "        <uei>uei.opennms.org/generic/traps/SNMP_Authen_Failure</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <destinationPath>Email-Mock</destinationPath>\n" + 
             "        <text-message>An Authentication Failure has been identified on\n" + 
             "network device %snmphost%.  This message is usually\n" + 
             "generated by an authentication failure during a user login\n" + 
@@ -233,7 +236,7 @@ public class NotifdTest extends TestCase {
             "    <notification name=\"serviceDeleted\" status=\"on\">\n" + 
             "        <uei>uei.opennms.org/nodes/serviceDeleted</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <destinationPath>Email-Mock</destinationPath>\n" + 
             "        <text-message>Due to extended downtime, the %service% service on\n" + 
             "interface %interfaceresolve% (%interface%) on node %nodelabel% \n" + 
             "has been deleted from OpenNMS&apos;s polling database.</text-message>\n" + 
@@ -243,7 +246,7 @@ public class NotifdTest extends TestCase {
             "    <notification name=\"nodeAdded\" status=\"on\">\n" + 
             "        <uei>uei.opennms.org/nodes/nodeAdded</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <destinationPath>Email-Mock</destinationPath>\n" + 
             "        <text-message>OpenNMS has discovered a new node named\n" + 
             "%parm[nodelabel]%. Please be advised.</text-message>\n" + 
             "        <subject>Notice #%noticeid%: %parm[nodelabel]% discovered.</subject>\n" + 
@@ -252,7 +255,7 @@ public class NotifdTest extends TestCase {
             "    <notification name=\"nodeInfoChanged\" status=\"on\">\n" + 
             "        <uei>uei.opennms.org/nodes/nodeInfoChanged</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <destinationPath>Email-Mock</destinationPath>\n" + 
             "        <text-message>Node information has changed for a device in your\n" + 
             "network.  The new information is included:    System Name:\n" + 
             "%parm[nodesysname]%  System Description:\n" + 
@@ -266,7 +269,7 @@ public class NotifdTest extends TestCase {
             "    <notification name=\"interfaceDeleted\" status=\"on\">\n" + 
             "        <uei>uei.opennms.org/nodes/interfaceDeleted</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
-            "        <destinationPath>Email-Admin</destinationPath>\n" + 
+            "        <destinationPath>Email-Mock</destinationPath>\n" + 
             "        <text-message>Due to extended downtime, the interface %interfaceresolve% (%interface%) \n" + 
             "on node %nodelabel% has been deleted from OpenNMS&apos;s polling database.</text-message>\n" + 
             "        <subject>Notice #%noticeid%: [OpenNMS] %interfaceresolve% (%interface%) on node %nodelabel% deleted.</subject>\n" + 
@@ -346,6 +349,12 @@ public class NotifdTest extends TestCase {
             "        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
             "        <mstation>localhost</mstation>\n" + 
             "    </header>\n" + 
+            "    <path name=\"Email-Mock\" initial-delay=\"0m\">\n" + 
+            "        <target>\n" + 
+            "            <name>david@opennms.org</name>\n" + 
+            "            <command>mockNotifier</command>\n" + 
+            "        </target>\n" + 
+            "    </path>\n" + 
             "    <path name=\"Email-Reporting\">\n" + 
             "        <target>\n" + 
             "                <name>Reporting</name>\n" + 
@@ -555,6 +564,20 @@ public class NotifdTest extends TestCase {
             "        <mstation>master.nmanage.com</mstation>\n" + 
             "    </header>\n" + 
             "    <command binary=\"false\">\n" + 
+            "        <name>mockNotifier</name>\n" + 
+            "        <execute>org.opennms.netmgt.notifd.mock.MockNotificationStrategy</execute>\n" + 
+            "        <comment>Mock Class for sending test notifications</comment>\n" + 
+            "        <argument streamed=\"false\">\n" + 
+            "            <switch>-subject</switch>\n" + 
+            "        </argument>\n" + 
+            "        <argument streamed=\"false\">\n" + 
+            "            <switch>-pemail</switch>\n" + 
+            "        </argument>\n" + 
+            "        <argument streamed=\"false\">\n" + 
+            "            <switch>-tm</switch>\n" + 
+            "        </argument>\n" + 
+            "    </command>\n" + 
+            "    <command binary=\"false\">\n" + 
             "        <name>javaPagerEmail</name>\n" + 
             "        <execute>org.opennms.netmgt.notifd.JavaMailNotificationStrategy</execute>\n" + 
             "        <comment>class for sending pager email notifications</comment>\n" + 
@@ -656,6 +679,8 @@ public class NotifdTest extends TestCase {
             "        </argument>\n" + 
             "    </command>\n" + 
             "</notification-commands>";
+    private MockDatabase m_db;
+    private MockNetwork m_network;
 
     /*
      * @see TestCase#setUp()
@@ -666,26 +691,44 @@ public class NotifdTest extends TestCase {
         MockUtil.setupLogging();
         MockUtil.resetLogLevel();
         
+        m_network = new MockNetwork();
+        m_network.setCriticalService("ICMP");
+        m_network.addNode(1, "Router");
+        m_network.addInterface("192.168.1.1");
+        m_network.addService("ICMP");
+        m_network.addService("SMTP");
+        m_network.addInterface("192.168.1.2");
+        m_network.addService("ICMP");
+        m_network.addService("SMTP");
+        m_network.addNode(2, "Server");
+        m_network.addInterface("192.168.1.3");
+        m_network.addService("ICMP");
+        m_network.addService("HTTP");
+        
+        m_db = new MockDatabase();
+        m_db.populate(m_network);
+
         m_eventMgr = new MockEventIpcManager();
+        m_eventMgr.setEventWriter(m_db);
+        m_notifdConfig = new MockNotifdConfigManager(NOTIFD_CONFIG_MANAGER);
+        m_notifdConfig.setNextNotifIdSql(m_db.getNextNotifIdSql());
         m_groupManager = new MockGroupManager(GROUP_MANAGER);
         m_userManager = new MockUserManager(m_groupManager, USER_MANAGER);
-        m_destinationPathManager = new MockDestinationPathManager(PATH_MANAGER);
-        
+        m_destinationPathManager = new MockDestinationPathManager(PATH_MANAGER);        
         m_notificationCommandManger = new MockNotificationCommandManager(CMD_MANAGER);
+        m_notificationManager = new MockNotificationManager(m_notifdConfig, m_db, NOTIFICATION_MANAGER);
         
         m_notifd = new Notifd();
-        m_notifdConfig = new MockNotifdConfigManager(m_configString);
         m_notifd.setEventManager(m_eventMgr);
         m_notifd.setConfigManager(m_notifdConfig);
         m_notifd.setGroupManager(m_groupManager);
         m_notifd.setUserManager(m_userManager);
         m_notifd.setDestinationPathManager(m_destinationPathManager);
         m_notifd.setNotificationCommandManager(m_notificationCommandManger);
-        
-        m_notificationManager = new MockNotificationManager(m_notifdConfig, NOTIFICATION_MANAGER);
         m_notifd.setNotificationManager(m_notificationManager);
         
-        // FIXME: Needed to comment these out so the build worked
+        m_notifd.setNotificationManager(m_notificationManager);
+        
         m_notifd.init();
         m_notifd.start();
     }
@@ -697,21 +740,38 @@ public class NotifdTest extends TestCase {
         super.tearDown();
         // FIXME: commented this out so the build worked
         m_notifd.stop();
+        m_db.drop();
         assertTrue(MockUtil.noWarningsOrHigherLogged());
     }
 
     public void testNotifdStatus() throws Exception {
         
             //test for off status passed in config XML string
-            assertEquals(m_notifdConfig.getNotificationStatus(), "off");
-            
-            //test for on status set here
-            m_notifdConfig.turnNotifdOn();
             assertEquals(m_notifdConfig.getNotificationStatus(), "on");
             
-            //test for off status set here
+            //test for on status set here
             m_notifdConfig.turnNotifdOff();
             assertEquals(m_notifdConfig.getNotificationStatus(), "off");
+            
+            //test for off status set here
+            m_notifdConfig.turnNotifdOn();
+            assertEquals(m_notifdConfig.getNotificationStatus(), "on");
 
     }
+    
+    public void testMockNotification() throws Exception {
+        
+        MockNode node = m_network.getNode(1);
+        m_eventMgr.sendNow(node.createDownEvent());
+        sleep(3000);
+        
+    }
+    
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+        }
+    }
+
 }
