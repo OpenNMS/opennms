@@ -7,10 +7,17 @@
 - Loopback interfaces will now be discovered, and are preferred
   as the Primary SNMP interface. Applies to non-127.*.*.*
   interfaces only.
-
-1.0.0 to 1.0.1
-----------------------------------------------------------------------
-
+- fixed issue with capsd pulling all of the ifTable for interface.
+  Could cause issues with some HP switches.
+- Bug 664: Notifications not filtering on services.
+- Bug 666: Generic SNMP Traps are hard-coded and cannot be 
+  managed via eventconf.xml. This fix also included a change
+  that fixes and enforces the order of events in eventconf.xml.
+  Care must be taken so that the most specific mask matches are
+  listed  before more generic ones. But this fix insures that the
+  correct wildcards and exact matches work as ordered.
+- Fixed a NullPointer exception when deleting a node due to a
+  poller downtime model.
 - fixed bug with Admin/Oper status types causing exception
 - removed duplicate listings for LDAP and Citrix in capsd config
 - fixed bug with rescans on certain devices (net-snmp on MACOSX)
