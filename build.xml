@@ -723,13 +723,11 @@ your distribution.
  </target>
 
 
- <!-- XXX need to rethink how this is done, especially the use of the
-      properties in the antcall -->
  <target name="release.prepare.binary" depends="prep">
   <mkdir dir="${build.dir}/${release.binary.dir}"/>
-  <antcall target="install">
+  <antcall target="install" inheritAll="false">
    <param name="install.dir" value="/opt/OpenNMS"/>
-   <param name="install.prefix" value="${basedir}${build.dir}"/>
+   <param name="install.prefix" value="${basedir}/${build.dir}"/>
   </antcall>
   <move todir="${build.dir}/${release.binary.dir}">
    <fileset dir="${build.dir}/opt/OpenNMS" includes="**/*"/>
