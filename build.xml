@@ -262,6 +262,43 @@ your distribution.
     <pathelement location="${dev.lib.dir}/jasper/jasper-runtime.jar"/>
   </path>  
   
+  <path id="mock.path">
+    <pathelement location="${packaged.lib.dir}/hsqldb.jar"/>
+    <pathelement location="${packaged.lib.dir}/SNMP4J.jar"/>
+    <pathelement location="${packaged.lib.dir}/${postgresql.jar}"/>
+  </path>
+
+  <path id="test.path">
+    <pathelement location="${dev.lib.dir}/junit.jar"/>
+    <pathelement location="${build.classes.dir}" />
+    <pathelement location="${build.tests.dir}" />
+    <path refid="libraries.java.path"/>
+    <path refid="mock.path"/>
+  </path>
+	
+  <path id="jwebunit.jars">
+    <pathelement location="${dev.lib.dir}/junit.jar"/>
+    <pathelement location="${dev.lib.dir}/httpunit.jar"/>
+    <pathelement location="${dev.lib.dir}/nekohtml.jar"/>
+    <pathelement location="${dev.lib.dir}/js.jar"/>
+    <pathelement location="${dev.lib.dir}/jasper/jasper-compiler.jar"/>
+    <pathelement location="${dev.lib.dir}/jasper/jasper-runtime.jar"/>
+    <pathelement location="${dev.lib.dir}/xercesImpl.jar"/>
+    <pathelement location="${dev.lib.dir}/xml-apis.jar"/>
+    <pathelement location="${dev.lib.dir}/servlet.jar"/>
+    <pathelement location="${dev.lib.dir}/jwebunit-1.2.jar"/>
+  </path>
+	
+  <path id="webtest.path">
+    <path refid="jwebunit.jars"/>
+    <pathelement location="${build.tests.dir}" />
+    <path refid="tomcatlib.jars.path"/>
+    <path refid="mock.path"/>
+    <pathelement path="${packaged.lib.dir}/commons-logging.jar"/>
+  	<pathelement path="${dev.lib.didr}/ant/lib/ant.jar"/>
+  	<pathelement path="${dev.lib.didr}/ant/lib/ant-launcher.jar"/>
+  </path>
+
   <!-- Files in ${packaged.lib.dir} that are copied into ${install.dir}/lib.
        Note: everything in ${build.jar.dir} is also copied.  -->
   <patternset id="lib.jars">
@@ -299,6 +336,7 @@ your distribution.
   	<include name="mailapi.jar" />
   	<include name="pop3.jar" />
   	<include name="smtp.jar" />
+  	<include name="oro*.jar" />
   </patternset>
 
   <!-- The includes in this patternset need to match the directories in
@@ -491,9 +529,14 @@ your distribution.
     <filter token="rpm.install.dir" value="${rpm.install.dir}"/>
     <filter token="rpm.platform" value="${rpm.platform}"/>
     <filter token="runjava.contents" value="${runjava.contents}"/>
-
+  	
     <!-- prep wrapup -->
     <property name="prep.done" value="true"/>
+  </target>
+	
+  <target name="test.prep" depends="prep">
+    <delete dir="${test.xml.dir}"/>
+    <mkdir dir="${test.xml.dir}"/>
   </target>
 
   <target name="platform.check" depends="platform.init, platform.darwin,
@@ -1322,32 +1365,16 @@ OpenNMS as part of the post-install.
     <include name="**/*TestCase.java"/>
    <include name="**/mock/*.java"/>
    <classpath>
-     <path refid="libraries.java.path"/>
-     <pathelement location="${dev.lib.dir}/junit.jar"/>
-     <pathelement location="${packaged.lib.dir}/hsqldb.jar"/>
-     <pathelement location="${packaged.lib.dir}/SNMP4J.jar"/>
-     <pathelement location="${dev.lib.dir}/jwebunit-1.2.jar"/>
-    <pathelement location="${dev.lib.dir}/httpunit.jar"/>
-     <pathelement location="${build.classes.dir}"/>
+     <path refid="test.path"/>
+     <path refid="webtest.path"/>
    </classpath>
   </javac>
 </target>
 
-<target name="test" depends="prep, java.compile, junit.compile"
-  description="Run all the unit tests" unless="skip.tests">
-  <delete dir="${test.xml.dir}"/>
-  <mkdir dir="${test.xml.dir}"/>
+<target name="test" depends="test.prep, java.compile, junit.compile"
+  description="Run all the unit tests on the opennms service code" unless="skip.tests">
   <junit errorProperty="test.failed" failureProperty="test.failed">
-     <classpath>
-       <path refid="libraries.java.path"/>
-       <pathelement location="${packaged.lib.dir}/oro204.jar" />
-       <pathelement location="${dev.lib.dir}/junit.jar"/>
-       <pathelement location="${packaged.lib.dir}/hsqldb.jar"/>
-       <pathelement location="${packaged.lib.dir}/SNMP4J.jar"/>
-       <pathelement location="${packaged.lib.dir}/${postgresql.jar}"/>
-       <pathelement location="${build.classes.dir}" />
-       <pathelement location="${build.tests.dir}" />
-     </classpath>
+     <classpath refid="test.path"/>
      <formatter type="brief" usefile="false" />
      <formatter type="xml" />
      <batchtest todir="${test.xml.dir}">
@@ -1379,22 +1406,14 @@ OpenNMS as part of the post-install.
   </fail>
 </target>
 
-<target name="runTest" depends="prep, java.compile, junit.compile"
+<target name="runTest" depends="test.prep, java.compile, junit.compile"
         description="Run a single unit test class">
   <fail unless="test.class">
     You need to define the test.class property to indicate which test
     to run.  See README.build for details on setting properties.
   </fail>
   <junit errorProperty="test.failed" failureProperty="test.failed">
-     <classpath>
-       <path refid="libraries.java.path"/>
-       <pathelement location="${dev.lib.dir}/junit.jar"/>
-       <pathelement location="${packaged.lib.dir}/hsqldb.jar"/>
-       <pathelement location="${packaged.lib.dir}/SNMP4J.jar"/>
-       <pathelement location="${packaged.lib.dir}/${postgresql.jar}"/>
-       <pathelement location="${build.classes.dir}" />
-       <pathelement location="${build.tests.dir}" />
-     </classpath>
+     <classpath refid="test.path"/>
      <formatter type="plain" usefile="false" />
      <test name="${test.class}"/>
      <sysproperty key="mock.logLevel" value="${mock.logLevel}" />
@@ -1414,6 +1433,35 @@ OpenNMS as part of the post-install.
   </fail>
 </target>
 
+<target name="webtest" depends="test.prep, junit.compile, install"
+  description="Run all the unit tests on the webapp" unless="skip.tests">
+  <junit fork="true" forkmode="once" errorProperty="test.failed" failureProperty="test.failed">
+  	 <classpath refid="webtest.path"/>
+     <formatter type="brief" usefile="false" />
+     <formatter type="xml" />
+     <batchtest todir="${test.xml.dir}">
+         <fileset dir="${source.dir}/web/src">
+            <include name="**/*Test.java" />
+            <exclude name="**/AllTests.java" /> 
+         </fileset>
+     </batchtest>
+     <sysproperty key="mock.logLevel" value="${mock.logLevel}" />
+     <sysproperty key="mock.debug" value="${mock.debug}" />
+     <sysproperty key="mock.rundbtests" value="${mock.rundbtests}" />
+  </junit>
+  <condition property="continue.build">
+    <or>
+     <isset property="ignoreFailedTests" />
+     <not> <isset property="test.failed" /></not>
+    </or>
+  </condition>
+  <fail unless="continue.build" >
+     Unit Tests Failed.  Check the test results in ${test.xml.dir}.
+     To ignore failed tests, set the ignoreFailedTests property to true.
+     See README.build for details on setting properties.
+  </fail>
+</target>
+	
  <!-- JAR targets -->
  <target name="jar" depends="opennms_core.jar, opennms_joesnmp.jar,
 			     opennms_web.jar, opennms_common.jar,
