@@ -148,7 +148,6 @@ ${print.headertext}
   PostgreSQL Library Arguments = ${compile.postgresql.lib}
   RRDTool Include Arguments    = ${compile.rrdtool.include}
   RRDTool Library Arguments    = ${compile.rrdtool.lib}
-  Other Library Arguments      = ${compile.otherlibs}
 
   === Build/Install Directories ===
   Build Working Directory      = ${relative.build}
@@ -943,7 +942,6 @@ OpenNMS as part of the post-install.
    <arg line="${compile.ld.dynamic} ${compile.ld.shared} -L${compile.postgresql.lib} -R${compile.rrdtool.lib} -o"/>
    <targetfile/>
    <srcfile/>
-   <arg line="${compile.otherlibs}"/>
    <fileset dir="${root.build}/postgresql" includes="*.o"/>
    <mapper type="glob" from="*.o" to="*.${compile.soext}.${opennms.version}"/>
   </apply>
@@ -987,7 +985,7 @@ OpenNMS as part of the post-install.
 
   <!-- generate .so files -->
   <apply executable="${compile.ld}" dir="${root.build}/jicmp" failonerror="true" dest="${root.build}/jicmp">
-   <arg line="${compile.ld.dynamic} ${compile.ld.shared} ${compile.otherlibs} -o"/>
+   <arg line="${compile.ld.dynamic} ${compile.ld.shared} -o"/>
    <targetfile/>
    <srcfile/>
    <fileset dir="${root.build}/jicmp" includes="*.o"/>

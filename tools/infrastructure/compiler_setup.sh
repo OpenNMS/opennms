@@ -22,9 +22,12 @@ for dir in /usr/ccs/bin /usr/local/bin /usr/bin /bin; do
 		LD="$dir/ld"
 	fi
 done
-if [ "`uname`" = "Darwin" ]; then
-	LD="/usr/bin/cc"
-fi
+case `uname` in
+	Darwin)
+	SunOS)
+		LD="$CC"
+		;;
+esac
 
 for dir in /usr/local/pgsql/lib /usr/local/lib /usr/lib /sw/lib; do
 	if [ -f "$dir/libpq.so" ] || [ -f "$dir/libpq.dylib" ] || [ -f "$dir/libpq.so.2" ]; then
