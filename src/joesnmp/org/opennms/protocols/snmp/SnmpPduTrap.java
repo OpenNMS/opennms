@@ -205,10 +205,10 @@ public class SnmpPduTrap extends Object
 		m_specific	= second.m_specific;
 		m_tstamp	= second.m_tstamp;
 		m_variables	= new ArrayList(second.m_variables.size());
-		for(int x = second.m_variables.size() - 1; x >= 0; x--)
-		{
-			m_variables.set(x, ((SnmpVarBind)(second.m_variables.get(x))).duplicate());
-		}
+  		for(int x = 0; x < second.m_variables.size(); x++)
+  		{
+    			m_variables.add(((SnmpVarBind)(second.m_variables.get(x))).duplicate());
+  		}
 	}
 
 	/**
