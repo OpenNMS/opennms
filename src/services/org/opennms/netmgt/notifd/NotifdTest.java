@@ -33,10 +33,8 @@
 
 package org.opennms.netmgt.notifd;
 
-import java.io.IOException;
+import junit.framework.TestCase;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.mock.MockEventIpcManager;
@@ -47,8 +45,6 @@ import org.opennms.netmgt.notifd.mock.MockNotifdConfigManager;
 import org.opennms.netmgt.notifd.mock.MockNotificationCommandManager;
 import org.opennms.netmgt.notifd.mock.MockNotificationManager;
 import org.opennms.netmgt.notifd.mock.MockUserManager;
-
-import junit.framework.TestCase;
 /**
  * @author david
  *
@@ -683,6 +679,8 @@ public class NotifdTest extends TestCase {
         m_notifd.setConfigManager(m_notifdConfig);
         m_notifd.setGroupManager(m_groupManager);
         m_notifd.setUserManager(m_userManager);
+        m_notifd.setDestinationPathManager(m_destinationPathManager);
+        m_notifd.setNotificationCommandManager(m_notificationCommandManger);
         
         m_notificationManager = new MockNotificationManager(m_notifdConfig, NOTIFICATION_MANAGER);
         m_notifd.setNotificationManager(m_notificationManager);
@@ -702,10 +700,8 @@ public class NotifdTest extends TestCase {
         assertTrue(MockUtil.noWarningsOrHigherLogged());
     }
 
-    public void testNotifdStatus() {
+    public void testNotifdStatus() throws Exception {
         
-        try {
-            
             //test for off status passed in config XML string
             assertEquals(m_notifdConfig.getNotificationStatus(), "off");
             
@@ -716,17 +712,6 @@ public class NotifdTest extends TestCase {
             //test for off status set here
             m_notifdConfig.turnNotifdOff();
             assertEquals(m_notifdConfig.getNotificationStatus(), "off");
-
-        } catch (MarshalException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ValidationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
 
     }
 }
