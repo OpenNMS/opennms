@@ -459,33 +459,35 @@ public final class EventUtil
 			Snmp info = event.getSnmp();
 			if (info == null)
 				retParmVal = null;
-
-			StringBuffer snmpStr = new StringBuffer(info.getId());
-			if (info.getIdtext() != null)
-				snmpStr.append(ATTRIB_DELIM + escape(info.getIdtext().trim(), ATTRIB_DELIM));
 			else
-				snmpStr.append(ATTRIB_DELIM + "undefined");
-
-			snmpStr.append(ATTRIB_DELIM + info.getVersion());
-
-			if (info.hasSpecific())
-				snmpStr.append(ATTRIB_DELIM + Integer.toString(info.getSpecific()));
-			else
-				snmpStr.append(ATTRIB_DELIM + "undefined");
-
-			if (info.hasGeneric())
-				snmpStr.append(ATTRIB_DELIM + Integer.toString(info.getGeneric()));
-			else
-				snmpStr.append(ATTRIB_DELIM + "undefined");
-
-			if (info.getCommunity() != null)
 			{
-				snmpStr.append(ATTRIB_DELIM + info.getCommunity().trim() );
-			}
-			else
-				snmpStr.append(ATTRIB_DELIM + "undefined");
+				StringBuffer snmpStr = new StringBuffer(info.getId());
+				if (info.getIdtext() != null)
+					snmpStr.append(ATTRIB_DELIM + escape(info.getIdtext().trim(), ATTRIB_DELIM));
+				else
+					snmpStr.append(ATTRIB_DELIM + "undefined");
 
-			retParmVal = snmpStr.toString();
+				snmpStr.append(ATTRIB_DELIM + info.getVersion());
+
+				if (info.hasSpecific())
+					snmpStr.append(ATTRIB_DELIM + Integer.toString(info.getSpecific()));
+				else
+					snmpStr.append(ATTRIB_DELIM + "undefined");
+
+				if (info.hasGeneric())
+					snmpStr.append(ATTRIB_DELIM + Integer.toString(info.getGeneric()));
+				else
+					snmpStr.append(ATTRIB_DELIM + "undefined");
+
+				if (info.getCommunity() != null)
+				{
+					snmpStr.append(ATTRIB_DELIM + info.getCommunity().trim() );
+				}
+				else
+					snmpStr.append(ATTRIB_DELIM + "undefined");
+
+				retParmVal = snmpStr.toString();
+			}
 		}
 		else if (parm.equals(TAG_SNMP_ID))
 		{
