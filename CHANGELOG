@@ -1,5 +1,7 @@
 1.1.1 to 1.1.2
 ----------------------------------------------------------------------
+- Fixed issues in events when nodes are deleted. Bug 708
+- Fixed issues with null issnmpprimary values. Bug 741
 - Added the ScriptD daemon for running BeanShell scripts. Thx Jim
 - Set caspd not to reset the parentId on a rescan (useful for maps)
 - Fixed a bug that caused certain rules to match all. Bug 752
