@@ -80,7 +80,7 @@ public final class Collectd
 	 * SQL used to retrieve all the interfaces which support a 
 	 * particular service.
 	 */
-	private final static String SQL_RETRIEVE_INTERFACES = "SELECT nodeid,ipaddr FROM ifServices, service WHERE ifServices.serviceid = service.serviceid AND service.servicename = ?";
+	private final static String SQL_RETRIEVE_INTERFACES = "SELECT DISTINCT nodeid,ipaddr FROM ifServices, service WHERE ifServices.serviceid = service.serviceid AND service.servicename = ?";
 
 	/**
 	 * SQL used to retrieve all the service id's and names from
