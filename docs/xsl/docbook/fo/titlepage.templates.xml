@@ -17,63 +17,84 @@
              xmlns:fo="http://www.w3.org/1999/XSL/Format"
              xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
+<!-- ********************************************************************
+     $Id: titlepage.templates.xml,v 1.23 2003/12/16 00:30:49 bobstayton Exp $
+     ********************************************************************
+
+     This file is part of the DocBook XSL Stylesheet distribution.
+     See ../README or http://docbook.sf.net/ for copyright
+     and other information.
+
+     ******************************************************************** -->
+
 <!-- ==================================================================== -->
 
-<t:titlepage element="article" wrapper="fo:block">
-  <t:titlepage-content side="recto">
-      <title
-	     named-template="component.title"
-	     param:node="ancestor-or-self::article[1]"
-	     fo:text-align="center"
-	     fo:margin-left="-4pc"
-	     fo:keep-with-next="always"
-	     fo:font-size="&hsize5;"
-	     fo:font-weight="bold"
-	     fo:font-family="{$title.font.family}"/>
-    <subtitle
-	      fo:font-family="{$title.font.family}"
-	      fo:text-align="center"/>
-    <corpauthor/>
-    <authorgroup/>
-    <author/>
-    <othercredit/>
-    <releaseinfo/>
-    <copyright/>
-    <legalnotice/>
-    <pubdate/>
-    <revision/>
-    <revhistory/>
-    <abstract/>
+<t:titlepage t:element="article" t:wrapper="fo:block"
+             font-family="{$title.fontset}">
+
+  <t:titlepage-content t:side="recto"
+             text-align="center">
+
+    <title t:named-template="component.title"
+	   param:node="ancestor-or-self::article[1]"
+	   keep-with-next="always"
+	   font-size="&hsize5;"
+	   font-weight="bold"/>
+
+    <subtitle/>
+
+    <corpauthor space-before="0.5em"
+                font-size="&hsize2;"/>
+    <authorgroup space-before="0.5em"
+                 font-size="&hsize2;"/>
+    <author space-before="0.5em"
+            font-size="&hsize2;"/>
+
+    <othercredit space-before="0.5em"/>
+    <releaseinfo space-before="0.5em"/>
+    <copyright space-before="0.5em"/>
+    <legalnotice text-align="start"
+                 margin-left="0.5in"
+                 margin-right="0.5in"
+                 font-family="{$body.fontset}"/>
+    <pubdate space-before="0.5em"/>
+    <revision space-before="0.5em"/>
+    <revhistory space-before="0.5em"/>
+    <abstract space-before="0.5em"
+	      text-align="start"
+	      margin-left="0.5in"
+              margin-right="0.5in"
+              font-family="{$body.fontset}"/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-<t:titlepage element="set" wrapper="fo:block">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="set" t:wrapper="fo:block">
+  <t:titlepage-content t:side="recto">
       <title
-	     named-template="division.title"
+	     t:named-template="division.title"
 	     param:node="ancestor-or-self::set[1]"
-	     fo:text-align="center"
-	     fo:font-size="&hsize5;"
-	     fo:space-before="&hsize5space;"
-	     fo:font-weight="bold"
-	     fo:font-family="{$title.font.family}"/>
+	     text-align="center"
+	     font-size="&hsize5;"
+	     space-before="&hsize5space;"
+	     font-weight="bold"
+	     font-family="{$title.fontset}"/>
     <subtitle
-	      fo:font-family="{$title.font.family}"
-	      fo:text-align="center"/>
+	      font-family="{$title.fontset}"
+	      text-align="center"/>
     <corpauthor/>
     <authorgroup/>
     <author/>
@@ -87,122 +108,121 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-  <t:titlepage element="book" wrapper="fo:block">
-    <t:titlepage-content side="recto">
+  <t:titlepage t:element="book" t:wrapper="fo:block">
+    <t:titlepage-content t:side="recto">
       <title
-	     named-template="division.title"
+	     t:named-template="division.title"
 	     param:node="ancestor-or-self::book[1]"
-	     fo:text-align="center"
-	     fo:font-size="&hsize5;"
-	     fo:space-before="&hsize5space;"
-	     fo:font-weight="bold"
-	     fo:font-family="{$title.font.family}"/>
+	     text-align="center"
+	     font-size="&hsize5;"
+	     space-before="&hsize5space;"
+	     font-weight="bold"
+	     font-family="{$title.fontset}"/>
       <subtitle
-		fo:text-align="center"
-		fo:font-size="&hsize4;"
-		fo:space-before="&hsize4space;"
-		fo:font-family="{$title.font.family}"/>
-      <corpauthor fo:font-size="&hsize3;"
-		  fo:keep-with-next="always"
-		  fo:space-before="2in"/>
-      <authorgroup fo:space-before="2in"/>
-      <author fo:font-size="&hsize3;"
-	      fo:space-before="&hsize2space;"
-	      fo:keep-with-next="always"/>
+		text-align="center"
+		font-size="&hsize4;"
+		space-before="&hsize4space;"
+		font-family="{$title.fontset}"/>
+      <corpauthor font-size="&hsize3;"
+		  keep-with-next="always"
+		  space-before="2in"/>
+      <authorgroup space-before="2in"/>
+      <author font-size="&hsize3;"
+	      space-before="&hsize2space;"
+	      keep-with-next="always"/>
     </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
       <title
-	     named-template="book.verso.title"
-	     fo:font-size="&hsize2;"
-	     fo:font-weight="bold"
-	     fo:font-family="{$title.font.family}"/>
+	     t:named-template="book.verso.title"
+	     font-size="&hsize2;"
+	     font-weight="bold"
+	     font-family="{$title.fontset}"/>
       <corpauthor/>
-      <authorgroup/>
+      <authorgroup t:named-template="verso.authorgroup"/>
       <author/>
       <othercredit/>
-      <pubdate fo:space-before="1em"/>
+      <pubdate space-before="1em"/>
       <copyright/>
       <abstract/>
-      <legalnotice fo:font-size="8pt"/>
+      <legalnotice font-size="8pt"/>
   </t:titlepage-content>
 
   <t:titlepage-separator>
       <fo:block break-after="page"/>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
       <fo:block break-after="page"/>
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-<t:titlepage element="part" wrapper="fo:block">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="part" t:wrapper="fo:block">
+  <t:titlepage-content t:side="recto">
       <title
-	     named-template="division.title"
+	     t:named-template="division.title"
 	     param:node="ancestor-or-self::part[1]"
-	     fo:text-align="center"
-	     fo:font-size="&hsize5;"
-	     fo:space-before="&hsize5space;"
-	     fo:font-weight="bold"
-	     fo:font-family="{$title.font.family}"/>
+	     text-align="center"
+	     font-size="&hsize5;"
+	     space-before="&hsize5space;"
+	     font-weight="bold"
+	     font-family="{$title.fontset}"/>
     <subtitle
-	      fo:text-align="center"
-	      fo:font-size="&hsize4;"
-	      fo:space-before="&hsize4space;"
-	      fo:font-weight='bold'
-	      fo:font-style='italic'
-	      fo:font-family="{$title.font.family}"/>
+	      text-align="center"
+	      font-size="&hsize4;"
+	      space-before="&hsize4space;"
+	      font-weight='bold'
+	      font-style='italic'
+	      font-family="{$title.fontset}"/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
-<t:titlepage element="partintro" wrapper="fo:block">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="partintro" t:wrapper="fo:block">
+  <t:titlepage-content t:side="recto">
     <title
-	   fo:text-align="center"
-	   fo:font-size="&hsize3;"
-	   fo:font-weight="bold"
-	   fo:margin-left="-4pc"
-	   fo:space-before="1em"
-	   fo:font-family="{$title.font.family}"/>
+	   text-align="center"
+	   font-size="&hsize5;"
+	   font-weight="bold"
+	   space-before="1em"
+	   font-family="{$title.fontset}"/>
     <subtitle
-	      fo:text-align="center"
-	      fo:font-size="&hsize2;"
-	      fo:font-weight="bold"
-	      fo:font-style="italic"
-	      fo:font-family="{$title.font.family}"/>
+	      text-align="center"
+	      font-size="&hsize2;"
+	      font-weight="bold"
+	      font-style="italic"
+	      font-family="{$title.fontset}"/>
     <corpauthor/>
     <authorgroup/>
     <author/>
@@ -216,34 +236,34 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-<t:titlepage element="reference" wrapper="fo:block">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="reference" t:wrapper="fo:block">
+  <t:titlepage-content t:side="recto">
       <title
-	     named-template="division.title"
+	     t:named-template="division.title"
 	     param:node="ancestor-or-self::reference[1]"
-	     fo:text-align="center"
-	     fo:font-size="&hsize5;"
-	     fo:space-before="&hsize5space;"
-	     fo:font-weight="bold"
-	     fo:font-family="{$title.font.family}"/>
+	     text-align="center"
+	     font-size="&hsize5;"
+	     space-before="&hsize5space;"
+	     font-weight="bold"
+	     font-family="{$title.fontset}"/>
     <subtitle
-	      fo:font-family="{$title.font.family}"
-	      fo:text-align="center"/>
+	      font-family="{$title.fontset}"
+	      text-align="center"/>
     <corpauthor/>
     <authorgroup/>
     <author/>
@@ -257,62 +277,167 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-  <t:titlepage element="dedication" wrapper="fo:block">
-    <t:titlepage-content side="recto">
+<t:titlepage t:element="refsynopsisdiv" t:wrapper="fo:block">
+  <t:titlepage-content t:side="recto">
+    <title
+	   font-family="{$title.fontset}"/>
+  </t:titlepage-content>
+
+  <t:titlepage-content t:side="verso">
+  </t:titlepage-content>
+
+  <t:titlepage-separator>
+  </t:titlepage-separator>
+
+  <t:titlepage-before t:side="recto">
+  </t:titlepage-before>
+
+  <t:titlepage-before t:side="verso">
+  </t:titlepage-before>
+</t:titlepage>
+
+<!-- ==================================================================== -->
+
+<t:titlepage t:element="refsection" t:wrapper="fo:block">
+  <t:titlepage-content t:side="recto">
+    <title
+	   font-family="{$title.fontset}"/>
+  </t:titlepage-content>
+
+  <t:titlepage-content t:side="verso">
+  </t:titlepage-content>
+
+  <t:titlepage-separator>
+  </t:titlepage-separator>
+
+  <t:titlepage-before t:side="recto">
+  </t:titlepage-before>
+
+  <t:titlepage-before t:side="verso">
+  </t:titlepage-before>
+</t:titlepage>
+
+<!-- ==================================================================== -->
+
+<t:titlepage t:element="refsect1" t:wrapper="fo:block">
+  <t:titlepage-content t:side="recto">
+    <title
+	   font-family="{$title.fontset}"/>
+  </t:titlepage-content>
+
+  <t:titlepage-content t:side="verso">
+  </t:titlepage-content>
+
+  <t:titlepage-separator>
+  </t:titlepage-separator>
+
+  <t:titlepage-before t:side="recto">
+  </t:titlepage-before>
+
+  <t:titlepage-before t:side="verso">
+  </t:titlepage-before>
+</t:titlepage>
+
+<!-- ==================================================================== -->
+
+<t:titlepage t:element="refsect2" t:wrapper="fo:block">
+  <t:titlepage-content t:side="recto">
+    <title
+	   font-family="{$title.fontset}"/>
+  </t:titlepage-content>
+
+  <t:titlepage-content t:side="verso">
+  </t:titlepage-content>
+
+  <t:titlepage-separator>
+  </t:titlepage-separator>
+
+  <t:titlepage-before t:side="recto">
+  </t:titlepage-before>
+
+  <t:titlepage-before t:side="verso">
+  </t:titlepage-before>
+</t:titlepage>
+
+<!-- ==================================================================== -->
+
+<t:titlepage t:element="refsect3" t:wrapper="fo:block">
+  <t:titlepage-content t:side="recto">
+    <title
+	   font-family="{$title.fontset}"/>
+  </t:titlepage-content>
+
+  <t:titlepage-content t:side="verso">
+  </t:titlepage-content>
+
+  <t:titlepage-separator>
+  </t:titlepage-separator>
+
+  <t:titlepage-before t:side="recto">
+  </t:titlepage-before>
+
+  <t:titlepage-before t:side="verso">
+  </t:titlepage-before>
+</t:titlepage>
+
+<!-- ==================================================================== -->
+
+  <t:titlepage t:element="dedication" t:wrapper="fo:block">
+    <t:titlepage-content t:side="recto">
       <title
-	     force="1"
-	     named-template="component.title"
+	     t:force="1"
+	     t:named-template="component.title"
 	     param:node="ancestor-or-self::dedication[1]"
-	     fo:margin-left="-4pc"
-	     fo:font-size="&hsize3;"
-	     fo:font-family="{$title.font.family}"
-	     fo:font-weight="bold"/>
+	     margin-left="{$title.margin.left}"
+	     font-size="&hsize5;"
+	     font-family="{$title.fontset}"
+	     font-weight="bold"/>
       <subtitle
-		fo:font-family="{$title.font.family}"/>
+		font-family="{$title.fontset}"/>
     </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-  <t:titlepage element="preface" wrapper="fo:block">
-    <t:titlepage-content side="recto">
+  <t:titlepage t:element="preface" t:wrapper="fo:block">
+    <t:titlepage-content t:side="recto">
       <title
-	     force="1"
-	     named-template="component.title"
+	     t:force="1"
+	     t:named-template="component.title"
 	     param:node="ancestor-or-self::preface[1]"
-	     fo:margin-left="-4pc"
-	     fo:font-size="&hsize3;"
-	     fo:font-family="{$title.font.family}"
-	     fo:font-weight="bold"/>
+	     margin-left="{$title.margin.left}"
+	     font-size="&hsize5;"
+	     font-family="{$title.fontset}"
+	     font-weight="bold"/>
       <subtitle
-		fo:font-family="{$title.font.family}"/>
+		font-family="{$title.fontset}"/>
       <corpauthor/>
       <authorgroup/>
       <author/>
@@ -326,40 +451,46 @@
       <abstract/>
     </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-  <t:titlepage element="chapter" wrapper="fo:block">
-    <t:titlepage-content side="recto">
-      <title
-	     named-template="component.title"
+  <t:titlepage t:element="chapter" t:wrapper="fo:block"
+               font-family="{$title.fontset}">
+    <t:titlepage-content t:side="recto" margin-left="{$title.margin.left}">
+      <title t:named-template="component.title"
 	     param:node="ancestor-or-self::chapter[1]"
-	     fo:margin-left="-4pc"
-	     fo:font-size="&hsize3;"
-	     fo:font-weight="bold"
-	     fo:font-family="{$title.font.family}"/>
-      <subtitle
-		fo:space-before="0.5em"
-		fo:margin-left="-4pc"
-		fo:font-style="italic"
-		fo:font-size="&hsize2;"
-		fo:font-weight="bold"
-		fo:font-family="{$title.font.family}"/>
-      <corpauthor/>
-      <authorgroup/>
-      <author/>
+	     font-size="&hsize5;"
+	     font-weight="bold"/>
+
+      <subtitle space-before="0.5em"
+		font-style="italic"
+		font-size="&hsize2;"
+		font-weight="bold"/>
+
+      <corpauthor  space-before="0.5em"
+	           space-after="0.5em"
+                   font-size="&hsize2;"/>
+
+      <authorgroup space-before="0.5em"
+	           space-after="0.5em"
+                   font-size="&hsize2;"/>
+
+      <author      space-before="0.5em"
+	           space-after="0.5em"
+                   font-size="&hsize2;"/>
+
       <othercredit/>
       <releaseinfo/>
       <copyright/>
@@ -370,32 +501,32 @@
       <abstract/>
     </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-  <t:titlepage element="appendix" wrapper="fo:block">
-    <t:titlepage-content side="recto">
+  <t:titlepage t:element="appendix" t:wrapper="fo:block">
+    <t:titlepage-content t:side="recto">
       <title
-	     named-template="component.title"
+	     t:named-template="component.title"
 	     param:node="ancestor-or-self::appendix[1]"
-	     fo:margin-left="-4pc"
-	     fo:font-size="&hsize3;"
-	     fo:font-weight="bold"
-	     fo:font-family="{$title.font.family}"/>
+	     margin-left="{$title.margin.left}"
+	     font-size="&hsize5;"
+	     font-weight="bold"
+	     font-family="{$title.fontset}"/>
       <subtitle
-		fo:font-family="{$title.font.family}"/>
+		font-family="{$title.fontset}"/>
       <corpauthor/>
       <authorgroup/>
       <author/>
@@ -409,28 +540,28 @@
       <abstract/>
     </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-<t:titlepage element="section" wrapper="fo:block">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="section" t:wrapper="fo:block">
+  <t:titlepage-content t:side="recto">
     <title
-	   fo:margin-left="-4pc"
-	   fo:font-family="{$title.font.family}"/>
+	   margin-left="{$title.margin.left}"
+	   font-family="{$title.fontset}"/>
     <subtitle
-	      fo:font-family="{$title.font.family}"/>
+	      font-family="{$title.fontset}"/>
     <corpauthor/>
     <authorgroup/>
     <author/>
@@ -444,26 +575,26 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
-<t:titlepage element="sect1" wrapper="fo:block">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="sect1" t:wrapper="fo:block">
+  <t:titlepage-content t:side="recto">
     <title
-	   fo:margin-left="-4pc"
-	   fo:font-family="{$title.font.family}"/>
+	   margin-left="{$title.margin.left}"
+	   font-family="{$title.fontset}"/>
     <subtitle
-	      fo:font-family="{$title.font.family}"/>
+	      font-family="{$title.fontset}"/>
     <corpauthor/>
     <authorgroup/>
     <author/>
@@ -477,26 +608,26 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
-<t:titlepage element="sect2" wrapper="fo:block">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="sect2" t:wrapper="fo:block">
+  <t:titlepage-content t:side="recto">
     <title
-	   fo:margin-left="-4pc"
-	   fo:font-family="{$title.font.family}"/>
+	   margin-left="{$title.margin.left}"
+	   font-family="{$title.fontset}"/>
     <subtitle
-	      fo:font-family="{$title.font.family}"/>
+	      font-family="{$title.fontset}"/>
     <corpauthor/>
     <authorgroup/>
     <author/>
@@ -510,26 +641,26 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
-<t:titlepage element="sect3" wrapper="fo:block">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="sect3" t:wrapper="fo:block">
+  <t:titlepage-content t:side="recto">
     <title
-	   fo:margin-left="-4pc"
-	   fo:font-family="{$title.font.family}"/>
+	   margin-left="{$title.margin.left}"
+	   font-family="{$title.fontset}"/>
     <subtitle
-	      fo:font-family="{$title.font.family}"/>
+	      font-family="{$title.fontset}"/>
     <corpauthor/>
     <authorgroup/>
     <author/>
@@ -543,26 +674,26 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
-<t:titlepage element="sect4" wrapper="fo:block">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="sect4" t:wrapper="fo:block">
+  <t:titlepage-content t:side="recto">
     <title
-	   fo:margin-left="-4pc"
-	   fo:font-family="{$title.font.family}"/>
+	   margin-left="{$title.margin.left}"
+	   font-family="{$title.fontset}"/>
     <subtitle
-	      fo:font-family="{$title.font.family}"/>
+	      font-family="{$title.fontset}"/>
     <corpauthor/>
     <authorgroup/>
     <author/>
@@ -576,26 +707,26 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
-<t:titlepage element="sect5" wrapper="fo:block">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="sect5" t:wrapper="fo:block">
+  <t:titlepage-content t:side="recto">
     <title
-	   fo:margin-left="-4pc"
-	   fo:font-family="{$title.font.family}"/>
+	   margin-left="{$title.margin.left}"
+	   font-family="{$title.fontset}"/>
     <subtitle
-	      fo:font-family="{$title.font.family}"/>
+	      font-family="{$title.fontset}"/>
     <corpauthor/>
     <authorgroup/>
     <author/>
@@ -609,26 +740,26 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
-<t:titlepage element="simplesect" wrapper="fo:block">
-  <t:titlepage-content side="recto">
+<t:titlepage t:element="simplesect" t:wrapper="fo:block">
+  <t:titlepage-content t:side="recto">
     <title
-	   fo:margin-left="-4pc"
-	   fo:font-family="{$title.font.family}"/>
+	   margin-left="{$title.margin.left}"
+	   font-family="{$title.fontset}"/>
     <subtitle
-	      fo:font-family="{$title.font.family}"/>
+	      font-family="{$title.fontset}"/>
     <corpauthor/>
     <authorgroup/>
     <author/>
@@ -642,290 +773,450 @@
     <abstract/>
   </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-  <t:titlepage element="bibliography" wrapper="fo:block">
-    <t:titlepage-content side="recto">
+  <t:titlepage t:element="bibliography" t:wrapper="fo:block">
+    <t:titlepage-content t:side="recto">
       <title
-	     force="1"
-	     named-template="component.title"
+	     t:force="1"
+	     t:named-template="component.title"
 	     param:node="ancestor-or-self::bibliography[1]"
-	     fo:margin-left="-4pc"
-	     fo:font-size="&hsize3;"
-	     fo:font-family="{$title.font.family}"
-	     fo:font-weight="bold"/>
+	     margin-left="{$title.margin.left}"
+	     font-size="&hsize5;"
+	     font-family="{$title.fontset}"
+	     font-weight="bold"/>
       <subtitle
-		fo:font-family="{$title.font.family}"/>
+		font-family="{$title.fontset}"/>
     </t:titlepage-content>
 
-    <t:titlepage-content side="verso">
+    <t:titlepage-content t:side="verso">
     </t:titlepage-content>
 
     <t:titlepage-separator>
     </t:titlepage-separator>
 
-    <t:titlepage-before side="recto">
+    <t:titlepage-before t:side="recto">
     </t:titlepage-before>
 
-    <t:titlepage-before side="verso">
+    <t:titlepage-before t:side="verso">
     </t:titlepage-before>
   </t:titlepage>
 
 <!-- ==================================================================== -->
 
-  <t:titlepage element="glossary" wrapper="fo:block">
-    <t:titlepage-content side="recto">
+  <t:titlepage t:element="bibliodiv" t:wrapper="fo:block">
+    <t:titlepage-content t:side="recto">
+      <title t:named-template="component.title"
+	     param:node="ancestor-or-self::bibliodiv[1]"
+	     margin-left="{$title.margin.left}"
+	     font-size="&hsize4;"
+	     font-family="{$title.fontset}"
+	     font-weight="bold"/>
+      <subtitle
+		font-family="{$title.fontset}"/>
+    </t:titlepage-content>
+
+    <t:titlepage-content t:side="verso">
+    </t:titlepage-content>
+
+    <t:titlepage-separator>
+    </t:titlepage-separator>
+
+    <t:titlepage-before t:side="recto">
+    </t:titlepage-before>
+
+    <t:titlepage-before t:side="verso">
+    </t:titlepage-before>
+  </t:titlepage>
+
+<!-- ==================================================================== -->
+
+  <t:titlepage t:element="glossary" t:wrapper="fo:block">
+    <t:titlepage-content t:side="recto">
       <title
-	     force="1"
-	     named-template="component.title"
+	     t:force="1"
+	     t:named-template="component.title"
 	     param:node="ancestor-or-self::glossary[1]"
-	     fo:margin-left="-4pc"
-	     fo:font-size="&hsize3;"
-	     fo:font-family="{$title.font.family}"
-	     fo:font-weight="bold"/>
+	     margin-left="{$title.margin.left}"
+	     font-size="&hsize5;"
+	     font-family="{$title.fontset}"
+	     font-weight="bold"/>
       <subtitle
-		fo:font-family="{$title.font.family}"/>
+		font-family="{$title.fontset}"/>
     </t:titlepage-content>
 
-    <t:titlepage-content side="verso">
+    <t:titlepage-content t:side="verso">
     </t:titlepage-content>
 
     <t:titlepage-separator>
     </t:titlepage-separator>
 
-    <t:titlepage-before side="recto">
+    <t:titlepage-before t:side="recto">
     </t:titlepage-before>
 
-    <t:titlepage-before side="verso">
+    <t:titlepage-before t:side="verso">
     </t:titlepage-before>
   </t:titlepage>
 
 <!-- ==================================================================== -->
 
-  <t:titlepage element="index" wrapper="fo:block">
-    <t:titlepage-content side="recto">
+  <t:titlepage t:element="glossdiv" t:wrapper="fo:block">
+    <t:titlepage-content t:side="recto">
+      <title t:named-template="component.title"
+	     param:node="ancestor-or-self::glossdiv[1]"
+	     margin-left="{$title.margin.left}"
+	     font-size="&hsize4;"
+	     font-family="{$title.fontset}"
+	     font-weight="bold"/>
+      <subtitle
+		font-family="{$title.fontset}"/>
+    </t:titlepage-content>
+
+    <t:titlepage-content t:side="verso">
+    </t:titlepage-content>
+
+    <t:titlepage-separator>
+    </t:titlepage-separator>
+
+    <t:titlepage-before t:side="recto">
+    </t:titlepage-before>
+
+    <t:titlepage-before t:side="verso">
+    </t:titlepage-before>
+  </t:titlepage>
+
+<!-- ==================================================================== -->
+
+  <t:titlepage t:element="index" t:wrapper="fo:block">
+    <t:titlepage-content t:side="recto">
       <title
-	     force="1"
-	     named-template="component.title"
+	     t:force="1"
+	     t:named-template="component.title"
 	     param:node="ancestor-or-self::index[1]"
-	     fo:margin-left="-4pc"
-	     fo:font-size="&hsize3;"
-	     fo:font-family="{$title.font.family}"
-	     fo:font-weight="bold"/>
+             param:pagewide="1"
+	     margin-left="0pt"
+	     font-size="&hsize5;"
+	     font-family="{$title.fontset}"
+	     font-weight="bold"/>
       <subtitle
-		fo:font-family="{$title.font.family}"/>
+		font-family="{$title.fontset}"/>
     </t:titlepage-content>
 
-    <t:titlepage-content side="verso">
+    <t:titlepage-content t:side="verso">
     </t:titlepage-content>
 
     <t:titlepage-separator>
     </t:titlepage-separator>
 
-    <t:titlepage-before side="recto">
+    <t:titlepage-before t:side="recto">
     </t:titlepage-before>
 
-    <t:titlepage-before side="verso">
+    <t:titlepage-before t:side="verso">
     </t:titlepage-before>
   </t:titlepage>
 
 <!-- ==================================================================== -->
 
-  <t:titlepage element="colophon" wrapper="fo:block">
-    <t:titlepage-content side="recto">
-      <title
-	     force="1"
-	     named-template="component.title"
-	     param:node="ancestor-or-self::colophon[1]"
-	     fo:margin-left="-4pc"
-	     fo:font-size="&hsize3;"
-	     fo:font-family="{$title.font.family}"
-	     fo:font-weight="bold"/>
+  <!-- The indexdiv.title template is used so that manual and -->
+  <!-- automatically generated indexdiv titles get the same -->
+  <!-- formatting. -->
+
+  <t:titlepage t:element="indexdiv" t:wrapper="fo:block">
+    <t:titlepage-content t:side="recto">
+      <title t:force="1"
+	     t:named-template="indexdiv.title"
+	     param:title="title"/>
       <subtitle
-		fo:font-family="{$title.font.family}"/>
+		font-family="{$title.fontset}"/>
     </t:titlepage-content>
 
-  <t:titlepage-content side="verso">
+    <t:titlepage-content t:side="verso">
+    </t:titlepage-content>
+
+    <t:titlepage-separator>
+    </t:titlepage-separator>
+
+    <t:titlepage-before t:side="recto">
+    </t:titlepage-before>
+
+    <t:titlepage-before t:side="verso">
+    </t:titlepage-before>
+  </t:titlepage>
+
+<!-- ==================================================================== -->
+
+  <t:titlepage t:element="setindex" t:wrapper="fo:block">
+    <t:titlepage-content t:side="recto">
+      <title
+	     t:force="1"
+	     t:named-template="component.title"
+	     param:node="ancestor-or-self::setindex[1]"
+             param:pagewide="1"
+	     margin-left="0pt"
+	     font-size="&hsize5;"
+	     font-family="{$title.fontset}"
+	     font-weight="bold"/>
+      <subtitle
+		font-family="{$title.fontset}"/>
+    </t:titlepage-content>
+
+    <t:titlepage-content t:side="verso">
+    </t:titlepage-content>
+
+    <t:titlepage-separator>
+    </t:titlepage-separator>
+
+    <t:titlepage-before t:side="recto">
+    </t:titlepage-before>
+
+    <t:titlepage-before t:side="verso">
+    </t:titlepage-before>
+  </t:titlepage>
+
+<!-- ==================================================================== -->
+
+  <t:titlepage t:element="colophon" t:wrapper="fo:block">
+    <t:titlepage-content t:side="recto">
+      <title
+	     t:force="1"
+	     t:named-template="component.title"
+	     param:node="ancestor-or-self::colophon[1]"
+	     margin-left="{$title.margin.left}"
+	     font-size="&hsize5;"
+	     font-family="{$title.fontset}"
+	     font-weight="bold"/>
+      <subtitle
+		font-family="{$title.fontset}"/>
+    </t:titlepage-content>
+
+  <t:titlepage-content t:side="verso">
   </t:titlepage-content>
 
   <t:titlepage-separator>
   </t:titlepage-separator>
 
-  <t:titlepage-before side="recto">
+  <t:titlepage-before t:side="recto">
   </t:titlepage-before>
 
-  <t:titlepage-before side="verso">
+  <t:titlepage-before t:side="verso">
   </t:titlepage-before>
 </t:titlepage>
 
 <!-- ==================================================================== -->
 
-  <t:titlepage element="table.of.contents" wrapper="fo:block">
-    <t:titlepage-content side="recto">
+  <t:titlepage t:element="table.of.contents" t:wrapper="fo:block">
+    <t:titlepage-content t:side="recto">
       <title
-	     force="1"
-	     named-template="gentext"
+	     t:force="1"
+	     t:named-template="gentext"
 	     param:key="'TableofContents'"
-	     fo:space-after="1em"
-	     fo:margin-left="-4pc"
-	     fo:font-size="&hsize3;"
-	     fo:font-weight="bold"
-	     fo:font-family="{$title.font.family}"/>
+             space-before.minimum="1em"
+             space-before.optimum="1.5em"
+             space-before.maximum="2em"
+	     space-after="0.5em"
+	     margin-left="{$title.margin.left}"
+	     font-size="&hsize3;"
+	     font-weight="bold"
+	     font-family="{$title.fontset}"/>
     </t:titlepage-content>
 
-    <t:titlepage-content side="verso">
+    <t:titlepage-content t:side="verso">
     </t:titlepage-content>
 
     <t:titlepage-separator>
     </t:titlepage-separator>
 
-    <t:titlepage-before side="recto">
+    <t:titlepage-before t:side="recto">
     </t:titlepage-before>
 
-    <t:titlepage-before side="verso">
+    <t:titlepage-before t:side="verso">
     </t:titlepage-before>
   </t:titlepage>
 
-  <t:titlepage element="list.of.tables" wrapper="fo:block">
-    <t:titlepage-content side="recto">
+  <t:titlepage t:element="list.of.tables" t:wrapper="fo:block">
+    <t:titlepage-content t:side="recto">
       <title
-	     force="1"
-	     named-template="gentext"
+	     t:force="1"
+	     t:named-template="gentext"
 	     param:key="'ListofTables'"
-	     fo:space-after="1em"
-	     fo:margin-left="-4pc"
-	     fo:font-size="&hsize3;"
-	     fo:font-weight="bold"
-	     fo:font-family="{$title.font.family}"/>
+             space-before.minimum="1em"
+             space-before.optimum="1.5em"
+             space-before.maximum="2em"
+	     space-after="0.5em"
+	     margin-left="{$title.margin.left}"
+	     font-size="&hsize3;"
+	     font-weight="bold"
+	     font-family="{$title.fontset}"/>
     </t:titlepage-content>
 
-    <t:titlepage-content side="verso">
+    <t:titlepage-content t:side="verso">
     </t:titlepage-content>
 
     <t:titlepage-separator>
     </t:titlepage-separator>
 
-    <t:titlepage-before side="recto">
+    <t:titlepage-before t:side="recto">
     </t:titlepage-before>
 
-    <t:titlepage-before side="verso">
+    <t:titlepage-before t:side="verso">
     </t:titlepage-before>
   </t:titlepage>
 
-  <t:titlepage element="list.of.figures" wrapper="fo:block">
-    <t:titlepage-content side="recto">
+  <t:titlepage t:element="list.of.figures" t:wrapper="fo:block">
+    <t:titlepage-content t:side="recto">
       <title
-	     force="1"
-	     named-template="gentext"
+	     t:force="1"
+	     t:named-template="gentext"
 	     param:key="'ListofFigures'"
-	     fo:space-after="1em"
-	     fo:margin-left="-4pc"
-	     fo:font-size="&hsize3;"
-	     fo:font-weight="bold"
-	     fo:font-family="{$title.font.family}"/>
+             space-before.minimum="1em"
+             space-before.optimum="1.5em"
+             space-before.maximum="2em"
+	     space-after="0.5em"
+	     margin-left="{$title.margin.left}"
+	     font-size="&hsize3;"
+	     font-weight="bold"
+	     font-family="{$title.fontset}"/>
     </t:titlepage-content>
 
-    <t:titlepage-content side="verso">
+    <t:titlepage-content t:side="verso">
     </t:titlepage-content>
 
     <t:titlepage-separator>
     </t:titlepage-separator>
 
-    <t:titlepage-before side="recto">
+    <t:titlepage-before t:side="recto">
     </t:titlepage-before>
 
-    <t:titlepage-before side="verso">
+    <t:titlepage-before t:side="verso">
     </t:titlepage-before>
   </t:titlepage>
 
-  <t:titlepage element="list.of.examples" wrapper="fo:block">
-    <t:titlepage-content side="recto">
+  <t:titlepage t:element="list.of.examples" t:wrapper="fo:block">
+    <t:titlepage-content t:side="recto">
       <title
-	     force="1"
-	     named-template="gentext"
+	     t:force="1"
+	     t:named-template="gentext"
 	     param:key="'ListofExamples'"
-	     fo:space-after="1em"
-	     fo:margin-left="-4pc"
-	     fo:font-size="&hsize3;"
-	     fo:font-weight="bold"
-	     fo:font-family="{$title.font.family}"/>
+             space-before.minimum="1em"
+             space-before.optimum="1.5em"
+             space-before.maximum="2em"
+	     space-after="0.5em"
+	     margin-left="{$title.margin.left}"
+	     font-size="&hsize3;"
+	     font-weight="bold"
+	     font-family="{$title.fontset}"/>
     </t:titlepage-content>
 
-    <t:titlepage-content side="verso">
+    <t:titlepage-content t:side="verso">
     </t:titlepage-content>
 
     <t:titlepage-separator>
     </t:titlepage-separator>
 
-    <t:titlepage-before side="recto">
+    <t:titlepage-before t:side="recto">
     </t:titlepage-before>
 
-    <t:titlepage-before side="verso">
+    <t:titlepage-before t:side="verso">
     </t:titlepage-before>
   </t:titlepage>
 
-  <t:titlepage element="list.of.equations" wrapper="fo:block">
-    <t:titlepage-content side="recto">
+  <t:titlepage t:element="list.of.equations" t:wrapper="fo:block">
+    <t:titlepage-content t:side="recto">
       <title
-	     force="1"
-	     named-template="gentext"
+	     t:force="1"
+	     t:named-template="gentext"
 	     param:key="'ListofEquations'"
-	     fo:space-after="1em"
-	     fo:margin-left="-4pc"
-	     fo:font-size="&hsize3;"
-	     fo:font-weight="bold"
-	     fo:font-family="{$title.font.family}"/>
+             space-before.minimum="1em"
+             space-before.optimum="1.5em"
+             space-before.maximum="2em"
+	     space-after="0.5em"
+	     margin-left="{$title.margin.left}"
+	     font-size="&hsize3;"
+	     font-weight="bold"
+	     font-family="{$title.fontset}"/>
     </t:titlepage-content>
 
-    <t:titlepage-content side="verso">
+    <t:titlepage-content t:side="verso">
     </t:titlepage-content>
 
     <t:titlepage-separator>
     </t:titlepage-separator>
 
-    <t:titlepage-before side="recto">
+    <t:titlepage-before t:side="recto">
     </t:titlepage-before>
 
-    <t:titlepage-before side="verso">
+    <t:titlepage-before t:side="verso">
     </t:titlepage-before>
   </t:titlepage>
 
-  <t:titlepage element="list.of.unknowns" wrapper="fo:block">
-    <t:titlepage-content side="recto">
+  <t:titlepage t:element="list.of.procedures" t:wrapper="fo:block">
+    <t:titlepage-content t:side="recto">
       <title
-	     force="1"
-	     named-template="gentext"
-	     param:key="'ListofUnknown'"
-	     fo:space-after="1em"
-	     fo:margin-left="-4pc"
-	     fo:font-size="&hsize3;"
-	     fo:font-weight="bold"
-	     fo:font-family="{$title.font.family}"/>
+	     t:force="1"
+	     t:named-template="gentext"
+	     param:key="'ListofProcedures'"
+             space-before.minimum="1em"
+             space-before.optimum="1.5em"
+             space-before.maximum="2em"
+	     space-after="0.5em"
+	     margin-left="{$title.margin.left}"
+	     font-size="&hsize3;"
+	     font-weight="bold"
+	     font-family="{$title.fontset}"/>
     </t:titlepage-content>
 
-    <t:titlepage-content side="verso">
+    <t:titlepage-content t:side="verso">
     </t:titlepage-content>
 
     <t:titlepage-separator>
     </t:titlepage-separator>
 
-    <t:titlepage-before side="recto">
+    <t:titlepage-before t:side="recto">
     </t:titlepage-before>
 
-    <t:titlepage-before side="verso">
+    <t:titlepage-before t:side="verso">
+    </t:titlepage-before>
+  </t:titlepage>
+
+  <t:titlepage t:element="list.of.unknowns" t:wrapper="fo:block">
+    <t:titlepage-content t:side="recto">
+      <title
+	     t:force="1"
+	     t:named-template="gentext"
+	     param:key="'ListofUnknown'"
+             space-before.minimum="1em"
+             space-before.optimum="1.5em"
+             space-before.maximum="2em"
+	     space-after="0.5em"
+	     margin-left="{$title.margin.left}"
+	     font-size="&hsize3;"
+	     font-weight="bold"
+	     font-family="{$title.fontset}"/>
+    </t:titlepage-content>
+
+    <t:titlepage-content t:side="verso">
+    </t:titlepage-content>
+
+    <t:titlepage-separator>
+    </t:titlepage-separator>
+
+    <t:titlepage-before t:side="recto">
+    </t:titlepage-before>
+
+    <t:titlepage-before t:side="verso">
     </t:titlepage-before>
   </t:titlepage>
 

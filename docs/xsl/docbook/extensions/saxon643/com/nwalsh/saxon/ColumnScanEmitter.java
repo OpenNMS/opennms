@@ -9,6 +9,7 @@ import com.icl.saxon.expr.FragmentValue;
 /**
  * <p>Saxon extension to scan the column widthsin a result tree fragment.</p>
  *
+ * <p>$Id: ColumnScanEmitter.java,v 1.2 2002/11/15 13:49:42 nwalsh Exp $</p>
  *
  * <p>Copyright (C) 2000 Norman Walsh.</p>
  *
@@ -32,6 +33,7 @@ import com.icl.saxon.expr.FragmentValue;
  * @author Norman Walsh
  * <a href="mailto:ndw@nwalsh.com">ndw@nwalsh.com</a>
  *
+ * @version $Id: ColumnScanEmitter.java,v 1.2 2002/11/15 13:49:42 nwalsh Exp $
  *
  */
 public class ColumnScanEmitter extends com.icl.saxon.output.Emitter {
@@ -56,7 +58,12 @@ public class ColumnScanEmitter extends com.icl.saxon.output.Emitter {
 
   /** Return the number of columns. */
   public String[] columnWidths() {
-    return width;
+    // Return a width array with exactly the right number of columns
+    String rWidth[] = new String[numColumns];
+    for (int count = 0; count < numColumns; count++) {
+      rWidth[count] = width[count];
+    }
+    return rWidth;
   }
 
   /** Discarded. */

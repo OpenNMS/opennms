@@ -13,6 +13,7 @@ import com.icl.saxon.tree.AttributeCollection;
 /**
  * <p>Saxon extension to decorate a result tree fragment with callouts.</p>
  *
+ * <p>$Id: CalloutEmitter.java,v 1.2 2002/03/21 13:27:51 nwalsh Exp $</p>
  *
  * <p>Copyright (C) 2000 Norman Walsh.</p>
  *
@@ -40,6 +41,7 @@ import com.icl.saxon.tree.AttributeCollection;
  * @author Norman Walsh
  * <a href="mailto:ndw@nwalsh.com">ndw@nwalsh.com</a>
  *
+ * @version $Id: CalloutEmitter.java,v 1.2 2002/03/21 13:27:51 nwalsh Exp $
  *
  */
 public class CalloutEmitter extends CopyEmitter {
@@ -54,6 +56,9 @@ public class CalloutEmitter extends CopyEmitter {
 
   /** The FO namespace name. */
   protected static String foURI = "http://www.w3.org/1999/XSL/Format";
+
+  /** The XHTML namespace name. */
+  protected static String xhURI = "http://www.w3.org/1999/xhtml";
 
   /** The default column for callouts that specify only a line. */
   protected int defaultColumn = 60;
@@ -411,15 +416,20 @@ public class CalloutEmitter extends CopyEmitter {
    * @return True if the element is the outer-most block, false otherwise.
    */
   protected boolean skipThisElement(int nameCode) {
+    // FIXME: This is such a gross hack...
     if (firstElement) {
       int thisFingerprint    = namePool.getFingerprint(nameCode);
       int foBlockFingerprint = namePool.getFingerprint(foURI, "block");
       int htmlPreFingerprint = namePool.getFingerprint("", "pre");
       int htmlDivFingerprint = namePool.getFingerprint("", "div");
+      int xhtmlPreFingerprint = namePool.getFingerprint(xhURI, "pre");
+      int xhtmlDivFingerprint = namePool.getFingerprint(xhURI, "div");
 
       if ((foStylesheet && thisFingerprint == foBlockFingerprint)
 	  || (!foStylesheet && (thisFingerprint == htmlPreFingerprint
-				|| thisFingerprint == htmlDivFingerprint))) {
+				|| thisFingerprint == htmlDivFingerprint
+				|| thisFingerprint == xhtmlPreFingerprint
+				|| thisFingerprint == xhtmlDivFingerprint))) {
 	// Don't push the outer-most wrapping div, pre, or fo:block
 	return true;
       }

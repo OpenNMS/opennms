@@ -3,6 +3,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
+     $Id: toc.xsl,v 1.5 2002/03/14 18:43:42 nwalsh Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -119,7 +120,7 @@
 </xsl:template>
 
 <xsl:template name="tocentry-content">
-  <xsl:variable name="targets" select="id(@linkend)"/>
+  <xsl:variable name="targets" select="key('id',@linkend)"/>
   <xsl:variable name="target" select="$targets[1]"/>
 
   <xsl:choose>

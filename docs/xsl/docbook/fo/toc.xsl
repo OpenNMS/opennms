@@ -4,6 +4,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
+     $Id: toc.xsl,v 1.7 2003/04/12 21:03:29 nwalsh Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -18,7 +19,7 @@
      the case that a page-sequence is required. Is that true? -->
 
 <xsl:template match="toc">
-  <xsl:variable name="master-name">
+  <xsl:variable name="master-reference">
     <xsl:call-template name="select.pagemaster"/>
   </xsl:variable>
 
@@ -27,19 +28,40 @@
       <xsl:if test="$process.source.toc != 0">
         <!-- if the toc isn't empty, process it -->
         <fo:page-sequence hyphenate="{$hyphenate}"
-                          master-name="{$master-name}">
+                          master-reference="{$master-reference}">
           <xsl:attribute name="language">
             <xsl:call-template name="l10n.language"/>
           </xsl:attribute>
+          <xsl:attribute name="format">
+            <xsl:call-template name="page.number.format">
+              <xsl:with-param name="element" select="'toc'"/>
+            </xsl:call-template>
+          </xsl:attribute>
           <xsl:if test="$double.sided != 0">
-            <xsl:attribute name="force-page-count">end-on-even</xsl:attribute>
+            <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
           </xsl:if>
 
+          <xsl:attribute name="hyphenation-character">
+            <xsl:call-template name="gentext">
+              <xsl:with-param name="key" select="'hyphenation-character'"/>
+            </xsl:call-template>
+          </xsl:attribute>
+          <xsl:attribute name="hyphenation-push-character-count">
+            <xsl:call-template name="gentext">
+              <xsl:with-param name="key" select="'hyphenation-push-character-count'"/>
+            </xsl:call-template>
+          </xsl:attribute>
+          <xsl:attribute name="hyphenation-remain-character-count">
+            <xsl:call-template name="gentext">
+              <xsl:with-param name="key" select="'hyphenation-remain-character-count'"/>
+            </xsl:call-template>
+          </xsl:attribute>
+
           <xsl:apply-templates select="." mode="running.head.mode">
-            <xsl:with-param name="master-name" select="$master-name"/>
+            <xsl:with-param name="master-reference" select="$master-reference"/>
           </xsl:apply-templates>
           <xsl:apply-templates select="." mode="running.foot.mode">
-            <xsl:with-param name="master-name" select="$master-name"/>
+            <xsl:with-param name="master-reference" select="$master-reference"/>
           </xsl:apply-templates>
 
           <fo:flow flow-name="xsl-region-body">
@@ -54,19 +76,40 @@
     <xsl:otherwise>
       <xsl:if test="$process.empty.source.toc != 0">
         <fo:page-sequence hyphenate="{$hyphenate}"
-                          master-name="{$master-name}">
+                          master-reference="{$master-reference}">
           <xsl:attribute name="language">
             <xsl:call-template name="l10n.language"/>
           </xsl:attribute>
+          <xsl:attribute name="format">
+            <xsl:call-template name="page.number.format">
+              <xsl:with-param name="element" select="'toc'"/>
+            </xsl:call-template>
+          </xsl:attribute>
           <xsl:if test="$double.sided != 0">
-            <xsl:attribute name="force-page-count">end-on-even</xsl:attribute>
+            <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
           </xsl:if>
 
+          <xsl:attribute name="hyphenation-character">
+            <xsl:call-template name="gentext">
+              <xsl:with-param name="key" select="'hyphenation-character'"/>
+            </xsl:call-template>
+          </xsl:attribute>
+          <xsl:attribute name="hyphenation-push-character-count">
+            <xsl:call-template name="gentext">
+              <xsl:with-param name="key" select="'hyphenation-push-character-count'"/>
+            </xsl:call-template>
+          </xsl:attribute>
+          <xsl:attribute name="hyphenation-remain-character-count">
+            <xsl:call-template name="gentext">
+              <xsl:with-param name="key" select="'hyphenation-remain-character-count'"/>
+            </xsl:call-template>
+          </xsl:attribute>
+
           <xsl:apply-templates select="." mode="running.head.mode">
-            <xsl:with-param name="master-name" select="$master-name"/>
+            <xsl:with-param name="master-reference" select="$master-reference"/>
           </xsl:apply-templates>
           <xsl:apply-templates select="." mode="running.foot.mode">
-            <xsl:with-param name="master-name" select="$master-name"/>
+            <xsl:with-param name="master-reference" select="$master-reference"/>
           </xsl:apply-templates>
 
           <fo:flow flow-name="xsl-region-body">

@@ -7,6 +7,18 @@
                 exclude-result-prefixes="doc"
                 extension-element-prefixes="saxon xalanredirect lxslt">
 
+<!-- ********************************************************************
+     $Id: oldchunker.xsl,v 1.5 2003/11/30 19:42:23 bobstayton Exp $
+     ********************************************************************
+
+     This file is part of the XSL DocBook Stylesheet distribution.
+     See ../README or http://nwalsh.com/docbook/xsl/ for copyright
+     and other information.
+
+     ******************************************************************** -->
+
+<!-- ==================================================================== -->
+
 <!-- This stylesheet works with Saxon and Xalan; for XT use xtchunker.xsl -->
 
 <!-- ==================================================================== -->

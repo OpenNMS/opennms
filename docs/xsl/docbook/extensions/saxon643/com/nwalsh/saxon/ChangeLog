@@ -1,3 +1,33 @@
+2004-03-04  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* ImageIntrinsics.java: Added warning messages when images can't be loaded
+
+2004-03-01  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* Text.java: Normalize DOS and Mac line breaks to LF in included files.
+
+2003-08-27  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* NumberLinesEmitter.java, Verbatim.java: Support startinglinenumber and continuation on verbatim environments
+
+2002-11-15  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* ColumnScanEmitter.java: Make sure the width[] array returned is always exactly the right length
+
+	* Table.java: Correct rounding errors in column percentage width calculation
+
+2002-06-26  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* UnwrapLinks.java, UnwrapLinksEmitter.java: New file.
+
+2002-05-08  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* ImageIntrinsics.java: New file.
+
+2002-03-21  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* CalloutEmitter.java, NumberLinesEmitter.java: Fix nesting bug in XHTML
+
 2001-08-05  Norman Walsh <nwalsh@users.sourceforge.net>
 
 	* FormatDingbatCallout.java, FormatUnicodeCallout.java, Verbatim.java: 

@@ -3,6 +3,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
+     $Id: html.xsl,v 1.8 2003/09/23 08:55:42 kosek Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -24,18 +25,39 @@
   </xsl:if>
 </xsl:template>
 
+<xsl:template name="href.target.uri">
+  <xsl:param name="context" select="."/>
+  <xsl:param name="object" select="."/>
+  <xsl:text>#</xsl:text>
+  <xsl:call-template name="object.id">
+    <xsl:with-param name="object" select="$object"/>
+  </xsl:call-template>
+</xsl:template>
+
+<xsl:template name="href.target">
+  <xsl:param name="context" select="."/>
+  <xsl:param name="object" select="."/>
+  <xsl:text>#</xsl:text>
+  <xsl:call-template name="object.id">
+    <xsl:with-param name="object" select="$object"/>
+  </xsl:call-template>
+</xsl:template>
+
+<xsl:template name="href.target.with.base.dir">
+  <xsl:param name="object" select="."/>
+  <xsl:if test="$manifest.in.base.dir = 0">
+    <xsl:value-of select="$base.dir"/>
+  </xsl:if>
+  <xsl:call-template name="href.target">
+    <xsl:with-param name="object" select="$object"/>
+  </xsl:call-template>
+</xsl:template>
+
 <xsl:template name="dingbat">
   <xsl:param name="dingbat">bullet</xsl:param>
-  <xsl:choose>
-    <xsl:when test="false() and $using.chunker != 0">
-      <dingbat name="{$dingbat}"/>
-    </xsl:when>
-    <xsl:otherwise>
-      <xsl:call-template name="dingbat.characters">
-        <xsl:with-param name="dingbat" select="$dingbat"/>
-      </xsl:call-template>
-    </xsl:otherwise>
-  </xsl:choose>
+  <xsl:call-template name="dingbat.characters">
+    <xsl:with-param name="dingbat" select="$dingbat"/>
+  </xsl:call-template>
 </xsl:template>
 
 <xsl:template name="dingbat.characters">

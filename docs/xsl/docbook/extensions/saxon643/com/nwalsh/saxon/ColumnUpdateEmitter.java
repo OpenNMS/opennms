@@ -11,6 +11,7 @@ import com.icl.saxon.tree.AttributeCollection;
 /**
  * <p>Saxon extension to scan the column widthsin a result tree fragment.</p>
  *
+ * <p>$Id: ColumnUpdateEmitter.java,v 1.1 2001/07/16 21:23:57 nwalsh Exp $</p>
  *
  * <p>Copyright (C) 2000 Norman Walsh.</p>
  *
@@ -34,6 +35,7 @@ import com.icl.saxon.tree.AttributeCollection;
  * @author Norman Walsh
  * <a href="mailto:ndw@nwalsh.com">ndw@nwalsh.com</a>
  *
+ * @version $Id: ColumnUpdateEmitter.java,v 1.1 2001/07/16 21:23:57 nwalsh Exp $
  *
  */
 public class ColumnUpdateEmitter extends CopyEmitter {

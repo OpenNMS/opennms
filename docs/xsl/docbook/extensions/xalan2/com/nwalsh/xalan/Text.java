@@ -33,6 +33,7 @@ import javax.xml.transform.TransformerException;
 /**
  * <p>Xalan extension element for inserting text
  *
+ * <p>$Id: Text.java,v 1.1 2001/04/02 13:03:45 nwalsh Exp $</p>
  *
  * <p>Copyright (C) 2001 Norman Walsh.</p>
  *
@@ -49,6 +50,7 @@ import javax.xml.transform.TransformerException;
  * @author Norman Walsh
  * <a href="mailto:ndw@nwalsh.com">ndw@nwalsh.com</a>
  *
+ * @version $Id: Text.java,v 1.1 2001/04/02 13:03:45 nwalsh Exp $
  *
  */
 public class Text {

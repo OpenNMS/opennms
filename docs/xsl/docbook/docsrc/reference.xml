@@ -2,9 +2,8 @@
   PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
 <!ENTITY common.xml SYSTEM "common/common.xml" NDATA SGML>
-<!ENTITY lib.xml SYSTEM "lib/lib.xml" NDATA SGML>
+<!ENTITY lib.xml SYSTEM "../lib/lib.xml" NDATA SGML>
 <!ENTITY html-param.xml SYSTEM "html/param.xml" NDATA SGML>
-<!ENTITY html-ebnf.xml SYSTEM "html/ebnf.xml" NDATA SGML>
 <!ENTITY fo-param.xml SYSTEM "fo/param.xml" NDATA SGML>
 <!ENTITY fo-table.xml SYSTEM "fo/table.xml" NDATA SGML>
 <!ENTITY titlepage.xml SYSTEM "template/titlepage.xml" NDATA SGML>
@@ -13,6 +12,7 @@
 <bookinfo>
 <title>DocBook XSL Stylesheet Reference Documentation</title>
 <releaseinfo role="meta">
+$Id: reference.xml,v 1.5 2002/03/25 14:01:39 nwalsh Exp $
 </releaseinfo>
 <author><surname>Walsh</surname>
 <firstname>Norman</firstname></author>
@@ -36,13 +36,10 @@ of references generated from the stylesheet sources:</para>
 <listitem><para><olink type="title" localinfo="common/common.html"
                        targetdocent="common.xml"/></para>
 </listitem>
-<listitem><para><olink type="title" localinfo="html/param.html"
+<listitem><para><olink type="title" localinfo="html/index.html"
                        targetdocent="html-param.xml"/></para>
 </listitem>
-<listitem><para><olink type="title" localinfo="html/ebnf.html"
-                       targetdocent="html-ebnf.xml"/></para>
-</listitem>
-<listitem><para><olink type="title" localinfo="fo/param.html"
+<listitem><para><olink type="title" localinfo="fo/index.html"
                        targetdocent="fo-param.xml"/></para>
 </listitem>
 <listitem><para><olink type="title" localinfo="fo/table.html"

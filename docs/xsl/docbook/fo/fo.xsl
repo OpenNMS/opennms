@@ -4,6 +4,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
+     $Id: fo.xsl,v 1.5 2002/03/14 18:43:34 nwalsh Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -11,6 +12,19 @@
      and other information.
 
      ******************************************************************** -->
+
+<xsl:template name="anchor">
+  <xsl:param name="node" select="."/>
+  <xsl:param name="conditional" select="1"/>
+  <xsl:variable name="id">
+    <xsl:call-template name="object.id">
+      <xsl:with-param name="object" select="$node"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:if test="$conditional = 0 or $node/@id">
+    <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+  </xsl:if>
+</xsl:template>
 
 <xsl:template name="dingbat">
   <xsl:param name="dingbat">bullet</xsl:param>

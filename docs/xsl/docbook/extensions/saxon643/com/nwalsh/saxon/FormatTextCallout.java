@@ -13,6 +13,7 @@ import com.nwalsh.saxon.Callout;
 /**
  * <p>Utility class for the Verbatim extension (ignore this).</p>
  *
+ * <p>$Id: FormatTextCallout.java,v 1.1 2001/07/16 21:23:57 nwalsh Exp $</p>
  *
  * <p>Copyright (C) 2000, 2001 Norman Walsh.</p>
  *
@@ -27,6 +28,7 @@ import com.nwalsh.saxon.Callout;
  *
  * @see Verbatim
  *
+ * @version $Id: FormatTextCallout.java,v 1.1 2001/07/16 21:23:57 nwalsh Exp $
  **/
 
 public class FormatTextCallout extends FormatCallout {

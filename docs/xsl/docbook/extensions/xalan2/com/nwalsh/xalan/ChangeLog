@@ -1,3 +1,16 @@
+2003-12-17  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* FormatCallout.java, FormatUnicodeCallout.java, Params.java, Verbatim.java: 
+	Support unicode.font in Xalan extensions
+
+2002-11-15  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* Table.java: Correct rounding errors in column percentage width calculation
+
+2002-05-08  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* ImageIntrinsics.java: New file.
+
 2001-07-15  Norman Walsh <nwalsh@users.sourceforge.net>
 
 	* Verbatim.java: New Xalan code sometimes (always?) returns DOCUMENT_NODE where DOCUMENT_FRAGMENT_NODE used to be returned: handle it

@@ -4,6 +4,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
+     $Id: admon.xsl,v 1.7 2003/05/07 06:10:42 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -30,54 +31,69 @@
 
 <xsl:template name="admon.graphic">
   <xsl:param name="node" select="."/>
-  <xsl:value-of select="$admon.graphics.path"/>
+
+  <xsl:variable name="filename">
+    <xsl:value-of select="$admon.graphics.path"/>
+    <xsl:choose>
+      <xsl:when test="name($node)='note'">note</xsl:when>
+      <xsl:when test="name($node)='warning'">warning</xsl:when>
+      <xsl:when test="name($node)='caution'">caution</xsl:when>
+      <xsl:when test="name($node)='tip'">tip</xsl:when>
+      <xsl:when test="name($node)='important'">important</xsl:when>
+      <xsl:otherwise>note</xsl:otherwise>
+    </xsl:choose>
+    <xsl:value-of select="$admon.graphics.extension"/>
+  </xsl:variable>
+
   <xsl:choose>
-    <xsl:when test="name($node)='note'">note</xsl:when>
-    <xsl:when test="name($node)='warning'">warning</xsl:when>
-    <xsl:when test="name($node)='caution'">caution</xsl:when>
-    <xsl:when test="name($node)='tip'">tip</xsl:when>
-    <xsl:when test="name($node)='important'">important</xsl:when>
-    <xsl:otherwise>note</xsl:otherwise>
+    <xsl:when test="$passivetex.extensions != 0
+                    or $fop.extensions != 0
+                    or $arbortext.extensions != 0">
+      <xsl:value-of select="$filename"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:text>url(</xsl:text>
+      <xsl:value-of select="$filename"/>
+      <xsl:text>)</xsl:text>
+    </xsl:otherwise>
   </xsl:choose>
-  <xsl:value-of select="$admon.graphics.extension"/>
 </xsl:template>
 
 <xsl:template name="graphical.admonition">
   <xsl:variable name="id">
     <xsl:call-template name="object.id"/>
   </xsl:variable>
+  <xsl:variable name="graphic.width">
+     <xsl:call-template name="admon.graphic.width"/>
+  </xsl:variable>
 
   <fo:block id="{$id}">
-    <fo:table>
-      <fo:table-body>
-        <fo:table-row>
-          <fo:table-cell number-rows-spanned="2">
+    <fo:list-block provisional-distance-between-starts="{$graphic.width} + 18pt"
+    		provisional-label-separation="18pt"
+		xsl:use-attribute-sets="list.block.spacing">
+      <fo:list-item>
+          <fo:list-item-label end-indent="label-end()">
             <fo:block>
-              <fo:external-graphic width="auto" height="auto">
+              <fo:external-graphic width="auto" height="auto"
+	      		           content-width="{$graphic.width}" >
                 <xsl:attribute name="src">
                   <xsl:call-template name="admon.graphic"/>
                 </xsl:attribute>
-                <xsl:attribute name="content-width">
-                  <xsl:call-template name="admon.graphic.width"/>
-                </xsl:attribute>
               </fo:external-graphic>
             </fo:block>
-          </fo:table-cell>
-          <fo:table-cell>
-            <fo:block>
-              <xsl:apply-templates select="." mode="object.title.markup"/>
-            </fo:block>
-          </fo:table-cell>
-        </fo:table-row>
-        <fo:table-row>
-          <fo:table-cell number-columns-spanned="2">
-            <fo:block>
+          </fo:list-item-label>
+          <fo:list-item-body start-indent="body-start()">
+            <xsl:if test="$admon.textlabel != 0 or title">
+              <fo:block xsl:use-attribute-sets="admonition.title.properties">
+                <xsl:apply-templates select="." mode="object.title.markup"/>
+              </fo:block>
+            </xsl:if>
+            <fo:block xsl:use-attribute-sets="admonition.properties">
               <xsl:apply-templates/>
             </fo:block>
-          </fo:table-cell>
-        </fo:table-row>
-      </fo:table-body>
-    </fo:table>
+          </fo:list-item-body>
+      </fo:list-item>
+    </fo:list-block>
   </fo:block>
 </xsl:template>
 
@@ -92,11 +108,16 @@
             start-indent="0.25in"
             end-indent="0.25in"
             id="{$id}">
-    <fo:block font-size="14pt" font-weight="bold" keep-with-next='always'>
-      <xsl:apply-templates select="." mode="object.title.markup"/>
-    </fo:block>
+    <xsl:if test="$admon.textlabel != 0 or title">
+      <fo:block keep-with-next='always'
+                xsl:use-attribute-sets="admonition.title.properties">
+         <xsl:apply-templates select="." mode="object.title.markup"/>
+      </fo:block>
+    </xsl:if>
 
-    <xsl:apply-templates/>
+    <fo:block xsl:use-attribute-sets="admonition.properties">
+      <xsl:apply-templates/>
+    </fo:block>
   </fo:block>
 </xsl:template>
 
@@ -105,11 +126,5 @@
 <xsl:template match="warning/title"></xsl:template>
 <xsl:template match="caution/title"></xsl:template>
 <xsl:template match="tip/title"></xsl:template>
-
-<xsl:template match="title" mode="admonition.title.mode">
-  <fo:block font-size="14pt" font-weight="bold" keep-with-next='always'>
-    <xsl:apply-templates/>
-  </fo:block>
-</xsl:template>
 
 </xsl:stylesheet>

@@ -3,6 +3,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
+     $Id: pi.xsl,v 1.4 2002/03/14 18:43:34 nwalsh Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -19,32 +20,11 @@
 <xsl:template name="dbfo-attribute">
   <xsl:param name="pis" select="processing-instruction('dbfo')"/>
   <xsl:param name="attribute">filename</xsl:param>
-  <xsl:param name="count">1</xsl:param>
 
-  <xsl:choose>
-    <xsl:when test="$count>count($pis)">
-      <!-- not found -->
-    </xsl:when>
-    <xsl:otherwise>
-      <xsl:variable name="pi">
-        <xsl:value-of select="$pis[$count]"/>
-      </xsl:variable>
-      <xsl:choose>
-        <xsl:when test="contains($pi,concat($attribute, '='))">
-          <xsl:variable name="rest" select="substring-after($pi,concat($attribute,'='))"/>
-          <xsl:variable name="quote" select="substring($rest,1,1)"/>
-          <xsl:value-of select="substring-before(substring($rest,2),$quote)"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:call-template name="dbfo-attribute">
-            <xsl:with-param name="pis" select="$pis"/>
-            <xsl:with-param name="attribute" select="$attribute"/>
-            <xsl:with-param name="count" select="$count + 1"/>
-          </xsl:call-template>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:otherwise>
-  </xsl:choose>
+  <xsl:call-template name="pi-attribute">
+    <xsl:with-param name="pis" select="$pis"/>
+    <xsl:with-param name="attribute" select="$attribute"/>
+  </xsl:call-template>
 </xsl:template>
 
 <xsl:template name="dbfo-filename">

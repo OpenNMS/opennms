@@ -36,7 +36,12 @@
       <xsl:with-param name="dingbat">copyright</xsl:with-param>
     </xsl:call-template>
     <xsl:call-template name="gentext.space"/>
-    <xsl:apply-templates select="$years" mode="titlepage.mode"/>
+    <xsl:call-template name="copyright.years">
+      <xsl:with-param name="years" select="year"/>
+      <xsl:with-param name="print.ranges" select="1"/>
+      <xsl:with-param name="single.year.ranges"
+                      select="$make.single.year.ranges"/>
+    </xsl:call-template>
     <xsl:call-template name="gentext.space"/>
     <xsl:call-template name="gentext.by"/>
     <xsl:call-template name="gentext.space"/>

@@ -7,19 +7,24 @@
 <!ENTITY templates.xml SYSTEM "templates.xml">
 <!ENTITY html-param.xml SYSTEM "html/param.xml" NDATA SGML>
 <!ENTITY tools-profiling.xml SYSTEM "tools/profiling.xml" NDATA SGML>
+<!ENTITY htmlhelp.xml SYSTEM "htmlhelp.xml">
 ]>
 <book>
 <bookinfo>
 <title>DocBook XSL Stylesheet Documentation</title>
+<!-- $Id: documentation.xml,v 1.6 2002/06/04 12:39:40 nwalsh Exp $ -->
 
 <authorgroup>
 <author><surname>Walsh</surname>
 <firstname>Norman</firstname></author>
 <othercredit><surname>Stayton</surname>
 <firstname>Bob</firstname></othercredit>
+<othercredit><surname>Kosek</surname>
+<firstname>Ji&rcaron;&iacute;</firstname>
+</othercredit>
 </authorgroup>
 
-<copyright><year>1999</year><year>2000</year><year>2001</year>
+<copyright><year>1999</year><year>2000</year><year>2001</year><year>2002</year>
 <holder>Norman Walsh</holder>
 </copyright>
 </bookinfo>
@@ -61,5 +66,6 @@ directory <filename>tools</filename>.</para>
 </chapter>
 
 &templates.xml;
+&htmlhelp.xml;
 </book>
 

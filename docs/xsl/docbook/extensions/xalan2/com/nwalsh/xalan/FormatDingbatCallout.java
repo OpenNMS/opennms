@@ -10,6 +10,7 @@ import org.apache.xml.utils.AttList;
 /**
  * <p>Utility class for the Verbatim extension (ignore this).</p>
  *
+ * <p>$Id: FormatDingbatCallout.java,v 1.1 2001/07/07 22:11:12 nwalsh Exp $</p>
  *
  * <p>Copyright (C) 2000, 2001 Norman Walsh.</p>
  *
@@ -24,6 +25,7 @@ import org.apache.xml.utils.AttList;
  *
  * @see Verbatim
  *
+ * @version $Id: FormatDingbatCallout.java,v 1.1 2001/07/07 22:11:12 nwalsh Exp $
  **/
 
 public class FormatDingbatCallout extends FormatCallout {

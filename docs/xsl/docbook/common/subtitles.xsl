@@ -4,7 +4,18 @@
                 exclude-result-prefixes="doc"
                 version='1.0'>
 
-<!-- ============================================================ -->
+<!-- ********************************************************************
+     $Id: subtitles.xsl,v 1.6 2004/01/29 14:18:46 nwalsh Exp $
+     ********************************************************************
+
+     This file is part of the XSL DocBook Stylesheet distribution.
+     See ../README or http://nwalsh.com/docbook/xsl/ for copyright
+     and other information.
+
+     ******************************************************************** -->
+
+<!-- ==================================================================== -->
+
 <!-- subtitle markup -->
 
 <doc:mode mode="subtitle.markup" xmlns="">
@@ -32,7 +43,7 @@ subtitle of the element.
 
 <xsl:template match="set" mode="subtitle.markup">
   <xsl:param name="allow-anchors" select="'0'"/>
-  <xsl:apply-templates select="(setinfo/subtitle|subtitle)[1]"
+  <xsl:apply-templates select="(setinfo/subtitle|info/subtitle|subtitle)[1]"
                        mode="subtitle.markup">
     <xsl:with-param name="allow-anchors" select="$allow-anchors"/>
   </xsl:apply-templates>
@@ -40,7 +51,7 @@ subtitle of the element.
 
 <xsl:template match="book" mode="subtitle.markup">
   <xsl:param name="allow-anchors" select="'0'"/>
-  <xsl:apply-templates select="(bookinfo/subtitle|subtitle)[1]"
+  <xsl:apply-templates select="(bookinfo/subtitle|info/subtitle|subtitle)[1]"
                        mode="subtitle.markup">
     <xsl:with-param name="allow-anchors" select="$allow-anchors"/>
   </xsl:apply-templates>
@@ -50,6 +61,7 @@ subtitle of the element.
   <xsl:param name="allow-anchors" select="'0'"/>
   <xsl:apply-templates select="(partinfo/subtitle
                                 |docinfo/subtitle
+                                |info/subtitle
                                 |subtitle)[1]"
                        mode="subtitle.markup">
     <xsl:with-param name="allow-anchors" select="$allow-anchors"/>
@@ -59,6 +71,7 @@ subtitle of the element.
 <xsl:template match="preface|chapter|appendix" mode="subtitle.markup">
   <xsl:param name="allow-anchors" select="'0'"/>
   <xsl:apply-templates select="(docinfo/subtitle
+                                |info/subtitle
                                 |prefaceinfo/subtitle
                                 |chapterinfo/subtitle
                                 |appendixinfo/subtitle
@@ -72,6 +85,7 @@ subtitle of the element.
   <xsl:param name="allow-anchors" select="'0'"/>
   <xsl:apply-templates select="(artheader/subtitle
                                 |articleinfo/subtitle
+                                |info/subtitle
                                 |subtitle)[1]"
                        mode="subtitle.markup">
     <xsl:with-param name="allow-anchors" select="$allow-anchors"/>
@@ -90,6 +104,7 @@ subtitle of the element.
   <xsl:param name="allow-anchors" select="'0'"/>
   <xsl:apply-templates select="(referenceinfo/subtitle
                                 |docinfo/subtitle
+                                |info/subtitle
                                 |subtitle)[1]"
                        mode="subtitle.markup">
     <xsl:with-param name="allow-anchors" select="$allow-anchors"/>
@@ -99,6 +114,7 @@ subtitle of the element.
 <xsl:template match="refentry" mode="subtitle.markup">
   <xsl:param name="allow-anchors" select="'0'"/>
   <xsl:apply-templates select="(refentryinfo/subtitle
+                                |info/subtitle
                                 |docinfo/subtitle)[1]"
                        mode="subtitle.markup">
     <xsl:with-param name="allow-anchors" select="$allow-anchors"/>
@@ -111,7 +127,8 @@ subtitle of the element.
                      |simplesect"
               mode="subtitle.markup">
   <xsl:param name="allow-anchors" select="'0'"/>
-  <xsl:apply-templates select="(sectioninfo/subtitle
+  <xsl:apply-templates select="(info/subtitle
+                                |sectioninfo/subtitle
                                 |sect1info/subtitle
                                 |sect2info/subtitle
                                 |sect3info/subtitle

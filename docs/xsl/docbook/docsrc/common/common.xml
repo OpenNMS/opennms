@@ -1,9 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!DOCTYPE reference
   PUBLIC "-//Norman Walsh//DTD JRefEntry V1.1//EN" "http://docbook.sourceforge.net/release/jrefentry/1.1/jrefentry.dtd">
 <reference>
 <referenceinfo>
 <releaseinfo role="meta">
+$Id: common.xsl,v 1.39 2003/12/06 00:07:51 bobstayton Exp $
 </releaseinfo>
 <author><surname>Walsh</surname>
 <firstname>Norman</firstname></author>
@@ -121,13 +122,12 @@ to be incomplete. Don't forget to read the source, too :-)</para>
 <refdescription>
 
 <para>This template calculates the hierarchical level of a section.
-Hierarchically, components are <quote>top level</quote>, so a
-<sgmltag>sect1</sgmltag> is at level 2, <sgmltag>sect3</sgmltag> is
-at level 3, etc.</para>
+The element <sgmltag>sect1</sgmltag> is at level 1, <sgmltag>sect2</sgmltag> is
+at level 2, etc.</para>
 
 
 
-<para>Recursive sections are calculated down to the sixth level.</para>
+<para>Recursive sections are calculated down to the fifth level.</para>
 
 </refdescription><refparameter>
 
@@ -144,7 +144,7 @@ Defaults to the context node.</para>
 
 </refparameter><refreturn>
 
-<para>The section level, <quote>2</quote>, <quote>3</quote>, etc.
+<para>The section level, <quote>1</quote>, <quote>2</quote>, etc.
 </para>
 
 </refreturn></refentry>
@@ -172,27 +172,25 @@ Defaults to the context node.</para>
 <refentry id="template.select.mediaobject">
 <refnamediv>
 <refname>select.mediaobject</refname>
-<refpurpose>Selects an appropriate media object from a list</refpurpose>
+<refpurpose>Selects and processes an appropriate media object from a list</refpurpose>
 </refnamediv>
 <refsynopsisdiv>
 <synopsis>&lt;xsl:template name="select.mediaobject"&gt;
 &lt;xsl:param name="olist" select="imageobject|imageobjectco                      |videoobject|audioobject|textobject"/&gt;
-&lt;xsl:param name="count"&gt;1&lt;/xsl:param&gt;
   ...
 &lt;/xsl:template&gt;</synopsis>
 </refsynopsisdiv>
 <refdescription>
 
-<para>This template examines a list of media objects (usually the
+<para>This template takes a list of media objects (usually the
 children of a mediaobject or inlinemediaobject) and processes
 the "right" object.</para>
 
 
 
-<para>This template relies on a template named "is.acceptable.mediaobject"
-to determine if a given object is an acceptable graphic. The semantics
-of media objects is that the first acceptable graphic should be used.
-</para>
+<para>This template relies on a template named 
+"select.mediaobject.index" to determine which object
+in the list is appropriate.</para>
 
 
 
@@ -213,6 +211,70 @@ of media objects is that the first acceptable graphic should be used.
 </refparameter><refreturn>
 
 <para>Calls &lt;xsl:apply-templates&gt; on the selected object.</para>
+
+</refreturn></refentry>
+
+<refentry id="template.select.mediaobject.index">
+<refnamediv>
+<refname>select.mediaobject.index</refname>
+<refpurpose>Selects the position of the appropriate media object from a list</refpurpose>
+</refnamediv>
+<refsynopsisdiv>
+<synopsis>&lt;xsl:template name="select.mediaobject.index"&gt;
+&lt;xsl:param name="olist" select="imageobject|imageobjectco                      |videoobject|audioobject|textobject"/&gt;
+&lt;xsl:param name="count"&gt;1&lt;/xsl:param&gt;
+  ...
+&lt;/xsl:template&gt;</synopsis>
+</refsynopsisdiv>
+<refdescription>
+
+<para>This template takes a list of media objects (usually the
+children of a mediaobject or inlinemediaobject) and determines
+the "right" object. It returns the position of that object
+to be used by the calling template.</para>
+
+
+
+<para>If the parameter <parameter>use.role.for.mediaobject</parameter>
+is nonzero, then it first checks for an object with
+a role attribute of the appropriate value.  It takes the first
+of those.  Otherwise, it takes the first acceptable object
+through a recursive pass through the list.</para>
+
+
+
+<para>This template relies on a template named "is.acceptable.mediaobject"
+to determine if a given object is an acceptable graphic. The semantics
+of media objects is that the first acceptable graphic should be used.
+</para>
+
+
+
+<para>If no acceptable object is located, no index is returned.</para>
+
+</refdescription><refparameter>
+
+<variablelist>
+<varlistentry><term>olist</term>
+<listitem>
+
+<para>The node list of potential objects to examine.</para>
+
+</listitem>
+</varlistentry>
+<varlistentry><term>count</term>
+<listitem>
+
+<para>The position in the list currently being considered by the 
+recursive process.</para>
+
+</listitem>
+</varlistentry>
+</variablelist>
+
+</refparameter><refreturn>
+
+<para>Returns the position in the original list of the selected object.</para>
 
 </refreturn></refentry>
 
@@ -369,4 +431,29 @@ year range is <quote>1991-1992</quote> but discretely it's
 <para>This template returns the formatted list of years.</para>
 
 </refreturn></refentry>
+
+<refentry id="template.find.path.params">
+<refnamediv>
+<refname>find.path.params</refname>
+<refpurpose>Search in a table for the "best" match for the node</refpurpose>
+</refnamediv>
+<refsynopsisdiv>
+<synopsis>&lt;xsl:template name="find.path.params"&gt;
+&lt;xsl:param name="node" select="."/&gt;
+&lt;xsl:param name="table" select="''"/&gt;
+&lt;xsl:param name="location"&gt;
+    &lt;xsl:call-template name="xpath.location"&gt;
+      &lt;xsl:with-param name="node" select="$node"/&gt;
+    &lt;/xsl:call-template&gt;
+  &lt;/xsl:param&gt;
+  ...
+&lt;/xsl:template&gt;</synopsis>
+</refsynopsisdiv>
+<refdescription>
+
+<para>This template searches in a table for the value that most-closely
+(in the typical best-match sense of XSLT) matches the current (element)
+node location.</para>
+
+</refdescription></refentry>
 </reference>

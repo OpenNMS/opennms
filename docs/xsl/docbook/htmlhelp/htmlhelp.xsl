@@ -1,23 +1,22 @@
 <?xml version="1.0"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
+                xmlns:exsl="http://exslt.org/common"
+                xmlns:set="http://exslt.org/sets"
 		version="1.0"
-                exclude-result-prefixes="doc">
+                exclude-result-prefixes="doc exsl set">
+
+<!-- ********************************************************************
+     $Id: htmlhelp.xsl,v 1.25 2002/06/12 13:21:54 kosek Exp $
+     ******************************************************************** 
+
+     This file is used by htmlhelp.xsl if you want to generate source
+     files for HTML Help.  It is based on the XSL DocBook Stylesheet
+     distribution (especially on JavaHelp code) from Norman Walsh.
+
+     ******************************************************************** -->
 
 <xsl:import href="../html/chunk.xsl"/>
 <xsl:include href="htmlhelp-common.xsl"/>
-
-<xsl:template name="write.text.chunk">
-  <xsl:param name="filename" select="''"/>
-  <xsl:param name="method" select="'text'"/>
-  <xsl:param name="content" select="''"/>
-  <xsl:param name="encoding" select="'iso-8859-1'"/>
-  <xsl:call-template name="write.chunk">
-    <xsl:with-param name="filename" select="$filename"/>
-    <xsl:with-param name="method" select="$method"/>
-    <xsl:with-param name="content" select="$content"/>
-    <xsl:with-param name="encoding" select="$encoding"/>
-  </xsl:call-template>
-</xsl:template>
 
 </xsl:stylesheet>

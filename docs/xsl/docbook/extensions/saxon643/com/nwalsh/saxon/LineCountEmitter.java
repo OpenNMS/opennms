@@ -9,6 +9,7 @@ import com.icl.saxon.expr.FragmentValue;
 /**
  * <p>Saxon extension to count the lines in a result tree fragment.</p>
  *
+ * <p>$Id: LineCountEmitter.java,v 1.1 2001/07/16 21:23:57 nwalsh Exp $</p>
  *
  * <p>Copyright (C) 2000 Norman Walsh.</p>
  *
@@ -34,6 +35,7 @@ import com.icl.saxon.expr.FragmentValue;
  * @author Norman Walsh
  * <a href="mailto:ndw@nwalsh.com">ndw@nwalsh.com</a>
  *
+ * @version $Id: LineCountEmitter.java,v 1.1 2001/07/16 21:23:57 nwalsh Exp $
  *
  */
 public class LineCountEmitter extends com.icl.saxon.output.Emitter {

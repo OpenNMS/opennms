@@ -10,6 +10,7 @@ import org.apache.xml.utils.AttList;
 /**
  * <p>Utility class for the Verbatim extension (ignore this).</p>
  *
+ * <p>$Id: FormatGraphicCallout.java,v 1.1 2001/04/02 13:03:45 nwalsh Exp $</p>
  *
  * <p>Copyright (C) 2000, 2001 Norman Walsh.</p>
  *
@@ -24,6 +25,7 @@ import org.apache.xml.utils.AttList;
  *
  * @see Verbatim
  *
+ * @version $Id: FormatGraphicCallout.java,v 1.1 2001/04/02 13:03:45 nwalsh Exp $
  **/
 
 public class FormatGraphicCallout extends FormatCallout {

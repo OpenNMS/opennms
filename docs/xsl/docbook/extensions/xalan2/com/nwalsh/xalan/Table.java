@@ -24,6 +24,7 @@ import org.apache.xml.utils.AttList;
 /**
  * <p>Xalan extensions supporting Tables</p>
  *
+ * <p>$Id: Table.java,v 1.5 2002/11/15 13:50:53 nwalsh Exp $</p>
  *
  * <p>Copyright (C) 2000 Norman Walsh.</p>
  *
@@ -56,6 +57,7 @@ import org.apache.xml.utils.AttList;
  * @author Norman Walsh
  * <a href="mailto:ndw@nwalsh.com">ndw@nwalsh.com</a>
  *
+ * @version $Id: Table.java,v 1.5 2002/11/15 13:50:53 nwalsh Exp $
  *
  */
 public class Table {
@@ -355,8 +357,9 @@ public class Table {
       for (int count = 0; count < numColumns; count++) {
 	float rel = relParts[count] / relTotal * 100;
 	Float f = new Float(rel);
-	widths[count] = Integer.toString(f.intValue()) + "%";
+	widths[count] = Integer.toString(f.intValue());
       }
+      widths = correctRoundingError(widths);
     } else {
       int pixelWidth = nominalWidth;
 
@@ -392,8 +395,9 @@ public class Table {
 	for (int count = 0; count < numColumns; count++) {
 	  float rel = relParts[count] / absTotal * 100;
 	  Float f = new Float(rel);
-	  widths[count] = Integer.toString(f.intValue()) + "%";
+	  widths[count] = Integer.toString(f.intValue());
 	}
+	widths = correctRoundingError(widths);
       }
     }
 
@@ -483,5 +487,45 @@ public class Table {
       }
     }
     return attrs;
+  }
+
+  /**
+   * Correct rounding errors introduced in calculating the width of each
+   * column. Make sure they sum to 100% in the end.
+   */
+  protected String[] correctRoundingError(String widths[]) {
+    int totalWidth = 0;
+
+    for (int count = 0; count < widths.length; count++) {
+      try {
+	int width = Integer.parseInt(widths[count]);
+	totalWidth += width;
+      } catch (NumberFormatException nfe) {
+	// nop; "can't happen"
+      }
+    }
+
+    float totalError = 100 - totalWidth;
+    float columnError = totalError / widths.length;
+    float error = 0;
+
+    for (int count = 0; count < widths.length; count++) {
+      try {
+	int width = Integer.parseInt(widths[count]);
+	error = error + columnError;
+	if (error >= 1.0) {
+	  int adj = (int) Math.round(Math.floor(error));
+	  error = error - (float) Math.floor(error);
+	  width = width + adj;
+	  widths[count] = Integer.toString(width) + "%";
+	} else {
+	  widths[count] = Integer.toString(width) + "%";
+	}
+      } catch (NumberFormatException nfe) {
+	// nop; "can't happen"
+      }
+    }
+
+    return widths;
   }
 }

@@ -1,3 +1,7 @@
+2001-10-13  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* Makefile: Changes to make the documentation work with the new litprog sources
+
 2001-04-03  Norman Walsh <nwalsh@users.sourceforge.net>
 
 	* Makefile: Documentation fixes

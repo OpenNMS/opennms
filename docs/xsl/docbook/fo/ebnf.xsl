@@ -6,6 +6,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
+     $Id: ebnf.xsl,v 1.5 2003/04/12 20:57:44 nwalsh Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -17,6 +18,7 @@
 <doc:reference xmlns="">
 <referenceinfo>
 <releaseinfo role="meta">
+$Id: ebnf.xsl,v 1.5 2003/04/12 20:57:44 nwalsh Exp $
 </releaseinfo>
 <author><surname>Walsh</surname>
 <firstname>Norman</firstname></author>
@@ -54,22 +56,30 @@ to be incomplete. Don't forget to read the source, too :-)</para>
 
   <xsl:choose>
     <xsl:when test="title">
-      <fo:table-and-caption id="{$id}"
-                            xsl:use-attribute-sets="formal.object.properties">
-        <fo:table-caption>
-          <fo:block xsl:use-attribute-sets="formal.title.properties">
-            <xsl:apply-templates select="." mode="object.title.markup"/>
-          </fo:block>
-        </fo:table-caption>
+      <fo:block id="{$id}" xsl:use-attribute-sets="formal.object.properties">
+        <xsl:call-template name="formal.object.heading">
+          <xsl:with-param name="placement" select="'before'"/>
+        </xsl:call-template>
+
         <fo:table table-layout="fixed" width="100%">
+          <fo:table-column column-number="1" column-width="3%"/>
+          <fo:table-column column-number="2" column-width="15%"/>
+          <fo:table-column column-number="3" column-width="5%"/>
+          <fo:table-column column-number="4" column-width="52%"/>
+          <fo:table-column column-number="5" column-width="25%"/>
           <fo:table-body>
             <xsl:apply-templates select="production|productionrecap"/>
           </fo:table-body>
         </fo:table>
-      </fo:table-and-caption>
+      </fo:block>
     </xsl:when>
     <xsl:otherwise>
-      <fo:table table-layout="fixed" width="100%">
+      <fo:table id="{$id}" table-layout="fixed" width="100%">
+        <fo:table-column column-number="1" column-width="3%"/>
+        <fo:table-column column-number="2" column-width="15%"/>
+        <fo:table-column column-number="3" column-width="5%"/>
+        <fo:table-column column-number="4" column-width="52%"/>
+        <fo:table-column column-number="5" column-width="25%"/>
         <fo:table-body>
           <xsl:apply-templates select="production|productionrecap"/>
         </fo:table-body>
@@ -86,14 +96,14 @@ to be incomplete. Don't forget to read the source, too :-)</para>
   <xsl:param name="recap" select="false()"/>
   <xsl:variable name="id"><xsl:call-template name="object.id"/></xsl:variable>
   <fo:table-row>
-    <fo:table-cell width="3%">
+    <fo:table-cell>
       <fo:block text-align="start">
         <xsl:text>[</xsl:text>
         <xsl:number count="production" level="any"/>
         <xsl:text>]</xsl:text>
       </fo:block>
     </fo:table-cell>
-    <fo:table-cell width="10%">
+    <fo:table-cell>
       <fo:block text-align="end">
         <xsl:choose>
           <xsl:when test="$recap">
@@ -110,19 +120,18 @@ to be incomplete. Don't forget to read the source, too :-)</para>
         </xsl:choose>
       </fo:block>
     </fo:table-cell>
-    <fo:table-cell width="5%">
+    <fo:table-cell>
       <fo:block text-align="center">
-        <fo:inline font-family="{$monospace.font.family}">
-          <xsl:text>::=</xsl:text>
-        </fo:inline>
+        <xsl:copy-of select="$ebnf.assignment"/>
       </fo:block>
     </fo:table-cell>
-    <fo:table-cell width="52%">
+    <fo:table-cell>
       <fo:block>
         <xsl:apply-templates select="rhs"/>
+        <xsl:copy-of select="$ebnf.statement.terminator"/>
       </fo:block>
     </fo:table-cell>
-    <fo:table-cell width="30%" border-start-width="3pt">
+    <fo:table-cell border-start-width="3pt">
       <fo:block text-align="start">
         <xsl:choose>
           <xsl:when test="rhs/lineannotation|constraint">
@@ -139,7 +148,7 @@ to be incomplete. Don't forget to read the source, too :-)</para>
 </xsl:template>
 
 <xsl:template match="productionrecap">
-  <xsl:variable name="targets" select="id(@linkend)"/>
+  <xsl:variable name="targets" select="key('id',@linkend)"/>
   <xsl:variable name="target" select="$targets[1]"/>
 
   <xsl:if test="count($targets)=0">
@@ -207,7 +216,7 @@ to be incomplete. Don't forget to read the source, too :-)</para>
   <xsl:variable name="href">
     <xsl:choose>
       <xsl:when test="$linkend != ''">
-	<xsl:variable name="targets" select="id($linkend)"/>
+	<xsl:variable name="targets" select="key('id',$linkend)"/>
 	<xsl:variable name="target" select="$targets[1]"/>
         <xsl:call-template name="object.id">
           <xsl:with-param name="object" select="$target"/>
@@ -228,7 +237,7 @@ to be incomplete. Don't forget to read the source, too :-)</para>
       <xsl:otherwise>
         <xsl:choose>
           <xsl:when test="$linkend != ''">
-            <xsl:variable name="targets" select="id($linkend)"/>
+            <xsl:variable name="targets" select="key('id',$linkend)"/>
             <xsl:variable name="target" select="$targets[1]"/>
             <xsl:apply-templates select="$target/lhs"/>
           </xsl:when>
@@ -262,7 +271,7 @@ to be incomplete. Don't forget to read the source, too :-)</para>
   </xsl:call-template>
 
   <xsl:variable name="href">
-    <xsl:variable name="targets" select="id(@linkend)"/>
+    <xsl:variable name="targets" select="key('id',@linkend)"/>
     <xsl:variable name="target" select="$targets[1]"/>
     <xsl:call-template name="object.id">
       <xsl:with-param name="object" select="$target"/>
@@ -280,7 +289,7 @@ to be incomplete. Don't forget to read the source, too :-)</para>
       <xsl:text>: </xsl:text>
     </xsl:when>
     <xsl:otherwise>
-      <xsl:variable name="targets" select="id(@linkend)"/>
+      <xsl:variable name="targets" select="key('id',@linkend)"/>
       <xsl:variable name="target" select="$targets[1]"/>
       <xsl:if test="$target/@role">
 	<xsl:value-of select="$target/@role"/>
@@ -291,7 +300,7 @@ to be incomplete. Don't forget to read the source, too :-)</para>
 
   <fo:basic-link internal-destination="{$href}"
                  xsl:use-attribute-sets="xref.properties">
-    <xsl:variable name="targets" select="id(@linkend)"/>
+    <xsl:variable name="targets" select="key('id',@linkend)"/>
     <xsl:variable name="target" select="$targets[1]"/>
     <xsl:apply-templates select="$target" mode="title.markup"/>
   </fo:basic-link>

@@ -5,6 +5,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
+     $Id: ebnf.xsl,v 1.9 2003/04/12 21:08:45 nwalsh Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -16,6 +17,7 @@
 <doc:reference xmlns="">
 <referenceinfo>
 <releaseinfo role="meta">
+$Id: ebnf.xsl,v 1.9 2003/04/12 21:08:45 nwalsh Exp $
 </releaseinfo>
 <author><surname>Walsh</surname>
 <firstname>Norman</firstname></author>
@@ -45,30 +47,6 @@ to be incomplete. Don't forget to read the source, too :-)</para>
 </section>
 </partintro>
 </doc:reference>
-
-<!-- ==================================================================== -->
-
-<xsl:param name="ebnf.table.bgcolor">#F5DCB3</xsl:param>
-
-<doc:param name="ebnf.table.bgcolor" xmlns="">
-<refpurpose>Background color for EBNF tables</refpurpose>
-<refdescription>
-<para>Sets the background color for EBNF tables. No <sgmltag>bgcolor</sgmltag>
-attribute is output if <varname>ebnf.table.bgcolor</varname> is set to
-the null string. The default value matches the value used in recent
-online versions of the W3C's XML Spec productions.</para>
-</refdescription>
-</doc:param>
-
-<xsl:param name="ebnf.table.border">1</xsl:param>
-
-<doc:param name="ebnf.table.border" xmlns="">
-<refpurpose>Selects border on EBNF tables</refpurpose>
-<refdescription>
-<para>Selects the border on EBNF tables. If non-zero, the tables have
-borders, otherwise they don't.</para>
-</refdescription>
-</doc:param>
 
 <!-- ==================================================================== -->
 
@@ -149,9 +127,12 @@ borders, otherwise they don't.</para>
 	</xsl:otherwise>
       </xsl:choose>
     </td>
-    <td valign="top" width="5%" align="center"><tt>::=</tt></td>
+    <td valign="top" width="5%" align="center">
+      <xsl:copy-of select="$ebnf.assignment"/>
+    </td>
     <td valign="top" width="52%">
       <xsl:apply-templates select="rhs"/>
+      <xsl:copy-of select="$ebnf.statement.terminator"/>
     </td>
     <td align="left" valign="top" width="30%">
       <xsl:choose>
@@ -168,7 +149,7 @@ borders, otherwise they don't.</para>
 </xsl:template>
 
 <xsl:template match="productionrecap">
-  <xsl:variable name="targets" select="id(@linkend)"/>
+  <xsl:variable name="targets" select="key('id',@linkend)"/>
   <xsl:variable name="target" select="$targets[1]"/>
 
   <xsl:if test="count($targets)=0">
@@ -240,7 +221,7 @@ borders, otherwise they don't.</para>
   <xsl:variable name="href">
     <xsl:choose>
       <xsl:when test="$linkend != ''">
-	<xsl:variable name="targets" select="id($linkend)"/>
+	<xsl:variable name="targets" select="key('id',$linkend)"/>
 	<xsl:variable name="target" select="$targets[1]"/>
 	<xsl:call-template name="href.target">
 	  <xsl:with-param name="object" select="$target"/>
@@ -260,7 +241,7 @@ borders, otherwise they don't.</para>
       <xsl:otherwise>
 	<xsl:choose>
 	  <xsl:when test="$linkend != ''">
-	    <xsl:variable name="targets" select="id($linkend)"/>
+	    <xsl:variable name="targets" select="key('id',$linkend)"/>
 	    <xsl:variable name="target" select="$targets[1]"/>
 	    <xsl:apply-templates select="$target/lhs"/>
 	  </xsl:when>
@@ -295,7 +276,7 @@ borders, otherwise they don't.</para>
   </xsl:call-template>
 
   <xsl:variable name="href">
-    <xsl:variable name="targets" select="id(@linkend)"/>
+    <xsl:variable name="targets" select="key('id',@linkend)"/>
     <xsl:variable name="target" select="$targets[1]"/>
     <xsl:call-template name="href.target">
       <xsl:with-param name="object" select="$target"/>
@@ -310,7 +291,7 @@ borders, otherwise they don't.</para>
       <xsl:text>: </xsl:text>
     </xsl:when>
     <xsl:otherwise>
-      <xsl:variable name="targets" select="id(@linkend)"/>
+      <xsl:variable name="targets" select="key('id',@linkend)"/>
       <xsl:variable name="target" select="$targets[1]"/>
       <xsl:if test="$target/@role">
 	<xsl:value-of select="$target/@role"/>
@@ -320,7 +301,7 @@ borders, otherwise they don't.</para>
   </xsl:choose>
 
   <a href="{$href}">
-    <xsl:variable name="targets" select="id(@linkend)"/>
+    <xsl:variable name="targets" select="key('id',@linkend)"/>
     <xsl:variable name="target" select="$targets[1]"/>
     <xsl:apply-templates select="$target" mode="title.markup"/>
   </a>

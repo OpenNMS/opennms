@@ -22,7 +22,8 @@ public class Params {
 	return "";
       }
     } catch (TransformerException te) {
-      System.out.println("Transformer exception getting value of $" + varName);
+      // Nevermind the warning
+      // System.out.println("Transformer exception getting value of $" + varName);
       return "";
     }
   }

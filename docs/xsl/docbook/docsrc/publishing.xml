@@ -1,111 +1,276 @@
 <chapter>
-<chapterinfo>
-<releaseinfo role="meta">
-</releaseinfo>
-<author><surname>Stayton</surname>
-<firstname>Bob</firstname></author>
-<copyright><year>2000</year><holder>Bob Stayton</holder>
-</copyright>
-</chapterinfo>
-<title>DocBook XSL</title>
-<?dbhtml filename="publishing.html"?>
- <sect1>
-  <title>Using XSL tools to publish DocBook
-   documents</title>
-  <para>There is a growing list of tools to process DocBook
-   documents using XSL stylesheets. Each tool implements parts
-   or all of the XSL standard, which actually has several
-   components:
-   <variablelist>
-    <varlistentry>
-     <term>Extensible Stylesheet Language (XSL)</term>
-     <listitem>
-      <para>A language for expressing stylesheets written
-       in XML. It includes the formatting object language, but
-       refers to separate documents for the transformation
-       language and the path language.</para>
-  </listitem>
-  </varlistentry>
-  <varlistentry>
-   <term>XSL Transformation (XSLT)</term>
-   <listitem>
-    <para>The part of XSL for transforming XML documents
-       into other XML documents, HTML, or text. It can be used to
-       rearrange the content and generate new content.</para>
-  </listitem>
- </varlistentry>
- <varlistentry>
-  <term>XML Path Language (XPath)</term>
-  <listitem>
-   <para>A language for addressing parts of an XML
-       document. It is used to find the parts of your document to
-       apply different styles to. All XSL processors use this
-       component.</para>
- </listitem>
-</varlistentry>
-</variablelist></para>
-<para>To publish HTML from your XML documents, you just
-   need an XSLT engine. To get to print, you need an XSLT
-   engine to produce formatting objects (FO), which then must
-   be processed with a formatting object processor to produce
-   PostScript or PDF output.</para>
-<para>James Clark's XT was the first useful XSLT engine,
-   and it is still in wide use. It is written in Java, so it
-   runs on many platforms, and it is free (
-   <ulink url="http://www.jclark.com">http://www.jclark.com</ulink>).
-   XT comes with James Clark's nonvalidating parser XP, but
-   you can substitute a different Java parser. Here is a
-   simple example of using XT from the Unix command line to
-   produce HTML: You'll need to alter your
-   <parameter>CLASSPATH</parameter> environment variable to
-   include the path to where you put the
-   <filename>.jar</filename> files from the XT
-   distribution.</para>
-<screen>CLASSPATH=xt.jar:xp.jar:sax.jar
-export CLASSPATH
-java  com.jclark.xsl.sax.Driver <replaceable>filename.xml</replaceable> <replaceable>docbook/html/docbook.xsl</replaceable> &gt; <replaceable>output.html</replaceable></screen>
-<para>If you replace the HTML stylesheet with a
-   formatting object stylesheet, XT will produce a formatting
-   object file. Then you can convert that to PDF using FOP, a
-   formatting object processor available for free from the
-   Apache XML Project (
-   <ulink url="http://xml.apache.org">http://xml.apache.org</ulink>).
-   Here is an example of that two stage processing:</para>
-<screen>CLASSPATH=xt.jar:xp.jar:sax.jar:fop.jar
-export CLASSPATH
-java  com.jclark.xsl.sax.Driver <replaceable>filename.xml</replaceable> <replaceable>docbook/fo/docbook.xsl</replaceable> &gt; <replaceable>output.fo</replaceable>
-java  org.apache.fop.apps.CommandLine <replaceable>output.fo</replaceable> <replaceable>output.pdf</replaceable></screen>
-<para>As of this writing, some other XSLT processors to
-   choose from include:</para>
-<itemizedlist>
-<listitem>
- <para>4XSLT, written in Python, from FourThought LLC (
-     <ulink url="http://www.fourthought.com">http://www.fourthought.com</ulink>)</para>
-</listitem>
-<listitem>
-<para>Sablotron, written in C++, from Ginger Alliance (
+  <chapterinfo>
+    <releaseinfo role="meta">
+      $Id: publishing.xml,v 1.4 2002/06/03 19:26:58 xmldoc Exp $
+    </releaseinfo>
+    <author><surname>Stayton</surname>
+      <firstname>Bob</firstname></author>
+    <copyright><year>2000</year><holder>Bob Stayton</holder>
+    </copyright>
+  </chapterinfo>
+  <title>DocBook XSL</title>
+  <?dbhtml filename="publishing.html"?>
+  <sect1>
+    <title>Using XSL tools to publish DocBook
+      documents</title>
+    <para>There is a growing list of tools to process DocBook
+      documents using XSL stylesheets. Each tool implements parts
+      or all of the XSL standard, which actually has several
+      components:
+      <variablelist>
+        <varlistentry>
+          <term>Extensible Stylesheet Language (XSL)</term>
+          <listitem>
+            <para>A language for expressing stylesheets written
+              in XML. It includes the formatting object language, but
+              refers to separate documents for the transformation
+              language and the path language.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>XSL Transformation (XSLT)</term>
+          <listitem>
+            <para>The part of XSL for transforming XML documents
+              into other XML documents, HTML, or text. It can be used to
+              rearrange the content and generate new content.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>XML Path Language (XPath)</term>
+          <listitem>
+            <para>A language for addressing parts of an XML
+              document. It is used to find the parts of your document to
+              apply different styles to. All XSL processors use this
+              component.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist></para>
+    <para>To publish HTML from your XML documents, you just
+      need an XSLT engine. To get to print, you need an XSLT
+      engine to produce formatting objects (FO), which then must
+      be processed with an FO engine to produce
+      PostScript or PDF output.</para>
+    <sect2>
+      <title>XSLT engines</title>
 
-     <ulink url="http://www.gingerall.com">http://www.gingerall.com</ulink>)</para>
-</listitem>
-<listitem>
-<para>Saxon, written in Java, from Michael Kay (
-     <ulink url="http://users.iclway.co.uk/mhkay/saxon">http://users.iclway.co.uk/mhkay/saxon</ulink>)</para>
-</listitem>
-<listitem>
-<para>Xalan, written in Java, from the Apache XML
-     Project (
-     <ulink url="http://xml.apache.org">http://xml.apache.org</ulink>)</para>
-</listitem>
-<listitem>
-<para>XML::XSLT,written in Perl, from Geert Josten and
-     Egon Willighagen (
-     <ulink url="http://www.cpan.org">http://www.cpan.org</ulink>)</para>
-</listitem>
-</itemizedlist>
-<para>For print output, these additional tools are available for processing formatting objects:</para>
-<itemizedlist><listitem><para>XEP (written in Java) from
-   RenderX (
-  <ulink url="http://www.renderx.com">http://www.renderx.com</ulink>).</para></listitem><listitem><para>PassiveTeX from Sebastian Rahtz (<ulink url="http://users.ox.ac.uk/~rahtz/passivetex/">http://users.ox.ac.uk/~rahtz/passivetex/</ulink>).</para></listitem></itemizedlist></sect1>
+      <para>This section provides a discussion about which XSLT
+        engines you might want to use to generate HTML and FO output
+        from your DocBook XML documents, along with a few short
+        examples of how to actually use some specific XSLT engines to
+        generate that output. Before using any particular XSLT engine,
+        you should consult its reference documentation for more
+        detailed information.</para>
+
+      <sect3>
+        <title>Which XSLT engine should I use?</title>
+
+        <para>Currently, the only XSLT engines that are recommended and
+          known to work well with the DocBook XSL stylesheets are
+          Daniel Veillard's C-based implementation, <application
+            class="software" >xsltproc</application> (the command line
+          processor packaged with <ulink
+            url="http://xmlsoft.org/XSLT/" >libxslt</ulink>, the XSLT
+          C library for Gnome), and Michael Kay's Java-based
+          implementation, <application class="software" ><ulink
+              url="http://saxon.sourceforge.net/"
+              >Saxon</ulink></application>.</para>
+
+        <warning>
+          <title>XSLT engines not recommended for use with DocBook</title>
+          <para>The following engines are not currently recommended for
+            use with the DocBook XSL stylesheets:
+            <variablelist>
+              <varlistentry>
+                <term>James Clark's XT</term>
+                <listitem>
+                  <para>XT is an incomplete implementation
+                    of the XSLT 1.0 specification. One of the important things
+                    that's missing from it is support for XSLT "keys", which
+                    the DocBook XSLT stylesheets rely on for generating
+                    indexes, among other things. So you can't use XT reliably
+                    with current versions of the stylesheets.</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Xalan (both Java and C++ implementations)</term>
+                <listitem>
+                  <para>Bugs in current versions of Xalan prevent it
+                    from being used reliably with the stylesheets.</para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+          </para>
+        </warning>
+
+        <para>Your choice of an XSLT engine may depend a lot on the
+          environment you'll be running the engine in. Many DocBook
+          users who need or want a non-Java application are using
+          <application class="software" >xsltproc</application>. It's
+          very fast, and also a good choice because Veillard monitors
+          the DocBook mailing lists to field usage and troubleshooting
+          questions and responds very quickly to bug reports. (And the
+          libxslt site features a <ulink
+            url="http://xmlsoft.org/XSLT/docbook.html" >DocBook
+            page</ulink> that, among other things, includes a shell
+          script you can use to automatically generate <ulink
+            url="http://xmlsoft.org/catalog.html" >XML
+            catalogs</ulink> for DocBook.) But one current limitation
+          <application class="software" >xsltproc</application> has is
+          that it doesn't yet support Norm Walsh's DocBook-specific
+          XSLT extension functions.</para>
+
+        <para>If you can use a Java-based implementation, choose Michael
+          Kay's <application class="software">Saxon</application>. It
+          supports Norm Walsh's DocBook-specific XSLT extension
+          functions.</para>
+
+        <para>A variety of XSLT engines are available. Not all of them
+          are used much in the DocBook community, but here's a list of
+          some free/open-source ones you might consider (though
+          <application class="software" >xsltproc</application> and
+          <application class="software" >Saxon</application> are
+          currently the only recommended XSLT engines for use with
+          DocBook).
+          <itemizedlist>
+            <listitem>
+              <para>xsltproc, written in C, from Daniel Veillard (<ulink
+                  url="http://xmlsoft.org/XSLT/"
+                  >http://xmlsoft.org/XSLT/</ulink>)</para>
+            </listitem>
+            <listitem>
+              <para>Saxon, written in Java, from Michael Kay (<ulink
+                  url="http://saxon.sourceforge.net/"
+                  >http://saxon.sourceforge.net/</ulink>)</para>
+            </listitem>
+<!-- commented out because current Xalan versions don't work with DocBook
+            <listitem>
+            <para>Xalan, available in both C++ and Java
+            implementations, from the Apache XML Project (<ulink
+            url="http://xml.apache.org"
+            >http://xml.apache.org</ulink>)</para>
+          </listitem>
+<!-->
+            <listitem>
+              <para>4XSLT, written in Python, from FourThought LLC
+                (<ulink url="http://www.fourthought.com"
+                  >http://www.fourthought.com</ulink>)</para>
+            </listitem>
+            <listitem>
+              <para>Sablotron, written in C++, from Ginger Alliance
+                (<ulink url="http://www.gingerall.com"
+                  >http://www.gingerall.com</ulink>)</para>
+            </listitem>
+            <listitem>
+              <para>XML::XSLT,written in Perl, from Geert Josten and
+                Egon Willighagen (<ulink url="http://www.cpan.org"
+                  >http://www.cpan.org</ulink>)</para>
+            </listitem>
+          </itemizedlist>
+        </para>
+
+        <para>For generating print/PDF output from FO files, there are
+          two free/open-source FO engines that, while they aren't
+          complete bug-free implementations of the FO part of the XSL
+          specification, are still very useful:
+          <itemizedlist>
+            <listitem><para>PassiveTeX (TeX-based) from Sebastian
+                Rahtz (<ulink
+                  url="http://www.hcu.ox.ac.uk/TEI/Software/passivetex/"
+                  >http://www.hcu.ox.ac.uk/TEI/Software/passivetex/</ulink>)</para>
+            </listitem>
+            <listitem>
+              <para>FOP (Java-based) from the Apache XML Project
+                (<ulink url="http://xml.apache.org/fop/"
+                  >http://xml.apache.org/fop/</ulink>)</para>
+            </listitem>
+          </itemizedlist>
+          Of those, PassiveTeX currently seems to be the more mature,
+          less buggy implementation.
+        </para>
+
+        <para>And there are two proprietary commercial products that
+          both seem to be fairly mature, complete implementations of the
+          FO part of the XSL specification:
+          <itemizedlist>
+            <listitem>
+              <para>current versions of <ulink
+                  url="http://www.arbortext.com" >Arbortext Epic
+                  Editor</ulink> include integrated support for
+                processing formatting object files</para>
+            </listitem>
+            <listitem>
+              <para><ulink url="http://www.renderx.com" >RenderX
+                  XEP</ulink> (written in Java) is a standalone tool
+                for processing formatting object files</para>
+            </listitem>
+          </itemizedlist>
+        </para>
+        
+      </sect3>
+      <sect3>
+        <title>How do I use an XSLT engine?</title>
+
+        <para>Before using any XSLT engine, you should consult the
+          reference documentation that comes with it for details about
+          its command syntax and so on. But there are some common
+          steps to follow when using the Java-based engines, so here's
+          an example of using Saxon from the UNIX command line that
+          might help give you general idea of how to use the Java-based
+          engines.</para>
+
+        <note>
+          <para>You'll need to alter your
+            <parameter>CLASSPATH</parameter> environment variable to
+            include the path to where you put the
+            <filename>saxon.jar</filename> file from the Saxon
+            distribution. And you'll need to specify the correct path
+            to the <filename>docbook.xsl</filename> HTML stylesheet
+            file in your local environment.</para>
+        </note>
+
+        <example>
+          <title>Using Saxon to generate HTML output</title>
+<screen>CLASSPATH=saxon.jar:$CLASSPATH
+export CLASSPATH
+java  com.icl.saxon.StyleSheet  <replaceable>filename.xml</replaceable> <replaceable>docbook/html/docbook.xsl</replaceable> &gt; <replaceable>output.html</replaceable></screen>
+</example>
+        <para>If you replace the path to the HTML stylesheet with the
+          path to the FO stylesheet, Saxon will produce a formatting
+          object file. Then you can convert that to PDF using a FO
+          engine such such as FOP, the free/open-source FO engine
+          available from the Apache XML Project (<ulink
+          url="http://xml.apache.org/fop/">http://xml.apache.org/fop/</ulink>).
+          Here is an example of that two-stage process.</para>
+        <example>
+          <title>Using Saxon and FOP to generate PDF output</title>
+<screen>CLASSPATH=saxon.jar:fop.jar:$CLASSPATH
+export CLASSPATH
+java  com.icl.saxon.StyleSheet <replaceable>filename.xml</replaceable> <replaceable>docbook/fo/docbook.xsl</replaceable> &gt; <replaceable>output.fo</replaceable>
+java  org.apache.fop.apps.CommandLine <replaceable>output.fo</replaceable> <replaceable>output.pdf</replaceable></screen>
+</example>
+
+        <para>Using a C-based XSLT engine such as xsltproc is a little
+        easier, since it doesn't require setting any environment
+        variables or remembering Java package names. Here's an example
+        of using xsltproc to generate HTML output.</para>
+
+        <example>
+          <title>Using xsltproc to generate HTML output</title>
+          <screen
+>xsltproc <replaceable>docbook/html/docbook.xsl</replaceable> <replaceable>filename.xml</replaceable> &gt; <replaceable>output.html</replaceable></screen>
+        </example>
+
+        <para>Note that when using xsltproc, the pathname to the
+        stylesheet file precedes the name of your XML source file on
+        the command line (it's the other way around with Saxon and
+        with most other Java-based XSLT engines).</para>
+
+</sect3>
+
+</sect2>
+
+</sect1>
+
 <sect1>
 <title>A brief introduction to XSL</title>
 <para>XSL is both a transformation language and a
