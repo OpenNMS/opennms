@@ -130,6 +130,10 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
     private static final long MAX_INSIG_UPDATE_SECONDS = RrdConfig.getProperty("org.opennms.rrd.queuing.maxInsigUpdateSeconds", 0L);
 
+    private static final long WRITE_THREAD_SLEEP_TIME = RrdConfig.getProperty("org.opennms.rrd.queuing.writethread.sleepTime", 50L);
+
+    private static final long WRITE_THREAD_EXIT_DELAY = RrdConfig.getProperty("org.opennms.rrd.queuing.writethread.exitDelay", 60000L);
+
     LinkedList filesWithSignificantWork = new LinkedList();
 
     LinkedList filesWithInsignificantWork = new LinkedList();
@@ -183,6 +187,7 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
     long lastDequeuedItems = 0;
 
     long lastOpsPending = 0;
+
 
 
     /**
@@ -725,8 +730,24 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
     
     public void run() {
         try {
-            while (totalOperationsPending > 0) {
-                processPendingOperations();
+           
+            long waitStart = -1L;
+            long delayed = 0;
+            while (delayed < WRITE_THREAD_EXIT_DELAY) {
+                if (totalOperationsPending > 0) {
+                    delayed = 0;
+                    waitStart = -1L;
+                    processPendingOperations();
+                }
+                else {
+                    if (waitStart < 0) {
+                        waitStart = System.currentTimeMillis();
+                    }
+                    try { Thread.sleep(WRITE_THREAD_SLEEP_TIME); } catch (InterruptedException e) {}
+                    long now = System.currentTimeMillis();
+                    delayed = now - waitStart;
+                }
+                
 
             }
         } finally {
