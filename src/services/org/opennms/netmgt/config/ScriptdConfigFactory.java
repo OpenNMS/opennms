@@ -27,7 +27,7 @@
 // For more information contact:
 //      OpenNMS Licensing       <license@opennms.org>
 //      http://www.opennms.org/
-//      http://www.sortova.com/
+//      http://www.blast.com/
 //
 //
 // Tab Size = 8
