@@ -1,7 +1,7 @@
 /*
  * Created on Sep 8, 2004
  * 
- * Copyright (C) 2004, The OpenNMS Group, Inc..
+ * Copyright (C) 2005, The OpenNMS Group, Inc..
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
