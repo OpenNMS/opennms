@@ -10,7 +10,7 @@ PG_DIR=/usr/lib/postgresql/lib/opennms
 PG_USER=postgres
 PG_CTL=/usr/lib/postgresql/bin/pg_ctl
 DATA_DIR=/var/lib/postgres/data
-PGHBA_CONF=$PGHBA_CONF
+PGHBA_CONF=/etc/postgresql/pg_hba.conf
 
 case "$1" in
     configure)
@@ -32,7 +32,7 @@ case "$1" in
 	# Add the host entry if needed
 	if ! grep -q "^host opennms" $PGHBA_CONF; then
 	    sed \
-	        -e "/^host.*ident sameuser/i\\" \
+	        -e "/^host.*127.0.0.1.*ident sameuser/i\\" \
 	        -e "host opennms 127.0.0.1 255.0.0.0 password" \
 		$PGHBA_CONF > $TMPFILE
 	    cp $TMPFILE $PGHBA_CONF
