@@ -259,6 +259,11 @@ public class EventConstants
 	*/
 	public final static String INTERFACE_SUPPORTS_SNMP_EVENT_UEI = "uei.opennms.org/internal/capsd/interfaceSupportsSNMP";
 	
+	/**	
+	 * A service scan has discovered a duplicate IP address.
+	*/
+	public final static String DUPLICATE_IPINTERFACE_EVENT_UEI = "uei.opennms.org/internal/capsd/duplicateIPAddress";
+	
 	/**
 	 * The interface reparented event
 	 */

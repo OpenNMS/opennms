@@ -74,6 +74,7 @@ import org.opennms.netmgt.config.capsd.*;
  * The constructor takes a string which is the IP address of the interface 
  * to be scanned.  
  *
+ * @author <a href="mailto:jamesz@blast.com">James Zuo</a>
  * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
  * @author <a href="mailto:weave@opennms.org">Brian Weaver</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
@@ -85,7 +86,12 @@ final class SuspectEventProcessor
 	 * SQL statement to retrieve the node identifier for a given IP address
 	 */
 	private static String 	SQL_RETRIEVE_INTERFACE_NODEID_PREFIX = "SELECT nodeId FROM ipinterface WHERE ";
-	
+
+        /**
+         * SQL statement to retrieve the ipaddresses for a given node ID
+         */
+        private final static String SQL_RETRIEVE_IPINTERFACES_ON_NODEID = "SELECT ipaddr FROM ipinterface WHERE nodeid = ?";
+
 	private final static String 	SELECT_METHOD_MIN = "min";
 	private final static String 	SELECT_METHOD_MAX = "max";
 	
@@ -162,6 +168,8 @@ final class SuspectEventProcessor
 		// Loop through the interface table entries and see if any already exist
 		// in the database.
 		Iterator iter = ifTable.getEntries().iterator();
+                List ipaddrsOfNewNode = new ArrayList();
+                List ipaddrsOfOldNode = new ArrayList();
 
 		while(iter.hasNext())
 		{
@@ -202,20 +210,22 @@ final class SuspectEventProcessor
 				InetAddress ipAddress = (InetAddress)aiter.next();
 				
 				// 
-			// Skip interface if no IP address or if IP address is "0.0.0.0"
-			// or if this interface is of type loopback
+			        // Skip interface if no IP address or if IP address is "0.0.0.0"
+			        // or if this interface is of type loopback
 				if (ipAddress == null || 
 					ipAddress.getHostAddress().equals("0.0.0.0") ||
 					ipAddress.getHostAddress().startsWith("127."))
-				continue;
+				        continue;
 				
-			if (firstAddress)
-			{
-					sqlBuffer.append("ipaddr='").append(ipAddress.getHostAddress()).append("'");
-				firstAddress = false;
-			}
-			else
+			        if (firstAddress)
+			        {
+				       	sqlBuffer.append("ipaddr='").append(ipAddress.getHostAddress()).append("'");
+				        firstAddress = false;
+			        }
+			        else
 					sqlBuffer.append(" OR ipaddr='").append(ipAddress.getHostAddress()).append("'");
+                                        
+                                ipaddrsOfNewNode.add(ipAddress.getHostAddress());
 			}
 		} // end while
 		
@@ -241,7 +251,7 @@ final class SuspectEventProcessor
 			{
 				nodeID = rs.getInt(1);
 				if (log.isDebugEnabled())
-					log.debug("getExistingNodeEntry: target " + collector.getTarget().getHostAddress() + " belongs under nodeId " + nodeID);
+					log.debug("getExistingNodeEntry: target " + collector.getTarget().getHostAddress() + nodeID);
 				rs = null;
 			}
 		}
@@ -261,17 +271,87 @@ final class SuspectEventProcessor
 			}
 		}
 			
-		if (nodeID != -1)
+		if (nodeID == -1)
+			return null;
+                
+		try
 		{
+                        stmt = dbc.prepareStatement(SQL_RETRIEVE_IPINTERFACES_ON_NODEID);
+			stmt.setInt(1, nodeID);
+                        
+                        ResultSet rs = stmt.executeQuery();
+			while (rs.next())
+			{
+				String ipaddr = rs.getString(1);
+                                if (!ipaddr.equals("0.0.0.0"))
+                                        ipaddrsOfOldNode.add(ipaddr);
+			}
+		}
+		catch(SQLException sqlE)
+		{
+			throw sqlE;
+		}
+		finally
+		{
+			try
+			{
+				stmt.close(); // automatically closes the result set as well
+			}
+			catch (Exception e)
+			{
+				// Ignore
+			}
+		}
+                
+                if (ipaddrsOfNewNode.containsAll(ipaddrsOfOldNode))
+                {
 			if (log.isDebugEnabled())
 				log.debug("getExistingNodeEntry: found one of the addrs under existing node: " + nodeID);
 			return DbNodeEntry.get(nodeID);
-		}
-		else
-			return null;
+                }
+                else
+                {
+                        String dupIpaddr = getDuplicateIpaddress(ipaddrsOfOldNode, ipaddrsOfNewNode);
+                        createAndSendDuplicateIpaddressEvent(nodeID, dupIpaddr);
+                        return null;
+                }
 	}
 	
+
 	/**
+	 * This method is used to verify if there is a same ipaddress existing in two sets 
+         * of ipaddresses, and return the first ipaddress that is the same in both sets as 
+         * a string.
+	 * 
+	 * @param ipListA       a collection of ip addresses.
+	 * @param ipListB	a collection of ip addresses.
+	 *
+	 * @return	the first ipaddress exists in both ipaddress lists.
+	 *
+	 */
+	private String getDuplicateIpaddress(List ipListA, List ipListB)
+	{
+		Category log = ThreadCategory.getInstance(getClass());
+		if (ipListA == null || ipListB == null)
+                        return null;
+                
+                String ipaddr = null;
+		Iterator iter = ipListA.iterator();
+		while (iter.hasNext())
+                {
+                        ipaddr = (String)iter.next();
+                        if (ipListB.contains(ipaddr)) 
+                        {
+		                if (log.isDebugEnabled())
+			                log.debug("getDuplicateIpaddress: get duplicate ip address: " + ipaddr);
+                                break;
+                        }
+                }
+                return ipaddr;
+        }
+
+        
+        /**
 	 * This method is responsble for inserting a new node into the node table.
 	 * 
 	 * @param dbc		Database connection.
@@ -1912,6 +1992,47 @@ final class SuspectEventProcessor
 
 	}
 	
+	/**
+	 * This method is responsible for creating and sending a 'duplicateIPAddress' 
+	 * event to Eventd
+	 * 
+	 * @param nodeId	Interface's parent node identifier.
+	 * @param ipAddr	Interface's IP address
+	 */
+	private void createAndSendDuplicateIpaddressEvent(int nodeId, String ipAddr)
+	{
+		Category log = ThreadCategory.getInstance(getClass());
+				
+		// create the event to be sent
+		Event newEvent = new Event();
+		
+		newEvent.setUei(EventConstants.DUPLICATE_IPINTERFACE_EVENT_UEI);
+		
+		newEvent.setSource("OpenNMS.Capsd");
+		
+		newEvent.setNodeid(nodeId);
+		
+		newEvent.setHost(Capsd.getLocalHostAddress());
+		
+		newEvent.setInterface(ipAddr);
+		
+		newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+		
+		// Send event to Eventd
+		try
+		{
+			EventIpcManagerFactory.getInstance().getManager().sendNow(newEvent);
+
+		        if (log.isDebugEnabled())
+				log.debug("createAndSendDuplicateIpaddressEvent: successfully sent duplicateIPAddress event for interface: " + ipAddr);
+	        }
+		catch(Throwable t)
+		{
+			log.warn("run: unexpected throwable exception caught during send to middleware", t);
+		}
+	}
+
+
 	/**
 	 * This method is responsible for creating and sending a 'nodeGainedInterface' 
 	 * event to Eventd
