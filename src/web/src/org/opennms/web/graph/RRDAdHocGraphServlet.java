@@ -203,7 +203,7 @@ public class RRDAdHocGraphServlet extends HttpServlet {
             String dsAbbrev = "ds" + Integer.toString(i);
 
             String dsName = dsNames[i];
-            String rrd = this.workDir + File.separator + rrdDir + File.separator + dsNames[i] + RrdFileConstants.RRD_SUFFIX;
+            String rrd = rrdDir + File.separator + dsNames[i] + RrdFileConstants.RRD_SUFFIX;
             String dsAggregFxn = dsAggregFxns[i];
             String color = colors[i];
             String dsTitle = dsTitles[i];
