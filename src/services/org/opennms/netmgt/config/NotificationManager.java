@@ -781,7 +781,7 @@ public abstract class NotificationManager {
         final Map parmMap = new HashMap();
         Querier querier = new Querier(m_dbConnectionFactory, "select notifications.*, service.* from notifications left outer join service on notifications.serviceID = service.serviceID  where notifyId = ?") {
             public void processRow(ResultSet rs) throws SQLException {
-                parmMap.put(NotificationManager.PARAM_TEXT_MSG, rs.getObject("textMsg"));
+                parmMap.put(NotificationManager.PARAM_TEXT_MSG, resolutionPrefix+rs.getObject("textMsg"));
                 parmMap.put(NotificationManager.PARAM_NUM_MSG, rs.getObject("numericMsg"));
                 parmMap.put(NotificationManager.PARAM_SUBJECT, resolutionPrefix+rs.getObject("subject"));
                 parmMap.put(NotificationManager.PARAM_NODE, rs.getObject("nodeID").toString());
