@@ -2446,7 +2446,7 @@ final class RescanProcessor
         {
 		Category log = ThreadCategory.getInstance(getClass());
 		
-		// Sanity check...null parms?
+                // Sanity check...null parms?
 		if (dbInterfaces == null || snmpc == null)
                 {
 			log.error("areDbInterfacesInSnmpCollection: empty dbInterfaces or IfSnmpCollector.");
@@ -2485,9 +2485,16 @@ final class RescanProcessor
                         while (iter.hasNext())
                         {
                                 InetAddress addr = (InetAddress)iter.next();
+			        if (log.isDebugEnabled())
+				        log.debug("areDbInterfacesInSnmpCollection: ipaddress in db: " + ipaddr.getHostAddress()
+                                                + " ipaddress in ipAddrTable: " + addr.getHostAddress()); 
+                                
                                 if (ipaddr.getHostAddress().equals(addr.getHostAddress()))
                                 {
                                         found = true;
+			                if (log.isDebugEnabled())
+				                log.debug("areDbInterfacesInSnmpCollection: found match for ipaddress: " 
+                                                        + ipaddr.getHostAddress()); 
                                         break;
                                 }
                                 else
