@@ -107,8 +107,8 @@
     are polled (without a restart).</para>
 
     <para>In order to alert this system to events from OpenNMS, like
-    "nodeLostService", we send events out via <filename>xmlrpcd</filename>.
-    </para>
+    "nodeLostService", we send events out via
+    <filename>xmlrpcd</filename>.</para>
 
     <para>Unfortunately, there isn't time to describe in detail how this
     system works, but it will be documented as soon as possible (the hope is
@@ -209,6 +209,12 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
     <para>DJ Gregor (building on work started by Edwin Buck) rebuilt the build
     system, making it almost pure <filename>ant</filename>. This was great for
     those doing development, so hats off to Deej and Edwin.</para>
+
+    <bridgehead>New NTP Poller</bridgehead>
+
+    <para>Mike Huot has written a new NTP poller. You'll notice it in
+    capsd-configuration.xml and poller-configuration.xml. Hat off to
+    Mike.</para>
 
     <bridgehead>Nice Little Things</bridgehead>
 
