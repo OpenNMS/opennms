@@ -45,7 +45,50 @@
 			<group 	name = "mib2-host-resources-memory" ifType = "ignore">
 				<mibObj oid=".1.3.6.1.2.1.25.2.2" instance="0" alias="hrMemorySize"    type="integer"/>
 			</group>
+
+			<group name="printer-usage" ifType="ignore">
+				<mibObj oid="1.3.6.1.2.1.43.10.2.1.4.1"    instance="1" alias="lifeCount" type="Gauge" />
+				<mibObj oid="1.3.6.1.2.1.43.10.2.1.4.1"    instance="1" alias="powerOnCount" type="Gauge" />
+			</group>
 			
+			<!-- group definition for rmon etherstats -->
+			<group name = "rmon-etherStats-size" ifType = "6,62,69,117">
+			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.3" instance="ifIndex" alias="s_Drop" type="counter"/>
+			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.4" instance="ifIndex" alias="s_Octets" type="counter"/>
+			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.5" instance="ifIndex" alias="s_Ethpacket" type="counter"/>
+			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.6" instance="ifIndex" alias="s_Broadcast" type="counter"/>
+			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.7" instance="ifIndex" alias="s_Multicast" type="counter"/>
+			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.8" instance="ifIndex" alias="s_CRCAlign" type="counter"/>
+			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.9" instance="ifIndex" alias="s_Under" type="counter"/>
+			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.10" instance="ifIndex" alias="s_Over" type="counter"/>
+			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.11" instance="ifIndex" alias="s_Fragment" type="counter"/>
+			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.12" instance="ifIndex" alias="s_Jabber" type="counter"/>
+			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.13" instance="ifIndex" alias="s_Collision" type="counter"/>
+			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.14" instance="ifIndex" alias="s_Size64" type="counter"/>
+			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.15" instance="ifIndex" alias="s_Size127" type="counter"/>
+			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.16" instance="ifIndex" alias="s_Size255" type="counter"/>
+			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.17" instance="ifIndex" alias="s_Size511" type="counter"/>
+			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.18" instance="ifIndex" alias="s_Size1023" type="counter"/>
+			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.19" instance="ifIndex" alias="s_Size1518" type="counter"/>
+			        <mibObj oid=".1.3.6.1.2.1.16.1.1.1.21" instance="ifIndex" alias="s_Status" type="counter"/>
+		        </group>
+
+			<group name = "upsmib.in.1" ifType="ignore">
+				<mibObj oid=".1.3.6.1.2.1.33.1.3.3.1.2"    instance="1" alias="inFreq" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.3.3.1.3"    instance="1" alias="inVolt" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.3.3.1.4"    instance="1" alias="inAmp" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.3.3.1.5"    instance="1" alias="inWatt" type="Gauge32" />
+			</group>
+
+			<group name = "upsmib.out.1" ifType="ignore">
+				<mibObj oid=".1.3.6.1.2.1.33.1.4.2"    instance="0" alias="outFreq"  type="Gauge32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.4.4.1.2"    instance="1" alias="outVolt" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.4.4.1.3"    instance="1" alias="outAmp" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.4.4.1.4"    instance="1" alias="outWatt" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.4.4.1.5"    instance="1" alias="outLoad" type="Gauge32" />
+			</group>
+
+
 			<group 	name = "cisco-router" ifType = "ignore">
 				<mibObj oid=".1.3.6.1.4.1.9.2.1.58" instance="0" alias="avgBusy5"    type="integer"/>
 				<mibObj oid=".1.3.6.1.4.1.9.2.1.8"  instance="0" alias="freeMem"     type="gauge"/>
@@ -60,6 +103,29 @@
                                 <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.65" instance="ifIndex" alias="locIfnovellOutOct" type="counter"/>
                                 <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.76" instance="ifIndex" alias="locIfbridgedInOct" type="counter"/>
                                 <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.77" instance="ifIndex" alias="locIfbridgedOutOct" type="counter"/>
+                        </group>
+
+                        <group name = "cisco-router-buffers" ifType = "ignore">
+                                <mibObj oid=".1.3.6.1.4.1.9.2.1.15" instance="0" alias="bufferSmTotal" type="counter"/>
+                                <mibObj oid=".1.3.6.1.4.1.9.2.1.16" instance="0" alias="bufferSmFree" type="counter"/>
+                                <mibObj oid=".1.3.6.1.4.1.9.2.1.18" instance="0" alias="bufferSmHit" type="counter"/>
+                                <mibObj oid=".1.3.6.1.4.1.9.2.1.19" instance="0" alias="bufferSmMiss" type="counter"/>
+                                <mibObj oid=".1.3.6.1.4.1.9.2.1.23" instance="0" alias="bufferMdTotal" type="counter"/>
+                                <mibObj oid=".1.3.6.1.4.1.9.2.1.24" instance="0" alias="bufferMdFree" type="counter"/>
+                                <mibObj oid=".1.3.6.1.4.1.9.2.1.26" instance="0" alias="bufferMdHit" type="counter"/>
+                                <mibObj oid=".1.3.6.1.4.1.9.2.1.27" instance="0" alias="bufferMdMiss" type="counter"/>
+                                <mibObj oid=".1.3.6.1.4.1.9.2.1.31" instance="0" alias="bufferBgTotal" type="counter"/>
+                                <mibObj oid=".1.3.6.1.4.1.9.2.1.32" instance="0" alias="bufferBgFree" type="counter"/>
+                                <mibObj oid=".1.3.6.1.4.1.9.2.1.34" instance="0" alias="bufferBgHit" type="counter"/>
+                                <mibObj oid=".1.3.6.1.4.1.9.2.1.35" instance="0" alias="bufferBgMiss" type="counter"/>
+                                <mibObj oid=".1.3.6.1.4.1.9.2.1.39" instance="0" alias="bufferLgTotal" type="counter"/>
+                                <mibObj oid=".1.3.6.1.4.1.9.2.1.40" instance="0" alias="bufferLgFree" type="counter"/>
+                                <mibObj oid=".1.3.6.1.4.1.9.2.1.42" instance="0" alias="bufferLgHit" type="counter"/>
+                                <mibObj oid=".1.3.6.1.4.1.9.2.1.43" instance="0" alias="bufferLgMiss" type="counter"/>
+                                <mibObj oid=".1.3.6.1.4.1.9.2.1.63" instance="0" alias="bufferHgTotal" type="counter"/>
+                                <mibObj oid=".1.3.6.1.4.1.9.2.1.64" instance="0" alias="bufferHgFree" type="counter"/>
+                                <mibObj oid=".1.3.6.1.4.1.9.2.1.66" instance="0" alias="bufferHgHit" type="counter"/>
+                                <mibObj oid=".1.3.6.1.4.1.9.2.1.67" instance="0" alias="bufferHgMiss" type="counter"/>
                         </group>
 			
 			<group 	name = "bay-router" ifType = "ignore">
@@ -79,6 +145,11 @@
 			<group 	name = "3com-router-sys" ifType = "ignore">
 				<mibObj oid=".1.3.6.1.4.1.43.2.13.3.1.1.5" instance="0" alias="a3sysMemSize" type="integer"/>
 				<mibObj oid=".1.3.6.1.4.1.43.2.13.8.4"     instance="0" alias="a3sysCpuUtil" type="integer"/>
+			</group>
+
+			<group name = "mge.max.stats.1" ifType="ignore">
+				<mibObj oid=".1.3.6.1.4.1.705.1.6.2.1.5"    instance="1" alias="inVmax" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.705.1.6.2.1.4"    instance="1" alias="inVmin" type="Gauge32" />
 			</group>
 
 			<group name = "netware-host" ifType = "ignore">
@@ -190,6 +261,18 @@
                                 <mibObj oid=".1.3.6.1.4.1.42.3.13.17" instance="0" alias="rsIfOutErrors"       type="counter"/>
                                 <mibObj oid=".1.3.6.1.4.1.42.3.13.18" instance="0" alias="rsIfCollisions"      type="counter"/>
                         </group>
+
+                        <group  name = "APC" ifType = "ignore">
+                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.2.2.1" instance="0" alias="apcpercent"    type="gauge32"/>
+                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.2.2.2" instance="0" alias="apctemp"    type="gauge32"/>
+                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.2.2.3" instance="0" alias="apctime"    type="TimeTicks"/>
+                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.4.2.1" instance="0" alias="apcoutvac"    type="gauge32"/>
+                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.4.2.3" instance="0" alias="apcload"    type="gauge32"/>
+                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.4.2.4" instance="0" alias="apccurrent"    type="gauge32"/>
+                                <mibObj oid=".1.3.6.1.4.1.318.1.1.1.3.2.1" instance="0" alias="apcinvac"    type="gauge32"/>
+                        </group>
+
+
 		</groups>
 
 		<systems>
@@ -200,32 +283,28 @@
 				</collect>
 			</systemDef>		
 			
-			<systemDef name = "Net-SNMP">
-				<sysoidMask>.1.3.6.1.4.1.2021.250.</sysoidMask>
-				<collect>
-					<includeGroup>mib2-interfaces-net-snmp</includeGroup>
-					<includeGroup>mib2-host-resources-storage</includeGroup> 
-					<includeGroup>mib2-host-resources-system</includeGroup> 
-					<includeGroup>mib2-host-resources-memory</includeGroup> 
-					<includeGroup>ucd-loadavg</includeGroup> 
-				</collect>
-			</systemDef>
-			
-			<systemDef name = "Windows NT/2000">
-				<sysoid>.1.3.6.1.4.1.311.1.1.3.1.1</sysoid>
+			<systemDef name="AlliedTelesyn switches">
+				<sysoidMask>.1.3.6.1.4.1.207.1.4.</sysoidMask>
 				<collect>
 					<includeGroup>mib2-interfaces</includeGroup>
-					<includeGroup>windows-host</includeGroup>
-					<includeGroup>checkpoint-host</includeGroup>
-					<includeGroup>domino-stats</includeGroup>
-					<includeGroup>compaq-insight-manager-stats</includeGroup>
+					<includeGroup>mib2-packets-classification</includeGroup>
+					<includeGroup>mib2-EtherLike</includeGroup>
+					<includeGroup>rmon-etherStats-size</includeGroup>
 				</collect>
 			</systemDef>
-			<systemDef name = "Citrix">
-				<sysoid>.1.3.6.1.4.1.311.1.1.3.1.2</sysoid>
+
+                        <systemDef name = "American Power Conversion">
+                                <sysoidMask>.1.3.6.1.4.1.318.</sysoidMask>
+                                <collect>
+                                        <includeGroup>APC</includeGroup>
+                                </collect>
+                        </systemDef>
+
+			<systemDef name = "Bay Routers">
+				<sysoidMask>.1.3.6.1.4.1.18.</sysoidMask>
 				<collect>
 					<includeGroup>mib2-interfaces</includeGroup>
-					<includeGroup>windows-host</includeGroup>
+					<includeGroup>bay-router</includeGroup>
 				</collect>
 			</systemDef>
 			
@@ -237,6 +316,61 @@
 				</collect>
 			</systemDef>
 				
+			<systemDef name = "Cisco Routers">
+				<sysoidMask>.1.3.6.1.4.1.9.1.</sysoidMask>
+				<collect>
+					<includeGroup>mib2-interfaces</includeGroup>
+					<includeGroup>cisco-router</includeGroup>
+					<includeGroup>cisco-router-protocols</includeGroup>
+					<includeGroup>cisco-router-buffers</includeGroup>
+				</collect>
+			</systemDef>
+			
+			<systemDef name = "Citrix">
+				<sysoid>.1.3.6.1.4.1.311.1.1.3.1.2</sysoid>
+				<collect>
+					<includeGroup>mib2-interfaces</includeGroup>
+					<includeGroup>windows-host</includeGroup>
+				</collect>
+			</systemDef>
+			
+			<systemDef name = "HpPrinters">
+			<sysoidMask>.1.3.6.1.4.1.11.2.3.9.1</sysoidMask>
+				<collect>
+					<includeGroup>mib2-interfaces</includeGroup>
+					<includeGroup>printer-usage</includeGroup>
+				</collect>
+			</systemDef>
+
+			<systemDef name = "Net-SNMP">
+				<sysoidMask>.1.3.6.1.4.1.2021.250.</sysoidMask>
+				<collect>
+					<includeGroup>mib2-interfaces-net-snmp</includeGroup>
+					<includeGroup>mib2-host-resources-storage</includeGroup> 
+					<includeGroup>mib2-host-resources-system</includeGroup> 
+					<includeGroup>mib2-host-resources-memory</includeGroup> 
+					<includeGroup>ucd-loadavg</includeGroup> 
+				</collect>
+			</systemDef>
+			
+			<systemDef name = "MGE-UPS.1">
+				<sysoidMask>.1.3.6.1.4.1.705.1.2</sysoidMask>
+				<collect>
+					<includeGroup>upsmib.in.1</includeGroup>
+					<includeGroup>upsmib.out.1</includeGroup>
+					<includeGroup>mge.max.stats.1</includeGroup>
+				</collect>
+			</systemDef>
+
+			<systemDef name = "MGE-UPS.2">
+				<sysoidMask>.1.3.6.1.4.1.705.1.3</sysoidMask>
+				<collect>
+					<includeGroup>upsmib.in.1</includeGroup>
+					<includeGroup>upsmib.out.1</includeGroup>
+					<includeGroup>mge.max.stats.1</includeGroup>
+				</collect>
+			</systemDef>
+
 			<systemDef name = "Netware">
 				<sysoidMask>.1.3.6.1.4.1.23.1.6.</sysoidMask>
 				<collect>
@@ -244,24 +378,15 @@
 					<includeGroup>netware-host</includeGroup>
 				</collect>
 			</systemDef>
-			
-			<systemDef name = "Cisco Routers">
-				<sysoidMask>.1.3.6.1.4.1.9.1.</sysoidMask>
-				<collect>
-					<includeGroup>mib2-interfaces</includeGroup>
-					<includeGroup>cisco-router</includeGroup>
-					<includeGroup>cisco-router-protocols</includeGroup>
-				</collect>
-			</systemDef>
-			
-			<systemDef name = "Bay Routers">
-				<sysoidMask>.1.3.6.1.4.1.18.</sysoidMask>
-				<collect>
-					<includeGroup>mib2-interfaces</includeGroup>
-					<includeGroup>bay-router</includeGroup>
-				</collect>
-			</systemDef>
-			
+
+			<systemDef name = "Sun Enterprise Agent v1.0.3">
+				<sysoidMask>.1.3.6.1.4.1.42.</sysoidMask>
+                                <collect>
+					<includeGroup>mib2-interfaces-sunw</includeGroup>
+					<includeGroup>sunHostPerf</includeGroup>
+                                </collect>
+                        </systemDef>
+
 			<systemDef name = "3Com Routers">
 				<sysoidMask>.1.3.6.1.4.1.43.</sysoidMask>
 				<collect>
@@ -270,13 +395,17 @@
 					<includeGroup>3com-router-perf</includeGroup>
 				</collect>
 			</systemDef>
-			<systemDef name = "Sun Enterprise Agent v1.0.3">
-				<sysoidMask>.1.3.6.1.4.1.42.</sysoidMask>
-                                <collect>
-					<includeGroup>mib2-interfaces-sunw</includeGroup>
-					<includeGroup>sunHostPerf</includeGroup>
-                                </collect>
-                        </systemDef>
+
+			<systemDef name = "Windows NT/2000">
+				<sysoid>.1.3.6.1.4.1.311.1.1.3.1.1</sysoid>
+				<collect>
+					<includeGroup>mib2-interfaces</includeGroup>
+					<includeGroup>windows-host</includeGroup>
+					<includeGroup>checkpoint-host</includeGroup>
+					<includeGroup>domino-stats</includeGroup>
+					<includeGroup>compaq-insight-manager-stats</includeGroup>
+				</collect>
+			</systemDef>
 
 		</systems>
 	</snmp-collection>
