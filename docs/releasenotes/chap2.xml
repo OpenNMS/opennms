@@ -1136,6 +1136,12 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
 
     <programlisting>        &lt;event-script language="beanshell"&gt;
 
+                import org.opennms.core.utils.ThreadCategory;
+                import org.apache.log4j.Category;
+
+                ThreadCategory.setPrefix("scriptd-event");
+                Category log = ThreadCategory.getInstance();
+
                 event = bsf.lookupBean("event");
 
                 if (event.snmp != null) {
@@ -1151,6 +1157,12 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
     OpenNMS events as an SNMP trap to another system:</para>
 
     <programlisting>&lt;event-script language="beanshell"&gt;
+
+        import org.opennms.core.utils.ThreadCategory;
+        import org.apache.log4j.Category;
+
+        ThreadCategory.setPrefix("scriptd-event");
+        Category log = ThreadCategory.getInstance();
 
         event = bsf.lookupBean("event");
 
