@@ -62,10 +62,7 @@ import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.users.Users;
 
 /**
- * @author david
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * @author david hustace <david@opennms.org>
  */
 public abstract class UserManager {
 

@@ -61,12 +61,9 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DestinationPathFactory;
-import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.NotifdConfigManager;
 import org.opennms.netmgt.config.NotificationCommandFactory;
 import org.opennms.netmgt.config.NotificationManager;
-import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.destinationPaths.Escalate;
 import org.opennms.netmgt.config.destinationPaths.Path;
 import org.opennms.netmgt.config.destinationPaths.Target;
@@ -140,7 +137,6 @@ final class BroadcastEventProcessor implements EventListener {
             /*
              * TODO: these need to be removed
              */
-            DestinationPathFactory.init();
             NotificationCommandFactory.init();
         } catch (Exception e) {
             ThreadCategory.getInstance(getClass()).error("Error getting group, user notification or command factory instances: " + e.getMessage(), e);
@@ -346,7 +342,7 @@ final class BroadcastEventProcessor implements EventListener {
                         // get the target and escalation information
                         Path path = null;
                         try {
-                            path = DestinationPathFactory.getInstance().getPath(notification.getDestinationPath());
+                            path = m_notifd.getDestinationPathManager().getPath(notification.getDestinationPath());
                             if (path == null) {
                                 log.warn("Unknown destination path " + notification.getDestinationPath() + ". Please check the <destinationPath> tag for the notification " + notification.getName() + " in the notification.xml file.");
                                 return;
@@ -436,9 +432,9 @@ final class BroadcastEventProcessor implements EventListener {
         int count = 0;
         String targetName = target.getName();
 
-        if (GroupFactory.getInstance().hasGroup(targetName)) {
-            count = GroupFactory.getInstance().getGroup(targetName).getUserCount();
-        } else if (UserFactory.getInstance().hasUser(targetName)) {
+        if (m_notifd.getGroupManager().hasGroup(targetName)) {
+            count = m_notifd.getGroupManager().getGroup(targetName).getUserCount();
+        } else if (m_notifd.getUserManager().hasUser(targetName)) {
             count = 1;
         } else if (targetName.indexOf("@") > -1) {
             count = 1;
@@ -555,8 +551,8 @@ final class BroadcastEventProcessor implements EventListener {
 
             long curSendTime = 0;
 
-            if (GroupFactory.getInstance().hasGroup((targetName))) {
-                Group group = GroupFactory.getInstance().getGroup(targetName);
+            if (m_notifd.getGroupManager().hasGroup((targetName))) {
+                Group group = m_notifd.getGroupManager().getGroup(targetName);
                 String[] users = group.getUser();
 
                 if (users != null && users.length > 0) {
@@ -573,7 +569,7 @@ final class BroadcastEventProcessor implements EventListener {
                 } else {
                     ThreadCategory.getInstance(getClass()).debug("Not sending notice, no users specified for group " + group.getName());
                 }
-            } else if (UserFactory.getInstance().hasUser(targetName)) {
+            } else if (m_notifd.getUserManager().hasUser(targetName)) {
                 NotificationTask newTask = makeUserTask(startTime + curSendTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings);
 
                 if (newTask != null) {
@@ -614,7 +610,7 @@ final class BroadcastEventProcessor implements EventListener {
         try {
             task = new NotificationTask(m_notifd, sendTime, parameters, siblings);
 
-            User user = UserFactory.getInstance().getUser(targetName);
+            User user = m_notifd.getUserManager().getUser(targetName);
 
             Command commands[] = new Command[commandList.length];
             for (int i = 0; i < commandList.length; i++) {

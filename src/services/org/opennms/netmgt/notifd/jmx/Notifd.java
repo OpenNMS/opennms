@@ -36,6 +36,7 @@ package org.opennms.netmgt.notifd.jmx;
 
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.NotificationFactory;
@@ -75,6 +76,12 @@ public class Notifd implements NotifdMBean {
         } catch (Exception e) {
             ThreadCategory.getInstance(getClass()).warn("start: Failed to init user factory.", e);
         }
+        
+        try {
+            NotificationFactory.init();
+        } catch (Exception e) {
+            ThreadCategory.getInstance(getClass()).warn("start: Failed to init destination path factory.", e);
+        }
 
         getNotifd().setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
         getNotifd().setEventManager(EventIpcManagerFactory.getInstance().getManager());
@@ -83,6 +90,7 @@ public class Notifd implements NotifdMBean {
         getNotifd().setNotificationManager(NotificationFactory.getInstance());
         getNotifd().setGroupManager(GroupFactory.getInstance());
         getNotifd().setUserManager(UserFactory.getInstance());
+        getNotifd().setDestinationPathManager(DestinationPathFactory.getInstance());
         getNotifd().init();
         
     }

@@ -46,11 +46,10 @@ import java.util.Map;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DbConnectionFactory;
-import org.opennms.netmgt.config.GroupFactory;
+import org.opennms.netmgt.config.DestinationPathManager;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.NotifdConfigManager;
 import org.opennms.netmgt.config.NotificationManager;
-import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.notifd.Queue;
 import org.opennms.netmgt.eventd.EventIpcManager;
@@ -109,6 +108,8 @@ public final class Notifd implements PausableFiber {
 
     private UserManager m_userManager;
 
+    private DestinationPathManager m_destinationPathManager;
+
     /**
      * Constructs a new Notifd service daemon.
      */
@@ -160,24 +161,32 @@ public final class Notifd implements PausableFiber {
         return m_configManager;
     }
     
-    public void setConfigManager(NotifdConfigManager configManager ) {
-        m_configManager = configManager;
+    public void setConfigManager(NotifdConfigManager manager ) {
+        m_configManager = manager;
     }
     
     public GroupManager getGroupManager() {
         return m_groupManager;
     }
     
-    public void setGroupManager(GroupManager groupManager) {
-        m_groupManager = new GroupFactory();
+    public void setGroupManager(GroupManager manager) {
+        m_groupManager = manager;
     }
     
     public UserManager getUserManager() {
         return m_userManager;
     }
     
-    public void setUserManager(UserManager userManager) {
-        m_userManager = new UserFactory();
+    public void setUserManager(UserManager manager) {
+        m_userManager = manager;
+    }
+    
+    public DestinationPathManager getDestinationPathManager() {
+        return m_destinationPathManager;
+    }
+    
+    public void setDestinationPathManager(DestinationPathManager manager) {
+        m_destinationPathManager = manager;
     }
 
     public NotificationManager getNotificationManager() {

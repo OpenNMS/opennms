@@ -268,8 +268,69 @@ public class NotifdTest extends TestCase {
             "</notifications>\n" + 
             "";
     
-    public static final String GROUP_MANAGER = "";
-    public static final String USER_MANAGER = "";
+    public static final String GROUP_MANAGER = "<?xml version=\"1.0\"?>\n" + 
+            "<groupinfo>\n" + 
+            "    <header>\n" + 
+            "        <rev>1.3</rev>\n" + 
+            "        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
+            "        <mstation>dhcp-219.internal.opennms.org</mstation>\n" + 
+            "    </header>\n" + 
+            "    <groups>\n" + 
+            "        <group>\n" + 
+            "            <name>Network/Systems</name>\n" + 
+            "            <comments>The network and systems group</comments>\n" + 
+            "        </group>\n" + 
+            "        <group>\n" + 
+            "            <name>Desktops</name>\n" + 
+            "            <comments>The desktops group</comments>\n" + 
+            "        </group>\n" + 
+            "        <group>\n" + 
+            "            <name>Security</name>\n" + 
+            "            <comments>The security group</comments>\n" + 
+            "        </group>\n" + 
+            "        <group>\n" + 
+            "            <name>Management</name>\n" + 
+            "            <comments>The management group</comments>\n" + 
+            "        </group>\n" + 
+            "        <group>\n" + 
+            "            <name>Reporting</name>\n" + 
+            "            <comments>The reporting group</comments>\n" + 
+            "        </group>\n" + 
+            "   <group>\n" + 
+            "       <name>Admin</name>\n" + 
+            "            <comments>The administrators</comments>\n" + 
+            "       <user>admin</user>\n" + 
+            "        </group>\n" + 
+            "    </groups>\n" + 
+            "</groupinfo>\n" + 
+            "";
+    public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" + 
+            "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\">\n" + 
+            "   <header>\n" + 
+            "       <rev>.9</rev>\n" + 
+            "           <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
+            "       <mstation>master.nmanage.com</mstation>\n" + 
+            "   </header>\n" + 
+            "   <users>\n" + 
+            "       <user>\n" + 
+            "           <user-id>admin</user-id>\n" + 
+            "           <full-name>Administrator</full-name>\n" + 
+            "           <user-comments>Default administrator, do not delete</user-comments>\n" + 
+            "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" + 
+            "                </user>\n" + 
+            "       <user>\n" + 
+            "           <user-id>tempuser</user-id>\n" + 
+            "           <full-name>Temporary User</full-name>\n" + 
+            "                        <user-comments></user-comments>\n" + 
+            "           <password>18126E7BD3F84B3F3E4DF094DEF5B7DE</password>\n" + 
+            "           <contact type=\"email\" info=\"temp.user@opennms.org\"/>\n" + 
+            "           <contact type=\"numericPage\" info=\"6789\" serviceProvider=\"ATT\"/>\n" + 
+            "           <contact type=\"textPage\" info=\"9876\" serviceProvider=\"Sprint\"/>\n" + 
+            "           <duty-schedule>MoTuWeThFrSaSu800-2300</duty-schedule>\n" + 
+            "       </user>\n" + 
+            "   </users>\n" + 
+            "</userinfo>\n" + 
+            "";
     
     private NotificationManager m_notificationManager;
 
