@@ -78,7 +78,7 @@ public class KSC_PerformanceReportFactory {
      * The array of values that may be used in the timespan declaration of a
      * graph
      */
-    public final String[] timespan_options = { "1_hour", "8_hour", "1_day", "7_day", "1_month", "6_month", "1_year", "Today", "Yesterday", "This Week", "Last Week", "This Month", "Last Month", "This Quarter", "Last Quarter", "This Year", "Last Year" };
+    public final String[] timespan_options = { "1_hour", "2_hour", "4_hour", "8_hour", "1_day", "7_day", "1_month", "6_month", "1_year", "Today", "Yesterday", "This Week", "Last Week", "This Month", "Last Month", "This Quarter", "Last Quarter", "This Year", "Last Year" };
 
     /**
      * This is a working report that may be used to hold a report & its index
@@ -340,6 +340,10 @@ public class KSC_PerformanceReportFactory {
     {
         if (interval.equals("1_hour")) {
             begin_time.add(Calendar.HOUR, -1);
+        } else if (interval.equals("2_hour")) {
+            begin_time.add(Calendar.HOUR, -2);
+        } else if (interval.equals("4_hour")) {
+            begin_time.add(Calendar.HOUR, -4);
         } else if (interval.equals("8_hour")) {
             begin_time.add(Calendar.HOUR, -8);
         } else if (interval.equals("1_day")) {
