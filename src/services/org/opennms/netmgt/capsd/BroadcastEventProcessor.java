@@ -1845,9 +1845,10 @@ final class BroadcastEventProcessor implements EventListener {
             stmt.setString(2, ipAddr);
             rs = stmt.executeQuery();
             
-            List services = new LinkedList();
+            Set services = new HashSet();
             while (rs.next()) {
                 String serviceName = rs.getString(1);
+		log.debug("found service "+serviceName+" for ipAddr "+ipAddr+" node "+nodeId);
                 services.add(serviceName);
             }
             
@@ -1856,7 +1857,7 @@ final class BroadcastEventProcessor implements EventListener {
             stmt.close();
             stmt = null;
             
-            final String DB_MARK_SERVICES_FOR_INTERFACE = "UPDATE ifservices SET ifservices.status = 'D' where ifservices.nodeID = ? and ifservices.ipAddr = ?";
+            final String DB_MARK_SERVICES_FOR_INTERFACE = "UPDATE ifservices SET status = 'D' where ifservices.nodeID = ? and ifservices.ipAddr = ?";
             stmt = dbConn.prepareStatement(DB_MARK_SERVICES_FOR_INTERFACE);
             stmt.setLong(1, nodeId);
             stmt.setString(2, ipAddr);
@@ -1865,6 +1866,7 @@ final class BroadcastEventProcessor implements EventListener {
             
             for (Iterator it = services.iterator(); it.hasNext();) {
                 String serviceName = (String) it.next();
+		log.debug("creating event for service "+serviceName+" for ipAddr "+ipAddr+" node "+nodeId);
                 eventsToSend.add(EventUtils.createServiceDeletedEvent(source, nodeId, ipAddr, serviceName, txNo));
             }
             
@@ -1930,7 +1932,7 @@ final class BroadcastEventProcessor implements EventListener {
 				if (stmt != null) stmt.close();
 			} catch (SQLException e) {
 			}
-		}
+}
 	}
 
     /**
@@ -1965,19 +1967,18 @@ final class BroadcastEventProcessor implements EventListener {
 			stmt.setLong(1, nodeId);
 			rs = stmt.executeQuery();
 
-			List ipAddrs = new LinkedList();
+			Set ipAddrs = new HashSet();
 			while (rs.next()) {
 				String ipAddr = rs.getString(1);
-                log.debug("found interface "+ipAddr+" of node "+nodeId);
+				log.debug("found interface "+ipAddr+" for node "+nodeId);
 				ipAddrs.add(ipAddr);
 			}
 
 			for (Iterator it = ipAddrs.iterator(); it.hasNext();) {
 				String ipAddr = (String) it.next();
-                log.debug("deleting services for interface "+ipAddr+" of node "+nodeId);
+				log.debug("deleting interface "+ipAddr+" for node "+nodeId);
 				eventsToSend.addAll(markAllServicesForInterfaceDeleted(dbConn,
 						source, nodeId, ipAddr, txNo));
-                log.debug("deleting interface "+ipAddr+" of node "+nodeId);
 				eventsToSend.addAll(markInterfaceDeleted(dbConn, source,
 						nodeId, ipAddr, txNo));
 			}
