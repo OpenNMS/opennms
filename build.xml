@@ -1253,7 +1253,15 @@ OpenNMS as part of the post-install.
      <sysproperty key="mock.logLevel" value="WARN" />
      <sysproperty key="mock.debug" value="false" />
   </junit>
-  <fail message="Tests failed! Check test reports." if="test.failed" />
+  <condition property="continue.build">
+    <or>
+     <isset property="ignoreFailedTests" />
+     <not> <isset property="test.failed" /></not>
+    </or>
+  </condition>
+  <fail unless="continue.build" >
+     Unit Tests Failed.  Check the Test Results in ${test.xml.dir}.  To build anyway run the build with -DignoreFailedTests=true
+  </fail>
 </target>
 
  <!-- JAR targets -->
