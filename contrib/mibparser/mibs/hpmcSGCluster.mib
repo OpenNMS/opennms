@@ -1,0 +1,1010 @@
+HP-MCSG DEFINITIONS ::= BEGIN
+
+       IMPORTS
+           OBJECT-TYPE, MODULE-IDENTITY, OBJECT-IDENTITY,
+           NOTIFICATION-TYPE, enterprises, IpAddress, Integer32
+               FROM SNMPv2-SMI
+	   DisplayString, TruthValue, DateAndTime, MacAddress,
+	 	       FROM SNMPv2-TC
+			hpmcClusterState, hpmcClusterName, 
+			hpmcClusterIndex, hpmcNodeName, hpmcNodeID
+               FROM HP-MCCLUSTER;
+
+       --
+       -- Object hierarchy under HP's enterprise object id
+       --
+       hp                 OBJECT IDENTIFIER ::= { enterprises 11 }
+       nm                 OBJECT IDENTIFIER ::= { hp 2 }
+       system             OBJECT IDENTIFIER ::= { nm 3 }
+       general            OBJECT IDENTIFIER ::= { system 1 }
+       hpmcCluster        OBJECT IDENTIFIER ::= { general 6 }
+       hpmcTypeSpecific   OBJECT IDENTIFIER ::= { hpmcCluster 3 }
+
+       hpmcSGCluster MODULE-IDENTITY
+            LAST-UPDATED "9710030000Z"
+            ORGANIZATION "Hewlett Packard Company,
+                          General Systems Division"
+            CONTACT-INFO
+                    "       Miha Wang
+                            Kevin Watkins 
+                            Carol Ann Krug 
+       
+                    Postal: Hewlett Packard Company
+                            19411 Pruneridge Ave, MS44UA
+                            Cupertino, CA 95014
+
+                    Tel:    +1 408 447 2339 (MW)
+                            +1 408 447 5795 (KW)
+                            +1 408 447 3477 (CK)
+                    Fax:    +1 408 447 1345 
+       
+                    E-mail: miha@cup.hp.com
+                            kevin@cup.hp.com
+                            carolann@cup.hp.com"
+
+            DESCRIPTION
+                    "This MIB module describes an HP private MIB
+                    for the management of ServiceGuard Clusters.
+                    The MIB is intended to support specific ServiceGuard
+				    cluster attributes." 
+            ::= { hpmcTypeSpecific 1 }
+
+       --
+       -- MacAddress
+       -- DateAndTime - defined here for benefit of SNMP Research code which
+       --  does not have this built in for 12.2.0.2 release.  When they are 
+       --  available they should be removed from the MIB definitions and
+       --  "DateAndTime" and "MacAddress" should be added back into the 
+       --  IMPORTS list.
+       --
+       --       DateAndTime specification: 
+       --       
+       --             field  octets  contents                  range
+       --             =====  ======  ========                  =====
+       --               1      1-2   year                      0..65536
+       --               2       3    month                     1..12
+       --               3       4    day                       1..31
+       --               4       5    hour                      0..23
+       --               5       6    minutes                   0..59
+       --               6       7    seconds                   0..60
+       --                            (use 60 for leap-second)
+       --               7       8    deci-seconds              0..9
+       --               8       9    direction from UTC        '+' / '-'
+       --               9      10    hours from UTC            0..11
+       --              10      11    minutes from UTC          0..59
+       --
+       --             For example, Tuesday May 26, 1992 at 1:30:15 PM
+       --             EDT would be displayed as:
+       --
+       --                          1992-5-26,13:30:15.0,-4:0
+       --
+       --             Note that if only local time is known, then
+       --             timezone information (fields 8-10) is not
+       --             present."
+       --
+       -- Uncomment next 2 lines for SNMPResearch compiles
+       -- DateAndTime ::= OCTET STRING (SIZE (8 | 11))
+       -- MacAddress  ::= OCTET STRING (SIZE (6))
+
+       --
+       -- ServiceGuard Specific Information
+       --
+       --   The following groups are specific to ServiceGuard, and will
+       --  not exist on nodes which do not have the ServiceGuard 
+       --  product installed.
+       --
+
+       -- 
+       -- The SG Cluster Information Group
+       -- 
+       --   This group contains cluster-wide information configured
+       --  for a particular instance of a service guard cluster to
+       --  which this node belongs.
+       -- 
+
+       hpmcSGTraps         OBJECT IDENTIFIER ::= { hpmcSGCluster 0 }
+       hpmcSGObjects       OBJECT IDENTIFIER ::= { hpmcSGCluster 1 }
+
+       hpmcSGGenInfo       OBJECT IDENTIFIER ::= { hpmcSGObjects 1 }
+
+       --
+       -- The SG Cluster Specific Information
+       --
+       -- Information related to SG configuration is maintained as
+       -- a set of scalar objects.  This is because a node can only
+       -- belong to at most a SINGLE ServiceGuard Cluster.
+       --
+
+       hpmcSGClusterIndex OBJECT-TYPE
+           SYNTAX      Integer32
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The index into the general cluster table which contains
+		    other information about the Service Guard cluster (such
+		    as membership and general state information)."
+           ::= { hpmcSGGenInfo 1 }
+       
+       hpmcSGClusterID OBJECT-TYPE
+           SYNTAX      Integer32
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The unique ID assigned to this cluster configuration
+		    by the MC/ServiceGuard configuration daemon."
+           ::= { hpmcSGGenInfo 2 }
+       
+       hpmcSGHeartbeatInterval OBJECT-TYPE
+           SYNTAX      Integer32
+           UNITS       "microseconds"
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The interval between the sending of heartbeat messages.
+		    The value is expressed in microseconds."
+           ::= { hpmcSGGenInfo 3 }
+       
+       hpmcSGNodeTimeout OBJECT-TYPE
+           SYNTAX      Integer32
+           UNITS       "microseconds"
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The maximum amount of time allowed between receipt of 
+		    heartbeats, before marking a node as down.  The value
+                    is expressed in microseconds."
+           ::= { hpmcSGGenInfo 4 }
+       
+       hpmcSGAutoStartTimeout OBJECT-TYPE
+           SYNTAX      Integer32
+           UNITS       "microseconds"
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The number of microseconds to wait for all nodes to join
+		    the cluster when nodes are booting up."
+           ::= { hpmcSGGenInfo 5 }
+       
+       hpmcSGNetworkPollingInterval OBJECT-TYPE
+           SYNTAX      Integer32
+           UNITS       "microseconds"
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The frequency at which LAN cards send a message to 
+		    another LAN card in order to verify its health.  The
+                    value is expressed in microseconds."
+           ::= { hpmcSGGenInfo 6 }
+       
+
+       --
+       -- The SG Lock Table
+       --
+       --  A Service Guard cluster will have one or more volumes used
+       -- as a locking mechanism.  This table describes the volumes
+       -- used for the SG cluster.
+       --
+       hpmcSGLockInfo OBJECT IDENTIFIER ::= { hpmcSGObjects 2 }
+
+       hpmcSGLockTable OBJECT-TYPE
+           SYNTAX      SEQUENCE OF HpmcSGLockEntry
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "A table describing the volume groups which are used
+		    as locks for the ServiceGuard cluster."
+           ::= { hpmcSGLockInfo 1 }
+       
+       hpmcSGLockEntry OBJECT-TYPE
+           SYNTAX      HpmcSGLockEntry
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "An entry providing information about a specific volume
+		    used for locking the ServiceGuard cluster."
+           INDEX      { hpmcSGVolumeIndex }
+           ::= { hpmcSGLockTable 1 }
+       
+       HpmcSGLockEntry ::=
+           SEQUENCE {
+	       hpmcSGVolumeIndex             Integer32,
+	       hpmcSGPhysicalVolume          DisplayString
+           }
+       
+       --
+       -- May have tie in with Host Resources MIB in future.
+       --
+       hpmcSGVolumeIndex OBJECT-TYPE
+           SYNTAX      Integer32
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "A value which uniquely identifies this volume."
+           ::= { hpmcSGLockEntry 1 }
+
+       hpmcSGPhysicalVolume OBJECT-TYPE
+           SYNTAX      DisplayString
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "Device path used to access the disk device used for 
+		    locking."
+           ::= { hpmcSGLockEntry 2 }
+       
+       
+       --
+       -- The SG Network Interface Table
+       --
+       --  ServiceGuard will utilize at least one network interface for
+       -- maintaining a heartbeat with other SG Cluster members.  Other
+       -- network interfaces may also be monitored by SG.
+       --
+       --  In addition SG is capable of failing over from one interface
+       -- card to another in the event a failure is detected with a card.
+       -- Candidate links for failover must be on the same "BridgedNet"
+       -- as the failing link.  A BridgedNet is the logical collection
+       -- of all interfaces which can communicate with each other at
+       -- the link layer (either by virtue of being directly connected
+       -- to the same media, or connected via a bridge).
+       --
+       hpmcSGIfInfo OBJECT IDENTIFIER ::= { hpmcSGObjects 3 }
+
+       hpmcSGNetTable OBJECT-TYPE
+           SYNTAX      SEQUENCE OF HpmcSGNetEntry
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "A table describing the network interfaces in which SG
+		    has an active interest."
+           ::= { hpmcSGIfInfo 1 }
+       
+       hpmcSGNetEntry OBJECT-TYPE
+           SYNTAX      HpmcSGNetEntry
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "An entry providing information about a specific network
+		    interface of interest to the ServiceGuard cluster."
+           INDEX      { hpmcSGNetIfIndex }
+           ::= { hpmcSGNetTable 1 }
+       
+       HpmcSGNetEntry ::=
+           SEQUENCE {
+	       hpmcSGNetIfIndex           Integer32,
+               hpmcSGNetIfName            DisplayString,
+	       hpmcSGNetBridgedNet        Integer32,
+	       hpmcSGNetIfFlags           Integer32,
+	       hpmcSGNetLastEvent         INTEGER,
+	       hpmcSGNetLastEventTime     DateAndTime,
+	       hpmcSGNetIfHwPath          DisplayString
+           }
+       
+       hpmcSGNetIfIndex OBJECT-TYPE
+           SYNTAX      Integer32
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The index value which uniquely identifies the network
+		    interface card to which this entry is applicable.  This
+		    index matches that in the MIB-II interface table and
+		    in particular, ifIndex."
+           ::= { hpmcSGNetEntry 1 }
+
+       hpmcSGNetIfName OBJECT-TYPE
+           SYNTAX      DisplayString
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "This is the concise name of the network interface, which
+                    is used in local system management operations.  It may
+                    differ from the MIB II object ifDescr, in that the 
+                    latter can contain additional information."
+           ::= { hpmcSGNetEntry 2 }
+
+       hpmcSGNetBridgedNet OBJECT-TYPE
+           SYNTAX      Integer32
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "A unique value which identifies the bridged network
+		    to which this interface card is physically attached.
+		    Interface cards sharing the same bridged network,
+		    which are not currently active can act in a backup
+		    capacity for others."
+           ::= { hpmcSGNetEntry 3 }
+
+       hpmcSGNetIfFlags OBJECT-TYPE
+           SYNTAX    Integer32
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "An integer whose value represents a bitstring.  These
+		    bit values indicate flag settings for this interface
+		    as well as status information.  Note that the MIB-II 
+		    interface group also contains status information, but
+		    this is relative to IP (if IP is not enabled on the card,
+		    it is marked as down).  The value is determined by 
+		    summing the following:
+			1 - Heartbeat
+			2 - Primary 
+			4 - Active
+			8 - HW Failure Detected
+			16 - Connectivity Failure Detected"
+           ::= { hpmcSGNetEntry 4 }
+       
+       hpmcSGNetLastEvent OBJECT-TYPE
+           SYNTAX      INTEGER{
+                         none(0),
+                         down(1),
+                         up(2)
+                       }
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "An event code which indicates the last event which
+		    resulted in reaching the current status of the interface."
+           ::= { hpmcSGNetEntry 5 }
+       
+       hpmcSGNetLastEventTime OBJECT-TYPE
+           SYNTAX      DateAndTime
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "Indicates at what time the event described by
+		    hpmcSGNetLastEvent occured.  A value of 0 indicates
+                    that the time is unknown."
+           ::= { hpmcSGNetEntry 6 }
+       
+       --
+       -- Note:  this information is contained in the Host Resources MIB,
+       -- and could be derived by matching the ifIndex with a Device Table
+       -- entry in that MIB.  Possibly eliminate this entry in the event
+       -- that HR is available...
+       --
+       hpmcSGNetIfHwPath OBJECT-TYPE
+           SYNTAX      DisplayString
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "Describes the HW location of the interface card.  This
+		    information can be useful in locating the physical 
+		    position of a faulty card."
+           ::= { hpmcSGNetEntry 7 }
+       
+
+
+       --
+       -- The Service Guard Package Group
+       --
+       --  Location of information about the packages run by ServiceGuard.
+       --
+
+       hpmcSGPkgInfo       OBJECT IDENTIFIER ::= { hpmcSGObjects 4 }
+
+       --
+       -- The SG Package Table
+       --
+       --  A Service Guard cluster will typically be running with
+       -- one or more "packages".  These represent collections of services
+       -- which will receive high availability support from ServiceGuard.
+       --
+       --  The information in this table is available to all members of
+       -- the SG Cluster, not just the node where the package is currently
+       -- active.
+       --
+       hpmcSGPkgTable OBJECT-TYPE
+           SYNTAX      SEQUENCE OF HpmcSGPkgEntry
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "A table describing the packages which are currently
+		    configured for the ServiceGuard cluster."
+           ::= { hpmcSGPkgInfo 1 }
+       
+       hpmcSGPkgEntry OBJECT-TYPE
+           SYNTAX      HpmcSGPkgEntry
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "An entry providing information about a specific package."
+           INDEX      { hpmcSGPkgIndex }
+           ::= { hpmcSGPkgTable 1 }
+       
+       HpmcSGPkgEntry ::=
+           SEQUENCE {
+	       hpmcSGPkgIndex                Integer32,
+	       hpmcSGPkgName                 DisplayString,
+	       hpmcSGPkgDescr                DisplayString,
+	       hpmcSGPkgStatus               Integer32,
+               hpmcSGPkgCurrNode             DisplayString,
+	       hpmcSGPkgLastEvent            INTEGER,
+	       hpmcSGPkgLastEventTime        DateAndTime,
+	       hpmcSGPkgRunScriptPath        DisplayString,
+	       hpmcSGPkgHaltScriptPath       DisplayString,
+	       hpmcSGPkgRunScriptTimeout     Integer32,
+	       hpmcSGPkgHaltScriptTimeout    Integer32
+           }
+       
+       hpmcSGPkgIndex OBJECT-TYPE
+           SYNTAX      Integer32
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "An index value which uniquely identifies the package.
+		    These indices should be consistent across nodes in
+		    the same SG Cluster.  More specifically, these indices
+                    should match the cluster-wide pkgid assigned by SG."
+           ::= { hpmcSGPkgEntry 1 }
+       
+       hpmcSGPkgName OBJECT-TYPE
+           SYNTAX      DisplayString
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The name configured for this package."
+           ::= { hpmcSGPkgEntry 2 }
+       
+       hpmcSGPkgDescr OBJECT-TYPE
+           SYNTAX      DisplayString
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "Explanatory text provided by the user to further 
+		    clarify the function of this package."
+           ::= { hpmcSGPkgEntry 3 }
+       
+       hpmcSGPkgStatus OBJECT-TYPE
+           SYNTAX      Integer32
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "This integer value is the encoding of a set of bits
+		    which include configured flags for the package in
+		    addition to dynamic status information.  The value is
+		    determined by summing those flags from the list below
+		    which are applicable:
+
+                       1   - Up
+                       2   - Moving 
+                       4   - Valid package status 
+                       8   - PackageSwitchingEnabled
+                       16  - NetSwitchingEnabled
+                       32  - NodeFailFastEnabled
+                       64  - SummaryLocalSwitchStatus
+                      128  - Offline "
+
+           ::= { hpmcSGPkgEntry 4 }
+
+       hpmcSGPkgCurrNode OBJECT-TYPE
+           SYNTAX      DisplayString
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "Name of the node where the package is executing.  This
+                    string will be empty if the package is currently unowned."
+           ::= { hpmcSGPkgEntry 5 }
+       
+       hpmcSGPkgLastEvent OBJECT-TYPE
+           SYNTAX      INTEGER{
+                         none(0),
+                         down(1),
+                         up(2),
+                         start(3),
+                         halt(4),
+                         globalswitchenable(5),
+                         localswitchenable(6)
+                       }
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "An event code which indicates the last event which
+		    resulted in reacing the status described by 
+		    hpmcSGPkgStatus."
+           ::= { hpmcSGPkgEntry 6 }
+       
+       hpmcSGPkgLastEventTime OBJECT-TYPE
+           SYNTAX      DateAndTime
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "Indicates at what time the package entered the status
+		    described by hpmcSGPkgStatus.  A value of 0 indicates
+                    that the time is unknown."
+           ::= { hpmcSGPkgEntry 7 }
+       
+       hpmcSGPkgRunScriptPath OBJECT-TYPE
+           SYNTAX      DisplayString
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The name of the file which is invoked in order to 
+		    launch the package."
+           ::= { hpmcSGPkgEntry 8 }
+       
+       hpmcSGPkgHaltScriptPath OBJECT-TYPE
+           SYNTAX      DisplayString
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The name of the file which is invoked in order to 
+		    shutdown the package.  This is often the same as
+		    the Run Script."
+           ::= { hpmcSGPkgEntry 9 }
+       
+       hpmcSGPkgRunScriptTimeout OBJECT-TYPE
+           SYNTAX      Integer32
+           UNITS       "seconds"
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The maximum amount of time allowed for the Run Script
+		    to complete.  The value is expressed in seconds."
+           ::= { hpmcSGPkgEntry 10 }
+       
+       hpmcSGPkgHaltScriptTimeout OBJECT-TYPE
+           SYNTAX      Integer32
+           UNITS       "seconds"
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The maximum amount of time allowed for the Run Script
+		    to complete.  The value is expressed in seconds."
+           ::= { hpmcSGPkgEntry 11 }
+       
+
+       --
+       -- The SG Package Dependent Subnet Table
+       --
+       --  A Service Guard package can specify subnets upon which it 
+       -- has a dependency.  In the event of the failure of this subnet
+       -- the package will be migrated to another node.
+       --
+       hpmcSGPkgSubnetTable OBJECT-TYPE
+           SYNTAX      SEQUENCE OF HpmcSGPkgSubnetEntry
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "A table describing the subnets upon which this package 
+		    has a dependency."
+           ::= { hpmcSGPkgInfo 2 }
+       
+       hpmcSGPkgSubnetEntry OBJECT-TYPE
+           SYNTAX      HpmcSGPkgSubnetEntry
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "An entry describes a single subnet dependency."
+           INDEX      { hpmcSGPkgIndex, hpmcSGPkgSubnet }
+           ::= { hpmcSGPkgSubnetTable 1 }
+       
+       HpmcSGPkgSubnetEntry ::=
+           SEQUENCE {
+	       hpmcSGPkgSubnet                IpAddress,
+               hpmcSGPkgSubnetStatus          INTEGER,
+	       hpmcSGPkgOverrideMACAddr       OCTET STRING
+           }
+       
+       hpmcSGPkgSubnet OBJECT-TYPE
+           SYNTAX      IpAddress
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The Subnetwork Id on which this package has a dependency.
+		    Service Guard will migrate the package to another host
+		    in the event this subnetwork becomes unavailable."
+           ::= { hpmcSGPkgSubnetEntry 1 }
+
+       hpmcSGPkgSubnetStatus OBJECT-TYPE
+           SYNTAX    INTEGER{
+                       unknown(0),
+                       down(1),
+                       up(2)
+                     }
+           MAX-ACCESS    read-only
+           STATUS    current
+           DESCRIPTION
+                   "The current state of the service."
+           ::= { hpmcSGPkgSubnetEntry 2 }
+
+       hpmcSGPkgOverrideMACAddr OBJECT-TYPE
+           SYNTAX      MacAddress
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "A MAC address which will be used to override the 
+		    default MAC address on the interface card associated 
+		    with the given Subnet.  In particular this will allow
+		    DLPI applications to continue servicing clients on 
+		    the same address after failover.  In the event
+		    that no override MAC address is used, this object
+		    shall be assigned the value 0x000000000000."
+           ::= { hpmcSGPkgSubnetEntry 3 }
+
+
+       --
+       -- The SG Package IP Address Table
+       --
+       --  A Service Guard package can define zero or more IP addresses
+       -- which are "owned" by the package.  Normally, when a package
+       -- is migrated to another node, these addresses are migrated 
+       -- along with it.  Sometimes the addresses may persist on the
+       -- node after a failover.
+       --
+       --  The information about Package IP addresses is currently only
+       -- available to the node which has that package active.  Hence
+       -- this is a sparse table (i.e. rows only exist in this table
+       -- for packages active on this node).
+       --
+       hpmcSGPkgAddrTable OBJECT-TYPE
+           SYNTAX      SEQUENCE OF HpmcSGPkgAddrEntry
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "A table describing the movable IP addresses which are 
+                    usually associated with active packages on this node."
+           ::= { hpmcSGPkgInfo 3 }
+       
+       hpmcSGPkgAddrEntry OBJECT-TYPE
+           SYNTAX      HpmcSGPkgAddrEntry
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "An entry describes a single address associated with a
+		    package."
+           INDEX      { hpmcSGPkgAddr }
+           ::= { hpmcSGPkgAddrTable 1 }
+       
+       HpmcSGPkgAddrEntry ::=
+           SEQUENCE {
+	       hpmcSGPkgAddr                 IpAddress,
+               hpmcSGPkgID                   Integer32
+           }
+       
+       hpmcSGPkgAddr OBJECT-TYPE
+           SYNTAX      IpAddress
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "A migratable address which is currently active for
+		    this package."
+           ::= { hpmcSGPkgAddrEntry 1 }
+       
+       hpmcSGPkgID OBJECT-TYPE
+           SYNTAX      Integer32
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The hpmcSGPkgIndex value for the owning package.  
+		    A value of 0 indicates no owning package."
+           ::= { hpmcSGPkgAddrEntry 2 }
+       
+
+       --
+       -- The SG Package Service Table
+       --
+       --  A Service Guard package will consist of one or more services
+       -- which do the actual work associated with the package.  Service
+       -- Guard will parent and monitor the service process in addition
+       -- to other dependencies the package and cluster overall require.
+       --
+       --  The information about the Package services is only available 
+       -- to the node which has that package active.  Certainly information
+       -- such as PIDs are meaningless unless the package is active.  Hence
+       -- this is a sparse table.
+       --
+       hpmcSGPkgSvcTable OBJECT-TYPE
+           SYNTAX      SEQUENCE OF HpmcSGPkgSvcEntry
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "A table describing the services or applications which
+                    are associated with active packages on this node."
+           ::= { hpmcSGPkgInfo 4 }
+       
+       hpmcSGPkgSvcEntry OBJECT-TYPE
+           SYNTAX      HpmcSGPkgSvcEntry
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "An entry that describes a single service associated with a
+		    package."
+           INDEX      { hpmcSGPkgIndex, hpmcSGPkgSvcIndex }
+           ::= { hpmcSGPkgSvcTable 1 }
+       
+       HpmcSGPkgSvcEntry ::=
+           SEQUENCE {
+	       hpmcSGPkgSvcIndex             Integer32,
+	       hpmcSGPkgSvcName              DisplayString,
+	       hpmcSGPkgSvcStatus            INTEGER,
+	       hpmcSGPkgSvcFlags             Integer32,
+	       hpmcSGPkgSvcHaltTimeout       Integer32,
+	       hpmcSGPkgSvcMaxRestarts       Integer32,
+	       hpmcSGPkgSvcRestartCount      Integer32
+	       }
+       
+       hpmcSGPkgSvcIndex OBJECT-TYPE
+           SYNTAX      Integer32
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "A unique value which identifies this service in the
+		    context of the package."
+           ::= { hpmcSGPkgSvcEntry 1 }
+       
+       hpmcSGPkgSvcName OBJECT-TYPE
+           SYNTAX      DisplayString
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The name of this service."
+           ::= { hpmcSGPkgSvcEntry 2 }
+       
+       hpmcSGPkgSvcStatus OBJECT-TYPE
+           SYNTAX    INTEGER{
+                       unknown(0),
+                       down(1),
+                       up(2)
+                     }
+           MAX-ACCESS    read-only
+           STATUS    current
+           DESCRIPTION
+                   "The current state of the service."
+           ::= { hpmcSGPkgSvcEntry 3 }
+       
+       hpmcSGPkgSvcFlags OBJECT-TYPE
+           SYNTAX      Integer32
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "An integer whose value represents a bitstring.  These
+		    bit values indicate flag settings for this service.
+		    Currently there is only one flag available.  The 
+		    value is determined by summing the following:
+			8 - FailFastSwitch"
+           ::= { hpmcSGPkgSvcEntry 4 }
+       
+       hpmcSGPkgSvcHaltTimeout OBJECT-TYPE
+           SYNTAX      Integer32
+	   UNITS       "seconds"
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The maximum amount of time ServiceGuard will wait
+		    for the service to terminate during package shutdown.
+                    The value is expressed in seconds."
+           ::= { hpmcSGPkgSvcEntry 5 }
+
+
+       hpmcSGPkgSvcMaxRestarts OBJECT-TYPE
+           SYNTAX      Integer32
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The maximum number of times this Service may be restarted.
+		    A value of 0 indicates that the service may not be
+		    restarted, a value of -1 indicates no limit."
+           ::= { hpmcSGPkgSvcEntry 6 }
+       
+       hpmcSGPkgSvcRestartCount OBJECT-TYPE
+           SYNTAX      Integer32
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "The current number of times this service has been 
+		    restarted." 
+           ::= { hpmcSGPkgSvcEntry 7 }
+       
+
+       --
+       -- The SG Package Dependent Node Table
+       --
+       --  A Service Guard package can specify an ordered list of nodes
+       --  that it will run on.  This table represents that list for a 
+       --  given package.
+       --
+       hpmcSGPkgNodeTable OBJECT-TYPE
+           SYNTAX      SEQUENCE OF HpmcSGPkgNodeEntry
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "A table describing the ordered list of nodes where
+                    this package can run."
+           ::= { hpmcSGPkgInfo 5 }
+
+       hpmcSGPkgNodeEntry OBJECT-TYPE
+           SYNTAX      HpmcSGPkgNodeEntry
+           MAX-ACCESS  not-accessible
+           STATUS      current
+           DESCRIPTION
+                   "An entry describes a single candidate node."
+           INDEX      { hpmcSGPkgIndex, hpmcSGPkgNodeRank }
+           ::= { hpmcSGPkgNodeTable 1 }
+
+       HpmcSGPkgNodeEntry ::=
+           SEQUENCE {
+               hpmcSGPkgNodeRank             Integer32,
+               hpmcSGPkgNode                 Integer32,
+               hpmcSGPkgLocalSwitchEnable    INTEGER
+           }
+
+       hpmcSGPkgNodeRank OBJECT-TYPE
+           SYNTAX      Integer32
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "Order in which the node indicated by hpmcSGPkgNode will
+                    be chosen for this package.  Lowest number is chosen
+                    first."
+           ::= { hpmcSGPkgNodeEntry 1 }
+
+       hpmcSGPkgNode OBJECT-TYPE
+           SYNTAX      Integer32
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "Index of a node (within the hpmcNodeTable) that could run
+                    this package."
+           ::= { hpmcSGPkgNodeEntry 2 }
+
+       hpmcSGPkgLocalSwitchEnable OBJECT-TYPE
+           SYNTAX      INTEGER{
+                         disabled(0),
+                         enabled(1)
+                       }
+           MAX-ACCESS  read-only
+           STATUS      current
+           DESCRIPTION
+                   "A binary value that represents the status of the LOCAL 
+                    switch capability for the respective package on the
+                    particular node."
+           ::= { hpmcSGPkgNodeEntry 3 }
+
+
+       --
+       -- Traps
+       --
+
+       hpmcSGSubagentUp NOTIFICATION-TYPE
+	   OBJECTS     { hpmcClusterState, hpmcClusterName }
+           STATUS      current
+           DESCRIPTION
+                   "Sent by the subagent when it starts."
+           ::= { hpmcSGTraps 1 }
+
+       hpmcSGReconfig NOTIFICATION-TYPE
+	   OBJECTS     { hpmcClusterIndex, hpmcClusterName }
+           STATUS      current
+           DESCRIPTION
+                   "Sent by the cluster coordinator after the cluster has
+		    reformed."
+           ::= { hpmcSGTraps 2 }
+
+       hpmcSGClusterUp NOTIFICATION-TYPE
+	   OBJECTS     { hpmcClusterIndex, hpmcClusterName }
+           STATUS      current
+           DESCRIPTION
+                   "Sent by any node in the cluster when clustering is
+		    first initiated."
+           ::= { hpmcSGTraps 3 }
+
+       hpmcSGClusterDown NOTIFICATION-TYPE
+	   OBJECTS     { hpmcClusterIndex, hpmcClusterName }
+           STATUS      current
+           DESCRIPTION
+                   "Sent by any node in the cluster when clustering is
+		    being halted."
+           ::= { hpmcSGTraps 4 }
+
+       hpmcSGConfigChange NOTIFICATION-TYPE
+	   OBJECTS     { hpmcClusterIndex, hpmcClusterName }
+           STATUS      current
+           DESCRIPTION
+                   "Sent when the cluster configuration is modified."
+           ::= { hpmcSGTraps 5 }
+
+       hpmcSGPkgStart NOTIFICATION-TYPE
+	   OBJECTS     { hpmcSGPkgIndex, hpmcNodeID, hpmcSGPkgName, hpmcNodeName, hpmcSGPkgStatus }
+           STATUS      current
+           DESCRIPTION
+                   "Sent from the coordinator of the cluster when a package 
+                    run script has been started on a cluster node."
+           ::= { hpmcSGTraps 6 }
+
+       hpmcSGPkgUp NOTIFICATION-TYPE
+	   OBJECTS     { hpmcSGPkgIndex, hpmcNodeID, hpmcSGPkgName, hpmcNodeName, hpmcSGPkgStatus }
+           STATUS      current
+           DESCRIPTION
+                   "Sent from the coordinator of the cluster when a package 
+                    run script has completed successfully on a cluster node."
+           ::= { hpmcSGTraps 7 }
+
+       hpmcSGPkgHalt NOTIFICATION-TYPE
+	   OBJECTS     { hpmcSGPkgIndex, hpmcNodeID, hpmcSGPkgName, hpmcNodeName, hpmcSGPkgStatus }
+           STATUS      current
+           DESCRIPTION
+                   "Sent from the coordinator of the cluster when a package 
+                    halt script has been started on a cluster node."
+           ::= { hpmcSGTraps 8 }
+
+       hpmcSGPkgDown NOTIFICATION-TYPE
+	   OBJECTS     { hpmcSGPkgIndex, hpmcSGPkgName, hpmcSGPkgStatus, hpmcSGPkgCurrNode}
+           STATUS      current
+           DESCRIPTION
+                   "Sent from the coordinator of the cluster when a package
+                    halt script has completed on a cluster node."
+           ::= { hpmcSGTraps 9 }
+
+       hpmcSGSvcDown NOTIFICATION-TYPE
+	   OBJECTS     { hpmcSGPkgIndex, hpmcSGPkgSvcIndex, hpmcSGPkgName, hpmcSGPkgSvcName }
+           STATUS      current
+           DESCRIPTION
+                   "Sent when a previously active service has been brought
+		    down on a cluster node."
+           ::= { hpmcSGTraps 10 }
+
+       hpmcSGPkgFlags NOTIFICATION-TYPE
+	   OBJECTS     { hpmcSGPkgIndex, hpmcSGPkgStatus, hpmcSGPkgName }
+           STATUS      current
+           DESCRIPTION
+                   "Sent from the coordinator of the cluster when a package's 
+                    global or local switch enable has been toggled."
+           ::= { hpmcSGTraps 11 }
+
+       hpmcSGIPAddrUp NOTIFICATION-TYPE
+	   OBJECTS     { hpmcSGPkgAddr }
+	   STATUS      current
+           DESCRIPTION
+                   "Sent when ServiceGuard adds a relocatable IP address."
+           ::= { hpmcSGTraps 12 }
+
+       hpmcSGIPAddrDown NOTIFICATION-TYPE
+	   OBJECTS     { hpmcSGPkgAddr }
+	   STATUS      current
+           DESCRIPTION
+                   "Sent when ServiceGuard removes a relocatable IP address."
+           ::= { hpmcSGTraps 13 }
+
+       hpmcSGLocalSwitch NOTIFICATION-TYPE
+	   OBJECTS     { hpmcSGNetIfName, hpmcSGNetIfName }
+	   STATUS      current
+           DESCRIPTION
+                   "Sent when ServiceGuard suucessfuly completes a local
+                    switch from one network interface to another."
+           ::= { hpmcSGTraps 14 }
+
+       hpmcSGSubnetUp NOTIFICATION-TYPE
+	   OBJECTS     { hpmcSGPkgSubnet }
+	   STATUS      current
+           DESCRIPTION
+                   "Sent when ServiceGuard detects that a previously disabled
+                    subnet is now operational."
+           ::= { hpmcSGTraps 15 }
+
+       hpmcSGSubnetDown NOTIFICATION-TYPE
+	   OBJECTS     { hpmcSGPkgSubnet }
+	   STATUS      current
+           DESCRIPTION
+                   "Sent when ServiceGuard detects that a previously 
+                    operational subnet is now down."
+           ::= { hpmcSGTraps 16 }
+
+       hpmcSGNodeUp NOTIFICATION-TYPE
+           STATUS      current
+           DESCRIPTION
+                   "Sent when a cluster node's status changes to 5(running)."
+           ::= { hpmcSGTraps 17 }
+
+       hpmcSGNodeHalted NOTIFICATION-TYPE
+           STATUS      current
+           DESCRIPTION
+                   "Sent when a cluster node is halted by a system 
+                    administrator."
+           ::= { hpmcSGTraps 18 }
+
+       hpmcSGNodeFailed NOTIFICATION-TYPE
+           STATUS      current
+           DESCRIPTION
+                   "Sent when a cluster node fails (leaves the cluster)."
+           ::= { hpmcSGTraps 19 }
+
+END

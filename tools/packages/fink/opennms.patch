@@ -1,0 +1,11 @@
+--- opennms-1.1.4-1/source/etc/rrd-configuration.properties	Mon Oct 25 14:24:54 2004
++++ opennms-1.1.4-1-new/source/etc/rrd-configuration.properties	Tue Oct 26 16:46:50 2004
+@@ -13,7 +13,7 @@
+ # to Tomcat start up so that the JRobin code can properly generate the graphs.
+ #
+ # The default setting is true (use the JNI code)
+-#org.opennms.rrd.usejni=true
++org.opennms.rrd.usejni=false
+ 
+ #
+ # This property defines whether or not to use the write queuing system.  

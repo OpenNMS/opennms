@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/capsd">
+
+	<element name="snmp-config">
+		<complexType>
+			<sequence>
+				<!-- Maps IP addresses to specific SNMP parms (retries, timeouts...) -->
+				<element ref="definition" minOccurs="0" maxOccurs="unbounded"/>
+			</sequence>
+			<!-- Default number of retries -->
+			<attribute name="retry" type="int" use="optional"/>
+			<!-- Default timeout (in milliseconds) -->
+			<attribute name="timeout" type="int" use="optional"/>
+			<!-- Default read community string -->
+			<attribute name="read-community" type="string" use="optional"/>
+			<!-- Default write community string -->
+			<attribute name="write-community" type="string" use="optional"/>
+		</complexType>
+	</element>
+
+	<!-- Provides a mechanism for associating one or more specific IP addresses
+		 and/or IP address ranges with a set of SNMP parms which will be used in 
+		 place of the default values during SNMP data collection.
+	-->
+	<element name="definition">
+		<complexType>
+			<sequence>
+				<!-- IP address range to which this definition applies. -->
+				<element ref="range" minOccurs="0" maxOccurs="unbounded"/>
+				<!-- Specific IP address to which this definition applies. -->
+				<element name="specific" type="string" minOccurs="0" maxOccurs="unbounded"/>
+			</sequence>
+			<!-- Number of retries (overrides the default value). -->
+			<attribute name="retry" type="int" use="optional"/>
+			<!-- Timeout in milliseconds (overrides the default value). -->
+			<attribute name="timeout" type="int" use="optional"/>
+			<!-- Read community string (overrides default value). -->
+			<attribute name="read-community" type="string" use="optional"/>
+			<!-- Write community string (overrides default value). -->
+			<attribute name="write-community" type="string" use="optional"/>
+			<!-- If set, overrides UDP port 161 as the port where SNMP 
+				 GET/GETNEXT/GETBULK requests are sent.
+			-->
+			<attribute name="port" type="int" use="optional"/>
+			<!-- If set, forces SNMP data collection to the specified version. -->
+			<attribute name="version" type="string" use="optional">
+				<simpleType>
+					<restriction base="string">
+						<pattern value="(v1|v2c)"/>
+					</restriction>
+				</simpleType>
+			</attribute>
+		</complexType>
+	</element>
+
+	<!-- IP Address Range -->
+	<element name="range">
+		<complexType>
+			<!-- Starting IP address of the range. -->
+			<attribute name="begin" type="string" use="required"/>
+			<!-- Ending IP address of the range. -->
+			<attribute name="end" type="string" use="required"/>
+		</complexType>
+	</element>
+
+</schema>

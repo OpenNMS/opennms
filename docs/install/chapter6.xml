@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter>
+  <title>Troubleshooting an OpenNMS Installation</title>
+
+  <section>
+    <title>Common Installation Issues</title>
+
+    <para>The following section contains advice for overcoming common
+    installation issues.</para>
+
+    <section>
+      <title>Dependency Problems</title>
+
+      <para>To assist with code management, the easiest way to install OpenNMS
+      is via packages. Every effort has been made to insure that the packages
+      OpenNMS depends on are required before the OpenNMS package can be
+      installed. You should be able to find those packages on the distribution
+      CDs that came with your system. For some of the more obscure packages,
+      like <filename>metamail</filename>, you can visit the OpenNMS <ulink
+      url="ftp://ftp.opennms.org">FTP</ulink> site and check in the
+      <filename>/pub/dependencies</filename> directory. In addition, sites
+      like <ulink url="http://distro.ibiblio.org/">Ibiblio</ulink> and <ulink
+      url="http://www.freshrpms.net">FreshRPMs</ulink> are also good
+      sources.</para>
+    </section>
+
+    <section>
+      <title>The OpenNMS Application Won't Start</title>
+
+      <para>If the OpenNMS is installed, and the packages were not forced in
+      using options like "--nodeps", the application should run just fine. If
+      not, OpenNMS has a robust logging facility. Change to the logs directory
+      (usually <filename>/var/log/opennms</filename>) and search the logs,
+      using <filename>grep</filename> or your tool of choice, for words like
+      FATAL and ERROR (the two highest log severities). Those events should
+      give you clues as to why OpenNMS is not working.</para>
+    </section>
+
+    <section>
+      <title>The OpenNMS Web Application Will Not Start, or You Can't Log
+      In</title>
+
+      <para>There are actually two main applications in the OpenNMS product:
+      the application itself and the web-based User Interface (webUI). The
+      webUI is implemented via Tomcat, and it is possible for Tomcat to be
+      running and the OpenNMS application to be stopped and vice versa.</para>
+
+      <para>If you can't get to the OpenNMS interface
+      (<filename>http://[opennms server]:8080/opennms</filename> or
+      <filename>http://[opennms server]:8180/opennms</filename> on Debian -
+      where [opennms server] is the name of the OpenNMS machine) make sure
+      that Tomcat is running, and if necessary restart it. You should also be
+      able to access the main Tomcat page by leaving off the
+      "<filename>/opennms</filename>".</para>
+
+      <para>Check to make sure that the OpenNMS web application is installed
+      correctly. In Tomcat's <varname>CATALINA_HOME</varname> (usually
+      <filename>/var/tomcat4</filename>), you should see a sub-directory called
+      <filename>webapps</filename>.  Starting in OpenNMS 1.1.4, we no longer
+      place the OpenNMS webapp directly into this <filename>webapps</filename>
+      directory.  Inside of <filename>webapps</filename>, you should only see
+      a file (or symbolic link) called <filename>opennms.xml</filename>.  If
+      you see a directory (or symbolic link) called
+      <filename>opennms</filename>, delete it (this is not done automatically
+      by the installer when upgrading).</para>
+
+      <para>Also in <varname>CATALINA_HOME</varname> there is a sub-directory
+      called conf and in that directory is a file called
+      <filename>server.xml</filename>.  Before OpenNMS 1.1.4, we needed to
+      add a "context" to that file, however this is no longer needed in
+      OpenNMS 1.1.4.  In fact, if you are upgrading from 1.1.3 or earlier,
+      you must manually remove this "context" from
+      <filename>server.xml</filename> (it is not done automatically when
+      upgrading).  Here is what it looks like looks like:</para>
+
+      <programlisting>&lt;!-- Example Server Configuration File --&gt;
+&lt;Server ...
+...
+  ...
+    &lt;Host ... &gt;
+      ....
+      &lt;Context path="/opennms" docBase="opennms" debug="0" reloadable="true"&gt;
+        &lt;Logger classname="org.opennms.web.log.Log4JLogger" homeDir="/opt/OpenNMS"/&gt;
+        &lt;Realm className="org.opennms.web.authenticate.OpenNMSTomcatRealm" homeDir="/opt/OpenNMS"/&gt;
+      &lt;/Context &gt;
+    &lt;/Host &gt;
+  ...
+&lt;/Server &gt;</programlisting>
+
+      <para>Finally, Tomcat will also need to be aware of various OpenNMS JARs
+      and libraries which provide the Java classes which make these directives
+      work. To give tomcat access to these resources, links are created in
+      <filename>$CATALINA_HOME/server/lib</filename> pointing to the locations
+      of the following OpenNMS JARs:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para><filename>castor-0.9.3.9.jar -&gt;
+          /opt/OpenNMS/lib/castor-0.9.3.9.jar</filename></para>
+        </listitem>
+
+        <listitem>
+          <para><filename>log4j.jar -&gt;
+          /opt/OpenNMS/lib/log4j.jar</filename></para>
+        </listitem>
+
+        <listitem>
+          <para><filename>opennms_common.jar -&gt;
+          /opt/OpenNMS/lib/opennms_common.jar</filename></para>
+        </listitem>
+
+        <listitem>
+          <para><filename>opennms_core.jar -&gt;
+          /opt/OpenNMS/lib/opennms_core.jar</filename></para>
+        </listitem>
+
+        <listitem>
+          <para><filename><filename>opennms_services.jar -&gt;
+          /opt/OpenNMS/lib/opennms_services.jar</filename></filename></para>
+        </listitem>
+
+        <listitem>
+          <para><filename>opennms_web.jar -&gt;
+          /opt/OpenNMS/lib/opennms_web.jar</filename></para>
+        </listitem>
+      </itemizedlist>
+    </section>
+    
+    <section>
+      <title>"runjava: Could not find an appropriate JRE"</title>
+	
+      <para>XXX</para>
+    </section>
+
+    <section>
+      <title>"Column X in new table has NOT NULL constraint ..."</title>
+	
+      <para>XXX</para>
+    </section>
+
+    <section>
+      <title>"One or more backup tables from a previous install still
+      exists"</title>
+
+      <para>When the installer runs to upgrade the OpenNMS database from a
+	previous install, it often updates table schemas.  When it does this,
+	it copies the data in a table to a temporary table (e.g.: the
+	contents of <filename>node</filename> are copied into
+	<filename>node_old_11033991291234</filename>).  The original table is
+	deleted, the new version of the table is created, the data in the
+	temporary table is translated into the new table, and finally the
+	temporary table is deleted.</para>
+
+      <para>Unfortunately, the installer cannot
+	check for all problems that might break translation, so sometimes the
+	translation step fails.  In this case, the installer "reverts" the
+	table it was processing by dropping the new table and moving the
+	temporary table into its place.</para>
+      
+      <para>Reverting the table in case of a problem is all good and well,
+	but sometimes even it does not work properly, especially with older
+	versions of the Java installer.  If this happens, the
+	temporary table (the one with "_old_" in it) is left with all of the
+	old data.  Until OpenNMS 1.1.5, this problem would not be caught the
+	nnext time you ran the installer.  The installer would see that you
+	did not have the <filename>node</filename> table, for example, and
+	happily continue to create a new one for you.  This is bad,
+	especially since you probably still have data that you care about
+	that is now in the "old" table.</para>
+
+      <para>If you get this error, you will want to get rid of the table(s)
+	containing "_old_", however you want to first check if they contain
+	data.  For example, if you have a single table,
+	<filename>node_old_11033991291234</filename>, no other
+	<filename>node_old_*</filename> tables, and no
+	<filename>node</filename> table, you can simply rename the table.
+	Example:
+      </para>
+
+      <programlisting>
+psql -U opennms opennms
+ALTER TABLE node_old_11033991291234 RENAME TO node;</programlisting>
+
+      <para>You can use the "\d" command within <filename>psql</filename> to
+	see what other tables exist in your database.  You can use
+	<filename>SELECT count(*) from table</filename> (fill in the table
+	name for "table") to get a count of rows in any table.  If you
+	have empty tables, you can just drop them.  If you have multiple
+	tables with data, you will have to decide which table of data you
+	want to keep or merge them.  This is left as a (not so simple)
+	exercise for the reader.</para>
+    </section>
+  </section>
+
+
+  <section>
+    <title>Where to Get Help</title>
+
+    <para>OpenNMS is a community supported project. Please keep that in mind
+    when seeking help on the program, as no one gets paid to work on the
+    project (unless it is through a commercial support contract).</para>
+
+    <section>
+      <title>The OpenNMS Web Site</title>
+
+      <para>The main OpenNMS <ulink url="http://www.opennms.org">site</ulink>
+      is a Wiki. As a community project, there is a lot of good advice and
+      information available there. In particular, we suggest checking the
+      <ulink url="http://wiki.opennms.org/tiki-list_faqs.php">FAQ</ulink>
+      and the
+      <ulink url="http://bugzilla.opennms.org/cgi-bin/bugzilla/index.cgi">bug
+      database</ulink>.  You might also find useful information in the
+      <ulink url="http://faq.opennms.org/">old FAQ</ulink>, but please realize
+      that this information may be out of date.</para>
+    </section>
+
+    <section>
+      <title>The OpenNMS Mailing Lists</title>
+
+      <para>OpenNMS maintains a number of active mailing lists on
+      Sourceforge:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>opennms-announce: A low traffic, moderated mailing list for
+          OpenNMS announcements. All posts to this list are duplicated on the
+          opennms-discuss list.</para>
+        </listitem>
+
+        <listitem>
+          <para>opennms-cvs: This is a fairly high traffic list of all updates
+          to the CVS repositories on SourceForge. Moderated. Only CVS updates
+          are posted here (no discussion).</para>
+        </listitem>
+
+        <listitem>
+          <para>opennms-devel: This list is for code development
+          discussion.</para>
+        </listitem>
+
+        <listitem>
+          <para>opennms-discuss: This is the main OpenNMS discuss list. Its
+          pretty friendly. Pretty much anything goes here, however it's
+          suggested that installation-related issues to go
+          opennms-install.</para>
+        </listitem>
+
+        <listitem>
+          <para>opennms-install: This is a great list for new users to
+          OpenNMS. The main focus is installation issues (cleared up by this
+          great documentation, right?) but most "newbie" questions are welcome
+          here.</para>
+        </listitem>
+
+        <listitem>
+          <para>opennms-maps: Whether or not to use maps in network management
+          is as divisive an issue as abortion or gun control (grin). OpenNMS
+          does have a small contributed map system, which still needs a lot of
+          work. We can talk about it here.</para>
+        </listitem>
+
+        <listitem>
+          <para>opennms-ug-tokyo: We have a small users group in Tokyo, Japan.
+          This list is for meeting announcements or help in Japanese.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Commercial Support</title>
+
+      <para>If you are using OpenNMS in a production environment, or are
+      considering it, you might be interested in commercial support.  The
+      <ulink url="http://www.opennms.com/opennms_about.html">OpenNMS
+      Group</ulink> maintains the OpenNMS project, and we also offer
+      support, training, consulting services and custom development.</para>
+    </section>
+  </section>
+</chapter>

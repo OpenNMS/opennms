@@ -1,0 +1,11 @@
+PKG="NMSopennms"
+NAME="opennms"
+ARCH="sparc"
+VERSION="1.03"
+CATEGORY="application"
+VENDOR="OpenNMS"
+EMAIL="tarus@sortova.com"
+PSTAMP="Tarus Balog"
+BASEDIR="/usr/local"
+CLASSES="none"
+

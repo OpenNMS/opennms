@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter>
+  <title>Installing OpenNMS - An Overview</title>
+
+  <para>OpenNMS is the world's first enterprise-grade network management
+  system developed under the open source model. As with any complex and
+  powerful system, getting it installed and configured can take a little
+  effort. It is the purpose of this document to explain what is required to
+  get OpenNMS installed.</para>
+
+  <para>So, how should you use this document? It is arranged in the following
+  sections:</para>
+
+  <itemizedlist>
+    <listitem>
+      <para>This Overview</para>
+    </listitem>
+
+    <listitem>
+      <para>The programs on which OpenNMS depends, and how they need to be
+      modified</para>
+    </listitem>
+
+    <listitem>
+      <para>Distribution Specific Installation Instructions</para>
+    </listitem>
+
+    <listitem>
+      <para>Troubleshooting and Where to Get Help</para>
+    </listitem>
+  </itemizedlist>
+
+  <para>This installation guide relies strongly on the idea of "packages".
+  Most modern operating systems and distributions have a system where software
+  can be installed and managed through the use of packages that group the
+  files belonging to a given application together (as well as managing changes
+  to those files, removal, upgrades, etc.).</para>
+
+  <para>Please see the latest <ulink
+  url="https://sourceforge.net/docman/?group_id=4141">release notes</ulink> to
+  see if your operating system is supported. Currently OpenNMS runs on Linux
+  (many distributions), Solaris and Mac OS X.</para>
+
+  <para>This guide assumes that if you use packages, you do so consistently.
+  This is because OpenNMS will attempt to determine if the software it
+  requires is installed by using the operating system's built in package
+  management system. If you've installed, say, Java, but not via packages,
+  OpenNMS will be unable to determine that Java is installed and it will
+  fail.</para>
+
+  <para>To get back to the original question of "how should you use this
+  document", first go through the second section to insure that you have all
+  of the prerequisite applications properly installed and configured. Use the
+  third section to help get those packages installed for your particular
+  operating system, as well as the OpenNMS software. Finally, use the last
+  section to help correct any errors your might encounter.</para>
+
+  <section>
+    <title>Minimum Requirements</title>
+
+    <para>While it is impossible to exactly size OpenNMS for a particular
+    environment, the following represents the minimum requirements for
+    installation, assuming a network of about 200 devices. Note that OpenNMS
+    can monitor more than 100 times that given the proper hardware.</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Processor: 1 GHz Pentium III class or better. OpenNMS will
+        benefit from more processors.</para>
+      </listitem>
+
+      <listitem>
+        <para>Memory: A minimum of 256 MB of RAM, although 512 MB is strongly
+        recommended. The OpenNMS Java Virtual Machine benefits from large
+        amounts of memory, up to 2 GB.</para>
+      </listitem>
+
+      <listitem>
+        <para>Disk Space: OpenNMS requires about 25 MB of disk space for the
+        program files. In addition, each data variable collected requires, by
+        default, 283 KB of disk space. It is safe to assume that each
+        interface being managed will require around 2 MB of disk space, so for
+        200 interfaces you are looking at 400 MB (conservatively). Depending
+        on the number of events stored, you can assume 100 MB to 200 MB are
+        required for the database. Finally, the OpenNMS logs can grow quite
+        large, especially in debug mode. Edit the
+        <filename>log4j.properties</filename> file in the OpenNMS
+        configuration directory (usually <filename>/opt/OpenNMS/etc</filename>
+        or <filename>/etc/opennms</filename>) to change those settings. For a
+        minimum system, 800 MB to 1 GB should be sufficient.</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section>
+    <title>Download</title>
+
+    <para>OpenNMS is available for download from <ulink
+    url="http://sourceforge.net">Sourceforge</ulink> on the OpenNMS <ulink
+    url="https://sourceforge.net/project/showfiles.php?group_id=4141">download</ulink>
+    page. Install the dependent packages per this document, and read the
+    <ulink url="https://sourceforge.net/docman/?group_id=4141">release
+    notes</ulink> to insure that your installation goes smoothly.</para>
+  </section>
+</chapter>

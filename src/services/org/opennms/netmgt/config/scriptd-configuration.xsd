@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/scriptd">
+
+	<element name="scriptd-configuration">
+		<complexType>
+			<sequence>
+				<element ref="engine" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="start-script" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="stop-script" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="reload-script" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="event-script" minOccurs="0" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="engine">
+		<complexType>
+			<attribute name="language" type="string" use="required"/>
+			<attribute name="className" type="string" use="required"/>
+			<attribute name="extensions" type="string"/>
+		</complexType>
+	</element>
+	
+	<element name="start-script">
+		<complexType>
+			<simpleContent>
+				<extension base="string">
+					<attribute name="language" type="string" use="required"/>
+				</extension>
+			</simpleContent>
+		</complexType>
+	</element>
+	
+	<element name="stop-script">
+		<complexType>
+			<simpleContent>
+				<extension base="string">
+					<attribute name="language" type="string" use="required"/>
+				</extension>
+			</simpleContent>
+		</complexType>
+	</element>
+
+	<element name="reload-script">
+		<complexType>
+			<simpleContent>
+				<extension base="string">
+					<attribute name="language" type="string" use="required"/>
+				</extension>
+			</simpleContent>
+		</complexType>
+	</element>
+
+	<element name="event-script">
+		<complexType mixed="true">
+			<sequence>
+				<element name="uei" minOccurs="0" maxOccurs="unbounded">
+					<complexType>
+						<attribute name="name" type="string" use="required"/>
+					</complexType>
+				</element>
+			</sequence>
+			<attribute name="language" type="string" use="required"/>
+		</complexType>
+	</element>
+</schema>

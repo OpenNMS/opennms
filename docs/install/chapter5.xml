@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter>
+  <title>Building hand Installing From Source</title>
+
+  <section>
+    <title>Are you sure you want to do this?</title>
+
+    <para>OpenNMS is a complex software product, and it does not (yet) have a
+    simple "./configure &amp;&amp; make &amp;&amp; make install" build process
+    like many other tools. If there is a packaged release for your operating
+    system, we highly suggest you use that instead. If you have problems with
+    a packaged release, please see the troubleshooting section for
+    assistance.</para>
+  </section>
+
+  <section>
+    <title>Install prerequisite applications</title>
+
+    <para>See the chaper on installing prerequisites for OpenNMS and install
+    all prerequisites.</para>
+  </section>
+
+  <section>
+    <title>Download source</title>
+
+    <para>You can download source for a specific release, or you can download
+    source directly from the source code respository (CVS). You probably want
+    to download released source unless you wish to do development or are
+    looking for specific features or bug fixes that are not yet in a
+    release.</para>
+
+    <section>
+      <title>Retrieve released source</title>
+
+      <para>XXX someone needs to write this. :-)</para>
+    </section>
+
+    <section>
+      <title>Retrieve source from CVS</title>
+
+      <para>The source code for OpenNMS is stored in CVS at
+      <ulink url="http://sourceforge.net/">SourceForge.net</ulink>.  See
+      the <ulink url="http://sourceforge.net/cvs/?group_id=4141">OpenNMS
+      CVS page</ulink> for details, or follow the instructions below to
+      get started quickly.</para>
+
+      <para>Login to the CVS server with an empty password:</para>
+
+      <para><programlisting>cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/opennms login</programlisting></para>
+ 
+      <para>Check out the OpenNMS sources (this will fetch HEAD, the most bleeding-edge version):</para>
+
+      <para><programlisting>cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/opennms co opennms</programlisting></para>
+    </section>
+  </section>
+
+  <section>
+    <title>Configuring <filename>build.properties</filename></title>
+
+    <para>There are a few details about where RRDtool and PostgreSQL are
+    installed that the build process cannot (or does not yet) reliably
+    determine automatically.  If you don't have RRDtool installed into
+    <filename>/usr</filename> or if the PostgreSQL server include directory
+    is not <filename>/usr/include/pgsql/server</filename>, you will need to
+    create a <filename>build.properties</filename> file.</para>
+
+    <para>You can be lazy and let the build process tell you if it cannot
+    find any of these components.</para>
+
+    <para>By default, the install process will install OpenNMS into the
+    <filename>dist</filename> directory under the same directory that
+    contains <filename>build.xml</filename>.  This is fine for testing
+    (and probably desireable), but if you want to install into somewhere
+    for production use, you need to set <filename>install.dir</filename>.
+    You probably want to add a line like this to
+    <filename>build.properties</filename>:</para>
+
+    <para><programlisting>install.dir=/opt/OpenNMS</programlisting></para>
+  </section>
+
+  <section>
+    <title>Compiling OpenNMS</title>
+
+    <para>This part is easy.  Execute this command:</para>
+
+    <para><programlisting>./build.sh compile</programlisting></para>
+  </section>
+
+  <section>
+    <title>Installing OpenNMS</title>
+
+    <para>This part is pretty easy, too.  Note: this will install
+    into <filename>dist</filename> in the same directory as the
+    <filename>build.xml</filename>, unless you changed
+    <filename>install.dir</filename> as mentioned above.  Execute
+    this command to install:</para>
+
+    <para><programlisting>./build.sh install</programlisting></para>
+
+    <para>Once the files are installed, you need execute
+    <filename>runjava</filename> to find and configure a suitable
+    Java Runtime Environment for OpenNMS and then run the OpenNMS
+    installer to setup the database and other items.  First, execute
+    <filename>runjava -s</filename>:</para>
+
+    <para><programlisting>$OPENNMS_HOME/bin/runjava -s</programlisting></para>
+
+    <para>Then, execute the installer:</para>
+
+    <para><programlisting>$OPENNMS_HOME/bin/install -disU</programlisting></para>
+  </section>
+
+  <section>
+    <title>Setup the webapp in Tomcat</title>
+
+    <para>XXX this needs to be written. :-)</para>
+  </section>
+
+  <section>
+    <title>Starting OpenNMS</title>
+
+    <para>Execute the startup script:</para>
+
+    <para><programlisting>$OPENNMS_HOME/bin/opennms start</programlisting></para>
+  </section>
+</chapter>
