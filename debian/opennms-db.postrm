@@ -18,13 +18,18 @@ case "$1" in
 
 		if [ -x /usr/lib/postgresql/bin/dropdb ]; then
 			echo -n "- removing the opennms database tables..."
-			/usr/lib/postgresql/bin/dropdb "opennms" >/dev/null || :
+			su - postgres -c \
+				'/usr/lib/postgresql/bin/dropdb "opennms"' \
+				> /dev/null || :
 			echo " done."
 		fi
 
 		echo -n "- removing opennms database access controls..."
 		TMPFILE=`mktemp /etc/postgresql/pg_hba.conf.XXXXXX`
 		grep -v "^host.*opennms" /etc/postgresql/pg_hba.conf > $TMPFILE
+		mv $TMPFILE /etc/postgresql/pg_hba.conf
+		grep -v "^local template1 trust" \
+			/etc/postgresql/pg_hba.conf > $TMPFILE
 		mv $TMPFILE /etc/postgresql/pg_hba.conf
 		chmod 644 /etc/postgresql/pg_hba.conf
 		chown postgres:postgres /etc/postgresql/pg_hba.conf

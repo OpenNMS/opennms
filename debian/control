@@ -1,8 +1,8 @@
 Source: opennms
 Section: contrib/net
 Priority: optional
-Maintainer: Tony Simone <tony.simone@medvantx.com>
-Build-Depends: debhelper (>> 3.0.0), ant, j2sdk1.4 | java2-compiler, librrd0-dev (>= 1.0.40), postgresql-dev (>= 7.3)
+Maintainer: Eric Evans <eevans@opennms.org>
+Build-Depends: debhelper (>> 3.0.0), ant, j2sdk1.4 | java2-compiler, librrd0-dev (>= 1.0.35), postgresql-dev (>= 7.2)
 Standards-Version: 3.5.8
 
 Package: opennms
@@ -41,7 +41,7 @@ Package: opennms-db
 Section: contrib/net
 Architecture: all
 Conflicts: opennms (<< 1.1.1-4), opennms-server (<< 1.1.1-5)
-Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl, libiplike-pgsql (=${Source-Version}), postgresql (>= 7.3)
+Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl, libiplike-pgsql (=${Source-Version}), postgresql (>= 7.2)
 Recommends: opennms-webapp, qpage
 Suggests: opennms-doc
 Description: The Open Network Management System
@@ -105,7 +105,7 @@ Package: libiplike-pgsql
 Section: contrib/net
 Architecture: any
 Conflicts: opennms (<< 1.1.1-4)
-Depends: postgresql (>= 7.3)
+Depends: postgresql (>= 7.2)
 Description: IPLike stored procedure for Postgresql
  A stored procedure for Postgresql, providing the "iplike()" function,
  currently only used by the OpenNMS package.
