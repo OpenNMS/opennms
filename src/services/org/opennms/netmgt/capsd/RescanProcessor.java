@@ -1107,6 +1107,7 @@ final class RescanProcessor
 			{
 				int status = snmpc.getAdminStatus(ifIndex);
 				currIpIfEntry.setStatus(status);
+                                currIpIfEntry.setIfIndex(ifIndex);
 				ifType = snmpc.getIfType(ifIndex);
 				
 				// For new interfaces simply set 'isSnmpPrimary' field to secondary for now.  
