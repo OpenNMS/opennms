@@ -258,6 +258,10 @@
                 if (curnodeid == intnodeid)
 		{
 		String statustest = curInterface.getStatus();
+		if (statustest == null)
+                {
+                        statustest = "N";
+                }
 		String key = intnodeid + "+" + curInterface.getIfIndex();
 		if (statustest.equals("P"))
 		{
