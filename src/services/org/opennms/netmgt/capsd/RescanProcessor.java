@@ -850,6 +850,11 @@ final class RescanProcessor implements Runnable {
                             }
                             
                             DbNodeEntry suspectNodeEntry = DbNodeEntry.get(dbc, existingNodeId);
+                            if (suspectNodeEntry == null) {
+                                // it appears this couldn't happen yet we are seeing NullPointers
+                                // on the getInterfaces line below.
+                                continue;
+                            }
                             
                             // Retrieve list of interfaces associated with the old
                             // node
