@@ -411,7 +411,7 @@ public final class EventUtil
 		}
 		if (parm.equals(TAG_EVENT_DB_ID)) {
 			if (event.hasDbid()) {
-				retParmVal = (String) event.getDbid();
+				retParmVal = Integer.toString(event.getDbid());
 			} else {
 				retParmVal = "eventid-unknown";
 			}
