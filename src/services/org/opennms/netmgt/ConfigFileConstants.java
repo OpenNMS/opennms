@@ -55,7 +55,8 @@ import org.opennms.core.utils.ThreadCategory;
  */
 public final class ConfigFileConstants
 {
-	private static final String[] FILE_ID_TO_NAME;
+
+    private static final String[] FILE_ID_TO_NAME;
 
 	/**
 	 * The opennms database config file
@@ -99,7 +100,7 @@ public final class ConfigFileConstants
 	/**
 	 * The opennms dhcpd config file
 	 */
-	public static final String DHCPD_CONFIG_FILE_NAME = "dhcpd-configuration.xml";
+	public static final int DHCPD_CONFIG_FILE_NAME;
 
 	/**
 	 * The opennms notifd config file
@@ -172,7 +173,12 @@ public final class ConfigFileConstants
 	 * The opennms xmlrpcd config file
 	 */
 	public static final int XMLRPCD_CONFIG_FILE_NAME;
-	
+
+    /**
+     * The config file specifying the rrd config (ie JRobin vs JNI)
+     */
+    public static final int RRD_CONFIG_FILE_NAME;
+
         //
 	// End services config files
 	//
@@ -351,6 +357,7 @@ public final class ConfigFileConstants
 	{
 		// Initialize the constants
 		//
+
 		DB_CONFIG_FILE_NAME			= 0;
 		JMS_CONFIG_FILE_NAME			= 1;
 		ACTIOND_CONFIG_FILE_NAME		= 2;
@@ -414,9 +421,13 @@ public final class ConfigFileConstants
                 OPENNMS_SERVER_CONFIG_FILE_NAME         = 47;
                 XMLRPCD_CONFIG_FILE_NAME                = 48;
                 
+                DHCPD_CONFIG_FILE_NAME = 49;
+                
+                RRD_CONFIG_FILE_NAME = 50;
+                
 		// Allocate and build the mapping of identifiers to names
 		//
-		FILE_ID_TO_NAME = new String[49];
+		FILE_ID_TO_NAME = new String[51];
 
 		FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] 		= "opennms-database.xml";
 		FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME]		= "opennms-jms.xml";
@@ -483,6 +494,8 @@ public final class ConfigFileConstants
 
 		FILE_ID_TO_NAME[OPENNMS_SERVER_CONFIG_FILE_NAME]= "opennms-server.xml";
 		FILE_ID_TO_NAME[XMLRPCD_CONFIG_FILE_NAME]       = "xmlrpcd-configuration.xml";
+         FILE_ID_TO_NAME[DHCPD_CONFIG_FILE_NAME] = "dhcpd-configuration.xml";
+         FILE_ID_TO_NAME[RRD_CONFIG_FILE_NAME] = "rrd-configuration.properties";
 	}
 
 	/**
