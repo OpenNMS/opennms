@@ -43,6 +43,7 @@ import org.opennms.netmgt.utils.Signaler;
  * received/error occurs in the SnmpSession used to send requests /recieve 
  * replies.</P>
  *
+ * @author <A HREF="mailto:jamesz@opennms.org">James Zuo</A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya</A>
  * @author <A HREF="mailto:weave@opennms.org">Weave</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
@@ -537,6 +538,53 @@ public class IpAddrTable
 		return addresses;
 	}
 	
+	/**
+	 * Returns all Internet addresses in the ipAddrEntry list. If
+	 * the address cannot be resolved then a null reference is returned.
+	 * 
+	 * @param   ipAddrEntries List of IpAddrTableEntry objects to search
+	 *
+	 * @return list of InetAddress objects representing each of the
+	 *         interfaces IP addresses.
+	 */
+	public static List getIpAddresses(List ipAddrEntries)
+	{
+		if (ipAddrEntries == null)
+		{
+			return null;
+		}
+		
+		List addresses = new ArrayList();
+		
+		Iterator i = ipAddrEntries.iterator();
+		while(i.hasNext())
+		{
+			IpAddrTableEntry entry = (IpAddrTableEntry)i.next();
+			SnmpInt32 ndx = (SnmpInt32)entry.get(IpAddrTableEntry.IP_ADDR_IF_INDEX);
+			if(ndx != null )
+			{
+				// extract the addresses
+				//
+				List ipAddresses = getIpAddresses(ipAddrEntries, ndx.getValue());
+				if(ipAddresses != null)
+				{
+					try
+					{
+                                                addresses.addAll(ipAddresses);
+					}
+					catch(IndexOutOfBoundsException ie)
+					{
+						Category log = ThreadCategory.getInstance(IpAddrTable.class);
+						log.error("Failed to add ipaddresses of ifIndex: " + ndx.getValue() 
+                                                        + " to the address list of the ipAddTable.", ie);
+					}
+				}
+			}
+		}
+		return addresses;
+	}
+
+        
 	/**
 	 * <P>This method is used to find the ifIndex of an interface
 	 * given the interface's IP address.  The list of ipAddrTable entries

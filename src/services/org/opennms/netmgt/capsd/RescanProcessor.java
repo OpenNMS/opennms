@@ -1478,19 +1478,19 @@ final class RescanProcessor
 		
 		// Retrieve list of interfaces associated with this nodeID
 		// from the database
-		log.debug("RescanProcessor: retrieving all interfaces for node: " + oldNode.getNodeId());
+		log.debug("isInIpAddrTable: retrieving all interfaces for node: " + oldNode.getNodeId());
 		try
 		{
 			dbInterfaces = oldNode.getInterfaces();
 		}
 		catch (NullPointerException npE)
 		{
-			log.error("RescanProcessor: Null pointer when retrieving interfaces for node " + oldNode.getNodeId(), npE);
+			log.error("isInIpAddrTable: Null pointer when retrieving interfaces for node " + oldNode.getNodeId(), npE);
 			return false;
 		}
 		catch (SQLException sqlE)
 		{
-			log.error("RescanProcessor: unable to load interface info for nodeId " + oldNode.getNodeId() 
+			log.error("isInIpAddrTable: unable to load interface info for nodeId " + oldNode.getNodeId() 
                                 + " from the database.", sqlE);
 			return false;
 		}
@@ -1513,7 +1513,7 @@ final class RescanProcessor
 			}
 
 			if (log.isDebugEnabled())
-				log.debug("RescanProcessor: running collection for " + ifaddr.getHostAddress());
+				log.debug("isInIpAddrTable: running collection for " + ifaddr.getHostAddress());
 			
 			collector = new IfCollector(ifaddr, doSnmpCollection);
 			collector.run();
@@ -1526,16 +1526,27 @@ final class RescanProcessor
 				snmpc = collector.getSnmpCollector();
 				if (snmpc != null && !snmpc.failed())
 				{
-					// Got a successful SNMP collection from the node
-					doSnmpCollection = false;
+                                        if (areDbInterfacesInSnmpCollection(dbInterfaces, snmpc))
+					{
+                                                // Got a successful SNMP collection from the node
+					        doSnmpCollection = false;
 					
-					if (log.isDebugEnabled())
-						log.debug("RescanProcessor: SNMP data collected via " + ifaddr.getHostAddress());
+					        if (log.isDebugEnabled())
+						        log.debug("isInIpAddrTable: SNMP data collected via " 
+                                                                + ifaddr.getHostAddress());
+                                        }
+                                        else
+                                        {
+					        if (log.isDebugEnabled())
+						        log.debug("isInIpAddrTable: SNMP data collected via " 
+                                                                + ifaddr.getHostAddress() + " is not right." 
+                                                                + " Try to collect SNMP data through another ip address.");
+                                        }
 				}
 			}
 
 			if (log.isDebugEnabled())
-				log.debug("RescanProcessor: collection completed for " + ifaddr.getHostAddress());
+				log.debug("isInIpAddrTable: collection completed for " + ifaddr.getHostAddress());
 		}
 
                 // Check if a given ipAddress is on the ipAddrTable of the oldNode
@@ -2417,10 +2428,83 @@ final class RescanProcessor
 				break;
 		} // end while
 		
-		
 		return isAlias;
 	}
 	
+        /**
+         * This method is used to verify if each interface on a node stored in the database is in the specified
+         * SNMP data collection.
+	 *
+         * @param ipInterfaces	the ipInterfaces on a node stored in the database
+	 * @param snmpc		IfSnmpCollector object containing SNMP collected
+	 * 			ipAddrTable information.
+	 * 
+	 * @return TRUE if each ipInterface is contained in the ipAddrTable of the specified SNMP collection.
+         *
+         */
+        private boolean areDbInterfacesInSnmpCollection(DbIpInterfaceEntry[] dbInterfaces, IfSnmpCollector snmpc)
+        {
+		Category log = ThreadCategory.getInstance(getClass());
+		
+		// Sanity check...null parms?
+		if (dbInterfaces == null || snmpc == null)
+                {
+			log.error("areDbInterfacesInSnmpCollection: empty dbInterfaces or IfSnmpCollector.");
+			return false;
+		}
+                
+		// SNMP collection successful?
+		if (snmpc.failed())
+		{
+                        log.error("areDbInterfacesInSnmpCollection: Snmp Collector failed.");
+			return false;
+		}
+                
+		// Verify that SNMP collection contains ipAddrTable entries
+		IpAddrTable ipAddrTable = null;
+		
+		if (snmpc.hasIpAddrTable())
+			ipAddrTable = snmpc.getIpAddrTable();
+		
+		if ( ipAddrTable == null)
+		{
+                        log.error("areDbInterfacesInSnmpCollection: null ipAddrTable in the snmp collection");
+			return false;
+		}
+                
+                List ipAddrList = ipAddrTable.getIpAddresses(ipAddrTable.getEntries());
+                
+		// Loop through the interface table entries until there are no more
+		// entries or we've found a match
+		boolean isAlias = true;
+                for (int i=0; i < dbInterfaces.length; i++)
+                {
+                        InetAddress ipaddr = dbInterfaces[i].getIfAddress();
+                        Iterator iter = ipAddrList.iterator();
+                        boolean found = false;
+                        while (iter.hasNext())
+                        {
+                                InetAddress addr = (InetAddress)iter.next();
+                                if (ipaddr.getHostAddress().equals(addr.getHostAddress()))
+                                {
+                                        found = true;
+                                        break;
+                                }
+                                else
+                                {
+			                if (log.isDebugEnabled())
+				                log.debug("areDbInterfacesInSnmpCollection: ipaddress : " + ipaddr.getHostAddress() 
+                                                        + " not in the snmp collection. Snmp collection is not usable.");
+                                }
+                        }
+                        if (!found)
+                                return false;
+                }
+
+                return true;
+       }
+
+       
 	/**
 	 * This is where all the work of the class is done.  
 	 */
@@ -2438,10 +2522,13 @@ final class RescanProcessor
 		try
 		{
 			dbNodeEntry = DbNodeEntry.get(m_scheduledNode.getNodeId());
+			if (log.isDebugEnabled())
+				log.debug("RescanProcessor: start rescaning node: " + m_scheduledNode.getNodeId());
 		}
 		catch (SQLException sqlE)
 		{
-			log.error("RescanProcessor: unable to load node info for nodeId " + m_scheduledNode.getNodeId() + " from the database.", sqlE);
+			log.error("RescanProcessor: unable to load node info for nodeId " + m_scheduledNode.getNodeId() 
+                                + " from the database.", sqlE);
 			log.error("Rescan failed for node w/ nodeid " + m_scheduledNode.getNodeId());
 			return;
 		}
@@ -2464,13 +2551,15 @@ final class RescanProcessor
 			}
 			catch (NullPointerException npE)
 			{
-				log.error("RescanProcessor: Null pointer when retrieving interfaces for node " + m_scheduledNode.getNodeId(), npE);
+				log.error("RescanProcessor: Null pointer when retrieving interfaces for node " 
+                                        + m_scheduledNode.getNodeId(), npE);
 				log.error("Forced rescan failed for node w/ nodeid " + m_scheduledNode.getNodeId());
 				return;
 			}
 			catch (SQLException sqlE)
 			{
-				log.error("RescanProcessor: unable to load interface info for nodeId " + m_scheduledNode.getNodeId() + " from the database.", sqlE);
+				log.error("RescanProcessor: unable to load interface info for nodeId " + m_scheduledNode.getNodeId() 
+                                        + " from the database.", sqlE);
 				log.error("Forced rescan failed for node w/ nodeid " + m_scheduledNode.getNodeId());
 				return;
 			}
@@ -2486,13 +2575,15 @@ final class RescanProcessor
 			}
 			catch (NullPointerException npE)
 			{
-				log.error("RescanProcessor: Null pointer when retrieving managed interfaces for node " + m_scheduledNode.getNodeId(), npE);
+				log.error("RescanProcessor: Null pointer when retrieving managed interfaces for node " 
+                                        + m_scheduledNode.getNodeId(), npE);
 				log.error("Rescan failed for node w/ nodeid " + m_scheduledNode.getNodeId());
 				return;
 			}
 			catch (SQLException sqlE)
 			{
-				log.error("RescanProcessor: unable to load interface info for nodeId " + m_scheduledNode.getNodeId() + " from the database.", sqlE);
+				log.error("RescanProcessor: unable to load interface info for nodeId " 
+                                        + m_scheduledNode.getNodeId() + " from the database.", sqlE);
 				log.error("Rescan failed for node w/ nodeid " + m_scheduledNode.getNodeId());
 				return;
 			}
@@ -2547,12 +2638,21 @@ final class RescanProcessor
 				if (snmpc != null && !snmpc.failed())
 				{
 					// Got a successful SNMP collection from the node
-					doSnmpCollection = false;
-					if (collector.hasAdditionalTargets())
-						snmpTargets = collector.getAdditionalTargets();
+                                        if (areDbInterfacesInSnmpCollection(dbInterfaces, snmpc))
+                                        {
+					        doSnmpCollection = false;
+					        if (collector.hasAdditionalTargets())
+						        snmpTargets = collector.getAdditionalTargets();
 					
-					if (log.isDebugEnabled())
-						log.debug("SNMP data collected via " + ifaddr.getHostAddress());
+					        if (log.isDebugEnabled())
+						        log.debug("SNMP data collected via " + ifaddr.getHostAddress());
+                                        }
+                                        else
+                                        {
+			                        if (log.isDebugEnabled())
+				                        log.debug("SNMP data collected via " + ifaddr.getHostAddress()
+                                                                + " is not right.");
+                                        }
 				}
 			}
 
