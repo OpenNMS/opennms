@@ -49,6 +49,7 @@ import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.config.DestinationPathManager;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.NotifdConfigManager;
+import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.notifd.Queue;
@@ -109,6 +110,8 @@ public final class Notifd implements PausableFiber {
     private UserManager m_userManager;
 
     private DestinationPathManager m_destinationPathManager;
+
+    private NotificationCommandManager m_notificationCommandManager;
 
     /**
      * Constructs a new Notifd service daemon.
@@ -188,7 +191,15 @@ public final class Notifd implements PausableFiber {
     public void setDestinationPathManager(DestinationPathManager manager) {
         m_destinationPathManager = manager;
     }
+    
+    public NotificationCommandManager getNotificationCommandManager() {
+        return m_notificationCommandManager;
+    }
 
+    public void setNotificationCommandManager(NotificationCommandManager manager) {
+        m_notificationCommandManager = manager;
+    }
+    
     public NotificationManager getNotificationManager() {
         return m_notificationManager;
     }
@@ -322,4 +333,5 @@ public final class Notifd implements PausableFiber {
         m_dbConnectionFactory = dbConnectionFactory;
         
     }
+
 }

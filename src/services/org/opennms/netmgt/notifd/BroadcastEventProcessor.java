@@ -62,7 +62,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.NotifdConfigManager;
-import org.opennms.netmgt.config.NotificationCommandFactory;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.destinationPaths.Escalate;
 import org.opennms.netmgt.config.destinationPaths.Path;
@@ -130,18 +129,6 @@ final class BroadcastEventProcessor implements EventListener {
         //
         m_notifd = notifd;
         m_noticeQueues = noticeQueues;
-
-        // initialize the factory instances
-        try {
-            
-            /*
-             * TODO: these need to be removed
-             */
-            NotificationCommandFactory.init();
-        } catch (Exception e) {
-            ThreadCategory.getInstance(getClass()).error("Error getting group, user notification or command factory instances: " + e.getMessage(), e);
-            return;
-        }
 
         // start to listen for events
         getEventManager().addEventListener(this);
@@ -614,7 +601,7 @@ final class BroadcastEventProcessor implements EventListener {
 
             Command commands[] = new Command[commandList.length];
             for (int i = 0; i < commandList.length; i++) {
-                commands[i] = NotificationCommandFactory.getInstance().getCommand(commandList[i]);
+                commands[i] = m_notifd.getNotificationCommandManager().getCommand(commandList[i]);
             }
 
             // if either piece of information is missing don't add the task to
@@ -654,7 +641,7 @@ final class BroadcastEventProcessor implements EventListener {
 
             Command commands[] = new Command[commandList.length];
             for (int i = 0; i < commandList.length; i++) {
-                commands[i] = NotificationCommandFactory.getInstance().getCommand(commandList[i]);
+                commands[i] = m_notifd.getNotificationCommandManager().getCommand(commandList[i]);
             }
 
             task.setUser(user);

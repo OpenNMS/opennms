@@ -33,11 +33,14 @@
 
 package org.opennms.netmgt.notifd;
 
+import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.notifd.mock.MockDestinationPathManager;
 import org.opennms.netmgt.notifd.mock.MockGroupManager;
 import org.opennms.netmgt.notifd.mock.MockNotifdConfigManager;
+import org.opennms.netmgt.notifd.mock.MockNotificationCommandManager;
 import org.opennms.netmgt.notifd.mock.MockNotificationManager;
 import org.opennms.netmgt.notifd.mock.MockUserManager;
 
@@ -55,6 +58,10 @@ public class NotifdTest extends TestCase {
     private MockNotifdConfigManager m_notifdConfig;
     private MockGroupManager m_groupManager;
     private MockUserManager m_userManager;
+    private NotificationManager m_notificationManager;
+    private NotificationCommandManager m_notificationCommandManger;
+    private MockDestinationPathManager m_destinationPathManager;
+
     private static final String m_configString = "<?xml version=\"1.0\"?>\n" + 
             "<notifd-configuration \n" + 
             "        status=\"off\"\n" + 
@@ -332,7 +339,323 @@ public class NotifdTest extends TestCase {
             "</userinfo>\n" + 
             "";
     
-    private NotificationManager m_notificationManager;
+    private static final String PATH_MANAGER = "<?xml version=\"1.0\"?>\n" + 
+            "<destinationPaths>\n" + 
+            "    <header>\n" + 
+            "        <rev>1.2</rev>\n" + 
+            "        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
+            "        <mstation>localhost</mstation>\n" + 
+            "    </header>\n" + 
+            "    <path name=\"Email-Reporting\">\n" + 
+            "        <target>\n" + 
+            "                <name>Reporting</name>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "    </path>\n" + 
+            "    <path name=\"Page-Management\">\n" + 
+            "        <target>\n" + 
+            "                <name>Management</name>\n" + 
+            "                <command>textPage</command>\n" + 
+            "                <command>javaPagerEmail</command>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "    </path>\n" + 
+            "    <path name=\"Page-Network/Systems/Management\">\n" + 
+            "   <target interval=\"15m\">\n" + 
+            "                <name>Network/Systems</name>\n" + 
+            "                <command>textPage</command>\n" + 
+            "                <command>javaPagerEmail</command>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "        <escalate delay=\"15m\">\n" + 
+            "            <target>\n" + 
+            "                <name>Management</name>\n" + 
+            "                <command>textPage</command>\n" + 
+            "                <command>javaPagerEmail</command>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "            </target>\n" + 
+            "        </escalate>\n" + 
+            "    </path>\n" + 
+            "    <path name=\"Page-Network/Systems\">\n" + 
+            "        <target>\n" + 
+            "                <name>Network/Systems</name>\n" + 
+            "                <command>textPage</command>\n" + 
+            "                <command>javaPagerEmail</command>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "    </path>\n" + 
+            "    <path name=\"Email-Management\">\n" + 
+            "        <target>\n" + 
+            "                <name>Management</name>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "    </path>\n" + 
+            "    <path name=\"Page-Desktops/Management\">\n" + 
+            "        <target>\n" + 
+            "                <name>Desktops</name>\n" + 
+            "                <command>textPage</command>\n" + 
+            "                <command>javaPagerEmail</command>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "        <escalate delay=\"15m\">\n" + 
+            "                <target>\n" + 
+            "                        <name>Management</name>\n" + 
+            "                        <command>textPage</command>\n" + 
+            "                        <command>javaPagerEmail</command>\n" + 
+            "                        <command>javaEmail</command>\n" + 
+            "                </target>\n" + 
+            "        </escalate>\n" + 
+            "    </path>\n" + 
+            "    <path name=\"Email-Network/Systems/Management\">\n" + 
+            "        <target>\n" + 
+            "                <name>Network/Systems</name>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "        <escalate delay=\"15m\">\n" + 
+            "                <target>\n" + 
+            "                        <name>Management</name>\n" + 
+            "                        <command>javaEmail</command>\n" + 
+            "                </target>\n" + 
+            "        </escalate>\n" + 
+            "    </path>\n" + 
+            "    <path name=\"Email-Security/Management\">\n" + 
+            "        <target>\n" + 
+            "                <name>Security</name>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "        <escalate delay=\"15m\">\n" + 
+            "                <target>\n" + 
+            "                        <name>Management</name>\n" + 
+            "                        <command>javaEmail</command>\n" + 
+            "                </target>\n" + 
+            "        </escalate>\n" + 
+            "    </path>\n" + 
+            "    <path name=\"Page-Security/Management\">\n" + 
+            "        <target>\n" + 
+            "                <name>Security</name>\n" + 
+            "                <command>textPage</command>\n" + 
+            "                <command>javaPagerEmail</command>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "        <escalate delay=\"15m\">\n" + 
+            "                <target>\n" + 
+            "                        <name>Management</name>\n" + 
+            "                        <command>textPage</command>\n" + 
+            "                        <command>javaPagerEmail</command>\n" + 
+            "                        <command>javaEmail</command>\n" + 
+            "                </target>\n" + 
+            "        </escalate>\n" + 
+            "    </path>\n" + 
+            "    <path name=\"Email-Desktops/Management\">\n" + 
+            "        <target>\n" + 
+            "                <name>Desktops</name>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "        <escalate delay=\"15m\">\n" + 
+            "                <target>\n" + 
+            "                        <name>Management</name>\n" + 
+            "                        <command>javaEmail</command>\n" + 
+            "                </target>\n" + 
+            "        </escalate>\n" + 
+            "    </path>\n" + 
+            "    <path name=\"Email-Desktops\">\n" + 
+            "        <target>\n" + 
+            "                <name>Desktops</name>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "    </path>\n" + 
+            "    <path name=\"Email-Security\">\n" + 
+            "        <target>\n" + 
+            "                <name>Security</name>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "    </path>\n" + 
+            "    <path name=\"Email-Network/Systems\">\n" + 
+            "        <target>\n" + 
+            "                <name>Network/Systems</name>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "    </path>\n" + 
+            "    <path name=\"Page-Desktops\">\n" + 
+            "        <target>\n" + 
+            "                <name>Desktops</name>\n" + 
+            "                <command>textPage</command>\n" + 
+            "                <command>javaPagerEmail</command>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "    </path>\n" + 
+            "    <path name=\"Page-Security\">\n" + 
+            "        <target>\n" + 
+            "                <name>Security</name>\n" + 
+            "                <command>textPage</command>\n" + 
+            "                <command>javaPagerEmail</command>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "    </path>\n" + 
+            "    <path name=\"Page-All\">\n" + 
+            "        <target>\n" + 
+            "                <name>Network/Systems</name>\n" + 
+            "                <command>textPage</command>\n" + 
+            "                <command>javaPagerEmail</command>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "        \n" + 
+            "        <target interval=\"15m\">\n" + 
+            "                <name>Security</name>\n" + 
+            "                <command>textPage</command>\n" + 
+            "                <command>javaPagerEmail</command>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "        \n" + 
+            "        <target interval=\"1h\">\n" + 
+            "                <name>Desktops</name>\n" + 
+            "                <command>textPage</command>\n" + 
+            "                <command>javaPagerEmail</command>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "        \n" + 
+            "        <target interval=\"1d\">\n" + 
+            "                <name>Management</name>\n" + 
+            "                <command>page</command>\n" + 
+            "                <command>javaPagerEmail</command>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "    </path>\n" + 
+            "    <path name=\"Email-All\">\n" + 
+            "        <target>\n" + 
+            "                <name>Network/Systems</name>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "         </target>\n" + 
+            "        <target>\n" + 
+            "                <name>Security</name>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "        <target>\n" + 
+            "                <name>Desktops</name>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "        <target>\n" + 
+            "                <name>Management</name>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "    </path>\n" + 
+            "    <path name=\"Email-Admin\">\n" + 
+            "        <target>\n" + 
+            "                <name>Admin</name>\n" + 
+            "                <command>javaEmail</command>\n" + 
+            "        </target>\n" + 
+            "    </path>\n" + 
+            "</destinationPaths>\n" + 
+            "";
+    private static final String CMD_MANAGER = "<?xml version=\"1.0\"?>\n" + 
+            "<notification-commands>\n" + 
+            "    <header>\n" + 
+            "        <ver>.9</ver>\n" + 
+            "        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
+            "        <mstation>master.nmanage.com</mstation>\n" + 
+            "    </header>\n" + 
+            "    <command binary=\"false\">\n" + 
+            "        <name>javaPagerEmail</name>\n" + 
+            "        <execute>org.opennms.netmgt.notifd.JavaMailNotificationStrategy</execute>\n" + 
+            "        <comment>class for sending pager email notifications</comment>\n" + 
+            "        <argument streamed=\"false\">\n" + 
+            "            <switch>-subject</switch>\n" + 
+            "        </argument>\n" + 
+            "        <argument streamed=\"false\">\n" + 
+            "            <switch>-pemail</switch>\n" + 
+            "        </argument>\n" + 
+            "        <argument streamed=\"false\">\n" + 
+            "            <switch>-tm</switch>\n" + 
+            "        </argument>\n" + 
+            "    </command>\n" + 
+            "    <command binary=\"false\">\n" + 
+            "        <name>javaEmail</name>\n" + 
+            "        <execute>org.opennms.netmgt.notifd.JavaMailNotificationStrategy</execute>\n" + 
+            "        <comment>class for sending email notifications</comment>\n" + 
+            "        <argument streamed=\"false\">\n" + 
+            "            <switch>-subject</switch>\n" + 
+            "        </argument>\n" + 
+            "        <argument streamed=\"false\">\n" + 
+            "            <switch>-email</switch>\n" + 
+            "        </argument>\n" + 
+            "        <argument streamed=\"false\">\n" + 
+            "            <switch>-tm</switch>\n" + 
+            "        </argument>\n" + 
+            "    </command>\n" + 
+            "   <command binary=\"true\">\n" + 
+            "       <name>syslog</name>\n" + 
+            "       <execute>/usr/bin/logger</execute>\n" + 
+            "       <comment>syslog to local0.warning</comment>\n" + 
+            "       <argument streamed=\"false\">\n" + 
+            "           <substitution>-p</substitution>\n" + 
+            "       </argument>\n" + 
+            "       <argument streamed=\"false\">\n" + 
+            "           <substitution>local0.warning</substitution>\n" + 
+            "       </argument>\n" + 
+            "       <argument streamed=\"false\">\n" + 
+            "           <substitution>-t</substitution>\n" + 
+            "       </argument>\n" + 
+            "       <argument streamed=\"false\">\n" + 
+            "           <substitution>opennms</substitution>\n" + 
+            "       </argument>\n" + 
+            "       <argument streamed=\"true\">\n" + 
+            "           <switch>-tm</switch>\n" + 
+            "       </argument>\n" + 
+            "   </command>\n" + 
+            "    <command binary=\"true\">\n" + 
+            "        <name>textPage</name>\n" + 
+            "        <execute>/usr/bin/qpage</execute>\n" + 
+            "        <comment>text paging program</comment>\n" + 
+            "        <argument streamed=\"false\">\n" + 
+            "            <switch>-p</switch>\n" + 
+            "        </argument>\n" + 
+            "        <argument streamed=\"false\">\n" + 
+            "            <switch>-t</switch>\n" + 
+            "        </argument>\n" + 
+            "    </command>\n" + 
+            "    <command binary=\"true\">\n" + 
+            "        <name>numericPage</name>\n" + 
+            "        <execute>/usr/bin/qpage</execute>\n" + 
+            "        <comment>numeric paging program</comment>\n" + 
+            "        <argument streamed=\"false\">\n" + 
+            "            <substitution>-p</substitution>\n" + 
+            "            <switch>-d</switch>\n" + 
+            "        </argument>\n" + 
+            "        <argument streamed=\"false\">\n" + 
+            "            <switch>-nm</switch>\n" + 
+            "        </argument>\n" + 
+            "    </command>\n" + 
+            "    <command binary=\"true\">\n" + 
+            "        <name>email</name>\n" + 
+            "        <execute>/bin/mail</execute>\n" + 
+            "        <comment>for sending email notifications</comment>\n" + 
+            "        <argument streamed=\"false\">\n" + 
+            "            <substitution>-s</substitution>\n" + 
+            "            <switch>-subject</switch>\n" + 
+            "        </argument>\n" + 
+            "        <argument streamed=\"false\">\n" + 
+            "            <switch>-email</switch>\n" + 
+            "        </argument>\n" + 
+            "        <argument streamed=\"true\">\n" + 
+            "            <switch>-tm</switch>\n" + 
+            "        </argument>\n" + 
+            "    </command>\n" + 
+            "    <command binary=\"true\">\n" + 
+            "        <name>pagerEmail</name>\n" + 
+            "        <execute>/bin/mail</execute>\n" + 
+            "        <comment>for sending pager email notifications</comment>\n" + 
+            "        <argument streamed=\"false\">\n" + 
+            "            <substitution>-s</substitution>\n" + 
+            "            <switch>-subject</switch>\n" + 
+            "        </argument>\n" + 
+            "        <argument streamed=\"false\">\n" + 
+            "            <switch>-pemail</switch>\n" + 
+            "        </argument>\n" + 
+            "        <argument streamed=\"true\">\n" + 
+            "            <switch>-tm</switch>\n" + 
+            "        </argument>\n" + 
+            "    </command>\n" + 
+            "</notification-commands>";
 
     /*
      * @see TestCase#setUp()
@@ -346,6 +669,9 @@ public class NotifdTest extends TestCase {
         m_eventMgr = new MockEventIpcManager();
         m_groupManager = new MockGroupManager(GROUP_MANAGER);
         m_userManager = new MockUserManager(m_groupManager, USER_MANAGER);
+        m_destinationPathManager = new MockDestinationPathManager(PATH_MANAGER);
+        
+        m_notificationCommandManger = new MockNotificationCommandManager(CMD_MANAGER);
         
         m_notifd = new Notifd();
         m_notifdConfig = new MockNotifdConfigManager(m_configString);
