@@ -426,6 +426,7 @@ fi
 
 if [ $run -gt 0 ]; then
     runJava "$@"
+    exit $?
 fi
 
 if [ $search -gt 0 ]; then
