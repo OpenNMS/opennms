@@ -49,6 +49,7 @@ public class Vacuumd implements VacuumdMBean {
      * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#init()
      */
     public void init() {
+        org.opennms.netmgt.vacuumd.Vacuumd.getSingleton().init();
     }
 
     /* (non-Javadoc)
