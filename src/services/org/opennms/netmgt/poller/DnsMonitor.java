@@ -203,7 +203,9 @@ final class DnsMonitor
 		}
 		catch(ConnectException e)
 		{
-			e.fillInStackTrace();
+		        //Connection refused. Continue to retry.
+                        //
+                        e.fillInStackTrace();
 			log.debug("Connection exception for address: " + ipv4Addr, e);
 		}
 		catch (IOException ex) 

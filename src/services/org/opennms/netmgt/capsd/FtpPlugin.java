@@ -220,11 +220,10 @@ public final class FtpPlugin
 			}
 			catch(ConnectException cE)
 			{
-				// Connection refused!!  No need to perform retries.
+				// Connection refused!!  Continue to retry.
 				//
 				log.debug("FtpPlugin: connection refused to " + host.getHostAddress() + ":" + port);
 				isAServer = false;
-				break;
 			}
 			catch(NoRouteToHostException e)
 			{

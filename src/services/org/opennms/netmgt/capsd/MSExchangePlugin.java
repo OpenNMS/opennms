@@ -146,10 +146,9 @@ public final class MSExchangePlugin
 			}
 			catch(ConnectException e)
 			{
-				// Connection refused!!  No need to perform retries.
+				// Connection refused!!  Continue to retry.
 				//
 				log.debug("isServer: Connection refused to " + host.getHostAddress() + ":" + port);
-				break;
 			}
 			catch(NoRouteToHostException e)
 			{

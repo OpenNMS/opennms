@@ -395,7 +395,8 @@ final class SmtpMonitor
                         }
 			catch(ConnectException e)
 			{
-				// Ignore
+				// Connection refused. Continue to retry.
+                                //
 				e.fillInStackTrace();
 				if(log.isDebugEnabled())
 					log.debug("poll: Connection exception for address " + ipv4Addr.getHostAddress(), e);

@@ -172,11 +172,10 @@ public final class SshPlugin
 			}
 			catch(ConnectException e)
 			{
-				// Connection refused!!  No need to perform retries.
+				// Connection refused!!  Continue to retry.
 				//
 				log.debug("SshPlugin: Connection refused to " + host.getHostAddress() + ":" + port);
 				isAServer = false;
-				break;
 			}
 			catch(NoRouteToHostException e)
 			{

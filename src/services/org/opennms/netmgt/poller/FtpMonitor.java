@@ -487,7 +487,7 @@ final class FtpMonitor
                         }
 			catch(ConnectException e)
 			{
-				// Ignore
+				// Connection refused. Continue to retry. 
 				e.fillInStackTrace();
 				log.debug("FtpMonitor.poll: Connection exception for address: " + ipv4Addr, e);
 			}

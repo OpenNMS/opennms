@@ -324,12 +324,11 @@ final class HttpsMonitor
 				}
 				catch(ConnectException e)
 				{
-					// Connection Refused!!  No need to perform retries for this port.
+					// Connection Refused!!  Continue to retry.
 					//
 					e.fillInStackTrace();
 					log.debug("Connection exception for " + ipv4Addr + ":" + ports[portIndex], e);
 
-					break; // Break out of inner for(;;)
 				}
 				catch(IOException e)
 				{

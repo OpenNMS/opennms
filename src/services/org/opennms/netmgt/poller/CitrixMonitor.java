@@ -195,12 +195,11 @@ final class CitrixMonitor
 			}
 			catch(ConnectException cE)
 			{
-				// Connection refused!!  No need to perform retries.
+				// Connection refused!!  Continue to retry.
 				//
 				cE.fillInStackTrace();
 				log.debug("CitrixPlugin: connection refused by host " + host, cE);
 				serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
-				break;
 			}
 			catch(NoRouteToHostException e)
 			{

@@ -224,7 +224,8 @@ final class Pop3Monitor
                         }
 			catch(ConnectException e)
 			{
-				// Ignore
+				// Connection refused. Continue to retry.
+                                //
 				if(log.isDebugEnabled())
 					log.debug("poll: Connection exception for address " + ipv4Addr.getHostAddress(), e);
 			}

@@ -140,11 +140,10 @@ public final class CitrixPlugin
 			}
 			catch(ConnectException cE)
 			{
-				// Connection refused!!  No need to perform retries.
+				// Connection refused!!  Continue to  retry.
 				//
 				log.debug("CitrixPlugin: connection refused to " + host.getHostAddress() + ":" + port);
 				isAServer = false;
-				break;
 			}
 			catch(NoRouteToHostException e)
 			{

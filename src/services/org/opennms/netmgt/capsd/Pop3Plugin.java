@@ -146,11 +146,10 @@ public final class Pop3Plugin
 			}
 			catch(ConnectException cE)
 			{
-				// Connection refused!!  No need to perform retries.
+				// Connection refused!!  Continue to retry.
 				//
 				log.debug("Pop3Plugin: Connection refused to " + host.getHostAddress() + ":" + port);
 				isAServer = false;
-				break;
 			}
 			catch(NoRouteToHostException e)
 			{

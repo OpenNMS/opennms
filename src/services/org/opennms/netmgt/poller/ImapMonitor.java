@@ -252,7 +252,8 @@ final class ImapMonitor
                         }
 			catch(ConnectException e)
 			{
-				// Ignore
+				// Connection refused. Continue to retry.
+                                //
 				e.fillInStackTrace();
 				log.debug("ImapMonitor.poll: Connection exception for address: " + ipv4Addr, e);
 			}

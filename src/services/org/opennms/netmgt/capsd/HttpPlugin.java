@@ -213,10 +213,9 @@ public class HttpPlugin
 			}
 			catch(ConnectException e)
 			{
-				// Connection refused!!  No need to perform retries.
+				// Connection refused!!  Continue to retry.
 				//
 				log.debug(getClass().getName()+": connection refused to " + host.getHostAddress() + ":" + port);
-				break;
 			}
 			catch(NoRouteToHostException e)
 			{

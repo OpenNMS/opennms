@@ -158,11 +158,10 @@ public final class TcpPlugin
 			}
 			catch(ConnectException e)
 			{
-				// Connection refused!!  No need to perform retries.
+				// Connection refused!!  Continue to retry.
 				//
 				log.debug("TcpPlugin: Connection refused to " + host.getHostAddress() + ":" + port);
 				isAServer = false;
-				break;
 			}
 			catch(NoRouteToHostException e)
 			{

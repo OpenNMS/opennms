@@ -104,7 +104,7 @@ final class HttpMonitor
 	public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) 
 	{
 		//
-		// Get interface address from NetworkInterface
+        	// Get interface address from NetworkInterface
 		//
 		if (iface.getType() != iface.TYPE_IPV4)
 			throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
@@ -288,12 +288,11 @@ final class HttpMonitor
                         	}
 				catch(ConnectException e)
 				{
-					// Connection Refused!!  No need to perform retries for this port.
+					// Connection Refused. Continue to retry.
 					//
 					e.fillInStackTrace();
 					log.debug("Connection exception for " + ipv4Addr + ":" + ports[portIndex], e);
 
-					break; // Break out of inner for(;;)
 				}
 				catch(IOException e)
 				{

@@ -265,11 +265,10 @@ public final class SmtpPlugin
 			}
 			catch(ConnectException cE)
 			{
-				// Connection refused!!  No need to perform retries.
+				// Connection refused!!  Continue to retry.
 				//
 				log.debug("SmtpPlugin: connection refused to " + host.getHostAddress() + ":" + port);
 				isAServer = false;
-				break;
 			}
 			catch(NoRouteToHostException e)
 			{

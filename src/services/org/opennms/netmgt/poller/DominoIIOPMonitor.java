@@ -212,7 +212,8 @@ final class DominoIIOPMonitor
 			}
 			catch(ConnectException e)
 			{
-				// Ignore
+				// Connection refused. Continue to retry.
+                                //
 				e.fillInStackTrace();
 				if(log.isDebugEnabled())
 					log.debug("DominoIIOPMonitor: Connection exception for address: " + ipv4Addr, e);
