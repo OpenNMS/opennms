@@ -63,6 +63,8 @@ import org.opennms.core.utils.ThreadCategory;
  * open)
  */
 public class JRobinRrdStrategy implements RrdStrategy {
+    
+    private boolean m_initialized = false;
 
     /**
      * Closes the JRobin RrdDb.
@@ -130,8 +132,11 @@ public class JRobinRrdStrategy implements RrdStrategy {
      * Initialized the RrdDb to use the FILE factory because the NIO factory
      * uses too much memory for our implementation.
      */
-    public void initialize() throws Exception {
-        RrdDb.setDefaultFactory("FILE");
+    public synchronized void initialize() throws Exception {
+        if (!m_initialized) {
+            RrdDb.setDefaultFactory("FILE");
+            m_initialized = true;
+        }
     }
 
     /* (non-Javadoc)
