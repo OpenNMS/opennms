@@ -713,6 +713,14 @@ final class RescanProcessor implements Runnable {
                     dbSnmpIfEntry.updateName(ifName);
             }
 
+            // alias (from interface extensions table)
+            SnmpOctetString snmpIfAlias = snmpc.getIfAlias(ifIndex);
+            if (snmpIfAlias != null) {
+                String ifAlias = SystemGroup.getPrintableString(snmpIfAlias);
+                if (ifAlias != null && ifAlias.length() > 0)
+                    dbSnmpIfEntry.updateAlias(ifAlias);
+            }
+
         } // end if valid ifTable entry
 
         // If this is a new interface or if any of the following
@@ -722,7 +730,7 @@ final class RescanProcessor implements Runnable {
         // SNMP interface for the node.
         if (!m_snmpIfTableChangedFlag && newSnmpIfTableEntry ||
         // dbSnmpIfEntry.hasIfIndexChanged() ||
-                dbSnmpIfEntry.hasIfAddressChanged() || dbSnmpIfEntry.hasTypeChanged() || dbSnmpIfEntry.hasNameChanged() || dbSnmpIfEntry.hasDescriptionChanged() || dbSnmpIfEntry.hasPhysicalAddressChanged()) {
+                dbSnmpIfEntry.hasIfAddressChanged() || dbSnmpIfEntry.hasTypeChanged() || dbSnmpIfEntry.hasNameChanged() || dbSnmpIfEntry.hasDescriptionChanged() || dbSnmpIfEntry.hasPhysicalAddressChanged() || dbSnmpIfEntry.hasAliasChanged()) {
             m_snmpIfTableChangedFlag = true;
         }
 
@@ -1672,6 +1680,14 @@ final class RescanProcessor implements Runnable {
                         currSnmpIfEntry.setName(ifName);
                 }
 
+                // alias (from interface extensions table)
+                SnmpOctetString snmpIfAlias = snmpc.getIfAlias(ifIndex);
+                if (snmpIfAlias != null) {
+                    String ifAlias = SystemGroup.getPrintableString(snmpIfAlias);
+                    if (ifAlias != null && ifAlias.length() > 0)
+                        currSnmpIfEntry.setAlias(ifAlias);
+                }
+
             } // end if valid ifTable entry
 
             // Update any fields which have changed
@@ -1685,6 +1701,7 @@ final class RescanProcessor implements Runnable {
             dbSnmpIfEntry.updateSpeed(currSnmpIfEntry.getSpeed());
             dbSnmpIfEntry.updateAdminStatus(currSnmpIfEntry.getAdminStatus());
             dbSnmpIfEntry.updateOperationalStatus(currSnmpIfEntry.getOperationalStatus());
+            dbSnmpIfEntry.updateAlias(currSnmpIfEntry.getAlias());
 
             // If this is a new interface or if any of the following
             // key fields have changed set the m_snmpIfTableChangedFlag
@@ -1693,7 +1710,7 @@ final class RescanProcessor implements Runnable {
             // SNMP interface for the node.
             if (!m_snmpIfTableChangedFlag && newSnmpIfTableEntry ||
             // dbSnmpIfEntry.hasIfIndexChanged() ||
-                    dbSnmpIfEntry.hasIfAddressChanged() || dbSnmpIfEntry.hasTypeChanged() || dbSnmpIfEntry.hasNameChanged() || dbSnmpIfEntry.hasDescriptionChanged() || dbSnmpIfEntry.hasPhysicalAddressChanged()) {
+                    dbSnmpIfEntry.hasIfAddressChanged() || dbSnmpIfEntry.hasTypeChanged() || dbSnmpIfEntry.hasNameChanged() || dbSnmpIfEntry.hasDescriptionChanged() || dbSnmpIfEntry.hasPhysicalAddressChanged() || dbSnmpIfEntry.hasAliasChanged()) {
                 m_snmpIfTableChangedFlag = true;
             }
 

@@ -64,6 +64,8 @@ public class Interface {
     int m_snmpIfSpeed;
 
     int m_snmpIfAdminStatus;
+    
+    String m_snmpIfAlias;
 
     public int getNodeId() {
         return m_nodeId;
@@ -135,6 +137,10 @@ public class Interface {
 
     public boolean isManaged() {
         return (m_isManaged == 'M');
+    }
+
+    public String getSnmpIfAlias() {
+        return m_snmpIfAlias;
     }
 
 }

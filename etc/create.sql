@@ -259,6 +259,8 @@ create index ipinterface_nodeid_idx on ipInterface(nodeID);
 --#  snmpIfOperStatus   : SNMP MIB-2 ifTable.ifEntry.ifOperStatus
 --#                       Value is interface's current operational status
 --#                       1 = Up, 2 = Down, 3 = Testing
+--#  snmpIfAlias		: SNMP MIB-2 ifXTable.ifXEntry.ifAlias
+--#			  Value is interface's device alias
 --#
 --# NOTE:  Although not marked as "not null" the snmpIfIndex field
 --#        should never be null.  This table is considered to be uniquely
@@ -279,7 +281,8 @@ create table snmpInterface (
 	snmpIfName		varchar(32),
 	snmpIfSpeed		integer,
 	snmpIfAdminStatus	integer,
-	snmpIfOperStatus	integer );
+	snmpIfOperStatus	integer,
+	snmpIfAlias		varchar(32)	);
 
 create index snmpinterface_nodeid_ifindex_idx on snmpinterface(nodeID, snmpIfIndex);
 create index snmpinterface_nodeid_idx on snmpinterface(nodeID);

@@ -736,6 +736,9 @@ public class NetworkElementFactory extends Object {
 
                     element = new Integer(rs.getInt("snmpIfAdminStatus"));
                     intfs[i].m_snmpIfAdminStatus = ((Integer) element).intValue();
+
+                    element = rs.getString("snmpIfAlias");
+                    intfs[i].m_snmpIfAlias = (String) element;
                 }
 
                 rs.close();

@@ -825,6 +825,14 @@ final class SuspectEventProcessor implements Runnable {
                             snmpEntry.setName(ifName);
                     }
 
+                    // alias (from interface extensions table)
+                    SnmpOctetString snmpIfAlias = snmpc.getIfAlias(xifIndex);
+                    if (snmpIfAlias != null) {
+                        String ifAlias = SystemGroup.getPrintableString(snmpIfAlias);
+                        if (ifAlias != null && ifAlias.length() > 0)
+                            snmpEntry.setAlias(ifAlias);
+                    }
+
                     snmpEntry.store(dbc);
                 }
             }

@@ -406,6 +406,47 @@ final class IfSnmpCollector implements Runnable {
     }
 
     /**
+     * 
+     */
+    SnmpOctetString getIfAlias(int ifIndex) {
+        Category log = ThreadCategory.getInstance(getClass());
+        SnmpOctetString snmpIfAlias = null;
+
+        if (m_ifXTable != null && !m_ifXTable.failed()) {
+            // Find ifXTable entry with matching ifIndex
+            //
+            Iterator iter = m_ifXTable.getEntries().iterator();
+            while (iter.hasNext()) {
+                IfXTableEntry ifXEntry = (IfXTableEntry) iter.next();
+
+                int ifXIndex = -1;
+                SnmpInt32 snmpIfIndex = (SnmpInt32) ifXEntry.get(IfXTableEntry.IF_INDEX);
+                if (snmpIfIndex != null)
+                    ifXIndex = snmpIfIndex.getValue();
+
+                // compare with passed ifIndex
+                if (ifXIndex == ifIndex) {
+                    // Found match! Get the ifAlias
+                    snmpIfAlias = (SnmpOctetString) ifXEntry.get(IfXTableEntry.IF_ALIAS);
+                    break;
+                }
+
+            }
+        }
+
+        // Debug
+        if (snmpIfAlias != null) {
+            if (log.isDebugEnabled())
+                log.debug("getIfAlias: ifIndex " + ifIndex + " has ifAlias '" + snmpIfAlias + "'");
+        } else {
+            if (log.isDebugEnabled())
+                log.debug("getIfAlias: no ifAlias found for ifIndex " + ifIndex);
+        }
+
+        return snmpIfAlias;
+    }
+    
+    /**
      * <p>
      * Preforms the collection for the targeted internet address. The success or
      * failure of the collection should be tested via the <code>failed</code>

@@ -73,7 +73,7 @@ final class DbSnmpInterfaceEntry {
      * The SQL statement used to read a node from the database. This record is
      * keyed by the node identifier and the ifIndex.
      */
-    private static final String SQL_LOAD_REC = "SELECT ipAddr, snmpIpAdEntNetMask, snmpPhysAddr, snmpIfDescr, snmpIfType, snmpIfName, snmpIfSpeed, snmpIfAdminStatus, snmpIfOperStatus FROM snmpInterface WHERE nodeID = ? AND snmpIfIndex = ?";
+    private static final String SQL_LOAD_REC = "SELECT ipAddr, snmpIpAdEntNetMask, snmpPhysAddr, snmpIfDescr, snmpIfType, snmpIfName, snmpIfSpeed, snmpIfAdminStatus, snmpIfOperStatus, snmpIfAlias FROM snmpInterface WHERE nodeID = ? AND snmpIfIndex = ?";
 
     /**
      * True if this recored was loaded from the database. False if it's new.
@@ -104,6 +104,8 @@ final class DbSnmpInterfaceEntry {
     private int m_ifType;
 
     private String m_ifName;
+
+    private String m_ifAlias;
 
     private int m_ifSpeed;
 
@@ -136,6 +138,8 @@ final class DbSnmpInterfaceEntry {
     private static final int CHANGED_IFADMINSTATUS = 1 << 7;
 
     private static final int CHANGED_IFOPERSTATUS = 1 << 8;
+    
+    private static final int CHANGED_IFALIAS = 1 << 9;
 
     /**
      * Inserts the new interface into the ipInterface table of the OpenNMS
@@ -202,6 +206,12 @@ final class DbSnmpInterfaceEntry {
             values.append(",?");
             names.append(",snmpIfOperStatus");
         }
+        
+        if ((m_changed & CHANGED_IFALIAS) == CHANGED_IFALIAS) {
+            values.append(",?");
+            names.append(",snmpIfAlias");
+        }
+       
 
         names.append(") VALUES (").append(values).append(')');
         log.debug("DbSnmpInterfaceEntry.insert: SQL insert statment = " + names.toString());
@@ -242,6 +252,9 @@ final class DbSnmpInterfaceEntry {
 
         if ((m_changed & CHANGED_IFOPERSTATUS) == CHANGED_IFOPERSTATUS)
             stmt.setInt(ndx++, m_ifOperStatus);
+        
+        if ((m_changed & CHANGED_IFALIAS) == CHANGED_IFALIAS)
+            stmt.setString(ndx++, m_ifAlias);
 
         // Run the insert
         //
@@ -322,6 +335,11 @@ final class DbSnmpInterfaceEntry {
             comma = ',';
         }
 
+        if ((m_changed & CHANGED_IFALIAS) == CHANGED_IFALIAS) {
+            sqlText.append(comma).append("snmpIfAlias = ?");
+            comma = ',';
+        }
+
         sqlText.append(" WHERE nodeID = ? AND snmpIfIndex = ? ");
 
         log.debug("DbSnmpInterfaceEntry.update: SQL update statment = " + sqlText.toString());
@@ -395,6 +413,13 @@ final class DbSnmpInterfaceEntry {
                 stmt.setNull(ndx++, Types.INTEGER);
             else
                 stmt.setInt(ndx++, m_ifOperStatus);
+        }
+
+        if ((m_changed & CHANGED_IFALIAS) == CHANGED_IFALIAS) {
+            if (m_ifAlias == null)
+                stmt.setNull(ndx++, Types.VARCHAR);
+            else
+                stmt.setString(ndx++, m_ifAlias);
         }
 
         stmt.setInt(ndx++, m_nodeId);
@@ -517,7 +542,13 @@ final class DbSnmpInterfaceEntry {
         m_ifOperStatus = rset.getInt(ndx++);
         if (rset.wasNull())
             m_ifOperStatus = -1;
-
+        
+        // get the alias
+        //
+        m_ifAlias = rset.getString(ndx++);
+        if (rset.wasNull())
+            m_ifAlias = null;
+        
         rset.close();
         stmt.close();
 
@@ -558,6 +589,7 @@ final class DbSnmpInterfaceEntry {
         m_ifSpeed = -1;
         m_ifAdminStatus = -1;
         m_ifOperStatus = -1;
+        m_ifAlias = null;
         m_changed = 0;
     }
 
@@ -585,6 +617,7 @@ final class DbSnmpInterfaceEntry {
         m_ifSpeed = -1;
         m_ifAdminStatus = -1;
         m_ifOperStatus = -1;
+        m_ifAlias = null;
         m_changed = 0;
     }
 
@@ -840,7 +873,33 @@ final class DbSnmpInterfaceEntry {
             return true;
         }
     }
+    
+    String getAlias() {
+        return m_ifAlias;
+    }
 
+    void setAlias(String alias) {
+        m_ifAlias = alias;
+        m_changed |= CHANGED_IFALIAS;
+    }
+
+    boolean hasAliasChanged() {
+        if ((m_changed & CHANGED_IFALIAS) == CHANGED_IFALIAS)
+            return true;
+        else
+            return false;
+    }
+
+    boolean updateAlias(String newIfAlias) {
+        if (newIfAlias == null || newIfAlias.equals(m_ifAlias))
+            return false;
+        else {
+            setAlias(newIfAlias);
+            return true;
+        }
+    }
+
+    
     /**
      * Updates the interface information in the configured database. If the
      * interface does not exist the a new row in the table is created. If the
@@ -971,6 +1030,7 @@ final class DbSnmpInterfaceEntry {
         buf.append("ifSpeed         = ").append(m_ifSpeed).append(sep);
         buf.append("ifAdminStatus   = ").append(m_ifAdminStatus).append(sep);
         buf.append("ifOperStatus    = ").append(m_ifOperStatus).append(sep);
+        buf.append("ifAlias          = ").append(m_ifAlias).append(sep);
         return buf.toString();
     }
 

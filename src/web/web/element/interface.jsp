@@ -309,6 +309,11 @@ function doDelete() {
                       <td>Description</td>
                       <td><%=(intf_db.getSnmpIfDescription() == null) ? "&nbsp;" : intf_db.getSnmpIfDescription()%></td>
                     </tr>
+                    <tr>
+                      <td>Alias</td>
+                      <td><%=(intf_db.getSnmpIfAlias() == null) ? "&nbsp;" : intf_db.getSnmpIfAlias()%></td>
+                    </tr>
+
                   </table>
                   <br>
             <% } %>
@@ -605,6 +610,9 @@ function doDelete() {
           return true;
       
       if (intf_db.getSnmpIfOperStatus() > 0)
+          return true;
+
+      if (intf_db.getSnmpIfAlias() != null)
           return true;
       
       return false;
