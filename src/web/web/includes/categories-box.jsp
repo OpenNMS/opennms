@@ -100,9 +100,9 @@
 
 		<tr>
 
-		<td><a href="rtc/category.jsp?category=<%=
-			    URLEncoder.encode(response.encodeURL(categoryName),
-					      "UTF-8") %>"
+		<td><a href="<%= response.encodeURL(
+				"rtc/category.jsp?category=" +
+			    	URLEncoder.encode(categoryName, "UTF-8")) %>"
 		       title="<%= category.getTitle() %>"
 		    ><%= categoryName %></a></td>
 		<td bgcolor="<%= (opennmsDisconnect ? "lightblue" :
