@@ -317,8 +317,8 @@ public class PollerTest extends TestCase {
         anticipateDown(dotThree);
 
         startDaemons();
-
-	sleep(2000);
+        
+		sleep(2000);
 
         // move the reparted interface and send a reparented event
         dotTwo.moveTo(node2);
@@ -341,7 +341,7 @@ public class PollerTest extends TestCase {
 
         //sleep(5000);
 
-        verifyAnticipated(6000);
+        verifyAnticipated(2000);
 
     }
 
@@ -474,6 +474,45 @@ public class PollerTest extends TestCase {
 
 
     }
+    
+    // test open outages for unmanaged services
+    public void testUnmangedWithOpenOutageAtStartup() {
+        // before we start we need to initialize the database
+        
+        // create an outage for the service
+        MockService svc = m_network.getService(1, "192.168.1.1", "SMTP");
+        MockInterface iface = m_network.getInterface(1, "192.168.1.2");
+        
+        Event svcLostEvent = MockUtil.createNodeLostServiceEvent("Test", svc);
+        m_db.writeEvent(svcLostEvent);
+        createOutages(svc, svcLostEvent);
+        
+        Event ifaceDownEvent = MockUtil.createInterfaceDownEvent("Test", iface);
+        m_db.writeEvent(ifaceDownEvent);
+        createOutages(iface, ifaceDownEvent);
+        
+        // mark the service as unmanaged
+        m_db.setServiceStatus(svc, 'U');
+        m_db.setInterfaceStatus(iface, 'U');
+        
+        // assert that we have an open outage
+        assertEquals(1, m_db.countOpenOutagesForService(svc));
+        assertEquals(1, m_db.countOutagesForService(svc));
+        
+        assertEquals(iface.getServices().size(), m_db.countOutagesForInterface(iface));
+        assertEquals(iface.getServices().size(), m_db.countOpenOutagesForInterface(iface));
+        
+        startDaemons();
+        
+        // assert that we have no open outages
+        assertEquals(0, m_db.countOpenOutagesForService(svc));
+        assertEquals(1, m_db.countOutagesForService(svc));
+
+        assertEquals(0, m_db.countOpenOutagesForInterface(iface));
+        assertEquals(iface.getServices().size(), m_db.countOutagesForInterface(iface));
+
+    }
+
 
     public void testReparentCausesStatusChange() {
 
@@ -652,10 +691,6 @@ public class PollerTest extends TestCase {
         m_anticipator.anticipateEvent(element.createDownEvent());
     }
     
-    
-    
-    
-
     private void anticipateServicesUp(MockElement node) {
         MockVisitor eventCreator = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
@@ -672,6 +707,15 @@ public class PollerTest extends TestCase {
             }
         };
         node.visit(eventCreator);
+    }
+
+    private void createOutages(MockElement element, final Event event) {
+        MockVisitor outageCreater = new MockVisitorAdapter() {
+            public void visitService(MockService svc) {
+                m_db.createOutage(svc, event);
+            }
+        };
+        element.visit(outageCreater);
     }
 
     private void bringDownCritSvcs(MockElement element) {
