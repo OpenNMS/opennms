@@ -132,7 +132,7 @@ final class HttpsMonitor
 
 		int retry   = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
 		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
-		int[] ports = ParameterMap.getKeyedIntegerArray(parameters, "ports", DEFAULT_PORTS);
+		int[] ports = ParameterMap.getKeyedIntegerArray(parameters, "port", DEFAULT_PORTS);
 		String url  = ParameterMap.getKeyedString(parameters, "url", DEFAULT_URL);
                 String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
                 String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);

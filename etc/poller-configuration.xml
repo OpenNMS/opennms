@@ -67,33 +67,33 @@
 		</service>
 		<service name="HTTP" interval="300000" user-defined="false" status="on">
                         <parameter key="timeout" value="3000"/>
-                        <parameter key="ports" value="80"/>
+                        <parameter key="port" value="80"/>
                         <parameter key="url" value="/"/>
 			<parameter key="rrd-repository" value="@root.install.share@/rrd/response"/>
 			<parameter key="ds-name" value="http"/>
                 </service>
 		<service name="HTTP-MGMT" interval="300000" user-defined="false" status="on">
                         <parameter key="timeout" value="3000"/>
-                        <parameter key="ports" value="280"/>
+                        <parameter key="port" value="280"/>
                         <parameter key="url" value="/"/>
                 </service>
                 <service name="HTTP-8080" interval="300000" user-defined="false" status="on">
                         <parameter key="timeout" value="3000"/>
-                        <parameter key="ports" value="8080"/>
+                        <parameter key="port" value="8080"/>
                         <parameter key="url" value="/"/>
 			<parameter key="rrd-repository" value="@root.install.share@/rrd/response"/>
 			<parameter key="ds-name" value="http-8080"/>
                 </service>
                 <service name="HTTP-8000" interval="300000" user-defined="false" status="on">
                         <parameter key="timeout" value="3000"/>
-                        <parameter key="ports" value="8000"/>
+                        <parameter key="port" value="8000"/>
                         <parameter key="url" value="/"/>
 			<parameter key="rrd-repository" value="@root.install.share@/rrd/response"/>
 			<parameter key="ds-name" value="http-8000"/>
                 </service>
                 <service name="HTTPS" interval="300000" user-defined="false" status="on">
 			<parameter key="timeout" value="5000"/>
-			<parameter key="ports" value="443"/>
+			<parameter key="port" value="443"/>
 			<parameter key="url" value="/"/>
 		</service>
 		<service name="MySQL" interval="300000" user-defined="false" status="on">

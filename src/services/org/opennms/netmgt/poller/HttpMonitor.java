@@ -76,7 +76,7 @@ final class HttpMonitor
 	extends IPv4LatencyMonitor
 {
 	/** 
-	 * Default HTTP ports.
+	 * Default HTTP ports. 
 	 */
 	private static final int[] DEFAULT_PORTS 	= {80, 8080, 8888};
 
@@ -126,7 +126,7 @@ final class HttpMonitor
 
 		int retry   = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
 		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
-		int[] ports = ParameterMap.getKeyedIntegerArray(parameters, "ports", DEFAULT_PORTS);
+		int[] ports = ParameterMap.getKeyedIntegerArray(parameters, "port", DEFAULT_PORTS);
 		String url  = ParameterMap.getKeyedString(parameters, "url", DEFAULT_URL);
 		String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
 		String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
