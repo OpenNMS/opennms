@@ -20,7 +20,9 @@ VERSION_OPENNMS='1.21'
 STOP_ATTEMPTS=0
 RESTART_TOMCAT=0
 
-ulimit -s 2048
+#Suggestion by WC: ulimit -s 2048
+ulimit -s 8192
+ulimit -n 10240
 
 PWD_CMD=`which pwd 2>&1 | grep -v "no pwd in" | grep -v "shell built-in command"`
 [ -z "$PWD_COMMAND" ] && [ -x /bin/pwd ] && PWD_CMD="/bin/pwd"
