@@ -668,7 +668,7 @@ if ($TOMCAT) {
 
 	}
 
-	for my $dir ('/var/tomcat4/conf', '/sw/var/tomcat4/conf', '/usr/local/tomcat4/conf', '/etc/tomcat4') {
+	for my $dir ('/var/tomcat4/conf', '/sw/var/tomcat4/conf', '/usr/local/tomcat4/conf', '/etc/tomcat4', '/usr/local/tomcat/conf') {
 
 		my $serverxml  = $dir . '/server.xml';
 
@@ -864,7 +864,7 @@ unless ($NOSO) {
 	my $plpgsql_failed = 0;
 	my $plpgsql_sofile;
 	print "- adding PL/pgSQL call handler... ";
-	for my $dir ('/usr/lib', '/usr/local/lib', '/sw/lib/postgresql') {
+	for my $dir ('/usr/lib', '/usr/local/lib', '/sw/lib/postgresql', '/usr/local/pgsql/lib') {
 		for ($SOEXT, 'so') {
 			if (-d "$dir") {
 				if (-f "$dir/pgsql/plpgsql.$_") {
