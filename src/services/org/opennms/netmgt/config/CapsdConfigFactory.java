@@ -1330,11 +1330,11 @@ public final class CapsdConfigFactory
 					InetAddress stop = null;
 					try
 					{
-						start = InetAddress.getByName(rng.getBegin());
+						stop = InetAddress.getByName(rng.getEnd());
 					}
 					catch(UnknownHostException e)
 					{
-						log.warn("CapsdConfigFactory: failed to convert address " + rng.getBegin() + " to InetAddress", e);
+						log.warn("CapsdConfigFactory: failed to convert address " + rng.getEnd() + " to InetAddress", e);
 						continue;
 					}
 
