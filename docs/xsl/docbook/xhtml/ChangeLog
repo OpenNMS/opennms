@@ -1,0 +1,16 @@
+2001-08-01  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* docbook.xsl: Bug #441079, use import instead of include so that xsl:output isn't occurring multiple times at the same level
+
+2001-06-20  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* docbook.xsl: Put public and system identifiers on XHTML documents to that entity references (&nbsp; etc.) work
+
+2001-04-03  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* chunk.xsl, docbook.xsl, xtchunk.xsl: Support MathML and chunking properly
+
+2001-04-02  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* docbook.xsl, xtchunk.xsl: New file.
+

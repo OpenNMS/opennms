@@ -103,7 +103,7 @@ public final class IfTableEntry
 	 */
 	static
 	{
-		ms_elemList = new NamedSnmpVar[22];
+		ms_elemList = new NamedSnmpVar[9];
 		int ndx = 0;
 		
 		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, 		IF_INDEX, 		".1.3.6.1.2.1.2.2.1.1",  1);
@@ -115,19 +115,19 @@ public final class IfTableEntry
 		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, 		IF_ADMIN_STATUS,	".1.3.6.1.2.1.2.2.1.7",  7);
 		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, 		IF_OPER_STATUS, 	".1.3.6.1.2.1.2.2.1.8",  8);
 		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPTIMETICKS, 	IF_LAST_CHANGE, 	".1.3.6.1.2.1.2.2.1.9",  9);
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, 	IF_IN_OCTETS,		".1.3.6.1.2.1.2.2.1.10", 10);
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,	IF_IN_UCAST,		".1.3.6.1.2.1.2.2.1.11", 11);
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,	IF_IN_NUCAST,	 	".1.3.6.1.2.1.2.2.1.12", 12);
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,	IF_IN_DISCARDS, 	".1.3.6.1.2.1.2.2.1.13", 13);
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,	IF_IN_ERRORS, 		".1.3.6.1.2.1.2.2.1.14", 14);
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,	IF_IN_UKNOWN_PROTOS,	".1.3.6.1.2.1.2.2.1.15", 15);
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,	IF_OUT_OCTETS, 		".1.3.6.1.2.1.2.2.1.16", 16);
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,	IF_OUT_UCAST, 		".1.3.6.1.2.1.2.2.1.17", 17);
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,	IF_OUT_NUCAST, 		".1.3.6.1.2.1.2.2.1.18", 18);
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,	IF_OUT_DISCARDS,	".1.3.6.1.2.1.2.2.1.19", 19);
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,	IF_OUT_ERRORS, 		".1.3.6.1.2.1.2.2.1.20", 20);
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPGAUGE32,		IF_OUT_QLEN, 		".1.3.6.1.2.1.2.2.1.21", 21);
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID,	IF_SPECIFIC,	 	".1.3.6.1.2.1.2.2.1.22", 22);
+//		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32, 	IF_IN_OCTETS,		".1.3.6.1.2.1.2.2.1.10", 10);
+//		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,	IF_IN_UCAST,		".1.3.6.1.2.1.2.2.1.11", 11);
+//		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,	IF_IN_NUCAST,	 	".1.3.6.1.2.1.2.2.1.12", 12);
+//		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,	IF_IN_DISCARDS, 	".1.3.6.1.2.1.2.2.1.13", 13);
+//		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,	IF_IN_ERRORS, 		".1.3.6.1.2.1.2.2.1.14", 14);
+//		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,	IF_IN_UKNOWN_PROTOS,	".1.3.6.1.2.1.2.2.1.15", 15);
+//		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,	IF_OUT_OCTETS, 		".1.3.6.1.2.1.2.2.1.16", 16);
+//		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,	IF_OUT_UCAST, 		".1.3.6.1.2.1.2.2.1.17", 17);
+//		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,	IF_OUT_NUCAST, 		".1.3.6.1.2.1.2.2.1.18", 18);
+//		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,	IF_OUT_DISCARDS,	".1.3.6.1.2.1.2.2.1.19", 19);
+//		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPCOUNTER32,	IF_OUT_ERRORS, 		".1.3.6.1.2.1.2.2.1.20", 20);
+//		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPGAUGE32,		IF_OUT_QLEN, 		".1.3.6.1.2.1.2.2.1.21", 21);
+//		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID,	IF_SPECIFIC,	 	".1.3.6.1.2.1.2.2.1.22", 22);
 	}
 
 	/**
