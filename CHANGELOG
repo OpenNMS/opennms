@@ -1,5 +1,7 @@
 1.1.1 to 1.1.2
 ----------------------------------------------------------------------
+- Added an SSH specific poller that sends an identification string
+  when connecting. Helps reduce the number of logs.
 - Added a "bits" report and made it the default report for KSC.
 - Added the ability to define a null filter (speeds things up)
 - Added new Cisco and UCD-SNMP reports (Thx Tony and Stuart)
