@@ -175,6 +175,7 @@ your distribution.
   <path id="libraries.java.path">
     <pathelement path="${packaged.lib.dir}/log4j.jar"/>
     <pathelement path="${packaged.lib.dir}/commons-logging.jar"/>
+    <pathelement path="${packaged.lib.dir}/oro204.jar"/>
     <pathelement path="${packaged.lib.dir}/regexp120.jar"/>
     <pathelement path="${dev.lib.dir}/servlet.jar"/>
     <pathelement path="${packaged.lib.dir}/ldap.jar"/>
