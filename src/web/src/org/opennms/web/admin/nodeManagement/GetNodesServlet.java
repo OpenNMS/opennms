@@ -46,7 +46,7 @@ public class GetNodesServlet extends HttpServlet
 	//	"SELECT nodeid, nodelabel FROM node ORDER BY nodelabel, nodeid";
 	
         private static final String INTERFACE_QUERY = 
-                "SELECT nodeid, ipaddr, isManaged FROM ipinterface WHERE ismanaged in ('M','A','U','F') AND ipaddr <> '0.0.0.0' ORDER BY ipaddr";
+                "SELECT nodeid, ipaddr, isManaged FROM ipinterface WHERE ismanaged in ('M','A','U','F') AND ipaddr <> '0.0.0.0' ORDER BY inet(ipaddr)";
         
         private static final String SERVICE_QUERY =
                 "SELECT ifservices.serviceid, servicename, status FROM ifservices, service WHERE nodeid=? AND ipaddr=? AND status in ('A','U','F') AND ifservices.serviceid = service.serviceid ORDER BY servicename";

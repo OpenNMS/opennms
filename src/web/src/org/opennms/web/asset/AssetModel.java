@@ -207,7 +207,7 @@ public class AssetModel extends Object
         Vector vector = new Vector();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement( "SELECT NODEID, NODE.NODELABEL, " + columnName + " FROM ASSETS WHERE LOWER(" + columnName + ") LIKE ? AND ASSETS.NODEID=NODE.NODEID" );
+            PreparedStatement stmt = conn.prepareStatement( "SELECT NODEID, NODE.NODELABEL, " + columnName + " FROM ASSETS WHERE LOWER(" + columnName + ") LIKE ? AND ASSETS.NODEID=NODE.NODEID ORDER BY NODE.NODELABEL" );
             stmt.setString( 1, "%" + searchText.toLowerCase() + "%" );
             
             ResultSet rs = stmt.executeQuery();

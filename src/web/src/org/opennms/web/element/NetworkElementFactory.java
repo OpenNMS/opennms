@@ -140,7 +140,7 @@ public class NetworkElementFactory extends Object
 
         try {
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery( "SELECT * FROM NODE WHERE NODETYPE != 'D'" );
+            ResultSet rs = stmt.executeQuery( "SELECT * FROM NODE WHERE NODETYPE != 'D' ORDER BY NODELABEL" );
     
             nodes = rs2Nodes( rs );
             
@@ -173,7 +173,7 @@ public class NetworkElementFactory extends Object
             buffer.append( nodeLabel );
             buffer.append( "%" );
 
-            PreparedStatement stmt = conn.prepareStatement( "SELECT * FROM NODE WHERE LOWER(NODELABEL) LIKE ? AND NODETYPE != 'D'" );
+            PreparedStatement stmt = conn.prepareStatement( "SELECT * FROM NODE WHERE LOWER(NODELABEL) LIKE ? AND NODETYPE != 'D' ORDER BY NODELABEL" );
             stmt.setString( 1, buffer.toString() );
             ResultSet rs = stmt.executeQuery();
     
@@ -202,7 +202,7 @@ public class NetworkElementFactory extends Object
         Connection conn = Vault.getDbConnection();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement( "SELECT DISTINCT * FROM NODE WHERE NODE.NODEID=IPINTERFACE.NODEID AND IPLIKE(IPINTERFACE.IPADDR,?) AND NODETYPE != 'D'" );
+            PreparedStatement stmt = conn.prepareStatement( "SELECT DISTINCT * FROM NODE WHERE NODE.NODEID=IPINTERFACE.NODEID AND IPLIKE(IPINTERFACE.IPADDR,?) AND NODETYPE != 'D' ORDER BY NODELABEL" );
             stmt.setString( 1, iplike );
             ResultSet rs = stmt.executeQuery();
     
@@ -227,7 +227,7 @@ public class NetworkElementFactory extends Object
         Connection conn = Vault.getDbConnection();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement( "SELECT * FROM NODE WHERE NODEID IN (SELECT NODEID FROM IFSERVICES WHERE SERVICEID=?) AND NODETYPE != 'D'" );
+            PreparedStatement stmt = conn.prepareStatement( "SELECT * FROM NODE WHERE NODEID IN (SELECT NODEID FROM IFSERVICES WHERE SERVICEID=?) AND NODETYPE != 'D' ORDER BY NODELABEL" );
             stmt.setInt( 1, serviceId );
             ResultSet rs = stmt.executeQuery();
     
@@ -404,7 +404,7 @@ public class NetworkElementFactory extends Object
 
         try {
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM IPINTERFACE");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM IPINTERFACE ORDER BY IPHOSTNAME, NODEID, inet(IPADDR)");
     
             intfs = rs2Interfaces( rs );
 
@@ -475,7 +475,7 @@ public class NetworkElementFactory extends Object
 
         try {
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery( "SELECT IFSERVICES.*, SERVICE.SERVICENAME FROM IFSERVICES, SERVICE WHERE IFSERVICES.SERVICEID = SERVICE.SERVICEID" );
+            ResultSet rs = stmt.executeQuery( "SELECT IFSERVICES.*, SERVICE.SERVICENAME FROM IFSERVICES, SERVICE WHERE IFSERVICES.SERVICEID = SERVICE.SERVICEID ORDER BY SERVICE.SERVICEID, inet(IFSERVICES.IPADDR)" );
     
             services = rs2Services( rs );
           
@@ -509,7 +509,7 @@ public class NetworkElementFactory extends Object
             if( !includeDeletions ) {
                 buffer.append(" AND IFSERVICES.STATUS <> 'D'");
             }
-            
+
             PreparedStatement stmt = conn.prepareStatement(buffer.toString());
             stmt.setInt( 1, nodeId );
             stmt.setString( 2, ipAddress );
