@@ -8,14 +8,20 @@
 RETVAL=0
 LOGFILE=@root.install.logs@/output.log
 
-FUNCTIONS_LOADED=0
-# Source function library.
-for dir in @root.install.initdir@ /etc /etc/rc.d; do
-	if [ -f "$dir/init.d/functions" ] && [ "$FUNCTIONS_LOADED" = "0" ]; then
-		source "$dir/init.d/functions"
-		FUNCTIONS_LOADED=1
-	fi
-done
+if [ -f /etc/SuSE-release ]; then
+	. /etc/rc.status
+	rc_reset
+	. /usr/bin/setJava --version 1.4 --devel
+else
+	FUNCTIONS_LOADED=0
+	# Source function library.
+	for dir in @root.install.initdir@ /etc /etc/rc.d; do
+		if [ -f "$dir/init.d/functions" ] && [ "$FUNCTIONS_LOADED" = "0" ]; then
+			source "$dir/init.d/functions"
+			FUNCTIONS_LOADED=1
+		fi
+	done
+
 
 if [ "$FUNCTIONS_LOADED" = "0" ]; then
 	daemon() {
@@ -52,23 +58,36 @@ fi
 start(){
 	export REDIRECT=$LOGFILE
 	echo -n $"Starting OpenNMS: "
-	daemon @root.install@/bin/opennms.sh start
-	RETVAL=$?
-	echo
-	touch /var/lock/subsys/opennms
-	return $RETVAL
+	if [ -f /etc/SuSE-release ]; then
+		$OPENNMS_HOME/bin/opennms.sh start || rc_failed
+		rc_status -v
+	else
+		daemon $OPENNMS_HOME/bin/opennms.sh start
+		RETVAL=$?
+		echo
+		touch /var/lock/subsys/opennms
+		return $RETVAL
+	fi
 }
+
 
 stop(){
 	echo -n $"Stopping OpenNMS: "
-	daemon @root.install@/bin/opennms.sh stop
-	RETVAL=$?
-	echo
-	sleep 10
-	@root.install@/bin/opennms.sh kill >/dev/null 2>&1
-	rm -f /var/lock/subsys/opennms
-	return $RETVAL
+	if [ -f /etc/SuSE-release ]; then
+		$OPENNMS_HOME/bin/opennms.sh stop || rc_failed
+		$OPENNMS_HOME/bin/opennms.sh kill
+		rc_status -v
+	else
+		daemon @root.install@/bin/opennms.sh stop
+		RETVAL=$?
+		echo
+		sleep 10
+		@root.install@/bin/opennms.sh kill >/dev/null 2>&1
+		rm -f /var/lock/subsys/opennms
+		return $RETVAL
+	fi
 }
+
 
 restart(){
 	stop
