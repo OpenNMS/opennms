@@ -217,8 +217,6 @@
 				<mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="3" alias="tempout2" type="gauge32"/>
 				<mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="4" alias="tempout3" type="gauge32"/>
 				<mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.5" instance="1" alias="cpmCPUTotal5min" type="integer"/>
-				<mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.2.1.5.40" instance="6" alias="cfwConnCurrInUse" type="integer"/>
-				<mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.2.1.5.40" instance="7" alias="cfwConnMaxUsed" type="integer"/>
 			</group>
                         <group  name = "cisco-router-if-stats" ifType = "all">
                                 <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.7" instance="ifIndex" alias="locIfInPktsSec" type="integer"/>
@@ -529,7 +527,15 @@
                                 <sysoid>.1.3.6.1.4.1.9.1.451</sysoid>
                                 <collect>
                                         <includeGroup>cisco-memory</includeGroup>
-                                        <includeGroup>cisco-firewall</includeGroup>
+                                        <includeGroup>cisco-pix</includeGroup>
+                                </collect>
+                        </systemDef>
+
+                        <systemDef name = "Cisco PIX2">
+                                <sysoid>.1.3.6.1.4.1.9.1.417</sysoid>
+                                <collect>
+                                        <includeGroup>cisco-memory</includeGroup>
+                                        <includeGroup>cisco-pix</includeGroup>
                                 </collect>
                         </systemDef>
 

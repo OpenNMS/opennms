@@ -51,7 +51,7 @@ public class JavaMailer {
 
     private final String DEFAULT_TRANSPORT = JavaMailerConfig.getProperty("org.opennms.core.utils.transport", "smtp");
 
-    private final boolean DEFAULT_MAILER_DEBUG = JavaMailerConfig.getProperty("org.opennms.core.utils.debug", false);
+    private final boolean DEFAULT_MAILER_DEBUG = JavaMailerConfig.getProperty("org.opennms.core.utils.debug", true);
 
     private String _mailHost = DEFAULT_MAIL_HOST;
 

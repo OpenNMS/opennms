@@ -162,8 +162,10 @@ public class ReportMailer extends Object implements Runnable {
         try {
 
             if (useScript) {
+                log.debug("Sending "+filename+" via "+scriptMailReport);
                 mailFileToUser(scriptMailReport, filename, finalEmailAddr);
             } else {
+                log.debug("Sending "+filename+" via JavaMail");
                 mailFileToUser(filename, finalEmailAddr);
             }
             if (log.isInfoEnabled())
@@ -291,6 +293,8 @@ public class ReportMailer extends Object implements Runnable {
      *            Set this to use the script specified.
      */
     public void setUseScript(boolean useScript) {
+        if (useScript)
+            log.debug("Overiding script with JavaMailer.");
         this.useScript = useScript;
     }
 
