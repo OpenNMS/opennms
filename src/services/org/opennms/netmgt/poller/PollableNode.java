@@ -238,7 +238,7 @@ public class PollableNode extends PollableAggregate {
 
         // Create date object which will serve as the source
         // for the time on all generated events
-        Date date = new java.util.Date();
+        Date date = new Date();
 
         if (statusChanged() && getStatus() == PollStatus.STATUS_DOWN) {
             sendEvent(createDownEvent(date));
@@ -339,7 +339,7 @@ public class PollableNode extends PollableAggregate {
         PollableInterface pInterface = pSvc.getInterface();
         
         // Poll the service via the PollableInterface object
-        PollStatus ifStatus = pInterface.poll(pSvc);
+        PollStatus ifStatus = pollElement(pInterface, pSvc);
         
         // If interface status changed and is different from the node status
         if (ifStatus != getStatus() && pInterface.statusChanged()) {
@@ -365,6 +365,10 @@ public class PollableNode extends PollableAggregate {
             log.debug("poll: poll of nodeid " + m_nodeId + " completed, status=" + getStatus());
 
         return getStatus();
+    }
+
+    private PollStatus pollElement(PollableInterface pInterface, PollableService pSvc) {
+        return pInterface.poll(pSvc);
     }
 
     public void updateStatus(PollStatus newStatus) {
@@ -415,7 +419,7 @@ public class PollableNode extends PollableAggregate {
             // can't find a critical service to just pick a service
             svc = (PollableService) pIf.getServices().iterator().next();
         }
-        return pIf.poll(svc);
+        return pollElement(pIf, svc);
     }
 
     Poller getPoller() {

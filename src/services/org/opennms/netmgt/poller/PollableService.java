@@ -514,6 +514,7 @@ final class PollableService extends PollableElement {
             //
             setStatusChanged();
             setStatusChangeTime(System.currentTimeMillis());
+            adjustSchedule();
     
             // Is node outage processing disabled?
             if (!m_schedule.getPollerConfig().nodeOutageProcessingEnabled()) {
