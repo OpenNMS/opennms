@@ -38,7 +38,6 @@
 		<property key="retry" value="2"/>
 	</protocol-plugin>
         <protocol-plugin protocol="SNMP" class-name="org.opennms.netmgt.capsd.SnmpPlugin" scan="on" user-defined="false">
-		<property key="force version" value="SNMPv1"/>
 		<property key="timeout" value="2000"/>
 		<property key="retry" value="2"/>
 	</protocol-plugin>
