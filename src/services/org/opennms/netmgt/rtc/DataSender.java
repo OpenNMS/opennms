@@ -158,7 +158,8 @@ final class DataSender implements Fiber
 	/**
 	 * The constructor for this object 
 	 *
-	 * @param rtcManager	the RTC manager
+	 * @param categories	The category map.
+	 * @param numSenders	The number of senders.
 	 */
 	public DataSender(Map categories, int numSenders)
 	{

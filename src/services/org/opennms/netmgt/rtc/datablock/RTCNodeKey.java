@@ -86,7 +86,7 @@ public class RTCNodeKey extends Object implements Comparable
 	/**
 	 * Set the IP address
 	 *
-	 * @param ip	the ip address
+	 * @param ipStr	the ip address
 	 */
 	 public void setIP(String ipStr)
 	 {

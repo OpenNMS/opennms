@@ -618,7 +618,7 @@ final class SnmpThresholder
 	/**
 	 * Performs threshold checking on an SNMP RRD node directory.
 	 * 
-	 * @param path			RRD repository directory
+	 * @param directory		RRD repository directory
 	 * @param nodeId 		Node identifier
 	 * @param primary 		Primary SNMP interface address 
 	 * @param interval		Configured thresholding interval
@@ -759,7 +759,7 @@ final class SnmpThresholder
 	/**
 	 * Performs threshold checking on an SNMP RRD interface directory.
 	 * 
-	 * @param path			RRD repository directory
+	 * @param directory		RRD repository directory
 	 * @param nodeId 		Node identifier
 	 * @param primary 		Primary SNMP interface address 
 	 * @param interval		Configured thresholding interval
@@ -1144,7 +1144,7 @@ final class SnmpThresholder
 	 * @param dsValue	Data source value which triggered the threshold event
 	 * @param threshold	Configured threshold
 	 * @param uei		Event identifier 
-	 * @param data		source of event's timestamp
+	 * @param date		source of event's timestamp
 	 * 
 	 * @return new threshold event to be sent to Eventd
 	 */

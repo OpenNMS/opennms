@@ -454,7 +454,7 @@ public class ICMPHeader extends Object
 	 * thrown.
 	 *
 	 * @param buf		The storage buffer.
-	 * @param offst		The location to start in buf.
+	 * @param offset	The location to start in buf.
 	 *
 	 * @return The new offset after storing to the buffer.
 	 *

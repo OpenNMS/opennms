@@ -140,7 +140,7 @@ public class RTCNode extends Object
 	/**
 	 * Set the IP address.
 	 *
-	 * @param ip	the ip address
+	 * @param ipStr	the ip address
 	 */
 	public void setIP(String ipStr)
 	{
@@ -327,7 +327,7 @@ public class RTCNode extends Object
 	 * Return the total outage time for this node in the 'rollingWindow' milliseconds since 'curTime' for the category
 	 *
 	 * @param cat		the category in the context which of which downtime is needed
-	 * @param curtime	the start time (or current time) from which we go back rollinWindow interval
+	 * @param curTime	the start time (or current time) from which we go back rollinWindow interval
 	 * @param rollingWindow	the window for which downtime is required
 	 *
 	 * @return the total outage time for this node
@@ -348,7 +348,7 @@ public class RTCNode extends Object
 	 * Return the total availability for this node in the last 'rollingWindow' milliseconds since 'curTime' for the category
 	 *
 	 * @param cat		the category in the context which of which availability is needed
-	 * @param curtime	the start time (or current time) from which we go back rollinWindow interval
+	 * @param curTime	the start time (or current time) from which we go back rollinWindow interval
 	 * @param rollingWindow	the window for which availability is required
 	 *
 	 * @return the value for this node

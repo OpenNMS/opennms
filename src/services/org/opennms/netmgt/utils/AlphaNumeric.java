@@ -55,7 +55,7 @@ public class AlphaNumeric extends Object
 	 * For example: 'Ethernet 10/100' is converted to 'Ethernet_10_100'
 	 *
 	 * @param str	string to be converted
-	 * @param char	replacement character
+	 * @param replacement	replacement character
 	 * 
 	 * @return Converted value which can be used in a file name.
 	 */

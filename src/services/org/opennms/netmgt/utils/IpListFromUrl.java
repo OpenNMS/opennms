@@ -65,7 +65,7 @@ public class IpListFromUrl extends Object
 	private final static char COMMENT_CHAR		= '#';
 
 	/**
-	 * <p>This method is used to read all interfaces from an URL file</p>
+	 * This method is used to read all interfaces from an URL file.
 	 *
 	 * <pre>The file URL is read and each entry in this file checked. Each line
 	 * in the URL file can be one of -
@@ -78,7 +78,7 @@ public class IpListFromUrl extends Object
 	 * Lines starting with a '#' are ignored and so are characters after
 	 * a '<space>#' in a line.</pre>
 	 *
-	 * @param URL	The url file to read
+	 * @param url	The url file to read
 	 *
 	 * @return	list of IPs in the file
 	 */

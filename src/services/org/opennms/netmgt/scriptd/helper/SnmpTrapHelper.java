@@ -731,11 +731,8 @@ public class SnmpTrapHelper implements SnmpTrapHandler
    * Create an SNMP V2 trap with the specified trap object ID, and sysUpTime
    * value.
    *
-   * @param  entId  The enterprise ID for the trap.
-   * @param  agentAddr  The agent address for the trap.
-   * @param  generic  The generic ID for the trap.
-   * @param  specific  The specific ID for the trap.
-   * @param  timeStamp  The time stamp for the trap.
+   * @param  trapOid  The trap object id.
+   * @param  sysUpTime  The system up time.
    *
    * @return  The newly-created trap.
    * @exception  Throws SnmpTrapHelperException if the trap cannot be

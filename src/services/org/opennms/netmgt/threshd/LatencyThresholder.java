@@ -794,7 +794,7 @@ final class LatencyThresholder
 	 * @param dsValue	Data source value which triggered the threshold event
 	 * @param threshold	Configured threshold
 	 * @param uei		Event identifier 
-	 * @param data		source of event's timestamp
+	 * @param date		source of event's timestamp
 	 * 
 	 * @return new threshold event to be sent to Eventd
 	 */

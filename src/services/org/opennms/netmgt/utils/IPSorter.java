@@ -100,7 +100,7 @@ public class IPSorter extends Object
 	 * so that it can be compared using simple equality
 	 * operators.
 	 *
-	 * @param iface	The dotted decimal address string to
+	 * @param ipAddressString	The dotted decimal address string to
 	 *	convert
 	 *
 	 * @return The created long value
