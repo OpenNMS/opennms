@@ -1539,11 +1539,11 @@ sub ask_question {
 			print "\n";
 			$return = "";
 		}
- 
+
 		$return = $default if ($return eq "");
- 
+
 	}
- 
+
 	return $return;
 }
 
@@ -1606,6 +1606,7 @@ sub change_table {
 		}
 	}
 
+	# This line throws a harmless error if the table doesn't exist (normally it shouldn't between upgrades)
 	$database->do('DROP TABLE temp');
 
 	print "  - creating temporary table... ";
@@ -1696,7 +1697,11 @@ sub change_table {
 			}
 		}
 	}
+
+	# Commit the changes and turn autocommit back on
 	$database->commit;
+	$database->{AutoCommit} = 1;
+
 	print "\r  - transforming data into the new table... done     \n";
 
 	print "  - dropping temporary table... ";
