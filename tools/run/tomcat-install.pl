@@ -2,9 +2,9 @@
 
 use strict;
 
-my $OPENNMS_HOME = "/usr/share/opennms";
-my $VERSION      = "0.1";
-my $REVISION     = "1";
+my $OPENNMS_HOME = '@root.install@';
+my $VERSION      = '0.1';
+my $REVISION     = '1';
 
 my @conf_dirs = (
     "/etc/tomcat4/conf",
