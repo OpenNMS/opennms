@@ -154,7 +154,7 @@
       <p>
         <a HREF="admin/asset/index.jsp">Import and Export Asset Information</a>
       <p>
-        <a HREF="admin/sched-outages/index.jsp">Scheduled outages</a>
+        <a HREF="admin/sched-outages/index.jsp">Scheduled Outages</a>
       <p>
 
       <!-- security link -->
@@ -249,7 +249,7 @@
             database applications, and details for using the Import and Export
             functionalities can be found through this link as well.
         </p>
-	<p><b>Scheduled outages</b> provides an interface for adding and editing scheduled outages.  You can pause notifications, polling, thresholding and data collection (or any combination of the four) for any interface/node for any time.  
+	<p><b>Scheduled Outages</b> provides an interface for adding and editing scheduled outages.  You can pause notifications, polling, thresholding and data collection (or any combination of the four) for any interface/node for any time.  
 	</p>
 
         <p><b>Notification Status</b> provides both a visual reminder as to whether your users 

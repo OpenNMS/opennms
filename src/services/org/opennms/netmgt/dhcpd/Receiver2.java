@@ -51,8 +51,8 @@ import org.opennms.core.utils.ThreadCategory;
 
 import edu.bucknell.net.JDHCP.DHCPMessage;
 
-final class Receiver implements Runnable, Fiber {
-    private final static short DHCP_TARGET_PORT = 68;
+final class Receiver2 implements Runnable, Fiber {
+    private final static short DHCP_TARGET_PORT = 67;
 
     private DatagramSocket m_receiver;
 
@@ -64,8 +64,8 @@ final class Receiver implements Runnable, Fiber {
 
     private List m_clients;
 
-    Receiver(List clients) throws IOException {
-        m_name = "DHCPReceiver";
+    Receiver2(List clients) throws IOException {
+        m_name = "DHCPReceiver2";
         m_worker = null;
         m_status = START_PENDING;
         m_receiver = new DatagramSocket(DHCP_TARGET_PORT);

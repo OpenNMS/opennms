@@ -1,5 +1,6 @@
 1.2.0 to 1.2.1
 ----------------------------------------------------------------------
+- Added a new an improved DHCP poller. Bug 663. Thx Bill
 - Added a more descriptive error message when an invalid outage ID
   is entered in the webUI. Bug 498
 - Added display of ifAlias in an event or notification.  It uses the nodeid

@@ -126,7 +126,7 @@ final class Client extends Observable implements Runnable, Fiber {
             Category log = ThreadCategory.getInstance(this.getClass());
 
             if (log.isDebugEnabled())
-                log.debug("Unicast listener thread " + this.getName() + " running...");
+                log.debug("thread " + this.getName() + " running...");
 
             // set socket timeout to 1 second so the value of m_keepListening
             // can be checked periodically
@@ -179,7 +179,7 @@ final class Client extends Observable implements Runnable, Fiber {
             }
 
             if (log.isDebugEnabled())
-                log.debug("Unicast listener thread " + this.getName() + " exiting...");
+                log.debug("thread " + this.getName() + " exiting...");
         }
     }
 
@@ -270,12 +270,18 @@ final class Client extends Observable implements Runnable, Fiber {
             try {
                 Message msg = (Message) input.readObject();
                 if (msg.getAddress().equals(NULL_ADDR)) {
+                    if (log.isDebugEnabled())
+                        log.debug("Got disconnect request from Poller corresponding to sending port " + m_sender.getLocalPort());
                     isOk = false;
                 } else {
+                    if (log.isDebugEnabled())
+                        log.debug("Got request... adress = " + msg.getAddress());
                     byte[] dhcp = msg.getMessage().externalize();
 
                     DatagramPacket pkt = new DatagramPacket(dhcp, dhcp.length, msg.getAddress(), DHCP_TARGET_PORT);
                     try {
+                        if (log.isDebugEnabled())
+                           log.debug("sending request on port: " + m_sender.getLocalPort());
                         m_sender.send(pkt);
                     } catch (IOException ex) {
                     } // discard
