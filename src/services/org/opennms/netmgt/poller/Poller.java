@@ -335,6 +335,9 @@ public final class Poller implements PausableFiber {
         
         int count = scheduleMatchingServices(null);
         
+        m_network.recalculateStatus();
+        m_network.resetStatusChanged();
+        
         // Debug dump pollable network
         //
         if (log.isDebugEnabled()) {
@@ -383,9 +386,6 @@ public final class Poller implements PausableFiber {
             }
         };
         querier.execute();
-        
-        m_network.recalculateStatus();
-        m_network.resetStatusChanged();
         
         
         return querier.getCount();
