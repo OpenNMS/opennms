@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter id="chap2" label="2.">
+<chapter id="chap2">
   <title>What's New?</title>
 
   <subtitle>Changes in This OpenNMS</subtitle>
@@ -37,9 +37,9 @@
     writing a few extra bytes to an RRD file while its open anyway adds very
     little to the update time, this causes the average update cost per data
     point to go down the further the collector gets behind. What this means is
-    that you won’t lose any data points if you collector is configured to
+    that you will not lose any data points if you collector is configured to
     collect more than you I/O system can keep up with immediately. It just
-    means that the data that’s in the files is behind the actual
+    means that the data that is in the files is behind the actual
     collection.</para>
 
     <para>A last way the queuing system improves data collector performance is
@@ -49,26 +49,26 @@
     reason we give files with non-zero data points priority over files that
     have only zero data points. This way your systems that have only zero
     ifErrors or ifDiscards, for example, will not hold up writing of the data
-    for systems that have positive ifErrors and ifDiscards. Please see
-    rrd-configuration.properties in the OpenNMS etc directory for
-    configurations details.</para>
+    for systems that have positive ifErrors and ifDiscards.  Please see
+    <filename>$OPENNMS_HOME/etc/rrd-configuration.properties</filename>
+    for configurations details.</para>
 
     <para>Thanks to Rackspace and Eric Evans for providing equipment to help
-    us implement this and to General Electric’s John Lee and Neeraj Malve for
+    us implement this and to General Electric's John Lee and Neeraj Malve for
     helping to test this.</para>
 
     <bridgehead>JRobin Support</bridgehead>
 
     <para>Though the Collection Queuing above provides a great deal of
     performance benefit, for very high capacity data collection environments
-    it wasn’t sufficient. We’ve found the JRobin 1.4.0 provides performs
+    it was not sufficient. We have found the JRobin 1.4.0 provides performs
     better than RRDTool in our environment. The primary reason for this is
     that JRobin reads a much smaller amount of data on an RRD Open than
     RRDTool does. This increases throughput on systems like ours that max out
     the I/O subsystem doing an open, update, and close on a huge number of
     RRDs. An additional benefit of JRobin is that it is multi-thread enabled
     (unlike our libjrrd.so shared library that interacts with RRDTool) however
-    this doesn’t impact performance very much because the contention is not
+    this does not impact performance very much because the contention is not
     the bottle neck. In fact on system that have 100 data collection threads
     we found that have as few as 2-10 RRD write threads was sufficient to keep
     up.</para>
@@ -84,7 +84,7 @@
     team..</para>
 
     <para>The last benefit of JRobin is that is helps us to reach our goal of
-    a 100% Pure Java version of OpenNMS that can work write ‘out of the box’
+    a 100% Pure Java version of OpenNMS that can work write 'of the box'
     for new users.</para>
 
     <para>Thanks go to the JRobin team for providing this excellent RRD
@@ -115,7 +115,7 @@
     (for example, deleting an node, deleted its interfaces, which deletes its
     services) happens within a single transaction. This means that if a
     failure occurs for any of these, then the entire transaction is aborted,
-    and you aren’t left with a half deleted node.</para>
+    and you are not left with a half deleted node.</para>
 
     <para>In addition to overhauling node deletion, we have also added the
     ability to delete interfaces and services. If you visit the page for an
@@ -134,7 +134,7 @@
     actually removed from the database when a delete occurs, some way was
     needed to ensure that the data actually got removed eventually. To do this
     Vacuumd was introduced to provide a mechanism to periodically run database
-    maintenance operations. Vacuumd’s configuration consists of a set of
+    maintenance operations. Vacuumd's configuration consists of a set of
     database statements to be run daily (or which every period is preferable).
     There are four maintenance operations provided by OpenNMS by default.
     These are as follows: delete nodes have been marked as deleted, delete
@@ -145,18 +145,18 @@
     <para>In order to make sure that Vacuumd properly deletes all the data
     associated with the nodes, interfaces, services or other entries that it
     deletes we have added cascading delete constraints to the database. With
-    these if you do a ‘DELETE FROM nodes WHERE nodeid=’11’’ for example. You
+    these if you do a 'DELETE FROM nodes WHERE nodeid=11', for example. You
     delete all the related information, its interfaces, the services on those
-    interfaces, the outages related to the node, the events, etc., etc.</para>
+    interfaces, the outages related to the node, the events, etc., etc..</para>
 
-    <bridgehead>Database Connection ‘Leak’ Found</bridgehead>
+    <bridgehead>Database Connection 'Leak' Found</bridgehead>
 
     <para>Though not an actual leak because the connections are garbage
     collected, we found a problem in the code where database connections were
     being dropped and left for the garbage collector to clean up. This
     problem, which occurred primarily during discovery, would result in an
     abnormally large number of outstanding connections to the database to be
-    created. During discovery, on large networks, this can easily exceed the
+    created. During discovery on large networks this can easily exceed the
     configured limit on connections to PostgreSQL. Thanks to Chris Fedde and
     OnCommand for helping us track down this problem.</para>
 
@@ -276,16 +276,16 @@
     <bridgehead>Installer / Build System Improvements</bridgehead>
 
     <para>Thanks so much to new OpenNMS committer DJ Gregor for all his hard
-    work on improving the OpenNMS build and install code. Thanks to DJ’s
+    work on improving the OpenNMS build and install code. Thanks to DJ's
     efforts the installer has improved greatly and is now written completely
     in Java removing (along with the JavaMail feature and Dave Hustace)
-    OpenNMS’s dependency on Perl. </para>
+    OpenNMS's dependency on Perl. </para>
 
-    <para>That said, we do expect some issues with this , as the installer
+    <para>That said, we do expect some issues with this, as the installer
     does do a lot of database checks and conversions, and some users have
     large databases.</para>
 
-    <para>Other Improvements/Changes/Bug Fixes</para>
+    <bridgehead>Other Improvements/Changes/Bug Fixes</bridgehead>
 
     <para>Here is a small list of other improvements in 1.1.4:</para>
 
@@ -317,8 +317,45 @@
 
       <listitem>
         <para>Michael Huot added some code that causes the webUI to turn to
-        "light blue", similar to "Calculating ..." when the webUI loses
-        connectivity with OpenNMS.</para>
+        light blue, similar to "Calculating ..." when the webUI loses
+        connectivity with OpenNMS.  Code has also been added so the webUI
+	will attempt to reconnect to OpenNMS when this happens.  This should
+	remove the dependency on needing to restart Tomcat after restarting
+	OpenNMS.</para>
+      </listitem>
+
+      <listitem>
+	<para>RPM dependencies have been fixed (bug #906).  A packaging
+	error caused previous releases to only include a subset of
+	package dependencies.  Some dependencies have also been fixed for
+	Mandrake distributions (bug #933).</para>
+      </listitem>
+
+      <listitem>
+	<para>A generalized solution has been implemented for choosing
+	a proper Java Runtime Environment at runtime.  See
+	<filename>$OPENNMS_HOME/bin/runjava -h</filename> for details.</para>
+      </listitem>
+
+      <listitem>
+	<para>The OpenNMS startup script was rewritten to be more
+	cross-platform friendly and uses the JRE chosen by
+	<filename>runjava</filename>.</para>
+      </listitem>
+
+      <listitem>
+	<para>Upgraded to the latest PostgreSQL JDBC driver,
+	<filename>pg74.215.jdbc3.jar</filename>.</para>
+      </listitem>
+
+      <listitem>
+	<para>WebUI to OpenNMS communication has been changed to use
+	a separate connection for each request, instead of a single
+	connection that persists until Tomcat is restarted (or the
+	webapp is reloaded).  This eliminates exceptions that are
+	thrown when certain administrative actions are performed
+	(e.g.: adding a new node through the webUI) if OpenNMS is
+	restarted without restarting Tomcat.  See bug #897.</para>
       </listitem>
     </itemizedlist>
 
@@ -347,7 +384,7 @@
     <para>This release now supports duplicate IP addresses. The nodes will not
     be merged and an event will be generated.</para>
 
-    <para>Note that networks aren't supposed to have duplicate IP addresses.
+    <para>Note that networks are not supposed to have duplicate IP addresses.
     In other words, if there are two "10.1.1.1" addresses on a network, and
     OpenNMS sends a "ping" to 10.1.1.1, it will assume that a response means
     that interface 10.1.1.1 is "up", regardless of which "10.1.1.1" interface
@@ -355,7 +392,7 @@
 
     <para>Since this feature was mainly written to support inactive or
     unreachable interfaces that were discovered by SNMP, this behavior
-    shouldn't present a problem, although it does have the added benefit of
+    should not present a problem, although it does have the added benefit of
     being able to monitor highly available IP addresses.</para>
 
     <para>For example, if your website lives at 10.1.1.1, which lives on two
@@ -368,7 +405,7 @@
     lines of <programlisting>&lt;rule&gt;IPADDR IPLIKE *.*.*.*&lt;/rule&gt;</programlisting>
     are actually quite flexible, and can be built on almost anything in the
     database. However it would be nice to easily place a particular device
-    into a category for display on the main page, notifications, etc.</para>
+    into a category for display on the main page, notifications, etc..</para>
 
     <para>There are four categories:</para>
 
@@ -397,7 +434,7 @@
     </itemizedlist>
 
     <para>Note that there is no "hard coded" meaning to these categories, you
-    could use "poller" for "threshold" etc. They are just labeled for
+    could use "poller" for "threshold" etc..  They are just labeled for
     convenience.</para>
 
     <para>How would you use them? Well, you would need to modify the
@@ -424,7 +461,7 @@
     "nodeLostService", we send events out via
     <filename>xmlrpcd</filename>.</para>
 
-    <para>Unfortunately, there isn't time to describe in detail how this
+    <para>Unfortunately, there is not time to describe in detail how this
     system works, but it will be documented as soon as possible (the hope is
     by 1.2).</para>
 
@@ -493,7 +530,7 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
     parse.</para>
 
     <para>I have also come across some MIBs that define custom object types
-    and the parser doesn't handle it all that well. It is often possible just
+    and the parser does not handle it all that well. It is often possible just
     to delete the offending line from the MIB file (after making a copy of
     course) and try it again.</para>
 
@@ -515,7 +552,7 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
     <bridgehead>New Build System</bridgehead>
 
     <para>Our goal is to make OpenNMS as pure Java as possible. However, for a
-    variety of reasons we can't do that yet. When OpenNMS was started,
+    variety of reasons we cannot do that yet. When OpenNMS was started,
     <filename>ant</filename> (the program used to build other Java programs)
     had limitations that had to be worked around. This resulted in a workable,
     but somewhat confusing, build system.</para>
@@ -526,7 +563,7 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
 
     <bridgehead>New NTP Poller</bridgehead>
 
-    <para>Mike Huot has written a new NTP poller. You'll notice it in
+    <para>Mike Huot has written a new NTP poller. You will notice it in
     capsd-configuration.xml and poller-configuration.xml. Hat off to
     Mike.</para>
 
@@ -559,11 +596,11 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
 
     <bridgehead>Bug Fixes</bridgehead>
 
-    <para>We have lots of bug fixes. I'm really tired. Check out the <ulink
+    <para>We have lots of bug fixes. I am really tired. Check out the <ulink
     url="http://cvs.sourceforge.net/viewcvs.py/opennms/opennms/CHANGELOG?rev=1.97&amp;view=auto">CHANGELOG</ulink>.</para>
   </sect1>
 
-  <sect1 id="chap2sect1" label="2.1.">
+  <sect1 id="chap2sect1">
     <title>Changes in OpenNMS 1.1.2 and Above</title>
 
     <para>The following features were added in 1.1.2:</para>
@@ -599,7 +636,7 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
     <para>Okay, now you need to modify the capsd configuration to discover the
     service and modify the poller configuration to poll the service.</para>
 
-    <para>capsd: Here's an example for Sybase:</para>
+    <para>capsd: Here is an example for Sybase:</para>
 
     <para><programlisting>&lt;protocol-plugin protocol="Sybase-JDBC" class-name="org.opennms.netmgt.capsd.JDBCPlugin" scan="on"&gt;
         &lt;property key="user" value="sa"/&gt;
@@ -669,7 +706,7 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
         &lt;parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/&gt;
     &lt;/service&gt;</programlisting>
 
-    <para>One more thing in the poller-configuration file, you'll need to add
+    <para>One more thing in the poller-configuration file, you will need to add
     &lt;monitor&gt; tags at the bottom:</para>
 
     <programlisting>  &lt;monitor service="Sybase-JDBC" class-name="org.opennms.netmgt.poller.JDBCMonitor"/&gt;
@@ -711,19 +748,20 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
 
     <para>Example poller parameters are shown below. All of these are optional
     except script, which is required, and will cause an exception to be logged
-    if it's missing.</para>
+    if it is missing.</para>
 
     <para>Example plugin properties are also shown below. All of these are
     optional except script, which is required, and will cause an exception to
-    be logged if it's missing.</para>
+    be logged if it is missing.</para>
 
     <para>These programs use the exec method from Java's Runtime class. Exec
-    is known to have pitfalls. (See <ulink url="???">When Runtime.exec()
-    won't</ulink>) Also, exec doesn't have a built-in timeout feature. In
+    is known to have pitfalls. (See <ulink url="http://www.javaworld.com/javaworld/jw-12-2000/jw-1229-traps.html">When Runtime.exec()
+    won't</ulink>) Also, exec does not have a built-in timeout feature. In
     deciding what to do about these shortcomings, Bill discovered that Scott
     McCrory has already done it with his ExecRunner class. ExecRunner and
-    StreamGobbler are at <ulink url="???">Sourceforge</ulink> as part of
-    <ulink url="???">Spumoni</ulink>.</para>
+    StreamGobbler are at
+    <ulink url="http://sourceforge.net/">SourceForge</ulink> as part of
+    <ulink url="http://spumoni.sourceforge.net/">Spumoni</ulink>.</para>
 
     <para>One more word about the timeout. ExecRunner expects the timeout in
     integer seconds, not milliseconds, and a value of zero means wait
@@ -731,10 +769,10 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
     specifying the timeout in milliseconds. Before passing it on to
     ExecRunner, it gets converted to seconds in the following manner: Zero
     remains zero, 1 thru 1999 gets converted to 1 second, 2000 thru 2999 -&gt;
-    2 seconds, 3000 thru 3999 -&gt; 3 seconds, etc.</para>
+    2 seconds, 3000 thru 3999 -&gt; 3 seconds, etc..</para>
 
     <para>Included in contrib is a simple perl test script,
-    <filename>gptest.pl</filename>, that is handy for testing, since it's easy
+    <filename>gptest.pl</filename>, that is handy for testing, since it is easy
     to edit and change its behaviour.</para>
 
     <para>To implement Gp, add the following entries, substituting your
@@ -777,9 +815,10 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
     OpenNMS.</para>
 
     <para>The scripting language, as I understand it, is <ulink
-    url="???">beanshell</ulink>. As Jim writes: <quote>You will notice that
+    url="http://www.beanshell.org/">beanshell</ulink>. As Jim writes:
+    <quote>You will notice that
     BeanShell is a lot like Java, but with some relaxed syntax. For example
-    you don't have to define types for your variables, and attributes for
+    you do not have to define types for your variables, and attributes for
     which there are simple get methods can be accessed as properties (i.e. you
     can say event.uei or event.getUei() interchangably.) </quote></para>
 
@@ -939,12 +978,12 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
 
     <bridgehead>Maps</bridgehead>
 
-    <para>Okay, let's get this out in the open. I don't care for maps in
+    <para>Okay, let us get this out in the open. I do not care for maps in
     network management. Yes, they are nice looking, but truely useful maps
     cannot be automated, and the manual process of generating maps takes more
     time than they are worth.</para>
 
-    <para>That said, my opinions don't mean much in this project (grin) and if
+    <para>That said, my opinions do not mean much in this project (grin) and if
     someone is willing to put in some work and write solid code I am more than
     willing to accept it. Thus, Derek Glidden decided to go and write a
     mapping system for OpenNMS.</para>
@@ -1091,7 +1130,7 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
     </itemizedlist>
   </sect1>
 
-  <sect1 id="chap2sect2" label="2.2.">
+  <sect1 id="chap2sect2">
     <title>Changes in OpenNMS 1.1.1 and Above</title>
 
     <para>The following features were added in 1.1.1:</para>
@@ -1160,7 +1199,7 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
     Tomcat4 version 4.1.18 or higher.</para>
   </sect1>
 
-  <sect1 id="chap2sect3" label="2.3.">
+  <sect1 id="chap2sect3">
     <title>Changes in OpenNMS 1.1.0 and Above</title>
 
     <para>There were many changes to OpenNMS between 1.0 and 1.1. Here are a
@@ -1445,12 +1484,12 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
     rescans with certain devices.</para>
   </sect1>
 
-  <sect1 id="chap2sect4" label="2.4.">
+  <sect1 id="chap2sect4">
     <title>Changes in OpenNMS 1.0.0 and Above</title>
 
     <para>The following major changes occurred between 0.9.9 and 1.0.0:</para>
 
-    <bridgehead>OpenSSH service is now "SSH"</bridgehead>
+    <bridgehead>"OpenSSH" service is now "SSH"</bridgehead>
 
     <para>The OpenSSH service has been renamed to "SSH" and changed to detect
     common versions of SSH servers other than OpenSSH. Upgrades will retain
@@ -1460,12 +1499,12 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
 
     <para>There is now the possibility of having a state between "up" and
     "down" that flags a service as being unresponsive. This state can be
-    reached when the service's port can be connected to, but it doesn't
+    reached when the service's port can be connected to, but it does not
     respond in a reasonable amount of time.</para>
 
     <bridgehead>Bugfixes</bridgehead>
 
     <para>Many small bugfixes, including the "Calculating..." problem if RTC
-    hasn't come up yet when tomcat starts.</para>
+    has not come up yet when tomcat starts.</para>
   </sect1>
 </chapter>

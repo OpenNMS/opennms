@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter id="chap4" label="4.">
+<chapter id="chap4">
   <title>Supported Systems</title>
 
   <subtitle>Supported UNIX-like OSes</subtitle>
@@ -13,7 +13,7 @@
   <para>The following are the systems that support or are known to run
   OpenNMS.</para>
 
-  <sect1 id="chap4sect1" label="4.1.">
+  <sect1 id="chap4sect1">
     <title>Fully Supported</title>
 
     <para>The following Linux distributions and other unix-like systems are
@@ -85,7 +85,7 @@
       kern.sysv.shmseg=32 sysctl -w kern.sysv.shmall=4096 </programlisting></para>
   </sect1>
 
-  <sect1 id="chap4sect2" label="4.2.">
+  <sect1 id="chap4sect2">
     <title>Unsupported</title>
 
     <para>The following UNIX systems are unsupported, but have been known to

@@ -134,8 +134,12 @@
       <para>The main OpenNMS <ulink url="http://www.opennms.org">site</ulink>
       is a Wiki. As a community project, there is a lot of good advice and
       information available there. In particular, we suggest checking the
-      <ulink url="???">FAQ</ulink> and the <ulink url="???">bug
-      database</ulink>.</para>
+      <ulink url="http://wiki.opennms.org/tiki-list_faqs.php">FAQ</ulink>
+      and the
+      <ulink url="http://bugzilla.opennms.org/cgi-bin/bugzilla/index.cgi">bug
+      database</ulink>.  You might also find useful information in the
+      <ulink url="http://faq.opennms.org/">old FAQ</ulink>, but please realize
+      that this information may be out of date.</para>
     </section>
 
     <section>
