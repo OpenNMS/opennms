@@ -359,8 +359,16 @@ final class IcmpMonitor
 
                                 // Store round-trip-time in RRD database
                                 if (rtt >= 0 && rrdPath != null)
-                                        this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, rtt, pkg);
-
+				{
+					try
+					{
+	                                        this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, rtt, pkg);
+					}
+					catch(RuntimeException rex)
+					{
+						log.debug("There was a problem writing the RRD:" + rex);
+					}
+				}
 			}
 		}
 		

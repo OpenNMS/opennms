@@ -176,7 +176,16 @@ final class CitrixMonitor
 						serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
 		                                responseTime = System.currentTimeMillis() - sentTime;
                 	                        if (responseTime >= 0 && rrdPath != null)
-		                                        this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime, pkg);
+						{
+                                        		try
+                                        		{
+		                                        	this.updateRRD(m_rrdInterface, rrdPath, ipv4Addr, dsName, responseTime, pkg);
+                                        		}
+                                        		catch(RuntimeException rex)
+                                        		{
+                                                		log.debug("There was a problem writing the RRD:" + rex);
+                                        		}
+						}
 					}
 					else
 					{
