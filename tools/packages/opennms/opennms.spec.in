@@ -283,7 +283,7 @@ mkdir -p $RPM_BUILD_ROOT%{_bindir}
 cat > $RPM_BUILD_ROOT%{_bindir}/opennms <<EOF
 #!/bin/sh -
 
-exec %{instprefix}/bin/opennms.sh "$@"
+exec %{instprefix}/bin/opennms.sh "\$@"
 EOF
 
 ### XXX is this needed?  (Most of) the current scripts don't use OPENNMS_HOME.

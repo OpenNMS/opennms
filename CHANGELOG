@@ -5,8 +5,11 @@
 - Write test for and fixed midnight outages in PollOutageConfigManager, Bug 1122
 - Fix GETBULK in SnmpIfCollector to handle cases where indices are not
   contiguous.  Fixed ArrayIndexOutOfBound exceptions. Bug 1141
-- Add RESOLVED: to body of email and pager msgs.  Unit tests include. Bug 1134.  
+- Add RESOLVED: to body of email and pager msgs.  Unit tests include. Bug 1134.
   Thnx mhuot and bill ayres.
+- Fix the /usr/bin/opennms (or /usr/local/bin/opennms) script created by
+  opennms.spec.in so that it passes arguments to opennms.sh.  Bug 1136.
+  Thanks to Chris Abernethy <opennms@obado.net> for reporting this bug.
 
 1.1.5 to 1.2.0
 ----------------------------------------------------------------------
