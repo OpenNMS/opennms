@@ -47,6 +47,8 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -86,6 +88,13 @@ public class EventconfFactory
 	 * Boolean indicating if the init() method has been called
 	 */
 	private static boolean initialized = false;
+    
+    private static class EventLabelComparator implements Comparator {
+        
+		public int compare(Object o1, Object o2) {
+            return ((Event)o1).getEventLabel().compareToIgnoreCase(((Event)o2).getEventLabel());
+		}
+}
 	
 	/**
 	 *
@@ -402,6 +411,12 @@ public class EventconfFactory
                 }
                 
                 reload();
+        }
+        
+        public List getEventsByLabel() {
+        	    ArrayList list = new ArrayList(m_events);
+        		Collections.sort(list, new EventLabelComparator());
+             return list;
         }
 
 	/**

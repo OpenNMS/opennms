@@ -144,19 +144,20 @@
     public String buildEventSelect(Notification notice)
       throws IOException, FileNotFoundException
     {
-        Map events = EventconfFactory.getInstance().getEventLabels();
+        List events = EventconfFactory.getInstance().getEventsByLabel();
         StringBuffer buffer = new StringBuffer();
         
         List excludeList = getExcludeList();
 
-        Iterator i = events.keySet().iterator();
+        Iterator i = events.iterator();
 
         while(i.hasNext()) //for (int i = 0; i < events.size(); i++)
         {
-            String uei = (String)i.next();
+            Event e = (Event)i.next();
+            String uei = e.getUei();
             System.out.println(uei);
 
-            String label = (String)events.get(uei);
+            String label = e.getEventLabel();
             System.out.println(label);
 
             String trimmedUei = stripUei(uei);
