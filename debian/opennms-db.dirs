@@ -1,0 +1,3 @@
+etc/opennms
+usr/share/opennms-db
+usr/share/lintian/overrides

@@ -1,0 +1,69 @@
+The OpenNMS package set for Debian GNU/Linux
+--------------------------------------------
+
+This package has been laboriously built and updated by Tony Simone
+<tony.simone@medvantx.com>.  Until somebody else jumps onboard to help
+maintain the Debian build, direct all comments/suggestions/criticisms
+to Tony.  Please be kind.  :)
+
+At the moment I do not know if this package will properly upgrade from
+previous versions.  The real key here is the database stuff that gets
+done post-install by opennms-db.  It should work, assuming install.pl
+does the right thing, but don't expect anything magical to happen here.
+Constructive feedback appreciated!
+
+
+Getting Started:
+
+1. Before starting OpenNMS for the first time, modify the configs in
+   /etc/opennms.  The most important for initial startup are:
+
+	capsd-configuration.xml
+	collectd-configuration.xml
+	discovery-configuration.xml
+	poll-outages.xml
+	poller-configuration.xml
+	snmp-config.xml
+	threshd-configuration.xml
+
+2. Fire it up (/etc/init.d/opennms start)!  If it doesn't start, you may
+   need to change the JAVA_HOME in /etc/default/opennms.
+
+3. It takes a minute to start.  Grab a drink or something.  Watch the logs
+   in /var/log/opennms.  Some Java exceptions are normal and can be ignored.
+   This takes a little experience.  DHCP is a common one to ignore.
+
+4. Start (or restart) tomcat4.  It's another big Java app, so give it a
+   minute.  Watch /var/log/tomcat4/catalina.out for indications of problems.
+
+5. Point your browser to http://yourserver:8180/opennms.  Login as admin
+   with the password admin.
+
+If you make it that far and you don't see errors on the web page, you're in!
+
+
+Differences:
+
+There are some noteable difference between this package and what's reported
+at http://www.opennms.org/.  Here's a quick summary:
+
+1. Tomcat4 in Debian lives on port 8180.
+
+2. Because of #1, one of the OpenNMS ports was moved to 8280.
+
+3. In Debian, the mail binary lives in /usr/bin/mail, not /bin/mail.
+
+4. Default logging in /etc/opennms/log4j.properties has been scaled back to
+   INFO level and higher, and log rotation sizes were reduced.  The defaults
+   in the OpenNMS build were too noisy and large (just my opinion).
+
+5. librrd0 in Debian Sid has not been updated to use libpng3 (aka libpng12)
+   yet.  I've built a new version against libpng3/libpng12 and put it on my
+   server to take care of this.  Otherwise, you end up busting a bunch of KDE
+   and other stuff trying to install OpenNMS.
+
+I think there are more, but I can't remember.  Send me notes and I'll
+include them.
+
+-Tony
+

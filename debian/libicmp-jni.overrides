@@ -1,0 +1,2 @@
+libicmp-jni: sharedobject-in-library-directory-not-actually-a-shlib
+libicmp-jni: shared-lib-without-dependency-information
