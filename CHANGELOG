@@ -1,5 +1,6 @@
 1.0.0 to 1.1.0
 ----------------------------------------------------------------------
+- Added a "title" to categories to reflect the last update. Bug 517
 - Fixed the AM/PM in the Performance Report drop down. Bug 515
 - Fixed some typos and bad URLs in error messages. Bug 662
 - Changed all references to Hashtable (deprecated) to HashMap

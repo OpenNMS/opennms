@@ -89,8 +89,8 @@
             %>
                 <tr>
                   <td><a href="rtc/category.jsp?category=<%=java.net.URLEncoder.encode(categoryName)%>" title="<%=(title == null) ? categoryName : title%>"><%=categoryName%></a></td>
-                  <td bgcolor="<%=outageColor%>" align="right"><%=serviceDownCount%> of <%=serviceCount%></td>
-                  <td bgcolor="<%=color%>" align="right"><b><%=CategoryUtil.valueFormat.format( category.getValue() )%>%</b></td>
+                  <td bgcolor="<%=outageColor%>" align="right" title="Updated: <%=category.getLastUpdated()%>"><%=serviceDownCount%> of <%=serviceCount%></td>
+                  <td bgcolor="<%=color%>" align="right" title="Updated: <%=category.getLastUpdated()%>"><b><%=CategoryUtil.valueFormat.format( category.getValue() )%>%</b></td>
                   <!-- Last updated <%=category.getLastUpdated()%> -->
                   <!-- Epoch time:  <%=category.getLastUpdated().getTime()%> -->
                 </tr>
