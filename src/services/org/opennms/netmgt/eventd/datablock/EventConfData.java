@@ -174,7 +174,7 @@ public class EventConfData extends Object
 				}
 				else if (keyvalue.charAt(len-1) == '%')
 				{
-					if (eventvalue.startsWith(keyvalue.substring(0, len-2)))
+					if (eventvalue.startsWith(keyvalue.substring(0, len-1)))
 						maskMatch = true;
 				}
 			}
