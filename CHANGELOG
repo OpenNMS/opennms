@@ -1,5 +1,8 @@
 1.1.3 to 1.1.4
 ----------------------------------------------------------------------
+- When a new node is discovered, created a null record in
+  the assets table. This is useful for those using
+  the categories section in assets for notifications.
 - Added a new indicator to the webUI that if the categories
   have not been updated in two minutes, the category colors
   will go light blue - like "Calculating .." to indicate

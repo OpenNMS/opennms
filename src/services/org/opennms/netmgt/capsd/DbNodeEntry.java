@@ -492,6 +492,10 @@ final class DbNodeEntry
 		log.debug("DbNodeEntry.insert: SQL update result = " + rc);
 		stmt.close();
 
+		// Insert a null entry into the asset table
+
+		createAssetNodeEntry(c, m_nodeId);
+
 		// clear the mask and mark as backed
 		// by the database
 		//
@@ -2095,4 +2099,19 @@ final class DbNodeEntry
 		buf.append("last poll time           = ").append(m_lastPoll).append(sep);
 		return buf.toString();
 	}
+	/**
+	 * Creates a null entry for a nodeid into the assets table
+	*/
+    public void createAssetNodeEntry( Connection conn, int nodeid ) throws SQLException {
+
+            PreparedStatement stmt = conn.prepareStatement( "INSERT INTO ASSETS (nodeID,category,userLastModified,lastModifiedDate) values(?,?,?,?)");
+            stmt.setInt( 1, nodeid );
+            stmt.setString( 2, "Unspecified" );
+            stmt.setString( 3, "" );
+            stmt.setTimestamp( 4, new Timestamp((new Date()).getTime()));
+
+            stmt.execute();
+            stmt.close();
+    }
+
 }
