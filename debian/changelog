@@ -1,3 +1,9 @@
+opennms (1.1.3-1woody) stable; urgency=low
+
+  * Not yet released
+
+ -- Eric Evans <eevans@opennms.org>  Fri,  5 Sep 2003 14:10:00 -0500
+
 opennms (1.1.2-1woody) stable; urgency=low
 
   * Made /etc/opennms/web.xml a symlink that points to
