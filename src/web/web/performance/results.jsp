@@ -229,19 +229,19 @@
           <tr>
             <td align="center">
               <input type="radio" name="rtstatus" <%=(relativetime.equals("lastday") ? "checked" : "")%> 
-               onclick="top.location = 'performance/results.jsp?relativetime=lastday&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
+               onclick="top.location = '/opennms/performance/results.jsp?relativetime=lastday&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
             </td>
             <td align="center">
               <input type="radio" name="rtstatus" <%=(relativetime.equals("lastweek") ? "checked" : "")%>
-               onclick="top.location = 'performance/results.jsp?relativetime=lastweek&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
+               onclick="top.location = '/opennms/performance/results.jsp?relativetime=lastweek&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
             </td>
             <td align="center">
               <input type="radio" name="rtstatus" <%=(relativetime.equals("lastmonth") ? "checked" : "")%>
-               onclick="top.location = 'performance/results.jsp?relativetime=lastmonth&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
+               onclick="top.location = '/opennms/performance/results.jsp?relativetime=lastmonth&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
             </td>
             <td align="center">
               <input type="radio" name="rtstatus" <%=(relativetime.equals("lastyear") ? "checked" : "")%>
-               onclick="top.location = 'performance/results.jsp?relativetime=lastyear&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
+               onclick="top.location = '/opennms/performance/results.jsp?relativetime=lastyear&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
             </td>
           </tr>
         </table>
@@ -321,19 +321,19 @@
           <tr>
             <td align="center">
               <input type="radio" name="rtstatus" <%=(relativetime.equals("lastday") ? "checked" : "")%>
-               onclick="top.location = 'performance/results.jsp?relativetime=lastday&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
+               onclick="top.location = '/opennms/performance/results.jsp?relativetime=lastday&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
             </td>
             <td align="center">
               <input type="radio" name="rtstatus" <%=(relativetime.equals("lastweek") ? "checked" : "")%>
-               onclick="top.location = 'performance/results.jsp?relativetime=lastweek&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
+               onclick="top.location = '/opennms/performance/results.jsp?relativetime=lastweek&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
             </td>
             <td align="center">
               <input type="radio" name="rtstatus" <%=(relativetime.equals("lastmonth") ? "checked" : "")%>
-               onclick="top.location = 'performance/results.jsp?relativetime=lastmonth&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
+               onclick="top.location = '/opennms/performance/results.jsp?relativetime=lastmonth&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
             </td>
             <td align="center">
               <input type="radio" name="rtstatus" <%=(relativetime.equals("lastyear") ? "checked" : "")%>
-               onclick="top.location = 'performance/results.jsp?relativetime=lastyear&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
+               onclick="top.location = '/opennms/performance/results.jsp?relativetime=lastyear&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
             </td>
           </tr>
         </table>
