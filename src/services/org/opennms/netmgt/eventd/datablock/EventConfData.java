@@ -168,14 +168,14 @@ public class EventConfData extends Object
 			if (keyvalue != null && eventvalue != null)
 			{
 				int len = keyvalue.length();
-				if (keyvalue.charAt(len-1) == '%')
-				{
-					if (eventvalue.startsWith(keyvalue.substring(0, len-1)))
-						maskMatch = true;
-				}
-				else if (keyvalue.equals(eventvalue))
+				if (keyvalue.equals(eventvalue))
 				{
 					maskMatch = true;
+				}
+				else if (keyvalue.charAt(len-1) == '%')
+				{
+					if (eventvalue.startsWith(keyvalue.substring(0, len-2)))
+						maskMatch = true;
 				}
 			}
 		}
