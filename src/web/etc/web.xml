@@ -10,7 +10,13 @@
     <param-name>opennms.home</param-name>
     <param-value>@install.dir@/</param-value>
   </context-param>
-
+  
+  <!-- Set this for JRobin graphs and Availablity Reporting -->
+  <context-param>
+  	<param-name>java.awt.headless</param-name>
+  	<param-value>true</param-value>
+  </context-param>
+  
   <!-- Database parameters -->  
   <context-param>
     <param-name>opennms.db.poolman</param-name>
