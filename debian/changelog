@@ -1,3 +1,17 @@
+opennms (1.1.2-1woody) stable; urgency=low
+
+  * Made /etc/opennms/web.xml a symlink that points to
+    /usr/share/java/webapps/opennms/WEB-INF/web.xml to make tomcat happy.
+  * Changed the post-install of opennms-webapp and opennms-db, since
+    install.pl now runs as root.
+  * Fixed postrm of opennms-db so that dropdb works.
+  * Replaced reference to /opt/Opennms with /usr/share/opennms in init script.
+  * Added dependency on libgetopt-mixed-perl for opennms-contrib,
+    (send-event.pl requires it).
+  * Fixed duplicate and missing depends to make lintian happy.
+
+ -- Eric Evans <eevans@opennms.org>  Fri,  5 Sep 2003 14:10:00 -0500
+
 opennms (1.1.1-5) unstable; urgency=low
 
   * The "Tax Man Cometh" release!

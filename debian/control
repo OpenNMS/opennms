@@ -20,7 +20,7 @@ Description: The Open Network Management System
 Package: opennms-common
 Section: contrib/net
 Architecture: all
-Conflicts: opennms (<< 1.1.1-4)
+Conflicts: opennms (<< 1.1.2-1)
 Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl
 Recommends: libgetopt-mixed-perl, libnet-snmp-perl
 Description: The Open Network Management System core
@@ -31,8 +31,8 @@ Description: The Open Network Management System core
 Package: opennms-contrib
 Section: contrib/net
 Architecture: all
-Conflicts: opennms (<< 1.1.1-4)
-Depends: ${perl:Depends}, libwww-perl, libgtk-perl, opennms-common (=${Source-Version})
+Conflicts: opennms (<< 1.1.2-1)
+Depends: ${perl:Depends}, libwww-perl, libgtk-perl, libgetopt-mixed-perl, opennms-common (=${Source-Version})
 Description: The Open Network Management System contribs
  OpenNMS is a network management system along the lines of HP's OpenView
  or IBM's Tivoli.  Extras contributed along with OpenNMS.
@@ -40,7 +40,7 @@ Description: The Open Network Management System contribs
 Package: opennms-db
 Section: contrib/net
 Architecture: all
-Conflicts: opennms (<< 1.1.1-4), opennms-server (<< 1.1.1-5)
+Conflicts: opennms (<< 1.1.2-1)
 Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl, libiplike-pgsql (=${Source-Version}), postgresql (>= 7.2)
 Recommends: opennms-webapp, qpage
 Suggests: opennms-doc
@@ -51,8 +51,8 @@ Description: The Open Network Management System
 Package: opennms-server
 Section: contrib/net
 Architecture: all
-Conflicts: opennms (<< 1.1.1-4)
-Depends: j2sdk1.4 | java-virtual-machine , j2sdk1.4 | java2-runtime, libopennms-java (=${Source-Version}), mailx, metamail, opennms-common (=${Source-Version}), rrdtool
+Conflicts: opennms (<< 1.1.2-1)
+Depends: j2sdk1.4 | java-virtual-machine | java2-runtime, libopennms-java (=${Source-Version}), mailx, metamail, opennms-common (=${Source-Version}), rrdtool
 Recommends: opennms-db, opennms-webapp, qpage
 Suggests: opennms-doc
 Description: The Open Network Management System
@@ -62,8 +62,8 @@ Description: The Open Network Management System
 Package: opennms-webapp
 Section: contrib/net
 Architecture: all
-Conflicts: opennms (<< 1.1.1-4)
-Depends: j2sdk1.4 | java-virtual-machine , j2sdk1.4 | java2-runtime, liblog4j-java | liblog4j (>= 1.2.7), libopennms-java (=${Source-Version}), opennms-common (=${Source-Version}), tomcat4 (>= 4.1.18)
+Conflicts: opennms (<< 1.1.2-1)
+Depends: j2sdk1.4 | java-virtual-machine | java2-runtime, liblog4j-java | liblog4j (>= 1.2.7), libopennms-java (=${Source-Version}), opennms-common (=${Source-Version}), tomcat4 (>= 4.1.18)
 Suggests: opennms-doc
 Description: The Open Network Management System web application frontend
  The web console and frontend management application portion of OpenNMS.
@@ -71,14 +71,14 @@ Description: The Open Network Management System web application frontend
 Package: opennms-doc
 Section: contrib/doc
 Architecture: all
-Conflicts: opennms (<< 1.1.1-4)
+Conflicts: opennms (<< 1.1.2-1)
 Description: The Open Network Management System documentation
  JavaDoc and other release documents for OpenNMS.
 
 Package: libopennms-java
 Section: contrib/net
 Architecture: all
-Conflicts: opennms (<< 1.1.1-4)
+Conflicts: opennms (<< 1.1.2-1)
 Depends: j2sdk1.4 | java2-runtime, libicmp-jni, librrd0-jni
 Suggests: j2sdk1.4 | java-virtual-machine
 Description: The Open Network Management System base libs
@@ -88,15 +88,15 @@ Description: The Open Network Management System base libs
 Package: libicmp-jni
 Section: contrib/net
 Architecture: any
-Conflicts: opennms (<< 1.1.1-4)
-Depends: 
+Conflicts: opennms (<< 1.1.2-1)
+Depends: ${shlibs:Depends}
 Description: Java native libs for ICMP
  ICMP native libs for java, currently only used by the OpenNMS package.
 
 Package: librrd0-jni
 Section: contrib/net
 Architecture: any
-Conflicts: opennms (<< 1.1.1-4)
+Conflicts: opennms (<< 1.1.2-1)
 Depends: ${shlibs:Depends}
 Description: Java native libs for RRD
  RRD native libs for java, currently only used by the OpenNMS package.
@@ -104,7 +104,7 @@ Description: Java native libs for RRD
 Package: libiplike-pgsql
 Section: contrib/net
 Architecture: any
-Conflicts: opennms (<< 1.1.1-4)
+Conflicts: opennms (<< 1.1.2-1)
 Depends: postgresql (>= 7.2)
 Description: IPLike stored procedure for Postgresql
  A stored procedure for Postgresql, providing the "iplike()" function,
