@@ -758,7 +758,7 @@ create index userid_notifyid_idx on usersNotified(userID, notifyID);
 
 create table assets (
         nodeID          integer,
-			constraint fk_nodeID5 foreign key (nodeID) references node (nodeID),
+			constraint fk_nodeID5 foreign key (nodeID) references node ON DELETE CASCADE,
         category        varchar(64) not null,
         manufacturer    varchar(64),
         vendor          varchar(64),
