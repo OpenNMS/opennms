@@ -1249,6 +1249,7 @@ OpenNMS as part of the post-install.
             <exclude name="**/AllTest.java" /> 
          </fileset>
      </batchtest>
+     <sysproperty key="mock.logLevel" value="WARN" />
   </junit>
   <fail message="Tests failed! Check test reports." if="test.failed" />
 </target>

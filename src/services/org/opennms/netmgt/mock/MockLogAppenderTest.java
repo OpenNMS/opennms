@@ -44,7 +44,7 @@ public class MockLogAppenderTest extends TestCase {
     
     protected void setUp() throws Exception {
         super.setUp();
-        MockUtil.setupLogging();
+        MockUtil.setupLogging(false);
         MockUtil.resetLogLevel();
     }
     protected void tearDown() throws Exception {

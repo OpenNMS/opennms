@@ -165,11 +165,18 @@ public class MockUtil {
         return (e1.getUei() == e2.getUei() || e1.getUei().equals(e2.getUei())) && (e1.getNodeid() == e2.getNodeid()) && (e1.getInterface() == e2.getInterface() || e1.getInterface().equals(e2.getInterface())) && (e1.getService() == e2.getService() || e1.getService().equals(e2.getService()));
     }
 
-    public static void setupLogging() {
+   public static void setupLogging() {
+        setupLogging(true);
+   }
+
+    public static void setupLogging(boolean toConsole) {
         if (!s_loggingSetup) {
+            String level = System.getProperty("mock.logLevel", "DEBUG");
             Properties logConfig = new Properties();
 
-            logConfig.put("log4j.rootCategory", "DEBUG, POLLER, MOCK");
+            String consoleAppender = (toConsole ? ", POLLER" : "");
+
+            logConfig.put("log4j.rootCategory", level+consoleAppender+", MOCK");
             logConfig.put("log4j.appender.POLLER", "org.apache.log4j.ConsoleAppender");
             logConfig.put("log4j.appender.POLLER.layout", "org.apache.log4j.PatternLayout");
             logConfig.put("log4j.appender.POLLER.layout.ConversionPattern", "%d %-5p [%t] %c: %m%n");
