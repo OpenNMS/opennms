@@ -42,11 +42,11 @@ public class Constraint {
     public static final int FOREIGN_KEY = 2;
 
     private String m_name;
+    private boolean m_trigger;
     private int m_type;
     private String m_column;
     private String m_ftable;
     private String m_fcolumn;
-    private String m_fdeltype;
 
     public Constraint(String constraint) throws Exception {
 	this.parse(constraint);
@@ -59,14 +59,12 @@ public class Constraint {
     }
 
     public Constraint(String name, String column, String ftable,
-		      String fcolumn, String fdeltype) throws Exception {
+		      String fcolumn) {
 	m_name = name;
 	m_type = FOREIGN_KEY;
 	m_column = column;
 	m_ftable = ftable;
 	m_fcolumn = fcolumn;
-
-	setForeignDelType(fdeltype);
     }
 
     public String getName() {
@@ -75,6 +73,14 @@ public class Constraint {
 
     public void setName(String name) {
 	m_name = name.toLowerCase();
+    }
+    
+    public boolean getTrigger() {
+    	return m_trigger;
+    }
+    
+    public void setTrigger(boolean trigger) {
+    	m_trigger = trigger;
     }
 
     public int getType() {
@@ -109,18 +115,6 @@ public class Constraint {
 	m_fcolumn = fcolumn.toLowerCase();
     }
 
-    public String getForeignDelType() {
-	return m_fdeltype;
-    }
-
-    public void setForeignDelType(String fdeltype) throws Exception {
-	if (fdeltype.equals("a") || fdeltype.equals("c")) {
-	    m_fdeltype = fdeltype;
-	} else {
-	    throw new Exception("confdeltype \"" + fdeltype + "\" unknown");
-	}
-    }
-
     public String toString() {
 	StringBuffer b = new StringBuffer();
 
@@ -148,7 +142,7 @@ public class Constraint {
 	    b.append(")");
 	}
 	
-	if (m_fdeltype.equals("c")) {
+	if (m_trigger) {
 		b.append(" on delete cascade");
 	}
 
@@ -184,9 +178,10 @@ public class Constraint {
 		setForeignColumn(m.group(4));
 	    }
 	    if (m.group(5) == null) {
-		setForeignDelType("a");
-	    } else {
-		setForeignDelType("c");
+		setTrigger(false);
+	    }
+	    else {
+		setTrigger(true);
 	    }
 	    return;
 	}
@@ -236,15 +231,8 @@ public class Constraint {
 	    !m_fcolumn.equals(other.getForeignColumn())) {
 	    return false;
 	}
-
-	if ((m_fdeltype == null && other.getForeignDelType() != null) ||
-	    (m_fdeltype != null && other.getForeignDelType() == null)) {
+	if (m_trigger != other.m_trigger)
 	    return false;
-	}
-	if (m_fdeltype != null && other.m_fdeltype != null &&
-	    !m_fdeltype.equals(other.getForeignDelType())) {
-	    return false;
-	}
 
 	return true;
     }
@@ -254,7 +242,6 @@ public class Constraint {
 	    new Integer(m_type).hashCode() +
 	    m_column.hashCode() +
 	    m_ftable.hashCode() +
-	    m_fcolumn.hashCode() +
-	    m_fdeltype.hashCode();
+	    m_fcolumn.hashCode();
     }
 }
