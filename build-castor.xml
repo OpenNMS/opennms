@@ -109,7 +109,10 @@
 						<then>
 							<echo>Cleaning imports for @{srcpackage}...</echo>
 							<cleanimports srcdir="${build.castor.source.dir}" includes="${castor.gen.targetdir}/*.java">
-								<classpath refid="libraries.java.path" />
+								<classpath>
+								  <path refid="libraries.java.path" />
+								  <pathelement location="${build.castor.source.dir}" />
+								</classpath>
 							</cleanimports>
 						</then>
 					</if>
