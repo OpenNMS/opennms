@@ -90,7 +90,19 @@ final class RescanProcessor
 	 */
 	final static String	SQL_DB_RETRIEVE_NODE_TYPE = "SELECT nodetype FROM node WHERE nodeID=?";
 	
+        /**
+         * SQL statement used to retrieve other nodeIds that have the same ipinterface
+         * as the updating node.
+         */
+        final static String     SQL_DB_RETRIEVE_OTHER_NODES = "SELECT nodeid FROM ipinterface" 
+                                                           + "WHERE ipaddr = ? AND ifindex = ? AND nodeid !=? ";
 	/**
+         * SQL statement for retrieving the nodeids that have the same ipaddr as the updating node
+         * no matter what ifindex they have.
+         */
+        final static String     SQL_DB_RETRIEVE_DUPLICATE_NODEIDS = "SELECT nodeid FROM ipinterface WHERE ipaddr = ? AND nodeid !=? ";
+
+        /**
 	 * SQL statements used to reparent an interface and its associated
 	 * services under a new parent nodeid
 	 */
@@ -99,7 +111,15 @@ final class RescanProcessor
 	final static String 	SQL_DB_REPARENT_SNMP_IF_DELETE	= "DELETE FROM snmpinterface WHERE nodeID=? AND snmpifindex=?";
 	final static String 	SQL_DB_REPARENT_SNMP_INTERFACE	= "UPDATE snmpinterface SET nodeID=? WHERE nodeID=? AND snmpifindex=?";
 	final static String 	SQL_DB_REPARENT_IF_SERVICES	= "UPDATE ifservices SET nodeID=? WHERE nodeID=? AND ipaddr=? AND status!='D'";
-	
+
+        /**
+         * SQL statements used to clear up ipinterface table, ifservices table and snmpinterface
+         * table when delete a duplicate node.
+         */
+        final static String     SQL_DB_DELETE_DUP_INTERFACE = "DELETE FROM ipinterface WHERE nodeID=?";
+        final static String     SQL_DB_DELETE_DUP_SERVICES  = "DELETE FROM ifservices WHERE nodeid=?";
+        final static String     SQL_DB_DELETE_DUP_SNMPINTERFACE = "DELETE FROM snmpinterface WHERE nodeid =?";
+        
 	private final static String 	SELECT_METHOD_MIN = "min";
 	private final static String 	SELECT_METHOD_MAX = "max";
 
@@ -745,11 +765,31 @@ final class RescanProcessor
 				     IfSnmpCollector snmpc)
 		throws SQLException
 	{
+		//
+		// Reparenting
+		//
+		// This sub-interface was not previously associated with this node.  If 
+		// the sub-interface is already associated with another node we must do 
+		// one of the following:
+		//
+		// 1. If the target interface (the one being rescanned) appears to be an 
+		//    interface alias all of the interfaces under the sub-interface's node 
+		//    will be reparented under the nodeid of the target interface.
+		//
+		// 2. If however the interface is not an alias, only the sub-interface will
+		//    be reparented under the nodeid of the interface being rescanned.
+		//
+		// In the reparenting p/ocess, the database ipinterface, snmpinterface
+		// and ifservices table entries associated with the reparented interface
+		// will be "updated" to reflect the new nodeid.  If the old node has 
+		// no remaining interfaces following the reparenting it will be marked 
+		// as deleted.
+		//
+		
+		// Special case:  Need to skip interface reparenting for '0.0.0.0' 
+		// interfaces as well as loopback interfaces ('127.*.*.*').
 		Category log = ThreadCategory.getInstance(getClass());
 		
-		CapsdConfigFactory cFactory = CapsdConfigFactory.getInstance();
-		PollerConfigFactory pollerCfgFactory = PollerConfigFactory.getInstance();
-
 		if (log.isDebugEnabled())
 		{
 			log.debug("updateInterface: updating interface " + ifaddr.getHostAddress() + "(targetIf=" 
@@ -758,11 +798,7 @@ final class RescanProcessor
                                 + snmpc.getTarget().getHostAddress());
 		}
 				
-		boolean isAlias = false;
 		boolean reparentFlag = false;
-		
-		DbNodeEntry duplicateNodeEntry = null;
-		boolean deleteDuplicateNodeFlag = false;
 		boolean newIpIfEntry = false;
 		
 		// Attempt to load IP Interface entry from the database
@@ -772,273 +808,252 @@ final class RescanProcessor
 			log.debug("updateInterface: interface =" + ifaddr.getHostAddress() + " ifIndex = " + ifIndex);
                 
 		DbIpInterfaceEntry dbIpIfEntry = DbIpInterfaceEntry.get(dbc, node.getNodeId(), ifaddr);
-                if (ifIndex != -1)
+                
+                //
+                // the updating interface may have already existed in the ipinterface table with different
+                // nodeIds. If it exist in a different node, verify if all the interfaces on that node
+                // are contained in the snmpc of the updating interface. If they are, reparent all
+                // the interfaces on that node to the node of the updating interface, otherwise, just add 
+                // the interface to the updating node.
+                //
+                PreparedStatement stmt = null;
+                try
                 {
-		        DbIpInterfaceEntry ifEntry = DbIpInterfaceEntry.get(dbc, node.getNodeId(), ifaddr, ifIndex);
-                        if ( ifEntry != null)
-                                dbIpIfEntry = ifEntry;
-                }
+                        stmt = dbc.prepareStatement(SQL_DB_RETRIEVE_OTHER_NODES);
+                        stmt.setString(1, ifaddr.getHostAddress());
+                        stmt.setInt(2, ifIndex);
+                        stmt.setInt(3, node.getNodeId());
                         
-		if (dbIpIfEntry == null)
-		{
-			//
-			// Reparenting
-			//
-			// This sub-interface was not previously associated with this node.  If 
-			// the sub-interface is already associated with another node we must do 
-			// one of the following:
-			//
-			// 1. If the target interface (the one being rescanned) appears to be an 
-			//    interface alias all of the interfaces under the sub-interface's node 
-			//    will be reparented under the nodeid of the target interface.
-			//
-			// 2. If however the interface is not an alias, only the sub-interface will
-			//    be reparented under the nodeid of the interface being rescanned.
-			//
-			// In the reparenting process, the database ipinterface, snmpinterface
-			// and ifservices table entries associated with the reparented interface
-			// will be "updated" to reflect the new nodeid.  If the old node has 
-			// no remaining interfaces following the reparenting it will be marked 
-			// as deleted.
-			//
-			
-			// Special case:  Need to skip interface reparenting for '0.0.0.0' 
-			// interfaces as well as loopback interfaces ('127.*.*.*').
-			int oldNodeId = -1;
-			if (!ifaddr.getHostAddress().equals("0.0.0.0") && 
-				!ifaddr.getHostAddress().startsWith("127.")) 
-			{
-				oldNodeId = cFactory.getInterfaceDbNodeId(dbc, ifaddr, ifIndex);
-			}
-			else
-			{
-				if (log.isDebugEnabled())
-					log.debug("updateInterface: interface " + ifaddr.getHostAddress() + " is NOT eligible for reparenting.");
-			}
-				
-			if (oldNodeId != -1)
-			{
-				if (log.isDebugEnabled())
-					log.debug("updateInterface: interface " + ifaddr.getHostAddress() + " is however under nodeid " + oldNodeId);
-
-				// Determine if target interface is an alias or not?
-				isAlias = isInterfaceAlias(target, snmpc); 
-				if (isAlias)
-				{
-
-                                        // the target interface is not exist in the ipAddrTable of this node.
-                                        // Do nothing
-					if (log.isDebugEnabled())
-						log.debug("updateInterface: target interface " + ifaddr.getHostAddress() + " is an alias, reparenting all interfaces from node " + oldNodeId + " to node " + node.getNodeId());
-						
-					// Its an alias, move all the interfaces associated with the 
-					// sub-interface's nodeid under the target's nodeid
-					duplicateNodeEntry = DbNodeEntry.get(dbc, oldNodeId);
-					if (duplicateNodeEntry != null)
-					{
-						// Retrieve list of interfaces associated with the old node
-						DbIpInterfaceEntry[] tmpIfArray = duplicateNodeEntry.getInterfaces(dbc);
-						
-						// Reparent each interface under the targets' nodeid 
-						for (int i=0; i<tmpIfArray.length; i++)
-						{
-							InetAddress addr = tmpIfArray[i].getIfAddress();
-							int index = tmpIfArray[i].getIfIndex();
-							
-							// Skip non-IP or loopback interfaces
-							if (!addr.getHostAddress().equals("0.0.0.0") && 
-								!addr.getHostAddress().startsWith("127.")) 
-							{
-								continue;
-							}
-							
-							if (log.isDebugEnabled())
-								log.debug("updateInterface: reparenting interface " + tmpIfArray[i].getIfAddress().getHostAddress() + " under node " + node.getNodeId());
-								
-							reparentInterface(dbc, addr, index, node.getNodeId(), oldNodeId);
-							
-							// Create interfaceReparented event
-							createInterfaceReparentedEvent(node, oldNodeId, addr);
-						}
-					}
-					
-					// Set reparent flag
-					reparentFlag = true;
-				}
-				else
-				{
-                                        // 
-                                        // target interface is not an alias. Check if the updating interface
-                                        // exists in the ipAddrTable of the oldNode. If it is not in the old 
-                                        // node, reparent the interface to the new node. Otherwise, it is a
-                                        // duplicate interface, and add it to the new node and create an 
-                                        // interfaceAdded event and duplicateInterface event.
-                                        //
-					duplicateNodeEntry = DbNodeEntry.get(dbc, oldNodeId);
-					if (duplicateNodeEntry != null)
+                        ResultSet rs = stmt.executeQuery();
+                        while (rs.next())
+                        {
+                                int existingNodeId  = rs.getInt(1);
+        			DbNodeEntry suspectNodeEntry = DbNodeEntry.get(dbc, existingNodeId);
+        				
+                                // Verify if the suspectNodeEntry is a duplicate node
+                                if (isDuplicateNode(dbc, suspectNodeEntry, snmpc))
+                                {
+        			        // Retrieve list of interfaces associated with the old node
+        			        DbIpInterfaceEntry[] tmpIfArray = suspectNodeEntry.getInterfaces(dbc);
+        				
+                                        // Reparent each interface under the targets' nodeid 
+        				for (int i=0; i<tmpIfArray.length; i++)
         				{
-                                                if (isInIpAddrTable(ifaddr, duplicateNodeEntry))
+        					InetAddress addr = tmpIfArray[i].getIfAddress();
+        					int index = tmpIfArray[i].getIfIndex();
+        						
+        					// Skip non-IP or loopback interfaces
+        					if (addr.getHostAddress().equals("0.0.0.0") && 
+        						addr.getHostAddress().startsWith("127.")) 
+        					{
+        						continue;
+        					}
+        							
+        					if (log.isDebugEnabled())
+        						log.debug("updateInterface: reparenting interface " 
+                                                                + addr.getHostAddress() 
+                                                                + " under node: " + node.getNodeId()
+                                                                + " from existing node: " + existingNodeId);
+        								
+        					reparentInterface(dbc, addr, index, node.getNodeId(), existingNodeId);
+                                                if (ifaddr.getHostAddress().equals(addr.getHostAddress()))
                                                 {
-                                                        dbIpIfEntry = addDuplicateInterface(node, ifaddr, protocols, snmpc);
-		                                        // Attempt to load IP Interface entry from the database
-		                                        // since dbIpIfEntry is used later in the following 
-                                                        // program.
-                                                        //
-			                                if (dbIpIfEntry != null)
-                                                        {
-                                                                newIpIfEntry = true;
-                					        if (log.isDebugEnabled())
-                						        log.debug("updateInterface: interface " + ifaddr.getHostAddress() 
-                                                                        + " is added to node: " + node.getNodeId());
-                                                        }
-                                                }
-                                                else
-                                                {
-        					        // 
-        					        // It is not in the ipAddrTable of the oldNodeId, issue SQL update to 
-                                                        // move the sub-interface and its services under its new parent node
-        					        //
         					        if (log.isDebugEnabled())
-                						log.debug("updateInterface: target interface " 
+        						        log.debug("updateInterface: interface " 
                                                                         + ifaddr.getHostAddress() 
-                                                                        + " is not exist on nodeID: " + oldNodeId 
-                                                                        +". Reparenting " + ifaddr.getHostAddress() 
-                                                                        + " under nodeid " + node.getNodeId());
-                						
-                					// Get ifindex for this address
-                					int index = -1;
-                					if (snmpc != null && !snmpc.failed() && snmpc.hasIpAddrTable())
-                					{
-                						index = IpAddrTable.getIfIndex(snmpc.getIpAddrTable().getEntries(), 
-                                                                                                 ifaddr.getHostAddress());
-                					}
-                					if (log.isDebugEnabled())
-                						log.debug("updateInterface: interface " + ifaddr.getHostAddress() 
-                                                                        + " has ifIndex " + index);
-                					
-                					reparentInterface(dbc, ifaddr, index, node.getNodeId(), oldNodeId);
-                					
-                					// Create interfaceReparented event
-                					createInterfaceReparentedEvent(node, oldNodeId, ifaddr);
-                					
-                					// Set reparent flag
-                					reparentFlag = true;
+                                                                        + " is added to node: " + node.getNodeId()
+                                                                        + " by reparenting from existing node: " + existingNodeId);
+        		                                dbIpIfEntry = DbIpInterfaceEntry.get(dbc, node.getNodeId(), ifaddr);
+        				                reparentFlag = true;
+                                                        
                                                 }
-                                        }
-				}
-				
-				// Delete the old node id if it has no additional IP interfaces
-				// under it...non-IP interfaces do not count as they are only 
-				// discoverable via SNMP.
-				//
-				if (duplicateNodeEntry == null)
-					duplicateNodeEntry = DbNodeEntry.get(dbc, oldNodeId);
-				
-				if (duplicateNodeEntry != null)
-				{
-					DbIpInterfaceEntry[] duplicateNodeInterfaces = duplicateNodeEntry.getInterfaces(dbc);
-					
-					if (log.isDebugEnabled())
-						log.debug("updateInterface: checking if there are any remaining IP interfaces for this dup node.");
-					
-					// Determine IP interface count remaining under this node
-					int ipCount = 0;
-					int nonIpCount = 0;
-					for (int ii=0; ii<duplicateNodeInterfaces.length; ii++)
-					{
-						InetAddress addr = duplicateNodeInterfaces[ii].getIfAddress();
-						if (log.isDebugEnabled())
-							log.debug("updateInterface: remaining interface address: " + addr.getHostAddress());
-						
-						// Increment count if address is not "0.0.0.0" and
-						// is not a loopback address
-						if (!addr.getHostAddress().equals("0.0.0.0") && 
-							!addr.getHostAddress().startsWith("127.")) 
-						{
-							ipCount ++;
-						}
-						else
-						{
-							nonIpCount ++;
-						}
-					}
-					if (log.isDebugEnabled())
-						log.debug("updateInterface: ipCount=" + ipCount + " nonIpCount=" + nonIpCount);
-					
-					// If no IP interfaces left we can delete the old
-					// node entry
-					if (ipCount == 0)
-					{
-						if (log.isDebugEnabled())
-							log.debug("updateInterface: old nodeid " + oldNodeId + " has no IP interfaces associated with it, deleting...");
-						
-						// If any non IP interface entries remain we must
-						// first mark them as deleted.
-						if (nonIpCount > 0)
-						{
-							if (log.isDebugEnabled())
-								log.debug("updateInterface: dup nodeid " + oldNodeId + " has at least one non-IP interface associated with it, deleting all non-IP interfaces...");
-							
-							for (int ii=0; ii<duplicateNodeInterfaces.length; ii++)
-							{
-								if (log.isDebugEnabled())
-									log.debug("updateInterface: deleting non-IP interface with ifIndex " + duplicateNodeInterfaces[ii].getIfIndex() + " from dup node " + oldNodeId);
-								duplicateNodeInterfaces[ii].setManagedState(DbIpInterfaceEntry.STATE_DELETED);
-								duplicateNodeInterfaces[ii].store(dbc);
-							}
-						}
-						
-						// Delete any remaining snmpInterface table entries
-						if (log.isDebugEnabled())
-							log.debug("updateInterface: deleting any remaining snmpInterface table entries for old node " + oldNodeId);
-						PreparedStatement delete = dbc.prepareStatement("DELETE FROM snmpinterface WHERE nodeid=?");
-						try
-						{
-							delete.setInt(1, oldNodeId);
-							delete.executeUpdate();
-						}
-						finally
-						{
-							try 
-							{
-								delete.close();
-							}
-							catch (SQLException e)
-							{
-								// Do nothing
-							}
-						}
-						
-						// Now mark the node as deleted
-						duplicateNodeEntry.setNodeType(DbNodeEntry.NODE_TYPE_DELETED);
-						duplicateNodeEntry.store(dbc);
-						deleteDuplicateNodeFlag = true;
-					}
-				}
-			}
-		}
-
-		//
-		// IMPORTANT:  Notice that from here on event if the target interface was
-		// an alias resulting in the reparenting of multiple interfaces under the
-		// target interface's node, we only actually update the current sub-interface.
-		// This is ok because this method, updateInterface() should be called 
-		// for each sub-interface retrieved via SNMP...and these interfaces no
-		// longer need to be reparented so they will be updated as normal.
-		if (reparentFlag)
+        							
+        					// Create interfaceReparented event
+        					createInterfaceReparentedEvent(node, existingNodeId, addr);
+        				}
+        				// delete duplicate node after reparenting. 
+                                        deleteDuplicateNode(dbc, suspectNodeEntry);
+        			        createDuplicateNodeDeletedEvent(suspectNodeEntry);
+                                }
+                        }
+                }
+		catch(SQLException sqlE)
 		{
-			// Interface was reparented, now we can load its interface entry
-			dbIpIfEntry = DbIpInterfaceEntry.get(dbc, node.getNodeId(), ifaddr);
+			log.error("SQLException while updating interface: " + ifaddr.getHostAddress() 
+                                + " on nodeid: " + node.getNodeId());
+			throw sqlE;
 		}
-		else if (dbIpIfEntry == null)
+		finally
+		{
+                        try
+                        {
+			        stmt.close();
+                        }
+                        catch (SQLException e) {}
+		}
+                
+		// 
+                // if no reparenting occured on the updating interface, add it to the 
+                // updating node.
+                //
+		if (dbIpIfEntry == null)
 		{
 			// Interface not found with this nodeId so create new interface entry
 			if (log.isDebugEnabled())
-				log.debug("updateInterface: interface " + ifaddr + " not in database under nodeid " + node.getNodeId() + ", creating new interface object.");
+				log.debug("updateInterface: interface " + ifaddr 
+                                        + " not in database under nodeid " + node.getNodeId() 
+                                        + ", creating new interface object.");
 			dbIpIfEntry = DbIpInterfaceEntry.create(node.getNodeId(), ifaddr, ifIndex);
+                        if ( isDuplicateInterface(dbc, ifaddr, node.getNodeId()))
+                        {
+                                createDuplicateIpAddressEvent(dbIpIfEntry);
+                        }
 			newIpIfEntry = true;
 		}
+	
+                // update ipinterface for the updating interface
+                updateInterfaceInfo(dbc, now, node, dbIpIfEntry, snmpc, newIpIfEntry, reparentFlag);
+                
+                // update IfServices for the updating interface
+                updateServiceInfo(dbc, node, dbIpIfEntry, newIpIfEntry, protocols);
+                
+                // update SNMP info if available
+                updateSnmpInfo(dbc, node, dbIpIfEntry, snmpc);
+        }
 		
+        /**
+         * This method is responsible to delete any interface associated with the duplicate node, 
+         * delete any entry left in ifservices table and snmpinterface table for the duplicate node,
+         * and make the node as 'deleted'.
+         *
+	 * @param dbc		Database Connection
+	 * @param duplicateNode	Duplicate node to delete.
+         *
+         */
+        private void deleteDuplicateNode( Connection dbc,
+                                             DbNodeEntry duplicateNode)
+                throws SQLException
+        {
+
+		Category log = ThreadCategory.getInstance(getClass());
+                boolean duplicate = false;
+                
+                PreparedStatement ifStmt = dbc.prepareStatement(SQL_DB_DELETE_DUP_INTERFACE);
+                PreparedStatement svcStmt = dbc.prepareStatement(SQL_DB_DELETE_DUP_SERVICES);
+                PreparedStatement snmpStmt = dbc.prepareStatement(SQL_DB_DELETE_DUP_SNMPINTERFACE);
+                try
+                {
+                        ifStmt.setInt(1, duplicateNode.getNodeId());
+                        svcStmt.setInt(1, duplicateNode.getNodeId());
+                        snmpStmt.setInt(1, duplicateNode.getNodeId());
+                        
+                        ifStmt.executeUpdate();
+                        svcStmt.executeUpdate();
+                        snmpStmt.executeUpdate();
+
+                        duplicateNode.setNodeType(DbNodeEntry.NODE_TYPE_DELETED);
+                        duplicateNode.store(dbc);
+                }
+		catch(SQLException sqlE)
+		{
+			log.error("deleteDuplicateNode  SQLException while deleting duplicate node: " + duplicateNode.getNodeId()); 
+			throw sqlE;
+		}
+		finally
+		{
+                        try 
+                        {
+			        ifStmt.close();
+			        svcStmt.close();
+			        snmpStmt.close();
+                        }
+                        catch (SQLException e) {}
+                        
+		}
+                
+        }
+        
+        
+        /**
+         * This method verify if an ipaddress is existing in other node except 
+         * in the updating node.
+         *
+	 * @param dbc		Database Connection
+	 * @param ifaddr	Ip address being verified.
+	 * @param nodeId	Node Id of the node being rescanned
+         *
+         */
+        private boolean isDuplicateInterface( Connection dbc,
+                                              InetAddress ifaddr, 
+                                              int nodeId)
+                throws SQLException
+        {
+
+		Category log = ThreadCategory.getInstance(getClass());
+                boolean duplicate = false;
+                
+                PreparedStatement stmt = null;
+                try
+                {
+                        stmt = dbc.prepareStatement(SQL_DB_RETRIEVE_DUPLICATE_NODEIDS);
+                        stmt.setString(1, ifaddr.getHostAddress());
+                        stmt.setInt(2, nodeId);
+                        
+                        ResultSet rs = stmt.executeQuery();
+                        while (rs.next())
+                        {
+        		        duplicate = true;
+                        }
+                }
+		catch(SQLException sqlE)
+		{
+			log.error("isDuplicateInterface: SQLException while updating interface: " + ifaddr.getHostAddress() 
+                                + " on nodeid: " + nodeId);
+			throw sqlE;
+		}
+		finally
+		{
+                        try 
+                        {
+			        stmt.close();
+                        }
+                        catch (SQLException e) {}
+                        return duplicate;
+		}
+                
+        }
+         
+	/**
+	 * This method is responsible for updating the ipinterface table entry
+	 * for a specific interface.
+	 *
+	 * @param dbc		Database Connection.
+	 * @param now		Date/time to be associated with the update.
+	 * @param node		Node entry for the node being rescanned.
+	 * @param dbIpIfEntry 	interface entry of the updating interface.
+	 * @param snmpc		SNMP collector or null if SNMP not supported.
+	 * @param isNewIpEntry  if dbIpIfEntry is a new entry.
+	 * @param isReparented 	if dbIpIfentry is reparented.
+	 * 
+	 * @throws SQLException if there is a problem updating the ipinterface table.
+	 */
+        private void updateInterfaceInfo(  Connection dbc, 
+                                           Date now,
+                                           DbNodeEntry node, 
+                                           DbIpInterfaceEntry dbIpIfEntry,
+                                           IfSnmpCollector snmpc,
+                                           boolean isNewIpEntry,
+				           boolean isReparented )
+                throws SQLException
+        {
+		Category log = ThreadCategory.getInstance(getClass());
+
+		CapsdConfigFactory cFactory = CapsdConfigFactory.getInstance();
+		PollerConfigFactory pollerCfgFactory = PollerConfigFactory.getInstance();
+                
+                InetAddress ifaddr = dbIpIfEntry.getIfAddress();
+		int ifIndex = snmpc.getIfIndex(ifaddr);
+                
 		// Clone the existing database entry so we have access to the values
 		// of the database fields associated with the interface in the event
 		// that something has changed.
@@ -1088,10 +1103,8 @@ final class RescanProcessor
 		int ifType = -1;
 		if (snmpc != null && !snmpc.failed())
 		{	
-			//int ifIndex = snmpc.getIfIndex(ifaddr);
 			if(ifIndex != -1)
 			{
-				currIpIfEntry.setIfIndex(ifIndex);
 				int status = snmpc.getAdminStatus(ifIndex);
 				currIpIfEntry.setStatus(status);
 				ifType = snmpc.getIfType(ifIndex);
@@ -1100,7 +1113,7 @@ final class RescanProcessor
 				// Following the interface updates the primary SNMP interface will be determined
 				// and the value of the 'isSnmpPrimary' field set to 'P' (primary) for that
 				// interface.
-				if (newIpIfEntry)
+				if (isNewIpEntry)
 					currIpIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_SECONDARY);
 				else
 					currIpIfEntry.setPrimaryState(originalIpIfEntry.getPrimaryState());
@@ -1138,23 +1151,18 @@ final class RescanProcessor
 		// If the interface was not already in the database under 
 		// the node being rescanned or some other node send a
 		// nodeGainedInterface event.
-		if (newIpIfEntry && !reparentFlag)
+		if (isNewIpEntry && !isReparented)
 		{
 			createNodeGainedInterfaceEvent(dbIpIfEntry);
 		}
 		// If an interface has been reparented send associated events
-		else if (reparentFlag)
+		else if (isReparented)
 		{
-			// Duplicate node deleted?
-			if (deleteDuplicateNodeFlag)
-			{
-				createDuplicateNodeDeletedEvent(duplicateNodeEntry);
-			}
 			
 			// InterfaceIndexChanged event
 			//
 			if (log.isDebugEnabled())
-				log.debug("updateInterface: ifIndex changed: " + ifIndexChangedFlag);
+				log.debug("updateInterfaceInfo: ifIndex changed: " + ifIndexChangedFlag);
 			if (ifIndexChangedFlag)
 			{
 				createInterfaceIndexChangedEvent(dbIpIfEntry, originalIpIfEntry);
@@ -1164,7 +1172,7 @@ final class RescanProcessor
 			// IPHostNameChanged event
 			//
 			if (log.isDebugEnabled())
-				log.debug("updateInterface: hostname changed: " + ipHostnameChangedFlag);
+				log.debug("updateInterfaceInfo: hostname changed: " + ipHostnameChangedFlag);
 			if (ipHostnameChangedFlag)
 			{
 				createIpHostNameChangedEvent(dbIpIfEntry, originalIpIfEntry);
@@ -1177,7 +1185,7 @@ final class RescanProcessor
 			// InterfaceIndexChanged event
 			//
 			if (log.isDebugEnabled())
-				log.debug("updateInterface: ifIndex changed: " + ifIndexChangedFlag);
+				log.debug("updateInterfaceInfo: ifIndex changed: " + ifIndexChangedFlag);
 			if (ifIndexChangedFlag)
 			{
 				createInterfaceIndexChangedEvent(dbIpIfEntry, originalIpIfEntry);
@@ -1187,13 +1195,42 @@ final class RescanProcessor
 			// IPHostNameChanged event
 			//
 			if (log.isDebugEnabled())
-				log.debug("updateInterface: hostname changed: " + ipHostnameChangedFlag);
+				log.debug("updateInterfaceInfo: hostname changed: " + ipHostnameChangedFlag);
 			if (ipHostnameChangedFlag)
 			{
 				createIpHostNameChangedEvent(dbIpIfEntry, originalIpIfEntry);
 			}
 		}
+        }
 		
+
+	/**
+	 * This method is responsible for updating the ifservices table entry
+	 * for a specific interface.
+	 *
+	 * @param dbc		Database Connection.
+	 * @param node		Node entry for the node being rescanned.
+	 * @param dbIpIfEntry 	interface entry of the updating interface.
+	 * @param isNewIpEntry  if the dbIpIfEntry is a new entry.
+	 * @param protocols	Protocols supported by the interface.
+	 * 
+	 * @throws SQLException if there is a problem updating the ifservices table.
+	 */
+        private void updateServiceInfo(  Connection dbc, 
+                                        DbNodeEntry node, 
+                                        DbIpInterfaceEntry dbIpIfEntry,
+                                        boolean isNewIpEntry,
+				        List	 protocols )
+                throws SQLException
+        {
+		Category log = ThreadCategory.getInstance(getClass());
+
+		CapsdConfigFactory cFactory = CapsdConfigFactory.getInstance();
+		PollerConfigFactory pollerCfgFactory = PollerConfigFactory.getInstance();
+		org.opennms.netmgt.config.poller.Package ipPkg = null;
+                
+                InetAddress ifaddr = dbIpIfEntry.getIfAddress();
+                
 		// Retrieve from the database the interface's service list
 		DbIfServiceEntry[] dbSupportedServices = dbIpIfEntry.getServices(dbc);
 			
@@ -1218,6 +1255,7 @@ final class RescanProcessor
 				if (dbSupportedServices[i].getServiceId() == sid.intValue())
 					found = true;
 			}
+                        
 			if (!found)
 			{
 				DbIfServiceEntry ifSvcEntry = DbIfServiceEntry.create(node.getNodeId(), ifaddr, sid.intValue());
@@ -1231,9 +1269,11 @@ final class RescanProcessor
 					boolean svcToBePolled = false;
 					if (ipPkg != null)
 					{
+			                        ipPkg = pollerCfgFactory.getFirstPackageMatch(ifaddr.getHostAddress());
 						svcToBePolled = pollerCfgFactory.isPolled(p.getProtocolName(), ipPkg);
 						if (!svcToBePolled)
-							svcToBePolled = pollerCfgFactory.isPolled(ifaddr.getHostAddress(), p.getProtocolName());
+							svcToBePolled = pollerCfgFactory.isPolled(ifaddr.getHostAddress(), 
+                                                                                                  p.getProtocolName());
 					}
 
 					if (svcToBePolled)
@@ -1251,7 +1291,8 @@ final class RescanProcessor
 					{
 						Integer port = (Integer)p.getQualifiers().get("port");
 						if (log.isDebugEnabled())
-							log.debug("addInterfaces: got a port qualifier: " + port);
+							log.debug("updateIfServices: got a port qualifier: " + port
+                                                                + " for service: " + p.getProtocolName());
 						ifSvcEntry.setQualifier(port.toString());
 					}
 					catch (ClassCastException ccE)
@@ -1269,26 +1310,54 @@ final class RescanProcessor
 		
 				ifSvcEntry.store();
 				
+				if (log.isDebugEnabled())
+					log.debug("updateIfServices: update service: " + p.getProtocolName()
+                                                + " for interface:" + ifaddr.getHostAddress()
+                                                + " on node:" + node.getNodeId());
+                                                
 				// Generate nodeGainedService event
 				createNodeGainedServiceEvent(node, dbIpIfEntry, p.getProtocolName());
 				
 				// If this interface already existed in the database and SNMP
 				// service has been gained then create interfaceSupportsSNMP event
-				if (!newIpIfEntry && p.getProtocolName().equalsIgnoreCase("SNMP"))
+				if (!isNewIpEntry && p.getProtocolName().equalsIgnoreCase("SNMP"))
 				{
 					createInterfaceSupportsSNMPEvent(dbIpIfEntry);
 				}
 			}
 		} // end while(more protocols)
+        }
+
+	/**
+	 * This method is responsible for updating the snmpInterface table entry
+	 * for a specific interface.
+	 *
+	 * @param dbc		Database Connection
+	 * @param node		Node entry for the node being rescanned
+	 * @param dbIpIfEntry 	interface entry of the updating interface
+	 * @param snmpc		SNMP collector or null if SNMP not supported.
+	 * 
+	 * @throws SQLException if there is a problem updating the snmpInterface table.
+	 */
+        private void updateSnmpInfo(    Connection dbc, 
+                                        DbNodeEntry node, 
+                                        DbIpInterfaceEntry dbIpIfEntry, 
+                                        IfSnmpCollector snmpc)
+                throws SQLException
+        {
+                
+		Category log = ThreadCategory.getInstance(getClass());
+
+                InetAddress ifaddr = dbIpIfEntry.getIfAddress();
 		
-		//
+                //
 		// If SNMP info is available update the snmpInterface table entry with
 		// anything that has changed.
 		//		
 		if (snmpc != null && !snmpc.failed() && dbIpIfEntry.getIfIndex() != -1)
 		{
 			if (log.isDebugEnabled())
-				log.debug("updateInterface: updating snmp interface for nodeId/ifIndex=" +
+				log.debug("updateSnmpInfo: updating snmp interface for nodeId/ifIndex=" +
 					+ node.getNodeId() + "/" + dbIpIfEntry.getIfIndex());
 			
 			// Create and load SNMP Interface entry from the database
@@ -1299,7 +1368,8 @@ final class RescanProcessor
 			{
 				// SNMP Interface not found with this nodeId, create new interface
 				if (log.isDebugEnabled())
-					log.debug("updateInterface: SNMP interface index " + dbIpIfEntry.getIfIndex() + " not in database, creating new interface object.");
+					log.debug("updateSnmpInfo: SNMP interface index " + dbIpIfEntry.getIfIndex() 
+                                                + " not in database, creating new interface object.");
 				dbSnmpIfEntry = DbSnmpInterfaceEntry.create(node.getNodeId(), dbIpIfEntry.getIfIndex());
 				newSnmpIfTableEntry = true;
 			}
@@ -1342,7 +1412,7 @@ final class RescanProcessor
 				//
 				if(aaddrs == null)
 				{
-					log.warn("updateInterface: unable to retrieve address and netmask for nodeId/ifIndex: " +
+					log.warn("updateSnmpInfo: unable to retrieve address and netmask for nodeId/ifIndex: " +
 						node.getNodeId() + "/" + dbIpIfEntry.getIfIndex());
 
 					aaddrs = new InetAddress[2];
@@ -1363,7 +1433,7 @@ final class RescanProcessor
 				if (aaddrs[1] != null)
 				{
 					if (log.isDebugEnabled()) 
-						log.debug("updateInterface: interface " + aaddrs[0].getHostAddress() 
+						log.debug("updateSnmpInfo: interface " + aaddrs[0].getHostAddress() 
                                                         + " has netmask: " + aaddrs[1].getHostAddress());
 					currSnmpIfEntry.setNetmask(aaddrs[1]);
 				}
@@ -1376,7 +1446,7 @@ final class RescanProcessor
 				// description
 				String str = SystemGroup.getPrintableString((SnmpOctetString)ifte.get(IfTableEntry.IF_DESCR));
 				if (log.isDebugEnabled())
-					log.debug("updateInterface: " + ifaddr + " has ifDescription: " + str);
+					log.debug("updateSnmpInfo: " + ifaddr + " has ifDescription: " + str);
 				if(str != null && str.length() > 0)
 					currSnmpIfEntry.setDescription(str);
 					
@@ -1396,7 +1466,7 @@ final class RescanProcessor
 				String physAddr = sbuf.toString().trim();
 			
 				if (log.isDebugEnabled())
-					log.debug("updateInterface: " + ifaddr + " has phys address: -" + physAddr + "-");
+					log.debug("updateSnmpInfo: " + ifaddr + " has phys address: -" + physAddr + "-");
 				
 				if (physAddr.length() == 12)
 				{
@@ -1460,215 +1530,79 @@ final class RescanProcessor
 		} // end if snmp info available
 	}
 
-
 	/**
-	 * This method checks if a given ipaddress is in the ipAddrTable of a given
-         * node. If the ipaddress is in the ipAddrtable of a specific node, return 
-         * true, otherwise return false.
+	 * This method checks if a suspect node entry is a duplicate node to the
+         * updating node by verify if each interface in the suspect node is 
+         * contained in the ipAddrTable of the updating node.
 	 * 
-	 * @param node		DbNodeEntry object 
-	 * @param ifaddr	the interface to check
+         * @param dbc           Database connection
+	 * @param suspectNode	the suspect node to verify duplication. 
+	 * @param snmpc         the SNMP collection of the updating node.
 	 */
-        private boolean isInIpAddrTable(InetAddress ipAddress, DbNodeEntry oldNode)
+        private boolean isDuplicateNode(Connection dbc, DbNodeEntry suspectNode, IfSnmpCollector snmpc)
         {
 
 		Category log = ThreadCategory.getInstance(getClass());
+		if (suspectNode == null)
+                {
+		        if (log.isDebugEnabled())
+			        log.debug("isDuplicateNode: null node.");
+                        return false;
 
-		// Retrieve all the interfaces
-		// associated with the old node and perform collections against them.  
-		// 
-		DbIpInterfaceEntry[] dbInterfaces = null;
-		
-		// Retrieve list of interfaces associated with this nodeID
-		// from the database
-		log.debug("isInIpAddrTable: retrieving all interfaces for node: " + oldNode.getNodeId());
-		try
-		{
-			dbInterfaces = oldNode.getInterfaces();
-		}
-		catch (NullPointerException npE)
-		{
-			log.error("isInIpAddrTable: Null pointer when retrieving interfaces for node " + oldNode.getNodeId(), npE);
-			return false;
-		}
-		catch (SQLException sqlE)
-		{
-			log.error("isInIpAddrTable: unable to load interface info for nodeId " + oldNode.getNodeId() 
-                                + " from the database.", sqlE);
-			return false;
-		}
-
-		// Run collector for each retrieved interface 
-		// 
-                IfCollector collector = null;
-		IfSnmpCollector snmpc = null;
-		boolean doSnmpCollection = true;
-		for (int i=0; i<dbInterfaces.length && doSnmpCollection; i++)
-		{
-			InetAddress ifaddr = dbInterfaces[i].getIfAddress();
-				
-			// collect the information from the interface.  
-			// NOTE: skip '127.*.*.*' and '0.0.0.0' addresses.
-			if(ifaddr.getHostAddress().startsWith("127") || 
-				ifaddr.getHostAddress().equals("0.0.0.0"))
-			{
-				continue;
-			}
-
-			if (log.isDebugEnabled())
-				log.debug("isInIpAddrTable: running collection for " + ifaddr.getHostAddress());
-			
-			collector = new IfCollector(ifaddr, doSnmpCollection);
-			collector.run();
-			
-			// Only need to collect SNMP data from one of the
-			// node's interfaces. 
-			//
-			if (doSnmpCollection)
-			{
-				snmpc = collector.getSnmpCollector();
-				if (snmpc != null && !snmpc.failed())
-				{
-                                        if (areDbInterfacesInSnmpCollection(dbInterfaces, snmpc))
-					{
-                                                // Got a successful SNMP collection from the node
-					        doSnmpCollection = false;
-					
-					        if (log.isDebugEnabled())
-						        log.debug("isInIpAddrTable: SNMP data collected via " 
-                                                                + ifaddr.getHostAddress());
-                                        }
-                                        else
-                                        {
-					        if (log.isDebugEnabled())
-						        log.debug("isInIpAddrTable: SNMP data collected via " 
-                                                                + ifaddr.getHostAddress() + " is not right." 
-                                                                + " Try to collect SNMP data through another ip address.");
-                                        }
-				}
-			}
-
-			if (log.isDebugEnabled())
-				log.debug("isInIpAddrTable: collection completed for " + ifaddr.getHostAddress());
-		}
-
-                // Check if a given ipAddress is on the ipAddrTable of the oldNode
-                return !isInterfaceAlias(ipAddress, snmpc);
-        }
-
-
-	/**
-	 * This method is responsble for inserting a new entry into the ipInterface
-	 * table and all its supported protocols into ifservices table for a given node.
-	 * 
-	 * @param node		DbNodeEntry object representing the rescaning interface's
-	 *                      parent node table entry
-	 * @param ifaddr	Rescaning interface
-	 * @param protocols	Protocols supported by the interface.
-	 * @param snmpc		SNMP collector or null if SNMP not supported.
-	 * 
-	 * @throws SQLException if there is a problem updating the ipInterface table.
-	 */
-	private DbIpInterfaceEntry addDuplicateInterface( DbNodeEntry node,
-				   InetAddress ifaddr,
-                                   List protocols,
-				   IfSnmpCollector snmpc)
-		throws SQLException
-	{
-		Category log = ThreadCategory.getInstance(getClass());
-
-		CapsdConfigFactory cFactory = CapsdConfigFactory.getInstance();
-		PollerConfigFactory pollerCfgFactory = PollerConfigFactory.getInstance();
-
-		Date now = new Date();
-
-		// if there is no snmp information then it's a
-		// simple addtion to the database
-		//
-		if(snmpc != null || !snmpc.failed())
-		{
-			if (log.isDebugEnabled())
-				log.debug("AddDuplicateInterface: add interface " + ifaddr.getHostAddress()
-                                        + " for nodeId: " + node.getNodeId());
-                                        
-			DbIpInterfaceEntry ipIfEntry = DbIpInterfaceEntry.create(node.getNodeId(), ifaddr);
-			ipIfEntry.setLastPoll(now);
-			ipIfEntry.setHostname(ifaddr.getHostName());
-
-			// The package filter evaluation requires that the ip be in the
-			// database - at this point the ip is NOT in db, so insert as active
-			// and update afterward
-			//
-			// Try to avoid re-evaluating the ip against filters for
-			// each service, try to get the first package here and use
-			// that for service evaluation
-			//
-			boolean addrUnmanaged = cFactory.isAddressUnmanaged(ifaddr);
-			if(addrUnmanaged)
-				ipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_UNMANAGED);
-			else
-				ipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_MANAGED);
-
-			ipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
-
-			ipIfEntry.store();
-
-			// now update if necessary
-			org.opennms.netmgt.config.poller.Package ipPkg = null;
-			if (!addrUnmanaged)
-			{
-				boolean ipToBePolled = false;
-				ipPkg = pollerCfgFactory.getFirstPackageMatch(ifaddr.getHostAddress());
-				if (ipPkg != null)
-					ipToBePolled = true;
-
-				if (!ipToBePolled)
-				{
-					// update ismanaged to 'N' in ipinterface
-					ipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_NOT_POLLED);
-					ipIfEntry.store();
-				}
-			}
-
-			int ifIndex = -1;
-			if((ifIndex = snmpc.getIfIndex(ifaddr)) != -1)
-			{
-			        // Just set primary state to secondary for now.  The primary SNMP interface
-			        // won't be selected until after all interfaces have been inserted
-			        // into the database. This is because the interface must already be in
-			        // the database for filter rule evaluation to succeed.
-				ipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_SECONDARY);
-			
-				ipIfEntry.setIfIndex(ifIndex);
-				int status = snmpc.getAdminStatus(ifIndex);
-				if(status != -1)
-					ipIfEntry.setStatus(status);
-			}
-			else
-			{
-				// Address does not have a valid ifIndex associated with it
-				// so set primary state to NOT_ELIGIBLE.
-				ipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
-			}
-
-			ipIfEntry.store();
-                        createDuplicateIpAddressEvent(ipIfEntry);
-
-			// Add supported protocols
-			if (log.isDebugEnabled())
-				log.debug("AddDuplicateInterface: add supported protocols for interface " + ifaddr.getHostAddress()
-                                        + " /nodeId: " + node.getNodeId());
-			addSupportedProtocols(node, 
-						ipIfEntry, 
-					        protocols, 
-						addrUnmanaged, 
-						ifIndex, 
-						ipPkg);
-                        return ipIfEntry;
                 }
-                return null;
-	}
+						
+		// Retrieve list of interfaces associated with the suspect node
+                try 
+                {
+		        DbIpInterfaceEntry[] tmpIfArray = suspectNode.getInterfaces(dbc);
+				
+			for (int i = 0; i < tmpIfArray.length; i++)
+			{
+			        InetAddress addr = tmpIfArray[i].getIfAddress();
+				int index = tmpIfArray[i].getIfIndex();
+							
+                                InetAddress[] updateIfs = snmpc.getIfAddressAndMask(index);
+                                if (updateIfs == null)
+                                {
+				        if (log.isDebugEnabled())
+					        log.debug("isDuplicateNode: Interface: " + addr.getHostAddress()
+                                                        + " is not in the ipAddrTable of the updating node.");
+                                        return false;
+			        }
+                                else
+                                {       
+                                        boolean match = false;
+                                        for (int inx = 0; inx < updateIfs.length; inx ++)
+                                        {
+                                                if (updateIfs[inx].getHostAddress().equals(addr.getHostAddress()))
+                                                {
+				                        if (log.isDebugEnabled())
+					                        log.debug("isDuplicateNode: Interface: " + addr.getHostAddress()
+                                                                        + " found a match in the ipAddrTable of the updating node.");
+                                                        match = true;
+                                                        break;
+                                                }
+                                        }
 
+                                        if (!match)
+                                        {
+				                if (log.isDebugEnabled())
+					                log.debug("isDuplicateNode: Interface: " + addr.getHostAddress()
+                                                                + " is not in the ipAddrTable of the updating node.");
+                                                return false;
+                                        }
+                                }
+                        }
+			
+                        return true;
+                }
+                catch (SQLException sqlE)
+                {
+                        log.error("isDuplicateNode: failed to retrieve all interfaces for the supect node"
+                                + suspectNode.getNodeId(), sqlE);
+                        return false;
+                }
+        }
 
 	/**
 	 * Responsible for iterating inserting an entry into the ifServices
