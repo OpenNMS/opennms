@@ -91,7 +91,7 @@
   </tr>
   <tr> 
     <td align="center" >
-      <font  SIZE="-1">Copyright &copy; 2002 <a href="http://www.sortova.com">Sortova Consulting Group, Inc.</a>. Parts Copyright &copy; 1999-2002 <a href="http://www.oculan.com">Oculan Corp.</a> </font>
+      <font  SIZE="-2">Copyright &copy; 2002 <a href="http://www.sortova.com">Sortova Consulting Group, Inc.</a>. Parts Copyright &copy; 1999-2002 <a href="http://www.oculan.com">Oculan Corp.</a>. OpenNMS is a trademark of <a href="http://www.sortova.com">Sortova Consulting Group, Inc.</a>.</font>
     </td>
   </tr>
 </table>
