@@ -119,7 +119,7 @@ public class SnmpManageNodesServlet extends HttpServlet {
                     String intKey = curInterface.getNodeid() + "+" + curInterface.getIfIndex();
 
                     // determine what is managed and unmanged
-                    if (interfaceList.contains(intKey) && "N".equals(curInterface.getStatus())) {
+                    if (interfaceList.contains(intKey) && (curInterface.getStatus() == null || curInterface.getStatus().equals("N"))) {
                         stmt.setString(1, "C");
                         stmt.setInt(2, curInterface.getNodeid());
                         stmt.setInt(3, curInterface.getIfIndex());
