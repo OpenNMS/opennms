@@ -569,7 +569,7 @@ Java HotSpot(TM) Client VM (build 1.4.2_04-b05, mixed mode)
                 if (event.snmphost != null)
                         snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.12", "OctetString", "text", event.snmphost);
                 else
-                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.12", "OctetString", "text", "forge.blast.com");
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.12", "OctetString", "text", "forge.opennms.com");
                 if (event.service != null)
                         snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.13", "OctetString", "text", event.service);
                 else

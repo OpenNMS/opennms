@@ -32,7 +32,7 @@
 // For more information contact:
 //      OpenNMS Licensing       <license@opennms.org>
 //      http://www.opennms.org/
-//      http://www.blast.com/
+//      http://www.opennms.com/
 //
 
 package org.opennms.netmgt.poller;
@@ -64,7 +64,7 @@ import org.opennms.netmgt.xml.event.Value;
 /**
  * <P>The PollableNode class...</P>
  * 
- * @author <A HREF="mailto:jamesz@blast.com">James Zuo</A>
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo</A>
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
  * @author <A HREF="mailto:mike@opennms.org">Mike Davidson</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>

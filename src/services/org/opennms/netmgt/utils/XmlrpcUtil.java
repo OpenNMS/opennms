@@ -40,7 +40,7 @@ import org.opennms.netmgt.xml.event.Value;
 
 /**
  *
- * @author <a href="mailto:jamesz@blast.com">James Zuo</a>
+ * @author <a href="mailto:jamesz@opennms.com">James Zuo</a>
  */
 public final class XmlrpcUtil
 {

@@ -31,7 +31,7 @@
 // For more information contact: 
 //      OpenNMS Licensing       <license@opennms.org>
 //      http://www.opennms.org/
-//      http://www.blast.com/
+//      http://www.opennms.com/
 //
 // Tab Size = 8
 //
@@ -66,7 +66,7 @@ import org.opennms.netmgt.config.DatabaseConnectionFactory;
  * mode, then the caller must call <code>commit</code> to inform
  * the database that the transaction is complete.
  *
- * @author <a href="mailto:jamesz@blast.com">James Zuo</a>
+ * @author <a href="mailto:jamesz@opennms.com">James Zuo</a>
  * @author <a href="mailto:weave@oculan.com">Weave</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  *

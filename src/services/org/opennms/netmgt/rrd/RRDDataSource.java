@@ -27,7 +27,7 @@
 // For more information contact: 
 //      OpenNMS Licensing       <license@opennms.org>
 //      http://www.opennms.org/
-//      http://www.blast.com/
+//      http://www.opennms.com/
 //
 // RRDDataSource.java,v 1.1.1.1 2001/11/11 17:34:38 ben Exp
 //

@@ -33,7 +33,7 @@
 // For more information contact:
 //      OpenNMS Licensing       <license@opennms.org>
 //      http://www.opennms.org/
-//      http://www.blast.com/
+//      http://www.opennms.com/
 //
 
 package org.opennms.web.admin.nodeManagement;
@@ -61,7 +61,7 @@ import org.opennms.netmgt.xml.event.Event;
 /**
  * A servlet that handles adding a new interface
  *
- * @author <A HREF="mailto:jamesz@blast.com">James Zuo</A>
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 public class AddNewInterfaceServlet extends HttpServlet

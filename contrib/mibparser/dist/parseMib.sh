@@ -23,7 +23,7 @@
 # For more information contact:
 #      OpenNMS Licensing       <license@opennms.org>
 #      http://www.opennms.org/
-#      http://www.blast.com/
+#      http://www.opennms.com/
 
 #
 # This script sets up the java call to the Java MIB

@@ -10,10 +10,6 @@
     <para>The current corporate sponsor of OpenNMS is The OpenNMS Group,
     which also owns the OpenNMS trademark.</para>
 
-    <para>The OpenNMS Project strives to remain independent, and includes
-    contributions from people outside of Blast. Please visit the OpenNMS
-    website for more information.</para>
-
     <para>OpenNMS is a derivative work, containing both original code,
     included code and modified code that was published under the GNU General
     Public License. Please see the source for detailed copyright notices, but
@@ -22,8 +18,8 @@
     <para><itemizedlist>
         <listitem>
           <para><trademark class="copyright">Copyright </trademark> 2002-2004
-	      <ulink url="http://www.blast.com">Blast
-		Internet Services, Inc.</ulink>.
+	      <ulink url="http://www.opennms.com">The
+		OpenNMS Group, Inc.</ulink>.
 	  </para>
         </listitem>
 

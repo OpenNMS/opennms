@@ -34,7 +34,7 @@
 // For more information contact:
 //      OpenNMS Licensing       <license@opennms.org>
 //      http://www.opennms.org/
-//      http://www.blast.com///
+//      http://www.opennms.com///
 
 -->
 

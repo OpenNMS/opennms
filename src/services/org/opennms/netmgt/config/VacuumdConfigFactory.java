@@ -27,7 +27,7 @@
 // For more information contact: 
 //      OpenNMS Licensing       <license@opennms.org>
 //      http://www.opennms.org/
-//      http://www.blast.com/
+//      http://www.opennms.com/
 //
 // Tab Size = 8
 //
@@ -55,7 +55,7 @@ import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
  * <em>init()</em> is called before calling any other method to ensure
  * the config is loaded before accessing other convenience methods.
  *
- * @author <a href="mailto:jamesz@blast.com">James Zuo</a>
+ * @author <a href="mailto:jamesz@opennms.com">James Zuo</a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
