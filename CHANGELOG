@@ -1,5 +1,10 @@
 1.1.2 to 1.1.3
 ----------------------------------------------------------------------
+- When a new service is added, like SNMP, the categories for the node
+  that gained the service will be rescanned to see if the new service
+  modifies the filter for a particular category. Bug 683
+- When a service is deleted from a node, the node will not be deleted
+  from all categories. Bug 796
 - When new services are discovered via a rescan, they were not being
   polled until OpenNMS was restarted. This is now fixed.
 - Fixed a Delete Nodes issues with RTC - Bug 797
