@@ -16,6 +16,29 @@
 			<attribute name="read-community" type="string" use="optional"/>
 			<!-- Default write community string -->
 			<attribute name="write-community" type="string" use="optional"/>
+			<!-- Begin SNMPv3 attributes -->
+			<attribute name="security-name" use="optional"/>
+			<attribute name="auth-passphrase" use="optional"/>
+			<attribute name="auth-protocol" use="optional">
+				<simpleType>
+					<restriction base="string">
+						<pattern value ="(MD5|SHA)"/>
+					</restriction>
+				</simpleType>
+			</attribute>
+			<attribute name="engine-id" use="optional"/>
+			<attribute name="context-engine-id" use="optional"/>
+			<attribute name="context-name" use="optional"/>
+			<attribute name="privacy-passphrase" use="optional"/>
+			<attribute name="privacy-protocol" use="optional">
+				<simpleType>
+					<restriction base="string">
+						<pattern value="(DES|AES|AES192|AES256)"/>
+					</restriction>
+				</simpleType>
+			</attribute>
+			<attribute name="enterprise-id" use="optional"/>
+			<!-- End SNMPv3 attributes -->
 		</complexType>
 	</element>
 
@@ -41,18 +64,39 @@
 			<attribute name="write-community" type="string" use="optional"/>
 			<!-- The proxy host to use when communiciating with this agent -->
 			<attribute name="proxy-host" type="string" use="optional" />
-			<!-- If set, overrides UDP port 161 as the port where SNMP 
-				 GET/GETNEXT/GETBULK requests are sent.
-			-->
+			<!-- If set, overrides UDP port 161 as the port where SNMP GET/GETNEXT/GETBULK requests are sent.-->
 			<attribute name="port" type="int" use="optional"/>
 			<!-- If set, forces SNMP data collection to the specified version. -->
 			<attribute name="version" use="optional">
 				<simpleType>
 					<restriction base="string">
-						<pattern value="(v1|v2c)"/>
+						<pattern value="(v1|v2c|v3)"/>
 					</restriction>
 				</simpleType>
 			</attribute>
+			<!-- Begin SNMPv3 attributes -->
+			<attribute name="security-name" use="optional"/>
+			<attribute name="auth-passphrase" use="optional"/>
+			<attribute name="auth-protocol" use="optional">
+				<simpleType>
+					<restriction base="string">
+						<pattern value ="(MD5|SHA)"/>
+					</restriction>
+				</simpleType>
+			</attribute>
+			<attribute name="engine-id" use="optional"/>
+			<attribute name="context-engine-id" use="optional"/>
+			<attribute name="context-name" use="optional"/>
+			<attribute name="privacy-passphrase" use="optional"/>
+			<attribute name="privacy-protocol" use="optional">
+				<simpleType>
+					<restriction base="string">
+						<pattern value="(DES|AES|AES192|AES256)"/>
+					</restriction>
+				</simpleType>
+			</attribute>
+			<attribute name="enterprise-id" use="optional"/>
+			<!-- End SNMPv3 attributes -->
 		</complexType>
 	</element>
 
