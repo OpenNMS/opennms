@@ -908,6 +908,13 @@ public final class SnmpPeerFactory {
 
     } // end getPeer();
     
+    /**
+     * This method returns a target based on the snmp-config for use with the
+     * SNMP4J SNMP protocol stack.
+     * @param inetAddress
+     * @param requestedSnmpVersion
+     * @return
+     */
     public Target getTarget(InetAddress inetAddress, int requestedSnmpVersion) {
         
         String transportAddress = null;
@@ -989,7 +996,16 @@ public final class SnmpPeerFactory {
         return target;
 
     }
-        
+    
+    /**
+     * A convenience method for created an SNMP4J SNMP target.  If version 3
+     * is requested, then a UserTarget is return, otherwise, a
+     * CommunityTarget is returned.
+     * @param addr
+     * @param def
+     * @param requestedSnmpVersion
+     * @return
+     */
     private Target createTarget(InetAddress addr, Definition def, int requestedSnmpVersion) {
         
         int version = determineVersion(def, requestedSnmpVersion);
@@ -1009,6 +1025,14 @@ public final class SnmpPeerFactory {
 
     }
     
+    /**
+     * This is a helper method to set all the common attributes for a
+     * Target (CommunityTarget or UserTarget)
+     * @param target
+     * @param def
+     * @param version
+     * @param addr
+     */
     private void setCommonAttributes(Target target, Definition def, int version, InetAddress addr) {
         target.setVersion(version);
         target.setRetries(determineRetries(def));
@@ -1017,14 +1041,33 @@ public final class SnmpPeerFactory {
         target.setMaxSizeRequestPDU(determineMaxRequestSize(def));
     }
 
+    /**
+     * Helper method to search the snmp-config for the appropriate read
+     * community string.
+     * @param def
+     * @return
+     */
     private OctetString determineCommunity(Definition def) {
         return new OctetString((def.getReadCommunity() == null ? (m_config.getReadCommunity() == null ? "public" :m_config.getReadCommunity()) : def.getReadCommunity()));
     }
 
+    /**
+     * Helper method to search the snmp-config for the appropriate maximum
+     * request size.  The default is the minimum necessary for a request.
+     * @param def
+     * @return
+     */
     private int determineMaxRequestSize(Definition def) {
         return (def.getMaxRequestSize() == 0 ? (m_config.getMaxRequestSize() == 0 ? DEFAULT_MAX_REQUEST_SIZE : m_config.getMaxRequestSize()) : DEFAULT_MAX_REQUEST_SIZE);
     }
 
+    /**
+     * Helper method to find a security name to use in the snmp-config.  If v3 has
+     * been specified and one can't be found, then a default is used for this
+     * is a required option for v3 operations.
+     * @param def
+     * @return
+     */
     private OctetString determineSecurityName(Definition def) {
         String securityName = (def.getSecurityName() == null ? m_config.getSecurityName() : def.getSecurityName() );
         if (securityName == null) {
@@ -1033,6 +1076,16 @@ public final class SnmpPeerFactory {
         return new OctetString(securityName);
     }
 
+    /**
+     * Helper method to set the security level in v3 operations.  The default is
+     * noAuthNoPriv if there is no authentication passphrase.  From there, if
+     * there is a privacy passphrase supplied, then the security level is set to
+     * authPriv else it falls out to authNoPriv.  There are only these 3 possible
+     * security levels.
+     * default 
+     * @param def
+     * @return
+     */
     private int determineSercurityLevel(Definition def) {
 
         int securityLevel = SecurityLevel.NOAUTH_NOPRIV;
@@ -1053,6 +1106,17 @@ public final class SnmpPeerFactory {
         return securityLevel;
     }
 
+    /**
+     * Helper method to create an Address object that is compatible
+     * with the SNMP4J SNMP stack.
+     *
+     * @param def
+     * @param addr
+     * @return
+     */
+    
+    //TODO: This needs to be updated when the protocol flag is added to the definition
+    //so that UDP or TCP can be used in v3 operations.
     private Address determineAddress(Definition def, InetAddress addr) {
         String transportAddress = addr.getHostAddress();
         int port = determinePort(def);
