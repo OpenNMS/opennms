@@ -150,7 +150,7 @@ final public class SnmpV3Monitor extends IPv4Monitor {
         try {
             snmp = SnmpHelpers.createSnmpSession(target);
             snmp.listen();
-            PDU request = SnmpHelpers.createPDU(target);
+            PDU request = SnmpHelpers.createPDU();
             VariableBinding vb = new VariableBinding(new OID(DEFAULT_OID));
             request.add(vb);
             

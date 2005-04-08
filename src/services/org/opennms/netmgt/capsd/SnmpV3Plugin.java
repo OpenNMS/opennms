@@ -124,7 +124,7 @@ public final class SnmpV3Plugin extends AbstractPlugin {
         try {
             snmp = SnmpHelpers.createSnmpSession(target);
             snmp.listen();
-            PDU request = SnmpHelpers.createPDU(target);
+            PDU request = SnmpHelpers.createPDU();
             VariableBinding vb = new VariableBinding(new OID(DEFAULT_OID));
             request.add(vb);
             

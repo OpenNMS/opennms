@@ -43,31 +43,19 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.snmp4j.CommunityTarget;
 import org.snmp4j.Target;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.security.AuthMD5;
 import org.snmp4j.security.PrivDES;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
+import org.snmp4j.smi.TransportIpAddress;
 
 public class Snmpv3PluginTest extends TestCase {
 
-    private static final String DEFAULT_PORT = "161";
-    private static final String DEFAULT_TIMEOUT = "3000";
-    private static final String DEFAULT_RETRY = "2";
-
-    private static final String DEFAULT_SECURITY_NAME = "opennms";
     private static final OID DEFAULT_AUTH_PROTOCOL = AuthMD5.ID;
-    private static final OctetString DEFAULT_AUTH_PASSPHRASE = new OctetString("opennms");
     private static final OID DEFAULT_PRIV_PROTOCOL = PrivDES.ID;
-    private static final OctetString DEFAULT_PRIV_PASSPHRASE = new OctetString("opennms");
-    private static final String DEFAULT_VERSION = "snmpv3";
-
-    /**
-     * The system object identifier to retreive from the remote agent.
-     */
-    private static final String DEFAULT_OID = ".1.3.6.1.2.1.1.2.0";
-    
     private static final String SNMP_CONFIG ="<?xml version=\"1.0\"?>\n" + 
             "<snmp-config "+ 
             " retry=\"3\" timeout=\"800\"\n" + 
@@ -76,6 +64,11 @@ public class Snmpv3PluginTest extends TestCase {
             " port=\"161\"\n" +
             " version=\"v1\"\n" +
             " max-request-size=\"484\">\n" +
+            "\n" +
+            "   <definition version=\"v1\">\n" + 
+            "       <specific>192.168.0.100</specific>\n" +
+            "   </definition>\n" + 
+            "\n" + 
             "   <definition version=\"v2c\">\n" + 
             "       <specific>192.168.0.50</specific>\n" +
             "   </definition>\n" + 
@@ -98,26 +91,58 @@ public class Snmpv3PluginTest extends TestCase {
         super.tearDown();
     }
     
+    /**
+     * This tests getting a JoeSNMP peer
+     * @throws UnknownHostException
+     */
     public void testGetPeer() throws UnknownHostException {
         assertNotNull(SnmpPeerFactory.getInstance().getPeer(InetAddress.getLocalHost()));
     }
     
+    /**
+     * This tests creating a v1 target
+     * @throws UnknownHostException
+     */
     public void testGetV1Target() throws UnknownHostException {
-        Target target = SnmpPeerFactory.getInstance().getTarget(InetAddress.getByName("192.168.1.1"));
+        Target target = SnmpPeerFactory.getInstance().getTarget(InetAddress.getByName("192.168.0.100"));
         assertNotNull(target);
         assertTrue(target.getVersion() == SnmpConstants.version1);
     }
     
+    /**
+     * This tests for a specifically defined v2c target
+     * @throws UnknownHostException
+     */
     public void testGetV2cTarget() throws UnknownHostException {
         Target target = SnmpPeerFactory.getInstance().getTarget(InetAddress.getByName("192.168.0.50"));
         assertNotNull(target);
-        assertTrue(target.getVersion() == SnmpConstants.version2c);
+        assertEquals(target.getVersion(), SnmpConstants.version2c);
     }
 
+    /**
+     * This tests for a specifically defined v3 target
+     * @throws UnknownHostException
+     */
     public void testGetV3Target() throws UnknownHostException {
         Target target = SnmpPeerFactory.getInstance().getTarget(InetAddress.getByName("192.168.0.102"));
         assertNotNull(target);
-        assertTrue(target.getVersion() == SnmpConstants.version3);
+        assertEquals(target.getVersion(), SnmpConstants.version3);
+    }
+    
+    /**
+     * This tests for a target using an IP that matches no specific or range definition
+     * @throws UnknownHostException
+     */
+    public void testGetDefaultTarget() throws UnknownHostException {
+        CommunityTarget target = (CommunityTarget)SnmpPeerFactory.getInstance().getTarget(InetAddress.getByName("10.1.1.1"));
+        assertNotNull(target);
+        assertEquals(target.getVersion(), SnmpConstants.version1);
+        assertEquals(target.getRetries(), 3);
+        assertEquals(target.getTimeout(), 800L);
+        assertEquals(new OctetString("public"), target.getCommunity());
+        TransportIpAddress ta = (TransportIpAddress)target.getAddress();
+        assertEquals(ta.getPort(), 161);
+        assertEquals(target.getMaxSizeRequestPDU(), 484);
     }
 
     //This tests works against a live v3 compatible agent.  Need to
@@ -136,7 +161,7 @@ public class Snmpv3PluginTest extends TestCase {
         Map map = new HashMap();
         
         SnmpV3Plugin plugin = new SnmpV3Plugin();
-//        assertTrue(plugin.isProtocolSupported(address, map));
+        assertTrue(plugin.isProtocolSupported(address, map));
         
     }
    

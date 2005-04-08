@@ -865,6 +865,7 @@ public final class SnmpPeerFactory {
         } else {
             CommunityTarget target = new CommunityTarget();
             setCommonAttributes(target, def, version, addr);
+            target.setCommunity(determineCommunity(def));
             return target;
         }
 
@@ -876,6 +877,10 @@ public final class SnmpPeerFactory {
         target.setTimeout(determineTimeout(def));
         target.setAddress(determineAddress(def, addr));
         target.setMaxSizeRequestPDU(determineMaxRequestSize(def));
+    }
+
+    private OctetString determineCommunity(Definition def) {
+        return new OctetString((def.getReadCommunity() == null ? (m_config.getReadCommunity() == null ? "public" :m_config.getReadCommunity()) : def.getReadCommunity()));
     }
 
     private int determineMaxRequestSize(Definition def) {
