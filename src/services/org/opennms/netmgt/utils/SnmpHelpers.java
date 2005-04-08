@@ -38,7 +38,9 @@ import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.Target;
 import org.snmp4j.TransportMapping;
+import org.snmp4j.UserTarget;
 import org.snmp4j.mp.MPv3;
+import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.security.SecurityModels;
 import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.security.USM;
@@ -52,7 +54,7 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
  */
 public class SnmpHelpers {
     
-    public static PDU createPDU(Target target) {
+    public static PDU createPDU() {
         PDU request;
         request = new ScopedPDU();
         ScopedPDU scopedPDU = (ScopedPDU) request;
@@ -63,17 +65,21 @@ public class SnmpHelpers {
     }
 
     
-    public static Snmp createSnmpSession(OctetString uname) throws IOException {
+    public static Snmp createSnmpSession(Target target) throws IOException {
         TransportMapping transport;
         
         transport = new DefaultUdpTransportMapping();
         
         Snmp snmp = new Snmp(transport);
-        USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
-        SecurityModels.getInstance().addSecurityModel(usm);
-//      UsmUser user = new UsmUser(DEFAULT_SECURITY_NAME, DEFAULT_PRIV_PROTOCOL, DEFAULT_AUTH_PASSPHRASE, DEFAULT_PRIV_PROTOCOL, DEFAULT_PRIV_PASSPHRASE);
-        UsmUser user = new UsmUser(uname, null, null, null, null);
-        snmp.getUSM().addUser(uname, user);
+
+        if (target.getVersion() == SnmpConstants.version3) {
+            UserTarget userTarget = (UserTarget)target;
+            USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
+            SecurityModels.getInstance().addSecurityModel(usm);
+//          UsmUser user = new UsmUser(DEFAULT_SECURITY_NAME, DEFAULT_AUTH_PROTOCOL, DEFAULT_AUTH_PASSPHRASE, DEFAULT_PRIV_PROTOCOL, DEFAULT_PRIV_PASSPHRASE);
+            UsmUser user = new UsmUser(userTarget.getSecurityName(), null, null, null, null);
+            snmp.getUSM().addUser(userTarget.getSecurityName(), user);
+        }
 
         return snmp;
     }
