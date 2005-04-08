@@ -11,7 +11,7 @@
 	<description>Build file for OpenNMS' castor-generated Java files.</description>
 
 	<property name="dev.lib.dir" value="${basedir}/devlib"/>
-	<property name="package.lib.dir" value="${basedir}/lib"/>
+	<property name="packaged.lib.dir" value="${basedir}/lib"/>
 	
 	<taskdef classname="com.tombrus.cleanImports.ant.CleanImports" classpath="${dev.lib.dir}/cleanImports.jar" name="cleanimports" />
 	
@@ -24,9 +24,9 @@
 	    <classpath>
 	    	  <pathelement location="${build.dir}/castor-config" />
 	    	  <pathelement location="${dev.lib.dir}/castor-0.9.6-srcgen-ant-task.jar" />
-	    	  <pathelement location="${package.lib.dir}/castor-0.9.6.jar" />
-	      <pathelement location="${dev.lib.dir}/xercesImpl.jar" />
-	    	  <pathelement location="${package.lib.dir}/commons-logging.jar" />
+	    	  <pathelement location="${packaged.lib.dir}/castor-0.9.6.jar" />
+	      <pathelement location="${packaged.lib.dir}/xercesImpl-2.6.2.jar" />
+	    	  <pathelement location="${packaged.lib.dir}/commons-logging.jar" />
 	    </classpath>
 	</taskdef>
 	

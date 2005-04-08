@@ -187,7 +187,8 @@ your distribution.
     <pathelement path="${packaged.lib.dir}/jdhcp.jar"/>
     <pathelement path="${packaged.lib.dir}/jcifs.jar"/>
     <pathelement path="${packaged.lib.dir}/bsf220.jar"/>
-    <pathelement path="${packaged.lib.dir}/xerces201.jar"/>
+    <pathelement path="${packaged.lib.dir}/xercesImpl-2.6.2.jar"/>
+    <pathelement path="${packaged.lib.dir}/xml-apis-2.6.2.jar"/>
     <pathelement path="${packaged.lib.dir}/xmlrpc-1.2-b1.jar"/>
     <pathelement path="${packaged.lib.dir}/jrobin-1.4.0.jar"/>
     <pathelement path="${packaged.lib.dir}/mailapi.jar"/>
@@ -285,8 +286,8 @@ your distribution.
     <pathelement location="${dev.lib.dir}/js.jar"/>
     <pathelement location="${dev.lib.dir}/jasper/jasper-compiler.jar"/>
     <pathelement location="${dev.lib.dir}/jasper/jasper-runtime.jar"/>
-    <pathelement location="${dev.lib.dir}/xercesImpl.jar"/>
-    <pathelement location="${dev.lib.dir}/xml-apis.jar"/>
+    <pathelement location="${packaged.lib.dir}/xercesImpl-2.6.2.jar"/>
+    <pathelement location="${packaged.lib.dir}/xml-apis-2.6.2.jar"/>
     <pathelement location="${dev.lib.dir}/servlet.jar"/>
     <pathelement location="${dev.lib.dir}/jwebunit-1.2.jar"/>
   </path>
@@ -371,7 +372,7 @@ your distribution.
       <pathelement location="${packaged.lib.dir}/logkit-1.0.jar"/>
       <pathelement location="${packaged.lib.dir}/avalon-framework-4.0.jar"/>
       <pathelement location="${packaged.lib.dir}/batik.jar"/>
-      <pathelement location="${dev.lib.dir}/xercesImpl.jar"/>
+      <pathelement location="${packaged.lib.dir}/xercesImpl-2.6.2.jar"/>
     </classpath>
   </taskdef>
 
@@ -1620,10 +1621,10 @@ OpenNMS as part of the post-install.
 	destdir="${build.docs.dir}"
 	style="${docs.source.dir}/common/fo-docbook.xsl"
 	includes="**/book.xml"
-	classpath="${packaged.lib.dir}/xalan231.jar"
 	extension=".fot"
 	 />
  </target>
+
 
  <!-- The directories in the <fop> targets need to match the includes
       in the doc.dirs patternset. -->

@@ -46,11 +46,15 @@ import net.sourceforge.jwebunit.WebTestCase;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.common.BasicSchedule;
 import org.opennms.netmgt.config.common.Time;
 import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Outages;
+import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.mock.MockDatabase;
+import org.opennms.netmgt.mock.MockEventConfigManager;
+import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockUtil;
 
@@ -232,13 +236,66 @@ public class OutageEditorWebTest extends WebTestCase {
             "\n" + 
             "</web-app>\n" + 
             "";
+    
+    String config_xml = 
+            "<EventdConfiguration\n" + 
+            "   TCPPort=\"5817\"\n" + 
+            "   UDPPort=\"5817\"\n" + 
+            "   receivers=\"5\"\n" + 
+            "   getNextEventID=\"SELECT nextval(\'eventsNxtId\')\"\n" + 
+            "   getNextAlarmID=\"SELECT nextval(\'alarmsNxtId\')\"\n" + 
+            "   socketSoTimeoutRequired=\"yes\"\n" + 
+            "   socketSoTimeoutPeriod=\"3000\">\n" + 
+            "</EventdConfiguration>";
+    
     private MockNetwork m_network;
     private MockDatabase m_db;
     private String[] m_menu = { "Node List", "Search", "Outages", "Events", "Notification", "Assets", "Reports", "Help" };
+
+    private Eventd m_eventd;
     
 
     protected void setUp() throws Exception {
         MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
+        
+        MockUtil.setupLogging();
+        MockUtil.resetLogLevel();
+
+        m_network = new MockNetwork();
+        m_network.setCriticalService("ICMP");
+        m_network.addNode(1, "Router");
+        m_network.addInterface("192.168.1.1");
+        m_network.addService("ICMP");
+        m_network.addService("SMTP");
+        m_network.addInterface("192.168.1.2");
+        m_network.addService("ICMP");
+        m_network.addService("SMTP");
+        m_network.addNode(2, "Server");
+        m_network.addInterface("192.168.1.3");
+        m_network.addService("ICMP");
+        m_network.addService("HTTP");
+        m_network.addNode(3, "Firewall");
+        m_network.addInterface("192.168.1.4");
+        m_network.addService("SMTP");
+        m_network.addService("HTTP");
+        m_network.addInterface("192.168.1.5");
+        m_network.addService("SMTP");
+        m_network.addService("HTTP");
+        
+        m_db = new MockDatabase();
+        m_db.populate(m_network);
+        
+        DatabaseConnectionFactory.setInstance(m_db);
+        
+        MockEventConfigManager eventdConfigMgr = new MockEventConfigManager(config_xml);
+        MockEventIpcManager ipcMgr = new MockEventIpcManager();
+        m_eventd = new Eventd();
+        m_eventd.setConfigManager(eventdConfigMgr);
+        m_eventd.setEventIpcManager(ipcMgr);
+        
+        m_eventd.init();
+        m_eventd.start();
+        
         
 
 //        ServletRunner sr = new ServletRunner(new File("dist/webapps/opennms/WEB-INF/web.xml"), "/opennms");
@@ -254,32 +311,6 @@ public class OutageEditorWebTest extends WebTestCase {
            getTestContext().setAuthorization("admin","admin");
            getTestContext().setBaseUrl("http://localhost:8080/opennms");
 
-           MockUtil.setupLogging();
-           MockUtil.resetLogLevel();
-
-           m_network = new MockNetwork();
-           m_network.setCriticalService("ICMP");
-           m_network.addNode(1, "Router");
-           m_network.addInterface("192.168.1.1");
-           m_network.addService("ICMP");
-           m_network.addService("SMTP");
-           m_network.addInterface("192.168.1.2");
-           m_network.addService("ICMP");
-           m_network.addService("SMTP");
-           m_network.addNode(2, "Server");
-           m_network.addInterface("192.168.1.3");
-           m_network.addService("ICMP");
-           m_network.addService("HTTP");
-           m_network.addNode(3, "Firewall");
-           m_network.addInterface("192.168.1.4");
-           m_network.addService("SMTP");
-           m_network.addService("HTTP");
-           m_network.addInterface("192.168.1.5");
-           m_network.addService("SMTP");
-           m_network.addService("HTTP");
-           
-           m_db = new MockDatabase();
-           m_db.populate(m_network);
 
 }
 
@@ -288,6 +319,7 @@ public class OutageEditorWebTest extends WebTestCase {
     }
 
     protected void tearDown() throws Exception {
+        m_eventd.stop();
         assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
         m_db.drop();
         MockUtil.println("------------ End Test "+getName()+" --------------------------");
@@ -322,7 +354,7 @@ public class OutageEditorWebTest extends WebTestCase {
 
     }
     
-    public void _testCreateNewOutage() throws Exception {
+    public void testCreateNewOutage() throws Exception {
         Outages initialOutages = getCurrentOutages();
         
         beginAt("/admin/sched-outages/index.jsp");

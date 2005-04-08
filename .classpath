@@ -33,10 +33,6 @@
 	<classpathentry kind="lib" path="lib/regexp120.jar"/>
 	<classpathentry kind="lib" path="lib/sablecc-2.17.2.jar"/>
 	<classpathentry kind="lib" path="lib/w3c.jar"/>
-	<classpathentry kind="lib" path="lib/xalan122.jar"/>
-	<classpathentry kind="lib" path="lib/xalan231.jar"/>
-	<classpathentry kind="lib" path="lib/xerces201.jar"/>
-	<classpathentry kind="lib" path="lib/xml-apis231.jar"/>
 	<classpathentry kind="lib" path="lib/xmlrpc-1.2-b1.jar"/>
 	<classpathentry kind="lib" path="lib/jrobin-1.4.0.jar"/>
 	<classpathentry kind="lib" path="lib/smtp.jar"/>
@@ -53,7 +49,6 @@
 	<classpathentry kind="lib" path="lib/castor-0.9.6.jar"/>
 	<classpathentry kind="lib" path="lib/SNMP4J.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
-	<classpathentry kind="lib" path="devlib/xmlParserAPIs.jar"/>
 	<classpathentry kind="lib" path="devlib/Tidy.jar"/>
 	<classpathentry kind="lib" path="devlib/httpunit.jar"/>
 	<classpathentry kind="lib" path="devlib/js.jar"/>
@@ -62,5 +57,7 @@
 	<classpathentry kind="lib" path="devlib/servlet.jar"/>
 	<classpathentry kind="lib" path="devlib/jasper/jasper-compiler.jar"/>
 	<classpathentry kind="lib" path="devlib/jasper/jasper-runtime.jar"/>
+	<classpathentry kind="lib" path="lib/xml-apis-2.6.2.jar"/>
+	<classpathentry kind="lib" path="lib/xercesImpl-2.6.2.jar"/>
 	<classpathentry kind="output" path="work/opennms/classes"/>
 </classpath>
