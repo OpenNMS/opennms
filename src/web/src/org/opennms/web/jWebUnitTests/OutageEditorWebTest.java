@@ -31,6 +31,7 @@
 //
 package org.opennms.web.jWebUnitTests;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.StringBufferInputStream;
 import java.util.ArrayList;
@@ -42,7 +43,9 @@ import net.sourceforge.jwebunit.ExpectedRow;
 import net.sourceforge.jwebunit.ExpectedTable;
 import net.sourceforge.jwebunit.WebTestCase;
 
+import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.common.BasicSchedule;
 import org.opennms.netmgt.config.common.Time;
 import org.opennms.netmgt.config.poller.Outage;
@@ -231,7 +234,6 @@ public class OutageEditorWebTest extends WebTestCase {
             "";
     private MockNetwork m_network;
     private MockDatabase m_db;
-    private Outages m_outages;
     private String[] m_menu = { "Node List", "Search", "Outages", "Events", "Notification", "Assets", "Reports", "Help" };
     
 
@@ -252,7 +254,6 @@ public class OutageEditorWebTest extends WebTestCase {
            getTestContext().setAuthorization("admin","admin");
            getTestContext().setBaseUrl("http://localhost:8080/opennms");
 
-    
            MockUtil.setupLogging();
            MockUtil.resetLogLevel();
 
@@ -280,9 +281,11 @@ public class OutageEditorWebTest extends WebTestCase {
            m_db = new MockDatabase();
            m_db.populate(m_network);
 
-           m_outages = (Outages)Unmarshaller.unmarshal(Outages.class, new FileReader("../../etc/poll-outages.xml"));
-           
 }
+
+    private Outages getCurrentOutages() throws MarshalException, ValidationException, FileNotFoundException {
+        return (Outages)Unmarshaller.unmarshal(Outages.class, new FileReader("../../etc/poll-outages.xml"));
+    }
 
     protected void tearDown() throws Exception {
         assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
@@ -290,19 +293,94 @@ public class OutageEditorWebTest extends WebTestCase {
         MockUtil.println("------------ End Test "+getName()+" --------------------------");
     }
     
-    public void testOutageList() throws Exception {
-        beginAt("/admin/sched-outages/index.jsp");
-        assertTitleEquals("Scheduled Outage administration");
+    public void testCancelNewOutage() throws Exception {
         
-        assertHeaderPresent("Manage scheduled outages", "Admin", new String[] {"Home", "Admin", "Manage Scheduled Outages"});
+        Outages initialOutages = getCurrentOutages();
+        
+        beginAt("/admin/sched-outages/index.jsp");
+
+        // make sure the outage schedule is correct
+        verifySchedulePage(initialOutages);
+
+        setFormElement("newName", "test-outage");
+        submit("newOutage");
+        
+        // create an empty outage to verify against
+        Outage outage = new Outage();
+        outage.setName("test-outage");
+        
+        // verify the edit page
+        verifyEditPage(outage);
+        
+        setWorkingForm("cancelForm");
+        submit("cancelButton");
+
+        // no changes should be made to the main page
+        verifySchedulePage(initialOutages);
+        // make sure the current file has the expected contents
+        verifyOutageFile(initialOutages);
+
+    }
+    
+    public void _testCreateNewOutage() throws Exception {
+        Outages initialOutages = getCurrentOutages();
+        
+        beginAt("/admin/sched-outages/index.jsp");
+
+        // make sure the outage schedule is correct
+        verifySchedulePage(initialOutages);
+
+        setFormElement("newName", "test-outage");
+        submit("newOutage");
+        
+        // create an empty outage to verify against
+        Outage outage = new Outage();
+        outage.setName("test-outage");
+        
+        // verify the edit page
+        verifyEditPage(outage);
+        
+        setWorkingForm("editForm");
+        submit("addSpecificTime");
+        
+        // verify the edit page
+        verifyEditPage(outage);
+
+        setWorkingForm("editForm");
+        submit("saveButton");
+
+        // no changes should be made to the main page
+        verifySchedulePage(initialOutages);
+        // make sure the current file has the expected contents
+        verifyOutageFile(initialOutages);
+        
+    }
+
+    private void verifyEditPage(Outage outage) {
+        assertTitleEquals("Scheduled Outage administration");
+        assertHeaderPresent("Edit Outage", "Admin", new String[] {"Home", "Admin", "Manage Scheduled Outages", "Edit Outage"});
         assertFooterPresent("Admin");
 
-        checkOutagesTable(m_outages);
+        setWorkingForm("cancelForm");
+        assertSubmitButtonPresent("cancelButton");
 
-        
-        submit();
-        assertTitleEquals("Scheduled Outage administration");
-        assertTextPresent("Edit Outages");
+        setWorkingForm("editForm");
+        assertSubmitButtonPresent("saveButton");
+    }
+
+    private void verifyOutageFile(Outages expectedOutages) {
+        // TODO: add code to verify that the current outage file has the same contents
+        // as expected
+        return;
+    }
+
+    private void verifySchedulePage(Outages expectedOutages) {
+        assertTitleEquals("Scheduled Outage Administration");
+        assertHeaderPresent("Manage Scheduled Outages", "Admin", new String[] {"Home", "Admin", "Manage Scheduled Outages"});
+        assertFooterPresent("Admin");
+        checkOutagesTable(expectedOutages);
+        assertFormElementPresent("newName");
+        assertSubmitButtonPresent("newOutage");
     }
 
     private void checkOutagesTable(Outages pollOutages) {
@@ -317,6 +395,10 @@ public class OutageEditorWebTest extends WebTestCase {
         Outage[] outages = pollOutages.getOutage();
         for (int i = 0; i < outages.length; i++) {
             Outage outage = outages[i];
+            
+            assertLinkPresent(outage.getName()+".edit");
+            assertLinkPresent(outage.getName()+".delete");
+            
             assertCell(table, i+2, 0, outage.getName());
             assertCell(table, i+2, 1, outage.getType());
             
@@ -338,17 +420,19 @@ public class OutageEditorWebTest extends WebTestCase {
         }
     }
 
-    public void testSearchHeader() throws Exception {
+    public void testSearchMargins() throws Exception {
         beginAt("/element/index.jsp");
         
         assertHeaderPresent("Element Search", "Search", new String[]{"Home", "Search"});
+        assertFooterPresent("Search");
         
     }
 
-    public void testHelpHeader() throws Exception {
+    public void testHelpMargins() throws Exception {
         beginAt("/help/index.jsp");
         
         assertHeaderPresent("Help", "Help", new String[]{"Home", "Help"});
+        assertFooterPresent("Help");
         
     }
 
@@ -385,17 +469,6 @@ public class OutageEditorWebTest extends WebTestCase {
     private void assertBreadCrumbs(String[] breadcrumbs, TableCell cell) {
         if (breadcrumbs != null && breadcrumbs.length > 0)
             assertMenu(breadcrumbs[breadcrumbs.length-1], breadcrumbs, cell);
-    }
-
-    public void testHelpFooter() throws Exception {
-        beginAt("/help/index.jsp");
-        
-        assertFooterPresent("Help");
-    }
-    
-    public void testSearchFooter() throws Exception {
-        beginAt("/element/index.jsp");
-        assertFooterPresent("Search");
     }
 
     private void assertFooterPresent(String location) {
@@ -541,16 +614,10 @@ public class OutageEditorWebTest extends WebTestCase {
         }
     }
 
-    public void testNodeListFooter() throws Exception {
+    public void testNodeListMargins() throws Exception {
         beginAt("/element/nodelist.jsp");
-        assertFooterPresent("Node List");
-    }
-
-    public void testNodeListHeader() throws Exception {
-        beginAt("/element/nodelist.jsp");
-        
         assertHeaderPresent("Node List", "Node List", new String[]{"Home", "Search", "Node List"});
-        
+        assertFooterPresent("Node List");
     }
     
 }

@@ -57,14 +57,14 @@ if(deleteName!=null) {
 }
 %>
 <html>
-<title>Scheduled Outage administration</title>
+<title>Scheduled Outage Administration</title>
 <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
 <link rel="stylesheet" type="text/css" href="includes/styles.css" />
 <body>
 <% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
 <% String breadcrumb2 = "Manage Scheduled Outages"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Manage scheduled outages" />
+  <jsp:param name="title" value="Manage Scheduled Outages" />
   <jsp:param name="location" value="admin" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
@@ -172,21 +172,23 @@ for(int i=0; i<outages.length; i++) {
         <td align="center"><img src="<%=(pollingOutages.contains(outageName))?outageOnImageUrl:outageOffImageUrl%>"></td>
         <td align="center"><img src="<%=(thresholdingOutages.contains(outageName))?outageOnImageUrl:outageOffImageUrl%>"></td>
         <td align="center"><img src="<%=(collectionOutages.contains(outageName))?outageOnImageUrl:outageOffImageUrl%>"></td>
-	<td><a href="admin/sched-outages/editoutage.jsp?name=<%=java.net.URLEncoder.encode(outageName)%>">Edit</a></td>
-	<td><a href="admin/sched-outages/index.jsp?deleteOutage=<%=java.net.URLEncoder.encode(outageName)%>" onClick="if(!confirm('Are you sure you wish to delete this outage?')) {return false;}">Delete</a></td>
+	<td><a id="<%=outageName%>.edit" href="admin/sched-outages/editoutage.jsp?name=<%=java.net.URLEncoder.encode(outageName)%>">Edit</a></td>
+	<td><a id="<%=outageName%>.delete" href="admin/sched-outages/index.jsp?deleteOutage=<%=java.net.URLEncoder.encode(outageName)%>" onClick="if(!confirm('Are you sure you wish to delete this outage?')) {return false;}">Delete</a></td>
 </tr>
 
 <%	
 } //end for outages 
 %>
 </table>
-<jsp:include page="/includes/footer.jsp" flush="false" >
-  <jsp:param name="locatio" value="admin" />
-</jsp:include>
 <form action="admin/sched-outages/editoutage.jsp" method="POST">
 <input type="text" value="New Name" size="40" name="newName" />
 <input type="hidden" name="addNew" value="true"/>
-<input type="submit" value="Add new outage"/>
+<input type="submit" name="newOutage" value="Add new outage"/>
 </form>
+<br/>
+<jsp:include page="/includes/footer.jsp" flush="true" >
+  <jsp:param name="location" value="admin" />
+</jsp:include>
+
 </body>
 </html>

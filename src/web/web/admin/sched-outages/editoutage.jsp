@@ -92,7 +92,9 @@ shortDayNames.put("31","31st");
 		theOutage=(Outage)request.getSession().getAttribute("opennms.editoutage");
 		if(theOutage==null) {
 			//No name, and no outage in the session.  Give up
-			%> No outage name parameter, nor outage stored in the session.  Cannot edit!<BR>
+			%>
+			<html><body> 
+			No outage name parameter, nor outage stored in the session.  Cannot edit!<BR/>
 			</body></html>
 			<%
 			return;
@@ -438,9 +440,9 @@ function outageTypeChanged(selectElement) {
 <body>
 <% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
 <% String breadcrumb2 = "<a href='admin/sched-outages/index.jsp'>Manage Scheduled Outages</a>"; %>
-<% String breadcrumb3 = "Edit Outages"; %>
+<% String breadcrumb3 = "Edit Outage"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Edit outage" />
+  <jsp:param name="title" value="Edit Outage" />
   <jsp:param name="location" value="admin" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
@@ -456,7 +458,7 @@ while(enum.hasMoreElements()) {
 	<%
 }
  %>
-<form action="admin/sched-outages/editoutage.jsp" method="POST">
+<form id="editForm" action="admin/sched-outages/editoutage.jsp" method="POST">
 <input type="hidden" name="formSubmission" value="<%=true%>"/>
 <table border="0">
 <tr><td><b>Name:</b></td>
@@ -783,8 +785,13 @@ while(keys.hasNext()) {
 </table>
 <input type="submit" value="Save" name="saveButton" />
 </form>
-<form action="admin/sched-outages/index.jsp" method="POST">
+<form id="cancelForm" action="admin/sched-outages/index.jsp" method="POST">
 <input type="submit" value="Cancel" name="cancelButton" />
 </form>
+
+<jsp:include page="/includes/footer.jsp" flush="true" >
+  <jsp:param name="location" value="admin" />
+</jsp:include>
+
 </body>
 </html>
