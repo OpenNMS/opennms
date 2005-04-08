@@ -49,10 +49,8 @@ import org.snmp4j.Snmp;
 import org.snmp4j.Target;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.MPv3;
-import org.snmp4j.security.AuthMD5;
-import org.snmp4j.security.PrivDES;
+import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.smi.OID;
-import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.VariableBinding;
 
 /**
@@ -66,7 +64,7 @@ import org.snmp4j.smi.VariableBinding;
 public final class SnmpV3Plugin extends AbstractPlugin {
 
     private static final String PROTOCOL_NAME = "SNMPv3";
-    private static final String DEFAULT_PORT = "161";
+/*    private static final String DEFAULT_PORT = "161";
     private static final String DEFAULT_TIMEOUT = "3000";
     private static final String DEFAULT_RETRY = "2";
     private static final String DEFAULT_SECURITY_NAME = "opennms";
@@ -75,7 +73,7 @@ public final class SnmpV3Plugin extends AbstractPlugin {
     private static final OID DEFAULT_PRIV_PROTOCOL = PrivDES.ID;
     private static final OctetString DEFAULT_PRIV_PASSPHRASE = new OctetString("opennms");
     private static final String DEFAULT_VERSION = "snmpv3";
-    private static final String DEFAULT_OID = ".1.3.6.1.2.1.1.2.0";
+*/    private static final String DEFAULT_OID = ".1.3.6.1.2.1.1.2.0";
     
     public String getProtocolName() {
         return PROTOCOL_NAME;
@@ -110,8 +108,9 @@ public final class SnmpV3Plugin extends AbstractPlugin {
     public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
 
         InetAddress inetAddress = address;
-//      String forceVersion = (qualifiers.get("forced version") == null ? DEFAULT_VERSION : (String)qualifiers.get("forced version"));
-        Target target = SnmpPeerFactory.getInstance().getTarget(inetAddress);
+        
+        //Get a target from the PeerFactory and force to version 3
+        Target target = SnmpPeerFactory.getInstance().getTarget(inetAddress, SnmpConstants.version3);
         
         String vbValue = (String)qualifiers.get("vbvalue");
         String oid = ParameterMap.getKeyedString(qualifiers, "vbname", DEFAULT_OID);
@@ -122,15 +121,15 @@ public final class SnmpV3Plugin extends AbstractPlugin {
         
         Snmp snmp = null;
         try {
-            snmp = SnmpHelpers.createSnmpSession(target);
+            snmp = SnmpHelpers.createSnmpSession();
             snmp.listen();
-            PDU request = SnmpHelpers.createPDU();
-            VariableBinding vb = new VariableBinding(new OID(DEFAULT_OID));
-            request.add(vb);
+            PDU requestPDU = SnmpHelpers.createPDU();
+            VariableBinding vb = new VariableBinding(new OID(oid));
+            requestPDU.add(vb);
             
-            PDU response = null;
+            PDU responsePDU = null;
             ResponseEvent responseEvent;
-            responseEvent = snmp.send(request, target);
+            responseEvent = snmp.get(requestPDU, target);
             snmp.close();
             
             if (responseEvent.getResponse() != null) {

@@ -41,22 +41,16 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.utils.SnmpHelpers;
-import org.opennms.protocols.snmp.SnmpSession;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
+import org.snmp4j.Target;
 import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
-import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.security.AuthMD5;
-import org.snmp4j.security.PrivDES;
-import org.snmp4j.security.SecurityLevel;
-import org.snmp4j.smi.Address;
 import org.snmp4j.smi.OID;
-import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.TransportIpAddress;
-import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.VariableBinding;
 
 /**
@@ -76,22 +70,9 @@ final public class SnmpV3Monitor extends IPv4Monitor {
 
     static final String SNMPV3_TARGET_KEY = "org.snmp4j.UserTarget";
 
-    private static final int DEFAULT_PORT = 161;
-    private static final String DEFAULT_TIMEOUT = "3000";
-    private static final String DEFAULT_RETRY = "2";
-
-    private static final String DEFAULT_SECURITY_NAME = "opennms";
-    private static final OID DEFAULT_AUTH_PROTOCOL = AuthMD5.ID;
-    private static final OctetString DEFAULT_AUTH_PASSPHRASE = new OctetString("opennms");
-    private static final OID DEFAULT_PRIV_PROTOCOL = PrivDES.ID;
-    private static final OctetString DEFAULT_PRIV_PASSPHRASE = new OctetString("opennms");
-    private static final String DEFAULT_VERSION = "snmpv3";
-
-
     public String serviceName() {
         return SERVICE_NAME;
     }
-
 
     public void initialize(NetworkInterface iface) {
         Category log = ThreadCategory.getInstance(getClass());
@@ -103,13 +84,7 @@ final public class SnmpV3Monitor extends IPv4Monitor {
         if (log.isDebugEnabled())
             log.debug("initialize: setting SNMPv3 target attributes for this interface: " + inetAddress.getHostAddress());
 
-        String transportAddress = inetAddress.getHostAddress() + "/" + DEFAULT_PORT;
-        Address targetAddress = new UdpAddress(transportAddress);
-
-        UserTarget target = new UserTarget();
-        target.setSecurityLevel(SecurityLevel.NOAUTH_NOPRIV);
-        target.setVersion(SnmpConstants.version3);
-        target.setAddress(targetAddress);
+        Target target = SnmpPeerFactory.getInstance().getTarget(inetAddress);
         
         iface.setAttribute(SNMPV3_TARGET_KEY, target);
 
@@ -125,7 +100,6 @@ final public class SnmpV3Monitor extends IPv4Monitor {
 
         int status = SERVICE_UNAVAILABLE;
         InetAddress inetAddress = (InetAddress) iface.getAddress();
-        SnmpSession session = null;
 
         // Retrieve this interface's SNMP peer object
         //
@@ -141,14 +115,12 @@ final public class SnmpV3Monitor extends IPv4Monitor {
         //Need this for logging only
         TransportIpAddress address = (TransportIpAddress)target.getAddress();
         
-        String uname = ParameterMap.getKeyedString(parameters, "security name", DEFAULT_SECURITY_NAME);
-
         if (log.isDebugEnabled())
             log.debug("poll: service= SNMP address= " + inetAddress.getHostAddress() + " port= " + address.getPort() + " oid=" + oid + " timeout= " + target.getTimeout() + " retries= " + target.getRetries() + " operator = " + operator + " operand = " + operand);
 
         Snmp snmp = null;
         try {
-            snmp = SnmpHelpers.createSnmpSession(target);
+            snmp = SnmpHelpers.createSnmpSession();
             snmp.listen();
             PDU request = SnmpHelpers.createPDU();
             VariableBinding vb = new VariableBinding(new OID(DEFAULT_OID));

@@ -60,18 +60,19 @@ public class SnmpHelpers {
         ScopedPDU scopedPDU = (ScopedPDU) request;
 //      scopedPDU.setContextEngineID(contextEngineID);
 //      scopedPDU.setContextName(contextName);
-        request.setType(PDU.GET);
+//      request.setType(PDU.GET);
         return request;
     }
 
     
-    public static Snmp createSnmpSession(Target target) throws IOException {
-        TransportMapping transport;
-        
-        transport = new DefaultUdpTransportMapping();
-        
+    public static Snmp createSnmpSession() throws IOException {
+        TransportMapping transport = new DefaultUdpTransportMapping();
         Snmp snmp = new Snmp(transport);
-
+        return snmp;
+    }
+    
+    public static Snmp createSnmpSession(Target target) throws IOException {
+        Snmp snmp = createSnmpSession();
         if (target.getVersion() == SnmpConstants.version3) {
             UserTarget userTarget = (UserTarget)target;
             USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
@@ -80,7 +81,6 @@ public class SnmpHelpers {
             UsmUser user = new UsmUser(userTarget.getSecurityName(), null, null, null, null);
             snmp.getUSM().addUser(userTarget.getSecurityName(), user);
         }
-
         return snmp;
     }
 

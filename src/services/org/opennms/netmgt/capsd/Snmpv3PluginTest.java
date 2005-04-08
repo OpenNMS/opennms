@@ -43,6 +43,12 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.poller.monitors.IPv4NetworkInterface;
+import org.opennms.netmgt.poller.monitors.NetworkInterface;
+import org.opennms.netmgt.poller.monitors.ServiceMonitor;
+import org.opennms.netmgt.poller.monitors.SnmpV3Monitor;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.Target;
 import org.snmp4j.mp.SnmpConstants;
@@ -78,6 +84,11 @@ public class Snmpv3PluginTest extends TestCase {
             "       <specific>192.168.0.102</specific>\n" +
             "   </definition>\n" + 
             "\n" + 
+            "   <definition version=\"v3\" " +
+            "       security-name=\"opennmsUser\" >\n" + 
+            "       <specific>"+myLocalHost()+"</specific>\n" +
+            "   </definition>\n" + 
+            "\n" + 
             "\n" + 
             "</snmp-config>";
 
@@ -91,6 +102,19 @@ public class Snmpv3PluginTest extends TestCase {
         super.tearDown();
     }
     
+    private static String myLocalHost()  {
+        
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            fail("Exception getting localhost");
+        }
+        
+        return null;
+    }
+
     /**
      * This tests getting a JoeSNMP peer
      * @throws UnknownHostException
@@ -144,16 +168,16 @@ public class Snmpv3PluginTest extends TestCase {
         assertEquals(ta.getPort(), 161);
         assertEquals(target.getMaxSizeRequestPDU(), 484);
     }
-
+    
     //This tests works against a live v3 compatible agent.  Need to
     //work on the mockAgent.  Don't not check-in to cvs uncommented.
 
-    public void testIsProtocolSupported() {
-        
+    public void testIsV3ProtocolSupported() {
+
         InetAddress address = null;
         try {
             address = InetAddress.getLocalHost();
-            address = InetAddress.getByName("192.168.0.102");
+            MockUtil.println("Testing for v3 on: "+address.getHostAddress());
         } catch (UnknownHostException e1) {
             e1.printStackTrace();
         }
@@ -165,4 +189,42 @@ public class Snmpv3PluginTest extends TestCase {
         
     }
    
+    public void testIsV3ProtocolSupported2() {
+
+        InetAddress address = null;
+        try {
+            address = InetAddress.getByName("127.0.0.1");
+            MockUtil.println("Testing for v3 on: "+address.getHostAddress());
+        } catch (UnknownHostException e1) {
+            e1.printStackTrace();
+        }
+        
+        Map map = new HashMap();
+        
+        SnmpV3Plugin plugin = new SnmpV3Plugin();
+ //       assertTrue(plugin.isProtocolSupported(address, map));
+        
+    }
+    
+    /**
+     * This test uses the v3 monitor class to do a poll and check
+     * the status of the v3 agent
+     *
+     */
+    public void testIsV3ProtocolAvailable() {
+        
+        InetAddress address = null;
+        try {
+            address = InetAddress.getLocalHost();
+        } catch (UnknownHostException e1) {
+            e1.printStackTrace();
+        }
+
+        SnmpV3Monitor monitor = new SnmpV3Monitor();
+        NetworkInterface iface = new IPv4NetworkInterface(address);
+        monitor.initialize(iface);
+        int result = monitor.poll(iface, new HashMap(), new Package());
+        
+//        assertEquals(ServiceMonitor.SERVICE_AVAILABLE, result);
+    }
 }

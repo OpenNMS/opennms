@@ -71,9 +71,21 @@ import org.opennms.protocols.snmp.SnmpSMI;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.Target;
 import org.snmp4j.UserTarget;
+import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.security.AuthMD5;
+import org.snmp4j.security.AuthSHA;
+import org.snmp4j.security.PrivAES128;
+import org.snmp4j.security.PrivAES192;
+import org.snmp4j.security.PrivAES256;
+import org.snmp4j.security.PrivDES;
 import org.snmp4j.security.SecurityLevel;
+import org.snmp4j.security.SecurityModels;
+import org.snmp4j.security.SecurityProtocols;
+import org.snmp4j.security.USM;
+import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.Address;
+import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.UdpAddress;
 
@@ -114,6 +126,16 @@ public final class SnmpPeerFactory {
 
     private static final int DEFAULT_MAX_REQUEST_SIZE = 464;
 
+    private static final int DEFAULT_VERSION = SnmpConstants.version1;
+
+    private static final OID DEFAULT_AUTH_PROTOCOL = AuthMD5.ID;
+
+    private static final OID DEFAULT_PRIV_PROTOCOL = PrivDES.ID;
+
+    private USM m_usm;
+
+    private static final String DEFAULT_SECURITY_NAME = "opennmsUser";
+
     /**
      * Private constructor
      * 
@@ -129,11 +151,124 @@ public final class SnmpPeerFactory {
 
         m_config = (SnmpConfig) Unmarshaller.unmarshal(SnmpConfig.class, new InputStreamReader(cfgIn));
         cfgIn.close();
+        addSecurityModels();
 
     }
     
     public SnmpPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
         m_config = (SnmpConfig) Unmarshaller.unmarshal(SnmpConfig.class, rdr);
+        addSecurityModels();
+    }
+
+    private void addSecurityModels() {
+        
+        Definition def = new Definition();
+        
+        if (versionString2Int(m_config.getVersion()) == SnmpConstants.version3) {
+            def.setSecurityName(m_config.getSecurityName());
+            def.setAuthPassphrase(m_config.getAuthPassphrase());
+            def.setAuthProtocol(m_config.getAuthProtocol());
+            def.setPrivacyPassphrase(m_config.getPrivacyPassphrase());
+            def.setPrivacyProtocol(m_config.getPrivacyProtocol());
+            initSecurityModels(def);
+        }
+        
+        Enumeration edef = m_config.enumerateDefinition();
+        while (edef.hasMoreElements()) {
+            def = (Definition) edef.nextElement();
+            
+            if (versionString2Int(def.getVersion()) == SnmpConstants.version3) {
+                initSecurityModels(def);
+            }
+        }
+    }
+
+    /**
+     * This method will construct the v3 security models in the SNMP4J library.
+     * @param def
+     */
+    private void initSecurityModels(Definition def) {
+        OID authProtocol;
+        OID privProtocol;
+        OctetString authPassphrase;
+        OctetString privPassphrase;
+        OctetString securityName;
+        securityName = null;
+        authPassphrase = null;
+        authProtocol = null;
+        privPassphrase = null;
+        privProtocol = null;
+        
+        if (def.getSecurityName() != null) {
+            
+            //Work on Authorization
+            securityName = createOctetString(def.getSecurityName());
+            if (def.getAuthPassphrase() != null) {
+                authPassphrase = createOctetString(def.getAuthPassphrase());
+                authProtocol = DEFAULT_AUTH_PROTOCOL;
+                if (def.getAuthProtocol() != null) {
+                    if (def.getAuthProtocol().equals("MD5")) {
+                        authProtocol = AuthMD5.ID;
+                    } else if (def.getAuthProtocol().equals("SHA")) {
+                        authProtocol = AuthSHA.ID;
+                    } else {
+                        throw new IllegalArgumentException("Authentication protocol unsupported: " + def.getAuthProtocol());
+                    }
+                }
+            }
+            
+            //Work on Privacy
+            if (def.getPrivacyPassphrase() != null) {
+                privPassphrase = createOctetString(def.getPrivacyPassphrase());
+                privProtocol = DEFAULT_PRIV_PROTOCOL;
+                if (def.getPrivacyProtocol() != null) {
+                    if (def.getPrivacyProtocol().equals("DES")) {
+                        privProtocol = PrivDES.ID;
+                    } else if ((def.getPrivacyProtocol().equals("AES128")) || (def.getPrivacyProtocol().equals("AES"))) {
+                        privProtocol = PrivAES128.ID;
+                    } else if (def.getPrivacyProtocol().equals("AES192")) {
+                        privProtocol = PrivAES192.ID;
+                    } else if (def.getPrivacyProtocol().equals("AES256")) {
+                        privProtocol = PrivAES256.ID;
+                    } else {
+                        throw new IllegalArgumentException("Privacy protocol " + def.getPrivacyProtocol() + " not supported");
+                    }
+                }
+            }
+            
+            if (m_usm == null) {
+                m_usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
+                SecurityModels.getInstance().addSecurityModel(m_usm);
+            }
+            UsmUser user = new UsmUser(securityName, authProtocol, authPassphrase, privProtocol, privPassphrase);
+            m_usm.addUser(securityName, user);
+        }
+    }
+    
+    private static OctetString createOctetString(String s) {
+        OctetString octetString;
+        if (s.startsWith("0x")) {
+            octetString = OctetString.fromHexString(s.substring(2), ':');
+        } else {
+            octetString = new OctetString(s);
+        }
+        return octetString;
+    }
+
+
+    private int versionString2Int(String strVersion) {
+
+        int version = DEFAULT_VERSION;
+
+        if (strVersion.equals("v3")) {
+            version = SnmpConstants.version3;
+        } else if (strVersion.equals("v2c")) { 
+            version = SnmpConstants.version2c;
+        } else if (strVersion.equals("v1")) {
+            version = SnmpConstants.version1;
+        }
+        
+        return version;
     }
 
     /**
@@ -773,25 +908,28 @@ public final class SnmpPeerFactory {
 
     } // end getPeer();
     
-    public Target getTarget(InetAddress inetAddress, int supportedSnmpVersion) {
+    public Target getTarget(InetAddress inetAddress, int requestedSnmpVersion) {
         
-
         String transportAddress = null;
         //String transportAddress = inetAddress.getHostAddress() + "/" + DEFAULT_PORT;
         Address targetAddress = null;
         //Address targetAddress = new UdpAddress(transportAddress);
         
-        
         if (m_config == null) {
-            UserTarget target = new UserTarget();
-
-            if (supportedSnmpVersion == SnmpConstants.version1 || supportedSnmpVersion == SnmpConstants.version2c || supportedSnmpVersion == SnmpConstants.version3) {
-                target.setVersion(supportedSnmpVersion);
+            Target target = null;
+            if (requestedSnmpVersion == SnmpConstants.version3) {
+                target = new UserTarget();
+                target.setVersion(SnmpConstants.version3);
+            } else if (requestedSnmpVersion == SnmpConstants.version1){
+                target = new CommunityTarget();
+                target.setVersion(SnmpConstants.version1);
+            } else if (requestedSnmpVersion == SnmpConstants.version2c) {
+                target = new CommunityTarget();
+                target.setVersion(SnmpConstants.version2c);
             }
             
             return target;
         }
-        
 
         Target target = null;
 
@@ -809,7 +947,7 @@ public final class SnmpPeerFactory {
                 try {
                     InetAddress addr = InetAddress.getByName(saddr);
                     if (addr.equals(inetAddress)) {
-                        target = createTarget(addr, def, supportedSnmpVersion);
+                        target = createTarget(addr, def, requestedSnmpVersion);
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
@@ -832,7 +970,7 @@ public final class SnmpPeerFactory {
                     long stop = toLong(end);
 
                     if (start <= lhost && lhost <= stop) {
-                        target = createTarget(inetAddress, def, supportedSnmpVersion);
+                        target = createTarget(inetAddress, def, requestedSnmpVersion);
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
@@ -845,7 +983,7 @@ public final class SnmpPeerFactory {
         if (target == null) {
 
             Definition def = new Definition();
-            target = createTarget(inetAddress, def, VERSION_UNSPECIFIED);
+            target = createTarget(inetAddress, def, requestedSnmpVersion);
         }
 
         return target;
@@ -889,6 +1027,9 @@ public final class SnmpPeerFactory {
 
     private OctetString determineSecurityName(Definition def) {
         String securityName = (def.getSecurityName() == null ? m_config.getSecurityName() : def.getSecurityName() );
+        if (securityName == null) {
+            securityName = DEFAULT_SECURITY_NAME;
+        }
         return new OctetString(securityName);
     }
 
@@ -920,11 +1061,21 @@ public final class SnmpPeerFactory {
         return targetAddress;
     }
 
+    /**
+     * Helper method to search the snmp-config for a port
+     * @param def
+     * @return
+     */
     private int determinePort(Definition def) {
         int port = 161;
         return (def.getPort() == 0 ? (m_config.getPort() == 0 ? port : m_config.getPort()) : port);
     }
 
+    /**
+     * Helper method to search the snmp-config 
+     * @param def
+     * @return
+     */
     private long determineTimeout(Definition def) {
         long timeout = 3;
         return (long)(def.getTimeout() == 0 ? (m_config.getTimeout() == 0 ? timeout : m_config.getTimeout()) : timeout);
@@ -935,12 +1086,23 @@ public final class SnmpPeerFactory {
         return (def.getRetry() == 0 ? (m_config.getRetry() == 0 ? retries : m_config.getRetry()) : retries);
     }
 
-    private int determineVersion(Definition def, int supportedSnmpVersion) {
+    /**
+     * This method determines the appropriate value for an SNMP4J target.  If
+     * the order of operations is:
+     * 1st: return a valid requested version
+     * 2nd: return a valid version defined in a definition within the snmp-config
+     * 3rd: return a valid version in the snmp-config
+     * 4th: return the default version
+     * @param def
+     * @param requestedSnmpVersion
+     * @return
+     */
+    private int determineVersion(Definition def, int requestedSnmpVersion) {
         
         int version = SnmpConstants.version1;
         
         String cfgVersion = "v1";
-        if (supportedSnmpVersion == VERSION_UNSPECIFIED) {
+        if (requestedSnmpVersion == VERSION_UNSPECIFIED) {
             if (def.getVersion() == null) {
                 if (m_config.getVersion() == null) {
                     return version;
@@ -951,7 +1113,7 @@ public final class SnmpPeerFactory {
                 cfgVersion = def.getVersion();
             }
         } else {
-            return supportedSnmpVersion;
+            return requestedSnmpVersion;
         }
         
         if (cfgVersion.equals("v1")) {
@@ -965,6 +1127,13 @@ public final class SnmpPeerFactory {
         return version;
     }
 
+    /**
+     * Helper method.  Calls overloaded partner with the version unspecified
+     * value.  In effect this sets the target to the default version if one isn't
+     * found in the snmp-config or in a definition within the snmp-config.
+     * @param inetAddress
+     * @return
+     */
     public Target getTarget(InetAddress inetAddress) {
         return getTarget(inetAddress, VERSION_UNSPECIFIED);
     }
