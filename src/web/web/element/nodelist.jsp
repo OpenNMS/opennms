@@ -76,6 +76,7 @@
 <% String breadcrumb2 = "Node List"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Node List" />
+  <jsp:param name="location" value="nodelist" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
 </jsp:include>
@@ -147,7 +148,9 @@
                                      
 <br>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/footer.jsp" flush="false" >
+  <jsp:param name="location" value="nodelist" />
+</jsp:include>
 
 </body>
 </html>

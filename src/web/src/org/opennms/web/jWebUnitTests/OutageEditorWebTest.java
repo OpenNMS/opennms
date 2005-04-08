@@ -232,7 +232,7 @@ public class OutageEditorWebTest extends WebTestCase {
     private MockNetwork m_network;
     private MockDatabase m_db;
     private Outages m_outages;
-    private String[] m_menu = { "List Nodes", "Search", "Outages", "Events", "Notification", "Assets", "Reports", "Help" };
+    private String[] m_menu = { "Node List", "Search", "Outages", "Events", "Notification", "Assets", "Reports", "Help" };
     
 
     protected void setUp() throws Exception {
@@ -410,7 +410,7 @@ public class OutageEditorWebTest extends WebTestCase {
 
     private void assertMenu(String location, String[] menu, TableCell cell) {
         if (location != null)
-            assertTrue("Expected disabled menu item "+location, cell.getText().indexOf(location) >= 0);
+            assertTrue("Expected disabled menu item "+location+" but the cell is "+cell.getText(), cell.getText().indexOf(location) >= 0);
         List links = new ArrayList();
         for(int i = 0; i < menu.length; i++) {
             if (!menu[i].equals(location)) {
@@ -539,6 +539,18 @@ public class OutageEditorWebTest extends WebTestCase {
         } else {
             return day;
         }
+    }
+
+    public void testNodeListFooter() throws Exception {
+        beginAt("/element/nodelist.jsp");
+        assertFooterPresent("Node List");
+    }
+
+    public void testNodeListHeader() throws Exception {
+        beginAt("/element/nodelist.jsp");
+        
+        assertHeaderPresent("Node List", "Node List", new String[]{"Home", "Search", "Node List"});
+        
     }
     
 }

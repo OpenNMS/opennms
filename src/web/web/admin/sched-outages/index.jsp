@@ -180,6 +180,9 @@ for(int i=0; i<outages.length; i++) {
 } //end for outages 
 %>
 </table>
+<jsp:include page="/includes/footer.jsp" flush="false" >
+  <jsp:param name="locatio" value="admin" />
+</jsp:include>
 <form action="admin/sched-outages/editoutage.jsp" method="POST">
 <input type="text" value="New Name" size="40" name="newName" />
 <input type="hidden" name="addNew" value="true"/>
