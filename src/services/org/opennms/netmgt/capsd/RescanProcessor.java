@@ -1870,7 +1870,12 @@ final class RescanProcessor implements Runnable {
      *             table.
      */
     private void addSupportedProtocols(DbNodeEntry node, DbIpInterfaceEntry ipIfEntry, List protocols, boolean addrUnmanaged, int ifIndex, org.opennms.netmgt.config.poller.Package ipPkg) throws SQLException {
+        Category log = ThreadCategory.getInstance(getClass());
         InetAddress ifaddr = ipIfEntry.getIfAddress();
+        if(ifaddr.getHostAddress().equals("0.0.0.0")) {
+            log.debug("addSupportedProtocols: node " + node.getNodeId() + ": Cant add ip services for non-ip interface. Just return.");
+            return;
+        } 
 
         // add the supported protocols
         //
