@@ -33,7 +33,8 @@
 
 package org.opennms.netmgt.capsd;
 
-import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -41,30 +42,13 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.mock.MockUtil;
-import org.opennms.netmgt.utils.ParameterMap;
-import org.snmp4j.PDU;
-import org.snmp4j.ScopedPDU;
-import org.snmp4j.Snmp;
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.snmp4j.Target;
-import org.snmp4j.TransportMapping;
-import org.snmp4j.UserTarget;
-import org.snmp4j.event.ResponseEvent;
-import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.security.AuthMD5;
 import org.snmp4j.security.PrivDES;
-import org.snmp4j.security.SecurityLevel;
-import org.snmp4j.security.SecurityModels;
-import org.snmp4j.security.SecurityProtocols;
-import org.snmp4j.security.USM;
-import org.snmp4j.security.UsmUser;
-import org.snmp4j.smi.Address;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
-import org.snmp4j.smi.UdpAddress;
-import org.snmp4j.smi.VariableBinding;
-import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 public class Snmpv3PluginTest extends TestCase {
 
@@ -72,7 +56,7 @@ public class Snmpv3PluginTest extends TestCase {
     private static final String DEFAULT_TIMEOUT = "3000";
     private static final String DEFAULT_RETRY = "2";
 
-    private static final OctetString DEFAULT_SECURITY_NAME = new OctetString("opennms");
+    private static final String DEFAULT_SECURITY_NAME = "opennms";
     private static final OID DEFAULT_AUTH_PROTOCOL = AuthMD5.ID;
     private static final OctetString DEFAULT_AUTH_PASSPHRASE = new OctetString("opennms");
     private static final OID DEFAULT_PRIV_PROTOCOL = PrivDES.ID;
@@ -83,106 +67,77 @@ public class Snmpv3PluginTest extends TestCase {
      * The system object identifier to retreive from the remote agent.
      */
     private static final String DEFAULT_OID = ".1.3.6.1.2.1.1.2.0";
+    
+    private static final String SNMP_CONFIG ="<?xml version=\"1.0\"?>\n" + 
+            "<snmp-config "+ 
+            " retry=\"3\" timeout=\"800\"\n" + 
+            " read-community=\"public\"" +
+            " write-community=\"private\"\n" + 
+            " port=\"161\"\n" +
+            " version=\"v1\"\n" +
+            " max-request-size=\"484\">\n" +
+            "   <definition version=\"v2c\">\n" + 
+            "       <specific>192.168.0.50</specific>\n" +
+            "   </definition>\n" + 
+            "\n" + 
+            "   <definition version=\"v3\" " +
+            "       security-name=\"opennmsUser\" >\n" + 
+            "       <specific>192.168.0.102</specific>\n" +
+            "   </definition>\n" + 
+            "\n" + 
+            "\n" + 
+            "</snmp-config>";
 
     protected void setUp() throws Exception {
         super.setUp();
+        Reader rdr = new StringReader(SNMP_CONFIG);
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
     }
 
     protected void tearDown() throws Exception {
         super.tearDown();
     }
     
+    public void testGetPeer() throws UnknownHostException {
+        assertNotNull(SnmpPeerFactory.getInstance().getPeer(InetAddress.getLocalHost()));
+    }
+    
+    public void testGetV1Target() throws UnknownHostException {
+        Target target = SnmpPeerFactory.getInstance().getTarget(InetAddress.getByName("192.168.1.1"));
+        assertNotNull(target);
+        assertTrue(target.getVersion() == SnmpConstants.version1);
+    }
+    
+    public void testGetV2cTarget() throws UnknownHostException {
+        Target target = SnmpPeerFactory.getInstance().getTarget(InetAddress.getByName("192.168.0.50"));
+        assertNotNull(target);
+        assertTrue(target.getVersion() == SnmpConstants.version2c);
+    }
+
+    public void testGetV3Target() throws UnknownHostException {
+        Target target = SnmpPeerFactory.getInstance().getTarget(InetAddress.getByName("192.168.0.102"));
+        assertNotNull(target);
+        assertTrue(target.getVersion() == SnmpConstants.version3);
+    }
+
+    //This tests works against a live v3 compatible agent.  Need to
+    //work on the mockAgent.  Don't not check-in to cvs uncommented.
+
     public void testIsProtocolSupported() {
         
         InetAddress address = null;
         try {
             address = InetAddress.getLocalHost();
-            address = InetAddress.getByName("192.168.0.100");
+            address = InetAddress.getByName("192.168.0.102");
         } catch (UnknownHostException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
         }
         
-        assertTrue(isProtocolSupported(address, new HashMap()));
+        Map map = new HashMap();
+        
+        SnmpV3Plugin plugin = new SnmpV3Plugin();
+//        assertTrue(plugin.isProtocolSupported(address, map));
+        
     }
-    
-    private PDU createPDU(Target target) {
-        PDU request;
-        request = new ScopedPDU();
-        ScopedPDU scopedPDU = (ScopedPDU) request;
-//      scopedPDU.setContextEngineID(contextEngineID);
-//      scopedPDU.setContextName(contextName);
-        request.setType(PDU.GET);
-        return request;
-    }
-
-    
-    private Snmp createSnmpSession() throws IOException {
-        TransportMapping transport;
-        
-        transport = new DefaultUdpTransportMapping();
-        
-        Snmp snmp = new Snmp(transport);
-        USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
-        SecurityModels.getInstance().addSecurityModel(usm);
-//      UsmUser user = new UsmUser(DEFAULT_SECURITY_NAME, DEFAULT_PRIV_PROTOCOL, DEFAULT_AUTH_PASSPHRASE, DEFAULT_PRIV_PROTOCOL, DEFAULT_PRIV_PASSPHRASE);
-        UsmUser user = new UsmUser(DEFAULT_SECURITY_NAME, null, null, null, null);
-        snmp.getUSM().addUser(DEFAULT_SECURITY_NAME, user);
-
-        return snmp;
-    }
-
-    public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
-
-        InetAddress inetAddress = address;
-        String port =  (qualifiers.get("port") == null ? DEFAULT_PORT : (String)qualifiers.get("port"));
-        String timeout = (qualifiers.get("timeout") == null ? DEFAULT_TIMEOUT : (String)qualifiers.get("timeout"));
-        String retry = (qualifiers.get("retry") == null ? DEFAULT_RETRY : (String)qualifiers.get("retry"));
-        String forceVersion = (qualifiers.get("forced version") == null ? DEFAULT_VERSION : (String)qualifiers.get("forced version"));
-        String vbValue = (String)qualifiers.get("vbvalue");
-        String oid = ParameterMap.getKeyedString(qualifiers, "vbname", DEFAULT_OID);
-        
-        boolean isSupported = false;
-        
-        MPv3.setEnterpriseID(5813);
-        
-        String transportAddress = inetAddress.getHostAddress() + "/" + DEFAULT_PORT;
-        
-        Address targetAddress = new UdpAddress(transportAddress);
-        Snmp snmp = null;
-        try {
-            snmp = createSnmpSession();
-            UserTarget target = new UserTarget();
-            target.setSecurityLevel(SecurityLevel.NOAUTH_NOPRIV);
-            target.setVersion(SnmpConstants.version3);
-            target.setAddress(targetAddress);
-            target.setRetries(Integer.parseInt(retry));
-            target.setTimeout(Integer.parseInt(timeout));
-            target.setSecurityName(DEFAULT_SECURITY_NAME);
-            snmp.listen();
-            PDU request = createPDU(target);
-            VariableBinding vb = new VariableBinding(new OID(DEFAULT_OID));
-            request.add(vb);
-            
-            PDU response = null;
-            ResponseEvent responseEvent;
-            responseEvent = snmp.send(request, target);
-            snmp.close();
-            
-            if (responseEvent.getResponse() != null) {
-                MockUtil.println(responseEvent.getResponse().toString());
-                return true;
-            } else {
-                return false;
-            }
-
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return isSupported;
-    }
-
-
+   
 }

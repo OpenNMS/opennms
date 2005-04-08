@@ -1,10 +1,14 @@
 <?xml version="1.0"?>
-<snmp-config retry="3" timeout="800"
-	read-community="public" write-community="private">
-	<definition version="v2c">
-		<specific>192.168.0.5</specific>
-	</definition>
+<snmp-config port="161" retry="3" timeout="800"
+             read-community="public" 
+	         version="v1">
 
+	<definition version="v2c">
+		<specific>192.168.0.50</specific>
+	</definition>
+	<definition version="3" security-name="opennmsUser">
+		<specific>192.168.0.102</specific>
+	</definition>
 	<!--
 	<definition>
 		<range begin="192.168.100.1" end="192.168.100.254"/>

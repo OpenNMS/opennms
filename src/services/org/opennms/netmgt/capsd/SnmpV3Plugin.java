@@ -41,21 +41,18 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.utils.SnmpHelpers;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
-import org.snmp4j.UserTarget;
+import org.snmp4j.Target;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.MPv3;
-import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.security.AuthMD5;
 import org.snmp4j.security.PrivDES;
-import org.snmp4j.security.SecurityLevel;
-import org.snmp4j.smi.Address;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
-import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.VariableBinding;
 
 /**
@@ -113,32 +110,19 @@ public final class SnmpV3Plugin extends AbstractPlugin {
     public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
 
         InetAddress inetAddress = address;
-        String port =  (qualifiers.get("port") == null ? DEFAULT_PORT : (String)qualifiers.get("port"));
-        String timeout = (qualifiers.get("timeout") == null ? DEFAULT_TIMEOUT : (String)qualifiers.get("timeout"));
-        String retry = (qualifiers.get("retry") == null ? DEFAULT_RETRY : (String)qualifiers.get("retry"));
-//        String forceVersion = (qualifiers.get("forced version") == null ? DEFAULT_VERSION : (String)qualifiers.get("forced version"));
+//      String forceVersion = (qualifiers.get("forced version") == null ? DEFAULT_VERSION : (String)qualifiers.get("forced version"));
+        Target target = SnmpPeerFactory.getInstance().getTarget(inetAddress);
+        
         String vbValue = (String)qualifiers.get("vbvalue");
         String oid = ParameterMap.getKeyedString(qualifiers, "vbname", DEFAULT_OID);
-        
-        String uname = (qualifiers.get("security name") == null ? DEFAULT_SECURITY_NAME : (String)qualifiers.get("security name"));
         
         boolean isSupported = false;
         
         MPv3.setEnterpriseID(5813);
         
-        String transportAddress = inetAddress.getHostAddress() + "/" + DEFAULT_PORT;
-        
-        Address targetAddress = new UdpAddress(transportAddress);
         Snmp snmp = null;
         try {
-            snmp = SnmpHelpers.createSnmpSession(new OctetString(uname));
-            UserTarget target = new UserTarget();
-            target.setSecurityLevel(SecurityLevel.NOAUTH_NOPRIV);
-            target.setVersion(SnmpConstants.version3);
-            target.setAddress(targetAddress);
-            target.setRetries(Integer.parseInt(retry));
-            target.setTimeout(Integer.parseInt(timeout));
-            target.setSecurityName(new OctetString(uname));
+            snmp = SnmpHelpers.createSnmpSession(target);
             snmp.listen();
             PDU request = SnmpHelpers.createPDU(target);
             VariableBinding vb = new VariableBinding(new OID(DEFAULT_OID));

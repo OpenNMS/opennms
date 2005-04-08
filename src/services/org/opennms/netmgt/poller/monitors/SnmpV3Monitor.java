@@ -55,6 +55,7 @@ import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
+import org.snmp4j.smi.TransportIpAddress;
 import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.VariableBinding;
 
@@ -133,25 +134,21 @@ final public class SnmpV3Monitor extends IPv4Monitor {
         if (target == null)
             throw new RuntimeException("UserTarget object not available for interface " + inetAddress);
 
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", (int) target.getTimeout());
-        int retries = ParameterMap.getKeyedInteger(parameters, "retries", target.getRetries());
-        int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
         String oid = ParameterMap.getKeyedString(parameters, "oid", DEFAULT_OID);
         String operator = ParameterMap.getKeyedString(parameters, "operator", null);
         String operand = ParameterMap.getKeyedString(parameters, "operand", null);
+
+        //Need this for logging only
+        TransportIpAddress address = (TransportIpAddress)target.getAddress();
         
         String uname = ParameterMap.getKeyedString(parameters, "security name", DEFAULT_SECURITY_NAME);
 
-        target.setRetries(retries);
-        target.setTimeout(timeout);
-        target.setSecurityName(new OctetString(uname));
-
         if (log.isDebugEnabled())
-            log.debug("poll: service= SNMP address= " + inetAddress.getHostAddress() + " port= " + port + " oid=" + oid + " timeout= " + timeout + " retries= " + retries + " operator = " + operator + " operand = " + operand);
+            log.debug("poll: service= SNMP address= " + inetAddress.getHostAddress() + " port= " + address.getPort() + " oid=" + oid + " timeout= " + target.getTimeout() + " retries= " + target.getRetries() + " operator = " + operator + " operand = " + operand);
 
         Snmp snmp = null;
         try {
-            snmp = SnmpHelpers.createSnmpSession(new OctetString(uname));
+            snmp = SnmpHelpers.createSnmpSession(target);
             snmp.listen();
             PDU request = SnmpHelpers.createPDU(target);
             VariableBinding vb = new VariableBinding(new OID(DEFAULT_OID));

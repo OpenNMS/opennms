@@ -45,6 +45,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -67,6 +68,14 @@ import org.opennms.protocols.ip.IPv4Address;
 import org.opennms.protocols.snmp.SnmpParameters;
 import org.opennms.protocols.snmp.SnmpPeer;
 import org.opennms.protocols.snmp.SnmpSMI;
+import org.snmp4j.CommunityTarget;
+import org.snmp4j.Target;
+import org.snmp4j.UserTarget;
+import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.security.SecurityLevel;
+import org.snmp4j.smi.Address;
+import org.snmp4j.smi.OctetString;
+import org.snmp4j.smi.UdpAddress;
 
 /**
  * This class is the main respository for SNMP configuration information used by
@@ -101,6 +110,10 @@ public final class SnmpPeerFactory {
      */
     private static boolean m_loaded = false;
 
+    private static final int VERSION_UNSPECIFIED = -1;
+
+    private static final int DEFAULT_MAX_REQUEST_SIZE = 464;
+
     /**
      * Private constructor
      * 
@@ -117,6 +130,10 @@ public final class SnmpPeerFactory {
         m_config = (SnmpConfig) Unmarshaller.unmarshal(SnmpConfig.class, new InputStreamReader(cfgIn));
         cfgIn.close();
 
+    }
+    
+    public SnmpPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
+        m_config = (SnmpConfig) Unmarshaller.unmarshal(SnmpConfig.class, rdr);
     }
 
     /**
@@ -378,6 +395,11 @@ public final class SnmpPeerFactory {
             throw new IllegalStateException("The factory has not been initialized");
 
         return m_singleton;
+    }
+    
+    public static synchronized void setInstance(SnmpPeerFactory singleton) {
+        m_singleton = singleton;
+        m_loaded = true;
     }
 
     /**
@@ -750,4 +772,196 @@ public final class SnmpPeerFactory {
         return peer;
 
     } // end getPeer();
+    
+    public Target getTarget(InetAddress inetAddress, int supportedSnmpVersion) {
+        
+
+        String transportAddress = null;
+        //String transportAddress = inetAddress.getHostAddress() + "/" + DEFAULT_PORT;
+        Address targetAddress = null;
+        //Address targetAddress = new UdpAddress(transportAddress);
+        
+        
+        if (m_config == null) {
+            UserTarget target = new UserTarget();
+
+            if (supportedSnmpVersion == SnmpConstants.version1 || supportedSnmpVersion == SnmpConstants.version2c || supportedSnmpVersion == SnmpConstants.version3) {
+                target.setVersion(supportedSnmpVersion);
+            }
+            
+            return target;
+        }
+        
+
+        Target target = null;
+
+        // Attempt to locate the node
+        //
+        Enumeration edef = m_config.enumerateDefinition();
+        DEFLOOP: while (edef.hasMoreElements()) {
+            Definition def = (Definition) edef.nextElement();
+
+            // check the specifics first
+            //
+            Enumeration espec = def.enumerateSpecific();
+            while (espec.hasMoreElements()) {
+                String saddr = (String) espec.nextElement();
+                try {
+                    InetAddress addr = InetAddress.getByName(saddr);
+                    if (addr.equals(inetAddress)) {
+                        target = createTarget(addr, def, supportedSnmpVersion);
+                        break DEFLOOP;
+                    }
+                } catch (UnknownHostException e) {
+                    Category log = ThreadCategory.getInstance(getClass());
+                    log.warn("SnmpPeerFactory: could not convert host " + saddr + " to InetAddress", e);
+                }
+            }
+
+            // check the ranges
+            //
+            long lhost = toLong(inetAddress);
+            Enumeration erange = def.enumerateRange();
+            while (erange.hasMoreElements()) {
+                Range rng = (Range) erange.nextElement();
+                try {
+                    InetAddress begin = InetAddress.getByName(rng.getBegin());
+                    InetAddress end = InetAddress.getByName(rng.getEnd());
+
+                    long start = toLong(begin);
+                    long stop = toLong(end);
+
+                    if (start <= lhost && lhost <= stop) {
+                        target = createTarget(inetAddress, def, supportedSnmpVersion);
+                        break DEFLOOP;
+                    }
+                } catch (UnknownHostException e) {
+                    Category log = ThreadCategory.getInstance(getClass());
+                    log.warn("SnmpPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
+                }
+            }
+        } // end DEFLOOP
+
+        if (target == null) {
+
+            Definition def = new Definition();
+            target = createTarget(inetAddress, def, VERSION_UNSPECIFIED);
+        }
+
+        return target;
+
+    }
+        
+    private Target createTarget(InetAddress addr, Definition def, int requestedSnmpVersion) {
+        
+        int version = determineVersion(def, requestedSnmpVersion);
+        
+        if (version == SnmpConstants.version3) {
+            UserTarget target = new UserTarget();
+            setCommonAttributes(target, def, version, addr);
+            target.setSecurityLevel(determineSercurityLevel(def));
+            target.setSecurityName(determineSecurityName(def));
+            return target;
+        } else {
+            CommunityTarget target = new CommunityTarget();
+            setCommonAttributes(target, def, version, addr);
+            return target;
+        }
+
+    }
+    
+    private void setCommonAttributes(Target target, Definition def, int version, InetAddress addr) {
+        target.setVersion(version);
+        target.setRetries(determineRetries(def));
+        target.setTimeout(determineTimeout(def));
+        target.setAddress(determineAddress(def, addr));
+        target.setMaxSizeRequestPDU(determineMaxRequestSize(def));
+    }
+
+    private int determineMaxRequestSize(Definition def) {
+        return (def.getMaxRequestSize() == 0 ? (m_config.getMaxRequestSize() == 0 ? DEFAULT_MAX_REQUEST_SIZE : m_config.getMaxRequestSize()) : DEFAULT_MAX_REQUEST_SIZE);
+    }
+
+    private OctetString determineSecurityName(Definition def) {
+        String securityName = (def.getSecurityName() == null ? m_config.getSecurityName() : def.getSecurityName() );
+        return new OctetString(securityName);
+    }
+
+    private int determineSercurityLevel(Definition def) {
+
+        int securityLevel = SecurityLevel.NOAUTH_NOPRIV;
+
+        String authPassPhrase = (def.getAuthPassphrase() == null ? m_config.getAuthPassphrase() : def.getAuthPassphrase());
+        String privPassPhrase = (def.getPrivacyPassphrase() == null ? m_config.getPrivacyPassphrase() : def.getPrivacyPassphrase());
+        
+        if (authPassPhrase == null) {
+            securityLevel = SecurityLevel.NOAUTH_NOPRIV;
+        } else {
+            if (privPassPhrase == null) {
+                securityLevel = SecurityLevel.AUTH_NOPRIV;
+            } else {
+                securityLevel = SecurityLevel.AUTH_PRIV;
+            }
+        }
+        
+        return securityLevel;
+    }
+
+    private Address determineAddress(Definition def, InetAddress addr) {
+        String transportAddress = addr.getHostAddress();
+        int port = determinePort(def);
+        transportAddress += "/" + port;
+        Address targetAddress = new UdpAddress(transportAddress);
+        return targetAddress;
+    }
+
+    private int determinePort(Definition def) {
+        int port = 161;
+        return (def.getPort() == 0 ? (m_config.getPort() == 0 ? port : m_config.getPort()) : port);
+    }
+
+    private long determineTimeout(Definition def) {
+        long timeout = 3;
+        return (long)(def.getTimeout() == 0 ? (m_config.getTimeout() == 0 ? timeout : m_config.getTimeout()) : timeout);
+    }
+
+    private int determineRetries(Definition def) {        
+        int retries = 3;
+        return (def.getRetry() == 0 ? (m_config.getRetry() == 0 ? retries : m_config.getRetry()) : retries);
+    }
+
+    private int determineVersion(Definition def, int supportedSnmpVersion) {
+        
+        int version = SnmpConstants.version1;
+        
+        String cfgVersion = "v1";
+        if (supportedSnmpVersion == VERSION_UNSPECIFIED) {
+            if (def.getVersion() == null) {
+                if (m_config.getVersion() == null) {
+                    return version;
+                } else {
+                    cfgVersion = m_config.getVersion();
+                }
+            } else {
+                cfgVersion = def.getVersion();
+            }
+        } else {
+            return supportedSnmpVersion;
+        }
+        
+        if (cfgVersion.equals("v1")) {
+            version = SnmpConstants.version1;
+        } else if (cfgVersion.equals("v2c")) {
+            version = SnmpConstants.version2c;
+        } else if (cfgVersion.equals("v3")) {
+            version = SnmpConstants.version3;
+        }
+        
+        return version;
+    }
+
+    public Target getTarget(InetAddress inetAddress) {
+        return getTarget(inetAddress, VERSION_UNSPECIFIED);
+    }
+        
 }

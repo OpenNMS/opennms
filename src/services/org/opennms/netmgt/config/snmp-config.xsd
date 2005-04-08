@@ -8,6 +8,8 @@
 				<!-- Maps IP addresses to specific SNMP parms (retries, timeouts...) -->
 				<element ref="this:definition" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
+			<!-- If set, overrides UDP port 161 as the port where SNMP GET/GETNEXT/GETBULK requests are sent.-->
+			<attribute name="port" type="int" use="optional"/>
 			<!-- Default number of retries -->
 			<attribute name="retry" type="int" use="optional"/>
 			<!-- Default timeout (in milliseconds) -->
@@ -16,9 +18,26 @@
 			<attribute name="read-community" type="string" use="optional"/>
 			<!-- Default write community string -->
 			<attribute name="write-community" type="string" use="optional"/>
+			<!-- The proxy host to use when communiciating with this agent -->
+			<attribute name="proxy-host" type="string" use="optional" />
+			<!-- If set, forces SNMP data collection to the specified version. -->
+			<attribute name="version" use="optional">
+				<simpleType>
+					<restriction base="string">
+						<pattern value="(v1|v2c|v3)"/>
+					</restriction>
+				</simpleType>
+			</attribute>
+			<!-- Specifies the maximum number of variables that may be 
+			     encoded into an individual SNMP pdu request by Collectd
+			     Provides a means to limit the size of outgoing PDU requests.
+			     Value of 0 indicates no limit on number of PDUs which
+			     can be encoded into a single PDU.
+			-->
+			<attribute name="max-request-size" type="integer" use="optional"/>
 			<!-- Begin SNMPv3 attributes -->
-			<attribute name="security-name" use="optional"/>
-			<attribute name="auth-passphrase" use="optional"/>
+			<attribute name="security-name" type="string" use="optional"/>
+			<attribute name="auth-passphrase" type="string" use="optional"/>
 			<attribute name="auth-protocol" use="optional">
 				<simpleType>
 					<restriction base="string">
@@ -26,10 +45,10 @@
 					</restriction>
 				</simpleType>
 			</attribute>
-			<attribute name="engine-id" use="optional"/>
-			<attribute name="context-engine-id" use="optional"/>
-			<attribute name="context-name" use="optional"/>
-			<attribute name="privacy-passphrase" use="optional"/>
+			<attribute name="engine-id" type="string" use="optional"/>
+			<attribute name="context-engine-id" type="string" use="optional"/>
+			<attribute name="context-name" type="string" use="optional"/>
+			<attribute name="privacy-passphrase" type="string" use="optional"/>
 			<attribute name="privacy-protocol" use="optional">
 				<simpleType>
 					<restriction base="string">
@@ -37,7 +56,7 @@
 					</restriction>
 				</simpleType>
 			</attribute>
-			<attribute name="enterprise-id" use="optional"/>
+			<attribute name="enterprise-id" type="string" use="optional"/>
 			<!-- End SNMPv3 attributes -->
 		</complexType>
 	</element>
@@ -74,9 +93,16 @@
 					</restriction>
 				</simpleType>
 			</attribute>
+			<!-- Specifies the maximum number of variables that may be 
+			     encoded into an individual SNMP pdu request by Collectd
+			     Provides a means to limit the size of outgoing PDU requests.
+			     Value of 0 indicates no limit on number of PDUs which
+			     can be encoded into a single PDU.
+			-->
+			<attribute name="max-request-size" type="integer" use="optional"/>
 			<!-- Begin SNMPv3 attributes -->
-			<attribute name="security-name" use="optional"/>
-			<attribute name="auth-passphrase" use="optional"/>
+			<attribute name="security-name" type="string" use="optional"/>
+			<attribute name="auth-passphrase" type="string" use="optional"/>
 			<attribute name="auth-protocol" use="optional">
 				<simpleType>
 					<restriction base="string">
@@ -84,10 +110,10 @@
 					</restriction>
 				</simpleType>
 			</attribute>
-			<attribute name="engine-id" use="optional"/>
-			<attribute name="context-engine-id" use="optional"/>
-			<attribute name="context-name" use="optional"/>
-			<attribute name="privacy-passphrase" use="optional"/>
+			<attribute name="engine-id" type="string" use="optional"/>
+			<attribute name="context-engine-id" type="string" use="optional"/>
+			<attribute name="context-name" type="string" use="optional"/>
+			<attribute name="privacy-passphrase" type="string" use="optional"/>
 			<attribute name="privacy-protocol" use="optional">
 				<simpleType>
 					<restriction base="string">
@@ -95,7 +121,7 @@
 					</restriction>
 				</simpleType>
 			</attribute>
-			<attribute name="enterprise-id" use="optional"/>
+			<attribute name="enterprise-id" type="string" use="optional"/>
 			<!-- End SNMPv3 attributes -->
 		</complexType>
 	</element>
