@@ -302,170 +302,175 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 		if (log.isDebugEnabled()) {
 			log.debug("V2 trap numVars or pdu length: " + numVars);
 		}
-		if (numVars >= 2) // check number of varbinds
+		
+		if (numVars < 2) // check number of varbinds
 		{
-			//
-			// The first varbind has the sysUpTime
-			// Modify the sysUpTime varbind to add the trailing 0 if it is
-			// missing
-			// The second varbind has the snmpTrapOID
-			// Confirm that these two are present
-			//
-			String varBindName0 = pdu.getVarBindAt(0).getName().toString();
-			String varBindName1 = pdu.getVarBindAt(1).getName().toString();
-			if (varBindName0.equals(EXTREME_SNMP_SYSUPTIME_OID)) {
-				log
-						.info("V2 trap from "
-								+ trapInterface
-								+ " has been corrected due to the sysUptime.0 varbind not having been sent with a trailing 0.\n\tVarbinds received are : "
-								+ varBindName0 + " and " + varBindName1);
-				varBindName0 = SNMP_SYSUPTIME_OID;
-			}
+			log.info("V2 trap from " + trapInterface + 
+					" IGNORED due to not having the required varbinds.  Have " +
+					numVars + ", needed 2");
+			return;
+		}
+		
+		//
+		// The first varbind has the sysUpTime
+		// Modify the sysUpTime varbind to add the trailing 0 if it is
+		// missing
+		// The second varbind has the snmpTrapOID
+		// Confirm that these two are present
+		//
+		String varBindName0 = pdu.getVarBindAt(0).getName().toString();
+		String varBindName1 = pdu.getVarBindAt(1).getName().toString();
+		if (varBindName0.equals(EXTREME_SNMP_SYSUPTIME_OID)) {
+			log
+					.info("V2 trap from "
+							+ trapInterface
+							+ " has been corrected due to the sysUptime.0 varbind not having been sent with a trailing 0.\n\tVarbinds received are : "
+							+ varBindName0 + " and " + varBindName1);
+			varBindName0 = SNMP_SYSUPTIME_OID;
+		}
 
-			if ((!(varBindName0.equals(SNMP_SYSUPTIME_OID)))
-					|| (!(varBindName1.equals(SNMP_TRAP_OID)))) {
-				log
-						.info("V2 trap from "
-								+ trapInterface
-								+ " IGNORED due to not having the required varbinds.\n\tThe first varbind must be sysUpTime.0 and the second snmpTrapOID.0\n\tVarbinds received are : "
-								+ varBindName0 + " and " + varBindName1);
-				return;
-			}
+		if ((!(varBindName0.equals(SNMP_SYSUPTIME_OID)))
+				|| (!(varBindName1.equals(SNMP_TRAP_OID)))) {
+			log
+					.info("V2 trap from "
+							+ trapInterface
+							+ " IGNORED due to not having the required varbinds.\n\tThe first varbind must be sysUpTime.0 and the second snmpTrapOID.0\n\tVarbinds received are : "
+							+ varBindName0 + " and " + varBindName1);
+			return;
+		}
 
-			Snmp snmpInfo = new Snmp();
+		Snmp snmpInfo = new Snmp();
 
-			if (log.isDebugEnabled()) {
-				log.debug("V2 trap first varbind value: "
-						+ pdu.getVarBindAt(0).getValue().toString());
-			}
+		if (log.isDebugEnabled()) {
+			log.debug("V2 trap first varbind value: "
+					+ pdu.getVarBindAt(0).getValue().toString());
+		}
 
-			// time-stamp
-			long timeVal;
-			switch (pdu.getVarBindAt(SNMP_SYSUPTIME_OID_INDEX).getValue()
-					.typeId()) {
-			case SnmpSMI.SMI_TIMETICKS:
+		// time-stamp
+		long timeVal;
+		switch (pdu.getVarBindAt(SNMP_SYSUPTIME_OID_INDEX).getValue()
+				.typeId()) {
+		case SnmpSMI.SMI_TIMETICKS:
 				timeVal = ((SnmpTimeTicks) pdu.getVarBindAt(
 						SNMP_SYSUPTIME_OID_INDEX).getValue()).getValue();
-				log
-						.debug("V2 trap first varbind value is of type TIMETICKS (correct)");
-				break;
-			case SnmpSMI.SMI_INTEGER:
-				timeVal = ((SnmpInt32) pdu.getVarBindAt(
-						SNMP_SYSUPTIME_OID_INDEX).getValue()).getValue();
-				log
-						.debug("V2 trap first varbind value is of type INTEGER, casting to TIMETICKS");
-				break;
-			default:
-				log
-						.info("V2 trap does not have the required first varbind as TIMETICKS - cannot process trap");
-				return;
-			}
-
-			snmpInfo.setTimeStamp(timeVal);
-
-			// Get the value for the snmpTrapOID
-			SnmpObjectId snmpTrapOid = (SnmpObjectId) pdu.getVarBindAt(
-					SNMP_TRAP_OID_INDEX).getValue();
-			String snmpTrapOidValue = snmpTrapOid.toString();
-
-			// Force leading "." (dot) if not present
-			if (!snmpTrapOidValue.startsWith(".")) {
-				snmpTrapOidValue = "." + snmpTrapOidValue;
-			}
-
-			if (log.isDebugEnabled()) {
-				log.debug("snmpTrapOID: " + snmpTrapOidValue);
-			}
-
-			// get the last subid
-			int length = snmpTrapOidValue.length();
-			int lastIndex = snmpTrapOidValue.lastIndexOf(DOT_CHAR);
-
-			String lastSubIdStr = snmpTrapOidValue.substring(lastIndex + 1);
-			int lastSubId = -1;
-			try {
-				lastSubId = Integer.parseInt(lastSubIdStr);
-			} catch (NumberFormatException nfe) {
-				lastSubId = -1;
-			}
-
-			// Check if standard trap
-			if (GENERIC_TRAPS.contains(snmpTrapOid)) {
-				// set generic
-				snmpInfo.setGeneric(lastSubId - 1);
-
-				// set specific to zero
-				snmpInfo.setSpecific(0);
-
-				// if present, the 'snmpTrapEnterprise' OID occurs as
-				// the last OID
-				// Check the last varbind to see if it is the enterprise ID
-				String varBindName = pdu.getVarBindAt(numVars - 1).getName()
-						.toString();
-				if (varBindName.equals(SNMP_TRAP_ENTERPRISE_ID)) {
-					// if present, set the value of the varbind as the
-					// enterprise id
-					snmpInfo.setId(pdu.getVarBindAt(numVars - 1).getValue()
-							.toString());
-				} else {
-					// if not present, set the value of the varbind as the
-					// snmpTraps value defined as in RFC 1907
-					snmpInfo.setId(SNMP_TRAPS
-							+ "."
-							+ snmpTrapOidValue
-									.charAt(snmpTrapOidValue.length() - 1));
-				}
-
-			} else // not standard trap
-			{
-				// set generic to 6
-				snmpInfo.setGeneric(6);
-
-				// set specific to lastsubid
-				snmpInfo.setSpecific(lastSubId);
-
-				// get the next to last subid
-				int nextToLastIndex = snmpTrapOidValue.lastIndexOf(DOT_CHAR,
-						lastIndex - 1);
-
-				// check if value is zero
-				String nextToLastSubIdStr = snmpTrapOidValue.substring(
-						nextToLastIndex + 1, lastIndex);
-				if (nextToLastSubIdStr.equals("0")) {
-					// set enterprise value to trap oid minus the
-					// the last two subids
-					snmpInfo.setId(snmpTrapOidValue.substring(0,
-							nextToLastIndex));
-				} else {
-					snmpInfo.setId(snmpTrapOidValue.substring(0, lastIndex));
-				}
-			}
-
-			if (log.isDebugEnabled()) {
-				log.debug("snmp specific/generic/eid: "
-						+ snmpInfo.getSpecific() + "\t" + snmpInfo.getGeneric()
-						+ "\t" + snmpInfo.getId());
-			}
-
-			// version
-			snmpInfo.setVersion("v2");
-
-			// community
-			snmpInfo.setCommunity(new String(info.getCommunity().getString()));
-
-			event.setSnmp(snmpInfo);
-
-			Parms parms = new Parms();
-
-			for (int i = 0; i < pdu.getLength(); i++) {
-				String name = pdu.getVarBindAt(i).getName().toString();
-				SnmpSyntax obj = pdu.getVarBindAt(i).getValue();
-
-				parms.addParm(processSyntax(name, obj));
-			} // end for loop
-
-			event.setParms(parms);
+			log
+					.debug("V2 trap first varbind value is of type TIMETICKS (correct)");
+			break;
+		case SnmpSMI.SMI_INTEGER:
+			timeVal = ((SnmpInt32) pdu.getVarBindAt(
+					SNMP_SYSUPTIME_OID_INDEX).getValue()).getValue();
+			log
+					.debug("V2 trap first varbind value is of type INTEGER, casting to TIMETICKS");
+			break;
+		default:
+			log
+					.info("V2 trap does not have the required first varbind as TIMETICKS - cannot process trap");
+			return;
 		}
+
+		snmpInfo.setTimeStamp(timeVal);
+
+		// Get the value for the snmpTrapOID
+		SnmpObjectId snmpTrapOid = (SnmpObjectId) pdu.getVarBindAt(
+				SNMP_TRAP_OID_INDEX).getValue();
+		String snmpTrapOidValue = snmpTrapOid.toString();
+
+		// Force leading "." (dot) if not present
+		if (!snmpTrapOidValue.startsWith(".")) {
+			snmpTrapOidValue = "." + snmpTrapOidValue;
+		}
+
+		if (log.isDebugEnabled()) {
+			log.debug("snmpTrapOID: " + snmpTrapOidValue);
+		}
+
+		// get the last subid
+		int length = snmpTrapOidValue.length();
+		int lastIndex = snmpTrapOidValue.lastIndexOf(DOT_CHAR);
+
+		String lastSubIdStr = snmpTrapOidValue.substring(lastIndex + 1);
+		int lastSubId = -1;
+		try {
+			lastSubId = Integer.parseInt(lastSubIdStr);
+		} catch (NumberFormatException nfe) {
+			lastSubId = -1;
+		}
+
+		// Check if standard trap
+		if (GENERIC_TRAPS.contains(snmpTrapOid)) {
+			// set generic
+			snmpInfo.setGeneric(lastSubId - 1);
+
+			// set specific to zero
+			snmpInfo.setSpecific(0);
+
+			// if present, the 'snmpTrapEnterprise' OID occurs as
+			// the last OID
+			// Check the last varbind to see if it is the enterprise ID
+			String varBindName = pdu.getVarBindAt(numVars - 1).getName()
+					.toString();
+			if (varBindName.equals(SNMP_TRAP_ENTERPRISE_ID)) {
+				// if present, set the value of the varbind as the
+				// enterprise id
+				snmpInfo.setId(pdu.getVarBindAt(numVars - 1).getValue()
+						.toString());
+			} else {
+				// if not present, set the value of the varbind as the
+				// snmpTraps value defined as in RFC 1907
+				snmpInfo.setId(SNMP_TRAPS
+						+ "."
+						+ snmpTrapOidValue
+								.charAt(snmpTrapOidValue.length() - 1));
+			}
+
+		} else // not standard trap
+		{
+			// set generic to 6
+			snmpInfo.setGeneric(6);
+
+			// set specific to lastsubid
+			snmpInfo.setSpecific(lastSubId);
+
+			// get the next to last subid
+			int nextToLastIndex = snmpTrapOidValue.lastIndexOf(DOT_CHAR,
+					lastIndex - 1);
+			// check if value is zero
+			String nextToLastSubIdStr = snmpTrapOidValue.substring(
+					nextToLastIndex + 1, lastIndex);
+			if (nextToLastSubIdStr.equals("0")) {
+				// set enterprise value to trap oid minus the
+				// the last two subids
+				snmpInfo.setId(snmpTrapOidValue.substring(0,
+						nextToLastIndex));
+			} else {
+				snmpInfo.setId(snmpTrapOidValue.substring(0, lastIndex));
+			}
+		}
+
+		if (log.isDebugEnabled()) {
+			log.debug("snmp specific/generic/eid: "
+					+ snmpInfo.getSpecific() + "\t" + snmpInfo.getGeneric()
+					+ "\t" + snmpInfo.getId());
+		}
+
+		// version
+		snmpInfo.setVersion("v2");
+
+		// community
+		snmpInfo.setCommunity(new String(info.getCommunity().getString()));
+
+		event.setSnmp(snmpInfo);
+
+		Parms parms = new Parms();
+
+		for (int i = 0; i < pdu.getLength(); i++) {
+			String name = pdu.getVarBindAt(i).getName().toString();
+			SnmpSyntax obj = pdu.getVarBindAt(i).getValue();
+
+			parms.addParm(processSyntax(name, obj));
+		} // end for loop
+
+		event.setParms(parms);
 
 		processTrapEvent(event, trapInterface, ipNodeId);
 	}
