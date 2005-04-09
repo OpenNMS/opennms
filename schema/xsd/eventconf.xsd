@@ -169,7 +169,7 @@
 						default="logndisplay">
 						<simpleType>
 							<restriction base="string">
-								<pattern value="(logndisplay|displayonly|logonly|suppress|donotpersist)"/>
+								<pattern value="(logndisplay|displayonly|logonly|suppress|donotpersist|discardtraps)"/>
 							</restriction>
 						</simpleType>
 					</attribute>

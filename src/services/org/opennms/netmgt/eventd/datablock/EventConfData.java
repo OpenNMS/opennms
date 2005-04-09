@@ -284,6 +284,7 @@ public class EventConfData extends Object {
         //
         // use the eventkey and see if there is a match
         //
+		/*
         EventKey key = new EventKey(event);
         matchedEvent = (org.opennms.netmgt.xml.eventconf.Event) m_eventMap.get(key);
         if (matchedEvent != null) {
@@ -293,6 +294,7 @@ public class EventConfData extends Object {
 
             return matchedEvent;
         }
+        */
 
         //
         // get the UEI and see if the UEI keys get a match - this step is here
@@ -301,6 +303,7 @@ public class EventConfData extends Object {
         // through
         // the entire eventconf for each event
         //
+		/*
         String uei = event.getUei();
         if (uei != null) {
             // Go through the uei to keylist map
@@ -310,6 +313,7 @@ public class EventConfData extends Object {
                 matchedEvent = getMatchInKeyList(keylist, event);
             }
         }
+        */
 
         //
         // if still no match, no option but to go through all known keys

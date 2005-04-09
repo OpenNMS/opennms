@@ -109,7 +109,7 @@ public class EventWrapper {
 			b.append(" Severity: " + m_event.getSeverity() + "\n");
 		}
 		if (m_event.getSnmp() != null) {
-			b.append(" Snmp: " + m_event.getSnmp() + "\n");
+			b.append(" Snmp: " + new SnmpWrapper(m_event.getSnmp()) + "\n");
 		}
 		if (m_event.getSnmphost() != null) {
 			b.append(" Snmphost: " + m_event.getSnmphost() + "\n");

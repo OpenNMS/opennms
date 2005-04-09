@@ -53,12 +53,14 @@ import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.eventd.EventConfigurationManager;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
+import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.protocols.ip.IPv4Address;
 import org.opennms.protocols.snmp.SnmpCounter32;
 import org.opennms.protocols.snmp.SnmpCounter64;
@@ -643,19 +645,25 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 
 		return parm;
 	}
-
+	
 	public void processTrapEvent(Event event, String trapInterface, String ipNodeId) {
 		Category log = ThreadCategory.getInstance(getClass());
 		
-		if (event.getSnmp() == null) {
+		org.opennms.netmgt.xml.eventconf.Event econf = EventConfigurationManager.get(event);
+		if (econf == null || econf.getUei() == null) {
 			event.setUei("uei.opennms.org/default/event");  // XXX should this be default/trap?
 		} else {
-			org.opennms.netmgt.xml.eventconf.Event econf = org.opennms.netmgt.eventd.EventExpander.lookup(event.getSnmp());
+			event.setUei(econf.getUei());
+		}
 		
-			if (econf == null || econf.getUei() == null) {
-				event.setUei("uei.opennms.org/default/event");  // XXX should this be default/trap?
-			} else {
-				event.setUei(econf.getUei());
+		if (econf != null) {
+			Logmsg logmsg = econf.getLogmsg();
+			if (logmsg != null) {
+				String dest = logmsg.getDest();
+				if ("discardtraps".equals(dest)) {
+					log.debug("Trap discarded due to matching event having logmsg dest == discardtraps");
+					return;
+				}
 			}
 		}
 		

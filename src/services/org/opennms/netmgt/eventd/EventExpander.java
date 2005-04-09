@@ -453,7 +453,6 @@ public final class EventExpander {
         // for the passed event
         //
         org.opennms.netmgt.xml.eventconf.Event eConf = null;
-        org.opennms.netmgt.xml.eventconf.Event eSnmpConf = null;
 
         //
         // lookup based on the event mask, (defaults to UEI
@@ -461,57 +460,11 @@ public final class EventExpander {
         //
         eConf = EventConfigurationManager.get(event);
 
-        //
-        // lookup on SNMP information if it exists.
-        // This lookup will return EVENT_TRAP_UEI
-        // if no other one can be found and it's enterprise
-        // specific
-        //
-        if (event.getSnmp() != null) {
-            eSnmpConf = lookup(event.getSnmp());
-        }
-
-        //
-        // now process
-        // 
-        if (eConf == null && eSnmpConf != null) {
-            //
-            // set eConf to eSnmpConf
-            //
-            eConf = eSnmpConf;
-        } else if (eConf == null && eSnmpConf == null) {
+        if (eConf == null) {
             //
             // take the configuration of the default event
             //
             eConf = EventConfigurationManager.getByUei(DEFAULT_EVENT_UEI);
-        } else if (eConf != null && eSnmpConf != null) {
-            //
-            // If the econf not being null was a result of it not
-            // having an event mask(i.e defaulted to a UEI lookup),
-            // OR
-            // If the event mask lookup went through with a mask
-            // that does not include the SNMP EID,
-            // THEN
-            // Give precedence to the snmp lookup
-            //
-            if ((eConf.getMask() == null))
-                eConf = eSnmpConf;
-            else {
-                boolean snmpEidIsPartOfMask = false;
-                Enumeration en = eConf.getMask().enumerateMaskelement();
-                while (en.hasMoreElements()) {
-                    org.opennms.netmgt.xml.eventconf.Maskelement maskelement = (org.opennms.netmgt.xml.eventconf.Maskelement) en.nextElement();
-
-                    String name = maskelement.getMename();
-                    if (name.equals(org.opennms.netmgt.eventd.datablock.EventKey.TAG_SNMP_EID)) {
-                        snmpEidIsPartOfMask = true;
-                        break;
-                    }
-                }
-
-                if (!snmpEidIsPartOfMask)
-                    eConf = eSnmpConf;
-            }
         }
 
         return eConf;
