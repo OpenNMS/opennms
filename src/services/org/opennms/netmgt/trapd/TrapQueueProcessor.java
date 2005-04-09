@@ -651,7 +651,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 		
 		org.opennms.netmgt.xml.eventconf.Event econf = EventConfigurationManager.get(event);
 		if (econf == null || econf.getUei() == null) {
-			event.setUei("uei.opennms.org/default/event");  // XXX should this be default/trap?
+			event.setUei("uei.opennms.org/default/trap");
 		} else {
 			event.setUei(econf.getUei());
 		}
@@ -875,7 +875,6 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 				o = m_backlogQ.remove(1000);
 			} catch (InterruptedException iE) {
 				log.debug("Trapd.QueueProcessor: caught interrupted exception");
-				log.debug(iE.getLocalizedMessage(), iE);
 
 				o = null;
 

@@ -156,40 +156,45 @@ public class TrapHandlerTest extends TestCase {
 		m_trapHandler.setEventManager(m_eventMgr);
 		m_trapHandler.init();
 		m_trapHandler.start();
+		
+		if (newSuspectOnTrap) {
+			Event newSuspectEvent = new Event();
+			newSuspectEvent.setInterface("127.0.0.1");
+			newSuspectEvent.setNodeid(0);
+			newSuspectEvent.setUei("uei.opennms.org/internal/discovery/newSuspect");
+			System.out.println("Anticipating: " + new EventWrapper(newSuspectEvent));
+			m_anticipator.anticipateEvent(newSuspectEvent);
+		}
+	}
+	
+	public void finishUp() throws InterruptedException {
+		Thread.sleep(1000);
+		
+		m_eventMgr.finishProcessingEvents();
+	
+		m_anticipator.verifyAnticipated(1000, 0, 0, 0, 0);
 	}
 
 	public void tearDown() throws Exception {
 		m_trapHandler.stop();
 		m_trapHandler = null;
-		m_eventMgr.finishProcessingEvents();
-		
-		m_anticipator.verifyAnticipated(1000, 0, 0, 0, 0);
 	}
 
 	public void testV1TrapNoNewSuspect() throws UnknownHostException, InterruptedException {
-		doTestTrap(1, false);
+		doTestTrap("v1", false);
 	}
 	public void testV1TrapNewSuspect() throws UnknownHostException, InterruptedException {
-		doTestTrap(1, true);
+		doTestTrap("v1", true);
 	}
 	public void testV2TrapNoNewSuspect() throws UnknownHostException, InterruptedException {
-		doTestTrap(2, false);
+		doTestTrap("v2c", false);
 	}
 	public void testV2TrapNewSuspect() throws UnknownHostException, InterruptedException {
-		doTestTrap(2, true);
+		doTestTrap("v2c", true);
 	}
 	
 	public void testV1BgpEstablished() throws UnknownHostException, InterruptedException {
-		MockTrapdConfig mockTrapdConfig = new MockTrapdConfig();
-		mockTrapdConfig.setSnmpTrapPort(10000);
-		mockTrapdConfig.setNewSuspectOnTrap(false);
-		
-		m_trapHandler = new TrapHandler();
-		m_trapHandler.setTrapdConfig(mockTrapdConfig);
-		m_trapHandler.setEventManager(m_eventMgr);
-		m_trapHandler.init();
-		m_trapHandler.start();
-		
+		setUpTrapHandler(false);
 
 		Event snmpEvent = new Event();
 		snmpEvent.setInterface("127.0.0.1");
@@ -206,20 +211,11 @@ public class TrapHandlerTest extends TestCase {
 		m_trapHandler.snmpReceivedTrap(null, InetAddress.getByName("127.0.0.1"), 10000,
 				new SnmpOctetString("public".getBytes()), pdu);
 		
-		Thread.sleep(1000);
+		finishUp();
 	}
 
 	public void testV1ColdStart() throws InterruptedException, MarshalException, ValidationException, IOException {
-		MockTrapdConfig mockTrapdConfig = new MockTrapdConfig();
-		mockTrapdConfig.setSnmpTrapPort(10000);
-		mockTrapdConfig.setNewSuspectOnTrap(false);
-		
-		m_trapHandler = new TrapHandler();
-		m_trapHandler.setTrapdConfig(mockTrapdConfig);
-		m_trapHandler.setEventManager(m_eventMgr);
-		m_trapHandler.init();
-		m_trapHandler.start();
-		
+		setUpTrapHandler(false);
 
 		Event snmpEvent = new Event();
 		snmpEvent.setInterface("127.0.0.1");
@@ -233,20 +229,12 @@ public class TrapHandlerTest extends TestCase {
 		pdu.setAgentAddress(new SnmpIPAddress(InetAddress.getByName("127.0.0.1")));
 		m_trapHandler.snmpReceivedTrap(null, InetAddress.getByName("127.0.0.1"), 10000,
 				new SnmpOctetString("public".getBytes()), pdu);
-		
-		Thread.sleep(1000);
+
+		finishUp();
 	}
 	
 	public void testV1TrapDroppedEvent() throws UnknownHostException, InterruptedException {
-		MockTrapdConfig mockTrapdConfig = new MockTrapdConfig();
-		mockTrapdConfig.setSnmpTrapPort(10000);
-		mockTrapdConfig.setNewSuspectOnTrap(false);
-			
-		m_trapHandler = new TrapHandler();
-		m_trapHandler.setTrapdConfig(mockTrapdConfig);
-		m_trapHandler.setEventManager(m_eventMgr);
-		m_trapHandler.init();
-		m_trapHandler.start();
+		setUpTrapHandler(false);
 		
 		SnmpPduTrap pdu = new SnmpPduTrap();
 		pdu.setEnterprise(".1.3.6.1.2.1.15.7");
@@ -256,26 +244,18 @@ public class TrapHandlerTest extends TestCase {
 		m_trapHandler.snmpReceivedTrap(null, InetAddress.getByName("127.0.0.1"), 10000,
 				new SnmpOctetString("public".getBytes()), pdu);
 		
-		Thread.sleep(1000);
+		finishUp();
 	}
 	
 	public void testV1TrapDefaultEvent() throws UnknownHostException, InterruptedException {
-		MockTrapdConfig mockTrapdConfig = new MockTrapdConfig();
-		mockTrapdConfig.setSnmpTrapPort(10000);
-		mockTrapdConfig.setNewSuspectOnTrap(false);
+		setUpTrapHandler(false);
 
 		Event snmpEvent = new Event();
 		snmpEvent.setInterface("127.0.0.1");
 		snmpEvent.setNodeid(0);
-		snmpEvent.setUei("uei.opennms.org/default/event"); // XXX should this be default/trap???
+		snmpEvent.setUei("uei.opennms.org/default/trap");
 		System.out.println("Anticipating: " + new EventWrapper(snmpEvent));
 		m_anticipator.anticipateEvent(snmpEvent);
-			
-		m_trapHandler = new TrapHandler();
-		m_trapHandler.setTrapdConfig(mockTrapdConfig);
-		m_trapHandler.setEventManager(m_eventMgr);
-		m_trapHandler.init();
-		m_trapHandler.start();
 		
 		SnmpPduTrap pdu = new SnmpPduTrap();
 		pdu.setGeneric(6);
@@ -284,36 +264,27 @@ public class TrapHandlerTest extends TestCase {
 		m_trapHandler.snmpReceivedTrap(null, InetAddress.getByName("127.0.0.1"), 10000,
 				new SnmpOctetString("public".getBytes()), pdu);
 		
-		Thread.sleep(1000);
+		finishUp();
 	}
 	
-	public void doTestTrap(int version, boolean newSuspectOnTrap) throws UnknownHostException, InterruptedException {
+	public void doTestTrap(String version, boolean newSuspectOnTrap) throws UnknownHostException, InterruptedException {
 		setUpTrapHandler(newSuspectOnTrap);
-		
+
 		Event snmpEvent = new Event();
 		snmpEvent.setInterface("127.0.0.1");
 		snmpEvent.setNodeid(0);
-		snmpEvent.setUei("uei.opennms.org/default/event");
+		snmpEvent.setUei("uei.opennms.org/default/trap");
 		System.out.println("Anticipating: " + new EventWrapper(snmpEvent));
 		m_anticipator.anticipateEvent(snmpEvent);
 		
-		if (newSuspectOnTrap) {
-			Event newSuspectEvent = new Event();
-			newSuspectEvent.setInterface("127.0.0.1");
-			newSuspectEvent.setNodeid(0);
-			newSuspectEvent.setUei("uei.opennms.org/internal/discovery/newSuspect");
-			System.out.println("Anticipating: " + new EventWrapper(newSuspectEvent));
-			m_anticipator.anticipateEvent(newSuspectEvent);
-		}
-		
-		if (version == 1) {
+		if (version.equals("v1")) {
 			SnmpPduTrap pdu = new SnmpPduTrap();
 			pdu.setGeneric(6);
 			pdu.setSpecific(1);
 			pdu.setAgentAddress(new SnmpIPAddress(InetAddress.getByName("127.0.0.1")));
 			m_trapHandler.snmpReceivedTrap(null, InetAddress.getByName("127.0.0.1"), 10000,
 					new SnmpOctetString("public".getBytes()), pdu);
-		} else if (version == 2) {
+		} else if (version.equals("v2c")) {
 			SnmpPduRequest pdu = new SnmpPduRequest(SnmpPduPacket.V2TRAP);
 //			pdu.setGeneric(6);
 //			pdu.setSpecific(1);
@@ -323,6 +294,6 @@ public class TrapHandlerTest extends TestCase {
 			throw new UndeclaredThrowableException(null, "unsupported SNMP version for test: " + version); 
 		}
 		
-		Thread.sleep(1000);
+		finishUp();
 	}
 }

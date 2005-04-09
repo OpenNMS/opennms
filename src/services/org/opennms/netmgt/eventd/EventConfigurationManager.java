@@ -262,17 +262,6 @@ public final class EventConfigurationManager {
     }
 
     /**
-     * Returns the matching event configuration instance that is indexed by the
-     * SNMP enterprise identifier. This is an instance of the <code>Event</code>
-     * that was loaded from the event configuration file.
-     * 
-     * @return The loaded event matching the EID.
-     */
-    public static Event getBySnmpEid(String eid) {
-        return (Event) m_eventConf.getEventBySnmp(eid);
-    }
-
-    /**
      * Returns the matching event configuration instance for the event that just
      * came in. This is an instance of the <code>Event</code> that was loaded
      * from the event configuration file.

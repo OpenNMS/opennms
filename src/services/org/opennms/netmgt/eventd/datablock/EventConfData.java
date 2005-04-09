@@ -341,19 +341,6 @@ public class EventConfData extends Object {
     }
 
     /**
-     * Get the event with the specified snmp key
-     * 
-     * @param eid
-     *            the snmp eid
-     */
-    public synchronized org.opennms.netmgt.xml.eventconf.Event getEventBySnmp(String eid) {
-        EventKey key = new EventKey();
-        key.put(EventKey.TAG_SNMP_EID, new EventMaskValueList(eid));
-
-        return (org.opennms.netmgt.xml.eventconf.Event) m_eventMap.get(key);
-    }
-
-    /**
      * Get the event with the specified uei
      * 
      * @param uei

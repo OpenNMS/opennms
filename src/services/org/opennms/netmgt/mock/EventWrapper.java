@@ -93,7 +93,7 @@ public class EventWrapper {
 			b.append(" Operinstruct: " + m_event.getOperinstruct() + "\n");
 		}
 		if (m_event.getParms() != null) {
-			b.append(" Parms: " + m_event.getParms() + "\n");
+			b.append(" Parms: " + new ParmsWrapper(m_event.getParms()) + "\n");
 		}
 		if (m_event.getScriptCount() > 0) {
 			b.append(" Script:");

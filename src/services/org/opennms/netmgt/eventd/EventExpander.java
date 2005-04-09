@@ -47,7 +47,6 @@ import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Operaction;
-import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Tticket;
 
 /**
@@ -357,73 +356,6 @@ public final class EventExpander {
 
         return dest;
     }
-
-    /**
-     * <p>
-     * This method is used to find the matching event configuration object by
-     * looking at the event's SNMP information. In particular, the SNMP
-     * Enterprise Identifier is used first if it exist to find the matching
-     * record. If the enterprise identifier exists then it is compared as is, if
-     * that doesn't match then the enterprise prefix is stripped and the lookup
-     * is preformed again.
-     * </p>
-     * 
-     * <p>
-     * If the enterprise identifier is not found, but the event has generic and
-     * specific information then the appropriate generic UEI is used to find the
-     * appropriate record.
-     * </p>
-     * 
-     * 
-     * @param snmpInfo
-     *            The SNMP event information.
-     * 
-     * @return The matching event configuration object if found. A null
-     *         reference is returned if no match can be found.
-     * 
-     * @exception java.lang.NullPointerException
-     *                Thrown if the snmpInfo parameter that was passed is null.
-     * 
-     */
-    public static org.opennms.netmgt.xml.eventconf.Event lookup(Snmp snmpInfo) {
-        // Check the passed argument and make sure that
-        // it is valid. Throw the null pointer here instead of
-        // waiting for an invalid reference.
-        //
-        if (snmpInfo == null)
-            throw new NullPointerException("Invalid argument, the Snmp argument was null");
-
-        org.opennms.netmgt.xml.eventconf.Event eConf = null;
-
-        // Do enterprise id matching here
-        //
-        String eid = snmpInfo.getId();
-
-        // do a lookup on the fully qualified name first
-        //
-        eConf = EventConfigurationManager.getBySnmpEid(eid);
-        if (eConf == null && eid != null && eid.startsWith(ENTERPRISE_PRE)) {
-            // try partial match
-            //
-            eConf = EventConfigurationManager.getBySnmpEid(eid.substring(ENTERPRISE_PRE.length()));
-        } else if (eConf == null && eid != null && !eid.startsWith(ENTERPRISE_PRE)) {
-            // try complete match
-            //
-            eConf = EventConfigurationManager.getBySnmpEid(ENTERPRISE_PRE + eid);
-        }
-
-        // If no lookup has been possible yet, check the SNMP generic
-        // type and see if we can process it.
-        //
-        // Note: This is now changed. There are no more default generic events
-        // so that users can customize the Generic Traps 0-5. This does require
-        // an entry in eventconf.xml to catch these traps explicitly.
-
-        // return the found event base object
-        //
-        return eConf;
-
-    } // end lookup(SnmpInfo)
 
     /**
      * <p>
