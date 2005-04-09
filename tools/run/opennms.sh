@@ -277,7 +277,7 @@ doStart(){
 	date >> "$REDIRECT"
 	echo "begin ulimit settings:" >> "$REDIRECT"
 	ulimit -a >> "$REDIRECT"
-	echo "end ulimit settings:" >> "$REDIRECT"
+	echo "end ulimit settings" >> "$REDIRECT"
 	CMD="$JAVA_CMD -classpath $APP_CLASSPATH $APP_VM_PARMS $APP_CLASS $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER"
 	echo "Executing command: $CMD" >> "$REDIRECT"
 	$CMD >>"$REDIRECT" 2>&1 &
