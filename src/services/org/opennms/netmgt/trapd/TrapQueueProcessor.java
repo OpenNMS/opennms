@@ -169,7 +169,9 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 	private boolean m_newSuspect;
 
 	private EventIpcManager m_eventMgr;
-
+	
+	private SyntaxToEvent[] m_syntaxToEvents;
+	
 	/**
 	 * Create the standard traps list - used in v2 processing
 	 */
@@ -182,7 +184,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 		GENERIC_TRAPS.add(new SnmpObjectId("1.3.6.1.6.3.1.1.5.5")); // authenticationFailure
 		GENERIC_TRAPS.add(new SnmpObjectId("1.3.6.1.6.3.1.1.5.6")); // egpNeighborLoss
 	}
-
+	
 	/**
 	 * Process a V2 trap and convert it to an event for transmission.
 	 * 
@@ -449,8 +451,8 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 
 		if (log.isDebugEnabled()) {
 			log.debug("snmp specific/generic/eid: "
-					+ snmpInfo.getSpecific() + "\t" + snmpInfo.getGeneric()
-					+ "\t" + snmpInfo.getId());
+					+ snmpInfo.getSpecific() + "/" + snmpInfo.getGeneric()
+					+ "/" + snmpInfo.getId());
 		}
 
 		// version
@@ -558,52 +560,12 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 		
 		processTrapEvent(event, trapInterface, ipNodeId);
 	}
-
+	
 	public Parm processSyntax(String name, SnmpSyntax obj) {
 		Category log = ThreadCategory.getInstance(getClass());
 		Value val = new Value();
 
-		if (obj instanceof SnmpInt32) {
-			val.setType(EventConstants.TYPE_SNMP_INT32);
-			val.setEncoding(EventConstants.XML_ENCODING_TEXT);
-			val.setContent(EventConstants.toString(
-					EventConstants.XML_ENCODING_TEXT, obj));
-		} else if (obj instanceof SnmpNull) {
-			val.setType(EventConstants.TYPE_SNMP_NULL);
-			val.setEncoding(EventConstants.XML_ENCODING_TEXT);
-			val.setContent(EventConstants.toString(
-					EventConstants.XML_ENCODING_TEXT, obj));
-		} else if (obj instanceof SnmpObjectId) {
-			val.setType(EventConstants.TYPE_SNMP_OBJECT_IDENTIFIER);
-			val.setEncoding(EventConstants.XML_ENCODING_TEXT);
-			val.setContent(EventConstants.toString(
-					EventConstants.XML_ENCODING_TEXT, obj));
-		} else if (obj instanceof SnmpIPAddress) {
-			val.setType(EventConstants.TYPE_SNMP_IPADDRESS);
-			val.setEncoding(EventConstants.XML_ENCODING_TEXT);
-			val.setContent(EventConstants.toString(
-					EventConstants.XML_ENCODING_TEXT, obj));
-		} else if (obj instanceof SnmpTimeTicks) {
-			val.setType(EventConstants.TYPE_SNMP_TIMETICKS);
-			val.setEncoding(EventConstants.XML_ENCODING_TEXT);
-			val.setContent(EventConstants.toString(
-					EventConstants.XML_ENCODING_TEXT, obj));
-		} else if (obj instanceof SnmpCounter32) {
-			val.setType(EventConstants.TYPE_SNMP_COUNTER32);
-			val.setEncoding(EventConstants.XML_ENCODING_TEXT);
-			val.setContent(EventConstants.toString(
-					EventConstants.XML_ENCODING_TEXT, obj));
-		} else if (obj instanceof SnmpGauge32) {
-			val.setType(EventConstants.TYPE_SNMP_GAUGE32);
-			val.setEncoding(EventConstants.XML_ENCODING_TEXT);
-			val.setContent(EventConstants.toString(
-					EventConstants.XML_ENCODING_TEXT, obj));
-		} else if (obj instanceof SnmpOpaque) {
-			val.setType(EventConstants.TYPE_SNMP_OPAQUE);
-			val.setEncoding(EventConstants.XML_ENCODING_BASE64);
-			val.setContent(EventConstants.toString(
-					EventConstants.XML_ENCODING_BASE64, obj));
-		} else if (obj instanceof SnmpOctetString) {
+		if (obj instanceof SnmpOctetString) {
 			//
 			// check for non-printable characters. If they
 			// exist then print the string out as hexidecimal
@@ -612,8 +574,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 			byte[] data = ((SnmpOctetString) obj).getString();
 			for (int x = 0; x < data.length; x++) {
 				byte b = data[x];
-				if ((b < 32 && b != 9 && b != 10 && b != 13 && b != 0)
-						|| b == 127) {
+				if ((b < 32 && b != 9 && b != 10 && b != 13 && b != 0) || b == 127) {
 					asHex = true;
 					break;
 				}
@@ -622,7 +583,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 			data = null;
 
 			String encoding = asHex ? EventConstants.XML_ENCODING_BASE64
-					: EventConstants.XML_ENCODING_TEXT;
+				: EventConstants.XML_ENCODING_TEXT;
 
 			val.setType(EventConstants.TYPE_SNMP_OCTET_STRING);
 			val.setEncoding(encoding);
@@ -631,17 +592,26 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 			// DEBUG
 			if (!asHex && log.isDebugEnabled()) {
 				log.debug("snmpReceivedTrap: string varbind: "
-						+ (((SnmpOctetString) obj).toString()));
+					+ (((SnmpOctetString) obj).toString()));
 			}
-		} else if (obj instanceof SnmpCounter64) {
-			val.setType(EventConstants.TYPE_SNMP_COUNTER64);
-			val.setEncoding(EventConstants.XML_ENCODING_TEXT);
-			val.setContent(EventConstants.toString(
-					EventConstants.XML_ENCODING_TEXT, obj));
 		} else {
-			val.setType(EventConstants.TYPE_STRING);
-			val.setEncoding(EventConstants.XML_ENCODING_TEXT);
-			val.setContent(obj.toString());
+			boolean found = false;
+			for (int i = 0; i < m_syntaxToEvents.length; i++) {
+				if (m_syntaxToEvents[i].getClassMatch() == null ||
+						m_syntaxToEvents[i].m_classMatch.isInstance(obj)) {
+					val.setType(m_syntaxToEvents[i].getType());
+					val.setEncoding(m_syntaxToEvents[i].getEncoding());
+					val.setContent(EventConstants.toString(
+						m_syntaxToEvents[i].getType(), obj));
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				throw new IllegalStateException("Internal error: fell through the " +
+						"bottom of the loop.  The syntax-to-events array might not have a " +
+						"catch-all for Object");
+			}
 		}
 
 		Parm parm = new Parm();
@@ -773,6 +743,29 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 			m_localAddr = "localhost";
 			log.error("<ctor>: Error looking up local hostname", uhE);
 		}
+		
+		m_syntaxToEvents = new SyntaxToEvent[] {
+			new SyntaxToEvent(SnmpInt32.class, EventConstants.TYPE_SNMP_INT32,
+				EventConstants.XML_ENCODING_TEXT),
+			new SyntaxToEvent(SnmpNull.class, EventConstants.TYPE_SNMP_NULL,
+				EventConstants.XML_ENCODING_TEXT),
+			new SyntaxToEvent(SnmpObjectId.class, EventConstants.TYPE_SNMP_OBJECT_IDENTIFIER,
+				EventConstants.XML_ENCODING_TEXT),
+			new SyntaxToEvent(SnmpIPAddress.class, EventConstants.TYPE_SNMP_IPADDRESS,
+				EventConstants.XML_ENCODING_TEXT),
+			new SyntaxToEvent(SnmpTimeTicks.class, EventConstants.TYPE_SNMP_TIMETICKS,
+				EventConstants.XML_ENCODING_TEXT),
+			new SyntaxToEvent(SnmpCounter32.class, EventConstants.TYPE_SNMP_COUNTER32,
+				EventConstants.XML_ENCODING_TEXT),
+			new SyntaxToEvent(SnmpGauge32.class, EventConstants.TYPE_SNMP_GAUGE32,
+				EventConstants.XML_ENCODING_TEXT),
+			new SyntaxToEvent(SnmpOpaque.class, EventConstants.TYPE_SNMP_OPAQUE,
+				EventConstants.XML_ENCODING_BASE64),
+			new SyntaxToEvent(SnmpCounter64.class, EventConstants.TYPE_SNMP_COUNTER64,
+				EventConstants.XML_ENCODING_TEXT),
+			new SyntaxToEvent(Object.class, EventConstants.TYPE_STRING,
+				EventConstants.XML_ENCODING_TEXT)
+		};
 	}
 
 	/**
@@ -910,6 +903,30 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 					}
 				}
 			}
+		}
+	}
+	
+	public class SyntaxToEvent {
+		private Class m_classMatch;
+		private String m_type;
+		private String m_encoding;
+		
+		public SyntaxToEvent(Class classMatch, String type, String encoding) {
+			m_classMatch = classMatch;
+			m_type = type;
+			m_encoding = encoding;
+		}
+		
+		public Class getClassMatch() {
+			return m_classMatch;
+		}
+		
+		public String getType() {
+			return m_type;
+		}
+		
+		public String getEncoding() {
+			return m_encoding;
 		}
 	}
 }

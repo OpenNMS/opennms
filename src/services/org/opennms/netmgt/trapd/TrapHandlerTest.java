@@ -200,19 +200,29 @@ public class TrapHandlerTest extends TestCase {
 				".1.3.6.1.2.1.15.7", 6, 1);
 	}
 	
-	public void testV2EnterpriseIdAndGenericMatch() {
+	public void testV2EnterpriseIdAndGenericAndSpecificMatch() {
 		anticipateAndSend(false, "uei.opennms.org/IETF/BGP/traps/bgpEstablished", "v2c",
 				".1.3.6.1.2.1.15.7", 6, 1);
 	}
 
-	public void testV2EnterpriseIdAndGenericMatchWithZero() {
+	public void testV2EnterpriseIdAndGenericAndSpecificMatchWithZero() {
 		anticipateAndSend(false, "uei.opennms.org/IETF/BGP/traps/bgpEstablished", "v2c",
 				".1.3.6.1.2.1.15.7.0", 6, 1);
 	}
 	
-	public void testV2EnterpriseIdAndGenericMatchWithExtraZeros() {
+	public void testV2EnterpriseIdAndGenericAndSpecificMissWithExtraZeros() {
 		anticipateAndSend(false, "uei.opennms.org/default/trap", "v2c",
 				".1.3.6.1.2.1.15.7.0.0", 6, 1);
+	}
+
+	public void testV1EnterpriseIdAndGenericAndSpecificMissWithWrongGeneric() {
+		anticipateAndSend(false, "uei.opennms.org/default/trap", "v1",
+				".1.3.6.1.2.1.15.7", 5, 1);
+	}
+	
+	public void testV1EnterpriseIdAndGenericAndSpecificMissWithWrongSpecific() {
+		anticipateAndSend(false, "uei.opennms.org/default/trap", "v1",
+				".1.3.6.1.2.1.15.7", 6, 50);
 	}
 
 	public void testV1GenericMatch() {
