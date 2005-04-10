@@ -27,7 +27,7 @@ public class ParmsWrapper {
 			b.append(" ");
 			b.append(p.getParmName());
 			b.append(" = ");
-			b.append(p.getValue());
+			b.append(new ValueWrapper(p.getValue()));
 			b.append("\n");
 		}
 		b.append("End Parms\n");

@@ -148,8 +148,6 @@ public class TrapHandlerTest extends TestCase {
 		StringReader reader = new StringReader(eventconf);
 
 		org.opennms.netmgt.eventd.EventConfigurationManager.loadConfiguration(reader);
-
-		setUpTrapHandler(false);
 	}
 	
 	protected void setUpTrapHandler(boolean newSuspectOnTrap) {
@@ -182,61 +180,67 @@ public class TrapHandlerTest extends TestCase {
 	}
 
 	public void testV1TrapNoNewSuspect() {
-		doTestTrap("v1", false);
-	}
-	public void testV1TrapNewSuspect() {
-		doTestTrap("v1", true);
-	}
-	public void testV2TrapNoNewSuspect() {
-		doTestTrap("v2c", false);
-	}
-	public void testV2TrapNewSuspect() {
-		doTestTrap("v2c", true);
+		anticipateAndSend(false, "uei.opennms.org/default/trap", "v1", null, 6, 1);
 	}
 	
-	public void testV1BgpEstablished() {
-		anticipateEvent("uei.opennms.org/IETF/BGP/traps/bgpEstablished");
-		sendV1Trap(".1.3.6.1.2.1.15.7", 6, 1);
-		finishUp();
+	public void testV2TrapNoNewSuspect() {
+		anticipateAndSend(false, "uei.opennms.org/default/trap", "v2c", null, 6, 1);
+	}
+	
+	public void testV1TrapNewSuspect() {
+		anticipateAndSend(true, "uei.opennms.org/default/trap", "v1", null, 6, 1);
+	}
+	
+	public void testV2TrapNewSuspect() {
+		anticipateAndSend(true, "uei.opennms.org/default/trap", "v2c", null, 6, 1);
+	}
+	
+	public void testV1EnterpriseIdAndGenericMatch() {
+		anticipateAndSend(false, "uei.opennms.org/IETF/BGP/traps/bgpEstablished", "v1",
+				".1.3.6.1.2.1.15.7", 6, 1);
+	}
+	
+	public void testV2EnterpriseIdAndGenericMatch() {
+		anticipateAndSend(false, "uei.opennms.org/IETF/BGP/traps/bgpEstablished", "v2c",
+				".1.3.6.1.2.1.15.7", 6, 1);
 	}
 
-	public void testV1ColdStart() {
-		anticipateEvent("uei.opennms.org/generic/traps/SNMP_Cold_Start");
-		sendV1Trap(".0.0", 0, 0);
-		finishUp();
+	public void testV2EnterpriseIdAndGenericMatchWithZero() {
+		anticipateAndSend(false, "uei.opennms.org/IETF/BGP/traps/bgpEstablished", "v2c",
+				".1.3.6.1.2.1.15.7.0", 6, 1);
+	}
+	
+	public void testV2EnterpriseIdAndGenericMatchWithExtraZeros() {
+		anticipateAndSend(false, "uei.opennms.org/default/trap", "v2c",
+				".1.3.6.1.2.1.15.7.0.0", 6, 1);
+	}
+
+	public void testV1GenericMatch() {
+		anticipateAndSend(false, "uei.opennms.org/generic/traps/SNMP_Cold_Start",
+				"v1", null, 0, 0);
+	}
+	
+	public void testV2GenericMatch() {
+		anticipateAndSend(false, "uei.opennms.org/generic/traps/SNMP_Cold_Start",
+				"v2c", ".1.3.6.1.6.3.1.1.5.1", 0, 0);
 	}
 	
 	public void testV1TrapDroppedEvent() {
-		sendV1Trap(".1.3.6.1.2.1.15.7", 6, 2);
-		finishUp();
+		anticipateAndSend(false, null, "v1", ".1.3.6.1.2.1.15.7", 6, 2);
+	}
+	
+	public void testV2TrapDroppedEvent() {
+		anticipateAndSend(false, null, "v2c", ".1.3.6.1.2.1.15.7", 6, 2);
 	}
 	
 	public void testV1TrapDefaultEvent() {
-		anticipateEvent("uei.opennms.org/default/trap");
-		sendV1Trap(".0.0", 6, 1);
-		finishUp();
+		anticipateAndSend(false, "uei.opennms.org/default/trap", "v1", null, 6, 1);
 	}
 	
-	public void doTestTrap(String version, boolean newSuspectOnTrap) {
-		if (newSuspectOnTrap) {
-			tearDown();
-			setUpTrapHandler(true);
-			anticipateEvent("uei.opennms.org/internal/discovery/newSuspect");
-		}
-
-		anticipateEvent("uei.opennms.org/default/trap");
-		
-		if (version.equals("v1")) {
-			sendV1Trap(".0.0", 6, 1);
-		} else if (version.equals("v2c")) {
-			sendV2Trap(".0.0", 6, 1);
-		} else {
-			throw new UndeclaredThrowableException(null, "unsupported SNMP version for test: " + version); 
-		}
-		
-		finishUp();
+	public void testV2TrapDefaultEvent() {
+		anticipateAndSend(false, "uei.opennms.org/default/trap", "v2c", null, 6, 1);
 	}
-
+	
 	public void anticipateEvent(String uei) {
 		Event event = new Event();
 		event.setInterface("127.0.0.1");
@@ -246,24 +250,68 @@ public class TrapHandlerTest extends TestCase {
 		m_anticipator.anticipateEvent(event);
 	}
 
+	
+	public void anticipateAndSend(boolean newSuspectOnTrap, String event,
+			String version, String enterprise, int generic, int specific) {
+		setUpTrapHandler(newSuspectOnTrap);
+		
+		if (newSuspectOnTrap) {
+			anticipateEvent("uei.opennms.org/internal/discovery/newSuspect");
+		}
+
+		if (event != null) {
+			anticipateEvent(event);
+		}
+		
+		sendTrap(version, enterprise, generic, specific);
+		
+		finishUp();
+	}
+
+	public void	sendTrap(String version, String enterprise, int generic, int specific) {
+		if (enterprise == null) {
+			enterprise = ".0.0";
+		}
+		
+		if (version.equals("v1")) {
+			sendV1Trap(enterprise, generic, specific);
+		} else if (version.equals("v2c")) {
+			sendV2Trap(enterprise, specific);
+		} else {
+			throw new UndeclaredThrowableException(null, "unsupported SNMP version for test: " + version);
+		}
+	}
+
 	public void sendV1Trap(String enterprise, int generic, int specific) {
 		SnmpPduTrap pdu = new SnmpPduTrap();
 		pdu.setEnterprise(enterprise);
 		pdu.setGeneric(generic);
 		pdu.setSpecific(specific);
+		pdu.setTimeStamp(System.currentTimeMillis());
 		pdu.setAgentAddress(new SnmpIPAddress(m_localhost));
 		m_trapHandler.snmpReceivedTrap(null, m_localhost, m_port,
 				new SnmpOctetString("public".getBytes()), pdu);
 	}
-	
-	public void sendV2Trap(String enterprise, int generic, int specific) {
+		
+	public void sendV2Trap(String enterprise, int specific) {
+		boolean isGeneric = false;
+		String trapOID;
+		if (enterprise.startsWith(".1.3.6.1.6.3.1.1.5")) {
+			isGeneric = true;
+			trapOID = enterprise;
+		} else {
+			trapOID = enterprise + "." + specific;
+			// XXX or should it be this
+			// trap OID = enterprise + ".0." + specific;
+		}
 		SnmpPduRequest pdu = new SnmpPduRequest(SnmpPduPacket.V2TRAP);
 		pdu.addVarBindAt(0, new SnmpVarBind(".1.3.6.1.2.1.1.3.0", new SnmpTimeTicks(0)));
-		pdu.addVarBindAt(1, new SnmpVarBind(".1.3.6.1.6.3.1.1.4.1.0", new SnmpObjectId()));
-		// FIXME: these lines should be doing something. :-)
-//		pdu.setEnterprise(enterprise);
-//		pdu.setGeneric(generic);
-//		pdu.setSpecific(specific);
+		pdu.addVarBindAt(1, new SnmpVarBind(".1.3.6.1.6.3.1.1.4.1.0",
+				new SnmpObjectId(trapOID)));
+		if (isGeneric) {
+			pdu.addVarBindAt(2, new SnmpVarBind(".1.3.6.1.6.3.1.1.4.3.0",
+					new SnmpObjectId(enterprise)));
+		}
 		m_trapHandler.snmpReceivedTrap(null, m_localhost, m_port,
 				new SnmpOctetString("public".getBytes()), pdu);
 	}
