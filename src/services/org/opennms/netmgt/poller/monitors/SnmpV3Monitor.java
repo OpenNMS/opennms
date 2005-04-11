@@ -38,6 +38,7 @@ package org.opennms.netmgt.poller.monitors;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Map;
+import java.util.Vector;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -68,7 +69,11 @@ final public class SnmpV3Monitor extends IPv4Monitor {
 
     private static final String DEFAULT_OID = ".1.3.6.1.2.1.1.2"; 
 
-    static final String SNMPV3_TARGET_KEY = "org.snmp4j.UserTarget";
+    private static final String SNMPV3_TARGET_KEY = "org.snmp4j.UserTarget";
+    
+    private static final OID USM_STATS = new OID(new int[]{1, 3, 6, 1, 6, 3, 15, 1, 1});
+
+    private static final OID SNMP_MPD_STATS = new OID(new int[]{1, 3, 6, 1, 6, 3, 11, 2, 1});
 
     public String serviceName() {
         return SERVICE_NAME;
@@ -118,6 +123,7 @@ final public class SnmpV3Monitor extends IPv4Monitor {
         if (log.isDebugEnabled())
             log.debug("poll: service= SNMP address= " + inetAddress.getHostAddress() + " port= " + address.getPort() + " oid=" + oid + " timeout= " + target.getTimeout() + " retries= " + target.getRetries() + " operator = " + operator + " operand = " + operand);
 
+        //Now poll
         Snmp snmp = null;
         try {
             snmp = SnmpHelpers.createSnmpSession();
@@ -127,14 +133,32 @@ final public class SnmpV3Monitor extends IPv4Monitor {
             request.add(vb);
             
             PDU response = null;
-            ResponseEvent responseEvent;
-            responseEvent = snmp.send(request, target);
+            ResponseEvent responseEvent = snmp.send(request, target);
             snmp.close();
-            
+
+            status = SERVICE_UNAVAILABLE;
             if (responseEvent.getResponse() != null) {
-                status = SERVICE_AVAILABLE;
-            } else {
-                status = SERVICE_UNAVAILABLE;
+                if (responseEvent.getResponse().getErrorStatus() != 0) {
+                    log.error("SnmpV3Monitor: PDU reponse errorStatus > 0.  The errorStatus is: "+responseEvent.getResponse().getErrorStatus());
+                    status = SERVICE_UNAVAILABLE;
+                } else {
+                    status = SERVICE_AVAILABLE;
+
+                    //got a valid SNMPv3 response from the agent, but the response may contain
+                    //v3 error codes in the first varbind
+                    Vector vbs = responseEvent.getResponse().getVariableBindings();
+                    if (vbs != null && vbs.size() >0) {
+                        VariableBinding responseVB = responseVB = (VariableBinding)vbs.firstElement();
+                        
+                        //this comparison is very v3 protocol specific.  This left most compare
+                        //efficiently matches most all errors found in the first varbind.
+                        if (USM_STATS.leftMostCompare(USM_STATS.size(), responseVB.getOid()) == 0 || 
+                                SNMP_MPD_STATS.leftMostCompare(SNMP_MPD_STATS.size(), responseVB.getOid()) ==0 ) {
+                            status = SERVICE_UNAVAILABLE;
+                            log.error("SnmpV3Monitor: responseError: " +responseVB.getOid());
+                        }
+                    }
+                }
             }
             
         } catch (IOException e) {
