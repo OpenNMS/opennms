@@ -144,7 +144,7 @@ public class Snmpv3PluginTest extends TestCase {
      * @throws UnknownHostException
      */
     public void testGetV3Target() throws UnknownHostException {
-        Target target = SnmpPeerFactory.getInstance().getTarget(InetAddress.getByName("192.168.0.102"));
+        Target target = SnmpPeerFactory.getInstance().getTarget(InetAddress.getByName(myLocalHost()));
         assertNotNull(target);
         assertEquals(target.getVersion(), SnmpConstants.version3);
     }
