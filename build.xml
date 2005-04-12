@@ -261,6 +261,8 @@ your distribution.
     <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_joesnmp.jar"/>
     <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_services.jar"/>
     <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_web.jar"/>
+    <pathelement location="${install.servlet.dir}/WEB-INF/lib/jstl.jar"/>
+    <pathelement location="${install.servlet.dir}/WEB-INF/lib/standard.jar"/>
     <pathelement location="${dev.lib.dir}/jasper/jasper-compiler.jar"/>
     <pathelement location="${dev.lib.dir}/jasper/jasper-runtime.jar"/>
   </path>  
