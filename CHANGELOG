@@ -1,5 +1,7 @@
 1.2.X to 1.3.0
 ----------------------------------------------------------------------
+- Add CentOS 4 support to the RPM spec file.  Bug #1222.  Thanks
+  Ted Kaczmarek <tedkaz@optonline.net>.
 - Fix the arguments to "find" in runjava.  It should now work properly on
   Mandrake Linux.  Bug #1205.  Thanks Chris Goheen <cg@sonic.net> for
   reporting this.

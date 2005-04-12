@@ -38,6 +38,15 @@
 %define platform_match	true
 %endif
 
+%if "%{platform}" == "linux-i386-centos-4"
+%define initdir		/etc
+%define psql_service	postgresql
+%define requires	postgresql-server >= 7.4, compat-libstdc++33-3.2.3-47.3
+%define webapp_requires	tomcat4 >= 4.1.18
+%define release_pkg	%{release}_centos4
+%define platform_match	true
+%endif
+
 %if "%{platform}" == "linux-i386-fedora-1"
 %define	initdir		/etc
 %define psql_service	postgresql
