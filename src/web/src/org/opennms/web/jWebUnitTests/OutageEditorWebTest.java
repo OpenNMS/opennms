@@ -253,6 +253,8 @@ public class OutageEditorWebTest extends WebTestCase {
     private String[] m_menu = { "Node List", "Search", "Outages", "Events", "Notification", "Assets", "Reports", "Help" };
 
     private Eventd m_eventd;
+
+    private ServletRunner m_servletRunner;
     
 
     protected void setUp() throws Exception {
@@ -298,14 +300,12 @@ public class OutageEditorWebTest extends WebTestCase {
         
         
 
-//        ServletRunner sr = new ServletRunner(new File("dist/webapps/opennms/WEB-INF/web.xml"), "/opennms");
-      ServletRunner sr = new ServletRunner(new StringBufferInputStream(web_xml), "/opennms");
-
-      // 
+        m_servletRunner = new ServletRunner(new StringBufferInputStream(web_xml), "/opennms");
+    // 
       MockUtil.setupLogging();
 
         
-           ServletUnitClient sc = sr.newClient();
+           ServletUnitClient sc = m_servletRunner.newClient();
            
            getTestContext().setWebClient(sc);
            getTestContext().setAuthorization("admin","admin");
@@ -319,6 +319,7 @@ public class OutageEditorWebTest extends WebTestCase {
     }
 
     protected void tearDown() throws Exception {
+        m_servletRunner.shutDown();
         m_eventd.stop();
         assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
         m_db.drop();
@@ -392,6 +393,8 @@ public class OutageEditorWebTest extends WebTestCase {
         assertTitleEquals("Scheduled Outage administration");
         assertHeaderPresent("Edit Outage", "Admin", new String[] {"Home", "Admin", "Manage Scheduled Outages", "Edit Outage"});
         assertFooterPresent("Admin");
+        
+        
 
         setWorkingForm("cancelForm");
         assertSubmitButtonPresent("cancelButton");

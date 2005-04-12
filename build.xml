@@ -298,8 +298,8 @@ your distribution.
     <path refid="tomcatlib.jars.path"/>
     <path refid="mock.path"/>
     <pathelement path="${packaged.lib.dir}/commons-logging.jar"/>
-  	<pathelement path="${dev.lib.didr}/ant/lib/ant.jar"/>
-  	<pathelement path="${dev.lib.didr}/ant/lib/ant-launcher.jar"/>
+  	<pathelement path="${dev.lib.dir}/ant/lib/ant.jar"/>
+  	<pathelement path="${dev.lib.dir}/ant/lib/ant-launcher.jar"/>
   </path>
 
   <!-- Files in ${packaged.lib.dir} that are copied into ${install.dir}/lib.
@@ -340,6 +340,8 @@ your distribution.
   	<include name="pop3.jar" />
   	<include name="smtp.jar" />
   	<include name="oro*.jar" />
+  	<include name="jstl.jar" />
+  	<include name="standard.jar" />
   </patternset>
 
   <!-- The includes in this patternset need to match the directories in
@@ -1401,9 +1403,9 @@ OpenNMS as part of the post-install.
    </fail>
  </target>
 
- <target name="webtest" depends="test.prep, junit.compile, jsp.compile"
+ <target name="webtest" depends="install, test.prep, junit.compile"
 	 description="Run all the unit tests on the webapp" unless="skip.tests">
-   <junit fork="true" dir="${install.servlet.dir}" forkmode="once" errorProperty="test.failed"
+   <junit fork="true" dir="${install.prefix}${install.servlet.dir}" forkmode="once" errorProperty="test.failed"
 	  failureProperty="test.failed">
      <classpath refid="webtest.path"/>
      <formatter type="brief" usefile="false" />

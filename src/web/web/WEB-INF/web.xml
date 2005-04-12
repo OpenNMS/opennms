@@ -792,6 +792,11 @@
     <servlet-class>org.opennms.web.map.ModifyParentServlet</servlet-class>
   </servlet>
   
+  <servlet>
+  	<servlet-name>scheduleEditor</servlet-name>
+  	<servlet-class>org.opennms.web.admin.schedule.ScheduleEditorServlet</servlet-class>
+  </servlet>
+  
   <!-- python servlet for testing purposes - ->
   <servlet>
       <servlet-name>PyServlet</servlet-name>
@@ -810,6 +815,10 @@
   <!-- desktop graph servlet mapping -->
   <!-- desktop survey report servlet mapping -->  
   
+  <servlet-mapping>
+  	<servlet-name>scheduleEditor</servlet-name>
+  	<url-pattern>/admin/schedule/schedule-editor</url-pattern>
+  </servlet-mapping>
   <servlet-mapping>
     <servlet-name>snmpGraph</servlet-name>
     <url-pattern>/snmp/performance/graph.png</url-pattern>
@@ -1328,6 +1337,17 @@
     <location>/errors/unknownexception.jsp</location>
   </error-page>  
   
+
+  <taglib>
+    <taglib-uri>http://java.sun.com/jstl/core</taglib-uri>
+    <taglib-location>/WEB-INF/c.tld</taglib-location>
+  </taglib>
+
+  <taglib>
+    <taglib-uri>http://java.sun.com/jstl/core_rt</taglib-uri>
+    <taglib-location>/WEB-INF/c-rt.tld</taglib-location>
+  </taglib>
+
 
   <!-- Note: The order of these security-constraints is significant! -->
   <security-constraint>
