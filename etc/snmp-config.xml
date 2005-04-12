@@ -6,7 +6,7 @@
 	<definition version="v2c">
 		<specific>192.168.0.50</specific>
 	</definition>
-	<definition version="3" security-name="opennmsUser">
+	<definition version="v3" security-name="opennmsUser">
 		<specific>192.168.0.102</specific>
 	</definition>
 	<!--
