@@ -1,5 +1,8 @@
 1.2.X to 1.3.0
 ----------------------------------------------------------------------
+- Remove the Java dependency from the RPM package.  Of the Java packages
+  out there, there is no common package name or virtual package name.
+  We'll let 'runjava' do the dependency checking.  Bug #1144.
 - Remove the excludes for the compilation of JSP code from Java source to
   class files.  Anything ending in '.jsp' is now compiled.  The following
   two cleanups below made this possible.
