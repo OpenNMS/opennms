@@ -216,7 +216,7 @@ BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
 AutoReqProv:		no
 
-Requires:		rrdtool, curl, java-devel-sun >= 1.4, %{requires}
+Requires:		rrdtool, curl, %{requires}
 
 %description
 OpenNMS is a network management package.
