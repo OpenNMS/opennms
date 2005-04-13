@@ -31,7 +31,7 @@ public class ExampleWebTest extends WebTestCase {
      
         ServletUnitClient sc = sr.newClient();
         getTestContext().setWebClient(sc);
-        getTestContext().setAuthorization("admin","admin");
+        getTestContext().setAuthorization("admin","OpenNMS Administrator");
         getTestContext().setBaseUrl("http://localhost:8080/opennms");
     }
     

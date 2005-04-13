@@ -19,7 +19,7 @@ import net.sourceforge.jwebunit.WebTestCase;
  */
 public class OpenNMSWebTestCase extends WebTestCase {
 
-    private String[] m_menu = { "Node List", "Search", "Outages", "Events", "Notification", "Assets", "Reports", "Help" };
+    private String[] m_menu = { "Node List", "Search", "Outages", "Events", "Notification", "Assets", "Reports", "Admin", "Help" };
 
     protected void assertHeaderPresent(String title, String location, String[] breadcrumbs) {
     
@@ -44,8 +44,7 @@ public class OpenNMSWebTestCase extends WebTestCase {
         assertBreadCrumbs(breadcrumbs, subheadertable.getTableCell(0,0));
     
         // Ensure the menu links are correct
-        // TODO: Fix Admin right now coerce it to Null since we don't have auth right
-        assertMenu(("Admin".equals(location) ?  null : location), m_menu, subheadertable.getTableCell(0,1));
+        assertMenu(location, m_menu, subheadertable.getTableCell(0,1));
     }
 
     private void assertBreadCrumbs(String[] breadcrumbs, TableCell cell) {
@@ -58,8 +57,7 @@ public class OpenNMSWebTestCase extends WebTestCase {
         WebTable table = getDialog().getWebTableBySummaryOrId("footer");
         TableCell cell = table.getTableCell(0, 0);
     
-        // TODO: Fix Admin right now coerce it to Null since we don't have auth right
-        assertMenu(("Admin".equals(location) ?  null : location), m_menu, cell);
+        assertMenu(location, m_menu, cell);
         assertCell(table, 1, 0, "OpenNMS Copyright \u00a9 2002-2005 The OpenNMS Group, Inc. OpenNMS\u00ae is a registered trademark of The OpenNMS Group, Inc.");
     }
 
