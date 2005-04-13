@@ -34,7 +34,6 @@ package org.opennms.web.jWebUnitTests;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.StringBufferInputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -58,14 +57,12 @@ import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockUtil;
 
-import com.meterware.httpunit.TableCell;
-import com.meterware.httpunit.WebImage;
 import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebTable;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 
-public class OutageEditorWebTest extends WebTestCase {
+public class OutageEditorWebTest extends OpenNMSWebTestCase {
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(OutageEditorWebTest.class);
@@ -250,8 +247,6 @@ public class OutageEditorWebTest extends WebTestCase {
     
     private MockNetwork m_network;
     private MockDatabase m_db;
-    private String[] m_menu = { "Node List", "Search", "Outages", "Events", "Notification", "Assets", "Reports", "Help" };
-
     private Eventd m_eventd;
 
     private ServletRunner m_servletRunner;
@@ -474,60 +469,6 @@ public class OutageEditorWebTest extends WebTestCase {
     // TODO: Add tests for Admin vs not Admin in header and footer
     // TODO: Add tets for mapenabled vs not enable in header and footer
     
-    private void assertHeaderPresent(String title, String location, String[] breadcrumbs) {
-
-        assertTablePresent("header");
-
-        WebTable headertable = getDialog().getWebTableBySummaryOrId("header");
-        
-        // ensure the logo image is there
-        assertCellImage(headertable, 0, 0,  null);
-        
-        // ensure the title is correct 
-        assertCell(headertable, 0, 1, title);
-        
-        //Second line had a table in it that spans the three columns, we call it sub-header
-
-        //Chect that the sub-header table is present
-        assertTablePresent("sub-header");
-        
-        WebTable subheadertable = getDialog().getWebTableBySummaryOrId("sub-header");
-        
-        // Ensure the bread crumbs are correct
-        assertBreadCrumbs(breadcrumbs, subheadertable.getTableCell(0,0));
-
-        // Ensure the menu links are correct
-        // TODO: Fix Admin right now coerce it to Null since we don't have auth right
-        assertMenu(("Admin".equals(location) ?  null : location), m_menu, subheadertable.getTableCell(0,1));
-    }
-        
-    private void assertBreadCrumbs(String[] breadcrumbs, TableCell cell) {
-        if (breadcrumbs != null && breadcrumbs.length > 0)
-            assertMenu(breadcrumbs[breadcrumbs.length-1], breadcrumbs, cell);
-    }
-
-    private void assertFooterPresent(String location) {
-        assertTablePresent("footer");
-        WebTable table = getDialog().getWebTableBySummaryOrId("footer");
-        TableCell cell = table.getTableCell(0, 0);
-
-        // TODO: Fix Admin right now coerce it to Null since we don't have auth right
-        assertMenu(("Admin".equals(location) ?  null : location), m_menu, cell);
-        assertCell(table, 1, 0, "OpenNMS Copyright \u00a9 2002-2005 The OpenNMS Group, Inc. OpenNMS\u00ae is a registered trademark of The OpenNMS Group, Inc.");
-    }
-
-    private void assertMenu(String location, String[] menu, TableCell cell) {
-        if (location != null)
-            assertTrue("Expected disabled menu item "+location+" but the cell is "+cell.getText(), cell.getText().indexOf(location) >= 0);
-        List links = new ArrayList();
-        for(int i = 0; i < menu.length; i++) {
-            if (!menu[i].equals(location)) {
-                links.add(menu[i]);
-            }
-        }
-        assertLinks((String[]) links.toArray(new String[links.size()]), cell.getLinks());
-    }
-    
     private String computeImgSrc(Outage outage) {
         // TODO: correctly compute this based on the outage
         return "images/redcross.gif";
@@ -541,47 +482,12 @@ public class OutageEditorWebTest extends WebTestCase {
         return "admin/sched-outages/editoutage.jsp?name="+outage.getName().replace(' ','+');
     }
     
-    public void assertCellImage(WebTable table, int row, int col, String imgSrc) {
-        assertEquals(1, table.getTableCell(row, col).getImages().length);
-        WebImage img = table.getTableCell(row, col).getImages()[0];
-        assertNotNull(img);
-        if (imgSrc != null)
-            assertEquals(imgSrc, img.getSource());
-    }
-    
     public void assertCellLink(WebTable table, int row, int col, String text, String url) {
         assertEquals(1, table.getTableCell(row, col).getLinks().length);
         WebLink link = table.getTableCell(row, col).getLinks()[0];
         assertNotNull(link);
         assertEquals(text, link.getText());
         assertEquals(url, link.getURLString());
-    }
-    
-    private void assertLinks(String[] text, WebLink[] links) {
-        for (int i = 0; i < text.length; i++) {
-            assertTrue("Missing Link '"+text[i]+"'", i < links.length);
-            WebLink link = links[i];
-            assertNotNull(link);
-            assertEquals("Missing Link '"+text[i]+"'", text[i], link.getText());
-        }
-        
-        if (text.length < links.length) {
-            fail((links.length - text.length)+" unexpected links starting at '"+links[text.length].getText()+"'");
-        }
-    }
-    
-    public void assertCell(WebTable table, int row, int col, String contents, int colspan) {
-        if (contents == null) {
-            assertNull(table.getTableCell(row, col));
-        } else {
-            assertNotNull(table.getTableCell(row, col));
-            assertEquals(contents, table.getCellAsText(row, col));
-            assertEquals(colspan, table.getTableCell(row, col).getColSpan());
-        }
-    }
-    
-    public void assertCell(WebTable table, int row, int col, String contents) {
-        assertCell(table, row, col, contents, 1);
     }
     
     public void assertRow(WebTable table, int row, String[] contents) {
@@ -600,11 +506,6 @@ public class OutageEditorWebTest extends WebTestCase {
     // TODO: test the delete link
     // TODO: verify header and footer
     // TODO: verify security/authorization
-
-    private void appendRow(ExpectedTable expectedTable, List cells) {
-        ExpectedRow row = new ExpectedRow((ExpectedCell[]) cells.toArray(new ExpectedCell[cells.size()]));
-        expectedTable.appendRow(row);
-    }
 
     private String getTimeSpanString(BasicSchedule sched) {
         StringBuffer buf = new StringBuffer();
