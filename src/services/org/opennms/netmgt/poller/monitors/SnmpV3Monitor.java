@@ -52,6 +52,7 @@ import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.TransportIpAddress;
+import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 
 /**
@@ -63,7 +64,7 @@ import org.snmp4j.smi.VariableBinding;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final public class SnmpV3Monitor extends IPv4Monitor {
+final public class SnmpV3Monitor extends SnmpMonitorStrategy {
 
     private static final String SERVICE_NAME = "SNMPv3";
 
@@ -136,6 +137,8 @@ final public class SnmpV3Monitor extends IPv4Monitor {
             ResponseEvent responseEvent = snmp.send(request, target);
             snmp.close();
 
+            Vector vbs = responseEvent.getResponse().getVariableBindings();
+            VariableBinding firstVB = (VariableBinding)vbs.firstElement();
             status = SERVICE_UNAVAILABLE;
             if (responseEvent.getResponse() != null) {
                 if (responseEvent.getResponse().getErrorStatus() != 0) {
@@ -146,19 +149,36 @@ final public class SnmpV3Monitor extends IPv4Monitor {
 
                     //got a valid SNMPv3 response from the agent, but the response may contain
                     //v3 error codes in the first varbind
-                    Vector vbs = responseEvent.getResponse().getVariableBindings();
                     if (vbs != null && vbs.size() >0) {
-                        VariableBinding responseVB = responseVB = (VariableBinding)vbs.firstElement();
                         
                         //this comparison is very v3 protocol specific.  This left most compare
                         //efficiently matches most all errors found in the first varbind.
-                        if (USM_STATS.leftMostCompare(USM_STATS.size(), responseVB.getOid()) == 0 || 
-                                SNMP_MPD_STATS.leftMostCompare(SNMP_MPD_STATS.size(), responseVB.getOid()) ==0 ) {
+                        if (USM_STATS.leftMostCompare(USM_STATS.size(), firstVB.getOid()) == 0 || 
+                                SNMP_MPD_STATS.leftMostCompare(SNMP_MPD_STATS.size(), firstVB.getOid()) ==0 ) {
                             status = SERVICE_UNAVAILABLE;
-                            log.error("SnmpV3Monitor: responseError: " +responseVB.getOid());
+                            log.error("SnmpV3Monitor: responseError: " +firstVB.getOid());
                         }
                     }
                 }
+            }
+            
+            String hostAddress = inetAddress.getHostAddress();
+            Variable var = firstVB.getVariable();
+
+            if (status == SERVICE_AVAILABLE) {
+                log.debug("poll: SNMP poll succeeded, addr=" + hostAddress + " oid=" + oid + " value=" + responseEvent.getResponse().toString());
+                try {
+                    status = (meetsCriteria(var, operator, operand) ? ServiceMonitor.SERVICE_AVAILABLE : ServiceMonitor.SERVICE_UNAVAILABLE);
+                } catch (NumberFormatException e) {
+                    log.warn("Number operator used on a non-number " + e.getMessage());
+                    status = ServiceMonitor.SERVICE_AVAILABLE;
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid Snmp Criteria: " + e.getMessage());
+                    status = ServiceMonitor.SERVICE_UNAVAILABLE;
+                }
+            } else {
+                log.debug("poll: SNMPv3 poll failed, addr=" + hostAddress + " oid=" + oid);
+                status = ServiceMonitor.SERVICE_UNAVAILABLE;
             }
             
         } catch (IOException e) {

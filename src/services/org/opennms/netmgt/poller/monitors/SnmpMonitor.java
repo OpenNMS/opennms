@@ -42,11 +42,9 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
@@ -57,16 +55,12 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.utils.SnmpResponseHandler;
-import org.opennms.protocols.snmp.SnmpCounter64;
-import org.opennms.protocols.snmp.SnmpInt32;
 import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpPduPacket;
 import org.opennms.protocols.snmp.SnmpPduRequest;
 import org.opennms.protocols.snmp.SnmpPeer;
 import org.opennms.protocols.snmp.SnmpSMI;
 import org.opennms.protocols.snmp.SnmpSession;
-import org.opennms.protocols.snmp.SnmpSyntax;
-import org.opennms.protocols.snmp.SnmpUInt32;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
@@ -82,7 +76,7 @@ import org.opennms.protocols.snmp.SnmpVarBind;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final public class SnmpMonitor extends IPv4Monitor {
+final public class SnmpMonitor extends SnmpMonitorStrategy {
     /**
      * Name of monitored service.
      */
@@ -108,23 +102,6 @@ final public class SnmpMonitor extends IPv4Monitor {
      * object.
      */
     static final String SNMP_PEER_KEY = "org.opennms.netmgt.collectd.SnmpCollector.SnmpPeer";
-
-    /**
-     * Constant for less-than operand
-     */
-    static final String LESS_THAN = "<";
-
-    static final String GREATER_THAN = ">";
-
-    static final String LESS_THAN_EQUALS = "<=";
-
-    static final String GREATER_THAN_EQUALS = ">=";
-
-    static final String EQUALS = "=";
-
-    static final String NOT_EQUAL = "!=";
-
-    static final String MATCHES = "~";
 
     /**
      * <P>
@@ -247,7 +224,7 @@ final public class SnmpMonitor extends IPv4Monitor {
         //
         Category log = ThreadCategory.getInstance(getClass());
 
-        int status = SERVICE_UNAVAILABLE;
+        int status = ServiceMonitor.SERVICE_UNAVAILABLE;
         InetAddress ipaddr = (InetAddress) iface.getAddress();
         SnmpSession session = null;
 
@@ -295,7 +272,7 @@ final public class SnmpMonitor extends IPv4Monitor {
                 }
             }
 
-            return SERVICE_UNAVAILABLE;
+            return ServiceMonitor.SERVICE_UNAVAILABLE;
         }
 
         // Need to be certain that we close the SNMP session when the data
@@ -322,21 +299,21 @@ final public class SnmpMonitor extends IPv4Monitor {
             if (handler.getResult() != null) {
                 log.debug("poll: SNMP poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + handler.getResult().getValue());
                 try {
-                    status = (meetsCriteria(handler.getResult().getValue(), operator, operand) ? SERVICE_AVAILABLE : SERVICE_UNAVAILABLE);
+                    status = (meetsCriteria(handler.getResult().getValue(), operator, operand) ? ServiceMonitor.SERVICE_AVAILABLE : ServiceMonitor.SERVICE_UNAVAILABLE);
                 } catch (NumberFormatException e) {
                     log.warn("Number operator used on a non-number " + e.getMessage());
-                    status = SERVICE_AVAILABLE;
+                    status = ServiceMonitor.SERVICE_AVAILABLE;
                 } catch (IllegalArgumentException e) {
                     log.warn("Invalid Snmp Criteria: " + e.getMessage());
-                    status = SERVICE_UNAVAILABLE;
+                    status = ServiceMonitor.SERVICE_UNAVAILABLE;
                 }
             } else {
                 log.debug("poll: SNMP poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + oid);
-                status = SERVICE_UNAVAILABLE;
+                status = ServiceMonitor.SERVICE_UNAVAILABLE;
             }
         } catch (Throwable t) {
             log.warn("poll: Unexpected exception during SNMP poll of interface " + ipaddr.getHostAddress(), t);
-            status = SERVICE_UNAVAILABLE;
+            status = ServiceMonitor.SERVICE_UNAVAILABLE;
         } finally {
             // Regardless of what happens with the collection, close the session
             // when we're finished collecting data.
@@ -350,61 +327,5 @@ final public class SnmpMonitor extends IPv4Monitor {
         }
 
         return status;
-    }
-
-    /**
-     * Verifies that the result of the SNMP query meets the criteria specified
-     * by the operator and the operand from the configuartion file.
-     * 
-     * @param result
-     * @param operator
-     * @param operand
-     * @return
-     */
-    public boolean meetsCriteria(SnmpSyntax result, String operator, String operand) {
-        if (result == null)
-            return false;
-
-        if (operator == null || operand == null)
-            return true;
-
-        String value = result.toString();
-        if (EQUALS.equals(operator))
-            return operand.equals(value);
-        else if (NOT_EQUAL.equals(operator))
-            return !operand.equals(value);
-        else if (MATCHES.equals(operator))
-            return Pattern.compile(operand).matcher(value).find();
-
-        BigInteger val = null;
-        switch (result.typeId()) {
-        case SnmpSMI.SMI_INTEGER:
-            val = BigInteger.valueOf(((SnmpInt32) result).getValue());
-            break;
-        case SnmpSMI.SMI_COUNTER64:
-            val = ((SnmpCounter64) result).getValue();
-            break;
-        case SnmpSMI.SMI_GAUGE32:
-        case SnmpSMI.SMI_TIMETICKS:
-        case SnmpSMI.SMI_COUNTER32:
-            val = BigInteger.valueOf(((SnmpUInt32) result).getValue());
-            break;
-        default:
-            val = new BigInteger(result.toString());
-            break;
-        }
-
-        BigInteger intOperand = new BigInteger(operand);
-        if (LESS_THAN.equals(operator)) {
-            return val.compareTo(intOperand) < 0;
-        } else if (LESS_THAN_EQUALS.equals(operator)) {
-            return val.compareTo(intOperand) <= 0;
-        } else if (GREATER_THAN.equals(operator)) {
-            return val.compareTo(intOperand) > 0;
-        } else if (GREATER_THAN_EQUALS.equals(operator)) {
-            return val.compareTo(intOperand) >= 0;
-        } else {
-            throw new IllegalArgumentException("operator " + operator + " is unknown");
-        }
     }
 }
