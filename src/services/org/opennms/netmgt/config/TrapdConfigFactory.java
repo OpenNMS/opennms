@@ -43,6 +43,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
@@ -66,7 +67,7 @@ public final class TrapdConfigFactory implements TrapdConfig {
     /**
      * The singleton instance of this factory
      */
-    private static TrapdConfigFactory m_singleton = null;
+    private static TrapdConfig m_singleton = null;
 
     /**
      * The config class loaded from the config file
@@ -94,6 +95,10 @@ public final class TrapdConfigFactory implements TrapdConfig {
         m_config = (TrapdConfiguration) Unmarshaller.unmarshal(TrapdConfiguration.class, new InputStreamReader(cfgIn));
         cfgIn.close();
 
+    }
+    
+    public TrapdConfigFactory(Reader rdr) throws MarshalException, ValidationException {
+        m_config = (TrapdConfiguration) Unmarshaller.unmarshal(TrapdConfiguration.class, rdr);
     }
 
     /**
@@ -145,11 +150,16 @@ public final class TrapdConfigFactory implements TrapdConfig {
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
-    public static synchronized TrapdConfigFactory getInstance() {
+    public static synchronized TrapdConfig getInstance() {
         if (!m_loaded)
             throw new IllegalStateException("The factory has not been initialized");
 
         return m_singleton;
+    }
+    
+    public static synchronized void setInstance(TrapdConfig config) {
+        m_singleton = config;
+        m_loaded = true;
     }
 
     /**
