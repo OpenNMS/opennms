@@ -54,13 +54,12 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
  */
 public class SnmpHelpers {
     
-    public static PDU createPDU() {
+    public static PDU createPDU(int version) {
         PDU request;
-        request = new ScopedPDU();
-        ScopedPDU scopedPDU = (ScopedPDU) request;
-//      scopedPDU.setContextEngineID(contextEngineID);
-//      scopedPDU.setContextName(contextName);
-//      request.setType(PDU.GET);
+        if (version == SnmpConstants.version3)
+            request = new ScopedPDU();
+        else
+            request = new PDU();
         return request;
     }
 

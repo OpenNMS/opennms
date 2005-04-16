@@ -73,13 +73,13 @@
 			<parameter key="retry" value="2"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="port" value="161"/>
-			<parameter key="oid" value=".1.3.6.1.2.1.1.2"/>
+			<parameter key="oid" value=".1.3.6.1.2.1.1.2.0"/>
 		</service>
-		<service name="SNMPv3" interval="300000" user-defined="false" status="on">
+		<service name="SNMPv3" interval="300000" user-defined="false" status="off">
 			<parameter key="retry" value="2"/>
 			<parameter key="timeout" value="3000"/>
 			<parameter key="port" value="161"/>
-			<parameter key="oid" value=".1.3.6.1.2.1.1.2"/>
+			<parameter key="oid" value=".1.3.6.1.2.1.1.2.0"/>
 		</service>
 		<service name="HTTP" interval="300000" user-defined="false" status="on">
 			<parameter key="retry" value="1"/>
@@ -211,7 +211,7 @@
 	<monitor service="DNS"  	class-name="org.opennms.netmgt.poller.monitors.DnsMonitor" />
 	<monitor service="NTP"  	class-name="org.opennms.netmgt.poller.monitors.NtpMonitor" />
 	<monitor service="FTP"  	class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
-	<monitor service="SNMP"         class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor"/>
+	<monitor service="SNMP"         class-name="org.opennms.netmgt.poller.monitors.SnmpV3Monitor"/>
 	<monitor service="SNMPv3"       class-name="org.opennms.netmgt.poller.monitors.SnmpV3Monitor"/>
 	<monitor service="Oracle" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
 	<monitor service="Postgres" 	class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>

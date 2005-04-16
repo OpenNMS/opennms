@@ -63,17 +63,8 @@ import org.snmp4j.smi.VariableBinding;
  */
 public final class SnmpV3Plugin extends AbstractPlugin {
 
-    private static final String PROTOCOL_NAME = "SNMPv3";
-/*    private static final String DEFAULT_PORT = "161";
-    private static final String DEFAULT_TIMEOUT = "3000";
-    private static final String DEFAULT_RETRY = "2";
-    private static final String DEFAULT_SECURITY_NAME = "opennms";
-    private static final OID DEFAULT_AUTH_PROTOCOL = AuthMD5.ID;
-    private static final OctetString DEFAULT_AUTH_PASSPHRASE = new OctetString("opennms");
-    private static final OID DEFAULT_PRIV_PROTOCOL = PrivDES.ID;
-    private static final OctetString DEFAULT_PRIV_PASSPHRASE = new OctetString("opennms");
-    private static final String DEFAULT_VERSION = "snmpv3";
-*/    private static final String DEFAULT_OID = ".1.3.6.1.2.1.1.2.0";
+    private static final String PROTOCOL_NAME = "SNMP";
+    private static final String DEFAULT_OID = ".1.3.6.1.2.1.1.2.0";
     
     public String getProtocolName() {
         return PROTOCOL_NAME;
@@ -110,20 +101,36 @@ public final class SnmpV3Plugin extends AbstractPlugin {
         InetAddress inetAddress = address;
         
         //Get a target from the PeerFactory and force to version 3
-        Target target = SnmpPeerFactory.getInstance().getTarget(inetAddress, SnmpConstants.version3);
+        //Target target = SnmpPeerFactory.getInstance().getTarget(inetAddress, SnmpConstants.version3);
         
         String vbValue = (String)qualifiers.get("vbvalue");
         String oid = ParameterMap.getKeyedString(qualifiers, "vbname", DEFAULT_OID);
+        String forcedVersion = ParameterMap.getKeyedString(qualifiers, "forced version", null);
+        Target target = null;
+
+        // "force version" parm
+        //
+        if (forcedVersion != null) {
+            if (forcedVersion.equalsIgnoreCase("snmpv1"))
+                target = SnmpPeerFactory.getInstance().getTarget(inetAddress, SnmpConstants.version1);
+            else if (forcedVersion.equalsIgnoreCase("snmpv2") || forcedVersion.equalsIgnoreCase("snmpv2c"))
+                target = SnmpPeerFactory.getInstance().getTarget(inetAddress, SnmpConstants.version2c);
+            else if (forcedVersion.equalsIgnoreCase("snmpv3"))
+                target = SnmpPeerFactory.getInstance().getTarget(inetAddress, SnmpConstants.version2c);
+        } else {
+            target = SnmpPeerFactory.getInstance().getTarget(inetAddress);
+        }
         
         boolean isSupported = false;
-        
-        MPv3.setEnterpriseID(5813);
+
+        if (target.getVersion() == SnmpConstants.version3)
+            MPv3.setEnterpriseID(5813);
         
         Snmp snmp = null;
         try {
             snmp = SnmpHelpers.createSnmpSession();
             snmp.listen();
-            PDU requestPDU = SnmpHelpers.createPDU();
+            PDU requestPDU = SnmpHelpers.createPDU(target.getVersion());
             VariableBinding vb = new VariableBinding(new OID(oid));
             requestPDU.add(vb);
             

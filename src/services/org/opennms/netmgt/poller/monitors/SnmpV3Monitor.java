@@ -48,7 +48,6 @@ import org.opennms.netmgt.utils.SnmpHelpers;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.Target;
-import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.TransportIpAddress;
@@ -57,7 +56,7 @@ import org.snmp4j.smi.VariableBinding;
 
 /**
  * <P>
- * Used by the Poller to monitor status of a V3 agent.
+ * Used by the Poller to monitor status of a v1, v2c, or v3 agent.
  * </P>
  * 
  * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
@@ -66,9 +65,9 @@ import org.snmp4j.smi.VariableBinding;
  */
 final public class SnmpV3Monitor extends SnmpMonitorStrategy {
 
-    private static final String SERVICE_NAME = "SNMPv3";
+    private static final String SERVICE_NAME = "SNMP";
 
-    private static final String DEFAULT_OID = ".1.3.6.1.2.1.1.2"; 
+    private static final String DEFAULT_OID = ".1.3.6.1.2.1.1.2.0"; 
 
     private static final String SNMPV3_TARGET_KEY = "org.snmp4j.UserTarget";
     
@@ -79,8 +78,23 @@ final public class SnmpV3Monitor extends SnmpMonitorStrategy {
     public String serviceName() {
         return SERVICE_NAME;
     }
-
+    
+    /**
+     * This helper method was added to maintain compatibility while adding support
+     * for the new overloaded method that takes requested verion of SNMP in this
+     * method.  Right now, support for this was added only to simplify JUnit testing.
+     */
     public void initialize(NetworkInterface iface) {
+        initialize(iface, -1);
+    }
+
+    /**
+     * Currently, this implmentation is only called directly from JUnit tests
+     * and the overloaded partner method that is called by the poller.
+     * @param iface
+     * @param requestedVersion
+     */
+    public void initialize(NetworkInterface iface, int requestedVersion) {
         Category log = ThreadCategory.getInstance(getClass());
 
         if (iface.getType() != NetworkInterface.TYPE_IPV4)
@@ -88,9 +102,13 @@ final public class SnmpV3Monitor extends SnmpMonitorStrategy {
         InetAddress inetAddress = (InetAddress) iface.getAddress();
 
         if (log.isDebugEnabled())
-            log.debug("initialize: setting SNMPv3 target attributes for this interface: " + inetAddress.getHostAddress());
+            log.debug("initialize: setting SNMP target attributes for this interface: " + inetAddress.getHostAddress());
 
-        Target target = SnmpPeerFactory.getInstance().getTarget(inetAddress);
+        Target target = null;
+        if (requestedVersion != -1)
+            target = SnmpPeerFactory.getInstance().getTarget(inetAddress, requestedVersion);
+        else
+            target = SnmpPeerFactory.getInstance().getTarget(inetAddress);
         
         iface.setAttribute(SNMPV3_TARGET_KEY, target);
 
@@ -109,10 +127,10 @@ final public class SnmpV3Monitor extends SnmpMonitorStrategy {
 
         // Retrieve this interface's SNMP peer object
         //
-        UserTarget target = (UserTarget) iface.getAttribute(SNMPV3_TARGET_KEY);
+        Target target = (Target)iface.getAttribute(SNMPV3_TARGET_KEY);
         
         if (target == null)
-            throw new RuntimeException("UserTarget object not available for interface " + inetAddress);
+            throw new RuntimeException("Target object not available for interface " + inetAddress);
 
         String oid = ParameterMap.getKeyedString(parameters, "oid", DEFAULT_OID);
         String operator = ParameterMap.getKeyedString(parameters, "operator", null);
@@ -129,7 +147,7 @@ final public class SnmpV3Monitor extends SnmpMonitorStrategy {
         try {
             snmp = SnmpHelpers.createSnmpSession();
             snmp.listen();
-            PDU request = SnmpHelpers.createPDU();
+            PDU request = SnmpHelpers.createPDU(target.getVersion());
             VariableBinding vb = new VariableBinding(new OID(DEFAULT_OID));
             request.add(vb);
             
@@ -177,7 +195,7 @@ final public class SnmpV3Monitor extends SnmpMonitorStrategy {
                     status = ServiceMonitor.SERVICE_UNAVAILABLE;
                 }
             } else {
-                log.debug("poll: SNMPv3 poll failed, addr=" + hostAddress + " oid=" + oid);
+                log.debug("poll: SNMPv3Monitor poll failed, addr=" + hostAddress + " oid=" + oid);
                 status = ServiceMonitor.SERVICE_UNAVAILABLE;
             }
             
