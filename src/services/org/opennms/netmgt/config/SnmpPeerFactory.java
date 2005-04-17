@@ -128,6 +128,8 @@ public final class SnmpPeerFactory {
 
     private static final int DEFAULT_VERSION = SnmpConstants.version1;
 
+    private static final String DEFAULT_CONFIG_VERSION = "v1";
+    
     private static final OID DEFAULT_AUTH_PROTOCOL = AuthMD5.ID;
 
     private static final OID DEFAULT_PRIV_PROTOCOL = PrivDES.ID;
@@ -164,6 +166,9 @@ public final class SnmpPeerFactory {
         
         Definition def = new Definition();
         
+        if (m_config.getVersion() == null)
+            m_config.setVersion(DEFAULT_CONFIG_VERSION);
+        
         if (versionString2Int(m_config.getVersion()) == SnmpConstants.version3) {
             def.setSecurityName(m_config.getSecurityName());
             def.setAuthPassphrase(m_config.getAuthPassphrase());
@@ -177,9 +182,11 @@ public final class SnmpPeerFactory {
         while (edef.hasMoreElements()) {
             def = (Definition) edef.nextElement();
             
-            if (versionString2Int(def.getVersion()) == SnmpConstants.version3) {
+            if (def.getVersion() == null)
+                def.setVersion(m_config.getVersion());
+            
+            if (versionString2Int(def.getVersion()) == SnmpConstants.version3)
                 initSecurityModels(def);
-            }
         }
     }
 
@@ -259,6 +266,9 @@ public final class SnmpPeerFactory {
     private int versionString2Int(String strVersion) {
 
         int version = DEFAULT_VERSION;
+        
+        if (strVersion == null)
+            return version;
 
         if (strVersion.equals("v3")) {
             version = SnmpConstants.version3;
