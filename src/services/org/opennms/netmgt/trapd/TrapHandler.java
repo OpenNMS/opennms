@@ -207,10 +207,7 @@ public class TrapHandler implements SnmpTrapHandler, PausableFiber {
 			m_backlogQ.add(o);
 		} catch (InterruptedException ie) {
 			Category log = ThreadCategory.getInstance(getClass());
-			log
-					.warn(
-							"snmpReceivedTrap: Error adding trap to queue, it was interrupted",
-							ie);
+			log.warn("snmpReceivedTrap: Error adding trap to queue, it was interrupted", ie);
 		} catch (FifoQueueException qe) {
 			Category log = ThreadCategory.getInstance(getClass());
 			log.warn("snmpReceivedTrap: Error adding trap to queue", qe);
