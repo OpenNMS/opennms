@@ -35,9 +35,12 @@ package org.opennms.netmgt.mock;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.EventdConfigManager;
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.eventd.EventConfigurationManager;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
@@ -1279,6 +1282,67 @@ public class OpenNMSTestCase extends TestCase {
 
     protected static EventdConfigManager m_eventdConfigMgr;
 
+    /**
+     * String representing snmp-config.xml
+     */
+    protected static final String SNMP_CONFIG = "<?xml version=\"1.0\"?>\n" + 
+                "<snmp-config "+ 
+                " retry=\"3\" timeout=\"800\"\n" + 
+                " read-community=\"public\"" +
+                " write-community=\"private\"\n" + 
+                " port=\"161\"\n" +
+                " version=\"v1\"\n" +
+                " max-request-size=\"484\">\n" +
+                "\n" +
+                "   <definition version=\"v3\" " +
+                "       security-name=\"opennmsUser\" \n" + 
+                "       auth-passphrase=\"0p3nNMSv3\" >\n" +
+                "       <specific>"+myLocalHost()+"</specific>\n" +
+                "   </definition>\n" + 
+                "\n" + 
+                "   <definition version=\"v1\" read-community=\"specificv1\">\n" + 
+                "       <specific>10.0.0.1</specific>\n" +
+                "   </definition>\n" + 
+                "\n" + 
+                "   <definition version=\"v3\" " +
+                "       security-name=\"opennmsRangeUser\" \n" + 
+                "       auth-passphrase=\"0p3nNMSv3\" >\n" +
+                "       <range begin=\"1.1.1.1\" end=\"1.1.1.100\"/>\n" +
+                "   </definition>\n" + 
+                "\n" + 
+                "   <definition version=\"v1\" read-community=\"rangev1\">\n" + 
+                "       <range begin=\"10.0.0.101\" end=\"10.0.0.200\"/>\n" +
+                "   </definition>\n" + 
+                "\n" + 
+                "   <definition version=\"v2c\" read-community=\"rangev2c\">\n" + 
+                "       <range begin=\"10.0.1.100\" end=\"10.0.5.100\"/>\n" +
+                "       <range begin=\"10.7.20.100\" end=\"10.7.25.100\"/>\n" +
+                "   </definition>\n" + 
+                "\n" + 
+                "   <definition version=\"v2c\" read-community=\"specificv2c\">\n" + 
+                "       <specific>192.168.0.50</specific>\n" +
+                "   </definition>\n" + 
+                "\n" + 
+                "\n" + 
+                "</snmp-config>";
+
+    /**
+     * Helper method for getting the ip address of the localhost as a
+     * String to be used in the snmp-config.
+     * @return
+     */
+    protected static String myLocalHost() {
+        
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            fail("Exception getting localhost");
+        }
+        
+        return null;
+    }
+
     protected void setUp() throws Exception {
         super.setUp();
         MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
@@ -1314,7 +1378,10 @@ public class OpenNMSTestCase extends TestCase {
         m_eventd.setConfigManager(m_eventdConfigMgr);
         DatabaseConnectionFactory.setInstance(m_db);
         
-        Reader rdr = new StringReader(MOCK_EVENT_CONF);
+        Reader rdr = new StringReader(SNMP_CONFIG);
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
+
+        rdr = new StringReader(MOCK_EVENT_CONF);
         EventConfigurationManager.loadConfiguration(rdr);
 
         m_eventdIpcMgr = new EventIpcManagerDefaultImpl(m_eventdConfigMgr);
@@ -1326,6 +1393,7 @@ public class OpenNMSTestCase extends TestCase {
     }
 
     protected void tearDown() throws Exception {
+        m_eventd.stop();
         super.tearDown();
     }
 

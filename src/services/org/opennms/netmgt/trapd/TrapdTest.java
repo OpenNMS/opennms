@@ -7,12 +7,14 @@ package org.opennms.netmgt.trapd;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.TrapdConfigFactory;
+import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Logmsg;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
@@ -21,6 +23,7 @@ import org.snmp4j.Target;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.smi.Address;
+import org.snmp4j.smi.IpAddress;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
@@ -50,8 +53,8 @@ public class TrapdTest extends OpenNMSTestCase {
 
 	public void testSnmpV1TrapSend() throws UnknownHostException, IOException {
 
+
         Address address = new UdpAddress(myLocalHost()+"/"+m_port);
-        
         TransportMapping transport = new DefaultUdpTransportMapping();
         
         Target target = new CommunityTarget();
@@ -69,12 +72,27 @@ public class TrapdTest extends OpenNMSTestCase {
         trapPdu.setEnterprise(eOID);
         trapPdu.setGenericTrap(1);
         trapPdu.setSpecificTrap(0);
+        trapPdu.setAgentAddress((IpAddress)address);
+        
+        Event e = new Event();
+        e.setUei("uei.opennms.org/default/trap");
+        e.setSource("trapd");
+        e.setInterface(((UdpAddress)address).toString());
+        Logmsg logmsg = new Logmsg();
+        logmsg.setDest("logndisplay");
+        e.setLogmsg(logmsg);
+
+        EventAnticipator ea = new EventAnticipator();
+        ea.anticipateEvent(e);
+
+        snmp.send(trapPdu, target);
+        snmp.send(trapPdu, target);
+        snmp.send(trapPdu, target);
         snmp.send(trapPdu, target);
         
-	}
+        assertEquals(1, ea.waitForAnticipated(1000).size());
+        assertEquals(0, ea.unanticipatedEvents().size());
 
-    private String myLocalHost() throws UnknownHostException {
-        return InetAddress.getLocalHost().getHostAddress();
-    }
+	}
 }
 
