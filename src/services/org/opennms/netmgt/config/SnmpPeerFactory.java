@@ -191,7 +191,7 @@ public final class SnmpPeerFactory {
     }
 
     /**
-     * This method will construct the v3 security models in the SNMP4J library.
+     * This method will add the v3 Users to the USM in the SNMP4J library.
      * @param def
      */
     private void addUserToSecurityModel(Definition def) {

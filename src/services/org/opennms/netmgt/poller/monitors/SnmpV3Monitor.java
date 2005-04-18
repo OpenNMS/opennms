@@ -38,7 +38,6 @@ package org.opennms.netmgt.poller.monitors;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Map;
-import java.util.Vector;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -65,16 +64,17 @@ import org.snmp4j.smi.VariableBinding;
  */
 final public class SnmpV3Monitor extends SnmpMonitorStrategy {
 
+    private static Category m_log; 
     private static final String SERVICE_NAME = "SNMP";
-
     private static final String DEFAULT_OID = ".1.3.6.1.2.1.1.2.0"; 
-
     private static final String SNMPV3_TARGET_KEY = "org.snmp4j.UserTarget";
-    
     private static final OID USM_STATS = new OID(new int[]{1, 3, 6, 1, 6, 3, 15, 1, 1});
-
     private static final OID SNMP_MPD_STATS = new OID(new int[]{1, 3, 6, 1, 6, 3, 11, 2, 1});
 
+    public SnmpV3Monitor() {
+        m_log = ThreadCategory.getInstance(getClass());
+    }
+    
     public String serviceName() {
         return SERVICE_NAME;
     }
@@ -95,114 +95,146 @@ final public class SnmpV3Monitor extends SnmpMonitorStrategy {
      * @param requestedVersion
      */
     public void initialize(NetworkInterface iface, int requestedVersion) {
-        Category log = ThreadCategory.getInstance(getClass());
 
         if (iface.getType() != NetworkInterface.TYPE_IPV4)
             throw new RuntimeException("Unsupported interface type, only TYPE_IPV4 currently supported");
-        InetAddress inetAddress = (InetAddress) iface.getAddress();
-
-        if (log.isDebugEnabled())
-            log.debug("initialize: setting SNMP target attributes for this interface: " + inetAddress.getHostAddress());
+        if (m_log.isDebugEnabled())
+            m_log.debug("initialize: setting SNMP target attributes for this interface: " + ((InetAddress) iface.getAddress()).getHostAddress());
 
         Target target = null;
         if (requestedVersion != -1)
-            target = SnmpPeerFactory.getInstance().getTarget(inetAddress, requestedVersion);
+            target = SnmpPeerFactory.getInstance().getTarget((InetAddress) iface.getAddress(), requestedVersion);
         else
-            target = SnmpPeerFactory.getInstance().getTarget(inetAddress);
+            target = SnmpPeerFactory.getInstance().getTarget((InetAddress) iface.getAddress());
         
         iface.setAttribute(SNMPV3_TARGET_KEY, target);
 
-        log.debug("initialize: interface: " + inetAddress.getHostAddress() + " initialized.");
+        if (m_log.isDebugEnabled())
+            m_log.debug("initialize: interface: " + ((InetAddress) iface.getAddress()).getHostAddress() + " initialized.");
 
         return;
     }
 
     public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
-        // Log4j category
-        //
-        Category log = ThreadCategory.getInstance(getClass());
 
         int status = SERVICE_UNAVAILABLE;
-        InetAddress inetAddress = (InetAddress) iface.getAddress();
-
         // Retrieve this interface's SNMP peer object
         //
         Target target = (Target)iface.getAttribute(SNMPV3_TARGET_KEY);
         
         if (target == null)
-            throw new RuntimeException("Target object not available for interface " + inetAddress);
-
-        String oid = ParameterMap.getKeyedString(parameters, "oid", DEFAULT_OID);
-        String operator = ParameterMap.getKeyedString(parameters, "operator", null);
-        String operand = ParameterMap.getKeyedString(parameters, "operand", null);
-
-        //Need this for logging only
-        TransportIpAddress address = (TransportIpAddress)target.getAddress();
-        
-        if (log.isDebugEnabled())
-            log.debug("poll: service= SNMP address= " + inetAddress.getHostAddress() + " port= " + address.getPort() + " oid=" + oid + " timeout= " + target.getTimeout() + " retries= " + target.getRetries() + " operator = " + operator + " operand = " + operand);
+            throw new RuntimeException("Target object not available for interface " + ((InetAddress) iface.getAddress()));
 
         //Now poll
         Snmp snmp = null;
         try {
             snmp = SnmpHelpers.createSnmpSession();
-            snmp.listen();
-            PDU request = SnmpHelpers.createPDU(target.getVersion());
-            VariableBinding vb = new VariableBinding(new OID(DEFAULT_OID));
-            request.add(vb);
             
-            PDU response = null;
-            ResponseEvent responseEvent = snmp.send(request, target);
+            //This call is an SNMP4J helper that causes all registered transport mappings to listen 
+            snmp.listen();
+            PDU requestPDU = SnmpHelpers.createPDU(target.getVersion());
+            requestPDU.setType(PDU.GET);
+            VariableBinding vb = new VariableBinding(new OID(DEFAULT_OID));
+            requestPDU.add(vb);
+            
+            if (m_log.isDebugEnabled()) {
+                //Need this for logging only
+                TransportIpAddress address = (TransportIpAddress)target.getAddress();
+                m_log.debug("poll: service= SNMP address= " + ((InetAddress) iface.getAddress()).getHostAddress() + 
+                        " port= " + address.getPort() + 
+                        " oid=" + ParameterMap.getKeyedString(parameters, "oid", DEFAULT_OID) + 
+                        " timeout= " + target.getTimeout() + " retries= " + target.getRetries() + 
+                        " operator = " + ParameterMap.getKeyedString(parameters, "operator", null) + 
+                        " operand = " + ParameterMap.getKeyedString(parameters, "operand", null));
+            }
+
+            ResponseEvent responseEvent = snmp.send(requestPDU, target);
             snmp.close();
+            status = processResponseEvent(iface, parameters, target, responseEvent);
+        } catch (IOException e) {
+            m_log.error("SnmpV3Monitor:poll incurred an i/o Error: " +e.getMessage());
+        }
 
-            Vector vbs = responseEvent.getResponse().getVariableBindings();
-            VariableBinding firstVB = (VariableBinding)vbs.firstElement();
-            status = SERVICE_UNAVAILABLE;
-            if (responseEvent.getResponse() != null) {
-                if (responseEvent.getResponse().getErrorStatus() != 0) {
-                    log.error("SnmpV3Monitor: PDU reponse errorStatus > 0.  The errorStatus is: "+responseEvent.getResponse().getErrorStatus());
-                    status = SERVICE_UNAVAILABLE;
-                } else {
-                    status = SERVICE_AVAILABLE;
+        return status;
+    }
 
-                    //got a valid SNMPv3 response from the agent, but the response may contain
-                    //v3 error codes in the first varbind
-                    if (vbs != null && vbs.size() >0) {
-                        
-                        //this comparison is very v3 protocol specific.  This left most compare
-                        //efficiently matches most all errors found in the first varbind.
-                        if (USM_STATS.leftMostCompare(USM_STATS.size(), firstVB.getOid()) == 0 || 
-                                SNMP_MPD_STATS.leftMostCompare(SNMP_MPD_STATS.size(), firstVB.getOid()) ==0 ) {
-                            status = SERVICE_UNAVAILABLE;
-                            log.error("SnmpV3Monitor: responseError: " +firstVB.getOid());
-                        }
+    /**
+     * @param iface
+     * @param parameters
+     * @param log
+     * @param target
+     * @param responseEvent
+     * @return
+     */
+    private int processResponseEvent(NetworkInterface iface, Map parameters, Target target, ResponseEvent responseEvent) {
+        int status = SERVICE_UNAVAILABLE;
+        status = checkResponse(responseEvent, status);
+        if (status == SERVICE_AVAILABLE) {
+            if (m_log.isDebugEnabled())
+                m_log.debug("poll: SNMP poll succeeded, addr=" + ((InetAddress) iface.getAddress()).getHostAddress() +
+                        " oid=" + ParameterMap.getKeyedString(parameters, "oid", DEFAULT_OID) + 
+                        " value=" + responseEvent.getResponse().toString());
+            status = checkReponseCriteria(iface, parameters, responseEvent, status);
+        } else
+            if (m_log.isDebugEnabled())
+                m_log.debug("poll: SNMPv3Monitor poll failed, addr=" + ((InetAddress) iface.getAddress()).getHostAddress() + 
+                        " oid=" + ParameterMap.getKeyedString(parameters, "oid", DEFAULT_OID));
+        
+        return status;
+    }
+
+    /**
+     * @param iface
+     * @param parameters
+     * @param responseEvent
+     * @param log
+     * @param currentStatus
+     * @return
+     */
+    private int checkReponseCriteria(NetworkInterface iface, Map parameters, ResponseEvent responseEvent, int currentStatus) {
+        Variable var = ((VariableBinding)responseEvent.getResponse().getVariableBindings().firstElement()).getVariable();
+        if (currentStatus == SERVICE_AVAILABLE) {
+            try {
+                currentStatus = (meetsCriteria(var, ParameterMap.getKeyedString(parameters, "operator", null), ParameterMap.getKeyedString(parameters, "operand", null)) ? ServiceMonitor.SERVICE_AVAILABLE : ServiceMonitor.SERVICE_UNAVAILABLE);
+            } catch (NumberFormatException e) {
+                m_log.warn("Number operator used on a non-number " + e.getMessage());
+                currentStatus = ServiceMonitor.SERVICE_AVAILABLE;
+            } catch (IllegalArgumentException e) {
+                m_log.warn("Invalid Snmp Criteria: " + e.getMessage());
+                currentStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+            }
+        }
+        return currentStatus;
+    }
+
+    /**
+     * @param responseEvent
+     * @param log
+     * @param status
+     * @return
+     */
+    private int checkResponse(ResponseEvent responseEvent, int status) {
+        if (responseEvent.getResponse() != null) {
+            if (responseEvent.getResponse().getErrorStatus() != 0) {
+                m_log.error("SnmpV3Monitor: PDU reponse errorStatus > 0.  The errorStatus is: "+responseEvent.getResponse().getErrorStatus());
+                status = SERVICE_UNAVAILABLE;
+            } else {
+                status = SERVICE_AVAILABLE;
+
+                //got a valid SNMPv3 response from the agent, but the response may contain
+                //v3 error codes in the first varbind
+                if (responseEvent.getResponse().getVariableBindings() != null && responseEvent.getResponse().getVariableBindings().size() >0) {
+                    
+                    //this comparison is very v3 protocol specific.  This left most compare
+                    //efficiently matches most all errors found in the first varbind.
+                    if (USM_STATS.leftMostCompare(USM_STATS.size(), ((VariableBinding)responseEvent.getResponse().getVariableBindings().firstElement()).getOid()) == 0 || 
+                            SNMP_MPD_STATS.leftMostCompare(SNMP_MPD_STATS.size(), ((VariableBinding)responseEvent.getResponse().getVariableBindings().firstElement()).getOid()) ==0 ) {
+                        status = SERVICE_UNAVAILABLE;
+                        m_log.error("SnmpV3Monitor: responseError: " +((VariableBinding)responseEvent.getResponse().getVariableBindings().firstElement()).getOid());
                     }
                 }
             }
-            
-            String hostAddress = inetAddress.getHostAddress();
-            Variable var = firstVB.getVariable();
-
-            if (status == SERVICE_AVAILABLE) {
-                log.debug("poll: SNMP poll succeeded, addr=" + hostAddress + " oid=" + oid + " value=" + responseEvent.getResponse().toString());
-                try {
-                    status = (meetsCriteria(var, operator, operand) ? ServiceMonitor.SERVICE_AVAILABLE : ServiceMonitor.SERVICE_UNAVAILABLE);
-                } catch (NumberFormatException e) {
-                    log.warn("Number operator used on a non-number " + e.getMessage());
-                    status = ServiceMonitor.SERVICE_AVAILABLE;
-                } catch (IllegalArgumentException e) {
-                    log.warn("Invalid Snmp Criteria: " + e.getMessage());
-                    status = ServiceMonitor.SERVICE_UNAVAILABLE;
-                }
-            } else {
-                log.debug("poll: SNMPv3Monitor poll failed, addr=" + hostAddress + " oid=" + oid);
-                status = ServiceMonitor.SERVICE_UNAVAILABLE;
-            }
-            
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-
         return status;
     }
 
