@@ -76,11 +76,28 @@ public class SnmpHelpers {
             UserTarget userTarget = (UserTarget)target;
             USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
             SecurityModels.getInstance().addSecurityModel(usm);
-//          UsmUser user = new UsmUser(DEFAULT_SECURITY_NAME, DEFAULT_AUTH_PROTOCOL, DEFAULT_AUTH_PASSPHRASE, DEFAULT_PRIV_PROTOCOL, DEFAULT_PRIV_PASSPHRASE);
+//            UsmUser user = new UsmUser(DEFAULT_SECURITY_NAME, DEFAULT_AUTH_PROTOCOL, DEFAULT_AUTH_PASSPHRASE, DEFAULT_PRIV_PROTOCOL, DEFAULT_PRIV_PASSPHRASE);
             UsmUser user = new UsmUser(userTarget.getSecurityName(), null, null, null, null);
             snmp.getUSM().addUser(userTarget.getSecurityName(), user);
         }
         return snmp;
+    }
+
+
+    /**
+     * Returns a string representation of the SNMP4J version constants
+     * @param version
+     * @return
+     */
+    public static String versionString(int version) {
+        String retVal = null;
+            if(version == SnmpConstants.version1)
+                retVal = "SNMPv1";
+            if (version == SnmpConstants.version2c)
+                retVal = "SNMPv2c";
+            if (version == SnmpConstants.version3)
+                retVal = "SNMPv3";
+        return retVal;
     }
 
 
