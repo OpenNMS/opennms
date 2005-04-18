@@ -153,16 +153,16 @@ public final class SnmpPeerFactory {
 
         m_config = (SnmpConfig) Unmarshaller.unmarshal(SnmpConfig.class, new InputStreamReader(cfgIn));
         cfgIn.close();
-        addSecurityModels();
+        addConfigUsersToSecurityModel();
 
     }
     
     public SnmpPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
         m_config = (SnmpConfig) Unmarshaller.unmarshal(SnmpConfig.class, rdr);
-        addSecurityModels();
+        addConfigUsersToSecurityModel();
     }
 
-    private void addSecurityModels() {
+    private void addConfigUsersToSecurityModel() {
         
         Definition def = new Definition();
         
@@ -175,7 +175,7 @@ public final class SnmpPeerFactory {
             def.setAuthProtocol(m_config.getAuthProtocol());
             def.setPrivacyPassphrase(m_config.getPrivacyPassphrase());
             def.setPrivacyProtocol(m_config.getPrivacyProtocol());
-            initSecurityModels(def);
+            addUserToSecurityModel(def);
         }
         
         Enumeration edef = m_config.enumerateDefinition();
@@ -186,7 +186,7 @@ public final class SnmpPeerFactory {
                 def.setVersion(m_config.getVersion());
             
             if (versionString2Int(def.getVersion()) == SnmpConstants.version3)
-                initSecurityModels(def);
+                addUserToSecurityModel(def);
         }
     }
 
@@ -194,7 +194,7 @@ public final class SnmpPeerFactory {
      * This method will construct the v3 security models in the SNMP4J library.
      * @param def
      */
-    private void initSecurityModels(Definition def) {
+    private void addUserToSecurityModel(Definition def) {
         OID authProtocol;
         OID privProtocol;
         OctetString authPassphrase;
@@ -932,8 +932,9 @@ public final class SnmpPeerFactory {
         Address targetAddress = null;
         //Address targetAddress = new UdpAddress(transportAddress);
         
+        Target target = null;
+
         if (m_config == null) {
-            Target target = null;
             if (requestedSnmpVersion == SnmpConstants.version3) {
                 target = new UserTarget();
                 target.setVersion(SnmpConstants.version3);
@@ -947,8 +948,6 @@ public final class SnmpPeerFactory {
             
             return target;
         }
-
-        Target target = null;
 
         // Attempt to locate the node
         //
