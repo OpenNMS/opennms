@@ -34,6 +34,11 @@ package org.opennms.web.jWebUnitTests;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
 
 import net.sourceforge.jwebunit.WebTestCase;
 
@@ -48,14 +53,12 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockUtil;
 
 import com.meterware.httpunit.BlockElement;
-import com.meterware.httpunit.PostMethodWebRequest;
-import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebTable;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 
 public class ScheduleEditorWebTest extends WebTestCase {
-
+    
     private MockNetwork m_network;
 
     private MockDatabase m_db;
@@ -63,6 +66,7 @@ public class ScheduleEditorWebTest extends WebTestCase {
     private ServletRunner m_servletRunner;
 
     private ServletUnitClient m_servletClient;
+    private TestDialogResponder m_testResponder;
 
     private File m_outagesFile;
 
@@ -83,6 +87,10 @@ public class ScheduleEditorWebTest extends WebTestCase {
         ServletUnitClient client = m_servletRunner.newClient();
 
         m_servletClient = m_servletRunner.newClient();
+        
+        m_testResponder = new TestDialogResponder();
+        m_servletClient.setDialogResponder(m_testResponder);
+        
         getTestContext().setBaseUrl("http://localhost:8080/");
 
         getTestContext().setWebClient(m_servletClient);
@@ -132,6 +140,8 @@ public class ScheduleEditorWebTest extends WebTestCase {
         outages.addOutage(outage3);
         
         m_outagesFile = File.createTempFile("outages-", ".xml");
+        m_outagesFile.deleteOnExit();
+        
         System.err.println(m_outagesFile);
         FileWriter writer = new FileWriter(m_outagesFile);
         Marshaller.marshal(outages, writer);
@@ -144,32 +154,143 @@ public class ScheduleEditorWebTest extends WebTestCase {
         MockUtil.println("------------ End Test " + getName() + " --------------------------");
     }
     
-    private BasicSchedule[] getCurrentSchedules() throws Exception {
-        FileReader reader = new FileReader(m_outagesFile);
-        Outages outages = (Outages)Unmarshaller.unmarshal(Outages.class, reader);
-        reader.close();
-        return outages.getOutage();
-    }
-
     public void testScheduleDisplay() throws Exception {
         beginAt("/admin/schedule/schedule-editor?file=" + m_outagesFile.getAbsolutePath());
         assertTitleEquals("Schedule Editor");
         getTester().dumpResponse();
         checkScheduleTable(getCurrentSchedules());
         
+        // assert that the new schedule form exists
+        assertFormPresent("newScheduleForm");
+        setWorkingForm("newScheduleForm");
+        assertFormElementEquals("op", "newSchedule");
+        assertFormElementPresent("name");
+        assertFormElementPresent("type");
+        assertFormElementPresent("submit");
+        
+        
+        
+        
     }
     
-    public void testDeleteLink() throws Exception {
+    public void testDelete() throws Exception {
         beginAt("/admin/schedule/schedule-editor?file=" + m_outagesFile.getAbsolutePath());
         assertTitleEquals("Schedule Editor");
         BasicSchedule[] schedules = getCurrentSchedules();
-        checkScheduleTable(schedules);
         
-        clickLink("sched.2.delete");
-        getTester().dumpResponse();
+        int deleteIndex = 1;
+        String deleteForm = "schedule["+deleteIndex+"].deleteForm";
         
+        // first test canceling the confirm dialog
+        m_testResponder.anticipateConfirmation("Are you sure you wish to delete this schedule?", false);
+        setWorkingForm(deleteForm);
+        submit();
+        
+        // since we canceled everything should be the same
+        BasicSchedule[] canceledSchedules = getCurrentSchedules();
+        assertEquals(schedules.length, canceledSchedules.length);
+        
+        // noew test ok'ing the confirm dialog
+        m_testResponder.anticipateConfirmation("Are you sure you wish to delete this schedule?", true);
+        setWorkingForm(deleteForm);
+        submit();
+        
+        // since we canceled everything should be the same
         BasicSchedule[] newSchedules = getCurrentSchedules();
         assertEquals(schedules.length-1, newSchedules.length);
+        
+        int newIndex = 0;
+        for(int oldIndex = 0; oldIndex < schedules.length; oldIndex++) {
+            if (oldIndex == deleteIndex) continue;
+            assertEquals(schedules[oldIndex].getName(), newSchedules[newIndex].getName());
+            newIndex++;
+        }
+        
+    }
+    
+    public void testEdit() throws Exception {
+        beginAt("/admin/schedule/schedule-editor?file=" + m_outagesFile.getAbsolutePath());
+        assertTitleEquals("Schedule Editor");
+        BasicSchedule[] schedules = getCurrentSchedules();
+        
+        int editIndex = 1;
+        String editForm = "schedule["+editIndex+"].editForm";
+
+        setWorkingForm(editForm);
+        submit();
+        
+        // TODO: This should go back to the main page
+        checkEditPage(schedules[editIndex], editIndex);
+        getTester().dumpResponse();
+        
+        // since we canceled everything should be the same
+        BasicSchedule[] canceledSchedules = getCurrentSchedules();
+        assertEquals(schedules.length, canceledSchedules.length);
+        
+    }
+    
+    public void testNewSchedule() throws Exception {
+        beginAt("/admin/schedule/schedule-editor?file=" + m_outagesFile.getAbsolutePath());
+        assertTitleEquals("Schedule Editor");
+        BasicSchedule[] schedules = getCurrentSchedules();
+        
+        setWorkingForm("newScheduleForm");
+        submit();
+        
+        List newSchedules = new ArrayList(Arrays.asList(schedules));
+        BasicSchedule sched = new Outage();
+        sched.setName("Schedule Name");
+        sched.setType("specific");
+        Time time = new Time();
+        time.setBegins(new Date().toString());
+        time.setEnds(new Date().toString());
+        sched.addTime(time);
+        
+        newSchedules.add(sched);
+        
+        checkScheduleTable((BasicSchedule[]) newSchedules.toArray(new BasicSchedule[newSchedules.size()]));
+        
+        
+        
+    }
+    
+    public void testAddTime() throws Exception {
+        beginAt("/admin/schedule/schedule-editor?file=" + m_outagesFile.getAbsolutePath());
+        assertTitleEquals("Schedule Editor");
+        BasicSchedule[] schedules = getCurrentSchedules();
+        
+        int index = 1;
+        String addTimeForm = "schedule["+index+"].addTimeForm";
+
+        setWorkingForm(addTimeForm);
+        submit();
+        
+    }
+
+    // TODO: Edit times in place
+    // TODO: Test with empty schedule list
+    // TODO: have the jsp modify the schedule and save it
+    // TODO: test loading data from factory
+    // TODO: test inclusion in user page
+
+
+    private void checkEditPage(BasicSchedule schedule, int index) {
+        getTester().dumpResponse();
+        assertTitleEquals("Edit Schedule");
+        assertTextPresent("Name:");
+        assertTextPresent(schedule.getName());
+        assertTextPresent("Type:");
+        assertTextPresent(schedule.getType());
+        
+        // TODO: save changes
+        // TODO: cancel changes
+        
+        // TODO: Add readonly name and type
+        // TODO: Display times
+        // TODO: Edit times
+        // TODO: Add Times
+        // TODO: Delete Times
+        
     }
 
     private void checkScheduleTable(BasicSchedule[] schedules) {
@@ -179,29 +300,34 @@ public class ScheduleEditorWebTest extends WebTestCase {
         for (int i = 0; i < schedules.length; i++) {
             BasicSchedule schedule = schedules[i];
             
-            String schedId = "sched."+(i+1);
+            String schedId = "schedule["+i+"]";
             assertTextInElement(schedId+".name", schedule.getName());
             assertTextInElement(schedId+".type", schedule.getType());
 
             assertElementPresent(schedId+".times");
             checkScheduleTimes(schedule, schedId, table.getTableCellWithID(schedId+".times"));
             
-            assertLinkPresent(schedId+".edit");
-            assertLinkPresent(schedId+".delete");
-            
-            
+            assertScheduleFormPresent(i, "addTime");
+            assertScheduleFormPresent(i, "edit");
+            assertScheduleFormPresent(i, "delete");
+
         }
-        
-        
     }
-    
-    
+
+    private void assertScheduleFormPresent(int scheduleIndex, String op) {
+        String schedId = "schedule["+scheduleIndex+"]";
+        assertFormPresent(schedId+"."+op+"Form");
+        setWorkingForm(schedId+"."+op+"Form");
+        assertFormElementEquals("op", op);
+        assertFormElementEquals("scheduleIndex", String.valueOf(scheduleIndex));
+        assertFormElementPresent("submit");
+    }
 
     private void checkScheduleTimes(BasicSchedule schedule, String schedId, BlockElement timesCell) {
         Time[] times = schedule.getTime();
         for(int i = 0; i < times.length; i++) {
             Time time = times[i];
-            String idPrefix = schedId+".time."+(i+1);
+            String idPrefix = schedId+".time["+i+"]";
             if ("specific".equals(schedule.getType())) {
                 assertElementNotPresent(idPrefix+".day");
             } else {
@@ -212,8 +338,14 @@ public class ScheduleEditorWebTest extends WebTestCase {
             
         }
     }
+    
+    private BasicSchedule[] getCurrentSchedules() throws Exception {
+        FileReader reader = new FileReader(m_outagesFile);
+        Outages outages = (Outages)Unmarshaller.unmarshal(Outages.class, reader);
+        reader.close();
+        return outages.getOutage();
+    }
 
-    //.TODO: Delete an entry and make sure it gets saved 
-    // TODO: Make sure a confirmation happens before deletng
-    // TODO: have the jsp modify the schedule and save it
+
+
 }

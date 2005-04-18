@@ -39,113 +39,100 @@
 
 -->
 
-<%@page language="java" contentType = "text/html" session = "true"  import="org.opennms.netmgt.config.*,java.util.*,org.opennms.netmgt.config.users.*"%>
+<%@page language="java" contentType="text/html" session="true"
+	import="org.opennms.netmgt.config.*,java.util.*,org.opennms.netmgt.config.users.*"%>
 
 <html>
 <head>
-  <title>New User Info | User Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="includes/styles.css" />
+<title>New User Info | User Admin | OpenNMS Web Console</title>
+<base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
+<link rel="stylesheet" type="text/css" href="includes/styles.css" />
 </head>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0"
+	TOPMARGIN="0">
 
 <% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
 <% String breadcrumb2 = "<a href='admin/userGroupView/index.jsp'>Users and Groups</a>"; %>
-<% String breadcrumb3 = "User List"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="User Configuration" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
+<% String breadcrumb3 = "<a href='admin/userGroupView/users/list.jsp'>User List</a>"; %>
+<% String breadcrumb4 = "New User"; %>
+<jsp:include page="/includes/header.jsp" flush="false">
+	<jsp:param name="title" value="New User" />
+	<jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
+	<jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+	<jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
+	<jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
 </jsp:include>
 
 <script language="JavaScript">
-  function verifyGoForm() 
+  function validateFormInput() 
   {
-    var id = new String(document.goForm.userID.value);
+    var id = new String(document.newUserForm.userID.value);
     if (id.toLowerCase()=="admin")
     {
-        alert("The user ID '" + document.goForm.userID.value + "' cannot be used. It may be confused with the administration user ID 'admin'.");
+        alert("The user ID '" + document.newUserForm.userID.value + "' cannot be used. It may be confused with the administration user ID 'admin'.");
         return;
     }
     
-    if (document.goForm.pass1.value == document.goForm.pass2.value) 
+    if (document.newUserForm.pass1.value == document.newUserForm.pass2.value) 
     {
-      document.goForm.action="admin/userGroupView/users/addNewUser";
-      document.goForm.submit();
+      document.newUserForm.action="admin/userGroupView/users/addNewUser";
+      document.newUserForm.submit();
     } 
     else
     {
       alert("The two password fields do not match!");
+      document.newUserForm.pass1.value = "";
+      document.newUserForm.pass2.value = "";
     }
-    
-    function close()
-    {
-      document.goForm.action="admin/userGroupView/users/list.jsp";
-      document.goForm.submit();
-    }
-}
+  }    
+  function cancelUser()
+  {
+      document.newUserForm.action="admin/userGroupView/users/list.jsp";
+      document.newUserForm.submit();
+  }
+
 </script>
 
 <br>
 
-<form method="post" name="goForm">
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
+<form id="newUserForm" method="post" name="newUserForm">
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+	<tr>
+		<td>&nbsp;</td>
 
-    <td>
-    <%if (request.getParameter("action").equals("redo")) { %>
-      <h3>The user <%=request.getParameter("userID")%> already exists. Please type in a different user id.</h3>
-    <% } else { %>
-      <h3>Please enter a user id and password below.</h3>
-    <% } %>
-    <table>
-  <tr>
-    <td width="10%">
-      User ID:
-    </td>
-    <td width="100%">
-      <input type="text" name="userID">
-    </td>
-  </tr>
-  
-  <tr>
-    <td width="10%">
-      Password:
-    </td>
-    <td width="100%">
-      <input type="password" name="pass1">
-    </td>
-  </tr>
-  
-  <tr>
-    <td width="10%">
-      Confirm Password:
-    </td>
-    <td width="100%">
-      <input type="password" name="pass2">
-    </td>
-  </tr>
-  
-  <tr>
-    <td>
-      <input type="button" value="OK" onClick="verifyGoForm()">
-    </td>
-    <td>
-          <input type="button" value="Cancel" onClick="close()">
-        </td>
-      </tr>
-    </table>
-    </td>
-    </tr>
+		<td><%if (request.getParameter("action").equals("redo")) { %>
+		<h3>The user <%=request.getParameter("userID")%> already exists.
+		Please type in a different user id.</h3>
+		<%} else { %>
+		<h3>Please enter a user id and password below.</h3>
+		<%}%>
+		<table>
+			<tr>
+				<td width="10%"><label id="userIDLabel" for="userID">User ID:</label></td>
+				<td width="100%"><input id="userID" type="text" name="userID"></td>
+			</tr>
+
+			<tr>
+				<td width="10%"><label id="pass1Label" for="password1">Password:</label></td>
+				<td width="100%"><input id="pass1" type="password" name="pass1"></td>
+			</tr>
+
+			<tr>
+				<td width="10%"><label id="pass2Label" for="password2">Confirm Password:</label></td>
+				<td width="100%"><input id="pass2" type="password" name="pass2"></td>
+			</tr>
+
+			<tr>
+				<td><input id="doOK" type="button" value="OK" onClick="validateFormInput()"></td>
+				<td><input id="doCancel" type="button" value="Cancel" onClick="cancelUser()"></td>
+			</tr>
+		</table>
+		</td>
+	</tr>
 </table>
 </form>
 
-<br>
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
-
+<br> <jsp:include page="/includes/footer.jsp" flush="false" />
 </body>
 </html>

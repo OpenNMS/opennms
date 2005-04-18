@@ -3,15 +3,19 @@
  */
 package org.opennms.web.jWebUnitTests;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import net.sourceforge.jwebunit.WebTestCase;
 
 import com.meterware.httpunit.TableCell;
 import com.meterware.httpunit.WebImage;
 import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebTable;
-
-import net.sourceforge.jwebunit.WebTestCase;
 
 /**
  * @author mhuot
@@ -108,5 +112,29 @@ public class OpenNMSWebTestCase extends WebTestCase {
         assertCell(table, row, col, contents, 1);
     }
 
+    public void copyFile(String origFile, String newFile) throws IOException {
+        copyFile(new File(origFile), new File(newFile));
+    }
+    
+    public void copyFile(File origFile, File newFile) throws IOException {
+        assertTrue("File "+origFile+" is not readable", origFile.canRead());
+        assertTrue("File "+newFile+" is not writable", !newFile.exists() || newFile.canWrite());
+        
+        FileInputStream in = null;
+        FileOutputStream out = null;
+        try {
+            in = new FileInputStream(origFile);
+            out = new FileOutputStream(newFile);
+            int data;
+            while ((data = in.read()) != -1) {
+                out.write(data);
+            }
+        } finally {
+            if (in != null) in.close();
+            if (out != null) out.close();
+        }
+    }
+    
+    
 
 }

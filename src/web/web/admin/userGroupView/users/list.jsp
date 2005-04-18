@@ -39,7 +39,11 @@
 
 -->
 
-<%@page language="java" contentType = "text/html" session = "true"  import="org.opennms.netmgt.config.*,org.opennms.netmgt.config.users.*,org.opennms.web.admin.users.parsers.NotificationInfo,java.util.*" %>
+<%@page language="java" contentType = "text/html" session = "true"  %>
+<%@page import="java.util.*" %>
+<%@page import="javax.servlet.*" %>
+<%@page import="org.opennms.netmgt.config.*" %>
+<%@page import="org.opennms.netmgt.config.users.*" %>
 <%
 	UserFactory userFactory;
   	Map users = null;
@@ -135,7 +139,7 @@
     <p>Click on the <i>User ID</i> link to view detailed information about a user.</p>
 
     <p><table><tr>
-      <td valign="center"><a href="javascript:addNewUser()"><img src="images/add1.gif" alt="Add new user" border="0"></a></td>
+      <td valign="center"><a id="doNewUser" href="javascript:addNewUser()"><img src="images/add1.gif" alt="Add new user" border="0"></a></td>
       <td valign="center"><a href="javascript:addNewUser()">Add New User</a></td>
     </tr></table></p>
 
@@ -174,60 +178,80 @@
          <tr bgcolor=<%=row%2==0 ? "#ffffff" : "#cccccc"%>>
           <% if (!curUser.getUserId().equals("admin")) { %>
           <td width="5%" rowspan="2" align="center"> 
-            <a href="javascript:deleteUser('<%=curUser.getUserId()%>')" onclick="return confirm('Are you sure you want to delete the user <%=curUser.getUserId()%>')"><img src="images/trash.gif" alt="<%="Delete " + curUser.getUserId()%>"></a> 
+            <a id="<%= "users("+curUser.getUserId()+").doDelete" %>" href="javascript:deleteUser('<%=curUser.getUserId()%>')" onclick="return confirm('Are you sure you want to delete the user <%=curUser.getUserId()%>')"><img src="images/trash.gif" alt="<%="Delete " + curUser.getUserId()%>"></a> 
+            
           </td>
           <% } else { %>
           <td width="5%" rowspan="2" align="center">
-            <img src="images/trash.gif" alt="Cannot delete admin user">
+            <img id="<%= "users("+curUser.getUserId()+").doDelete" %>" src="images/trash.gif" alt="Cannot delete admin user">
           </td>
           <% } %>
           <td width="5%" rowspan="2" align="center">
-            <a href="javascript:modifyUser('<%=curUser.getUserId()%>')"><img src="images/modify.gif"></a>
+            <a id="<%= "users("+curUser.getUserId()+").doModify" %>" href="javascript:modifyUser('<%=curUser.getUserId()%>')"><img src="images/modify.gif"></a>
           </td>
           <td width="5%" rowspan="2" align="center">
             <% if ( !curUser.getUserId().equals("admin")) { %>
-                <input type="button" name="rename" value="Rename" onclick="renameUser('<%=curUser.getUserId()%>')">
+                <input id="<%= "users("+curUser.getUserId()+").doRename" %>" type="button" name="rename" value="Rename" onclick="renameUser('<%=curUser.getUserId()%>')">
               <% } else { %>
-                <input type="button" name="rename" value="Rename" onclick="alert('Sorry, the admin user cannot be renamed.')">
+                <input id="<%= "users("+curUser.getUserId()+").doRename" %>" type="button" name="rename" value="Rename" onclick="alert('Sorry, the admin user cannot be renamed.')">
               <% } %>
           </td>
           <td width="5%">
-            <a href="javascript:detailUser('<%=curUser.getUserId()%>')"><%=curUser.getUserId()%></a>
+            <a id="<%= "users("+curUser.getUserId()+").doDetails" %>" href="javascript:detailUser('<%=curUser.getUserId()%>')"><%=curUser.getUserId()%></a>
           </td>
           <td width="15%">
+           <div id="<%= "users("+curUser.getUserId()+").fullName" %>">
 	    <% if(curUser.getFullName() != null){ %>
 		    <%= (curUser.getFullName().equals("") ? "&nbsp;" : curUser.getFullName()) %>
 	    <% } %>
+	      </div>
           </td>
           <td width="15%">
+            <div id="<%= "users("+curUser.getUserId()+").email" %>">
             <%= ((email == null || email.equals("")) ? "&nbsp;" : email) %>
+            </div>
           </td>
           <td width="15%">
+           <div id="<%= "users("+curUser.getUserId()+").pagerEmail" %>">
             <%= ((pagerEmail == null || pagerEmail.equals("")) ? "&nbsp;" : pagerEmail) %>
+            </div>
           </td>
           <td width="15">
+           <div id="<%= "users("+curUser.getUserId()+").xmppAddress" %>">
             <%= ((xmppAddress == null || xmppAddress.equals("")) ? "&nbsp;" : xmppAddress) %>
+           </div>
           </td>
           <!--
           <td width="10%">
+            <div id="<%= "users("+curUser.getUserId()+").numericService" %>">
             <%= ((numericService == null || numericService.equals("")) ? "&nbsp;" : numericService) %>
+            </div>
           </td>
           <td width="10%">
+            <div id="<%= "users("+curUser.getUserId()+").numericPin" %>">
             <%= ((numericPin == null || numericPin.equals("")) ? "&nbsp;" : numericPin) %>
+            </div>
           </td>
           <td width="15%">
+           <div id="<%= "users("+curUser.getUserId()+").textService" %>">
             <%= ((textService == null || textService.equals("")) ? "&nbsp;" : textService) %>
+            </div>
           </td>
           <td width="15%">
-            <%= ((textPin.equals("") || textPin == null) ? "&nbsp;" : textPin) %>
+           <div id="<%= "users("+curUser.getUserId()+").textPin" %>">
+            <%= ((textPin == null || textPin.equals("")) ? "&nbsp;" : textPin) %>
+           </div>
           </td>
           -->
           </tr>
           <tr bgcolor=<%=row%2==0 ? "#ffffff" : "#cccccc"%>>
             <td colspan="5">
+             <div id="<%= "users("+curUser.getUserId()+").userComments" %>">
 	      <% if(curUser.getUserComments() != null){ %>
 		      <%= (curUser.getUserComments().equals("") ? "No Comments" : curUser.getUserComments()) %>
+		   
 	      <% } %>
+	        </div>
             </td>
           </tr>
          <% row++;

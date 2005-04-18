@@ -33,6 +33,7 @@
 package org.opennms.web.admin.users;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.text.ChoiceFormat;
 import java.util.Collection;
 import java.util.Vector;
@@ -48,6 +49,7 @@ import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.config.users.User;
+import org.opennms.web.Util;
 
 /**
  * A servlet that handles saving a user
@@ -71,7 +73,7 @@ public class UpdateUserServlet extends HttpServlet {
 
             // get the rest of the user information from the form
             newUser.setFullName(request.getParameter("fullName"));
-            newUser.setUserComments(request.getParameter("comments"));
+            newUser.setUserComments(request.getParameter("userComments"));
 
             String password = request.getParameter("password");
             if (password != null && !password.trim().equals("")) {
@@ -149,7 +151,7 @@ public class UpdateUserServlet extends HttpServlet {
         }
 
         // forward the request for proper display
-        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(request.getParameter("redirect"));
+        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(Util.decode(request.getParameter("redirect")));
         dispatcher.forward(request, response);
     }
 }

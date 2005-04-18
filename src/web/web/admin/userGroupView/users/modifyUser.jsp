@@ -147,7 +147,8 @@
     
     function saveUser()
     {
-        var ok = validate();
+        //var ok = validate();
+        var ok = true;
         if(ok)
         {
           document.modifyUser.redirect.value="/admin/userGroupView/users/saveUser";
@@ -180,10 +181,11 @@
 
 <br>
 
-<FORM METHOD="POST" NAME="modifyUser">
-<input type="hidden" name="userID" value="<%=user.getUserId()%>"/>
-<input type="hidden" name="password"/>
-<input type="hidden" name="redirect"/>
+<FORM id="modifyUser" METHOD="POST" NAME="modifyUser">
+<input id="userID" type="hidden" name="userID" value="<%=user.getUserId()%>"/>
+<input id="password" type="hidden" name="password"/>
+<input id="redirect" type="hidden" name="redirect"/>
+
 
 <table width="100%" border="0" cellspacing="0" cellpadding="2" >
   <tr>
@@ -195,7 +197,7 @@
     <table width="100%" border="0" cellspacing="0" cellpadding="2" >
       <tr>
         <td width="50%" valign="top">
-          <p><input type="button" value="Reset Password" onClick="resetPassword()" /></p>
+          <p><input id="resetPassword" type="button" value="Reset Password" onClick="resetPassword()" /></p>
 
           <p><table width="100%" border="0" cellspacing="0" cellpadding="2">
             <tr>
@@ -216,18 +218,18 @@
 	    %>
             <tr>
               <td valign="top">
-                Full Name:
+                <label id="fullNameLabel" for="filName">Full Name:</label>
               </td>
               <td align="left" valign="top">
-                <input type="text" size="35" name="fullName" value="<%=(fullName == null || fullName.equals(""))? "":fullName %>" />
+                <input id="fullName" type="text" size="35" name="fullName" value="<%=(fullName == null || fullName.equals(""))? "":fullName %>" />
               </td>
             </tr>
             <tr>
               <td valign="top">
-                Comments:
+                <label id="userCommentsLabel" for="userComments">Comments:</label>
               </td>
               <td align="left" valign="top">
-                <textarea rows="5" cols="33" name="comments"><%=(comments == null || comments.equals(""))? "":comments %></textarea>
+                <textarea rows="5" cols="33" id="userComments" name="userComments"><%=(comments == null || comments.equals(""))? "":comments %></textarea>
               </td>
             </tr>
             <tr>
@@ -242,58 +244,58 @@
             </tr>
             <tr>
               <td valign="top">
-                Email:
+                <label id="emailLabel" for="email">Email:</label>
               </td>
               <td valign="top">
-                <input type="text" size="35" name="email" value='<%= (email == null || email.equals(""))? "":email %>'>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top">
-                Pager Email:
-              </td>
-              <td valign="top">
-                <input type="text" size="35" name="pemail" value='<%=(pagerEmail == null || pagerEmail.equals(""))? "":pagerEmail%>'>
+                <input id="email" type="text" size="35" name="email" value='<%= (email == null || email.equals(""))? "":email %>'>
               </td>
             </tr>
             <tr>
               <td valign="top">
-                XMPP Address:
+                <label id="pemailLabel" for="pemail" Pager Email:
               </td>
               <td valign="top">
-                <input type="text" size="35" name="xmppAddress" value='<%=(xmppAddress == null || xmppAddress.equals(""))? "":xmppAddress%>'>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top">
-                Numeric Service:
-              </td>
-              <td valign="top">
-                <input type="text" size="35" name="numericalService" value='<%=(numericPage == null || numericPage.equals(""))? "":numericPage %>'>
+                <input type="text" size="35" id="pemail" name="pemail" value='<%=(pagerEmail == null || pagerEmail.equals(""))? "":pagerEmail%>'>
               </td>
             </tr>
             <tr>
               <td valign="top">
-                Numeric PIN:
+                <label id="xmppAddressLabel" for="xmppAddress">XMPP Address:</label>
               </td>
               <td valign="top">
-                <input type="text" size="35" name="numericalPin" value='<%= (numericPin == null || numericPin.equals(""))? "":numericPin%>'>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top">
-                Text Service:
-              </td>
-              <td valign="top">
-                <input type="text" size="35" name="textService" value='<%= (textPage == null || textPage.equals(""))? "":textPage%>'>
+                <input id="xmppAddress" type="text" size="35" name="xmppAddress" value='<%=(xmppAddress == null || xmppAddress.equals(""))? "":xmppAddress%>'>
               </td>
             </tr>
             <tr>
               <td valign="top">
-                Text PIN:
+                <label id="numericalServiceLabel" for="numericalService">Numeric Service:</label>
               </td>
               <td valign="top">
-                <input type="text" size="35" name="textPin" value='<%=(textPin == null || textPin.equals(""))? "":textPin%>'>
+                <input type="text" size="35" id="numericalService" name="numericalService" value='<%=(numericPage == null || numericPage.equals(""))? "":numericPage %>'>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top">
+                <label id="numericalPinLabel" for="numericalPin">Numeric PIN:</label>
+              </td>
+              <td valign="top">
+                <input type="text" size="35" id="numericalPin" name="numericalPin" value='<%= (numericPin == null || numericPin.equals(""))? "":numericPin%>'>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top">
+                <label id="textServiceLabel" for="textService">Text Service:</label>
+              </td>
+              <td valign="top">
+                <input type="text" size="35" id="textService" name="textService" value='<%= (textPage == null || textPage.equals(""))? "":textPage%>'>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top">
+                <label id="textPinLabel" for="textPin">Text PIN:</label>
+              </td>
+              <td valign="top">
+                <input type="text" size="35" id="textPin" name="textPin" value='<%=(textPin == null || textPin.equals(""))? "":textPin%>'>
               </td>
             </tr>
           </table></p>
@@ -382,7 +384,7 @@
       </tr>
     </table></p>
 
-    <p><input type="button" name="addSchedule" value="Add This Many Schedules" onclick="addDutySchedules()">
+    <p><input id="addSchedulesButton" type="button" name="addSchedule" value="Add This Many Schedules" onclick="addDutySchedules()">
       <select name="numSchedules" value="3" size="1">
         <option value="1">1</option>
         <option value="2">2</option>
@@ -394,9 +396,9 @@
       </select>
     </p>
 
-    <p><input type="button" name="addSchedule" value="Remove Checked Schedules" onclick="removeDutySchedules()"></p>
+    <p><input id="removeSchedulesButton" type="button" name="addSchedule" value="Remove Checked Schedules" onclick="removeDutySchedules()"></p>
 
-    <p><input type="button" name="finish" value="Finish" onclick="saveUser()">&nbsp;&nbsp;&nbsp;<input type="button" name="cancel" value="Cancel" onclick="cancelUser()"></p>
+    <p><input id="saveUserButton" type="button" name="finish" value="Finish" onclick="saveUser()">&nbsp;&nbsp;&nbsp;<input id="cancelButton" type="button" name="cancel" value="Cancel" onclick="cancelUser()"></p>
     <td>&nbsp;</td>
   </tr>
 </table>

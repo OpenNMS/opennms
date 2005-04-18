@@ -343,11 +343,10 @@ public final class OutageWriter implements Runnable {
         }
     }
 
-    /**
+    /*
      * Hanlde node regained service events. Record the 'nodeRegainedService'
      * event in the outages table - close the outage entry in the table if the
      * service is currently down.
-     * @param svc TODO
      */
     private void handleNodeRegainedService(long eventID, String eventTime, BasicService svc) {
         Category log = ThreadCategory.getInstance(OutageWriter.class);
