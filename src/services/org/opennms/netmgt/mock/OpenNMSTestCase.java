@@ -1281,6 +1281,8 @@ public class OpenNMSTestCase extends TestCase {
     protected static EventIpcManager m_eventdIpcMgr;
 
     protected static EventdConfigManager m_eventdConfigMgr;
+    
+    protected static boolean m_runSupers = false;
 
     /**
      * String representing snmp-config.xml
@@ -1323,6 +1325,9 @@ public class OpenNMSTestCase extends TestCase {
                 "       <specific>192.168.0.50</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
+                "   <definition version=\"v2c\" read-community=\"ipmatch\">\n" + 
+                "       <ip-match>77.5-12,15.1-255.255</ip-match>\n" +
+                "   </definition>\n" + 
                 "\n" + 
                 "</snmp-config>";
 
@@ -1349,52 +1354,58 @@ public class OpenNMSTestCase extends TestCase {
         MockUtil.setupLogging();
         MockUtil.resetLogLevel();
         
-        m_network = new MockNetwork();
-        m_network.setCriticalService("ICMP");
-        m_network.addNode(1, "Router");
-        m_network.addInterface("192.168.1.1");
-        m_network.addService("ICMP");
-        m_network.addService("SMTP");
-        m_network.addInterface("192.168.1.2");
-        m_network.addService("ICMP");
-        m_network.addService("SMTP");
-        m_network.addNode(2, "Server");
-        m_network.addInterface("192.168.1.3");
-        m_network.addService("ICMP");
-        m_network.addService("HTTP");
-        m_network.addNode(3, "Firewall");
-        m_network.addInterface("192.168.1.4");
-        m_network.addService("SMTP");
-        m_network.addService("HTTP");
-        m_network.addInterface("192.168.1.5");
-        m_network.addService("SMTP");
-        m_network.addService("HTTP");
+        if (m_runSupers) {
         
-        m_db = new MockDatabase();
-        m_db.populate(m_network);
-
-        m_eventd = new Eventd();
-        m_eventdConfigMgr = new MockEventConfigManager(MOCK_EVENT_CONFIG);
-        m_eventd.setConfigManager(m_eventdConfigMgr);
-        DatabaseConnectionFactory.setInstance(m_db);
+            m_network = new MockNetwork();
+            m_network.setCriticalService("ICMP");
+            m_network.addNode(1, "Router");
+            m_network.addInterface("192.168.1.1");
+            m_network.addService("ICMP");
+            m_network.addService("SMTP");
+            m_network.addInterface("192.168.1.2");
+            m_network.addService("ICMP");
+            m_network.addService("SMTP");
+            m_network.addNode(2, "Server");
+            m_network.addInterface("192.168.1.3");
+            m_network.addService("ICMP");
+            m_network.addService("HTTP");
+            m_network.addNode(3, "Firewall");
+            m_network.addInterface("192.168.1.4");
+            m_network.addService("SMTP");
+            m_network.addService("HTTP");
+            m_network.addInterface("192.168.1.5");
+            m_network.addService("SMTP");
+            m_network.addService("HTTP");
+            
+            m_db = new MockDatabase();
+            m_db.populate(m_network);
+            
+            m_eventd = new Eventd();
+            m_eventdConfigMgr = new MockEventConfigManager(MOCK_EVENT_CONFIG);
+            m_eventd.setConfigManager(m_eventdConfigMgr);
+            DatabaseConnectionFactory.setInstance(m_db);
+            
+            Reader rdr = new StringReader(SNMP_CONFIG);
+            SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
+            
+            rdr = new StringReader(MOCK_EVENT_CONF);
+            EventConfigurationManager.loadConfiguration(rdr);
+            
+            m_eventdIpcMgr = new EventIpcManagerDefaultImpl(m_eventdConfigMgr);
+            EventIpcManagerFactory.setIpcManager(m_eventdIpcMgr);
+            m_eventd.setEventIpcManager(m_eventdIpcMgr);
+            m_eventd.init();
+            m_eventd.start();
         
-        Reader rdr = new StringReader(SNMP_CONFIG);
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
-
-        rdr = new StringReader(MOCK_EVENT_CONF);
-        EventConfigurationManager.loadConfiguration(rdr);
-
-        m_eventdIpcMgr = new EventIpcManagerDefaultImpl(m_eventdConfigMgr);
-        EventIpcManagerFactory.setIpcManager(m_eventdIpcMgr);
-        m_eventd.setEventIpcManager(m_eventdIpcMgr);
-        m_eventd.init();
-        m_eventd.start();
+        }
 
     }
 
     protected void tearDown() throws Exception {
-        m_eventd.stop();
-        super.tearDown();
+        if(m_runSupers) {
+            m_eventd.stop();
+            super.tearDown();
+        }
     }
 
 }

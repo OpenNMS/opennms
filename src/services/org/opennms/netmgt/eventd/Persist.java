@@ -413,7 +413,10 @@ class Persist {
         int nodeid = (int) event.getNodeid();
         m_insStmt.setInt(4, event.hasNodeid() ? nodeid : -1);
         
-        //Column 5, serviceId
+        // Column 5, ipaddr
+        m_insStmt.setString(5, (event.getInterface() != null ? event.getInterface() : "0.0.0.0"));
+        
+        //Column 6, serviceId
         //
         // convert the service name to a service id
         //
@@ -425,72 +428,73 @@ class Persist {
                 log.warn("AlarmWriter.insertAlarm: Error converting service name \"" + event.getService() + "\" to an integer identifier, storing -1", sqlE);
             }
         }
-        m_insStmt.setInt(5, svcId);
+        m_insStmt.setInt(6, svcId);
 
-        //Column 6, reductionKey
-        m_insStmt.setString(6, event.getReductionKey());
+        //Column 7, reductionKey
+        m_insStmt.setString(7, event.getReductionKey());
         
-        //Column 7, counter
-        m_insStmt.setInt(7, 1);
+        //Column 8, counter
+        m_insStmt.setInt(8, 1);
         
-        //Column 8, serverity
-        set(m_insStmt, 8, Constants.getSeverity(event.getSeverity()));
+        //Column 9, serverity
+        set(m_insStmt, 9, Constants.getSeverity(event.getSeverity()));
 
-        //Column 9, lastEventId
-        m_insStmt.setInt(9, event.getDbid());
+        //Column 10, lastEventId
+        m_insStmt.setInt(10, event.getDbid());
         
+        //Column 11, firstEventTime
         java.sql.Timestamp eventTime = getEventTime(event, log);
-        m_insStmt.setTimestamp(10, eventTime);
-        
-        //Column 11, lastEventTime
         m_insStmt.setTimestamp(11, eventTime);
         
-        //Column 12, description
-        set(m_insStmt, 12, Constants.format(event.getDescr(), EVENT_DESCR_FIELD_SIZE));
+        //Column 12, lastEventTime
+        m_insStmt.setTimestamp(12, eventTime);
+        
+        //Column 13, description
+        set(m_insStmt, 13, Constants.format(event.getDescr(), EVENT_DESCR_FIELD_SIZE));
 
-        //Column 13, logMsg
+        //Column 14, logMsg
         if (event.getLogmsg() != null) {
             // set log message
-            set(m_insStmt, 13, Constants.format(event.getLogmsg().getContent(), EVENT_LOGMSG_FIELD_SIZE));
+            set(m_insStmt, 14, Constants.format(event.getLogmsg().getContent(), EVENT_LOGMSG_FIELD_SIZE));
         } else {
-            m_insStmt.setNull(13, Types.VARCHAR);
+            m_insStmt.setNull(14, Types.VARCHAR);
         }
 
-        //Column 14, operInstruct
-        set(m_insStmt, 14, Constants.format(event.getOperinstruct(), EVENT_OPERINSTRUCT_FIELD_SIZE));
+        //Column 15, operInstruct
+        set(m_insStmt, 15, Constants.format(event.getOperinstruct(), EVENT_OPERINSTRUCT_FIELD_SIZE));
         
-        //Column 15, tticketId
-        //Column 16, tticketState
+        //Column 16, tticketId
+        //Column 17, tticketState
         if (event.getTticket() != null) {
-            set(m_insStmt, 15, Constants.format(event.getTticket().getContent(), EVENT_TTICKET_FIELD_SIZE));
+            set(m_insStmt, 16, Constants.format(event.getTticket().getContent(), EVENT_TTICKET_FIELD_SIZE));
             int ttstate = 0;
             if (event.getTticket().getState().equals("on"))
                 ttstate = 1;
-            set(m_insStmt, 16, ttstate);
+            set(m_insStmt, 17, ttstate);
         } else {
-            m_insStmt.setNull(15, Types.VARCHAR);
-            m_insStmt.setNull(16, Types.INTEGER);
+            m_insStmt.setNull(16, Types.VARCHAR);
+            m_insStmt.setNull(17, Types.INTEGER);
         }
 
-        //Column 17, mouseOverText
-        set(m_insStmt, 17, Constants.format(event.getMouseovertext(), EVENT_MOUSEOVERTEXT_FIELD_SIZE));
+        //Column 18, mouseOverText
+        set(m_insStmt, 18, Constants.format(event.getMouseovertext(), EVENT_MOUSEOVERTEXT_FIELD_SIZE));
 
-        //Column 18, suppressedUntil
+        //Column 19, suppressedUntil
         //FIXME:
-        m_insStmt.setTimestamp(18, eventTime);
+        m_insStmt.setTimestamp(19, eventTime);
         
-        //Column 19, suppressedUser
-        m_insStmt.setString(19, null);
+        //Column 20, suppressedUser
+        m_insStmt.setString(20, null);
         
-        //Column 20, suppressedTime
+        //Column 21, suppressedTime
         //FIXME:
-        m_insStmt.setTimestamp(20, eventTime);
+        m_insStmt.setTimestamp(21, eventTime);
         
-        //Column 21, alarmAckUser
-        m_insStmt.setString(21, null);
+        //Column 22, alarmAckUser
+        m_insStmt.setString(22, null);
         
-        //Column 22, alarmAckTime
-        m_insStmt.setTimestamp(22, eventTime);
+        //Column 23, alarmAckTime
+        m_insStmt.setTimestamp(23, eventTime);
         
         if (log.isDebugEnabled())
             log.debug("m_insStmt is: "+m_insStmt.toString());

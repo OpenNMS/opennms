@@ -231,6 +231,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
         "   eventUei            VARCHAR(256) NOT NULL,\n" +
         "   dpName              VARCHAR(12) NOT NULL,\n" +
         "   nodeID              INTEGER,\n" +
+        "   ipaddr              VARCHAR(16),\n" +
         "   serviceID           INTEGER NOT NULL,\n" +
         "   reductionKey        VARCHAR(256),\n" +
         "   counter             INTEGER NOT NULL,\n" +

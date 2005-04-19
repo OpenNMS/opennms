@@ -744,6 +744,7 @@ create index userid_notifyid_idx on usersNotified(userID, notifyID);
 --# alarmID     : The id created from the alarmsNxtId sequence.
 --# eventUei    : A reference to the eventUei that created this alarm.
 --# nodeID      : A reference to the node represented by this alarm.
+--# ipAddr      : IP Address of node's interface
 --# serviceID   : A reference to the service represented by the alarm.
 --# reductionKey: Used with nodeID and serviceID to match an event and
 --#               increment the counter column
@@ -774,6 +775,7 @@ create table alarms (
 	eventUei				VARCHAR(256) NOT NULL,
 	dpName				VARCHAR(12) NOT NULL,
 	nodeID				INTEGER,
+	ipaddr				VARCHAR(16),
 	serviceID			INTEGER,
 	reductionKey			VARCHAR(256),
     counter              INTEGER NOT NULL,
