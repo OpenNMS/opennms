@@ -68,10 +68,6 @@ import org.opennms.netmgt.eventd.EventIpcManager;
  * 
  */
 public final class Notifd implements PausableFiber {
-    /**
-     * Logging categoyr for log4j
-     */
-    private static String LOG4J_CATEGORY = "OpenNMS.Notifd";
 
     /**
      * The signlton instance.
@@ -123,7 +119,6 @@ public final class Notifd implements PausableFiber {
     }
 
     public synchronized void init() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
         m_noticeQueues = new HashMap();
         m_queueHandlers = new HashMap();
@@ -220,7 +215,6 @@ public final class Notifd implements PausableFiber {
      * involves starting the queue handlers and starting an event receiver.
      */
     public synchronized void start() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
         Iterator i = m_queueHandlers.keySet().iterator();
         while (i.hasNext()) {

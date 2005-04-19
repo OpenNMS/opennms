@@ -34,6 +34,7 @@
 
 package org.opennms.netmgt.notifd.jmx;
 
+import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.DestinationPathFactory;
@@ -46,55 +47,63 @@ import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
 public class Notifd implements NotifdMBean {
+    /**
+     * Logging categoyr for log4j
+     */
+    private static String LOG4J_CATEGORY = "OpenNMS.Notifd";
+
     public void init() {
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        Category log = ThreadCategory.getInstance(getClass());
+
         EventIpcManagerFactory.init();
 
         try {
             NotifdConfigFactory.init();
         } catch (Throwable t) {
-            ThreadCategory.getInstance(getClass()).error("start: Failed to init NotifdConfigFactory.", t);
+            log.error("start: Failed to init NotifdConfigFactory.", t);
         }
         
         try {
             NotificationFactory.init();
         } catch( Throwable t) {
-            ThreadCategory.getInstance(getClass()).error("start: Failed to init NotificationFactory.", t);
+            log.error("start: Failed to init NotificationFactory.", t);
         }
         
         try {
             DatabaseConnectionFactory.init();
         } catch (Exception e) {
-            ThreadCategory.getInstance(getClass()).error("start: Failed to init database connection factory.", e);
+            log.error("start: Failed to init database connection factory.", e);
         }
 
         try {
             GroupFactory.init();
         } catch (Exception e) {
-            ThreadCategory.getInstance(getClass()).error("start: Failed to init group factory.", e);
+            log.error("start: Failed to init group factory.", e);
         }
 
         try {
             UserFactory.init();
         } catch (Exception e) {
-            ThreadCategory.getInstance(getClass()).error("start: Failed to init user factory.", e);
+            log.error("start: Failed to init user factory.", e);
         }
         
         try {
             DestinationPathFactory.init();
         } catch (Exception e) {
-            ThreadCategory.getInstance(getClass()).error("start: Failed to init destination path factory.", e);
+            log.error("start: Failed to init destination path factory.", e);
         }
         
         try {
             NotificationCommandFactory.init();
         } catch (Exception e) {
-            ThreadCategory.getInstance(getClass()).error("start: Failed to init notification command factory.", e);            
+            log.error("start: Failed to init notification command factory.", e);            
         }
 
         try {
             PollOutagesConfigFactory.init();
         } catch (Exception e) {
-            ThreadCategory.getInstance(getClass()).error("start: Failed to init poll outage config factory.", e);
+            log.error("start: Failed to init poll outage config factory.", e);
         }
         
         getNotifd().setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
@@ -115,26 +124,33 @@ public class Notifd implements NotifdMBean {
      * @return
      */
     private org.opennms.netmgt.notifd.Notifd getNotifd() {
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
         return org.opennms.netmgt.notifd.Notifd.getInstance();
     }
 
     public void start() {
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
         getNotifd().start();
     }
 
     public void stop() {
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
         getNotifd().stop();
     }
 
     public int getStatus() {
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
         return getNotifd().getStatus();
     }
 
     public String status() {
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
 
     public String getStatusText() {
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
 }
