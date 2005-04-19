@@ -350,4 +350,8 @@ public class DutySchedule {
 
         return buffer.toString();
     }
+    
+    public boolean hasDay(int aDay) {
+        return m_days.get(aDay);
+    }
 }

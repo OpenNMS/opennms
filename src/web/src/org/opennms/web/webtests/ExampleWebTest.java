@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.opennms.web.jWebUnitTests;
+package org.opennms.web.webtests;
 
 /**
  * @author mhuot

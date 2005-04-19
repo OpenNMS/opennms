@@ -471,4 +471,8 @@ public class DutySchedule {
         cal.setTime(time);
         return isInSchedule(cal);
     }
+    
+    public boolean hasDay(int aDay) {
+        return m_days.get(aDay);
+    }
 }

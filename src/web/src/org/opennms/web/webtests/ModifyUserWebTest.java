@@ -29,7 +29,7 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.web.jWebUnitTests;
+package org.opennms.web.webtests;
 
 import java.io.File;
 import java.io.FileReader;
@@ -39,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.exolab.castor.xml.Unmarshaller;
+import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.common.BasicSchedule;
 import org.opennms.netmgt.config.common.Time;
 import org.opennms.netmgt.config.poller.Outages;
@@ -50,6 +51,7 @@ import org.opennms.netmgt.config.users.Users;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.web.admin.users.parsers.DutySchedule;
 
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
@@ -68,7 +70,7 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
     private File m_outagesFile;
     
     private String m_usersFile = "../../etc/users.xml";
-
+    
     public static void main(String[] args) {
         junit.textui.TestRunner.run(ScheduleEditorWebTest.class);
     }
@@ -78,7 +80,7 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         
         // save of the users.xml file so we can restore it after the test
         copyFile(m_usersFile, m_usersFile+"."+getName()+"-sav");
-
+        
         m_servletRunner = new ServletRunner(new File("WEB-INF/web.xml"));
         ServletUnitClient client = m_servletRunner.newClient();
 
@@ -91,6 +93,10 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
 
         getTestContext().setWebClient(m_servletClient);
         getTestContext().setAuthorization("admin", "OpenNMS Administrator");
+
+        // We need to do this to ensure that the factory reloads the new users.xml file
+        UserFactory.init();
+        UserFactory.getInstance().reload();
 
 
     }
@@ -109,6 +115,7 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
     }
 
     private void assertUsersList(List users) {
+        getTester().dumpResponse();
         assertTitleEquals("List | User Admin | OpenNMS Web Console");
         assertHeaderPresent("User Configuration", null, new String[] {"Home", "Admin", "Users and Groups", "User List"});
         assertFooterPresent(null);
@@ -231,6 +238,10 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         
     }
     
+    // TODO: add test for modifying dutySchedule
+    // TODO: add tests for deleting dutySchedule
+    // TODO: add tests for adding dutySchedule
+    
     public void testNewUserCancelOnModifyPage() throws Exception {
         beginAt("/admin/userGroupView/users/list.jsp");
         List users = getCurrentUsers();
@@ -292,7 +303,27 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         assertFormElementEquals("textService", getServiceProvider(user, "textPage"));
         assertFormElementEquals("textPin", getContact(user, "textPage"));
         
-        // TODO: dutySchedules checks and input
+        String[] dutySchedules = user.getDutySchedule();
+        assertFormElementEquals("dutySchedules", String.valueOf(dutySchedules.length));
+        for(int i = 0; i < dutySchedules.length; i++) {
+            DutySchedule sched = new DutySchedule(dutySchedules[i]);
+            assertFormElementPresent("deleteDuty"+i);
+            assertCheckboxSelection("duty"+i+"Mo", sched.hasDay(DutySchedule.MONDAY));
+            assertCheckboxSelection("duty"+i+"Tu", sched.hasDay(DutySchedule.TUESDAY));
+            assertCheckboxSelection("duty"+i+"We", sched.hasDay(DutySchedule.WEDNESDAY));
+            assertCheckboxSelection("duty"+i+"Th", sched.hasDay(DutySchedule.THURSDAY));
+            assertCheckboxSelection("duty"+i+"Fr", sched.hasDay(DutySchedule.FRIDAY));
+            assertCheckboxSelection("duty"+i+"Sa", sched.hasDay(DutySchedule.SATURDAY));
+            assertCheckboxSelection("duty"+i+"Su", sched.hasDay(DutySchedule.SUNDAY));
+            assertFormElementEquals("duty"+i+"Begin", String.valueOf(sched.getStartTime()));
+            assertFormElementEquals("duty"+i+"End", String.valueOf(sched.getStopTime()));
+        }
+        
+        
+        
+        // TODO: add OncallSchedule
+        //fail("We don't do OncallSchedules yet!");
+        
         
         assertButtonPresent("addSchedulesButton");
         assertButtonPresent("removeSchedulesButton");
@@ -303,6 +334,13 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         
         
         
+    }
+
+    private void assertCheckboxSelection(String checkBoxName, boolean isSelected) {
+        if (isSelected)
+            assertCheckboxSelected(checkBoxName);
+        else
+            assertCheckboxNotSelected(checkBoxName);
     }
 
     private User findUser(String userID, List users) {
