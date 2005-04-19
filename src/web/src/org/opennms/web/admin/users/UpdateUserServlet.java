@@ -72,6 +72,7 @@ public class UpdateUserServlet extends HttpServlet {
             userFactory = UserFactory.getInstance();
 
             // get the rest of the user information from the form
+            System.err.println("Full Name is "+request.getParameter("fullName"));
             newUser.setFullName(request.getParameter("fullName"));
             newUser.setUserComments(request.getParameter("userComments"));
 
@@ -151,7 +152,7 @@ public class UpdateUserServlet extends HttpServlet {
         }
 
         // forward the request for proper display
-        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(Util.decode(request.getParameter("redirect")));
+        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(request.getParameter("redirect"));
         dispatcher.forward(request, response);
     }
 }

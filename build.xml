@@ -283,7 +283,7 @@ your distribution.
 	
   <path id="jwebunit.jars">
     <pathelement location="${dev.lib.dir}/junit.jar"/>
-    <pathelement location="${dev.lib.dir}/httpunit.jar"/>
+    <pathelement location="${dev.lib.dir}/httpunit-1.6.1.jar"/>
     <pathelement location="${dev.lib.dir}/nekohtml.jar"/>
     <pathelement location="${dev.lib.dir}/js.jar"/>
     <pathelement location="${dev.lib.dir}/jasper/jasper-compiler.jar"/>

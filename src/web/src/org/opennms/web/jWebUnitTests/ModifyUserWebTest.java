@@ -208,7 +208,7 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         String userID = "tempuser";
         User user = findUser(userID, users);
         assertNotNull("Unable to find user "+userID, user);
-        user = cloneUser(user);
+        //user = cloneUser(user);
 
         beginAt("/admin/userGroupView/users/list.jsp");
         
@@ -223,6 +223,8 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         fillModifyFormFromUser(user);
         
         clickButton("saveUserButton");
+        
+        getTester().dumpResponse();
         
         assertUsersList(users);
         

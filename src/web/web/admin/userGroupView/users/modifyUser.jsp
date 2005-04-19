@@ -221,7 +221,7 @@
                 <label id="fullNameLabel" for="filName">Full Name:</label>
               </td>
               <td align="left" valign="top">
-                <input id="fullName" type="text" size="35" name="fullName" value="<%=(fullName == null || fullName.equals(""))? "":fullName %>" />
+                <input id="fullName" type="text" size="35" name="fullName" value="<%=(fullName == null ? "":fullName) %>" />
               </td>
             </tr>
             <tr>
@@ -229,7 +229,7 @@
                 <label id="userCommentsLabel" for="userComments">Comments:</label>
               </td>
               <td align="left" valign="top">
-                <textarea rows="5" cols="33" id="userComments" name="userComments"><%=(comments == null || comments.equals(""))? "":comments %></textarea>
+                <textarea rows="5" cols="33" id="userComments" name="userComments"><%=(comments == null ? "":comments) %></textarea>
               </td>
             </tr>
             <tr>
@@ -247,7 +247,7 @@
                 <label id="emailLabel" for="email">Email:</label>
               </td>
               <td valign="top">
-                <input id="email" type="text" size="35" name="email" value='<%= (email == null || email.equals(""))? "":email %>'>
+                <input id="email" type="text" size="35" name="email" value='<%= (email == null ? "":email) %>'>
               </td>
             </tr>
             <tr>
@@ -255,7 +255,7 @@
                 <label id="pemailLabel" for="pemail" Pager Email:
               </td>
               <td valign="top">
-                <input type="text" size="35" id="pemail" name="pemail" value='<%=(pagerEmail == null || pagerEmail.equals(""))? "":pagerEmail%>'>
+                <input type="text" size="35" id="pemail" name="pemail" value='<%=(pagerEmail == null ? "":pagerEmail)%>'>
               </td>
             </tr>
             <tr>
@@ -263,7 +263,7 @@
                 <label id="xmppAddressLabel" for="xmppAddress">XMPP Address:</label>
               </td>
               <td valign="top">
-                <input id="xmppAddress" type="text" size="35" name="xmppAddress" value='<%=(xmppAddress == null || xmppAddress.equals(""))? "":xmppAddress%>'>
+                <input id="xmppAddress" type="text" size="35" name="xmppAddress" value='<%=(xmppAddress == null ? "":xmppAddress)%>'>
               </td>
             </tr>
             <tr>
@@ -271,7 +271,7 @@
                 <label id="numericalServiceLabel" for="numericalService">Numeric Service:</label>
               </td>
               <td valign="top">
-                <input type="text" size="35" id="numericalService" name="numericalService" value='<%=(numericPage == null || numericPage.equals(""))? "":numericPage %>'>
+                <input type="text" size="35" id="numericalService" name="numericalService" value='<%=(numericPage == null ? "":numericPage) %>'>
               </td>
             </tr>
             <tr>
@@ -279,7 +279,7 @@
                 <label id="numericalPinLabel" for="numericalPin">Numeric PIN:</label>
               </td>
               <td valign="top">
-                <input type="text" size="35" id="numericalPin" name="numericalPin" value='<%= (numericPin == null || numericPin.equals(""))? "":numericPin%>'>
+                <input type="text" size="35" id="numericalPin" name="numericalPin" value='<%= (numericPin == null ? "":numericPin)%>'>
               </td>
             </tr>
             <tr>
@@ -287,7 +287,7 @@
                 <label id="textServiceLabel" for="textService">Text Service:</label>
               </td>
               <td valign="top">
-                <input type="text" size="35" id="textService" name="textService" value='<%= (textPage == null || textPage.equals(""))? "":textPage%>'>
+                <input type="text" size="35" id="textService" name="textService" value='<%= (textPage == null ? "":textPage)%>'>
               </td>
             </tr>
             <tr>
@@ -295,7 +295,7 @@
                 <label id="textPinLabel" for="textPin">Text PIN:</label>
               </td>
               <td valign="top">
-                <input type="text" size="35" id="textPin" name="textPin" value='<%=(textPin == null || textPin.equals(""))? "":textPin%>'>
+                <input type="text" size="35" id="textPin" name="textPin" value='<%=(textPin == null ? "":textPin)%>'>
               </td>
             </tr>
           </table></p>
