@@ -75,7 +75,7 @@
 <head>
   <title>Choose Interface | Response Time | Reports | OpenNMS Web Console</title>
   <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="includes/styles.css" />
+  <link rel="stylesheet" type="text/css" href="css/styles.css" />
   <script language="Javascript" type="text/javascript" >
       function validateRRD()
       {

@@ -53,7 +53,7 @@
 <head>
   <title>Outages | OpenNMS Web Console</title>
   <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="includes/styles.css" />
+  <link rel="stylesheet" type="text/css" href="css/styles.css" />
 </head>
 
 <body bgcolor="white" text="#000000" link="#0000cc" vlink="#800080" alink="#ff0000" marginwidth="0" marginheight="0" LEFTMARGIN="0" rightmargin="0" TOPMARGIN="0">

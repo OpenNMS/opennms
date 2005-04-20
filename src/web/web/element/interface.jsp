@@ -159,7 +159,7 @@
 <head>
   <title><%=ipAddr%> | Interface | OpenNMS Web Console</title>
   <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="includes/styles.css" />
+  <link rel="stylesheet" type="text/css" href="css/styles.css" />
 </head>
 <% if (request.isUserInRole("OpenNMS Administrator")) { %>
 

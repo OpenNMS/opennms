@@ -43,7 +43,7 @@
 <head>
   <title>Connection Error | Error | OpenNMS Web Console</title>
   <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="includes/styles.css" />
+  <link rel="stylesheet" type="text/css" href="css/styles.css" />
 </head>
 <body marginwidth="0" marginheight="0" leftmargin="0" rightmargin="0" topmargin="0">
 

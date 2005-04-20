@@ -67,7 +67,7 @@
 <head>
   <title>Performance | Reports | KSC </title>
   <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="includes/styles.css" />
+  <link rel="stylesheet" type="text/css" href="css/styles.css" />
 </head>
 
 <%-- A script for validating Node ID Selection Form before submittal --%>

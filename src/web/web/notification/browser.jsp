@@ -84,7 +84,7 @@
 <head>
   <title> Browse | Notices | OpenNMS Web Console</title>
   <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="includes/styles.css" />
+  <link rel="stylesheet" type="text/css" href="css/styles.css" />
   
   <style type="text/css"> 
     a.filterLink { color:black; text-decoration:none; };

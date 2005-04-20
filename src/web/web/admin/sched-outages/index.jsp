@@ -59,7 +59,7 @@ if(deleteName!=null) {
 <html>
 <title>Scheduled Outage Administration</title>
 <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-<link rel="stylesheet" type="text/css" href="includes/styles.css" />
+<link rel="stylesheet" type="text/css" href="css/styles.css" />
 <body>
 <% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
 <% String breadcrumb2 = "Manage Scheduled Outages"; %>

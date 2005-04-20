@@ -56,7 +56,7 @@
 <head>
   <title>Destination Paths | Admin | OpenNMS Web Console</title>
   <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="includes/styles.css" />
+  <link rel="stylesheet" type="text/css" href="css/styles.css" />
 </head>
 
 <script language="Javascript" type="text/javascript" >
