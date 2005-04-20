@@ -55,7 +55,7 @@
     protected java.text.ChoiceFormat formatter = new java.text.ChoiceFormat( "0#No outstanding notices|1#1 outstanding notice|2#{0} outstanding notices" );
 %>
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" bgcolor="#cccccc">
+<table width="100%" border="1" cellspacing="0" cellpadding="2" id="notification" bordercolor="black" bgcolor="#cccccc">
   <tr> 
     <td bgcolor="#999999" ><b><a href="notification/index.jsp">Notification</a></b></td>
   </tr>

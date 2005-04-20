@@ -75,7 +75,7 @@
 
 <%-- Start the HTML Page Definition here --%>
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" bgcolor="#cccccc">
+<table width="100%" border="1" cellspacing="0" cellpadding="2" id="ksc" bordercolor="black" bgcolor="#cccccc">
   <tr>
     <td bgcolor="#999999" ><b><a href="KSC/index.jsp">KSC Reports</a></b></td>
   </tr>

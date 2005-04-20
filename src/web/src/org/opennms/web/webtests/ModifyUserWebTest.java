@@ -177,7 +177,7 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         setWorkingForm("newUserForm");
         setFormElement("userID", "newUser");
         setFormElement("pass1", "password");
-        setFormElement("pass2", "passwodr");  // note the typo here
+        setFormElement("pass2", "passwodr");  // note the typo here(It is intentional)
         clickButton("doOK");
         verifyAlert("The two password fields do not match!");
         

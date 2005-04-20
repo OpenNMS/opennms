@@ -65,7 +65,7 @@
     ResponseTimeModel.QueryableNode[] nodes = this.model.getQueryableNodes();
 %>
       
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" bgcolor="#cccccc">
+<table width="100%" border="1" cellspacing="0" cellpadding="2" id="response" bordercolor="black" bgcolor="#cccccc">
   <tr>
     <td bgcolor="#999999" ><b><a href="response/index.jsp">Response Time</a></b></td>
   </tr>

@@ -69,10 +69,10 @@ public class OpenNMSWebTestCase extends WebTestCase {
         WebTable headertable = getDialog().getWebTableBySummaryOrId("header");
         
         // ensure the logo image is there
-        assertCellImage(headertable, 0, 0,  null);
+        assertCellImage(headertable.getTableCell(0,0),  null);
         
         // ensure the title is correct 
-        assertCell(headertable, 0, 1, title);
+        assertCell(headertable.getTableCell(0,1), title);
         
         //Second line has a table in it that spans the three columns, we call it sub-header
     
@@ -120,7 +120,7 @@ public class OpenNMSWebTestCase extends WebTestCase {
         TableCell cell = table.getTableCell(0, 0);
     
         assertMenu(location, m_menu, cell);
-        assertCell(table, 1, 0, "OpenNMS Copyright \u00a9 2002-2005 The OpenNMS Group, Inc. OpenNMS\u00ae is a registered trademark of The OpenNMS Group, Inc.");
+        assertCell(table.getTableCell(1, 0), "OpenNMS Copyright \u00a9 2002-2005 The OpenNMS Group, Inc. OpenNMS\u00ae is a registered trademark of The OpenNMS Group, Inc.");
     }
 
     /**
@@ -147,9 +147,9 @@ public class OpenNMSWebTestCase extends WebTestCase {
         assertLinks((String[]) links.toArray(new String[links.size()]), cell.getLinks());
     }
 
-    public void assertCellImage(WebTable table, int row, int col, String imgSrc) {
-        assertEquals(1, table.getTableCell(row, col).getImages().length);
-        WebImage img = table.getTableCell(row, col).getImages()[0];
+    public void assertCellImage(TableCell cell, String imgSrc) {
+        assertEquals(1, cell.getImages().length);
+        WebImage img = cell.getImages()[0];
         assertNotNull(img);
         if (imgSrc != null)
             assertEquals(imgSrc, img.getSource());
@@ -168,18 +168,18 @@ public class OpenNMSWebTestCase extends WebTestCase {
         }
     }
 
-    public void assertCell(WebTable table, int row, int col, String contents, int colspan) {
+    public void assertCell(TableCell cell, String contents, int colspan) {
         if (contents == null) {
-            assertNull(table.getTableCell(row, col));
+            assertNull(cell);
         } else {
-            assertNotNull(table.getTableCell(row, col));
-            assertEquals(contents, table.getCellAsText(row, col));
-            assertEquals(colspan, table.getTableCell(row, col).getColSpan());
+            assertNotNull(cell);
+            assertEquals(contents, cell.getText());
+            assertEquals(colspan, cell.getColSpan());
         }
     }
 
-    public void assertCell(WebTable table, int row, int col, String contents) {
-        assertCell(table, row, col, contents, 1);
+    public void assertCell(TableCell cell, String contents) {
+        assertCell(cell, contents, 1);
     }
 
     public void copyFile(String origFile, String newFile) throws IOException {

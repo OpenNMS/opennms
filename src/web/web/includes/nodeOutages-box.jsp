@@ -69,7 +69,7 @@
     Outage[] outages = this.model.getOutagesForNode(nodeId, yesterday);
 %>
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
+<table width="100%" border="1" cellspacing="0" cellpadding="2" id="nodeOutages" bordercolor="black" BGCOLOR="#cccccc">
   
 
 <% if(outages.length == 0) { %>

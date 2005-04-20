@@ -80,7 +80,7 @@ public class OutageEditorWebTest extends OpenNMSWebTestCase {
             "<web-app>\n" + 
             "  <context-param>\n" + 
             "    <param-name>opennms.home</param-name>\n" + 
-            "    <param-value>../..</param-value>\n" + 
+            "    <param-value>/home/mhuot/workspace/opennms/dist</param-value>\n" + 
             "  </context-param>\n" + 
             "  \n" + 
             "  <!-- Set this for JRobin graphs and Availablity Reporting -->\n" + 
@@ -417,8 +417,8 @@ public class OutageEditorWebTest extends OpenNMSWebTestCase {
         
         WebTable table = getDialog().getWebTableBySummaryOrId("outages");
         // Top header line
-        assertCell(table, 0, 0, "", 4);
-        assertCell(table, 0, 4, "Affects...", 4);
+        assertCell(table.getTableCell(0,0), "", 4);
+        assertCell(table.getTableCell(0,4), "Affects...", 4);
         // Second header line
         String[] headerCells = { "Name", "Type", "Nodes/Interfaces", "Times", "Notifications", "Polling", "Thresholds", "Data collection", null, null};
         assertRow(table, 1, headerCells);
@@ -429,19 +429,19 @@ public class OutageEditorWebTest extends OpenNMSWebTestCase {
             assertLinkPresent(outage.getName()+".edit");
             assertLinkPresent(outage.getName()+".delete");
             
-            assertCell(table, i+2, 0, outage.getName());
-            assertCell(table, i+2, 1, outage.getType());
+            assertCell(table.getTableCell(i+2,0), outage.getName());
+            assertCell(table.getTableCell(i+2,1), outage.getType());
             
             // TODO: check for interfaces and nodes
-            assertCell(table, i+2, 2, "");
+            assertCell(table.getTableCell(i+2,2), "");
             
-            assertCell(table, i+2, 3, getTimeSpanString(outage));
+            assertCell(table.getTableCell(i+2,3), getTimeSpanString(outage));
             
             // test the X 's
-            assertCellImage(table, i+2, 4, computeImgSrc(outage));
-            assertCellImage(table, i+2, 5, computeImgSrc(outage));
-            assertCellImage(table, i+2, 6, computeImgSrc(outage));
-            assertCellImage(table, i+2, 7, computeImgSrc(outage));
+            assertCellImage(table.getTableCell(i+2,4), computeImgSrc(outage));
+            assertCellImage(table.getTableCell(i+2,5), computeImgSrc(outage));
+            assertCellImage(table.getTableCell(i+2,6), computeImgSrc(outage));
+            assertCellImage(table.getTableCell(i+2,7), computeImgSrc(outage));
             
             // the the links
             assertCellLink(table, i+2, 8, "Edit", computeEditURL(outage));
@@ -492,7 +492,7 @@ public class OutageEditorWebTest extends OpenNMSWebTestCase {
     
     public void assertRow(WebTable table, int row, String[] contents) {
         for(int i = 0; i < contents.length; i++) {
-            assertCell(table, row, i, contents[i]);
+            assertCell(table.getTableCell(row,i), contents[i]);
         }
     }
     

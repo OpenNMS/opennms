@@ -320,10 +320,46 @@ public class MainPageWebTest extends OpenNMSWebTestCase {
     public void testMainPage() throws Exception {
         beginAt("/index.jsp");
 
+        assertMainMargins();
+
+        getTester().dumpResponse();
+        assertCategoriesBox();
+        assertNotificationBox();
+        assertPerformanceBox();
+        assertResponseBox();
+        assertKSCBox();
+        
+    }
+
+    private void assertMainMargins() {
         assertTitleEquals("OpenNMS Web Console");
         assertHeaderPresent("Web Console", "", new String[] {});
         assertFooterPresent("");
+    }
 
+    private void assertKSCBox() {
+        assertTablePresent("ksc");
+        
+    }
+
+    private void assertResponseBox() {
+        assertTablePresent("response");
+        
+    }
+
+    private void assertPerformanceBox() {
+        assertTablePresent("performance");
+        
+    }
+
+    private void assertNotificationBox() {
+        assertTablePresent("notification");
+        
+    }
+
+    private void assertCategoriesBox() {
+        assertTablePresent("categories");
+        WebTable outagestable = getDialog().getWebTableBySummaryOrId("categories");
         
     }
     
