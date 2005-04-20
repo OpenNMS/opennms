@@ -49,6 +49,13 @@
               <a href="event/index.jsp">Events</a>&nbsp;|&nbsp;
         <%  } %>
 
+        <%-- Alarms --%>
+        <%  if( "alarm".equals( location ) ) { %>
+              Alarms&nbsp;|&nbsp;
+        <%  } else { %>
+              <a href="alarm/index.jsp">Alarms</a>&nbsp;|&nbsp;
+        <%  } %>
+
         <%-- Notification --%>                               
         <%  if( "notification".equals( location ) ) { %>
               Notification&nbsp;|&nbsp;

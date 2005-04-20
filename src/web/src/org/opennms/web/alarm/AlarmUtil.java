@@ -1,0 +1,330 @@
+//
+// This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included code and modified
+// code that was published under the GNU General Public License. Copyrights for modified 
+// and included code are below.
+//
+// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// 18 Apr 2005: This file created from EventUtil.java
+//
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+//
+// For more information contact:
+//      OpenNMS Licensing       <license@opennms.org>
+//      http://www.opennms.org/
+//      http://www.opennms.com/
+//
+
+package org.opennms.web.alarm;
+
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import org.opennms.web.alarm.filter.AcknowledgedByFilter;
+import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
+import org.opennms.web.alarm.filter.BeforeLastEventTimeFilter;
+import org.opennms.web.alarm.filter.AfterFirstEventTimeFilter;
+import org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter;
+import org.opennms.web.alarm.filter.ExactUEIFilter;
+import org.opennms.web.alarm.filter.Filter;
+import org.opennms.web.alarm.filter.IPLikeFilter;
+import org.opennms.web.alarm.filter.InterfaceFilter;
+import org.opennms.web.alarm.filter.LogMessageMatchesAnyFilter;
+import org.opennms.web.alarm.filter.LogMessageSubstringFilter;
+import org.opennms.web.alarm.filter.NegativeAcknowledgedByFilter;
+import org.opennms.web.alarm.filter.NegativeExactUEIFilter;
+import org.opennms.web.alarm.filter.NegativeInterfaceFilter;
+import org.opennms.web.alarm.filter.NegativeNodeFilter;
+import org.opennms.web.alarm.filter.NegativePartialUEIFilter;
+import org.opennms.web.alarm.filter.NegativeServiceFilter;
+import org.opennms.web.alarm.filter.NegativeSeverityFilter;
+import org.opennms.web.alarm.filter.NodeFilter;
+import org.opennms.web.alarm.filter.NodeNameLikeFilter;
+import org.opennms.web.alarm.filter.PartialUEIFilter;
+import org.opennms.web.alarm.filter.ServiceFilter;
+import org.opennms.web.alarm.filter.SeverityFilter;
+
+public abstract class AlarmUtil extends Object {
+    protected static final HashMap colors;
+
+    protected static final HashMap labels;
+
+    protected static final HashMap sortStyles;
+
+    protected static final HashMap ackTypes;
+
+    protected static final List severities;
+
+    public static final String ANY_SERVICES_OPTION = "Any";
+
+    public static final String ANY_SEVERITIES_OPTION = "Any";
+
+    public static final String ANY_RELATIVE_TIMES_OPTION = "Any";
+
+    static {
+        severities = new java.util.ArrayList();
+        severities.add(new Integer(Alarm.INDETERMINATE_SEVERITY));
+        severities.add(new Integer(Alarm.CLEARED_SEVERITY));
+        severities.add(new Integer(Alarm.NORMAL_SEVERITY));
+        severities.add(new Integer(Alarm.WARNING_SEVERITY));
+        severities.add(new Integer(Alarm.MINOR_SEVERITY));
+        severities.add(new Integer(Alarm.MAJOR_SEVERITY));
+        severities.add(new Integer(Alarm.CRITICAL_SEVERITY));
+
+        colors = new java.util.HashMap();
+        colors.put(new Integer(Alarm.INDETERMINATE_SEVERITY), "lightblue");
+        colors.put(new Integer(Alarm.CLEARED_SEVERITY), "white");
+        colors.put(new Integer(Alarm.NORMAL_SEVERITY), "green");
+        colors.put(new Integer(Alarm.WARNING_SEVERITY), "cyan");
+        colors.put(new Integer(Alarm.MINOR_SEVERITY), "yellow");
+        colors.put(new Integer(Alarm.MAJOR_SEVERITY), "orange");
+        colors.put(new Integer(Alarm.CRITICAL_SEVERITY), "red");
+
+        labels = new java.util.HashMap();
+        labels.put(new Integer(Alarm.INDETERMINATE_SEVERITY), "Indeterminate");
+        labels.put(new Integer(Alarm.CLEARED_SEVERITY), "Cleared");
+        labels.put(new Integer(Alarm.NORMAL_SEVERITY), "Normal");
+        labels.put(new Integer(Alarm.WARNING_SEVERITY), "Warning");
+        labels.put(new Integer(Alarm.MINOR_SEVERITY), "Minor");
+        labels.put(new Integer(Alarm.MAJOR_SEVERITY), "Major");
+        labels.put(new Integer(Alarm.CRITICAL_SEVERITY), "Critical");
+
+        sortStyles = new java.util.HashMap();
+        sortStyles.put("severity", AlarmFactory.SortStyle.SEVERITY);
+        sortStyles.put("lasteventtime", AlarmFactory.SortStyle.LASTEVENTTIME);
+        sortStyles.put("firsteventtime", AlarmFactory.SortStyle.FIRSTEVENTTIME);
+        sortStyles.put("node", AlarmFactory.SortStyle.NODE);
+        sortStyles.put("interface", AlarmFactory.SortStyle.INTERFACE);
+        sortStyles.put("service", AlarmFactory.SortStyle.SERVICE);
+        sortStyles.put("poller", AlarmFactory.SortStyle.POLLER);
+        sortStyles.put("id", AlarmFactory.SortStyle.ID);
+        sortStyles.put("count", AlarmFactory.SortStyle.COUNT);
+        sortStyles.put("rev_severity", AlarmFactory.SortStyle.REVERSE_SEVERITY);
+        sortStyles.put("rev_lasteventtime", AlarmFactory.SortStyle.REVERSE_LASTEVENTTIME);
+        sortStyles.put("rev_firsteventtime", AlarmFactory.SortStyle.REVERSE_FIRSTEVENTTIME);
+        sortStyles.put("rev_node", AlarmFactory.SortStyle.REVERSE_NODE);
+        sortStyles.put("rev_interface", AlarmFactory.SortStyle.REVERSE_INTERFACE);
+        sortStyles.put("rev_service", AlarmFactory.SortStyle.REVERSE_SERVICE);
+        sortStyles.put("rev_poller", AlarmFactory.SortStyle.REVERSE_POLLER);
+        sortStyles.put("rev_id", AlarmFactory.SortStyle.REVERSE_ID);
+        sortStyles.put("rev_count", AlarmFactory.SortStyle.REVERSE_COUNT);
+
+        sortStyles.put(AlarmFactory.SortStyle.SEVERITY, "severity");
+        sortStyles.put(AlarmFactory.SortStyle.LASTEVENTTIME, "lasteventtime");
+        sortStyles.put(AlarmFactory.SortStyle.FIRSTEVENTTIME, "firsteventtime");
+        sortStyles.put(AlarmFactory.SortStyle.NODE, "node");
+        sortStyles.put(AlarmFactory.SortStyle.INTERFACE, "interface");
+        sortStyles.put(AlarmFactory.SortStyle.SERVICE, "service");
+        sortStyles.put(AlarmFactory.SortStyle.POLLER, "poller");
+        sortStyles.put(AlarmFactory.SortStyle.ID, "id");
+        sortStyles.put(AlarmFactory.SortStyle.COUNT, "count");
+        sortStyles.put(AlarmFactory.SortStyle.REVERSE_SEVERITY, "rev_severity");
+        sortStyles.put(AlarmFactory.SortStyle.REVERSE_LASTEVENTTIME, "rev_lasteventtime");
+        sortStyles.put(AlarmFactory.SortStyle.REVERSE_FIRSTEVENTTIME, "rev_firsteventtime");
+        sortStyles.put(AlarmFactory.SortStyle.REVERSE_NODE, "rev_node");
+        sortStyles.put(AlarmFactory.SortStyle.REVERSE_INTERFACE, "rev_interface");
+        sortStyles.put(AlarmFactory.SortStyle.REVERSE_SERVICE, "rev_service");
+        sortStyles.put(AlarmFactory.SortStyle.REVERSE_POLLER, "rev_poller");
+        sortStyles.put(AlarmFactory.SortStyle.REVERSE_ID, "rev_id");
+        sortStyles.put(AlarmFactory.SortStyle.REVERSE_COUNT, "rev_count");
+
+        ackTypes = new java.util.HashMap();
+        ackTypes.put("ack", AlarmFactory.AcknowledgeType.ACKNOWLEDGED);
+        ackTypes.put("unack", AlarmFactory.AcknowledgeType.UNACKNOWLEDGED);
+        ackTypes.put("both", AlarmFactory.AcknowledgeType.BOTH);
+        ackTypes.put(AlarmFactory.AcknowledgeType.ACKNOWLEDGED, "ack");
+        ackTypes.put(AlarmFactory.AcknowledgeType.UNACKNOWLEDGED, "unack");
+        ackTypes.put(AlarmFactory.AcknowledgeType.BOTH, "both");
+    }
+
+    public static List getSeverityList() {
+        return severities;
+    }
+
+    public static int getSeverityId(int index) {
+        return ((Integer) severities.get(index)).intValue();
+    }
+
+    public static String getSeverityColor(int severity) {
+        return ((String) colors.get(new Integer(severity)));
+    }
+
+    public static String getSeverityLabel(int severity) {
+        return ((String) labels.get(new Integer(severity)));
+    }
+
+    public static AlarmFactory.SortStyle getSortStyle(String sortStyleString) {
+        if (sortStyleString == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+
+        return (AlarmFactory.SortStyle) sortStyles.get(sortStyleString.toLowerCase());
+    }
+
+    public static String getSortStyleString(AlarmFactory.SortStyle sortStyle) {
+        if (sortStyle == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+
+        return (String) sortStyles.get(sortStyle);
+    }
+
+    public static AlarmFactory.AcknowledgeType getAcknowledgeType(String ackTypeString) {
+        if (ackTypeString == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+
+        return (AlarmFactory.AcknowledgeType) ackTypes.get(ackTypeString.toLowerCase());
+    }
+
+    public static String getAcknowledgeTypeString(AlarmFactory.AcknowledgeType ackType) {
+        if (ackType == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+
+        return (String) ackTypes.get(ackType);
+    }
+
+    public static Filter getFilter(String filterString) {
+        if (filterString == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+
+        Filter filter = null;
+
+        StringTokenizer tokens = new StringTokenizer(filterString, "=");
+        String type = tokens.nextToken();
+        String value = tokens.nextToken();
+
+        if (type.equals(SeverityFilter.TYPE)) {
+            filter = new SeverityFilter(Integer.parseInt(value));
+        } else if (type.equals(NodeFilter.TYPE)) {
+            filter = new NodeFilter(Integer.parseInt(value));
+        } else if (type.equals(NodeNameLikeFilter.TYPE)) {
+            filter = new NodeNameLikeFilter(value);
+        } else if (type.equals(InterfaceFilter.TYPE)) {
+            filter = new InterfaceFilter(value);
+        } else if (type.equals(ServiceFilter.TYPE)) {
+            filter = new ServiceFilter(Integer.parseInt(value));
+        } else if (type.equals(PartialUEIFilter.TYPE)) {
+            filter = new PartialUEIFilter(value);
+        } else if (type.equals(ExactUEIFilter.TYPE)) {
+            filter = new ExactUEIFilter(value);
+        } else if (type.equals(AcknowledgedByFilter.TYPE)) {
+            filter = new AcknowledgedByFilter(value);
+        } else if (type.equals(NegativeSeverityFilter.TYPE)) {
+            filter = new NegativeSeverityFilter(Integer.parseInt(value));
+        } else if (type.equals(NegativeNodeFilter.TYPE)) {
+            filter = new NegativeNodeFilter(Integer.parseInt(value));
+        } else if (type.equals(NegativeInterfaceFilter.TYPE)) {
+            filter = new NegativeInterfaceFilter(value);
+        } else if (type.equals(NegativeServiceFilter.TYPE)) {
+            filter = new NegativeServiceFilter(Integer.parseInt(value));
+        } else if (type.equals(NegativePartialUEIFilter.TYPE)) {
+            filter = new NegativePartialUEIFilter(value);
+        } else if (type.equals(NegativeExactUEIFilter.TYPE)) {
+            filter = new NegativeExactUEIFilter(value);
+        } else if (type.equals(NegativeAcknowledgedByFilter.TYPE)) {
+            filter = new NegativeAcknowledgedByFilter(value);
+        } else if (type.equals(IPLikeFilter.TYPE)) {
+            filter = new IPLikeFilter(value);
+        } else if (type.equals(LogMessageSubstringFilter.TYPE)) {
+            filter = new LogMessageSubstringFilter(value);
+        } else if (type.equals(LogMessageMatchesAnyFilter.TYPE)) {
+            filter = new LogMessageMatchesAnyFilter(value);
+        } else if (type.equals(BeforeLastEventTimeFilter.TYPE)) {
+            filter = new BeforeLastEventTimeFilter(Long.parseLong(value));
+        } else if (type.equals(BeforeFirstEventTimeFilter.TYPE)) {
+            filter = new BeforeFirstEventTimeFilter(Long.parseLong(value));
+        } else if (type.equals(AfterLastEventTimeFilter.TYPE)) {
+            filter = new AfterLastEventTimeFilter(Long.parseLong(value));
+        } else if (type.equals(AfterFirstEventTimeFilter.TYPE)) {
+            filter = new AfterFirstEventTimeFilter(Long.parseLong(value));
+        }
+
+        return (filter);
+    }
+
+    public static String getFilterString(Filter filter) {
+        if (filter == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+
+        return (filter.getDescription());
+    }
+
+    public static final int LAST_HOUR_RELATIVE_TIME = 1;
+
+    public static final int LAST_FOUR_HOURS_RELATIVE_TIME = 2;
+
+    public static final int LAST_EIGHT_HOURS_RELATIVE_TIME = 3;
+
+    public static final int LAST_TWELVE_HOURS_RELATIVE_TIME = 4;
+
+    public static final int LAST_DAY_RELATIVE_TIME = 5;
+
+    public static final int LAST_WEEK_RELATIVE_TIME = 6;
+
+    public static final int LAST_MONTH_RELATIVE_TIME = 7;
+
+    public static Filter getRelativeTimeFilter(int relativeTime) {
+        Filter filter = null;
+        Calendar now = Calendar.getInstance();
+
+        switch (relativeTime) {
+        case LAST_HOUR_RELATIVE_TIME:
+            now.add(Calendar.HOUR, -1);
+            break;
+
+        case LAST_FOUR_HOURS_RELATIVE_TIME:
+            now.add(Calendar.HOUR, -4);
+            break;
+
+        case LAST_EIGHT_HOURS_RELATIVE_TIME:
+            now.add(Calendar.HOUR, -8);
+            break;
+
+        case LAST_TWELVE_HOURS_RELATIVE_TIME:
+            now.add(Calendar.HOUR, -12);
+            break;
+
+        case LAST_DAY_RELATIVE_TIME:
+            now.add(Calendar.HOUR, -24);
+            break;
+
+        case LAST_WEEK_RELATIVE_TIME:
+            now.add(Calendar.HOUR, -24 * 7);
+            break;
+
+        case LAST_MONTH_RELATIVE_TIME:
+            now.add(Calendar.MONTH, -1);
+            break;
+
+        default:
+            throw new IllegalArgumentException("Unknown relative time constant: " + relativeTime);
+        }
+
+        filter = new AfterLastEventTimeFilter(now.getTime());
+
+        return filter;
+    }
+}

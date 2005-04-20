@@ -299,6 +299,24 @@
     </init-param>
   </servlet>
   <servlet>
+    <servlet-name>acknowledgeAlarm</servlet-name>
+    <servlet-class>org.opennms.web.alarm.AcknowledgeAlarmServlet</servlet-class>
+    <init-param>
+      <param-name>redirect.success</param-name>
+      <param-value>list</param-value>
+      <description>Redirect to this sibling URL on success.</description>
+    </init-param>
+  </servlet>
+  <servlet>
+    <servlet-name>acknowledgeAlarmByFilter</servlet-name>
+    <servlet-class>org.opennms.web.alarm.AcknowledgeAlarmByFilterServlet</servlet-class>
+    <init-param>
+      <param-name>redirect.success</param-name>
+      <param-value>list</param-value>
+      <description>Redirect to this sibling URL on success.</description>
+    </init-param>
+  </servlet>
+  <servlet>
     <servlet-name>acknowledgeNotice</servlet-name>
     <servlet-class>org.opennms.web.notification.AcknowledgeNoticeServlet</servlet-class>
     <init-param>
@@ -337,6 +355,19 @@
   <servlet>
     <servlet-name>queryEvent</servlet-name>
     <servlet-class>org.opennms.web.event.EventQueryServlet</servlet-class>
+    <init-param>
+      <param-name>redirect.url</param-name>
+      <param-value>list</param-value>
+      <description>Redirect to this sibling URL after changing the parameter set.</description>
+    </init-param>    
+  </servlet>
+  <servlet>
+    <servlet-name>filterAlarm</servlet-name>
+    <servlet-class>org.opennms.web.alarm.AlarmFilterServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>queryAlarm</servlet-name>
+    <servlet-class>org.opennms.web.alarm.AlarmQueryServlet</servlet-class>
     <init-param>
       <param-name>redirect.url</param-name>
       <param-value>list</param-value>
@@ -922,6 +953,22 @@
     <url-pattern>/event/query</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
+    <servlet-name>acknowledgeAlarm</servlet-name>
+    <url-pattern>/alarm/acknowledge</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>acknowledgeAlarmByFilter</servlet-name>
+    <url-pattern>/alarm/acknowledgeByFilter</url-pattern>
+  </servlet-mapping>  
+  <servlet-mapping>
+    <servlet-name>filterAlarm</servlet-name>
+    <url-pattern>/alarm/list</url-pattern>
+  </servlet-mapping>    
+  <servlet-mapping>
+    <servlet-name>queryAlarm</servlet-name>
+    <url-pattern>/alarm/query</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
     <servlet-name>filterVulnerability</servlet-name>
     <url-pattern>/vulnerability/list</url-pattern>
   </servlet-mapping>    
@@ -1311,6 +1358,10 @@
   <error-page>
     <exception-type>org.opennms.web.event.EventIdNotFoundException</exception-type>
     <location>/errors/eventidnotfound.jsp</location>
+  </error-page>
+  <error-page>
+    <exception-type>org.opennms.web.alarm.EventIdNotFoundException</exception-type>
+    <location>/errors/alarmidnotfound.jsp</location>
   </error-page>
   <error-page>
     <exception-type>org.opennms.web.notification.NoticeIdNotFoundException</exception-type>
