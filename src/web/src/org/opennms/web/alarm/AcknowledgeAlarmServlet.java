@@ -47,7 +47,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.web.MissingParameterException;
 
 /**
- * This servlet receives an HTTP POST with a list of events to acknowledge or
+ * This servlet receives an HTTP POST with a list of alarms to acknowledge or
  * unacknowledge, and then it redirects the client to a URL for display. The
  * target URL is configurable in the servlet config (web.xml file).
  * 
@@ -78,33 +78,33 @@ public class AcknowledgeAlarmServlet extends HttpServlet {
     }
 
     /**
-     * Acknowledge the events specified in the POST and then redirect the client
+     * Acknowledge the alarms specified in the POST and then redirect the client
      * to an appropriate URL for display.
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // required parameter
-        String[] eventIdStrings = request.getParameterValues("event");
+        String[] alarmIdStrings = request.getParameterValues("alarm");
         String action = request.getParameter("action");
 
-        if (eventIdStrings == null) {
-            throw new MissingParameterException("event", new String[] { "event", "action" });
+        if (alarmIdStrings == null) {
+            throw new MissingParameterException("alarm", new String[] { "alarm", "action" });
         }
 
         if (action == null) {
-            throw new MissingParameterException("action", new String[] { "event", "action" });
+            throw new MissingParameterException("action", new String[] { "alarm", "action" });
         }
 
-        // convert the event id strings to ints
-        int[] eventIds = new int[eventIdStrings.length];
-        for (int i = 0; i < eventIds.length; i++) {
-            eventIds[i] = Integer.parseInt(eventIdStrings[i]);
+        // convert the alarm id strings to ints
+        int[] alarmIds = new int[alarmIdStrings.length];
+        for (int i = 0; i < alarmIds.length; i++) {
+            alarmIds[i] = Integer.parseInt(alarmIdStrings[i]);
         }
 
         try {
             if (action.equals(ACKNOWLEDGE_ACTION)) {
-                AlarmFactory.acknowledge(eventIds, request.getRemoteUser());
+                AlarmFactory.acknowledge(alarmIds, request.getRemoteUser());
             } else if (action.equals(UNACKNOWLEDGE_ACTION)) {
-                AlarmFactory.unacknowledge(eventIds);
+                AlarmFactory.unacknowledge(alarmIds);
             } else {
                 throw new ServletException("Unknown acknowledge action: " + action);
             }

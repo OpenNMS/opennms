@@ -268,18 +268,18 @@
           <td width="1%"> <%=this.makeSortLink( parms, AlarmFactory.SortStyle.ID,        AlarmFactory.SortStyle.REVERSE_ID,        "id",        "ID" )%></td>
           <td width="10%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SEVERITY,  AlarmFactory.SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%></td>
           <td width="25%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.NODE,      AlarmFactory.SortStyle.REVERSE_NODE,      "node",      "Node"      )%></td>
-          <td width="16%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.INTERFACE, AlarmFactory.SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%></td>
-          <td width="15%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SERVICE,   AlarmFactory.SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%></td>
-          <td width="10%"><b>Ackd</b></td>
+          <td width="20%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.INTERFACE, AlarmFactory.SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%></td>
+          <td width="20%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SERVICE,   AlarmFactory.SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%></td>
+          <td width="15%"><b>Ackd</b></td>
         </tr>      
         <tr bgcolor="#999999">
-          <td width="1%">&nbsp;</td>
-          <td width="1%">&nbsp;</td>
-          <td width="1%">&nbsp;</td>
-          <td width="19%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.COUNT,  AlarmFactory.SortStyle.REVERSE_COUNT,  "count",  "Count"  )%></td>
-          <td width="30%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.LASTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last Event Time"  )%></td>
-          <td width="30%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.FIRSTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time"  )%></td>
-          <td width="1%">&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td><%=this.makeSortLink( parms, AlarmFactory.SortStyle.COUNT,  AlarmFactory.SortStyle.REVERSE_COUNT,  "count",  "Count"  )%></td>
+          <td><%=this.makeSortLink( parms, AlarmFactory.SortStyle.LASTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last Event Time"  )%></td>
+          <td><%=this.makeSortLink( parms, AlarmFactory.SortStyle.FIRSTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time"  )%></td>
+          <td>&nbsp;</td>
         </tr>
       <% for( int i=0; i < alarms.length; i++ ) { %>        
         <tr valign="top" bgcolor="<%=(i%2 == 0) ? "white" : "#cccccc"%>">
@@ -388,14 +388,13 @@
               <a href="<%=this.makeLink( parms, new BeforeFirstEventTimeFilter(alarms[i].getFirstEventTime()), true)%>" class="filterLink" title="Only show alarms occurring before this one"><%=addBeforeDateFilterString%></a>
             </nobr>
           </td>
-	  <td>&nbsp;</td>
-	</tr>
         
-        <tr valign="top" bgcolor="<%=(i%2 == 0) ? "white" : "#cccccc"%>">
-          <td valign="top" colspan="3"><%=alarms[i].getLogMessage()%></td>
           <td valign="top">
             <%=alarms[i].isAcknowledged() ? org.opennms.netmgt.EventConstants.formatToUIString(alarms[i].getAcknowledgeTime()) : "&nbsp;"%>
           </td>
+        </tr>
+	<tr valign="top" bgcolor="<%=(i%2 == 0) ? "white" : "#cccccc"%>">
+          <td valign="top" colspan="3"><%=alarms[i].getLogMessage()%></td>
         </tr>
        
       <% } /*end for*/%>
