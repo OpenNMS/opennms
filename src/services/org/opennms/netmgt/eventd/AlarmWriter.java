@@ -131,15 +131,18 @@ final class AlarmWriter extends Persist {
                     m_dbConn.commit();
                     notUpdated = false;
                 } catch (SQLException e) {
-                    log.warn("Error in attempt: "+attempt+" inserting alarm into the datastore", e);
                     try {
                         m_dbConn.rollback();
                         m_dbConn.setAutoCommit(false);
                     } catch (Exception e2) {
                         log.warn("Rollback of transaction failed!", e2);
                     }
-                    if (attempt > 1)
+                    if (attempt > 1) {
+                        log.warn("Error in attempt: "+attempt+" inserting alarm into the datastore", e);
                         throw e;
+                    } else {
+                        log.info("Retrying insertOrUpdate statement after first attempt: "+ e.getMessage());
+                    }
                 }
                 attempt++;
             }

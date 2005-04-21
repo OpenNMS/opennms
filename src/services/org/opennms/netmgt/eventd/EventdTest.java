@@ -55,7 +55,7 @@ public class EventdTest extends OpenNMSTestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
         m_eventd.stop();
-//        assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
+        assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
     }
         
     public void testPersistEvent() throws Exception {
@@ -125,29 +125,29 @@ public class EventdTest extends OpenNMSTestCase {
         final MockNode node = m_network.getNode(1);
         
         final long millis = System.currentTimeMillis()+2500;
-
-        
         for (int i=1; i<= numberOfAlarmsToReduce; i++) {
             MockUtil.println("Creating Runnable: "+i+" of "+numberOfAlarmsToReduce+" events to reduce.");
 
             class EventRunner implements Runnable {
                 Object lock = new Object();
                 public void run() {
-                    synchronized (lock) {
+//                    synchronized (lock) {
                         while (System.currentTimeMillis() < millis) {
                             try {
-                                lock.wait(10);
+//                                lock.wait(10);
+                                Thread.sleep(10);
                             } catch (InterruptedException e) {
                                 MockUtil.println(e.getMessage());
                             }
                         }
                         sendNodeDownEvent(reductionKey, node);                    
-                    }
+  //                  }
                 }
             }
             
             Runnable r = new EventRunner();
-            r.run();
+            Thread p = new Thread(r);
+            p.start();
         }
         sleep(5000);
         
