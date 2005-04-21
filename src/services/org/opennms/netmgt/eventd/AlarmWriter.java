@@ -118,28 +118,30 @@ final class AlarmWriter extends Persist {
                 }
             }
 
-            try {
-                if (!isReductionNeeded(eventHeader, event)) {
-                    if (log.isDebugEnabled())
-                        log.debug("AlarmWriter not reducing event for: " +event.getDbid()+ ": "+ event.getUei());
-                    insertAlarm(eventHeader, event);
-                } else {
-                    if (log.isDebugEnabled())
-                        log.debug("AlarmWriter is reducing event for: " +event.getDbid()+ ": "+ event.getUei());
-                    updateAlarm(eventHeader, event);
-                }
-
-                // commit
-                m_dbConn.commit();
-            } catch (SQLException e) {
-                log.warn("Error inserting event into the datastore", e);
+            /*
+             * Try twice incase the transaction fails.  This could happen if 2 or more threads query the db
+             * at the same time and determine that insert needs to happen.  One insert will complete the other
+             * will fail.  The next time through the loop, the alarm will be reduced with an update. 
+             */
+            int attempt = 1;
+            boolean notUpdated = true;
+            while (attempt <= 2 && notUpdated) {
                 try {
-                    m_dbConn.rollback();
-                } catch (Exception e2) {
-                    log.warn("Rollback of transaction failed!", e2);
+                    insertOrUpdateAlarm(eventHeader, event);
+                    m_dbConn.commit();
+                    notUpdated = false;
+                } catch (SQLException e) {
+                    log.warn("Error in attempt: "+attempt+" inserting alarm into the datastore", e);
+                    try {
+                        m_dbConn.rollback();
+                        m_dbConn.setAutoCommit(false);
+                    } catch (Exception e2) {
+                        log.warn("Rollback of transaction failed!", e2);
+                    }
+                    if (attempt > 1)
+                        throw e;
                 }
-
-                throw e;
+                attempt++;
             }
 
             if (log.isDebugEnabled())

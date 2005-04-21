@@ -146,22 +146,24 @@ final class EventHandler implements Runnable {
                 log.debug("}");
             }
 
+            // look up eventconf match and expand event
+            EventExpander.expandEvent(event);
             try {
-                // look up eventconf match and expand event
-                EventExpander.expandEvent(event);
-
                 // add to database
                 eventWriter.persistEvent(m_eventLog.getHeader(), event);
-                alarmWriter.persistAlarm(m_eventLog.getHeader(), event);
-
                 // send event to interested listeners
                 EventIpcManagerFactory.getIpcManager().broadcastNow(event);
-
             } catch (SQLException sqle) {
                 log.warn("Unable to add event to database", sqle);
             } catch (Throwable t) {
                 log.warn("Unknown exception processing event", t);
             }
+            try {
+                alarmWriter.persistAlarm(m_eventLog.getHeader(), event);
+            } catch (SQLException sqle) {
+                log.warn("Unable to add alarm to database", sqle);
+            }
+
         }
 
         // close database related stuff in the eventwriter

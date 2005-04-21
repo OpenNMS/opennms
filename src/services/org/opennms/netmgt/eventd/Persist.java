@@ -347,7 +347,19 @@ class Persist {
         return hostname;
     }
     
-    protected boolean isReductionNeeded(Header eventHeader, Event event) throws SQLException {
+    public void insertOrUpdateAlarm(Header eventHeader, Event event) throws SQLException {
+        
+        Category log = ThreadCategory.getInstance(AlarmWriter.class);
+        if (isReductionNeeded(eventHeader, event)) {
+            log.debug("AlarmWriter is reducing event for: " +event.getDbid()+ ": "+ event.getUei());
+            updateAlarm(eventHeader, event);
+        } else {
+            log.debug("AlarmWriter is not reducing event for: " +event.getDbid()+ ": "+ event.getUei());
+            insertAlarm(eventHeader, event);
+        }
+    }
+    
+    private boolean isReductionNeeded(Header eventHeader, Event event) throws SQLException {
         
         Category log = ThreadCategory.getInstance(AlarmWriter.class);
                 
@@ -366,7 +378,7 @@ class Persist {
         return (count > 0 ? true : false);
     }
     
-    protected void updateAlarm(Header eventHeader, Event event) throws SQLException {
+    private void updateAlarm(Header eventHeader, Event event) throws SQLException {
 
         Category log = ThreadCategory.getInstance(Persist.class);
 
@@ -393,7 +405,7 @@ class Persist {
      *                Thrown if a required resource cannot be found in the
      *                properties file.
      */
-    protected void insertAlarm(Header eventHeader, Event event) throws SQLException {
+    private void insertAlarm(Header eventHeader, Event event) throws SQLException {
         int alarmID = -1;
         Category log = ThreadCategory.getInstance(AlarmWriter.class);
         

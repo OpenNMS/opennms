@@ -58,8 +58,10 @@ public class OpenNMSTestCase extends TestCase {
             "   TCPPort=\"5827\"\n" + 
             "   UDPPort=\"5827\"\n" + 
             "   receivers=\"5\"\n" + 
-            "   getNextEventID=\"SELECT max(eventId)+1 from events\"\n" + 
-            "   getNextAlarmID=\"SELECT max(alarmId)+1 from alarms\"\n" + 
+//            "   getNextEventID=\"SELECT max(eventId)+1 from events\"\n" + 
+            "   getNextEventID=\"select next value for eventNxtId from seqQueryTable\"\n" +
+//            "   getNextAlarmID=\"SELECT max(alarmId)+1 from alarms\"\n" + 
+            "   getNextAlarmID=\"select next value for alarmNxtId from seqQueryTable\"\n" +
             "   socketSoTimeoutRequired=\"yes\"\n" + 
             "   socketSoTimeoutPeriod=\"3000\">\n" + 
             "</EventdConfiguration>";
@@ -1282,7 +1284,7 @@ public class OpenNMSTestCase extends TestCase {
 
     protected static EventdConfigManager m_eventdConfigMgr;
     
-    protected static boolean m_runSupers = false;
+    protected static boolean m_runSupers = true;
 
     /**
      * String representing snmp-config.xml

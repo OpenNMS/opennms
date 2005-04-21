@@ -55,7 +55,7 @@ public class EventdTest extends OpenNMSTestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
         m_eventd.stop();
-        assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
+//        assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
     }
         
     public void testPersistEvent() throws Exception {
@@ -63,12 +63,7 @@ public class EventdTest extends OpenNMSTestCase {
         assertEquals(0, m_db.countRows("select * from events"));
         
         MockNode node = m_network.getNode(1);
-        Event e = MockUtil.createNodeDownEvent("Test", node);
-        Logmsg logmsg = new Logmsg();
-        logmsg.setDest("logndisplay");
-        logmsg.setContent("testing");
-        e.setLogmsg(logmsg);
-        m_eventd.processEvent(e);
+        sendNodeDownEvent(null, node);
         sleep(1000);
         assertEquals(1, m_db.countRows("select * from events"));
         
@@ -80,12 +75,7 @@ public class EventdTest extends OpenNMSTestCase {
         assertEquals(0, m_db.countRows("select * from alarms"));
         
         MockNode node = m_network.getNode(1);
-        Event e = MockUtil.createNodeDownEvent("Test", node);
-        Logmsg logmsg = new Logmsg();
-        logmsg.setDest("logndisplay");
-        logmsg.setContent("testing");
-        e.setLogmsg(logmsg);
-        m_eventd.processEvent(e);
+        sendNodeDownEvent(null, node);
         sleep(1000);
         
         //this should be the first occurrence of this alarm
@@ -94,24 +84,13 @@ public class EventdTest extends OpenNMSTestCase {
 
         //this should be the second occurrence and shouldn't create another row
         //there should still be only 1 alarm
-        e = MockUtil.createNodeDownEvent("Test", node);
-        logmsg = new Logmsg();
-        logmsg.setDest("logndisplay");
-        logmsg.setContent("testing");
-        e.setLogmsg(logmsg);
-        m_eventd.processEvent(e);
-        sleep(1000);        
+        sendNodeDownEvent(null, node);
+        sleep(1000);
         assertEquals(1, m_db.countRows("select * from alarms"));
         
         //this should be a new alarm because of the new key
         //there should now be 2 alarms
-        e = MockUtil.createNodeDownEvent("Test", node);
-        logmsg = new Logmsg();
-        logmsg.setDest("logndisplay");
-        logmsg.setContent("testing");
-        e.setLogmsg(logmsg);
-        e.setReductionKey("DontReduceThis");
-        m_eventd.processEvent(e);
+        sendNodeDownEvent("DontReduceThis", node);
         sleep(1000);
         assertEquals(2, m_db.countRows("select * from alarms"));
         
@@ -134,6 +113,70 @@ public class EventdTest extends OpenNMSTestCase {
             stmt.close();
             conn.close();
         }
+    }
+    
+    public void testPersistManyAlarmsAtOnce() throws InterruptedException {
+        
+        int numberOfAlarmsToReduce = 10;
+        //there should be no alarms in the alarms table
+        assertEquals(0, m_db.countRows("select * from alarms"));
+ 
+        final String reductionKey = "countThese";
+        final MockNode node = m_network.getNode(1);
+        
+        final long millis = System.currentTimeMillis()+2500;
+
+        
+        for (int i=1; i<= numberOfAlarmsToReduce; i++) {
+            MockUtil.println("Creating Runnable: "+i+" of "+numberOfAlarmsToReduce+" events to reduce.");
+
+            class EventRunner implements Runnable {
+                Object lock = new Object();
+                public void run() {
+                    synchronized (lock) {
+                        while (System.currentTimeMillis() < millis) {
+                            try {
+                                lock.wait(10);
+                            } catch (InterruptedException e) {
+                                MockUtil.println(e.getMessage());
+                            }
+                        }
+                        sendNodeDownEvent(reductionKey, node);                    
+                    }
+                }
+            }
+            
+            Runnable r = new EventRunner();
+            r.run();
+        }
+        sleep(5000);
+        
+        //this should be the first occurrence of this alarm
+        //there should be 1 alarm now
+        int rowCount = m_db.countRows("select * from alarms");
+        Integer counterColumn = m_db.getAlarmCount(reductionKey);
+        MockUtil.println("rowcCount is: "+rowCount+", expected 1.");
+        MockUtil.println("counterColumn is: "+counterColumn+", expected "+numberOfAlarmsToReduce);
+        assertEquals(1, rowCount);
+        assertEquals(numberOfAlarmsToReduce, counterColumn.intValue());
+        
+    }
+
+    /**
+     * @param reductionKey
+     * @param node
+     */
+    private void sendNodeDownEvent(String reductionKey, MockNode node) {
+        Event e = MockUtil.createNodeDownEvent("Test", node);
+        
+        if (reductionKey != null)
+            e.setReductionKey(reductionKey);
+        
+        Logmsg logmsg = new Logmsg();
+        logmsg.setDest("logndisplay");
+        logmsg.setContent("testing");
+        e.setLogmsg(logmsg);
+        m_eventd.processEvent(e);
     }
     
     private void sleep(long millis) {

@@ -255,8 +255,10 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
         "             CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID)  REFERENCES events (eventID) ON DELETE CASCADE"+
         ");");
         
+        update("CREATE UNIQUE INDEX alarm_reductionkey_idx ON alarms(reductionKey)");
         update("create sequence outageNxtId start with 1");
         update("create sequence eventNxtId start with 1");
+        update("create sequence alarmNxtId start with 1");
         update("create sequence notifNxtId start with 1");
         update("create table seqQueryTable (row integer)");
         update("insert into seqQueryTable (row) values (0)");
@@ -375,6 +377,12 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     private Integer getNextId(String nxtIdStmt) {
         SingleResultQuerier querier = new SingleResultQuerier(this, nxtIdStmt);
         querier.execute();
+        return (Integer)querier.getResult();
+    }
+    
+    public Integer getAlarmCount(String reductionKey) {
+        SingleResultQuerier querier = new SingleResultQuerier(this, "select counter from alarms where reductionKey = ?");
+        querier.execute(reductionKey);
         return (Integer)querier.getResult();
     }
 

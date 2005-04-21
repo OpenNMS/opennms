@@ -798,7 +798,7 @@ create table alarms (
 
 CREATE INDEX alarm_uei_idx ON alarms(eventUei);
 CREATE INDEX alarm_nodeid_idx ON alarms(nodeID);
-CREATE INDEX alarm_reductionkey_idx ON alarms(reductionKey);
+CREATE UNIQUE INDEX alarm_reductionkey_idx ON alarms(reductionKey);
 CREATE INDEX alarm_reduction2_idx ON alarms(alarmID, eventUei, dpName, nodeID, serviceID, reductionKey);
 
 
