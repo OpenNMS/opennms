@@ -1051,8 +1051,8 @@ public class AlarmFactory extends Object {
             element = rs.getString("nodeLabel");
             alarm.nodeLabel = (String) element;
 
-//            element = rs.getString("serviceName");
-//            alarm.serviceName = (String) element;
+            element = rs.getString("serviceName");
+            alarm.serviceName = (String) element;
 
 //            element = rs.getTimestamp("alarmCreateTime");
 //            alarm.createTime = new Date(((Timestamp) element).getTime());
