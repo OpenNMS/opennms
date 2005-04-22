@@ -114,27 +114,6 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         assertUsersList(users);
     }
 
-    private void assertUsersList(List users) {
-        assertTitleEquals("List | User Admin | OpenNMS Web Console");
-        assertHeaderPresent("User Configuration", null, new String[] {"Home", "Admin", "Users and Groups", "User List"});
-        assertFooterPresent(null);
-        assertElementPresent("doNewUser");
-        for(int i = 0; i < users.size(); i++) {
-            User user = (User)users.get(i);
-            String userPrefix = "users("+user.getUserId()+")";
-            assertElementPresent(userPrefix+".doDelete");
-            assertElementPresent(userPrefix+".doModify");
-            assertElementPresent(userPrefix+".doRename");
-            assertTextInElement(userPrefix+".doDetails", user.getUserId());
-            assertTextInElement(userPrefix+".fullName", user.getFullName());
-            assertTextInElement(userPrefix+".email", getContact(user, "email"));
-            assertTextInElement(userPrefix+".pagerEmail", getContact(user, "pagerEmail"));
-            assertTextInElement(userPrefix+".xmppAddress", getContact(user, "xmppAddress"));
-            // Other contacts could/should be here on this page?
-            assertTextInElement(userPrefix+".userComments", user.getUserComments());
-        }
-    }
-    
     public void testCancelAddUser() throws Exception {
         beginAt("/admin/userGroupView/users/list.jsp");
         List users = getCurrentUsers();
@@ -183,12 +162,11 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         assertNewUserPage("newUser", "", "");
     }
     
-    public void testCancelModifyUser() throws Exception {
+    public void testModifyUserPage() throws Exception {
         List users = getCurrentUsers();
         String userID = "tempuser";
         User user = findUser(userID, users);
         assertNotNull("Unable to find user "+userID, user);
-        user = cloneUser(user);
 
         beginAt("/admin/userGroupView/users/list.jsp");
         
@@ -196,6 +174,20 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         
         assertModifyUserPage(user);
         
+    }
+    
+    public void testCancelModifyUser() throws Exception {
+        List users = getCurrentUsers();
+        String userID = "tempuser";
+        User user = findUser(userID, users);
+        assertNotNull("Unable to find user "+userID, user);
+        
+        beginAt("/admin/userGroupView/users/list.jsp");
+        
+        clickLink("users("+userID+").doModify");
+        
+        // close user first so we don't modify expected list
+        user = cloneUser(user);
         user.setFullName("Mr. Personality");
         user.setUserComments("That down right rude SOB who expects me to RTFM!");
         setContact(user, "email", "brozow@opennms.org");
@@ -218,8 +210,6 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         beginAt("/admin/userGroupView/users/list.jsp");
         
         clickLink("users("+userID+").doModify");
-        
-        assertModifyUserPage(user);
         
         user.setFullName("Mr. Personality");
         user.setUserComments("That down right rude SOB who expects me to RTFM!");
@@ -246,8 +236,6 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         
         clickLink("users("+userID+").doModify");
         
-        assertModifyUserPage(user);
-
         addSchedule(user, "MoWeFr0900-1000");
         
         fillModifyFormFromUser(user);
@@ -271,8 +259,6 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         
         clickLink("users("+userID+").doModify");
         
-        assertModifyUserPage(user);
-        
         user.setDutySchedule(new String[0]);
 
         fillModifyFormFromUser(user);
@@ -287,11 +273,6 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         
     }
 
-    private void addSchedule(User user, String sched) {
-        DutySchedule newSched = new DutySchedule(sched);
-        user.addDutySchedule(newSched.toString());
-    }
-    
     public void testAddDutySchedule() throws Exception {
         List users = getCurrentUsers();
         String userID = "tempuser";
@@ -302,8 +283,6 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         
         clickLink("users("+userID+").doModify");
         
-        assertModifyUserPage(user);
-
         addSchedule(user, "MoWeFr0900-1000");
         addSchedule(user, "TuTh1000-1100");
         addSchedule(user, "SaSu1400-1500");
@@ -329,8 +308,6 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         
         clickLink("users("+userID+").doModify");
         
-        assertModifyUserPage(user);
-
         addSchedule(user, "MoWeFr9900-9901");
         
         fillModifyFormFromUser(user);
@@ -352,8 +329,6 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         
         clickLink("users("+userID+").doModify");
         
-        assertModifyUserPage(user);
-
         addSchedule(user, "MoWeFr0900-9000");
         
         fillModifyFormFromUser(user);
@@ -375,8 +350,6 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         
         clickLink("users("+userID+").doModify");
         
-        assertModifyUserPage(user);
-
         addSchedule(user, "MoWeFr1000-0900");
         
         fillModifyFormFromUser(user);
@@ -411,6 +384,11 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         assertUsersList(users);
         
         
+    }
+    
+    private void addSchedule(User user, String sched) {
+        DutySchedule newSched = new DutySchedule(sched);
+        user.addDutySchedule(newSched.toString());
     }
     
     private void fillModifyFormFromUser(User user) {
@@ -511,10 +489,31 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         
         OncallSchedule[] schedules = user.getOncallSchedule();
         assertFormElementEquals("oncallScheduleCount", String.valueOf(schedules.length));
+        assertFormElementPresent("schedAction");
+        assertFormElementPresent("schedIndex");
+        assertFormElementPresent("schedTimeIndex");
         for(int i = 0; i < schedules.length; i++) {
-            assertElementPresent("oncallSchedule["+i+"].name");
-            assertElementPresent("oncallSchedule["+i+"].type");
-            assertButtonPresent("oncallSchedule["+i+"].doDelete");
+            OncallSchedule sched = schedules[i];
+            String schedPrefix = "oncallSchedule["+i+"]";
+            assertFormElementEquals(schedPrefix+".name", sched.getName());
+            assertTextInElement(schedPrefix+".type", sched.getType());
+            assertButtonPresent(schedPrefix+".doDelete");
+            Time times[] = sched.getTime();
+            assertFormElementEquals(schedPrefix+".timeCount", String.valueOf(times.length));
+            for(int timeIndex = 0; timeIndex < times.length; timeIndex++) {
+                Time time = times[timeIndex];
+                String timePrefix = schedPrefix+".time["+timeIndex+"]";
+                
+                if ("specific".equals(sched.getType())) {
+                    assertFormElementNotPresent(timePrefix+".day");
+                } else {
+                    assertFormElementEquals(timePrefix+".day", time.getDay());
+                }
+                assertFormElementEquals(timePrefix+".begins", time.getBegins());
+                assertFormElementEquals(timePrefix+".ends", time.getEnds());
+                assertFormElementPresent(timePrefix+".doDeleteTime");
+            }
+            
             
         }
         
@@ -550,6 +549,27 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         assertNull("Unexpected alert: '"+alert+"'", alert);
     }
 
+    private void assertUsersList(List users) {
+        assertTitleEquals("List | User Admin | OpenNMS Web Console");
+        assertHeaderPresent("User Configuration", null, new String[] {"Home", "Admin", "Users and Groups", "User List"});
+        assertFooterPresent(null);
+        assertElementPresent("doNewUser");
+        for(int i = 0; i < users.size(); i++) {
+            User user = (User)users.get(i);
+            String userPrefix = "users("+user.getUserId()+")";
+            assertElementPresent(userPrefix+".doDelete");
+            assertElementPresent(userPrefix+".doModify");
+            assertElementPresent(userPrefix+".doRename");
+            assertTextInElement(userPrefix+".doDetails", user.getUserId());
+            assertTextInElement(userPrefix+".fullName", user.getFullName());
+            assertTextInElement(userPrefix+".email", getContact(user, "email"));
+            assertTextInElement(userPrefix+".pagerEmail", getContact(user, "pagerEmail"));
+            assertTextInElement(userPrefix+".xmppAddress", getContact(user, "xmppAddress"));
+            // Other contacts could/should be here on this page?
+            assertTextInElement(userPrefix+".userComments", user.getUserComments());
+        }
+    }
+    
     private void assertNewUserPage(String userID, String pass1, String pass2) {
         assertTitleEquals("New User Info | User Admin | OpenNMS Web Console");
         assertHeaderPresent("New User", null, new String[] {"Home", "Admin", "Users and Groups", "User List", "New User"});

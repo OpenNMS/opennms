@@ -48,30 +48,26 @@
 <%@page import="org.opennms.netmgt.config.common.*"%>
 <%@page import="org.opennms.netmgt.config.users.*"%>
 <%
-	HttpSession userSession = request.getSession(false);
-	Map users;
-	User user = null;
-	String userid = "";
-	UserFactory userFactory;
-	try
-	{
-		UserFactory.init();	
-		userFactory = UserFactory.getInstance();
-		users = userFactory.getUsers();
-	}
-	catch(Exception e)
-	{
-		throw new ServletException( "UserFactory:modify() " + e );
-	}
 
-	if (userSession != null)
-	{
-		user = (User)userSession.getAttribute("user.modifyUser.jsp");
-		userid = user.getUserId();
-	}
-	
+        HttpSession userSession = request.getSession(false);
+        Map users;
+        User user = null;
+        String userid = "";
+        UserFactory userFactory;
+        try {
+            UserFactory.init();
+            userFactory = UserFactory.getInstance();
+            users = userFactory.getUsers();
+        } catch (Exception e) {
+            throw new ServletException("UserFactory:modify() " + e);
+        }
 
-%>
+        if (userSession != null) {
+            user = (User) userSession.getAttribute("user.modifyUser.jsp");
+            userid = user.getUserId();
+        }
+
+        %>
 <html>
 <head>
 <title>Modify User | User Admin | OpenNMS Web Console</title>
@@ -170,25 +166,28 @@
         document.modifyUser.submit();
     }
     
-    function editOncallSchedule()
+    function deleteSchedule(schedIndex)
     {
-    	   var ok = validate();
-    	   if (ok)
-    	   {
-          document.modifyUser.redirect.value="/admin/userGroupView/users/modifyUser.jsp";
-          document.modifyUser.action="admin/userGroupView/users/updateUser";
-          document.modifyUser.submit();
-    	   }
+    		alert("Called deleteSchedule("+schedIndex+")");
+    }
+    
+    function deleteTime(schedIndex, timeIndex)
+    {
+    		alert("Called deleteTime("+schedIndex+", "+timeIndex+")");
     }
 
 </script>
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='admin/userGroupView/index.jsp'>Users and Groups</a>"; %>
-<% String breadcrumb3 = "<a href='admin/userGroupView/users/list.jsp'>User List</a>"; %>
-<% String breadcrumb4 = "Modify User"; %>
+<%String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>";
+        %>
+<%String breadcrumb2 = "<a href='admin/userGroupView/index.jsp'>Users and Groups</a>";
+        %>
+<%String breadcrumb3 = "<a href='admin/userGroupView/users/list.jsp'>User List</a>";
+        %>
+<%String breadcrumb4 = "Modify User";
+        %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Modify User" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
@@ -210,7 +209,7 @@
     <td>&nbsp;</td>
 
     <td>
-    <h3>Modify User: <%= userid %></h3>
+    <h3>Modify User: <%=userid%></h3>
 
     <table width="100%" border="0" cellspacing="0" cellpadding="2" >
       <tr>
@@ -223,17 +222,33 @@
                 <p><b>User Information</b></p>
               </td>
             </tr>
-	    <% 
-		String email = userFactory.getEmail(userid); 
-		String pagerEmail = userFactory.getPagerEmail(userid); 
-		String xmppAddress = userFactory.getXMPPAddress(userid);
-		String numericPage = userFactory.getNumericPage(userid); 
-		String numericPin = userFactory.getNumericPin(userid); 
-		String textPage = userFactory.getTextPage(userid); 
-		String textPin = userFactory.getTextPin(userid); 
-		String fullName = user.getFullName(); 
-		String comments = user.getUserComments(); 
-	    %>
+	    <%
+	    String email = null;
+        String pagerEmail = null;
+        String xmppAddress = null;
+        String numericPage = null;
+        String numericPin = null;
+        String textPage = null;
+        String textPin = null;
+        String fullName = null;
+        String comments = null;
+        try {
+            email = userFactory.getEmail(userid);
+            pagerEmail = userFactory.getPagerEmail(userid);
+            xmppAddress = userFactory.getXMPPAddress(userid);
+            numericPage = userFactory.getNumericPage(userid);
+            numericPin = userFactory.getNumericPin(userid);
+            textPage = userFactory.getTextPage(userid);
+            textPin = userFactory.getTextPin(userid);
+            fullName = user.getFullName();
+            comments = user.getUserComments();
+        } catch (org.exolab.castor.xml.MarshalException e) {
+            throw new ServletException("An Error occurred reading the users file", e);
+        } catch (org.exolab.castor.xml.ValidationException e) {
+            throw new ServletException("An Error occurred reading the users file", e);
+        }
+
+        %>
             <tr>
               <td valign="top">
                 <label id="fullNameLabel" for="fullName">Full Name:</label>
@@ -247,7 +262,7 @@
                 <label id="userCommentsLabel" for="userComments">Comments:</label>
               </td>
               <td align="left" valign="top">
-                <textarea rows="5" cols="33" id="userComments" name="userComments"><%=(comments == null ? "":comments) %></textarea>
+                <textarea rows="5" cols="33" id="userComments" name="userComments"><%=(comments == null ? "" : comments)%></textarea>
               </td>
             </tr>
             <tr>
@@ -347,11 +362,13 @@
           <p>To save your configuration, click on <b>[Finish]</b>.</p>
         </td>
       </tr>
+      
       <tr>
         <td width="100%" colspan="3">
           <p><b>Duty Schedules</b></p>
                                   <%
-				Collection dutySchedules = user.getDutyScheduleCollection(); %>
+Collection dutySchedules = user.getDutyScheduleCollection();
+        %>
 				<input type="hidden" name="dutySchedules" value="<%=user.getDutyScheduleCount()%>"/>
           
           <table width="100%" border="1" cellspacing="0" cellpadding="2" >
@@ -369,27 +386,28 @@
               <td><b>End Time</b></td>
             </tr>
                         <%
-				int i =0;
-				Iterator iter = dutySchedules.iterator();
-				while(iter.hasNext())
-				{
-					DutySchedule tmp = new DutySchedule((String)iter.next());
-					Vector curSched = tmp.getAsVector();
-                        %>
+int i = 0;
+        Iterator iter = dutySchedules.iterator();
+        while (iter.hasNext()) {
+            DutySchedule tmp = new DutySchedule((String) iter.next());
+            Vector curSched = tmp.getAsVector();
+
+            %>
                         <tr>
-                          <td width="1%"><%=(i+1)%></td>
+                          <td width="1%"><%=(i + 1)%></td>
                           <td width="1%">
                             <input type="checkbox" name="deleteDuty<%=i%>"/>
                           </td>
-                          <% ChoiceFormat days = new ChoiceFormat("0#Mo|1#Tu|2#We|3#Th|4#Fr|5#Sa|6#Su");
-                             for (int j = 0; j < 7; j++)
-                             {
-                                Boolean curDay = (Boolean)curSched.get(j);
-                          %>
+                          <%ChoiceFormat days = new ChoiceFormat("0#Mo|1#Tu|2#We|3#Th|4#Fr|5#Sa|6#Su");
+            for (int j = 0; j < 7; j++) {
+                Boolean curDay = (Boolean) curSched.get(j);
+
+                %>
                           <td width="5%">
                             <input type="checkbox" name="duty<%=i+days.format(j)%>" <%= (curDay.booleanValue() ? "checked=\"true\"" : "")%>/>
                           </td>
-                          <% } %>
+                          <%}
+            %>
                           <td width="5%">
                             <input type="text" size="4" name="duty<%=i%>Begin" value="<%=curSched.get(7)%>"/>
                           </td>
@@ -397,7 +415,9 @@
                             <input type="text" size="4" name="duty<%=i%>End" value="<%=curSched.get(8)%>"/>
                           </td>
                         </tr>
-                        <% i++; } %>
+                        <%i++;
+        }
+        %>
           </table>
         </td>
       </tr>
@@ -417,34 +437,46 @@
 
     <p><input id="removeSchedulesButton" type="button" name="addSchedule" value="Remove Checked Schedules" onclick="removeDutySchedules()"/></p>
     
-     <% OncallSchedule[] schedules = user.getOncallSchedule(); %>
-  	<input id="oncallScheduleCount" type="hidden" name="oncallScheduleCount" value="<%=schedules.length%>"/>
+     <%OncallSchedule[] schedules = user.getOncallSchedule();
+        %>
+  	<input type="hidden" id="oncallScheduleCount" name="oncallScheduleCount" value="<%=schedules.length%>"/>
+  	<input type="hidden" id="schedAction" name="schedAction" value="" />
+  	<input type="hidden" id="schedIndex" name="schedIndex" value="" />
+  	<input type="hidden" id="schedTimeIndex" name="schedTimeIndex" value=""/>
   	<table width="100%" border="1" cellspacing="0" cellpadding="2" >
             <tr bgcolor="#999999">
               <td width="1%">&nbsp;</td>
               <td><b>Role Name</b></td>
               <td><b>Type</b></td>
               <td colspan="3"><b>Times</b></td>
+              <td width="1%">&nbsp;</td>
             </tr>
-            <% for (int schedIndex = 0; schedIndex < schedules.length; schedIndex++) { %>
-            <%     OncallSchedule schedule = (OncallSchedule)schedules[schedIndex]; %>
-            <%     Time[] times = schedule.getTime(); %>
-            <%     String schedPrefix = "oncallSchedule["+schedIndex+"]"; %>
-            <%     for(int timeIndex = 0; timeIndex < times.length; timeIndex++) { %>
-            <%	     Time time = times[timeIndex]; %>
-            <%        String timePrefix = schedPrefix+".time["+timeIndex+"]"; %>
+            <%
+            	for (int schedIndex = 0; schedIndex < schedules.length; schedIndex++) {
+            		OncallSchedule schedule = (OncallSchedule) schedules[schedIndex];
+        		    Time[] times = schedule.getTime();
+	            String schedPrefix = "oncallSchedule[" + schedIndex + "]";
+	            for (int timeIndex = 0; timeIndex < times.length; timeIndex++) {
+		            Time time = times[timeIndex];
+		            String timePrefix = schedPrefix + ".time[" + timeIndex + "]";
+            %>
             			<tr>
-            <%        if (timeIndex == 0) { %>
+            <%
+            		if (timeIndex == 0) {
+            %>
               			<td rowSpan="<%= times.length %>">
-              				<input id="<%=schedPrefix%>.doDelete" type="button" name="editOncallSchedule" value="Delete" onclick="editOncallSchedule()"/>
+              			    <input type="hidden" id="<%= schedPrefix %>.timeCount" name="<%= schedPrefix %>.timeCount" value="<%= times.length %>" />
+              				<input type="hidden" id="<%= schedPrefix %>.doDelete" name="doDeleteSchedule" value="Delete" onclick="deleteSchedule(<%= schedIndex %>)"/>
               			</td>
             	  			<td rowSpan="<%= times.length %>" >
-            	  				<input id="<%=schedPrefix%>.name" type="text" name="<%=schedPrefix%>.name" value="<%= schedule.getName() %>" />
+            	  				<input id="<%= schedPrefix %>.name" type="text" name="<%= schedPrefix %>.name" value="<%= schedule.getName() %>" />
             	  			</td>
-            	  			<td rowSpan="<%= times.length %>" id="<%=schedPrefix%>.type">
+            	  			<td rowSpan="<%= times.length %>" id="<%= schedPrefix %>.type">
             	  				<%= schedule.getType() %>
             	  			</td>
-            <%        } %>
+            <%
+            		}
+            %>
             				<td>
             					<input type="text" id="<%=timePrefix%>.day" name="<%=timePrefix%>.day" value="<%= time.getDay() %>"/>
             				</td>           	  
@@ -453,10 +485,15 @@
             				</td>           	  
             				<td>
             					<input type="text" id="<%=timePrefix%>.ends" name="<%=timePrefix%>.ends" value="<%= time.getEnds() %>"/>
+            				</td>
+            				<td>
+            					<input type="button" id="<%=timePrefix%>.doDeleteTime" name="<%=timePrefix%>.doDeleteTime" value="Delete Time" onclick="deleteTime(<%= schedIndex %>, <%= timeIndex %>)"/>
             				</td>  
             			</tr>	  
-            <%    } %>
-  	        <% } %>
+        <%
+        		}
+  	     }
+    		%>
      </table>    
 
     <p><input id="saveUserButton" type="button" name="finish" value="Finish" onclick="saveUser()"/>&nbsp;&nbsp;&nbsp;<input id="cancelButton" type="button" name="cancel" value="Cancel" onclick="cancelUser()"/></p>
