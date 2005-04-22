@@ -33,7 +33,6 @@
 package org.opennms.web.admin.users;
 
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.text.ChoiceFormat;
 import java.util.Collection;
 import java.util.Vector;
@@ -49,7 +48,6 @@ import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.config.users.User;
-import org.opennms.web.Util;
 
 /**
  * A servlet that handles saving a user
@@ -70,9 +68,10 @@ public class UpdateUserServlet extends HttpServlet {
                 throw new ServletException("UpdateUserServlet:init Error initialising UserFactory " + e);
             }
             userFactory = UserFactory.getInstance();
+            
+            
 
             // get the rest of the user information from the form
-            System.err.println("Full Name is "+request.getParameter("fullName"));
             newUser.setFullName(request.getParameter("fullName"));
             newUser.setUserComments(request.getParameter("userComments"));
 

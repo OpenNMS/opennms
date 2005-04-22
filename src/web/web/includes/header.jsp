@@ -63,8 +63,8 @@
       <% } else { %>
         <%=status%>
       <% } %>
-      </b><br>
-      <font face="arial" size="-1"><b><%=date%><br>
+      </b><br/>
+      <font face="arial" size="-1"><b><%=date%><br/>
       <%=time%></b></font>
     </td>
   </tr>

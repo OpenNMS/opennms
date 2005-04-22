@@ -115,7 +115,6 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
     }
 
     private void assertUsersList(List users) {
-        getTester().dumpResponse();
         assertTitleEquals("List | User Admin | OpenNMS Web Console");
         assertHeaderPresent("User Configuration", null, new String[] {"Home", "Admin", "Users and Groups", "User List"});
         assertFooterPresent(null);
@@ -215,7 +214,6 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         String userID = "tempuser";
         User user = findUser(userID, users);
         assertNotNull("Unable to find user "+userID, user);
-        //user = cloneUser(user);
 
         beginAt("/admin/userGroupView/users/list.jsp");
         
@@ -238,10 +236,158 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         
     }
     
-    // TODO: add test for modifying dutySchedule
-    // TODO: add tests for deleting dutySchedule
-    // TODO: add tests for adding dutySchedule
+    public void testModifyDutySchedule() throws Exception {
+        List users = getCurrentUsers();
+        String userID = "tempuser";
+        User user = findUser(userID, users);
+        assertNotNull("Unable to find user "+userID, user);
+
+        beginAt("/admin/userGroupView/users/list.jsp");
+        
+        clickLink("users("+userID+").doModify");
+        
+        assertModifyUserPage(user);
+
+        addSchedule(user, "MoWeFr0900-1000");
+        
+        fillModifyFormFromUser(user);
+        
+        clickButton("saveUserButton");
+        
+        assertUsersList(users);
+
+        clickLink("users("+userID+").doModify");
+
+        assertModifyUserPage(user);
+    }
     
+    public void testDeleteDutySchedule() throws Exception {
+        List users = getCurrentUsers();
+        String userID = "tempuser";
+        User user = findUser(userID, users);
+        assertNotNull("Unable to find user "+userID, user);
+
+        beginAt("/admin/userGroupView/users/list.jsp");
+        
+        clickLink("users("+userID+").doModify");
+        
+        assertModifyUserPage(user);
+        
+        user.setDutySchedule(new String[0]);
+
+        fillModifyFormFromUser(user);
+        
+        clickButton("saveUserButton");
+        
+        assertUsersList(users);
+
+        clickLink("users("+userID+").doModify");
+
+        assertModifyUserPage(user);
+        
+    }
+
+    private void addSchedule(User user, String sched) {
+        DutySchedule newSched = new DutySchedule(sched);
+        user.addDutySchedule(newSched.toString());
+    }
+    
+    public void testAddDutySchedule() throws Exception {
+        List users = getCurrentUsers();
+        String userID = "tempuser";
+        User user = findUser(userID, users);
+        assertNotNull("Unable to find user "+userID, user);
+
+        beginAt("/admin/userGroupView/users/list.jsp");
+        
+        clickLink("users("+userID+").doModify");
+        
+        assertModifyUserPage(user);
+
+        addSchedule(user, "MoWeFr0900-1000");
+        addSchedule(user, "TuTh1000-1100");
+        addSchedule(user, "SaSu1400-1500");
+        
+        fillModifyFormFromUser(user);
+        
+        clickButton("saveUserButton");
+        
+        assertUsersList(users);
+
+        clickLink("users("+userID+").doModify");
+
+        assertModifyUserPage(user);
+    }
+    
+    public void testInvalidDutyScheduleStartTime() throws Exception {
+        List users = getCurrentUsers();
+        String userID = "tempuser";
+        User user = findUser(userID, users);
+        assertNotNull("Unable to find user "+userID, user);
+
+        beginAt("/admin/userGroupView/users/list.jsp");
+        
+        clickLink("users("+userID+").doModify");
+        
+        assertModifyUserPage(user);
+
+        addSchedule(user, "MoWeFr9900-9901");
+        
+        fillModifyFormFromUser(user);
+        
+        clickButton("saveUserButton");
+        
+        verifyAlert("The begin value for duty schedule " + (user.getDutyScheduleCount()) + " must be greater than 0 and less than 2400");
+        
+        assertModifyUserPage(user);
+    }
+    
+    public void testInvalidDutyScheduleEndTime() throws Exception {
+        List users = getCurrentUsers();
+        String userID = "tempuser";
+        User user = findUser(userID, users);
+        assertNotNull("Unable to find user "+userID, user);
+
+        beginAt("/admin/userGroupView/users/list.jsp");
+        
+        clickLink("users("+userID+").doModify");
+        
+        assertModifyUserPage(user);
+
+        addSchedule(user, "MoWeFr0900-9000");
+        
+        fillModifyFormFromUser(user);
+        
+        clickButton("saveUserButton");
+        
+        verifyAlert("The end value for duty schedule " + (user.getDutyScheduleCount()) + " must be greater than 0 and less than 2400");
+        
+        assertModifyUserPage(user);
+    }
+
+    public void testInvalidDutyScheduleInterval() throws Exception {
+        List users = getCurrentUsers();
+        String userID = "tempuser";
+        User user = findUser(userID, users);
+        assertNotNull("Unable to find user "+userID, user);
+
+        beginAt("/admin/userGroupView/users/list.jsp");
+        
+        clickLink("users("+userID+").doModify");
+        
+        assertModifyUserPage(user);
+
+        addSchedule(user, "MoWeFr1000-0900");
+        
+        fillModifyFormFromUser(user);
+        
+        clickButton("saveUserButton");
+        
+        verifyAlert("The begin value for duty schedule " + (user.getDutyScheduleCount()) + " must be less than the end value.");
+        
+        assertModifyUserPage(user);
+    }
+
     public void testNewUserCancelOnModifyPage() throws Exception {
         beginAt("/admin/userGroupView/users/list.jsp");
         List users = getCurrentUsers();
@@ -268,6 +414,22 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
     }
     
     private void fillModifyFormFromUser(User user) {
+
+        // First make sure the number of dutySchedules matches
+        String[] dutySchedules = user.getDutySchedule();
+
+        int numScheds = Integer.parseInt(getTester().getDialog().getFormParameterValue("dutySchedules"));
+        if (numScheds > dutySchedules.length) {
+            for(int i = dutySchedules.length; i < numScheds; i++) {
+                checkCheckbox("deleteDuty"+i);
+            }
+            clickButton("removeSchedulesButton");
+        } else if (numScheds < dutySchedules.length) {
+            int needed = dutySchedules.length - numScheds;
+            selectOption("numSchedules", String.valueOf(needed));
+            clickButton("addSchedulesButton");
+        }
+        
         setWorkingForm("modifyUser");
         setFormElement("fullName", user.getFullName());
         setFormElement("userComments", user.getUserComments());
@@ -278,10 +440,36 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         setFormElement("numericalPin", getContact(user, "numericPage"));
         setFormElement("textService", getServiceProvider(user, "textPage"));
         setFormElement("textPin", getContact(user, "textPage"));
+
+        assertFormElementEquals("dutySchedules", String.valueOf(dutySchedules.length));
+
+        for(int i = 0; i < dutySchedules.length; i++) {
+            DutySchedule sched = new DutySchedule(dutySchedules[i]);
+            setCheckboxSelection("duty"+i+"Mo", sched.hasDay(DutySchedule.MONDAY));
+            setCheckboxSelection("duty"+i+"Mo", sched.hasDay(DutySchedule.MONDAY));
+            setCheckboxSelection("duty"+i+"Tu", sched.hasDay(DutySchedule.TUESDAY));
+            setCheckboxSelection("duty"+i+"We", sched.hasDay(DutySchedule.WEDNESDAY));
+            setCheckboxSelection("duty"+i+"Th", sched.hasDay(DutySchedule.THURSDAY));
+            setCheckboxSelection("duty"+i+"Fr", sched.hasDay(DutySchedule.FRIDAY));
+            setCheckboxSelection("duty"+i+"Sa", sched.hasDay(DutySchedule.SATURDAY));
+            setCheckboxSelection("duty"+i+"Su", sched.hasDay(DutySchedule.SUNDAY));
+            setFormElement("duty"+i+"Begin", String.valueOf(sched.getStartTime()));
+            setFormElement("duty"+i+"End", String.valueOf(sched.getStopTime()));
+        }
+        
+        
+    }
+
+    private void setCheckboxSelection(String checkboxName, boolean isSelected) {
+        if (isSelected)
+            checkCheckbox(checkboxName);
+        else
+            uncheckCheckbox(checkboxName);
     }
 
 
     private void assertModifyUserPage(User user) {
+        
         assertNotNull(user.getUserId());
         assertFalse("".equals(user.getUserId()));
         
@@ -319,10 +507,16 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
             assertFormElementEquals("duty"+i+"End", String.valueOf(sched.getStopTime()));
         }
         
+        getTester().dumpResponse();
         
-        
-        // TODO: add OncallSchedule
-        //fail("We don't do OncallSchedules yet!");
+        OncallSchedule[] schedules = user.getOncallSchedule();
+        assertFormElementEquals("oncallScheduleCount", String.valueOf(schedules.length));
+        for(int i = 0; i < schedules.length; i++) {
+            assertElementPresent("oncallSchedule["+i+"].name");
+            assertElementPresent("oncallSchedule["+i+"].type");
+            assertButtonPresent("oncallSchedule["+i+"].doDelete");
+            
+        }
         
         
         assertButtonPresent("addSchedulesButton");

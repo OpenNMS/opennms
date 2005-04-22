@@ -21,6 +21,15 @@
 			<contact type="numericPage" info="6789" serviceProvider="ATT"/>
 			<contact type="textPage" info="9876" serviceProvider="Sprint"/>
 			<duty-schedule>MoTuWeThFrSaSu800-2300</duty-schedule>
+			<oncall-schedule name="oncall" type="weekly">
+			   <time day="sunday"    begins="08:00:00" ends="23:00:00"/>
+			   <time day="monday"    begins="08:00:00" ends="23:00:00"/>
+			   <time day="tuesday"   begins="08:00:00" ends="23:00:00"/>
+			   <time day="wednesday" begins="08:00:00" ends="23:00:00"/>
+			   <time day="thursday"  begins="08:00:00" ends="23:00:00"/>
+			   <time day="friday"    begins="08:00:00" ends="23:00:00"/>
+			   <time day="saturday"  begins="08:00:00" ends="23:00:00"/>
+			</oncall-schedule>
 		</user>
 	</users>
 </userinfo>

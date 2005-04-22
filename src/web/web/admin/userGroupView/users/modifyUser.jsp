@@ -39,7 +39,14 @@
 
 -->
 
-<%@page language="java" contentType = "text/html" session = "true"  import="java.util.*,java.text.*,org.opennms.netmgt.config.*,org.opennms.netmgt.config.users.*"%>
+<%@page language="java" contentType = "text/html" session = "true" %>
+<%@page import="java.util.*"%>
+<%@page import="java.text.*"%>
+<%@page import="javax.servlet.*"%>
+<%@page import="javax.servlet.http.*"%>
+<%@page import="org.opennms.netmgt.config.*"%>
+<%@page import="org.opennms.netmgt.config.common.*"%>
+<%@page import="org.opennms.netmgt.config.users.*"%>
 <%
 	HttpSession userSession = request.getSession(false);
 	Map users;
@@ -147,8 +154,8 @@
     
     function saveUser()
     {
-        //var ok = validate();
-        var ok = true;
+        var ok = validate();
+
         if(ok)
         {
           document.modifyUser.redirect.value="/admin/userGroupView/users/saveUser";
@@ -161,6 +168,17 @@
     {
         document.modifyUser.action="admin/userGroupView/users/list.jsp";
         document.modifyUser.submit();
+    }
+    
+    function editOncallSchedule()
+    {
+    	   var ok = validate();
+    	   if (ok)
+    	   {
+          document.modifyUser.redirect.value="/admin/userGroupView/users/modifyUser.jsp";
+          document.modifyUser.action="admin/userGroupView/users/updateUser";
+          document.modifyUser.submit();
+    	   }
     }
 
 </script>
@@ -179,7 +197,7 @@
   <jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
 </jsp:include>
 
-<br>
+<br/>
 
 <FORM id="modifyUser" METHOD="POST" NAME="modifyUser">
 <input id="userID" type="hidden" name="userID" value="<%=user.getUserId()%>"/>
@@ -218,7 +236,7 @@
 	    %>
             <tr>
               <td valign="top">
-                <label id="fullNameLabel" for="filName">Full Name:</label>
+                <label id="fullNameLabel" for="fullName">Full Name:</label>
               </td>
               <td align="left" valign="top">
                 <input id="fullName" type="text" size="35" name="fullName" value="<%=(fullName == null ? "":fullName) %>" />
@@ -247,15 +265,15 @@
                 <label id="emailLabel" for="email">Email:</label>
               </td>
               <td valign="top">
-                <input id="email" type="text" size="35" name="email" value='<%= (email == null ? "":email) %>'>
+                <input id="email" type="text" size="35" name="email" value='<%= (email == null ? "":email) %>'/>
               </td>
             </tr>
             <tr>
               <td valign="top">
-                <label id="pemailLabel" for="pemail" Pager Email:
+                <label id="pemailLabel" for="pemail">Pager Email:</label>
               </td>
               <td valign="top">
-                <input type="text" size="35" id="pemail" name="pemail" value='<%=(pagerEmail == null ? "":pagerEmail)%>'>
+                <input type="text" size="35" id="pemail" name="pemail" value='<%=(pagerEmail == null ? "":pagerEmail)%>'/>
               </td>
             </tr>
             <tr>
@@ -263,7 +281,7 @@
                 <label id="xmppAddressLabel" for="xmppAddress">XMPP Address:</label>
               </td>
               <td valign="top">
-                <input id="xmppAddress" type="text" size="35" name="xmppAddress" value='<%=(xmppAddress == null ? "":xmppAddress)%>'>
+                <input id="xmppAddress" type="text" size="35" name="xmppAddress" value='<%=(xmppAddress == null ? "":xmppAddress)%>'/>
               </td>
             </tr>
             <tr>
@@ -271,7 +289,7 @@
                 <label id="numericalServiceLabel" for="numericalService">Numeric Service:</label>
               </td>
               <td valign="top">
-                <input type="text" size="35" id="numericalService" name="numericalService" value='<%=(numericPage == null ? "":numericPage) %>'>
+                <input type="text" size="35" id="numericalService" name="numericalService" value='<%=(numericPage == null ? "":numericPage) %>'/>
               </td>
             </tr>
             <tr>
@@ -279,7 +297,7 @@
                 <label id="numericalPinLabel" for="numericalPin">Numeric PIN:</label>
               </td>
               <td valign="top">
-                <input type="text" size="35" id="numericalPin" name="numericalPin" value='<%= (numericPin == null ? "":numericPin)%>'>
+                <input type="text" size="35" id="numericalPin" name="numericalPin" value='<%= (numericPin == null ? "":numericPin)%>'/>
               </td>
             </tr>
             <tr>
@@ -287,7 +305,7 @@
                 <label id="textServiceLabel" for="textService">Text Service:</label>
               </td>
               <td valign="top">
-                <input type="text" size="35" id="textService" name="textService" value='<%= (textPage == null ? "":textPage)%>'>
+                <input type="text" size="35" id="textService" name="textService" value='<%= (textPage == null ? "":textPage)%>'/>
               </td>
             </tr>
             <tr>
@@ -295,7 +313,7 @@
                 <label id="textPinLabel" for="textPin">Text PIN:</label>
               </td>
               <td valign="top">
-                <input type="text" size="35" id="textPin" name="textPin" value='<%=(textPin == null ? "":textPin)%>'>
+                <input type="text" size="35" id="textPin" name="textPin" value='<%=(textPin == null ? "":textPin)%>'/>
               </td>
             </tr>
           </table></p>
@@ -332,6 +350,10 @@
       <tr>
         <td width="100%" colspan="3">
           <p><b>Duty Schedules</b></p>
+                                  <%
+				Collection dutySchedules = user.getDutyScheduleCollection(); %>
+				<input type="hidden" name="dutySchedules" value="<%=user.getDutyScheduleCount()%>"/>
+          
           <table width="100%" border="1" cellspacing="0" cellpadding="2" >
             <tr bgcolor="#999999">
               <td>&nbsp;</td>
@@ -347,9 +369,6 @@
               <td><b>End Time</b></td>
             </tr>
                         <%
-				Collection dutySchedules = user.getDutyScheduleCollection(); %>
-				<input type="hidden" name="dutySchedules" value="<%=user.getDutyScheduleCount()%>">
-                        <%
 				int i =0;
 				Iterator iter = dutySchedules.iterator();
 				while(iter.hasNext())
@@ -360,7 +379,7 @@
                         <tr>
                           <td width="1%"><%=(i+1)%></td>
                           <td width="1%">
-                            <input type="checkbox" name="deleteDuty<%=i%>">
+                            <input type="checkbox" name="deleteDuty<%=i%>"/>
                           </td>
                           <% ChoiceFormat days = new ChoiceFormat("0#Mo|1#Tu|2#We|3#Th|4#Fr|5#Sa|6#Su");
                              for (int j = 0; j < 7; j++)
@@ -368,14 +387,14 @@
                                 Boolean curDay = (Boolean)curSched.get(j);
                           %>
                           <td width="5%">
-                            <input type="checkbox" name="duty<%=i+days.format(j)%>" <%= (curDay.booleanValue() ? "checked" : "")%>>
+                            <input type="checkbox" name="duty<%=i+days.format(j)%>" <%= (curDay.booleanValue() ? "checked=\"true\"" : "")%>/>
                           </td>
                           <% } %>
                           <td width="5%">
-                            <input type="text" size="4" name="duty<%=i%>Begin" value="<%=curSched.get(7)%>">
+                            <input type="text" size="4" name="duty<%=i%>Begin" value="<%=curSched.get(7)%>"/>
                           </td>
                           <td width="5%">
-                            <input type="text" size="4" name="duty<%=i%>End" value="<%=curSched.get(8)%>">
+                            <input type="text" size="4" name="duty<%=i%>End" value="<%=curSched.get(8)%>"/>
                           </td>
                         </tr>
                         <% i++; } %>
@@ -384,7 +403,7 @@
       </tr>
     </table></p>
 
-    <p><input id="addSchedulesButton" type="button" name="addSchedule" value="Add This Many Schedules" onclick="addDutySchedules()">
+    <p><input id="addSchedulesButton" type="button" name="addSchedule" value="Add This Many Schedules" onclick="addDutySchedules()"/>
       <select name="numSchedules" value="3" size="1">
         <option value="1">1</option>
         <option value="2">2</option>
@@ -396,16 +415,57 @@
       </select>
     </p>
 
-    <p><input id="removeSchedulesButton" type="button" name="addSchedule" value="Remove Checked Schedules" onclick="removeDutySchedules()"></p>
+    <p><input id="removeSchedulesButton" type="button" name="addSchedule" value="Remove Checked Schedules" onclick="removeDutySchedules()"/></p>
+    
+     <% OncallSchedule[] schedules = user.getOncallSchedule(); %>
+  	<input id="oncallScheduleCount" type="hidden" name="oncallScheduleCount" value="<%=schedules.length%>"/>
+  	<table width="100%" border="1" cellspacing="0" cellpadding="2" >
+            <tr bgcolor="#999999">
+              <td width="1%">&nbsp;</td>
+              <td><b>Role Name</b></td>
+              <td><b>Type</b></td>
+              <td colspan="3"><b>Times</b></td>
+            </tr>
+            <% for (int schedIndex = 0; schedIndex < schedules.length; schedIndex++) { %>
+            <%     OncallSchedule schedule = (OncallSchedule)schedules[schedIndex]; %>
+            <%     Time[] times = schedule.getTime(); %>
+            <%     String schedPrefix = "oncallSchedule["+schedIndex+"]"; %>
+            <%     for(int timeIndex = 0; timeIndex < times.length; timeIndex++) { %>
+            <%	     Time time = times[timeIndex]; %>
+            <%        String timePrefix = schedPrefix+".time["+timeIndex+"]"; %>
+            			<tr>
+            <%        if (timeIndex == 0) { %>
+              			<td rowSpan="<%= times.length %>">
+              				<input id="<%=schedPrefix%>.doDelete" type="button" name="editOncallSchedule" value="Delete" onclick="editOncallSchedule()"/>
+              			</td>
+            	  			<td rowSpan="<%= times.length %>" >
+            	  				<input id="<%=schedPrefix%>.name" type="text" name="<%=schedPrefix%>.name" value="<%= schedule.getName() %>" />
+            	  			</td>
+            	  			<td rowSpan="<%= times.length %>" id="<%=schedPrefix%>.type">
+            	  				<%= schedule.getType() %>
+            	  			</td>
+            <%        } %>
+            				<td>
+            					<input type="text" id="<%=timePrefix%>.day" name="<%=timePrefix%>.day" value="<%= time.getDay() %>"/>
+            				</td>           	  
+            				<td>
+            					<input type="text" id="<%=timePrefix%>.begins" name="<%=timePrefix%>.begins" value="<%= time.getBegins() %>"/>
+            				</td>           	  
+            				<td>
+            					<input type="text" id="<%=timePrefix%>.ends" name="<%=timePrefix%>.ends" value="<%= time.getEnds() %>"/>
+            				</td>  
+            			</tr>	  
+            <%    } %>
+  	        <% } %>
+     </table>    
 
-    <p><input id="saveUserButton" type="button" name="finish" value="Finish" onclick="saveUser()">&nbsp;&nbsp;&nbsp;<input id="cancelButton" type="button" name="cancel" value="Cancel" onclick="cancelUser()"></p>
-    <td>&nbsp;</td>
+    <p><input id="saveUserButton" type="button" name="finish" value="Finish" onclick="saveUser()"/>&nbsp;&nbsp;&nbsp;<input id="cancelButton" type="button" name="cancel" value="Cancel" onclick="cancelUser()"/></p>
   </tr>
 </table>
 
 </FORM>
 
-<br>
+<br/>
 
 <jsp:include page="/includes/footer.jsp" flush="false" >
 </jsp:include>
