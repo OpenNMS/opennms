@@ -47,7 +47,7 @@ import com.meterware.httpunit.WebTable;
 
 public class OpenNMSWebTestCase extends WebTestCase {
 
-    private String[] m_menu = { "Node List", "Search", "Outages", "Events", "Notification", "Assets", "Reports", "Admin", "Help" };
+    private String[] m_menu = { "Node List", "Search", "Outages", "Events", "Alarms", "Notification", "Assets", "Reports", "Admin", "Help" };
 
     /**
      * This method checks for the header to see if it is present, has the correct title, 
