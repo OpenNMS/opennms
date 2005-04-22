@@ -176,6 +176,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
                    "eventDisplay        char(1) not null," +
                    "eventAckUser        varchar(256)," +
                    "eventAckTime        timestamp," +
+                   "alarmID             integer," +
                    "constraint pk_eventID primary key (eventID)," +
                    "constraint fk_nodeID6 foreign key (nodeID) references node ON DELETE CASCADE" +
         ")");
@@ -380,12 +381,6 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
         return (Integer)querier.getResult();
     }
     
-    public Integer getAlarmCount(String reductionKey) {
-        SingleResultQuerier querier = new SingleResultQuerier(this, "select counter from alarms where reductionKey = ?");
-        querier.execute(reductionKey);
-        return (Integer)querier.getResult();
-    }
-
     public String getNextEventIdStatement() {
         return "select next value for eventNxtId from seqQueryTable;";
     }
@@ -632,6 +627,18 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
         };
         loadExisting.execute(new Integer(event.getDbid()));
         return notifyIds;
+    }
+
+    public Integer getAlarmCount(String reductionKey) {
+        SingleResultQuerier querier = new SingleResultQuerier(this, "select counter from alarms where reductionKey = ?");
+        querier.execute(reductionKey);
+        return (Integer)querier.getResult();
+    }
+
+    public Integer getAlarmId(String reductionKey) {
+        SingleResultQuerier querier = new SingleResultQuerier(this, "select alarmid from alarms where reductionKey = ?");
+        querier.execute(reductionKey);
+        return (Integer)querier.getResult();
     }
     
 
