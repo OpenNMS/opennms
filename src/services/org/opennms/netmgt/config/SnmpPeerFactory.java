@@ -124,7 +124,7 @@ public final class SnmpPeerFactory {
 
     private static final int VERSION_UNSPECIFIED = -1;
 
-    private static final int DEFAULT_MAX_REQUEST_SIZE = 464;
+    private static final int DEFAULT_MAX_REQUEST_SIZE = SnmpConstants.MIN_PDU_LENGTH;
 
     private static final int DEFAULT_VERSION = SnmpConstants.version1;
 
@@ -994,6 +994,18 @@ public final class SnmpPeerFactory {
                     log.warn("SnmpPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
                 }
             }
+            
+            // check the matching ip expressions
+            //
+            Enumeration eMatch = def.enumerateIpMatch();
+            while (eMatch.hasMoreElements()) {
+                String ipMatch = (String)eMatch.nextElement();
+                if (verifyIpMatch(inetAddress.getHostAddress(), ipMatch)) {
+                    target = createTarget(inetAddress, def, requestedSnmpVersion);
+                    break DEFLOOP;
+                }
+            }
+            
         } // end DEFLOOP
 
         if (target == null) {
@@ -1006,6 +1018,60 @@ public final class SnmpPeerFactory {
 
     }
     
+    public static boolean verifyIpMatch(String hostAddress, String ipMatch) {
+        
+        String hostOctets[] = hostAddress.split("\\.", 0);
+        String matchOctets[] = ipMatch.split("\\.", 0);
+        for (int i = 0; i < 4; i++) {
+            if (!matchOctet(hostOctets[i], matchOctets[i]))
+                return false;
+        }
+        return true;
+    }
+
+    public static boolean matchOctet(String hostOctet, String patternOctet) {
+        
+        String patternList[] = patternOctet.split(",", 0);
+        for (int i = 0; i < patternList.length; i++) {
+            if (matchRange(hostOctet, patternList[i]))
+                return true;
+        }
+        return false;
+    }
+
+    public static boolean matchRange(String hostOctet, String patternRange) {
+        int dashCount = countChar('-', patternRange);
+        
+        if ("*".equals(patternRange))
+            return true;
+        else if (dashCount == 0)
+            return hostOctet.equals(patternRange);
+        else if (dashCount > 1)
+            return false;
+        else if (dashCount == 1) {
+            String ar[] = patternRange.split("-");
+            int rangeBegin = Integer.parseInt(ar[0]);
+            int rangeEnd = Integer.parseInt(ar[1]);
+            int ip = Integer.parseInt(hostOctet);
+            return (ip >= rangeBegin && ip <= rangeEnd);
+        }
+        return false;
+    }
+
+    public static int countChar(char charIn, String stingIn) {
+        
+        int charCount = 0;
+        int charIndex = 0;
+        for (int i=0; i<stingIn.length(); i++) {
+            charIndex = stingIn.indexOf(charIn, i);
+            if (charIndex != -1) {
+                charCount++;
+                i = charIndex +1;
+            }
+        }
+        return charCount;
+    }
+
     /**
      * A convenience method for created an SNMP4J SNMP target.  If version 3
      * is requested, then a UserTarget is return, otherwise, a

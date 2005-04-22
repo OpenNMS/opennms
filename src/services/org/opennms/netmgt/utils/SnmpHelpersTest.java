@@ -34,12 +34,9 @@
 package org.opennms.netmgt.utils;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
-import org.snmp4j.Target;
 
 public class SnmpHelpersTest extends OpenNMSTestCase {
 
@@ -52,7 +49,6 @@ public class SnmpHelpersTest extends OpenNMSTestCase {
     }
     
     public void testgetSystemGroup() throws UnknownHostException, IOException {
-        Target target = SnmpPeerFactory.getInstance().getTarget(InetAddress.getLocalHost());
     }
 
 }
