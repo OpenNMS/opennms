@@ -462,6 +462,8 @@ create index ifservices_nodeid_serviceid_idx on ifservices(nodeID, serviceID);
 --#  eventAckUser	: The user who acknowledged this event.  If
 --#			  null, then this event has not been acknowledged.
 --#  eventAckTime	: The time this event was acknowledged.
+--#  alarmID : If this event is configured for alarmReduction, the alarmId
+--#            of the reduced event will set in this column
 --#
 --##################################################################
 
@@ -499,6 +501,7 @@ create table events (
 	eventDisplay		char(1) not null,
 	eventAckUser		varchar(256),
 	eventAckTime		timestamp without time zone,
+	alarmID			integer,
 
 	constraint pk_eventID primary key (eventID),
 	constraint fk_nodeID6 foreign key (nodeID) references node ON DELETE CASCADE

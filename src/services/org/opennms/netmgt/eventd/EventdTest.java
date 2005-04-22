@@ -160,6 +160,15 @@ public class EventdTest extends OpenNMSTestCase {
         assertEquals(1, rowCount);
         assertEquals(numberOfAlarmsToReduce, counterColumn.intValue());
         
+        Integer alarmId = m_db.getAlarmId(reductionKey);
+        rowCount = m_db.countRows("select * from events where alarmid = "+alarmId);
+        MockUtil.println(String.valueOf(rowCount) + " of events with alarmid: "+alarmId);
+        assertEquals(numberOfAlarmsToReduce, rowCount);
+        
+        rowCount = m_db.countRows("select * from events where alarmid is null");
+        MockUtil.println(String.valueOf(rowCount) + " of events with null alarmid");
+        assertEquals(0, rowCount);
+
     }
 
     /**

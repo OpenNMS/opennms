@@ -161,6 +161,10 @@ class Persist {
     protected PreparedStatement m_reductionQuery;
     protected PreparedStatement m_upDateStmt;
 
+    protected PreparedStatement m_updateEventStmt;
+
+    private PreparedStatement m_getAlarmIdStmt;
+
     /**
      * Sets the statement up for a String value.
      * 
@@ -350,16 +354,17 @@ class Persist {
     public void insertOrUpdateAlarm(Header eventHeader, Event event) throws SQLException {
         
         Category log = ThreadCategory.getInstance(AlarmWriter.class);
-        if (isReductionNeeded(eventHeader, event)) {
+        int alarmId = isReductionNeeded(eventHeader, event);
+        if (alarmId != -1) {
             log.debug("AlarmWriter is reducing event for: " +event.getDbid()+ ": "+ event.getUei());
-            updateAlarm(eventHeader, event);
+            updateAlarm(eventHeader, event, alarmId);
         } else {
             log.debug("AlarmWriter is not reducing event for: " +event.getDbid()+ ": "+ event.getUei());
             insertAlarm(eventHeader, event);
         }
     }
     
-    private boolean isReductionNeeded(Header eventHeader, Event event) throws SQLException {
+    private int isReductionNeeded(Header eventHeader, Event event) throws SQLException {
         
         Category log = ThreadCategory.getInstance(AlarmWriter.class);
                 
@@ -370,15 +375,15 @@ class Persist {
         m_reductionQuery.setString(1, event.getReductionKey());
 
         ResultSet rs = m_reductionQuery.executeQuery();
-        int count = 0;
+        int alarmId = -1;
         while (rs.next()) {
-            count++;
+            alarmId = rs.getInt(1);
         }
         
-        return (count > 0 ? true : false);
+        return alarmId;
     }
     
-    private void updateAlarm(Header eventHeader, Event event) throws SQLException {
+    private void updateAlarm(Header eventHeader, Event event, int alarmId) throws SQLException {
 
         Category log = ThreadCategory.getInstance(Persist.class);
 
@@ -392,6 +397,11 @@ class Persist {
             log.debug("Persist.updateAlarm: reducing event: "+event.getDbid()+ "into alarm: ");
         
         m_upDateStmt.executeUpdate();
+
+
+        m_updateEventStmt.setInt(1, alarmId);
+        m_updateEventStmt.setInt(2, event.getDbid());
+        m_updateEventStmt.executeUpdate();
         
     }
     
@@ -512,6 +522,10 @@ class Persist {
             log.debug("m_insStmt is: "+m_insStmt.toString());
 
         m_insStmt.executeUpdate();
+        
+        m_updateEventStmt.setInt(1, alarmID);
+        m_updateEventStmt.setInt(2, event.getDbid());
+        m_updateEventStmt.executeUpdate();
 
         if (log.isDebugEnabled())
             log.debug("SUCCESSFULLY added " + event.getUei() + " related  data into the ALARMS table");

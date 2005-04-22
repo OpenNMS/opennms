@@ -56,17 +56,22 @@ public final class EventdConstants {
     /**
      * The SQL query to test for alarm reduction
      */
-    public final static String SQL_DB_ALARM_REDUCTION_QUERY = "" +
-            "SELECT * " +
+    public final static String SQL_DB_ALARM_REDUCTION_QUERY =
+            "SELECT alarmid " +
             "  FROM alarms " +
             " WHERE reductionKey = ?";
+
+    public static final String SQL_DB_UPDATE_EVENT_WITH_ALARM_ID =
+            "UPDATE events "+
+            "   SET alarmid = ? " +
+            " WHERE eventid = ?";
 
     /**
      * The SQL insertion string used by eventd to update an event as an alarm
      * in the database.
      */
-    public final static String SQL_DB_ALARM_UPDATE_EVENT = "" +
-            "UPDATE ALARMS " +
+    public final static String SQL_DB_ALARM_UPDATE_EVENT =
+            "UPDATE alarms " +
             "   SET counter = counter+1, lastEventID = ?, lastEventTime = ? " +
             " WHERE reductionKey = ?";
 
@@ -74,7 +79,7 @@ public final class EventdConstants {
      * The SQL insertion string used by eventd to store the event information as an alarm
      * into the database.
      */
-    public final static String SQL_DB_ALARM_INS_EVENT = "" +
+    public final static String SQL_DB_ALARM_INS_EVENT =
             "INSERT" +
             "  INTO alarms (alarmID, eventUei, dpName, nodeID, ipaddr, " +
             "               serviceID, reductionKey, counter, severity, " +

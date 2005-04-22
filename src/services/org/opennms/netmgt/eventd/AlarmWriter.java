@@ -70,6 +70,7 @@ final class AlarmWriter extends Persist {
         m_insStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_ALARM_INS_EVENT);
         m_reductionQuery = m_dbConn.prepareStatement(EventdConstants.SQL_DB_ALARM_REDUCTION_QUERY);
         m_upDateStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_ALARM_UPDATE_EVENT);
+        m_updateEventStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_UPDATE_EVENT_WITH_ALARM_ID);
         // set the database for rollback support
         //
         try {
