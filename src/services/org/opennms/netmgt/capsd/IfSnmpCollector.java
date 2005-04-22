@@ -196,7 +196,7 @@ final class IfSnmpCollector implements Runnable {
     /**
      * Returns the target address that the collection occured for.
      */
-    InetAddress getTarget() {
+    InetAddress getCollectorTargetAddress() {
         return m_address;
     }
 

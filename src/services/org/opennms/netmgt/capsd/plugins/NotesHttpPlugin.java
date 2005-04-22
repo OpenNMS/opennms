@@ -32,7 +32,8 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.capsd;
+package org.opennms.netmgt.capsd.plugins;
+
 
 /**
  * <P>

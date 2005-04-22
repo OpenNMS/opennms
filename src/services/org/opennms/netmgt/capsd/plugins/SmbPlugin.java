@@ -32,7 +32,7 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.capsd;
+package org.opennms.netmgt.capsd.plugins;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -42,6 +42,7 @@ import jcifs.netbios.NbtAddress;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.capsd.AbstractPlugin;
 
 /**
  * <P>

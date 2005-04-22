@@ -42,12 +42,15 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.capsd;
+package org.opennms.netmgt.capsd.plugins;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+
+import org.opennms.netmgt.capsd.AbstractTcpPlugin;
+import org.opennms.netmgt.capsd.ConnectionConfig;
 
 /**
  * <P>

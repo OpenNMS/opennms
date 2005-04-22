@@ -41,7 +41,7 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.capsd;
+package org.opennms.netmgt.capsd.plugins;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -55,6 +55,8 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.capsd.AbstractTcpPlugin;
+import org.opennms.netmgt.capsd.ConnectionConfig;
 
 /**
  * <P>

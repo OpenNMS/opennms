@@ -54,7 +54,7 @@ import java.util.Map;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */
-abstract class AbstractPlugin implements Plugin {
+public abstract class AbstractPlugin implements Plugin {
     /**
      * Returns the name of the protocol that this plugin checks on the target
      * system for support.

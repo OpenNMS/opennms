@@ -32,7 +32,7 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.capsd;
+package org.opennms.netmgt.capsd.plugins;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -43,35 +43,35 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.utils.ParameterMap;
-import org.opennms.protocols.ntp.NtpMessage;
+import org.opennms.protocols.dns.DNSAddressRequest;
 
 /**
- * This plugin is used to check a host for NTP (Network Time Protocol) support.
- * This is done by contacting the specified host on UDP port 123 and making a
- * tie request. If a valid response is returned then the server is considered an
- * NTP server.
+ * This plugin is used to check a host for DNS (Domain Name Server) support.
+ * This is done by contacting the specified host and requesting the default
+ * address or <em>localhost</em>. If a valid resposne is returned then the
+ * server is considered a DNS server.
  * 
- * @author <A HREF="mailto:mhuot@mhuot.net">mhuot </A>
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-public final class NtpPlugin extends AbstractPlugin {
+public final class DnsPlugin extends AbstractPlugin {
     /**
      * </P>
      * The protocol name that is tested by this plugin.
      * </P>
      */
-    private final static String PROTOCOL_NAME = "NTP";
+    private final static String PROTOCOL_NAME = "DNS";
 
     /**
      * </P>
-     * The default port on which the host is checked to see if it supports NTP.
+     * The default port on which the host is checked to see if it supports DNS.
      * </P>
      */
-    private final static int DEFAULT_PORT = 123;
+    private final static int DEFAULT_PORT = 53;
 
     /**
      * Default number of retries for DNS requests
@@ -84,17 +84,24 @@ public final class NtpPlugin extends AbstractPlugin {
     private final static int DEFAULT_TIMEOUT = 3000; // in milliseconds
 
     /**
+     * Default DNS lookup
+     */
+    private final static String DEFAULT_LOOKUP = "localhost";
+
+    /**
      * 
      * @param nserver
-     *            The address for the NTP server test.
+     *            The address for the name server test.
      * @param port
-     *            The port to test for NTP
+     *            The port to test for name resolution
      * @param timeout
      *            Timeout in milliseconds
+     * @param lookup
+     *            Host name to be used in DNS lookup packet
      * 
      * @return True if server, false if not.
      */
-    private boolean isServer(InetAddress nserver, int port, int retries, int timeout) {
+    private boolean isServer(InetAddress nserver, int port, int retries, int timeout, String lookup) {
         boolean isAServer = false;
         Category log = ThreadCategory.getInstance(getClass());
 
@@ -115,12 +122,13 @@ public final class NtpPlugin extends AbstractPlugin {
                 try {
                     // Construct a new DNS Address Request
                     //
-                    NtpMessage request = new NtpMessage();
+                    DNSAddressRequest request = new DNSAddressRequest(lookup);
 
                     // build the datagram packet used to request the address.
                     //
-                    byte[] buf = new NtpMessage().toByteArray();
-                    DatagramPacket outpkt = new DatagramPacket(buf, buf.length, nserver, port);
+                    byte[] rdata = request.buildRequest();
+                    DatagramPacket outpkt = new DatagramPacket(rdata, rdata.length, nserver, port);
+                    rdata = null;
 
                     // send the output packet
                     //
@@ -131,16 +139,12 @@ public final class NtpPlugin extends AbstractPlugin {
                     DatagramPacket inpkt = new DatagramPacket(data, data.length);
                     socket.receive(inpkt);
                     if (inpkt.getAddress().equals(nserver)) {
-                        // try
-                        // {
-                        NtpMessage msg = new NtpMessage(inpkt.getData());
-                        isAServer = true;
-                        // }
-                        // catch(IOException ex)
-                        // {
-                        // log.debug("Failed to match response to request, an
-                        // IOException occured", ex);
-                        // }
+                        try {
+                            request.verifyResponse(inpkt.getData(), inpkt.getLength());
+                            isAServer = true;
+                        } catch (IOException ex) {
+                            log.debug("Failed to match response to request, an IOException occured", ex);
+                        }
                     }
                 } catch (InterruptedIOException ex) {
                     // discard this exception, do next loop
@@ -148,7 +152,7 @@ public final class NtpPlugin extends AbstractPlugin {
                 }
             }
         } catch (IOException ex) {
-            log.warn("isServer: An I/O exception during NTP resolution test.", ex);
+            log.warn("isServer: An I/O exception during DNS resolution test.", ex);
         } finally {
             if (socket != null)
                 socket.close();
@@ -177,7 +181,7 @@ public final class NtpPlugin extends AbstractPlugin {
      * @return True if the protocol is supported by the address.
      */
     public boolean isProtocolSupported(InetAddress address) {
-        return isServer(address, DEFAULT_PORT, DEFAULT_RETRY, DEFAULT_TIMEOUT);
+        return isServer(address, DEFAULT_PORT, DEFAULT_RETRY, DEFAULT_TIMEOUT, DEFAULT_LOOKUP);
     }
 
     /**
@@ -207,13 +211,15 @@ public final class NtpPlugin extends AbstractPlugin {
         int port = DEFAULT_PORT;
         int timeout = DEFAULT_TIMEOUT;
         int retries = DEFAULT_RETRY;
+        String lookup = DEFAULT_LOOKUP;
         if (qualifiers != null) {
             port = ParameterMap.getKeyedInteger(qualifiers, "port", DEFAULT_PORT);
             timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
             retries = ParameterMap.getKeyedInteger(qualifiers, "retries", DEFAULT_RETRY);
+            lookup = ParameterMap.getKeyedString(qualifiers, "lookup", DEFAULT_LOOKUP);
         }
 
-        boolean result = isServer(address, port, retries, timeout);
+        boolean result = isServer(address, port, retries, timeout, lookup);
         if (result && qualifiers != null && !qualifiers.containsKey("port"))
             qualifiers.put("port", new Integer(port));
 

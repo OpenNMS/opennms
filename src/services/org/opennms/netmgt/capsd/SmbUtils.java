@@ -38,6 +38,7 @@ package org.opennms.netmgt.capsd;
 
 import jcifs.netbios.NbtAddress;
 
+import org.opennms.netmgt.capsd.plugins.MSExchangePlugin;
 import org.opennms.netmgt.config.capsd.SmbAuth;
 
 /**

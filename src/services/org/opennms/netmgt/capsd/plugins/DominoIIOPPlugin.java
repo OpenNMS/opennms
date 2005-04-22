@@ -45,7 +45,7 @@
 //
 //
 
-package org.opennms.netmgt.capsd;
+package org.opennms.netmgt.capsd.plugins;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -55,6 +55,8 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.capsd.AbstractTcpPlugin;
+import org.opennms.netmgt.capsd.ConnectionConfig;
 
 /**
  * <P>

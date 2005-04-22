@@ -41,7 +41,7 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.capsd;
+package org.opennms.netmgt.capsd.plugins;
 
 import java.net.Socket;
 
@@ -49,6 +49,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import org.opennms.netmgt.capsd.ConnectionConfig;
 import org.opennms.netmgt.utils.RelaxedX509TrustManager;
 
 /**

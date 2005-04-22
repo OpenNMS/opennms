@@ -792,7 +792,7 @@ final class RescanProcessor implements Runnable {
         if (log.isDebugEnabled()) {
             log.debug("updateInterface: updating interface " + ifaddr.getHostAddress() + "(targetIf=" + target.getHostAddress() + ")");
             if (doesSnmp) {
-                log.debug("updateInterface: the snmp collection passed in is collected via" + snmpc.getTarget().getHostAddress());
+                log.debug("updateInterface: the snmp collection passed in is collected via" + snmpc.getCollectorTargetAddress().getHostAddress());
             }
         }
 
@@ -1593,9 +1593,9 @@ final class RescanProcessor implements Runnable {
 
             // Make sure we have a valid IfTableEntry object
             if (ifte == null && ifIndex == CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX) {
-                currSnmpIfEntry.setIfAddress(snmpc.getTarget());
+                currSnmpIfEntry.setIfAddress(snmpc.getCollectorTargetAddress());
                  if (log.isDebugEnabled())
-                    log.debug("updateSnmpInfo: interface " + snmpc.getTarget().getHostAddress() + " appears to be a lame SNMP host. Setting ipaddr only.");
+                    log.debug("updateSnmpInfo: interface " + snmpc.getCollectorTargetAddress().getHostAddress() + " appears to be a lame SNMP host. Setting ipaddr only.");
             } else if (ifte != null) {
                 // IP address and netmask
                 //
@@ -2738,7 +2738,7 @@ final class RescanProcessor implements Runnable {
                 IfSnmpCollector snmpc = collector.getSnmpCollector();
                 if (snmpc != null)
                     gotSnmpc = true;
-                if (snmpc != null && snmpc.hasIpAddrTable() && snmpc.getIfIndex(snmpc.getTarget()) != -1) {
+                if (snmpc != null && snmpc.hasIpAddrTable() && snmpc.getIfIndex(snmpc.getCollectorTargetAddress()) != -1) {
 
                     if (areDbInterfacesInSnmpCollection(dbInterfaces, snmpc)) {
                         collectorMap.put(ifaddr.getHostAddress(), collector);
@@ -2960,7 +2960,7 @@ final class RescanProcessor implements Runnable {
                     if (log.isDebugEnabled())
                         log.debug("SNMP Collector has no IfTable");
                 }
-                if (!snmpc.hasIpAddrTable() || snmpc.getIfIndex(snmpc.getTarget()) == -1) {
+                if (!snmpc.hasIpAddrTable() || snmpc.getIfIndex(snmpc.getCollectorTargetAddress()) == -1) {
                     if (log.isDebugEnabled())
                         log.debug("SNMP Collector has no IpAddrTable. Assume its a lame SNMP host.");
                 }
@@ -3014,7 +3014,7 @@ final class RescanProcessor implements Runnable {
         }
 
         if (newSnmpPrimaryIf == null) {
-            newSnmpPrimaryIf = snmpc.getTarget();
+            newSnmpPrimaryIf = snmpc.getCollectorTargetAddress();
             psiType = "snmp collector target address";
         }
 

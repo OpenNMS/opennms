@@ -33,11 +33,14 @@
 
 package org.opennms.netmgt.capsd;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.netmgt.capsd.plugins.SnmpPlugin;
+import org.opennms.netmgt.capsd.plugins.SnmpV3Plugin;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.mock.MockUtil;
@@ -68,6 +71,7 @@ public class Snmpv3PluginTest extends OpenNMSTestCase {
      */
     protected void setUp() throws Exception {
         super.setUp();
+        m_runSupers = false;
     }
 
     /**
@@ -167,6 +171,16 @@ public class Snmpv3PluginTest extends OpenNMSTestCase {
         TransportIpAddress ta = (TransportIpAddress)target.getAddress();
         assertEquals(ta.getPort(), 161);
         assertEquals(target.getMaxSizeRequestPDU(), 484);
+    }
+    
+    public void testIsSNMPProtocolSupported () throws UnknownHostException, IOException {
+        InetAddress address = InetAddress.getByName(myLocalHost());
+        Map map = new HashMap();
+        map.put("forced version", "snmpv1");
+        
+        AbstractPlugin plugin = new SnmpPlugin();
+        if(m_runAssertions)
+            assertTrue(plugin.isProtocolSupported(address, map));        
     }
 
     /**
