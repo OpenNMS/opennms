@@ -258,8 +258,8 @@
       <input type="hidden" name="action" value="<%=action%>" />
       <%=org.opennms.web.Util.makeHiddenTags(request)%>
 
-      <table width="100%" cellspacing="1" cellpadding="2" border="0" bordercolor="black">
-        <tr bgcolor="#999999">
+      <table>
+        <tr class="eventlist-head">
           <% if ( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
           <td width="1%"><b>Ack</b></td>
           <% } else { %>
@@ -267,22 +267,26 @@
           <% } %>
           <td width="1%"> <%=this.makeSortLink( parms, AlarmFactory.SortStyle.ID,        AlarmFactory.SortStyle.REVERSE_ID,        "id",        "ID" )%></td>
           <td width="10%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SEVERITY,  AlarmFactory.SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%></td>
-          <td width="25%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.NODE,      AlarmFactory.SortStyle.REVERSE_NODE,      "node",      "Node"      )%></td>
-          <td width="20%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.INTERFACE, AlarmFactory.SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%></td>
-          <td width="20%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SERVICE,   AlarmFactory.SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%></td>
-          <td width="15%"><b>Ackd</b></td>
-        </tr>      
-        <tr bgcolor="#999999">
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
-          <td><%=this.makeSortLink( parms, AlarmFactory.SortStyle.COUNT,  AlarmFactory.SortStyle.REVERSE_COUNT,  "count",  "Count"  )%></td>
-          <td><%=this.makeSortLink( parms, AlarmFactory.SortStyle.LASTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last Event Time"  )%></td>
-          <td><%=this.makeSortLink( parms, AlarmFactory.SortStyle.FIRSTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time"  )%></td>
-          <td>&nbsp;</td>
+          <td width="22%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.NODE,      AlarmFactory.SortStyle.REVERSE_NODE,      "node",      "Node"      )%></td>
+          <td width="15%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.INTERFACE, AlarmFactory.SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%></td>
+          <td width="12%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SERVICE,   AlarmFactory.SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%></td>
+          <td width="5%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.COUNT,  AlarmFactory.SortStyle.REVERSE_COUNT,  "count",  "Count"  )%></td>
+          <td width="17%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.LASTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last Event Time"  )%></td>
+          <td width="17%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.FIRSTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time"  )%></td>
+        </tr>
+        <tr class="eventlist-head">
+	  <td>&nbsp;</td>
+	  <td>&nbsp;</td>
+	  <td>&nbsp;</td>
+          <td><b>Ackd</b></td>
+          <td><b>Ackd Time</b></td>
+	  <td>&nbsp;</td>
+	  <td>&nbsp;</td>
+	  <td>&nbsp;</td>
+	  <td>&nbsp;</td>
         </tr>
       <% for( int i=0; i < alarms.length; i++ ) { %>        
-        <tr valign="top" bgcolor="<%=(i%2 == 0) ? "white" : "#cccccc"%>">
+        <tr valign="top" class="<%=(i%2 == 0) ? "eventlist-odd" : "eventlist-even"%>">
           <td valign="top" rowspan="3" bgcolor="<%=AlarmUtil.getSeverityColor(alarms[i].getSeverity())%>">
             <nobr>
               <input type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" /> 
@@ -355,24 +359,16 @@
               &nbsp;
             <% } %>
           </td>          
-          <td>
-            <% if (alarms[i].isAcknowledged()) { %>
-              <% org.opennms.web.alarm.filter.Filter acknByFilter = new AcknowledgedByFilter(alarms[i].getAcknowledgeUser()); %>      
-              <%=alarms[i].getAcknowledgeUser()%>
-              <% if( !parms.filters.contains( acknByFilter )) { %>
-                <nobr>
-                  <a href="<%=this.makeLink( parms, acknByFilter, true)%>" class="filterLink" title="Show only alarms with this acknowledged by user"><%=addPositiveFilterString%></a>
-                  <a href="<%=this.makeLink( parms, new NegativeAcknowledgedByFilter(alarms[i].getAcknowledgeUser()), true)%>" class="filterLink" title="Do not show alarms acknowledgd by this user"><%=addNegativeFilterString%></a>
-                </nobr>
-              <% } %>              
-            <% } else { %>
-              &nbsp;
-            <% } %>
-          </td>
-        </tr>
-	<tr valign="top" bgcolor="<%=(i%2 == 0) ? "white" : "#cccccc"%>">
           <td valign="top" rowspan="1" >
+	    <% if(alarms[i].getUei()!= null ) { %>
+              <% org.opennms.web.alarm.filter.Filter exactUeiFilter = new ExactUEIFilter(alarms[i].getUei()); %>             
+                <nobr>
+                  <a href="<%=this.eventMakeLink( parms, exactUeiFilter, true)%>" title="Show only events of this type">
+            <%=alarms[i].getCount()%></a>
+                </nobr>
+            <% } else { %>
             <%=alarms[i].getCount()%>
+            <% } %>
           </td>
           <td>
             <nobr><%=org.opennms.netmgt.EventConstants.formatToUIString(alarms[i].getLastEventTime())%></nobr>
@@ -388,13 +384,33 @@
               <a href="<%=this.makeLink( parms, new BeforeFirstEventTimeFilter(alarms[i].getFirstEventTime()), true)%>" class="filterLink" title="Only show alarms occurring before this one"><%=addBeforeDateFilterString%></a>
             </nobr>
           </td>
+	</tr>
+        <tr valign="top" class="<%=(i%2 == 0) ? "eventlist-odd" : "eventlist-even"%>">
+          <td>
+            <% if (alarms[i].isAcknowledged()) { %>
+              <% org.opennms.web.alarm.filter.Filter acknByFilter = new AcknowledgedByFilter(alarms[i].getAcknowledgeUser()); %>      
+              <%=alarms[i].getAcknowledgeUser()%>
+              <% if( !parms.filters.contains( acknByFilter )) { %>
+                <nobr>
+                  <a href="<%=this.makeLink( parms, acknByFilter, true)%>" class="filterLink" title="Show only alarms with this acknowledged by user"><%=addPositiveFilterString%></a>
+                  <a href="<%=this.makeLink( parms, new NegativeAcknowledgedByFilter(alarms[i].getAcknowledgeUser()), true)%>" class="filterLink" title="Do not show alarms acknowledgd by this user"><%=addNegativeFilterString%></a>
+                </nobr>
+              <% } %>              
+            <% } else { %>
+              &nbsp;
+            <% } %>
+          </td>
         
           <td valign="top">
             <%=alarms[i].isAcknowledged() ? org.opennms.netmgt.EventConstants.formatToUIString(alarms[i].getAcknowledgeTime()) : "&nbsp;"%>
           </td>
+	   <td>&nbsp;</td>
+	   <td>&nbsp;</td>
+	   <td>&nbsp;</td>
+	   <td>&nbsp;</td>
         </tr>
-	<tr valign="top" bgcolor="<%=(i%2 == 0) ? "white" : "#cccccc"%>">
-          <td valign="top" colspan="3"><%=alarms[i].getLogMessage()%></td>
+        <tr valign="top" class="<%=(i%2 == 0) ? "eventlist-odd" : "eventlist-even"%>">
+          <td valign="top" colspan="7"><%=alarms[i].getLogMessage()%></td>
         </tr>
        
       <% } /*end for*/%>
@@ -494,6 +510,24 @@
       buffer.append( AlarmUtil.getSortStyleString(sortStyle) );
       buffer.append( "&acktype=" );
       buffer.append( AlarmUtil.getAcknowledgeTypeString(ackType) );
+      buffer.append( this.getFiltersAsString(filters) );
+
+      return( buffer.toString() );
+    }
+
+    public String eventMakeLink( AlarmQueryParms parms, org.opennms.web.alarm.filter.Filter filter, boolean add ) {
+      ArrayList filters = new ArrayList( parms.filters );
+      if( add ) {
+        filters.add( filter );
+      }
+      else {
+        filters.remove( filter );
+      }
+      StringBuffer buffer = new StringBuffer( "event/list" );
+      buffer.append( "?sortby=" );
+      buffer.append( AlarmUtil.getSortStyleString(parms.sortStyle) );
+      buffer.append( "&acktype=" );
+      buffer.append( AlarmUtil.getAcknowledgeTypeString(parms.ackType) );
       buffer.append( this.getFiltersAsString(filters) );
 
       return( buffer.toString() );
