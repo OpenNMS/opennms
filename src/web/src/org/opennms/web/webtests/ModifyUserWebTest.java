@@ -513,10 +513,11 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
                 assertFormElementEquals(timePrefix+".ends", time.getEnds());
                 assertFormElementPresent(timePrefix+".doDeleteTime");
             }
+            assertButtonPresent(schedPrefix+".addTime");
             
             
         }
-        
+        assertButtonPresent("addOncallSchedule");
         
         assertButtonPresent("addSchedulesButton");
         assertButtonPresent("removeSchedulesButton");

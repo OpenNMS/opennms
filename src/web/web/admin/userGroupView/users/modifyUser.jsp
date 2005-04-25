@@ -166,6 +166,11 @@
         document.modifyUser.submit();
     }
     
+    function addCallSchedule()
+    {
+    		alert("Called addCallSchedule()");
+    }
+    
     function deleteSchedule(schedIndex)
     {
     		alert("Called deleteSchedule("+schedIndex+")");
@@ -174,6 +179,11 @@
     function deleteTime(schedIndex, timeIndex)
     {
     		alert("Called deleteTime("+schedIndex+", "+timeIndex+")");
+    }
+    
+    function addTime(schedIndex)
+    {
+    		alert("Called addTime("+schedIndex+")");
     }
 
 </script>
@@ -443,6 +453,9 @@ int i = 0;
   	<input type="hidden" id="schedAction" name="schedAction" value="" />
   	<input type="hidden" id="schedIndex" name="schedIndex" value="" />
   	<input type="hidden" id="schedTimeIndex" name="schedTimeIndex" value=""/>
+  	
+  	<p><b>Oncall Schedules</b></p>
+  	
   	<table width="100%" border="1" cellspacing="0" cellpadding="2" >
             <tr bgcolor="#999999">
               <td width="1%">&nbsp;</td>
@@ -464,21 +477,40 @@ int i = 0;
             <%
             		if (timeIndex == 0) {
             %>
-              			<td rowSpan="<%= times.length %>">
+              			<td rowSpan="<%= times.length+1 %>">
               			    <input type="hidden" id="<%= schedPrefix %>.timeCount" name="<%= schedPrefix %>.timeCount" value="<%= times.length %>" />
-              				<input type="hidden" id="<%= schedPrefix %>.doDelete" name="doDeleteSchedule" value="Delete" onclick="deleteSchedule(<%= schedIndex %>)"/>
+              				<input type="button" id="<%= schedPrefix %>.doDelete" name="doDeleteSchedule" value="Delete" onclick="deleteSchedule(<%= schedIndex %>)"/>
               			</td>
-            	  			<td rowSpan="<%= times.length %>" >
+            	  			<td rowSpan="<%= times.length+1 %>" >
             	  				<input id="<%= schedPrefix %>.name" type="text" name="<%= schedPrefix %>.name" value="<%= schedule.getName() %>" />
             	  			</td>
-            	  			<td rowSpan="<%= times.length %>" id="<%= schedPrefix %>.type">
+            	  			<td rowSpan="<%= times.length+1 %>" id="<%= schedPrefix %>.type">
+            	  			    <input type="hidden" id="<%= schedPrefix %>.type" name="<%= schedPrefix%>.type" value="<%= schedule.getType() %>"/>
             	  				<%= schedule.getType() %>
             	  			</td>
             <%
             		}
             %>
             				<td>
+            				<% 
+            				if ("weekly".equals(schedule.getType())) {
+                          %>
+            					<select id="<%=timePrefix%>.day" name="<%=timePrefix%>.day" value="<%= time.getDay() %>">
+            					  <option value="sunday" <%= "sunday".equals(time.getDay()) ? "selected=\"true\"" : ""  %>>Sun</option>
+            					  <option value="monday" <%= "monday".equals(time.getDay()) ? "selected=\"true\"" : ""  %>>Mon</option>
+            					  <option value="tuesday" <%= "tuesday".equals(time.getDay()) ? "selected=\"true\"" : ""  %>>Tue</option>
+            					  <option value="wednesday" <%= "wednesday".equals(time.getDay()) ? "selected=\"true\"" : ""  %>>Wed</option>
+            					  <option value="thursday" <%= "thursday".equals(time.getDay()) ? "selected=\"true\"" : ""  %>>Thu</option>
+            					  <option value="friday" <%= "friday".equals(time.getDay()) ? "selected=\"true\"" : ""  %>>Fri</option>
+            					  <option value="saturday" <%= "saturday".equals(time.getDay()) ? "selected=\"true\"" : ""  %>>Sat</option>
+            					</select>
+            				<%
+            				} else if ("montly".equals(schedule.getType())) {
+                         %>
             					<input type="text" id="<%=timePrefix%>.day" name="<%=timePrefix%>.day" value="<%= time.getDay() %>"/>
+                         <%        
+            				}
+                         %>
             				</td>           	  
             				<td>
             					<input type="text" id="<%=timePrefix%>.begins" name="<%=timePrefix%>.begins" value="<%= time.getBegins() %>"/>
@@ -489,12 +521,19 @@ int i = 0;
             				<td>
             					<input type="button" id="<%=timePrefix%>.doDeleteTime" name="<%=timePrefix%>.doDeleteTime" value="Delete Time" onclick="deleteTime(<%= schedIndex %>, <%= timeIndex %>)"/>
             				</td>  
+            		      
             			</tr>	  
         <%
         		}
+        %>
+              <tr>
+                <td colspan="4"><input type="button" id="<%= schedPrefix %>.addTime" name-"<%= schedPrefix %>.doTime" value="Add Time" onclick="addTime(<%= schedIndex %>)"/></td>
+              </tr>
+        <% 
   	     }
     		%>
-     </table>    
+     </table>  
+     <input type="button" id="addOncallSchedule" name="addOncallSchedule" value="Add Oncall Schedule" onclick="addCallSchedule()" /> 
 
     <p><input id="saveUserButton" type="button" name="finish" value="Finish" onclick="saveUser()"/>&nbsp;&nbsp;&nbsp;<input id="cancelButton" type="button" name="cancel" value="Cancel" onclick="cancelUser()"/></p>
   </tr>

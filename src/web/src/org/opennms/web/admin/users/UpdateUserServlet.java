@@ -147,6 +147,13 @@ public class UpdateUserServlet extends HttpServlet {
                     dutySchedules.add(newDuty.toString());
                 }
             }
+            
+            
+            int ocScheduleCount = Integer.parseInt(request.getParameter("oncallScheduleCount"));
+            for(int ocSchedIndex = 0; ocSchedIndex < ocScheduleCount; ocSchedIndex++) {
+                
+            }
+            
             userSession.setAttribute("user.modifyUser.jsp", newUser);
         }
 
