@@ -207,6 +207,12 @@ public class Event extends Object {
     protected String nodeLabel;
 
     /**
+     * The alarmId if reduced.
+     * Can be null.
+     */
+    protected Integer alarmId;
+
+    /**
      * Empty constructor to create an empty <code>Event</code> instance. All
      * fields will hold the default values.
      */
@@ -280,6 +286,7 @@ public class Event extends Object {
         this.acknowledgeTime = acknowledgeTime;
         this.nodeLabel = nodeLabel;
         this.serviceName = serviceName;
+        this.alarmId = alarmId;
     }
 
     public int getId() {
@@ -400,6 +407,10 @@ public class Event extends Object {
 
     public boolean isAcknowledged() {
         return (this.acknowledgeUser != null);
+    }
+
+    public Integer getAlarmId() {
+        return (this.alarmId);
     }
 
 }

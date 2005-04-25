@@ -47,6 +47,7 @@ import org.opennms.web.event.filter.InterfaceFilter;
 import org.opennms.web.event.filter.NodeFilter;
 import org.opennms.web.event.filter.ServiceFilter;
 import org.opennms.web.event.filter.SeverityFilter;
+import org.opennms.web.event.filter.AlarmIDFilter;
 
 /**
  * Encapsulates all querying functionality for events.
@@ -1081,6 +1082,9 @@ public class EventFactory extends Object {
             if (element != null) {
                 event.acknowledgeTime = new Date(((Timestamp) element).getTime());
             }
+
+            element = rs.getObject("alarmid");
+            event.alarmId = (Integer) element;
 
             vector.addElement(event);
         }

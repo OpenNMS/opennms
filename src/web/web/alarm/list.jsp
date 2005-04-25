@@ -360,11 +360,10 @@
             <% } %>
           </td>          
           <td valign="top" rowspan="1" >
-	    <% if(alarms[i].getUei()!= null ) { %>
+	    <% if(alarms[i].getId() > 0 ) { %>
               <% org.opennms.web.alarm.filter.Filter exactUeiFilter = new ExactUEIFilter(alarms[i].getUei()); %>             
                 <nobr>
-                  <a href="<%=this.eventMakeLink( parms, exactUeiFilter, true)%>" title="Show only events of this type">
-            <%=alarms[i].getCount()%></a>
+                  <a href="event/list?sortby=id&acktype=unack&filter=alarm=<%=alarms[i].getId()%>"><%=alarms[i].getCount()%></a>
                 </nobr>
             <% } else { %>
             <%=alarms[i].getCount()%>

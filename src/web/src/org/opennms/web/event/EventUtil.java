@@ -58,6 +58,7 @@ import org.opennms.web.event.filter.NodeNameLikeFilter;
 import org.opennms.web.event.filter.PartialUEIFilter;
 import org.opennms.web.event.filter.ServiceFilter;
 import org.opennms.web.event.filter.SeverityFilter;
+import org.opennms.web.event.filter.AlarmIDFilter;
 
 public abstract class EventUtil extends Object {
     protected static final HashMap colors;
@@ -243,6 +244,8 @@ public abstract class EventUtil extends Object {
             filter = new BeforeDateFilter(Long.parseLong(value));
         } else if (type.equals(AfterDateFilter.TYPE)) {
             filter = new AfterDateFilter(Long.parseLong(value));
+        } else if (type.equals(AlarmIDFilter.TYPE)) {
+            filter = new AlarmIDFilter(Integer.parseInt(value));
         }
 
         return (filter);
