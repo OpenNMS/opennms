@@ -439,6 +439,11 @@
     <servlet-class>org.opennms.web.admin.users.DeleteUserServlet</servlet-class>
   </servlet>
   <servlet>
+    <!-- servlet for manipulating oncall-schedules in the modify user jsp -->
+    <servlet-name>updateOncall</servlet-name>
+    <servlet-class>org.opennms.web.admin.users.UpdateOncallServlet</servlet-class>
+  </servlet>
+  <servlet>
     <!-- servlet for adding duty schedules to a user's notification info-->
     <servlet-name>addDutySchedules</servlet-name>
     <servlet-class>org.opennms.web.admin.users.AddDutySchedulesServlet</servlet-class>
@@ -1028,6 +1033,10 @@
   <servlet-mapping>
     <servlet-name>deleteUser</servlet-name>
     <url-pattern>/admin/userGroupView/users/deleteUser</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>updateOncall</servlet-name>
+  	<url-pattern>/admin/userGroupView/users/updateOncall</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>addDutySchedules</servlet-name>

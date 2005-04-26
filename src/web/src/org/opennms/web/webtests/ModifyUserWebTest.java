@@ -33,8 +33,10 @@ package org.opennms.web.webtests;
 
 import java.io.File;
 import java.io.FileReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -386,6 +388,151 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         
     }
     
+    public void testModifyOncallSchedule() throws Exception {
+        List users = getCurrentUsers();
+        String userID = "tempuser";
+        User user = findUser(userID, users);
+        assertNotNull("Unable to find user "+userID, user);
+
+        beginAt("/admin/userGroupView/users/list.jsp");
+        
+        clickLink("users("+userID+").doModify");
+        
+        OncallSchedule sched = user.getOncallSchedule(0);
+        sched.setName("test");
+        sched.getTime(0).setDay("tuesday");
+        sched.getTime(0).setBegins("09:00:00");
+        sched.getTime(0).setEnds("10:00:00");
+        
+        fillModifyFormFromUser(user);
+        
+        clickButton("saveUserButton");
+        
+        assertUsersList(users);
+
+        clickLink("users("+userID+").doModify");
+
+        assertModifyUserPage(user);
+    }
+    
+    public void testDeleteOncallScheduleTime() throws Exception {
+        List users = getCurrentUsers();
+        String userID = "tempuser";
+        User user = findUser(userID, users);
+        assertNotNull("Unable to find user "+userID, user);
+
+        beginAt("/admin/userGroupView/users/list.jsp");
+        
+        clickLink("users("+userID+").doModify");
+
+        
+        int timeCount = Integer.parseInt(getDialog().getFormParameterValue("oncallSchedule[0].timeCount"));
+        assertTrue(timeCount > 1);
+
+        clickButton("oncallSchedule[0].time[0].doDeleteTime");
+
+        user.getOncallSchedule(0).getTimeCollection().remove(0);
+        
+        assertModifyUserPage(user);
+    }
+    
+    public void testAddOncallScheduleTime() throws Exception {
+        List users = getCurrentUsers();
+        String userID = "tempuser";
+        User user = findUser(userID, users);
+        assertNotNull("Unable to find user "+userID, user);
+
+        beginAt("/admin/userGroupView/users/list.jsp");
+        
+        clickLink("users("+userID+").doModify");
+
+        int timeCount = Integer.parseInt(getDialog().getFormParameterValue("oncallSchedule[0].timeCount"));
+        assertTrue(timeCount > 1);
+
+        clickButton("oncallSchedule[0].addTime");
+        
+        Time time = new Time();
+        time.setDay("sunday");
+        time.setBegins("00:00:00");
+        time.setEnds("00:00:00");
+
+        user.getOncallSchedule(0).addTime(time);
+        
+        assertModifyUserPage(user);
+    }
+    
+    public void testAddWeeklyOncallSchedule() throws Exception {
+        testAddOncallSchedule("weekly", "sunday", "00:00:00", "00:00:00");
+    }
+    
+    public void testAddMontlyOncallSchedule() throws Exception {
+        testAddOncallSchedule("monthly", "1", "00:00:00", "00:00:00");
+    }
+
+    public void testAddSpecificOncallSchedule() throws Exception {
+        Date date = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy 00:00:00");
+        String day = format.format(date);
+        testAddOncallSchedule("specific", null, day, day);
+    }
+
+    private void testAddOncallSchedule(String type, String day, String begins, String ends) throws Exception {
+        List users = getCurrentUsers();
+        String userID = "tempuser";
+        User user = findUser(userID, users);
+        assertNotNull("Unable to find user "+userID, user);
+        
+        beginAt("/admin/userGroupView/users/list.jsp");
+        clickLink("users("+userID+").doModify");
+        
+        setFormElement("addOncallType", type);
+        clickButton("addOncallSchedule");
+        
+        OncallSchedule sched = createOncallSchedule("new", type, day, begins, ends);
+        user.addOncallSchedule(sched);
+        
+        assertModifyUserPage(user);
+    }
+    
+    
+    
+    public void testDeleteOncallSchedule() throws Exception {
+        List users = getCurrentUsers();
+        String userID = "tempuser";
+        User user = findUser(userID, users);
+        assertNotNull("Unable to find user "+userID, user);
+
+        beginAt("/admin/userGroupView/users/list.jsp");
+        
+        clickLink("users("+userID+").doModify");
+
+        int schedCount = Integer.parseInt(getDialog().getFormParameterValue("oncallScheduleCount"));
+        assertTrue(schedCount > 1);
+
+        clickButton("oncallSchedule[0].doDelete");
+
+        user.getOncallScheduleCollection().remove(0);
+        
+        assertModifyUserPage(user);
+    }
+    // TODO: test deleting the last time from a schedule
+    // TODO: test monthly schedules
+    // TODO: test specific schedles
+    
+    
+    private OncallSchedule createOncallSchedule(String role, String type, String day, String begins, String ends) {
+        OncallSchedule sched = new OncallSchedule();
+        sched.setName(role);
+        sched.setType(type);
+        Time time = new Time();
+        if (day != null)
+            time.setDay(day);
+        time.setBegins(begins);
+        time.setEnds(ends);
+        sched.addTime(time);
+        return sched;
+    }
+
     private void addSchedule(User user, String sched) {
         DutySchedule newSched = new DutySchedule(sched);
         user.addDutySchedule(newSched.toString());
@@ -424,7 +571,6 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         for(int i = 0; i < dutySchedules.length; i++) {
             DutySchedule sched = new DutySchedule(dutySchedules[i]);
             setCheckboxSelection("duty"+i+"Mo", sched.hasDay(DutySchedule.MONDAY));
-            setCheckboxSelection("duty"+i+"Mo", sched.hasDay(DutySchedule.MONDAY));
             setCheckboxSelection("duty"+i+"Tu", sched.hasDay(DutySchedule.TUESDAY));
             setCheckboxSelection("duty"+i+"We", sched.hasDay(DutySchedule.WEDNESDAY));
             setCheckboxSelection("duty"+i+"Th", sched.hasDay(DutySchedule.THURSDAY));
@@ -435,6 +581,28 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
             setFormElement("duty"+i+"End", String.valueOf(sched.getStopTime()));
         }
         
+        OncallSchedule[] schedules = user.getOncallSchedule();
+        
+        assertFormElementEquals("oncallScheduleCount", String.valueOf(schedules.length));
+        
+        for(int i = 0; i < schedules.length; i++) {
+            OncallSchedule schedule = schedules[i];
+            String schedPrefix = "oncallSchedule["+i+"]";
+            setFormElement(schedPrefix+".name", schedule.getName());
+            assertFormElementEquals(schedPrefix+".type", schedule.getType());
+            
+            Time[] times = schedule.getTime();
+            assertFormElementEquals(schedPrefix+".timeCount", String.valueOf(times.length));
+            for(int j = 0; j < times.length; j++) {
+                Time time = times[j];
+                String timePrefix = schedPrefix+".time["+j+"]";
+                if (!"specific".equals(schedule.getType())) {
+                    setFormElement(timePrefix+".day", time.getDay());
+                } 
+                setFormElement(timePrefix+".begins", time.getBegins());
+                setFormElement(timePrefix+".ends", time.getEnds());
+            }
+        }
         
     }
 
@@ -485,7 +653,7 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
             assertFormElementEquals("duty"+i+"End", String.valueOf(sched.getStopTime()));
         }
         
-        getTester().dumpResponse();
+        //getTester().dumpResponse();
         
         OncallSchedule[] schedules = user.getOncallSchedule();
         assertFormElementEquals("oncallScheduleCount", String.valueOf(schedules.length));
@@ -517,6 +685,7 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
             
             
         }
+        assertFormElementPresent("addOncallType");
         assertButtonPresent("addOncallSchedule");
         
         assertButtonPresent("addSchedulesButton");

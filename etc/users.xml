@@ -30,6 +30,17 @@
 			   <time day="friday"    begins="08:00:00" ends="23:00:00"/>
 			   <time day="saturday"  begins="08:00:00" ends="23:00:00"/>
 			</oncall-schedule>
+			<oncall-schedule name="oncall" type="monthly">
+				<time day="7"  begins="09:00:00" ends="20:00:00" />
+				<time day="14" begins="09:00:00" ends="20:00:00" />
+				<time day="21" begins="09:00:00" ends="20:00:00" />
+				<time day="28" begins="09:00:00" ends="20:00:00" />
+			</oncall-schedule>
+			<oncall-schedule name="oncall" type="specific">
+				<time begins="21-Apr-2005 10:00:00" ends="21-Apr-2005 18:00:00" />
+				<time begins="22-Apr-2005 10:00:00" ends="22-Apr-2005 18:00:00" />
+				<time begins="23-Apr-2005 10:00:00" ends="23-Apr-2005 18:00:00" />
+			</oncall-schedule>
 		</user>
 	</users>
 </userinfo>

@@ -168,22 +168,38 @@
     
     function addCallSchedule()
     {
-    		alert("Called addCallSchedule()");
+          document.modifyUser.redirect.value="/admin/userGroupView/users/updateOncall";
+          document.modifyUser.schedAction.value="addSchedule";
+          document.modifyUser.action="admin/userGroupView/users/updateUser#oncall";
+          document.modifyUser.submit();
     }
     
     function deleteSchedule(schedIndex)
     {
-    		alert("Called deleteSchedule("+schedIndex+")");
+          document.modifyUser.redirect.value="/admin/userGroupView/users/updateOncall";
+          document.modifyUser.schedAction.value="deleteSchedule";
+          document.modifyUser.schedIndex.value=schedIndex;
+          document.modifyUser.action="admin/userGroupView/users/updateUser#oncall";
+          document.modifyUser.submit();
     }
     
     function deleteTime(schedIndex, timeIndex)
     {
-    		alert("Called deleteTime("+schedIndex+", "+timeIndex+")");
+          document.modifyUser.redirect.value="/admin/userGroupView/users/updateOncall";
+          document.modifyUser.schedAction.value="deleteTime";
+          document.modifyUser.schedIndex.value=schedIndex;
+          document.modifyUser.schedTimeIndex.value=timeIndex;
+          document.modifyUser.action="admin/userGroupView/users/updateUser#oncall";
+          document.modifyUser.submit();
     }
     
     function addTime(schedIndex)
     {
-    		alert("Called addTime("+schedIndex+")");
+          document.modifyUser.redirect.value="/admin/userGroupView/users/updateOncall";
+          document.modifyUser.schedAction.value="addTime";
+          document.modifyUser.schedIndex.value=schedIndex;
+          document.modifyUser.action="admin/userGroupView/users/updateUser#oncall";
+          document.modifyUser.submit();
     }
 
 </script>
@@ -454,7 +470,8 @@ int i = 0;
   	<input type="hidden" id="schedIndex" name="schedIndex" value="" />
   	<input type="hidden" id="schedTimeIndex" name="schedTimeIndex" value=""/>
   	
-  	<p><b>Oncall Schedules</b></p>
+  	<p><b><a name="oncall"/>Oncall Schedules</b></p>
+  	
   	
   	<table width="100%" border="1" cellspacing="0" cellpadding="2" >
             <tr bgcolor="#999999">
@@ -485,7 +502,7 @@ int i = 0;
             	  				<input id="<%= schedPrefix %>.name" type="text" name="<%= schedPrefix %>.name" value="<%= schedule.getName() %>" />
             	  			</td>
             	  			<td rowSpan="<%= times.length+1 %>" id="<%= schedPrefix %>.type">
-            	  			    <input type="hidden" id="<%= schedPrefix %>.type" name="<%= schedPrefix%>.type" value="<%= schedule.getType() %>"/>
+            	  			    <input type="hidden" id="<%= schedPrefix %>.type" name="<%= schedPrefix %>.type" value="<%= schedule.getType() %>"/>
             	  				<%= schedule.getType() %>
             	  			</td>
             <%
@@ -495,7 +512,7 @@ int i = 0;
             				<% 
             				if ("weekly".equals(schedule.getType())) {
                           %>
-            					<select id="<%=timePrefix%>.day" name="<%=timePrefix%>.day" value="<%= time.getDay() %>">
+            					<select id="<%=timePrefix%>.day" name="<%=timePrefix%>.day">
             					  <option value="sunday" <%= "sunday".equals(time.getDay()) ? "selected=\"true\"" : ""  %>>Sun</option>
             					  <option value="monday" <%= "monday".equals(time.getDay()) ? "selected=\"true\"" : ""  %>>Mon</option>
             					  <option value="tuesday" <%= "tuesday".equals(time.getDay()) ? "selected=\"true\"" : ""  %>>Tue</option>
@@ -505,9 +522,9 @@ int i = 0;
             					  <option value="saturday" <%= "saturday".equals(time.getDay()) ? "selected=\"true\"" : ""  %>>Sat</option>
             					</select>
             				<%
-            				} else if ("montly".equals(schedule.getType())) {
+            				} else if ("monthly".equals(schedule.getType())) {
                          %>
-            					<input type="text" id="<%=timePrefix%>.day" name="<%=timePrefix%>.day" value="<%= time.getDay() %>"/>
+            					<input type="text" id="<%=timePrefix%>.day" name="<%=timePrefix%>.day" value="<%= time.getDay() %>" size="3" />
                          <%        
             				}
                          %>
@@ -527,12 +544,17 @@ int i = 0;
         		}
         %>
               <tr>
-                <td colspan="4"><input type="button" id="<%= schedPrefix %>.addTime" name-"<%= schedPrefix %>.doTime" value="Add Time" onclick="addTime(<%= schedIndex %>)"/></td>
+                <td colspan="4"><input type="button" id="<%= schedPrefix %>.addTime" name="<%= schedPrefix %>.addTime" value="Add Time" onclick="addTime(<%= schedIndex %>)"/></td>
               </tr>
         <% 
   	     }
     		%>
      </table>  
+     <select id="addOncallType" name="addOncallType">
+		<option value="specific">Specific Dates</option>
+		<option value="monthly">Monthly</option>
+		<option value="weekly">Weekly</option>
+	</select>
      <input type="button" id="addOncallSchedule" name="addOncallSchedule" value="Add Oncall Schedule" onclick="addCallSchedule()" /> 
 
     <p><input id="saveUserButton" type="button" name="finish" value="Finish" onclick="saveUser()"/>&nbsp;&nbsp;&nbsp;<input id="cancelButton" type="button" name="cancel" value="Cancel" onclick="cancelUser()"/></p>

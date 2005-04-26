@@ -45,8 +45,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.common.Time;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.DutySchedule;
+import org.opennms.netmgt.config.users.OncallSchedule;
 import org.opennms.netmgt.config.users.User;
 
 /**
@@ -69,8 +71,6 @@ public class UpdateUserServlet extends HttpServlet {
             }
             userFactory = UserFactory.getInstance();
             
-            
-
             // get the rest of the user information from the form
             newUser.setFullName(request.getParameter("fullName"));
             newUser.setUserComments(request.getParameter("userComments"));
@@ -147,11 +147,27 @@ public class UpdateUserServlet extends HttpServlet {
                     dutySchedules.add(newDuty.toString());
                 }
             }
-            
+
+            newUser.clearOncallSchedule();
             
             int ocScheduleCount = Integer.parseInt(request.getParameter("oncallScheduleCount"));
             for(int ocSchedIndex = 0; ocSchedIndex < ocScheduleCount; ocSchedIndex++) {
-                
+                String schedPrefix = "oncallSchedule["+ocSchedIndex+"]";
+                OncallSchedule newOcSched = new OncallSchedule();
+                newOcSched.setName(request.getParameter(schedPrefix+".name"));
+                newOcSched.setType(request.getParameter(schedPrefix+".type"));
+                int timeCount = Integer.parseInt(request.getParameter(schedPrefix+".timeCount"));
+                for(int timeIndex = 0; timeIndex < timeCount; timeIndex++) {
+                    Time time = new Time();
+                    String timePrefix = schedPrefix +".time["+timeIndex+"]";
+                    if (!"specific".equals(newOcSched.getType())) {
+                        time.setDay(request.getParameter(timePrefix+".day"));
+                    }
+                    time.setBegins(request.getParameter(timePrefix+".begins"));
+                    time.setEnds(request.getParameter(timePrefix+".ends"));
+                    newOcSched.addTime(time);
+                }
+                newUser.addOncallSchedule(newOcSched);
             }
             
             userSession.setAttribute("user.modifyUser.jsp", newUser);
@@ -161,4 +177,5 @@ public class UpdateUserServlet extends HttpServlet {
         RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(request.getParameter("redirect"));
         dispatcher.forward(request, response);
     }
+    
 }
