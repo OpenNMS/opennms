@@ -45,12 +45,12 @@ import java.util.Enumeration;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.XmlrpcdConfigFactory;
+import org.opennms.netmgt.daemon.ServiceDaemon;
 
 /**
  * <p>
@@ -61,7 +61,7 @@ import org.opennms.netmgt.config.XmlrpcdConfigFactory;
  * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class Xmlrpcd implements PausableFiber {
+public class Xmlrpcd extends ServiceDaemon {
     /**
      * The name of the logging category for Xmlrpcd.
      */

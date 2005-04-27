@@ -45,11 +45,11 @@ import java.lang.reflect.UndeclaredThrowableException;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ScriptdConfigFactory;
+import org.opennms.netmgt.daemon.ServiceDaemon;
 
 /**
  * This class implements a script execution service. This service subscribes to
@@ -61,7 +61,7 @@ import org.opennms.netmgt.config.ScriptdConfigFactory;
  * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
  */
-public final class Scriptd implements PausableFiber {
+public final class Scriptd extends ServiceDaemon {
     /**
      * The log4j category used to log debug messsages and statements.
      */

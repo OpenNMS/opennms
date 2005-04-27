@@ -52,13 +52,13 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.daemon.ServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.poller.monitors.ServiceMonitor;
 import org.opennms.netmgt.poller.pollables.DbPollEvent;
@@ -80,7 +80,7 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
-public final class Poller implements PausableFiber {
+public final class Poller extends ServiceDaemon {
 
     private final static Poller m_singleton = new Poller();
 

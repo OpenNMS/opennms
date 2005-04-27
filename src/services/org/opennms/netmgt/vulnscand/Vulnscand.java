@@ -42,10 +42,10 @@ import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.VulnscandConfigFactory;
+import org.opennms.netmgt.daemon.ServiceDaemon;
 
 /**
  * <P>
@@ -66,7 +66,7 @@ import org.opennms.netmgt.config.VulnscandConfigFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-public class Vulnscand implements PausableFiber {
+public class Vulnscand extends ServiceDaemon {
     /**
      * The log4j category used to log messages.
      */

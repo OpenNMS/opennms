@@ -49,6 +49,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.TrapdConfigFactory;
+import org.opennms.netmgt.daemon.ServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
@@ -77,7 +78,7 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  * 
  */
-public class Trapd {
+public class Trapd extends ServiceDaemon {
 	/**
 	 * The name of the logging category for Trapd.
 	 */

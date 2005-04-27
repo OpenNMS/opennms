@@ -49,13 +49,13 @@ import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.daemon.ServiceDaemon;
 
 /**
  * <P>
@@ -73,7 +73,7 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-public class Capsd implements PausableFiber {
+public class Capsd extends ServiceDaemon {
     /**
      * The log4j category used to log messages.
      */

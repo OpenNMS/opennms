@@ -43,7 +43,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.PropertyConfigurator;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.outage.BasicNetwork;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -183,7 +182,7 @@ public class MockUtil {
             Date date = EventConstants.parseToDate(eventTime);
             timestamp = new Timestamp(date.getTime());
         } catch (ParseException e) {
-            ThreadCategory.getInstance(BasicNetwork.class).warn("Failed to convert event time " + eventTime + " to timestamp.", e);
+            ThreadCategory.getInstance(MockUtil.class).warn("Failed to convert event time " + eventTime + " to timestamp.", e);
     
             timestamp = new Timestamp((new Date()).getTime());
         }

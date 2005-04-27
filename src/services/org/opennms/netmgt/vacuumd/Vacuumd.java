@@ -48,16 +48,16 @@ import java.sql.SQLException;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
+import org.opennms.netmgt.daemon.ServiceDaemon;
 
 /**
  * Implements a daemon whose job it is to run periodic updates against the
  * database for database maintenance work.
  */
-public class Vacuumd implements PausableFiber, Runnable {
+public class Vacuumd extends ServiceDaemon implements Runnable {
 
     /**
      * The log4j category used to log debug messsages and statements.

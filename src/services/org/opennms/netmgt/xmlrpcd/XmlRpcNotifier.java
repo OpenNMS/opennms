@@ -55,7 +55,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
-import org.opennms.netmgt.outage.OutageConstants;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -359,7 +358,7 @@ public final class XmlRpcNotifier {
             if (log.isDebugEnabled())
                 log.debug("getNodeLabel: retrieve node label for: " + nodeId);
 
-            PreparedStatement stmt = dbConn.prepareStatement(OutageConstants.DB_GET_NODE_LABEL);
+            PreparedStatement stmt = dbConn.prepareStatement("SELECT nodelabel FROM NODE WHERE nodeid = ?");
             stmt.setLong(1, nodeId);
             ResultSet rs = stmt.executeQuery();
 

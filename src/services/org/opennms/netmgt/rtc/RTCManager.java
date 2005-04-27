@@ -44,9 +44,9 @@ import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.RTCConfigFactory;
+import org.opennms.netmgt.daemon.ServiceDaemon;
 
 /**
  * Maintains calculations for categories.
@@ -83,7 +83,7 @@ import org.opennms.netmgt.config.RTCConfigFactory;
  * @see org.opennms.netmgt.rtc.DataSender
  * @see org.opennms.netmgt.rtc.DataManager
  */
-public final class RTCManager implements PausableFiber {
+public final class RTCManager extends ServiceDaemon {
     /**
      * The log4j category used to log debug messsages and statements.
      */

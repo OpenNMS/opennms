@@ -51,10 +51,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.EventdConfigManager;
+import org.opennms.netmgt.daemon.ServiceDaemon;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
 import org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver;
 import org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver;
@@ -94,7 +94,7 @@ import org.opennms.netmgt.xml.event.EventReceipt;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public final class Eventd implements PausableFiber, org.opennms.netmgt.eventd.adaptors.EventHandler {
+public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.eventd.adaptors.EventHandler {
     private static EventIpcManager m_eventIpcManager;
     /**
      * The log4j category used to log debug messsages and statements.

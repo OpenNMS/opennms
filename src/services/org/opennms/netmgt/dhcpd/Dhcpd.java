@@ -55,9 +55,9 @@ import java.util.Observer;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DhcpdConfigFactory;
+import org.opennms.netmgt.daemon.ServiceDaemon;
 import org.opennms.netmgt.utils.IpValidator;
 
 /**
@@ -106,7 +106,7 @@ import org.opennms.netmgt.utils.IpValidator;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-public final class Dhcpd implements PausableFiber, Runnable, Observer {
+public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
     /**
      * Log4J prefix
      */

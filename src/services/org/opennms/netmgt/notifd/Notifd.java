@@ -43,7 +43,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.config.DestinationPathManager;
@@ -54,6 +53,7 @@ import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.notifd.Queue;
+import org.opennms.netmgt.daemon.ServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 
 /**
@@ -67,7 +67,7 @@ import org.opennms.netmgt.eventd.EventIpcManager;
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
  * 
  */
-public final class Notifd implements PausableFiber {
+public final class Notifd extends ServiceDaemon {
 
     /**
      * The signlton instance.

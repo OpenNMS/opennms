@@ -61,18 +61,18 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
+import org.opennms.netmgt.config.collectd.Package;
+import org.opennms.netmgt.daemon.ServiceDaemon;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
-import org.opennms.netmgt.config.collectd.Package;
 
-public final class Collectd implements PausableFiber {
+public final class Collectd extends ServiceDaemon {
     /**
      * Log4j category
      */
