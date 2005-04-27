@@ -1,27 +1,87 @@
-<schema	xmlns="http://www.w3.org/2001/XMLSchema"
-	xmlns:this="http://xmlns.opennms.org/xsd/config/vacuumd"
-	targetNamespace="http://xmlns.opennms.org/xsd/config/vacuumd">
-	<element name="VacuumdConfiguration">
-		<complexType>
-			<sequence>
-			    <!-- this represents the SQL that is performed every <period> seconds -->
-				<element ref="this:statement" minOccurs="0" maxOccurs="unbounded"/>
-			</sequence>
-		
-			<!--- how often to vacuum the database in seconds -->
-			<attribute name="period" type="positiveInteger" use="required"/>
-	
-                        <!--- the query to get next value of the 'outageNxtId' database sequence
-			      - to make the access database independant
-			-->
-		</complexType>
-	</element>
-	
-	<element name="statement">
-		<complexType>
-			<simpleContent>
-				<extension base="string"/>
-			</simpleContent>
-		</complexType>
-	</element>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:this="http://xmlns.opennms.org/xsd/config/vacuumd"
+    targetNamespace="http://xmlns.opennms.org/xsd/config/vacuumd">
+    <element name="VacuumdConfiguration">
+        <complexType>
+            <sequence>
+                <!-- this represents the SQL that is performed every <period> seconds -->
+                <element ref="this:statement" minOccurs="0" maxOccurs="unbounded" />
+                <element name="automations">
+                    <complexType>
+                        <sequence>
+                            <element ref="this:automation" minOccurs="0" maxOccurs="unbounded" />
+                        </sequence>
+                    </complexType>
+                </element>
+                <!-- A collection of triggers -->
+                <element name="triggers">
+                    <complexType>
+                        <sequence>
+                            <element ref="this:trigger" minOccurs="0" maxOccurs="unbounded" />
+                        </sequence>
+                        <!-- only run the action if the row count evalutes with the operator (defaults to > 0) -->
+                        <attribute name="operator" use="optional">
+                            <simpleType>
+                                <restriction base="string">
+                                    <pattern value="(&lt;|&lt;=|=|&gt;=|&gt;)" />
+                                </restriction>
+                            </simpleType>
+                        </attribute>
+                        <attribute name="row-count" type="integer" use="optional" />
+                    </complexType>
+                </element>
+                <!-- A collection of actions -->
+                <element name="actions">
+                    <complexType>
+                        <sequence>
+                            <element ref="this:action" minOccurs="0" maxOccurs="unbounded" />
+                        </sequence>
+                    </complexType>
+                </element>
+            </sequence>
+            <!--- how often to vacuum the database in seconds -->
+            <attribute name="period" type="positiveInteger" use="required" />
+            <!--- the query to get next value of the 'outageNxtId' database sequence
+                - to make the access database independant
+            -->
+        </complexType>
+    </element>
+    <!-- Triggers and Actions hooked up and run by the Vacuumd schedule using interval for frequency -->
+    <element name="automation">
+        <complexType>
+            <!-- The name of this automation -->
+            <attribute name="name" type="string" use="required" />
+            <!-- How ofter should this autmation run -->
+            <attribute name="interval" type="integer" use="required" />
+            <!-- reference a trigger from the collection of triggers -->
+            <attribute name="trigger-name" type="string" use="optional" />
+            <!-- reference an action from the collection of actions -->
+            <attribute name="action-name" type="string" use="required" />
+        </complexType>
+    </element>
+    <!-- A query to the database with a resultset used for actions  -->
+    <element name="trigger">
+        <complexType>
+            <sequence>
+                <element ref="this:statement" minOccurs="1" maxOccurs="1" />
+            </sequence>
+            <attribute name="name" type="string" use="required" />
+        </complexType>
+    </element>
+    <!-- actions modify the database based on results of a trigger -->
+    <element name="action">
+        <complexType>
+            <sequence>
+                <element ref="this:statement" minOccurs="1" maxOccurs="1" />
+            </sequence>
+            <attribute name="name" type="string" use="required" />
+        </complexType>
+    </element>
+    <!-- Just a generic string used for SQL statements -->
+    <element name="statement">
+        <complexType>
+            <simpleContent>
+                <extension base="string" />
+            </simpleContent>
+        </complexType>
+    </element>
 </schema>

@@ -34,18 +34,24 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.vacuumd.Action;
+import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Statement;
+import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
+
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -75,7 +81,10 @@ public final class VacuumdConfigFactory {
      */
     private static boolean m_loaded = false;
 
+    private static Reader m_configReader;
+
     /**
+     * @deprecated
      * Private constructor
      * 
      * @exception java.io.IOException
@@ -91,6 +100,20 @@ public final class VacuumdConfigFactory {
         m_config = (VacuumdConfiguration) Unmarshaller.unmarshal(VacuumdConfiguration.class, new InputStreamReader(cfgIn));
         cfgIn.close();
 
+    }
+    
+    /**
+     * Private constructor
+     * @param rdr Reader
+     * @throws MarshalException
+     * @throws ValidationException
+     */
+    private VacuumdConfigFactory(Reader rdr) throws MarshalException, ValidationException {
+        m_config = (VacuumdConfiguration) Unmarshaller.unmarshal(VacuumdConfiguration.class, rdr);
+    }
+    
+    public static void setConfigReader(Reader rdr) {
+        m_configReader = rdr;
     }
 
     /**
@@ -111,10 +134,12 @@ public final class VacuumdConfigFactory {
             return;
         }
 
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.VACUUMD_CONFIG_FILE_NAME);
+        if (m_configReader == null) {
+            m_configReader = new InputStreamReader(new FileInputStream(ConfigFileConstants.getFile(ConfigFileConstants.VACUUMD_CONFIG_FILE_NAME)));
+        }
 
-        m_singleton = new VacuumdConfigFactory(cfgFile.getPath());
-
+        m_singleton = new VacuumdConfigFactory(m_configReader);
+        m_configReader.close();
         m_loaded = true;
     }
 
@@ -149,11 +174,83 @@ public final class VacuumdConfigFactory {
 
         return m_singleton;
     }
+    
+    /**
+     * Returns a Collection of automations defined in the config
+     * @return
+     */
+    public synchronized Collection getAutomations() {
+        return m_config.getAutomations().getAutomationCollection();
+    }
+    
+    /**
+     * Returns a Collectionn of triggers defined in the config
+     * @return 
+     */
+    public synchronized Collection getTriggers() {
+        return m_config.getTriggers().getTriggerCollection();
+    }
+    
+    /**
+     * Returns a Trigger with a name matching the string parameter
+     * @param triggerName
+     * @return
+     */
+    public synchronized Trigger getTrigger(String triggerName) {
+        Collection triggers = m_config.getTriggers().getTriggerCollection();
+        Iterator it = triggers.iterator();
+        while (it.hasNext()) {
+            Trigger trig = (Trigger)it.next();
+            if (trig.getName().equals(triggerName))
+                return trig;
+        }
+        return null;
+    }
+    
+    /**
+     * Returns an Action with a name matching the string parmater
+     * @param actionName
+     * @return
+     */
+    public synchronized Action getAction(String actionName) {
+        Collection actions = m_config.getActions().getActionCollection();
+        Iterator it = actions.iterator();
+        while (it.hasNext()) {
+            Action act = (Action)it.next();
+            if (act.getName().equals(actionName))
+                return act;
+        }
+        return null;
+    }
+    
+    /**
+     * Returns an Automation with a name matching the string parameter
+     * @param autoName
+     * @return
+     */
+    public synchronized Automation getAutomation(String autoName) {
+        Collection autos = m_config.getAutomations().getAutomationCollection();
+        Iterator it = autos.iterator();
+        while (it.hasNext()) {
+            Automation auto = (Automation)it.next();
+            if (auto.getName().equals(autoName))
+                return auto;
+        }
+        return null;
+    }
+
+    /**
+     * Returns a Collection of actions defined in the config
+     * @return
+     */
+    public synchronized Collection getActions() {
+        return m_config.getActions().getActionCollection();
+    }
 
     public synchronized int getPeriod() {
         return m_config.getPeriod();
     }
-
+    
     public synchronized String[] getStatements() {
         Statement[] stmts = m_config.getStatement();
         String[] sql = new String[stmts.length];

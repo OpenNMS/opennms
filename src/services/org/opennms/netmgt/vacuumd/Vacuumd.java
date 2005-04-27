@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.log4j.Category;
@@ -119,11 +120,11 @@ public class Vacuumd implements PausableFiber, Runnable {
         Category log = ThreadCategory.getInstance(getClass());
         log.info("Starting Vacuumd");
 
-        m_status = STARTING;
+        m_status = START_PENDING;
         m_startTime = System.currentTimeMillis();
         m_thread = new Thread(this, "Vacuumd-Thread");
+        m_status = STARTING;
         m_thread.start();
-        m_status = RUNNING;
 
     }
 
@@ -169,11 +170,13 @@ public class Vacuumd implements PausableFiber, Runnable {
         if (m_status != PAUSED)
             return;
 
+        m_status = RESUME_PENDING;
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance(getClass());
         log.info("Resuming Vacuumd");
 
         m_thread = new Thread(this, "Vacuumd-Thread");
+        m_status = STARTING;
         m_thread.start();
     }
 
@@ -204,6 +207,7 @@ public class Vacuumd implements PausableFiber, Runnable {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance(getClass());
         log.info("Vacuumd scheduling started");
+        m_status = RUNNING;
 
         long now = System.currentTimeMillis();
         long period = VacuumdConfigFactory.getInstance().getPeriod();
@@ -215,29 +219,10 @@ public class Vacuumd implements PausableFiber, Runnable {
         while (!m_stopped) {
 
             try {
-                int count = 0;
-                while (!m_stopped && ((now - m_startTime) < period)) {
-                    try {
+                now = waitPeriod(log, now, period, waitTime);
 
-                        if (count % 100 == 0) {
-                            log.debug("Vacuumd: " + (period - now + m_startTime) + " millis remaining to execution.");
-                        }
-                        Thread.sleep(waitTime);
-                        now = System.currentTimeMillis();
-                        count++;
-                    } catch (InterruptedException e) {
-                        // FIXME: what do I do here?
-                    }
-                }
                 log.info("Vacuumd beginning to execute statements");
-
-                if (!m_stopped) {
-                    String[] stmts = VacuumdConfigFactory.getInstance().getStatements();
-                    for (int i = 0; i < stmts.length; i++) {
-                        runUpdate(stmts[i]);
-                    }
-
-                }
+                executeStatements();
 
                 m_startTime = System.currentTimeMillis();
 
@@ -247,7 +232,53 @@ public class Vacuumd implements PausableFiber, Runnable {
         }
     }
 
-    public void runUpdate(String sql) {
+    /**
+     * 
+     */
+    private void executeStatements() {
+        if (!m_stopped) {
+            String[] stmts = VacuumdConfigFactory.getInstance().getStatements();
+            for (int i = 0; i < stmts.length; i++) {
+                runUpdate(stmts[i]);
+            }
+
+        }
+    }
+
+    /**
+     * @param log
+     * @param now
+     * @param period
+     * @param waitTime
+     * @return
+     */
+    private long waitPeriod(Category log, long now, long period, long waitTime) {
+        int count = 0;
+        while (!m_stopped && ((now - m_startTime) < period)) {
+            try {
+
+                if (count % 100 == 0) {
+                    log.debug("Vacuumd: " + (period - now + m_startTime) + " millis remaining to execution.");
+                }
+                Thread.sleep(waitTime);
+                now = System.currentTimeMillis();
+                count++;
+            } catch (InterruptedException e) {
+                // FIXME: what do I do here?
+            }
+        }
+        return now;
+    }
+    
+    private ResultSet runTrigger(String sql) {
+        return null;
+    }
+    
+    private void runAction(String sql) {
+        runUpdate(sql);
+    }
+
+    private void runUpdate(String sql) {
         Category log = ThreadCategory.getInstance(getClass());
 
         log.info("Vacuumd executing statement: " + sql);

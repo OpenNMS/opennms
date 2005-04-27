@@ -21,4 +21,26 @@
           SELECT eventid FROM notifications WHERE eventid = events.eventid) 
        AND eventtime &lt; now() - interval '6 weeks';
     </statement>
+    <automations>
+    		<automation name="auto1" interval="60000" trigger-name="trigger1" action-name="action1" />
+    		<automation name="auto2" interval="90000" trigger-name="trigger2" action-name="action2" />
+    </automations>
+    <!-- Sample triggers -->
+    <triggers>
+    		<trigger name="trigger1" row-count="1" operator="&gt;">
+    			<statement>SELECT alarmid FROM alarms</statement>
+    		</trigger>
+    		<trigger name="trigger2" >
+    			<statement>SELECT alarmid FROM alarms WHERE counter &gt; 2</statement>
+    		</trigger>
+    </triggers>
+    <!-- Sample actions -->
+    <actions>
+    		<action name="action1" >
+    			<statement>DELETE FROM alarms WHERE alarmid = ${alarmid}</statement>
+    		</action>
+    		<action name="action2" >
+    			<statement>UPDATE alarms SET severity=serverity+1 WHERE alarmid = ${alarmid}</statement>
+    		</action>
+    </actions>
 </VacuumdConfiguration>
