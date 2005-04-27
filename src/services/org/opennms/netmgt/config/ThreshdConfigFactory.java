@@ -79,7 +79,7 @@ import org.opennms.netmgt.utils.IpListFromUrl;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class ThreshdConfigFactory {
+public final class ThreshdConfigFactory extends ThreshdConfigManager {
     /**
      * The singleton instance of this factory
      */

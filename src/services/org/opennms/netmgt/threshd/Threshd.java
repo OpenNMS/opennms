@@ -77,11 +77,6 @@ import org.opennms.netmgt.xml.event.Log;
 
 public final class Threshd implements PausableFiber {
     /**
-     * Log4j category
-     */
-    private final static String LOG4J_CATEGORY = "OpenNMS.Threshd";
-
-    /**
      * SQL used to retrieve all the interfaces which support a particular
      * service.
      */
@@ -140,7 +135,7 @@ public final class Threshd implements PausableFiber {
     /**
      * Constructor.
      */
-    private Threshd() {
+    Threshd() {
         m_scheduler = null;
         m_status = START_PENDING;
         m_svcThresholders = Collections.synchronizedMap(new TreeMap());
@@ -158,32 +153,12 @@ public final class Threshd implements PausableFiber {
     }
 
     public synchronized void init() {
-        // Set the category prefix
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
         // get the category logger
-        final Category log = ThreadCategory.getInstance();
+        final Category log = ThreadCategory.getInstance(getClass());
 
         if (log.isDebugEnabled())
             log.debug("start: Initializing thresholding daemon");
 
-        // Load threshd configuration file
-        //
-        try {
-            ThreshdConfigFactory.reload();
-        } catch (MarshalException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to load threshd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to load threshd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to load threshd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
 
         // Initialize the ThresholdingConfigFactory
         //
@@ -395,11 +370,8 @@ public final class Threshd implements PausableFiber {
     public synchronized void start() {
         m_status = STARTING;
 
-        // Set the category prefix
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
         // get the category logger
-        Category log = ThreadCategory.getInstance();
+        Category log = ThreadCategory.getInstance(getClass());
 
         if (log.isDebugEnabled())
             log.debug("start: Initializing thresholding daemon");
@@ -435,7 +407,7 @@ public final class Threshd implements PausableFiber {
 
         m_scheduler = null;
         m_status = STOPPED;
-        Category log = ThreadCategory.getInstance();
+        Category log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled())
             log.debug("stop: Threshd stopped");
     }
@@ -451,7 +423,7 @@ public final class Threshd implements PausableFiber {
         m_scheduler.pause();
         m_status = PAUSED;
 
-        Category log = ThreadCategory.getInstance();
+        Category log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled())
             log.debug("pause: Threshd paused");
     }
@@ -467,7 +439,7 @@ public final class Threshd implements PausableFiber {
         m_scheduler.resume();
         m_status = RUNNING;
 
-        Category log = ThreadCategory.getInstance();
+        Category log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled())
             log.debug("resume: Threshd resumed");
     }
@@ -529,7 +501,7 @@ public final class Threshd implements PausableFiber {
     private void scheduleExistingInterfaces() throws SQLException {
         // get the category logger
         //
-        Category log = ThreadCategory.getInstance();
+        Category log = ThreadCategory.getInstance(getClass());
 
         // Database connection
         java.sql.Connection dbConn = null;
@@ -760,5 +732,10 @@ public final class Threshd implements PausableFiber {
 		ThresholdableService thisService=(ThresholdableService)serviceIterator.next();
 		thisService.refreshPackage();
 	}
+    }
+
+    public void setThreshdConfig(ThreshdConfigFactory instance) {
+        // TODO Auto-generated method stub
+        
     }
 }
