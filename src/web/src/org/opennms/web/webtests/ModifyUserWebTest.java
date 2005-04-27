@@ -515,6 +515,33 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         
         assertModifyUserPage(user);
     }
+    
+    public void testDeleteLastTimeFromSchedule() throws Exception {
+        List users = getCurrentUsers();
+        String userID = "tempuser";
+        User user = findUser(userID, users);
+        assertNotNull("Unable to find user "+userID, user);
+
+        beginAt("/admin/userGroupView/users/list.jsp");
+        
+        clickLink("users("+userID+").doModify");
+
+        int timeCount = Integer.parseInt(getDialog().getFormParameterValue("oncallSchedule[0].timeCount"));
+        assertTrue(timeCount > 1);
+
+        for(int i = 0; i < timeCount; i++) {
+            clickButton("oncallSchedule[0].time[0].doDeleteTime");
+            
+            ArrayList timeCollection = user.getOncallSchedule(0).getTimeCollection();
+            if (timeCollection.size() > 1)
+                timeCollection.remove(0);
+            else
+                user.getOncallScheduleCollection().remove(0);
+            
+            assertModifyUserPage(user);
+        }
+        
+    }
     // TODO: test deleting the last time from a schedule
     // TODO: test monthly schedules
     // TODO: test specific schedles
@@ -755,12 +782,6 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
     private void verifyAlert(String alertText) {
         assertEquals(alertText, m_servletClient.popNextAlert());
     }
-
-    // TODO: Edit times in place
-    // TODO: Test with empty schedule list
-    // TODO: have the jsp modify the schedule and save it
-    // TODO: test loading data from factory
-    // TODO: test inclusion in user page
 
     private String getServiceProvider(User user, String contactType) {
         Contact[] contacts = user.getContact();

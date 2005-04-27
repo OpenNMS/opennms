@@ -34,6 +34,7 @@ package org.opennms.web.admin.users;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.servlet.RequestDispatcher;
@@ -65,7 +66,11 @@ public class UpdateOncallServlet extends HttpServlet {
             int schedIndex = Integer.parseInt(request.getParameter("schedIndex"));
             int timeIndex = Integer.parseInt(request.getParameter("schedTimeIndex"));
             
-            user.getOncallSchedule(schedIndex).getTimeCollection().remove(timeIndex);
+            ArrayList timeCollection = user.getOncallSchedule(schedIndex).getTimeCollection();
+            if (timeCollection.size() > 1)
+                timeCollection.remove(timeIndex);
+            else
+                user.getOncallScheduleCollection().remove(schedIndex);
             
         } else if ("addTime".equals(action)) {
             int schedIndex = Integer.parseInt(request.getParameter("schedIndex"));
