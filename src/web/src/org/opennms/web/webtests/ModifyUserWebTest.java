@@ -542,7 +542,7 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
         }
         
     }
-    // TODO: test deleting the last time from a schedule
+
     // TODO: test monthly schedules
     // TODO: test specific schedles
     
