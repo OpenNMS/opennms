@@ -18,15 +18,6 @@
                         <sequence>
                             <element ref="this:trigger" minOccurs="0" maxOccurs="unbounded" />
                         </sequence>
-                        <!-- only run the action if the row count evalutes with the operator (defaults to > 0) -->
-                        <attribute name="operator" use="optional">
-                            <simpleType>
-                                <restriction base="string">
-                                    <pattern value="(&lt;|&lt;=|=|&gt;=|&gt;)" />
-                                </restriction>
-                            </simpleType>
-                        </attribute>
-                        <attribute name="row-count" type="integer" use="optional" />
                     </complexType>
                 </element>
                 <!-- A collection of actions -->
@@ -65,6 +56,15 @@
                 <element ref="this:statement" minOccurs="1" maxOccurs="1" />
             </sequence>
             <attribute name="name" type="string" use="required" />
+            <!-- only run the action if the row count evalutes with the operator (defaults to > 0) -->
+            <attribute name="operator" use="optional">
+                <simpleType>
+                    <restriction base="string">
+                        <pattern value="(&lt;|&lt;=|=|&gt;=|&gt;)" />
+                    </restriction>
+                </simpleType>
+            </attribute>
+            <attribute name="row-count" type="integer" use="optional" />
         </complexType>
     </element>
     <!-- actions modify the database based on results of a trigger -->

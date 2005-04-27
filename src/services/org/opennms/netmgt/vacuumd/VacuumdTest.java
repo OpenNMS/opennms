@@ -134,6 +134,8 @@ public class VacuumdTest extends OpenNMSTestCase {
     
     public final void testGetTrigger() {
         assertNotNull(VacuumdConfigFactory.getInstance().getTrigger("trigger1"));
+        assertEquals(2, VacuumdConfigFactory.getInstance().getTrigger("trigger1").getRowCount());
+        assertEquals(">", VacuumdConfigFactory.getInstance().getTrigger("trigger1").getOperator());
         assertNotNull(VacuumdConfigFactory.getInstance().getTrigger("trigger2"));
     }
     
