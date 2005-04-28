@@ -794,7 +794,7 @@ create table alarms (
 	tticketState			INTEGER,
 	mouseOverText		VARCHAR(64),
 	suppressedUntil		TIMESTAMP WITHOUT TIME ZONE,
-	suppressedUser		TIMESTAMP WITHOUT TIME ZONE,
+	suppressedUser		VARCHAR(256),
 	suppressedTime		TIMESTAMP WITHOUT TIME ZONE,
 	alarmAckUser			VARCHAR(256),
 	alarmAckTime			TIMESTAMP WITHOUT TIME ZONE

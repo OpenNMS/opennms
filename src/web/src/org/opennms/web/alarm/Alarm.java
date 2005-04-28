@@ -37,10 +37,10 @@ package org.opennms.web.alarm;
 import java.util.Date;
 
 /**
- * A JavaBean implementation to hold information about a network event as
+ * A JavaBean implementation to hold information about a network alarm as
  * defined by OpenNMS.
  * 
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class Alarm extends Object {
@@ -58,79 +58,32 @@ public class Alarm extends Object {
 
     public static final int CRITICAL_SEVERITY = 7;
 
-    /** Unique identifier for the event, cannot be null */
+    /** Unique identifier for the alarm, cannot be null */
     protected int id;
 
-    /** Unique identifier for the event, cannot be null */
-    protected int count;
-
-    /** Universal Event Identifer (UEI) for this event, cannot be null */
+    /** Universal Event Identifer (UEI) for this alarm, cannot be null */
     protected String uei;
 
-    /**
-     * Contains the eid, eidtext (optionally), specific, and generic identifier
-     * for the SNMP Trap. This maps directly to the &lt;snmp&gt;element in the
-     * Event Data Stream DTD.
-     */
-    protected String snmp;
-
-    /**
-     * The &lt;time&gt; element from the Event Data Stream DTD, which is the
-     * time the event was received by the source process. Cannot be null.
-     */
-    protected Date lasteventtime;
-
-    /**
-     * The &lt;time&gt; element from the Event Data Stream DTD, which is the
-     * time the event was received by the source process. Cannot be null.
-     */
-    protected Date firsteventtime;
-
-    /** The &lt;host&gt; element from the Event Data Stream DTD */
-    protected String host;
-
-    /** The &lt;snmphost&gt; element from the Event Data Stream DTD */
-    protected String snmphost;
-
-    /** The dpName of the Dist Poller which received the event, cannot be null. */
+    /** The dpName of the Dist Poller which received the alarm, cannot be null. */
     protected String dpName;
-
-    /** The &lt;parms&gt; element from the Event Data Stream DTD */
-    protected String parms;
 
     /** Unique integer identifier for node, can be null */
     protected Integer nodeID;
 
-    /** Unique integer identifier of service/poller package, can be null */
-    protected Integer serviceID;
-
-    /** Human-readable name of the service */
-    protected String serviceName;
-
     /** IP Address of node's interface */
     protected String ipAddr;
 
-    /** Creation time of event in database, cannot be null */
-    protected Date createTime;
+    /** Unique integer identifier of service/poller package, can be null */
+    protected Integer serviceID;
 
-    /** Free-form textual description of the event */
-    protected String description;
+    /** Reduction key for this alarm, cannot be null */
+    protected String reductionKey;
 
-    /**
-     * Formatted display text to control how the event will appear in the
-     * browser. This field may contain variables that are populated by field
-     * values of the message.
-     */
-    protected String logMessage;
+    /** Reduction count for the alarm, cannot be null */
+    protected int count;
 
     /**
-     * Logical group with which to associate event. This field provides a means
-     * of logically grouping related events.
-     */
-    protected String logGroup;
-
-    /**
-     * Severity the of event.
+     * Severity the of alarm.
      * 
      * <pre>
      * 
@@ -145,35 +98,31 @@ public class Alarm extends Object {
      */
     protected int severity;
 
+    /** The last event to be reduced by this alarm */
+    protected int lastEventID;
+
+    /**
+     * The first time an event was reduced by this alarm
+     */
+    protected Date firsteventtime;
+
+    /**
+     * The last time an event was reduced by this alarm
+     */
+    protected Date lasteventtime;
+
+    /** Free-form textual description of the alarm */
+    protected String description;
+
+    /**
+     * Formatted display text to control how the alarm will appear in the
+     * browser. This field may contain variables that are populated by field
+     * values of the message.
+     */
+    protected String logMessage;
+
     /** Operator instruction for event. */
     protected String operatorInstruction;
-
-    /**
-     * Automated Action for event. Should consist of fully-qualfied pathname to
-     * executable command, with possible variables used to reference
-     * event-specific data
-     */
-    protected String autoAction;
-
-    /**
-     * Operator Action for event. Should consist of fully-qualfied pathname to
-     * executable command, with possible variables used to reference
-     * event-specific data
-     */
-    protected String operatorAction;
-
-    /**
-     * Text of the eventOperAction. Menu text displayed to Operator, which if
-     * selected, will invoke action described in eventOperAction.
-     */
-    protected String operatorActionMenuText;
-
-    /**
-     * Notification string. Should consist of a fully-qualfied pathname to an
-     * executable which invokes the notification software, and will likely
-     * contain event-specific variables
-     */
-    protected String notification;
 
     /**
      * Trouble ticket integration string. Should consist of fully-qualfied
@@ -189,32 +138,33 @@ public class Alarm extends Object {
     protected Integer troubleTicketState;
 
     /**
-     * The forwarding information. Contains a list of triplets:
-     * <code>Destination,State,Mechanism;Destination,State,Mechanism;</code>
-     * which reflect the following:
-     * <ul>
-     * <li>State is a boolean flag as to whether the entry is active or not.
-     * 1=on, 0=off.
-     * <li>Destination is hostname or IP of system to forward the event to
-     * <li>Method is the means by which it will be forwarded. A keyword, e.g.,
-     * SNMP
-     * </ul>
-     */
-    protected String forward;
-
-    /**
      * Mouse over text. Text to be displayed on MouseOver event, if the event is
      * displayed in the browser and the operator needs additional info.
      */
     protected String mouseOverText;
 
-    /** The name of the user who acknowledged this event. */
+    /** The time that suppression will end for this alarm. */
+    protected Date suppressedUntil;
+
+    /** The name of the user who suppressed this alarm. */
+    protected String suppressedUser;
+
+    /** The time this alarm was suppressed. */
+    protected Date suppressedTime;
+
+    /** The name of the user who acknowledged this alarm. */
     protected String acknowledgeUser;
 
-    /** The time this event was acknowledged. */
+    /** The time this alarm was acknowledged. */
     protected Date acknowledgeTime;
 
-    /** The human-readable name of the node of this event. Can be null. */
+    /** The &lt;parms&gt; element for this alarm.*/
+    protected String parms;
+
+    /** Human-readable name of the service */
+    protected String serviceName;
+
+    /** The human-readable name of the node of this alarm. Can be null. */
     protected String nodeLabel;
 
     /**
@@ -225,84 +175,84 @@ public class Alarm extends Object {
     }
 
     /**
-     * Create an event that represents a real network event with only the
+     * Create an alarm that represents a real network alarm with only the
      * required parameters.
      */
-    public Alarm(int id, String uei, Date time, String dpName, Date createTime, int severity) {
-        if (uei == null || time == null || dpName == null || createTime == null) {
+    public Alarm(int id, String uei, String dpName, Date lasteventtime, Date firsteventtime, int count, int severity) {
+        if (uei == null || dpName == null || lasteventtime == null || firsteventtime == null ) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
         this.id = id;
         this.uei = uei;
-        this.lasteventtime = lasteventtime;
         this.dpName = dpName;
-        this.createTime = createTime;
+        this.lasteventtime = lasteventtime;
+        this.firsteventtime = firsteventtime;
+        this.count = count;
         this.severity = severity;
     }
 
     /**
-     * Create an event that represents a real network event with all the
+     * Create an alarm that represents a real network alarm with all the
      * parameters.
      */
-    public Alarm(int id, String uei, Date lasteventtime, String dpName, Date createTime, int severity, String snmp, String host, String snmphost, String parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime) {
-        this(id, uei, lasteventtime, dpName, createTime, severity, snmp, host, snmphost, parms, nodeID, serviceID, ipAddr, description, logMessage, logGroup, operatorInstruction, autoAction, operatorAction, operatorActionMenuText, notification, troubleTicket, troubleTicketState, forward, mouseOverText, acknowledgeUser, acknowledgeTime, null, null);
+    public Alarm(int id, String uei, String dpName, Integer nodeID, String ipAddr, Integer serviceID, String reductionKey, int count, int severity, int lastEventID, Date firsteventtime, Date lasteventtime, String description, String logMessage, String operatorInstruction, String troubleTicket, Integer troubleTicketState, String mouseOverText, Date suppressedUntil, String suppressedUser, Date suppressedTime, String acknowledgeUser, Date acknowledgeTime, String parms) {
+    	this(id, uei, dpName, nodeID, ipAddr, serviceID, reductionKey, count, severity, lastEventID, firsteventtime, lasteventtime, description, logMessage, operatorInstruction, troubleTicket, troubleTicketState, mouseOverText, suppressedUntil, suppressedUser, suppressedTime, acknowledgeUser, acknowledgeTime, parms, null, null);
     }
 
     /**
-     * Create an event that represents a real network event with all the
+     * Create an alarm that represents a real network alarm with all the
      * parameters.
      */
-    public Alarm(int id, String uei, Date lasteventtime, String dpName, Date createTime, int severity, String snmp, String host, String snmphost, String parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime, String nodeLabel, String serviceName) {
+    public Alarm(int id, String uei, String dpName, Integer nodeID, String ipAddr, Integer serviceID, String reductionKey, int count, int severity, int lastEventID, Date firsteventtime, Date lasteventtime, String description, String logMessage, String operatorInstruction, String troubleTicket, Integer troubleTicketState, String mouseOverText, Date suppressedUntil, String suppressedUser, Date suppressedTime, String acknowledgeUser, Date acknowledgeTime, String parms, String nodeLabel, String serviceName) {
 
-        if (uei == null || lasteventtime == null || dpName == null || createTime == null) {
-            throw new IllegalArgumentException("Cannot take null values for the following parameters: uei, lasteventtime, dpName, createTime.");
+        if (uei == null || dpName == null || lasteventtime == null || firsteventtime == null ) {
+            throw new IllegalArgumentException("Cannot take null values for the following parameters: uei, dpName, firsteventtime, lasteventtime.");
         }
 
         // required fields
         this.id = id;
         this.uei = uei;
-        this.lasteventtime = lasteventtime;
         this.dpName = dpName;
-        this.createTime = createTime;
+        this.lasteventtime = lasteventtime;
+        this.firsteventtime = firsteventtime;
+	this.count = count;
         this.severity = severity;
 
         // optional fields
-        this.snmp = snmp;
-        this.host = host;
-        this.snmphost = snmphost;
+    	this.nodeID = nodeID;
+	this.ipAddr = ipAddr;
+	this.serviceID = serviceID;
+	this.reductionKey = reductionKey;
+	this.severity = severity;
+	this.lastEventID = lastEventID;
+	this.description = description;
+	this.logMessage = logMessage;
+	this.operatorInstruction = operatorInstruction;
+	this.troubleTicket = troubleTicket;
+	this.troubleTicketState = troubleTicketState;
+	this.mouseOverText = mouseOverText;
+	this.suppressedUntil = suppressedUntil;
+	this.suppressedUser = suppressedUser;
+	this.suppressedTime = suppressedTime;
+	this.acknowledgeUser = acknowledgeUser;
+	this.acknowledgeTime = acknowledgeTime;
         this.parms = parms;
-        this.nodeID = nodeID;
-        this.serviceID = serviceID;
-        this.ipAddr = ipAddr;
-        this.description = description;
-        this.logMessage = logMessage;
-        this.logGroup = logGroup;
-        this.operatorInstruction = operatorInstruction;
-        this.autoAction = autoAction;
-        this.operatorAction = operatorAction;
-        this.operatorActionMenuText = operatorActionMenuText;
-        this.notification = notification;
-        this.troubleTicket = troubleTicket;
-        this.troubleTicketState = troubleTicketState;
-        this.forward = forward;
-        this.mouseOverText = mouseOverText;
-        this.acknowledgeUser = acknowledgeUser;
-        this.acknowledgeTime = acknowledgeTime;
         this.nodeLabel = nodeLabel;
         this.serviceName = serviceName;
+
     }
 
     public int getId() {
         return (this.id);
     }
 
-    public int getCount() {
-        return (this.count);
-    }
-
     public String getUei() {
         return (this.uei);
+    }
+
+    public String getDpName() {
+        return (this.dpName);
     }
 
     public Date getLastEventTime() {
@@ -313,52 +263,32 @@ public class Alarm extends Object {
         return (firsteventtime);
     }
 
-    public String getDpName() {
-        return (this.dpName);
-    }
-
-    public Date getCreateTime() {
-        return (this.createTime);
+    public int getCount() {
+        return (this.count);
     }
 
     public int getSeverity() {
         return (this.severity);
     }
 
-    public String getSnmp() {
-        return (this.snmp);
-    }
-
-    public String getHost() {
-        return (this.host);
-    }
-
-    public String getSnmpHost() {
-        return (this.snmphost);
-    }
-
-    public String getParms() {
-        return (this.parms);
-    }
-
     public int getNodeId() {
         return (this.nodeID.intValue());
     }
 
-    public String getNodeLabel() {
-        return (this.nodeLabel);
+    public String getIpAddress() {
+        return (this.ipAddr);
     }
 
     public int getServiceId() {
         return (this.serviceID.intValue());
     }
 
-    public String getServiceName() {
-        return (this.serviceName);
+    public String getReductionKey() {
+        return (this.reductionKey);
     }
 
-    public String getIpAddress() {
-        return (this.ipAddr);
+    public int getLastEventID() {
+        return (this.lastEventID);
     }
 
     public String getDescription() {
@@ -369,28 +299,8 @@ public class Alarm extends Object {
         return (this.logMessage);
     }
 
-    public String getLogGroup() {
-        return (this.logGroup);
-    }
-
     public String getOperatorInstruction() {
         return (this.operatorInstruction);
-    }
-
-    public String getAutoAction() {
-        return (this.autoAction);
-    }
-
-    public String getOperatorAction() {
-        return (this.operatorAction);
-    }
-
-    public String getOperatorActionMenuText() {
-        return (this.operatorActionMenuText);
-    }
-
-    public String getNotification() {
-        return (this.notification);
     }
 
     public String getTroubleTicket() {
@@ -401,12 +311,20 @@ public class Alarm extends Object {
         return (this.troubleTicketState);
     }
 
-    public String getForward() {
-        return (this.forward);
-    }
-
     public String getMouseOverText() {
         return (this.mouseOverText);
+    }
+
+    public Date getSuppressedUntil() {
+        return (this.suppressedUntil);
+    }
+
+    public String getSuppressedUser() {
+        return (this.suppressedUser);
+    }
+
+    public Date getSuppressedTime() {
+        return (this.suppressedTime);
     }
 
     public String getAcknowledgeUser() {
@@ -419,6 +337,18 @@ public class Alarm extends Object {
 
     public boolean isAcknowledged() {
         return (this.acknowledgeUser != null);
+    }
+
+    public String getParms() {
+        return (this.parms);
+    }
+
+    public String getNodeLabel() {
+        return (this.nodeLabel);
+    }
+
+    public String getServiceName() {
+        return (this.serviceName);
     }
 
 }

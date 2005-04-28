@@ -53,6 +53,7 @@ import org.opennms.web.alarm.filter.SeverityFilter;
 /**
  * Encapsulates all querying functionality for alarms.
  * 
+ * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
@@ -287,7 +288,7 @@ public class AlarmFactory extends Object {
         return alarmCounts;
     }
 
-    /** Return a specific event. */
+    /** Return a specific alarm. */
     public static Alarm getAlarms(int alarmId) throws SQLException {
         Alarm alarm = null;
         Connection conn = Vault.getDbConnection();
@@ -422,21 +423,9 @@ public class AlarmFactory extends Object {
      * ****************************************************************************
      */
 
-    /** Return all unacknowledged alarms sorted by event ID for the given node. */
+    /** Return all unacknowledged alarms sorted by alarm ID for the given node. */
     public static Alarm[] getAlarmsForNode(int nodeId) throws SQLException {
         return (getAlarmsForNode(nodeId, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1));
-    }
-
-    /**
-     * Return all alarms (optionally only unacknowledged alarms) sorted by event
-     * ID for the given node.
-     * 
-     * @deprecated Replaced by
-     *             {@link " #getAlarmsForNode(int,SortStyle,AcknowledgeType) getEventsForNode( int, SortStyle, AcknowledgeType )"}
-     */
-    public static Alarm[] getAlarmsForNode(int nodeId, boolean includeAcknowledged) throws SQLException {
-        AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED;
-        return (getAlarmsForNode(nodeId, SortStyle.ID, ackType, -1, -1));
     }
 
     /**
@@ -488,18 +477,6 @@ public class AlarmFactory extends Object {
      */
     public static Alarm[] getAlarmsForInterface(int nodeId, String ipAddress) throws SQLException {
         return (getAlarmsForInterface(nodeId, ipAddress, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED, -1, -1));
-    }
-
-    /**
-     * Return all alarms (optionally only unacknowledged alarms) sorted by time
-     * for the given interface.
-     * 
-     * @deprecated Replaced by
-     *             {@link " #getEventsForInterface(int,String,SortStyle,AcknowledgeType) getEventsForInterface( int, String, SortStyle, AcknowledgeType )"}
-     */
-    public static Alarm[] getAlarmsForInterface(int nodeId, String ipAddress, boolean includeAcknowledged) throws SQLException {
-        AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED;
-        return (getAlarmsForInterface(nodeId, ipAddress, SortStyle.ID, ackType, -1, -1));
     }
 
     /**
@@ -598,18 +575,6 @@ public class AlarmFactory extends Object {
     }
 
     /**
-     * Return all alarms (optionally only unacknowledged alarms) sorted by time
-     * for the given service.
-     * 
-     * @deprecated Replaced by
-     *             {@link " #getEventsForService(int,String,int,SortStyle,AcknowledgeType,int,int) getEventsForService( int, String, int, SortStyle, AcknowledgeType, int, int )"}
-     */
-    public static Alarm[] getAlarmsForService(int nodeId, String ipAddress, int serviceId, boolean includeAcknowledged) throws SQLException {
-        AcknowledgeType ackType = (includeAcknowledged) ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED;
-        return (getAlarmsForService(nodeId, ipAddress, serviceId, SortStyle.ID, ackType, -1, -1));
-    }
-
-    /**
      * Return some maximum number of alarms or less (optionally only
      * unacknowledged alarms) sorted by the given sort style for the given node,
      * IP address, and service ID.
@@ -698,18 +663,6 @@ public class AlarmFactory extends Object {
         return (AlarmFactory.getAlarmsForSeverity(severity, SortStyle.ID, AcknowledgeType.UNACKNOWLEDGED));
     }
 
-    /**
-     * Return all alarms (optionally only unacknowledged alarms) sorted by time
-     * for the given severity.
-     * 
-     * @deprecated Replaced by
-     *             {@link " #getEventsForSeverity(int,SortStyle,AcknowledgeType) getEventsForSeverity( int, SortStyle, AcknowledgeType )"}
-     */
-    public static Alarm[] getAlarmsForSeverity(int severity, boolean includeAcknowledged) throws SQLException {
-        AcknowledgeType ackType = includeAcknowledged ? AcknowledgeType.BOTH : AcknowledgeType.UNACKNOWLEDGED;
-        return (AlarmFactory.getAlarmsForSeverity(severity, SortStyle.ID, ackType));
-    }
-
     public static Alarm[] getAlarmsForSeverity(int severity, SortStyle sortStyle, AcknowledgeType ackType) throws SQLException {
         return (AlarmFactory.getAlarms(sortStyle, ackType, new Filter[] { new SeverityFilter(severity) }));
     }
@@ -735,13 +688,13 @@ public class AlarmFactory extends Object {
         Connection conn = Vault.getDbConnection();
 
         try {
-            StringBuffer select = new StringBuffer("SELECT * FROM ALARMS WHERE EVENTDPNAME=?");
+            StringBuffer select = new StringBuffer("SELECT * FROM ALARMS WHERE DPNAME=?");
 
             if (!includeAcknowledged) {
                 select.append(" AND ALARMACKUSER IS NULL");
             }
 
-            select.append(" AND EVENTDISPLAY='Y' ");
+            select.append(" AND ALARMDISPLAY='Y' ");
             select.append(" ORDER BY ALARMID DESC");
 
             PreparedStatement stmt = conn.prepareStatement(select.toString());
@@ -1007,32 +960,11 @@ public class AlarmFactory extends Object {
             Object element = new Integer(rs.getInt("alarmID"));
             alarm.id = ((Integer) element).intValue();
 
-            element = rs.getObject("counter");
-            alarm.count = ((Integer) element).intValue();
-
             element = rs.getString("eventUei");
             alarm.uei = (String) element;
 
-//            element = rs.getString("alarmSnmp");
-//            alarm.snmp = (String) element;
-
-            element = rs.getTimestamp("lasteventtime");
-            alarm.lasteventtime = new Date(((Timestamp) element).getTime());
-
-            element = rs.getTimestamp("firsteventtime");
-            alarm.firsteventtime = new Date(((Timestamp) element).getTime());
-
-//            element = rs.getString("alarmHost");
-//            alarm.host = (String) element;
-
-//            element = rs.getString("alarmSnmpHost");
-//            alarm.snmphost = (String) element;
-
-//            element = rs.getString("alarmDpName");
-//            alarm.dpName = (String) element;
-
-//            element = rs.getString("alarmParms");
-//            alarm.parms = (String) element;
+            element = rs.getString("dpName");
+            alarm.dpName = (String) element;
 
             // node id can be null
             element = rs.getObject("nodeID");
@@ -1048,41 +980,32 @@ public class AlarmFactory extends Object {
             element = rs.getObject("serviceID");
             alarm.serviceID = (Integer) element;
 
-            element = rs.getString("nodeLabel");
-            alarm.nodeLabel = (String) element;
+            element = rs.getString("reductionKey");
+            alarm.reductionKey = (String) element;
 
-            element = rs.getString("serviceName");
-            alarm.serviceName = (String) element;
-
-//            element = rs.getTimestamp("alarmCreateTime");
-//            alarm.createTime = new Date(((Timestamp) element).getTime());
-
-            element = rs.getString("description");
-            alarm.description = (String) element;
-
-//            element = rs.getString("alarmLoggroup");
-//            alarm.logGroup = (String) element;
-
-            element = rs.getString("logmsg");
-            alarm.logMessage = (String) element;
+            element = rs.getObject("counter");
+            alarm.count = ((Integer) element).intValue();
 
             element = new Integer(rs.getInt("severity"));
             alarm.severity = ((Integer) element).intValue();
 
+            element = new Integer(rs.getInt("lastEventID"));
+            alarm.lastEventID = ((Integer) element).intValue();
+
+            element = rs.getTimestamp("firsteventtime");
+            alarm.firsteventtime = new Date(((Timestamp) element).getTime());
+
+            element = rs.getTimestamp("lasteventtime");
+            alarm.lasteventtime = new Date(((Timestamp) element).getTime());
+
+            element = rs.getString("description");
+            alarm.description = (String) element;
+
+            element = rs.getString("logmsg");
+            alarm.logMessage = (String) element;
+
             element = rs.getString("OperInstruct");
             alarm.operatorInstruction = (String) element;
-
-//            element = rs.getString("alarmAutoAction");
-//            alarm.autoAction = (String) element;
-
-//            element = rs.getString("alarmOperAction");
-//            alarm.operatorAction = (String) element;
-
-//            element = rs.getString("alarmOperActionMenuText");
-//            alarm.operatorActionMenuText = (String) element;
-
-//            element = rs.getString("alarmNotification");
-//            alarm.notification = (String) element;
 
             element = rs.getString("TTicketID");
             alarm.troubleTicket = (String) element;
@@ -1090,11 +1013,17 @@ public class AlarmFactory extends Object {
             element = rs.getObject("TTicketState");
             alarm.troubleTicketState = (Integer) element;
 
-//            element = rs.getString("alarmForward");
-//            alarm.forward = (String) element;
-
             element = rs.getString("MouseOverText");
             alarm.mouseOverText = (String) element;
+
+            element = rs.getTimestamp("suppressedUntil");
+            alarm.suppressedUntil = new Date(((Timestamp) element).getTime());
+
+            element = rs.getString("suppressedUser");
+            alarm.suppressedUser = (String) element;
+
+            element = rs.getTimestamp("suppressedTime");
+            alarm.suppressedTime = new Date(((Timestamp) element).getTime());
 
             element = rs.getString("alarmAckUser");
             alarm.acknowledgeUser = (String) element;
@@ -1103,6 +1032,12 @@ public class AlarmFactory extends Object {
             if (element != null) {
                 alarm.acknowledgeTime = new Date(((Timestamp) element).getTime());
             }
+
+            element = rs.getString("nodeLabel");
+            alarm.nodeLabel = (String) element;
+
+            element = rs.getString("serviceName");
+            alarm.serviceName = (String) element;
 
             vector.addElement(alarm);
         }
