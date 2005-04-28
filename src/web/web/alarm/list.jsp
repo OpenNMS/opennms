@@ -409,7 +409,7 @@
 	   <td>&nbsp;</td>
         </tr>
         <tr valign="top" class="<%=(i%2 == 0) ? "eventlist-odd" : "eventlist-even"%>">
-          <td valign="top" colspan="7"><%=alarms[i].getLogMessage()%></td>
+          <td valign="top" colspan="6"><%=alarms[i].getLogMessage()%></td>
         </tr>
        
       <% } /*end for*/%>

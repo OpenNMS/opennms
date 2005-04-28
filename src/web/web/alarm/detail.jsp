@@ -121,7 +121,7 @@
           <td><%=alarm.getAcknowledgeUser()!=null ? alarm.getAcknowledgeUser() : "&nbsp"%></td>
         </tr>
         <tr>
-          <td bgcolor="#999999"><b>Time</b></td>
+          <td bgcolor="#999999"><b>Last Event</b></td>
           <td><%=org.opennms.netmgt.EventConstants.formatToUIString(alarm.getLastEventTime())%></td>
           <td bgcolor="#999999"><b>Interface</b></td>
           <td>
@@ -139,6 +139,8 @@
           <td><%=alarm.getAcknowledgeTime()!=null ? org.opennms.netmgt.EventConstants.formatToUIString(alarm.getAcknowledgeTime()) : "&nbsp"%></td>
         </tr>
         <tr>
+          <td bgcolor="#999999"><b>First Event</b></td>
+          <td><%=org.opennms.netmgt.EventConstants.formatToUIString(alarm.getFirstEventTime())%></td>
           <td bgcolor="#999999"><b>Service</b></td>
           <td>
             <% if( alarm.getServiceName() != null ) { %>
@@ -153,11 +155,21 @@
           </td>
           </tr> 
           <tr>
+          	<td bgcolor="#999999"><b>Count</b></td>
+	        <td><%=alarm.getCount()%></td>
           	<td bgcolor="#999999"><b>UEI</b></td>
           	<% if( alarm.getUei() != null ) { %>
-          	      <td><%=alarm.getUei()%></td>
+          	      <td colspan=3><%=alarm.getUei()%></td>
           	<% } else {%>
-                	&nbsp;
+                      <td colspan=3>&nbsp;</td>
+          	<% } %>
+        </tr>
+          <tr>
+          	<td bgcolor="#999999"><b>Reduct. Key</b></td>
+          	<% if( alarm.getReductionKey() != null ) { %>
+          	      <td colspan=5><%=alarm.getReductionKey()%></td>
+          	<% } else {%>
+                      <td colspan=3>&nbsp;</td>
           	<% } %>
         </tr>
       </table>

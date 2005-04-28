@@ -1,5 +1,7 @@
 1.2.X to 1.3.0
 ----------------------------------------------------------------------
+- Added stylesheets to the alarm and event lists, and added a
+  specific UEI filter to events.
 - Added a viewer page for Alarms.
 - Add CentOS 4 support to the RPM spec file.  Bug #1222.  Thanks
   Ted Kaczmarek <tedkaz@optonline.net>.

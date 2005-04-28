@@ -258,8 +258,8 @@
       <input type="hidden" name="action" value="<%=action%>" />
       <%=org.opennms.web.Util.makeHiddenTags(request)%>
 
-      <table width="100%" cellspacing="1" cellpadding="2" border="0" bordercolor="black">
-        <tr bgcolor="#999999">
+      <table>
+        <tr class="eventlist-head">
           <% if ( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
           <td width="1%"><b>Ack</b></td>
           <% } else { %>
@@ -274,17 +274,17 @@
           <td width="10%"><b>Ackd</b></td>
         </tr>      
       <% for( int i=0; i < events.length; i++ ) { %>        
-        <tr valign="top" bgcolor="<%=(i%2 == 0) ? "white" : "#cccccc"%>">
-          <td valign="top" rowspan="2" bgcolor="<%=EventUtil.getSeverityColor(events[i].getSeverity())%>">
+        <tr valign="top" class="<%=(i%2 == 0) ? "eventlist-odd" : "eventlist-even"%>">
+          <td valign="top" rowspan="3" bgcolor="<%=EventUtil.getSeverityColor(events[i].getSeverity())%>">
             <nobr>
               <input type="checkbox" name="event" value="<%=events[i].getId()%>" /> 
             </nobr>
           </td>
-          <td valign="top" rowspan="2" bgcolor="<%=EventUtil.getSeverityColor(events[i].getSeverity())%>">
+          <td valign="top" rowspan="3" bgcolor="<%=EventUtil.getSeverityColor(events[i].getSeverity())%>">
             <a href="event/detail.jsp?id=<%=events[i].getId()%>"><%=events[i].getId()%></a>
           </td>
           
-          <td valign="top" rowspan="2" bgcolor="<%=EventUtil.getSeverityColor(events[i].getSeverity())%>">
+          <td valign="top" rowspan="3" bgcolor="<%=EventUtil.getSeverityColor(events[i].getSeverity())%>">
             <%=EventUtil.getSeverityLabel(events[i].getSeverity())%>
             
             <% org.opennms.web.event.filter.Filter severityFilter = new SeverityFilter(events[i].getSeverity()); %>      
@@ -370,11 +370,28 @@
           </td>
         </tr>
         
-        <tr valign="top" bgcolor="<%=(i%2 == 0) ? "white" : "#cccccc"%>">
-          <td colspan="4"><%=events[i].getLogMessage()%></td>
+        <tr valign="top" class="<%=(i%2 == 0) ? "eventlist-odd" : "eventlist-even"%>">
+          <td colspan="4">
+            <% if(events[i].getUei() != null) { %>
+              <% org.opennms.web.event.filter.Filter exactUEIFilter = new ExactUEIFilter(events[i].getUei()); %>
+                <%=events[i].getUei()%>
+              <% if( !parms.filters.contains( exactUEIFilter )) { %>
+                <nobr>
+                  <a href="<%=this.makeLink( parms, exactUEIFilter, true)%>" class="filterLink" title="Show only events with this UEI"><%=addPositiveFilterString%></a>
+                  <a href="<%=this.makeLink( parms, new NegativeExactUEIFilter(events[i].getUei()), true)%>" class="filterLink" title="Do not show events for this UEI"><%=addNegativeFilterString%></a>
+                </nobr>
+              <% } %>                            
+            <% } else { %>
+              &nbsp;
+            <% } %>
+          </td>          
           <td valign="top">
             <%=events[i].isAcknowledged() ? org.opennms.netmgt.EventConstants.formatToUIString(events[i].getAcknowledgeTime()) : "&nbsp;"%>
           </td>
+        </tr>
+       
+        <tr valign="top" class="<%=(i%2 == 0) ? "eventlist-odd" : "eventlist-even"%>">
+          <td colspan="5"><%=events[i].getLogMessage()%></td>
         </tr>
        
       <% } /*end for*/%>
