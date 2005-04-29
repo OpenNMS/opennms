@@ -72,8 +72,6 @@ public class Vacuumd extends ServiceDaemon implements Runnable {
 
     private boolean m_stopped = false;
 
-    private int m_status = START_PENDING;
-
     public synchronized static Vacuumd getSingleton() {
         if (m_singleton == null) {
             m_singleton = new Vacuumd();
@@ -120,10 +118,10 @@ public class Vacuumd extends ServiceDaemon implements Runnable {
         Category log = ThreadCategory.getInstance(getClass());
         log.info("Starting Vacuumd");
 
-        m_status = START_PENDING;
+        setStatus(START_PENDING);
         m_startTime = System.currentTimeMillis();
         m_thread = new Thread(this, "Vacuumd-Thread");
-        m_status = STARTING;
+        setStatus(STARTING);
         m_thread.start();
 
     }
@@ -138,9 +136,9 @@ public class Vacuumd extends ServiceDaemon implements Runnable {
         Category log = ThreadCategory.getInstance(getClass());
         log.info("Stopping Vacuumd");
 
-        m_status = STOP_PENDING;
+        setStatus(STOP_PENDING);
         m_stopped = true;
-        m_status = STOPPED;
+        setStatus(STOPPED);
     }
 
     /*
@@ -149,16 +147,16 @@ public class Vacuumd extends ServiceDaemon implements Runnable {
      * @see org.opennms.core.fiber.PausableFiber#pause()
      */
     public void pause() {
-        if (m_status != RUNNING)
+        if (!isRunning())
             return;
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance(getClass());
         log.info("Pausing Vacuumd");
 
-        m_status = PAUSE_PENDING;
+        setStatus(PAUSE_PENDING);
         m_stopped = true;
-        m_status = PAUSED;
+        setStatus(PAUSED);
     }
 
     /*
@@ -167,16 +165,16 @@ public class Vacuumd extends ServiceDaemon implements Runnable {
      * @see org.opennms.core.fiber.PausableFiber#resume()
      */
     public void resume() {
-        if (m_status != PAUSED)
+        if (!isPaused())
             return;
 
-        m_status = RESUME_PENDING;
+        setStatus(RESUME_PENDING);
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance(getClass());
         log.info("Resuming Vacuumd");
 
         m_thread = new Thread(this, "Vacuumd-Thread");
-        m_status = STARTING;
+        setStatus(STARTING);
         m_thread.start();
     }
 
@@ -192,22 +190,13 @@ public class Vacuumd extends ServiceDaemon implements Runnable {
     /*
      * (non-Javadoc)
      * 
-     * @see org.opennms.core.fiber.Fiber#getStatus()
-     */
-    public int getStatus() {
-        return m_status;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see java.lang.Runnable#run()
      */
     public void run() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance(getClass());
         log.info("Vacuumd scheduling started");
-        m_status = RUNNING;
+        setStatus(RUNNING);
 
         long now = System.currentTimeMillis();
         long period = VacuumdConfigFactory.getInstance().getPeriod();

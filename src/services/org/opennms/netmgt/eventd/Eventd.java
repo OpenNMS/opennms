@@ -129,11 +129,6 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
      */
     private String m_address = null;
 
-    /**
-     * The current status of this fiber
-     */
-    private int m_status;
-
     private EventdConfigManager m_eFactory;
 
 //    private DbConnectionFactory m_dbConnectionFactory;
@@ -157,14 +152,14 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
             log.warn("Could not lookup the host name for the local host machine, address set to localhost", uhE);
         }
 
-        m_status = START_PENDING;
+        setStatus(START_PENDING);
     }
 
     /**
      * Stops all the eventd threads
      */
     public void stop() {
-        m_status = STOP_PENDING;
+        setStatus(STOP_PENDING);
 
         Category log = ThreadCategory.getInstance();
         if (log.isDebugEnabled())
@@ -182,7 +177,7 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
         if (log.isDebugEnabled())
             log.debug("shutdown on tcp/udp listener threads returned");
 
-        m_status = STOPPED;
+        setStatus(STOPPED);
 
         if (log.isDebugEnabled())
             log.debug("Eventd shutdown complete");
@@ -193,13 +188,6 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
      */
     public String getName() {
         return "OpenNMS.Eventd";
-    }
-
-    /**
-     * Returns the current status
-     */
-    public synchronized int getStatus() {
-        return m_status;
     }
 
     public void init() {
@@ -273,7 +261,7 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
      * Read the eventd configuration xml, create and start all the subthreads
      */
     public void start() {
-        m_status = STARTING;
+        setStatus(STARTING);
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance();
@@ -289,17 +277,17 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
             log.debug("Eventd running");
         }
 
-        m_status = RUNNING;
+        setStatus(RUNNING);
     }
 
     /**
      * Pauses all the threads
      */
     public void pause() {
-        if (m_status != RUNNING)
+        if (!isRunning())
             return;
 
-        m_status = PAUSE_PENDING;
+        setStatus(PAUSE_PENDING);
 
         Category log = ThreadCategory.getInstance();
 
@@ -317,17 +305,17 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
         if (log.isDebugEnabled())
             log.debug("Finished pausing all threads");
 
-        m_status = PAUSED;
+        setStatus(PAUSED);
     }
 
     /**
      * Resumes all the threads
      */
     public void resume() {
-        if (m_status != PAUSED)
+        if (!isPaused())
             return;
 
-        m_status = RESUME_PENDING;
+        setStatus(RESUME_PENDING);
 
         Category log = ThreadCategory.getInstance();
 
@@ -346,7 +334,7 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
         if (log.isDebugEnabled())
             log.debug("Finished resuming ");
 
-        m_status = RUNNING;
+        setStatus(RUNNING);
     }
 
     /**

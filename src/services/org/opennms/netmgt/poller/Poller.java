@@ -80,11 +80,9 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
-public final class Poller extends ServiceDaemon {
+public class Poller extends ServiceDaemon {
 
     private final static Poller m_singleton = new Poller();
-
-    private int m_status = START_PENDING;
 
     private boolean m_initialized = false;
 
@@ -226,7 +224,7 @@ public final class Poller extends ServiceDaemon {
     }
 
     public synchronized void start() {
-        m_status = STARTING;
+        setStatus(STARTING);
 
         // get the category logger
         Category log = ThreadCategory.getInstance(getClass());
@@ -246,14 +244,14 @@ public final class Poller extends ServiceDaemon {
 
         // Set the status of the service as running.
         //
-        m_status = RUNNING;
+        setStatus(RUNNING);
 
         if (log.isDebugEnabled())
             log.debug("start: Poller running");
     }
 
     public synchronized void stop() {
-        m_status = STOP_PENDING;
+        setStatus(STOP_PENDING);
         m_scheduler.stop();
         m_receiver.close();
 
@@ -263,19 +261,19 @@ public final class Poller extends ServiceDaemon {
             sm.release();
         }
         m_scheduler = null;
-        m_status = STOPPED;
+        setStatus(STOPPED);
         Category log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled())
             log.debug("stop: Poller stopped");
     }
 
     public synchronized void pause() {
-        if (m_status != RUNNING)
+        if (!isRunning())
             return;
 
-        m_status = PAUSE_PENDING;
+        setStatus(PAUSE_PENDING);
         m_scheduler.pause();
-        m_status = PAUSED;
+        setStatus(PAUSED);
 
         Category log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled())
@@ -283,20 +281,16 @@ public final class Poller extends ServiceDaemon {
     }
 
     public synchronized void resume() {
-        if (m_status != PAUSED)
+        if (!isPaused())
             return;
 
-        m_status = RESUME_PENDING;
+        setStatus(RESUME_PENDING);
         m_scheduler.resume();
-        m_status = RUNNING;
+        setStatus(RUNNING);
 
         Category log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled())
             log.debug("resume: Poller resumed");
-    }
-
-    public synchronized int getStatus() {
-        return m_status;
     }
 
     public String getName() {

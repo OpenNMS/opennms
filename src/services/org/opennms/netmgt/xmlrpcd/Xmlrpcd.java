@@ -78,11 +78,6 @@ public class Xmlrpcd extends ServiceDaemon {
     private String m_name;
 
     /**
-     * The last status sent to the service control manager.
-     */
-    private int m_status = START_PENDING;
-
-    /**
      * The communication queue
      */
     private FifoQueue m_eventlogQ;
@@ -158,7 +153,7 @@ public class Xmlrpcd extends ServiceDaemon {
      * 
      */
     public synchronized void start() {
-        m_status = STARTING;
+        setStatus(STARTING);
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
@@ -169,7 +164,7 @@ public class Xmlrpcd extends ServiceDaemon {
 
         m_processor.start();
 
-        m_status = RUNNING;
+        setStatus(RUNNING);
 
         if (log.isDebugEnabled())
             log.debug("start: xmlrpcd ready to process events");
@@ -180,10 +175,10 @@ public class Xmlrpcd extends ServiceDaemon {
      * Pauses Xmlrpcd
      */
     public void pause() {
-        if (m_status != RUNNING)
+        if (!isRunning())
             return;
 
-        m_status = PAUSE_PENDING;
+        setStatus(PAUSE_PENDING);
 
         Category log = ThreadCategory.getInstance(getClass());
 
@@ -195,7 +190,7 @@ public class Xmlrpcd extends ServiceDaemon {
         if (log.isDebugEnabled())
             log.debug("Processor paused");
 
-        m_status = PAUSED;
+        setStatus(PAUSED);
 
         if (log.isDebugEnabled())
             log.debug("Xmlrpcd paused");
@@ -205,10 +200,10 @@ public class Xmlrpcd extends ServiceDaemon {
      * Resumes Xmlrpcd
      */
     public void resume() {
-        if (m_status != PAUSED)
+        if (!isPaused())
             return;
 
-        m_status = RESUME_PENDING;
+        setStatus(RESUME_PENDING);
 
         Category log = ThreadCategory.getInstance(getClass());
 
@@ -220,7 +215,7 @@ public class Xmlrpcd extends ServiceDaemon {
         if (log.isDebugEnabled())
             log.debug("Processor resumed");
 
-        m_status = RUNNING;
+        setStatus(RUNNING);
 
         if (log.isDebugEnabled())
             log.debug("Xmlrpcd resumed");
@@ -233,7 +228,7 @@ public class Xmlrpcd extends ServiceDaemon {
     public synchronized void stop() {
         Category log = ThreadCategory.getInstance(getClass());
 
-        m_status = STOP_PENDING;
+        setStatus(STOP_PENDING);
 
         // shutdown and wait on the background processing thread to exit.
         if (log.isDebugEnabled())
@@ -245,19 +240,10 @@ public class Xmlrpcd extends ServiceDaemon {
         // interrupt the processor daemon thread
         m_processor.stop();
 
-        m_status = STOPPED;
+        setStatus(STOPPED);
 
         if (log.isDebugEnabled())
             log.debug("stop: Xmlrpcd stopped");
-    }
-
-    /**
-     * Returns the current status of the service.
-     * 
-     * @return The service's status.
-     */
-    public synchronized int getStatus() {
-        return m_status;
     }
 
     /**

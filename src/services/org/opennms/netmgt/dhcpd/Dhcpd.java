@@ -139,11 +139,6 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
     private Receiver2 m_listener2;
 
     /**
-     * The current status of the fiber.
-     */
-    private int m_status;
-
-    /**
      * The working thread
      */
     private Thread m_worker;
@@ -157,7 +152,7 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
         m_clients = null;
         m_server = null;
         m_listener = null;
-        m_status = START_PENDING;
+        setStatus(START_PENDING);
         m_worker = null;
     }
 
@@ -183,7 +178,7 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
         if (log.isDebugEnabled())
             log.debug("start: DHCP client daemon starting...");
 
-        m_status = STARTING;
+        setStatus(STARTING);
 
         // Only allow start to be called once.
         //
@@ -284,7 +279,7 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
 
         // set the pending status
         //
-        m_status = STOP_PENDING;
+        setStatus(STOP_PENDING);
 
         // stop the receiver
         //
@@ -312,14 +307,7 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
         m_clients = null;
         m_worker = null;
         m_listener = null;
-        m_status = STOPPED;
-    }
-
-    /**
-     * Returns the current status of the fiber.
-     */
-    public synchronized int getStatus() {
-        return m_status;
+        setStatus(STOPPED);
     }
 
     /**
@@ -334,7 +322,7 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
      */
     public void pause() {
         // do nothing
-        m_status = PAUSED;
+        setStatus(PAUSED);
     }
 
     /**
@@ -342,7 +330,7 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
      */
     public void resume() {
         // do nothing
-        m_status = RUNNING;
+        setStatus(RUNNING);
     }
 
     /**
@@ -356,12 +344,12 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
         // update the status
         //
         synchronized (this) {
-            if (m_status != STARTING)
+            if (!isStarting())
                 return;
 
             if (log.isDebugEnabled())
                 log.debug("run: setting status to running...");
-            m_status = RUNNING;
+            setStatus(RUNNING);
         }
 
         if (log.isDebugEnabled())
@@ -377,13 +365,13 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
 
             for (;;) {
                 synchronized (this) {
-                    if (m_status == PAUSED) {
+                    if (isPaused()) {
                         try {
                             wait();
                         } catch (InterruptedException e) {
                             // ignore
                         }
-                    } else if (m_status != RUNNING)
+                    } else if (isRunning())
                         break;
                 }
 
@@ -406,24 +394,24 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
                     clnt.start();
                 } catch (IOException ioE) {
                     synchronized (this) {
-                        if (m_status == RUNNING)
+                        if (isRunning())
                             log.error("I/O exception occured creating client handler.", ioE);
                     }
                 }
             }
         } catch (IOException ioE) {
             synchronized (this) {
-                if (m_status == RUNNING)
+                if (isRunning())
                     log.error("I/O exception occured processing incomming request", ioE);
             }
         } catch (Throwable t) {
             synchronized (this) {
-                if (m_status == RUNNING)
+                if (isRunning())
                     log.error("An undeclared throwable was caught", t);
             }
         } finally {
             synchronized (this) {
-                m_status = STOPPED;
+                setStatus(STOPPED);
             }
         }
 

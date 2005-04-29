@@ -83,17 +83,12 @@ public final class Actiond extends ServiceDaemon {
     private BroadcastEventProcessor m_eventReader;
 
     /**
-     * The current status of this fiber
-     */
-    private int m_status;
-
-    /**
      * Constructs a new Action execution daemon.
      */
     private Actiond() {
         m_execution = null;
         m_eventReader = null;
-        m_status = START_PENDING;
+        setStatus(START_PENDING);
     }
 
     public synchronized void init() {
@@ -146,16 +141,16 @@ public final class Actiond extends ServiceDaemon {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance();
 
-        if (m_status == START_PENDING) {
-            m_status = STARTING;
+        if (isStartPending()) {
+            setStatus(STARTING);
             if (m_execution == null) {
                 init();
             }
 
             m_execution.start();
-            m_status = RUNNING;
-
             log.info("Actiond running");
+
+            setStatus(RUNNING);
         } else if (m_execution != null && m_execution.getStatus() != STOPPED) {
             // Service is already running?
             throw new IllegalStateException("The actiond service is already running");
@@ -168,7 +163,7 @@ public final class Actiond extends ServiceDaemon {
      * 
      */
     public synchronized void stop() {
-        m_status = STOP_PENDING;
+        setStatus(STOP_PENDING);
 
         try {
             if (m_execution != null) {
@@ -183,16 +178,7 @@ public final class Actiond extends ServiceDaemon {
 
         m_eventReader = null;
         m_execution = null;
-        m_status = STOPPED;
-    }
-
-    /**
-     * Returns the current status of the service.
-     * 
-     * @return The service's status.
-     */
-    public synchronized int getStatus() {
-        return m_status;
+        setStatus(STOPPED);
     }
 
     /**
@@ -208,28 +194,28 @@ public final class Actiond extends ServiceDaemon {
      * Pauses the service if its currently running
      */
     public synchronized void pause() {
-        if (m_status != RUNNING) {
+        if (!isRunning()) {
             return;
         }
 
-        m_status = PAUSE_PENDING;
+        setStatus(PAUSE_PENDING);
 
         m_execution.pause();
-        m_status = PAUSED;
+        setStatus(PAUSED);
     }
 
     /**
      * Resumes the service if its currently paused
      */
     public synchronized void resume() {
-        if (m_status != PAUSED) {
+        if (!isPaused()) {
             return;
         }
 
-        m_status = RESUME_PENDING;
+        setStatus(RESUME_PENDING);
 
         m_execution.resume();
-        m_status = RUNNING;
+        setStatus(RUNNING);
     }
 
     /**

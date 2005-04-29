@@ -110,11 +110,6 @@ public final class Collectd extends ServiceDaemon {
     private Scheduler m_scheduler;
 
     /**
-     * Status of the Collectd instance.
-     */
-    private int m_status;
-
-    /**
      * Reference to the event processor
      */
     private BroadcastEventProcessor m_receiver;
@@ -135,7 +130,7 @@ public final class Collectd extends ServiceDaemon {
      */
     private Collectd() {
         m_scheduler = null;
-        m_status = START_PENDING;
+        setStatus(START_PENDING);
         m_svcCollectors = Collections.synchronizedMap(new TreeMap());
         m_collectableServices = Collections.synchronizedList(new LinkedList());
     }
@@ -369,7 +364,7 @@ public final class Collectd extends ServiceDaemon {
      * Responsible for starting the collection daemon.
      */
     public synchronized void start() {
-        m_status = STARTING;
+        setStatus(STARTING);
 
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -395,7 +390,7 @@ public final class Collectd extends ServiceDaemon {
 
         // Set the status of the service as running.
         //
-        m_status = RUNNING;
+        setStatus(RUNNING);
 
         if (log.isDebugEnabled())
             log.debug("start: Collectd running");
@@ -405,12 +400,12 @@ public final class Collectd extends ServiceDaemon {
      * Responsible for stopping the collection daemon.
      */
     public synchronized void stop() {
-        m_status = STOP_PENDING;
+        setStatus(STOP_PENDING);
         m_scheduler.stop();
         m_receiver.close();
 
         m_scheduler = null;
-        m_status = STOPPED;
+        setStatus(STOPPED);
         Category log = ThreadCategory.getInstance();
         if (log.isDebugEnabled())
             log.debug("stop: Collectd stopped");
@@ -420,12 +415,12 @@ public final class Collectd extends ServiceDaemon {
      * Responsible for pausing the collection daemon.
      */
     public synchronized void pause() {
-        if (m_status != RUNNING)
+        if (!isRunning())
             return;
 
-        m_status = PAUSE_PENDING;
+        setStatus(PAUSE_PENDING);
         m_scheduler.pause();
-        m_status = PAUSED;
+        setStatus(PAUSED);
 
         Category log = ThreadCategory.getInstance();
         if (log.isDebugEnabled())
@@ -436,23 +431,16 @@ public final class Collectd extends ServiceDaemon {
      * Responsible for resuming the collection daemon.
      */
     public synchronized void resume() {
-        if (m_status != PAUSED)
+        if (!isPaused())
             return;
 
-        m_status = RESUME_PENDING;
+        setStatus(RESUME_PENDING);
         m_scheduler.resume();
-        m_status = RUNNING;
+        setStatus(RUNNING);
 
         Category log = ThreadCategory.getInstance();
         if (log.isDebugEnabled())
             log.debug("resume: Collectd resumed");
-    }
-
-    /**
-     * Returns current status of the collection daemon.
-     */
-    public synchronized int getStatus() {
-        return m_status;
     }
 
     /**

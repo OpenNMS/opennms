@@ -89,11 +89,6 @@ public final class Notifd extends ServiceDaemon {
      */
     private BroadcastEventProcessor m_eventReader;
 
-    /**
-     * The current status of this fiber
-     */
-    private int m_status;
-
     private EventIpcManager m_eventManager;
 
     private NotifdConfigManager m_configManager;
@@ -223,7 +218,7 @@ public final class Notifd extends ServiceDaemon {
         }
 
         // create the control receiver
-        m_status = RUNNING;
+        setStatus(RUNNING);
     }
 
     /**
@@ -232,7 +227,7 @@ public final class Notifd extends ServiceDaemon {
      * 
      */
     public synchronized void stop() {
-        m_status = STOP_PENDING;
+        setStatus(STOP_PENDING);
 
         try {
             Iterator i = m_queueHandlers.keySet().iterator();
@@ -248,17 +243,8 @@ public final class Notifd extends ServiceDaemon {
 
         m_eventReader = null;
 
-        m_status = STOPPED;
+        setStatus(STOPPED);
 
-    }
-
-    /**
-     * Returns the current status of the service.
-     * 
-     * @return The service's status.
-     */
-    public synchronized int getStatus() {
-        return m_status;
     }
 
     /**
@@ -274,10 +260,10 @@ public final class Notifd extends ServiceDaemon {
      * Pauses the service if its currently running
      */
     public synchronized void pause() {
-        if (m_status != RUNNING)
+        if (!isRunning())
             return;
 
-        m_status = PAUSE_PENDING;
+        setStatus(PAUSE_PENDING);
 
         Iterator i = m_queueHandlers.keySet().iterator();
         while (i.hasNext()) {
@@ -285,17 +271,17 @@ public final class Notifd extends ServiceDaemon {
             curHandler.pause();
         }
 
-        m_status = PAUSED;
+        setStatus(PAUSED);
     }
 
     /**
      * Resumes the service if its currently paused
      */
     public synchronized void resume() {
-        if (m_status != PAUSED)
+        if (!isPaused())
             return;
 
-        m_status = RESUME_PENDING;
+        setStatus(RESUME_PENDING);
 
         Iterator i = m_queueHandlers.keySet().iterator();
         while (i.hasNext()) {
@@ -303,7 +289,7 @@ public final class Notifd extends ServiceDaemon {
             curHandler.resume();
         }
 
-        m_status = RUNNING;
+        setStatus(RUNNING);
     }
 
     /**

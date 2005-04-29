@@ -35,6 +35,11 @@ import org.opennms.core.fiber.PausableFiber;
 
 public abstract class ServiceDaemon implements PausableFiber {
 
+    /**
+     * The current status of this fiber
+     */
+    private int m_status;
+
     abstract public void pause();
 
     abstract public void resume();
@@ -45,6 +50,28 @@ public abstract class ServiceDaemon implements PausableFiber {
 
     abstract public String getName();
 
-    abstract public int getStatus();
+    protected void setStatus(int status) {
+        m_status = status;
+    }
+
+    public int getStatus() {
+        return m_status;
+    }
+
+    protected boolean isStartPending() {
+        return m_status == START_PENDING;
+    }
+
+    protected boolean isRunning() {
+        return m_status == RUNNING;
+    }
+
+    protected boolean isPaused() {
+        return m_status == PAUSED;
+    }
+
+    protected boolean isStarting() {
+        return m_status == STARTING;
+    }
 
 }

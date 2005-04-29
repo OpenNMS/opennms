@@ -190,11 +190,6 @@ public final class RTCManager extends ServiceDaemon {
     private static DataManager m_dataMgr;
 
     /**
-     * The current status of this fiber
-     */
-    private int m_status;
-
-    /**
      * The timer scheduled task that runs and informs the RTCManager when the
      * timer goes off
      */
@@ -253,7 +248,7 @@ public final class RTCManager extends ServiceDaemon {
         Category log = ThreadCategory.getInstance(getClass());
 
         if (log.isDebugEnabled())
-            log.debug("TimerTask \'" + tt.getID() + "\' complete, status: " + m_status);
+            log.debug("TimerTask \'" + tt.getID() + "\' complete, status: " + getStatus());
 
         if (tt.getID().equals(LOWT_TASK)) {
             // cancel user timer
@@ -270,7 +265,7 @@ public final class RTCManager extends ServiceDaemon {
                 m_highTtask = null;
             }
 
-            if (m_status == RUNNING) {
+            if (isRunning()) {
                 m_dataSender.notifyToSend();
             }
 
@@ -297,7 +292,7 @@ public final class RTCManager extends ServiceDaemon {
                 m_lowTtask = null;
             }
 
-            if (m_status == RUNNING) {
+            if (isRunning()) {
                 m_dataSender.notifyToSend();
             }
 
@@ -311,7 +306,7 @@ public final class RTCManager extends ServiceDaemon {
                 log.debug("timerTaskComplete: " + USERTIMER + " scheduled");
         } else if (tt.getID().equals(USERTIMER)) {
             // send if not pasued
-            if (m_status == RUNNING) {
+            if (isRunning()) {
                 m_dataSender.notifyToSend();
             }
 
@@ -323,7 +318,7 @@ public final class RTCManager extends ServiceDaemon {
      * 
      */
     public RTCManager() {
-        m_status = START_PENDING;
+        setStatus(START_PENDING);
     }
 
     /**
@@ -453,13 +448,6 @@ public final class RTCManager extends ServiceDaemon {
         return "OpenNMS.RTCManager";
     }
 
-    /**
-     * Returns the current status.
-     */
-    public int getStatus() {
-        return m_status;
-    }
-
     public void init() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
@@ -553,7 +541,7 @@ public final class RTCManager extends ServiceDaemon {
         // create the timer
         m_timer = new Timer();
 
-        m_status = RUNNING;
+        setStatus(RUNNING);
 
         if (log.isDebugEnabled()) {
             log.debug("RTC ready to receive events");
@@ -571,7 +559,7 @@ public final class RTCManager extends ServiceDaemon {
      * starts the data updater(s) and the data sender
      */
     public void start() {
-        m_status = STARTING;
+        setStatus(STARTING);
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
@@ -622,7 +610,7 @@ public final class RTCManager extends ServiceDaemon {
             throw new UndeclaredThrowableException(t);
         }
 
-        m_status = RUNNING;
+        setStatus(RUNNING);
 
         if (log.isDebugEnabled()) {
             log.debug("RTC ready to receive events");
@@ -633,14 +621,14 @@ public final class RTCManager extends ServiceDaemon {
      * Pauses all the threads.
      */
     public void pause() {
-        if (m_status != RUNNING)
+        if (!isRunning())
             return;
 
-        m_status = PAUSE_PENDING;
+        setStatus(PAUSE_PENDING);
 
         Category log = ThreadCategory.getInstance(getClass());
 
-        m_status = PAUSED;
+        setStatus(PAUSED);
 
         if (log.isDebugEnabled())
             log.debug("Finished pausing all threads");
@@ -650,14 +638,14 @@ public final class RTCManager extends ServiceDaemon {
      * Resumes all the threads.
      */
     public void resume() {
-        if (m_status != PAUSED)
+        if (!isPaused())
             return;
 
-        m_status = RESUME_PENDING;
+        setStatus(RESUME_PENDING);
 
         Category log = ThreadCategory.getInstance(getClass());
 
-        m_status = RUNNING;
+        setStatus(RUNNING);
 
         if (log.isDebugEnabled())
             log.debug("Finished resuming ");
@@ -667,7 +655,7 @@ public final class RTCManager extends ServiceDaemon {
      * Stops all the threads.
      */
     public void stop() {
-        m_status = STOP_PENDING;
+        setStatus(STOP_PENDING);
 
         Category log = ThreadCategory.getInstance(getClass());
 
@@ -716,7 +704,7 @@ public final class RTCManager extends ServiceDaemon {
             if (log.isDebugEnabled())
                 log.debug("shutdown: Timer Canceled");
 
-            m_status = STOPPED;
+            setStatus(STOPPED);
 
             log.info("RTCManager shutdown complete");
         } catch (Exception e) {

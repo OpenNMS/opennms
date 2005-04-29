@@ -83,11 +83,6 @@ public class Vulnscand extends ServiceDaemon {
     private static final Vulnscand m_singleton = new Vulnscand();
 
     /**
-     * Current status of this fiber
-     */
-    private int m_status;
-
-    /**
      * Database synchronization lock for synchronizing write access to the
      * database between the SpecificScanProcessor and RescanProcessor thread
      * pools
@@ -143,14 +138,14 @@ public class Vulnscand extends ServiceDaemon {
      */
     public Vulnscand() {
         m_scheduler = null;
-        m_status = START_PENDING;
+        setStatus(START_PENDING);
     }
 
     /**
      * Stop the Vulnscand threads.
      */
     public void stop() {
-        m_status = STOP_PENDING;
+        setStatus(STOP_PENDING);
 
         // Stop the broadcast event receiver
         //
@@ -164,7 +159,7 @@ public class Vulnscand extends ServiceDaemon {
         //
         m_scheduledScanRunner.stop();
 
-        m_status = STOPPED;
+        setStatus(STOPPED);
     }
 
     /**
@@ -175,7 +170,7 @@ public class Vulnscand extends ServiceDaemon {
 
         Category log = ThreadCategory.getInstance();
 
-        m_status = STARTING;
+        setStatus(STARTING);
 
         // Initialize the Vulnscand configuration factory.
         //
@@ -253,7 +248,7 @@ public class Vulnscand extends ServiceDaemon {
             throw new UndeclaredThrowableException(t);
         }
 
-        m_status = RUNNING;
+        setStatus(RUNNING);
     }
 
     public void pause() {
@@ -264,16 +259,16 @@ public class Vulnscand extends ServiceDaemon {
     }
 
     public void resume() {
-        if (m_status != PAUSED)
+        if (!isPaused())
             return;
 
-        m_status = RESUME_PENDING;
+        setStatus(RESUME_PENDING);
 
         Category log = ThreadCategory.getInstance(getClass());
 
         // TBD - Resume all threads
 
-        m_status = RUNNING;
+        setStatus(RUNNING);
 
         if (log.isDebugEnabled())
             log.debug("resume: Finished resuming all threads");
@@ -284,13 +279,6 @@ public class Vulnscand extends ServiceDaemon {
      */
     public String getName() {
         return "OpenNMS.Vulnscand";
-    }
-
-    /**
-     * Returns the current status
-     */
-    public synchronized int getStatus() {
-        return m_status;
     }
 
     /**

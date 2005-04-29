@@ -123,11 +123,6 @@ public final class Discovery extends ServiceDaemon {
     private PingManager m_manager;
 
     /**
-     * The current status of this fiber
-     */
-    private int m_status;
-
-    /**
      * Constructs a new discovery instance.
      */
     private Discovery() {
@@ -135,7 +130,7 @@ public final class Discovery extends ServiceDaemon {
         m_eventWriter = null;
         m_eventReader = null;
         m_manager = null;
-        m_status = START_PENDING;
+        setStatus(START_PENDING);
     }
 
     /**
@@ -419,7 +414,7 @@ public final class Discovery extends ServiceDaemon {
      * 
      */
     public synchronized void start() {
-        m_status = STARTING;
+        setStatus(STARTING);
 
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
@@ -442,7 +437,7 @@ public final class Discovery extends ServiceDaemon {
             throw new UndeclaredThrowableException(ex);
         }
 
-        m_status = RUNNING;
+        setStatus(RUNNING);
     }
 
     /**
@@ -451,7 +446,7 @@ public final class Discovery extends ServiceDaemon {
      * 
      */
     public synchronized void stop() {
-        m_status = STOP_PENDING;
+        setStatus(STOP_PENDING);
 
         try {
             if (m_eventReader != null) {
@@ -477,14 +472,7 @@ public final class Discovery extends ServiceDaemon {
         } catch (Exception e) {
         }
         m_manager = null;
-        m_status = STOPPED;
-    }
-
-    /**
-     * Returns the current status of the discovery process.
-     */
-    public synchronized int getStatus() {
-        return m_status;
+        setStatus(STOPPED);
     }
 
     /**
@@ -498,25 +486,25 @@ public final class Discovery extends ServiceDaemon {
      * Pauses the discovery process if its currently running
      */
     public synchronized void pause() {
-        if (m_status != RUNNING)
+        if (!isRunning())
             return;
 
-        m_status = PAUSE_PENDING;
+        setStatus(PAUSE_PENDING);
 
         m_manager.pause();
-        m_status = PAUSED;
+        setStatus(PAUSED);
     }
 
     /**
      * Resumes the discovery process if its currently paused
      */
     public synchronized void resume() {
-        if (m_status != PAUSED)
+        if (!isPaused())
             return;
 
-        m_status = RESUME_PENDING;
+        setStatus(RESUME_PENDING);
         m_manager.resume();
-        m_status = RUNNING;
+        setStatus(RUNNING);
     }
 
     /**

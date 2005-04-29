@@ -85,11 +85,6 @@ public class Capsd extends ServiceDaemon {
     private static final Capsd m_singleton = new Capsd();
 
     /**
-     * Current status of this fiber
-     */
-    private int m_status;
-
-    /**
      * Database synchronization lock for synchronizing write access to the
      * database between the SuspectEventProcessor and RescanProcessor thread
      * pools
@@ -146,14 +141,14 @@ public class Capsd extends ServiceDaemon {
      */
     public Capsd() {
         m_scheduler = null;
-        m_status = START_PENDING;
+        setStatus(START_PENDING);
     }
 
     /**
      * Stop the Capsd threads.
      */
     public void stop() {
-        m_status = STOP_PENDING;
+        setStatus(STOP_PENDING);
 
         // Stop the broadcast event receiver
         //
@@ -167,7 +162,7 @@ public class Capsd extends ServiceDaemon {
         //
         m_rescanRunner.stop();
 
-        m_status = STOPPED;
+        setStatus(STOPPED);
     }
 
     /**
@@ -353,7 +348,7 @@ public class Capsd extends ServiceDaemon {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance();
 
-        m_status = STARTING;
+        setStatus(STARTING);
 
         // Start the suspect event and rescan thread pools
         //
@@ -370,20 +365,20 @@ public class Capsd extends ServiceDaemon {
         }
         m_scheduler.start();
 
-        m_status = RUNNING;
+        setStatus(RUNNING);
     }
 
     public void pause() {
-        if (m_status != RUNNING)
+        if (!isRunning())
             return;
 
-        m_status = PAUSE_PENDING;
+        setStatus(PAUSE_PENDING);
 
         Category log = ThreadCategory.getInstance();
 
         // TBD - Pause all threads
 
-        m_status = PAUSED;
+        setStatus(PAUSED);
 
         if (log.isDebugEnabled()) {
             log.debug("pause: Finished pausing all threads");
@@ -391,17 +386,17 @@ public class Capsd extends ServiceDaemon {
     }
 
     public void resume() {
-        if (m_status != PAUSED) {
+        if (!isPaused()) {
             return;
         }
 
-        m_status = RESUME_PENDING;
+        setStatus(RESUME_PENDING);
 
         Category log = ThreadCategory.getInstance();
 
         // TBD - Resume all threads
 
-        m_status = RUNNING;
+        setStatus(RUNNING);
 
         if (log.isDebugEnabled()) {
             log.debug("pause: Finished resuming all threads");
@@ -413,13 +408,6 @@ public class Capsd extends ServiceDaemon {
      */
     public String getName() {
         return "OpenNMS.Capsd";
-    }
-
-    /**
-     * Returns the current status
-     */
-    public synchronized int getStatus() {
-        return m_status;
     }
 
     /**
