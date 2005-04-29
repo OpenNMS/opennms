@@ -35,20 +35,21 @@ package org.opennms.netmgt.vacuumd;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
+import org.opennms.netmgt.config.vacuumd.Action;
+import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.utils.Querier;
-import org.opennms.netmgt.utils.RowProcessor;
 
 public class VacuumdTest extends OpenNMSTestCase {
 
@@ -82,7 +83,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         "    </automations>\n" + 
         "    <triggers>\n" + 
         "           <trigger name=\"trigger1\" row-count=\"2\" operator=\"&gt;\">\n" + 
-        "               <statement>SELECT alarmid FROM alarms</statement>\n" + 
+        "               <statement>SELECT * FROM alarms</statement>\n" + 
         "           </trigger>\n" + 
         "           <trigger name=\"trigger2\" >\n" + 
         "               <statement>SELECT alarmid FROM alarms WHERE counter &gt; 2</statement>\n" + 
@@ -90,10 +91,10 @@ public class VacuumdTest extends OpenNMSTestCase {
         "    </triggers>\n" + 
         "    <actions>\n" + 
         "           <action name=\"action1\" >\n" + 
-        "               <statement>DELETE FROM alarms WHERE alarmid = ${alarmid}</statement>\n" + 
+        "               <statement>DELETE FROM alarms WHERE nodeid = ${nodeid} and eventuei = ${eventuei}</statement>\n" + 
         "           </action>\n" + 
         "           <action name=\"action2\" >\n" + 
-        "               <statement>UPDATE alarms SET severity=serverity+1 WHERE alarmid = ${alarmid}</statement>\n" + 
+        "               <statement>UPDATE alarms SET severity=serverity+1, WHERE alarmid = ${alarmid}</statement>\n" + 
         "           </action>\n" + 
         "    </actions>\n" + 
         "" + 
@@ -112,6 +113,11 @@ public class VacuumdTest extends OpenNMSTestCase {
         
         //The rdr is closed by init, too, but doesn't hurt
         rdr.close();
+        //Get an alarm in the db
+        MockNode node = m_network.getNode(1);
+        m_eventd.processEvent(node.createDownEvent());
+        Thread.sleep(200);
+        
     }
 
     protected void tearDown() throws Exception {
@@ -129,7 +135,10 @@ public class VacuumdTest extends OpenNMSTestCase {
     }
     
     public final void testGetActions() {
+        
+        AutoProcessor ap = new AutoProcessor();
         assertEquals(2,VacuumdConfigFactory.getInstance().getActions().size());
+        assertEquals(2, ap.getTokenCount(((Action)((ArrayList)VacuumdConfigFactory.getInstance().getActions()).get(0)).getStatement().getContent()));
     }
     
     public final void testGetTrigger() {
@@ -151,27 +160,44 @@ public class VacuumdTest extends OpenNMSTestCase {
 
     public final void testRunTrigger() throws InterruptedException {
         
-        //Get an alarm in the db
-        MockNode node = m_network.getNode(1);
-        m_eventd.processEvent(node.createDownEvent());
-        Thread.sleep(200);
-        
         //Get all the triggers defined in the config
         ArrayList triggers = (ArrayList)VacuumdConfigFactory.getInstance().getTriggers();
         assertEquals(2, triggers.size());
 
-        //A row process for the querier (currently does nothing)
-        RowProcessor rp = new RowProcessor() {
-            public void processRow(ResultSet rs) throws SQLException {
-            }
-        };
-        
         Querier q = null;
 
         MockUtil.println("Running trigger query: "+((Trigger)triggers.get(0)).getStatement().getContent());
-        q = new Querier(m_db, ((Trigger)triggers.get(0)).getStatement().getContent(), rp);
+        q = new Querier(m_db, ((Trigger)triggers.get(0)).getStatement().getContent());
         q.execute();
         assertEquals(1, q.getCount());
+        
+    }
+    
+    public final void testRunAutomation() throws SQLException {
+
+        ArrayList autos = (ArrayList)VacuumdConfigFactory.getInstance().getAutomations();
+        Automation auto = (Automation)autos.get(0);
+        
+        AutoProcessor ap = new AutoProcessor();
+        ap.setAutomation(auto);
+        //ap.run();
+        assertTrue(ap.runAutomation(auto));
+        
+        Querier q = new Querier(m_db, "select * from alarms");
+        q.execute();
+        assertEquals(0, q.getCount());
+
+    }
+
+    public void testGetTokenizedColumns() {
+        
+        AutoProcessor ap = new AutoProcessor();
+        
+        ArrayList actions = (ArrayList)VacuumdConfigFactory.getInstance().getActions();
+        Collection tokens = ap.getTokenizedColumns(((Action)actions.get(0)).getStatement().getContent());
+
+        //just this for now
+        assertFalse(tokens.isEmpty());
         
     }
     
@@ -195,5 +221,5 @@ public class VacuumdTest extends OpenNMSTestCase {
     public final void testRunUpdate() {
         //TODO Implement runUpdate().
     }
-
+    
 }

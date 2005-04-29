@@ -55,14 +55,14 @@ import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
- * OutageManager from the outage-configuration xml file.
+ * Vacuumd process from the vacuumd-configuration xml file.
  * 
  * <strong>Note: </strong>Users of this class should make sure the
- * <em>init()</em> is called before calling any other method to ensure the
+ * <em>setReader()</em> method is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
  * 
- * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
+ * @author <a href="mailto:david@opennms.com">David Hustace </a>
+ * @author <a href="mailto:brozow@opennms.com">Mathew Brozowski </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public final class VacuumdConfigFactory {
