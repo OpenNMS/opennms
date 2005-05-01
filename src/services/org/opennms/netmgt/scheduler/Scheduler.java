@@ -449,16 +449,39 @@ public class Scheduler implements Runnable, PausableFiber, ScheduleTimer {
             // signals us to wakeup
             //
             synchronized (this) {
+                
                 if (m_status != RUNNING && m_status != PAUSED && m_status != PAUSE_PENDING && m_status != RESUME_PENDING) {
                     if (log.isDebugEnabled())
                         log.debug("run: status = " + m_status + ", time to exit");
                     break;
                 }
 
+                // if paused or pause pending then block
+                while (m_status == PAUSE_PENDING || m_status == PAUSED) {
+                    if (m_status == PAUSE_PENDING && log.isDebugEnabled())
+                        log.debug("run: pausing.");
+                    m_status = PAUSED;
+                    try {
+                        wait();
+                    } catch (InterruptedException ex) {
+                        // exit
+                        break;
+                    }
+                }
+
+                // if resume pending then change to running
+
+                if (m_status == RESUME_PENDING) {
+                    if (log.isDebugEnabled())
+                        log.debug("run: resuming.");
+                    
+                    m_status = RUNNING;
+                }
+
                 if (m_scheduled == 0) {
                     try {
                         if (log.isDebugEnabled())
-                            log.debug("run: no interfaces scheduled, waiting...");
+                            log.debug("run: no ready runnables scheduled, waiting...");
                         wait();
                     } catch (InterruptedException ex) {
                         break;
