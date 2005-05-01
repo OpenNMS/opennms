@@ -726,7 +726,7 @@ public class OpenNMSTestCase extends TestCase {
             "       <logmsg dest=\'logndisplay\'>\n" + 
             "           Node %parm[nodelabel]% is down.\n" + 
             "       </logmsg>\n" + 
-            "       <severity>Critical</severity>\n" +
+            "       <severity>Major</severity>\n" +
             "       <reductionKey>%uei%:%dpname%:%nodeid%</reductionKey>"+
             "   </event>\n" + 
             "   <event>\n" + 
