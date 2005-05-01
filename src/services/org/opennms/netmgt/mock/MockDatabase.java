@@ -265,6 +265,8 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
         update("insert into seqQueryTable (row) values (0)");
         
         update("CREATE ALIAS iplike FOR \"org.opennms.netmgt.config.SnmpPeerFactory.verifyIpMatch\"");
+        update("CREATE ALIAS greatest FOR \"java.lang.Math.max\"");
+        update("CREATE ALIAS least FOR \"java.lang.Math.min\"");
     }
     
     public void startServer() {
