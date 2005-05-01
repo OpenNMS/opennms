@@ -44,6 +44,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -51,7 +53,10 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
+import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.scheduler.Schedule;
+import org.opennms.netmgt.scheduler.Scheduler;
 
 /**
  * Implements a daemon whose job it is to run periodic updates against the
@@ -71,6 +76,8 @@ public class Vacuumd extends ServiceDaemon implements Runnable {
     private long m_startTime;
 
     private boolean m_stopped = false;
+
+    private Scheduler m_scheduler;
 
     public synchronized static Vacuumd getSingleton() {
         if (m_singleton == null) {
@@ -105,6 +112,9 @@ public class Vacuumd extends ServiceDaemon implements Runnable {
         }
 
         log.info("Vaccumd initialization complete");
+        
+        createScheduler();
+        scheduleAutomations();
 
     }
 
@@ -123,6 +133,7 @@ public class Vacuumd extends ServiceDaemon implements Runnable {
         m_thread = new Thread(this, "Vacuumd-Thread");
         setStatus(STARTING);
         m_thread.start();
+        m_scheduler.start();
 
     }
 
@@ -155,6 +166,7 @@ public class Vacuumd extends ServiceDaemon implements Runnable {
         log.info("Pausing Vacuumd");
 
         setStatus(PAUSE_PENDING);
+        m_scheduler.pause();
         m_stopped = true;
         setStatus(PAUSED);
     }
@@ -175,6 +187,7 @@ public class Vacuumd extends ServiceDaemon implements Runnable {
 
         m_thread = new Thread(this, "Vacuumd-Thread");
         setStatus(STARTING);
+        m_scheduler.resume();
         m_thread.start();
     }
 
@@ -307,6 +320,44 @@ public class Vacuumd extends ServiceDaemon implements Runnable {
                 }
         }
 
+    }
+    
+    private void createScheduler() {
+        Category log = ThreadCategory.getInstance(getClass());
+        // Create a scheduler
+        //
+        try {
+            log.debug("init: Creating Vacuumd scheduler");
+            m_scheduler = new Scheduler("Vacuumd", 2);
+        } catch (RuntimeException e) {
+            log.fatal("init: Failed to create Vacuumd scheduler", e);
+            throw e;
+        }
+    }
+    
+    public Scheduler getScheduler() {
+        return m_scheduler;
+    }
+    
+    private void scheduleAutomations() {
+        
+        Collection autos = VacuumdConfigFactory.getInstance().getAutomations();
+        Iterator it = autos.iterator();
+        
+        while (it.hasNext()) {
+            
+            scheduleAutomation((Automation)it.next());
+            
+        }
+    }
+    
+    private void scheduleAutomation(Automation auto) {
+        
+        AutomationProcessor ap = new AutomationProcessor();
+        ap.setAutomation(auto);
+        Schedule s = new Schedule(ap, new AutomationInterval(auto.getInterval()), m_scheduler);
+        ap.setSchedule(s);
+        s.schedule();
     }
 
 }

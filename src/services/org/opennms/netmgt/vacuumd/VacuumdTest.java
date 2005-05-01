@@ -43,13 +43,13 @@ import org.opennms.core.fiber.Fiber;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Action;
-import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.utils.Querier;
+import org.opennms.netmgt.utils.SingleResultQuerier;
 
 public class VacuumdTest extends OpenNMSTestCase {
 
@@ -78,23 +78,29 @@ public class VacuumdTest extends OpenNMSTestCase {
         "       AND eventtime &lt; now() - interval \'6 weeks\';\n" + 
         "    </statement>\n" +
         "    <automations>\n" + 
-        "           <automation name=\"auto1\" interval=\"60000\" trigger-name=\"trigger1\" action-name=\"action1\" />\n" + 
-        "           <automation name=\"auto2\" interval=\"90000\" trigger-name=\"trigger2\" action-name=\"action2\" />\n" + 
+        "           <automation name=\"autoEscalate\" interval=\"10000\" trigger-name=\"selectWithCounter\" action-name=\"escalate\" />\n" + 
+        "           <automation name=\"cleanUpAlarms\" interval=\"300000\" action-name=\"deleteDayOldAlarms\" />\n" + 
         "    </automations>\n" + 
         "    <triggers>\n" + 
-        "           <trigger name=\"trigger1\" row-count=\"2\" operator=\"&gt;\">\n" + 
+        "           <trigger name=\"selectAll\" operator=\"&gt;=\" row-count=\"1\" >\n" + 
         "               <statement>SELECT * FROM alarms</statement>\n" + 
         "           </trigger>\n" + 
-        "           <trigger name=\"trigger2\" >\n" + 
-        "               <statement>SELECT alarmid FROM alarms WHERE counter &gt; 2</statement>\n" + 
+        "           <trigger name=\"selectWithCounter\" >\n" + 
+        "               <statement>SELECT alarmid FROM alarms WHERE counter &gt;= 2</statement>\n" + 
         "           </trigger>\n" + 
         "    </triggers>\n" + 
         "    <actions>\n" + 
-        "           <action name=\"action1\" >\n" + 
+        "           <action name=\"clear\" >\n" + 
+        "               <statement>UPDATE alarms SET severity=2 WHERE alarmid = ${alarmid}</statement>\n" + 
+        "           </action>\n" + 
+        "           <action name=\"escalate\" >\n" + 
+        "               <statement>UPDATE alarms SET severity = least(7,severity+1) WHERE alarmid = ${alarmid} and alarmAckUser is null</statement>\n" + 
+        "           </action>\n" + 
+        "           <action name=\"delete\" >\n" + 
         "               <statement>DELETE FROM alarms WHERE nodeid = ${nodeid} and eventuei = ${eventuei}</statement>\n" + 
         "           </action>\n" + 
-        "           <action name=\"action2\" >\n" + 
-        "               <statement>UPDATE alarms SET severity=serverity+1, WHERE alarmid = ${alarmid}</statement>\n" + 
+        "           <action name=\"deleteDayOldAlarms\" >\n" + 
+        "               <statement>DELETE FROM alarms WHERE alarmAckUser IS NOT NULL AND lastEventTime &lt; CURRENT_TIMESTAMP</statement>\n" + 
         "           </action>\n" + 
         "    </actions>\n" + 
         "" + 
@@ -109,55 +115,141 @@ public class VacuumdTest extends OpenNMSTestCase {
         VacuumdConfigFactory.setConfigReader(rdr);
         m_vacuumd = Vacuumd.getSingleton();
         m_vacuumd.init();
-        m_vacuumd.start();
         
         //The rdr is closed by init, too, but doesn't hurt
         rdr.close();
         //Get an alarm in the db
         MockNode node = m_network.getNode(1);
         m_eventd.processEvent(node.createDownEvent());
-        Thread.sleep(200);
+        Thread.sleep(1000);
+        MockUtil.println("------------ Finished setup for: "+getName()+" --------------------------");
         
     }
 
     protected void tearDown() throws Exception {
         assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
-        m_vacuumd.stop();
         super.tearDown();
     }
     
+    /**
+     * This is an attempt at testing scheduled automations.
+     * @throws InterruptedException
+     */
+    public final void testConcurrency() throws InterruptedException {
+        
+        /*
+         * Test status of threads
+         */
+        assertEquals(Fiber.START_PENDING, m_vacuumd.getStatus());
+        assertEquals(Fiber.START_PENDING, m_vacuumd.getScheduler().getStatus());
+        
+        /*
+         * Testing the start
+         */
+        m_vacuumd.start();
+        assertEquals(Fiber.STARTING, m_vacuumd.getStatus());
+        Thread.sleep(200);
+        assertEquals(Fiber.RUNNING, m_vacuumd.getStatus());
+        assertEquals(Fiber.RUNNING, m_vacuumd.getScheduler().getStatus());
+        
+        /*
+         * Testing the pause
+         */
+        m_vacuumd.pause();
+        Thread.sleep(200);
+        assertEquals(PausableFiber.PAUSED, m_vacuumd.getStatus());
+        assertEquals(PausableFiber.PAUSED, m_vacuumd.getScheduler().getStatus());
+
+        /*
+         * Changes to the automations to the VACUUMD_CONFIG will
+         * probably affect this.  There should be one node down
+         * alarm.
+         */
+        assertEquals(1, verifyInitialAlarmState());
+
+        /*
+         * Send in another alarm for reduction and increased count
+         * that so we can verify the escalation automation.
+         */
+        MockNode node = m_network.getNode(1);
+        m_eventd.processEvent(node.createDownEvent());
+
+        m_vacuumd.resume();
+        Thread.sleep(200);
+        assertEquals(PausableFiber.RUNNING, m_vacuumd.getStatus());
+        assertEquals(PausableFiber.RUNNING, m_vacuumd.getScheduler().getStatus());
+        
+        /*
+         * Sleep and wait for the alarm to be written
+         */
+        Thread.sleep(200);
+        assertEquals(2, alarmDeDuplicated());
+        
+        /*
+         * Sleep long enough for the automation to run.
+         */
+        Thread.sleep(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate").getInterval()+100);
+        assertEquals(7, verifyAlarmEscalated());
+                
+        //Stop what you start.
+        m_vacuumd.stop();
+
+    }
+    
+    /**
+     * Simple test on a helper method.
+     */
     public final void testGetAutomations() {
         assertEquals(2, VacuumdConfigFactory.getInstance().getAutomations().size());
     }
     
+    /**
+     * Simple test on a helper method.
+     */
     public final void testGetTriggers() {
         assertEquals(2,VacuumdConfigFactory.getInstance().getTriggers().size());
     }
     
+    /**
+     * Simple test on a helper method.
+     */
     public final void testGetActions() {
-        
-        AutoProcessor ap = new AutoProcessor();
-        assertEquals(2,VacuumdConfigFactory.getInstance().getActions().size());
-        assertEquals(2, ap.getTokenCount(((Action)((ArrayList)VacuumdConfigFactory.getInstance().getActions()).get(0)).getStatement().getContent()));
+        AutomationProcessor ap = new AutomationProcessor();
+        assertEquals(4,VacuumdConfigFactory.getInstance().getActions().size());
+        assertEquals(2, ap.getTokenCount(VacuumdConfigFactory.getInstance().getAction("delete").getStatement().getContent()));
     }
     
+    /**
+     * Simple test on a helper method.
+     */
     public final void testGetTrigger() {
-        assertNotNull(VacuumdConfigFactory.getInstance().getTrigger("trigger1"));
-        assertEquals(2, VacuumdConfigFactory.getInstance().getTrigger("trigger1").getRowCount());
-        assertEquals(">", VacuumdConfigFactory.getInstance().getTrigger("trigger1").getOperator());
-        assertNotNull(VacuumdConfigFactory.getInstance().getTrigger("trigger2"));
+        assertNotNull(VacuumdConfigFactory.getInstance().getTrigger("selectAll"));
+        assertEquals(1, VacuumdConfigFactory.getInstance().getTrigger("selectAll").getRowCount());
+        assertEquals(">=", VacuumdConfigFactory.getInstance().getTrigger("selectAll").getOperator());
+        assertNotNull(VacuumdConfigFactory.getInstance().getTrigger("selectWithCounter"));
+        assertNull(VacuumdConfigFactory.getInstance().getTrigger("selectWithCounter").getOperator());
+        assertEquals(0,VacuumdConfigFactory.getInstance().getTrigger("selectWithCounter").getRowCount());
     }
     
+    /**
+     * Simple test on a helper method.
+     */
     public final void testGetAction() {
-        assertNotNull(VacuumdConfigFactory.getInstance().getAction("action1"));
-        assertNotNull(VacuumdConfigFactory.getInstance().getAction("action2"));
+        assertNotNull(VacuumdConfigFactory.getInstance().getAction("clear"));
+        assertNotNull(VacuumdConfigFactory.getInstance().getAction("escalate"));
+        assertNotNull(VacuumdConfigFactory.getInstance().getAction("delete"));
     }
     
+    /**
+     * Simple test on a helper method.
+     */
     public final void testGetAutomation() {
-        assertNotNull(VacuumdConfigFactory.getInstance().getAutomation("auto1"));
-        assertNotNull(VacuumdConfigFactory.getInstance().getAutomation("auto2"));
+        assertNotNull(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate"));
     }
 
+    /**
+     * Simple test running a trigger.
+     */
     public final void testRunTrigger() throws InterruptedException {
         
         //Get all the triggers defined in the config
@@ -172,26 +264,49 @@ public class VacuumdTest extends OpenNMSTestCase {
         assertEquals(1, q.getCount());
         
     }
-    
-    public final void testRunAutomation() throws SQLException {
 
-        ArrayList autos = (ArrayList)VacuumdConfigFactory.getInstance().getAutomations();
-        Automation auto = (Automation)autos.get(0);
+    /**
+     * This tests the running of automations directly as if they were scheduled.
+     * @throws SQLException
+     * @throws InterruptedException 
+     */
+    public final void testRunAutomation() throws SQLException, InterruptedException {
+
+        final int major = 6;
         
-        AutoProcessor ap = new AutoProcessor();
-        ap.setAutomation(auto);
-        //ap.run();
-        assertTrue(ap.runAutomation(auto));
-        
-        Querier q = new Querier(m_db, "select * from alarms");
-        q.execute();
-        assertEquals(0, q.getCount());
+        assertEquals(1, verifyInitialAlarmState());
+        assertEquals(major, getSingleResultSeverity());
+
+        /*
+         * Send in another alarm for reduction and increased count
+         * that so we can verify the escalation automation.
+         */
+        MockNode node = m_network.getNode(1);
+        m_eventd.processEvent(node.createDownEvent());
+
+        AutomationProcessor ap = new AutomationProcessor();
+        ap.setAutomation(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate"));
+        Thread.sleep(500);
+        assertTrue(ap.runAutomation(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate")));        
+        assertEquals(major+1, getSingleResultSeverity());
 
     }
+    
+    public final void testRunAutomationWithNoTrigger() throws InterruptedException, SQLException {
+        assertEquals(1, verifyInitialAlarmState());
 
+        AutomationProcessor ap = new AutomationProcessor();
+        ap.setAutomation(VacuumdConfigFactory.getInstance().getAutomation("cleanUpAlarms"));
+        Thread.sleep(2000);
+        assertTrue(ap.runAutomation(VacuumdConfigFactory.getInstance().getAutomation("cleanUpAlarms")));
+    }
+
+    /**
+     * Test the ability to find tokens in a statement.
+     */
     public void testGetTokenizedColumns() {
         
-        AutoProcessor ap = new AutoProcessor();
+        AutomationProcessor ap = new AutomationProcessor();
         
         ArrayList actions = (ArrayList)VacuumdConfigFactory.getInstance().getActions();
         Collection tokens = ap.getTokenizedColumns(((Action)actions.get(0)).getStatement().getContent());
@@ -201,25 +316,76 @@ public class VacuumdTest extends OpenNMSTestCase {
         
     }
     
-    public final void testPauseResume() throws InterruptedException {
-        
-        Thread.sleep(200);
-        assertEquals(Fiber.RUNNING, m_vacuumd.getStatus());
-        
-        m_vacuumd.pause();
-        assertEquals(PausableFiber.PAUSED, m_vacuumd.getStatus());
-        
-        m_vacuumd.resume();
-        Thread.sleep(500);
-        assertEquals(Fiber.RUNNING, m_vacuumd.getStatus());
-    }
-
+    /**
+     * Why not.
+     */
     public final void testGetName() {
         assertEquals("OpenNMS.Vacuumd", m_vacuumd.getName());
     }
 
+    /**
+     * 
+     */
     public final void testRunUpdate() {
         //TODO Implement runUpdate().
     }
     
+
+    /**
+     * Really only elminated some duplication here.  This
+     * method verifys that there is one alarm in the database
+     * when a test begins (based on setUp()).
+     * @return
+     */
+    private int verifyInitialAlarmState() {
+        int verified = -1;
+        Querier q = new Querier(m_db, "select * from alarms");
+        q.execute();
+        verified = q.getCount();
+        MockUtil.println("verifyInitialSetup: Expecting rows in alarms table to be 1 and actually is: "+q.getCount());
+        q = null;
+        return verified;
+    }
+
+    /**
+     * Verifys for the concurrency test that the alarm deduplicated.
+     * @return
+     */
+    private int alarmDeDuplicated() {
+        int verified = -1;
+        //TODO: put check in to make sure there is only one alarm in the table
+        SingleResultQuerier srq = new SingleResultQuerier(m_db, "select counter from alarms");
+        srq.execute();
+        verified = ((Integer)srq.getResult()).intValue();
+        MockUtil.println("verifyInitialSetup: Expecting counter in alarms table to be 2 and actually is: "+((Integer)srq.getResult()).intValue());
+        srq = null;
+        return verified;
+    }
+
+    /**
+     * Verifys for the concurrency test that the alarm escalated.
+     * @return
+     */
+    private int verifyAlarmEscalated() {
+        int verified = -1;
+        //TODO: put check in to make sure there is only one alarm in the table
+        SingleResultQuerier srq = new SingleResultQuerier(m_db, "select severity from alarms");
+        srq.execute();
+        verified = ((Integer)srq.getResult()).intValue();
+        MockUtil.println("verifyAlarmEscalated: Expecting severity in alarms table to be 7 and actually is: "+((Integer)srq.getResult()).intValue());
+        srq = null;
+        return verified;
+    }
+
+    /**
+     * Returns the severity of the alarm in the alarms table.
+     * @return
+     */
+    private int getSingleResultSeverity() {
+        SingleResultQuerier srq;
+        srq = new SingleResultQuerier(m_db, "select severity from alarms");
+        srq.execute();
+        int severity = ((Integer)srq.getResult()).intValue();
+        return severity;
+    }    
 }
