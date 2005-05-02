@@ -1,5 +1,6 @@
 1.2.2 to 1.2.3
 ----------------------------------------------------------------------
+- Added NORTEL Contivity events. Bug 1223. Thx Julian
 - Added some new Foundry event definitions. Bug 1234. Thx Ted
 - Added the --color attribute to jRobin graphs. Bug 1239. Thx Gerald
 - Tweaked the availability report format from suggestions from the
