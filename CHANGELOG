@@ -1,5 +1,6 @@
 1.2.2 to 1.2.3
 ----------------------------------------------------------------------
+- Added the --color attribute to jRobin graphs. Bug 1239. Thx Gerald
 - Tweaked the availability report format from suggestions from the
   list.
 - Removed the possibility that 0.0.0.0 would show up as the IP
