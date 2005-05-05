@@ -18,15 +18,16 @@ import javax.mail.internet.MimeMessage;
 
 import alt.dev.jmta.JMTA;
 */
-import junit.framework.TestCase;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import org.apache.log4j.Category;
+import org.opennms.netmgt.mock.OpenNMSTestCase;
 
 /**
- * @author david
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * @author david hustace
  */
-public class JavaMailerTest extends TestCase {
+public class JavaMailerTest extends OpenNMSTestCase {
     
     public void testNothing() throws Exception {
         
@@ -53,6 +54,53 @@ public class JavaMailerTest extends TestCase {
         
         JMTA.send(message);
         
+    }
+
+    
+    public final void testJavaMailerWithoutFileAttachment()  {
+        
+        JavaMailer jm = new JavaMailer();
+        
+        jm.setFrom("david@opennms.org");
+        try {
+            jm.setMessageText("Test message from testJavaMailer: "+InetAddress.getLocalHost());
+        } catch (UnknownHostException e) {
+            log().error("Host Name exception: "+e.getMessage());
+        }
+        jm.setSubject("Testing JavaMailer");
+        jm.setTo("david@opennms.org");
+        try {
+            jm.mailSend();
+        } catch (JavaMailerException e) {
+            log().error("JavaMailerException exception: "+e.getMessage());
+        }
+        
+    }
+    
+    public final void testJavaMailerWithFileAttachment() {
+        
+        JavaMailer jm = new JavaMailer();
+
+        jm.setFrom("david@opennms.org");
+        try {
+            jm.setMessageText("Test message with file attachment from testJavaMailer: "+InetAddress.getLocalHost());
+        } catch (UnknownHostException e) {
+            log().error("Host Name exception: "+e.getMessage());
+        }
+        jm.setSubject("Testing JavaMailer");
+        jm.setTo("david@opennms.org");
+        
+        jm.setFileName("/etc/motd");
+        try {
+            jm.mailSend();
+        } catch (JavaMailerException e) {
+            log().error("JavaMailerException exception: "+e.getMessage());
+        }
+        
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 */
 }
