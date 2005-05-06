@@ -137,7 +137,9 @@ public class AvailabilityReport extends Object {
         File file = new File(ConfigFileConstants.getHome() + "/share/reports/AvailReport.xml");
         try {
             FileWriter fileWriter = new FileWriter(file);
-            Marshaller.marshal(m_report, fileWriter);
+            Marshaller marshaller = new Marshaller(fileWriter);
+            marshaller.setSuppressNamespaces(true);
+            marshaller.marshal(m_report);
             if (log.isDebugEnabled())
                 log.debug("The xml marshalled from the castor classes is saved in " + ConfigFileConstants.getHome() + "/share/reports/AvailReport.xml");
             fileWriter.close();
