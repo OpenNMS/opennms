@@ -56,6 +56,22 @@
 - Include group dutySchedules from Bill Ayres. Bug 1147.
 - De-singletonized Eventd for jUnit test framework
 - Added support the new notion of Alarms vs. Events
+- Enhanced Vacuumd with support of Automations.  Automations process
+  triggers and actions that are defined as SQL statements using the
+  Schedule class.
+- Changed JavaMailer to only send mime mult-part message if a file
+  attachment is required.
+- Added pause code to Schedule class
+- Created OpenNMSTestCase base class for JUnit testing.
+- Added support for SNMPv3 using SNMP4J API.  Currently, only
+  discovery (capsd) and monitoring (poller) support v3.
+- Enhanced snmp-config.xml with new attributes to support SNMPv3
+  as well as a new <ip-match> tag that behaves just as the IPLIKE
+  so users have more flexibility specifying SNMP settings. 
+- Modified SNMP plugins and monitors to rely more heavily on snmp-config.xml.
+- Clearified the behavior of the SnmpPeerFactory constructor that takes
+  the SNMP version argument to be one of "requested version" vs. "required".
+- Moved capsd plugins to a separate package from capsd.
 - fix namespaces issue with marshalled reports
 
 1.2.2 to 1.2.3
