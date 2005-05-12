@@ -1,5 +1,6 @@
 1.2.2 to 1.2.3
 ----------------------------------------------------------------------
+- Modified isReady for PollableService as a work around for hung polling.
 - Added some SNMP Informant collections, reports and thresholds.
 - Added NORTEL Contivity events. Bug 1223. Thx Julian
 - Added some new Foundry event definitions. Bug 1234. Thx Ted

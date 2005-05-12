@@ -32,7 +32,6 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Date;
 
 import org.apache.log4j.Category;
@@ -257,7 +256,14 @@ public class PollableService extends PollableElement implements ReadyRunnable {
     }
     
     public boolean isReady() {
-        return isTreeLockAvailable();
+		/* FIXME: There is a bug in the Scheduler that only checks the first service in a queue.
+		 * If a thread hangs the below line will cause all services with the same interval to get
+		 * hang behind a service that is blocked if it has the same polling interval.  The below would
+		 * be the optimal way to do it to promote fairness but... not for now.
+		 */
+        //return isTreeLockAvailable();
+		return true;
+		
     }
 
 
