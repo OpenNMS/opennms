@@ -518,14 +518,7 @@ public final class IfXTable implements SnmpHandler {
         // the signalAll() method on the signaler
         //
         if (doNotify) {
-            synchronized (this) {
-                notifyAll();
-            }
-            if (m_signal != null) {
-                synchronized (m_signal) {
-                    m_signal.signalAll();
-                }
-            }
+            signal();
         }
     }
 
@@ -555,14 +548,7 @@ public final class IfXTable implements SnmpHandler {
         }
         m_error = true;
 
-        synchronized (this) {
-            notifyAll();
-        }
-        if (m_signal != null) {
-            synchronized (m_signal) {
-                m_signal.signalAll();
-            }
-        }
+        signal();
     }
 
     /**
@@ -589,13 +575,15 @@ public final class IfXTable implements SnmpHandler {
 
         m_error = true;
 
+        signal();
+    }
+
+    private void signal() {
         synchronized (this) {
             notifyAll();
         }
         if (m_signal != null) {
-            synchronized (m_signal) {
-                m_signal.signalAll();
-            }
+            m_signal.signalAll();
         }
     }
 

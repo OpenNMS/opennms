@@ -523,19 +523,7 @@ public class SnmpNodeCollector implements SnmpHandler {
             // Signal anyone waiting
             //
             if (doNotify) {
-                if (m_signal != null) {
-                    synchronized (m_signal) {
-                        m_signal.signalAll();
-                    }
-                }
-
-                //
-                // notify anyone waiting on this
-                // particular object
-                //
-                synchronized (this) {
-                    this.notifyAll();
-                }
+                signal();
             }
         } catch (Throwable t) {
             if (log.isEnabledFor(Priority.WARN))
@@ -569,24 +557,7 @@ public class SnmpNodeCollector implements SnmpHandler {
 
         m_error = true;
 
-        if (m_signal != null) {
-            if (log.isDebugEnabled())
-                log.debug("snmpInternalError: synchronizing on signal...");
-
-            synchronized (m_signal) {
-                if (log.isDebugEnabled())
-                    log.debug("snmpInternalError: calling signalAll....");
-
-                m_signal.signalAll();
-
-                if (log.isDebugEnabled())
-                    log.debug("snmpInternalError: back from calling signalAll....");
-            }
-        }
-
-        synchronized (this) {
-            this.notifyAll();
-        }
+        signal();
     }
 
     /**
@@ -613,14 +584,16 @@ public class SnmpNodeCollector implements SnmpHandler {
         m_error = true;
         m_timeout = true;
 
-        if (m_signal != null) {
-            synchronized (m_signal) {
-                m_signal.signalAll();
-            }
-        }
+        signal();
+    }
 
+    private void signal() {
         synchronized (this) {
             this.notifyAll();
+        }
+
+        if (m_signal != null) {
+            m_signal.signalAll();
         }
     }
 

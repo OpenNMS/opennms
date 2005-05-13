@@ -468,23 +468,21 @@ final class IfSnmpCollector implements Runnable {
             session = new SnmpSession(m_peer);
 
             BarrierSignaler signaler = new BarrierSignaler(3);
-            synchronized (signaler) {
-                m_sysGroup = new SystemGroup(session, signaler);
-                m_ifTable = new IfTable(session, signaler, m_peer.getParameters().getVersion());
-                m_ipAddrTable = new IpAddrTable(session, signaler, m_peer.getParameters().getVersion());
+            m_sysGroup = new SystemGroup(session, signaler);
+            m_ifTable = new IfTable(session, signaler, m_peer.getParameters().getVersion());
+            m_ipAddrTable = new IpAddrTable(session, signaler, m_peer.getParameters().getVersion());
 
-                try {
-                    // wait a maximum of five minutes!
-                    //
-                    signaler.wait(300000);
-                } catch (InterruptedException e) {
-                    m_sysGroup = null;
-                    m_ifTable = null;
-                    m_ipAddrTable = null;
+            try {
+                // wait a maximum of five minutes!
+                //
+                signaler.waitFor(300000);
+            } catch (InterruptedException e) {
+                m_sysGroup = null;
+                m_ifTable = null;
+                m_ipAddrTable = null;
 
-                    log.warn("IfSnmpCollector: collection interrupted, exiting", e);
-                    return;
-                }
+                log.warn("IfSnmpCollector: collection interrupted, exiting", e);
+                return;
             }
 
             // Log any failures
@@ -500,17 +498,15 @@ final class IfSnmpCollector implements Runnable {
             //
             if (this.hasIfTable()) {
                 signaler = new BarrierSignaler(1);
-                synchronized (signaler) {
-                    m_ifXTable = new IfXTable(session, signaler, m_peer.getParameters().getVersion());
+                m_ifXTable = new IfXTable(session, signaler, m_peer.getParameters().getVersion());
 
-                    try {
-                        signaler.wait(300000);
-                    } catch (InterruptedException e) {
-                        m_ifXTable = null;
+                try {
+                    signaler.waitFor(300000);
+                } catch (InterruptedException e) {
+                    m_ifXTable = null;
 
-                        log.warn("IfSnmpCollector: ifXTable collection interrupted, exiting", e);
-                        return;
-                    }
+                    log.warn("IfSnmpCollector: ifXTable collection interrupted, exiting", e);
+                    return;
                 }
             }
         } catch (java.net.SocketException e) {

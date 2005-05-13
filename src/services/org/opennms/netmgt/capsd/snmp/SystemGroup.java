@@ -313,17 +313,19 @@ public final class SystemGroup extends java.util.TreeMap implements SnmpHandler 
                             put(ms_elemList[x].getOid(), null);
                         }
                     } catch (ClassNotFoundException e) {
-                        Category log = ThreadCategory.getInstance(getClass());
-                        log.error("Failed retrieving SNMP type class for element: " + ms_elemList[x].getAlias(), e);
+                        log().error("Failed retrieving SNMP type class for element: " + ms_elemList[x].getAlias(), e);
                     } catch (NullPointerException e) {
-                        Category log = ThreadCategory.getInstance(getClass());
-                        log.error("Invalid reference", e);
+                        log().error("Invalid reference", e);
                     }
 
                     break;
                 }
             }
         }
+    }
+
+    private static Category log() {
+        return ThreadCategory.getInstance(SystemGroup.class);
     }
 
     /**
@@ -404,22 +406,7 @@ public final class SystemGroup extends java.util.TreeMap implements SnmpHandler 
             m_error = true;
         }
 
-        //
-        // Signal anyone waiting
-        //
-        if (m_signal != null) {
-            synchronized (m_signal) {
-                m_signal.signalAll();
-            }
-        }
-
-        //
-        // notify anyone waiting on this
-        // particular object
-        //
-        synchronized (this) {
-            this.notifyAll();
-        }
+        signal();
     }
 
     /**
@@ -441,21 +428,25 @@ public final class SystemGroup extends java.util.TreeMap implements SnmpHandler 
      * @see org.opennms.protocols.snmp.SnmpHandler SnmpHandler
      */
     public void snmpInternalError(SnmpSession session, int error, SnmpSyntax pdu) {
-        Category log = ThreadCategory.getInstance(getClass());
-        if (log.isEnabledFor(Priority.WARN)) {
-            log.warn("snmpInternalError: The session experienced an internal error, error = " + error);
+        if (log().isEnabledFor(Priority.WARN)) {
+            log().warn("snmpInternalError: The session experienced an internal error, error = " + error);
         }
 
         m_error = true;
 
-        if (m_signal != null) {
-            synchronized (m_signal) {
-                m_signal.signalAll();
-            }
-        }
+        signal();
+    }
 
+    public void setSignaler(Signaler sig) {
+        m_signal = sig;
+    }
+    
+    private void signal() {
         synchronized (this) {
             this.notifyAll();
+        }
+        if (m_signal != null) {
+            m_signal.signalAll();
         }
     }
 
@@ -475,22 +466,13 @@ public final class SystemGroup extends java.util.TreeMap implements SnmpHandler 
      * 
      */
     public void snmpTimeoutError(SnmpSession session, SnmpSyntax pdu) {
-        Category log = ThreadCategory.getInstance(getClass());
-        if (log.isEnabledFor(Priority.WARN)) {
-            log.warn("snmpTimeoutError: The session timed out communicating with the agent.");
+        if (log().isEnabledFor(Priority.WARN)) {
+            log().warn("snmpTimeoutError: The session timed out communicating with the agent.");
         }
 
         m_error = true;
 
-        if (m_signal != null) {
-            synchronized (m_signal) {
-                m_signal.signalAll();
-            }
-        }
-
-        synchronized (this) {
-            this.notifyAll();
-        }
+        signal();
     }
 
     /**

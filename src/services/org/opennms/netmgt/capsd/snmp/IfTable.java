@@ -514,14 +514,7 @@ public final class IfTable implements SnmpHandler {
             // to be using it any further.
             //
             m_tempStorage = null;
-            synchronized (this) {
-                notifyAll();
-            }
-            if (m_signal != null) {
-                synchronized (m_signal) {
-                    m_signal.signalAll();
-                }
-            }
+            signal();
         }
     }
 
@@ -550,14 +543,7 @@ public final class IfTable implements SnmpHandler {
         }
 
         m_error = true;
-        synchronized (this) {
-            notifyAll();
-        }
-        if (m_signal != null) {
-            synchronized (m_signal) {
-                m_signal.signalAll();
-            }
-        }
+        signal();
     }
 
     /**
@@ -582,13 +568,15 @@ public final class IfTable implements SnmpHandler {
         }
 
         m_error = true;
+        signal();
+    }
+
+    private void signal() {
         synchronized (this) {
             notifyAll();
         }
         if (m_signal != null) {
-            synchronized (m_signal) {
-                m_signal.signalAll();
-            }
+            m_signal.signalAll();
         }
     }
 

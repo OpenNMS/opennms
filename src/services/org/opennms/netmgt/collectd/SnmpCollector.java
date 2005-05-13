@@ -65,7 +65,6 @@ import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.poller.monitors.NetworkInterface;
-import org.opennms.netmgt.rrd.RRDDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.AlphaNumeric;
@@ -76,7 +75,6 @@ import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.utils.SnmpResponseHandler;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.protocols.snmp.SnmpObjectId;
-import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpPduBulk;
 import org.opennms.protocols.snmp.SnmpPduPacket;
 import org.opennms.protocols.snmp.SnmpPduRequest;
@@ -84,7 +82,6 @@ import org.opennms.protocols.snmp.SnmpPeer;
 import org.opennms.protocols.snmp.SnmpSMI;
 import org.opennms.protocols.snmp.SnmpSession;
 import org.opennms.protocols.snmp.SnmpSyntax;
-import org.opennms.protocols.snmp.SnmpTimeTicks;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
@@ -1045,7 +1042,6 @@ final class SnmpCollector implements ServiceCollector {
                                                                     // collection
                                                                     // is
                                                                     // complete
-                synchronized (blocker) {
                     try {
                         nodeCollector = new SnmpNodeCollector(session, blocker, nodeOidList, maxVarsPerPdu.intValue());
 
@@ -1089,7 +1085,6 @@ final class SnmpCollector implements ServiceCollector {
                     } catch (Throwable t) {
                         log.error("Unexpected error during node SNMP collection for " + ipaddr.getHostAddress(), t);
                     }
-                } // end synchronized(blocker)
 
                 // Was the node collection successful?
                 //
@@ -1118,7 +1113,6 @@ final class SnmpCollector implements ServiceCollector {
                                                                     // collection
                                                                     // is
                                                                     // complete
-                synchronized (blocker) {
                     try {
                         ifCollector = new SnmpIfCollector(session, blocker, String.valueOf(nodeInfo.getPrimarySnmpIfIndex()), ifMap, ifCount, maxVarsPerPdu.intValue());
 
@@ -1163,7 +1157,6 @@ final class SnmpCollector implements ServiceCollector {
                     } catch (Throwable t) {
                         log.error("Unexpected error during interface SNMP collection for " + ipaddr.getHostAddress(), t);
                     }
-                } // end sychronized(blocker)
 
                 // Was the interface collection successful?
                 //

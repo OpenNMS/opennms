@@ -86,8 +86,7 @@ public final class BarrierSignaler implements Signaler {
      * @see java.lang.Object#notify
      */
     public synchronized void signal() {
-        if (++m_counter == m_barrier) {
-            --m_counter;
+        if (++m_counter >= m_barrier) {
             notify();
         }
     }
@@ -100,10 +99,26 @@ public final class BarrierSignaler implements Signaler {
      * 
      * @see java.lang.Object#notifyAll
      */
-    public void signalAll() {
-        if (++m_counter == m_barrier) {
-            --m_counter;
+    public synchronized void signalAll() {
+        if (++m_counter >= m_barrier) {
             notifyAll();
+        }
+    }
+    
+    
+    public synchronized void waitFor() throws InterruptedException {
+        while(m_counter < m_barrier) {
+            wait();
+        }
+    }
+    
+    public synchronized void waitFor(long timeout) throws InterruptedException {
+        long last = System.currentTimeMillis();
+        long waitTime = timeout;
+        while (m_counter < m_barrier && waitTime > 0) {
+            wait(waitTime);
+            long now = System.currentTimeMillis();
+            waitTime -= (now - last);
         }
     }
 }
