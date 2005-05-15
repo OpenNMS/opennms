@@ -274,4 +274,8 @@ public class SnmpUInt32 extends Object implements SnmpSyntax, Cloneable, Seriali
     public String toString() {
         return Long.toString(getValue());
     }
+
+    public static Long toLong(SnmpUInt32 val) {
+        return (val == null ? null : new Long(val.getValue()));
+    }
 }

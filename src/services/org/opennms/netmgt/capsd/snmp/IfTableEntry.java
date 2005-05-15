@@ -40,12 +40,18 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.protocols.snmp.SnmpInt32;
 import org.opennms.protocols.snmp.SnmpObjectId;
+import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpPduBulk;
 import org.opennms.protocols.snmp.SnmpPduPacket;
 import org.opennms.protocols.snmp.SnmpPduRequest;
+import org.opennms.protocols.snmp.SnmpUInt32;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
@@ -76,7 +82,7 @@ import org.opennms.protocols.snmp.SnmpVarBind;
  * 
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
-public final class IfTableEntry extends java.util.TreeMap {
+public final class IfTableEntry {
     //
     // Lookup strings for specific table entries
     //
@@ -200,6 +206,8 @@ public final class IfTableEntry extends java.util.TreeMap {
      * @see #TABLE_OID
      */
     public static final SnmpObjectId ROOT = new SnmpObjectId(TABLE_OID);
+
+    private Map m_responseMap = new TreeMap();
 
     /**
      * <P>
@@ -389,4 +397,57 @@ public final class IfTableEntry extends java.util.TreeMap {
     public static int getElementListSize() {
         return ms_elemList.length;
     }
+
+    public Integer getIfIndex() {
+        return getInt32(IfTableEntry.IF_INDEX);
+    }
+
+    public Integer getIfType() {
+        return getInt32(IfTableEntry.IF_TYPE);
+    }
+    
+    public Integer getIfAdminStatus() {
+        return getInt32(IfTableEntry.IF_ADMIN_STATUS);
+    }
+
+    public String getIfDescr() {
+        return getDisplayString(IfTableEntry.IF_DESCR);
+    }
+
+    public String getPhysAddr() {
+        return getHexString(IfTableEntry.IF_PHYS_ADDR);
+    }
+
+    public Integer getIfOperStatus() {
+        return getInt32(IfTableEntry.IF_OPER_STATUS);
+    }
+
+    public Long getIfSpeed() {
+        return getUInt32(IfTableEntry.IF_SPEED);
+    }
+
+    private Integer getInt32(String key) {
+        return SnmpInt32.toInteger((SnmpInt32) get(key));
+    }
+    
+    private Long getUInt32(String key) {
+        return SnmpUInt32.toLong((SnmpUInt32) get(key));
+    }
+    
+    private String getDisplayString(String key) {
+        return SnmpOctetString.toDisplayString((SnmpOctetString) get(key));
+    }
+
+    private String getHexString(String key) {
+        return SnmpOctetString.toHexString((SnmpOctetString) get(key));
+    }
+
+    private Object get(String key) {
+        return m_responseMap.get(key);
+    }
+    
+    private void put(String key, Object value) {
+        m_responseMap.put(key, value);
+    }
+
 }

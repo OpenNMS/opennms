@@ -97,7 +97,6 @@ import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.protocols.snmp.SnmpInt32;
 import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpUInt32;
 
 /**
  * This class is designed to rescan all the managed interfaces for a specified
@@ -110,7 +109,7 @@ import org.opennms.protocols.snmp.SnmpUInt32;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class RescanProcessor implements Runnable {
+public final class RescanProcessor implements Runnable {
     /**
      * SQL statement for retrieving the 'nodetype' field of the node table for
      * the specified nodeid. Used to determine if the node is active ('A') or
@@ -313,25 +312,25 @@ final class RescanProcessor implements Runnable {
                 SystemGroup sysgrp = snmpc.getSystemGroup();
 
                 // sysObjectId
-                currNodeEntry.setSystemOID(sysgrp.get(SystemGroup.SYS_OBJECTID).toString());
+                currNodeEntry.setSystemOID(sysgrp.getSysObjectID());
 
                 // sysName
-                String str = SystemGroup.getPrintableString((SnmpOctetString) sysgrp.get(SystemGroup.SYS_NAME));
+                String str = sysgrp.getSysName();
                 if (str != null && str.length() > 0)
                     currNodeEntry.setSystemName(str);
 
                 // sysDescription
-                str = SystemGroup.getPrintableString((SnmpOctetString) sysgrp.get(SystemGroup.SYS_DESCR));
+                str = sysgrp.getSysDescr();
                 if (str != null && str.length() > 0)
                     currNodeEntry.setSystemDescription(str);
 
                 // sysLocation
-                str = SystemGroup.getPrintableString((SnmpOctetString) sysgrp.get(SystemGroup.SYS_LOCATION));
+                str = sysgrp.getSysLocation();
                 if (str != null && str.length() > 0)
                     currNodeEntry.setSystemLocation(str);
 
                 // sysContact
-                str = SystemGroup.getPrintableString((SnmpOctetString) sysgrp.get(SystemGroup.SYS_CONTACT));
+                str = sysgrp.getSysContact();
                 if (str != null && str.length() > 0)
                     currNodeEntry.setSystemContact(str);
             }
@@ -626,9 +625,9 @@ final class RescanProcessor implements Runnable {
 
             // index
             //
-            SnmpInt32 sint = (SnmpInt32) ifte.get(IfTableEntry.IF_INDEX);
+            Integer sint = ifte.getIfIndex();
             if (sint != null) {
-                if (ifIndex == sint.getValue()) {
+                if (ifIndex == sint.intValue()) {
                     if (log.isDebugEnabled())
                         log.debug("updateNonIpInterface: found match for ifIndex: " + ifIndex);
                     match = true;
@@ -651,75 +650,59 @@ final class RescanProcessor implements Runnable {
             // NOTE: non-IP interfaces don't have netmasks so skip
 
             // type
-            SnmpInt32 sint = (SnmpInt32) ifte.get(IfTableEntry.IF_TYPE);
-            dbSnmpIfEntry.updateType(sint.getValue());
+            Integer sint = ifte.getIfType();
+            //FIXME: check for null
+            dbSnmpIfEntry.updateType(sint.intValue());
 
             // description
-            String str = SystemGroup.getPrintableString((SnmpOctetString) ifte.get(IfTableEntry.IF_DESCR));
+            String str = ifte.getIfDescr();
             if (log.isDebugEnabled())
                 log.debug("updateNonIpInterface: ifIndex: " + ifIndex + " has ifDescription: " + str);
             if (str != null && str.length() > 0)
                 dbSnmpIfEntry.updateDescription(str);
 
-            // physical address
-            StringBuffer sbuf = new StringBuffer();
-            SnmpOctetString ostr = (SnmpOctetString) ifte.get(IfTableEntry.IF_PHYS_ADDR);
-            if (ostr != null && ostr.getLength() > 0) {
-                byte[] bytes = ostr.getString();
-                for (int i = 0; i < bytes.length; i++) {
-                    sbuf.append(Integer.toHexString(((int) bytes[i] >> 4) & 0xf));
-                    sbuf.append(Integer.toHexString((int) bytes[i] & 0xf));
-                }
-            }
-
-            String physAddr = sbuf.toString().trim();
+            String physAddr = ifte.getPhysAddr();
 
             if (log.isDebugEnabled())
                 log.debug("updateNonIpInterface: ifIndex: " + ifIndex + " has physical address: -" + physAddr + "-");
 
-            if (physAddr.length() == 12) {
+            if (physAddr != null && physAddr.length() == 12) {
                 dbSnmpIfEntry.updatePhysicalAddress(physAddr);
             }
 
             // speed
-            SnmpUInt32 uint = (SnmpUInt32) ifte.get(IfTableEntry.IF_SPEED);
+            Long uint = ifte.getIfSpeed();
             if (uint == null) {
                 dbSnmpIfEntry.updateSpeed(0);
             } else {
-                dbSnmpIfEntry.updateSpeed((int) uint.getValue());
+                dbSnmpIfEntry.updateSpeed(uint.longValue());
             }
 
             // admin status
-            sint = (SnmpInt32) ifte.get(IfTableEntry.IF_ADMIN_STATUS);
+            sint = ifte.getIfAdminStatus();
             if (sint == null) {
                 dbSnmpIfEntry.updateAdminStatus(0);
             } else {
-                dbSnmpIfEntry.updateAdminStatus(sint.getValue());
+                dbSnmpIfEntry.updateAdminStatus(sint.intValue());
             }
 
             // oper status
-            sint = (SnmpInt32) ifte.get(IfTableEntry.IF_OPER_STATUS);
+            sint = ifte.getIfOperStatus();
             if (sint == null) {
                 dbSnmpIfEntry.updateOperationalStatus(0);
             } else {
-                dbSnmpIfEntry.updateOperationalStatus(sint.getValue());
+                dbSnmpIfEntry.updateOperationalStatus(sint.intValue());
             }
 
             // name (from interface extensions table)
-            SnmpOctetString snmpIfName = snmpc.getIfName(ifIndex);
-            if (snmpIfName != null) {
-                String ifName = SystemGroup.getPrintableString(snmpIfName);
-                if (ifName != null && ifName.length() > 0)
-                    dbSnmpIfEntry.updateName(ifName);
-            }
+            String ifName = snmpc.getIfName(ifIndex);
+            if (ifName != null && ifName.length() > 0)
+                dbSnmpIfEntry.updateName(ifName);
 
             // alias (from interface extensions table)
-            SnmpOctetString snmpIfAlias = snmpc.getIfAlias(ifIndex);
-            if (snmpIfAlias != null) {
-                String ifAlias = SystemGroup.getPrintableString(snmpIfAlias);
-                if (ifAlias != null && ifAlias.length() > 0)
-                    dbSnmpIfEntry.updateAlias(ifAlias);
-            }
+            String ifAlias = snmpc.getIfAlias(ifIndex);
+            if (ifAlias != null && ifAlias.length() > 0)
+                dbSnmpIfEntry.updateAlias(ifAlias);
 
         } // end if valid ifTable entry
 
@@ -1582,9 +1565,9 @@ final class RescanProcessor implements Runnable {
 
                 // index
                 //
-                SnmpInt32 sint = (SnmpInt32) ifte.get(IfTableEntry.IF_INDEX);
+                Integer sint = ifte.getIfIndex();
                 if (sint != null) {
-                    if (ifIndex == sint.getValue()) {
+                    if (ifIndex == sint.intValue()) {
                         break;
                     } else 
                         ifte = null;
@@ -1634,64 +1617,48 @@ final class RescanProcessor implements Runnable {
 
                 // type
                 //
-                SnmpInt32 sint = (SnmpInt32) ifte.get(IfTableEntry.IF_TYPE);
-                currSnmpIfEntry.setType(sint.getValue());
+                Integer sint = ifte.getIfType();
+                currSnmpIfEntry.setType(sint.intValue());
 
                 // description
-                String str = SystemGroup.getPrintableString((SnmpOctetString) ifte.get(IfTableEntry.IF_DESCR));
+                String str = ifte.getIfDescr();
                 if (log.isDebugEnabled())
                     log.debug("updateSnmpInfo: " + ifaddr + " has ifDescription: " + str);
                 if (str != null && str.length() > 0)
                     currSnmpIfEntry.setDescription(str);
 
-                // physical address
-                StringBuffer sbuf = new StringBuffer();
-                SnmpOctetString ostr = (SnmpOctetString) ifte.get(IfTableEntry.IF_PHYS_ADDR);
-                if (ostr != null && ostr.getLength() > 0) {
-                    byte[] bytes = ostr.getString();
-                    for (int i = 0; i < bytes.length; i++) {
-                        sbuf.append(Integer.toHexString(((int) bytes[i] >> 4) & 0xf));
-                        sbuf.append(Integer.toHexString((int) bytes[i] & 0xf));
-                    }
-                }
-
-                String physAddr = sbuf.toString().trim();
+                String physAddr = ifte.getPhysAddr();
 
                 if (log.isDebugEnabled())
                     log.debug("updateSnmpInfo: " + ifaddr + " has phys address: -" + physAddr + "-");
 
-                if (physAddr.length() == 12) {
+                if (physAddr != null && physAddr.length() == 12) {
                     currSnmpIfEntry.setPhysicalAddress(physAddr);
                 }
 
                 // speed
-                SnmpUInt32 uint = (SnmpUInt32) ifte.get(IfTableEntry.IF_SPEED);
-		currSnmpIfEntry.setSpeed((uint == null ? 10000000 : (int) uint.getValue())); 
-		//set the default speed to 10MB if not retrievable. 
+                Long uint = ifte.getIfSpeed();
+
+                //set the default speed to 10MB if not retrievable. 
+                currSnmpIfEntry.setSpeed((uint == null ? 10000000L : uint.longValue())); 
 
                 // admin status
-                sint = (SnmpInt32) ifte.get(IfTableEntry.IF_ADMIN_STATUS);
-                currSnmpIfEntry.setAdminStatus(sint.getValue());
+                sint = ifte.getIfAdminStatus();
+                currSnmpIfEntry.setAdminStatus(sint.intValue());
 
                 // oper status
-                sint = (SnmpInt32) ifte.get(IfTableEntry.IF_OPER_STATUS);
-                currSnmpIfEntry.setOperationalStatus(sint.getValue());
+                sint = ifte.getIfOperStatus();
+                currSnmpIfEntry.setOperationalStatus(sint.intValue());
 
                 // name (from interface extensions table)
-                SnmpOctetString snmpIfName = snmpc.getIfName(ifIndex);
-                if (snmpIfName != null) {
-                    String ifName = SystemGroup.getPrintableString(snmpIfName);
-                    if (ifName != null && ifName.length() > 0)
-                        currSnmpIfEntry.setName(ifName);
-                }
+                String ifName = snmpc.getIfName(ifIndex);
+                if (ifName != null && ifName.length() > 0)
+                    currSnmpIfEntry.setName(ifName);
 
                 // alias (from interface extensions table)
-                SnmpOctetString snmpIfAlias = snmpc.getIfAlias(ifIndex);
-                if (snmpIfAlias != null) {
-                    String ifAlias = SystemGroup.getPrintableString(snmpIfAlias);
-                    if (ifAlias != null && ifAlias.length() > 0)
-                        currSnmpIfEntry.setAlias(ifAlias);
-                }
+                String ifAlias = snmpc.getIfAlias(ifIndex);
+                if (ifAlias != null && ifAlias.length() > 0)
+                    currSnmpIfEntry.setAlias(ifAlias);
 
             } // end if valid ifTable entry
 
@@ -2457,7 +2424,7 @@ final class RescanProcessor implements Runnable {
                 IfSnmpCollector snmpc = ifc.getSnmpCollector();
                 SystemGroup sysgrp = snmpc.getSystemGroup();
 
-                String str = SystemGroup.getPrintableString((SnmpOctetString) sysgrp.get(SystemGroup.SYS_NAME));
+                String str = sysgrp.getSysName();
                 if (str != null && str.length() > 0) {
                     labelSet = true;
                     currNodeEntry.setLabel(str);
@@ -2566,7 +2533,7 @@ final class RescanProcessor implements Runnable {
         while (iter.hasNext()) {
             IfTableEntry ifEntry = (IfTableEntry) iter.next();
 
-            if (ifEntry.containsKey("ifIndex") != true) {
+            if (ifEntry.getIfIndex() == null) {
                 if (log.isDebugEnabled())
                     log.debug("isInterfaceAlias:  Breaking from loop");
                 break;
@@ -2578,9 +2545,9 @@ final class RescanProcessor implements Runnable {
             //
             int ifIndex = -1;
 
-            SnmpInt32 snmpIfIndex = (SnmpInt32) ifEntry.get(IfTableEntry.IF_INDEX);
+            Integer snmpIfIndex = ifEntry.getIfIndex();
             if (snmpIfIndex != null)
-                ifIndex = snmpIfIndex.getValue();
+                ifIndex = snmpIfIndex.intValue();
 
             List addrList = IpAddrTable.getIpAddresses(ipAddrTable.getEntries(), ifIndex);
             Iterator addrIter = addrList.iterator();

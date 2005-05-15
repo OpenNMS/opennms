@@ -315,4 +315,69 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
 
         return rs;
     }
+
+    /**
+     * This method takes an SnmpOctetString and replaces any unprintable
+     * characters with ASCII period ('.') and returns the resulting character
+     * string. Special case in which the supplied SnmpOctetString consists of a
+     * single ASCII Null byte is also handled. In this special case an empty
+     * string is returned.
+     * 
+     * NOTE: A character is considered unprintable if its decimal value falls
+     * outside of the range: 32 - 126.
+     * 
+     * @param octetString
+     *            SnmpOctetString from which to generate the String
+     * 
+     * @return a Java String object created from the octet string's byte array.
+     */
+    public static String toDisplayString(SnmpOctetString octetString) {
+        // TODO: Move this to a more common place
+        // Valid SnmpOctetString object
+        if (octetString == null) {
+            return null;
+        }
+    
+        byte bytes[] = octetString.getString();
+    
+        // Sanity check
+        if (bytes == null || bytes.length == 0) {
+            return null;
+        }
+    
+        // Check for special case where byte array contains a single
+        // ASCII null character
+        if (bytes.length == 1 && bytes[0] == 0) {
+            return null;
+        }
+    
+        // Replace all unprintable chars (chars outside of
+        // decimal range 32 - 126 inclusive) with an
+        // ASCII period char (decimal 46).
+        // 
+        for (int i = 0; i < bytes.length; i++) {
+            if (bytes[i] < 32 || bytes[i] > 126) {
+                bytes[i] = 46; // ASCII period '.'
+            }
+        }
+    
+        // Create string, trim any white-space and return
+        String result = new String(bytes);
+        return result.trim();
+    }
+
+    // TODO: Move this to common base class
+    public static String toHexString(SnmpOctetString ostr) {
+        if (ostr == null) return null;
+        StringBuffer sbuf = new StringBuffer();
+        if (ostr != null && ostr.getLength() > 0) {
+            byte[] bytes = ostr.getString();
+            for (int i = 0; i < bytes.length; i++) {
+                sbuf.append(Integer.toHexString(((int) bytes[i] >> 4) & 0xf));
+                sbuf.append(Integer.toHexString((int) bytes[i] & 0xf));
+            }
+        }
+        String physAddr = sbuf.toString().trim();
+        return physAddr;
+    }
 }

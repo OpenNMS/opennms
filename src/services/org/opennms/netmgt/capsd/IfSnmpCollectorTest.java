@@ -40,21 +40,20 @@ import java.util.List;
 import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IpAddrTable;
 import org.opennms.netmgt.capsd.snmp.SystemGroup;
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
-import org.opennms.protocols.snmp.SnmpOctetString;
 public class IfSnmpCollectorTest extends OpenNMSTestCase {
 
     private IfSnmpCollector m_ifSnmpc;
-    private boolean m_run = false;
+    private boolean m_run = true;
     private boolean m_hasRun = false;
 
     protected void setUp() throws Exception {
         super.setUp();
         m_runSupers = false;
         
-        m_ifSnmpc = new IfSnmpCollector(SnmpPeerFactory.getInstance().getPeer(InetAddress.getByName(myLocalHost())));
+        InetAddress addr = InetAddress.getByName(myLocalHost());
+        m_ifSnmpc = new IfSnmpCollector(addr);
         if(m_run && !m_hasRun) {
             m_ifSnmpc.run();
             m_hasRun = true;
@@ -146,7 +145,7 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
             assertNotNull(ipAddrTable);
             assertFalse(ipAddrTable.failed());
             List entries = ipAddrTable.getEntries();
-            List addresses = IpAddrTable.getIpAddresses(entries, 1);
+            List addresses = IpAddrTable.getIpAddresses(entries);
             assertTrue(addresses.contains(InetAddress.getByName(myLocalHost())));
             assertTrue(addresses.contains(InetAddress.getByName("127.0.0.1")));
         }        
@@ -183,18 +182,6 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
             InetAddress target = m_ifSnmpc.getCollectorTargetAddress();
             assertNotNull(target);
             assertEquals(myLocalHost(), target.getHostAddress());
-        }
-    }
-
-    public final void testGetMask() {
-        if(m_run) {
-
-            if(!m_hasRun)
-                m_ifSnmpc.run();
-            
-            InetAddress mask = m_ifSnmpc.getMask(1);
-            assertNotNull(mask);
-            assertEquals("255.0.0.0", mask.getHostAddress());
         }
     }
 
@@ -250,8 +237,10 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
             if(!m_hasRun)
                 m_ifSnmpc.run();
             
-            SnmpOctetString ifName = m_ifSnmpc.getIfName(1);
-            assertNotNull(ifName);
+            if (m_ifSnmpc.hasIfXTable()) {
+                String ifName = m_ifSnmpc.getIfName(1);
+                assertNotNull(ifName);
+            }
         }
     }
 
@@ -261,38 +250,11 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
             if(!m_hasRun)
                 m_ifSnmpc.run();
             
-            SnmpOctetString ifAlias = m_ifSnmpc.getIfAlias(1);
-            assertNotNull(ifAlias);
+            if (m_ifSnmpc.hasIfXTable()) {
+                String ifAlias = m_ifSnmpc.getIfAlias(1);
+                assertNotNull(ifAlias);
+            }
         }
-    }
-
-    /*
-     * Class under test for void wait(long)
-     */
-    public final void testWaitlong() {
-        if(m_run)
-            fail();
-    }
-
-    /*
-     * Class under test for void wait(long, int)
-     */
-    public final void testWaitlongint() {
-        if(m_run)
-            fail();
-    }
-
-    /*
-     * Class under test for void wait()
-     */
-    public final void testWait() {
-        if(m_run)
-            fail();
-    }
-
-    public final void testFinalize() {
-        if(m_run)
-            fail();
     }
 
 }

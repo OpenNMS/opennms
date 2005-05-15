@@ -40,7 +40,9 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Category;
@@ -220,9 +222,9 @@ public final class IfXTable implements SnmpHandler {
      * there is an error in the collection the signaler object is <EM>notified
      * </EM> to inform other threads.
      * </P>
-     * 
      * @param session
      *            The session with the remote agent.
+     * @param address TODO
      * @param signaler
      *            The object to notify waiters.
      * @param version
@@ -230,7 +232,7 @@ public final class IfXTable implements SnmpHandler {
      * 
      * @see IfXTableEntry
      */
-    public IfXTable(SnmpSession session, Signaler signaler, int version) {
+    public IfXTable(SnmpSession session, InetAddress address, Signaler signaler, int version) {
         m_signal = signaler;
         m_entries = new ArrayList(2); // not synchronized.
         m_error = false;
@@ -625,5 +627,50 @@ public final class IfXTable implements SnmpHandler {
             buf.append(m_hexDigit[(b & 0xf)]); // based upon US-ASCII
         }
         return buf.toString().toUpperCase();
+    }
+
+    public String getIfName(int ifIndex) {
+    
+        // Find ifXTable entry with matching ifIndex
+        //
+        Iterator iter = getEntries().iterator();
+        while (iter.hasNext()) {
+            IfXTableEntry ifXEntry = (IfXTableEntry) iter.next();
+    
+            int ifXIndex = -1;
+            Integer snmpIfIndex = ifXEntry.getIfIndex();
+            if (snmpIfIndex != null)
+                ifXIndex = snmpIfIndex.intValue();
+    
+            // compare with passed ifIndex
+            if (ifXIndex == ifIndex) {
+                // Found match! Get the ifName
+                return ifXEntry.getIfName();
+            }
+    
+        }
+        return null;
+    }
+
+    public String getIfIndex(int ifIndex) {
+        // Find ifXTable entry with matching ifIndex
+        //
+        Iterator iter = getEntries().iterator();
+        while (iter.hasNext()) {
+            IfXTableEntry ifXEntry = (IfXTableEntry) iter.next();
+    
+            int ifXIndex = -1;
+            Integer snmpIfIndex = ifXEntry.getIfIndex();
+            if (snmpIfIndex != null)
+                ifXIndex = snmpIfIndex.intValue();
+    
+            // compare with passed ifIndex
+            if (ifXIndex == ifIndex) {
+                // Found match! Get the ifAlias
+                return ifXEntry.getIfAlias();
+            }
+    
+        }
+        return null;
     }
 }

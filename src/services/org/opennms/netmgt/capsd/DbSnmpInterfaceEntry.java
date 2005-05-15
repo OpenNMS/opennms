@@ -107,7 +107,7 @@ final class DbSnmpInterfaceEntry {
 
     private String m_ifAlias;
 
-    private int m_ifSpeed;
+    private long m_ifSpeed;
 
     private int m_ifAdminStatus;
 
@@ -245,7 +245,7 @@ final class DbSnmpInterfaceEntry {
             stmt.setString(ndx++, m_ifName);
 
         if ((m_changed & CHANGED_IFSPEED) == CHANGED_IFSPEED)
-            stmt.setInt(ndx++, m_ifSpeed);
+            stmt.setLong(ndx++, m_ifSpeed);
 
         if ((m_changed & CHANGED_IFADMINSTATUS) == CHANGED_IFADMINSTATUS)
             stmt.setInt(ndx++, m_ifAdminStatus);
@@ -353,6 +353,7 @@ final class DbSnmpInterfaceEntry {
         int ndx = 1;
 
         if ((m_changed & CHANGED_IFADDRESS) == CHANGED_IFADDRESS) {
+            //FIXME: What's this about? shouldn't it be m_ipAddr == null ?
             if (m_ifIndex == -1)
                 stmt.setNull(ndx++, Types.VARCHAR);
             else
@@ -395,21 +396,21 @@ final class DbSnmpInterfaceEntry {
         }
 
         if ((m_changed & CHANGED_IFSPEED) == CHANGED_IFSPEED) {
-            if (m_ifSpeed == -1)
+            if (m_ifSpeed == -1L)
                 stmt.setNull(ndx++, Types.INTEGER);
             else
-                stmt.setInt(ndx++, m_ifSpeed);
+                stmt.setLong(ndx++, m_ifSpeed);
         }
 
         if ((m_changed & CHANGED_IFADMINSTATUS) == CHANGED_IFADMINSTATUS) {
-            if (m_ifSpeed == -1)
+            if (m_ifAdminStatus == -1)
                 stmt.setNull(ndx++, Types.INTEGER);
             else
                 stmt.setInt(ndx++, m_ifAdminStatus);
         }
 
         if ((m_changed & CHANGED_IFOPERSTATUS) == CHANGED_IFOPERSTATUS) {
-            if (m_ifSpeed == -1)
+            if (m_ifOperStatus == -1)
                 stmt.setNull(ndx++, Types.INTEGER);
             else
                 stmt.setInt(ndx++, m_ifOperStatus);
@@ -527,9 +528,9 @@ final class DbSnmpInterfaceEntry {
 
         // get the speed
         //
-        m_ifSpeed = rset.getInt(ndx++);
+        m_ifSpeed = rset.getLong(ndx++);
         if (rset.wasNull())
-            m_ifSpeed = -1;
+            m_ifSpeed = -1L;
 
         // get the admin status
         //
@@ -586,7 +587,7 @@ final class DbSnmpInterfaceEntry {
         m_ifDescription = null;
         m_ifType = -1;
         m_ifName = null;
-        m_ifSpeed = -1;
+        m_ifSpeed = -1L;
         m_ifAdminStatus = -1;
         m_ifOperStatus = -1;
         m_ifAlias = null;
@@ -614,7 +615,7 @@ final class DbSnmpInterfaceEntry {
         m_ifDescription = null;
         m_ifType = -1;
         m_ifName = null;
-        m_ifSpeed = -1;
+        m_ifSpeed = -1L;
         m_ifAdminStatus = -1;
         m_ifOperStatus = -1;
         m_ifAlias = null;
@@ -799,11 +800,11 @@ final class DbSnmpInterfaceEntry {
         }
     }
 
-    int getSpeed() {
+    long getSpeed() {
         return m_ifSpeed;
     }
 
-    void setSpeed(int speed) {
+    void setSpeed(long speed) {
         m_ifSpeed = speed;
         m_changed |= CHANGED_IFSPEED;
     }
@@ -815,8 +816,8 @@ final class DbSnmpInterfaceEntry {
             return false;
     }
 
-    boolean updateSpeed(int newIfSpeed) {
-        if (newIfSpeed == -1 || newIfSpeed == m_ifSpeed)
+    boolean updateSpeed(long newIfSpeed) {
+        if (newIfSpeed == -1L || newIfSpeed == m_ifSpeed)
             return false;
         else {
             setSpeed(newIfSpeed);

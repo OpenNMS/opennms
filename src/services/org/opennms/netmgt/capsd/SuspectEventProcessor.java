@@ -84,7 +84,6 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.protocols.snmp.SnmpInt32;
-import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpUInt32;
 
@@ -195,7 +194,7 @@ final class SuspectEventProcessor implements Runnable {
         while (iter.hasNext()) {
             IfTableEntry ifEntry = (IfTableEntry) iter.next();
 
-            if (ifEntry.containsKey("ifIndex") != true) {
+            if (ifEntry.getIfIndex() == null) {
                 log.debug("getExistingNodeEntry:  Breaking from loop");
                 break;
             }
@@ -204,9 +203,9 @@ final class SuspectEventProcessor implements Runnable {
             // Get ifIndex
             //
             int ifIndex = -1;
-            SnmpInt32 snmpIfIndex = (SnmpInt32) ifEntry.get(IfTableEntry.IF_INDEX);
+            Integer snmpIfIndex = ifEntry.getIfIndex();
             if (snmpIfIndex != null)
-                ifIndex = snmpIfIndex.getValue();
+                ifIndex = snmpIfIndex.intValue();
 
             //
             // Get ALL IP Addresses for this ifIndex
@@ -218,9 +217,9 @@ final class SuspectEventProcessor implements Runnable {
             // Get ifType for this interface
             //
             int ifType = -1;
-            SnmpInt32 snmpIfType = (SnmpInt32) ifEntry.get(IfTableEntry.IF_TYPE);
+            Integer snmpIfType = ifEntry.getIfType();
             if (snmpIfType != null)
-                ifType = snmpIfType.getValue();
+                ifType = snmpIfType.intValue();
 
             // Iterate over IP address list and add each to the sql buffer
             //
@@ -395,14 +394,14 @@ final class SuspectEventProcessor implements Runnable {
                 SystemGroup sysgrp = snmpc.getSystemGroup();
 
                 // sysObjectId
-                SnmpObjectId sysObjectId = (SnmpObjectId) sysgrp.get(SystemGroup.SYS_OBJECTID);
+                String sysObjectId = sysgrp.getSysObjectID();
                 if (sysObjectId != null)
-                    entryNode.setSystemOID(sysObjectId.toString());
+                    entryNode.setSystemOID(sysObjectId);
                 else
                     log.warn("SuspectEventProcessor: " + ifaddr.getHostAddress() + " has NO sysObjectId!!!!");
 
                 // sysName
-                String str = SystemGroup.getPrintableString((SnmpOctetString) sysgrp.get(SystemGroup.SYS_NAME));
+                String str = sysgrp.getSysName();
                 if (log.isDebugEnabled())
                     log.debug("SuspectEventProcessor: " + ifaddr.getHostAddress() + " has sysName: " + str);
 
@@ -419,21 +418,21 @@ final class SuspectEventProcessor implements Runnable {
                 }
 
                 // sysDescription
-                str = SystemGroup.getPrintableString((SnmpOctetString) sysgrp.get(SystemGroup.SYS_DESCR));
+                str = sysgrp.getSysDescr();
                 if (log.isDebugEnabled())
                     log.debug("SuspectEventProcessor: " + ifaddr.getHostAddress() + " has sysDescription: " + str);
                 if (str != null && str.length() > 0)
                     entryNode.setSystemDescription(str);
 
                 // sysLocation
-                str = SystemGroup.getPrintableString((SnmpOctetString) sysgrp.get(SystemGroup.SYS_LOCATION));
+                str = sysgrp.getSysLocation();
                 if (log.isDebugEnabled())
                     log.debug("SuspectEventProcessor: " + ifaddr.getHostAddress() + " has sysLocation: " + str);
                 if (str != null && str.length() > 0)
                     entryNode.setSystemLocation(str);
 
                 // sysContact
-                str = SystemGroup.getPrintableString((SnmpOctetString) sysgrp.get(SystemGroup.SYS_CONTACT));
+                str = sysgrp.getSysContact();
                 if (log.isDebugEnabled())
                     log.debug("SuspectEventProcessor: " + ifaddr.getHostAddress() + " has sysContact: " + str);
                 if (str != null && str.length() > 0)
@@ -715,9 +714,9 @@ final class SuspectEventProcessor implements Runnable {
                     // index
                     //
                     int xifIndex = -1;
-                    SnmpInt32 sint = (SnmpInt32) ifte.get(IfTableEntry.IF_INDEX);
+                    Integer sint = ifte.getIfIndex();
                     if (sint != null)
-                        xifIndex = sint.getValue();
+                        xifIndex = sint.intValue();
                     else
                         continue;
 
@@ -730,7 +729,7 @@ final class SuspectEventProcessor implements Runnable {
                     //
                     InetAddress[] aaddrs = null;
                     if (snmpc.hasIpAddrTable())
-                        aaddrs = snmpc.getIfAddressAndMask(sint.getValue());
+                        aaddrs = snmpc.getIfAddressAndMask(sint.intValue());
                     if (aaddrs == null) {
                         // Must be non-IP interface, set ifAddress to '0.0.0.0' and
                         // Mask to null
@@ -745,8 +744,9 @@ final class SuspectEventProcessor implements Runnable {
 
                     // Retrieve ifType so we can check for loopback
                     //
-                    sint = (SnmpInt32) ifte.get(IfTableEntry.IF_TYPE);
-                    int ifType = sint.getValue();
+                    sint = ifte.getIfType();
+                    // FIXME: What if sint is null
+                    int ifType = sint.intValue();
 
                     // Skip loopback interfaces
                     //
@@ -765,75 +765,59 @@ final class SuspectEventProcessor implements Runnable {
                         snmpEntry.setNetmask(aaddrs[1]);
 
                     // description
-                    String str = SystemGroup.getPrintableString((SnmpOctetString) ifte.get(IfTableEntry.IF_DESCR));
+                    String str = ifte.getIfDescr();
                     if (log.isDebugEnabled())
                         log.debug("SuspectEventProcessor: " + aaddrs[0].getHostAddress() + " has ifDescription: " + str);
                     if (str != null && str.length() > 0)
                         snmpEntry.setDescription(str);
 
                     // physical address
-                    StringBuffer sbuf = new StringBuffer();
-                    SnmpOctetString ostr = (SnmpOctetString) ifte.get(IfTableEntry.IF_PHYS_ADDR);
-                    if (ostr != null) {
+                    String physAddr = ifte.getPhysAddr();
                         
-                        byte[] bytes = ostr.getString();
-                        for (int i = 0; i < bytes.length; i++) {
-                            sbuf.append(Integer.toHexString(((int) bytes[i] >> 4) & 0xf));
-                            sbuf.append(Integer.toHexString((int) bytes[i] & 0xf));
-                        }
-                        
-                        String physAddr = sbuf.toString().trim();
-                        
-                        if (log.isDebugEnabled())
-                            log.debug("SuspectEventProcessor: " + aaddrs[0].getHostAddress() + " has physical address: -" + physAddr + "-");
-                        
-                        if (physAddr.length() == 12) {
-                            snmpEntry.setPhysicalAddress(physAddr);
-                        }
+                    if (log.isDebugEnabled())
+                        log.debug("SuspectEventProcessor: " + aaddrs[0].getHostAddress() + " has physical address: -" + physAddr + "-");
+                    
+                    if (physAddr != null && physAddr.length() == 12) {
+                        snmpEntry.setPhysicalAddress(physAddr);
                     }
+                    
 
                     // type
                     snmpEntry.setType(ifType);
 
                     // speed
-                    SnmpUInt32 uint = (SnmpUInt32) ifte.get(IfTableEntry.IF_SPEED);
+                    Long uint = ifte.getIfSpeed();
                     if (uint == null) {
                         snmpEntry.setSpeed(0);
                     } else {
-                        snmpEntry.setSpeed((int) uint.getValue());
+                        snmpEntry.setSpeed(uint.longValue());
                     }
 
                     // admin status
-                    sint = (SnmpInt32) ifte.get(IfTableEntry.IF_ADMIN_STATUS);
+                    sint = ifte.getIfAdminStatus();
                     if (sint == null) {
                         snmpEntry.setAdminStatus(0);
                     } else {
-                        snmpEntry.setAdminStatus(sint.getValue());
+                        snmpEntry.setAdminStatus(sint.intValue());
                     }
 
                     // oper status
-                    sint = (SnmpInt32) ifte.get(IfTableEntry.IF_OPER_STATUS);
+                    sint = ifte.getIfOperStatus();
                     if (sint == null) {
                         snmpEntry.setOperationalStatus(0);
                     } else {
-                        snmpEntry.setOperationalStatus(sint.getValue());
+                        snmpEntry.setOperationalStatus(sint.intValue());
                     }
 
                     // name (from interface extensions table)
-                    SnmpOctetString snmpIfName = snmpc.getIfName(xifIndex);
-                    if (snmpIfName != null) {
-                        String ifName = SystemGroup.getPrintableString(snmpIfName);
-                        if (ifName != null && ifName.length() > 0)
-                            snmpEntry.setName(ifName);
-                    }
+                    String ifName = snmpc.getIfName(xifIndex);
+                    if (ifName != null && ifName.length() > 0)
+                        snmpEntry.setName(ifName);
 
                     // alias (from interface extensions table)
-                    SnmpOctetString snmpIfAlias = snmpc.getIfAlias(xifIndex);
-                    if (snmpIfAlias != null) {
-                        String ifAlias = SystemGroup.getPrintableString(snmpIfAlias);
-                        if (ifAlias != null && ifAlias.length() > 0)
-                            snmpEntry.setAlias(ifAlias);
-                    }
+                    String ifAlias = snmpc.getIfAlias(xifIndex);
+                    if (ifAlias != null && ifAlias.length() > 0)
+                        snmpEntry.setAlias(ifAlias);
 
                     snmpEntry.store(dbc);
                 }

@@ -297,19 +297,19 @@ public class SnmpIPAddress extends SnmpOctetString {
      *                equal to four
      * 
      */
-    public InetAddress convertToIpAddress() throws SnmpBadConversionException {
+    public InetAddress convertToIpAddress() {
         byte[] data = getString();
 
-        StringBuffer buf = new StringBuffer();
-        buf.append((int) (data[0] < 0 ? 256 + data[0] : data[0])).append('.');
-        buf.append((int) (data[1] < 0 ? 256 + data[1] : data[1])).append('.');
-        buf.append((int) (data[2] < 0 ? 256 + data[2] : data[2])).append('.');
-        buf.append((int) (data[3] < 0 ? 256 + data[3] : data[3]));
-
+        byte addr[] = new byte[4];
+        addr[0] = data[0];
+        addr[1] = data[1];
+        addr[2] = data[2];
+        addr[3] = data[3];
+                       
         try {
-            return InetAddress.getByName(buf.toString());
+            return InetAddress.getByAddress(addr);
         } catch (UnknownHostException e) {
-            throw new SnmpBadConversionException("Invalid IP Address?", e);
+            throw new RuntimeException("Unable to convert "+this+" to an InetAddress", e);
         }
     }
 
@@ -326,6 +326,10 @@ public class SnmpIPAddress extends SnmpOctetString {
         buf.append((int) (data[3] < 0 ? 256 + data[3] : data[3]));
 
         return buf.toString();
+    }
+
+    public static InetAddress toInetAddress(SnmpIPAddress val) {
+        return (val == null ? null : val.convertToIpAddress());
     }
 
 }

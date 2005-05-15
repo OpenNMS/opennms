@@ -238,4 +238,8 @@ public class SnmpInt32 extends Object implements SnmpSyntax, Cloneable, Serializ
     public String toString() {
         return Integer.toString(getValue());
     }
+
+    public static Integer toInteger(SnmpInt32 val) {
+        return (val == null ? null : new Integer(val.getValue()));
+    }
 }

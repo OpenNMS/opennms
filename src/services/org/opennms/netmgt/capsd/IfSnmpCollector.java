@@ -38,22 +38,15 @@
 package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
-import java.util.Iterator;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.IfTable;
-import org.opennms.netmgt.capsd.snmp.IfTableEntry;
 import org.opennms.netmgt.capsd.snmp.IfXTable;
-import org.opennms.netmgt.capsd.snmp.IfXTableEntry;
 import org.opennms.netmgt.capsd.snmp.IpAddrTable;
-import org.opennms.netmgt.capsd.snmp.IpAddrTableEntry;
 import org.opennms.netmgt.capsd.snmp.SystemGroup;
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.utils.BarrierSignaler;
-import org.opennms.protocols.snmp.SnmpBadConversionException;
-import org.opennms.protocols.snmp.SnmpIPAddress;
-import org.opennms.protocols.snmp.SnmpInt32;
-import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpPeer;
 import org.opennms.protocols.snmp.SnmpSMI;
 import org.opennms.protocols.snmp.SnmpSession;
@@ -65,15 +58,11 @@ import org.opennms.protocols.snmp.SnmpSession;
  * and colletion occurs in the main run method of the instance. This allows the
  * collection to occur in a thread if necessary.
  * 
- * @author <a href="mailto:weave@oculan.com">Weave </a>
+ * @author <a href="mailto:brozow@opennms.org">brozow </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  * 
  */
 final class IfSnmpCollector implements Runnable {
-    /**
-     * The SnmpPeer object used to communicate via SNMP with the remote host.
-     */
-    private SnmpPeer m_peer;
 
     /**
      * The IP address to used to collect the SNMP information
@@ -117,13 +106,9 @@ final class IfSnmpCollector implements Runnable {
      * the collection point. The collection does not occur until the
      * <code>run</code> method is invoked.
      * 
-     * @param peer
-     *            The SnmpPeer object to collect from.
-     * 
      */
-    IfSnmpCollector(SnmpPeer peer) {
-        m_peer = peer;
-        m_address = peer.getPeer();
+    IfSnmpCollector(InetAddress address) {
+        m_address = address;
         m_sysGroup = null;
         m_ifTable = null;
         m_ifXTable = null;
@@ -141,6 +126,7 @@ final class IfSnmpCollector implements Runnable {
      * Returns true if the system group was collected successfully
      */
     boolean hasSystemGroup() {
+        // FIXME What should we do if the table had no error but was empty
         return (m_sysGroup != null && !m_sysGroup.failed());
     }
 
@@ -155,6 +141,7 @@ final class IfSnmpCollector implements Runnable {
      * Returns true if the interface table was collected.
      */
     boolean hasIfTable() {
+        // FIXME What should we do if the table had no error but was empty
         return (m_ifTable != null && !m_ifTable.failed());
     }
 
@@ -169,6 +156,7 @@ final class IfSnmpCollector implements Runnable {
      * Returns true if the IP Interface Address table was collected.
      */
     boolean hasIpAddrTable() {
+        // FIXME What should we do if the table had no error but was empty
         return (m_ipAddrTable != null && !m_ipAddrTable.failed());
     }
 
@@ -183,6 +171,7 @@ final class IfSnmpCollector implements Runnable {
      * Returns true if the interface extensions table was collected.
      */
     boolean hasIfXTable() {
+        // FIXME What should we do if the table had no error but was empty
         return (m_ifXTable != null && !m_ifXTable.failed());
     }
 
@@ -201,47 +190,6 @@ final class IfSnmpCollector implements Runnable {
     }
 
     /**
-     * Returns the netmask address at the corresponding index. If the address
-     * cannot be resolved then a null reference is returned.
-     * 
-     * NOTE: If an interface has more than one IP address associated with it
-     * only the FIRST match is returned.
-     * 
-     * @param ifIndex
-     *            The index to search for.
-     * 
-     * @throws java.lang.IndexOutOfBoundsException
-     *             Thrown if the index cannot be resolved due to an incomplete
-     *             table.
-     */
-    InetAddress getMask(int ifIndex) {
-        if (m_ipAddrTable == null || m_ipAddrTable.getEntries() == null) {
-            throw new IndexOutOfBoundsException("Illegal Index, no table present");
-        }
-
-        Iterator i = m_ipAddrTable.getEntries().iterator();
-        while (i.hasNext()) {
-            IpAddrTableEntry entry = (IpAddrTableEntry) i.next();
-            SnmpInt32 ndx = (SnmpInt32) entry.get(IpAddrTableEntry.IP_ADDR_IF_INDEX);
-            if (ndx != null && ndx.getValue() == ifIndex) {
-                // found it
-                // extract the address
-                //
-                SnmpIPAddress maskAddr = (SnmpIPAddress) entry.get(IpAddrTableEntry.IP_ADDR_ENT_NETMASK);
-                if (maskAddr != null) {
-                    try {
-                        return maskAddr.convertToIpAddress();
-                    } catch (SnmpBadConversionException e) {
-                        Category log = ThreadCategory.getInstance(getClass());
-                        log.error("Failed to convert snmp netmask: " + maskAddr, e);
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
      * Returns the Internet address at the corresponding index. If the address
      * cannot be resolved then a null reference is returned.
      * 
@@ -253,153 +201,54 @@ final class IfSnmpCollector implements Runnable {
      *             table.
      */
     InetAddress[] getIfAddressAndMask(int ifIndex) {
-        if (m_ipAddrTable == null || m_ipAddrTable.getEntries() == null) {
+        if (!hasIpAddrTable()) {
             throw new IndexOutOfBoundsException("Illegal Index, no table present");
         }
 
-        Iterator i = m_ipAddrTable.getEntries().iterator();
-        while (i.hasNext()) {
-            IpAddrTableEntry entry = (IpAddrTableEntry) i.next();
-            SnmpInt32 ndx = (SnmpInt32) entry.get(IpAddrTableEntry.IP_ADDR_IF_INDEX);
-            if (ndx != null && ndx.getValue() == ifIndex) {
-                // found it
-                // extract the address
-                //
-                SnmpIPAddress ifAddr = (SnmpIPAddress) entry.get(IpAddrTableEntry.IP_ADDR_ENT_ADDR);
-                SnmpIPAddress ifMask = (SnmpIPAddress) entry.get(IpAddrTableEntry.IP_ADDR_ENT_NETMASK);
-                if (ifAddr != null) {
-                    try {
-                        InetAddress[] pair = new InetAddress[2];
-                        pair[0] = ifAddr.convertToIpAddress();
-                        pair[1] = ifMask.convertToIpAddress();
-                        return pair;
-                    } catch (SnmpBadConversionException e) {
-                        Category log = ThreadCategory.getInstance(getClass());
-                        log.error("Failed to convert snmp collected address: " + ifAddr, e);
-                    }
-                }
-            }
-        }
-        return null;
+        return m_ipAddrTable.getIfAddressAndMask(ifIndex);
     }
 
     int getAdminStatus(int ifIndex) {
-        if (m_ifTable == null || m_ifTable.getEntries() == null) {
+        if (!hasIfTable()) {
             throw new IndexOutOfBoundsException("Illegal Index, no table present");
         }
-
-        Iterator i = m_ifTable.getEntries().iterator();
-        while (i.hasNext()) {
-            IfTableEntry entry = (IfTableEntry) i.next();
-            SnmpInt32 ndx = (SnmpInt32) entry.get(IfTableEntry.IF_INDEX);
-            if (ndx != null && ndx.getValue() == ifIndex) {
-                // found it
-                // extract the admin status
-                //
-                SnmpInt32 ifStatus = (SnmpInt32) entry.get(IfTableEntry.IF_ADMIN_STATUS);
-                if (ifStatus != null)
-                    return ifStatus.getValue();
-            }
-        }
-        return -1;
+        
+        return m_ifTable.getAdminStatus(ifIndex);
     }
 
     int getIfType(int ifIndex) {
-        if (m_ifTable == null || m_ifTable.getEntries() == null) {
+        if (!hasIfTable()) {
             throw new IndexOutOfBoundsException("Illegal Index, no table present");
         }
-
-        Iterator i = m_ifTable.getEntries().iterator();
-        while (i.hasNext()) {
-            IfTableEntry entry = (IfTableEntry) i.next();
-            SnmpInt32 ndx = (SnmpInt32) entry.get(IfTableEntry.IF_INDEX);
-            if (ndx != null && ndx.getValue() == ifIndex) {
-                // found it
-                // extract the ifType
-                //
-                SnmpInt32 ifType = (SnmpInt32) entry.get(IfTableEntry.IF_TYPE);
-                if (ifType != null)
-                    return ifType.getValue();
-            }
-        }
-        return -1;
+        
+        return m_ifTable.getIfType(ifIndex);
     }
 
     int getIfIndex(InetAddress address) {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        log.debug("getIfIndex: retrieving ifIndex for " + address.getHostAddress());
-        if (m_ipAddrTable == null || m_ipAddrTable.getEntries() == null) {
-            log.debug("getIfIndex: Illegal index, no table present.");
+        log().debug("getIfIndex: retrieving ifIndex for " + address.getHostAddress());
+        if (!hasIpAddrTable()) {
+            log().debug("getIfIndex: Illegal index, no table present.");
             throw new IndexOutOfBoundsException("Illegal Index, no table present");
         }
 
-        if (log.isDebugEnabled())
-            log.debug("getIfIndex: num ipAddrTable entries: " + m_ipAddrTable.getEntries().size());
-        Iterator i = m_ipAddrTable.getEntries().iterator();
-        while (i.hasNext()) {
-            IpAddrTableEntry entry = (IpAddrTableEntry) i.next();
-            SnmpIPAddress snmpAddr = (SnmpIPAddress) entry.get(IpAddrTableEntry.IP_ADDR_ENT_ADDR);
-            if (snmpAddr != null) {
-                InetAddress ifAddr = null;
-                try {
-                    ifAddr = snmpAddr.convertToIpAddress();
-                } catch (SnmpBadConversionException e) {
-                    log.error("Failed to convert snmp collected address: " + ifAddr, e);
-                    continue;
-                }
-
-                if (ifAddr.equals(address)) {
-                    // found it
-                    // extract the ifIndex
-                    //
-                    SnmpInt32 ndx = (SnmpInt32) entry.get(IpAddrTableEntry.IP_ADDR_IF_INDEX);
-                    log.debug("getIfIndex: got a match for address " + address.getHostAddress() + " index: " + ndx);
-                    if (ndx != null)
-                        return ndx.getValue();
-                }
-            }
-        }
-        log.debug("getIfIndex: no matching ipAddrTable entry for " + address.getHostAddress());
-        return -1;
+        return m_ipAddrTable.getIfIndex(address);
     }
 
     /**
      * 
      */
-    SnmpOctetString getIfName(int ifIndex) {
-        Category log = ThreadCategory.getInstance(getClass());
-        SnmpOctetString snmpIfName = null;
+    String getIfName(int ifIndex) {
+        String snmpIfName = null;
 
-        if (m_ifXTable != null && !m_ifXTable.failed()) {
-            // Find ifXTable entry with matching ifIndex
-            //
-            Iterator iter = m_ifXTable.getEntries().iterator();
-            while (iter.hasNext()) {
-                IfXTableEntry ifXEntry = (IfXTableEntry) iter.next();
-
-                int ifXIndex = -1;
-                SnmpInt32 snmpIfIndex = (SnmpInt32) ifXEntry.get(IfXTableEntry.IF_INDEX);
-                if (snmpIfIndex != null)
-                    ifXIndex = snmpIfIndex.getValue();
-
-                // compare with passed ifIndex
-                if (ifXIndex == ifIndex) {
-                    // Found match! Get the ifName
-                    snmpIfName = (SnmpOctetString) ifXEntry.get(IfXTableEntry.IF_NAME);
-                    break;
-                }
-
-            }
+        if (hasIfXTable()) {
+            snmpIfName = m_ifXTable.getIfName(ifIndex);
         }
 
         // Debug
         if (snmpIfName != null) {
-            if (log.isDebugEnabled())
-                log.debug("getIfName: ifIndex " + ifIndex + " has ifName '" + snmpIfName);
+            log().debug("getIfName: ifIndex " + ifIndex + " has ifName '" + snmpIfName);
         } else {
-            if (log.isDebugEnabled())
-                log.debug("getIfName: no ifName found for ifIndex " + ifIndex);
+            log().debug("getIfName: no ifName found for ifIndex " + ifIndex);
         }
 
         return snmpIfName;
@@ -408,44 +257,23 @@ final class IfSnmpCollector implements Runnable {
     /**
      * 
      */
-    SnmpOctetString getIfAlias(int ifIndex) {
-        Category log = ThreadCategory.getInstance(getClass());
-        SnmpOctetString snmpIfAlias = null;
+    String getIfAlias(int ifIndex) {
+        String snmpIfAlias = null;
 
-        if (m_ifXTable != null && !m_ifXTable.failed()) {
-            // Find ifXTable entry with matching ifIndex
-            //
-            Iterator iter = m_ifXTable.getEntries().iterator();
-            while (iter.hasNext()) {
-                IfXTableEntry ifXEntry = (IfXTableEntry) iter.next();
-
-                int ifXIndex = -1;
-                SnmpInt32 snmpIfIndex = (SnmpInt32) ifXEntry.get(IfXTableEntry.IF_INDEX);
-                if (snmpIfIndex != null)
-                    ifXIndex = snmpIfIndex.getValue();
-
-                // compare with passed ifIndex
-                if (ifXIndex == ifIndex) {
-                    // Found match! Get the ifAlias
-                    snmpIfAlias = (SnmpOctetString) ifXEntry.get(IfXTableEntry.IF_ALIAS);
-                    break;
-                }
-
-            }
+        if (hasIfXTable()) {
+            snmpIfAlias = m_ifXTable.getIfIndex(ifIndex);
         }
 
         // Debug
         if (snmpIfAlias != null) {
-            if (log.isDebugEnabled())
-                log.debug("getIfAlias: ifIndex " + ifIndex + " has ifAlias '" + snmpIfAlias + "'");
+            log().debug("getIfAlias: ifIndex " + ifIndex + " has ifAlias '" + snmpIfAlias + "'");
         } else {
-            if (log.isDebugEnabled())
-                log.debug("getIfAlias: no ifAlias found for ifIndex " + ifIndex);
+            log().debug("getIfAlias: no ifAlias found for ifIndex " + ifIndex);
         }
 
         return snmpIfAlias;
     }
-    
+
     /**
      * <p>
      * Preforms the collection for the targeted internet address. The success or
@@ -460,60 +288,53 @@ final class IfSnmpCollector implements Runnable {
      * 
      */
     public void run() {
-        Category log = ThreadCategory.getInstance(getClass());
-
         SnmpSession session = null;
         try {
-            log.debug("IfSnmpCollector.run: address: " + m_address.getHostAddress() + " Snmp version: " + ((m_peer.getParameters().getVersion() == SnmpSMI.SNMPV1) ? "SNMPv1" : "SNMPv2"));
+            SnmpPeer m_peer = SnmpPeerFactory.getInstance().getPeer(m_address);
+            log().debug("IfSnmpCollector.run: address: " + m_address.getHostAddress() + " Snmp version: " + ((m_peer.getParameters().getVersion() == SnmpSMI.SNMPV1) ? "SNMPv1" : "SNMPv2"));
             session = new SnmpSession(m_peer);
 
-            BarrierSignaler signaler = new BarrierSignaler(3);
-            m_sysGroup = new SystemGroup(session, signaler);
-            m_ifTable = new IfTable(session, signaler, m_peer.getParameters().getVersion());
-            m_ipAddrTable = new IpAddrTable(session, signaler, m_peer.getParameters().getVersion());
+            BarrierSignaler signaler = new BarrierSignaler(4);
+            m_sysGroup = new SystemGroup(session, m_address, signaler);
+            m_ifTable = new IfTable(session, m_address, signaler, m_peer.getParameters().getVersion());
+            m_ipAddrTable = new IpAddrTable(session, m_address, signaler, m_peer.getParameters().getVersion());
+            m_ifXTable = new IfXTable(session, m_address, signaler, m_peer.getParameters().getVersion());
 
             try {
                 // wait a maximum of five minutes!
                 //
+                // FIXME: Why do we do this. If we are successfully processing responses shouldn't we keep going?
                 signaler.waitFor(300000);
             } catch (InterruptedException e) {
                 m_sysGroup = null;
                 m_ifTable = null;
                 m_ipAddrTable = null;
+                m_ifXTable = null;
 
-                log.warn("IfSnmpCollector: collection interrupted, exiting", e);
+                log().warn("IfSnmpCollector: collection interrupted, exiting", e);
                 return;
             }
 
             // Log any failures
             //
             if (!this.hasSystemGroup())
-                log.info("IfSnmpCollector: failed to collect System group for " + m_address.getHostAddress());
+                log().info("IfSnmpCollector: failed to collect System group for " + m_address.getHostAddress());
             if (!this.hasIfTable())
-                log.info("IfSnmpCollector: failed to collect ifTable for " + m_address.getHostAddress());
+                log().info("IfSnmpCollector: failed to collect ifTable for " + m_address.getHostAddress());
             if (!this.hasIpAddrTable())
-                log.info("IfSnmpCollector: failed to collect ipAddrTable for " + m_address.getHostAddress());
+                log().info("IfSnmpCollector: failed to collect ipAddrTable for " + m_address.getHostAddress());
+            if (!this.hasIfXTable())
+                log().info("IfSnmpCollector: failed to collect ifXTable for " + m_address.getHostAddress());
 
-            // If ifTable collection succeeded go after the ifXTable
-            //
-            if (this.hasIfTable()) {
-                signaler = new BarrierSignaler(1);
-                m_ifXTable = new IfXTable(session, signaler, m_peer.getParameters().getVersion());
-
-                try {
-                    signaler.waitFor(300000);
-                } catch (InterruptedException e) {
-                    m_ifXTable = null;
-
-                    log.warn("IfSnmpCollector: ifXTable collection interrupted, exiting", e);
-                    return;
-                }
-            }
         } catch (java.net.SocketException e) {
-            log.error("Failed to create SNMP session to connect to host " + m_address.getHostAddress(), e);
+            log().error("Failed to create SNMP session to connect to host " + m_address.getHostAddress(), e);
         } finally {
             if (session != null)
                 session.close();
         }
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 }

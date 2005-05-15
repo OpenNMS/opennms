@@ -40,13 +40,18 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.protocols.snmp.SnmpInt32;
 import org.opennms.protocols.snmp.SnmpObjectId;
+import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpPduBulk;
 import org.opennms.protocols.snmp.SnmpPduPacket;
 import org.opennms.protocols.snmp.SnmpPduRequest;
+import org.opennms.protocols.snmp.SnmpUInt32;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
@@ -78,7 +83,7 @@ import org.opennms.protocols.snmp.SnmpVarBind;
  * 
  * @see <A HREF="http://www.ietf.org/rfc/rfc1573.txt">RFC1573 </A>
  */
-public final class IfXTableEntry extends java.util.TreeMap {
+public final class IfXTableEntry {
     /**
      * Lookup strings for specific table entries
      */
@@ -199,6 +204,8 @@ public final class IfXTableEntry extends java.util.TreeMap {
      * @see #TABLE_OID
      */
     public static final SnmpObjectId ROOT = new SnmpObjectId(TABLE_OID);
+
+    private Map m_responseMap = new TreeMap();
 
     /**
      * <P>
@@ -423,4 +430,41 @@ public final class IfXTableEntry extends java.util.TreeMap {
     public static int getElementListSize() {
         return ms_elemList.length;
     }
+    
+    public Integer getIfIndex() {
+        return getInt32(IfXTableEntry.IF_INDEX);
+    }
+    
+    public String getIfName() {
+        return getDisplayString(IfXTableEntry.IF_NAME);
+    }
+    
+    public String getIfAlias() {
+        return getDisplayString(IfXTableEntry.IF_ALIAS);
+    }
+    
+    private Integer getInt32(String key) {
+        return SnmpInt32.toInteger((SnmpInt32) get(key));
+    }
+    
+    private Long getUInt32(String key) {
+        return SnmpUInt32.toLong((SnmpUInt32) get(key));
+    }
+    
+    private String getDisplayString(String key) {
+        return SnmpOctetString.toDisplayString((SnmpOctetString) get(key));
+    }
+
+    private String getHexString(String key) {
+        return SnmpOctetString.toHexString((SnmpOctetString) get(key));
+    }
+
+    private Object get(String key) {
+        return m_responseMap.get(key);
+    }
+    
+    private void put(String key, Object value) {
+        m_responseMap.put(key, value);
+    }
+
 }

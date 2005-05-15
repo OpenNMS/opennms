@@ -56,10 +56,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
 import org.opennms.netmgt.capsd.snmp.IpAddrTable;
 import org.opennms.netmgt.config.CapsdConfigFactory;
-import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.protocols.snmp.SnmpInt32;
-import org.opennms.protocols.snmp.SnmpPeer;
-import org.opennms.protocols.snmp.SnmpSMI;
 
 /**
  * This class is designed to collect all the relevant information from the
@@ -369,8 +365,6 @@ final class IfCollector implements Runnable {
             SupportedProtocol proto = (SupportedProtocol) iter.next();
             if (proto.getProtocolName().equalsIgnoreCase("snmp")) {
                 isSnmp = true;
-            } else if (proto.getProtocolName().equalsIgnoreCase("snmpv2")) {
-                isSnmpV2 = true;
             } else if (proto.getProtocolName().equalsIgnoreCase("smb")) {
                 isSmb = true;
             } else if (proto.getProtocolName().equalsIgnoreCase("msexchange")) {
@@ -404,9 +398,7 @@ final class IfCollector implements Runnable {
                 log.debug("IfCollector.run: starting SNMP collection");
 
             try {
-                SnmpPeer peer = SnmpPeerFactory.getInstance().getPeer(m_target, (isSnmpV2) ? SnmpSMI.SNMPV2 : SnmpSMI.SNMPV1);
-
-                m_snmpCollector = new IfSnmpCollector(peer);
+                m_snmpCollector = new IfSnmpCollector(m_target);
                 m_snmpCollector.run();
 
                 // now probe the remaining interfaces, if any
@@ -424,13 +416,13 @@ final class IfCollector implements Runnable {
 
                         // Get the ifIndex
                         //
-                        SnmpInt32 ifIndex = (SnmpInt32) ifEntry.get(IfTableEntry.IF_INDEX);
+                        Integer ifIndex = ifEntry.getIfIndex();
                         if (ifIndex == null)
                             continue;
 
                         // Get list of all IP addresses for the current ifIndex
                         //
-                        List ipAddrs = IpAddrTable.getIpAddresses(m_snmpCollector.getIpAddrTable().getEntries(), ifIndex.getValue());
+                        List ipAddrs = IpAddrTable.getIpAddresses(m_snmpCollector.getIpAddrTable().getEntries(), ifIndex.intValue());
                         if (ipAddrs == null || ipAddrs.size() == 0) {
                             // Non IP interface
                             InetAddress nonIpAddr = null;
@@ -460,7 +452,7 @@ final class IfCollector implements Runnable {
 
                             // now find the ifType
                             //
-                            SnmpInt32 ifType = (SnmpInt32) ifEntry.get(IfTableEntry.IF_TYPE);
+                            Integer ifType = ifEntry.getIfType();
 
                             // lookup of if type failed, next!
                             //

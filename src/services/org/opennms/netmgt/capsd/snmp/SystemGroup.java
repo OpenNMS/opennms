@@ -38,6 +38,10 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
+import java.net.InetAddress;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
@@ -64,7 +68,7 @@ import org.opennms.protocols.snmp.SnmpVarBind;
  * 
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
-public final class SystemGroup extends java.util.TreeMap implements SnmpHandler {
+public final class SystemGroup implements SnmpHandler {
     //
     // Lookup strings for specific table entries
     //
@@ -79,7 +83,7 @@ public final class SystemGroup extends java.util.TreeMap implements SnmpHandler 
     public final static String SYS_LOCATION = "sysLocation";
 
     public final static String SYS_CONTACT = "sysContact";
-
+    
     /**
      * <P>
      * The keys that will be supported by default from the TreeMap base class.
@@ -225,6 +229,8 @@ public final class SystemGroup extends java.util.TreeMap implements SnmpHandler 
      * </P>
      */
     private Signaler m_signal;
+    
+    private Map m_responseMap;
 
     /**
      * <P>
@@ -236,7 +242,7 @@ public final class SystemGroup extends java.util.TreeMap implements SnmpHandler 
      * @exception java.lang.UnsupportedOperationException
      *                Always thrown from this method since it is not supported.
      * 
-     * @see #SystemGroup(SnmpSession, Signaler)
+     * @see #SystemGroup(SnmpSession, InetAddress, Signaler)
      */
     private SystemGroup() throws UnsupportedOperationException {
         throw new UnsupportedOperationException("Default Constructor not supported");
@@ -249,19 +255,21 @@ public final class SystemGroup extends java.util.TreeMap implements SnmpHandler 
      * store by the object. When all the data has been collected the passed
      * signaler object is <EM>notified</em> using the notifyAll() method.
      * </P>
-     * 
      * @param session
      *            The SNMP session with the remote agent.
+     * @param address TODO
      * @param signaler
      *            The object signaled when data collection is done.
      * 
      */
-    public SystemGroup(SnmpSession session, Signaler signaler) {
+    public SystemGroup(SnmpSession session, InetAddress address, Signaler signaler) {
         super();
 
         m_error = false;
 
         m_signal = signaler;
+        m_responseMap = new TreeMap();
+        
         SnmpPduPacket pdu = getPdu();
         pdu.setRequestId(SnmpPduPacket.nextSequence());
         session.send(pdu, this);
@@ -484,53 +492,32 @@ public final class SystemGroup extends java.util.TreeMap implements SnmpHandler 
         return m_error;
     }
 
-    /**
-     * This method takes an SnmpOctetString and replaces any unprintable
-     * characters with ASCII period ('.') and returns the resulting character
-     * string. Special case in which the supplied SnmpOctetString consists of a
-     * single ASCII Null byte is also handled. In this special case an empty
-     * string is returned.
-     * 
-     * NOTE: A character is considered unprintable if its decimal value falls
-     * outside of the range: 32 - 126.
-     * 
-     * @param octetString
-     *            SnmpOctetString from which to generate the String
-     * 
-     * @return a Java String object created from the octet string's byte array.
-     */
-    public static String getPrintableString(SnmpOctetString octetString) {
-        // Valid SnmpOctetString object
-        if (octetString == null) {
-            return null;
-        }
+    public String getSysName() {
+        return SnmpOctetString.toDisplayString((SnmpOctetString) get(SystemGroup.SYS_NAME));
+    }
 
-        byte bytes[] = octetString.getString();
+    public String getSysObjectID() {
+        return (get(SystemGroup.SYS_OBJECTID) == null ? null : get(SystemGroup.SYS_OBJECTID).toString());
+    }
 
-        // Sanity check
-        if (bytes == null || bytes.length == 0) {
-            return null;
-        }
+    public String getSysDescr() {
+        return SnmpOctetString.toDisplayString((SnmpOctetString) get(SystemGroup.SYS_DESCR));
+    }
 
-        // Check for special case where byte array contains a single
-        // ASCII null character
-        if (bytes.length == 1 && bytes[0] == 0) {
-            return null;
-        }
+    public String getSysLocation() {
+        return SnmpOctetString.toDisplayString((SnmpOctetString) get(SystemGroup.SYS_LOCATION));
+    }
 
-        // Replace all unprintable chars (chars outside of
-        // decimal range 32 - 126 inclusive) with an
-        // ASCII period char (decimal 46).
-        // 
-        for (int i = 0; i < bytes.length; i++) {
-            if (bytes[i] < 32 || bytes[i] > 126) {
-                bytes[i] = 46; // ASCII period '.'
-            }
-        }
-
-        // Create string, trim any white-space and return
-        String result = new String(bytes);
-        return result.trim();
+    public String getSysContact() {
+        return SnmpOctetString.toDisplayString((SnmpOctetString) get(SystemGroup.SYS_CONTACT));
+    }
+    
+    private Object get(String key) {
+        return m_responseMap.get(key);
+    }
+    
+    private void put(String key, Object value) {
+        m_responseMap.put(key, value);
     }
 
 }

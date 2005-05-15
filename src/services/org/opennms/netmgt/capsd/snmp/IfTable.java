@@ -38,7 +38,9 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Category;
@@ -226,15 +228,15 @@ public final class IfTable implements SnmpHandler {
      * there is an error in the collection the signaler object is <EM>notified
      * </EM> to inform other threads.
      * </P>
-     * 
      * @param session
      *            The session with the remote agent.
+     * @param address TODO
      * @param signaler
      *            The object to notify waiters.
      * 
      * @see IfTableEntry
      */
-    public IfTable(SnmpSession session, Signaler signaler, int version) {
+    public IfTable(SnmpSession session, InetAddress address, Signaler signaler, int version) {
         m_signal = signaler;
         m_entries = new ArrayList(2); // not synchronized.
         m_error = false;
@@ -618,5 +620,43 @@ public final class IfTable implements SnmpHandler {
             buf.append(m_hexDigit[(b & 0xf)]); // based upon US-ASCII
         }
         return buf.toString().toUpperCase();
+    }
+
+    public int getAdminStatus(int ifIndex) {
+        if (getEntries() == null)
+            return -1;
+        Iterator i = getEntries().iterator();
+        while (i.hasNext()) {
+            IfTableEntry entry = (IfTableEntry) i.next();
+            Integer ndx = entry.getIfIndex();
+            if (ndx != null && ndx.intValue() == ifIndex) {
+                // found it
+                // extract the admin status
+                //
+                Integer ifStatus = entry.getIfAdminStatus();
+                if (ifStatus != null)
+                    return ifStatus.intValue();
+            }
+        }
+        return -1;
+    }
+
+    public int getIfType(int ifIndex) {
+        if (getEntries() == null)
+            return -1;
+        Iterator i = getEntries().iterator();
+        while (i.hasNext()) {
+            IfTableEntry entry = (IfTableEntry) i.next();
+            Integer ndx = entry.getIfIndex();
+            if (ndx != null && ndx.intValue() == ifIndex) {
+                // found it
+                // extract the ifType
+                //
+                Integer ifType = entry.getIfType();
+                if (ifType != null)
+                    return ifType.intValue();
+            }
+        }
+        return -1;
     }
 }

@@ -47,10 +47,7 @@ import java.util.List;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.utils.Signaler;
-import org.opennms.protocols.snmp.SnmpBadConversionException;
 import org.opennms.protocols.snmp.SnmpHandler;
-import org.opennms.protocols.snmp.SnmpIPAddress;
-import org.opennms.protocols.snmp.SnmpInt32;
 import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpPduBulk;
 import org.opennms.protocols.snmp.SnmpPduPacket;
@@ -180,15 +177,15 @@ public class IpAddrTable implements SnmpHandler {
      * there is an error in the collection the signaler object is <EM>notified
      * </EM> to inform other threads.
      * </P>
-     * 
      * @param session
      *            The session with the remote agent.
+     * @param address TODO
      * @param signaler
      *            The object to notify waiters.
      * 
      * @see IpAddrTableEntry
      */
-    public IpAddrTable(SnmpSession session, Signaler signaler, int version) {
+    public IpAddrTable(SnmpSession session, InetAddress address, Signaler signaler, int version) {
         m_signal = signaler;
         m_entries = new ArrayList();
         m_error = false;
@@ -465,32 +462,16 @@ public class IpAddrTable implements SnmpHandler {
         while (iter.hasNext()) {
             IpAddrTableEntry ipAddrEntry = (IpAddrTableEntry) iter.next();
 
-            SnmpInt32 snmpIpAddrIndex = (SnmpInt32) ipAddrEntry.get(IpAddrTableEntry.IP_ADDR_IF_INDEX);
+            Integer snmpIpAddrIndex = ipAddrEntry.getIpAdEntIfIndex();
 
             if (snmpIpAddrIndex == null) {
                 continue;
             }
 
-            int ipAddrIndex = snmpIpAddrIndex.getValue();
+            int ipAddrIndex = snmpIpAddrIndex.intValue();
 
             if (ipAddrIndex == ifIndex) {
-                SnmpIPAddress snmpAddr = (SnmpIPAddress) ipAddrEntry.get(IpAddrTableEntry.IP_ADDR_ENT_ADDR);
-
-                if (snmpAddr != null /*
-                                         * &&
-                                         * !snmpAddr.toString().startsWith("127")
-                                         */) {
-                    InetAddress addr = null;
-                    try {
-                        addr = snmpAddr.convertToIpAddress();
-                    } catch (SnmpBadConversionException e) {
-                        log.warn("getIpAddress: Unable to convert SnmpIPAddress " + snmpAddr.toString() + " to InetAddress.", e);
-                        addr = null;
-                    }
-
-                    return addr;
-                }
-
+                return ipAddrEntry.getIpAdEntAddr();
             }
 
         }
@@ -520,19 +501,12 @@ public class IpAddrTable implements SnmpHandler {
         Iterator i = ipAddrEntries.iterator();
         while (i.hasNext()) {
             IpAddrTableEntry entry = (IpAddrTableEntry) i.next();
-            SnmpInt32 ndx = (SnmpInt32) entry.get(IpAddrTableEntry.IP_ADDR_IF_INDEX);
-            if (ndx != null && ndx.getValue() == ifIndex) {
-                // found it
-                // extract the address
-                //
-                SnmpIPAddress ifAddr = (SnmpIPAddress) entry.get(IpAddrTableEntry.IP_ADDR_ENT_ADDR);
+            Integer ndx = entry.getIpAdEntIfIndex();
+            if (ndx != null && ndx.intValue() == ifIndex) {
+                
+                InetAddress ifAddr = entry.getIpAdEntAddr();
                 if (ifAddr != null) {
-                    try {
-                        addresses.add(ifAddr.convertToIpAddress());
-                    } catch (SnmpBadConversionException e) {
-                        Category log = ThreadCategory.getInstance(IpAddrTable.class);
-                        log.error("Failed to convert snmp collected address: " + ifAddr, e);
-                    }
+                    addresses.add(ifAddr);
                 }
             }
         }
@@ -559,19 +533,12 @@ public class IpAddrTable implements SnmpHandler {
         Iterator i = ipAddrEntries.iterator();
         while (i.hasNext()) {
             IpAddrTableEntry entry = (IpAddrTableEntry) i.next();
-            SnmpInt32 ndx = (SnmpInt32) entry.get(IpAddrTableEntry.IP_ADDR_IF_INDEX);
+            Integer ndx = entry.getIpAdEntIfIndex();
             if (ndx != null) {
-                // extract the addresses
-                //
-                ThreadCategory.getInstance(IpAddrTable.class).debug("Running new and improved (read working) getIpAddresses");
-                SnmpIPAddress ifAddr = (SnmpIPAddress) entry.get(IpAddrTableEntry.IP_ADDR_ENT_ADDR);
+
+                InetAddress ifAddr = entry.getIpAdEntAddr();
                 if (ifAddr != null) {
-                    try {
-                        addresses.add(ifAddr.convertToIpAddress());
-                    } catch (SnmpBadConversionException e) {
-                        Category log = ThreadCategory.getInstance(IpAddrTable.class);
-                        log.error("Failed to convert snmp collected address: " + ifAddr, e);
-                    }
+                    addresses.add(ifAddr);
                 }
 
             }
@@ -601,10 +568,10 @@ public class IpAddrTable implements SnmpHandler {
         Iterator iter = ipAddrEntries.iterator();
         while (iter.hasNext()) {
             IpAddrTableEntry ipAddrEntry = (IpAddrTableEntry) iter.next();
-            SnmpIPAddress snmpAddr = (SnmpIPAddress) ipAddrEntry.get(IpAddrTableEntry.IP_ADDR_ENT_ADDR);
-            if (((String) snmpAddr.toString()).equals(ipAddress)) {
-                SnmpInt32 snmpIpAddrIndex = (SnmpInt32) ipAddrEntry.get(IpAddrTableEntry.IP_ADDR_IF_INDEX);
-                return snmpIpAddrIndex.getValue();
+            InetAddress snmpAddr = ipAddrEntry.getIpAdEntAddr();
+            if (ipAddress.equals(snmpAddr.toString())) {
+                Integer snmpIpAddrIndex = ipAddrEntry.getIpAdEntIfIndex();
+                return snmpIpAddrIndex.intValue();
             } else
                 continue;
         }
@@ -636,22 +603,67 @@ public class IpAddrTable implements SnmpHandler {
         Iterator iter = ipAddrEntries.iterator();
         while (iter.hasNext()) {
             IpAddrTableEntry ipAddrEntry = (IpAddrTableEntry) iter.next();
-            SnmpInt32 snmpIpAddrIndex = (SnmpInt32) ipAddrEntry.get(IpAddrTableEntry.IP_ADDR_IF_INDEX);
+            Integer snmpIpAddrIndex = ipAddrEntry.getIpAdEntIfIndex();
             if (snmpIpAddrIndex == null) {
                 continue;
             }
 
-            int ipAddrIndex = snmpIpAddrIndex.getValue();
+            int ipAddrIndex = snmpIpAddrIndex.intValue();
             if (ipAddrIndex == ifIndex) {
-                SnmpIPAddress snmpAddr = (SnmpIPAddress) ipAddrEntry.get(IpAddrTableEntry.IP_ADDR_ENT_NETMASK);
-                if (snmpAddr != null) {
-                    return snmpAddr.toString();
-                } else {
-                    return null;
-                }
+                InetAddress snmpAddr = ipAddrEntry.getIpAdEntNetMask();
+                return (snmpAddr == null ? null : snmpAddr.getHostAddress());
             }
         }
 
         return null;
+    }
+
+    public InetAddress[] getIfAddressAndMask(int ifIndex) {
+        if (getEntries() == null)
+            return null;
+        
+        Iterator i = getEntries().iterator();
+        while (i.hasNext()) {
+            IpAddrTableEntry entry = (IpAddrTableEntry) i.next();
+            Integer ndx = entry.getIpAdEntIfIndex();
+            if (ndx != null && ndx.intValue() == ifIndex) {
+                // found it
+                // extract the address
+                //
+                InetAddress[] pair = new InetAddress[2];
+                pair[0] = entry.getIpAdEntAddr();
+                pair[1] = entry.getIpAdEntNetMask();
+                return pair;
+            }
+        }
+        return null;
+    }
+
+    public int getIfIndex(InetAddress address) {
+        if (getEntries() == null) {
+            return -1;
+        }
+        if (log().isDebugEnabled())
+            log().debug("getIfIndex: num ipAddrTable entries: " + getEntries().size());
+        Iterator i = getEntries().iterator();
+        while (i.hasNext()) {
+            IpAddrTableEntry entry = (IpAddrTableEntry) i.next();
+            InetAddress ifAddr = entry.getIpAdEntAddr();
+            if (ifAddr != null && ifAddr.equals(address)) {
+                // found it
+                // extract the ifIndex
+                //
+                Integer ndx = entry.getIpAdEntIfIndex();
+                log().debug("getIfIndex: got a match for address " + address.getHostAddress() + " index: " + ndx);
+                if (ndx != null)
+                    return ndx.intValue();
+            }
+        }
+        log().debug("getIfIndex: no matching ipAddrTable entry for " + address.getHostAddress());
+        return -1;
+    }
+
+    private static Category log() {
+        return ThreadCategory.getInstance(IpAddrTable.class);
     }
 }

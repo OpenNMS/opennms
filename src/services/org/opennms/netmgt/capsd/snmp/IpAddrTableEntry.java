@@ -34,13 +34,21 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
+import java.net.InetAddress;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.protocols.snmp.SnmpIPAddress;
+import org.opennms.protocols.snmp.SnmpInt32;
 import org.opennms.protocols.snmp.SnmpObjectId;
+import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpPduBulk;
 import org.opennms.protocols.snmp.SnmpPduPacket;
 import org.opennms.protocols.snmp.SnmpPduRequest;
 import org.opennms.protocols.snmp.SnmpSMI;
+import org.opennms.protocols.snmp.SnmpUInt32;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
@@ -66,7 +74,7 @@ import org.opennms.protocols.snmp.SnmpVarBind;
  * @see IpAddrTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
-public final class IpAddrTableEntry extends java.util.TreeMap {
+public final class IpAddrTableEntry {
     // Lookup strings for specific table entries
     //
     public final static String IP_ADDR_ENT_ADDR = "ipAdEntAddr";
@@ -128,6 +136,8 @@ public final class IpAddrTableEntry extends java.util.TreeMap {
      * @see #TABLE_OID
      */
     public static final SnmpObjectId ROOT = new SnmpObjectId(TABLE_OID);
+
+    private Map m_responseMap = new TreeMap();
 
     /**
      * <P>
@@ -300,5 +310,52 @@ public final class IpAddrTableEntry extends java.util.TreeMap {
     public static int getElementListSize() {
         return ms_elemList.length;
     }
+    
+    public InetAddress getIpAdEntAddr() {
+        return getIPAddress(IpAddrTableEntry.IP_ADDR_ENT_ADDR);
+    }
+
+    public Integer getIpAdEntIfIndex() {
+        return getInt32(IpAddrTableEntry.IP_ADDR_IF_INDEX);
+    }
+
+    public InetAddress getIpAdEntNetMask() {
+        return getIPAddress(IpAddrTableEntry.IP_ADDR_ENT_NETMASK);
+    }
+    
+    public InetAddress getIpAdEntBcastAddr() {
+        return getIPAddress(IpAddrTableEntry.IP_ADDR_ENT_BCASTADDR);
+    }
+
+    private InetAddress getIPAddress(String key) {
+        return SnmpIPAddress.toInetAddress((SnmpIPAddress) get(key));
+    }
+    
+    private Integer getInt32(String key) {
+        return SnmpInt32.toInteger((SnmpInt32) get(key));
+    }
+    
+    private Long getUInt32(String key) {
+        return SnmpUInt32.toLong((SnmpUInt32) get(key));
+    }
+    
+    private String getDisplayString(String key) {
+        return SnmpOctetString.toDisplayString((SnmpOctetString) get(key));
+    }
+
+    private String getHexString(String key) {
+        return SnmpOctetString.toHexString((SnmpOctetString) get(key));
+    }
+
+    private Object get(String key) {
+        return m_responseMap.get(key);
+    }
+    
+    private void put(String key, Object value) {
+        m_responseMap.put(key, value);
+    }
+
+
+
 
 }
