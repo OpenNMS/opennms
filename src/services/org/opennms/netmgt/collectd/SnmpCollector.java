@@ -266,7 +266,7 @@ final class SnmpCollector implements ServiceCollector {
         // Initialize the SnmpPeerFactory
         //
         try {
-            SnmpPeerFactory.reload();
+            SnmpPeerFactory.init();
         } catch (MarshalException ex) {
             if (log.isEnabledFor(Priority.FATAL))
                 log.fatal("initialize: Failed to load SNMP configuration", ex);

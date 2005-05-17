@@ -252,7 +252,7 @@ public abstract class SnmpPduPacket extends Object implements SnmpSyntax, Clonea
         if (sm_seq == 0) {
             Date seed = new Date();
             Random rnd = new Random(seed.getTime());
-            sm_seq = rnd.nextInt();
+            sm_seq = rnd.nextInt(1000000);
         }
         return sm_seq++;
     }
