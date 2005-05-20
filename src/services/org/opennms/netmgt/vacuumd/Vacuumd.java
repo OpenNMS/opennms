@@ -353,11 +353,13 @@ public class Vacuumd extends ServiceDaemon implements Runnable {
     
     private void scheduleAutomation(Automation auto) {
         
-        AutomationProcessor ap = new AutomationProcessor();
-        ap.setAutomation(auto);
-        Schedule s = new Schedule(ap, new AutomationInterval(auto.getInterval()), m_scheduler);
-        ap.setSchedule(s);
-        s.schedule();
+        if (auto.getActive()) {
+            AutomationProcessor ap = new AutomationProcessor();
+            ap.setAutomation(auto);
+            Schedule s = new Schedule(ap, new AutomationInterval(auto.getInterval()), m_scheduler);
+            ap.setSchedule(s);
+            s.schedule();
+        }
     }
 
 }

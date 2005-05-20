@@ -78,8 +78,8 @@ public class VacuumdTest extends OpenNMSTestCase {
         "       AND eventtime &lt; now() - interval \'6 weeks\';\n" + 
         "    </statement>\n" +
         "    <automations>\n" + 
-        "           <automation name=\"autoEscalate\" interval=\"10000\" trigger-name=\"selectWithCounter\" action-name=\"escalate\" />\n" + 
-        "           <automation name=\"cleanUpAlarms\" interval=\"300000\" action-name=\"deleteDayOldAlarms\" />\n" + 
+        "           <automation name=\"autoEscalate\" interval=\"10000\" trigger-name=\"selectWithCounter\" action-name=\"escalate\" active=\"true\" />\n" + 
+        "           <automation name=\"cleanUpAlarms\" interval=\"300000\" action-name=\"deleteDayOldAlarms\" active=\"true\" />\n" + 
         "    </automations>\n" + 
         "    <triggers>\n" + 
         "           <trigger name=\"selectAll\" operator=\"&gt;=\" row-count=\"1\" >\n" + 

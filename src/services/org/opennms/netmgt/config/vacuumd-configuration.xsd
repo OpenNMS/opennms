@@ -47,6 +47,8 @@
             <attribute name="trigger-name" type="string" use="optional" />
             <!-- reference an action from the collection of actions -->
             <attribute name="action-name" type="string" use="required" />
+            <!-- enable/disable this automation -->
+            <attribute name="active" type="boolean" use="optional" />
         </complexType>
     </element>
     <!-- A query to the database with a resultset used for actions  -->

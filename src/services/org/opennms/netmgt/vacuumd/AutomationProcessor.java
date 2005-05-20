@@ -179,12 +179,12 @@ public class AutomationProcessor implements ReadyRunnable {
 
         String triggerSQL = null;
 
-        if (auto.getTriggerName() != null) {
-            triggerSQL = VacuumdConfigFactory.getInstance().getTrigger(auto.getTriggerName()).getStatement().getContent();
+        if (hasTrigger(auto)) {
+            triggerSQL = getTriggerSQL(auto);
             hasTrigger = true;
         }
 
-        String actionSQL = VacuumdConfigFactory.getInstance().getAction(auto.getActionName()).getStatement().getContent();
+        String actionSQL = getAutomationSQL(auto);
         
         if (getLog().isDebugEnabled()) {
             getLog().debug("runAutomation: "+auto.getName()+" trigger statement is: "+triggerSQL);
@@ -283,6 +283,18 @@ public class AutomationProcessor implements ReadyRunnable {
         }
         
         return actionStatus;
+    }
+
+    private String getAutomationSQL(Automation auto) {
+        return VacuumdConfigFactory.getInstance().getAction(auto.getActionName()).getStatement().getContent();
+    }
+
+    private String getTriggerSQL(Automation auto) {
+        return VacuumdConfigFactory.getInstance().getTrigger(auto.getTriggerName()).getStatement().getContent();
+    }
+
+    private boolean hasTrigger(Automation auto) {
+        return auto.getTriggerName() != null;
     }
 
     /**
