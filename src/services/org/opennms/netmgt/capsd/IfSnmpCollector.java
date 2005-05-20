@@ -291,7 +291,7 @@ final class IfSnmpCollector implements Runnable {
         SnmpSession session = null;
         try {
             SnmpPeer m_peer = SnmpPeerFactory.getInstance().getPeer(m_address);
-            log().debug("IfSnmpCollector.run: address: " + m_address.getHostAddress() + " Snmp version: " + ((m_peer.getParameters().getVersion() == SnmpSMI.SNMPV1) ? "SNMPv1" : "SNMPv2"));
+            log().debug("IfSnmpCollector.run: address: " + m_address.getHostAddress() + " Snmp version: " + SnmpSMI.getVersionString(m_peer.getParameters().getVersion()));
             session = new SnmpSession(m_peer);
 
             BarrierSignaler signaler = new BarrierSignaler(4);

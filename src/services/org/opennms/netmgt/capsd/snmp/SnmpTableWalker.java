@@ -144,7 +144,7 @@ public abstract class SnmpTableWalker implements SnmpHandler {
         
         try {
             
-            log().debug(getTableName()+": snmpReceivedPdu: got SNMP response, current version: " + ((m_version == SnmpSMI.SNMPV1) ? "SNMPv1" : "SNMPv2"));
+            log().debug(getTableName()+": snmpReceivedPdu: got SNMP response, current version: " + SnmpSMI.getVersionString(m_version));
             
             checkForResponsePdu(command);
             checkForPduError(pdu);

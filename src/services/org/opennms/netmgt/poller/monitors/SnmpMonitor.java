@@ -186,7 +186,7 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
         SnmpPeer peer = SnmpPeerFactory.getInstance().getPeer(ipAddr, SnmpSMI.SNMPV1);
         if (log.isDebugEnabled()) {
             String nl = System.getProperty("line.separator");
-            log.debug("initialize: SnmpPeer configuration: address: " + peer.getPeer() + nl + "      version: " + ((peer.getParameters().getVersion() == SnmpSMI.SNMPV1) ? "SNMPv1" : "SNMPv2") + nl + "      timeout: " + peer.getTimeout() + nl + "      retries: " + peer.getRetries() + nl + "      read commString: " + peer.getParameters().getReadCommunity() + nl + "      write commString: " + peer.getParameters().getWriteCommunity());
+            log.debug("initialize: SnmpPeer configuration: address: " + peer.getPeer() + nl + "      version: " + SnmpSMI.getVersionString(peer.getParameters().getVersion()) + nl + "      timeout: " + peer.getTimeout() + nl + "      retries: " + peer.getRetries() + nl + "      read commString: " + peer.getParameters().getReadCommunity() + nl + "      write commString: " + peer.getParameters().getWriteCommunity());
         }
 
         // Add the snmp config object as an attribute of the interface
@@ -257,7 +257,7 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
             peer.setPort(port);
             if (log.isDebugEnabled()) {
                 String nl = System.getProperty("line.separator");
-                log.debug("SnmpMonitor.poll: SnmpPeer configuration: address: " + peer.getPeer() + nl + "      version: " + ((peer.getParameters().getVersion() == SnmpSMI.SNMPV1) ? "SNMPv1" : "SNMPv2") + nl + "      timeout: " + peer.getTimeout() + nl + "      retries: " + peer.getRetries() + nl + "      read commString: " + peer.getParameters().getReadCommunity() + nl + "      write commString: " + peer.getParameters().getWriteCommunity());
+                log.debug("SnmpMonitor.poll: SnmpPeer configuration: address: " + peer.getPeer() + nl + "      version: " + SnmpSMI.getVersionString(peer.getParameters().getVersion()) + nl + "      timeout: " + peer.getTimeout() + nl + "      retries: " + peer.getRetries() + nl + "      read commString: " + peer.getParameters().getReadCommunity() + nl + "      write commString: " + peer.getParameters().getWriteCommunity());
             }
             session = new SnmpSession(peer);
         } catch (SocketException e) {

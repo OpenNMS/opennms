@@ -170,4 +170,8 @@ public class SnmpSMI {
      * The value for a SNMP V2 protocol session.
      */
     public static final int SNMPV2 = 1;
+
+    public static String getVersionString(int version) {
+        return ((version == SNMPV1) ? "SNMPv1" : "SNMPv2");
+    }
 }
