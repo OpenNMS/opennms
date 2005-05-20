@@ -124,6 +124,8 @@ public class IpAddrTable implements SnmpHandler {
      */
     private List m_snmpVarBindList;
 
+    private InetAddress m_address;
+
     /**
      * <P>
      * The default constructor is marked as private and will always throw an
@@ -192,9 +194,10 @@ public class IpAddrTable implements SnmpHandler {
         m_version = version;
         m_stopAt = IpAddrTableEntry.stop_oid();
         m_snmpVarBindList = new ArrayList();
+        m_address = address;
 
         SnmpPduPacket pdu = IpAddrTableEntry.getNextPdu(version);
-        ThreadCategory.getInstance(getClass()).debug("IpAddrTable: initial pdu request id: " + pdu.getRequestId());
+        log().debug("IpAddrTable: initial pdu request id: " + pdu.getRequestId());
         session.send(pdu, this);
     }
 
@@ -242,133 +245,178 @@ public class IpAddrTable implements SnmpHandler {
      * 
      */
     public void snmpReceivedPdu(SnmpSession session, int command, SnmpPduPacket pdu) {
-        boolean doNotify = true;
-
-        Category log = ThreadCategory.getInstance(getClass());
-
-        if (log.isDebugEnabled()) {
-            log.debug("snmpReceivedPdu: got SNMP response, current version: " + ((m_version == SnmpSMI.SNMPV1) ? "SNMPv1" : "SNMPv2"));
-        }
-
-        if (command != SnmpPduPacket.RESPONSE) {
-            m_error = true;
-        } else {
-            //
-            // Check for error stored in request pdu
-            //
-            int errStatus = ((SnmpPduRequest) pdu).getErrorStatus();
-            if (errStatus != SnmpPduPacket.ErrNoError) {
-                m_error = true;
+        
+        try {
+            
+            log().debug("snmpReceivedPdu: got SNMP response, current version: " + ((m_version == SnmpSMI.SNMPV1) ? "SNMPv1" : "SNMPv2"));
+            
+            checkForResponsePdu(command);
+            checkForPduError(pdu);
+            
+            boolean done;
+            
+            if (m_version == SnmpSMI.SNMPV1){
+                done = onV1Response(session, pdu);
             } else {
-                // The last variable in the list of elements
-                // is always the first to run off the table, so
-                // we only need to check that one.
-                //
+                done = onV2Response(session, pdu);
+            }
+            if (done) {
+                signal();
+            }
+            
+        } catch (InvalidResponseException e) {
+            m_error = true;
+            log().info("Error retrieving IpAddrTable for "+m_address+": "+e.getMessage());
+            signal();
+            
+        }
+        
+    }
 
-                // GETBULK response handling
-                if (m_version == SnmpSMI.SNMPV2) {
-                    int numVarBinds = pdu.getLength();
+    private boolean onV1Response(SnmpSession session, SnmpPduPacket pdu) throws InvalidResponseException {
+        
+        // Create a new map of the interface entry
+        //
+        // The last varbind will be the first one to walk off the
+        // end
+        // of the ipAddrTable. So verify that the last entry in the
+        // received pdu is still within the scope of the
+        // IpAddrTable...
+        // if it is then create a new entry.
+        //
+        if (!isV1Finished(pdu)) {
+            processV1Pdu(pdu);
+            
+            // next pdu
+            //
+            sendV1Pdu(session, pdu);
+            return false;
+        } else {
+            return true;
+        }
+    }
 
-                    for (int x = 0; x < numVarBinds; x++) {
-                        SnmpVarBind vb = pdu.getVarBindAt(x);
+    private boolean isV1Finished(SnmpPduPacket pdu) {
+        return !(IpAddrTableEntry.ROOT.isRootOf(pdu.getVarBindAt(pdu.getLength() - 1).getName()));
+    }
 
-                        if (vb.getValue() instanceof org.opennms.protocols.snmp.SnmpV2Error) {
-                            m_error = true;
-                            if (log.isDebugEnabled())
-                                log.debug("snmpReceivedPDU: varbind: " + vb.getName() + "  error: '" + vb.getValue() + "'");
-                            break;
-                        }
-                        m_snmpVarBindList.add(vb);
-                    }
+    private void processV1Pdu(SnmpPduPacket pdu) {
+        if (log().isDebugEnabled())
+            log().debug("snmpReceivedPdu: got SNMPv1 response and still within IpAddrTable, creating new entry.");
+        processTableRow(pdu.toVarBindArray());
+    }
 
-                    if (!m_error) {
-                        // in case we did not receive all the data from the
-                        // first packet, must generate a new GETBULK packet
-                        // starting at the OID the previous one left off.
-                        //
-                        if (m_stopAt.compare(pdu.getVarBindAt(numVarBinds - 1).getName()) > 0) {
-                            SnmpObjectId id = new SnmpObjectId(pdu.getVarBindAt(numVarBinds - 1).getName());
-                            SnmpVarBind[] newvblist = { new SnmpVarBind(id) };
+    private void sendV1Pdu(SnmpSession session, SnmpPduPacket pdu) {
+        SnmpPduRequest nxt = new SnmpPduRequest(SnmpPduPacket.GETNEXT);
+        for (int x = 0; x < pdu.getLength(); x++) {
+            nxt.addVarBind(new SnmpVarBind(pdu.getVarBindAt(x).getName()));
+        }
+        nxt.setRequestId(SnmpPduPacket.nextSequence());
+        session.send(nxt, this);
+    }
 
-                            SnmpPduPacket nxt = new SnmpPduBulk(0, 10, newvblist);
-                            nxt.setRequestId(SnmpPduPacket.nextSequence());
-                            session.send(nxt, this);
-                            doNotify = false;
-                        } else {
-                            // Convert SNMP variable binding list to an array
-                            // for processing
-                            //
-                            SnmpVarBind[] tempStorage = new SnmpVarBind[m_snmpVarBindList.size()];
-                            tempStorage = (SnmpVarBind[]) m_snmpVarBindList.toArray(tempStorage);
+    private boolean onV2Response(SnmpSession session, SnmpPduPacket pdu) throws InvalidResponseException {
+        
+        processV2Pdu(pdu);
 
-                            // since the MIB does not store the number of
-                            // interfaces that have
-                            // IP addresses, the method must resort to an
-                            // alternative. By
-                            // counting the number of values found for the
-                            // ipAddrIfIndex variable,
-                            // we'll have the number of interfaces with IP's.
-                            // Each IP-bound
-                            // interface will have a value for each MIB variable
-                            // listed
-                            //
-                            int numInterfaces = 0;
-                            SnmpObjectId ipAddrIfIndex = new SnmpObjectId(IP_ADDR_IF_INDEX);
+        // in case we did not receive all the data from the
+        // first packet, must generate a new GETBULK packet
+        // starting at the OID the previous one left off.
+        //
+        if (!isV2Finished(pdu)) {
+            sendV2Pdu(session, pdu);
+            return false;
+        } else {
+            processV2Complete();
+            return true;
+        }
+    }
 
-                            while (ipAddrIfIndex.compare(tempStorage[numInterfaces].getName()) > 0)
-                                numInterfaces++;
+    private void processV2Pdu(SnmpPduPacket pdu) throws InvalidResponseException {
+        checkForErrorVarbinds(pdu);
+        for (int x = 0; x < pdu.getLength(); x++) {
+            SnmpVarBind vb = pdu.getVarBindAt(x);
+            m_snmpVarBindList.add(vb);
+        }
+    }
 
-                            // store the IP Address Table data for each
-                            // interface into a map.
-                            //
-                            int numEntries = IpAddrTableEntry.getElementListSize();
-                            for (int if_index = 0; if_index < numInterfaces; if_index++) {
-                                SnmpVarBind[] vblist = new SnmpVarBind[numEntries];
-                                for (int vb_index = 0; vb_index < numEntries; vb_index++) {
-                                    vblist[vb_index] = tempStorage[if_index + (vb_index * numInterfaces)];
-                                }
-                                IpAddrTableEntry ent = new IpAddrTableEntry(vblist);
-                                m_entries.add(ent);
-                            }
-                        }
-                    }
-                } else if (m_version == SnmpSMI.SNMPV1)// GETNEXT response
-                                                        // handling
-                {
-                    // Create a new map of the interface entry
-                    //
-                    // The last varbind will be the first one to walk off the
-                    // end
-                    // of the ipAddrTable. So verify that the last entry in the
-                    // received pdu is still within the scope of the
-                    // IpAddrTable...
-                    // if it is then create a new entry.
-                    //
-                    if (IpAddrTableEntry.ROOT.isRootOf(pdu.getVarBindAt(pdu.getLength() - 1).getName())) {
-                        if (log.isDebugEnabled())
-                            log.debug("snmpReceivedPdu: got SNMPv1 response and still within IpAddrTable, creating new entry.");
-                        SnmpVarBind[] vblist = pdu.toVarBindArray();
-                        IpAddrTableEntry ent = new IpAddrTableEntry(vblist);
-                        m_entries.add(ent);
+    private void processV2Complete() {
+        // Convert SNMP variable binding list to an array
+        // for processing
+        //
+        SnmpVarBind[] tempStorage = new SnmpVarBind[m_snmpVarBindList.size()];
+        tempStorage = (SnmpVarBind[]) m_snmpVarBindList.toArray(tempStorage);
+        // since the MIB does not store the number of
+        // interfaces that have
+        // IP addresses, the method must resort to an
+        // alternative. By
+        // counting the number of values found for the
+        // ipAddrIfIndex variable,
+        // we'll have the number of interfaces with IP's.
+        // Each IP-bound
+        // interface will have a value for each MIB variable
+        // listed
+        //
+        int numInterfaces = 0;
+        SnmpObjectId ipAddrIfIndex = new SnmpObjectId(IP_ADDR_IF_INDEX);
+        while (ipAddrIfIndex.compare(tempStorage[numInterfaces].getName()) > 0)
+            numInterfaces++;
+        // store the IP Address Table data for each
+        // interface into a map.
+        //
+        int numEntries = IpAddrTableEntry.getElementListSize();
+        for (int if_index = 0; if_index < numInterfaces; if_index++) {
+            SnmpVarBind[] vblist = new SnmpVarBind[numEntries];
+            for (int vb_index = 0; vb_index < numEntries; vb_index++) {
+                vblist[vb_index] = tempStorage[if_index + (vb_index * numInterfaces)];
+            }
+            processTableRow(vblist);
+        }
+    }
 
-                        // next pdu
-                        //
-                        SnmpPduRequest nxt = new SnmpPduRequest(SnmpPduPacket.GETNEXT);
-                        for (int x = 0; x < pdu.getLength(); x++) {
-                            nxt.addVarBind(new SnmpVarBind(pdu.getVarBindAt(x).getName()));
-                        }
+    private boolean isV2Finished(SnmpPduPacket pdu) {
+        return !(m_stopAt.compare(pdu.getVarBindAt(pdu.getLength() - 1).getName()) > 0);
+    }
 
-                        nxt.setRequestId(SnmpPduPacket.nextSequence());
-                        session.send(nxt, this);
-                        doNotify = false;
-                    }
-                }
+    private void sendV2Pdu(SnmpSession session, SnmpPduPacket pdu) {
+        SnmpObjectId id = new SnmpObjectId(pdu.getVarBindAt(pdu.getLength() - 1).getName());
+        SnmpVarBind[] newvblist = { new SnmpVarBind(id) };
+        SnmpPduPacket nxt = new SnmpPduBulk(0, 10, newvblist);
+        nxt.setRequestId(SnmpPduPacket.nextSequence());
+        session.send(nxt, this);
+    }
+
+    private void processTableRow(SnmpVarBind[] vblist) {
+        IpAddrTableEntry ent = new IpAddrTableEntry(vblist);
+        m_entries.add(ent);
+    }
+
+    private void checkForPduError(SnmpPduPacket pdu) throws InvalidResponseException {
+        //
+        // Check for error stored in request pdu
+        //
+        int errStatus = ((SnmpPduRequest) pdu).getErrorStatus();
+        if (errStatus != SnmpPduPacket.ErrNoError) {
+            throw new InvalidResponseException("Error received from "+m_address+" errStatus="+errStatus);
+        }
+    }
+
+    private void checkForResponsePdu(int command) throws InvalidResponseException {
+        if (command != SnmpPduPacket.RESPONSE) {
+            throw new InvalidResponseException("Unexpected packet from "+m_address+" command = "+command);
+        }
+    }
+
+    private int checkForErrorVarbinds(SnmpPduPacket pdu) throws InvalidResponseException {
+        int numVarBinds = pdu.getLength();
+        for (int x = 0; x < numVarBinds; x++) {
+            SnmpVarBind vb = pdu.getVarBindAt(x);
+
+            if (vb.getValue() instanceof org.opennms.protocols.snmp.SnmpV2Error) {
+                throw new InvalidResponseException("snmpReceivedPDU: varbind: " + vb.getName() + "  error: '" + vb.getValue() + "'");
             }
         }
-
-        if (doNotify) {
-            signal();
-        }
+        return numVarBinds;
     }
 
     /**
@@ -390,9 +438,8 @@ public class IpAddrTable implements SnmpHandler {
      * @see org.opennms.protocols.snmp.SnmpHandler SnmpHandler
      */
     public void snmpInternalError(SnmpSession session, int error, SnmpSyntax pdu) {
-        Category log = ThreadCategory.getInstance(getClass());
-        if (log.isDebugEnabled()) {
-            log.debug("snmpInternalError: " + error + " for: " + session.getPeer().getPeer());
+        if (log().isDebugEnabled()) {
+            log().debug("snmpInternalError: " + error + " for: " + session.getPeer().getPeer());
         }
 
         m_error = true;
@@ -425,9 +472,8 @@ public class IpAddrTable implements SnmpHandler {
      * 
      */
     public void snmpTimeoutError(SnmpSession session, SnmpSyntax pdu) {
-        Category log = ThreadCategory.getInstance(getClass());
-        if (log.isDebugEnabled()) {
-            log.debug("snmpTimeoutError for: " + session.getPeer().getPeer());
+        if (log().isDebugEnabled()) {
+            log().debug("snmpTimeoutError for: " + session.getPeer().getPeer());
         }
 
         m_error = true;
@@ -452,8 +498,6 @@ public class IpAddrTable implements SnmpHandler {
      * @return IP Address for the indexed interface.
      */
     public static InetAddress getIpAddress(List ipAddrEntries, int ifIndex) {
-        Category log = ThreadCategory.getInstance(IpAddrTable.class);
-
         if (ifIndex == -1 || ipAddrEntries == null) {
             return null;
         }
