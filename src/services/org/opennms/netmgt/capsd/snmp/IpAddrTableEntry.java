@@ -44,10 +44,6 @@ import org.opennms.protocols.snmp.SnmpIPAddress;
 import org.opennms.protocols.snmp.SnmpInt32;
 import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpPduBulk;
-import org.opennms.protocols.snmp.SnmpPduPacket;
-import org.opennms.protocols.snmp.SnmpPduRequest;
-import org.opennms.protocols.snmp.SnmpSMI;
 import org.opennms.protocols.snmp.SnmpUInt32;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
@@ -106,7 +102,7 @@ public final class IpAddrTableEntry {
         // ipAdEntReasmMaxSize variable because we aren't currently using
         // it and not all agents implement it which causes the collection
         // of the ipAddrTable to fail
-        ms_elemList = new NamedSnmpVar[4];
+        IpAddrTableEntry.ms_elemList = (new NamedSnmpVar[4]);
         int ndx = 0;
 
         ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPIPADDRESS, IP_ADDR_ENT_ADDR, ".1.3.6.1.2.1.4.20.1.1", 1);
@@ -203,8 +199,8 @@ public final class IpAddrTableEntry {
         // is in the outer loop to limit the times a
         // new object is created.
         //
-        for (int x = 0; x < ms_elemList.length; x++) {
-            SnmpObjectId id = new SnmpObjectId(ms_elemList[x].getOid());
+        for (int x = 0; x < getElements().length; x++) {
+            SnmpObjectId id = new SnmpObjectId(getElements()[x].getOid());
 
             for (int y = 0; y < vars.length; y++) {
                 if (id.isRootOf(vars[y].getName())) {
@@ -213,7 +209,7 @@ public final class IpAddrTableEntry {
                         // Retrieve the class object of the expected SNMP data
                         // type for this element
                         //
-                        Class classObj = ms_elemList[x].getTypeClass();
+                        Class classObj = getElements()[x].getTypeClass();
 
                         //
                         // If the SnmpSyntax object matches the expected class
@@ -222,19 +218,19 @@ public final class IpAddrTableEntry {
                         //
                         if (classObj == null || classObj.isInstance(vars[y].getValue())) {
                             if (log.isDebugEnabled()) {
-                                log.debug("update: Types match!  SNMP Alias: " + ms_elemList[x].getAlias() + "  Vars[y]: " + vars[y].toString());
+                                log.debug("update: Types match!  SNMP Alias: " + getElements()[x].getAlias() + "  Vars[y]: " + vars[y].toString());
                             }
-                            put(ms_elemList[x].getAlias(), vars[y].getValue());
-                            put(ms_elemList[x].getOid(), vars[y].getValue());
+                            put(getElements()[x].getAlias(), vars[y].getValue());
+                            put(getElements()[x].getOid(), vars[y].getValue());
                         } else {
                             if (log.isDebugEnabled()) {
-                                log.debug("update: variable '" + vars[y].toString() + "' does NOT match expected type '" + ms_elemList[x].getType() + "'");
+                                log.debug("update: variable '" + vars[y].toString() + "' does NOT match expected type '" + getElements()[x].getType() + "'");
                             }
-                            put(ms_elemList[x].getAlias(), null);
-                            put(ms_elemList[x].getOid(), null);
+                            put(getElements()[x].getAlias(), null);
+                            put(getElements()[x].getOid(), null);
                         }
                     } catch (ClassNotFoundException e) {
-                        log.error("Failed to retreive SNMP type class for element: " + ms_elemList[x].getAlias(), e);
+                        log.error("Failed to retreive SNMP type class for element: " + getElements()[x].getAlias(), e);
                     } catch (NullPointerException e) {
                         log.error("Invalid reference", e);
                     }
@@ -245,70 +241,11 @@ public final class IpAddrTableEntry {
 
     /**
      * <P>
-     * If the SNMP version is V1, this method is used to get a generic SNMP
-     * GETNEXT PDU that contains one varbind per member element.
-     * </P>
-     * 
-     * <P>
-     * If the SNMP version is V2, this method is used to get an SNMP GETBULK PDU
-     * with a single varbind containing the TABLE_OID object identifier.
-     * </P>
-     * 
-     * <P>
-     * The PDU can then be used to perform an <EM>SNMP walk</EM> of the MIB-II
-     * IP Address table of a remote host.
-     * </P>
-     * 
-     * @param version
-     *            SnmpSMI.SNMPV1 or SnmpSMI.SNMPV2
-     * 
-     * @return An SnmpPduPacket object with a command of GETNEXT (for SNMPv1) or
-     *         GETBULK (for SNMPv2).
-     * 
-     */
-    public static SnmpPduPacket getNextPdu(int version) {
-        SnmpPduPacket pdu = null;
-
-        if (version == SnmpSMI.SNMPV2) {
-            pdu = new SnmpPduBulk();
-            ((SnmpPduBulk) pdu).setMaxRepititions(10);
-            pdu.setRequestId(SnmpPduPacket.nextSequence());
-            SnmpObjectId oid = new SnmpObjectId(TABLE_OID);
-            pdu.addVarBind(new SnmpVarBind(oid));
-        } else {
-            pdu = new SnmpPduRequest(SnmpPduPacket.GETNEXT);
-            pdu.setRequestId(SnmpPduPacket.nextSequence());
-            for (int x = 0; x < ms_elemList.length; x++) {
-                SnmpObjectId oid = new SnmpObjectId(ms_elemList[x].getOid());
-                pdu.addVarBind(new SnmpVarBind(oid));
-            }
-        }
-
-        return pdu;
-    }
-
-    /**
-     * <P>
-     * This method will determine where the cut off point will be for valid data
-     * from the response to the GETBULK packet. By using the size of the element
-     * list, listed above, we can determine the proper index for this task.
-     * <P>
-     */
-    public static SnmpObjectId stop_oid() {
-        Integer endindex = new Integer(ms_elemList.length + 1);
-        String endoid = new String(TABLE_OID + "." + endindex.toString());
-        SnmpObjectId oid = new SnmpObjectId(endoid);
-
-        return oid;
-    }
-
-    /**
-     * <P>
      * Returns the number of entries in the MIB-II ipAddrTable element list.
      * </P>
      */
     public static int getElementListSize() {
-        return ms_elemList.length;
+        return getElements().length;
     }
     
     public InetAddress getIpAdEntAddr() {
@@ -353,6 +290,14 @@ public final class IpAddrTableEntry {
     
     private void put(String key, Object value) {
         m_responseMap.put(key, value);
+    }
+
+    public static void setElements(NamedSnmpVar[] ms_elemList) {
+        IpAddrTableEntry.ms_elemList = ms_elemList;
+    }
+
+    public static NamedSnmpVar[] getElements() {
+        return ms_elemList;
     }
 
 
