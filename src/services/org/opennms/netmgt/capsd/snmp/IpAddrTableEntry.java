@@ -292,10 +292,6 @@ public final class IpAddrTableEntry {
         m_responseMap.put(key, value);
     }
 
-    public static void setElements(NamedSnmpVar[] ms_elemList) {
-        IpAddrTableEntry.ms_elemList = ms_elemList;
-    }
-
     public static NamedSnmpVar[] getElements() {
         return ms_elemList;
     }

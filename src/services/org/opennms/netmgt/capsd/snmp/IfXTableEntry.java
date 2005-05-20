@@ -204,6 +204,8 @@ public final class IfXTableEntry {
      * @see #TABLE_OID
      */
     public static final SnmpObjectId ROOT = new SnmpObjectId(TABLE_OID);
+    
+    
 
     private Map m_responseMap = new TreeMap();
 
@@ -261,8 +263,6 @@ public final class IfXTableEntry {
      * 
      */
     public void update(SnmpVarBind[] vars) {
-        Category log = ThreadCategory.getInstance(getClass());
-
         //
         // iterate through the variable bindings
         // and set the members appropiately.
@@ -309,20 +309,30 @@ public final class IfXTableEntry {
                         // in the map.
                         //
                         if (classObj.isInstance(vars[y].getValue())) {
+                            if (log().isDebugEnabled()) {
+                                log().debug("update: Types match!  SNMP Alias: " + getElements()[x].getAlias() + "  Vars[y]: " + vars[y].toString());
+                            }
                             put(ms_elemList[x].getAlias(), vars[y].getValue());
                             put(ms_elemList[x].getOid(), vars[y].getValue());
                         } else {
+                            if (log().isDebugEnabled()) {
+                                log().debug("update: variable '" + vars[y].toString() + "' does NOT match expected type '" + getElements()[x].getType() + "'");
+                            }
                             put(ms_elemList[x].getAlias(), null);
                             put(ms_elemList[x].getOid(), null);
                         }
                     } catch (ClassNotFoundException e) {
-                        log.error("update: Failed retrieving SNMP type class for element: " + ms_elemList[x].getAlias(), e);
+                        log().error("update: Failed retrieving SNMP type class for element: " + ms_elemList[x].getAlias(), e);
                     } catch (NullPointerException e) {
-                        log.error("update: NullPointerException retrieveing SNMP information", e);
+                        log().error("update: NullPointerException retrieveing SNMP information", e);
                     }
                 }
             }
         }
+    }
+
+    private final Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
     /**
@@ -466,5 +476,10 @@ public final class IfXTableEntry {
     private void put(String key, Object value) {
         m_responseMap.put(key, value);
     }
+    
+    public static NamedSnmpVar[] getElements() {
+        return ms_elemList;
+    }
+
 
 }
