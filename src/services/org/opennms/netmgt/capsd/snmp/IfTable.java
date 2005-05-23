@@ -41,7 +41,6 @@ package org.opennms.netmgt.capsd.snmp;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -80,18 +79,6 @@ public final class IfTable extends SnmpTableWalker {
 
     /**
      * <P>
-     * The list of interfaces from the remote's interface table. The list
-     * contains a set of IfTableEntry objects that were collected from the
-     * remote host.
-     * </P>
-     * 
-     * @see IfTableEntry
-     */
-    private List m_entries;
-
-
-    /**
-     * <P>
      * Constructs an IfTable object that is used to collect the interface
      * elements from the remote agent. Once all the interfaces are collected, or
      * there is an error in the collection the signaler object is <EM>notified
@@ -113,24 +100,10 @@ public final class IfTable extends SnmpTableWalker {
         start(session);
     }
     
-    protected void processTableRow(SnmpVarBind[] vblist) {
-        IfTableEntry ent = new IfTableEntry(vblist);
-        m_entries.add(ent);
+    protected SnmpTableEntry createTableEntry(SnmpVarBind[] vblist) {
+        return new IfTableEntry(vblist);
     }
 
-
-
-    /**
-     * <P>
-     * Returns the list of entry maps that can be used to access all the
-     * information about the interface table.
-     * </P>
-     * 
-     * @return The list of ifTableEntry maps.
-     */
-    public List getEntries() {
-        return m_entries;
-    }
 
 
     private final Category log() {

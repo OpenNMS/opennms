@@ -35,6 +35,7 @@ package org.opennms.netmgt.capsd.snmp;
 
 
 
+
 public abstract class SnmpTableEntry extends SnmpStore {
     
     protected SnmpTableEntry(NamedSnmpVar[] list) {

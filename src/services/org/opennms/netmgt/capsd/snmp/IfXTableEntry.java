@@ -212,72 +212,24 @@ public final class IfXTableEntry extends SnmpTableEntry {
      * 
      */
     public void update(SnmpVarBind[] vars) {
-        //
-        // iterate through the variable bindings
-        // and set the members appropiately.
-        //
-        // Note: the creation of the snmp object id
-        // is in the outer loop to limit the times a
-        // new object is created.
-        //
-        for (int x = 0; x < ms_elemList.length; x++) {
-            SnmpObjectId id = new SnmpObjectId(ms_elemList[x].getOid());
-            for (int y = 0; y < vars.length; y++) {
-                if (id.isRootOf(vars[y].getName())) {
-                    try {
-                        //
-                        // Retrieve the class object of the expected SNMP data
-                        // type for this element
-                        //
-                        Class classObj = ms_elemList[x].getTypeClass();
+        
+        // Since the ifXTable is indexed by ifIndex but does not contain the 
+        // ifIndex column we extract the index from the oid of the first column.
+        for(int varBind = 0; varBind < vars.length; varBind++) {
+            SnmpObjectId firstColumn = new SnmpObjectId(getElements()[0].getOid());
+            
+            if (firstColumn.isRootOf(vars[varBind].getName())) {
 
-                        // SPECIAL CASE
-                        // 
-                        // Since we don't have the ifIndex as part of the
-                        // interface extensions table we will retrieve the
-                        // ifIndex from the object id of the
-                        // first retrieved element (ifName) and store it
-                        // in the map with the key of "IF_INDEX".
-                        if (x == 0) {
-                            // Extract the instance id from the returned object
-                            // id associated with ifName variable. This instance
-                            // id becomes our ifIndex value. // Extract the
-                            // "instance" id from the current SnmpVarBind's
-                            // object id
-                            String from_oid = vars[y].getName().toString();
-                            SnmpObjectId objId = new SnmpObjectId(from_oid);
-                            int[] ids = objId.getIdentifiers();
-                            SnmpInt32 instanceId = new SnmpInt32(ids[ids.length - 1]);
+                SnmpInt32 instanceId = new SnmpInt32(vars[varBind].getName().getLastIdentifier());
 
-                            // Store it
-                            put("ifIndex", instanceId);
-                        }
-                        //
-                        // If the SnmpSyntax object matches the expected class
-                        // then store it in the map. Else, store a null pointer
-                        // in the map.
-                        //
-                        if (classObj.isInstance(vars[y].getValue())) {
-                            if (log().isDebugEnabled()) {
-                                log().debug("update: Types match!  SNMP Alias: " + getElements()[x].getAlias() + "  Vars[y]: " + vars[y].toString());
-                            }
-                            put(ms_elemList[x].getAlias(), vars[y].getValue());
-                            put(ms_elemList[x].getOid(), vars[y].getValue());
-                        } else {
-                            if (log().isDebugEnabled()) {
-                                log().debug("update: variable '" + vars[y].toString() + "' does NOT match expected type '" + getElements()[x].getType() + "'");
-                            }
-                            put(ms_elemList[x].getAlias(), null);
-                            put(ms_elemList[x].getOid(), null);
-                        }
-                    } catch (ClassNotFoundException e) {
-                        log().error("update: Failed retrieving SNMP type class for element: " + ms_elemList[x].getAlias(), e);
-                    } catch (NullPointerException e) {
-                        log().error("update: NullPointerException retrieveing SNMP information", e);
-                    }
-                }
+                // Store it
+                put(IF_INDEX, instanceId);
+                
             }
         }
+        
+        super.update(vars);
+        
     }
 
     public Integer getIfIndex() {

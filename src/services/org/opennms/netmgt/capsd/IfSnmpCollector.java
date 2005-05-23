@@ -295,7 +295,7 @@ final class IfSnmpCollector implements Runnable {
             session = new SnmpSession(m_peer);
 
             BarrierSignaler signaler = new BarrierSignaler(4);
-            m_sysGroup = new SystemGroup(session, m_address, signaler);
+            m_sysGroup = new SystemGroup(session, m_address, signaler, m_peer.getParameters().getVersion());
             m_ifTable = new IfTable(session, m_address, signaler, m_peer.getParameters().getVersion());
             m_ipAddrTable = new IpAddrTable(session, m_address, signaler, m_peer.getParameters().getVersion());
             m_ifXTable = new IfXTable(session, m_address, signaler, m_peer.getParameters().getVersion());

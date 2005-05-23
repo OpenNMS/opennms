@@ -36,10 +36,7 @@ package org.opennms.netmgt.capsd.snmp;
 
 import java.net.InetAddress;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.protocols.snmp.SnmpIPAddress;
-import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
@@ -129,73 +126,6 @@ public final class IpAddrTableEntry extends SnmpTableEntry {
     public IpAddrTableEntry(SnmpVarBind[] vars) {
         super(ms_elemList);
         update(vars);
-    }
-
-    /**
-     * <P>
-     * This method is used to update the map with the current information from
-     * the agent. The array of variables should be all the elements in the
-     * address row.
-     * </P>
-     * 
-     * </P>
-     * This does not clear out any column in the actual row that does not have a
-     * definition.
-     * </P>
-     * 
-     * @param vars
-     *            The variables in the interface row.
-     * 
-     */
-    public void update(SnmpVarBind[] vars) {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        //
-        // iterate through the variable bindings
-        // and set the members appropiately.
-        //
-        // Note: the creation of the snmp object id
-        // is in the outer loop to limit the times a
-        // new object is created.
-        //
-        for (int x = 0; x < getElements().length; x++) {
-            SnmpObjectId id = new SnmpObjectId(getElements()[x].getOid());
-
-            for (int y = 0; y < vars.length; y++) {
-                if (id.isRootOf(vars[y].getName())) {
-                    try {
-                        //
-                        // Retrieve the class object of the expected SNMP data
-                        // type for this element
-                        //
-                        Class classObj = getElements()[x].getTypeClass();
-
-                        //
-                        // If the SnmpSyntax object matches the expected class
-                        // then store it in the map. Else, store a null pointer
-                        // in the map.
-                        //
-                        if (classObj == null || classObj.isInstance(vars[y].getValue())) {
-                            if (log.isDebugEnabled()) {
-                                log.debug("update: Types match!  SNMP Alias: " + getElements()[x].getAlias() + "  Vars[y]: " + vars[y].toString());
-                            }
-                            put(getElements()[x].getAlias(), vars[y].getValue());
-                            put(getElements()[x].getOid(), vars[y].getValue());
-                        } else {
-                            if (log.isDebugEnabled()) {
-                                log.debug("update: variable '" + vars[y].toString() + "' does NOT match expected type '" + getElements()[x].getType() + "'");
-                            }
-                            put(getElements()[x].getAlias(), null);
-                            put(getElements()[x].getOid(), null);
-                        }
-                    } catch (ClassNotFoundException e) {
-                        log.error("Failed to retreive SNMP type class for element: " + getElements()[x].getAlias(), e);
-                    } catch (NullPointerException e) {
-                        log.error("Invalid reference", e);
-                    }
-                }
-            }
-        }
     }
 
     public InetAddress getIpAdEntAddr() {

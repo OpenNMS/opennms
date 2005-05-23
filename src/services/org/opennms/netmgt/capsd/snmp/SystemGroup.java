@@ -40,15 +40,9 @@ package org.opennms.netmgt.capsd.snmp;
 
 import java.net.InetAddress;
 
-import org.apache.log4j.Priority;
 import org.opennms.netmgt.utils.Signaler;
 import org.opennms.protocols.snmp.SnmpHandler;
-import org.opennms.protocols.snmp.SnmpObjectId;
-import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpPduPacket;
-import org.opennms.protocols.snmp.SnmpPduRequest;
 import org.opennms.protocols.snmp.SnmpSession;
-import org.opennms.protocols.snmp.SnmpSyntax;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
@@ -64,7 +58,7 @@ import org.opennms.protocols.snmp.SnmpVarBind;
  * 
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
-public final class SystemGroup extends SnmpStore implements SnmpHandler {
+public final class SystemGroup extends SnmpWalker implements SnmpHandler {
     //
     // Lookup strings for specific table entries
     //
@@ -189,16 +183,6 @@ public final class SystemGroup extends SnmpStore implements SnmpHandler {
 
     /**
      * <P>
-     * Flag indicating the success or failure of the informational query. If the
-     * flag is set to false then either part of all of the information was
-     * unable to be retreived. If it is set to true then all of the data was
-     * received from the remote host.
-     * </P>
-     */
-    public boolean m_error;
-
-    /**
-     * <P>
      * The SYSTEM_OID is the object identifier that represents the root of the
      * system information in the MIB forest. Each of the system elements can be
      * retreived by adding their specific index to the string, and an additional
@@ -207,24 +191,7 @@ public final class SystemGroup extends SnmpStore implements SnmpHandler {
      */
     public static final String SYSTEM_OID = ".1.3.6.1.2.1.1";
 
-    /**
-     * <P>
-     * The SnmpObjectId that represents the root of the system tree. It is
-     * created at initilization time and is the converted value of SYSTEM_OID.
-     * </P>
-     * 
-     * @see #SYSTEM_OID
-     */
-    public static final SnmpObjectId ROOT = new SnmpObjectId(SYSTEM_OID);
-
-    /**
-     * <P>
-     * Used to synchronize the class to ensure that the session has finished
-     * collecting data before the value of success or failure is set, and
-     * control is returned to the caller.
-     * </P>
-     */
-    private Signaler m_signal;
+    private SnmpStore m_store;
     
     /**
      * <P>
@@ -240,249 +207,34 @@ public final class SystemGroup extends SnmpStore implements SnmpHandler {
      *            The object signaled when data collection is done.
      * 
      */
-    public SystemGroup(SnmpSession session, InetAddress address, Signaler signaler) {
-        super(ms_elemList);
-
-        m_error = false;
-
-        m_signal = signaler;
-        
-        SnmpPduPacket pdu = getPdu();
-        pdu.setRequestId(SnmpPduPacket.nextSequence());
-        session.send(pdu, this);
-    }
-
-    /**
-     * <P>
-     * This method is used to update the map with the current information from
-     * the agent.
-     * 
-     * </P>
-     * This does not clear out any column in the actual row that does not have a
-     * definition.
-     * </P>
-     * 
-     * @param vars
-     *            The variables in the interface row.
-     * 
-     */
-    public void update(SnmpVarBind[] vars) {
-        //
-        // iterate through the variable bindings
-        // and set the members appropiately.
-        //
-        for (int x = 0; x < ms_elemList.length; x++) {
-            SnmpObjectId id = new SnmpObjectId(ms_elemList[x].getOid());
-            for (int y = 0; y < vars.length; y++) {
-                if (id.isRootOf(vars[y].getName())) {
-                    try {
-                        //
-                        // Retrieve the class object of the expected SNMP data
-                        // type for this element
-                        //
-                        Class classObj = ms_elemList[x].getTypeClass();
-
-                        //
-                        // If the classes match then it is the type we expected
-                        // so
-                        // go ahead and store the information.
-                        //
-                        if (classObj.isInstance(vars[y].getValue())) {
-                            put(ms_elemList[x].getAlias(), vars[y].getValue());
-                            put(ms_elemList[x].getOid(), vars[y].getValue());
-                        } else {
-                            //
-                            // reset the values
-                            //
-                            put(ms_elemList[x].getAlias(), null);
-                            put(ms_elemList[x].getOid(), null);
-                        }
-                    } catch (ClassNotFoundException e) {
-                        log().error("Failed retrieving SNMP type class for element: " + ms_elemList[x].getAlias(), e);
-                    } catch (NullPointerException e) {
-                        log().error("Invalid reference", e);
-                    }
-
-                    break;
-                }
-            }
-        }
-    }
-
-    /**
-     * <P>
-     * This method is used to build the initial SNMP PDU that is sent to the
-     * remote host. The PDU contains as many variable bindings as needed by the
-     * object. The varbinds are SnmpNull objects that have been initialized each
-     * with one instance of a required variable. The PDU type is marked as GET
-     * so that only a single Request/Response is required to get all the data.
-     * </P>
-     * 
-     * @return An SnmpPduRequest with the command GET and a predefined varbind
-     *         list.
-     * 
-     * @see org.opennms.protocols.snmp.SnmpNull SnmpNull
-     * @see org.opennms.protocols.snmp.SnmpPduRequest SnmpPduRequest
-     */
-    public static SnmpPduRequest getPdu() {
-        SnmpPduRequest pdu = new SnmpPduRequest(SnmpPduRequest.GET);
-        for (int x = 1; x <= ms_elemList.length; x++) {
-            SnmpObjectId oid = new SnmpObjectId(SYSTEM_OID + "." + x + ".0");
-            pdu.addVarBind(new SnmpVarBind(oid));
-        }
-        return pdu;
-    }
-
-    /**
-     * <P>
-     * This method is used to process received SNMP PDU packets from the remote
-     * agent. The method is part of the SnmpHandler interface and will be
-     * invoked when a PDU is successfully decoded. The method is passed the
-     * receiving session, the PDU command, and the actual PDU packet.
-     * </P>
-     * 
-     * <P>
-     * When all the data has been received from the session the signaler object,
-     * initialized in the constructor, is signaled. In addition, the receiving
-     * instance will call notifyAll() on itself at the same time.
-     * </P>
-     * 
-     * @param session
-     *            The SNMP Session that received the PDU
-     * @param command
-     *            The command contained in the received pdu
-     * @param pdu
-     *            The actual received PDU.
-     * 
-     */
-    public void snmpReceivedPdu(SnmpSession session, int command, SnmpPduPacket pdu) {
-        if (command == SnmpPduPacket.RESPONSE) {
-            //
-            // Check for SNMPv1 error stored in request pdu
-            //
-            int errStatus = ((SnmpPduRequest) pdu).getErrorStatus();
-            if (errStatus != SnmpPduPacket.ErrNoError) {
-                int errIndex = ((SnmpPduRequest) pdu).getErrorIndex();
-                //
-                // If first varbind had error (sysDescription) then we will
-                // assume
-                // that nothing was collected for system group. If the error
-                // occurred
-                // later in the varbind list lets proceed since this information
-                // is
-                // useful (older SNMP agents won't have sysServices implemented
-                // for example).
-                //
-                if (errIndex == 1)
-                    m_error = true;
-            }
-
-            if (!m_error) {
-                SnmpVarBind[] vars = pdu.toVarBindArray();
-                update(vars);
-            }
-
-        } else // It was an invalid PDU
-        {
-            m_error = true;
-        }
-
-        signal();
-    }
-
-    /**
-     * <P>
-     * This method is part of the SnmpHandler interface and called when an
-     * internal error happens in a session. This is usually the result of an I/O
-     * error. This method will not be called if the session times out sending a
-     * packet, see snmpTimeoutError for timeout handling.
-     * </P>
-     * 
-     * @param session
-     *            The session that had an unexpected error
-     * @param error
-     *            The error condition
-     * @param pdu
-     *            The PDU being sent when the error occured
-     * 
-     * @see #snmpTimeoutError
-     * @see org.opennms.protocols.snmp.SnmpHandler SnmpHandler
-     */
-    public void snmpInternalError(SnmpSession session, int error, SnmpSyntax pdu) {
-        if (log().isEnabledFor(Priority.WARN)) {
-            log().warn("snmpInternalError: The session experienced an internal error, error = " + error);
-        }
-
-        m_error = true;
-
-        signal();
-    }
-
-    public void setSignaler(Signaler sig) {
-        m_signal = sig;
-    }
-    
-    private void signal() {
-        synchronized (this) {
-            this.notifyAll();
-        }
-        if (m_signal != null) {
-            m_signal.signalAll();
-        }
-    }
-
-    /**
-     * <P>
-     * This method is part of the SnmpHandler interface and is invoked when the
-     * SnmpSession does not receive a reply after exhausting the retransmission
-     * attempts.
-     * </P>
-     * 
-     * @param session
-     *            The session invoking the error handler
-     * @param pdu
-     *            The PDU that the remote failed to respond to.
-     * 
-     * @see org.opennms.protocols.snmp.SnmpHandler SnmpHandler
-     * 
-     */
-    public void snmpTimeoutError(SnmpSession session, SnmpSyntax pdu) {
-        if (log().isEnabledFor(Priority.WARN)) {
-            log().warn("snmpTimeoutError: The session timed out communicating with the agent.");
-        }
-
-        m_error = true;
-
-        signal();
-    }
-
-    /**
-     * <P>
-     * Returns the success or failure code for collection of the data.
-     * </P>
-     */
-    public boolean failed() {
-        return m_error;
+    public SystemGroup(SnmpSession session, InetAddress address, Signaler signaler, int version) {
+        super(address, signaler, version, "systemGroup", ms_elemList, SYSTEM_OID);
+        m_store = new SnmpStore(ms_elemList); 
+        start(session);
     }
 
     public String getSysName() {
-        return SnmpOctetString.toDisplayString((SnmpOctetString) get(SystemGroup.SYS_NAME));
+        return m_store.getDisplayString(SYS_NAME);
     }
 
     public String getSysObjectID() {
-        return (get(SystemGroup.SYS_OBJECTID) == null ? null : get(SystemGroup.SYS_OBJECTID).toString());
+        return m_store.getObjectID(SYS_OBJECTID);
     }
 
     public String getSysDescr() {
-        return SnmpOctetString.toDisplayString((SnmpOctetString) get(SystemGroup.SYS_DESCR));
+        return m_store.getDisplayString(SYS_DESCR);
     }
 
     public String getSysLocation() {
-        return SnmpOctetString.toDisplayString((SnmpOctetString) get(SystemGroup.SYS_LOCATION));
+        return m_store.getDisplayString(SYS_LOCATION);
     }
 
     public String getSysContact() {
-        return SnmpOctetString.toDisplayString((SnmpOctetString) get(SystemGroup.SYS_CONTACT));
+        return m_store.getDisplayString(SYS_CONTACT);
+    }
+
+    protected void update(SnmpVarBind[] vblist) {
+        m_store.update(vblist);
     }
     
 }

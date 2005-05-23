@@ -39,11 +39,12 @@ import java.util.TreeMap;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.protocols.snmp.SnmpInt32;
+import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpUInt32;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
-public abstract class SnmpStore {
+public class SnmpStore {
 
     private Map m_responseMap = new TreeMap();
     /**
@@ -59,8 +60,6 @@ public abstract class SnmpStore {
     protected static Category log() {
         return ThreadCategory.getInstance(SnmpTableEntry.class);
     }
-
-    public abstract void update(SnmpVarBind[] vars);
 
     public SnmpStore(NamedSnmpVar[] list) {
         super();
@@ -96,6 +95,10 @@ public abstract class SnmpStore {
         return SnmpOctetString.toHexString((SnmpOctetString) get(key));
     }
 
+    public String getObjectID(String sys_objectid) {
+        return (get(SystemGroup.SYS_OBJECTID) == null ? null : get(SystemGroup.SYS_OBJECTID).toString());
+    }
+
     protected Object get(String key) {
         return m_responseMap.get(key);
     }
@@ -103,5 +106,73 @@ public abstract class SnmpStore {
     protected void put(String key, Object value) {
         m_responseMap.put(key, value);
     }
+
+    /**
+     * <P>
+     * This method is used to update the map with the current information from
+     * the agent. The array of variables should be all the elements in the
+     * address row.
+     * </P>
+     * 
+     * </P>
+     * This does not clear out any column in the actual row that does not have a
+     * definition.
+     * </P>
+     * 
+     * @param vars
+     *            The variables in the interface row.
+     * 
+     */
+    public void update(SnmpVarBind[] vars) {
+        Category log = ThreadCategory.getInstance(getClass());
+    
+        //
+        // iterate through the variable bindings
+        // and set the members appropiately.
+        //
+        // Note: the creation of the snmp object id
+        // is in the outer loop to limit the times a
+        // new object is created.
+        //
+        for (int col = 0; col < getElements().length; col++) {
+            SnmpObjectId id = new SnmpObjectId(getElements()[col].getOid());
+    
+            for (int varBind = 0; varBind < vars.length; varBind++) {
+                if (id.isRootOf(vars[varBind].getName())) {
+                    try {
+                        //
+                        // Retrieve the class object of the expected SNMP data
+                        // type for this element
+                        //
+                        Class classObj = getElements()[col].getTypeClass();
+    
+                        //
+                        // If the SnmpSyntax object matches the expected class
+                        // then store it in the map. Else, store a null pointer
+                        // in the map.
+                        //
+                        if (classObj == null || classObj.isInstance(vars[varBind].getValue())) {
+                            if (log.isDebugEnabled()) {
+                                log.debug("update: Types match!  SNMP Alias: " + getElements()[col].getAlias() + "  Vars[y]: " + vars[varBind].toString());
+                            }
+                            put(getElements()[col].getAlias(), vars[varBind].getValue());
+                            put(getElements()[col].getOid(), vars[varBind].getValue());
+                        } else {
+                            if (log.isDebugEnabled()) {
+                                log.debug("update: variable '" + vars[varBind].toString() + "' does NOT match expected type '" + getElements()[col].getType() + "'");
+                            }
+                            put(getElements()[col].getAlias(), null);
+                            put(getElements()[col].getOid(), null);
+                        }
+                    } catch (ClassNotFoundException e) {
+                        log.error("Failed to retreive SNMP type class for element: " + getElements()[col].getAlias(), e);
+                    } catch (NullPointerException e) {
+                        log.error("Invalid reference", e);
+                    }
+                }
+            }
+        }
+    }
+
 
 }

@@ -40,7 +40,6 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
-import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
@@ -194,70 +193,6 @@ public final class IfTableEntry extends SnmpTableEntry {
     public IfTableEntry(SnmpVarBind[] vars) {
         super(ms_elemList);
         update(vars);
-    }
-
-    /**
-     * <P>
-     * This method is used to update the map with the current information from
-     * the agent. The array of variables should be all the elements in the
-     * interfaces row.
-     * </P>
-     * 
-     * </P>
-     * This does not clear out any column in the actual ifEntry row that does
-     * not have a definition.
-     * </P>
-     * 
-     * @param vars
-     *            The variables in the interface row.
-     * 
-     */
-    public void update(SnmpVarBind[] vars) {
-        //
-        // iterate through the variable bindings
-        // and set the members appropiately.
-        //
-        // Note: the creation of the snmp object id
-        // is in the outer loop to limit the times a
-        // new object is created.
-        //
-        for (int x = 0; x < ms_elemList.length; x++) {
-            SnmpObjectId id = new SnmpObjectId(ms_elemList[x].getOid());
-            for (int y = 0; y < vars.length; y++) {
-                if (id.isRootOf(vars[y].getName())) {
-                    try {
-                        //
-                        // Retrieve the class object of the expected SNMP data
-                        // type for this element
-                        //
-                        Class classObj = ms_elemList[x].getTypeClass();
-
-                        //
-                        // If the SnmpSyntax object matches the expected class
-                        // then store it in the map. Else, store a null pointer
-                        // in the map.
-                        //
-                        if (classObj.isInstance(vars[y].getValue())) {
-                            if (log().isDebugEnabled()) {
-                                log().debug("update: Types match!  SNMP Alias: " + getElements()[x].getAlias() + "  Vars[y]: " + vars[y].toString());
-                            }
-                            put(ms_elemList[x].getAlias(), vars[y].getValue());
-                            put(ms_elemList[x].getOid(), vars[y].getValue());
-                        } else {
-                            if (log().isDebugEnabled()) {
-                                log().debug("update: variable '" + vars[y].toString() + "' does NOT match expected type '" + getElements()[x].getType() + "'");
-                            }
-                            put(ms_elemList[x].getAlias(), null);
-                            put(ms_elemList[x].getOid(), null);
-                        }
-                    } catch (ClassNotFoundException e) {
-                        log().error("Failed retrieving SNMP type class for element: " + ms_elemList[x].getAlias(), e);
-                    } catch (NullPointerException e) {
-                        log().error("Invalid reference", e);
-                    }
-                }
-            }
-        }
     }
 
     public Integer getIfIndex() {

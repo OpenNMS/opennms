@@ -43,7 +43,6 @@ package org.opennms.netmgt.capsd.snmp;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.opennms.netmgt.utils.Signaler;
 import org.opennms.protocols.snmp.SnmpSession;
@@ -71,17 +70,6 @@ public final class IfXTable extends SnmpTableWalker {
 
     /**
      * <P>
-     * The list of interfaces from the remote's interface extensions table. The
-     * list contains a set of IfXTableEntry objects that were collected from the
-     * remote host.
-     * </P>
-     * 
-     * @see IfXTableEntry
-     */
-    private List m_entries;
-
-    /**
-     * <P>
      * Constructs an IfXTable object that is used to collect the interface
      * elements from the remote agent. Once all the interfaces are collected, or
      * there is an error in the collection the signaler object is <EM>notified
@@ -105,21 +93,8 @@ public final class IfXTable extends SnmpTableWalker {
         start(session);
     }
 
-    /**
-     * <P>
-     * Returns the list of entry maps that can be used to access all the
-     * information about the interface extensions table.
-     * </P>
-     * 
-     * @return The list of ifXTableEntry maps.
-     */
-    public List getEntries() {
-        return m_entries;
-    }
-
-    protected void processTableRow(SnmpVarBind[] vblist) {
-        IfXTableEntry ent = new IfXTableEntry(vblist);
-        m_entries.add(ent);
+    protected SnmpTableEntry createTableEntry(SnmpVarBind[] vblist) {
+        return new IfXTableEntry(vblist);
     }
 
     public String getIfName(int ifIndex) {

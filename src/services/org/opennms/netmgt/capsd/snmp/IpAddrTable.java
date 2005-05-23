@@ -69,14 +69,6 @@ public class IpAddrTable extends SnmpTableWalker {
 
     /**
      * <P>
-     * The list of collected IpAddrTableEntries built from the infomation
-     * collected from the remote agent.
-     * </P>
-     */
-    private List m_entries;
-
-    /**
-     * <P>
      * Constructs an IpAddrTable object that is used to collect the address
      * elements from the remote agent. Once all the elements are collected, or
      * there is an error in the collection the signaler object is <EM>notified
@@ -96,21 +88,8 @@ public class IpAddrTable extends SnmpTableWalker {
         start(session);
     }
 
-    /**
-     * <P>
-     * Returns the list of entry maps that can be used to access all the
-     * information about the interface table.
-     * </P>
-     * 
-     * @return The list of ifTableEntry maps.
-     */
-    public List getEntries() {
-        return m_entries;
-    }
-
-    protected void processTableRow(SnmpVarBind[] vblist) {
-        IpAddrTableEntry ent = new IpAddrTableEntry(vblist);
-        m_entries.add(ent);
+    protected SnmpTableEntry createTableEntry(SnmpVarBind[] vblist) {
+        return new IpAddrTableEntry(vblist);
     }
 
     /**
