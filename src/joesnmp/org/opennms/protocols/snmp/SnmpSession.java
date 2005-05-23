@@ -1039,4 +1039,78 @@ public class SnmpSession extends Object {
         SnmpUtil.registerSyntax(object);
     }
 
+    public SnmpSyntax getNext(SnmpObjectId oid) {
+        return getResult(SnmpPduPacket.GETNEXT, oid);
+    }
+
+    public SnmpSyntax[] getNext(SnmpObjectId[] oids) {
+        return getResults(SnmpPduPacket.GETNEXT, oids);
+    }
+    
+    public SnmpSyntax get(SnmpObjectId oid) {
+        return getResult(SnmpPduPacket.GET, oid);
+    }
+
+    public SnmpSyntax[] get(SnmpObjectId[] oids) {
+        return getResults(SnmpPduPacket.GET, oids);
+    }
+    
+    public SnmpSyntax[] getBulk(int nonRepeaters, int maxReptitions, SnmpObjectId id) {
+        return getBulk(nonRepeaters, maxReptitions, new SnmpObjectId[] { id });
+    }
+    
+    public SnmpSyntax[] getBulk(int nonRepeaters, int maxRepititions, SnmpObjectId[] oids) {
+        SnmpVarBind[] varbinds = createVarBinds(oids);
+        SnmpPduPacket request = new SnmpPduBulk(nonRepeaters, maxRepititions, varbinds);
+        return getResults(request);
+    }
+
+    private SnmpSyntax getResult(int requestType, SnmpObjectId oid) {
+        SnmpSyntax[] result = getResults(requestType, new SnmpObjectId[] { oid });
+        return (result == null || result.length <= 0 ? null : result[0]);
+    }
+    
+    private SnmpSyntax[] getResults(int requestType, SnmpObjectId[] oids) {
+        SnmpVarBind[] varbinds = createVarBinds(oids);
+        SnmpPduPacket request = new SnmpPduRequest(requestType, varbinds);
+        return getResults(request);
+    }
+    
+    private SnmpVarBind[] createVarBinds(SnmpObjectId[] oids) {
+        SnmpVarBind[] varbinds = new SnmpVarBind[oids.length];
+        for(int i = 0; i < oids.length; i++) {
+            varbinds[i] = new SnmpVarBind(oids[i]);
+        }
+        return varbinds;
+    }
+
+    private SnmpSyntax[] getResults(SnmpPduPacket request) {
+        SnmpPduPacket response = getResponse(request);
+        if (response == null)
+            return null;
+        SnmpSyntax[] vals = new SnmpSyntax[response.getLength()];
+        for(int i = 0; i < response.getLength(); i++) {
+            vals[i] = response.getVarBindAt(i).getValue();
+        }
+        return vals;
+    }
+    
+    public SnmpPduPacket getResponse(SnmpPduPacket request) {
+        SnmpResponseHandler handler = new SnmpResponseHandler();
+        synchronized (handler) {
+            send(request, handler);
+            try {
+                handler.wait((long) ((getPeer().getRetries() + 1) * getPeer().getTimeout()));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        SnmpPduPacket response = handler.getResponse();
+        return response;
+    }
+
+
+
+
+
 } // end of SnmpSession class
