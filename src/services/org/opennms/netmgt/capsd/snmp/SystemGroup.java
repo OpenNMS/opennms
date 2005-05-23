@@ -41,7 +41,6 @@ package org.opennms.netmgt.capsd.snmp;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.utils.Signaler;
-import org.opennms.protocols.snmp.SnmpHandler;
 import org.opennms.protocols.snmp.SnmpSession;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
@@ -58,7 +57,7 @@ import org.opennms.protocols.snmp.SnmpVarBind;
  * 
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
-public final class SystemGroup extends SnmpWalker implements SnmpHandler {
+public final class SystemGroup extends SnmpWalker {
     //
     // Lookup strings for specific table entries
     //
