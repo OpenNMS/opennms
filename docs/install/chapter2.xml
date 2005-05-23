@@ -310,7 +310,7 @@ TOMCAT_USER="tomcat"
           <filename>capsd-configuration.xml</filename>. Run the
           commands:</para>
 
-          <para><programlisting><computeroutput># </computeroutput><command>chgrp -R tomcat4 /var/log/opennms
+          <para><programlisting><computeroutput># </computeroutput><command>chgrp -R tomcat4 $OPENNMS_HOME/etc
 </command><computeroutput># </computeroutput><command>chmod -R g+w $OPENNMS_HOME/etc</command></programlisting></para>
 
           <para>where <varname>$OPENNMS_HOME/etc</varname> is the OpenNMS

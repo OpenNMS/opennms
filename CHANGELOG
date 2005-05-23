@@ -1,5 +1,9 @@
 1.2.2 to 1.2.3
 ----------------------------------------------------------------------
+- A few small documentation fixes, including bug 1204 (thanks Chris)
+  and bug 1185.
+- Change the $echo variable in opennms.sh to $opennms_echo.  This should
+  take care of problems people were seeing on Mandrake.
 - Added data collections for TCP stats.
 - Modified isReady for PollableService as a work around for hung polling.
 - Added some SNMP Informant collections, reports and thresholds.
