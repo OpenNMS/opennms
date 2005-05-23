@@ -41,19 +41,17 @@ package org.opennms.netmgt.capsd.plugins;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.Map;
 
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.utils.ParameterMap;
-import org.opennms.netmgt.utils.SnmpResponseHandler;
-import org.opennms.protocols.snmp.SnmpPduBulk;
-import org.opennms.protocols.snmp.SnmpPduPacket;
-import org.opennms.protocols.snmp.SnmpPduRequest;
+import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpPeer;
 import org.opennms.protocols.snmp.SnmpSMI;
 import org.opennms.protocols.snmp.SnmpSession;
-import org.opennms.protocols.snmp.SnmpVarBind;
+import org.opennms.protocols.snmp.SnmpSyntax;
 
 /**
  * This class is used to test passed address for SNMP support. The configuration
@@ -95,37 +93,26 @@ public final class SnmpPlugin extends AbstractPlugin {
      * @return True if the protocol is supported by the address.
      */
     public boolean isProtocolSupported(InetAddress address) {
-        boolean isSupported = false;
-        SnmpSession session = null;
-        SnmpPeer peer = SnmpPeerFactory.getInstance().getPeer(address);
         try {
-            if (peer == null)
-                peer = new SnmpPeer(address);
-            session = new SnmpSession(peer);
+            return (getNextValue(SnmpPeerFactory.getInstance().getPeer(address), DEFAULT_OID) != null);
 
-            SnmpResponseHandler handler = new SnmpResponseHandler();
-            SnmpPduPacket out = new SnmpPduRequest(SnmpPduPacket.GETNEXT, new SnmpVarBind[] { new SnmpVarBind(DEFAULT_OID) });
-
-            synchronized (handler) {
-                session.send(out, handler);
-                try {
-                    wait((long) ((peer.getRetries() + 1) * peer.getTimeout()));
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-
-            if (handler.getResult() != null) {
-                isSupported = true;
-            }
         } catch (Throwable t) {
             throw new UndeclaredThrowableException(t);
+        }
+        
+    }
+
+    private String getNextValue(SnmpPeer peer, String oid) throws SocketException {
+        SnmpSession session = null;
+        try {
+            session = new SnmpSession(peer);
+            SnmpSyntax val = session.getNext(new SnmpObjectId(oid));
+            return (val == null ? null : val.toString());
+            
         } finally {
             if (session != null)
                 session.close();
         }
-
-        return isSupported;
     }
 
     /**
@@ -143,13 +130,10 @@ public final class SnmpPlugin extends AbstractPlugin {
      * @return True if the protocol is supported by the address.
      */
     public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
-        boolean isSupported = false;
-        SnmpSession session = null;
-        SnmpPeer peer = SnmpPeerFactory.getInstance().getPeer(address);
         try {
-            if (peer == null)
-                peer = new SnmpPeer(address);
 
+            String oid = ParameterMap.getKeyedString(qualifiers, "vbname", DEFAULT_OID);
+            SnmpPeer peer = SnmpPeerFactory.getInstance().getPeer(address);
             String expectedValue = null;
             if (qualifiers != null) {
                 // "port" parm
@@ -158,21 +142,21 @@ public final class SnmpPlugin extends AbstractPlugin {
                     int port = ParameterMap.getKeyedInteger(qualifiers, "port", peer.getPort());
                     peer.setPort(port);
                 }
-
+                
                 // "timeout" parm
                 //
                 if (qualifiers.get("timeout") != null) {
                     int timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", peer.getTimeout());
                     peer.setTimeout(timeout);
                 }
-
+                
                 // "retry" parm
                 //
                 if (qualifiers.get("retry") != null) {
                     int retry = ParameterMap.getKeyedInteger(qualifiers, "retry", peer.getRetries());
                     peer.setRetries(retry);
                 }
-
+                
                 // "force version" parm
                 //
                 if (qualifiers.get("force version") != null) {
@@ -182,67 +166,24 @@ public final class SnmpPlugin extends AbstractPlugin {
                     else if (version.equalsIgnoreCase("snmpv2"))
                         peer.getParameters().setVersion(SnmpSMI.SNMPV2);
                 }
-
+                
                 // "vbvalue" parm
                 //
                 if (qualifiers.get("vbvalue") != null) {
                     expectedValue = (String) qualifiers.get("vbvalue");
                 }
             }
-
-            session = new SnmpSession(peer);
-
-            String oid = ParameterMap.getKeyedString(qualifiers, "vbname", DEFAULT_OID);
-
-            SnmpResponseHandler handler = new SnmpResponseHandler();
-
-            SnmpPduPacket out = null;
-            if (peer.getParameters().getVersion() == SnmpSMI.SNMPV1)
-                out = new SnmpPduRequest(SnmpPduPacket.GETNEXT, new SnmpVarBind[] { new SnmpVarBind(oid) });
-            else if (peer.getParameters().getVersion() == SnmpSMI.SNMPV2)
-                out = new SnmpPduBulk(1, // nonRepeaters
-                        0, // maxRepetitions
-                        new SnmpVarBind[] { new SnmpVarBind(oid) });
-
-            synchronized (handler) {
-                session.send(out, handler);
-                try {
-                    handler.wait((long) ((peer.getRetries() + 1) * peer.getTimeout()));
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+            
+            String retrievedValue = getNextValue(peer, oid);
+            
+            if (retrievedValue != null) {
+                return (expectedValue == null ? true : retrievedValue.equals(expectedValue));
             }
-
-            if (handler.getResult() != null) {
-                String retrievedValue = handler.getResult().getValue().toString();
-
-                // If no expected value to check against isSupported is true
-                if (expectedValue == null) {
-                    isSupported = true;
-                }
-                // If there is an expected value, verify it matches the
-                // retrieved value
-                else {
-                    if (retrievedValue.equals(expectedValue))
-                        isSupported = true;
-                }
-
-                if (qualifiers != null) {
-                    qualifiers.put("vbname", handler.getResult().getName().toString());
-                    qualifiers.put("vbvalue", retrievedValue);
-                    if (peer.getParameters().getVersion() == SnmpSMI.SNMPV1)
-                        qualifiers.put("version", "SNMPv1");
-                    else if (peer.getParameters().getVersion() == SnmpSMI.SNMPV2)
-                        qualifiers.put("version", "SNMPv2");
-                }
-            }
+            return false;
+            
         } catch (Throwable t) {
             throw new UndeclaredThrowableException(t);
-        } finally {
-            if (session != null)
-                session.close();
         }
-
-        return isSupported;
+        
     }
 }

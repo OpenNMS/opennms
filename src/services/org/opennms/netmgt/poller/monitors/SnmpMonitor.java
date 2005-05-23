@@ -54,14 +54,11 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.utils.ParameterMap;
-import org.opennms.netmgt.utils.SnmpResponseHandler;
 import org.opennms.protocols.snmp.SnmpObjectId;
-import org.opennms.protocols.snmp.SnmpPduPacket;
-import org.opennms.protocols.snmp.SnmpPduRequest;
 import org.opennms.protocols.snmp.SnmpPeer;
 import org.opennms.protocols.snmp.SnmpSMI;
 import org.opennms.protocols.snmp.SnmpSession;
-import org.opennms.protocols.snmp.SnmpVarBind;
+import org.opennms.protocols.snmp.SnmpSyntax;
 
 /**
  * <P>
@@ -260,69 +257,36 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
                 log.debug("SnmpMonitor.poll: SnmpPeer configuration: address: " + peer.getPeer() + nl + "      version: " + SnmpSMI.getVersionString(peer.getParameters().getVersion()) + nl + "      timeout: " + peer.getTimeout() + nl + "      retries: " + peer.getRetries() + nl + "      read commString: " + peer.getParameters().getReadCommunity() + nl + "      write commString: " + peer.getParameters().getWriteCommunity());
             }
             session = new SnmpSession(peer);
-        } catch (SocketException e) {
-            if (log.isEnabledFor(Priority.ERROR))
-                log.error("poll: Error creating the SnmpSession to collect from " + ipaddr.getHostAddress(), e);
-            if (session != null) {
-                try {
-                    session.close();
-                } catch (Exception ex) {
-                    if (log.isInfoEnabled())
-                        log.info("poll: an error occured closing the SNMP session", ex);
-                }
-            }
+            SnmpObjectId snmpObjectId = new SnmpObjectId(oid);
+            
+            // TODO: Someday this should be changed to GET rather than GETNEXT
+            SnmpSyntax result = session.getNext(snmpObjectId);
 
-            return ServiceMonitor.SERVICE_UNAVAILABLE;
-        }
-
-        // Need to be certain that we close the SNMP session when the data
-        // retrieval is completed...wrapping in a try/finally block
-        //
-        try {
-            // Create SNMP response handler, send SNMP GetNext request and
-            // block waiting for response.
-            //
-            SnmpResponseHandler handler = new SnmpResponseHandler();
-            SnmpPduPacket out = new SnmpPduRequest(SnmpPduPacket.GETNEXT, new SnmpVarBind[] { new SnmpVarBind(new SnmpObjectId(oid)) });
-
-            synchronized (handler) {
-                session.send(out, handler);
-                try {
-                    // wait for response for no longer than
-                    // (timeout)*(retries)+1000ms
-                    handler.wait(timeout * retries + 1000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-
-            if (handler.getResult() != null) {
-                log.debug("poll: SNMP poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + handler.getResult().getValue());
-                try {
-                    status = (meetsCriteria(handler.getResult().getValue(), operator, operand) ? ServiceMonitor.SERVICE_AVAILABLE : ServiceMonitor.SERVICE_UNAVAILABLE);
-                } catch (NumberFormatException e) {
-                    log.warn("Number operator used on a non-number " + e.getMessage());
-                    status = ServiceMonitor.SERVICE_AVAILABLE;
-                } catch (IllegalArgumentException e) {
-                    log.warn("Invalid Snmp Criteria: " + e.getMessage());
-                    status = ServiceMonitor.SERVICE_UNAVAILABLE;
-                }
+            if (result != null) {
+                log.debug("poll: SNMP poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
+                status = (meetsCriteria(result, operator, operand) ? ServiceMonitor.SERVICE_AVAILABLE : ServiceMonitor.SERVICE_UNAVAILABLE);
             } else {
                 log.debug("poll: SNMP poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + oid);
                 status = ServiceMonitor.SERVICE_UNAVAILABLE;
             }
+            
+        } catch (NumberFormatException e) {
+            log.error("Number operator used on a non-number " + e.getMessage());
+            status = ServiceMonitor.SERVICE_UNAVAILABLE;
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid Snmp Criteria: " + e.getMessage());
+            status = ServiceMonitor.SERVICE_UNAVAILABLE;
+        } catch (SocketException e) {
+            log.error("poll: Error creating the SnmpSession to collect from " + ipaddr.getHostAddress(), e);
+            return ServiceMonitor.SERVICE_UNAVAILABLE;
         } catch (Throwable t) {
             log.warn("poll: Unexpected exception during SNMP poll of interface " + ipaddr.getHostAddress(), t);
             status = ServiceMonitor.SERVICE_UNAVAILABLE;
         } finally {
-            // Regardless of what happens with the collection, close the session
-            // when we're finished collecting data.
-            //
             try {
-                session.close();
+                if (session != null) session.close();
             } catch (Exception e) {
-                if (log.isEnabledFor(Priority.WARN))
-                    log.warn("collect: An error occured closing the SNMP session for " + ipaddr.getHostAddress(), e);
+                log.warn("collect: An error occured closing the SNMP session for " + ipaddr.getHostAddress(), e);
             }
         }
 
