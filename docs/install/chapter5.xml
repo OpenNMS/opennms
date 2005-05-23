@@ -37,6 +37,13 @@
     <section>
       <title>Retrieve released source</title>
 
+      <note>
+	<para>The <filename>tar</filename> that ships with Solaris will not
+	  properly unarchive the OpenNMS source.  It can (nearly) silently fail,
+	  leaving you with a corrupted directory of OpenNMS source.  You will
+	  need to use GNU tar on Solaris.</para>
+      </note>
+
       <para>Download the latest source release from the <ulink
       url="http://sourceforge.net/project/showfiles.php?group_id=4141&amp;package_id=118141"><filename>opennms-source</filename>
       file package</ulink> in the <ulink
