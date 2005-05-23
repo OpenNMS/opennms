@@ -91,7 +91,7 @@ public class IpAddrTable extends SnmpTableWalker {
      * @see IpAddrTableEntry
      */
     public IpAddrTable(SnmpSession session, InetAddress address, Signaler signaler, int version) {
-        super(address, signaler, version, "ipAddrTable", IpAddrTableEntry.getElements(), IpAddrTableEntry.TABLE_OID);
+        super(address, signaler, version, "ipAddrTable", IpAddrTableEntry.ms_elemList, IpAddrTableEntry.TABLE_OID);
         m_entries = new ArrayList();
         start(session);
     }

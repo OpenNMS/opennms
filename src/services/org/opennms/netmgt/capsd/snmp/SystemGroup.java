@@ -39,12 +39,8 @@
 package org.opennms.netmgt.capsd.snmp;
 
 import java.net.InetAddress;
-import java.util.Map;
-import java.util.TreeMap;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.utils.Signaler;
 import org.opennms.protocols.snmp.SnmpHandler;
 import org.opennms.protocols.snmp.SnmpObjectId;
@@ -68,7 +64,7 @@ import org.opennms.protocols.snmp.SnmpVarBind;
  * 
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
-public final class SystemGroup implements SnmpHandler {
+public final class SystemGroup extends SnmpStore implements SnmpHandler {
     //
     // Lookup strings for specific table entries
     //
@@ -92,7 +88,7 @@ public final class SystemGroup implements SnmpHandler {
      * class.
      * </P>
      */
-    private static NamedSnmpVar[] ms_elemList = null;
+    public static NamedSnmpVar[] ms_elemList = null;
 
     /**
      * <P>
@@ -230,24 +226,6 @@ public final class SystemGroup implements SnmpHandler {
      */
     private Signaler m_signal;
     
-    private Map m_responseMap;
-
-    /**
-     * <P>
-     * The default constructor is marked private and will always throw an
-     * exception. This is done to disallow the default constructor. The reason
-     * is that this object requires an SNMP session and a synchronization object
-     * to perform it's duties.
-     * 
-     * @exception java.lang.UnsupportedOperationException
-     *                Always thrown from this method since it is not supported.
-     * 
-     * @see #SystemGroup(SnmpSession, InetAddress, Signaler)
-     */
-    private SystemGroup() throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("Default Constructor not supported");
-    }
-
     /**
      * <P>
      * The class constructor is used to initialize the collector and send out
@@ -263,12 +241,11 @@ public final class SystemGroup implements SnmpHandler {
      * 
      */
     public SystemGroup(SnmpSession session, InetAddress address, Signaler signaler) {
-        super();
+        super(ms_elemList);
 
         m_error = false;
 
         m_signal = signaler;
-        m_responseMap = new TreeMap();
         
         SnmpPduPacket pdu = getPdu();
         pdu.setRequestId(SnmpPduPacket.nextSequence());
@@ -330,10 +307,6 @@ public final class SystemGroup implements SnmpHandler {
                 }
             }
         }
-    }
-
-    private static Category log() {
-        return ThreadCategory.getInstance(SystemGroup.class);
     }
 
     /**
@@ -512,12 +485,4 @@ public final class SystemGroup implements SnmpHandler {
         return SnmpOctetString.toDisplayString((SnmpOctetString) get(SystemGroup.SYS_CONTACT));
     }
     
-    private Object get(String key) {
-        return m_responseMap.get(key);
-    }
-    
-    private void put(String key, Object value) {
-        m_responseMap.put(key, value);
-    }
-
 }

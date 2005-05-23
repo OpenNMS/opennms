@@ -35,16 +35,11 @@
 package org.opennms.netmgt.capsd.snmp;
 
 import java.net.InetAddress;
-import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.protocols.snmp.SnmpIPAddress;
-import org.opennms.protocols.snmp.SnmpInt32;
 import org.opennms.protocols.snmp.SnmpObjectId;
-import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpUInt32;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
@@ -70,7 +65,7 @@ import org.opennms.protocols.snmp.SnmpVarBind;
  * @see IpAddrTable
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
-public final class IpAddrTableEntry {
+public final class IpAddrTableEntry extends SnmpTableEntry {
     // Lookup strings for specific table entries
     //
     public final static String IP_ADDR_ENT_ADDR = "ipAdEntAddr";
@@ -81,15 +76,7 @@ public final class IpAddrTableEntry {
 
     public final static String IP_ADDR_ENT_BCASTADDR = "ipAdEntBcastAddr";
 
-    /**
-     * <P>
-     * The keys that will be supported by default from the TreeMap base class.
-     * Each of the elements in the list are an instance of the SNMP Interface
-     * table. Objects in this list should be used by multiple instances of this
-     * class.
-     * </P>
-     */
-    private static NamedSnmpVar[] ms_elemList = null;
+    public static NamedSnmpVar[] ms_elemList = null;
 
     /**
      * <P>
@@ -125,34 +112,6 @@ public final class IpAddrTableEntry {
 
     /**
      * <P>
-     * The SnmpObjectId that represents the root of the interface tree. It is
-     * created when the class is initialized and contains the value of
-     * TABLE_OID.
-     * 
-     * @see #TABLE_OID
-     */
-    public static final SnmpObjectId ROOT = new SnmpObjectId(TABLE_OID);
-
-    private Map m_responseMap = new TreeMap();
-
-    /**
-     * <P>
-     * Creates a default instance of the IP Address table entry map. The map
-     * represents a singular instance of the address table. Each column in the
-     * table for the loaded instance may be retreived either through its name or
-     * object identifier.
-     * </P>
-     * 
-     * <P>
-     * The initial table is constructied with zero elements in the map.
-     * </P>
-     */
-    public IpAddrTableEntry() {
-        super();
-    }
-
-    /**
-     * <P>
      * The class constructor used to initialize the object to its initial state.
      * Although the object's member variables can change after an instance is
      * created, this constructor will initialize all the variables as per their
@@ -168,7 +127,7 @@ public final class IpAddrTableEntry {
      *            The array of variable bindings.
      */
     public IpAddrTableEntry(SnmpVarBind[] vars) {
-        this();
+        super(ms_elemList);
         update(vars);
     }
 
@@ -239,15 +198,6 @@ public final class IpAddrTableEntry {
         }
     }
 
-    /**
-     * <P>
-     * Returns the number of entries in the MIB-II ipAddrTable element list.
-     * </P>
-     */
-    public static int getElementListSize() {
-        return getElements().length;
-    }
-    
     public InetAddress getIpAdEntAddr() {
         return getIPAddress(IpAddrTableEntry.IP_ADDR_ENT_ADDR);
     }
@@ -268,35 +218,4 @@ public final class IpAddrTableEntry {
         return SnmpIPAddress.toInetAddress((SnmpIPAddress) get(key));
     }
     
-    private Integer getInt32(String key) {
-        return SnmpInt32.toInteger((SnmpInt32) get(key));
-    }
-    
-    private Long getUInt32(String key) {
-        return SnmpUInt32.toLong((SnmpUInt32) get(key));
-    }
-    
-    private String getDisplayString(String key) {
-        return SnmpOctetString.toDisplayString((SnmpOctetString) get(key));
-    }
-
-    private String getHexString(String key) {
-        return SnmpOctetString.toHexString((SnmpOctetString) get(key));
-    }
-
-    private Object get(String key) {
-        return m_responseMap.get(key);
-    }
-    
-    private void put(String key, Object value) {
-        m_responseMap.put(key, value);
-    }
-
-    public static NamedSnmpVar[] getElements() {
-        return ms_elemList;
-    }
-
-
-
-
 }

@@ -106,7 +106,7 @@ public final class IfTable extends SnmpTableWalker {
      * @see IfTableEntry
      */
     public IfTable(SnmpSession session, InetAddress address, Signaler signaler, int version) {
-        super(address, signaler, version, "ifTable", IfTableEntry.getElements(), IfTableEntry.TABLE_OID);
+        super(address, signaler, version, "ifTable", IfTableEntry.ms_elemList, IfTableEntry.TABLE_OID);
 
         m_entries = new ArrayList(2); // not synchronized.
         

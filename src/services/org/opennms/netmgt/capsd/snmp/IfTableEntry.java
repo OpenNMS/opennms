@@ -40,18 +40,7 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.protocols.snmp.SnmpInt32;
 import org.opennms.protocols.snmp.SnmpObjectId;
-import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpPduBulk;
-import org.opennms.protocols.snmp.SnmpPduPacket;
-import org.opennms.protocols.snmp.SnmpPduRequest;
-import org.opennms.protocols.snmp.SnmpUInt32;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
@@ -82,7 +71,7 @@ import org.opennms.protocols.snmp.SnmpVarBind;
  * 
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
-public final class IfTableEntry {
+public final class IfTableEntry extends SnmpTableEntry {
     //
     // Lookup strings for specific table entries
     //
@@ -129,16 +118,8 @@ public final class IfTableEntry {
     public final static String IF_OUT_QLEN = "ifOutQLen";
 
     public final static String IF_SPECIFIC = "ifSpecific";
-
-    /**
-     * <P>
-     * The keys that will be supported by default from the TreeMap base class.
-     * Each of the elements in the list are an instance of the SNMP Interface
-     * table. Objects in this list should be used by multiple instances of this
-     * class.
-     * </P>
-     */
-    private static NamedSnmpVar[] ms_elemList = null;
+    
+    public static NamedSnmpVar[] ms_elemList = null;
 
     /**
      * <P>
@@ -199,34 +180,6 @@ public final class IfTableEntry {
 
     /**
      * <P>
-     * The SnmpObjectId that represents the root of the interface tree. It is
-     * created when the class is initialized and contains the value of
-     * TABLE_OID.
-     * 
-     * @see #TABLE_OID
-     */
-    public static final SnmpObjectId ROOT = new SnmpObjectId(TABLE_OID);
-
-    private Map m_responseMap = new TreeMap();
-
-    /**
-     * <P>
-     * Creates a default instance of the interface table entry map. The map
-     * represents a singular instance of the interface table. Each column in the
-     * table for the loaded instance may be retreived either through its name or
-     * object identifier.
-     * </P>
-     * 
-     * <P>
-     * The initial table is constructied with zero elements in the map.
-     * </P>
-     */
-    public IfTableEntry() {
-        super();
-    }
-
-    /**
-     * <P>
      * The class constructor used to initialize the object to its initial state.
      * Although the object's attributes and data can be changed after its
      * created, this constructor will initialize all the variables as per their
@@ -239,9 +192,7 @@ public final class IfTableEntry {
      * 
      */
     public IfTableEntry(SnmpVarBind[] vars) {
-        // Initialize the map
-        //
-        this();
+        super(ms_elemList);
         update(vars);
     }
 
@@ -309,103 +260,6 @@ public final class IfTableEntry {
         }
     }
 
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
-    /**
-     * <P>
-     * This method is used to get a generic SNMPv1 GETNEXT PDU that contains one
-     * varbind per member element. The PDU can then be used to perform an <EM>
-     * SNMP walk</EM> of the MIB-II interface table on remote host via
-     * consecutive SNMPv1 GETNEXT requests.
-     * </P>
-     * 
-     * @return An SnmpPduPacket with the command of GETNEXT and one varbind for
-     *         each member variable.
-     */
-    public static SnmpPduPacket getNextPdu() {
-        SnmpPduPacket pdu = new SnmpPduRequest(SnmpPduRequest.GETNEXT);
-
-        pdu.setRequestId(SnmpPduPacket.nextSequence());
-        for (int x = 0; x < ms_elemList.length; x++) {
-            SnmpObjectId oid = new SnmpObjectId(ms_elemList[x].getOid());
-            pdu.addVarBind(new SnmpVarBind(oid));
-        }
-        Category log = ThreadCategory.getInstance(IfTableEntry.class);
-        if (log.isDebugEnabled()) {
-            log.debug("snmpReceivedPdu: generating next SNMPv1 request with id: " + pdu.getRequestId());
-        }
-
-        return pdu;
-    }
-
-    /**
-     * <P>
-     * This method is used to get a generic SNMPv2 GETBULK PDU that contains a
-     * single varbind -- the ifTable root oid. The PDU can then be used to
-     * perform an <EM>SNMP walk</EM> of the MIB-II interface table on remote
-     * host via SNMPv2 GETBULK REQUESTS.
-     * </P>
-     * 
-     * @return An SnmpPduPacket with the command of GETBULK.
-     */
-    public static SnmpPduPacket getBulkPdu(int numInterfaces) {
-        SnmpPduPacket pdu = new SnmpPduBulk();
-
-        ((SnmpPduBulk) pdu).setMaxRepititions(numInterfaces * ms_elemList.length);
-        pdu.setRequestId(SnmpPduPacket.nextSequence());
-
-        SnmpObjectId oid = new SnmpObjectId(TABLE_OID);
-        pdu.addVarBind(new SnmpVarBind(oid));
-
-        Category log = ThreadCategory.getInstance(IfTableEntry.class);
-        if (log.isDebugEnabled()) {
-            log.debug("snmpReceivedPdu: generating next SNMPv2 request with id: " + pdu.getRequestId());
-        }
-        return pdu;
-    }
-
-    /**
-     * <P>
-     * This method will determine where the cut off point will be for valid data
-     * from the response to the GETBULK packet. By using the size of the element
-     * list, listed above, we can determine the proper index for this task.
-     * </P>
-     */
-    public static SnmpObjectId stop_oid() {
-        Integer endindex = new Integer(ms_elemList.length + 1);
-        String endoid = new String(TABLE_OID + "." + endindex.toString());
-        SnmpObjectId oid = new SnmpObjectId(endoid);
-
-        return oid;
-    }
-
-    /**
-     * <P>
-     * This method will generate a packet that will go out and retrieve the
-     * ifNumber variable from the MIB, the variable that states the number of
-     * interfaces for the device.
-     * </P>
-     */
-    public static SnmpPduRequest getIfNumberPdu() {
-        SnmpPduRequest pdu = new SnmpPduRequest(SnmpPduRequest.GETNEXT);
-        SnmpObjectId oid = new SnmpObjectId(".1.3.6.1.2.1.2.1");
-        pdu.addVarBind(new SnmpVarBind(oid));
-        pdu.setRequestId(SnmpPduPacket.nextSequence());
-
-        return pdu;
-    }
-
-    /**
-     * <P>
-     * Returns the number of entries in the MIB-II ifTable element list.
-     * </P>
-     */
-    public static int getElementListSize() {
-        return ms_elemList.length;
-    }
-
     public Integer getIfIndex() {
         return getInt32(IfTableEntry.IF_INDEX);
     }
@@ -432,34 +286,6 @@ public final class IfTableEntry {
 
     public Long getIfSpeed() {
         return getUInt32(IfTableEntry.IF_SPEED);
-    }
-
-    private Integer getInt32(String key) {
-        return SnmpInt32.toInteger((SnmpInt32) get(key));
-    }
-    
-    private Long getUInt32(String key) {
-        return SnmpUInt32.toLong((SnmpUInt32) get(key));
-    }
-    
-    private String getDisplayString(String key) {
-        return SnmpOctetString.toDisplayString((SnmpOctetString) get(key));
-    }
-
-    private String getHexString(String key) {
-        return SnmpOctetString.toHexString((SnmpOctetString) get(key));
-    }
-
-    private Object get(String key) {
-        return m_responseMap.get(key);
-    }
-    
-    private void put(String key, Object value) {
-        m_responseMap.put(key, value);
-    }
-
-    public static NamedSnmpVar[] getElements() {
-        return ms_elemList;
     }
 
 }

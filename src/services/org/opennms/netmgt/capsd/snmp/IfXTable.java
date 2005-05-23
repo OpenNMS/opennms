@@ -98,7 +98,7 @@ public final class IfXTable extends SnmpTableWalker {
      * @see IfXTableEntry
      */
     public IfXTable(SnmpSession session, InetAddress address, Signaler signaler, int version) {
-        super(address, signaler, version, "ifXTable", IfXTableEntry.getElements(), IfXTableEntry.TABLE_OID);
+        super(address, signaler, version, "ifXTable", IfXTableEntry.ms_elemList, IfXTableEntry.TABLE_OID);
 
         m_entries = new ArrayList(2);
         
