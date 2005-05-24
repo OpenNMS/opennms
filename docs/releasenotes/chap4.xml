@@ -19,11 +19,13 @@
     <para>The following Linux distributions and other unix-like systems are
     supported out-of-the-box with native installation packages.</para>
 
-    <bridgehead>Red Hat Linux 7.x, Red Hat Linux 8, Red Hat Linux 9 and Red
-    Hat Enterprise Linux 3</bridgehead>
+    <bridgehead>Red Hat Linux 7.x, Red Hat Linux 8, Red Hat Linux 9, Red Hat
+    Enterprise Linux 3 and Red Hat Enterprise Linux 4</bridgehead>
 
     <para>PostgreSQL 7.2 and later has shipped with Red Hat Linux since
     version 7.3. Be sure to follow the above instructions.</para>
+
+    <bridgehead>CentOS 3 and CentOS 4</bridgehead>
 
     <formalpara>
       <title>Fedora Core 1, Fedora Core 2 and Fedora Core 3.</title>
@@ -33,7 +35,7 @@
     </formalpara>
 
     <formalpara>
-      <title>Debian Woody on Intel</title>
+      <title>Debian Woody, Sarge and Sid</title>
 
       <para>Debian packages should be available on ftp.opennms.org, and at the
       following apt-repository:<programlisting>deb http://debian.opennms.org/apt debian/opennms stable</programlisting></para>
@@ -66,7 +68,7 @@
     </formalpara>
 
     <formalpara>
-      <title>MacOSX 10.3</title>
+      <title>MacOSX 10.3 and 10.4</title>
 
       <para>On MacOSX, the Fink distribution packages of OpenNMS are
       supported. See <ulink url="http://fink.sf.net/">the Fink web

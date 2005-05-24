@@ -376,26 +376,60 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
 
     <section>
       <title>Error: "- adding iplike database function... &lt;snip&gt;
-	org.postgresql.util.PSQLException: ERROR: could not access file
-	'&lt;snip&gt;/lib/iplike.so': Permission denied"</title>
+      org.postgresql.util.PSQLException: ERROR: could not access file
+      '&lt;snip&gt;/lib/iplike.so': Permission denied"</title>
 
-      <para>The PostgreSQL server cannot access the iplike.so file.  This
-	could be due to the file itself not having appropriate permissions
-	for the user that PostgreSQL runs as and/or one or more of the
-	parent directories of the iplike.so not having appropriate
-	permissions.</para>
+      <para>The PostgreSQL server cannot access the iplike.so file. This could
+      be due to the file itself not having appropriate permissions for the
+      user that PostgreSQL runs as and/or one or more of the parent
+      directories of the iplike.so not having appropriate permissions.</para>
 
-      <para>This error is seen even when running the installer as root
-	because it is not OpenNMS nor the installer that cannot access
-	the iplike.so file, but the PostgreSQL database.  The installer
-	instructs the PostgreSQL database to load the iplike.so and the
-	PostgreSQL database server usually runs as a non-root user, so it
-	is subject to filesystem access control checks like any other
-	normal user.  This is commonly seen when people install OpenNMS
-	into a home directory for root or another user and the permissions
-	on that home directory do not allow users other than the owner
-	of the directory access.</para>
-      </section>
+      <para>This error is seen even when running the installer as root because
+      it is not OpenNMS nor the installer that cannot access the iplike.so
+      file, but the PostgreSQL database. The installer instructs the
+      PostgreSQL database to load the iplike.so and the PostgreSQL database
+      server usually runs as a non-root user, so it is subject to filesystem
+      access control checks like any other normal user. This is commonly seen
+      when people install OpenNMS into a home directory for root or another
+      user and the permissions on that home directory do not allow users other
+      than the owner of the directory access.</para>
+    </section>
+
+    <section>
+      <title>Error: "Exception in thread "main"
+      org.postgresql.util.PSQLException: ERROR: relation "pg_user" does not
+      exist" when running installer.</title>
+
+      <para>This error means the database was not created properly. Since the
+      installer script is supposed to create the database, one might assume it
+      is a problem with OpenNMS, but instead it is an issue with the SELinux
+      portions of Red Hat 4 (and CentOS 4). Basically, the postgres init_db
+      command is not able to write to /dev/null, and it fails without a useful
+      error message.</para>
+
+      <para>To get around this, run the following commands:</para>
+
+      <orderedlist>
+        <listitem>
+          <para>stop postgres</para>
+        </listitem>
+
+        <listitem>
+          <para>rm -rf /var/lib/pgsql/data</para>
+        </listitem>
+
+        <listitem>
+          <para>/usr/sbin/setenforce 0</para>
+        </listitem>
+
+        <listitem>
+          <para>start postgres</para>
+        </listitem>
+      </orderedlist>
+
+      <para>Note that step 2 will delete any changes you made to the
+      postgresql configuration files and you'll need to redo them.</para>
+    </section>
   </section>
 
   <section>

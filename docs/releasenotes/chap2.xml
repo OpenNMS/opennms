@@ -12,6 +12,68 @@
   version 1.1.5 continues that progress.</para>
 
   <section>
+    <title>Changes in OpenNMS 1.2.3</title>
+
+    <section>
+      <title>New Features</title>
+
+      <bridgehead>Scheduled Outages Editor</bridgehead>
+
+      <para>The final version of Craig Miskell's (OGP) poll-outages editor is
+      included in this release. Accessed from the Admin menu, it allows one to
+      configure weekly, monthly and specific poll-outages from the webUI. A
+      poll outage is where polling will stop for a particular set of devices
+      or a package. </para>
+
+      <para>Choose "Scheduled Outages" from the admin page, and the GUI will
+      display the currently configured outages. You can edit those or create
+      your own. You can then apply them to notifications, or to particular
+      packages in the threshd, collectd and poller configurations.</para>
+
+      <para>Please note that when applied to polling, no checks occur during
+      the outage period. The services are not automatically considered "up".
+      So if you have a maintenance window that starts at 2am and ends a 4am on
+      Sundays, if you take the service down at 1:59 am and OpenNMS marks it as
+      down, it will stay down until 4am.</para>
+
+      <para>Hat off to Craig for this feature.</para>
+
+      <bridgehead>Growl Support in OS X</bridgehead>
+
+      <para>If you happen to run OpenNMS on OS X, you can now send
+      notifications via Growl. Simply use "growlMessage" as one of the
+      services in your destination path. Note that you have to be on the
+      machine running OpenNMS to see them.</para>
+
+      <bridgehead>New Events and Graphs</bridgehead>
+
+      <para>There have been a number of event definitions added to OpenNMS,
+      including those for NORTEL Contivity and Foundry devices. In addition,
+      more support has been added for the SNMP Informant agent.</para>
+    </section>
+
+    <section>
+      <title>Bug Fixes</title>
+
+      <para>Some people have reported an issue with service polling stopping.
+      It was determined that, for some reason on some systems, a particular
+      device or devices will cause a polling thread to hang. This would block
+      polling from occuring. While the root cause of the issue has not been
+      found (i.e. why the thread hangs) the code was modified so that a hung
+      thread would not block the whole queue.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Changes in OpenNMS 1.2.2</title>
+
+    <para>There is only one bug addressed in 1.2.2 concerning possible webUI
+    exceptions if there are null values in the
+    <varname>issnmpprimary</varname> field in the <varname>interface</varname>
+    table of the database.</para>
+  </section>
+
+  <section>
     <title>Changes in OpenNMS 1.2.1</title>
 
     <section>
@@ -211,7 +273,7 @@ report.netsnmp.disk1percent.command=--title="Percentage Disk Space on {ns-disk-1
 
       <para>Thanks to Bill for his hard work on this.</para>
 
-      <bridgehead>GUI for <filename>snmp-config.xml</filename> </bridgehead>
+      <bridgehead>GUI for <filename>snmp-config.xml</filename></bridgehead>
 
       <para>Gerald Turner has written a useful admin GUI for managing the
       <filename>snmp-config.xml</filename> file. It allows you to add specific
@@ -297,7 +359,7 @@ report.netsnmp.disk1percent.command=--title="Percentage Disk Space on {ns-disk-1
       displayed on this page as well. It is hoped that it will be available
       for the next release.</para>
 
-      <para>Hats of to Gerald for this work. </para>
+      <para>Hats of to Gerald for this work.</para>
 
       <bridgehead>Other Features</bridgehead>
 

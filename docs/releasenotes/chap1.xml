@@ -4,6 +4,13 @@
 
   <subtitle>About This Release</subtitle>
 
+  <para>Release 1.2.3 is another maintenance release in the OpenNMS stable
+  branch. It addresses a polling issue that may cause polling to stop, as well
+  as adding a final version of the poll-outages calendar. Also included are a
+  number of new events and reports.</para>
+
+  <para>Release 1.2.2 is 1.2.1 with one annoying webUI bug fixed.</para>
+
   <para>Release 1.2.1 is a maintenance release in the OpenNMS stable branch.
   It contains a few bug fixes and several small features. "Stable" releases
   may contain new features, as long as it is determined that they pose a very
