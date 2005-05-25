@@ -373,7 +373,7 @@ public class SnmpIfCollector implements SnmpHandler {
         index = new Integer(m_indexArray[m_responses]);
         m_objList = ((IfInfo) m_ifMap.get(index)).getOidList();
         if (log().isDebugEnabled())
-            log().debug("getNextSnmpV1Pdu: ("+m_primaryIf+") ifindex: " + index + " oidListIndex=" + m_oidListIndex + " objCount=" + m_objList.size());
+            log().debug("getNextSnmpV1Pdu: ("+m_primaryIf+") ifindex: " + index + " oidListIndex=" + m_oidListIndex + " objCount=" + (m_objList == null ? 0 : m_objList.size()));
 
         pdu.setRequestId(SnmpPduPacket.nextSequence());
 

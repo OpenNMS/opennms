@@ -1333,6 +1333,8 @@ public class OpenNMSTestCase extends TestCase {
                 "\n" + 
                 "</snmp-config>";
 
+    private boolean m_startEventd = true;
+
     /**
      * Helper method for getting the ip address of the localhost as a
      * String to be used in the snmp-config.
@@ -1382,22 +1384,27 @@ public class OpenNMSTestCase extends TestCase {
             m_db = new MockDatabase();
             m_db.populate(m_network);
             
-            m_eventd = new Eventd();
-            m_eventdConfigMgr = new MockEventConfigManager(MOCK_EVENT_CONFIG);
-            m_eventd.setConfigManager(m_eventdConfigMgr);
             DatabaseConnectionFactory.setInstance(m_db);
-            
+
             Reader rdr = new StringReader(SNMP_CONFIG);
             SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
             
-            rdr = new StringReader(MOCK_EVENT_CONF);
-            EventConfigurationManager.loadConfiguration(rdr);
-            
-            m_eventdIpcMgr = new EventIpcManagerDefaultImpl(m_eventdConfigMgr);
-            EventIpcManagerFactory.setIpcManager(m_eventdIpcMgr);
-            m_eventd.setEventIpcManager(m_eventdIpcMgr);
-            m_eventd.init();
-            m_eventd.start();
+            if (isStartEventd()) {
+                m_eventd = new Eventd();
+                m_eventdConfigMgr = new MockEventConfigManager(MOCK_EVENT_CONFIG);
+                m_eventd.setConfigManager(m_eventdConfigMgr);
+                
+                
+                Reader configRdr = new StringReader(MOCK_EVENT_CONF);
+                EventConfigurationManager.loadConfiguration(configRdr);
+                
+                
+                m_eventdIpcMgr = new EventIpcManagerDefaultImpl(m_eventdConfigMgr);
+                EventIpcManagerFactory.setIpcManager(m_eventdIpcMgr);
+                m_eventd.setEventIpcManager(m_eventdIpcMgr);
+                m_eventd.init();
+                m_eventd.start();
+            }
         
         }
 
@@ -1405,9 +1412,17 @@ public class OpenNMSTestCase extends TestCase {
 
     protected void tearDown() throws Exception {
         if(m_runSupers) {
-            m_eventd.stop();
+            if (isStartEventd()) m_eventd.stop();
             super.tearDown();
         }
+    }
+
+    protected void setStartEventd(boolean startEventd) {
+        m_startEventd = startEventd;
+    }
+
+    protected boolean isStartEventd() {
+        return m_startEventd;
     }
 
 }

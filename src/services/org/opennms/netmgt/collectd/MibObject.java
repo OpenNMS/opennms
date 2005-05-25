@@ -202,6 +202,7 @@ public class MibObject {
      * @return The object's maxval.
      */
     public String getMaxval() {
+        // TODO: No one uses these... Do we need them?
         return m_maxval;
     }
 
@@ -211,6 +212,7 @@ public class MibObject {
      * @return The object's minval.
      */
     public String getMinval() {
+        // TODO: No one uses these... Do we need them?
         return m_minval;
     }
 
