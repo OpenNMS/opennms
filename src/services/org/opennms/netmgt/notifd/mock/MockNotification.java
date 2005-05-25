@@ -40,6 +40,7 @@ public class MockNotification {
     private String m_subject;
     private String m_email;
     private String m_pemail;
+	private String m_textMsg;
     private long m_expectedTime;
     
     
@@ -48,10 +49,9 @@ public class MockNotification {
         if(o instanceof MockNotification) {
             MockNotification m = (MockNotification)o;
             return (m_subject == null ? m.m_subject == null : m_subject.equals(m.m_subject))
+                && (m_textMsg == null ? m.m_textMsg == null : m_textMsg.equals(m.m_textMsg))
                 && (m_email == null ? m.m_email == null : m_email.equals(m.m_email))
-                && (m_pemail == null ? m.m_pemail == null : m_pemail.equals(m.m_pemail))
-                && (Math.abs(m_expectedTime - m.m_expectedTime) < 500)
-                ;
+                && (m_pemail == null ? m.m_pemail == null : m_pemail.equals(m.m_pemail));
         }
         return false;
         
@@ -102,13 +102,30 @@ public class MockNotification {
         m_expectedTime = expectedTime;
     }
 
+	/**
+	 * @return Returns the m_textMsg.
+	 */
+	public String getTextMsg() {
+		return m_textMsg;
+	}
+	
+
+	/**
+	 * @param textMsg The m_textMsg to set.
+	 */
+	public void setTextMsg(String textMsg) {
+		m_textMsg = textMsg;
+	}
+
     public String toString() {
         return 
         "[" +
         " expectedTime = '" + m_expectedTime + "'" +
         " subject = '" + m_subject + "'" +
         " email = '" + m_email + "'" +
+        " textMsg = '" + m_textMsg + "'" +
         "]";
     }
-
+	
+	
 }

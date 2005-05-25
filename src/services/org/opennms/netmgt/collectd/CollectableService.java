@@ -50,6 +50,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
+import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -78,7 +79,7 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
     /**
      * The package information for this interface/service pair
      */
-    private final org.opennms.netmgt.config.collectd.Package m_package;
+    private org.opennms.netmgt.config.collectd.Package m_package;
 
     /**
      * The service informaion for this interface/service pair
@@ -246,6 +247,18 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
         return m_updates;
     }
 
+	/**
+	* Uses the existing package name to try and re-obtain the package from the collectd config factory.
+	* Should be called when the collect config has been reloaded.
+	*/
+	public void refreshPackage() {
+		org.opennms.netmgt.config.collectd.Package refreshedPackage=CollectdConfigFactory.getInstance().getPackage(this.getPackageName());
+		if(refreshedPackage!=null) {
+			this.m_package=refreshedPackage;
+		}
+	}
+
+
     /**
      * This method is used to evaluate the status of this interface and service
      * pair. If it is time to run the collection again then a value of true is
@@ -409,7 +422,9 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
             // Does the outage apply to the current time?
             if (outageFactory.isCurTimeInOutage(outageName)) {
                 // Does the outage apply to this interface?
-                if (outageFactory.isInterfaceInOutage(m_address.getHostAddress(), outageName)) {
+                if ((outageFactory.isNodeIdInOutage((long)m_nodeId, outageName)) ||
+			(outageFactory.isInterfaceInOutage(m_address.getHostAddress(), outageName)))
+		{
                     if (ThreadCategory.getInstance(getClass()).isDebugEnabled())
                         ThreadCategory.getInstance(getClass()).debug("scheduledOutage: configured outage '" + outageName + "' applies, interface " + m_address.getHostAddress() + " will not be collected for " + m_service);
                     outageFound = true;

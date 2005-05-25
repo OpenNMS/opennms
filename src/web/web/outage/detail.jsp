@@ -58,13 +58,13 @@
         outageId = Integer.parseInt( outageIdString );
     }
     catch( NumberFormatException e ) {
-        throw new OutageIdNotFoundException( "The outage id must be an integer.", outageIdString );
+        throw new org.opennms.web.outage.OutageIdNotFoundException( "The outage id must be an integer.", outageIdString );
     }
 
     Outage outage = OutageFactory.getOutage( outageId );
 
     if( outage == null ) {
-        throw new OutageIdNotFoundException( "An outage with this id was not found.", String.valueOf(outageId) );
+        throw new org.opennms.web.outage.OutageIdNotFoundException( "An outage with this id was not found.", String.valueOf(outageId) );
     }
     
     String action = null;

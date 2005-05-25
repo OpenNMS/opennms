@@ -47,6 +47,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -159,8 +160,6 @@ public class Installer {
 	float m_pg_version;
 
 	String m_cascade = "";
-
-	LinkedList m_sql_l = new LinkedList();
 
 	String m_sql;
 
@@ -479,12 +478,18 @@ public class Installer {
 	}
 
 	public void readTables() throws Exception {
-		BufferedReader r = new BufferedReader(new FileReader(m_create_sql));
+		readTables(new FileReader(m_create_sql));
+	}
+		
+	public void readTables(Reader reader) throws Exception {
+		BufferedReader r = new BufferedReader(reader);
 		String line;
 
 		m_tables = new LinkedList();
 		m_seqmapping = new HashMap();
 		m_sequences = new LinkedList();
+		
+		LinkedList sql_l = new LinkedList();
 
 		Pattern seqmappingPattern = Pattern.compile("\\s*--#\\s+install:\\s*"
 				+ "(\\S+)\\s+(\\S+)\\s+" + "(\\S+)\\s*.*");
@@ -559,7 +564,7 @@ public class Installer {
 					throw new Exception("Unknown CREATE encountered: " + line);
 				}
 
-				m_sql_l.add(line);
+				sql_l.add(line);
 				continue;
 			}
 
@@ -581,7 +586,7 @@ public class Installer {
 				}
 				((LinkedList) m_inserts.get(table)).add(line);
 
-				m_sql_l.add(line);
+				sql_l.add(line);
 				continue;
 			}
 
@@ -589,18 +594,18 @@ public class Installer {
 			if (m.matches()) {
 				m_drops.add(m.group(1));
 
-				m_sql_l.add(line);
+				sql_l.add(line);
 				continue;
 			}
 
 			// XXX should do something here to we can catch what we can't parse
 			// m_out.println("unmatched line: " + line);
 
-			m_sql_l.add(line);
+			sql_l.add(line);
 		}
 		r.close();
 
-		m_sql = cleanText(m_sql_l);
+		m_sql = cleanText(sql_l);
 	}
 
 	public void databaseConnect(String database) throws Exception {
@@ -1793,19 +1798,14 @@ public class Installer {
 				String a = accumulator.toString().trim();
 
 				if (a.toLowerCase().startsWith("constraint ")) {
-					if (columns.size() == 0) {
-						throw new Exception("found constraint with no "
-								+ "previous column");
-					}
-
 					Constraint constraint = new Constraint(a);
-					Column lastcol = (Column) columns.getLast();
-					if (!constraint.getColumn().equals(lastcol.getName())) {
+					Column constrained = findColumn(columns, constraint.getColumn());
+					if (constrained == null) {
 						throw new Exception("constraint does not "
-								+ "reference previous column ("
-								+ lastcol.getName() + "): " + constraint);
+								+ "reference a column in the table: "
+								+ constraint);
 					}
-					lastcol.addConstraint(constraint);
+					constrained.addConstraint(constraint);
 				} else {
 					Column column = new Column();
 					column.parse(accumulator.toString());

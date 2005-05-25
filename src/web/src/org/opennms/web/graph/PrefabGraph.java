@@ -78,6 +78,7 @@ public class PrefabGraph extends Object implements Comparable {
     protected String command;
 
     protected String[] externalValues;
+    protected String[] propertiesValues;
 
     protected int order;
 
@@ -85,7 +86,7 @@ public class PrefabGraph extends Object implements Comparable {
 
     protected String description;
 
-    public PrefabGraph(String name, String title, String[] columns, String command, String[] externalValues, int order, String type, String description) {
+    public PrefabGraph(String name, String title, String[] columns, String command, String[] externalValues, String[] propertiesValues, int order, String type, String description) {
         if (name == null || title == null || columns == null || command == null || externalValues == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -95,6 +96,7 @@ public class PrefabGraph extends Object implements Comparable {
         this.columns = columns;
         this.command = command;
         this.externalValues = externalValues;
+	this.propertiesValues = propertiesValues;
         this.order = order;
 
         // type can be null
@@ -136,6 +138,13 @@ public class PrefabGraph extends Object implements Comparable {
             this.externalValues = BundleLists.parseBundleList(externalValuesString);
         }
 
+	String propertiesValuesString = props.getProperty("report." + key + ".propertiesValues");
+	if( propertiesValuesString == null ) {
+		this.propertiesValues = new String[0];
+	} else {
+		this.propertiesValues = BundleLists.parseBundleList(propertiesValuesString);
+	}
+
         // can be null
         this.type = props.getProperty("report." + key + ".type");
 
@@ -166,6 +175,11 @@ public class PrefabGraph extends Object implements Comparable {
     public String[] getExternalValues() {
         return this.externalValues;
     }
+
+    public String[] getPropertiesValues() {
+	return this.propertiesValues;
+    }
+
 
     /** Can be null. */
     public String getType() {

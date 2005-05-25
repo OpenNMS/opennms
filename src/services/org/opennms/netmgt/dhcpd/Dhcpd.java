@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2005 Jan 28: Added ability to listen on port 67 and/or 68
+//              depending on config options
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -56,14 +58,15 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DhcpdConfigFactory;
+import org.opennms.netmgt.utils.IpValidator;
 
 /**
  * <P>
  * The DHCP client daemon serves as a multiplexor for DHCP requests and
  * responses. The Bootp/DHCP protocol specifies that a DHCP server listens for
  * requests on local UDP/67 and will either send/broadcast responses to UDP/68
- * or will unicast responses back to the client's UDP port on from which the
- * request originated.
+ * or UDP/67 or will unicast responses back to the client's UDP port on from
+ * which the request originated.
  * </p>
  * 
  * <p>
@@ -85,17 +88,18 @@ import org.opennms.netmgt.config.DhcpdConfigFactory;
  * 
  * <p>
  * Incoming requests are sent to UDP/67 on specified remote host. If the remote
- * host is runnning a DHCP server it will send/braodcast an appropriate response
- * to UDP/68 (or will unicast the response).
+ * host is runnning a DHCP server it will send/broadcast an appropriate response
+ * to UDP/68 or UDP/67 (or will unicast the response).
  * </p>
  * 
  * <p>
- * The DHCP daemon includes a listener thread which binds to UDP/68 and simply
- * listens for any incoming DHCP responses. When a datagram is received by the
- * listener thread it loops through the list of currently connected clients and
- * forwards the DHCP response packet to each client. It is the responsibility of
- * the client to validate that the datagram is in response to a DHCP discover
- * request packet that it generated.
+ * The DHCP daemon includes a listener thread which binds to UDP/68 or UDP/67
+ * and simply listens for any incoming DHCP responses. In extended mode,
+ * threads are started on both ports. When a datagram is received by the
+ * listener thread(s) it loops through the list of currently connected clients
+ * and forwards the DHCP response packet to each client. It is the responsibility
+ * of the client to validate that the datagram is in response to a DHCP request
+ * packet that it generated.
  * </p>
  * 
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
@@ -125,9 +129,14 @@ public final class Dhcpd implements PausableFiber, Runnable, Observer {
     private ServerSocket m_server;
 
     /**
-     * DHCP response listener.
+     * DHCP response port 67 listener.
      */
     private Receiver m_listener;
+
+    /**
+     * DHCP response port 68 listener.
+     */
+    private Receiver2 m_listener2;
 
     /**
      * The current status of the fiber.
@@ -170,6 +179,7 @@ public final class Dhcpd implements PausableFiber, Runnable, Observer {
     public synchronized void start() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance(getClass());
+        boolean relayMode = false;
         if (log.isDebugEnabled())
             log.debug("start: DHCP client daemon starting...");
 
@@ -216,19 +226,47 @@ public final class Dhcpd implements PausableFiber, Runnable, Observer {
             throw new UndeclaredThrowableException(ex);
         }
 
-        // open the receiver socket
-        //
-        try {
-            if (log.isDebugEnabled())
-                log.debug("start: starting unicast receiver thread..");
-            m_listener = new Receiver(m_clients);
-            m_listener.start();
-        } catch (IOException ex) {
-            try {
-                m_server.close();
-            } catch (IOException ex1) {
+        // see if we have a valid relay address
+        String myIpStr = DhcpdConfigFactory.getInstance().getMyIpAddress();
+        if (log.isDebugEnabled())
+            log.debug("Checking string \"" + myIpStr + "\" to see if we have an IP address");
+        if (myIpStr != null &&  !myIpStr.equals("") && !myIpStr.equalsIgnoreCase("broadcast")) {
+            if(IpValidator.isIpValid(myIpStr)) {
+                relayMode = true;
             }
-            throw new UndeclaredThrowableException(ex);
+        }
+        if (log.isDebugEnabled())
+            log.debug("Setting relay mode " + relayMode);
+        // open the receiver socket(s)
+        //
+        if(!relayMode || (dFactory.getExtendedMode() != null && dFactory.getExtendedMode().equalsIgnoreCase("true"))) {
+            try {
+                if (log.isDebugEnabled())
+                    log.debug("start: starting receiver thread for port 68");
+                m_listener = new Receiver(m_clients);
+                m_listener.start();
+            } catch (IOException ex) {
+                try {
+                    m_server.close();
+                } catch (IOException ex1) {
+                }
+                throw new UndeclaredThrowableException(ex);
+            }
+        }
+
+        if(relayMode) {
+            try {
+                if (log.isDebugEnabled())
+                    log.debug("start: starting receiver thread for port 67");
+                m_listener2 = new Receiver2(m_clients);
+                m_listener2.start();
+            } catch (IOException ex) {
+                try {
+                    m_server.close();
+                } catch (IOException ex1) {
+                }
+                throw new UndeclaredThrowableException(ex);
+            }
         }
 
         m_worker = new Thread(this, getName());

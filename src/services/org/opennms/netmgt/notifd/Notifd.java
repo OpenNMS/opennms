@@ -51,6 +51,8 @@ import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.NotifdConfigManager;
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
+import org.opennms.netmgt.config.PollOutagesConfigFactory;
+import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.notifd.Queue;
 import org.opennms.netmgt.eventd.EventIpcManager;
@@ -112,6 +114,8 @@ public final class Notifd implements PausableFiber {
     private DestinationPathManager m_destinationPathManager;
 
     private NotificationCommandManager m_notificationCommandManager;
+
+    private PollOutagesConfigManager m_pollOutagesConfigManager;
 
     /**
      * Constructs a new Notifd service daemon.
@@ -337,5 +341,15 @@ public final class Notifd implements PausableFiber {
         m_dbConnectionFactory = dbConnectionFactory;
         
     }
+
+    public void setPollOutagesConfigManager(PollOutagesConfigManager configManager) {
+        m_pollOutagesConfigManager = configManager;
+    }
+    
+    public PollOutagesConfigManager getPollOutagesConfigManager() {
+        return m_pollOutagesConfigManager;
+    }
+    
+    
 
 }

@@ -49,6 +49,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.threshd.Parameter;
+import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.threshd.Service;
 import org.opennms.netmgt.poller.monitors.IPv4NetworkInterface;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
@@ -74,7 +75,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements ReadyRu
     /**
      * The package information for this interface/service pair
      */
-    private final org.opennms.netmgt.config.threshd.Package m_package;
+    private org.opennms.netmgt.config.threshd.Package m_package;
 
     /**
      * The service informaion for this interface/service pair
@@ -231,6 +232,17 @@ final class ThresholdableService extends IPv4NetworkInterface implements ReadyRu
      */
     public String getPackageName() {
         return m_package.getName();
+    }
+
+    /**
+    * Uses the existing package name to try and re-obtain the package from the threshd config factory.
+    * Should be called when the threshd config has been reloaded.
+    */
+    public void refreshPackage() {
+	org.opennms.netmgt.config.threshd.Package refreshedPackage=ThreshdConfigFactory.getInstance().getPackage(this.getPackageName());
+	if(refreshedPackage!=null) {
+		this.m_package=refreshedPackage;
+	}
     }
 
     /**
@@ -410,7 +422,8 @@ final class ThresholdableService extends IPv4NetworkInterface implements ReadyRu
             // Does the outage apply to the current time?
             if (outageFactory.isCurTimeInOutage(outageName)) {
                 // Does the outage apply to this interface?
-                if (outageFactory.isInterfaceInOutage(m_address.getHostAddress(), outageName)) {
+		if ((outageFactory.isNodeIdInOutage((long)m_nodeId, outageName)) ||
+			(outageFactory.isInterfaceInOutage(m_address.getHostAddress(), outageName))) {
                     if (ThreadCategory.getInstance(getClass()).isDebugEnabled())
                         ThreadCategory.getInstance(getClass()).debug("scheduledOutage: configured outage '" + outageName + "' applies, interface " + m_address.getHostAddress() + " will not be collected for " + m_service);
                     outageFound = true;

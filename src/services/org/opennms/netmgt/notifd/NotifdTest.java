@@ -36,6 +36,7 @@ package org.opennms.netmgt.notifd;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -50,6 +51,8 @@ import junit.framework.TestCase;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.TimeConverter;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.groups.Group;
@@ -165,7 +168,8 @@ public class NotifdTest extends TestCase {
             "        <uei>uei.opennms.org/nodes/interfaceDown</uei>\n" + 
             "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
             "        <destinationPath>Escalate</destinationPath>\n" + 
-            "        <text-message>All services are down on interface %interface%.</text-message>\n" + 
+            "        <text-message>All services are down on interface %interface%, %ifalias%.</text-message>\n" + 
+//          "        <text-message>All services are down on interface %interface%.</text-message>\n" + 
             "        <subject>interface %interface% down.</subject>\n" + 
             "        <numeric-message>222-%noticeid%</numeric-message>\n" + 
             "    </notification>\n" + 
@@ -217,6 +221,14 @@ public class NotifdTest extends TestCase {
             "            <vbvalue>loadavg5</vbvalue>\n" + 
             "        </varbind>\n" + 
             "    </notification>" +
+            "    <notification name=\"nodeTimeTest\" status=\"on\">\n" + 
+            "        <uei>uei.opennms.org/tests/nodeTimeTest</uei>\n" + 
+            "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+            "        <destinationPath>NoEscalate</destinationPath>\n" + 
+            "        <text-message>Timestamp: %time%.</text-message>\n" + 
+            "        <subject>time %time%.</subject>\n" + 
+            "        <numeric-message>333-%noticeid%</numeric-message>\n" + 
+            "    </notification>\n" + 
             "</notifications>\n" + 
             "";
     
@@ -370,9 +382,11 @@ public class NotifdTest extends TestCase {
         m_network.setCriticalService("ICMP");
         m_network.addNode(1, "Router");
         m_network.addInterface("192.168.1.1");
+		m_network.setIfAlias("dot1 interface alias");
         m_network.addService("ICMP");
         m_network.addService("SMTP");
         m_network.addInterface("192.168.1.2");
+		m_network.setIfAlias("dot2 interface alias");
         m_network.addService("ICMP");
         m_network.addService("SMTP");
         m_network.addNode(2, "Server");
@@ -381,6 +395,7 @@ public class NotifdTest extends TestCase {
         m_network.addService("HTTP");
         
         m_db = new MockDatabase();
+		DatabaseConnectionFactory.setInstance(m_db);
         m_db.populate(m_network);
 
         m_eventMgr = new MockEventIpcManager();
@@ -409,7 +424,7 @@ public class NotifdTest extends TestCase {
         m_notifd.start();
         
         Date downDate = new Date();
-        anticipateNotificationsForGroup("node 2 down.", "InitialGroup", downDate, 0);
+        anticipateNotificationsForGroup("node 2 down.", "All services are down on node 2.", "InitialGroup", downDate, 0);
 
         //bring node down now
         m_eventMgr.sendEventToListeners(m_network.getNode(2).createDownEvent(downDate));
@@ -417,7 +432,7 @@ public class NotifdTest extends TestCase {
         m_anticipator.waitForAnticipated(2000);
         
         m_anticipator.reset();
-
+		
         MockUtil.println("################ Finish Setup for "+getName()+" ################");
         
     }
@@ -443,7 +458,7 @@ public class NotifdTest extends TestCase {
         
         Date date = new Date();
         
-        long finished = anticipateNotificationsForGroup("High loadavg5 Threshold exceeded", "InitialGroup", date, 0);
+        long finished = anticipateNotificationsForGroup("High loadavg5 Threshold exceeded", "High loadavg5 Threshold exceeded on 192.168.1.1, loadavg5 with ", "InitialGroup", date, 0);
 
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
         Event e = MockUtil.createInterfaceEvent("test", "uei.opennms.org/threshold/highThresholdExceeded", iface);
@@ -486,7 +501,7 @@ public class NotifdTest extends TestCase {
         MockNode node = m_network.getNode(1);
 
         Date downDate = new Date();
-        long finishedDowns = anticipateNotificationsForGroup("node 1 down.", "InitialGroup", downDate, 0);
+        long finishedDowns = anticipateNotificationsForGroup("node 1 down.", "All services are down on node 1.", "InitialGroup", downDate, 0);
 
         //bring node down now
         m_eventMgr.sendEventToListeners(node.createDownEvent(downDate));
@@ -496,8 +511,8 @@ public class NotifdTest extends TestCase {
         m_anticipator.reset();
         
         Date upDate = new Date();
-        anticipateNotificationsForGroup("RESOLVED: node 1 down.", "InitialGroup", upDate, 0);
-        long finishedUps = anticipateNotificationsForGroup("node 1 up.", "UpGroup", upDate, 0);
+        anticipateNotificationsForGroup("RESOLVED: node 1 down.", "RESOLVED: All services are down on node 1.", "InitialGroup", upDate, 0);
+        long finishedUps = anticipateNotificationsForGroup("node 1 up.", "The node which was previously down is now up.", "UpGroup", upDate, 0);
 
         //bring node back up now
         m_eventMgr.sendEventToListeners(node.createUpEvent(upDate));
@@ -513,7 +528,7 @@ public class NotifdTest extends TestCase {
         MockNode node = m_network.getNode(1);
 
         Date downDate = new Date(new Date().getTime()+1800);
-        long finished = anticipateNotificationsForGroup("node 1 down.", "InitialGroup", downDate, 0);
+        long finished = anticipateNotificationsForGroup("node 1 down.", "All services are down on node 1.", "InitialGroup", downDate, 0);
 
         m_eventMgr.sendEventToListeners(node.createDownEvent(downDate));
 
@@ -529,8 +544,8 @@ public class NotifdTest extends TestCase {
         
         long interval = computeInterval();
 
-        long endTime = anticipateNotificationsForGroup("service ICMP on 192.168.1.1 down.", "InitialGroup", date, interval);
-        
+        long endTime = anticipateNotificationsForGroup("service ICMP on 192.168.1.1 down.", "Service ICMP is down on interface 192.168.1.1.", "InitialGroup", date, interval);
+
         m_eventMgr.sendEventToListeners(svc.createDownEvent(date));
         
         verifyAnticipated(endTime, 500);
@@ -543,8 +558,10 @@ public class NotifdTest extends TestCase {
 
         Date now = new Date();
 
-        anticipateNotificationsForGroup("interface 192.168.1.1 down.", "InitialGroup", now, 0);
-        long endTime = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "EscalationGroup", now.getTime()+2500, 0);
+//        anticipateNotificationsForGroup("interface 192.168.1.1 down.", "All services are down on interface 192.168.1.1.", "InitialGroup", now, 0);
+//        long endTime = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "All services are down on interface 192.168.1.1.", "EscalationGroup", now.getTime()+2500, 0);
+        anticipateNotificationsForGroup("interface 192.168.1.1 down.", "All services are down on interface 192.168.1.1, dot1 interface alias.", "InitialGroup", now, 0);
+        long endTime = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "All services are down on interface 192.168.1.1, dot1 interface alias.", "EscalationGroup", now.getTime()+2500, 0);
 
         m_eventMgr.sendEventToListeners(iface.createDownEvent(now));
 
@@ -562,12 +579,8 @@ public class NotifdTest extends TestCase {
         m_eventMgr.sendEventToListeners(e);
 
         m_db.acknowledgeNoticesForEvent(e);
-        
-        sleep(5000);
-        
-        printNotifications("Unexpected notifications", m_anticipator.getUnanticipated());
-        assertTrue("Unexpected notifications received", m_anticipator.getUnanticipated().isEmpty());
-        
+  
+        verifyAnticipated(0, 0, 5000);
     }
 
     public void testManualAcknowledge2() throws Exception {
@@ -575,7 +588,7 @@ public class NotifdTest extends TestCase {
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
 
         Date downDate = new Date();
-        long finishedDowns = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "InitialGroup", downDate, 0);
+        long finishedDowns = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "All services are down on interface 192.168.1.1, dot1 interface alias.",  "InitialGroup", downDate, 0);
 
         //bring node down now
         Event event = iface.createDownEvent(downDate);
@@ -602,7 +615,7 @@ public class NotifdTest extends TestCase {
         sleep(1000);
         Date date = new Date();
         Event upEvent = node.createUpEvent(date);
-        long endTime = anticipateNotificationsForGroup("node 1 up.", "UpGroup", date, 0);
+        long endTime = anticipateNotificationsForGroup("node 1 up.", "The node which was previously down is now up.", "UpGroup", date, 0);
         
         m_eventMgr.sendEventToListeners(upEvent);
                 
@@ -614,7 +627,7 @@ public class NotifdTest extends TestCase {
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
 
         Date downDate = new Date();
-        long finishedDowns = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "InitialGroup", downDate, 0);
+        long finishedDowns = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "All services are down on interface 192.168.1.1, dot1 interface alias.", "InitialGroup", downDate, 0);
 
         //bring node down now
         Event event = iface.createDownEvent(downDate);
@@ -623,15 +636,15 @@ public class NotifdTest extends TestCase {
         sleep(1000);
         Date date = new Date();
         Event upEvent = iface.createUpEvent(date);
-        anticipateNotificationsForGroup("RESOLVED: interface 192.168.1.1 down.", "InitialGroup", date, 0);
-        long endTime = anticipateNotificationsForGroup("interface 192.168.1.1 up.", "UpGroup", date, 0);
+        anticipateNotificationsForGroup("RESOLVED: interface 192.168.1.1 down.", "RESOLVED: All services are down on interface 192.168.1.1, dot1 interface alias.", "InitialGroup", date, 0);
+        long endTime = anticipateNotificationsForGroup("interface 192.168.1.1 up.", "The interface which was previously down is now up.", "UpGroup", date, 0);
         
         m_eventMgr.sendEventToListeners(upEvent);
                 
         verifyAnticipated(endTime, 500, 5000);
                 
     }
-    
+
     /**
      * see http://bugzilla.opennms.org/cgi-bin/bugzilla/show_bug.cgi?id=731
      * @throws Exception
@@ -640,7 +653,7 @@ public class NotifdTest extends TestCase {
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
 
         Date downDate = new Date();
-        long finishedDowns = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "InitialGroup", downDate, 0);
+        long finishedDowns = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "All services are down on interface 192.168.1.1, dot1 interface alias.", "InitialGroup", downDate, 0);
 
         //bring node down now
         Event event = iface.createDownEvent(downDate);
@@ -649,18 +662,39 @@ public class NotifdTest extends TestCase {
         sleep(1000);
         Date date = new Date();
         Event upEvent = iface.createUpEvent(date);
-        anticipateNotificationsForGroup("RESOLVED: interface 192.168.1.1 down.", "InitialGroup", date, 0);
-        long endTime = anticipateNotificationsForGroup("interface 192.168.1.1 up.", "UpGroup", date, 0);
+        anticipateNotificationsForGroup("RESOLVED: interface 192.168.1.1 down.", "RESOLVED: All services are down on interface 192.168.1.1, dot1 interface alias.", "InitialGroup", date, 0);
+        long endTime = anticipateNotificationsForGroup("interface 192.168.1.1 up.", "The interface which was previously down is now up.", "UpGroup", date, 0);
         m_eventMgr.sendEventToListeners(upEvent);
         verifyAnticipated(endTime, 500, 5000);
         
+    }
+    
+    public void testBug1114() throws Exception {
+		// XXX Needing to bump up this number is bogus
+    		m_anticipator.setExpectedDifference(5000);
+    		
+        MockService svc = m_network.getService(1, "192.168.1.1", "ICMP");
+        
+        long interval = computeInterval();
+
+        Event event = MockUtil.createServiceEvent("Test", "uei.opennms.org/tests/nodeTimeTest", svc);
+        
+        Date date = EventConstants.parseToDate(event.getTime());
+        String dateString = DateFormat.getDateTimeInstance(DateFormat.FULL,
+        		DateFormat.FULL).format(date);
+        long endTime = anticipateNotificationsForGroup("time " + dateString + ".", "Timestamp: " + dateString + ".", "InitialGroup", date, interval);
+  
+        m_eventMgr.sendEventToListeners(event);
+
+		// XXX Needing to decrease the end time is bogus
+        verifyAnticipated(endTime - 5000, 500);
     }
     
     public void testRebuildParameterMap() throws Exception {
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
 
         Date downDate = new Date();
-        long finishedDowns = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "InitialGroup", downDate, 0);
+        long finishedDowns = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "All services are down on interface 192.168.1.1.", "InitialGroup", downDate, 0);
 
         //bring node down now
         Event event = iface.createDownEvent(downDate);
@@ -680,6 +714,7 @@ public class NotifdTest extends TestCase {
             
             Map resolutionMap = new HashMap(originalMap);
             resolutionMap.put(NotificationManager.PARAM_SUBJECT, "RESOLVED: "+resolutionMap.get(NotificationManager.PARAM_SUBJECT));
+            resolutionMap.put(NotificationManager.PARAM_TEXT_MSG, "RESOLVED: "+resolutionMap.get(NotificationManager.PARAM_TEXT_MSG));
            
             
             Map rebuiltMap = m_notifd.getBroadcastEventProcessor().rebuildParameterMap(notifId.intValue(), "RESOLVED: ");
@@ -693,7 +728,7 @@ public class NotifdTest extends TestCase {
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
 
         Date downDate = new Date();
-        long finishedDowns = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "InitialGroup", downDate, 0);
+        long finishedDowns = anticipateNotificationsForGroup("interface 192.168.1.1 down.", "All services are down on interface 192.168.1.1, dot1 interface alias.", "InitialGroup", downDate, 0);
 
         //bring node down now
         Event event = iface.createDownEvent(downDate);
@@ -727,18 +762,15 @@ public class NotifdTest extends TestCase {
             };
             m_notificationManager.forEachUserNotification(notifId.intValue(), rp);
 	   
-	    for (Iterator i = expectedResults.iterator(); i.hasNext(); ) {
-		assertTrue(actualResults.remove(i.next()));
-	    }
-	    assertEquals(actualResults.size(), 0);
+            assertEquals(expectedResults, actualResults);
         }
     }
     
-    private long anticipateNotificationsForGroup(String subject, String groupName, Date startTime, long interval) throws Exception {
-        return anticipateNotificationsForGroup(subject, groupName, startTime.getTime(), interval);
+    private long anticipateNotificationsForGroup(String subject, String textMsg, String groupName, Date startTime, long interval) throws Exception {
+        return anticipateNotificationsForGroup(subject, textMsg, groupName, startTime.getTime(), interval);
     }        
     
-    private long anticipateNotificationsForGroup(String subject, String groupName, long startTime, long interval) throws Exception {
+    private long anticipateNotificationsForGroup(String subject, String textMsg, String groupName, long startTime, long interval) throws Exception {
         Group group = m_groupManager.getGroup(groupName);
         String[] users = group.getUser();
         long expectedTime = startTime;
@@ -748,7 +780,7 @@ public class NotifdTest extends TestCase {
             for (int j = 0; j < contacts.length; j++) {
                 Contact contact = contacts[j];
                 if ("email".equals(contact.getType())) {
-                    m_anticipator.anticipateNotification(createMockNotification(expectedTime, subject, contact.getInfo()));
+                    m_anticipator.anticipateNotification(createMockNotification(expectedTime, subject, textMsg, contact.getInfo()));
                 }
             }
             expectedTime += interval;
@@ -772,30 +804,9 @@ public class NotifdTest extends TestCase {
     }
 
     private void verifyAnticipated(long lastNotifyTime, long waitTime, long sleepTime) {
-        long totalWaitTime = Math.max(0, lastNotifyTime + waitTime - System.currentTimeMillis());
+        m_anticipator.verifyAnticipated(lastNotifyTime, waitTime, sleepTime);
+    }
         
-        Collection missingNotifications = m_anticipator.waitForAnticipated(totalWaitTime);
-        printNotifications("Missing notifications", missingNotifications);
-        assertEquals("Expected notifications not forthcoming.", 0, missingNotifications.size());
-        // make sure that we didn't start before we should have
-        long now = System.currentTimeMillis();
-        MockUtil.println("Expected notifications no sooner than "+lastNotifyTime+", currentTime is "+now);
-        assertTrue("Anticipated notifications received before expected start time", now > lastNotifyTime);
-        sleep(sleepTime);
-        printNotifications("Unexpected notifications", m_anticipator.getUnanticipated());
-        assertEquals("Unexpected notifications forthcoming.", 0, m_anticipator.getUnanticipated().size());
-    }
-
-    /**
-     * @param missingNotifications
-     */
-    private void printNotifications(String prefix, Collection missingNotifications) {
-        for (Iterator it = missingNotifications.iterator(); it.hasNext();) {
-            MockNotification notification = (MockNotification) it.next();
-            MockUtil.println(prefix+": "+notification);
-        }
-    }
-
     private void sleep(long millis) {
         try {
             Thread.sleep(millis);
@@ -803,11 +814,12 @@ public class NotifdTest extends TestCase {
         }
     }
 
-    private MockNotification createMockNotification(long expectedTime, String subject, String email) {
+    private MockNotification createMockNotification(long expectedTime, String subject, String textMsg, String email) {
         MockNotification notification;
         notification = new MockNotification();
         notification.setExpectedTime(expectedTime);
         notification.setSubject(subject);
+		notification.setTextMsg(textMsg);
         notification.setEmail(email);
         return notification;
     }
