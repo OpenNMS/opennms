@@ -68,6 +68,8 @@ public class MockNetwork extends MockContainer {
     private Map m_nameToIdMap = new HashMap();
     
     private String m_criticalService;
+	
+	private String m_ifAlias;
 
     private int m_nextServiceId = 1;
 
@@ -82,6 +84,14 @@ public class MockNetwork extends MockContainer {
     
     public void setCriticalService(String svcName) {
         m_criticalService = svcName;
+    }
+    
+    public String getIfAlias() {
+        return m_ifAlias;
+    }
+    
+    public void setIfAlias(String ifAlias) {
+        m_currentInterface.setIfAlias(ifAlias);
     }
 
     // model

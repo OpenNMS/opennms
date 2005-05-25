@@ -538,7 +538,7 @@ public class MockNetworkTest extends TestCase {
         m_pollerConfig.addScheduledOutage("outage1", now - tenMinutes, now + tenMinutes, "192.168.1.1");
         m_pollerConfig.addScheduledOutage("outage2", now - tenMinutes, now, "192.168.1.2");
         
-        try { Thread.sleep(500); } catch (InterruptedException e) {}
+        try { Thread.sleep(1000); } catch (InterruptedException e) {}
 
         Package pkg = m_pollerConfig.getPackage("TestPackage");
         assertNotNull(pkg);

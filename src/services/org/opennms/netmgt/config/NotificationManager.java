@@ -8,8 +8,6 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -95,6 +93,7 @@ public abstract class NotificationManager {
     public static final String PARAM_SUBJECT = "-subject";
     public static final String PARAM_EMAIL = "-email";
     public static final String PARAM_PAGER_EMAIL = "-pemail";
+    public static final String PARAM_XMPP_ADDRESS = "-xmpp";
     public static final String PARAM_TEXT_PAGER_PIN = "-tp";
     public static final String PARAM_NUM_PAGER_PIN = "-np";
     NotifdConfigManager m_configManager;
@@ -781,7 +780,7 @@ public abstract class NotificationManager {
         final Map parmMap = new HashMap();
         Querier querier = new Querier(m_dbConnectionFactory, "select notifications.*, service.* from notifications left outer join service on notifications.serviceID = service.serviceID  where notifyId = ?") {
             public void processRow(ResultSet rs) throws SQLException {
-                parmMap.put(NotificationManager.PARAM_TEXT_MSG, rs.getObject("textMsg"));
+                parmMap.put(NotificationManager.PARAM_TEXT_MSG, resolutionPrefix+rs.getObject("textMsg"));
                 parmMap.put(NotificationManager.PARAM_NUM_MSG, rs.getObject("numericMsg"));
                 parmMap.put(NotificationManager.PARAM_SUBJECT, resolutionPrefix+rs.getObject("subject"));
                 parmMap.put(NotificationManager.PARAM_NODE, rs.getObject("nodeID").toString());

@@ -45,6 +45,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.io.FileWriter;
 import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -54,6 +56,7 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
+import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
@@ -281,6 +284,30 @@ public final class CollectdConfigFactory {
         init();
     }
 
+         /**
+         * Saves the current in-memory configuration to disk and reloads
+          */
+         public synchronized void saveCurrent()
+                 throws MarshalException, IOException, ValidationException
+         {
+                 File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME);
+
+                 //marshall to a string first, then write the string to the file. This way the original config
+                 //isn't lost if the xml from the marshall is hosed.
+                 StringWriter stringWriter = new StringWriter();
+                 Marshaller.marshal(m_config, stringWriter);
+                 if (stringWriter.toString()!=null)
+                 {
+                         FileWriter fileWriter = new FileWriter(cfgFile);
+                         fileWriter.write(stringWriter.toString());
+                         fileWriter.flush();
+                         fileWriter.close();
+                 }
+
+                 reload();
+         }
+
+
     /**
      * Return the singleton instance of this factory.
      * 
@@ -302,6 +329,18 @@ public final class CollectdConfigFactory {
     public synchronized CollectdConfiguration getConfiguration() {
         return m_config;
     }
+
+         public synchronized  org.opennms.netmgt.config.collectd.Package getPackage(String name) {
+                 Enumeration packageEnum=m_config.enumeratePackage();
+                 while(packageEnum.hasMoreElements()) {
+                         org.opennms.netmgt.config.collectd.Package thisPackage=( org.opennms.netmgt.config.collectd.Package)packageEnum.nextElement();
+                         if(thisPackage.getName().equals(name)) {
+                                 return thisPackage;
+                         }
+                 }
+                 return null;
+         }
+
 
     /**
      * This method is used to determine if the named interface is included in

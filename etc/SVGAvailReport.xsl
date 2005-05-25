@@ -495,12 +495,12 @@ xmlns:svg="http://www.w3.org/2000/svg">
 		<xsl:otherwise>
 			<svg:text style="font-size:9;text-anchor:middle">
 				<xsl:attribute name="x">
-					<xsl:value-of select="$x + 165"/>
+					<xsl:value-of select="$x + 175"/>
 				</xsl:attribute>
 				<xsl:attribute name="y">
 					<xsl:value-of select="(385 + (-1 * $y-offset)) "/>
 				</xsl:attribute>
-				<xsl:value-of select="format-number($value, '0.0000')"/>
+				<xsl:value-of select="format-number($value, '0.00')"/>
 			</svg:text>
 		</xsl:otherwise>
 	</xsl:choose>

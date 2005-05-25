@@ -92,7 +92,7 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
     /**
      * The singleton instance of this factory
      */
-    private static DatabaseConnectionFactory m_singleton = null;
+    private static DbConnectionFactory m_singleton = null;
 
     /**
      * This member is set to true if the configuration file has been loaded.
@@ -927,6 +927,7 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
         Class.forName(driverCN);
     }
 
+
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
@@ -982,12 +983,17 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
-    public static synchronized DatabaseConnectionFactory getInstance() {
+    public static synchronized DbConnectionFactory getInstance() {
         if (!m_loaded)
             throw new IllegalStateException("The factory has not been initialized");
 
         return m_singleton;
     }
+	
+	public static void setInstance(DbConnectionFactory singleton) {
+		m_singleton=singleton;
+		m_loaded=true;
+	}
 
     /**
      * Return the database that was configured in the config file

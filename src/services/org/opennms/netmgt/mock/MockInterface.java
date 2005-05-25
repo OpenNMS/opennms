@@ -46,6 +46,7 @@ import org.opennms.netmgt.xml.event.Event;
 public class MockInterface extends MockContainer {
 
     String m_ipAddr;
+	private String m_ifAlias;
 
     public MockInterface(MockNode node, String ipAddr) {
         super(node);
@@ -156,5 +157,18 @@ public class MockInterface extends MockContainer {
     public Event createDeleteEvent() {
         return MockUtil.createInterfaceDeletedEvent("Test", this);
     }
+
+	public void setIfAlias(String ifAlias) {
+		// ifAlias for an interface
+		m_ifAlias = ifAlias;
+	}
+
+    /**
+     * @return Returns the ifAlias.
+     */
+    public String getIfAlias() {
+        return m_ifAlias;
+    }
+    
 
 }
