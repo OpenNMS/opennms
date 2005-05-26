@@ -36,13 +36,22 @@ import org.opennms.protocols.snmp.SnmpVarBind;
 
 public class SnmpTableTest extends SnmpCollectorTestCase {
 
+    private SnmpObjId sysNameOid;
+
     protected void setUp() throws Exception {
         super.setUp();
+        sysNameOid = new SnmpObjId(".1.3.6.1.2.1.1.5");
+
     }
 
     protected void tearDown() throws Exception {
         super.tearDown();
     }
+    
+    
+    //
+    // Object Id test code
+    //
     
     public void testSnmpOidCompare() {
         SnmpObjId oid1 = new SnmpObjId("1.3.5.7");
@@ -69,7 +78,7 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
         
     }
     
-    public void testOidAppendPrefixSuffix() {
+    public void testOidAppendPrefixInstance() {
         SnmpObjId base = new SnmpObjId(".1.3.5.7");
         SnmpObjId result = new SnmpObjId(".1.3.5.7.9.8.7.6");
 
@@ -79,6 +88,15 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
         assertTrue(base.isPrefixOf(base));
         assertTrue(base.isPrefixOf(result));
         assertFalse(result.isPrefixOf(base));
+        
+        SnmpInstId instance = result.getInstance(base);
+        assertEquals(new SnmpObjId(".9.8.7.6"), instance);
+        assertEquals("9.8.7.6", instance.toString());
+    }
+    
+    public void testDecrement() {
+        SnmpObjId oid = new SnmpObjId(".1.3.5.7");
+        assertEquals(new SnmpObjId(".1.3.5.6"), oid.decrement());
     }
     
     
@@ -86,7 +104,7 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
         if (a == null) {
             assertNull("expected value is null but actual value is "+b, b);
         } else {
-            if (b == null) fail("Expected valud is "+a+" but actual value is null"); 
+            if (b == null) fail("Expected value is "+a+" but actual value is null"); 
             assertEquals("arrays have different length", a.length, b.length);
             for(int i = 0; i < a.length; i++) {
                 assertEquals("array differ at index "+i+" expected: "+a+", actual: "+b, a[i], b[i]);
@@ -94,89 +112,95 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
         }
     }
     
-    // TODO: Test non integer instances such as ipAddr instances
+    
+    //
+    // Test Trackers
+    //
+    
     public void testSingleInstanceTrackerZeroInstance() {
-        String sysNameOid = ".1.3.6.1.2.1.1.5";
-        InstanceTracker it = new SpecificInstanceTracker(sysNameOid, "0");
-        assertTrue(it.hasOidForNext());
-        String oidForNext = it.getOidForNext();
-        assertEquals(sysNameOid, oidForNext);
-        assertEquals("0", it.receivedOid(sysNameOid+".0")) ;
+        testSpecificInstanceTracker("1.2.3", new SnmpObjId(sysNameOid, "0"));
+    }
+    
+    public void testSingleInstanceTrackerMultiIdInstance() {
+        testSpecificInstanceTracker("1.2.3", new SnmpObjId(sysNameOid, "1.2.3"));
+    }
+    
+    public void testSpecificInstanceTracker(String instance, SnmpObjId receivedOid) {
+        SnmpInstId inst = new SnmpInstId(instance);
+        InstanceTracker it = new SpecificInstanceTracker(sysNameOid, instance);
+        
+        testInstanceTrackerInnerLoop(it, inst, receivedOid);
+        
+        // ensure that it thinks we are finished
         assertFalse(it.hasOidForNext());
+    }
+    
+    private void testInstanceTrackerInnerLoop(InstanceTracker it, SnmpInstId inst, SnmpObjId receivedOid) {
+        // ensure it needs to receive something - object id for the instance
+        assertTrue(it.hasOidForNext());
+        // ensure that is asks for the oid preceeding
+        assertEquals(new SnmpObjId(sysNameOid, inst).decrement(), it.getOidForNext());
+        // tell it received the expected one and ensure that it agrees
+        if (receivedOid.equals(new SnmpObjId(sysNameOid, inst)))
+            assertEquals(inst, it.receivedOid(receivedOid));
+        else
+            assertNull(it.receivedOid(receivedOid));
     }
     
     public void testSingleInstanceTrackerNonZeroInstance() {
-        String sysNameOid = ".1.3.6.1.2.1.1.5";
-        InstanceTracker it = new SpecificInstanceTracker(sysNameOid, "1");
-        assertTrue(it.hasOidForNext());
-        String oidForNext = it.getOidForNext();
-        assertEquals(sysNameOid+".0", oidForNext);
-        assertEquals("1", it.receivedOid(sysNameOid+".1")) ;
-        assertFalse(it.hasOidForNext());
+        testSpecificInstanceTracker("1.2.3", new SnmpObjId(sysNameOid, "1.2.3"));
     }
     
     public void testSingleInstanceTrackerNoMatch() {
-        String sysNameOid = ".1.3.6.1.2.1.1.5";
-        InstanceTracker it = new SpecificInstanceTracker(sysNameOid, "0");
-        assertTrue(it.hasOidForNext());
-        String oidForNext = it.getOidForNext();
-        assertEquals(sysNameOid, oidForNext);
-        assertNull(it.receivedOid(sysNameOid+".1")) ;
-        assertFalse(it.hasOidForNext());
+        testSpecificInstanceTracker("0", new SnmpObjId(sysNameOid, "1"));
     }
     
     public void testListInstanceTrackerWithAllResults() {
-        String sysNameOid = ".1.3.6.1.2.1.1.5";
-        int instances[] = { 1, 3, 5 };
-        InstanceTracker it = new SpecificInstanceTracker(sysNameOid, toString(instances));
+        String instances[] = { "1", "3", "5" };
+        InstanceTracker it = new SpecificInstanceTracker(sysNameOid, toCommaSeparated(instances));
         
         for(int i = 0; i < instances.length; i++) {
-            assertTrue(it.hasOidForNext());
-            String oidForNext = it.getOidForNext();
-            assertEquals(sysNameOid+"."+(instances[i]-1), oidForNext);
-            assertEquals(Integer.toString(instances[i]), it.receivedOid(sysNameOid+"."+instances[i]));
+            testInstanceTrackerInnerLoop(it, new SnmpInstId(instances[i]), new SnmpObjId(sysNameOid, instances[i]));
         }
         assertFalse(it.hasOidForNext());
     }
     
     public void testListInstanceTrackerWithNoResults() {
-        String sysNameOid = ".1.3.6.1.2.1.1.5";
-        int instances[] = { 1, 3, 5 };
-        InstanceTracker it = new SpecificInstanceTracker(sysNameOid, toString(instances));
+        String instances[] = { "1", "3", "5" };
+        InstanceTracker it = new SpecificInstanceTracker(sysNameOid, toCommaSeparated(instances));
         
         for(int i = 0; i < instances.length; i++) {
-            assertTrue(it.hasOidForNext());
-            String oidForNext = it.getOidForNext();
-            assertEquals(sysNameOid+"."+(instances[i]-1), oidForNext);
-            assertNull(it.receivedOid(sysNameOid+"."+(instances[i]+1)));
+            testInstanceTrackerInnerLoop(it, new SnmpInstId(instances[i]), new SnmpObjId(sysNameOid, instances[i]+".0"));
         }
         assertFalse(it.hasOidForNext());
     }
     
     public void testColumnInstanceTracker() {
-        String colOid = ".1.3.6.1.2.1.1.5";
-        String nextColOid = ".1.3.6.1.2.1.1.6.2";
+        SnmpObjId colOid = new SnmpObjId(".1.3.6.1.2.1.1.5");
+        SnmpObjId nextColOid = new SnmpObjId(".1.3.6.1.2.1.1.6.2");
         InstanceTracker it = new ColumnInstanceTracker(colOid);
         
         int colLength = 5;
-        for(int i = 0; i < colLength; i++) {
-            assertTrue(it.hasOidForNext());
-            String oidForNext = it.getOidForNext();
-            assertEquals((i == 0 ? colOid : colOid+"."+(i-1)), oidForNext);
-            assertEquals(Integer.toString(i), it.receivedOid(colOid+"."+i));
-        }
         
+        for(int i = 0; i < colLength; i++) {
+            String instance = Integer.toString(i);
+            testInstanceTrackerInnerLoop(it, new SnmpInstId(instance), colOid.append(instance));
+        }
+
+        // it needs another non matching receipt before it can know its done
         assertTrue(it.hasOidForNext());
-        String oidForNext = it.getOidForNext();
-        assertEquals((colOid+"."+(colLength-1)), oidForNext);
+        SnmpObjId oidForNext = it.getOidForNext();
+        assertEquals(colOid.append(""+(colLength-1)), oidForNext); 
         assertNull(it.receivedOid(nextColOid));
+
+        // now it should be done
         assertFalse(it.hasOidForNext());
         
         
         
     }
     
-    private String toString(int[] instances) {
+    private String toCommaSeparated(String[] instances) {
         StringBuffer buf = new StringBuffer();
         for(int i = 0; i < instances.length; i++) {
             if (i != 0) {
@@ -192,19 +216,40 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
      
     
     public void testColumnGetNextZeroInstance() {
-        String sysNameOid = ".1.3.6.1.2.1.1.5";
         
         SnmpColumn col = new SnmpColumn(sysNameOid, "0");
         assertTrue(col.hasOidForNext());
-        String nextOid = col.getOidForNext();
+        SnmpObjId nextOid = col.getOidForNext();
         assertEquals(sysNameOid, nextOid);
         
         Object result = "sysName";
-        col.addResult(nextOid+".0", result);
+        col.addResult(nextOid.append("0"), result);
         assertEquals(result, col.getResultForInstance("0"));
         
         
         assertFalse(col.hasOidForNext());
+    }
+    
+    public void xtestGetColumnWithMultiInstances() {
+        String[] instances = { "1", "2", "3" };
+        SnmpColumn col = new SnmpColumn(sysNameOid, "1,2,3");
+        
+        for(int i = 0; i < instances.length; i++) {
+            assertTrue(col.hasOidForNext());
+            SnmpObjId expected = new SnmpObjId(sysNameOid, instances[i]);
+            assertEquals(expected.decrement(), col.getOidForNext());
+        
+            Object result = "sysName"+i;
+            col.addResult(expected, result);
+        }
+            
+        assertFalse(col.hasOidForNext());
+
+        for(int i = 0; i < instances.length; i++) {
+            Object result = "sysName"+i;
+            assertEquals(result, col.getResultForInstance(instances[i]));
+        }
+        
     }
 
     public void testGetNextVarBinds() {

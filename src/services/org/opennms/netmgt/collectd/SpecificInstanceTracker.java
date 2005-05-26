@@ -33,22 +33,24 @@ package org.opennms.netmgt.collectd;
 
 import java.util.StringTokenizer;
 
-import org.opennms.protocols.snmp.SnmpObjectId;
-
 public class SpecificInstanceTracker implements InstanceTracker {
     
-    private int[] m_instances;
+    private SnmpInstId[] m_instances;
     private int m_current = 0;
-    private String m_base;
+    private SnmpObjId m_base;
+    
+    public SpecificInstanceTracker(String base, String instances) {
+        this(new SnmpObjId(base), instances);
+    }
 
-    public SpecificInstanceTracker(String base, String instance) {
+    public SpecificInstanceTracker(SnmpObjId base, String instances) {
         m_base = base;
-        StringTokenizer tokenizer = new StringTokenizer(instance, ",");
-        m_instances = new int[tokenizer.countTokens()];
+        StringTokenizer tokenizer = new StringTokenizer(instances, ",");
+        m_instances = new SnmpInstId[tokenizer.countTokens()];
         int index = 0;
         while (tokenizer.hasMoreTokens()) {
             String token = tokenizer.nextToken();
-            int inst = Integer.parseInt(token);
+            SnmpInstId inst = new SnmpInstId(token);
             m_instances[index] = inst;
             index++;
         }
@@ -58,23 +60,22 @@ public class SpecificInstanceTracker implements InstanceTracker {
         return m_current < m_instances.length;
     }
 
-    public String getOidForNext() {
-        return nextExpectedInstance() == 0 ? m_base : m_base+"."+(nextExpectedInstance()-1);
+    public SnmpObjId getOidForNext() {
+        return new SnmpObjId(m_base, nextExpectedInstance()).decrement();
     }
 
-    private int nextExpectedInstance() {
+    private SnmpInstId nextExpectedInstance() {
         return m_instances[m_current];
     }
 
-    public String receivedOid(String lastOid) {
-        int expectedInstance = nextExpectedInstance();
-        SnmpObjectId expectedOid = new SnmpObjectId(m_base+"."+expectedInstance);
-        SnmpObjectId receivedOid = new SnmpObjectId(lastOid);
+    public SnmpInstId receivedOid(SnmpObjId receivedOid) {
+        SnmpInstId expectedInstance = nextExpectedInstance();
+        SnmpObjId expectedOid = new SnmpObjId(m_base, expectedInstance);
         m_current++;
-        return expectedOid.equals(receivedOid) ? Integer.toString(expectedInstance) : null;
+        return expectedOid.equals(receivedOid) ? expectedInstance : null;
     }
 
-    public String getBaseOid() {
+    public SnmpObjId getBaseOid() {
         return m_base;
     }
 

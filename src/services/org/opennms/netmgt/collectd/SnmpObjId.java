@@ -35,30 +35,55 @@ public class SnmpObjId implements Comparable {
 
     private int[] m_ids;
     
-    private SnmpObjId() {
-        m_ids = null;
+    private SnmpObjId(int[] ids, boolean clone) {
+        m_ids = (clone ? cloneIds(ids) : ids);
     }
-
+    
     public SnmpObjId(int[] ids) {
-        m_ids = cloneIds(ids);
+        this(ids, true);
     }
 
     public SnmpObjId(String oid) {
-        m_ids = convertStringToInts(oid);
+        this(convertStringToInts(oid), false);
     }
     
+    public SnmpObjId(SnmpObjId instance) {
+        this(instance.m_ids);
+    }
+    
+    public SnmpObjId(String objId, String instance) {
+        this(appendArrays(convertStringToInts(objId), convertStringToInts(instance)), false);
+    }
+    
+    public SnmpObjId(SnmpObjId objId, String instance) {
+        this(appendArrays(objId.m_ids, convertStringToInts(instance)), false);
+    }
+    
+    public SnmpObjId(SnmpObjId objId, SnmpObjId instance) {
+        this(appendArrays(objId.m_ids, instance.m_ids), false);
+    }
+
     public int[] getIds() {
         return cloneIds(m_ids);
     }
-
-    private int[] cloneIds(int[] ids) {
-        if (ids == null) return null;
-        int[] newIds = new int[ids.length];
-        System.arraycopy(ids, 0, newIds, 0, ids.length);
-        return newIds;
+    
+    protected int[] getIdsRef() {
+        return m_ids;
     }
 
-    private int[] convertStringToInts(String oid) {
+    private static int[] cloneIds(int[] ids) {
+        return cloneIds(ids, ids.length);
+    }
+    
+    private static int[] cloneIds(int[] ids, int lengthToClone) {
+        if (ids == null) return null;
+        int len = Math.min(lengthToClone, ids.length);
+        int[] newIds = new int[len];
+        System.arraycopy(ids, 0, newIds, 0, len);
+        return newIds;
+    }
+    
+    private static int[] convertStringToInts(String oid) {
         if (oid.startsWith(".")) {
             oid = oid.substring(1);
         }
@@ -95,12 +120,18 @@ public class SnmpObjId implements Comparable {
     }
 
     public String toString() {
-        StringBuffer buf = new StringBuffer(m_ids.length*2+10); // a guess at the str len
-        for(int i = 0; i < m_ids.length; i++) {
-            buf.append('.');
+        StringBuffer buf = new StringBuffer(length()*2+10); // a guess at the str len
+        for(int i = 0; i < length(); i++) {
+            if (i != 0 || addPrefixDotInToString()) {
+                buf.append('.');  
+            }
             buf.append(m_ids[i]);
         }
         return buf.toString();
+    }
+
+    protected boolean addPrefixDotInToString() {
+        return true;
     }
 
     public int compareTo(Object o) {
@@ -109,7 +140,7 @@ public class SnmpObjId implements Comparable {
 
         // compare each element in order for as much length as they have in common
         // which is the entire length of one or both oids
-        int minLen = Math.min(m_ids.length, other.m_ids.length);
+        int minLen = Math.min(length(), other.length());
         for(int i = 0; i < minLen; i++) {
             int diff = m_ids[i] - other.m_ids[i];
             // the first one that is not equal indicates which is bigger
@@ -119,24 +150,31 @@ public class SnmpObjId implements Comparable {
         
         // if they get to hear then both are identifical for their common length
         // so which ever is longer is then greater
-        return m_ids.length - other.m_ids.length;
+        return length() - other.length();
     }
 
     public SnmpObjId append(String inst) {
         return append(convertStringToInts(inst));
     }
+    
+    public SnmpObjId append(SnmpObjId inst) {
+        return append(inst.m_ids);
+    }
 
     public SnmpObjId append(int[] instIds) {
-        int[] ids = new int[m_ids.length+instIds.length];
-        System.arraycopy(m_ids, 0, ids, 0, m_ids.length);
-        System.arraycopy(instIds, 0, ids, m_ids.length, instIds.length);
-        SnmpObjId result = new SnmpObjId();
-        result.m_ids = ids;
-        return result;
+        int[] ids = appendArrays(m_ids, instIds);
+        return new SnmpObjId(ids, false);
+    }
+
+    private static int[] appendArrays(int[] objIds, int[] instIds) {
+        int[] ids = new int[objIds.length+instIds.length];
+        System.arraycopy(objIds, 0, ids, 0, objIds.length);
+        System.arraycopy(instIds, 0, ids, objIds.length, instIds.length);
+        return ids;
     }
 
     public boolean isPrefixOf(SnmpObjId other) {
-        if (m_ids.length > other.m_ids.length)
+        if (length() > other.length())
             return false;
         
         for(int i = 0; i < m_ids.length; i++) {
@@ -145,6 +183,37 @@ public class SnmpObjId implements Comparable {
         }
         
         return true;
+    }
+
+    public SnmpInstId getInstance(SnmpObjId base) {
+        if (!base.isPrefixOf(this)) return null;
+        
+        int[] instanceIds = new int[length() - base.length()];
+        System.arraycopy(m_ids, base.length(), instanceIds, 0, instanceIds.length);
+        return new SnmpInstId(instanceIds);
+    }
+
+    public int length() {
+        return m_ids.length;
+    }
+    
+    int getSubIdAt(int index) {
+        return m_ids[index];
+    }
+    
+    int getLastSubId() {
+        return getSubIdAt(length()-1);
+    }
+
+    public SnmpObjId decrement() {
+        if (getLastSubId() == 0) {
+            return new SnmpObjId(cloneIds(m_ids, length() - 1), false);
+        }
+        else {
+            int[] newIds = cloneIds(m_ids, length());
+            newIds[newIds.length-1] -= 1;
+            return new SnmpObjId(newIds, false);
+        }
     }
 
 

@@ -31,39 +31,40 @@
 //
 package org.opennms.netmgt.collectd;
 
-import org.opennms.protocols.snmp.SnmpObjectId;
 
 public class ColumnInstanceTracker implements InstanceTracker {
 
-    private SnmpObjectId m_base;
-    private SnmpObjectId m_last;
+    private SnmpObjId m_base;
+    private SnmpObjId m_last;
 
     public ColumnInstanceTracker(String base) {
-        m_base = new SnmpObjectId(base);
-        m_last = m_base;
+        this(new SnmpObjId(base));
+    }
+    
+    public ColumnInstanceTracker(SnmpObjId base) {
+        m_base = base;
+        m_last = base;
     }
 
     public boolean hasOidForNext() {
-        return m_base.isRootOf(m_last);
+        return m_base.isPrefixOf(m_last);
     }
 
-    public String getOidForNext() {
-        return m_last.toString();
+    public SnmpObjId getOidForNext() {
+        return m_last;
     }
 
-    public String receivedOid(String lastOid) {
-        m_last = new SnmpObjectId(lastOid);
+    public SnmpInstId receivedOid(SnmpObjId lastOid) {
+        m_last = lastOid;
         String instance = null;
-        if (m_base.isRootOf(m_last) && !m_base.equals(m_last)) {
-            String baseStr = m_base.toString();
-            String lastStr = m_last.toString();
-            instance = lastStr.substring(baseStr.length()+1); // add one to remove leading '.'
+        if (m_base.isPrefixOf(m_last) && !m_base.equals(m_last)) {
+            return m_last.getInstance(m_base);
         }
-        return instance;
+        return null;
     }
 
-    public String getBaseOid() {
-        return m_base.toString();
+    public SnmpObjId getBaseOid() {
+        return m_base;
     }
 
 }

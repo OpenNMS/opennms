@@ -31,48 +31,23 @@
 //
 package org.opennms.netmgt.collectd;
 
+public class SnmpInstId extends SnmpObjId {
 
+    public SnmpInstId(int[] instanceIds) {
+        super(instanceIds);
+    }
 
-public class SnmpColumn {
-
-    private InstanceTracker m_tracker;
-    private Object m_result = null;
-
-    /*
-     * TODO track the process of retrieving a column.
-     * TODO MibObject used to define the column
-     * TODO hasNext returns true until the last value or one passed the last is set
-     * TODO getNext returns the next var to set
-     * TODO addResult set the last retrieved value
-     * TODO addResult must be able to take results out of order ?
-     * 
-     * 
-     */
-    
-    public SnmpColumn(String baseOid, String instances) {
-        this(new SnmpObjId(baseOid), instances);
+    public SnmpInstId(String instance) {
+        super(instance);
     }
     
-    public SnmpColumn(SnmpObjId baseOid, String instances) {
-        m_tracker = new SpecificInstanceTracker(baseOid, instances);
+    public SnmpInstId(SnmpObjId instance) {
+        super(instance);
+    }
+
+    protected boolean addPrefixDotInToString() {
+        return false;
     }
     
-    public boolean hasOidForNext() {
-        return m_tracker.hasOidForNext();
-    }
-
-    public SnmpObjId getOidForNext() {
-        return m_tracker.getOidForNext();
-    }
-
-    public void addResult(SnmpObjId oid, Object val) {
-        if (m_tracker.receivedOid(oid) != null)
-            m_result = val;
-        
-    }
-
-    public Object getResultForInstance(String string) {
-       return m_result;
-    }
-
+    
 }
