@@ -66,11 +66,16 @@ public class SpecificInstanceTracker implements InstanceTracker {
         return m_instances[m_current];
     }
 
-    public boolean receivedOid(String lastOid) {
-        SnmpObjectId expectedOid = new SnmpObjectId(m_base+"."+nextExpectedInstance());
+    public String receivedOid(String lastOid) {
+        int expectedInstance = nextExpectedInstance();
+        SnmpObjectId expectedOid = new SnmpObjectId(m_base+"."+expectedInstance);
         SnmpObjectId receivedOid = new SnmpObjectId(lastOid);
         m_current++;
-        return expectedOid.equals(receivedOid);
+        return expectedOid.equals(receivedOid) ? Integer.toString(expectedInstance) : null;
+    }
+
+    public String getBaseOid() {
+        return m_base;
     }
 
 }

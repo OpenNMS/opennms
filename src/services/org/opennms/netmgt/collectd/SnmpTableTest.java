@@ -44,13 +44,64 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
         super.tearDown();
     }
     
+    public void testSnmpOidCompare() {
+        SnmpObjId oid1 = new SnmpObjId("1.3.5.7");
+        SnmpObjId oid1b = new SnmpObjId(".1.3.5.7");
+        SnmpObjId oid2 = new SnmpObjId(new int[] {1, 3, 5, 7});
+        SnmpObjId oid3 = new SnmpObjId(".1.3.5.8");
+        SnmpObjId oid4 = new SnmpObjId(".1.3.5.7.0");
+        
+        assertArrayEquals(oid1.getIds(), oid2.getIds());
+        
+        assertEquals(oid1, oid1b);
+        
+        assertEquals(".1.3.5.7", oid1.toString());
+        
+        assertEquals(oid1, oid2);
+        
+        assertFalse(oid1.equals(oid3));
+        assertFalse(oid1.equals(oid4));
+        
+        assertTrue(oid1.compareTo(oid3) < 0);
+        assertTrue(oid3.compareTo(oid1) > 0);
+        assertTrue(oid1.compareTo(oid4) < 0);
+        assertTrue(oid4.compareTo(oid1) > 0);
+        
+    }
+    
+    public void testOidAppendPrefixSuffix() {
+        SnmpObjId base = new SnmpObjId(".1.3.5.7");
+        SnmpObjId result = new SnmpObjId(".1.3.5.7.9.8.7.6");
+
+        assertEquals(result, base.append(new int[] {9,8,7,6}));
+        assertEquals(result, base.append("9.8.7.6"));
+        
+        assertTrue(base.isPrefixOf(base));
+        assertTrue(base.isPrefixOf(result));
+        assertFalse(result.isPrefixOf(base));
+    }
+    
+    
+    private void assertArrayEquals(int[] a, int[] b) {
+        if (a == null) {
+            assertNull("expected value is null but actual value is "+b, b);
+        } else {
+            if (b == null) fail("Expected valud is "+a+" but actual value is null"); 
+            assertEquals("arrays have different length", a.length, b.length);
+            for(int i = 0; i < a.length; i++) {
+                assertEquals("array differ at index "+i+" expected: "+a+", actual: "+b, a[i], b[i]);
+            }
+        }
+    }
+    
+    // TODO: Test non integer instances such as ipAddr instances
     public void testSingleInstanceTrackerZeroInstance() {
         String sysNameOid = ".1.3.6.1.2.1.1.5";
         InstanceTracker it = new SpecificInstanceTracker(sysNameOid, "0");
         assertTrue(it.hasOidForNext());
         String oidForNext = it.getOidForNext();
         assertEquals(sysNameOid, oidForNext);
-        assertTrue(it.receivedOid(sysNameOid+".0")) ;
+        assertEquals("0", it.receivedOid(sysNameOid+".0")) ;
         assertFalse(it.hasOidForNext());
     }
     
@@ -60,7 +111,7 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
         assertTrue(it.hasOidForNext());
         String oidForNext = it.getOidForNext();
         assertEquals(sysNameOid+".0", oidForNext);
-        assertTrue(it.receivedOid(sysNameOid+".1")) ;
+        assertEquals("1", it.receivedOid(sysNameOid+".1")) ;
         assertFalse(it.hasOidForNext());
     }
     
@@ -70,7 +121,7 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
         assertTrue(it.hasOidForNext());
         String oidForNext = it.getOidForNext();
         assertEquals(sysNameOid, oidForNext);
-        assertFalse(it.receivedOid(sysNameOid+".1")) ;
+        assertNull(it.receivedOid(sysNameOid+".1")) ;
         assertFalse(it.hasOidForNext());
     }
     
@@ -83,7 +134,7 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
             assertTrue(it.hasOidForNext());
             String oidForNext = it.getOidForNext();
             assertEquals(sysNameOid+"."+(instances[i]-1), oidForNext);
-            assertTrue(it.receivedOid(sysNameOid+"."+instances[i]));
+            assertEquals(Integer.toString(instances[i]), it.receivedOid(sysNameOid+"."+instances[i]));
         }
         assertFalse(it.hasOidForNext());
     }
@@ -97,7 +148,7 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
             assertTrue(it.hasOidForNext());
             String oidForNext = it.getOidForNext();
             assertEquals(sysNameOid+"."+(instances[i]-1), oidForNext);
-            assertFalse(it.receivedOid(sysNameOid+"."+(instances[i]+1)));
+            assertNull(it.receivedOid(sysNameOid+"."+(instances[i]+1)));
         }
         assertFalse(it.hasOidForNext());
     }
@@ -112,13 +163,13 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
             assertTrue(it.hasOidForNext());
             String oidForNext = it.getOidForNext();
             assertEquals((i == 0 ? colOid : colOid+"."+(i-1)), oidForNext);
-            assertTrue(it.receivedOid(colOid+"."+i));
+            assertEquals(Integer.toString(i), it.receivedOid(colOid+"."+i));
         }
         
         assertTrue(it.hasOidForNext());
         String oidForNext = it.getOidForNext();
         assertEquals((colOid+"."+(colLength-1)), oidForNext);
-        assertFalse(it.receivedOid(nextColOid));
+        assertNull(it.receivedOid(nextColOid));
         assertFalse(it.hasOidForNext());
         
         
@@ -141,14 +192,17 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
      
     
     public void testColumnGetNextZeroInstance() {
-        MibObject sysName = createMibObject("sysName", ".1.3.6.1.2.1.1.5", "0", "string");
+        String sysNameOid = ".1.3.6.1.2.1.1.5";
         
-        SnmpColumn col = new SnmpColumn(sysName.getOid());
+        SnmpColumn col = new SnmpColumn(sysNameOid, "0");
         assertTrue(col.hasOidForNext());
         String nextOid = col.getOidForNext();
-        assertEquals(sysName.getOid(), nextOid);
+        assertEquals(sysNameOid, nextOid);
         
-        col.addResult(nextOid+".0", new SnmpOctetString("sysName".getBytes()));
+        Object result = "sysName";
+        col.addResult(nextOid+".0", result);
+        assertEquals(result, col.getResultForInstance("0"));
+        
         
         assertFalse(col.hasOidForNext());
     }

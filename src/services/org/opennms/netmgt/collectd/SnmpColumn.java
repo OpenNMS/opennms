@@ -32,9 +32,10 @@
 package org.opennms.netmgt.collectd;
 
 
+
 public class SnmpColumn {
 
-    private String m_objectId;
+    private InstanceTracker m_tracker;
     private Object m_result = null;
 
     /*
@@ -48,20 +49,26 @@ public class SnmpColumn {
      * 
      */
     
-    public SnmpColumn(String objectId) {
-        m_objectId = objectId;
+    public SnmpColumn(String baseOid, String instances) {
+        m_tracker = new SpecificInstanceTracker(baseOid, instances);
     }
 
     public boolean hasOidForNext() {
-        return m_result == null;
+        return m_tracker.hasOidForNext();
     }
 
     public String getOidForNext() {
-        return m_objectId;
+        return m_tracker.getOidForNext();
     }
 
-    public void addResult(String nextOid, Object val) {
-        m_result = val;
+    public void addResult(String oid, Object val) {
+        if (m_tracker.receivedOid(oid) != null)
+            m_result = val;
+        
+    }
+
+    public Object getResultForInstance(String string) {
+       return m_result;
     }
 
 }

@@ -51,9 +51,19 @@ public class ColumnInstanceTracker implements InstanceTracker {
         return m_last.toString();
     }
 
-    public boolean receivedOid(String lastOid) {
+    public String receivedOid(String lastOid) {
         m_last = new SnmpObjectId(lastOid);
-        return m_base.isRootOf(m_last);
+        String instance = null;
+        if (m_base.isRootOf(m_last) && !m_base.equals(m_last)) {
+            String baseStr = m_base.toString();
+            String lastStr = m_last.toString();
+            instance = lastStr.substring(baseStr.length()+1); // add one to remove leading '.'
+        }
+        return instance;
+    }
+
+    public String getBaseOid() {
+        return m_base.toString();
     }
 
 }

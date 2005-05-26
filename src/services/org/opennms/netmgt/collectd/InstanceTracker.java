@@ -33,11 +33,13 @@ package org.opennms.netmgt.collectd;
 
 
 public interface InstanceTracker  {
+    
+    String getBaseOid();
 
     boolean hasOidForNext();
 
     String getOidForNext();
 
-    boolean receivedOid(String lastOid);
+    String receivedOid(String lastOid);
     
 }
