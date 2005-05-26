@@ -35,6 +35,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TreeMap;
 
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.utils.BarrierSignaler;
@@ -52,6 +53,62 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     protected BarrierSignaler m_signaler;
     protected List m_objList;
     protected SnmpPeer m_peer;
+    private TreeMap m_mibObjectMap;
+    
+    private static final String initalMibObjects[][] = {
+        {
+            "sysLocation", ".1.3.6.1.2.1.1.6", "0", "string"
+        },
+
+        {
+            "sysName",     ".1.3.6.1.2.1.1.5", "0", "string"
+        },
+
+        {
+            "sysContact",  ".1.3.6.1.2.1.1.4", "0", "string"
+        },
+
+        {
+            "sysUptime",   ".1.3.6.1.2.1.1.3", "0", "timeTicks"
+        },
+
+        {
+            "sysOid",      ".1.3.6.1.2.1.1.2", "0", "objectid"
+        },
+
+        {
+            "sysDescr", ".1.3.6.1.2.1.1.1", "0", "string"
+        },
+        { 
+            "ifNumber",    ".1.3.6.1.2.1.2.1", "0", "integer" 
+        },
+        
+        {
+            "ifInDiscards", ".1.3.6.1.2.1.2.2.1.13", "ifIndex", "counter"
+        },
+
+        {
+            "ifOutErrors", ".1.3.6.1.2.1.2.2.1.20", "ifIndex", "counter"
+        },
+
+        {
+            "ifInErrors", ".1.3.6.1.2.1.2.2.1.14", "ifIndex", "counter"
+        },
+
+        {
+            "ifOutOctets", ".1.3.6.1.2.1.2.2.1.16", "ifIndex", "counter"
+        },
+
+        {
+            "ifInOctets", ".1.3.6.1.2.1.2.2.1.10", "ifIndex", "counter"
+        },
+
+        {
+            "ifSpeed", ".1.3.6.1.2.1.2.2.1.5", "ifIndex", "gauge"
+        },
+        
+
+    };
 
     protected void setUp() throws Exception {
         setStartEventd(false);
@@ -59,6 +116,13 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         m_peer = new SnmpPeer(InetAddress.getLocalHost());
         m_signaler = new BarrierSignaler(1);
         m_objList = new ArrayList();
+        m_mibObjectMap = new TreeMap();
+        
+        for (int i = 0; i < initalMibObjects.length; i++) {
+            String[] mibData = initalMibObjects[i];
+            defineMibObject(mibData[0], mibData[1], mibData[2], mibData[3]);
+            
+        }
     }
 
     protected void tearDown() throws Exception {
@@ -111,17 +175,111 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         return Void.class;
     }
 
+    protected MibObject defineMibObject(String alias, String oid, String instance, String type) {
+        MibObject mibObj = createMibObject(alias, oid, instance, type);
+        m_mibObjectMap.put(mibObj.getAlias(), mibObj);
+        m_mibObjectMap.put(mibObj.getOid(), mibObj);
+        return mibObj;
+    }
+
     protected MibObject createMibObject(String alias, String oid, String instance, String type) {
-        MibObject sysName = new MibObject();
-        sysName.setAlias(alias);
-        sysName.setOid(oid);
-        sysName.setType(type);
-        sysName.setInstance(instance);
-        return sysName;
+        MibObject mibObj = new MibObject();
+        mibObj.setAlias(alias);
+        mibObj.setOid(oid);
+        mibObj.setType(type);
+        mibObj.setInstance(instance);
+        return mibObj;
     }
 
     protected SnmpSession getSession() throws Exception {
         return new SnmpSession(m_peer);
     }
+
+    protected void addIfNumber() {
+        addMibObject("ifNumber",    ".1.3.6.1.2.1.2.1", "0", "integer");
+    }
+
+    protected void addSystemGroup() {
+        addSysDescr();
+        addSysOid();
+        addSysUptime();
+        addSysContact();
+        addSysName();
+        addSysLocation();
+    }
+
+    protected void addSysLocation() {
+        addMibObject("sysLocation", ".1.3.6.1.2.1.1.6", "0", "string");
+    }
+
+    protected void addSysName() {
+        addMibObject("sysName",     ".1.3.6.1.2.1.1.5", "0", "string");
+    }
+
+    protected void addSysContact() {
+        addMibObject("sysContact",  ".1.3.6.1.2.1.1.4", "0", "string");
+    }
+
+    protected void addSysUptime() {
+        addMibObject("sysUptime",   ".1.3.6.1.2.1.1.3", "0", "timeTicks");
+    }
+
+    protected void addSysOid() {
+        addMibObject("sysOid",      ".1.3.6.1.2.1.1.2", "0", "objectid");
+    }
+
+    protected void addSysDescr() {
+        addMibObject("sysDescr", ".1.3.6.1.2.1.1.1", "0", "string");
+    }
+
+    protected void addMibObject(String alias, String oid, String inst, String type) {
+        m_objList.add(getMibObject(alias,    oid, inst, type));
+    }
+
+    protected MibObject getMibObject(String alias, String oid, String inst, String type) {
+        MibObject mibObj = getMibObject(alias);
+        if (mibObj != null) return mibObj;
+        return defineMibObject(alias, oid, inst, type);
+        
+    }
+
+    protected MibObject getMibObject(String aliasOrOid) {
+        return (MibObject)m_mibObjectMap.get(aliasOrOid);
+    }
+
+    protected void addIfTable() {
+        addIfSpeed();
+        addIfInOctets();
+        addIfOutOctets();
+        addIfInErrors();
+        addIfOutErrors();
+        addIfInDiscards();
+    }
+
+    protected void addIfInDiscards() {
+        addMibObject("ifInDiscards", ".1.3.6.1.2.1.2.2.1.13", "ifIndex", "counter");
+    }
+
+    protected void addIfOutErrors() {
+        addMibObject("ifOutErrors", ".1.3.6.1.2.1.2.2.1.20", "ifIndex", "counter");
+    }
+
+    protected void addIfInErrors() {
+        addMibObject("ifInErrors", ".1.3.6.1.2.1.2.2.1.14", "ifIndex", "counter");
+    }
+
+    protected void addIfOutOctets() {
+        addMibObject("ifOutOctets", ".1.3.6.1.2.1.2.2.1.16", "ifIndex", "counter");
+    }
+
+    protected void addIfInOctets() {
+        addMibObject("ifInOctets", ".1.3.6.1.2.1.2.2.1.10", "ifIndex", "counter");
+    }
+
+    protected void addIfSpeed() {
+        addMibObject("ifSpeed", ".1.3.6.1.2.1.2.2.1.5", "ifIndex", "gauge");
+    }
+    
+    
 
 }

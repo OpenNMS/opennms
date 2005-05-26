@@ -85,8 +85,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     public void testInvalidVar() throws Exception {
         IfInfo ifInfo = new IfInfo(1, 24, "lo", "P");
         
-        // TODO test for a list with only one bad var.. other vars should be collected
-        m_objList.add(createMibObject("ifInOctets", "1.3.6.1.2.1.2.2.2.10", "ifIndex", "counter"));
+        addMibObject("ifInOctets", "1.3.6.1.2.1.2.2.2.10", "ifIndex", "counter");
         
         ifInfo.setOidList(new ArrayList(m_objList));
         
@@ -101,16 +100,42 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         
     }
     
-    public void testRottenApple() throws Exception {
+    public void testBadApple() throws Exception {
         IfInfo ifInfo = new IfInfo(1, 24, "lo", "P");
         
-        m_objList.add(createMibObject("ifSpeed", "1.3.6.1.2.1.2.2.1.5", "ifIndex", "gauge"));
-        m_objList.add(createMibObject("ifInOctets", "1.3.6.1.2.1.2.2.1.10", "ifIndex", "counter"));
+        addIfSpeed();
+        addIfInOctets();
         // the oid below is wrong.  Make sure we collect the others anyway
-        m_objList.add(createMibObject("ifOutOctets", "1.3.6.1.2.1.2.2.2.16", "ifIndex", "counter"));
-        m_objList.add(createMibObject("ifInErrors", "1.3.6.1.2.1.2.2.1.14", "ifIndex", "counter"));
-        m_objList.add(createMibObject("ifOutErrors", "1.3.6.1.2.1.2.2.1.20", "ifIndex", "counter"));
-        m_objList.add(createMibObject("ifInDiscards", "1.3.6.1.2.1.2.2.1.13", "ifIndex", "counter"));
+        addMibObject("ifOutOctets", "1.3.6.1.2.1.2.2.2.16", "ifIndex", "counter");
+        addIfInErrors();
+        addIfOutErrors();
+        addIfInDiscards();
+        
+        ifInfo.setOidList(new ArrayList(m_objList));
+        
+        addIfInfo(ifInfo);
+        
+        SnmpIfCollector collector = new SnmpIfCollector(getSession(), m_signaler, "1", m_ifMap, m_ifMap.size(), 50);
+        waitForSignal();
+        
+        // remove the bad apple before compare
+        m_objList.remove(2);
+        assertInterfaceMibObjectsPresent(collector.getEntries());
+        
+    }
+
+    public void testBadAppleV2() throws Exception {
+        m_peer.getParameters().setVersion(SnmpSMI.SNMPV2);
+
+        IfInfo ifInfo = new IfInfo(1, 24, "lo", "P");
+        
+        addIfSpeed();
+        addIfInOctets();
+        // the oid below is wrong.  Make sure we collect the others anyway
+        addMibObject("ifOutOctets", "1.3.66.1.2.1.2.2.299.16", "ifIndex", "counter");
+        addIfInErrors();
+        addIfOutErrors();
+        addIfInDiscards();
         
         ifInfo.setOidList(new ArrayList(m_objList));
         
@@ -127,7 +152,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
 
 
     public void testManyVars() throws Exception {
-        populateObjList();
+        addIfTable();
         
         addIfInfo(createIfInfo(1, 24, "lo", "P"));
         
@@ -144,17 +169,8 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         return ifInfo;
     }
 
-    private void populateObjList() {
-        m_objList.add(createMibObject("ifSpeed", "1.3.6.1.2.1.2.2.1.5", "ifIndex", "gauge"));
-        m_objList.add(createMibObject("ifInOctets", "1.3.6.1.2.1.2.2.1.10", "ifIndex", "counter"));
-        m_objList.add(createMibObject("ifOutOctets", "1.3.6.1.2.1.2.2.1.16", "ifIndex", "counter"));
-        m_objList.add(createMibObject("ifInErrors", "1.3.6.1.2.1.2.2.1.14", "ifIndex", "counter"));
-        m_objList.add(createMibObject("ifOutErrors", "1.3.6.1.2.1.2.2.1.20", "ifIndex", "counter"));
-        m_objList.add(createMibObject("ifInDiscards", "1.3.6.1.2.1.2.2.1.13", "ifIndex", "counter"));
-    }
-    
     public void testManyIfs() throws Exception {
-        populateObjList();
+        addIfTable();
         
         addIfInfo(createIfInfo(1, 24, "lo0", "P"));
         addIfInfo(createIfInfo(2, 55, "gif0", "S"));
@@ -166,9 +182,10 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         assertInterfaceMibObjectsPresent(collector.getEntries());
     }
 
+    // TODO: add test for very large v2 request
     public void testManyIfsV2() throws Exception {
         m_peer.getParameters().setVersion(SnmpSMI.SNMPV2);
-        populateObjList();
+        addIfTable();
         
         addIfInfo(createIfInfo(1, 24, "lo0", "P"));
         addIfInfo(createIfInfo(2, 55, "gif0", "S"));

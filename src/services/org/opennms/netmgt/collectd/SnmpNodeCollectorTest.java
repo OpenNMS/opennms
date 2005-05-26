@@ -44,19 +44,19 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
     }
 
     public void testInvalidVar() throws Exception {
-        m_objList.add(createMibObject("sysName", "1.3.6.1.2.1.2", "0", "string"));
+        addMibObject("sysName", ".1.3.6.1.2.1.2", "0", "string");
         SnmpNodeCollector collector = createNodeCollector(50);
         assertTrue(collector.getEntry().isEmpty());
     }
 
     public void testInvalidInst() throws Exception {
-        m_objList.add(createMibObject("sysUptime", "1.3.6.1.2.1.1.3", "1", "timeTicks"));
+        addMibObject("sysUptime", ".1.3.6.1.2.1.1.3", "1", "timeTicks");
         SnmpNodeCollector collector = createNodeCollector(50);
         assertTrue(collector.getEntry().isEmpty());
     }
 
     public void testOneVar() throws Exception {
-        m_objList.add(createMibObject("sysName", "1.3.6.1.2.1.1.5", "0", "string"));
+        addSysName();
         SnmpNodeCollector collector = createNodeCollector(50);
         assertMibObjectsPresent(collector.getEntry(), m_objList);
     }
@@ -86,13 +86,8 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
 
     private void testManyVars(int version, int maxVarsPerPdu) throws Exception, InterruptedException {
         m_peer.getParameters().setVersion(version);
-        m_objList.add(createMibObject("sysDescr",    "1.3.6.1.2.1.1.1", "0", "string"));
-        m_objList.add(createMibObject("sysOid",      "1.3.6.1.2.1.1.2", "0", "objectid"));
-        m_objList.add(createMibObject("sysUptime",   "1.3.6.1.2.1.1.3", "0", "timeTicks"));
-        m_objList.add(createMibObject("sysContact",  "1.3.6.1.2.1.1.4", "0", "string"));
-        m_objList.add(createMibObject("sysName",     "1.3.6.1.2.1.1.5", "0", "string"));
-        m_objList.add(createMibObject("sysLocation", "1.3.6.1.2.1.1.6", "0", "string"));
-        m_objList.add(createMibObject("ifNumber",    "1.3.6.1.2.1.2.1", "0", "integer"));
+        addSystemGroup();
+        addIfNumber();
         SnmpNodeCollector collector = createNodeCollector(maxVarsPerPdu);
         assertMibObjectsPresent(collector.getEntry(), m_objList);
     }
