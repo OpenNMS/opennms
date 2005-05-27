@@ -57,6 +57,8 @@ public class ReportMailer extends Object implements Runnable {
      * The log4j category used to log debug messsages and statements.
      */
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+	
+	private static final String MONTH_FORMAT_CLASSIC = "classic";
 
     protected String scriptGenerateReport;
 
@@ -213,8 +215,9 @@ public class ReportMailer extends Object implements Runnable {
         }
 
         // java.lang.Process process = Runtime.getRuntime().exec( cmdArgs );
+		// TODO: Add code to generate "calendar" as well as "classic" reports
         try {
-            AvailabilityReport.generateReport(getLogoUrl(), getCategoryName(), getFormat());
+            AvailabilityReport.generateReport(getLogoUrl(), getCategoryName(), getFormat(), MONTH_FORMAT_CLASSIC);
         } catch (Exception e) {
             log.error("Caught exception generating report: ", e);
         }
