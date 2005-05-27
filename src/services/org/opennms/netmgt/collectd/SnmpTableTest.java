@@ -31,16 +31,23 @@
 //
 package org.opennms.netmgt.collectd;
 
-import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpVarBind;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SnmpTableTest extends SnmpCollectorTestCase {
 
     private SnmpObjId sysNameOid;
+    private SnmpObjId ifDescr;
 
     protected void setUp() throws Exception {
         super.setUp();
-        sysNameOid = new SnmpObjId(".1.3.6.1.2.1.1.5");
+        loadSnmpTestData("snmpTestData1.properties");
+        sysNameOid = SnmpObjId.get(".1.3.6.1.2.1.1.5");
+        ifDescr = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.2");
+        
 
     }
 
@@ -54,11 +61,11 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
     //
     
     public void testSnmpOidCompare() {
-        SnmpObjId oid1 = new SnmpObjId("1.3.5.7");
-        SnmpObjId oid1b = new SnmpObjId(".1.3.5.7");
-        SnmpObjId oid2 = new SnmpObjId(new int[] {1, 3, 5, 7});
-        SnmpObjId oid3 = new SnmpObjId(".1.3.5.8");
-        SnmpObjId oid4 = new SnmpObjId(".1.3.5.7.0");
+        SnmpObjId oid1 = SnmpObjId.get("1.3.5.7");
+        SnmpObjId oid1b = SnmpObjId.get(".1.3.5.7");
+        SnmpObjId oid2 = SnmpObjId.get(new int[] {1, 3, 5, 7});
+        SnmpObjId oid3 = SnmpObjId.get(".1.3.5.8");
+        SnmpObjId oid4 = SnmpObjId.get(".1.3.5.7.0");
         
         assertArrayEquals(oid1.getIds(), oid2.getIds());
         
@@ -79,8 +86,8 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
     }
     
     public void testOidAppendPrefixInstance() {
-        SnmpObjId base = new SnmpObjId(".1.3.5.7");
-        SnmpObjId result = new SnmpObjId(".1.3.5.7.9.8.7.6");
+        SnmpObjId base = SnmpObjId.get(".1.3.5.7");
+        SnmpObjId result = SnmpObjId.get(".1.3.5.7.9.8.7.6");
 
         assertEquals(result, base.append(new int[] {9,8,7,6}));
         assertEquals(result, base.append("9.8.7.6"));
@@ -90,13 +97,16 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
         assertFalse(result.isPrefixOf(base));
         
         SnmpInstId instance = result.getInstance(base);
-        assertEquals(new SnmpObjId(".9.8.7.6"), instance);
+        assertEquals(SnmpObjId.get(".9.8.7.6"), instance);
         assertEquals("9.8.7.6", instance.toString());
     }
     
     public void testDecrement() {
-        SnmpObjId oid = new SnmpObjId(".1.3.5.7");
-        assertEquals(new SnmpObjId(".1.3.5.6"), oid.decrement());
+        SnmpObjId oid = SnmpObjId.get(".1.3.5.7");
+        assertEquals(SnmpObjId.get(".1.3.5.6"), oid.decrement());
+        
+        SnmpObjId oid2 = SnmpObjId.get(".1.3.5.7.0");
+        assertEquals(oid, oid2.decrement());
     }
     
     
@@ -118,11 +128,11 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
     //
     
     public void testSingleInstanceTrackerZeroInstance() {
-        testSpecificInstanceTracker("1.2.3", new SnmpObjId(sysNameOid, "0"));
+        testSpecificInstanceTracker("0", SnmpObjId.get(sysNameOid, "0"));
     }
     
     public void testSingleInstanceTrackerMultiIdInstance() {
-        testSpecificInstanceTracker("1.2.3", new SnmpObjId(sysNameOid, "1.2.3"));
+        testSpecificInstanceTracker("1.2.3", SnmpObjId.get(sysNameOid, "1.2.3"));
     }
     
     public void testSpecificInstanceTracker(String instance, SnmpObjId receivedOid) {
@@ -139,20 +149,22 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
         // ensure it needs to receive something - object id for the instance
         assertTrue(it.hasOidForNext());
         // ensure that is asks for the oid preceeding
-        assertEquals(new SnmpObjId(sysNameOid, inst).decrement(), it.getOidForNext());
+        assertEquals(SnmpObjId.get(sysNameOid, inst).decrement(), it.getOidForNext());
         // tell it received the expected one and ensure that it agrees
-        if (receivedOid.equals(new SnmpObjId(sysNameOid, inst)))
+        
+        //FIXME: take this if out an make it explicit as an arg or something (can lead to hidden failures)
+        if (receivedOid.equals(SnmpObjId.get(sysNameOid, inst)))
             assertEquals(inst, it.receivedOid(receivedOid));
         else
             assertNull(it.receivedOid(receivedOid));
     }
     
     public void testSingleInstanceTrackerNonZeroInstance() {
-        testSpecificInstanceTracker("1.2.3", new SnmpObjId(sysNameOid, "1.2.3"));
+        testSpecificInstanceTracker("1", SnmpObjId.get(sysNameOid, "1"));
     }
     
     public void testSingleInstanceTrackerNoMatch() {
-        testSpecificInstanceTracker("0", new SnmpObjId(sysNameOid, "1"));
+        testSpecificInstanceTracker("0", SnmpObjId.get(sysNameOid, "1"));
     }
     
     public void testListInstanceTrackerWithAllResults() {
@@ -160,7 +172,7 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
         InstanceTracker it = new SpecificInstanceTracker(sysNameOid, toCommaSeparated(instances));
         
         for(int i = 0; i < instances.length; i++) {
-            testInstanceTrackerInnerLoop(it, new SnmpInstId(instances[i]), new SnmpObjId(sysNameOid, instances[i]));
+            testInstanceTrackerInnerLoop(it, new SnmpInstId(instances[i]), SnmpObjId.get(sysNameOid, instances[i]));
         }
         assertFalse(it.hasOidForNext());
     }
@@ -170,14 +182,14 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
         InstanceTracker it = new SpecificInstanceTracker(sysNameOid, toCommaSeparated(instances));
         
         for(int i = 0; i < instances.length; i++) {
-            testInstanceTrackerInnerLoop(it, new SnmpInstId(instances[i]), new SnmpObjId(sysNameOid, instances[i]+".0"));
+            testInstanceTrackerInnerLoop(it, new SnmpInstId(instances[i]), SnmpObjId.get(sysNameOid, instances[i]+".0"));
         }
         assertFalse(it.hasOidForNext());
     }
     
     public void testColumnInstanceTracker() {
-        SnmpObjId colOid = new SnmpObjId(".1.3.6.1.2.1.1.5");
-        SnmpObjId nextColOid = new SnmpObjId(".1.3.6.1.2.1.1.6.2");
+        SnmpObjId colOid = SnmpObjId.get(".1.3.6.1.2.1.1.5");
+        SnmpObjId nextColOid = SnmpObjId.get(".1.3.6.1.2.1.1.6.2");
         InstanceTracker it = new ColumnInstanceTracker(colOid);
         
         int colLength = 5;
@@ -214,7 +226,9 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
     // TODO: add hint columns
     // TODO: add extra required columns like ifType for interface collection
      
-    
+    /*
+     * Test the SnmpColumn class
+     */
     public void testColumnGetNextZeroInstance() {
         
         SnmpColumn col = new SnmpColumn(sysNameOid, "0");
@@ -230,13 +244,13 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
         assertFalse(col.hasOidForNext());
     }
     
-    public void xtestGetColumnWithMultiInstances() {
+    public void testGetColumnWithMultiInstances() {
         String[] instances = { "1", "2", "3" };
         SnmpColumn col = new SnmpColumn(sysNameOid, "1,2,3");
         
         for(int i = 0; i < instances.length; i++) {
             assertTrue(col.hasOidForNext());
-            SnmpObjId expected = new SnmpObjId(sysNameOid, instances[i]);
+            SnmpObjId expected = SnmpObjId.get(sysNameOid, instances[i]);
             assertEquals(expected.decrement(), col.getOidForNext());
         
             Object result = "sysName"+i;
@@ -251,38 +265,203 @@ public class SnmpTableTest extends SnmpCollectorTestCase {
         }
         
     }
-
-    public void testGetNextVarBinds() {
-        addSysDescr();
-        addSysName();
-        SnmpTable table = new SnmpTable(m_objList);
+    
+    public void testGetColumnForTableColumn() {
+        SnmpColumn col = new SnmpColumn(ifDescr, "ifIndex");
         
-        SnmpVarBind[] varbinds = table.getNextVarBinds();
-
-        // process the varbinds
-        assertNotNull(varbinds);
-        assertEquals(m_objList.size(), varbinds.length);
-        for (int i = 0; i < varbinds.length; i++) {
-            SnmpVarBind varBind = varbinds[i];
-            MibObject mibObject = (MibObject)m_objList.get(i);
-            assertNotNull(varBind);
-            assertEquals(mibObject.getOid(), varBind.getName().toString());
+        LinkedHashMap linkedMap = new LinkedHashMap();
+        
+        SnmpObjId next = ifDescr;
+        while(col.hasOidForNext()) {
+            assertEquals(next, col.getOidForNext());
+            next = getNextSnmpId(next);
+            SnmpInstId inst = next.getInstance(ifDescr);
+            Object result = getSnmpData(next);
+            assertEquals(inst, col.addResult(next, result));
+            if (inst != null)
+                linkedMap.put(inst, result);
         }
         
-        // create responses
-        for (int i = 0; i < varbinds.length; i++) {
-            varbinds[i].setValue(new SnmpOctetString(("result"+i).getBytes()));
-        } 
-        
-        table.processResults(varbinds);
-        
-        // to do make sure it processed the results correctly
-        
-        
+        for (Iterator it = linkedMap.keySet().iterator(); it.hasNext();) {
+            SnmpInstId inst = (SnmpInstId) it.next();
+            Object val = linkedMap.get(inst);
+            assertEquals(val, col.getResultForInstance(inst));
+        }
         
     }
-
     
+    // TODO: make sure columns can handle getting multiple responses with out a getNext call
+    // TODO: add maxRepititions to columns
+    
+
+    /*
+     * Test SnmpCollectionTracker
+     */
+    
+    public void testGetNextVarBindsForZeroInstanceVars() {
+        addSysDescr();
+        addSysName();
+        SnmpCollectionTracker tracker = new SnmpCollectionTracker(m_objList);
+
+        final int[] callCount = new int[3];
+        final Iterator it = m_objList.iterator();
+        ResponseProcessor rp = tracker.buildNextPdu(new PduBuilder() {
+            public void addOid(SnmpObjId snmpObjId) {
+                callCount[0]++;
+                MibObject mibObj = (MibObject)it.next();
+                assertEquals(SnmpObjId.get(mibObj.getOid()), snmpObjId);
+            }
+            public void setNonRepeaters(int numNonRepeaters) {
+                callCount[1]++;
+            }
+            public void setMaxRepititions(int maxRepititions) {
+                callCount[2]++;
+            }
+        });
+        assertNotNull(rp);
+        
+        assertEquals(m_objList.size(), callCount[0]);
+        assertEquals(1, callCount[1]);
+        assertEquals(1, callCount[2]);
+        
+        // create responses
+        for (int i = 0; i < m_objList.size(); i++) {
+            MibObject mibObj = (MibObject)m_objList.get(i);
+            rp.processResponse(SnmpObjId.get(mibObj.getOid(), "0"), "response"+i);
+        } 
+        
+        // TODO make sure it processed the results correctly
+        Map store = tracker.getDataForInstance(new SnmpInstId("0"));
+        assertNotNull(store);
+        
+        for (int i = 0; i < m_objList.size(); i++) {
+            MibObject mibObj = (MibObject)m_objList.get(i);
+            assertEquals("response"+i, store.get(SnmpObjId.get(mibObj.getOid())));
+        } 
+        
+    }
+    
+    public void testCollectSystemGroup() {
+        addSystemGroup();
+        verifyCollection();
+    }
+    
+    public void testCollectIfTable() {
+        addIfTable();
+        verifyCollection();
+    }
+    
+    public void testCollectIpAddrTable() {
+        addIpAddrTable();
+        verifyCollection();
+        
+    }
+    
+    public void testSpecificPlusColumn() {
+        addSysName();
+        addIfSpeed();
+        verifyCollection();
+    }
+    
+    public void testAllTables() {
+        addSystemGroup();
+        addIfTable();
+        addIpAddrTable();
+        verifyCollection();
+    }
+    
+    // TODO: handle maxVarsPerPdu
+    public void xtestMaxVarsPerPdu() {
+        fail("Unimplemented!");
+    }
+
+    private void verifyCollection() {
+        SnmpCollectionTracker tracker = new SnmpCollectionTracker(m_objList);
+        final List colTrackers = new ArrayList(m_objList.size());
+        for (Iterator it = m_objList.iterator(); it.hasNext();) {
+            MibObject mibObj = (MibObject) it.next();
+            SnmpObjId base = SnmpObjId.get(mibObj.getOid());
+            InstanceTracker colTracker = InstanceTracker.get(base, mibObj.getInstance());
+            colTrackers.add(colTracker);
+        }
+        
+        while(!tracker.isFinished()) {
+            
+            // compute the list of oids we need to request
+            final List expectedOids = new ArrayList(colTrackers.size());
+            for (Iterator it = colTrackers.iterator(); it.hasNext();) {
+                InstanceTracker colTracker = (InstanceTracker) it.next();
+                if (colTracker.hasOidForNext())
+                    expectedOids.add(colTracker.getOidForNext());
+            }
+            
+            
+            // build a pdu for reqeusting them
+            final int[] callCount = new int[3];
+            ResponseProcessor rp = tracker.buildNextPdu(new PduBuilder() {
+                
+                int currIndex = 0;
+
+                public void addOid(SnmpObjId snmpObjId) {
+                    assertEquals(expectedOids.get(currIndex), snmpObjId);
+                    currIndex++;
+                    callCount[0]++;
+                }
+
+                public void setNonRepeaters(int numNonRepeaters) {
+                    assertTrue(numNonRepeaters <= expectedOids.size());
+                    callCount[1]++;
+                }
+
+                public void setMaxRepititions(int maxRepititions) {
+                    assertTrue(maxRepititions > 0);
+                    callCount[2]++;
+                }
+                
+            });
+            
+            // make sure we properly built the pdu
+            assertEquals(callCount[0], expectedOids.size());
+            assertEquals(1, callCount[1]);
+            assertEquals(1, callCount[2]);
+
+            // generate responses and update the tracking
+            for (Iterator it = colTrackers.iterator(); it.hasNext();) {
+                InstanceTracker colTracker = (InstanceTracker) it.next();
+                if (colTracker.hasOidForNext()) {
+                    // then we requested it earlier so it is in expectedOids
+                    // and the below is the value it has
+                    SnmpObjId req = colTracker.getOidForNext();
+                    
+                    // these are the response for this pdu
+                    SnmpObjId resp = getNextSnmpId(req);
+                    Object val = getSnmpData(resp);
+                    
+                    // notify the response processor
+                    rp.processResponse(resp, val);
+                    
+                    // update the tracker
+                    colTracker.receivedOid(resp);
+                }
+            }
+            
+        }
+
+        for (Iterator it = colTrackers.iterator(); it.hasNext();) {
+            InstanceTracker colTracker = (InstanceTracker) it.next();
+            SnmpObjId base = colTracker.getBaseOid();
+
+            for(SnmpObjId mib = getNextSnmpId(base); base.isPrefixOf(mib); mib = getNextSnmpId(mib)) {
+                SnmpInstId inst = mib.getInstance(base);
+                Object result = getSnmpData(mib);
+                Map store = tracker.getDataForInstance(inst);
+                assertNotNull(store);
+
+                assertEquals(result, store.get(base));
+                
+            }
+        }
+    }
     
 
 }

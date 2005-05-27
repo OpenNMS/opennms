@@ -31,46 +31,8 @@
 //
 package org.opennms.netmgt.collectd;
 
-import java.util.ArrayList;
-import java.util.List;
+public interface ResponseProcessor {
 
-import org.opennms.protocols.snmp.SnmpVarBind;
-
-public class SnmpTable {
-    
-    List m_objList;
-
-    public SnmpTable(List objList) {
-        m_objList = new ArrayList(objList);
-    }
-    /*
-     * TODO: take a list of mib object bases and instance types
-     * TODO: track the columns that have been retrieved
-     * TODO: process the results to match instance data up for Entry objects
-     * TODO: handle getting data out of order
-     * TODO: construct the varbinds needed to do getNext/Bulk
-     * TODO: track the complete collection of each column
-     * TODO: (maybe)be able to start with just the root oid of the table and process an 
-     * entire table
-     * 
-     * TODO: be able to get data for instance '2'
-     * TODO: be able to get date for instance 'ifIndex'
-     * 
-     * TODO: tell when it gets to the end of a column
-     * 
-     */
-
-    public SnmpVarBind[] getNextVarBinds() {
-        SnmpVarBind[] varbinds = new SnmpVarBind[m_objList.size()];
-        for(int i = 0; i < varbinds.length; i++) {
-            MibObject mibObj = (MibObject) m_objList.get(i);
-            varbinds[i] = new SnmpVarBind(mibObj.getOid());
-        }
-        return varbinds;
-    }
-    public void processResults(SnmpVarBind[] varbinds) {
-    }
-
-
+    void processResponse(SnmpObjId snmpObjId, Object val);
 
 }

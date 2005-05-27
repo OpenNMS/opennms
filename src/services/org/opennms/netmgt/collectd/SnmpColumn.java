@@ -31,32 +31,32 @@
 //
 package org.opennms.netmgt.collectd;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 
 
 public class SnmpColumn {
 
     private InstanceTracker m_tracker;
-    private Object m_result = null;
+    private Map m_results = new TreeMap();
 
-    /*
-     * TODO track the process of retrieving a column.
-     * TODO MibObject used to define the column
-     * TODO hasNext returns true until the last value or one passed the last is set
-     * TODO getNext returns the next var to set
-     * TODO addResult set the last retrieved value
-     * TODO addResult must be able to take results out of order ?
-     * 
-     * 
-     */
-    
     public SnmpColumn(String baseOid, String instances) {
-        this(new SnmpObjId(baseOid), instances);
+        this(SnmpObjId.get(baseOid), instances);
     }
     
     public SnmpColumn(SnmpObjId baseOid, String instances) {
-        m_tracker = new SpecificInstanceTracker(baseOid, instances);
+        this(InstanceTracker.get(baseOid, instances));
     }
     
+    private SnmpColumn(InstanceTracker tracker) {
+        m_tracker = tracker;
+    }
+    
+    public SnmpObjId getBase() {
+        return m_tracker.getBaseOid();
+    }
+
     public boolean hasOidForNext() {
         return m_tracker.hasOidForNext();
     }
@@ -65,14 +65,22 @@ public class SnmpColumn {
         return m_tracker.getOidForNext();
     }
 
-    public void addResult(SnmpObjId oid, Object val) {
-        if (m_tracker.receivedOid(oid) != null)
-            m_result = val;
+    public SnmpInstId addResult(SnmpObjId oid, Object val) {
+        SnmpInstId inst = m_tracker.receivedOid(oid);
+        if (inst != null) {
+            System.err.println("Adding result for inst "+inst+": "+val);
+            m_results.put(inst, val);
+        }
+        return inst;
         
     }
 
-    public Object getResultForInstance(String string) {
-       return m_result;
+    public Object getResultForInstance(String inst) {
+       return getResultForInstance(new SnmpInstId(inst));
+    }
+
+    public Object getResultForInstance(SnmpInstId inst) {
+        return m_results.get(inst);
     }
 
 }

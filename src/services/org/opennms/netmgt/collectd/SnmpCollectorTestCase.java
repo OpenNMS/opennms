@@ -31,12 +31,17 @@
 //
 package org.opennms.netmgt.collectd;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.TreeMap;
 
+import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.utils.BarrierSignaler;
 import org.opennms.protocols.snmp.SnmpCounter32;
@@ -109,6 +114,9 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         
 
     };
+    protected TreeMap m_agentData;
+    
+    
 
     protected void setUp() throws Exception {
         setStartEventd(false);
@@ -124,10 +132,45 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
             
         }
     }
-
+    
     protected void tearDown() throws Exception {
         getSession().close();
         super.tearDown();
+    }
+    
+    /*
+     * Loads mibfiles of the form generated the Net-SNMPs snmpwalk as follows
+     * snmpwalk -OUne -v1 -c <comnunity-string> <hostname>
+     */
+    protected void loadSnmpTestData(String name) throws IOException {
+        InputStream dataStream = getClass().getResourceAsStream(name);
+        Properties mibData = new Properties();
+        mibData.load(dataStream);
+        
+        m_agentData = new TreeMap();
+        for (Iterator it = mibData.entrySet().iterator(); it.hasNext();) {
+            Map.Entry entry = (Map.Entry) it.next();
+            SnmpObjId objId = SnmpObjId.get((String)entry.getKey());
+            
+            m_agentData.put(objId, parseMibValue((String)entry.getValue()));
+            
+            
+        }
+        
+    }
+    
+    protected Object getSnmpData(SnmpObjId id) {
+        return m_agentData.get(id);
+    }
+    
+    protected SnmpObjId getNextSnmpId(SnmpObjId id) {
+        MockUtil.println("Retrieving next id for "+id);
+        return (SnmpObjId)m_agentData.tailMap(SnmpObjId.get(id, "0")).firstKey();
+    }
+    
+
+    private Object parseMibValue(String mibVal) {
+        return mibVal;
     }
 
     protected void waitForSignal() throws InterruptedException {
@@ -254,6 +297,39 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         addIfInErrors();
         addIfOutErrors();
         addIfInDiscards();
+    }
+    
+    protected void addIpAddrTable() {
+        addIpAdEntAddr();
+        addIpAdEntIfIndex();
+        addIpAdEntNetMask();
+        addIpAdEntBcastAddr();
+    }
+    
+    
+
+    protected void addIpAdEntBcastAddr() {
+        // .1.3.6.1.2.1.4.20.1.4
+        // FIXME: be better about non specific instances.. They are not all ifIndex but we are using that to mean a column
+        addMibObject("addIpAdEntBcastAddr", ".1.3.6.1.2.1.4.20.1.4", "ifIndex", "ipAddress");
+    }
+
+    protected void addIpAdEntNetMask() {
+        // .1.3.6.1.2.1.4.20.1.3
+        addMibObject("addIpAdEntNetMask", ".1.3.6.1.2.1.4.20.1.3", "ifIndex", "ipAddress");
+        
+    }
+
+    protected void addIpAdEntIfIndex() {
+        // .1.3.6.1.2.1.4.20.1.2
+        addMibObject("addIpAdEntIfIndex", ".1.3.6.1.2.1.4.20.1.2", "ifIndex", "integer");
+        
+    }
+
+    protected void addIpAdEntAddr() {
+        // .1.3.6.1.2.1.4.20.1.1
+        addMibObject("addIpAdEntAddr", ".1.3.6.1.2.1.4.20.1.1", "ifIndex", "ipAddress");
+        
     }
 
     protected void addIfInDiscards() {

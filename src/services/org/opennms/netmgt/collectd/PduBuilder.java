@@ -31,27 +31,14 @@
 //
 package org.opennms.netmgt.collectd;
 
-public class SnmpInstId extends SnmpObjId {
+public interface PduBuilder {
 
-    public SnmpInstId(int[] instanceIds) {
-        super(instanceIds);
-    }
+    void addOid(SnmpObjId snmpObjId);
 
-    public SnmpInstId(String instance) {
-        super(instance);
-    }
+    void setNonRepeaters(int numNonRepeaters);
     
-    public SnmpInstId(SnmpObjId instance) {
-        super(instance);
-    }
-
-    public SnmpInstId(int instance) {
-        super(new int[] { instance }, false);
-    }
-
-    protected boolean addPrefixDotInToString() {
-        return false;
-    }
+    void setMaxRepititions(int maxRepititions);
     
     
+
 }

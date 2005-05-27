@@ -33,14 +33,14 @@ package org.opennms.netmgt.collectd;
 
 import java.util.StringTokenizer;
 
-public class SpecificInstanceTracker implements InstanceTracker {
+public class SpecificInstanceTracker extends InstanceTracker {
     
     private SnmpInstId[] m_instances;
     private int m_current = 0;
     private SnmpObjId m_base;
     
     public SpecificInstanceTracker(String base, String instances) {
-        this(new SnmpObjId(base), instances);
+        this(SnmpObjId.get(base), instances);
     }
 
     public SpecificInstanceTracker(SnmpObjId base, String instances) {
@@ -61,7 +61,7 @@ public class SpecificInstanceTracker implements InstanceTracker {
     }
 
     public SnmpObjId getOidForNext() {
-        return new SnmpObjId(m_base, nextExpectedInstance()).decrement();
+        return SnmpObjId.get(m_base, nextExpectedInstance()).decrement();
     }
 
     private SnmpInstId nextExpectedInstance() {
@@ -70,7 +70,7 @@ public class SpecificInstanceTracker implements InstanceTracker {
 
     public SnmpInstId receivedOid(SnmpObjId receivedOid) {
         SnmpInstId expectedInstance = nextExpectedInstance();
-        SnmpObjId expectedOid = new SnmpObjId(m_base, expectedInstance);
+        SnmpObjId expectedOid = SnmpObjId.get(m_base, expectedInstance);
         m_current++;
         return expectedOid.equals(receivedOid) ? expectedInstance : null;
     }

@@ -32,34 +32,39 @@ package org.opennms.netmgt.collectd;
 import java.util.StringTokenizer;
 
 public class SnmpObjId implements Comparable {
+    
+    /* FIXME: Change the implementation of this to cache oids and share common prefixes
+     * This should enhance the amount of garbage we generate a great deal at least for
+     * this class.
+     */
 
     private int[] m_ids;
     
-    private SnmpObjId(int[] ids, boolean clone) {
+    protected SnmpObjId(int[] ids, boolean clone) {
         m_ids = (clone ? cloneIds(ids) : ids);
     }
     
-    public SnmpObjId(int[] ids) {
+    protected SnmpObjId(int[] ids) {
         this(ids, true);
     }
 
-    public SnmpObjId(String oid) {
+    protected SnmpObjId(String oid) {
         this(convertStringToInts(oid), false);
     }
     
-    public SnmpObjId(SnmpObjId instance) {
-        this(instance.m_ids);
+    protected SnmpObjId(SnmpObjId oid) {
+        this(oid.m_ids);
     }
     
-    public SnmpObjId(String objId, String instance) {
+    private SnmpObjId(String objId, String instance) {
         this(appendArrays(convertStringToInts(objId), convertStringToInts(instance)), false);
     }
     
-    public SnmpObjId(SnmpObjId objId, String instance) {
+    private SnmpObjId(SnmpObjId objId, String instance) {
         this(appendArrays(objId.m_ids, convertStringToInts(instance)), false);
     }
     
-    public SnmpObjId(SnmpObjId objId, SnmpObjId instance) {
+    private SnmpObjId(SnmpObjId objId, SnmpObjId instance) {
         this(appendArrays(objId.m_ids, instance.m_ids), false);
     }
 
@@ -115,8 +120,7 @@ public class SnmpObjId implements Comparable {
     }
 
     public int hashCode() {
-        // TODO Auto-generated method stub
-        return super.hashCode();
+        return 0;
     }
 
     public String toString() {
@@ -173,6 +177,30 @@ public class SnmpObjId implements Comparable {
         return ids;
     }
 
+    public static SnmpObjId get(String oid) {
+        return new SnmpObjId(oid);
+    }
+
+    public static SnmpObjId get(int[] ids) {
+        return new SnmpObjId(ids);
+    }
+
+    public static SnmpObjId get(SnmpObjId oid) {
+        return new SnmpObjId(oid);
+    }
+
+    public static SnmpObjId get(String objId, String instance) {
+        return new SnmpObjId(objId, instance);
+    }
+
+    public static SnmpObjId get(SnmpObjId objId, String instance) {
+        return new SnmpObjId(objId, instance);
+    }
+
+    public static SnmpObjId get(SnmpObjId objId, SnmpObjId instance) {
+        return new SnmpObjId(objId, instance);
+    }
+
     public boolean isPrefixOf(SnmpObjId other) {
         if (length() > other.length())
             return false;
@@ -197,11 +225,11 @@ public class SnmpObjId implements Comparable {
         return m_ids.length;
     }
     
-    int getSubIdAt(int index) {
+    public int getSubIdAt(int index) {
         return m_ids[index];
     }
     
-    int getLastSubId() {
+    public int getLastSubId() {
         return getSubIdAt(length()-1);
     }
 

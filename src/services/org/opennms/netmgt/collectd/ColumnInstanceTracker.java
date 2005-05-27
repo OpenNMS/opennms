@@ -32,13 +32,13 @@
 package org.opennms.netmgt.collectd;
 
 
-public class ColumnInstanceTracker implements InstanceTracker {
+public class ColumnInstanceTracker extends InstanceTracker {
 
     private SnmpObjId m_base;
     private SnmpObjId m_last;
 
     public ColumnInstanceTracker(String base) {
-        this(new SnmpObjId(base));
+        this(SnmpObjId.get(base));
     }
     
     public ColumnInstanceTracker(SnmpObjId base) {
