@@ -82,13 +82,22 @@
                                 <element name="sectionTitle" type="string" minOccurs="0" maxOccurs="1"/>
                                 <element name="sectionDescr" type="string" minOccurs="0" maxOccurs="1"/>
                                 <element name="period" type="string" minOccurs="0" maxOccurs="1"/>
-                                <element ref="this:col" minOccurs="0" maxOccurs="1"/>
-                                <element ref="this:rows" minOccurs="0" maxOccurs="1"/>
+                                <element ref="this:classicTable" minOccurs="0" maxOccurs="1"/>
+                                <element ref="this:calendarTable" minOccurs="0" maxOccurs="1"/>
                                 <element name="sectionIndex" type="integer" minOccurs="0" maxOccurs="1"/>
                         </sequence>
                 </complexType>
         </element>
-
+        
+        <element name="classicTable">
+                <complexType>
+                        <sequence>
+ 								<element ref="this:col" minOccurs="0" maxOccurs="1"/>
+                                <element ref="this:rows" minOccurs="0" maxOccurs="1"/>
+                        </sequence>
+                </complexType>
+        </element>
+                                                       
         <element name="col">
                 <complexType>
                         <sequence>
@@ -122,5 +131,40 @@
                         </simpleContent>
                 </complexType>
         </element>
+        
+        <element name="calendarTable">
+                <complexType>
+                        <sequence>
+                        		<element ref="this:daysOfWeek" minOccurs="0"/>
+                                <element ref="this:week" minOccurs="5" maxOccurs="6"/>
+                        </sequence>
+                <attribute name="month" type="string" minOccurs="1" maxOccurs="1" />
+                </complexType>
+        </element>
+                                                                                                                             
+        <element name="daysOfWeek">
+                <complexType>
+                        <sequence>
+                                <element name="dayName" type="string" minOccurs="7" maxOccurs="7"/>
+                        </sequence>
+                </complexType>
+        </element>
+                                                                                                                             
+        <element name="week">
+                <complexType>
+                        <sequence>
+                                <element ref="this:day" minOccurs="7" maxOccurs="7"/>
+                        </sequence>
+                </complexType>
+        </element>
+                                                                                                                            
+        <element name="day">
+                <complexType>
+                                <attribute name="date" type="integer" minOccurs="0" maxOccurs="1"/>
+                                <attribute name="pctValue" type="double" minOccurs="0" maxOccurs="1"/>
+                                <attribute name="visible" type="boolean" minOccurs="1" maxOccurs="1"/>
+                </complexType>
+        </element>
+        
 </schema>
 
