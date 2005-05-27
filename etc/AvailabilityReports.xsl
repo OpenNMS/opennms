@@ -3,9 +3,25 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <xsl:template match="report">
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Report</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>OpenNMS Availability Report</title>
+<style type="text/css">
+table.calendar { width:350px; border-collapse:collapse; }
+table.calendar th { font:bold 70% Tahoma, sans-serif; padding:5px; border-bottom:1px solid #666; color:#999; }
+table.calendar td { padding:3px; border:1px solid #ccc; vertical-align:top; font-family:Tahoma, sans-serif; width:50px; }
+table.calendar td.empty { background-color:#eee; }
+table.calendar td.critical { background-color:#ff0000; }
+table.calendar td.warning { background-color:#ffff00; }
+table.calendar td.normal { background-color:#00ff00; }
+div.date { color:#666; font-size: 60%; }
+div.dataValue { width:50px, font-size:90%; font-weight:bold; margin:4px auto; text-align:center; }
+.normal { color:#000000; }
+.warning { color:#FFFF00; }
+.critical { color:#FF0000; }
+                                                                                                                             
+</style>
 </head>
 <body bgcolor="white">
   <xsl:apply-templates select="viewInfo"/>
@@ -74,10 +90,8 @@
 <xsl:template match="section">
         <h3><xsl:apply-templates select="sectionTitle"/></h3>
         <p><xsl:apply-templates select="sectionDescr"/></p>
-        <table border="1">
-          <xsl:apply-templates select="col"/>
-          <xsl:apply-templates select="rows"/>
-        </table>
+	<xsl:apply-templates select="classicTable"/>
+	<xsl:apply-templates select="calendarTable"/>
 </xsl:template>
 
 <xsl:template match="sectionName">
@@ -90,6 +104,13 @@
 
 <xsl:template match="sectionDescr">
         <xsl:value-of select="."/>
+</xsl:template>
+
+<xsl:template match="classicTable">
+        <table border="1">
+          <xsl:apply-templates select="col"/>
+          <xsl:apply-templates select="rows"/>
+        </table>
 </xsl:template>
 
 <xsl:template match="col">
@@ -123,5 +144,66 @@
           <td align="right"><xsl:value-of select="."/></td>
         </xsl:if>
 </xsl:template>
+
+<xsl:template match="calendarTable">
+  <h3><xsl:value-of select="@month"/></h3>
+  <table class="calendar">
+  <tr>
+  <xsl:apply-templates select="daysOfWeek"/>
+  </tr>
+  <xsl:apply-templates select="week"/>
+  </table>
+</xsl:template>
+
+<xsl:template match="daysOfWeek">
+         <xsl:for-each select="dayName">
+          <th>
+           <xsl:value-of select="."/>
+          </th>
+         </xsl:for-each>
+</xsl:template>
+                                                                                                                             
+<xsl:template match="week">
+        <tr>
+        <xsl:apply-templates select="day"/>
+        </tr>
+</xsl:template>
+
+<xsl:template match="day">
+        <xsl:choose>
+          <xsl:when test="@visible='true'">
+            <xsl:choose>
+             <xsl:when test="@pctValue=0">
+               <td class="empty">
+            <div class="date"><xsl:value-of select="@date"/></div>
+            <div class="dataValue normal"><xsl:value-of select="format-number(@pctValue,'0.00')"/></div>
+            </td>
+             </xsl:when>
+             <xsl:when test="../../../../../warning >= @pctValue">
+               <td class="critical">
+            <div class="date"><xsl:value-of select="@date"/></div>
+            <div class="dataValue normal"><xsl:value-of select="format-number(@pctValue,'0.00')"/></div>
+            </td>
+             </xsl:when>
+             <xsl:when test="../../../../../normal >= @pctValue">
+               <td class="warning">
+            <div class="date"><xsl:value-of select="@date"/></div>
+            <div class="dataValue normal"><xsl:value-of select="format-number(@pctValue,'0.00')"/></div>
+            </td>
+             </xsl:when>
+             <xsl:otherwise>
+               <td class="normal">
+            <div class="date"><xsl:value-of select="@date"/></div>
+            <div class="dataValue normal"><xsl:value-of select="format-number(@pctValue,'0.00')"/></div>
+            </td>
+             </xsl:otherwise>
+            </xsl:choose>
+          </xsl:when>
+          <xsl:otherwise>
+            <td class="empty"></td>
+          </xsl:otherwise>
+        </xsl:choose>
+</xsl:template>
+
 
 </xsl:stylesheet>
