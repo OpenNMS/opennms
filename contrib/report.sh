@@ -4,7 +4,7 @@ show_help () {
  
   cat <<END
 
-Usage: $0 [category_name [format]]
+Usage: $0 [category_name [format] [monthFormat]
  
 END
   return
@@ -35,7 +35,8 @@ else
         fi
 fi
 
-OPENNMS_HOME="@install.dir@"
+OPENNMS_HOME="/opt/OpenNMS"
+OPENNMS_WEBAPP="$OPENNMS_HOME/webapps/opennms"
 
 # load libraries
 for script in pid_process arg_process build_classpath check_tools \
@@ -44,24 +45,21 @@ for script in pid_process arg_process build_classpath check_tools \
 	source $OPENNMS_HOME/lib/scripts/${script}.sh
 done
 
-for file in $OPENNMS_HOME/lib/scripts/platform_*.sh; do
-	source $file
-done
-
 add_ld_path "$OPENNMS_HOME/lib"
 
 CATNAME="$1"; shift
 FORMAT="$1"; shift
+MONTHFORMAT="$1";shift
 
 JAVA_CMD="$JAVA_HOME/bin/java"
 APP_CLASSPATH=`build_classpath dir:$OPENNMS_HOME/lib/updates \
 	jardir:$OPENNMS_HOME/lib/updates "cp:$CLASSPATH_OVERRIDE" \
 	dir:$OPENNMS_HOME/etc jardir:$OPENNMS_HOME/lib  \
 	"cp:$CLASSPATH"`
-APP_VM_PARMS="-Xmx256m -Dopennms.home=$OPENNMS_HOME -Dimage=@root.install.servlets@/images/logo.gif -Djava.awt.headless=true"
+APP_VM_PARMS="-Xmx256m -Dopennms.home=$OPENNMS_HOME -Dimage=$OPENNMS_WEBAPP/images/logo.gif -Djava.awt.headless=true"
 APP_CLASS="org.opennms.report.availability.AvailabilityReport"
 
 if [ -z "$NOEXECUTE" ]; then
-	$JAVA_CMD -classpath $APP_CLASSPATH $APP_VM_PARMS -DcatName="$CATNAME" -Dformat="$FORMAT" $APP_CLASS "$@"
+	$JAVA_CMD -classpath $APP_CLASSPATH $APP_VM_PARMS -DcatName="$CATNAME" -Dformat="$FORMAT" -DMonthFormat="$MONTHFORMAT" $APP_CLASS "$@"
 	exit 0
 fi
