@@ -31,17 +31,13 @@
 //
 package org.opennms.netmgt.collectd;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.TreeMap;
 
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.collectd.mock.TestAgent;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.utils.BarrierSignaler;
 import org.opennms.protocols.snmp.SnmpCounter32;
@@ -59,6 +55,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     protected List m_objList;
     protected SnmpPeer m_peer;
     private TreeMap m_mibObjectMap;
+    public TestAgent m_agent = new TestAgent();
     
     private static final String initalMibObjects[][] = {
         {
@@ -114,7 +111,9 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         
 
     };
-    protected TreeMap m_agentData;
+
+    protected SnmpObjId m_sysNameOid;
+    protected SnmpObjId m_ifDescr;
     
     
 
@@ -131,6 +130,10 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
             defineMibObject(mibData[0], mibData[1], mibData[2], mibData[3]);
             
         }
+        
+        m_sysNameOid = SnmpObjId.get(".1.3.6.1.2.1.1.5");
+        m_ifDescr = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.2");
+
     }
     
     protected void tearDown() throws Exception {
@@ -138,41 +141,6 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         super.tearDown();
     }
     
-    /*
-     * Loads mibfiles of the form generated the Net-SNMPs snmpwalk as follows
-     * snmpwalk -OUne -v1 -c <comnunity-string> <hostname>
-     */
-    protected void loadSnmpTestData(String name) throws IOException {
-        InputStream dataStream = getClass().getResourceAsStream(name);
-        Properties mibData = new Properties();
-        mibData.load(dataStream);
-        
-        m_agentData = new TreeMap();
-        for (Iterator it = mibData.entrySet().iterator(); it.hasNext();) {
-            Map.Entry entry = (Map.Entry) it.next();
-            SnmpObjId objId = SnmpObjId.get((String)entry.getKey());
-            
-            m_agentData.put(objId, parseMibValue((String)entry.getValue()));
-            
-            
-        }
-        
-    }
-    
-    protected Object getSnmpData(SnmpObjId id) {
-        return m_agentData.get(id);
-    }
-    
-    protected SnmpObjId getNextSnmpId(SnmpObjId id) {
-        MockUtil.println("Retrieving next id for "+id);
-        return (SnmpObjId)m_agentData.tailMap(SnmpObjId.get(id, "0")).firstKey();
-    }
-    
-
-    private Object parseMibValue(String mibVal) {
-        return mibVal;
-    }
-
     protected void waitForSignal() throws InterruptedException {
         m_signaler.waitFor();
     }
