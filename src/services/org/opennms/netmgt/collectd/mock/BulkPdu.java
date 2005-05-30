@@ -31,65 +31,27 @@
 //
 package org.opennms.netmgt.collectd.mock;
 
+public class BulkPdu extends RequestPdu {
+    int m_nonRepeaters;
+    int m_maxRepititions;
 
-import org.opennms.netmgt.collectd.SnmpObjId;
-
-abstract class TestPdu {
-
-    private TestVarBindList m_varBindList;
-
-    public TestPdu() {
-        m_varBindList = new TestVarBindList();
+    public BulkPdu() {
+        super();
     }
 
-    public static ResponsePdu getResponse() {
-        return new ResponsePdu();
+    public void setNonRepeaters(int nonRepeaters) {
+        m_nonRepeaters = nonRepeaters;
     }
 
-    public static GetPdu getGet() {
-        return new GetPdu();
+    public void setMaxRepititions(int maxRepititions) {
+        m_maxRepititions = maxRepititions;
     }
 
-    
-    public static NextPdu getNext() {
-        return new NextPdu();
+    public int getNonRepeaters() {
+        return m_nonRepeaters;
     }
 
-    public static BulkPdu getBulk() {
-        return new BulkPdu();
+    public int getMaxRepititions() {
+        return m_maxRepititions;
     }
-    
-    public TestVarBindList getVarBinds() {
-        return m_varBindList;
-    }
-
-    public void addVarBind(SnmpObjId objId, Object snmpData) {
-        m_varBindList.addVarBind(objId, snmpData);
-    }
-
-    public void addVarBind(SnmpObjId objId) {
-        m_varBindList.addVarBind(objId);
-    }
-
-    public void addVarBind(String oid, String inst) {
-        addVarBind(SnmpObjId.get(oid, inst));
-    }
-
-    public void addVarBind(String oid, int inst) {
-        addVarBind(SnmpObjId.get(oid, ""+inst));
-    }
-
-    public int size() {
-        return m_varBindList.size();
-    }
-
-    public TestVarBind getVarBindAt(int i) {
-        return m_varBindList.getVarBindAt(i);
-    }
-
-    public void addVarBind(String oid) {
-        addVarBind(SnmpObjId.get(oid));
-    }
-
-
 }

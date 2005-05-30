@@ -145,7 +145,7 @@ public class TestAgentTest extends TestCase {
     // TODO simulate bad agents by repeating same oid on getnext, bulk
 
     public void testGet() {
-        TestPdu get = TestPdu.getGet();
+        GetPdu get = TestPdu.getGet();
         get.addVarBind(zeroInst1Base, 0);
         get.addVarBind(zeroInst2Base, 0);
         get.addVarBind(col1Base, 1);
@@ -158,20 +158,20 @@ public class TestAgentTest extends TestCase {
     public void xtestGetWithInvalidOidV1() {
         m_agent.setBehaviorToV1();
         
-        TestPdu get = TestPdu.getGet();
+        GetPdu get = TestPdu.getGet();
         
         get.addVarBind(zeroInst1Base, 0);
         get.addVarBind(invalid, 0);
         get.addVarBind(zeroInst2Base, 0);
         
-        TestPdu resp = m_agent.send(get);
+        ResponsePdu resp = m_agent.send(get);
         
-        assertEquals(TestPdu.NO_SUCH_NAME, resp.getErrorStatus());
+        assertEquals(ResponsePdu.NO_SUCH_NAME_ERR, resp.getErrorStatus());
         assertEquals(2, resp.getErrorIndex());
         
     }
 
-    private void validateGetResponse(TestPdu get, TestPdu resp) {
+    private void validateGetResponse(GetPdu get, ResponsePdu resp) {
         assertNotNull(resp);
         
         // determine if errors are expected
@@ -185,7 +185,7 @@ public class TestAgentTest extends TestCase {
     }
     
     public void testNext() {
-        TestPdu pdu = TestPdu.getNext();
+        NextPdu pdu = TestPdu.getNext();
         pdu.addVarBind(zeroInst1Base);
         pdu.addVarBind(zeroInst2Base);
         pdu.addVarBind(col1Base);
@@ -195,7 +195,7 @@ public class TestAgentTest extends TestCase {
         validateNextResponse(pdu, m_agent.send(pdu));
     }
 
-    private void validateNextResponse(TestPdu pdu, TestPdu resp) {
+    private void validateNextResponse(NextPdu pdu, ResponsePdu resp) {
         assertNotNull(resp);
         assertEquals(pdu.size(), resp.size());
         for(int i = 0; i < resp.size(); i++) {
@@ -205,7 +205,7 @@ public class TestAgentTest extends TestCase {
     }
     
     public void testBulk() {
-        TestPdu pdu = TestPdu.getBulk();
+        BulkPdu pdu = TestPdu.getBulk();
         pdu.addVarBind(zeroInst1Base);
         pdu.addVarBind(zeroInst2Base);
         pdu.addVarBind(col1Base);
@@ -217,7 +217,7 @@ public class TestAgentTest extends TestCase {
         validateBulkResponse(pdu, m_agent.send(pdu));
     }
 
-    private void validateBulkResponse(TestPdu pdu, TestPdu resp) {
+    private void validateBulkResponse(BulkPdu pdu, ResponsePdu resp) {
         assertNotNull(resp);
         
         int nonRepeaters = pdu.getNonRepeaters();

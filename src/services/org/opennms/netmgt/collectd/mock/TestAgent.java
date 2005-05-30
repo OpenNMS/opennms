@@ -33,9 +33,7 @@ package org.opennms.netmgt.collectd.mock;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -80,95 +78,13 @@ public class TestAgent {
         setAgentData(mibData);
     }
     
-    protected TestVarBindList getNext(TestVarBindList request) {
-        TestVarBindList response = new TestVarBindList(request.size());
-        for (Iterator it = request.iterator(); it.hasNext();) {
-            TestVarBind req = (TestVarBind) it.next();
-            SnmpObjId respOid = getFollowingObjId(req.getObjId());
-            response.addVarBind(respOid, getValueFor(respOid));
-        }
-        return response;
-    }
-    
     /**
      * This simulates send a packet and waiting for a response 
      * @param pdu
      * @return
      */
-    public TestPdu send(TestPdu pdu) {
-        switch(pdu.getType()) {
-        case TestPdu.GET_REQ:
-            return sendGet(pdu);
-        case TestPdu.NEXT_REQ:
-            return sendNext(pdu);
-        case TestPdu.BULK_REQ:
-            return sendBulk(pdu);
-        default:
-            return sendError(pdu);
-        }
-        
-    }
-
-    private TestPdu sendError(TestPdu pdu) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    private TestPdu sendBulk(TestPdu pdu) {
-        TestPdu resp = TestPdu.getResponse();
-
-        // first do non repeaters
-        int nonRepeaters = Math.min(pdu.size(), pdu.getNonRepeaters());
-        for(int i = 0; i < nonRepeaters; i++) {
-            TestVarBind varBind = (TestVarBind) pdu.getVarBindAt(i);
-            SnmpObjId objId = getFollowingObjId(varBind.getObjId());
-            resp.addVarBind(objId, getValueFor(objId));
-        }
-        
-        // now do the repeaters
-        
-        // make a list to track the repititions
-        int repeaters = pdu.size() - nonRepeaters;
-        List repeaterList = new ArrayList(repeaters);
-        for(int i = nonRepeaters; i < pdu.size(); i++) {
-            repeaterList.add(pdu.getVarBindAt(i).getObjId());
-        }
-        
-        for(int count = 0; count < pdu.getMaxRepititions(); count++) {
-            for(int i = 0; i < repeaterList.size(); i++) {
-                SnmpObjId lastOid = (SnmpObjId)repeaterList.get(i);
-                SnmpObjId objId = getFollowingObjId(lastOid);
-                resp.addVarBind(objId, getValueFor(objId));
-                repeaterList.set(i, objId);
-            }
-        }
-        
-        
-        return resp;
-    }
-
-    private TestPdu sendNext(TestPdu pdu) {
-        TestPdu resp = TestPdu.getResponse();
-        
-        for (Iterator it = pdu.getVarBinds().iterator(); it.hasNext();) {
-            TestVarBind varBind = (TestVarBind) it.next();
-            SnmpObjId objId = getFollowingObjId(varBind.getObjId());
-            resp.addVarBind(objId, getValueFor(objId));
-        }
-        
-        return resp;
-    }
-
-    private TestPdu sendGet(TestPdu pdu) {
-        TestPdu resp = TestPdu.getResponse();
-        
-        for (Iterator it = pdu.getVarBinds().iterator(); it.hasNext();) {
-            TestVarBind varBind = (TestVarBind) it.next();
-            SnmpObjId objId = varBind.getObjId();
-            resp.addVarBind(objId, getValueFor(objId));
-        }
-        
-        return resp;
+    public ResponsePdu send(RequestPdu pdu) {
+        return pdu.send(this);
     }
 
     public void setBehaviorToV1() {

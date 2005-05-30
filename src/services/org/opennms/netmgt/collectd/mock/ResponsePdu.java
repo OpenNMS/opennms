@@ -31,65 +31,36 @@
 //
 package org.opennms.netmgt.collectd.mock;
 
+public class ResponsePdu extends TestPdu {
+    
+    // we only use the errros related to reading since we don't support writing yet
+    public static final int NO_ERR = 0;
+    public static final int TOO_BIG_ERR = 1;
+    public static final int NO_SUCH_NAME_ERR = 2;
+    public static final int GEN_ERR = 5;
 
-import org.opennms.netmgt.collectd.SnmpObjId;
+    private int m_errorStatus;
+    private int m_errorIndex;
 
-abstract class TestPdu {
-
-    private TestVarBindList m_varBindList;
-
-    public TestPdu() {
-        m_varBindList = new TestVarBindList();
+    public ResponsePdu() {
+        super();
     }
-
-    public static ResponsePdu getResponse() {
-        return new ResponsePdu();
+    
+    public int getErrorStatus() {
+        return m_errorStatus;
     }
-
-    public static GetPdu getGet() {
-        return new GetPdu();
+    
+    void setErrorStatus(int errorStatus) {
+        m_errorStatus = errorStatus;
+    }
+    
+    public int getErrorIndex() {
+        return m_errorIndex;
+    }
+    
+    void setErrorIndex(int errorIndex) {
+        m_errorIndex = errorIndex;
     }
 
     
-    public static NextPdu getNext() {
-        return new NextPdu();
-    }
-
-    public static BulkPdu getBulk() {
-        return new BulkPdu();
-    }
-    
-    public TestVarBindList getVarBinds() {
-        return m_varBindList;
-    }
-
-    public void addVarBind(SnmpObjId objId, Object snmpData) {
-        m_varBindList.addVarBind(objId, snmpData);
-    }
-
-    public void addVarBind(SnmpObjId objId) {
-        m_varBindList.addVarBind(objId);
-    }
-
-    public void addVarBind(String oid, String inst) {
-        addVarBind(SnmpObjId.get(oid, inst));
-    }
-
-    public void addVarBind(String oid, int inst) {
-        addVarBind(SnmpObjId.get(oid, ""+inst));
-    }
-
-    public int size() {
-        return m_varBindList.size();
-    }
-
-    public TestVarBind getVarBindAt(int i) {
-        return m_varBindList.getVarBindAt(i);
-    }
-
-    public void addVarBind(String oid) {
-        addVarBind(SnmpObjId.get(oid));
-    }
-
-
 }
