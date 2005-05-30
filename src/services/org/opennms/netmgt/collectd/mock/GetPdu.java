@@ -38,7 +38,8 @@ public class GetPdu extends RequestPdu {
         super();
     }
 
-    protected SnmpObjId getRespObjIdFromReqObjId(TestAgent agent, SnmpObjId reqObjId) {
-        return reqObjId;
+    protected TestVarBind getResponseVarBind(TestAgent agent, SnmpObjId objId, int errIndex) {
+        return agent.getResponseVarBind(objId, errIndex);
     }
+
 }

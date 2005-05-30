@@ -31,32 +31,22 @@
 //
 package org.opennms.netmgt.collectd.mock;
 
-import java.util.ArrayList;
+public class AgentIndexException extends RuntimeException {
 
-import org.opennms.netmgt.collectd.SnmpObjId;
+    private int m_errorStatus;
+    private int m_errorIndex;
 
-class TestVarBindList extends ArrayList {
-    public TestVarBindList(int sz) {
-        super(sz);
-    }
-
-    public TestVarBindList() {
-        super();
+    public AgentIndexException(int errorStatus, int errorIndex) {
+        m_errorStatus = errorStatus;
+        m_errorIndex = errorIndex;
     }
     
-    public TestVarBindList(TestVarBindList list) {
-        super(list);
+    public int getErrorStatus() {
+        return m_errorStatus;
     }
     
-    public void addVarBind(SnmpObjId oid) {
-        add(new TestVarBind(oid));
-    }
-    
-    public void addVarBind(SnmpObjId oid, Object val) {
-        add(new TestVarBind(oid, val));
+    public int getErrorIndex() {
+        return m_errorIndex;
     }
 
-    public TestVarBind getVarBindAt(int i) {
-        return (TestVarBind)get(i);
-    }
 }

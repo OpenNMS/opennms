@@ -31,32 +31,11 @@
 //
 package org.opennms.netmgt.collectd.mock;
 
-import java.util.ArrayList;
-
-import org.opennms.netmgt.collectd.SnmpObjId;
-
-class TestVarBindList extends ArrayList {
-    public TestVarBindList(int sz) {
-        super(sz);
-    }
-
-    public TestVarBindList() {
-        super();
+public class AgentNoSuchNameException extends AgentIndexException {
+    
+    public AgentNoSuchNameException(int errorIndex) {
+        super(ResponsePdu.NO_SUCH_NAME_ERR, errorIndex);
     }
     
-    public TestVarBindList(TestVarBindList list) {
-        super(list);
-    }
-    
-    public void addVarBind(SnmpObjId oid) {
-        add(new TestVarBind(oid));
-    }
-    
-    public void addVarBind(SnmpObjId oid, Object val) {
-        add(new TestVarBind(oid, val));
-    }
 
-    public TestVarBind getVarBindAt(int i) {
-        return (TestVarBind)get(i);
-    }
 }

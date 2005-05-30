@@ -31,32 +31,10 @@
 //
 package org.opennms.netmgt.collectd.mock;
 
-import java.util.ArrayList;
+public class AgentGenErrException extends AgentIndexException {
 
-import org.opennms.netmgt.collectd.SnmpObjId;
-
-class TestVarBindList extends ArrayList {
-    public TestVarBindList(int sz) {
-        super(sz);
+    public AgentGenErrException(int errorIndex) {
+        super(ResponsePdu.GEN_ERR, errorIndex);
     }
 
-    public TestVarBindList() {
-        super();
-    }
-    
-    public TestVarBindList(TestVarBindList list) {
-        super(list);
-    }
-    
-    public void addVarBind(SnmpObjId oid) {
-        add(new TestVarBind(oid));
-    }
-    
-    public void addVarBind(SnmpObjId oid, Object val) {
-        add(new TestVarBind(oid, val));
-    }
-
-    public TestVarBind getVarBindAt(int i) {
-        return (TestVarBind)get(i);
-    }
 }

@@ -102,7 +102,28 @@ public class TestAgentTest extends TestCase {
         }
         
         // what should it do if you ask for an invalid one - return null
-        assertNull(m_agent.getValueFor(SnmpObjId.get(".1.1.1.1.1")));
+        try {
+            m_agent.getValueFor(SnmpObjId.get(".1.1.1.1.1"));
+            fail("expected an exception");
+        } catch (AgentNoSuchObjectException e) {
+            
+        }
+        
+        SnmpObjId objId = SnmpObjId.get(zeroInst1Base, "1");
+        try {
+            m_agent.getValueFor(objId);
+            fail("Expected no such instance exception");
+        } catch (AgentNoSuchInstanceException e) {
+            
+        }
+        
+        RuntimeException exception = new RuntimeException();
+        try {
+            m_agent.setAgentValue(objId, exception);
+            m_agent.getValueFor(objId);
+        } catch (RuntimeException e) {
+            assertSame(exception, e);
+        }
         
     }
     
@@ -137,12 +158,12 @@ public class TestAgentTest extends TestCase {
     }
     
     // TODO generate tooBig error
-    // TODO generate genErr
-    // TODO generate end of mib, errorIndex for v1, endOfMibView of v2
     // TODO generate partial getBulk responses
     
     // TODO simulate bad agents by returning data out of order
     // TODO simulate bad agents by repeating same oid on getnext, bulk
+
+    // TODO make sure v1 agent fails to respond to getBulk
 
     public void testGet() {
         GetPdu get = TestPdu.getGet();
@@ -153,9 +174,8 @@ public class TestAgentTest extends TestCase {
         validateGetResponse(get, m_agent.send(get));
     }
     
-    // TODO make sure v1 agent fails to respond to getBulk
     
-    public void xtestGetWithInvalidOidV1() {
+    public void testGetWithInvalidOidV1() {
         m_agent.setBehaviorToV1();
         
         GetPdu get = TestPdu.getGet();
@@ -170,10 +190,86 @@ public class TestAgentTest extends TestCase {
         assertEquals(2, resp.getErrorIndex());
         
     }
+    
+    public void testGetWithNoInstanceV1() {
+        m_agent.setBehaviorToV1();
+        
+        GetPdu get = TestPdu.getGet();
+        
+        get.addVarBind(zeroInst1Base, 0);
+        get.addVarBind(zeroInst1Base, 1);
+        get.addVarBind(zeroInst2Base, 0);
+        
+        ResponsePdu resp = m_agent.send(get);
+        
+        assertEquals(ResponsePdu.NO_SUCH_NAME_ERR, resp.getErrorStatus());
+        assertEquals(2, resp.getErrorIndex());
+    }
+
+    public void testGetWithInvalidOidV2() {
+        m_agent.setBehaviorToV2();
+        
+        GetPdu get = TestPdu.getGet();
+        
+        get.addVarBind(zeroInst1Base, 0);
+        get.addVarBind(invalid, 0);
+        get.addVarBind(zeroInst2Base, 0);
+        
+        validateGetResponse(get, m_agent.send(get));
+        
+    }
+    
+    public void testGetWithNoInstanceV2() {
+        m_agent.setBehaviorToV2();
+        
+        GetPdu get = TestPdu.getGet();
+        
+        get.addVarBind(zeroInst1Base, 0);
+        get.addVarBind(zeroInst1Base, 1);
+        get.addVarBind(zeroInst2Base, 0);
+        
+        validateGetResponse(get, m_agent.send(get));
+    }
+
+    public void testGetWithGenErrV1() {
+        m_agent.setBehaviorToV1();
+        
+        m_agent.setAgentValue(SnmpObjId.get(zeroInst1Base, "1"), new RuntimeException());
+
+        GetPdu get = TestPdu.getGet();
+        
+        get.addVarBind(zeroInst1Base, 0);
+        get.addVarBind(zeroInst1Base, 1);
+        get.addVarBind(zeroInst2Base, 0);
+        
+        ResponsePdu resp = m_agent.send(get);
+        
+        assertEquals(ResponsePdu.GEN_ERR, resp.getErrorStatus());
+        assertEquals(2, resp.getErrorIndex());
+    }
+    
+    public void testGetWithGenErrV2() {
+        m_agent.setBehaviorToV2();
+        
+        m_agent.setAgentValue(SnmpObjId.get(zeroInst1Base, "1"), new RuntimeException());
+
+        GetPdu get = TestPdu.getGet();
+        
+        get.addVarBind(zeroInst1Base, 0);
+        get.addVarBind(zeroInst1Base, 1);
+        get.addVarBind(zeroInst2Base, 0);
+        
+        ResponsePdu resp = m_agent.send(get);
+        
+        assertEquals(ResponsePdu.GEN_ERR, resp.getErrorStatus());
+        assertEquals(2, resp.getErrorIndex());
+    }
+    
+    
 
     private void validateGetResponse(GetPdu get, ResponsePdu resp) {
         assertNotNull(resp);
-        
+        assertEquals(ResponsePdu.NO_ERR, resp.getErrorStatus());
         // determine if errors are expected
         
         
@@ -195,16 +291,89 @@ public class TestAgentTest extends TestCase {
         validateNextResponse(pdu, m_agent.send(pdu));
     }
 
-    private void validateNextResponse(NextPdu pdu, ResponsePdu resp) {
+    public void testNextInvalidOidV1() {
+        m_agent.setBehaviorToV1();
+        
+        NextPdu pdu = TestPdu.getNext();
+        pdu.addVarBind(zeroInst1Base);
+        pdu.addVarBind(invalid);
+        pdu.addVarBind(col1Base);
+        
+        ResponsePdu resp = m_agent.send(pdu);
+        
+        assertEquals(ResponsePdu.NO_SUCH_NAME_ERR, resp.getErrorStatus());
+        assertEquals(2, resp.getErrorIndex());
+    }
+
+    public void testNextInvalidOidV2() {
+        m_agent.setBehaviorToV2();
+        
+        NextPdu pdu = TestPdu.getNext();
+        pdu.addVarBind(zeroInst1Base);
+        pdu.addVarBind(invalid);
+        pdu.addVarBind(col1Base);
+        
+        validateNextResponse(pdu, m_agent.send(pdu));
+    }
+
+    public void testNextWithGenErrV1() {
+        m_agent.setBehaviorToV1();
+        
+        m_agent.setAgentValue(SnmpObjId.get(zeroInst1Base, "1"), new RuntimeException());
+
+        NextPdu get = TestPdu.getNext();
+        
+        get.addVarBind(zeroInst1Base);
+        get.addVarBind(zeroInst1Base, 0);
+        get.addVarBind(zeroInst2Base);
+        
+        ResponsePdu resp = m_agent.send(get);
+        
+        assertEquals(ResponsePdu.GEN_ERR, resp.getErrorStatus());
+        assertEquals(2, resp.getErrorIndex());
+    }
+
+    public void testNextWithGenErrV2() {
+        m_agent.setBehaviorToV2();
+        
+        m_agent.setAgentValue(SnmpObjId.get(zeroInst1Base, "1"), new RuntimeException());
+
+        NextPdu get = TestPdu.getNext();
+        
+        get.addVarBind(zeroInst1Base);
+        get.addVarBind(zeroInst1Base, 0);
+        get.addVarBind(zeroInst2Base);
+        
+        ResponsePdu resp = m_agent.send(get);
+        
+        assertEquals(ResponsePdu.GEN_ERR, resp.getErrorStatus());
+        assertEquals(2, resp.getErrorIndex());
+    }
+   private void validateNextResponse(NextPdu pdu, ResponsePdu resp) {
         assertNotNull(resp);
+        assertEquals(ResponsePdu.NO_ERR, resp.getErrorStatus());
         assertEquals(pdu.size(), resp.size());
         for(int i = 0; i < resp.size(); i++) {
-            assertEquals(m_agent.getFollowingObjId(pdu.getVarBindAt(i).getObjId()), resp.getVarBindAt(i).getObjId());
-            verifyObjIdValue(resp.getVarBindAt(i));
+            verifyNextVarBind(pdu.getVarBindAt(i).getObjId(), resp.getVarBindAt(i));
         }
     }
-    
+
+    private SnmpObjId verifyNextVarBind(SnmpObjId reqObjId, TestVarBind respVarBind) {
+        try {
+            SnmpObjId nextOid = m_agent.getFollowingObjId(reqObjId);
+            assertEquals(nextOid, respVarBind.getObjId());
+            verifyObjIdValue(respVarBind);
+            return nextOid;
+        } catch (AgentEndOfMibException e) {
+            assertEquals(reqObjId, respVarBind.getObjId());
+            assertEquals(TestAgent.END_OF_MIB, respVarBind.getValue());
+            return reqObjId;
+        }
+    }
+
     public void testBulk() {
+        m_agent.setBehaviorToV2();
+
         BulkPdu pdu = TestPdu.getBulk();
         pdu.addVarBind(zeroInst1Base);
         pdu.addVarBind(zeroInst2Base);
@@ -216,9 +385,98 @@ public class TestAgentTest extends TestCase {
         
         validateBulkResponse(pdu, m_agent.send(pdu));
     }
+    
+    public void xtestBulkInV1() {
+        try {
+            m_agent.setBehaviorToV1();
+            BulkPdu pdu = TestPdu.getBulk();
+            pdu.addVarBind(zeroInst1Base);
+            pdu.addVarBind(zeroInst2Base);
+            pdu.addVarBind(col1Base);
+            pdu.addVarBind(col2Base);
+            pdu.addVarBind(col3Base);
+            pdu.setNonRepeaters(2);
+            pdu.setMaxRepititions(3);
+            m_agent.send(pdu);
+            fail("Cannot send Bulk Pdus to V1 agent");
+        } catch(Exception e) {
+            
+        }
+    }
+
+    public void testBulkInvalidOidInNonRepeaterV2() {
+        m_agent.setBehaviorToV2();
+        BulkPdu pdu = TestPdu.getBulk();
+        pdu.addVarBind(zeroInst1Base);
+        pdu.addVarBind(invalid);
+        pdu.addVarBind(col1Base);
+        pdu.addVarBind(col2Base);
+        pdu.addVarBind(col3Base);
+        pdu.setNonRepeaters(2);
+        pdu.setMaxRepititions(3);
+        
+        validateBulkResponse(pdu, m_agent.send(pdu));
+    }
+
+    public void testBulkInvalidOidInRepeaterV2() {
+        m_agent.setBehaviorToV2();
+        BulkPdu pdu = TestPdu.getBulk();
+        pdu.addVarBind(zeroInst1Base);
+        pdu.addVarBind(zeroInst2Base);
+        pdu.addVarBind(col1Base);
+        pdu.addVarBind(invalid);
+        pdu.addVarBind(col3Base);
+        pdu.setNonRepeaters(2);
+        pdu.setMaxRepititions(3);
+        
+        validateBulkResponse(pdu, m_agent.send(pdu));
+    }
+    
+    public void testBulkWithGenErrInNonRepeater() {
+        m_agent.setBehaviorToV2();
+        
+        m_agent.setAgentValue(SnmpObjId.get(zeroInst1Base, "1"), new RuntimeException());
+
+        BulkPdu pdu = TestPdu.getBulk();
+        pdu.addVarBind(zeroInst1Base);
+        pdu.addVarBind(zeroInst1Base, 0);
+        pdu.addVarBind(zeroInst2Base);
+        pdu.addVarBind(col1Base);
+        pdu.addVarBind(col2Base);
+        pdu.addVarBind(col3Base);
+        pdu.setNonRepeaters(3);
+        pdu.setMaxRepititions(3);
+        
+        ResponsePdu resp = m_agent.send(pdu);
+        
+        assertEquals(ResponsePdu.GEN_ERR, resp.getErrorStatus());
+        assertEquals(2, resp.getErrorIndex());
+    }
+
+    public void testBulkWithGenErrInRepeater() {
+        m_agent.setBehaviorToV2();
+        
+        m_agent.setAgentValue(SnmpObjId.get(col2Base, "2"), new RuntimeException());
+
+        BulkPdu pdu = TestPdu.getBulk();
+        pdu.addVarBind(zeroInst1Base);
+        pdu.addVarBind(zeroInst2Base);
+        pdu.addVarBind(col1Base);
+        pdu.addVarBind(col2Base);
+        pdu.addVarBind(col3Base);
+        pdu.setNonRepeaters(2);
+        pdu.setMaxRepititions(3);
+        
+        ResponsePdu resp = m_agent.send(pdu);
+        
+        assertEquals(ResponsePdu.GEN_ERR, resp.getErrorStatus());
+        assertEquals(4, resp.getErrorIndex());
+    }
+
 
     private void validateBulkResponse(BulkPdu pdu, ResponsePdu resp) {
         assertNotNull(resp);
+        assertEquals(ResponsePdu.NO_ERR, resp.getErrorStatus());
         
         int nonRepeaters = pdu.getNonRepeaters();
         int repeaters = (pdu.size() - nonRepeaters);
@@ -228,24 +486,30 @@ public class TestAgentTest extends TestCase {
         
         // validate the nonRepeaters
         for(int i = 0; i < nonRepeaters; i++) {
-            assertEquals(m_agent.getFollowingObjId(pdu.getVarBindAt(i).getObjId()), resp.getVarBindAt(i).getObjId());
-            verifyObjIdValue(resp.getVarBindAt(i));
+            verifyNextVarBind(pdu.getVarBindAt(i).getObjId(), resp.getVarBindAt(i));
         }
         
         // validate the repeaters
         for(int i = 0; i < repeaters; i++) {
             SnmpObjId oid = pdu.getVarBindAt(i+nonRepeaters).getObjId();
             for(int count = 0; count < pdu.getMaxRepititions(); count++) {
-                SnmpObjId nextOid = m_agent.getFollowingObjId(oid);
-                assertEquals(nextOid, resp.getVarBindAt(nonRepeaters+(count*repeaters)+i).getObjId());
-                verifyObjIdValue(resp.getVarBindAt(i));
-                oid = nextOid;
+                oid = verifyNextVarBind(oid, resp.getVarBindAt(nonRepeaters+(count*repeaters)+i));
             } 
+        }
+    }
+    
+    public Object getAgentValueFor(SnmpObjId objId) {
+        try {
+            return m_agent.getValueFor(objId);
+        } catch (AgentNoSuchInstanceException e) {
+            return TestAgent.NO_SUCH_INSTANCE;
+        } catch (AgentNoSuchObjectException e) {
+            return TestAgent.NO_SUCH_OBJECT;
         }
     }
 
     private void verifyObjIdValue(TestVarBind varbind) {
-        assertEquals(getValueFor(varbind.getObjId()), varbind.getValue());
+        assertEquals(getAgentValueFor(varbind.getObjId()), varbind.getValue());
         
     }
 

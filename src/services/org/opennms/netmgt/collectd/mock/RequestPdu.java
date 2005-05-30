@@ -38,7 +38,7 @@ import org.opennms.netmgt.collectd.SnmpObjId;
 
 abstract public class RequestPdu extends TestPdu {
 
-    protected SnmpObjId getRespObjIdFromReqObjId(TestAgent agent, SnmpObjId reqObjId) {
+    final public SnmpObjId getRespObjIdFromReqObjId(TestAgent agent, SnmpObjId reqObjId) {
         return agent.getFollowingObjId(reqObjId);
     }
 
@@ -63,33 +63,46 @@ abstract public class RequestPdu extends TestPdu {
      */
     public ResponsePdu send(TestAgent agent) {
         ResponsePdu resp = TestPdu.getResponse();
-        
-        // first do non repeaters
-        int nonRepeaters = Math.min(size(), getNonRepeaters());
-        for(int i = 0; i < nonRepeaters; i++) {
-            TestVarBind varBind = (TestVarBind) getVarBindAt(i);
-            SnmpObjId lastOid = varBind.getObjId();
-            SnmpObjId objId = getRespObjIdFromReqObjId(agent, lastOid);
-            resp.addVarBind(objId, agent.getValueFor(objId));
-        }
-        
-        // make a list to track the repititions
-        int repeaters = size() - nonRepeaters;
-        List repeaterList = new ArrayList(repeaters);
-        for(int i = nonRepeaters; i < size(); i++) {
-            repeaterList.add(getVarBindAt(i).getObjId());
-        }
-        
-        // now generate varbinds for the repeaters
-        for(int count = 0; count < getMaxRepititions(); count++) {
-            for(int i = 0; i < repeaterList.size(); i++) {
-                SnmpObjId lastOid = (SnmpObjId)repeaterList.get(i);
-                SnmpObjId objId = getRespObjIdFromReqObjId(agent, lastOid);
-                resp.addVarBind(objId, agent.getValueFor(objId));
-                repeaterList.set(i, objId);
+
+        try {
+            // first do non repeaters
+            int nonRepeaters = Math.min(size(), getNonRepeaters());
+            for(int i = 0; i < nonRepeaters; i++) {
+                int errIndex = i+1;
+                TestVarBind varBind = (TestVarBind) getVarBindAt(i);
+                SnmpObjId lastOid = varBind.getObjId();
+                TestVarBind newVarBind = getResponseVarBind(agent, lastOid, errIndex);
+                resp.addVarBind(newVarBind);
             }
+            
+            // make a list to track the repititions
+            int repeaters = size() - nonRepeaters;
+            List repeaterList = new ArrayList(repeaters);
+            for(int i = nonRepeaters; i < size(); i++) {
+                repeaterList.add(getVarBindAt(i).getObjId());
+            }
+            
+            // now generate varbinds for the repeaters
+            for(int count = 0; count < getMaxRepititions(); count++) {
+                for(int i = 0; i < repeaterList.size(); i++) {
+                    int errIndex = nonRepeaters+i+1;
+                    SnmpObjId lastOid = (SnmpObjId)repeaterList.get(i);
+                    TestVarBind newVarBind = getResponseVarBind(agent, lastOid, errIndex);
+                    resp.addVarBind(newVarBind);
+                    repeaterList.set(i, newVarBind.getObjId());
+                }
+            }
+            return resp;
+        } catch (AgentIndexException e) {
+            resp.setVarBinds(getVarBinds());
+            resp.setErrorStatus(e.getErrorStatus());
+            resp.setErrorIndex(e.getErrorIndex()); // errorIndex uses indices starting at 1
+            return resp;
         }
-        return resp;
     }
-    
+
+    protected TestVarBind getResponseVarBind(TestAgent agent, SnmpObjId lastOid, int errIndex) {
+        return agent.getNextResponseVarBind(lastOid, errIndex);
+    }
+
 }

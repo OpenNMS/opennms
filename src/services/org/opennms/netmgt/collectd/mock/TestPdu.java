@@ -63,6 +63,10 @@ abstract class TestPdu {
         return m_varBindList;
     }
 
+    void setVarBinds(TestVarBindList varBinds) {
+        m_varBindList = new TestVarBindList(varBinds);
+    }
+
     public void addVarBind(SnmpObjId objId, Object snmpData) {
         m_varBindList.addVarBind(objId, snmpData);
     }
@@ -90,6 +94,11 @@ abstract class TestPdu {
     public void addVarBind(String oid) {
         addVarBind(SnmpObjId.get(oid));
     }
+
+    public void addVarBind(TestVarBind newVarBind) {
+        m_varBindList.add(newVarBind);
+    }
+
 
 
 }

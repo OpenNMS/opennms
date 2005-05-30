@@ -31,32 +31,18 @@
 //
 package org.opennms.netmgt.collectd.mock;
 
-import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
-import org.opennms.netmgt.collectd.SnmpObjId;
+public class AgentNoSuchObjectException extends NoSuchElementException {
 
-class TestVarBindList extends ArrayList {
-    public TestVarBindList(int sz) {
-        super(sz);
-    }
-
-    public TestVarBindList() {
+    public AgentNoSuchObjectException() {
         super();
-    }
-    
-    public TestVarBindList(TestVarBindList list) {
-        super(list);
-    }
-    
-    public void addVarBind(SnmpObjId oid) {
-        add(new TestVarBind(oid));
-    }
-    
-    public void addVarBind(SnmpObjId oid, Object val) {
-        add(new TestVarBind(oid, val));
+        // TODO Auto-generated constructor stub
     }
 
-    public TestVarBind getVarBindAt(int i) {
-        return (TestVarBind)get(i);
+    public AgentNoSuchObjectException(String s) {
+        super(s);
+        // TODO Auto-generated constructor stub
     }
+
 }
