@@ -54,4 +54,11 @@ public class BulkPdu extends RequestPdu {
     public int getMaxRepititions() {
         return m_maxRepititions;
     }
+
+    public ResponsePdu send(TestAgent agent) {
+        if (agent.isVersion1())
+            throw new IllegalStateException("can't send a buld pack to a V1 Agent");
+        
+        return super.send(agent);
+    }
 }

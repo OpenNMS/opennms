@@ -163,8 +163,6 @@ public class TestAgentTest extends TestCase {
     // TODO simulate bad agents by returning data out of order
     // TODO simulate bad agents by repeating same oid on getnext, bulk
 
-    // TODO make sure v1 agent fails to respond to getBulk
-
     public void testGet() {
         GetPdu get = TestPdu.getGet();
         get.addVarBind(zeroInst1Base, 0);
@@ -173,7 +171,28 @@ public class TestAgentTest extends TestCase {
         
         validateGetResponse(get, m_agent.send(get));
     }
-    
+
+    public void xtestGetTooBig() {
+        m_agent.setBehaviorToV1();
+        m_agent.setMaxResponseSize(5);
+        GetPdu get = TestPdu.getGet();
+        get.addVarBind(zeroInst1Base, 0);
+        get.addVarBind(zeroInst2Base, 0);
+        get.addVarBind(col1Base, 1);
+        get.addVarBind(col1Base, 2);
+        get.addVarBind(col1Base, 3);
+        get.addVarBind(col2Base, 1);
+        get.addVarBind(col2Base, 2);
+        get.addVarBind(col2Base, 3);
+        get.addVarBind(col3Base, 1);
+        get.addVarBind(col3Base, 2);
+        get.addVarBind(col3Base, 3);
+        
+        ResponsePdu resp = m_agent.send(get);
+        
+        assertEquals(ResponsePdu.TOO_BIG_ERR, resp.getErrorStatus());
+    }
+
     
     public void testGetWithInvalidOidV1() {
         m_agent.setBehaviorToV1();
@@ -386,7 +405,7 @@ public class TestAgentTest extends TestCase {
         validateBulkResponse(pdu, m_agent.send(pdu));
     }
     
-    public void xtestBulkInV1() {
+    public void testBulkInV1() {
         try {
             m_agent.setBehaviorToV1();
             BulkPdu pdu = TestPdu.getBulk();

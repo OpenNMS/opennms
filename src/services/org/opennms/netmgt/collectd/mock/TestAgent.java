@@ -44,9 +44,9 @@ import org.opennms.netmgt.collectd.SnmpObjId;
 
 public class TestAgent {
     
-    public static final Object NO_SUCH_INSTANCE = new Object() { public String toString() { return "NO_SUCH_INSTANCE"; } };
-    public static final Object NO_SUCH_OBJECT = new Object() { public String toString() { return "NO_SUCH_OBJECT"; } };
-    public static final Object END_OF_MIB = new Object() { public String toString() { return "END_OF_MIB"; } };
+    public static final Object NO_SUCH_INSTANCE = new Object() { public String toString() { return "noSuchInstance"; } };
+    public static final Object NO_SUCH_OBJECT = new Object() { public String toString() { return "noSuchObect"; } };
+    public static final Object END_OF_MIB = new Object() { public String toString() { return "endOfMibView"; } };
     
     private TreeMap m_agentData;
     private boolean isV1 = true;
@@ -125,7 +125,7 @@ public class TestAgent {
     }
 
     Object handleNoSuchObject(SnmpObjId reqObjId, int errIndex) {
-        if (isV1)
+        if (isVersion1())
             throw new AgentNoSuchNameException(errIndex);
         
             
@@ -133,7 +133,7 @@ public class TestAgent {
     }
     
     Object handleNoSuchInstance(SnmpObjId reqObjId, int errIndex) {
-        if (isV1)
+        if (isVersion1())
             throw new AgentNoSuchNameException(errIndex);
         
         return NO_SUCH_INSTANCE;
@@ -163,7 +163,7 @@ public class TestAgent {
     }
 
     private TestVarBind handleEndOfMib(SnmpObjId lastOid, int errIndex) {
-        if (isV1)
+        if (isVersion1())
             throw new AgentNoSuchNameException(errIndex);
         
         return new TestVarBind(lastOid, END_OF_MIB);
@@ -172,6 +172,15 @@ public class TestAgent {
     TestVarBind getResponseVarBind(SnmpObjId objId, int errIndex) {
         Object value = getVarBindValue(objId, errIndex);
         return new TestVarBind(objId, value);
+    }
+
+    public boolean isVersion1() {
+        return isV1;
+    }
+
+    public void setMaxResponseSize(int i) {
+        // TODO Auto-generated method stub
+        
     }
 
 
