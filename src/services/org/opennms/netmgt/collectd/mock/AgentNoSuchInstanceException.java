@@ -37,12 +37,5 @@ public class AgentNoSuchInstanceException extends NoSuchElementException {
 
     public AgentNoSuchInstanceException() {
         super();
-        // TODO Auto-generated constructor stub
     }
-
-    public AgentNoSuchInstanceException(String s) {
-        super(s);
-        // TODO Auto-generated constructor stub
-    }
-
 }

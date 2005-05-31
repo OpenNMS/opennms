@@ -40,9 +40,4 @@ public class AgentNoSuchObjectException extends NoSuchElementException {
         // TODO Auto-generated constructor stub
     }
 
-    public AgentNoSuchObjectException(String s) {
-        super(s);
-        // TODO Auto-generated constructor stub
-    }
-
 }

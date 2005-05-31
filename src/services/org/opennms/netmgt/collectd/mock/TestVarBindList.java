@@ -36,10 +36,6 @@ import java.util.ArrayList;
 import org.opennms.netmgt.collectd.SnmpObjId;
 
 class TestVarBindList extends ArrayList {
-    public TestVarBindList(int sz) {
-        super(sz);
-    }
-
     public TestVarBindList() {
         super();
     }
@@ -52,10 +48,6 @@ class TestVarBindList extends ArrayList {
         add(new TestVarBind(oid));
     }
     
-    public void addVarBind(SnmpObjId oid, Object val) {
-        add(new TestVarBind(oid, val));
-    }
-
     public TestVarBind getVarBindAt(int i) {
         return (TestVarBind)get(i);
     }

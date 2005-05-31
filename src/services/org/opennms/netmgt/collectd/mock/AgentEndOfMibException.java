@@ -37,12 +37,6 @@ public class AgentEndOfMibException extends NoSuchElementException {
 
     public AgentEndOfMibException() {
         super();
-        // TODO Auto-generated constructor stub
-    }
-
-    public AgentEndOfMibException(String s) {
-        super(s);
-        // TODO Auto-generated constructor stub
     }
 
 }

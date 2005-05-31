@@ -37,16 +37,4 @@ public class AgentTooBigException extends RuntimeException {
         super();
     }
 
-    public AgentTooBigException(String message) {
-        super(message);
-    }
-
-    public AgentTooBigException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public AgentTooBigException(Throwable cause) {
-        super(cause);
-    }
-
 }
