@@ -56,10 +56,10 @@ public class TestAgent {
     }
 
     public static final Object NO_SUCH_INSTANCE = new Object() { public String toString() { return "noSuchInstance"; } };
-    public static final Object NO_SUCH_OBJECT = new Object() { public String toString() { return "noSuchObect"; } };
+    public static final Object NO_SUCH_OBJECT = new Object() { public String toString() { return "noSuchObject"; } };
     public static final Object END_OF_MIB = new Object() { public String toString() { return "endOfMibView"; } };
     
-    private TreeMap m_agentData;
+    private TreeMap m_agentData = new TreeMap();
     private boolean isV1 = true;
 
     private int m_maxResponseSize = 100; // this is kind of close to reality
@@ -79,7 +79,7 @@ public class TestAgent {
     }
 
     private void generateException(SnmpObjId id) {
-        if (m_agentData.size() == 0)
+        if (m_agentData.isEmpty())
             throw new AgentNoSuchObjectException();
         
         SnmpObjId firstOid = (SnmpObjId)m_agentData.firstKey();

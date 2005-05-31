@@ -37,10 +37,6 @@ public class ColumnInstanceTracker extends InstanceTracker {
     private SnmpObjId m_base;
     private SnmpObjId m_last;
 
-    public ColumnInstanceTracker(String base) {
-        this(SnmpObjId.get(base));
-    }
-    
     public ColumnInstanceTracker(SnmpObjId base) {
         m_base = base;
         m_last = base;

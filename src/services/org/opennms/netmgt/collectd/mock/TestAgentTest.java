@@ -86,6 +86,33 @@ public class TestAgentTest extends TestCase {
         return oid+"-value";
     }
     
+    public void testConstantObjects() {
+        assertEquals("noSuchObject", TestAgent.NO_SUCH_OBJECT.toString());
+        assertEquals("noSuchInstance", TestAgent.NO_SUCH_INSTANCE.toString());
+        assertEquals("endOfMibView", TestAgent.END_OF_MIB.toString());
+    }
+    
+    public void testEmptyAgent() {
+        TestAgent agent = new TestAgent();
+        SnmpObjId z1 = SnmpObjId.get(zeroInst1Base, "0");
+
+        try {
+            agent.getValueFor(z1);
+            fail("Expected exception");
+        } catch (AgentNoSuchObjectException e) {
+            
+        }
+        
+    }
+    
+    public void testLoadSnmpData() throws Exception {
+        TestAgent agent = new TestAgent();
+        agent.loadSnmpTestData(getClass(), "loadSnmpDataTest.properties");
+        SnmpObjId z1 = SnmpObjId.get(zeroInst1Base, "0");
+        assertEquals("TestData", agent.getValueFor(z1));
+        
+    }
+    
     public void testAgentValueFor() {
         SnmpObjId z1 = SnmpObjId.get(zeroInst1Base, "0");
         SnmpObjId z2 = SnmpObjId.get(zeroInst2Base, "0");

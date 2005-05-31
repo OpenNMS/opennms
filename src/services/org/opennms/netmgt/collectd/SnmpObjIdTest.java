@@ -46,6 +46,22 @@ public class SnmpObjIdTest extends TestCase {
             }
         }
     }
+    
+    public void testInvalidOids() {
+        try {
+            SnmpObjId.get(".1.3.5.x.9");
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            
+        }
+        
+        try {
+            SnmpObjId.get(".1.3.-5.7");
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            
+        }
+    }
 
     public void testSnmpOidCompare() {
         SnmpObjId oid1 = SnmpObjId.get("1.3.5.7");
@@ -53,6 +69,7 @@ public class SnmpObjIdTest extends TestCase {
         SnmpObjId oid2 = SnmpObjId.get(new int[] {1, 3, 5, 7});
         SnmpObjId oid3 = SnmpObjId.get(".1.3.5.8");
         SnmpObjId oid4 = SnmpObjId.get(".1.3.5.7.0");
+        SnmpObjId oid5 = SnmpObjId.get(oid4);
         
         assertArrayEquals(oid1.getIds(), oid2.getIds());
         
@@ -61,23 +78,35 @@ public class SnmpObjIdTest extends TestCase {
         assertEquals(".1.3.5.7", oid1.toString());
         
         assertEquals(oid1, oid2);
+        assertEquals(oid5, oid4);
         
         assertFalse(oid1.equals(oid3));
         assertFalse(oid1.equals(oid4));
+        assertFalse(oid1.equals(null));
+        assertFalse(oid1.equals(".1.3.5.7"));
         
         assertTrue(oid1.compareTo(oid3) < 0);
         assertTrue(oid3.compareTo(oid1) > 0);
         assertTrue(oid1.compareTo(oid4) < 0);
         assertTrue(oid4.compareTo(oid1) > 0);
         
+        try {
+            oid1.compareTo(null);
+            fail("Expected NullPointerException");
+        } catch (NullPointerException e) {
+            
+        }
+        
     }
 
     public void testOidAppendPrefixInstance() {
         SnmpObjId base = SnmpObjId.get(".1.3.5.7");
         SnmpObjId result = SnmpObjId.get(".1.3.5.7.9.8.7.6");
+        SnmpInstId inst = new SnmpInstId("9.8.7.6");
 
         assertEquals(result, base.append(new int[] {9,8,7,6}));
         assertEquals(result, base.append("9.8.7.6"));
+        assertEquals(result, base.append(inst));
         
         assertTrue(base.isPrefixOf(base));        assertTrue(base.isPrefixOf(result));
         assertFalse(result.isPrefixOf(base));

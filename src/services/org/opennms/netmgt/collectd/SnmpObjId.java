@@ -72,16 +72,11 @@ public class SnmpObjId implements Comparable {
         return cloneIds(m_ids);
     }
     
-    protected int[] getIdsRef() {
-        return m_ids;
-    }
-
     private static int[] cloneIds(int[] ids) {
         return cloneIds(ids, ids.length);
     }
     
     private static int[] cloneIds(int[] ids, int lengthToClone) {
-        if (ids == null) return null;
         int len = Math.min(lengthToClone, ids.length);
         int[] newIds = new int[len];
         System.arraycopy(ids, 0, newIds, 0, len);
