@@ -214,6 +214,7 @@ public class TestAgentTest extends TestCase {
         ResponsePdu resp = m_agent.send(get);
         
         assertEquals(ResponsePdu.TOO_BIG_ERR, resp.getErrorStatus());
+        assertEquals(0, resp.getErrorIndex());
     }
 
     
