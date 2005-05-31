@@ -64,7 +64,7 @@ public class TestAgent {
 
     private int m_maxResponseSize = 100; // this is kind of close to reality
  
-    public Object parseMibValue(String mibVal) {
+    Object parseMibValue(String mibVal) {
         return mibVal;
     }
 

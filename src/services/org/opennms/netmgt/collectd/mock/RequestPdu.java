@@ -38,10 +38,6 @@ import org.opennms.netmgt.collectd.SnmpObjId;
 
 abstract public class RequestPdu extends TestPdu {
 
-    final public SnmpObjId getRespObjIdFromReqObjId(TestAgent agent, SnmpObjId reqObjId) {
-        return agent.getFollowingObjId(reqObjId);
-    }
-
     protected int getNonRepeaters() {
         return size();
     }
@@ -73,6 +69,8 @@ abstract public class RequestPdu extends TestPdu {
                 SnmpObjId lastOid = varBind.getObjId();
                 TestVarBind newVarBind = getResponseVarBind(agent, lastOid, errIndex);
                 resp.addVarBind(newVarBind);
+                
+                // make sure we haven't exceeded response size
                 validateResponseSize(resp, agent);
             }
             
@@ -91,16 +89,20 @@ abstract public class RequestPdu extends TestPdu {
                     TestVarBind newVarBind = getResponseVarBind(agent, lastOid, errIndex);
                     resp.addVarBind(newVarBind);
                     repeaterList.set(i, newVarBind.getObjId());
+                    
+                    // make sure we haven't exceeded response size
                     validateResponseSize(resp, agent);
                 }
             }
             return resp;
         } catch (AgentIndexException e) {
+            // this happens for GenErr and NoSuchName errs
             resp.setVarBinds(getVarBinds());
             resp.setErrorStatus(e.getErrorStatus());
             resp.setErrorIndex(e.getErrorIndex()); // errorIndex uses indices starting at 1
             return resp;
         } catch (AgentTooBigException e) {
+            // when we exceed response size we'll get here
             return handleTooBig(agent, resp);
         }
     }
