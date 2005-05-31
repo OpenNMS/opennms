@@ -117,16 +117,15 @@ public class TestAgentTest extends TestCase {
             
         }
         
-        RuntimeException exception = new RuntimeException();
+        RuntimeException exception = m_agent.introduceGenErr(objId);
         try {
-            m_agent.setAgentValue(objId, exception);
             m_agent.getValueFor(objId);
         } catch (RuntimeException e) {
             assertSame(exception, e);
         }
         
     }
-    
+
     public void testFollowingOid() {
         SnmpObjId z1 = SnmpObjId.get(zeroInst1Base);
         SnmpObjId z2 = SnmpObjId.get(zeroInst2Base);
@@ -155,14 +154,11 @@ public class TestAgentTest extends TestCase {
         } catch (NoSuchElementException e) {
             
         }
+        
+        m_agent.introduceSequenceError(col2dot10, col2dot1);
+        assertEquals(col2dot1, m_agent.getFollowingObjId(col2dot10));
     }
     
-    // TODO generate tooBig error
-    // TODO generate partial getBulk responses
-    
-    // TODO simulate bad agents by returning data out of order
-    // TODO simulate bad agents by repeating same oid on getnext, bulk
-
     public void testGet() {
         GetPdu get = TestPdu.getGet();
         get.addVarBind(zeroInst1Base, 0);
@@ -172,7 +168,7 @@ public class TestAgentTest extends TestCase {
         validateGetResponse(get, m_agent.send(get));
     }
 
-    public void xtestGetTooBig() {
+    public void testGetTooBig() {
         m_agent.setBehaviorToV1();
         m_agent.setMaxResponseSize(5);
         GetPdu get = TestPdu.getGet();
@@ -423,6 +419,21 @@ public class TestAgentTest extends TestCase {
         }
     }
 
+    public void testBulkTooBig() {
+        m_agent.setBehaviorToV2();
+        m_agent.setMaxResponseSize(4);
+        BulkPdu pdu = TestPdu.getBulk();
+        pdu.addVarBind(zeroInst1Base);
+        pdu.addVarBind(zeroInst2Base);
+        pdu.addVarBind(col1Base);
+        pdu.addVarBind(col2Base);
+        pdu.addVarBind(col3Base);
+        pdu.setNonRepeaters(2);
+        pdu.setMaxRepititions(3);
+        
+        validateBulkResponse(pdu, m_agent.send(pdu));
+    }
+    
     public void testBulkInvalidOidInNonRepeaterV2() {
         m_agent.setBehaviorToV2();
         BulkPdu pdu = TestPdu.getBulk();
@@ -501,20 +512,28 @@ public class TestAgentTest extends TestCase {
         int repeaters = (pdu.size() - nonRepeaters);
         
         // validate the length
-        assertEquals(nonRepeaters+(repeaters*pdu.getMaxRepititions()), resp.size());
+        int expectedSize = Math.min(nonRepeaters+(repeaters*pdu.getMaxRepititions()), m_agent.getMaxResponseSize());
+        assertEquals(expectedSize, resp.size());
         
         // validate the nonRepeaters
         for(int i = 0; i < nonRepeaters; i++) {
-            verifyNextVarBind(pdu.getVarBindAt(i).getObjId(), resp.getVarBindAt(i));
+            verifyBulkVarBind(pdu.getVarBindAt(i).getObjId(), resp, i);
         }
         
         // validate the repeaters
         for(int i = 0; i < repeaters; i++) {
             SnmpObjId oid = pdu.getVarBindAt(i+nonRepeaters).getObjId();
             for(int count = 0; count < pdu.getMaxRepititions(); count++) {
-                oid = verifyNextVarBind(oid, resp.getVarBindAt(nonRepeaters+(count*repeaters)+i));
+                oid = verifyBulkVarBind(oid, resp, nonRepeaters+(count*repeaters)+i);
             } 
         }
+    }
+
+    private SnmpObjId verifyBulkVarBind(SnmpObjId oid, ResponsePdu resp, int index) {
+        if (index < resp.size())
+            return verifyNextVarBind(oid, resp.getVarBindAt(index));
+        else
+            return oid;
     }
     
     public Object getAgentValueFor(SnmpObjId objId) {

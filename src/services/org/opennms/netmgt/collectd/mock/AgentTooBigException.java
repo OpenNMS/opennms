@@ -31,40 +31,22 @@
 //
 package org.opennms.netmgt.collectd.mock;
 
+public class AgentTooBigException extends RuntimeException {
 
-public class BulkPdu extends RequestPdu {
-    int m_nonRepeaters;
-    int m_maxRepititions;
-
-    public BulkPdu() {
+    public AgentTooBigException() {
         super();
     }
 
-    public void setNonRepeaters(int nonRepeaters) {
-        m_nonRepeaters = nonRepeaters;
+    public AgentTooBigException(String message) {
+        super(message);
     }
 
-    public void setMaxRepititions(int maxRepititions) {
-        m_maxRepititions = maxRepititions;
+    public AgentTooBigException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public int getNonRepeaters() {
-        return m_nonRepeaters;
+    public AgentTooBigException(Throwable cause) {
+        super(cause);
     }
 
-    public int getMaxRepititions() {
-        return m_maxRepititions;
-    }
-
-    public ResponsePdu send(TestAgent agent) {
-        if (agent.isVersion1())
-            throw new IllegalStateException("can't send a buld pack to a V1 Agent");
-        
-        return super.send(agent);
-    }
-
-    protected ResponsePdu handleTooBig(TestAgent agent, ResponsePdu resp) {
-        resp.getVarBinds().subList(agent.getMaxResponseSize(), resp.size()).clear();
-        return resp;
-    }
 }

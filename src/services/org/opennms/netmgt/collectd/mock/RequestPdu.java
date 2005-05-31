@@ -73,6 +73,7 @@ abstract public class RequestPdu extends TestPdu {
                 SnmpObjId lastOid = varBind.getObjId();
                 TestVarBind newVarBind = getResponseVarBind(agent, lastOid, errIndex);
                 resp.addVarBind(newVarBind);
+                validateResponseSize(resp, agent);
             }
             
             // make a list to track the repititions
@@ -90,6 +91,7 @@ abstract public class RequestPdu extends TestPdu {
                     TestVarBind newVarBind = getResponseVarBind(agent, lastOid, errIndex);
                     resp.addVarBind(newVarBind);
                     repeaterList.set(i, newVarBind.getObjId());
+                    validateResponseSize(resp, agent);
                 }
             }
             return resp;
@@ -98,7 +100,21 @@ abstract public class RequestPdu extends TestPdu {
             resp.setErrorStatus(e.getErrorStatus());
             resp.setErrorIndex(e.getErrorIndex()); // errorIndex uses indices starting at 1
             return resp;
+        } catch (AgentTooBigException e) {
+            return handleTooBig(agent, resp);
         }
+    }
+
+    protected ResponsePdu handleTooBig(TestAgent agent, ResponsePdu resp) {
+        resp.setVarBinds(new TestVarBindList());
+        resp.setErrorStatus(ResponsePdu.TOO_BIG_ERR);
+        resp.setErrorIndex(0); // errorIndex uses indices starting at 1
+        return resp;
+    }
+
+    private void validateResponseSize(ResponsePdu resp, TestAgent agent) {
+        if (resp.size() > agent.getMaxResponseSize())
+            throw new AgentTooBigException();
     }
 
     protected TestVarBind getResponseVarBind(TestAgent agent, SnmpObjId lastOid, int errIndex) {

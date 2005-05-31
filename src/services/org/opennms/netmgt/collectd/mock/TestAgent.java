@@ -44,6 +44,17 @@ import org.opennms.netmgt.collectd.SnmpObjId;
 
 public class TestAgent {
     
+    private static class Redirect {
+        SnmpObjId m_targetObjId;
+        public Redirect(SnmpObjId targetObjId) {
+            m_targetObjId = targetObjId;
+        }
+        public SnmpObjId getTargetObjId() {
+            return m_targetObjId;
+        }
+
+    }
+
     public static final Object NO_SUCH_INSTANCE = new Object() { public String toString() { return "noSuchInstance"; } };
     public static final Object NO_SUCH_OBJECT = new Object() { public String toString() { return "noSuchObect"; } };
     public static final Object END_OF_MIB = new Object() { public String toString() { return "endOfMibView"; } };
@@ -51,6 +62,8 @@ public class TestAgent {
     private TreeMap m_agentData;
     private boolean isV1 = true;
 
+    private int m_maxResponseSize = 100; // this is kind of close to reality
+ 
     public Object parseMibValue(String mibVal) {
         return mibVal;
     }
@@ -88,7 +101,13 @@ public class TestAgent {
 
     public SnmpObjId getFollowingObjId(SnmpObjId id) {
         try {
-            return (SnmpObjId)m_agentData.tailMap(SnmpObjId.get(id, "0")).firstKey();
+            SnmpObjId nextObjId = (SnmpObjId)m_agentData.tailMap(SnmpObjId.get(id, "0")).firstKey();
+            Object value = m_agentData.get(nextObjId);
+            if (value instanceof Redirect) {
+                Redirect redirect = (Redirect) value;
+                return redirect.getTargetObjId();
+            }
+            return nextObjId;
         } catch (NoSuchElementException e) {
             throw new AgentEndOfMibException();   
         }
@@ -178,10 +197,25 @@ public class TestAgent {
         return isV1;
     }
 
-    public void setMaxResponseSize(int i) {
-        // TODO Auto-generated method stub
-        
+    public void setMaxResponseSize(int maxResponseSize) {
+        m_maxResponseSize = maxResponseSize;
     }
+    
+    public int getMaxResponseSize() {
+        return m_maxResponseSize;
+    }
+
+    public void introduceSequenceError(SnmpObjId objId, SnmpObjId followingObjId) {
+        Redirect redirect = new Redirect(followingObjId);
+        setAgentValue(SnmpObjId.get(objId, "0"), redirect);
+    }
+
+    public RuntimeException introduceGenErr(SnmpObjId objId) {
+        RuntimeException exception = new RuntimeException();
+        setAgentValue(objId, exception);
+        return exception;
+    }
+   
 
 
 
