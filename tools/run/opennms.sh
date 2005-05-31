@@ -212,6 +212,13 @@ doStart(){
     esac
 
 
+    $JAVA_CMD -classpath $APP_CLASSPATH -Dopennms.home=$OPENNMS_HOME \
+	org.opennms.netmgt.vmmgr.DatabaseChecker
+    if [ $? -ne 0 ]; then
+	echo "OpenNMS runs better if you start up the database first." >&2
+	return 1
+    fi
+
     ##########################################################################
     # Run opennms.sh with the "-t" option to enable the Java Platform Debugging
     # Architecture. This will open a server socket on port 8001 that can be
