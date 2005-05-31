@@ -37,8 +37,15 @@ OPENNMS_HOME="@install.dir@"
 # PID file for OpenNMS.
 OPENNMS_PIDFILE="@install.pid.file@"
 
+# Log directory for OpenNMS
+LOG_DIRECTORY="@install.logs.dir@"
+
+# Directory where init functions are likely stored (we also check a few other
+# directories, just in case)
+INITDIR="@install.init.dir@"
+
 # Where to redirect "start" output.
-REDIRECT="@install.logs.dir@/output.log"
+REDIRECT="$LOG_DIRECTORY/output.log"
 
 # Number of times to do "opennms status" after starting OpenNMS to see
 # if it comes up completely.  Set to "0" to disable.  Between each
@@ -104,48 +111,6 @@ Usage: $0 [-n] [-t] [-v] <command> [<service>]
 
 END
     return
-}
-
-if `ps auxwww >/dev/null 2>&1`; then
-    PS="ps auxwww"
-elif `ps -ef >/dev/null 2>&1`; then
-    PS="ps -ef"
-else
-    echo "I don't know how to run PS on your system!"
-    exit 1
-fi
-export PS
-
-get_url () {
-    [ -n "$1" ] || return 1
-    URL="$1"
-    HTTP=`which curl 2>/dev/null | egrep -v 'no such|no curl'`
-    if [ -n "$HTTP" ]; then
-	$HTTP -o - -s "$URL" | $OPENNMS_HOME/bin/parse-status.pl
-	return 0
-    fi
-    HTTP=`which wget 2>/dev/null | egrep -v 'no such|no wget'`
-    if [ -n "$HTTP" ]; then
-	$HTTP --quiet -O - "$URL" | $OPENNMS_HOME/bin/parse-status.pl
-	return 0
-    fi
-    HTTP=`which lynx 2>/dev/null | egrep -v 'no such|no lynx'`
-    if [ -n "$HTTP" ]; then
-	$HTTP -dump "$URL" | $OPENNMS_HOME/bin/parse-status.pl
-	return 0
-    fi
-    return 1
-}
-
-getStatus(){
-    get_url "${INVOKE_URL}&operation=status" && return 0
-
-    APP_VM_PARMS="$CONTROLLER_OPTIONS"
-    APP_CLASS="$CONTROLLER_CLASS"
-    APP_PARMS_BEFORE="status $SERVICE"
-    if [ -z "$NOEXECUTE" ]; then
-	$JAVA_CMD -classpath $APP_CLASSPATH $APP_VM_PARMS $APP_CLASS $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER 2>&1 | $OPENNMS_HOME/bin/parse-status.pl
-    fi
 }
 
 checkRpmFiles(){
@@ -231,7 +196,7 @@ doStart(){
 	    echo "OpenNMS is partially running." >&2
 	    echo "If you have just attempted starting OpenNMS, please try again in a few" >&2
 	    echo "moments, otherwise, at least one service probably had issues starting." >&2
-	    echo "Check your logs in @install.logs.dir@ for errors." >&2
+	    echo "Check your logs in $LOG_DIRECTORY for errors." >&2
 	    return 1
 	    ;;
 
@@ -355,7 +320,7 @@ doStop() {
     while [ $STOP_ATTEMPTS -lt 5 ]; do
 	doStatus
 	if [ $? -eq 3 ]; then
-	    echo "" > "@install.pid.file@"
+	    echo "" > "$OPENNMS_PIDFILE"
 	    return 0
 	fi
 
@@ -379,42 +344,25 @@ doKill(){
 	get_url "${INVOKE_URL}&operation=doSystemExit"
     fi
 
-    pid="`cat @install.pid.file@`"
+    pid="`cat $OPENNMS_PIDFILE`"
     if [ x"$pid" != x"" ]; then
 	if ps -p "$pid" | grep "^root" > /dev/null; then
 	    kill -9 $pid > /dev/null 2>&1
 	fi
     fi
 
-    echo "" > "@install.pid.file@"
+    echo "" > "$OPENNMS_PIDFILE"
 }
 
 doStatus(){
-    getStatus | determineStatus "$@"
-}
-
-determineStatus(){
-    running=0
-    services=0
-    while read line; do
-	if [ $VERBOSE -gt 0 ]; then
-	    echo "$line"
-	fi
-
-	if echo "$line" | grep "running" > /dev/null; then
-	    running=`expr $running + 1`
-	fi
-	services=`expr $services + 1`
-    done
-
-    if [ $services -eq 0 ]; then
-	return 3      # According to LSB: 3 - service not running
-    elif [ $running -ne $services ]; then
-	return 160    # According to LSB: reserved for application
-	              # So, I say 160 - partially running
-    else    # everything should be good and running
-	return 0
+    if [ $VERBOSE -gt 0 ]; then
+	STATUS_VERBOSE="-v"
+    else
+	STATUS_VERBOSE=""
     fi
+
+    $JAVA_CMD -classpath $APP_CLASSPATH org.opennms.netmgt.vmmgr.StatusGetter \
+	-u "${INVOKE_URL}&operation=status" $STATUS_VERBOSE
 }
 
 FUNCTIONS_LOADED=0
@@ -424,7 +372,7 @@ if [ -f /etc/SuSE-release ]; then
     rc_reset
 else
     # Source function library.
-    for dir in @install.init.dir@ /etc /etc/rc.d; do
+    for dir in "$INITDIR" /etc /etc/rc.d; do
 	if [ -f "$dir/init.d/functions" -a $FUNCTIONS_LOADED -eq 0 ]; then
 	    . "$dir/init.d/functions"
 	    FUNCTIONS_LOADED=1
