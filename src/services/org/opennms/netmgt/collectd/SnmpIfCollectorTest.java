@@ -37,12 +37,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import junit.framework.TestSuite;
+
 import org.opennms.protocols.snmp.SnmpSMI;
 
 
 public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     
-    
+    public static TestSuite suite() {
+        Class testClass = SnmpIfCollectorTest.class;
+        TestSuite suite = new TestSuite(testClass.getName());
+        suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv1 Tests", SnmpSMI.SNMPV1));
+        suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv2 Tests", SnmpSMI.SNMPV2));
+        return suite;
+    }
+
     private Map m_ifMap;
 
     protected void setUp() throws Exception {
@@ -101,31 +110,6 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     }
     
     public void testBadApple() throws Exception {
-        IfInfo ifInfo = new IfInfo(1, 24, "lo", "P");
-        
-        addIfSpeed();
-        addIfInOctets();
-        // the oid below is wrong.  Make sure we collect the others anyway
-        addMibObject("invalid", ".1.3.6.1.2.1.2.2.2.16", "ifIndex", "counter");
-        addIfInErrors();
-        addIfOutErrors();
-        addIfInDiscards();
-        
-        ifInfo.setOidList(new ArrayList(m_objList));
-        
-        addIfInfo(ifInfo);
-        
-        SnmpIfCollector collector = new SnmpIfCollector(getSession(), m_signaler, "1", m_ifMap, m_ifMap.size(), 50);
-        waitForSignal();
-        
-        // remove the bad apple before compare
-        m_objList.remove(2);
-        assertInterfaceMibObjectsPresent(collector.getEntries());
-        
-    }
-
-    public void testBadAppleV2() throws Exception {
-        m_peer.getParameters().setVersion(SnmpSMI.SNMPV2);
 
         IfInfo ifInfo = new IfInfo(1, 24, "lo", "P");
         
@@ -183,20 +167,8 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     }
 
     // TODO: add test for very large v2 request
-    public void testManyIfsV2() throws Exception {
-        m_peer.getParameters().setVersion(SnmpSMI.SNMPV2);
-        addIfTable();
-        
-        addIfInfo(createIfInfo(1, 24, "lo0", "P"));
-        addIfInfo(createIfInfo(2, 55, "gif0", "S"));
-        addIfInfo(createIfInfo(3, 57, "stf0", "C"));
-        
-        SnmpIfCollector collector = new SnmpIfCollector(getSession(), m_signaler, "1", m_ifMap, m_ifMap.size(), 50);
-        waitForSignal();
-        
-        assertInterfaceMibObjectsPresent(collector.getEntries());
-    }
 
+    
     private void addIfInfo(IfInfo ifInfo) {
         m_ifMap.put(new Integer(ifInfo.getIndex()), ifInfo);
     }

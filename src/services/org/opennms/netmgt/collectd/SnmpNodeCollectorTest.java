@@ -34,9 +34,20 @@ package org.opennms.netmgt.collectd;
 
 import java.util.ArrayList;
 
+import junit.framework.TestSuite;
+
 import org.opennms.protocols.snmp.SnmpSMI;
 
 public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
+    
+    public static TestSuite suite() {
+        Class testClass = SnmpNodeCollectorTest.class;
+        TestSuite suite = new TestSuite(testClass.getName());
+        suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv1 Tests", SnmpSMI.SNMPV1));
+        suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv2 Tests", SnmpSMI.SNMPV2));
+        return suite;
+    }
+
 
     public void testZeroVars() throws Exception {
         SnmpNodeCollector collector = createNodeCollector(50);
@@ -69,23 +80,14 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
     }
 
     public void testManyVarsV1() throws Exception {
-        testManyVars(SnmpSMI.SNMPV1, 50);
+        testManyVars(50);
     }
     
     public void testV1MaxVarsPerPdu() throws Exception {
-        testManyVars(SnmpSMI.SNMPV1, 2);
+        testManyVars(2);
     }
     
-    public void testManyVarsV2() throws Exception {
-        testManyVars(SnmpSMI.SNMPV2, 50);
-    }
-    
-    public void testV2MaxVarsPerPdu() throws Exception {
-        testManyVars(SnmpSMI.SNMPV2, 2);
-    }
-
-    private void testManyVars(int version, int maxVarsPerPdu) throws Exception, InterruptedException {
-        m_peer.getParameters().setVersion(version);
+    private void testManyVars(int maxVarsPerPdu) throws Exception, InterruptedException {
         addSystemGroup();
         addIfNumber();
         SnmpNodeCollector collector = createNodeCollector(maxVarsPerPdu);

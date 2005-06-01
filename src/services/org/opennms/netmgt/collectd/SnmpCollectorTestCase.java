@@ -115,12 +115,17 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     protected SnmpObjId m_sysNameOid;
     protected SnmpObjId m_ifDescr;
     
+    private int m_version = -1;
     
+    public void setVersion(int version) {
+        m_version = version;
+    }
 
     protected void setUp() throws Exception {
         setStartEventd(false);
         super.setUp();
         m_peer = new SnmpPeer(InetAddress.getLocalHost());
+        m_peer.getParameters().setVersion(m_version);
         m_signaler = new BarrierSignaler(1);
         m_objList = new ArrayList();
         m_mibObjectMap = new TreeMap();

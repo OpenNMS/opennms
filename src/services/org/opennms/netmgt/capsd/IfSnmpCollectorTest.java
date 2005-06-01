@@ -42,8 +42,9 @@ import org.opennms.netmgt.capsd.snmp.IpAddrTable;
 import org.opennms.netmgt.capsd.snmp.SystemGroup;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
-public class IfSnmpCollectorTest extends OpenNMSTestCase {
 
+public class IfSnmpCollectorTest extends OpenNMSTestCase {
+    
     private IfSnmpCollector m_ifSnmpc;
     private boolean m_run = true;
     private boolean m_hasRun = false;

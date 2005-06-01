@@ -280,6 +280,20 @@ public final class SnmpPeerFactory {
         
         return version;
     }
+    
+    private String versionInt2String(int version) {
+        switch (version) {
+        case SnmpConstants.version1:
+            return "v1";
+        case SnmpConstants.version2c:
+            return "v2c";
+        case SnmpConstants.version3:
+            return "v3";
+        default:
+            throw new IllegalArgumentException("Cannot convert "+version+" to an SNMP version string");    
+        }
+        
+    }
 
     /**
      * Load the config from the default config file and create the singleton
@@ -680,6 +694,13 @@ public final class SnmpPeerFactory {
 
         // Store the altered list of definitions
         m_config.setDefinitionCollection(definitions);
+    }
+    
+    public void addVersionForSpecific(InetAddress addr, int version) {
+        Definition def = new Definition();
+        def.addSpecific(addr.getHostAddress());
+        def.setVersion(versionInt2String(version));
+        m_config.addDefinition(0, def);
     }
 
     /**

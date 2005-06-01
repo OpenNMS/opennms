@@ -198,8 +198,8 @@ public class SnmpCollectionTrackerTest extends SnmpCollectorTestCase {
     }
     
     // TODO: handle maxVarsPerPdu
-    public void xtestMaxVarsPerPdu() {
-        fail("Unimplemented!");
+    public void testMaxVarsPerPdu() {
+        fail("Unimplemented! Create a VersionedTestSuite to run V1 and V2 tests");
     }
 
     private void verifyCollection() {
