@@ -97,6 +97,14 @@ public class SnmpObjIdTest extends TestCase {
             
         }
         
+        SnmpInstId inst1 = new SnmpInstId("1");
+        SnmpInstId inst2 = new SnmpInstId(inst1);
+        SnmpInstId inst3 = new SnmpInstId(1);
+        
+        assertEquals(inst1, inst2);
+        assertEquals(inst2, inst3);
+        assertEquals(inst1, inst3);
+        
     }
 
     public void testOidAppendPrefixInstance() {

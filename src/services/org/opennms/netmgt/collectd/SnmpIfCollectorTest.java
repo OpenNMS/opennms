@@ -85,7 +85,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     public void testInvalidVar() throws Exception {
         IfInfo ifInfo = new IfInfo(1, 24, "lo", "P");
         
-        addMibObject("ifInOctets", "1.3.6.1.2.1.2.2.2.10", "ifIndex", "counter");
+        addMibObject("invalid", "1.3.6.1.2.1.2.2.2.10", "ifIndex", "counter");
         
         ifInfo.setOidList(new ArrayList(m_objList));
         
@@ -106,7 +106,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         addIfSpeed();
         addIfInOctets();
         // the oid below is wrong.  Make sure we collect the others anyway
-        addMibObject("ifOutOctets", "1.3.6.1.2.1.2.2.2.16", "ifIndex", "counter");
+        addMibObject("invalid", ".1.3.6.1.2.1.2.2.2.16", "ifIndex", "counter");
         addIfInErrors();
         addIfOutErrors();
         addIfInDiscards();
@@ -132,7 +132,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         addIfSpeed();
         addIfInOctets();
         // the oid below is wrong.  Make sure we collect the others anyway
-        addMibObject("ifOutOctets", "1.3.66.1.2.1.2.2.299.16", "ifIndex", "counter");
+        addMibObject("invalid", "1.3.66.1.2.1.2.2.299.16", "ifIndex", "counter");
         addIfInErrors();
         addIfOutErrors();
         addIfInDiscards();

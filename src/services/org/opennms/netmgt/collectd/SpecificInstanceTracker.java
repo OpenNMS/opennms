@@ -39,10 +39,6 @@ public class SpecificInstanceTracker extends InstanceTracker {
     private int m_current = 0;
     private SnmpObjId m_base;
     
-    public SpecificInstanceTracker(String base, String instances) {
-        this(SnmpObjId.get(base), instances);
-    }
-
     public SpecificInstanceTracker(SnmpObjId base, String instances) {
         m_base = base;
         StringTokenizer tokenizer = new StringTokenizer(instances, ",");

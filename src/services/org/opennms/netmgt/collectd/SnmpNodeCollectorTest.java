@@ -44,13 +44,13 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
     }
 
     public void testInvalidVar() throws Exception {
-        addMibObject("sysName", ".1.3.6.1.2.1.2", "0", "string");
+        addMibObject("invalid", ".1.3.6.1.2.1.2", "0", "string");
         SnmpNodeCollector collector = createNodeCollector(50);
         assertTrue(collector.getEntry().isEmpty());
     }
 
     public void testInvalidInst() throws Exception {
-        addMibObject("sysUptime", ".1.3.6.1.2.1.1.3", "1", "timeTicks");
+        addMibObject("invalid", ".1.3.6.1.2.1.1.3", "1", "timeTicks");
         SnmpNodeCollector collector = createNodeCollector(50);
         assertTrue(collector.getEntry().isEmpty());
     }
