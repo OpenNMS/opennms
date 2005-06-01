@@ -236,7 +236,7 @@ doStart(){
     if [ "$SERVICE" = "" ]; then
 	APP_VM_PARMS="$JPDA $MANAGER_OPTIONS"
 	APP_CLASS="$MANAGER_CLASS"
-	APP_PARMS_BEFORE=""
+	APP_PARMS_BEFORE="start"
 
     else
 	APP_VM_PARMS="$CONTROLLER_OPTIONS"
@@ -282,7 +282,7 @@ doPause(){
     if doStatus; then
 	APP_VM_PARMS="$CONTROLLER_OPTIONS"
 	APP_CLASS="$CONTROLLER_CLASS"
-	APP_PARMS_BEFORE="pause $SERVICE"
+	APP_PARMS_BEFORE="-u $INVOKE_URL pause $SERVICE"
 	if [ -z "$NOEXECUTE" ]; then
 	    $JAVA_CMD -classpath $APP_CLASSPATH $APP_VM_PARMS $APP_CLASS $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
 	fi
@@ -295,7 +295,7 @@ doResume(){
     if doStatus; then
 	APP_VM_PARMS="$CONTROLLER_OPTIONS"
 	APP_CLASS="$CONTROLLER_CLASS"
-	APP_PARMS_BEFORE="resume $SERVICE"
+	APP_PARMS_BEFORE="-u $INVOKE_URL resume $SERVICE"
 	if [ -z "$NOEXECUTE" ]; then
 	    $JAVA_CMD -classpath $APP_CLASSPATH $APP_VM_PARMS $APP_CLASS $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
 	fi
@@ -334,7 +334,7 @@ doStop() {
 	if [ -z "$NOEXECUTE" ]; then
 	    APP_VM_PARMS="$CONTROLLER_OPTIONS"
 	    APP_CLASS="$CONTROLLER_CLASS"
-	    APP_PARMS_BEFORE="stop $SERVICE"
+	    APP_PARMS_BEFORE="-u $INVOKE_URL stop $SERVICE"
 	    $JAVA_CMD -classpath $APP_CLASSPATH $APP_VM_PARMS $APP_CLASS $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
 	fi
 
@@ -348,10 +348,13 @@ doStop() {
 
 doKill(){
     if doStatus; then
-	get_url "${INVOKE_URL}&operation=doSystemExit"
+	APP_VM_PARMS="$CONTROLLER_OPTIONS"
+	APP_CLASS="$CONTROLLER_CLASS"
+	APP_PARMS_BEFORE="-u $INVOKE_URL exit"
+	$JAVA_CMD -classpath $APP_CLASSPATH $APP_VM_PARMS $APP_CLASS $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
     fi
 
-    pid="`cat $OPENNMS_PIDFILE`"
+    pid="`test -f $OPENNMS_PIDFILE && cat $OPENNMS_PIDFILE`"
     if [ x"$pid" != x"" ]; then
 	if ps -p "$pid" | grep "^root" > /dev/null; then
 	    kill -9 $pid > /dev/null 2>&1
@@ -368,8 +371,12 @@ doStatus(){
 	STATUS_VERBOSE=""
     fi
 
-    $JAVA_CMD -classpath $APP_CLASSPATH org.opennms.netmgt.vmmgr.StatusGetter \
-	-u "${INVOKE_URL}&operation=status" $STATUS_VERBOSE
+    if [ -z "$NOEXECUTE" ]; then
+	APP_VM_PARMS="$CONTROLLER_OPTIONS"
+	APP_CLASS="$CONTROLLER_CLASS"
+	APP_PARMS_BEFORE="-u $INVOKE_URL $STATUS_VERBOSE status"
+	$JAVA_CMD -classpath $APP_CLASSPATH $APP_VM_PARMS $APP_CLASS $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
+    fi
 }
 
 FUNCTIONS_LOADED=0
@@ -443,8 +450,7 @@ fi
 
 CONTROLLER_CLASS=org.opennms.netmgt.vmmgr.Manager
 CONTROLLER_OPTIONS="-Dopennms.home=$OPENNMS_HOME"
-CONTROLLER_OPTIONS="-Dlog4j.configuration=log4j.properties"
-
+CONTROLLER_OPTIONS="$CONTROLLER_OPTIONS -Dlog4j.configuration=log4j.properties"
 
 TEST=0
 NOEXECUTE=""

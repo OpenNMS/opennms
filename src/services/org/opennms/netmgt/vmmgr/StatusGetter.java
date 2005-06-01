@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.ConnectException;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -21,6 +23,8 @@ public class StatusGetter {
 
     private boolean m_verbose = false;
     private URL m_invokeURL;
+    private String m_username;
+    private String m_password;
     private int m_status = STATUS_UNKNOWN;
 
     public StatusGetter() throws MalformedURLException {
@@ -71,6 +75,13 @@ public class StatusGetter {
 	    }
 	}
 
+	Authenticator.setDefault(new Authenticator() {
+		protected PasswordAuthentication getPasswordAuthentication() {
+			return new PasswordAuthentication("manager",
+						          "manager".toCharArray());
+		}
+	});
+
 	statusGetter.queryStatus();
 
 	if (statusGetter.getStatus() == STATUS_NOT_RUNNING ||
@@ -92,9 +103,12 @@ public class StatusGetter {
     }
 
     public void queryStatus() throws Exception {
+
         URLConnection connection = m_invokeURL.openConnection();
+	BufferedReader reader;
 	try {
 	    connection.connect();
+	    reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 	} catch (ConnectException e) {
 	    if (isVerbose()) {
 		System.out.println("Could not connect to " +
@@ -108,8 +122,6 @@ public class StatusGetter {
 	    m_status = STATUS_CONNECTION_REFUSED;
 	    return;
 	}
-	BufferedReader reader =
-	    new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
 	StringBuffer statusResultsBuf = new StringBuffer();
 	String line;

@@ -27,6 +27,14 @@ maintained
 			<name>ProcessorName</name>
 			<value type="javax.management.ObjectName">:Name=XSLTProcessor</value>
 		</attribute>
+		<attribute>
+			<name>AuthenticationMethod</name>
+			<value type="java.lang.String">basic</value>
+		</attribute>
+		<invoke pass="0" method="addAuthorization">
+			<argument type="java.lang.String">admin</argument>
+			<argument type="java.lang.String">admin</argument>
+		</invoke>
 		<invoke pass="0" method="start"/>
 	</service>
 
@@ -41,6 +49,14 @@ maintained
 			<name>Host</name>
 			<value type="java.lang.String">127.0.0.1</value>
 		</attribute>
+		<attribute>
+			<name>AuthenticationMethod</name>
+			<value type="java.lang.String">basic</value>
+		</attribute>
+		<invoke pass="0" method="addAuthorization">
+			<argument type="java.lang.String">manager</argument>
+			<argument type="java.lang.String">manager</argument>
+		</invoke>
 		<invoke pass="0" method="start"/>
 	</service>
 

@@ -40,6 +40,8 @@ package org.opennms.netmgt.vmmgr;
 
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -91,6 +93,9 @@ import org.opennms.netmgt.config.service.Service;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public class Manager implements ManagerMBean {
+    public static final String s_defaultInvokeUrl =
+	"http://127.0.0.1:8181/invoke?objectname=OpenNMS%3AName=FastExit";
+
     /**
      * The log4j category used to log debug messsages and statements.
      */
@@ -423,43 +428,194 @@ public class Manager implements ManagerMBean {
         System.exit(1);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] argv) {
+	String invokeUrl = s_defaultInvokeUrl;
+	boolean verbose = false;
+	
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance(Manager.class);
 
+	/*
+	 * Setup Authenticator so that we can provide authentication, if
+	 * needed, when go to connect to the URL
+	 */
+	Authenticator.setDefault(getAuthenticator());
+
         // set up the JMX logging
-        //
         mx4j.log.Log.redirectTo(new mx4j.log.Log4JLogger());
 
-        if (args.length == 0 || "start".equals(args[0])) {
+	for (int i = 0; i < argv.length; i++) {
+	    if (argv[i].equals("-h")) {
+		System.out.println("Usage: java org.opennms.netmgt.vmmgr.Manager [<options>] <command>");
+		System.out.println("Accepted options:");
+		System.out.println("        -v              Verbose mode.");
+		System.out.println("        -u <URL>        Alternate invoker URL.");
+		System.out.println("");
+		System.out.println("Accepted commands: start, stop, status");
+		System.out.println("");
+		System.out.println("The default invoker URL is: " +
+				   s_defaultInvokeUrl);
+		System.exit(0);
+	    } else if (argv[i].equals("-v")) {
+		verbose = true;
+	    } else if (argv[i].equals("-u")) {
+		invokeUrl = argv[i + 1];
+		i++;
+	    } else if (i != (argv.length - 1)) {
+		System.err.println("Invalid command-line option: \"" + argv[i]
+				   + "\".  Use \"-h\" option for help.");
+		System.exit(1);
+	    } else {
+		break;
+	    }
+	}
+
+	if (argv.length == 0) {
+	    System.err.println("You must specify a command.  Use \"-h\"" +
+			       " option for help");
+	}
+
+	String command = argv[argv.length - 1];
+
+        if ("start".equals(command)) {
             MBeanServer server = MBeanServerFactory.createMBeanServer("OpenNMS");
             start(server);
-        } else if (args.length != 0 && "stop".equals(args[0])) {
+        } else if ("stop".equals(command)) {
             try {
-                URL invoke = new URL("http://127.0.0.1:8181/invoke?objectname=OpenNMS%3AName=FastExit&operation=stop");
+                URL invoke = new URL(invokeUrl + "&operation=stop");
                 InputStream in = invoke.openStream();
                 int ch;
-                while ((ch = in.read()) != -1)
+                while ((ch = in.read()) != -1) {
                     System.out.write((char) ch);
+		}
                 in.close();
                 System.out.println("");
                 System.out.flush();
             } catch (Throwable t) {
                 log.error("error invoking stop command", t);
+		System.exit(1);
             }
-        } else if (args.length != 0 && "status".equals(args[0])) {
+        } else if ("status".equals(command)) {
             try {
-                URL invoke = new URL("http://127.0.0.1:8181/invoke?objectname=OpenNMS%3AName=FastExit&operation=status");
+		StatusGetter statusGetter = new StatusGetter();
+
+		statusGetter.setVerbose(verbose);
+		statusGetter.setInvokeURL(new URL(invokeUrl +
+						  "&operation=status"));
+
+		statusGetter.queryStatus();
+
+		if (statusGetter.getStatus() ==
+		    StatusGetter.STATUS_NOT_RUNNING ||
+		    statusGetter.getStatus() ==
+		    StatusGetter.STATUS_CONNECTION_REFUSED) {
+		    System.exit(3); // According to LSB: 3 - service not running
+		} else if (statusGetter.getStatus() ==
+			   StatusGetter.STATUS_PARTIALLY_RUNNING) {
+		    /*
+		     * According to LSB: reserved for application
+		     * So, I say 160 - partially running
+		     */
+		    System.exit(160);
+		} else if (statusGetter.getStatus() ==
+			   StatusGetter.STATUS_RUNNING) {
+		    System.exit(0); // everything should be good and running
+		} else {
+		    String message = "Unknown status returned from " +
+			"statusGetter.getStatus(): " +
+			statusGetter.getStatus();
+		    System.err.println(message);
+		    log.error(message);
+		    System.exit(1);
+		}
+            } catch (Throwable t) {
+                log.error("error invoking status command", t);
+		System.exit(1);
+            }
+	} else if ("exit".equals(command)) {
+            try {
+                URL invoke = new URL(invokeUrl + "&operation=doSystemExit");
                 InputStream in = invoke.openStream();
                 int ch;
-                while ((ch = in.read()) != -1)
+                while ((ch = in.read()) != -1) {
                     System.out.write((char) ch);
+		}
                 in.close();
                 System.out.println("");
                 System.out.flush();
             } catch (Throwable t) {
-                log.error("error invoking status command", t);
+                log.error("error invoking exit command", t);
+		System.exit(1);
             }
+        } else {
+	    System.err.println("Invalid command \"" + command + "\".");
+	    System.err.println("Use \"-h\" option for help.");
+	    System.exit(1);
+	}
+    }
+
+    public static Authenticator getAuthenticator() {
+        ServiceConfigFactory sfact = null;
+        try {
+            ServiceConfigFactory.init();
+            sfact = ServiceConfigFactory.getInstance();
+        } catch (Exception e) {
+            throw new java.lang.reflect.UndeclaredThrowableException(e);
         }
+
+        // allocate some storage locations
+        //
+        Service[] services = sfact.getServices();
+
+        Category log = ThreadCategory.getInstance(Manager.class);
+
+        for (int i = 0; i < services.length; i++) {
+	    if (!services[i].getName().equals(":Name=HttpAdaptorMgmt")) {
+		continue;
+	    }
+
+            org.opennms.netmgt.config.service.Attribute[] attribs =
+		services[i].getAttribute();
+
+            if (attribs == null) {
+		// the AuthenticationMethod is not set, so no authentication
+		return null;
+	    }
+
+	    boolean usingBasic = false;
+	    for (int j = 0; j < attribs.length; j++) {
+		if (attribs[j].getName().equals("AuthenticationMethod")) {
+		    if (!attribs[j].getValue().getContent().equals("basic")) {
+			log.error("AuthenticationMethod is \"" +
+				  attribs[j].getValue() +
+				  "\", but only \"basic\" is " +
+				  "supported");
+			return null;
+		    }
+		    usingBasic = true;
+		    break;
+		}
+	    }
+
+	    Invoke[] invokes = services[i].getInvoke();
+	    for (int j = 0; invokes != null && j < invokes.length; j++) {
+		if (invokes[j].getMethod().equals("addAuthorization")) {
+		    Argument[] args = invokes[j].getArgument();
+		    if (args != null && args.length == 2 &&
+			args[0].getContent().equals("manager")) {
+			final String username = args[0].getContent();
+			final String password = args[1].getContent();
+			return new Authenticator() {
+				protected PasswordAuthentication
+				    getPasswordAuthentication() {
+				    return new PasswordAuthentication(username,
+								      password.toCharArray());
+				}
+			    };
+		    }
+		}
+	    }
+	}
+	return null;
     }
 }
