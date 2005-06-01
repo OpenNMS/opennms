@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="var" path="CLOVER_RUNTIME"/>
 	<classpathentry excluding="**/classlist" kind="src" path="src/core"/>
 	<classpathentry excluding="**/classlist|org/opennms/install/MANIFEST.MF|org/opennms/install/installer.properties" kind="src" path="src/install"/>
 	<classpathentry excluding="**/classlist" kind="src" path="src/joesnmp"/>
