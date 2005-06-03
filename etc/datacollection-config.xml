@@ -54,7 +54,15 @@
 		                 <mibObj oid=".1.3.6.1.2.1.6.12" instance="0" alias="tcpRetransSegs" type="Counter32"/>
 		                 <mibObj oid=".1.3.6.1.2.1.6.14" instance="0" alias="tcpInErrors" type="Counter32"/>
 		                 <mibObj oid=".1.3.6.1.2.1.6.15" instance="0" alias="tcpOutRsts" type="Counter32"/>
-			</group>
+ 			</group>
+             		<group name="mib2-ups-rfc1628" ifType="ignore">
+				<mibObj oid=".1.3.6.1.2.1.33.1.2.2" instance="0" alias="upsSecondsOnBattery" type="Integer32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.2.3" instance="0" alias="upsEstMinsRemain" type="Integer32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.2.4" instance="0" alias="upsEstChargeRemain" type="Integer32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.2.5" instance="0" alias="upsBatteryVoltage" type="Integer32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.2.6" instance="0" alias="upsBatteryCurrent" type="Integer32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.2.7" instance="0" alias="upsBatteryTemp" type="Integer32" />
+ 			</group>
                         <group  name = "printer-usage" ifType = "ignore">
                                 <mibObj oid="1.3.6.1.2.1.43.10.2.1.4.1"    instance="1" alias="lifeCount" type="Gauge" />
                                 <mibObj oid="1.3.6.1.2.1.43.10.2.1.5.1"    instance="1" alias="powerOnCount" type="Gauge" />
@@ -685,6 +693,7 @@
 				<sysoidMask>.1.3.6.1.4.1.318.</sysoidMask>
                                 <collect>
                                         <includeGroup>APC</includeGroup>
+                                        <includeGroup>mib2-ups-rfc1628</includeGroup>
 				</collect>
                         </systemDef>
 			
@@ -786,6 +795,13 @@
                                 <collect>
                                         <includeGroup>juniper-router</includeGroup>
                                 </collect>
+                        </systemDef>
+
+			<systemDef name = "MGE UPS">
+				<sysoidMask>.1.3.6.1.4.1.705.</sysoidMask>
+                                <collect>
+                                        <includeGroup>mib2-ups-rfc1628</includeGroup>
+				</collect>
                         </systemDef>
 
 			<systemDef name = "Microsoft Windows NT/2000">
