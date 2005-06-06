@@ -502,6 +502,10 @@ public class SQLTranslation extends DepthFirstAdapter {
             node.getLike().apply(this);
             m_where.append(" LIKE ");
         }
+        if (node.getTildeLike() != null) {
+            node.getTildeLike().apply(this);
+            m_where.append(" ~ ");
+        }
         if (node.getQuotedString() != null) {
             node.getQuotedString().apply(this);
             m_where.append(convertString(node.getQuotedString().getText()));

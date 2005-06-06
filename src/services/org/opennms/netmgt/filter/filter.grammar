@@ -23,6 +23,7 @@ less_than_equal  = '<=';
 and              = '&';
 or               = '|';
 like             = 'LIKE' | 'like' | '~';
+tilde_like       = '~';
 iplike           = 'IPLIKE' | 'iplike';
 lparen           = '(';
 rparen           = ')';
