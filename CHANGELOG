@@ -1,5 +1,7 @@
 1.2.3 to 1.2.4
 ----------------------------------------------------------------------
+- Make the tilde "~" character work in filters and rules. This
+  allows for regular expressions in SQL queries in Postgres 7.4+
 - Added support for RFC1628, the UPS MIB
 
 1.2.2 to 1.2.3
