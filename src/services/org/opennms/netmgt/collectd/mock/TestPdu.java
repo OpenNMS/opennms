@@ -34,7 +34,7 @@ package org.opennms.netmgt.collectd.mock;
 
 import org.opennms.netmgt.collectd.SnmpObjId;
 
-abstract class TestPdu {
+public abstract class TestPdu {
 
     private TestVarBindList m_varBindList;
 

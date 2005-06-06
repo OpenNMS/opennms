@@ -33,13 +33,16 @@ package org.opennms.netmgt.collectd;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class SnmpCollectionTracker {
     
     List m_colList;
+    int m_lastReceivedColumn = 0;
     private Map m_instanceMaps = new HashMap();
 
     public SnmpCollectionTracker(List objList) {
@@ -52,31 +55,30 @@ public class SnmpCollectionTracker {
         
     }
     /*
-     * TODO: take a list of mib object bases and instance types
-     * TODO: track the columns that have been retrieved
-     * TODO: process the results to match instance data up for Entry objects
      * TODO: handle getting data out of order
-     * TODO: construct the varbinds needed to do getNext/Bulk
-     * TODO: track the complete collection of each column
      * TODO: (maybe)be able to start with just the root oid of the table and process an 
      * entire table
-     * 
-     * TODO: be able to get data for instance '2'
-     * TODO: be able to get date for instance 'ifIndex'
-     * 
-     * TODO: tell when it gets to the end of a column
+     *
+     * TODO: handle maxRepeaters greater than 1
+     * TODO: handle repition hints
+     * TODO: handle hint oids to be retrieved in first packet
+     * TODO: handle hint values passed in with initial data
      * 
      */
 
-    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
-        final List expectantCols = new ArrayList(m_colList.size());
-        for (Iterator it = m_colList.iterator(); it.hasNext();) {
-            SnmpColumn col = (SnmpColumn)it.next();
+    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder, int maxVarsPerPdu) {
+        final List expectantCols = new ArrayList(Math.min(maxVarsPerPdu, m_colList.size()));
+        int count = 0;
+        for(int i = 0; i < m_colList.size() && count < maxVarsPerPdu; i++) {
+            int index = i;
+            SnmpColumn col = (SnmpColumn)m_colList.get(index);
             if (col.hasOidForNext()) {
+                count++;
                 pduBuilder.addOid(col.getOidForNext());
                 expectantCols.add(col);
             }
         }
+       
         pduBuilder.setNonRepeaters(expectantCols.size());
         pduBuilder.setMaxRepititions(1);
         return new ResponseProcessor() {
@@ -87,13 +89,14 @@ public class SnmpCollectionTracker {
                 
                 SnmpColumn col = (SnmpColumn)expectantCols.get(currIndex);
                 SnmpInstId inst = col.addResult(snmpObjId, val);
-                Map instMap = (Map)m_instanceMaps.get(inst);
-                if (instMap == null) {
-                    instMap = new HashMap();
-                    m_instanceMaps.put(inst, instMap);
+                if (inst != null) {
+                    Map instMap = (Map)m_instanceMaps.get(inst);
+                    if (instMap == null) {
+                        instMap = new HashMap();
+                        m_instanceMaps.put(inst, instMap);
+                    }
+                    instMap.put(col.getBase(), val);
                 }
-                instMap.put(col.getBase(), val);
-                
                 currIndex++;
             }
             
@@ -109,6 +112,9 @@ public class SnmpCollectionTracker {
                 return false;
         }
         return true;
+    }
+    public Set getInstances() {
+        return new HashSet(m_instanceMaps.keySet());
     }
 
 

@@ -33,22 +33,24 @@ package org.opennms.netmgt.collectd.mock;
 
 import org.opennms.netmgt.collectd.SnmpObjId;
 
-class TestVarBind {
+public class TestVarBind {
     private SnmpObjId m_oid;
     private Object m_val;
-    TestVarBind(SnmpObjId oid) {
+    
+    public TestVarBind(SnmpObjId oid) {
         this(oid, null);
     }
-    TestVarBind(SnmpObjId oid, Object val) {
+    
+    public TestVarBind(SnmpObjId oid, Object val) {
         m_oid = oid;
         m_val = val;
         
     }
-    SnmpObjId getObjId() {
+    public SnmpObjId getObjId() {
         return m_oid;
     }
     
-    Object getValue() {
+    public Object getValue() {
         return m_val;
     }
 }

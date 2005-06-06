@@ -35,7 +35,12 @@ import java.util.ArrayList;
 
 import org.opennms.netmgt.collectd.SnmpObjId;
 
-class TestVarBindList extends ArrayList {
+public class TestVarBindList extends ArrayList {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
     public TestVarBindList() {
         super();
     }
