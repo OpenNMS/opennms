@@ -22,8 +22,8 @@ less_than        = '<';
 less_than_equal  = '<=';
 and              = '&';
 or               = '|';
-like             = 'LIKE' | 'like' | '~';
-tilde_like       = '~';
+like             = 'LIKE' | 'like';
+tildelike        = '~';
 iplike           = 'IPLIKE' | 'iplike';
 lparen           = '(';
 rparen           = ')';
@@ -57,6 +57,7 @@ expr_part =  {ident}           ident |
 	     {not_equal}       ident not_equal compare_right |
 	     {not}             not expr |
 	     {like}            ident like quoted_string |
+	     {tildelike}       ident tildelike quoted_string |
 	     {iplike}          ident iplike ip_ident;
 
 compare_right = {integer} integer |
