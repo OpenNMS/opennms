@@ -32,7 +32,7 @@
 %if "%{platform}" == "linux-i386-centos-3"
 %define	initdir		/etc
 %define psql_service	rhdb
-%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_centos3
 %define platform_match	true
@@ -41,7 +41,7 @@
 %if "%{platform}" == "linux-i386-fedora-1"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_fc1
 %define platform_match	true
@@ -50,7 +50,7 @@
 %if "%{platform}" == "linux-i386-fedora-2"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_fc2
 %define platform_match	true
@@ -59,7 +59,7 @@
 %if "%{platform}" == "linux-i386-fedora-3"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4, xorg-x11-deprecated-libs
+%define requires	postgresql-server >= 7.2, j2sdk >= 1.4, xorg-x11-deprecated-libs
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_fc3
 %define platform_match	true
@@ -104,7 +104,7 @@
 %if "%{platform}" == "linux-i386-mandrake-10"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2, libstdc++2.10, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk10
 %define platform_match	true
@@ -140,7 +140,7 @@
 %if "%{platform}" == "linux-i386-rhel-3"
 %define	initdir		/etc
 %define psql_service	rhdb
-%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_rhel3
 %define platform_match	true
@@ -149,7 +149,7 @@
 %if "%{platform}" == "linux-i386-rhel-4"
 %define	initdir		/etc
 %define psql_service	rhdb
-%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_rhel4
 %define platform_match	true
