@@ -2,7 +2,6 @@
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xlink="http://www.w3.org/1999/xlink"
 xmlns:fo="http://www.w3.org/1999/XSL/Format">
-<xsl:output indent="yes"/>
 
 <!-- define some useful attribute sets -->
 
@@ -231,14 +230,14 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format">
      </fo:table-cell>
     </xsl:when>
     <!-- value is below warning level so colour it red -->
-    <xsl:when test="../../../../warning >= @pctValue">
+    <xsl:when test="../../../../../warning >= @pctValue">
      <fo:table-cell xsl:use-attribute-sets = "critical-cell-attrs">
       <fo:block xsl:use-attribute-sets = "date-attrs"><xsl:value-of select="@date"/></fo:block>
       <fo:block xsl:use-attribute-sets = "pct-val-attrs"><xsl:value-of select="format-number(@pctValue,'0.00')"/></fo:block>
      </fo:table-cell>
     </xsl:when>
      <!-- value is below normal level so colour it yellow -->
-    <xsl:when test="../../../../normal >= @pctValue">
+    <xsl:when test="../../../../../normal >= @pctValue">
      <fo:table-cell xsl:use-attribute-sets = "warning-cell-attrs">
       <fo:block xsl:use-attribute-sets = "date-attrs"><xsl:value-of select="@date"/></fo:block>
       <fo:block xsl:use-attribute-sets = "pct-val-attrs"><xsl:value-of select="format-number(@pctValue,'0.00')"/></fo:block>
@@ -297,75 +296,32 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format">
 </xsl:template>
 
 <xsl:template match="col">
-        <fo:table>
-                <xsl:for-each select="colTitle">
-                        <fo:table-column column-width="2.5in">
-                        </fo:table-column>
-                </xsl:for-each>
-                <fo:table-body>
-                        <xsl:apply-templates select="rows"/>
-                </fo:table-body>
-        </fo:table>
-</xsl:template>
-                                                                                                                             
-<!-- *****  not at all clear if these templates are needed -->
-
-<xsl:template match="col">
         <fo:table-row>
         <xsl:for-each select="colTitle">
                 <fo:table-cell>
                 <fo:block font-weight="bold"><xsl:value-of select="."/></fo:block>
                 </fo:table-cell>
-                <!-- xsl:apply-templates select="colTitle"/ -->
         </xsl:for-each>
         </fo:table-row>
 </xsl:template>
-<xsl:template match="colTitle">
-        <fo:table-column column-width="20mm">
-                <fo:table-cell>
-                        <xsl:value-of select="."/>
-                </fo:table-cell>
-        </fo:table-column>
-</xsl:template>
-
-<!-- ***** -->
 
 <xsl:template match="rows">
-        <xsl:for-each select="row">
-                <fo:table-row>
-                        <xsl:for-each select="value">
-                                <fo:table-cell>
-                                        <fo:block font-weight="bold"><xsl:value-of select="."/></fo:block>
-                                </fo:table-cell>
-                        </xsl:for-each>
-                        <!-- xsl:apply-templates select="colTitle"/ -->
-                </fo:table-row>
-        </xsl:for-each>
-        <!-- xsl:apply-templates select="row"/ -->
-</xsl:template>
-
-<!-- not at all clear if these templates are needed -->
-
-<xsl:template match="row">
-        <!-- temporary fo:block lines, remove after table works -->
-        <fo:table-row>
-                <fo:table-cell>
-                        <fo:block>
-                                <xsl:apply-templates select="value"/>
-                        </fo:block>
-                </fo:table-cell>
-        </fo:table-row>
-</xsl:template>
-<xsl:template match="value">
-<!-- fo:table-column column-width="20mm" -->
+  <xsl:for-each select="row">
+    <fo:table-row>
+      <xsl:for-each select="value">
         <fo:table-cell>
-                <xsl:value-of select="."/>
+          <fo:block>
+            <xsl:call-template name="replace">
+              <xsl:with-param name="string" select="."/>
+              <xsl:with-param name="old" select="'.'"/>
+              <xsl:with-param name="new" select="'.&#x200b;'"/>
+            </xsl:call-template>
+          </fo:block>
         </fo:table-cell>
-<!-- /fo:table-column -->
-                                                                                                                             
+      </xsl:for-each>
+    </fo:table-row>
+  </xsl:for-each>
 </xsl:template>
-
-<!-- ***** -->
 
 <xsl:template match="sectionName">
         <xsl:value-of select="."/>
@@ -377,6 +333,26 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format">
 
 <xsl:template match="sectionDescr">
         <xsl:value-of select="."/>
+</xsl:template>
+
+<xsl:template name="replace">
+  <xsl:param name="string"/>
+  <xsl:param name="old" />
+  <xsl:param name="new"/>
+  <xsl:choose>
+    <xsl:when test="contains( $string, $old )">
+      <xsl:value-of select="substring-before( $string, $old )"/>
+      <xsl:value-of select="$new"/>
+      <xsl:call-template name="replace">
+        <xsl:with-param name="string" select="substring-after( $string, $old )"/>
+        <xsl:with-param name="old" select="$old"/>
+        <xsl:with-param name="new" select="$new"/>
+        </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$string"/>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 </xsl:stylesheet>
