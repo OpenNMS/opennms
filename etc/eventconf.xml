@@ -30,6 +30,7 @@
         <event-file>@install.etc.dir@/events/DellOpenManage.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Fore.events.xml</event-file>
         <event-file>@install.etc.dir@/events/FoundryNetworks.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/FujitsuSeimens.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Groupwise.events.xml</event-file>
         <event-file>@install.etc.dir@/events/HP.events.xml</event-file>
         <event-file>@install.etc.dir@/events/IBM.events.xml</event-file>
@@ -52,6 +53,7 @@
         <event-file>@install.etc.dir@/events/Snort.events.xml</event-file>
         <event-file>@install.etc.dir@/events/SonicWall.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Symbol.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/SystemEdge.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Uptime.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Xerox.events.xml</event-file>
 
