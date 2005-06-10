@@ -62,6 +62,13 @@ public abstract class InstanceTracker  {
      * tracker, the instance if it does belong
      */
     public abstract SnmpInstId receivedOid(SnmpObjId lastOid);
+
+    /**
+     * Indicates whether instances retrieved by this instance tracker should be repeated
+     * in a GetBulk or not
+     * @return true if it should not be repeated, false otherwise
+     */
+    public abstract boolean isNonRepeater();
     
     /**
      * 
@@ -73,5 +80,5 @@ public abstract class InstanceTracker  {
             return new SpecificInstanceTracker(base, instances);
         }
     }
-    
+
 }

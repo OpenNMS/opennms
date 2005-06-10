@@ -43,9 +43,11 @@ public class SnmpCollectionTracker {
     
     List m_colList;
     int m_lastReceivedColumn = 0;
+    int m_maxVarsPerPdu;
     private Map m_instanceMaps = new HashMap();
 
-    public SnmpCollectionTracker(List objList) {
+    public SnmpCollectionTracker(List objList, int maxVarsPerPdu) {
+        m_maxVarsPerPdu = maxVarsPerPdu;
         m_colList = new ArrayList(objList.size());
         for (Iterator it = objList.iterator(); it.hasNext();) {
             MibObject mibObj = (MibObject) it.next();
@@ -66,28 +68,53 @@ public class SnmpCollectionTracker {
      * 
      */
 
-    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder, int maxVarsPerPdu) {
-        final List expectantCols = new ArrayList(Math.min(maxVarsPerPdu, m_colList.size()));
+    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
+        
+        int maxVars = Math.min(m_maxVarsPerPdu, m_colList.size());
+        final List nonRepeaters = new ArrayList(maxVars);
+        final List repeaters = new ArrayList(maxVars);
         int count = 0;
-        for(int i = 0; i < m_colList.size() && count < maxVarsPerPdu; i++) {
+        for(int i = 0; i < m_colList.size() && count < m_maxVarsPerPdu; i++) {
             int index = i;
             SnmpColumn col = (SnmpColumn)m_colList.get(index);
             if (col.hasOidForNext()) {
                 count++;
-                pduBuilder.addOid(col.getOidForNext());
-                expectantCols.add(col);
+                if (col.isNonRepeater())
+                    nonRepeaters.add(col);
+                else
+                    repeaters.add(col);
             }
         }
+        
+        for (Iterator it = nonRepeaters.iterator(); it.hasNext();) {
+            SnmpColumn col = (SnmpColumn) it.next();
+            pduBuilder.addOid(col.getOidForNext());
+        }
+        
+        for (Iterator it = repeaters.iterator(); it.hasNext();) {
+            SnmpColumn col = (SnmpColumn) it.next();
+            pduBuilder.addOid(col.getOidForNext());
+        }
+        
        
-        pduBuilder.setNonRepeaters(expectantCols.size());
-        pduBuilder.setMaxRepititions(1);
+        pduBuilder.setNonRepeaters(nonRepeaters.size());
+        pduBuilder.setMaxRepititions(10);
         return new ResponseProcessor() {
             
             int currIndex = 0;
+            
+            public SnmpColumn getColumn() {
+                if (currIndex < nonRepeaters.size())
+                    return (SnmpColumn)nonRepeaters.get(currIndex);
+                
+                int repeaterIndex = (currIndex - nonRepeaters.size()) % repeaters.size();
+                
+                return (SnmpColumn)repeaters.get(repeaterIndex);
+            }
 
             public void processResponse(SnmpObjId snmpObjId, Object val) {
                 
-                SnmpColumn col = (SnmpColumn)expectantCols.get(currIndex);
+                SnmpColumn col = getColumn();
                 SnmpInstId inst = col.addResult(snmpObjId, val);
                 if (inst != null) {
                     Map instMap = (Map)m_instanceMaps.get(inst);

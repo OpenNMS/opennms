@@ -63,4 +63,8 @@ public class ColumnInstanceTracker extends InstanceTracker {
         return m_base;
     }
 
+    public boolean isNonRepeater() {
+        return false;
+    }
+
 }

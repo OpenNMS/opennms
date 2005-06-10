@@ -82,5 +82,9 @@ public class SnmpColumn {
     public Object getResultForInstance(SnmpInstId inst) {
         return m_results.get(inst);
     }
+    
+    public boolean isNonRepeater() {
+        return m_tracker.isNonRepeater();
+    }
 
 }

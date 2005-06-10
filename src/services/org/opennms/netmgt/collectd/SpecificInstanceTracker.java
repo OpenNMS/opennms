@@ -75,4 +75,8 @@ public class SpecificInstanceTracker extends InstanceTracker {
         return m_base;
     }
 
+    public boolean isNonRepeater() {
+        return true;
+    }
+    
 }

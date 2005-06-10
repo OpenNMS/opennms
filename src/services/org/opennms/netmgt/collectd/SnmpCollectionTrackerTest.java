@@ -81,9 +81,10 @@ public class SnmpCollectionTrackerTest extends SnmpCollectorTestCase {
 
     }
     
-    private static class GetBulkBuilder implements TestPduBuilder {
+    private class GetBulkBuilder implements TestPduBuilder {
         
         private BulkPdu m_bulkPdu;
+        private int m_nonRepeaters = 0;
 
         public GetBulkBuilder() {
             m_bulkPdu = TestPdu.getBulk();
@@ -95,14 +96,19 @@ public class SnmpCollectionTrackerTest extends SnmpCollectorTestCase {
 
         public void addOid(SnmpObjId snmpObjId) {
             m_bulkPdu.addVarBind(snmpObjId);
+            MibObject mibObj = findMibObjectFor(snmpObjId);
+            if (!"ifIndex".equals(mibObj.getInstance()))
+                m_nonRepeaters++;
         }
 
         public void setNonRepeaters(int numNonRepeaters) {
             m_bulkPdu.setNonRepeaters(numNonRepeaters);
+            assertEquals(m_nonRepeaters, numNonRepeaters);
         }
 
         public void setMaxRepititions(int maxRepititions) {
             m_bulkPdu.setMaxRepititions(maxRepititions);
+            assertTrue(maxRepititions > 1);
         }
         
     }
@@ -114,6 +120,16 @@ public class SnmpCollectionTrackerTest extends SnmpCollectorTestCase {
     
     public void setVersion(int version) {
         m_version = version;
+    }
+
+    public MibObject findMibObjectFor(SnmpObjId snmpObjId) {
+        for (Iterator it = m_objList.iterator(); it.hasNext();) {
+            MibObject mibObj = (MibObject) it.next();
+            if (SnmpObjId.get(mibObj.getOid()).isPrefixOf(snmpObjId)) {
+                return mibObj;
+            }
+        }
+        return null;
     }
 
     protected void setUp() throws Exception {
@@ -139,10 +155,10 @@ public class SnmpCollectionTrackerTest extends SnmpCollectorTestCase {
     public void testGetNextVarbindsForZeroInstanceVars() {
         addSysDescr();
         addSysName();
-        SnmpCollectionTracker tracker = new SnmpCollectionTracker(m_objList);
+        SnmpCollectionTracker tracker = new SnmpCollectionTracker(m_objList, 50);
 
         TestPduBuilder pduBuilder = getPduBuilder();
-        ResponseProcessor rp = tracker.buildNextPdu(pduBuilder, 2);
+        ResponseProcessor rp = tracker.buildNextPdu(pduBuilder);
         RequestPdu next = pduBuilder.getPdu();
         
         assertNotNull(rp);
@@ -196,24 +212,44 @@ public class SnmpCollectionTrackerTest extends SnmpCollectorTestCase {
         verifyCollection(50);
     }
     
+    public void testAllTablesFewVarsPerPdu() {
+        addSystemGroup();
+        addIfTable();
+        addIpAddrTable();
+        verifyCollection(7);
+    }
+    
+    public void testAllTablesFewVarsPerPduWithFewResponses() {
+        addSystemGroup();
+        addIfTable();
+        addIpAddrTable();
+        m_agent.setMaxResponseSize(23);
+        verifyCollection(7);
+    }
     private void verifyCollection(int maxVarsPerPdu) {
-        SnmpCollectionTracker tracker = new SnmpCollectionTracker(m_objList);
+        SnmpCollectionTracker tracker = new SnmpCollectionTracker(m_objList, maxVarsPerPdu);
         
         while(!tracker.isFinished()) {
             
             // build a pdu for reqeusting them
             TestPduBuilder pduBuilder = getPduBuilder();
-            ResponseProcessor rp = tracker.buildNextPdu(pduBuilder, maxVarsPerPdu);
+            ResponseProcessor rp = tracker.buildNextPdu(pduBuilder);
             
             RequestPdu request = pduBuilder.getPdu();
             assertTrue(request.size() <= maxVarsPerPdu);
             
             ResponsePdu response = m_agent.send(request);
-            System.err.println("Get a response with "+response.size()+" vars");
-            for (Iterator it = response.getVarBinds().iterator(); it.hasNext();) {
-                TestVarBind varBind = (TestVarBind) it.next();
-                rp.processResponse(varBind.getObjId(), varBind.getValue());
-            }
+            if (response.getErrorStatus() == ResponsePdu.NO_ERR) {
+                
+                System.err.println("Get a response with "+response.size()+" vars");
+                for (Iterator it = response.getVarBinds().iterator(); it.hasNext();) {
+                    TestVarBind varBind = (TestVarBind) it.next();
+                    rp.processResponse(varBind.getObjId(), varBind.getValue());
+                }
+            
+            } else if (response.getErrorStatus() == ResponsePdu.TOO_BIG_ERR) {
+                maxVarsPerPdu = maxVarsPerPdu / 2;
+            } 
 
         }
 
