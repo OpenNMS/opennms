@@ -232,7 +232,7 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
         }
     }
 
-    public final void testGetIfName() {
+    public final void xtestGetIfName() {
         if(m_run) {
 
             if(!m_hasRun)
@@ -245,7 +245,7 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
         }
     }
 
-    public final void testGetIfAlias() {
+    public final void xtestGetIfAlias() {
         if(m_run) {
 
             if(!m_hasRun)
