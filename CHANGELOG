@@ -1,5 +1,7 @@
 1.2.3 to 1.2.4
 ----------------------------------------------------------------------
+- Added SystemEdge and Fujitsu-Seimens events, as well as new MGE-UPS
+  event definitions.
 - Added MGE UPS collections and reports.
 - Make the tilde "~" character work in filters and rules. This
   allows for regular expressions in SQL queries in Postgres 7.4+
