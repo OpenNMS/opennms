@@ -34,6 +34,8 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
+import org.opennms.netmgt.snmp.SnmpCollectionTracker;
+
 /**
  * The NamedSnmpVar class is used to associate a name for a particular snmp
  * instance with its object identifier. Common names often include ifIndex,
@@ -49,7 +51,7 @@ package org.opennms.netmgt.capsd.snmp;
  * 
  * 
  */
-final class NamedSnmpVar {
+final class NamedSnmpVar implements SnmpCollectionTracker.CollectionDefinition {
     /**
      * String which contains the Class name of the expected SNMP data type for
      * the object.
@@ -114,18 +116,6 @@ final class NamedSnmpVar {
     public static final String SNMPENDOFMIBVIEW = "org.opennms.protocols.snmp.SnmpEndOfMibView";
 
     public static final String SNMPNULL = "org.opennms.protocols.snmp.SnmpNull";
-
-    /**
-     * The class default constructor. The default constructor is disallowed in
-     * this class and thus the unsupported operation exception is always thrown
-     * by this constructor.
-     * 
-     * @exception java.lang.UnsupportedOperationException
-     *                Always thrown by this constructor.
-     */
-    private NamedSnmpVar() throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("default constructor not supported");
-    }
 
     /**
      * This constructor creates a new instance of the class with the type, alias
@@ -204,7 +194,7 @@ final class NamedSnmpVar {
     /**
      * Returns the object identifer for this instance.
      */
-    String getOid() {
+    public String getOid() {
         return m_oid;
     }
 
@@ -221,5 +211,12 @@ final class NamedSnmpVar {
      */
     int getColumn() {
         return m_column;
+    }
+
+    public String getInstanceDef() {
+        if (m_isTabular)
+            return SnmpCollectionTracker.COLUMN;
+        else
+            return "0";
     }
 }

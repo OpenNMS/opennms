@@ -36,6 +36,8 @@ import java.util.ArrayList;
 
 import junit.framework.TestSuite;
 
+import org.opennms.netmgt.snmp.SnmpCollectorTestCase;
+import org.opennms.netmgt.snmp.VersionSettingTestSuite;
 import org.opennms.protocols.snmp.SnmpSMI;
 
 public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
@@ -79,11 +81,11 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
         return collector;
     }
 
-    public void testManyVarsV1() throws Exception {
+    public void testManyVars() throws Exception {
         testManyVars(50);
     }
     
-    public void testV1MaxVarsPerPdu() throws Exception {
+    public void testMaxVarsPerPdu() throws Exception {
         testManyVars(2);
     }
     

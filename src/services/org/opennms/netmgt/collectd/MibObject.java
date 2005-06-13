@@ -39,6 +39,8 @@
 
 package org.opennms.netmgt.collectd;
 
+import org.opennms.netmgt.snmp.SnmpCollectionTracker;
+
 /**
  * This class is responsible for holding information about a particular MIB
  * object parsed from the DataCollection.xml file.
@@ -49,7 +51,7 @@ package org.opennms.netmgt.collectd;
  * @version 1.1.1.1
  * 
  */
-public class MibObject {
+public class MibObject implements SnmpCollectionTracker.CollectionDefinition {
     /**
      * Object's identifier in dotted-decimal notation (e.g, ".1.3.6.1.2.1.1.1").
      */
@@ -296,5 +298,12 @@ public class MibObject {
         buffer.append("\n   type:     ").append(m_type);
 
         return buffer.toString();
+    }
+
+    public String getInstanceDef() {
+        if ("ifIndex".equals(getInstance()))
+            return SnmpCollectionTracker.COLUMN;
+        else
+            return getInstance();
     }
 }

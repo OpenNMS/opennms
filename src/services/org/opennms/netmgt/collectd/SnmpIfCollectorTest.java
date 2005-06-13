@@ -39,6 +39,8 @@ import java.util.TreeMap;
 
 import junit.framework.TestSuite;
 
+import org.opennms.netmgt.snmp.SnmpCollectorTestCase;
+import org.opennms.netmgt.snmp.VersionSettingTestSuite;
 import org.opennms.protocols.snmp.SnmpSMI;
 
 
