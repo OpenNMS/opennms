@@ -33,16 +33,18 @@ package org.opennms.netmgt.snmp;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.collectd.MibObject;
+import org.opennms.netmgt.capsd.snmp.SnmpStore;
 
 public class SnmpCollectionTracker {
     
@@ -73,41 +75,53 @@ public class SnmpCollectionTracker {
         }
 
 
-        public SnmpColumn getColumn() {
+        public InstanceTracker getColumn() {
             int zeroBasedIndex = m_currIndex;
             return getColumn(zeroBasedIndex);
         }
 
 
-        private SnmpColumn getColumn(int zeroBasedIndex) {
+        private InstanceTracker getColumn(int zeroBasedIndex) {
             if (zeroBasedIndex < m_nonRepeaters.size())
-                return (SnmpColumn)m_nonRepeaters.get(zeroBasedIndex);
+                return ((InstanceTracker)m_nonRepeaters.get(zeroBasedIndex));
             int repeaterIndex = (zeroBasedIndex - m_nonRepeaters.size()) % m_repeaters.size();
-            return (SnmpColumn)m_repeaters.get(repeaterIndex);
+            return ((InstanceTracker)m_repeaters.get(repeaterIndex));
         }
         
 
         public void processResponse(SnmpObjId snmpObjId, Object val) {
             
-            SnmpColumn col = getColumn();
+            InstanceTracker col = getColumn();
             if (val == END_OF_MIB)
-                col.receivedEndOfMib();
-            SnmpInstId inst = col.addResult(snmpObjId, val);
+                col.receivedEndOFMib();
+            SnmpInstId inst = col.receivedOid(snmpObjId);
             if (inst != null) {
-                Map instMap = (Map)m_instanceMaps.get(inst);
-                if (instMap == null) {
-                    instMap = new HashMap();
-                    m_instanceMaps.put(inst, instMap);
-                }
-                instMap.put(col.getBase(), val);
+                SnmpStore instMap = getStoreForInstance(col.getBaseOid(), inst);
+                System.err.println("Adding result for inst "+inst+": "+val);
+                instMap.put(col.getBaseOid(), val);
             }
             m_currIndex++;
+        }
+
+
+        private SnmpStore getStoreForInstance(SnmpObjId baseOid, SnmpInstId inst) {
+            SnmpStore instMap = (SnmpStore)m_instanceMaps.get(inst);
+            if (instMap == null) {
+                instMap = createStoreForInstance(baseOid, inst);
+                m_instanceMaps.put(inst, instMap);
+            }
+            return instMap;
+        }
+
+
+        protected SnmpStore createStoreForInstance(SnmpObjId baseOid, SnmpInstId inst) {
+            return new SnmpStore();
         }
 
         public boolean processErrors(int errorStatus, int errorIndex) {
             switch(errorStatus) {
             case GEN_ERR: {
-                SnmpColumn col = getColumn(Math.max(0, errorIndex - 1));
+                InstanceTracker col = getColumn(Math.max(0, errorIndex - 1));
                 log().warn("GenErr: processing varbind "+errorIndex+"( "+col.getOidForNext()+" )");
                 col.errorOccurred();
                 break;
@@ -118,11 +132,17 @@ public class SnmpCollectionTracker {
                 break;
             }
             case NO_SUCH_NAME_ERR: {
-                SnmpColumn col = getColumn(Math.max(0, errorIndex - 1));
+                InstanceTracker col = getColumn(Math.max(0, errorIndex - 1));
                 log().warn("NoSuchNameErr: processing varbind "+errorIndex+"( "+col.getOidForNext()+" )");
                 col.errorOccurred();
                 break;
             }
+            
+            case NO_ERR: {
+                break;
+            }
+            default:
+                throw new IllegalArgumentException("Unexpected error status from agent! "+errorStatus);
             }
             return errorStatus != NO_ERR;
         }
@@ -130,20 +150,21 @@ public class SnmpCollectionTracker {
     };
     
 
-    List m_colList;
-    int m_lastReceivedColumn = 0;
-    int m_maxVarsPerPdu;
-    private Map m_instanceMaps = new HashMap();
+    private List m_instTrackerList;
+    private int m_lastReceivedColumn = 0;
+    private int m_maxVarsPerPdu;
+    private Map m_instanceMaps = new TreeMap();
     
 
     public SnmpCollectionTracker(List objList, int maxVarsPerPdu) {
         m_maxVarsPerPdu = maxVarsPerPdu;
-        m_colList = new ArrayList(objList.size());
+        m_instTrackerList = new ArrayList(objList.size());
         for (Iterator it = objList.iterator(); it.hasNext();) {
-            CollectionDefinition mibObj = (MibObject) it.next();
-            SnmpColumn col = new SnmpColumn(mibObj.getOid(), mibObj.getInstanceDef());
-            m_colList.add(col);
-        }
+            CollectionDefinition colDef = (CollectionDefinition) it.next();
+            InstanceTracker tracker = InstanceTracker.get(SnmpObjId.get(colDef.getOid()), colDef.getInstanceDef());
+            m_instTrackerList.add(tracker);
+        }    
+        
         
     }
     /*
@@ -153,15 +174,19 @@ public class SnmpCollectionTracker {
      * 
      */
 
+    public SnmpCollectionTracker(CollectionDefinition[] columns, int maxVarsPerPdu) {
+        this(Arrays.asList(columns), maxVarsPerPdu);
+    }
+
     public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
         
-        int maxVars = Math.min(m_maxVarsPerPdu, m_colList.size());
+        int maxVars = Math.min(m_maxVarsPerPdu, m_instTrackerList.size());
         List nonRepeaters = new ArrayList(maxVars);
         List repeaters = new ArrayList(maxVars);
         int count = 0;
-        for(int i = 0; i < m_colList.size() && count < m_maxVarsPerPdu; i++) {
+        for(int i = 0; i < m_instTrackerList.size() && count < m_maxVarsPerPdu; i++) {
             int index = i;
-            SnmpColumn col = (SnmpColumn)m_colList.get(index);
+            InstanceTracker col = (InstanceTracker)m_instTrackerList.get(index);
             if (col.hasOidForNext()) {
                 count++;
                 if (col.isNonRepeater())
@@ -172,12 +197,12 @@ public class SnmpCollectionTracker {
         }
         
         for (Iterator it = nonRepeaters.iterator(); it.hasNext();) {
-            SnmpColumn col = (SnmpColumn) it.next();
+            InstanceTracker col = (InstanceTracker) it.next();
             pduBuilder.addOid(col.getOidForNext());
         }
         
         for (Iterator it = repeaters.iterator(); it.hasNext();) {
-            SnmpColumn col = (SnmpColumn) it.next();
+            InstanceTracker col = (InstanceTracker) it.next();
             pduBuilder.addOid(col.getOidForNext());
         }
        
@@ -189,21 +214,24 @@ public class SnmpCollectionTracker {
     protected Category log() {
         return ThreadCategory.getInstance(getClass());
     }
-    public Map getDataForInstance(SnmpInstId id) {
-        return (Map)m_instanceMaps.get(id) ;
+    public SnmpStore getDataForInstance(SnmpInstId id) {
+        return (SnmpStore)m_instanceMaps.get(id) ;
     }
     public boolean isFinished() {
         if (m_maxVarsPerPdu < 1)
             throw new IllegalStateException("Unable to query agent. maxVarsPerPdu is "+m_maxVarsPerPdu);
-        for (Iterator it = m_colList.iterator(); it.hasNext();) {
-            SnmpColumn col = (SnmpColumn) it.next();
+        for (Iterator it = m_instTrackerList.iterator(); it.hasNext();) {
+            InstanceTracker col = (InstanceTracker) it.next();
             if (col.hasOidForNext())
                 return false;
         }
         return true;
     }
     public Set getInstances() {
-        return new HashSet(m_instanceMaps.keySet());
+        return Collections.unmodifiableSet(m_instanceMaps.keySet());
+    }
+    public Collection getDataForInstances() {
+        return Collections.unmodifiableCollection(m_instanceMaps.values());
     }
 
 
