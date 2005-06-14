@@ -38,7 +38,6 @@ import java.util.TreeMap;
 
 import junit.framework.TestSuite;
 
-import org.opennms.netmgt.capsd.snmp.SnmpStore;
 import org.opennms.netmgt.collectd.MibObject;
 import org.opennms.netmgt.snmp.mock.BulkPdu;
 import org.opennms.netmgt.snmp.mock.NextPdu;
@@ -322,7 +321,7 @@ public class SnmpCollectionTrackerTest extends SnmpCollectorTestCase {
         Set instances = tracker.getInstances();
         for (Iterator iter = instances.iterator(); iter.hasNext();) {
             SnmpInstId inst = (SnmpInstId) iter.next();
-            SnmpStore store = tracker.getDataForInstance(inst);
+            Map store = tracker.getDataForInstance(inst);
             
             for (Iterator it = store.keySet().iterator(); it.hasNext();) {
                 SnmpObjId base = (SnmpObjId) it.next();
@@ -365,7 +364,7 @@ public class SnmpCollectionTrackerTest extends SnmpCollectorTestCase {
                 SnmpInstId inst = mib.getInstance(column);
                 Object result = columnData.get(mib);
                 
-                SnmpStore store = tracker.getDataForInstance(inst);
+                Map store = tracker.getDataForInstance(inst);
                 assertNotNull("No Instance data for "+mib, store);
                 assertEquals("Unexpected value collected for oid "+mib, result, store.get(column));
             }

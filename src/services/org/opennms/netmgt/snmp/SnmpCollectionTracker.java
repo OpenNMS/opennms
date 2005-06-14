@@ -96,7 +96,7 @@ public class SnmpCollectionTracker {
                 col.receivedEndOFMib();
             SnmpInstId inst = col.receivedOid(snmpObjId);
             if (inst != null) {
-                SnmpStore instMap = getStoreForInstance(col.getBaseOid(), inst);
+                Map instMap = getStoreForInstance(col.getBaseOid(), inst);
                 System.err.println("Adding result for inst "+inst+": "+val);
                 instMap.put(col.getBaseOid(), val);
             }
@@ -104,8 +104,8 @@ public class SnmpCollectionTracker {
         }
 
 
-        private SnmpStore getStoreForInstance(SnmpObjId baseOid, SnmpInstId inst) {
-            SnmpStore instMap = (SnmpStore)m_instanceMaps.get(inst);
+        private Map getStoreForInstance(SnmpObjId baseOid, SnmpInstId inst) {
+            Map instMap = (Map)m_instanceMaps.get(inst);
             if (instMap == null) {
                 instMap = createStoreForInstance(baseOid, inst);
                 m_instanceMaps.put(inst, instMap);
@@ -114,8 +114,8 @@ public class SnmpCollectionTracker {
         }
 
 
-        protected SnmpStore createStoreForInstance(SnmpObjId baseOid, SnmpInstId inst) {
-            return new SnmpStore();
+        protected Map createStoreForInstance(SnmpObjId baseOid, SnmpInstId inst) {
+            return new TreeMap();
         }
 
         public boolean processErrors(int errorStatus, int errorIndex) {
@@ -214,8 +214,8 @@ public class SnmpCollectionTracker {
     protected Category log() {
         return ThreadCategory.getInstance(getClass());
     }
-    public SnmpStore getDataForInstance(SnmpInstId id) {
-        return (SnmpStore)m_instanceMaps.get(id) ;
+    public Map getDataForInstance(SnmpInstId id) {
+        return (Map)m_instanceMaps.get(id) ;
     }
     public boolean isFinished() {
         if (m_maxVarsPerPdu < 1)
