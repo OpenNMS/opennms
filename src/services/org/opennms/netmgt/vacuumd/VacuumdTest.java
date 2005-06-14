@@ -78,7 +78,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         "       AND eventtime &lt; now() - interval \'6 weeks\';\n" + 
         "    </statement>\n" +
         "    <automations>\n" + 
-        "           <automation name=\"autoEscalate\" interval=\"10000\" trigger-name=\"selectWithCounter\" action-name=\"escalate\" active=\"true\" />\n" + 
+        "           <automation name=\"autoEscalate\" interval=\"10000\" trigger-name=\"selectWithCounter\" auto-event-name=\"escalationEvent\" action-name=\"escalate\" active=\"true\" />\n" + 
         "           <automation name=\"cleanUpAlarms\" interval=\"300000\" action-name=\"deleteDayOldAlarms\" active=\"true\" />\n" + 
         "    </automations>\n" + 
         "    <triggers>\n" + 
@@ -103,6 +103,11 @@ public class VacuumdTest extends OpenNMSTestCase {
         "               <statement>DELETE FROM alarms WHERE alarmAckUser IS NOT NULL AND lastEventTime &lt; CURRENT_TIMESTAMP</statement>\n" + 
         "           </action>\n" + 
         "    </actions>\n" + 
+        "    <auto-events>\n" +
+        "        <auto-event name=\"escalationEvent\" >\n" +
+        "            <uei>uei.opennms.org/vacuumd/alarmEscalated</uei>\n" +
+        "        </auto-event>\n" +
+        "    </auto-events>\n" +
         "" + 
         "</VacuumdConfiguration>";
     
@@ -114,6 +119,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         Reader rdr = new StringReader(VACUUMD_CONFIG);
         VacuumdConfigFactory.setConfigReader(rdr);
         m_vacuumd = Vacuumd.getSingleton();
+        m_vacuumd.setEventManager(m_eventdIpcMgr);
         m_vacuumd.init();
         
         //The rdr is closed by init, too, but doesn't hurt
@@ -201,6 +207,10 @@ public class VacuumdTest extends OpenNMSTestCase {
      */
     public final void testGetAutomations() {
         assertEquals(2, VacuumdConfigFactory.getInstance().getAutomations().size());
+    }
+    
+    public final void testGetAutoEvents() {
+        assertEquals(1, VacuumdConfigFactory.getInstance().getAutoEvents().size());
     }
     
     /**

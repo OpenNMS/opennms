@@ -38,6 +38,9 @@
 
 package org.opennms.netmgt.vacuumd.jmx;
 
+import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+
 /**
  * Implementws the VacuumdMBead interface and delegeates the mbean
  * implementation to the single Vacuumd.
@@ -50,7 +53,12 @@ public class Vacuumd implements VacuumdMBean {
      * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#init()
      */
     public void init() {
-        org.opennms.netmgt.vacuumd.Vacuumd.getSingleton().init();
+
+        EventIpcManagerFactory.init();
+        EventIpcManager mgr = EventIpcManagerFactory.getIpcManager();
+        getVacuumd().setEventManager(mgr);
+        getVacuumd().init();
+
     }
 
     /*
@@ -59,7 +67,7 @@ public class Vacuumd implements VacuumdMBean {
      * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#start()
      */
     public void start() {
-        org.opennms.netmgt.vacuumd.Vacuumd.getSingleton().start();
+        getVacuumd().start();
     }
 
     /*
@@ -68,7 +76,7 @@ public class Vacuumd implements VacuumdMBean {
      * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#stop()
      */
     public void stop() {
-        org.opennms.netmgt.vacuumd.Vacuumd.getSingleton().stop();
+        getVacuumd().stop();
     }
 
     /*
@@ -77,7 +85,7 @@ public class Vacuumd implements VacuumdMBean {
      * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#getStatus()
      */
     public int getStatus() {
-        return org.opennms.netmgt.vacuumd.Vacuumd.getSingleton().getStatus();
+        return getVacuumd().getStatus();
     }
 
     /*
@@ -96,6 +104,10 @@ public class Vacuumd implements VacuumdMBean {
      */
     public String getStatusText() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
+
+    private org.opennms.netmgt.vacuumd.Vacuumd getVacuumd() {
+        return org.opennms.netmgt.vacuumd.Vacuumd.getSingleton();
     }
 
 }

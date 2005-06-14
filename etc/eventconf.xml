@@ -38,7 +38,7 @@
         <event-file>@install.etc.dir@/events/Linksys.events.xml</event-file>
         <event-file>@install.etc.dir@/events/MGE-UPS.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Microsoft.events.xml</event-file>
-	<event-file>@install.etc.dir@/events/Mylex.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Mylex.events.xml</event-file>
         <event-file>@install.etc.dir@/events/NetApp.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Netbotz.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Nokia.events.xml</event-file>
@@ -81,7 +81,7 @@
 		<logmsg dest='logonly'>
 			Capsd has asked Discovery to pause momentarily.
 		</logmsg>
-		<severity>Indeterminate</severity>
+		<severity>Warning</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/internal/capsd/discResume</uei>
@@ -93,7 +93,7 @@
 		<logmsg dest='logonly'>
 			Capsd is ready for Discovery to resume scheduling nodes.
 		</logmsg>
-		<severity>Indeterminate</severity>
+		<severity>Normal</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/internal/capsd/snmpConflictsWithDb</uei>
@@ -121,7 +121,7 @@
 			&lt;p&gt;A services scan has been forced on this
 			node.&lt;/p&gt;
 		</logmsg>
-		<severity>Major</severity>
+		<severity>Warning</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/internal/capsd/interfaceSupportsSNMP</uei>
@@ -151,6 +151,7 @@
 			%interface%.&lt;/p&gt;
 		</logmsg>
 		<severity>Minor</severity>
+		<reductionKey>%uei%:%dpname%:%nodeid%</reductionKey>
 	</event>
 	<event>
 		<uei>uei.opennms.org/internal/capsd/updateServer</uei>
@@ -329,7 +330,7 @@
 		<logmsg dest='logndisplay'>
 			The interface %interface% is being forcibly unmanaged.
 		</logmsg>
-		<severity>Major</severity>
+		<severity>Minor</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/internal/notificationWithoutUsers</uei>
@@ -342,7 +343,7 @@
 			A destination path in a notification has not been assigned
 			any users.
 		</logmsg>
-		<severity>Normal</severity>
+		<severity>Warning</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/internal/notificationsTurnedOff</uei>
@@ -356,7 +357,7 @@
 		<logmsg dest='logndisplay'>
 			&lt;p&gt;Notifications have been disabled.&lt;/p&gt;
 		</logmsg>
-		<severity>Major</severity>
+		<severity>Minor</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/internal/notificationsTurnedOn</uei>
@@ -370,7 +371,7 @@
 		<logmsg dest='logndisplay'>
 			&lt;p&gt;Notifications have been enabled.&lt;/p&gt;
 		</logmsg>
-		<severity>Major</severity>
+		<severity>Warning</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/internal/reloadEventConfig</uei>
@@ -384,7 +385,7 @@
 			&lt;p&gt;The event configuration files have
 			changed.&lt;/p&gt;
 		</logmsg>
-		<severity>Major</severity>
+		<severity>Warning</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/internal/reloadPollerConfig</uei>
@@ -398,7 +399,7 @@
 			&lt;p&gt;The poller configuration files have
 			changed.&lt;/p&gt;
 		</logmsg>
-		<severity>Major</severity>
+		<severity>Warning</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/internal/reloadScriptConfig</uei>
@@ -410,7 +411,7 @@
 		<logmsg dest='logndisplay'>
 			&lt;p&gt;The ScriptD configuration files have changed.&lt;/p&gt;
 		</logmsg>
-		<severity>Major</severity>
+		<severity>Minor</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/internal/configureSNMP</uei>
@@ -426,8 +427,9 @@
                         &quot;%parm[communityString]%&quot; has been defined
                         for IP %parm[firstIPAddress]%-%parm[lastIPAddress]%.&lt;/p&gt;
 		</logmsg>
-		<severity>Major</severity>
+		<severity>Warning</severity>
 	</event>
+	<!-- deprecated: originally designed for something called service control manager -->
 	<event>
 		<uei>uei.opennms.org/internal/restartSCM</uei>
 		<event-label>OpenNMS-defined internal event: restartSCM</event-label>
@@ -437,7 +439,7 @@
 		<logmsg dest='logndisplay'>
 			SCM has been asked to restart.
 		</logmsg>
-		<severity>Normal</severity>
+		<severity>Indeterminate</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/internal/rtc/subscribe</uei>
@@ -450,7 +452,7 @@
 			A subscription to RTC for the %parm[viewname]% for
 			%parm[url]% has been generated.
 		</logmsg>
-		<severity>Indeterminate</severity>
+		<severity>Normal</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/internal/rtc/unsubscribe</uei>
@@ -463,7 +465,7 @@
 		<logmsg dest='logonly'>
 			Unsubscribe request received from %parm[url]%.
 		</logmsg>
-		<severity>Indeterminate</severity>
+		<severity>Warning</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/internal/serviceManaged</uei>
@@ -489,7 +491,7 @@
 			The service %service% on interface %interface% is being
 			forcibly unmanaged.
 		</logmsg>
-		<severity>Major</severity>
+		<severity>Minor</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/internal/unknownServiceStatus</uei>
@@ -502,7 +504,7 @@
 			The Scheduler has received an unrecognized service status
 			from a scheduler.
 		</logmsg>
-		<severity>Indeterminate</severity>
+		<severity>Warning</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/dataCollectionFailed</uei>
@@ -514,7 +516,8 @@
 		<logmsg dest='logndisplay'>
 			%service% data collection on interface %interface% failed.
 		</logmsg>
-		<severity>Warning</severity>
+		<severity>Minor</severity>
+		<reductionKey>%uei%:%dpname%:%nodeid%</reductionKey>
 	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/dataCollectionSucceeded</uei>
@@ -527,7 +530,8 @@
 			%service% data collection on interface %interface% prevously
 			failed and has been restored.
 		</logmsg>
-		<severity>Cleared</severity>
+		<severity>Normal</severity>
+		<reductionKey>%uei%:%dpname%:%nodeid%</reductionKey>
 	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/deleteService</uei>
@@ -548,7 +552,7 @@
 			The %service% service on interface %interface% has been
 			scheduled for deletion.
 		</logmsg>
-		<severity>Minor</severity>
+		<severity>Warning</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/duplicateNodeDeleted</uei>
@@ -584,7 +588,7 @@
 			Interface %interface% deleted from node #&lt;a
 			href="element/node.jsp?node=%nodeid%"&gt;%nodeid%&lt;/a&gt;.
 		</logmsg>
-		<severity>Major</severity>
+		<severity>Minor</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/interfaceDown</uei>
@@ -601,7 +605,7 @@
 		<logmsg dest='logndisplay'>
 			Interface %interface% is down.
 		</logmsg>
-		<severity>Major</severity>
+		<severity>Minor</severity>
 		<reductionKey>%uei%:%dpname%:%nodeid%:%interface%</reductionKey>
 	</event>
 	<event>
@@ -613,7 +617,7 @@
 		<logmsg dest='logndisplay'>
 			The hostname for this node changed.
 		</logmsg>
-		<severity>Minor</severity>
+		<severity>Warning</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/interfaceIndexChanged</uei>
@@ -634,7 +638,7 @@
 			&lt;p&gt;SNMP Interface Index %parm[oldIfIndex]% has changed
 			to %parm[newIfIndex]% on %interface%&lt;/p&gt;
 		</logmsg>
-		<severity>Minor</severity>
+		<severity>Warning</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/interfaceReparented</uei>
@@ -670,7 +674,7 @@
 		<logmsg dest='logndisplay'>
 			Interface %interface% is up.
 		</logmsg>
-		<severity>Cleared</severity>
+		<severity>Normal</severity>
 		<reductionKey>%uei%:%dpname%:%nodeid%:%interface%</reductionKey>
 	</event>
 	<event>
@@ -706,7 +710,7 @@
 			href="element/node.jsp?node=%nodeid%"&gt;%nodeid%&lt;/a&gt;
 			was deleted.
 		</logmsg>
-		<severity>Minor</severity>
+		<severity>Warning</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/nodeDown</uei>
@@ -722,7 +726,7 @@
 		<logmsg dest='logndisplay'>
 			Node %parm[nodelabel]% is down.
 		</logmsg>
-		<severity>Critical</severity>
+		<severity>Major</severity>
 		<reductionKey>%uei%:%dpname%:%nodeid%</reductionKey>
 	</event>
 	<event>
@@ -768,7 +772,7 @@
 			Polling will be discontinued for %service% service on interface
 			%interface%.
 		</logmsg>
-		<severity>Warning</severity>
+		<severity>Normal</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/internal/poller/resumePollingService</uei>
@@ -784,7 +788,7 @@
 			Polling will begin/resume for %service% service on interface
 			%interface%.
 		</logmsg>
-		<severity>Warning</severity>
+		<severity>Normal</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/nodeInfoChanged</uei>
@@ -828,7 +832,7 @@
 		<logmsg dest='logndisplay'>
 			%service% outage identified on interface %interface%.
 		</logmsg>
-		<severity>Major</severity>
+		<severity>Minor</severity>
 		<reductionKey>%uei%:%dpname%:%nodeid%:%interface%:%service%</reductionKey>
 	</event>
 	<event>
@@ -847,7 +851,7 @@
 			The %service% outage on interface %interface% has been
 			cleared. Service is restored.
 		</logmsg>
-		<severity>Cleared</severity>
+		<severity>Normal</severity>
 		<reductionKey>%uei%:%dpname%:%nodeid%:%interface%:%service%</reductionKey>
 	</event>
 	<event>
@@ -863,7 +867,7 @@
 		<logmsg dest='logndisplay'>
 			Node %parm[nodelabel]% is up.
 		</logmsg>
-		<severity>Cleared</severity>
+		<severity>Normal</severity>
 		<reductionKey>%uei%:%dpname%:%nodeid%</reductionKey>
 	</event>
 	<event>
@@ -908,7 +912,7 @@
 		<logmsg dest='logndisplay'>
 			%service% is responding normally on interface %interface%.
 		</logmsg>
-		<severity>Cleared</severity>
+		<severity>Normal</severity>
         </event>
 	<event>
 		<uei>uei.opennms.org/nodes/serviceDeleted</uei>
@@ -927,7 +931,7 @@
 			The %service% service was deleted from interface
 			%interface%.
 		</logmsg>
-		<severity>Major</severity>
+		<severity>Warning</severity>
 	</event>
 	<event>
                 <uei>uei.opennms.org/nodes/serviceUnresponsive</uei>
@@ -939,7 +943,7 @@
 		<logmsg dest='logndisplay'>
 			%service% is up but unresponsive on interface %interface%.
 		</logmsg>
-		<severity>Major</severity>
+		<severity>Minor</severity>
         </event>
 	<event>
 		<uei>uei.opennms.org/threshold/highThresholdExceeded</uei>
@@ -1009,7 +1013,7 @@
                         High threshold rearmed for %service% datasource %parm[ds]% on interface
                         %interface%, parms: %parm[all]%
                 </logmsg>
-                <severity>Cleared</severity>
+                <severity>Normal</severity>
         </event>
         <event>
                 <uei>uei.opennms.org/threshold/lowThresholdRearmed</uei>
@@ -1032,7 +1036,7 @@
                         Low threshold rearmed for %service% datasource %parm[ds]% on interface
                         %interface%, parms: %parm[all]%
                 </logmsg>
-                <severity>Cleared</severity>
+                <severity>Normal</severity>
         </event>
 	<event>
 		<uei>uei.opennms.org/nodes/thresholdingFailed</uei>
@@ -1057,7 +1061,7 @@
 			%service% thresholding on interface %interface% prevously
 			failed and has been restored.
 		</logmsg>
-		<severity>Cleared</severity>
+		<severity>Normal</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/vulnscand/specificVulnerabilityScan</uei>
@@ -1069,7 +1073,7 @@
 			&lt;p&gt;A vulnerabilities scan has been forced on this
 			interface.&lt;/p&gt;
 		</logmsg>
-		<severity>Major</severity>
+		<severity>Warning</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/assetInfoChanged</uei>
@@ -1127,7 +1131,7 @@
                         &lt;p&gt;An OpenNMS Event has been received as an SNMP Trap with UEI:
                         %parm[#5]%.&lt;/p&gt;
                 </logmsg>
-                <severity>Indeterminate</severity>
+                <severity>Normal</severity>
         </event>
 	<event-file>@install.etc.dir@/events/default.events.xml</event-file>
 </events>

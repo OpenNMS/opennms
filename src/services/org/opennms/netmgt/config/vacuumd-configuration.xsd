@@ -28,6 +28,13 @@
                         </sequence>
                     </complexType>
                 </element>
+                <element name="auto-events">
+                    <complexType>
+                        <sequence>
+                            <element ref="this:auto-event" minOccurs="0" maxOccurs="unbounded" />
+                        </sequence>
+                    </complexType>
+                </element>
             </sequence>
             <!--- how often to vacuum the database in seconds -->
             <attribute name="period" type="positiveInteger" use="required" />
@@ -47,6 +54,8 @@
             <attribute name="trigger-name" type="string" use="optional" />
             <!-- reference an action from the collection of actions -->
             <attribute name="action-name" type="string" use="required" />
+            <!-- specify an event UEI to send -->
+            <attribute name="auto-event-name" type="string" use="optional" />
             <!-- enable/disable this automation -->
             <attribute name="active" type="boolean" use="optional" />
         </complexType>
@@ -76,6 +85,24 @@
                 <element ref="this:statement" minOccurs="1" maxOccurs="1" />
             </sequence>
             <attribute name="name" type="string" use="required" />
+        </complexType>
+    </element>
+    <!-- actions modify the database based on results of a trigger -->
+    <element name="auto-event">
+        <complexType>
+            <sequence>
+            <!-- Must be a UEI defined in event-conf.xml -->
+                <element ref="this:uei" minOccurs="1" maxOccurs="1" />
+            </sequence>
+            <attribute name="name" type="string" use="required" />
+            <attribute name="fields" type="string" use="optional" />
+        </complexType>
+    </element>
+    <element name="uei">
+        <complexType>
+            <simpleContent>
+                <extension base="string" />
+            </simpleContent>
         </complexType>
     </element>
     <!-- Just a generic string used for SQL statements -->

@@ -47,6 +47,7 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.vacuumd.Action;
+import org.opennms.netmgt.config.vacuumd.AutoEvent;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Statement;
 import org.opennms.netmgt.config.vacuumd.Trigger;
@@ -247,6 +248,31 @@ public final class VacuumdConfigFactory {
         return m_config.getActions().getActionCollection();
     }
 
+    /**
+     * Returns a Collection of named events to that may have
+     * been configured to be sent after an automation has run.
+     */
+    
+    public synchronized Collection getAutoEvents() {
+        return m_config.getAutoEvents().getAutoEventCollection();
+    }
+    
+    /**
+     * Returns the AutoEvent associated with the auto-event-name
+     * @param name
+     * @return
+     */
+    public synchronized AutoEvent getAutoEvent(String name) {
+        Collection actions = getAutoEvents();
+        Iterator it = actions.iterator();
+        while (it.hasNext()) {
+            AutoEvent ae = (AutoEvent)it.next();
+            if (ae.getName().equals(name))
+                return ae;
+        }
+        return null;
+    }
+    
     public synchronized int getPeriod() {
         return m_config.getPeriod();
     }

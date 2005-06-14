@@ -55,6 +55,7 @@ import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Scheduler;
 
@@ -78,6 +79,8 @@ public class Vacuumd extends ServiceDaemon implements Runnable {
     private boolean m_stopped = false;
 
     private Scheduler m_scheduler;
+    
+    private EventIpcManager m_eventMgr;
 
     public synchronized static Vacuumd getSingleton() {
         if (m_singleton == null) {
@@ -360,6 +363,14 @@ public class Vacuumd extends ServiceDaemon implements Runnable {
             ap.setSchedule(s);
             s.schedule();
         }
+    }
+
+    public EventIpcManager getEventManager() {
+        return m_eventMgr;
+    }
+
+    public void setEventManager(EventIpcManager eventMgr) {
+        m_eventMgr = eventMgr;
     }
 
 }

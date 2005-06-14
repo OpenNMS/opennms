@@ -47,12 +47,14 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Automation;
+import org.opennms.netmgt.config.vacuumd.Uei;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Schedule;
+import org.opennms.netmgt.xml.event.Event;
 
 /**
  * This class used to process automations configured in
@@ -69,6 +71,13 @@ public class AutomationProcessor implements ReadyRunnable {
     private Automation m_automation;
     private boolean m_ready = false;
     private Schedule m_schedule;
+    private boolean m_triggerSuccessful;
+    private boolean m_actionSuccessful;
+    private boolean m_triggerInAutomation;
+    private Statement m_triggerStatement;
+    private ResultSet m_triggerResultSet;
+    private Collection m_actionColumns;
+    private Connection m_conn;
 
     /**
      * Public constructor.
@@ -84,27 +93,27 @@ public class AutomationProcessor implements ReadyRunnable {
     public void run() {
 
         long startDate = System.currentTimeMillis();
-        if (getLog().isDebugEnabled())
-            getLog().debug("Start Scheduled automation "+this);
+        if (log().isDebugEnabled())
+            log().debug("Start Scheduled automation "+this);
         
-        if (!(m_automation == null)) {
+        if (!(getAutomation() == null)) {
             Runnable r = new Runnable() {
                 public void run() {
-                    m_ready = false;
+                    setReady(false);
                     try {
-                        runAutomation(m_automation);
+                        runAutomation(getAutomation());
                     } catch (SQLException e) {
-                        getLog().warn("Error running automation: "+e.getMessage());
+                        log().warn("Error running automation: "+getAutomation().getName()+", "+e.getMessage());
                     } finally {
-                        m_ready = true;
+                        setReady(true);
                     }
                 }
             };
             r.run();
         }
 
-        if (getLog().isDebugEnabled())
-            getLog().debug("run: Finished automation "+m_automation.getName()+", started at "+new Date(startDate));
+        if (log().isDebugEnabled())
+            log().debug("run: Finished automation "+m_automation.getName()+", started at "+new Date(startDate));
         
     }
 
@@ -121,13 +130,13 @@ public class AutomationProcessor implements ReadyRunnable {
     public boolean triggerRowCheck(int trigRowCount, String trigOp, int resultRows) {
         
         if (trigRowCount == 0 || trigOp == null) {
-            if (getLog().isDebugEnabled())
-                getLog().debug("triggerRowCheck: trigger has no row-count restrictions: operator is: "+trigOp+", row-count is: "+trigRowCount);
+            if (log().isDebugEnabled())
+                log().debug("triggerRowCheck: trigger has no row-count restrictions: operator is: "+trigOp+", row-count is: "+trigRowCount);
             return true;
         }
         
-        if (getLog().isDebugEnabled())
-            getLog().debug("triggerRowCheck: Verifying trigger resulting row count " +resultRows+" is "+trigOp+" "+trigRowCount);
+        if (log().isDebugEnabled())
+            log().debug("triggerRowCheck: Verifying trigger resulting row count " +resultRows+" is "+trigOp+" "+trigRowCount);
         
         boolean runAction = false;
         if ("<".equals(trigOp)) {
@@ -152,8 +161,8 @@ public class AutomationProcessor implements ReadyRunnable {
             
         }
         
-        if (getLog().isDebugEnabled())
-            getLog().debug("Row count verification is: "+runAction);
+        if (log().isDebugEnabled())
+            log().debug("Row count verification is: "+runAction);
         
         return runAction;
     }
@@ -170,119 +179,179 @@ public class AutomationProcessor implements ReadyRunnable {
      * @throws SQLException
      */
     public boolean runAutomation(Automation auto) throws SQLException {
-        
-        if (getLog().isDebugEnabled())
-            getLog().debug("runAutomation: "+auto.getName()+" running...");
-        
-        boolean actionStatus = false;
-        boolean hasTrigger = false;
 
-        String triggerSQL = null;
+        if (log().isDebugEnabled())
+            log().debug("runAutomation: "+auto.getName()+" running...");
 
-        if (hasTrigger(auto)) {
-            triggerSQL = getTriggerSQL(auto);
-            hasTrigger = true;
+        setTriggerInAutomation(hasTrigger(auto));
+
+        if (log().isDebugEnabled()) {
+            log().debug("runAutomation: "+auto.getName()+" trigger statement is: "+getTriggerSQL(auto));
+            log().debug("runAutomation: "+auto.getName()+" action statement is: "+getAutomationSQL(auto));
         }
 
-        String actionSQL = getAutomationSQL(auto);
-        
-        if (getLog().isDebugEnabled()) {
-            getLog().debug("runAutomation: "+auto.getName()+" trigger statement is: "+triggerSQL);
-            getLog().debug("runAutomation: "+auto.getName()+" action statement is: "+actionSQL);
-        }
-        
-        Collection actionColumns = getTokenizedColumns(actionSQL);
-        
-        DbConnectionFactory dcf = DatabaseConnectionFactory.getInstance();
-        Connection conn = null;
-        Statement triggerStatement = null;
-        ResultSet triggerResultSet = null;
-        int resultRows = 0;
-        
-        if (getLog().isDebugEnabled())
-            getLog().debug("runAutomation: Executing trigger: "+auto.getTriggerName());
-            
+        setFields(auto);
+
+        if (log().isDebugEnabled())
+            log().debug("runAutomation: Executing trigger: "+auto.getTriggerName());
+
         try {
-            conn = dcf.getConnection();
+            setConn(DatabaseConnectionFactory.getInstance().getConnection());
 
-            if (hasTrigger) {
-                //get a scrollable ResultSet so that we can count the rows and move back to the
-                //beginning for processing.
-                triggerStatement = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-                triggerResultSet = triggerStatement.executeQuery(triggerSQL);
-                
-                //determine if number of rows required by the trigger row-count and operator were
-                //met by the trigger query, if so we'll run the action
-                resultRows = countRows(triggerResultSet);
-                if (resultRows < 1)
-                    return actionStatus;
-                int triggerRowCount = VacuumdConfigFactory.getInstance().getTrigger(auto.getTriggerName()).getRowCount();
-                String triggerOperator = VacuumdConfigFactory.getInstance().getTrigger(auto.getTriggerName()).getOperator();
-                if (!triggerRowCheck(triggerRowCount, triggerOperator, resultRows))
-                    return actionStatus;
-                
-                //Verfiy the trigger ResultSet returned the require columns for the action statement
-                if (!resultSetHasRequiredActionColumns(triggerResultSet, actionColumns))
-                    return actionStatus;                
+            processTrigger(auto);
+            
+            if (!isTriggerSuccessful()) {
+                return false;
             }
-            
+
             PreparedStatement actionStatement = null;
-            
-            if (getLog().isDebugEnabled())
-                getLog().debug("runAutomation: running action: "+auto.getActionName());
-            
+
             try {
-                if (hasTrigger) {
-                    triggerResultSet.beforeFirst();
-                    conn.setAutoCommit(false);
-                    
-                    //Loop through the select results
-                    while (triggerResultSet.next()) {
-                        
-                        //Convert the sql to a PreparedStatement
-                        actionStatement = convertActionToPreparedStatement(triggerResultSet, actionSQL, conn);
-                        actionStatement.executeUpdate();            
-                    }
-                } else {
-                    
-                    //No trigger defined, just running the action.
-                    if (getTokenCount(actionSQL) != 0) {
-                            getLog().info("runAutomation: not running action: "+auto.getActionName()+".  Action contains tokens in an automation ("+auto.getName()+") with no trigger.");
-                        return actionStatus;
-                    }
-                    actionStatement = convertActionToPreparedStatement(triggerResultSet, actionSQL, conn);
-                    actionStatement.executeUpdate();
-                }
-                
-                conn.commit();
-                
+                setActionSuccessful(false);
+                processAction(auto);           
             } catch (SQLException e) {
-                conn.rollback();
-                getLog().warn("runAutomation: Could not execute update on action: "+auto.getActionName());
-                getLog().warn(e.getMessage());
+                getConn().rollback();
+                log().warn("runAutomation: Could not execute update on action: "+auto.getActionName());
+                log().warn(e.getMessage());
             } finally {
                 if (actionStatement != null) {
-                    getLog().debug("runAutomation: closing action statement.");
+                    log().debug("runAutomation: closing action statement.");
                     actionStatement.close();                    
                 }
             }
-            
-            actionStatus = true;
-            
+
         } catch (SQLException e) {
-            getLog().warn("runAutomation: Could not execute trigger: "+auto.getTriggerName());
-            getLog().warn(e.getMessage());
+            log().warn("runAutomation: Could not execute trigger: "+auto.getTriggerName());
+            log().warn(e.getMessage());
         } finally {
-            getLog().debug("runAutomation: Closing trigger resultset.");
-            if (hasTrigger) {
-                getLog().debug("runAutomation: Closing trigger statement.");
-                triggerResultSet.close();
+            log().debug("runAutomation: Closing trigger resultset.");
+            if (isTriggerInAutomation()) {
+                log().debug("runAutomation: Closing trigger statement.");
+                getTriggerResultSet().close();
             }
-            getLog().debug("runAutomation: Closing database connection.");
-            conn.close();
+            log().debug("runAutomation: Closing database connection.");
+            getConn().close();
         }
+
+        return isActionSuccessful();
+    }
+
+    private void processAction(Automation auto) throws SQLException {
+
+        if (log().isDebugEnabled())
+            log().debug("runAutomation: running action(s): "+auto.getActionName());
+
+        getConn().setAutoCommit(false);
+        if (isTriggerInAutomation()) {
+            getTriggerResultSet().beforeFirst();
+            
+            //Loop through the select results
+            while (getTriggerResultSet().next()) {                        
+                processActionStatement(getAutomationSQL(auto), getTriggerResultSet());            
+                sendAutoEvent(auto);
+            }
+            setActionSuccessful(true);
+        } else {
+            //No trigger defined, just running the action.
+            if (getTokenCount(getAutomationSQL(auto)) != 0) {
+                log().info("runAutomation: not running action: "+auto.getActionName()+".  Action contains tokens in an automation ("+auto.getName()+") with no trigger.");
+                setActionSuccessful(false);
+            } else {
+                processActionStatement(getAutomationSQL(auto), getTriggerResultSet());
+                sendAutoEvent(auto);
+                setActionSuccessful(true);
+            }
+        }
+        getConn().commit();
+    }
+
+    private void processTrigger(Automation auto) throws SQLException {
+        if (isTriggerInAutomation()) {
+            //get a scrollable ResultSet so that we can count the rows and move back to the
+            //beginning for processing.
+            setTriggerStatement(getConn().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY));
+            setTriggerResultSet(getTriggerStatement().executeQuery(getTriggerSQL(auto)));
+
+            //Verfiy the trigger ResultSet returned the required number of rows and the required columns for the action statement
+            if (!verifyRowCount(auto, getTriggerResultSet()) || !resultSetHasRequiredActionColumns(getTriggerResultSet(), getActionColumns())) {
+                setTriggerSuccessful(false);
+            } else {
+                setTriggerSuccessful(true);
+            }
+        }
+    }
+
+    private void setFields(Automation auto) {
+        setActionColumns(getTokenizedColumns(getAutomationSQL(auto)));
+        setConn(null);
+        setTriggerStatement(null);
+        setTriggerResultSet(null);
+    }
+
+    private void sendAutoEvent(Automation auto) {
+        if (log().isDebugEnabled())
+            log().debug("runAutomation: Sending any possible configured event for automation: "+auto.getName());
+        String uei = getUei(auto);
+        if (uei != null) {             
+             //create and send event
+             if (log().isDebugEnabled())
+                 log().debug("runAutomation: Sending event: "+uei+" for automation: "+auto.getName());
+             
+             Event e = createEvent("Automation", uei);
+             Vacuumd.getSingleton().getEventManager().sendNow(e);
+         } else {
+             if (log().isDebugEnabled())
+                 log().debug("runAutomation: No event configured automation: "+auto.getName());             
+         }
+    }
+
+    private String getUei(Automation auto) {
+        Uei uei = VacuumdConfigFactory.getInstance().getAutoEvent(auto.getAutoEventName()).getUei();
+        if (uei == null) {
+            return null;
+        } else {
+            return VacuumdConfigFactory.getInstance().getAutoEvent(auto.getAutoEventName()).getUei().getContent();
+        }
+    }
+
+    private static Event createEvent(String source, String uei) {
+        Event event = new Event();
+        event.setSource(source);
+        event.setUei(uei);
+        String eventTime = EventConstants.formatToString(new Date());
+        event.setCreationTime(eventTime);
+        event.setTime(eventTime);
+        return event;
+    }
+
+    private boolean verifyRowCount(Automation auto, ResultSet triggerResultSet) throws SQLException {
+        int resultRows;
+        boolean validRows = true;
+        //determine if number of rows required by the trigger row-count and operator were
+        //met by the trigger query, if so we'll run the action
+        resultRows = countRows(triggerResultSet);
         
-        return actionStatus;
+        int triggerRowCount = VacuumdConfigFactory.getInstance().getTrigger(auto.getTriggerName()).getRowCount();
+        String triggerOperator = VacuumdConfigFactory.getInstance().getTrigger(auto.getTriggerName()).getOperator();
+
+        if (log().isDebugEnabled())
+            log().debug("verifyRowCount: Verifying trigger result: "+resultRows+" is "+triggerOperator+" than "+triggerRowCount);
+
+        if (resultRows < 1) {
+            validRows = false;
+        } else {    
+            if (!triggerRowCheck(triggerRowCount, triggerOperator, resultRows))
+                validRows = false;
+        }
+
+        return validRows;
+    }
+
+    private void processActionStatement(String actionSQL, ResultSet triggerResultSet) throws SQLException {
+        PreparedStatement actionStatement;
+        //Convert the sql to a PreparedStatement
+        actionStatement = convertActionToPreparedStatement(triggerResultSet, actionSQL);
+        actionStatement.executeUpdate();
     }
 
     private String getAutomationSQL(Automation auto) {
@@ -318,8 +387,8 @@ public class AutomationProcessor implements ReadyRunnable {
      */
     public boolean resultSetHasRequiredActionColumns(ResultSet rs, Collection actionColumns) {
         
-        if (getLog().isDebugEnabled())
-            getLog().debug("resultSetHasRequiredActionColumns: Verifying required action columns in trigger ResultSet...");
+        if (log().isDebugEnabled())
+            log().debug("resultSetHasRequiredActionColumns: Verifying required action columns in trigger ResultSet...");
         
         boolean verified = false;
         String actionColumnName = null;
@@ -333,8 +402,8 @@ public class AutomationProcessor implements ReadyRunnable {
                     verified = true;
                 }
             } catch (SQLException e) {
-                getLog().warn("resultSetHasRequiredActionColumns: Trigger ResultSet does NOT have required action columns.  Missing: "+actionColumnName);
-                getLog().warn(e.getMessage());
+                log().warn("resultSetHasRequiredActionColumns: Trigger ResultSet does NOT have required action columns.  Missing: "+actionColumnName);
+                log().warn(e.getMessage());
                 verified = false;
             }
         }
@@ -355,15 +424,15 @@ public class AutomationProcessor implements ReadyRunnable {
         Pattern pattern = Pattern.compile(expression);
         Matcher matcher = pattern.matcher(targetString);
         
-        if (getLog().isDebugEnabled())
-            getLog().debug("getTokenizedColumns: processing string: "+targetString);
+        if (log().isDebugEnabled())
+            log().debug("getTokenizedColumns: processing string: "+targetString);
         
         Collection tokens = new ArrayList();
         int count = 0;
         while (matcher.find()) {
             count++;
-            if (getLog().isDebugEnabled())
-                getLog().debug("getTokenizedColumns: Token "+count+": "+matcher.group(1));
+            if (log().isDebugEnabled())
+                log().debug("getTokenizedColumns: Token "+count+": "+matcher.group(1));
             
             tokens.add(matcher.group(1));
         }
@@ -381,14 +450,14 @@ public class AutomationProcessor implements ReadyRunnable {
         Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(targetString);
         
-        if (getLog().isDebugEnabled())
-            getLog().debug("getTokenCount: processing string: "+targetString);
+        if (log().isDebugEnabled())
+            log().debug("getTokenCount: processing string: "+targetString);
         
         int count = 0;
         while (matcher.find()) {
             count++;
-            if (getLog().isDebugEnabled())
-                getLog().debug("getTokenCount: Token "+count+": "+matcher.group(1));
+            if (log().isDebugEnabled())
+                log().debug("getTokenCount: Token "+count+": "+matcher.group(1));
         }
         return count;
     }
@@ -415,18 +484,17 @@ public class AutomationProcessor implements ReadyRunnable {
      * in each token are set from values in the ResultSet of the trigger. 
      * @param rs
      * @param actionSQL
-     * @param conn
      * @return
      * @throws SQLException
      */
-    public PreparedStatement convertActionToPreparedStatement(ResultSet rs, String actionSQL, Connection conn) throws SQLException {
+    public PreparedStatement convertActionToPreparedStatement(ResultSet rs, String actionSQL) throws SQLException {
     
         String actionJDBC = actionSQL.replaceAll("\\$\\{\\w+\\}", "?");
         
-        if (getLog().isDebugEnabled())
-            getLog().debug("convertActionToPreparedStatement: This action SQL: "+actionSQL+"\nTurned into this: "+actionJDBC);
+        if (log().isDebugEnabled())
+            log().debug("convertActionToPreparedStatement: This action SQL: "+actionSQL+"\nTurned into this: "+actionJDBC);
         
-        PreparedStatement stmt = conn.prepareStatement(actionJDBC);
+        PreparedStatement stmt = getConn().prepareStatement(actionJDBC);
         
         ArrayList actionColumns = (ArrayList)getTokenizedColumns(actionSQL);        
         Iterator it = actionColumns.iterator();
@@ -485,8 +553,68 @@ public class AutomationProcessor implements ReadyRunnable {
         m_schedule = schedule;
     }
     
-    private Category getLog() {
+    private Category log() {
         return ThreadCategory.getInstance(getClass());        
+    }
+
+    private void setActionSuccessful(boolean actionStatus) {
+        m_actionSuccessful = actionStatus;
+    }
+
+    private boolean isActionSuccessful() {
+        return m_actionSuccessful;
+    }
+
+    private void setTriggerInAutomation(boolean triggerInAuto) {
+        m_triggerInAutomation = triggerInAuto;
+    }
+
+    private boolean isTriggerInAutomation() {
+        return m_triggerInAutomation;
+    }
+
+    private void setTriggerStatement(Statement triggerStatement) {
+        m_triggerStatement = triggerStatement;
+    }
+
+    private Statement getTriggerStatement() {
+        return m_triggerStatement;
+    }
+
+    private void setTriggerResultSet(ResultSet triggerResultSet) {
+        m_triggerResultSet = triggerResultSet;
+    }
+
+    private ResultSet getTriggerResultSet() {
+        return m_triggerResultSet;
+    }
+
+    private void setActionColumns(Collection actionColumns) {
+        m_actionColumns = actionColumns;
+    }
+
+    private Collection getActionColumns() {
+        return m_actionColumns;
+    }
+
+    private void setConn(Connection conn) {
+        m_conn = conn;
+    }
+
+    private Connection getConn() {
+        return m_conn;
+    }
+
+    public void setReady(boolean ready) {
+        m_ready = ready;
+    }
+
+    private void setTriggerSuccessful(boolean triggerSuccessful) {
+        m_triggerSuccessful = triggerSuccessful;
+    }
+
+    private boolean isTriggerSuccessful() {
+        return m_triggerSuccessful;
     }
 
 }

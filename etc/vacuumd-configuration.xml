@@ -22,25 +22,26 @@
        AND eventtime &lt; now() - interval '6 weeks';
     </statement>
     <automations>
-    		<automation name="auto1" interval="60000" trigger-name="trigger1" action-name="action1" />
-    		<automation name="auto2" interval="90000" trigger-name="trigger2" action-name="action2" />
+    		<automation name="auto1" interval="60000" trigger-name="all-alarms" action-name="escalate" active="true" />
+    		<automation name="auto2" interval="90000" trigger-name="all-reduced-alarms" action-name="action2" active="true" />
     </automations>
     <!-- Sample triggers -->
     <triggers>
-    		<trigger name="trigger1" row-count="1" operator="&gt;">
+    		<trigger name="all-alarms" row-count="1" operator="&gt;">
     			<statement>SELECT alarmid FROM alarms</statement>
     		</trigger>
-    		<trigger name="trigger2" >
+    		<trigger name="all-reduced-alarms" >
     			<statement>SELECT alarmid FROM alarms WHERE counter &gt; 2</statement>
     		</trigger>
     </triggers>
     <!-- Sample actions -->
     <actions>
-    		<action name="action1" >
+    		<action name="delete-selected" >
     			<statement>DELETE FROM alarms WHERE alarmid = ${alarmid}</statement>
     		</action>
-    		<action name="action2" >
-    			<statement>UPDATE alarms SET severity=serverity+1 WHERE alarmid = ${alarmid}</statement>
+    		<action name="escalate" >
+    			<!-- use the least function to prevent escalation above highest supported OpenNMS serverity (Critical = 7) -->
+    			<statement>UPDATE alarms SET severity = least(7,severity+1) WHERE alarmid = ${alarmid} and alarmAckUser is null</statement>
     		</action>
     </actions>
 </VacuumdConfiguration>
