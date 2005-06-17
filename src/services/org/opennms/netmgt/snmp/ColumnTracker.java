@@ -1,0 +1,101 @@
+//
+// This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included code and modified
+// code that was published under the GNU General Public License. Copyrights for modified 
+// and included code are below.
+//
+// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+//
+// For more information contact:
+// OpenNMS Licensing       <license@opennms.org>
+//     http://www.opennms.org/
+//     http://www.opennms.com/
+//
+package org.opennms.netmgt.snmp;
+
+public class ColumnTracker extends CollectionTracker {
+    
+    private SnmpObjId m_base;
+    private SnmpObjId m_last;
+    private boolean m_finished = false;
+    private int m_maxRepititions = 10;
+
+    public ColumnTracker(SnmpObjId base) {
+        m_base = base;
+        m_last = base;
+    }
+
+    public boolean isFinished() {
+        return m_finished || !m_base.isPrefixOf(m_last);
+    }
+
+    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
+        if (pduBuilder.getMaxVarsPerPdu() < 1)
+            throw new IllegalArgumentException("maxVarsPerPdu < 1");
+        
+        pduBuilder.addOid(m_last);
+        pduBuilder.setNonRepeaters(0);
+        pduBuilder.setMaxRepititions(getMaxRepititions());
+        
+        ResponseProcessor rp = new ResponseProcessor() {
+
+            public void processResponse(SnmpObjId responseObjId, Object val) {
+                if (val == CollectionTracker.END_OF_MIB)
+                    receivedEndOfMib();
+
+                m_last = responseObjId;
+                if (m_base.isPrefixOf(responseObjId) && !m_base.equals(responseObjId)) {
+                    SnmpInstId inst = responseObjId.getInstance(m_base);
+                    if (inst != null)
+                        storeResult(m_base, inst, val);
+                }
+            }
+
+            public boolean processErrors(int errorStatus, int errorIndex) {
+                if (errorStatus == CollectionTracker.NO_ERR)
+                    return false;
+                else {
+                    errorOccurred();
+                    return true;
+                }
+            }
+        };
+        
+        return rp;
+    }
+
+    public int getMaxRepititions() {
+        return m_maxRepititions;
+    }
+    
+    public void setMaxRepititions(int maxRepititions) {
+        m_maxRepititions = maxRepititions;
+    }
+
+    protected void receivedEndOfMib() {
+        m_finished = true;
+    }
+
+    protected void errorOccurred() {
+        m_finished = true;
+    }
+
+}

@@ -31,49 +31,41 @@
 //
 package org.opennms.netmgt.snmp;
 
-
-public class ColumnInstanceTracker extends InstanceTracker {
-
-    private SnmpObjId m_base;
-    private SnmpObjId m_last;
-    private boolean m_finished = false;
-
-    public ColumnInstanceTracker(SnmpObjId base) {
-        m_base = base;
-        m_last = base;
-    }
-
-    public boolean hasOidForNext() {
-        return !m_finished && m_base.isPrefixOf(m_last);
-    }
-
-    public SnmpObjId getOidForNext() {
-        return m_last;
-    }
-
-    public SnmpInstId receivedOid(SnmpObjId lastOid) {
-        m_last = lastOid;
-        String instance = null;
-        if (m_base.isPrefixOf(m_last) && !m_base.equals(m_last)) {
-            return m_last.getInstance(m_base);
-        }
-        return null;
+public abstract class CollectionTracker {
+    
+    private CollectionTracker m_parent;
+    
+    public CollectionTracker() {
+        this(null);
     }
     
-    public void errorOccurred() {
-        m_finished = true;
+    public CollectionTracker(CollectionTracker parent) {
+        m_parent = parent;
     }
 
-    public SnmpObjId getBaseOid() {
-        return m_base;
+    public abstract boolean isFinished();
+
+    public abstract ResponseProcessor buildNextPdu(PduBuilder pduBuilder);
+
+    public static final int NO_ERR = 0;
+    public static final int TOO_BIG_ERR = 1;
+    public static final int NO_SUCH_NAME_ERR = 2;
+    public static final int GEN_ERR = 5;
+    public static final Object END_OF_MIB = new Object() { public String toString() { return "endOfMibView"; } };
+    
+    protected void storeResult(SnmpObjId base, SnmpInstId inst, Object val) {
+        if (m_parent != null)
+            m_parent.storeResult(base, inst, val);
+    }
+    
+    public void setParent(CollectionTracker parent) {
+        m_parent = parent;
+    }
+    
+    public CollectionTracker getParent() {
+        return m_parent;
     }
 
-    public boolean isNonRepeater() {
-        return false;
-    }
 
-    public void receivedEndOFMib() {
-        m_finished = true;
-    }
 
 }

@@ -32,8 +32,6 @@
 package org.opennms.netmgt.snmp;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -44,9 +42,8 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.capsd.snmp.SnmpStore;
 
-public class SnmpCollectionTracker {
+public class SnmpCollectionTracker extends AggregateTracker {
     
     public static final String COLUMN = "column";
     
@@ -55,117 +52,14 @@ public class SnmpCollectionTracker {
         public String getInstanceDef();
     }
     
-    public static final int NO_ERR = 0;
-    public static final int TOO_BIG_ERR = 1;
-    public static final int NO_SUCH_NAME_ERR = 2;
-    public static final int GEN_ERR = 5;
-    
-    public static final Object END_OF_MIB = new Object() { public String toString() { return "endOfMibView"; } };
-    
-    class PduResponseProcessor implements ResponseProcessor {
-        
-        List m_repeaters;
-        List m_nonRepeaters;
-        
-        int m_currIndex = 0;
-
-        public PduResponseProcessor(List nonRepeaters, List repeaters) {
-            m_nonRepeaters = nonRepeaters;
-            m_repeaters = repeaters;
-        }
-
-
-        public InstanceTracker getColumn() {
-            int zeroBasedIndex = m_currIndex;
-            return getColumn(zeroBasedIndex);
-        }
-
-
-        private InstanceTracker getColumn(int zeroBasedIndex) {
-            if (zeroBasedIndex < m_nonRepeaters.size())
-                return ((InstanceTracker)m_nonRepeaters.get(zeroBasedIndex));
-            int repeaterIndex = (zeroBasedIndex - m_nonRepeaters.size()) % m_repeaters.size();
-            return ((InstanceTracker)m_repeaters.get(repeaterIndex));
-        }
-        
-
-        public void processResponse(SnmpObjId snmpObjId, Object val) {
-            
-            InstanceTracker col = getColumn();
-            if (val == END_OF_MIB)
-                col.receivedEndOFMib();
-            SnmpInstId inst = col.receivedOid(snmpObjId);
-            if (inst != null) {
-                Map instMap = getStoreForInstance(col.getBaseOid(), inst);
-                System.err.println("Adding result for inst "+inst+": "+val);
-                instMap.put(col.getBaseOid(), val);
-            }
-            m_currIndex++;
-        }
-
-
-        private Map getStoreForInstance(SnmpObjId baseOid, SnmpInstId inst) {
-            Map instMap = (Map)m_instanceMaps.get(inst);
-            if (instMap == null) {
-                instMap = createStoreForInstance(baseOid, inst);
-                m_instanceMaps.put(inst, instMap);
-            }
-            return instMap;
-        }
-
-
-        protected Map createStoreForInstance(SnmpObjId baseOid, SnmpInstId inst) {
-            return new TreeMap();
-        }
-
-        public boolean processErrors(int errorStatus, int errorIndex) {
-            switch(errorStatus) {
-            case GEN_ERR: {
-                InstanceTracker col = getColumn(Math.max(0, errorIndex - 1));
-                log().warn("GenErr: processing varbind "+errorIndex+"( "+col.getOidForNext()+" )");
-                col.errorOccurred();
-                break;
-            }
-            case TOO_BIG_ERR: {
-                m_maxVarsPerPdu = m_maxVarsPerPdu / 2;
-                log().warn("TooBig message received reduing maxVarsPerPdu to "+m_maxVarsPerPdu);
-                break;
-            }
-            case NO_SUCH_NAME_ERR: {
-                InstanceTracker col = getColumn(Math.max(0, errorIndex - 1));
-                log().warn("NoSuchNameErr: processing varbind "+errorIndex+"( "+col.getOidForNext()+" )");
-                col.errorOccurred();
-                break;
-            }
-            
-            case NO_ERR: {
-                break;
-            }
-            default:
-                throw new IllegalArgumentException("Unexpected error status from agent! "+errorStatus);
-            }
-            return errorStatus != NO_ERR;
-        }
-        
-    };
-    
-
-    private List m_instTrackerList;
-    private int m_lastReceivedColumn = 0;
-    private int m_maxVarsPerPdu;
-    private Map m_instanceMaps = new TreeMap();
-    
-
-    public SnmpCollectionTracker(List objList, int maxVarsPerPdu) {
-        m_maxVarsPerPdu = maxVarsPerPdu;
-        m_instTrackerList = new ArrayList(objList.size());
+    private static CollectionTracker[] createCollectionTrackers(List objList) {
+        CollectionTracker[] trackers = new CollectionTracker[objList.size()];
+        int index = 0;
         for (Iterator it = objList.iterator(); it.hasNext();) {
             CollectionDefinition colDef = (CollectionDefinition) it.next();
-            InstanceTracker tracker = InstanceTracker.get(SnmpObjId.get(colDef.getOid()), colDef.getInstanceDef());
-            m_instTrackerList.add(tracker);
-        }    
-        
-        
+            trackers[index++] = createTracker(SnmpObjId.get(colDef.getOid()), colDef.getInstanceDef());
+        }
+        return trackers;
     }
     /*
      * TODO: handle repition hints
@@ -174,64 +68,44 @@ public class SnmpCollectionTracker {
      * 
      */
 
-    public SnmpCollectionTracker(CollectionDefinition[] columns, int maxVarsPerPdu) {
-        this(Arrays.asList(columns), maxVarsPerPdu);
+    private static CollectionTracker createTracker(SnmpObjId id, String instanceDef) {
+        if (SnmpCollectionTracker.COLUMN.equals(instanceDef)) {
+            return new ColumnTracker(id);
+        } else {
+            return new InstanceListTracker(id, instanceDef);
+        }
     }
+    
+    private Map m_instanceMaps = new TreeMap();
 
-    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
-        
-        int maxVars = Math.min(m_maxVarsPerPdu, m_instTrackerList.size());
-        List nonRepeaters = new ArrayList(maxVars);
-        List repeaters = new ArrayList(maxVars);
-        int count = 0;
-        for(int i = 0; i < m_instTrackerList.size() && count < m_maxVarsPerPdu; i++) {
-            int index = i;
-            InstanceTracker col = (InstanceTracker)m_instTrackerList.get(index);
-            if (col.hasOidForNext()) {
-                count++;
-                if (col.isNonRepeater())
-                    nonRepeaters.add(col);
-                else
-                    repeaters.add(col);
-            }
-        }
-        
-        for (Iterator it = nonRepeaters.iterator(); it.hasNext();) {
-            InstanceTracker col = (InstanceTracker) it.next();
-            pduBuilder.addOid(col.getOidForNext());
-        }
-        
-        for (Iterator it = repeaters.iterator(); it.hasNext();) {
-            InstanceTracker col = (InstanceTracker) it.next();
-            pduBuilder.addOid(col.getOidForNext());
-        }
-       
-        pduBuilder.setNonRepeaters(nonRepeaters.size());
-        pduBuilder.setMaxRepititions(10);
-
-        return new PduResponseProcessor(nonRepeaters, repeaters);
+    public SnmpCollectionTracker(List objList) {
+        super(createCollectionTrackers(objList));
     }
-    protected Category log() {
-        return ThreadCategory.getInstance(getClass());
+    
+    protected void storeResult(SnmpObjId base, SnmpInstId inst, Object val) {
+        System.err.println("Storing result ["+base+"].["+inst+"] = "+val);
+        super.storeResult(base, inst, val);
+        Map resultsForInstance = (Map)m_instanceMaps.get(inst);
+        if (resultsForInstance == null) {
+            resultsForInstance = new TreeMap();
+            m_instanceMaps.put(inst, resultsForInstance);
+        }
+        resultsForInstance.put(base, val);
     }
+    
     public Map getDataForInstance(SnmpInstId id) {
         return (Map)m_instanceMaps.get(id) ;
     }
-    public boolean isFinished() {
-        if (m_maxVarsPerPdu < 1)
-            throw new IllegalStateException("Unable to query agent. maxVarsPerPdu is "+m_maxVarsPerPdu);
-        for (Iterator it = m_instTrackerList.iterator(); it.hasNext();) {
-            InstanceTracker col = (InstanceTracker) it.next();
-            if (col.hasOidForNext())
-                return false;
-        }
-        return true;
-    }
+
     public Set getInstances() {
         return Collections.unmodifiableSet(m_instanceMaps.keySet());
     }
     public Collection getDataForInstances() {
         return Collections.unmodifiableCollection(m_instanceMaps.values());
+    }
+
+    protected Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
 

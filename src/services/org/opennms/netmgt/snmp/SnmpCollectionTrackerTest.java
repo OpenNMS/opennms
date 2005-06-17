@@ -59,13 +59,18 @@ public class SnmpCollectionTrackerTest extends SnmpCollectorTestCase {
     }
 
     
-    private static interface TestPduBuilder extends PduBuilder {
-        public RequestPdu getPdu();
+    private static abstract class TestPduBuilder extends PduBuilder {
+        public TestPduBuilder(int maxVarsPerPdu) {
+            super(maxVarsPerPdu);
+        }
+
+        public abstract RequestPdu getPdu();
     }
-    private static class GetNextBuilder implements TestPduBuilder {
+    private static class GetNextBuilder extends TestPduBuilder {
         private final NextPdu m_nextPdu;
 
-        private GetNextBuilder() {
+        private GetNextBuilder(int maxVarsPerPdu) {
+            super(maxVarsPerPdu);
             m_nextPdu = TestPdu.getNext();
         }
 
@@ -84,12 +89,13 @@ public class SnmpCollectionTrackerTest extends SnmpCollectorTestCase {
 
     }
     
-    private class GetBulkBuilder implements TestPduBuilder {
+    private class GetBulkBuilder extends TestPduBuilder {
         
         private BulkPdu m_bulkPdu;
         private int m_nonRepeaters = 0;
 
-        public GetBulkBuilder() {
+        public GetBulkBuilder(int maxVarsPerPdu) {
+            super(maxVarsPerPdu);
             m_bulkPdu = TestPdu.getBulk();
         }
 
@@ -111,7 +117,7 @@ public class SnmpCollectionTrackerTest extends SnmpCollectorTestCase {
 
         public void setMaxRepititions(int maxRepititions) {
             m_bulkPdu.setMaxRepititions(maxRepititions);
-            assertTrue(maxRepititions > 1);
+            assertTrue(maxRepititions >= 1);
         }
         
     }
@@ -159,9 +165,9 @@ public class SnmpCollectionTrackerTest extends SnmpCollectorTestCase {
     public void testGetNextVarbindsForZeroInstanceVars() {
         addSysDescr();
         addSysName();
-        SnmpCollectionTracker tracker = new SnmpCollectionTracker(m_objList, 50);
+        SnmpCollectionTracker tracker = new SnmpCollectionTracker(m_objList);
 
-        TestPduBuilder pduBuilder = getPduBuilder();
+        TestPduBuilder pduBuilder = getPduBuilder(50);
         ResponseProcessor rp = tracker.buildNextPdu(pduBuilder);
         RequestPdu next = pduBuilder.getPdu();
         
@@ -260,14 +266,14 @@ public class SnmpCollectionTrackerTest extends SnmpCollectorTestCase {
     }
     
     private void verifyCollection(int maxVarsPerPdu) {
-        SnmpCollectionTracker tracker = new SnmpCollectionTracker(m_objList, maxVarsPerPdu);
+        SnmpCollectionTracker tracker = new SnmpCollectionTracker(m_objList);
         
         int loopCount = 0;
         while(!tracker.isFinished()) {
             assertTrue("loopCount exceeded "+m_maxLoopCount+". Possible infinite loop!", loopCount++ < m_maxLoopCount);
             
             // build a pdu for reqeusting them
-            TestPduBuilder pduBuilder = getPduBuilder();
+            TestPduBuilder pduBuilder = getPduBuilder(maxVarsPerPdu);
             ResponseProcessor rp = tracker.buildNextPdu(pduBuilder);
             
             RequestPdu request = pduBuilder.getPdu();
@@ -279,8 +285,10 @@ public class SnmpCollectionTrackerTest extends SnmpCollectorTestCase {
             
             assertEquals(response.getErrorStatus() != ResponsePdu.NO_ERR, retry);
                 
-            if (retry)
+            if (retry) {
+                maxVarsPerPdu = pduBuilder.getMaxVarsPerPdu();
                 continue;
+            }
             
             System.err.println("Get a response with "+response.size()+" vars");
             for (Iterator it = response.getVarBinds().iterator(); it.hasNext();) {
@@ -301,12 +309,12 @@ public class SnmpCollectionTrackerTest extends SnmpCollectorTestCase {
         return (val == TestAgent.END_OF_MIB ? SnmpCollectionTracker.END_OF_MIB : val);
     }
 
-    private TestPduBuilder getPduBuilder() {
+    private TestPduBuilder getPduBuilder(int maxVarsPerPdu) {
         switch (m_version) {
         case V1:
-            return new GetNextBuilder();
+            return new GetNextBuilder(maxVarsPerPdu);
         case V2:
-            return new GetBulkBuilder();
+            return new GetBulkBuilder(maxVarsPerPdu);
         default:
             throw new IllegalStateException("Don't understand version "+m_version);
         }

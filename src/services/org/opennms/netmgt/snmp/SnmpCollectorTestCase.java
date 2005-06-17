@@ -340,6 +340,8 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         addMibObject("ifSpeed", ".1.3.6.1.2.1.2.2.1.5", "ifIndex", "gauge");
     }
     
+    public void testDoNothing() {}
+    
     
 
 }

@@ -33,88 +33,150 @@ package org.opennms.netmgt.snmp;
 
 public class InstanceTrackerTest extends SnmpCollectorTestCase {
 
+
+    public class MyColumnTracker extends ColumnTracker {
+
+        private boolean m_expectsStorageCall;
+        private boolean m_storageCalled;
+
+        protected void storeResult(SnmpObjId base, SnmpInstId inst, Object val) {
+            m_storageCalled = true;
+            assertTrue(m_expectsStorageCall);
+        }
+        
+        protected void assertStoreResultsCalled() {
+            if (m_expectsStorageCall)
+                assertTrue(m_storageCalled);
+        }
+        
+        void setExpectsStorageCall(boolean expectsStorageCall) {
+            m_expectsStorageCall = expectsStorageCall;
+            m_storageCalled = false;
+        }
+
+        public MyColumnTracker(SnmpObjId base) {
+            super(base);
+        }
+
+    }
+
     public void testSingleInstanceTrackerZeroInstance() {
-        testSpecificInstanceTracker("0", SnmpObjId.get(m_sysNameOid, "0"));
+        testSingleInstanceTracker("0", SnmpObjId.get(m_sysNameOid, "0"));
     }
     
     public void testSingleInstanceTrackerMultiIdInstance() {
-        testSpecificInstanceTracker("1.2.3", SnmpObjId.get(m_sysNameOid, "1.2.3"));
+        testSingleInstanceTracker("1.2.3", SnmpObjId.get(m_sysNameOid, "1.2.3"));
     }
     
-    public void testSpecificInstanceTracker(String instance, SnmpObjId receivedOid) {
+    public void testSingleInstanceTracker(String instance, SnmpObjId receivedOid) {
         SnmpInstId inst = new SnmpInstId(instance);
-        InstanceTracker it = new SpecificInstanceTracker(m_sysNameOid, instance);
+        CollectionTracker it = new SingleInstanceTracker(m_sysNameOid, inst);
         
-        testInstanceTrackerInnerLoop(it, inst, receivedOid);
+        testCollectionTrackerInnerLoop(it, SnmpObjId.get(m_sysNameOid, inst), receivedOid, 1);
         
         // ensure that it thinks we are finished
-        assertFalse(it.hasOidForNext());
+        assertTrue(it.isFinished());
     }
     
-    private void testInstanceTrackerInnerLoop(InstanceTracker it, SnmpInstId inst, SnmpObjId receivedOid) {
+    private void testCollectionTrackerInnerLoop(CollectionTracker tracker, final SnmpObjId expectedOid, SnmpObjId receivedOid, final int nonRepeaters) {
+        testCollectionTrackerInnerLoop(tracker, new SnmpObjId[] { expectedOid }, new SnmpObjId[] { receivedOid }, nonRepeaters);
+    }
+    
+    private void testCollectionTrackerInnerLoop(CollectionTracker tracker, final SnmpObjId[] expectedOids, SnmpObjId[] receivedOids, final int nonRepeaters) {
+        class OidCheckedPduBuilder extends PduBuilder {
+            int count = 0;
+
+            public void addOid(SnmpObjId snmpObjId) {
+                assertEquals(expectedOids[count].decrement(), snmpObjId);
+                count++;
+            }
+
+            public void setNonRepeaters(int numNonRepeaters) {
+                assertEquals(nonRepeaters, numNonRepeaters);
+            }
+
+            public void setMaxRepititions(int maxRepititions) {
+                assertTrue("MaxRepititions must be positive", maxRepititions > 0);
+            }
+            
+            public int getCount() {
+                return count;
+            }
+            
+        }
+
         // ensure it needs to receive something - object id for the instance
-        assertTrue(it.hasOidForNext());
+        assertFalse(tracker.isFinished());
         // ensure that is asks for the oid preceeding
-        assertEquals(SnmpObjId.get(m_sysNameOid, inst).decrement(), it.getOidForNext());
-        // tell it received the expected one and ensure that it agrees
+        OidCheckedPduBuilder builder = new OidCheckedPduBuilder();
+        ResponseProcessor rp = tracker.buildNextPdu(builder);
+        assertNotNull(rp);
+        assertEquals(expectedOids.length, builder.getCount());
+        rp.processErrors(0, 0);
+        for(int i = 0; i < receivedOids.length; i++)
+            rp.processResponse(receivedOids[i], "Value");
         
-        //FIXME: take this if out an make it explicit as an arg or something (can lead to hidden failures)
-        if (receivedOid.equals(SnmpObjId.get(m_sysNameOid, inst)))
-            assertEquals(inst, it.receivedOid(receivedOid));
-        else
-            assertNull(it.receivedOid(receivedOid));
+        
     }
     
     public void testSingleInstanceTrackerNonZeroInstance() {
-        testSpecificInstanceTracker("1", SnmpObjId.get(m_sysNameOid, "1"));
+        testSingleInstanceTracker("1", SnmpObjId.get(m_sysNameOid, "1"));
+
     }
     
     public void testSingleInstanceTrackerNoMatch() {
-        testSpecificInstanceTracker("0", SnmpObjId.get(m_sysNameOid, "1"));
+        testSingleInstanceTracker("0", SnmpObjId.get(m_sysNameOid, "1"));
     }
     
-    public void testListInstanceTrackerWithAllResults() {
+    public void testInstanceListTrackerWithAllResults() {
         String instances[] = { "1", "3", "5" };
-        InstanceTracker it = new SpecificInstanceTracker(m_sysNameOid, toCommaSeparated(instances));
+        CollectionTracker it = new InstanceListTracker(m_sysNameOid, toCommaSeparated(instances));
         
+        SnmpObjId[] oids = new SnmpObjId[instances.length];
         for(int i = 0; i < instances.length; i++) {
-            testInstanceTrackerInnerLoop(it, new SnmpInstId(instances[i]), SnmpObjId.get(m_sysNameOid, instances[i]));
+            oids[i] = SnmpObjId.get(m_sysNameOid, instances[i]);
         }
-        assertFalse(it.hasOidForNext());
+        testCollectionTrackerInnerLoop(it, oids, oids, oids.length);
+
+        assertTrue(it.isFinished());
     }
     
-    public void testListInstanceTrackerWithNoResults() {
+    public void testInstanceListTrackerWithNoResults() {
         String instances[] = { "1", "3", "5" };
-        InstanceTracker it = new SpecificInstanceTracker(m_sysNameOid, toCommaSeparated(instances));
+        CollectionTracker it = new InstanceListTracker(m_sysNameOid, toCommaSeparated(instances));
         
+        SnmpObjId[] expectedOids = new SnmpObjId[instances.length];
+        SnmpObjId[] receivedOids = new SnmpObjId[instances.length];
         for(int i = 0; i < instances.length; i++) {
-            testInstanceTrackerInnerLoop(it, new SnmpInstId(instances[i]), SnmpObjId.get(m_sysNameOid, instances[i]+".0"));
+            expectedOids[i] = SnmpObjId.get(m_sysNameOid, instances[i]);
+            receivedOids[i] = expectedOids[i].append("0");
         }
-        assertFalse(it.hasOidForNext());
+        testCollectionTrackerInnerLoop(it, expectedOids, receivedOids, expectedOids.length);
+
+        assertTrue(it.isFinished());
     }
+
     
-    public void testColumnInstanceTracker() {
+    public void testColumnTracker() {
         SnmpObjId colOid = SnmpObjId.get(".1.3.6.1.2.1.1.5");
         SnmpObjId nextColOid = SnmpObjId.get(".1.3.6.1.2.1.1.6.2");
-        InstanceTracker it = new ColumnInstanceTracker(colOid);
+        MyColumnTracker tracker = new MyColumnTracker(colOid);
         
         int colLength = 5;
         
         for(int i = 0; i < colLength; i++) {
             String instance = Integer.toString(i);
-            testInstanceTrackerInnerLoop(it, new SnmpInstId(instance), colOid.append(instance));
+            tracker.setExpectsStorageCall(true);
+            testCollectionTrackerInnerLoop(tracker, SnmpObjId.get(colOid, instance), colOid.append(instance), 0);
+            tracker.assertStoreResultsCalled();
         }
 
-        // it needs another non matching receipt before it can know its done
-        assertTrue(it.hasOidForNext());
-        SnmpObjId oidForNext = it.getOidForNext();
-        assertEquals(colOid.append(""+(colLength-1)), oidForNext); 
-        assertNull(it.receivedOid(nextColOid));
-
+        tracker.setExpectsStorageCall(false);
+        testCollectionTrackerInnerLoop(tracker, SnmpObjId.get(colOid, ""+colLength), nextColOid, 0);
+        tracker.assertStoreResultsCalled();
+        
         // now it should be done
-        assertFalse(it.hasOidForNext());
-        
-        
+        assertTrue(tracker.isFinished());
         
     }
     

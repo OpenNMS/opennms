@@ -31,6 +31,8 @@
 //
 package org.opennms.netmgt.snmp;
 
+import java.util.StringTokenizer;
+
 public class SnmpInstId extends SnmpObjId {
 
     public SnmpInstId(int[] instanceIds) {
@@ -51,6 +53,19 @@ public class SnmpInstId extends SnmpObjId {
 
     protected boolean addPrefixDotInToString() {
         return false;
+    }
+
+    public static SnmpInstId[] convertToSnmpInstIds(String instances) {
+        StringTokenizer tokenizer = new StringTokenizer(instances, ",");
+        SnmpInstId[] insts = new SnmpInstId[tokenizer.countTokens()];
+        int index = 0;
+        while (tokenizer.hasMoreTokens()) {
+            String token = tokenizer.nextToken();
+            SnmpInstId inst = new SnmpInstId(token);
+            insts[index] = inst;
+            index++;
+        }
+        return insts;
     }
     
     

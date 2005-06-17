@@ -1,0 +1,285 @@
+//
+// This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included code and modified
+// code that was published under the GNU General Public License. Copyrights for modified 
+// and included code are below.
+//
+// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+//
+// For more information contact:
+// OpenNMS Licensing       <license@opennms.org>
+//     http://www.opennms.org/
+//     http://www.opennms.com/
+//
+package org.opennms.netmgt.snmp;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+
+public abstract class AggregateTracker extends CollectionTracker {
+
+    private static class ChildTrackerPduBuilder extends PduBuilder {
+        private List m_oids = new ArrayList();
+        private int m_nonRepeaters = 0;
+        private int m_maxRepititions = 0;
+        private ResponseProcessor m_responseProcessor;
+        private int m_nonRepeaterStartIndex;
+        private int m_repeaterStartIndex;
+        
+        public ChildTrackerPduBuilder(int maxVarsPerPdu) {
+            super(maxVarsPerPdu);
+        }
+        public void addOid(SnmpObjId snmpObjId) {
+            m_oids.add(snmpObjId);
+        }
+    
+        public void setNonRepeaters(int nonRepeaters) {
+            m_nonRepeaters = nonRepeaters;
+        }
+        
+        public int getNonRepeaters() {
+            return m_nonRepeaters;
+        }
+        
+        public int getRepeaters() {
+            return size() - getNonRepeaters();
+        }
+    
+        public void setMaxRepititions(int maxRepititions) {
+            m_maxRepititions = maxRepititions;
+        }
+        
+        public int getMaxRepititions() {
+            return hasRepeaters() ? m_maxRepititions : Integer.MAX_VALUE;
+        }
+        
+        public int size() {
+            return m_oids.size();
+        }
+        
+        public void setResponseProcessor(ResponseProcessor responseProcessor) {
+            m_responseProcessor = responseProcessor;
+        }
+        
+        public ResponseProcessor getResponseProcessor() {
+            return m_responseProcessor;
+        }
+        
+        public void addNonRepeaters(PduBuilder pduBuilder) {
+            for(int i = 0; i < m_nonRepeaters; i++) {
+                SnmpObjId oid = (SnmpObjId)m_oids.get(i);
+                pduBuilder.addOid(oid);
+            }
+        }
+        
+        public void addRepeaters(PduBuilder pduBuilder) {
+            for(int i = m_nonRepeaters; i < m_oids.size(); i++) {
+                SnmpObjId oid = (SnmpObjId)m_oids.get(i);
+                pduBuilder.addOid(oid);
+            }
+        }
+        
+        public boolean hasRepeaters() {
+            return getNonRepeaters() < size();
+        }
+        
+        public void setNonRepeaterStartIndex(int nonRepeaterStartIndex) {
+            m_nonRepeaterStartIndex = nonRepeaterStartIndex;
+        }
+        
+        public int getNonRepeaterStartIndex() {
+            return m_nonRepeaterStartIndex;
+        }
+        
+        public void setRepeaterStartIndex(int repeaterStartIndex) {
+            m_repeaterStartIndex = repeaterStartIndex;
+        }
+        
+        public int getRepeaterStartIndex() {
+            return m_repeaterStartIndex;
+        }
+        
+        boolean isNonRepeater(int canonicalIndex) {
+            return getNonRepeaterStartIndex() <= canonicalIndex && canonicalIndex < getNonRepeaterStartIndex() + getNonRepeaters();
+        }
+        
+        boolean isRepeater(int canonicalIndex) {
+            return getRepeaterStartIndex() <= canonicalIndex && canonicalIndex < getRepeaterStartIndex()+getRepeaters();
+        }
+        
+        public int getChildIndex(int canonicalIndex) {
+            if (isNonRepeater(canonicalIndex))
+                return canonicalIndex - getNonRepeaterStartIndex();
+            
+            if (isRepeater(canonicalIndex))
+                return canonicalIndex - getRepeaterStartIndex();
+            
+            throw new IllegalArgumentException("index out of range for tracker "+this);
+    
+        }
+        
+        
+    }
+
+    private static class ChildTrackerResponseProcessor implements ResponseProcessor {
+        private final int m_repeaters;
+    
+        private final PduBuilder m_pduBuilder;
+    
+        private final int m_nonRepeaters;
+    
+        private final List m_childPduBuilders;
+        
+        private int m_currResponseIndex = 0;
+        
+        public ChildTrackerResponseProcessor(PduBuilder pduBuilder, List builders, int nonRepeaters, int repeaters) {
+            this.m_repeaters = repeaters;
+            this.m_pduBuilder = pduBuilder;
+            this.m_nonRepeaters = nonRepeaters;
+            this.m_childPduBuilders = builders;
+        }
+    
+        public void processResponse(SnmpObjId snmpObjId, Object val) {
+            ChildTrackerPduBuilder childBuilder = getChildBuilder(m_currResponseIndex++);
+            childBuilder.getResponseProcessor().processResponse(snmpObjId, val);
+        }
+    
+        public boolean processChildError(int errorStatus, int errorIndex) {
+            int canonicalIndex = getCanonicalIndex(errorIndex-1);
+            ChildTrackerPduBuilder childBuilder = getChildBuilder(canonicalIndex);
+            int childIndex = childBuilder.getChildIndex(canonicalIndex);
+            return childBuilder.getResponseProcessor().processErrors(errorStatus, childIndex+1);
+        }
+    
+        private ChildTrackerPduBuilder getChildBuilder(int zeroBasedIndex) {
+            int canonicalIndex = getCanonicalIndex(zeroBasedIndex);
+            for (Iterator it = m_childPduBuilders.iterator(); it.hasNext();) {
+                ChildTrackerPduBuilder childBuilder = (ChildTrackerPduBuilder) it.next();
+                if (childBuilder.isNonRepeater(canonicalIndex) || childBuilder.isRepeater(canonicalIndex))
+                    return childBuilder;
+            }
+    
+            throw new IllegalStateException("Unable to find childBuilder for index "+zeroBasedIndex);
+    
+        }
+    
+        private int getCanonicalIndex(int zeroBaseIndex) {
+            if (zeroBaseIndex <= 0)
+                return 0;
+            if (zeroBaseIndex < m_nonRepeaters)
+                return zeroBaseIndex;
+    
+            // return the smallest index of the repeater this index refers to 
+            return ((zeroBaseIndex - m_nonRepeaters)%m_repeaters)+m_nonRepeaters;
+                
+        }
+    
+        public boolean processErrors(int errorStatus, int errorIndex) {
+            if (errorStatus == TOO_BIG_ERR) {
+                m_pduBuilder.setMaxVarsPerPdu(m_pduBuilder.getMaxVarsPerPdu()/2);
+                log().info("Received tooBig error. Reducing maxVarsPerPdu for this request to "+m_pduBuilder.getMaxVarsPerPdu());
+                return true;
+            } else if (errorStatus == GEN_ERR || errorStatus == NO_SUCH_NAME_ERR) {
+                return processChildError(errorStatus, errorIndex);
+            } else {
+                return errorStatus != NO_ERR;
+            }
+            
+        }
+
+        private Category log() {
+            return ThreadCategory.getInstance(ChildTrackerResponseProcessor.class);
+        }
+    }
+
+    private CollectionTracker[] m_children;
+
+    public AggregateTracker(CollectionTracker[] children) {
+        this(children, null);
+    }
+
+    public AggregateTracker(CollectionTracker[] children, CollectionTracker parent) {
+        super(parent);
+        m_children = children;
+        for(int i = 0; i < m_children.length; i++)
+            m_children[i].setParent(this);
+    }
+
+    public boolean isFinished() {
+        for(int i = 0; i < m_children.length; i++) {
+            if (!m_children[i].isFinished())
+                return false;
+        }
+        return true;
+    }
+
+    public ResponseProcessor buildNextPdu(final PduBuilder pduBuilder) {
+        
+        // first process the child trackers that aren't finished up to maxVars 
+        int count = 0;
+        int maxVars = pduBuilder.getMaxVarsPerPdu();
+        final List builders = new ArrayList(m_children.length);
+        for (int i = 0; i < m_children.length && count < maxVars; i++) {
+            CollectionTracker subTracker = m_children[i];
+            if (!subTracker.isFinished()) {
+                ChildTrackerPduBuilder subPduBuilder = new ChildTrackerPduBuilder(maxVars-count);
+                ResponseProcessor rp = subTracker.buildNextPdu(subPduBuilder);
+                subPduBuilder.setResponseProcessor(rp);
+                builders.add(subPduBuilder);
+                count += subPduBuilder.size();
+            }
+        }
+        
+        // set the nonRepeaters in the passed in pduBuilder and store indices in the childTrackers
+        int nonRepeaters = 0;
+        for (Iterator it = builders.iterator(); it.hasNext();) {
+            ChildTrackerPduBuilder subBuilder = (ChildTrackerPduBuilder) it.next();
+            subBuilder.setNonRepeaterStartIndex(nonRepeaters);
+            subBuilder.addNonRepeaters(pduBuilder);
+            nonRepeaters += subBuilder.getNonRepeaters();
+        }
+        
+        // set the repeaters in the passed in pduBuilder and store indices in the childTrackers
+        int maxRepititions = Integer.MAX_VALUE;
+        int repeaters = 0;
+        for (Iterator it = builders.iterator(); it.hasNext();) {
+            ChildTrackerPduBuilder subBuilder = (ChildTrackerPduBuilder) it.next();
+            subBuilder.setRepeaterStartIndex(nonRepeaters+repeaters);
+            subBuilder.addRepeaters(pduBuilder);
+            maxRepititions = Math.min(maxRepititions, subBuilder.getMaxRepititions());
+            repeaters += subBuilder.getRepeaters();
+        }
+        
+        // set the non repeaters and max repititions
+        pduBuilder.setNonRepeaters(nonRepeaters);
+        pduBuilder.setMaxRepititions(maxRepititions == Integer.MAX_VALUE ? 1 : maxRepititions);
+        
+        // construct a response processor that tracks the changes and informs the response processors
+        // for the child trackers
+        return new ChildTrackerResponseProcessor(pduBuilder, builders, nonRepeaters, repeaters);
+    }
+
+
+}

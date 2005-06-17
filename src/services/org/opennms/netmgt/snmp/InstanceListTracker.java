@@ -31,32 +31,32 @@
 //
 package org.opennms.netmgt.snmp;
 
-public abstract class PduBuilder {
+
+public class InstanceListTracker extends AggregateTracker {
     
-    private int m_maxVarsPerPdu;
-    
-    public PduBuilder() {
-        this(50);
-    }
-
-    public PduBuilder(int maxVarsPerPdu) {
-        m_maxVarsPerPdu = maxVarsPerPdu;
-    }
-
-    public abstract void addOid(SnmpObjId snmpObjId);
-
-    public abstract void setNonRepeaters(int numNonRepeaters);
-    
-    public abstract void setMaxRepititions(int maxRepititions);
-
-    public int getMaxVarsPerPdu() {
-        return m_maxVarsPerPdu;
+    public InstanceListTracker(SnmpObjId base, String instances) {
+        this(base, SnmpInstId.convertToSnmpInstIds(instances), null);
     }
     
-    public void setMaxVarsPerPdu(int maxVarsPerPdu) {
-        m_maxVarsPerPdu = maxVarsPerPdu;
+    public InstanceListTracker(SnmpObjId base, String instances, CollectionTracker parent) {
+        this(base, SnmpInstId.convertToSnmpInstIds(instances), parent);
     }
     
+    public InstanceListTracker(SnmpObjId base, SnmpInstId[] instances) {
+        this(base, instances, null);
+    }
     
+    public InstanceListTracker(SnmpObjId base, SnmpInstId[] instances, CollectionTracker parent) {
+        super(getSingleInstanceTrackers(base, instances), parent);
+    }
+    
+    private static SingleInstanceTracker[] getSingleInstanceTrackers(SnmpObjId base, SnmpInstId[] instances) {
+        SingleInstanceTracker[] trackers = new SingleInstanceTracker[instances.length];
+        for (int i = 0; i < instances.length; i++) {
+            trackers[i] = new SingleInstanceTracker(base, instances[i]);
+        }
+        return trackers;
+        
+    }
 
 }
