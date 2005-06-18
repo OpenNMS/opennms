@@ -380,4 +380,24 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
         String physAddr = sbuf.toString().trim();
         return physAddr;
     }
+
+    public boolean equals(Object obj) {
+        if (obj instanceof SnmpOctetString) {
+            SnmpOctetString str = (SnmpOctetString)obj;
+            if (m_data == null) return (str.m_data == null);
+            
+            if (m_data.length != str.m_data.length) return false;
+            
+            for(int i = 0; i < m_data.length; i++)
+                if (m_data[i] != str.m_data[i])
+                    return false;
+            
+            return true;
+        }
+        return false;
+    }
+
+    public int hashCode() {
+        return 0;
+    }
 }
