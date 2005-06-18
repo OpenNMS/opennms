@@ -292,7 +292,7 @@ final class IfSnmpCollector implements Runnable {
         m_ifXTable = new IfXTable(m_address);
         
         BarrierSignaler signaler = new BarrierSignaler(1);
-        SnmpWalker walker = new SnmpWalker(m_address, signaler, "system/ifTable/ifXTable/ipAddrTable", new CollectionTracker[] { m_sysGroup, m_ifTable, m_ipAddrTable, m_ifXTable});
+        SnmpWalker walker = new SnmpWalker(m_address, signaler, "system/ifTable/ifXTable/ipAddrTable", 50, new CollectionTracker[] { m_sysGroup, m_ifTable, m_ipAddrTable, m_ifXTable});
         walker.start();
 
         try {
