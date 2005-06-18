@@ -224,8 +224,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     protected void addSystemGroup() {
         addSysDescr();
         addSysOid();
-        addSysUptime();
-        addSysContact();
+//        addSysContact();
         addSysName();
         addSysLocation();
     }

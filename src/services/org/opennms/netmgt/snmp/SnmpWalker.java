@@ -184,15 +184,15 @@ public class SnmpWalker {
     private SnmpPeer m_peer;
     private SnmpSession m_session;
 
-    public SnmpWalker(final InetAddress address, Signaler signal, String name, CollectionTracker[] trackers) {
-        this(address, signal, name, new AggregateTracker(trackers) {
+    public SnmpWalker(final InetAddress address, Signaler signal, String name, int maxVarsPerPdu, CollectionTracker[] trackers) {
+        this(address, signal, name, maxVarsPerPdu, new AggregateTracker(trackers) {
             protected void reportTooBigErr(String msg) {
                 log().info("Received tooBig response from "+address+". "+msg);
             }
         });
     }
     
-    public SnmpWalker(InetAddress address, Signaler signal, String name, CollectionTracker tracker) {
+    public SnmpWalker(InetAddress address, Signaler signal, String name, int maxVarsPerPdu, CollectionTracker tracker) {
         m_address = address;
         m_signal = signal;
         
@@ -205,8 +205,8 @@ public class SnmpWalker {
         m_tracker = tracker;
         
         m_pduBuilder = (getVersion() == SnmpSMI.SNMPV1 
-                ? (JoeSnmpPduBuilder)new GetNextBuilder(50) 
-                : (JoeSnmpPduBuilder)new GetBulkBuilder(50));
+                ? (JoeSnmpPduBuilder)new GetNextBuilder(maxVarsPerPdu) 
+                : (JoeSnmpPduBuilder)new GetBulkBuilder(maxVarsPerPdu));
         
         m_handler = new JoeSnmpResponseHandler();
 
@@ -270,7 +270,7 @@ public class SnmpWalker {
 
     private void handleError(String msg) {
         m_error = true;
-        m_tracker.setFailed(true);
+        m_tracker.setTimedOut(true);
         log().info(getName()+": Error retrieving "+getName()+" for "+m_address+": "+msg);
         finish();
     }

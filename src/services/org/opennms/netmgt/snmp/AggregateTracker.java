@@ -238,6 +238,12 @@ public class AggregateTracker extends CollectionTracker {
             m_children[i].setFailed(failed);
     }
 
+    public void setTimedOut(boolean timedOut) {
+        super.setTimedOut(timedOut);
+        for(int i = 0; i < m_children.length; i++)
+            m_children[i].setTimedOut(timedOut);
+    }
+
     public boolean isFinished() {
         for(int i = 0; i < m_children.length; i++) {
             if (!m_children[i].isFinished())

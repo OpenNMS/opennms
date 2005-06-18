@@ -31,6 +31,7 @@
 //
 package org.opennms.netmgt.snmp;
 
+
 public abstract class CollectionTracker {
     
     private CollectionTracker m_parent;
@@ -54,6 +55,7 @@ public abstract class CollectionTracker {
     public static final int NO_SUCH_NAME_ERR = 2;
     public static final int GEN_ERR = 5;
     public static final Object END_OF_MIB = new Object() { public String toString() { return "endOfMibView"; } };
+    private boolean m_timedOut;
     
     protected void storeResult(SnmpObjId base, SnmpInstId inst, Object val) {
         if (m_parent != null)
@@ -68,10 +70,16 @@ public abstract class CollectionTracker {
         return m_parent;
     }
 
-    public boolean failed() { return m_failed; }
+    public boolean failed() { return m_failed || m_timedOut; }
+    
+    public boolean timedOut() { return m_timedOut; }
     
     public void setFailed(boolean failed) {
         m_failed = failed;
+    }
+    
+    public void setTimedOut(boolean timedOut) {
+        m_timedOut = timedOut;
     }
     
     protected void reportTooBigErr(String msg) {
@@ -88,7 +96,6 @@ public abstract class CollectionTracker {
         if (m_parent != null)
             m_parent.reportNoSuchNameErr(msg);
     }
-    
-    
+
 
 }
