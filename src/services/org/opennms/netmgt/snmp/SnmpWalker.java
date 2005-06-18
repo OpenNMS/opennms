@@ -29,18 +29,13 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.capsd.snmp;
+package org.opennms.netmgt.snmp;
 
 import java.net.InetAddress;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.snmp.AggregateTracker;
-import org.opennms.netmgt.snmp.CollectionTracker;
-import org.opennms.netmgt.snmp.PduBuilder;
-import org.opennms.netmgt.snmp.ResponseProcessor;
-import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.utils.Signaler;
 import org.opennms.protocols.snmp.SnmpHandler;
 import org.opennms.protocols.snmp.SnmpObjectId;
@@ -164,8 +159,6 @@ public class SnmpWalker {
         
     }
 
-
-
     private String m_name;
     private CollectionTracker m_tracker;
 
@@ -256,11 +249,15 @@ public class SnmpWalker {
     }
 
     private void finish() {
+        close();
+        signal();
+    }
+
+    private void close() {
         if (m_session != null) {
             m_session.close();
             m_session = null;
         }
-        signal();
     }
 
     public String getName() {

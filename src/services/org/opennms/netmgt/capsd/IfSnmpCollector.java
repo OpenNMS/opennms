@@ -44,9 +44,9 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IfXTable;
 import org.opennms.netmgt.capsd.snmp.IpAddrTable;
-import org.opennms.netmgt.capsd.snmp.SnmpWalker;
 import org.opennms.netmgt.capsd.snmp.SystemGroup;
 import org.opennms.netmgt.snmp.CollectionTracker;
+import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.utils.BarrierSignaler;
 
 /**
