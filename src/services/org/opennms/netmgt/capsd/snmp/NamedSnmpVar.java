@@ -34,7 +34,12 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
-import org.opennms.netmgt.snmp.SnmpCollectionTracker;
+import org.opennms.netmgt.snmp.Collectable;
+import org.opennms.netmgt.snmp.CollectionTracker;
+import org.opennms.netmgt.snmp.ColumnTracker;
+import org.opennms.netmgt.snmp.SingleInstanceTracker;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
 
 /**
  * The NamedSnmpVar class is used to associate a name for a particular snmp
@@ -51,7 +56,7 @@ import org.opennms.netmgt.snmp.SnmpCollectionTracker;
  * 
  * 
  */
-final class NamedSnmpVar implements SnmpCollectionTracker.CollectionDefinition {
+final class NamedSnmpVar implements Collectable {
     /**
      * String which contains the Class name of the expected SNMP data type for
      * the object.
@@ -197,12 +202,21 @@ final class NamedSnmpVar implements SnmpCollectionTracker.CollectionDefinition {
     public String getOid() {
         return m_oid;
     }
+    
+    public SnmpObjId getSnmpObjId() {
+        return SnmpObjId.get(m_oid);
+    }
 
     /**
      * Returns true if this instance is part of a table.
      */
     boolean isTableEntry() {
         return m_isTabular;
+    }
+    
+    public CollectionTracker getCollectionTracker() {
+        return m_isTabular ? (CollectionTracker)new ColumnTracker(getSnmpObjId()) : 
+                             (CollectionTracker)new SingleInstanceTracker(getSnmpObjId(), SnmpInstId.INST_ZERO);
     }
 
     /**
@@ -213,10 +227,12 @@ final class NamedSnmpVar implements SnmpCollectionTracker.CollectionDefinition {
         return m_column;
     }
 
-    public String getInstanceDef() {
-        if (m_isTabular)
-            return SnmpCollectionTracker.COLUMN;
-        else
-            return "0";
+    static CollectionTracker[] getTrackersFor(NamedSnmpVar[] columns) {
+        CollectionTracker[] trackers = new CollectionTracker[columns.length];
+        for(int i = 0; i < columns.length; i++)
+            trackers[i] = columns[i].getCollectionTracker();
+        
+         return trackers;
     }
+
 }

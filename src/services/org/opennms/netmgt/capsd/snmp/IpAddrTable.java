@@ -46,9 +46,8 @@ import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.utils.Signaler;
-import org.opennms.protocols.snmp.SnmpSession;
-import org.opennms.protocols.snmp.SnmpVarBind;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
 
 /**
  * <P>
@@ -65,7 +64,7 @@ import org.opennms.protocols.snmp.SnmpVarBind;
  * 
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
-public class IpAddrTable extends SnmpTableWalker {
+public class IpAddrTable extends SnmpTable {
 
     /**
      * <P>
@@ -74,22 +73,15 @@ public class IpAddrTable extends SnmpTableWalker {
      * there is an error in the collection the signaler object is <EM>notified
      * </EM> to inform other threads.
      * </P>
-     * @param session
-     *            The session with the remote agent.
      * @param address TODO
-     * @param signaler
-     *            The object to notify waiters.
-     * 
      * @see IpAddrTableEntry
      */
-    public IpAddrTable(SnmpSession session, InetAddress address, Signaler signaler, int version) {
-        super(address, signaler, version, "ipAddrTable", IpAddrTableEntry.ms_elemList, IpAddrTableEntry.TABLE_OID);
-        m_entries = new ArrayList();
-        start(session);
+    public IpAddrTable(InetAddress address) {
+        super(address, "ipAddrTable", IpAddrTableEntry.ms_elemList);
     }
 
-    protected SnmpTableEntry createTableEntry(SnmpVarBind[] vblist) {
-        return new IpAddrTableEntry(vblist);
+    protected SnmpTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
+        return new IpAddrTableEntry();
     }
 
     /**
@@ -318,7 +310,7 @@ public class IpAddrTable extends SnmpTableWalker {
         return -1;
     }
 
-    private final Category log() {
+    protected final Category log() {
         return ThreadCategory.getInstance(IpAddrTable.class);
     }
 }

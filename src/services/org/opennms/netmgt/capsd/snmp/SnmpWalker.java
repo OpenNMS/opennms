@@ -32,41 +32,142 @@
 package org.opennms.netmgt.capsd.snmp;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.CollectionTracker;
+import org.opennms.netmgt.snmp.PduBuilder;
+import org.opennms.netmgt.snmp.ResponseProcessor;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.utils.Signaler;
 import org.opennms.protocols.snmp.SnmpHandler;
 import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpPduBulk;
 import org.opennms.protocols.snmp.SnmpPduPacket;
 import org.opennms.protocols.snmp.SnmpPduRequest;
+import org.opennms.protocols.snmp.SnmpPeer;
 import org.opennms.protocols.snmp.SnmpSMI;
 import org.opennms.protocols.snmp.SnmpSession;
 import org.opennms.protocols.snmp.SnmpSyntax;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
-public abstract class SnmpWalker implements SnmpHandler {
+public class SnmpWalker {
+    
+    private static abstract class JoeSnmpPduBuilder extends PduBuilder {
+        public JoeSnmpPduBuilder(int maxVarsPerPdu) {
+            super(maxVarsPerPdu);
+        }
 
-    private String m_name;
+        public abstract SnmpPduPacket getPdu();
 
-    protected SnmpWalker(InetAddress address, Signaler signal, int version, String name, NamedSnmpVar[] columns, String oid) {
+        public abstract void reset();
+    }
+    
+    private static class GetNextBuilder extends JoeSnmpPduBuilder {
+        private SnmpPduRequest m_nextPdu = null;
 
-        m_address = address;
-        m_signal = signal;
-        m_version = version;
-        m_columns = columns;
-        m_rootOid = oid;
-        m_name = name;
+        private GetNextBuilder(int maxVarsPerPdu) {
+            super(maxVarsPerPdu);
+            reset();
+        }
+        
+        public void reset() {
+            m_nextPdu = new SnmpPduRequest(SnmpPduRequest.GETNEXT);
+        }
 
-        m_error = false;
-        m_snmpVarBindList = new ArrayList();
+        public SnmpPduPacket getPdu() {
+            return m_nextPdu;
+        }
+        
+        public void addOid(SnmpObjId snmpObjId) {
+            SnmpVarBind varBind = new SnmpVarBind(new SnmpObjectId(snmpObjId.getIds()));
+            m_nextPdu.addVarBind(varBind);
+        }
+
+        public void setNonRepeaters(int numNonRepeaters) {
+        }
+
+        public void setMaxRepititions(int maxRepititions) {
+        }
 
     }
+    
+    private class GetBulkBuilder extends JoeSnmpPduBuilder {
+        
+        private SnmpPduBulk m_bulkPdu;
 
-    protected abstract void update(SnmpVarBind[] vblist);
+        public GetBulkBuilder(int maxVarsPerPdu) {
+            super(maxVarsPerPdu);
+            reset();
+        }
+        
+        public void reset() {
+            m_bulkPdu = new SnmpPduBulk();
+        }
+
+        public SnmpPduPacket getPdu() {
+            return m_bulkPdu;
+        }
+
+        public void addOid(SnmpObjId snmpObjId) {
+            SnmpVarBind varBind = new SnmpVarBind(new SnmpObjectId(snmpObjId.getIds()));
+            m_bulkPdu.addVarBind(varBind);
+        }
+
+        public void setNonRepeaters(int numNonRepeaters) {
+            m_bulkPdu.setNonRepeaters(numNonRepeaters);
+        }
+
+        public void setMaxRepititions(int maxRepititions) {
+            m_bulkPdu.setMaxRepititions(maxRepititions);
+        }
+        
+    }
+    
+    private class JoeSnmpResponseHandler implements SnmpHandler {
+
+        public void snmpReceivedPdu(SnmpSession session, int command, SnmpPduPacket pdu) {
+            
+            try {
+                log().debug("Received a tracker pdu from "+m_address+" of size "+pdu.getLength());
+                SnmpPduRequest response = (SnmpPduRequest)pdu;
+                if (!m_responseProcessor.processErrors(response.getErrorStatus(), response.getErrorIndex())) {
+                    for(int i = 0; i < response.getLength(); i++) {
+                        SnmpVarBind vb = response.getVarBindAt(i);
+                        SnmpObjId receivedOid = SnmpObjId.get(vb.getName().getIdentifiers());
+                        Object val = vb.getValue();
+                        m_responseProcessor.processResponse(receivedOid, val);
+                    }
+                }
+                if (m_tracker.isFinished())
+                    handleDone();
+                else {
+                    m_pduBuilder.reset();
+                    m_responseProcessor = m_tracker.buildNextPdu(m_pduBuilder);
+                    log().debug("Sending tracker pdu to "+m_address+" of size "+m_pduBuilder.getPdu().getLength());
+                    session.send(m_pduBuilder.getPdu(), m_handler);
+                }
+            } catch (Throwable e) {
+                handleFatalError(e);
+            }
+        }
+
+        public void snmpInternalError(SnmpSession session, int err, SnmpSyntax pdu) {
+            handleError(getName()+": snmpInternalError: " + err + " for: " + m_address);
+        }
+
+        public void snmpTimeoutError(SnmpSession session, SnmpSyntax pdu) {
+            handleError(getName()+": snmpTimeoutError for: " + session.getPeer().getPeer());
+        }
+        
+    }
+
+
+
+    private String m_name;
+    private CollectionTracker m_tracker;
 
     /**
      * <P>
@@ -82,31 +183,60 @@ public abstract class SnmpWalker implements SnmpHandler {
      * </P>
      */
     private Signaler m_signal;
-    /**
-     * <P>
-     * Used to generate the proper command for fetching the SNMP data from the
-     * agent (via GETBULK for version 2 or GETNEXT for version 1.
-     */
-    private int m_version;
-    /**
-     * <P>
-     * This list will hold each instance of the specific MIB variable listed
-     * within IpAddrTableEntry. By keeping these separate, we can generate our
-     * own usable map from the variables.
-     */
-    private List m_snmpVarBindList;
+
     private InetAddress m_address;
-    private NamedSnmpVar[] m_columns;
-    private String m_rootOid;
+    private JoeSnmpPduBuilder m_pduBuilder;
+    private ResponseProcessor m_responseProcessor;
+    private JoeSnmpResponseHandler m_handler;
+    private SnmpPeer m_peer;
+    private SnmpSession m_session;
 
-    protected void start(SnmpSession session) {
-        log().debug("Walking "+getName()+" for "+m_address+" using version "+m_version);
+    public SnmpWalker(final InetAddress address, Signaler signal, String name, CollectionTracker[] trackers) {
+        this(address, signal, name, new AggregateTracker(trackers) {
+            protected void reportTooBigErr(String msg) {
+                log().info("Received tooBig response from "+address+". "+msg);
+            }
+        });
+    }
+    
+    public SnmpWalker(InetAddress address, Signaler signal, String name, CollectionTracker tracker) {
+        m_address = address;
+        m_signal = signal;
+        
+        m_peer = SnmpPeerFactory.getInstance().getPeer(m_address);
 
-        if (m_version == SnmpSMI.SNMPV1) {
-            sendV1Pdu(session, null);
-        } else {
-            sendV2Pdu(session, null);
+        m_name = name;
+
+        m_error = false;
+        
+        m_tracker = tracker;
+        
+        m_pduBuilder = (getVersion() == SnmpSMI.SNMPV1 
+                ? (JoeSnmpPduBuilder)new GetNextBuilder(50) 
+                : (JoeSnmpPduBuilder)new GetBulkBuilder(50));
+        
+        m_handler = new JoeSnmpResponseHandler();
+
+    }
+    
+    public void start() {
+        try {
+            log().debug("Walking "+getName()+" for "+m_address+" using version "+SnmpSMI.getVersionString(getVersion()));
+            
+            
+            if (m_tracker.isFinished())
+                handleDone();
+            else {
+                m_session = new SnmpSession(m_peer);
+                m_responseProcessor = m_tracker.buildNextPdu(m_pduBuilder);
+                log().debug("Sending tracker pdu of size "+m_pduBuilder.getPdu().getLength());
+                m_session.send(m_pduBuilder.getPdu(), m_handler);
+            }
+        } catch (Throwable e) {
+            handleFatalError(e);
         }
+        
+        
     }
 
     /**
@@ -118,59 +248,18 @@ public abstract class SnmpWalker implements SnmpHandler {
         return m_error;
     }
 
-    /**
-     * <P>
-     * This method is used to process received SNMP PDU packets from the remote
-     * agent. The method is part of the SnmpHandler interface and will be
-     * invoked when a PDU is successfully decoded. The method is passed the
-     * receiving session, the PDU command, and the actual PDU packet.
-     * </P>
-     * 
-     * <P>
-     * When all the data has been received from the session the signaler object,
-     * initialized in the constructor, is signaled. In addition, the receiving
-     * instance will call notifyAll() on itself at the same time.
-     * </P>
-     * 
-     * @param session
-     *            The SNMP Session that received the PDU
-     * @param command
-     *            The command contained in the received pdu
-     * @param pdu
-     *            The actual received PDU.
-     * 
-     */
-    public void snmpReceivedPdu(SnmpSession session, int command, SnmpPduPacket pdu) {
-        
-        try {
-            
-            log().debug(getName()+": snmpReceivedPdu: got SNMP response, current version: " + SnmpSMI.getVersionString(m_version));
-            
-            checkForResponsePdu(command);
-            checkForPduError(pdu);
-            
-            boolean done;
-            
-            if (m_version == SnmpSMI.SNMPV1){
-                done = onV1Response(session, pdu);
-            } else {
-                done = onV2Response(session, pdu);
-            }
-            if (done) {
-                handleDone();
-            }
-            
-        } catch (InvalidResponseException e) {
-            handleError(e.getMessage());
-        } catch (Throwable e) {
-            handleFatalError(e);
-        }
-        
-    }
-
     private void handleFatalError(Throwable e) {
         m_error = true;
+        m_tracker.setFailed(true);
         log().error(getName()+": Unexpected Error occurred processing "+getName()+" for "+m_address, e);
+        finish();
+    }
+
+    private void finish() {
+        if (m_session != null) {
+            m_session.close();
+            m_session = null;
+        }
         signal();
     }
 
@@ -179,197 +268,14 @@ public abstract class SnmpWalker implements SnmpHandler {
     }
 
     private void handleDone() {
-        signal();
+        finish();
     }
 
     private void handleError(String msg) {
         m_error = true;
+        m_tracker.setFailed(true);
         log().info(getName()+": Error retrieving "+getName()+" for "+m_address+": "+msg);
-        signal();
-    }
-
-    private boolean onV1Response(SnmpSession session, SnmpPduPacket pdu) throws InvalidResponseException {
-        
-        // Create a new map of the interface entry
-        //
-        // The last varbind will be the first one to walk off the
-        // end
-        // of the ipAddrTable. So verify that the last entry in the
-        // received pdu is still within the scope of the
-        // IpAddrTable...
-        // if it is then create a new entry.
-        //
-        if (!processV1Pdu(pdu)) {
-            sendV1Pdu(session, pdu);
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    private boolean onV2Response(SnmpSession session, SnmpPduPacket pdu) throws InvalidResponseException {
-        
-        // in case we did not receive all the data from the
-        // first packet, must generate a new GETBULK packet
-        // starting at the OID the previous one left off.
-        //
-        if (!processV2Pdu(pdu)) {
-            sendV2Pdu(session, pdu);
-            return false;
-        } else {
-            processV2Complete();
-            return true;
-        }
-    }
-
-    private boolean isV1Finished(SnmpPduPacket pdu) {
-        return !(stop_oid().compare(pdu.getVarBindAt(pdu.getLength() - 1).getName()) > 0);
-    }
-
-    private boolean processV1Pdu(SnmpPduPacket pdu) {
-        
-        if (isV1Finished(pdu)) {
-            return true;
-        } else {
-            if (log().isDebugEnabled())
-                log().debug(getName()+": snmpReceivedPdu: got SNMPv1 response and still within "+getName()+", creating new entry.");
-            update(pdu.toVarBindArray());
-            return false;
-        }
-    }
-
-    private void sendV1Pdu(SnmpSession session, SnmpPduPacket pdu) {
-        
-        if (pdu == null) {
-            SnmpPduPacket firstPdu = getNextV1Pdu();
-            log().debug(getName()+": initial pdu request id: " + firstPdu.getRequestId());
-            session.send(firstPdu, this);
-        } else {
-            SnmpPduRequest nxt = new SnmpPduRequest(SnmpPduPacket.GETNEXT);
-            for (int x = 0; x < pdu.getLength(); x++) {
-                nxt.addVarBind(new SnmpVarBind(pdu.getVarBindAt(x).getName()));
-            }
-            nxt.setRequestId(SnmpPduPacket.nextSequence());
-            session.send(nxt, this);
-        }
-    }
-
-    private boolean processV2Pdu(SnmpPduPacket pdu) throws InvalidResponseException {
-        checkForErrorVarbinds(pdu);
-        for (int x = 0; x < pdu.getLength(); x++) {
-            SnmpVarBind vb = pdu.getVarBindAt(x);
-            m_snmpVarBindList.add(vb);
-        }
-        return isV2Finished(pdu);
-    }
-
-    private void processV2Complete() {
-        // Convert SNMP variable binding list to an array
-        // for processing
-        //
-        SnmpVarBind[] tempStorage = new SnmpVarBind[m_snmpVarBindList.size()];
-        tempStorage = (SnmpVarBind[]) m_snmpVarBindList.toArray(tempStorage);
-        // since the MIB does not store the number of
-        // interfaces that have
-        // IP addresses, the method must resort to an
-        // alternative. By
-        // counting the number of values found for the
-        // ipAddrIfIndex variable,
-        // we'll have the number of interfaces with IP's.
-        // Each IP-bound
-        // interface will have a value for each MIB variable
-        // listed
-        //
-        int numRows = 0;
-        SnmpObjectId firstCol = new SnmpObjectId(getColumns()[0].getOid());
-        for(int i = 0; i < tempStorage.length; i++) {
-            if (firstCol.isRootOf(tempStorage[i].getName()))
-                numRows++;
-        }
-        
-        // store the IP Address Table data for each
-        // interface into a map.
-        //
-        int numCols = getColumns().length;
-        for (int row = 0; row < numRows; row++) {
-            SnmpVarBind[] rowVarbinds = new SnmpVarBind[numCols];
-            for (int col = 0; col < numCols; col++) {
-                rowVarbinds[col] = tempStorage[row + (col * numRows)];
-            }
-            update(rowVarbinds);
-        }
-    }
-
-    private boolean isV2Finished(SnmpPduPacket pdu) {
-        return !(stop_oid().compare(pdu.getVarBindAt(pdu.getLength() - 1).getName()) > 0);
-    }
-
-    private void sendV2Pdu(SnmpSession session, SnmpPduPacket pdu) {
-        if (pdu == null) {
-            SnmpPduPacket firstPdu = getNextV2Pdu();
-            log().debug(getName()+": initial pdu request id: " + firstPdu.getRequestId());
-            session.send(firstPdu, this);
-        } else {
-            SnmpObjectId id = new SnmpObjectId(pdu.getVarBindAt(pdu.getLength() - 1).getName());
-            SnmpVarBind[] newvblist = { new SnmpVarBind(id) };
-            SnmpPduPacket nxt = new SnmpPduBulk(0, getMaxRepeaters(), newvblist);
-            nxt.setRequestId(SnmpPduPacket.nextSequence());
-            session.send(nxt, this);
-        }
-    }
-
-    private int getMaxRepeaters() {
-        return Math.min(50, getColumns().length * 3 + 1);
-    }
-
-    protected void checkForPduError(SnmpPduPacket pdu) throws InvalidResponseException {
-        //
-        // Check for error stored in request pdu
-        //
-        int errStatus = ((SnmpPduRequest) pdu).getErrorStatus();
-        if (errStatus != SnmpPduPacket.ErrNoError) {
-            throw new InvalidResponseException(getName()+": Error received from "+m_address+" errStatus="+errStatus);
-        }
-    }
-
-    private void checkForResponsePdu(int command) throws InvalidResponseException {
-        if (command != SnmpPduPacket.RESPONSE) {
-            throw new InvalidResponseException(getName()+": Unexpected packet from "+m_address+" command = "+command);
-        }
-    }
-
-    protected int checkForErrorVarbinds(SnmpPduPacket pdu) throws InvalidResponseException {
-        int numVarBinds = pdu.getLength();
-        for (int x = 0; x < numVarBinds; x++) {
-            SnmpVarBind vb = pdu.getVarBindAt(x);
-    
-            if (vb.getValue() instanceof org.opennms.protocols.snmp.SnmpV2Error) {
-                throw new InvalidResponseException(getName()+": snmpReceivedPDU: varbind: " + vb.getName() + "  error: '" + vb.getValue() + "'");
-            }
-        }
-        return numVarBinds;
-    }
-
-    /**
-     * <P>
-     * This method is part of the SnmpHandler interface and called when an
-     * internal error happens in a session. This is usually the result of an I/O
-     * error. This method will not be called if the session times out sending a
-     * packet, see snmpTimeoutError for timeout handling.
-     * </P>
-     * 
-     * @param session
-     *            The session that had an unexpected error
-     * @param error
-     *            The error condition
-     * @param pdu
-     *            The PDU being sent when the error occured
-     * 
-     * @see #snmpTimeoutError
-     * @see org.opennms.protocols.snmp.SnmpHandler SnmpHandler
-     */
-    public void snmpInternalError(SnmpSession session, int error, SnmpSyntax pdu) {
-        handleError(getName()+": snmpInternalError: " + error + " for: " + m_address);
+        finish();
     }
 
     private void signal() {
@@ -381,70 +287,12 @@ public abstract class SnmpWalker implements SnmpHandler {
         }
     }
 
-    /**
-     * <P>
-     * This method is part of the SnmpHandler interface and is invoked when the
-     * SnmpSession does not receive a reply after exhausting the retransmission
-     * attempts.
-     * </P>
-     * 
-     * @param session
-     *            The session invoking the error handler
-     * @param pdu
-     *            The PDU that the remote failed to respond to.
-     * 
-     * @see org.opennms.protocols.snmp.SnmpHandler SnmpHandler
-     * 
-     */
-    public void snmpTimeoutError(SnmpSession session, SnmpSyntax pdu) {
-        handleError(getName()+": snmpTimeoutError for: " + session.getPeer().getPeer());
-    }
-
-    public SnmpPduPacket getNextV1Pdu() {
-        SnmpPduPacket pdu;
-        pdu = new SnmpPduRequest(SnmpPduPacket.GETNEXT);
-        pdu.setRequestId(SnmpPduPacket.nextSequence());
-        NamedSnmpVar[] elements = getColumns();
-        for (int x = 0; x < elements.length; x++) {
-            SnmpObjectId oid = new SnmpObjectId(elements[x].getOid());
-            pdu.addVarBind(new SnmpVarBind(oid));
-        }
-        return pdu;
-    }
-
-    public SnmpPduPacket getNextV2Pdu() {
-        SnmpPduPacket pdu;
-        pdu = new SnmpPduBulk();
-        ((SnmpPduBulk) pdu).setMaxRepititions(getMaxRepeaters());
-        pdu.setRequestId(SnmpPduPacket.nextSequence());
-        SnmpObjectId oid = getRootOfTable();
-        pdu.addVarBind(new SnmpVarBind(oid));
-        return pdu;
-    }
-
-    private SnmpObjectId getRootOfTable() {
-        return new SnmpObjectId(m_rootOid);
-    }
-
-    /**
-     * <P>
-     * This method will determine where the cut off point will be for valid data
-     * from the response to the GETBULK packet. By using the size of the element
-     * list, listed above, we can determine the proper index for this task.
-     * <P>
-     */
-    public SnmpObjectId stop_oid() {
-         SnmpObjectId id = getRootOfTable();
-         id.append(Integer.toString(getColumns().length+1));
-         return id;
-    }
-
-    private NamedSnmpVar[] getColumns() {
-        return m_columns;
-    }
-    
     private final Category log() {
         return ThreadCategory.getInstance(SnmpWalker.class);
+    }
+
+    private int getVersion() {
+        return m_peer.getParameters().getVersion();
     }
 
 

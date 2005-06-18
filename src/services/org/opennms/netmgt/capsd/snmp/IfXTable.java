@@ -41,12 +41,10 @@
 package org.opennms.netmgt.capsd.snmp;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.opennms.netmgt.utils.Signaler;
-import org.opennms.protocols.snmp.SnmpSession;
-import org.opennms.protocols.snmp.SnmpVarBind;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
 
 /**
  * <P>
@@ -66,7 +64,7 @@ import org.opennms.protocols.snmp.SnmpVarBind;
  * 
  * @see <A HREF="http://www.ietf.org/rfc/rfc2233.txt">RFC2233 </A>
  */
-public final class IfXTable extends SnmpTableWalker {
+public final class IfXTable extends SnmpTable {
 
     /**
      * <P>
@@ -75,28 +73,17 @@ public final class IfXTable extends SnmpTableWalker {
      * there is an error in the collection the signaler object is <EM>notified
      * </EM> to inform other threads.
      * </P>
-     * @param session
-     *            The session with the remote agent.
      * @param address TODO
-     * @param signaler
-     *            The object to notify waiters.
-     * @param version
-     *            SNMP version to use
-     * 
      * @see IfXTableEntry
      */
-    public IfXTable(SnmpSession session, InetAddress address, Signaler signaler, int version) {
-        super(address, signaler, version, "ifXTable", IfXTableEntry.ms_elemList, IfXTableEntry.TABLE_OID);
-
-        m_entries = new ArrayList(2);
-        
-        start(session);
+    public IfXTable(InetAddress address) {
+        super(address, "ifXTable", IfXTableEntry.ms_elemList);
     }
 
-    protected SnmpTableEntry createTableEntry(SnmpVarBind[] vblist) {
-        return new IfXTableEntry(vblist);
+    protected SnmpTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
+        return new IfXTableEntry(inst.toInt());
     }
-
+    
     public String getIfName(int ifIndex) {
     
         // Find ifXTable entry with matching ifIndex

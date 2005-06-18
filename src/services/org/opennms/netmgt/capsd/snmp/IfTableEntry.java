@@ -40,7 +40,6 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
-import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
  * <P>
@@ -190,9 +189,8 @@ public final class IfTableEntry extends SnmpTableEntry {
      *            The array of variable bindings.
      * 
      */
-    public IfTableEntry(SnmpVarBind[] vars) {
+    public IfTableEntry() {
         super(ms_elemList);
-        update(vars);
     }
 
     public Integer getIfIndex() {

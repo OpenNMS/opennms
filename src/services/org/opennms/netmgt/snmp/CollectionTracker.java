@@ -34,6 +34,7 @@ package org.opennms.netmgt.snmp;
 public abstract class CollectionTracker {
     
     private CollectionTracker m_parent;
+    private boolean m_failed;
     
     public CollectionTracker() {
         this(null);
@@ -41,6 +42,7 @@ public abstract class CollectionTracker {
     
     public CollectionTracker(CollectionTracker parent) {
         m_parent = parent;
+        m_failed = false;
     }
 
     public abstract boolean isFinished();
@@ -66,6 +68,27 @@ public abstract class CollectionTracker {
         return m_parent;
     }
 
-
+    public boolean failed() { return m_failed; }
+    
+    public void setFailed(boolean failed) {
+        m_failed = failed;
+    }
+    
+    protected void reportTooBigErr(String msg) {
+        if (m_parent != null)
+            m_parent.reportTooBigErr(msg);
+    }
+    
+    protected void reportGenErr(String msg) {
+        if (m_parent != null)
+            m_parent.reportGenErr(msg);
+    }
+    
+    protected void reportNoSuchNameErr(String msg) {
+        if (m_parent != null)
+            m_parent.reportNoSuchNameErr(msg);
+    }
+    
+    
 
 }

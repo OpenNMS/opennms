@@ -41,8 +41,6 @@
 package org.opennms.netmgt.capsd.snmp;
 
 import org.opennms.protocols.snmp.SnmpInt32;
-import org.opennms.protocols.snmp.SnmpObjectId;
-import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
  * <P>
@@ -190,46 +188,9 @@ public final class IfXTableEntry extends SnmpTableEntry {
      *            The array of variable bindings.
      * 
      */
-    public IfXTableEntry(SnmpVarBind[] vars) {
+    public IfXTableEntry(int ifIndex) {
         super(ms_elemList);
-        update(vars);
-    }
-
-    /**
-     * <P>
-     * This method is used to update the map with the current information from
-     * the agent. The array of variables should be all the elements in the
-     * interfaces row.
-     * </P>
-     * 
-     * </P>
-     * This does not clear out any column in the actual ifXEntry row that does
-     * not have a definition.
-     * </P>
-     * 
-     * @param vars
-     *            The variables in the interface row.
-     * 
-     */
-    public void update(SnmpVarBind[] vars) {
-        
-        // Since the ifXTable is indexed by ifIndex but does not contain the 
-        // ifIndex column we extract the index from the oid of the first column.
-        for(int varBind = 0; varBind < vars.length; varBind++) {
-            SnmpObjectId firstColumn = new SnmpObjectId(getElements()[0].getOid());
-            
-            if (firstColumn.isRootOf(vars[varBind].getName())) {
-
-                SnmpInt32 instanceId = new SnmpInt32(vars[varBind].getName().getLastIdentifier());
-
-                // Store it
-                put(IF_INDEX, instanceId);
-                
-            }
-        }
-        
-        super.update(vars);
-        
+        put(IF_INDEX, new SnmpInt32(ifIndex));
     }
 
     public Integer getIfIndex() {

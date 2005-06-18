@@ -74,11 +74,20 @@ public class SingleInstanceTracker extends CollectionTracker {
             }
 
             public boolean processErrors(int errorStatus, int errorIndex) {
-                if (errorStatus == CollectionTracker.NO_ERR)
+                if (errorStatus == NO_ERR) {
                     return false;
-                else {
+                } else if (errorStatus == TOO_BIG_ERR) {
+                    throw new IllegalArgumentException("Unable to handle tooBigError for oid request "+m_oid.decrement());
+                } else if (errorStatus == GEN_ERR) {
+                    reportGenErr("Received genErr reqeusting oid "+m_oid.decrement()+". Marking column is finished.");
                     errorOccurred();
                     return true;
+                } else if (errorStatus == NO_SUCH_NAME_ERR) {
+                    reportNoSuchNameErr("Received noSuchName reqeusting oid "+m_oid.decrement()+". Marking column is finished.");
+                    errorOccurred();
+                    return true;
+                } else {
+                    throw new IllegalArgumentException("Unexpected error processing oid "+m_oid.decrement()+". Aborting!");
                 }
             }
         };

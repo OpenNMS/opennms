@@ -37,7 +37,6 @@ package org.opennms.netmgt.capsd.snmp;
 import java.net.InetAddress;
 
 import org.opennms.protocols.snmp.SnmpIPAddress;
-import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
  * <P>
@@ -123,9 +122,8 @@ public final class IpAddrTableEntry extends SnmpTableEntry {
      * @param vars
      *            The array of variable bindings.
      */
-    public IpAddrTableEntry(SnmpVarBind[] vars) {
+    public IpAddrTableEntry() {
         super(ms_elemList);
-        update(vars);
     }
 
     public InetAddress getIpAdEntAddr() {

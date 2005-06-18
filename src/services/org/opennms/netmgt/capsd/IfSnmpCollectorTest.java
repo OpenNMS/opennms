@@ -81,6 +81,18 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
             assertFalse(m_ifSnmpc.failed());
         }
     }
+    
+    public void testFailed() throws Exception {
+        InetAddress addr = InetAddress.getByName("1.1.1.1");
+        IfSnmpCollector ifSnmpc = new IfSnmpCollector(addr);
+        ifSnmpc.run();
+        assertTrue(ifSnmpc.failed());
+        assertTrue(ifSnmpc.getSystemGroup().failed());
+        assertTrue(ifSnmpc.getIfTable().failed());
+        assertTrue(ifSnmpc.getIfXTable().failed());
+        assertTrue(ifSnmpc.getIpAddrTable().failed());
+
+    }
 
     public final void testHasSystemGroup() {
         if(m_run) {
@@ -101,6 +113,7 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
             SystemGroup sg = m_ifSnmpc.getSystemGroup();
             assertNotNull(sg);
             assertFalse(sg.failed());
+            assertEquals("brozow.local", sg.getSysName());
         }        
     }
 
@@ -123,6 +136,7 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
             IfTable ifTable = m_ifSnmpc.getIfTable();
             assertNotNull(ifTable);
             assertFalse(ifTable.failed());
+            assertEquals(24, ifTable.getIfType(1));
         }        
     }
 
@@ -145,6 +159,7 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
             IpAddrTable ipAddrTable = m_ifSnmpc.getIpAddrTable();
             assertNotNull(ipAddrTable);
             assertFalse(ipAddrTable.failed());
+            assertEquals(1, ipAddrTable.getIfIndex(InetAddress.getByName("127.0.0.1")));
             List entries = ipAddrTable.getEntries();
             List addresses = IpAddrTable.getIpAddresses(entries);
             assertTrue(addresses.contains(InetAddress.getByName(myLocalHost())));

@@ -32,27 +32,49 @@
 package org.opennms.netmgt.capsd.snmp;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
-import org.opennms.netmgt.utils.Signaler;
-import org.opennms.protocols.snmp.SnmpVarBind;
+import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
 
-abstract public class SnmpTableWalker extends SnmpWalker {
+
+abstract public class SnmpTable  extends AggregateTracker {
     
-    protected List m_entries;
+    private Map m_results = new TreeMap();
+    private InetAddress m_address;
+    private String m_tableName;
 
-    protected SnmpTableWalker(InetAddress address, Signaler signal, int version, String tableName, NamedSnmpVar[] columns, String oid) {
-        super(address, signal, version, tableName, columns, oid);
+    protected SnmpTable(InetAddress address, String tableName, NamedSnmpVar[] columns) {
+        super(NamedSnmpVar.getTrackersFor(columns));
+        m_address = address;
+        m_tableName = tableName;
+    }
+    
+    protected void storeResult(SnmpObjId base, SnmpInstId inst, Object val) {
+        SnmpTableEntry entry = (SnmpTableEntry)m_results.get(inst);
+        if (entry == null) {
+            entry = createTableEntry(base, inst, val);
+            m_results.put(inst, entry);
+        }
+        entry.storeResult(base, inst, val);
     }
 
-    protected abstract SnmpTableEntry createTableEntry(SnmpVarBind[] vblist);
+    protected abstract SnmpTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val);
 
-    protected void update(SnmpVarBind[] vblist) {
-        m_entries.add(createTableEntry(vblist));
-    }
-    
     public List getEntries() {
-        return m_entries;
+        return new ArrayList(m_results.values());
     }
+    protected void reportGenErr(String msg) {
+        log().error("Error retrieving "+m_tableName+" from "+m_address+". "+msg);
+    }
+
+    protected void reportNoSuchNameErr(String msg) {
+        log().error("Error retrieving "+m_tableName+" from "+m_address+". "+msg);
+    }
+
 
 }

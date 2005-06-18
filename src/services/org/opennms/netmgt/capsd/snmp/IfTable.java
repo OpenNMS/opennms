@@ -39,14 +39,12 @@
 package org.opennms.netmgt.capsd.snmp;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.utils.Signaler;
-import org.opennms.protocols.snmp.SnmpSession;
-import org.opennms.protocols.snmp.SnmpVarBind;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
 
 /**
  * <P>
@@ -74,7 +72,7 @@ import org.opennms.protocols.snmp.SnmpVarBind;
  * 
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
-public final class IfTable extends SnmpTableWalker {
+public final class IfTable extends SnmpTable {
     
 
     /**
@@ -84,29 +82,19 @@ public final class IfTable extends SnmpTableWalker {
      * there is an error in the collection the signaler object is <EM>notified
      * </EM> to inform other threads.
      * </P>
-     * @param session
-     *            The session with the remote agent.
      * @param address TODO
-     * @param signaler
-     *            The object to notify waiters.
-     * 
      * @see IfTableEntry
      */
-    public IfTable(SnmpSession session, InetAddress address, Signaler signaler, int version) {
-        super(address, signaler, version, "ifTable", IfTableEntry.ms_elemList, IfTableEntry.TABLE_OID);
-
-        m_entries = new ArrayList(2); // not synchronized.
-        
-        start(session);
+    public IfTable(InetAddress address) {
+        super(address, "ifTable", IfTableEntry.ms_elemList);
     }
     
-    protected SnmpTableEntry createTableEntry(SnmpVarBind[] vblist) {
-        return new IfTableEntry(vblist);
+    protected SnmpTableEntry createTableEntry(SnmpObjId base, SnmpInstId inst, Object val) {
+        return new IfTableEntry();
     }
 
 
-
-    private final Category log() {
+    protected final Category log() {
         return ThreadCategory.getInstance(IfTable.class);
     }
     
@@ -149,5 +137,8 @@ public final class IfTable extends SnmpTableWalker {
         }
         return -1;
     }
+
+
+
 
 }

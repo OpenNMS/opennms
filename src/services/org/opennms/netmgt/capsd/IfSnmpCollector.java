@@ -44,12 +44,10 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IfXTable;
 import org.opennms.netmgt.capsd.snmp.IpAddrTable;
+import org.opennms.netmgt.capsd.snmp.SnmpWalker;
 import org.opennms.netmgt.capsd.snmp.SystemGroup;
-import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.utils.BarrierSignaler;
-import org.opennms.protocols.snmp.SnmpPeer;
-import org.opennms.protocols.snmp.SnmpSMI;
-import org.opennms.protocols.snmp.SnmpSession;
 
 /**
  * This class is designed to collect the necessary SNMP information from the
@@ -126,7 +124,6 @@ final class IfSnmpCollector implements Runnable {
      * Returns true if the system group was collected successfully
      */
     boolean hasSystemGroup() {
-        // FIXME What should we do if the table had no error but was empty
         return (m_sysGroup != null && !m_sysGroup.failed());
     }
 
@@ -288,50 +285,41 @@ final class IfSnmpCollector implements Runnable {
      * 
      */
     public void run() {
-        SnmpSession session = null;
+
+        m_sysGroup = new SystemGroup(m_address);
+        m_ifTable = new IfTable(m_address);
+        m_ipAddrTable = new IpAddrTable(m_address);
+        m_ifXTable = new IfXTable(m_address);
+        
+        BarrierSignaler signaler = new BarrierSignaler(1);
+        SnmpWalker walker = new SnmpWalker(m_address, signaler, "system/ifTable/ifXTable/ipAddrTable", new CollectionTracker[] { m_sysGroup, m_ifTable, m_ipAddrTable, m_ifXTable});
+        walker.start();
+
         try {
-            SnmpPeer m_peer = SnmpPeerFactory.getInstance().getPeer(m_address);
-            log().debug("IfSnmpCollector.run: address: " + m_address.getHostAddress() + " Snmp version: " + SnmpSMI.getVersionString(m_peer.getParameters().getVersion()));
-            session = new SnmpSession(m_peer);
-
-            BarrierSignaler signaler = new BarrierSignaler(4);
-            m_sysGroup = new SystemGroup(session, m_address, signaler, m_peer.getParameters().getVersion());
-            m_ifTable = new IfTable(session, m_address, signaler, m_peer.getParameters().getVersion());
-            m_ipAddrTable = new IpAddrTable(session, m_address, signaler, m_peer.getParameters().getVersion());
-            m_ifXTable = new IfXTable(session, m_address, signaler, m_peer.getParameters().getVersion());
-
-            try {
-                // wait a maximum of five minutes!
-                //
-                // FIXME: Why do we do this. If we are successfully processing responses shouldn't we keep going?
-                signaler.waitFor(300000);
-            } catch (InterruptedException e) {
-                m_sysGroup = null;
-                m_ifTable = null;
-                m_ipAddrTable = null;
-                m_ifXTable = null;
-
-                log().warn("IfSnmpCollector: collection interrupted, exiting", e);
-                return;
-            }
-
-            // Log any failures
+            // wait a maximum of five minutes!
             //
-            if (!this.hasSystemGroup())
-                log().info("IfSnmpCollector: failed to collect System group for " + m_address.getHostAddress());
-            if (!this.hasIfTable())
-                log().info("IfSnmpCollector: failed to collect ifTable for " + m_address.getHostAddress());
-            if (!this.hasIpAddrTable())
-                log().info("IfSnmpCollector: failed to collect ipAddrTable for " + m_address.getHostAddress());
-            if (!this.hasIfXTable())
-                log().info("IfSnmpCollector: failed to collect ifXTable for " + m_address.getHostAddress());
+            // FIXME: Why do we do this. If we are successfully processing responses shouldn't we keep going?
+            signaler.waitFor(300000);
+        } catch (InterruptedException e) {
+            m_sysGroup = null;
+            m_ifTable = null;
+            m_ipAddrTable = null;
+            m_ifXTable = null;
 
-        } catch (java.net.SocketException e) {
-            log().error("Failed to create SNMP session to connect to host " + m_address.getHostAddress(), e);
-        } finally {
-            if (session != null)
-                session.close();
+            log().warn("IfSnmpCollector: collection interrupted, exiting", e);
+            return;
         }
+
+        // Log any failures
+        //
+        if (!this.hasSystemGroup())
+            log().info("IfSnmpCollector: failed to collect System group for " + m_address.getHostAddress());
+        if (!this.hasIfTable())
+            log().info("IfSnmpCollector: failed to collect ifTable for " + m_address.getHostAddress());
+        if (!this.hasIpAddrTable())
+            log().info("IfSnmpCollector: failed to collect ipAddrTable for " + m_address.getHostAddress());
+        if (!this.hasIfXTable())
+            log().info("IfSnmpCollector: failed to collect ifXTable for " + m_address.getHostAddress());
     }
 
     private Category log() {

@@ -38,7 +38,7 @@ import java.util.List;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
-public abstract class AggregateTracker extends CollectionTracker {
+public class AggregateTracker extends CollectionTracker {
 
     private static class ChildTrackerPduBuilder extends PduBuilder {
         private List m_oids = new ArrayList();
@@ -143,7 +143,7 @@ public abstract class AggregateTracker extends CollectionTracker {
         
     }
 
-    private static class ChildTrackerResponseProcessor implements ResponseProcessor {
+    private class ChildTrackerResponseProcessor implements ResponseProcessor {
         private final int m_repeaters;
     
         private final PduBuilder m_pduBuilder;
@@ -185,33 +185,38 @@ public abstract class AggregateTracker extends CollectionTracker {
     
         }
     
-        private int getCanonicalIndex(int zeroBaseIndex) {
-            if (zeroBaseIndex <= 0)
+        private int getCanonicalIndex(int zeroBasedIndex) {
+            if (zeroBasedIndex <= 0)
                 return 0;
-            if (zeroBaseIndex < m_nonRepeaters)
-                return zeroBaseIndex;
+            if (zeroBasedIndex < m_nonRepeaters)
+                return zeroBasedIndex;
     
             // return the smallest index of the repeater this index refers to 
-            return ((zeroBaseIndex - m_nonRepeaters)%m_repeaters)+m_nonRepeaters;
+            return ((zeroBasedIndex - m_nonRepeaters)%m_repeaters)+m_nonRepeaters;
                 
         }
     
         public boolean processErrors(int errorStatus, int errorIndex) {
             if (errorStatus == TOO_BIG_ERR) {
-                m_pduBuilder.setMaxVarsPerPdu(m_pduBuilder.getMaxVarsPerPdu()/2);
-                log().info("Received tooBig error. Reducing maxVarsPerPdu for this request to "+m_pduBuilder.getMaxVarsPerPdu());
+                int maxVarsPerPdu = m_pduBuilder.getMaxVarsPerPdu();
+                if (maxVarsPerPdu <= 1)
+                    throw new IllegalArgumentException("Unable to handle tooBigError when maxVarsPerPdu = "+maxVarsPerPdu);
+                m_pduBuilder.setMaxVarsPerPdu(maxVarsPerPdu/2);
+                reportTooBigErr("Reducing maxVarsPerPdu for this request to "+m_pduBuilder.getMaxVarsPerPdu());
                 return true;
-            } else if (errorStatus == GEN_ERR || errorStatus == NO_SUCH_NAME_ERR) {
+            } else if (errorStatus == GEN_ERR) {
                 return processChildError(errorStatus, errorIndex);
+            } else if (errorStatus == NO_SUCH_NAME_ERR) {
+                return processChildError(errorStatus, errorIndex);
+            } else if (errorStatus != NO_ERR){
+                throw new IllegalArgumentException("Unrecognized errorStatus "+errorStatus);
             } else {
-                return errorStatus != NO_ERR;
+                // contine on.. no need to retry
+                return false;
             }
             
         }
 
-        private Category log() {
-            return ThreadCategory.getInstance(ChildTrackerResponseProcessor.class);
-        }
     }
 
     private CollectionTracker[] m_children;
@@ -226,6 +231,12 @@ public abstract class AggregateTracker extends CollectionTracker {
         for(int i = 0; i < m_children.length; i++)
             m_children[i].setParent(this);
     }
+    
+    public void setFailed(boolean failed) {
+        super.setFailed(failed);
+        for(int i = 0; i < m_children.length; i++)
+            m_children[i].setFailed(failed);
+    }
 
     public boolean isFinished() {
         for(int i = 0; i < m_children.length; i++) {
@@ -235,51 +246,54 @@ public abstract class AggregateTracker extends CollectionTracker {
         return true;
     }
 
-    public ResponseProcessor buildNextPdu(final PduBuilder pduBuilder) {
+    public ResponseProcessor buildNextPdu(final PduBuilder parentBuilder) {
         
         // first process the child trackers that aren't finished up to maxVars 
         int count = 0;
-        int maxVars = pduBuilder.getMaxVarsPerPdu();
+        int maxVars = parentBuilder.getMaxVarsPerPdu();
         final List builders = new ArrayList(m_children.length);
         for (int i = 0; i < m_children.length && count < maxVars; i++) {
-            CollectionTracker subTracker = m_children[i];
-            if (!subTracker.isFinished()) {
-                ChildTrackerPduBuilder subPduBuilder = new ChildTrackerPduBuilder(maxVars-count);
-                ResponseProcessor rp = subTracker.buildNextPdu(subPduBuilder);
-                subPduBuilder.setResponseProcessor(rp);
-                builders.add(subPduBuilder);
-                count += subPduBuilder.size();
+            CollectionTracker childTracker = m_children[i];
+            if (!childTracker.isFinished()) {
+                ChildTrackerPduBuilder childBuilder = new ChildTrackerPduBuilder(maxVars-count);
+                ResponseProcessor rp = childTracker.buildNextPdu(childBuilder);
+                childBuilder.setResponseProcessor(rp);
+                builders.add(childBuilder);
+                count += childBuilder.size();
             }
         }
         
         // set the nonRepeaters in the passed in pduBuilder and store indices in the childTrackers
         int nonRepeaters = 0;
         for (Iterator it = builders.iterator(); it.hasNext();) {
-            ChildTrackerPduBuilder subBuilder = (ChildTrackerPduBuilder) it.next();
-            subBuilder.setNonRepeaterStartIndex(nonRepeaters);
-            subBuilder.addNonRepeaters(pduBuilder);
-            nonRepeaters += subBuilder.getNonRepeaters();
+            ChildTrackerPduBuilder childBuilder = (ChildTrackerPduBuilder) it.next();
+            childBuilder.setNonRepeaterStartIndex(nonRepeaters);
+            childBuilder.addNonRepeaters(parentBuilder);
+            nonRepeaters += childBuilder.getNonRepeaters();
         }
         
         // set the repeaters in the passed in pduBuilder and store indices in the childTrackers
         int maxRepititions = Integer.MAX_VALUE;
         int repeaters = 0;
         for (Iterator it = builders.iterator(); it.hasNext();) {
-            ChildTrackerPduBuilder subBuilder = (ChildTrackerPduBuilder) it.next();
-            subBuilder.setRepeaterStartIndex(nonRepeaters+repeaters);
-            subBuilder.addRepeaters(pduBuilder);
-            maxRepititions = Math.min(maxRepititions, subBuilder.getMaxRepititions());
-            repeaters += subBuilder.getRepeaters();
+            ChildTrackerPduBuilder childBuilder = (ChildTrackerPduBuilder) it.next();
+            childBuilder.setRepeaterStartIndex(nonRepeaters+repeaters);
+            childBuilder.addRepeaters(parentBuilder);
+            maxRepititions = Math.min(maxRepititions, childBuilder.getMaxRepititions());
+            repeaters += childBuilder.getRepeaters();
         }
         
         // set the non repeaters and max repititions
-        pduBuilder.setNonRepeaters(nonRepeaters);
-        pduBuilder.setMaxRepititions(maxRepititions == Integer.MAX_VALUE ? 1 : maxRepititions);
+        parentBuilder.setNonRepeaters(nonRepeaters);
+        parentBuilder.setMaxRepititions(maxRepititions == Integer.MAX_VALUE ? 1 : maxRepititions);
         
         // construct a response processor that tracks the changes and informs the response processors
         // for the child trackers
-        return new ChildTrackerResponseProcessor(pduBuilder, builders, nonRepeaters, repeaters);
+        return new ChildTrackerResponseProcessor(parentBuilder, builders, nonRepeaters, repeaters);
     }
 
+    protected Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 
 }

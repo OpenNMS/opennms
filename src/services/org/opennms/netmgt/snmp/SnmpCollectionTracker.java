@@ -45,19 +45,12 @@ import org.opennms.core.utils.ThreadCategory;
 
 public class SnmpCollectionTracker extends AggregateTracker {
     
-    public static final String COLUMN = "column";
-    
-    public interface CollectionDefinition {
-        public String getOid();
-        public String getInstanceDef();
-    }
-    
     private static CollectionTracker[] createCollectionTrackers(List objList) {
         CollectionTracker[] trackers = new CollectionTracker[objList.size()];
         int index = 0;
         for (Iterator it = objList.iterator(); it.hasNext();) {
-            CollectionDefinition colDef = (CollectionDefinition) it.next();
-            trackers[index++] = createTracker(SnmpObjId.get(colDef.getOid()), colDef.getInstanceDef());
+            Collectable colDef = (Collectable) it.next();
+            trackers[index++] = colDef.getCollectionTracker();
         }
         return trackers;
     }
@@ -68,14 +61,6 @@ public class SnmpCollectionTracker extends AggregateTracker {
      * 
      */
 
-    private static CollectionTracker createTracker(SnmpObjId id, String instanceDef) {
-        if (SnmpCollectionTracker.COLUMN.equals(instanceDef)) {
-            return new ColumnTracker(id);
-        } else {
-            return new InstanceListTracker(id, instanceDef);
-        }
-    }
-    
     private Map m_instanceMaps = new TreeMap();
 
     public SnmpCollectionTracker(List objList) {

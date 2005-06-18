@@ -38,11 +38,12 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
+
 import java.net.InetAddress;
 
-import org.opennms.netmgt.utils.Signaler;
-import org.opennms.protocols.snmp.SnmpSession;
-import org.opennms.protocols.snmp.SnmpVarBind;
+import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
 
 /**
  * <P>
@@ -57,21 +58,28 @@ import org.opennms.protocols.snmp.SnmpVarBind;
  * 
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213 </A>
  */
-public final class SystemGroup extends SnmpWalker {
+public final class SystemGroup extends AggregateTracker {
+
     //
     // Lookup strings for specific table entries
     //
-    public final static String SYS_OBJECTID = "sysObjectID";
+    public final static String SYS_OBJECTID_ALIAS = "sysObjectID";
+    private static final String SYS_OBJECTID = ".1.3.6.1.2.1.1.2";
 
-    public final static String SYS_UPTIME = "sysUptime";
+    public final static String SYS_UPTIME_ALIAS = "sysUptime";
+    private static final String SYS_UPTIME = ".1.3.6.1.2.1.1.3";
 
-    public final static String SYS_NAME = "sysName";
+    public final static String SYS_NAME_ALIAS = "sysName";
+    private static final String SYS_NAME = ".1.3.6.1.2.1.1.5";
 
-    public final static String SYS_DESCR = "sysDescr";
+    public final static String SYS_DESCR_ALIAS = "sysDescr";
+    private static final String SYS_DESCR = ".1.3.6.1.2.1.1.1";
 
-    public final static String SYS_LOCATION = "sysLocation";
+    public final static String SYS_LOCATION_ALIAS = "sysLocation";
+    private static final String SYS_LOCATION = ".1.3.6.1.2.1.1.6";
 
-    public final static String SYS_CONTACT = "sysContact";
+    public final static String SYS_CONTACT_ALIAS = "sysContact";
+    private static final String SYS_CONTACT = ".1.3.6.1.2.1.1.4";
     
     /**
      * <P>
@@ -105,7 +113,7 @@ public final class SystemGroup extends SnmpWalker {
          * should be a US-ASCII display string.
          * </P>
          */
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, SYS_DESCR, ".1.3.6.1.2.1.1.1");
+        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, SYS_DESCR_ALIAS, SYS_DESCR);
 
         /**
          * <P>
@@ -114,7 +122,7 @@ public final class SystemGroup extends SnmpWalker {
          * times the specific vendor's hardware platform.
          * </P>
          */
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID, SYS_OBJECTID, ".1.3.6.1.2.1.1.2");
+        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID, SYS_OBJECTID_ALIAS, SYS_OBJECTID);
 
         /**
          * <P>
@@ -122,7 +130,7 @@ public final class SystemGroup extends SnmpWalker {
          * initialized. This will be in 1/100th of a second increments.
          * </P>
          */
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPTIMETICKS, SYS_UPTIME, ".1.3.6.1.2.1.1.3");
+        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPTIMETICKS, SYS_UPTIME_ALIAS, SYS_UPTIME);
 
         /**
          * <P>
@@ -133,7 +141,7 @@ public final class SystemGroup extends SnmpWalker {
          * depending on the environment.
          * </P>
          */
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, SYS_CONTACT, ".1.3.6.1.2.1.1.4");
+        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, SYS_CONTACT_ALIAS, SYS_CONTACT);
 
         /**
          * <P>
@@ -142,7 +150,7 @@ public final class SystemGroup extends SnmpWalker {
          * site's implementation.
          * </P>
          */
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, SYS_NAME, ".1.3.6.1.2.1.1.5");
+        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, SYS_NAME_ALIAS, SYS_NAME);
 
         /**
          * <P>
@@ -153,7 +161,7 @@ public final class SystemGroup extends SnmpWalker {
          * the equipment.
          * </P>
          */
-        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, SYS_LOCATION, ".1.3.6.1.2.1.1.6");
+        ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, SYS_LOCATION_ALIAS, SYS_LOCATION);
 
         /**
          * <P>
@@ -191,6 +199,7 @@ public final class SystemGroup extends SnmpWalker {
     public static final String SYSTEM_OID = ".1.3.6.1.2.1.1";
 
     private SnmpStore m_store;
+    private InetAddress m_address;
     
     /**
      * <P>
@@ -199,19 +208,15 @@ public final class SystemGroup extends SnmpWalker {
      * store by the object. When all the data has been collected the passed
      * signaler object is <EM>notified</em> using the notifyAll() method.
      * </P>
-     * @param session
-     *            The SNMP session with the remote agent.
      * @param address TODO
-     * @param signaler
-     *            The object signaled when data collection is done.
      * 
      */
-    public SystemGroup(SnmpSession session, InetAddress address, Signaler signaler, int version) {
-        super(address, signaler, version, "systemGroup", ms_elemList, SYSTEM_OID);
+    public SystemGroup(InetAddress address) {
+        super(NamedSnmpVar.getTrackersFor(ms_elemList));
+        m_address = address;
         m_store = new SnmpStore(ms_elemList); 
-        start(session);
     }
-
+    
     public String getSysName() {
         return m_store.getDisplayString(SYS_NAME);
     }
@@ -232,8 +237,16 @@ public final class SystemGroup extends SnmpWalker {
         return m_store.getDisplayString(SYS_CONTACT);
     }
 
-    protected void update(SnmpVarBind[] vblist) {
-        m_store.update(vblist);
+    protected void storeResult(SnmpObjId base, SnmpInstId inst, Object val) {
+        m_store.storeResult(base, inst, val);
     }
-    
+
+    protected void reportGenErr(String msg) {
+        log().error("Error retrieving systemGroup from "+m_address+". "+msg);
+    }
+
+    protected void reportNoSuchNameErr(String msg) {
+        log().error("Error retrieving systemGroup from "+m_address+". "+msg);
+    }
+
 }
