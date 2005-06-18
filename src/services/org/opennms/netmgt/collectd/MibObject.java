@@ -39,6 +39,9 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.ColumnTracker;
@@ -60,6 +63,8 @@ public class MibObject implements Collectable {
      * Object's identifier in dotted-decimal notation (e.g, ".1.3.6.1.2.1.1.1").
      */
     private String m_oid;
+    
+    private SnmpObjId m_snmpObjId = null;
 
     /**
      * Object's alias (e.g., "sysDescription").
@@ -135,6 +140,7 @@ public class MibObject implements Collectable {
      */
     public void setOid(String oid) {
         m_oid = oid;
+        m_snmpObjId = null;
     }
 
     /**
@@ -308,6 +314,26 @@ public class MibObject implements Collectable {
         return "ifIndex".equals(getInstance()) 
             ? (CollectionTracker)new ColumnTracker(SnmpObjId.get(getOid())) 
             : (CollectionTracker)new InstanceListTracker(SnmpObjId.get(getOid()), getInstance());
+    }
+
+    public static CollectionTracker[] getCollectionTrackers(List objList) {
+        CollectionTracker[] trackers = new CollectionTracker[objList.size()];
+        int index = 0;
+        for (Iterator it = objList.iterator(); it.hasNext();) {
+            MibObject mibObj = (MibObject) it.next();
+            trackers[index++] = mibObj.getCollectionTracker();
+        }
+        return trackers;
+    }
+
+    public SnmpObjId getSnmpObjId() {
+        if (getOid() == null)
+            return null;
+        
+        if (m_snmpObjId == null)
+            m_snmpObjId = SnmpObjId.get(getOid());
+        
+        return m_snmpObjId;
     }
 
 }

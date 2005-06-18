@@ -56,6 +56,7 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
         assertTrue(collector.getEntry().isEmpty());
     }
 
+
     public void testInvalidVar() throws Exception {
         addMibObject("invalid", ".1.3.6.1.2.1.2", "0", "string");
         SnmpNodeCollector collector = createNodeCollector(50);
@@ -75,7 +76,7 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
     }
 
     private SnmpNodeCollector createNodeCollector(int maxVarsPerPdu) throws Exception, InterruptedException {
-        SnmpNodeCollector collector = new SnmpNodeCollector(getSession(), m_signaler, new ArrayList(m_objList), maxVarsPerPdu);
+        SnmpNodeCollector collector = new SnmpNodeCollector(getSession().getPeer().getPeer(), m_signaler, new ArrayList(m_objList), maxVarsPerPdu);
         waitForSignal();
         assertNotNull(collector.getEntry());
         return collector;

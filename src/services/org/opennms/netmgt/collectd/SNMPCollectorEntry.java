@@ -38,11 +38,14 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
@@ -88,8 +91,11 @@ public final class SNMPCollectorEntry extends java.util.TreeMap {
      * </P>
      */
     public SNMPCollectorEntry() {
-        super();
-        m_objList = null;
+        this(null);
+    }
+    
+    public SNMPCollectorEntry(List objList) {
+        m_objList = objList;
     }
 
     /**
@@ -116,8 +122,7 @@ public final class SNMPCollectorEntry extends java.util.TreeMap {
      *            SNMP data is for the node.
      */
     public SNMPCollectorEntry(SnmpVarBind[] vars, List objList, String ifIndex) {
-        this();
-        m_objList = objList;
+        this(objList);
 
         // Store the ifIndex to which the varbind list pertains
         // within the map. This provides an easy mechanism for
@@ -151,10 +156,8 @@ public final class SNMPCollectorEntry extends java.util.TreeMap {
     public void update(SnmpVarBind[] vars, String ifIndex) {
         // Log4j category
         //
-        Category log = ThreadCategory.getInstance(getClass());
-
-        if (log.isDebugEnabled())
-            log.debug("update: updating SNMPCollectorEntry map for ifIndex: " + ifIndex);
+        if (log().isDebugEnabled())
+            log().debug("update: updating SNMPCollectorEntry map for ifIndex: " + ifIndex);
 
         try {
             // Iterate over the list of MibObjects representing the
@@ -182,11 +185,11 @@ public final class SNMPCollectorEntry extends java.util.TreeMap {
                     if (vars[y] != null && id.isRootOf(vars[y].getName())) {
                         try {
                             put(fullOid, vars[y].getValue());
-                            if (log.isDebugEnabled())
-                                log.debug("update: added oid:value pair: " + fullOid + " : " + vars[y].getValue());
+                            if (log().isDebugEnabled())
+                                log().debug("update: added oid:value pair: " + fullOid + " : " + vars[y].getValue());
                         } catch (NullPointerException e) {
-                            if (log.isDebugEnabled())
-                                log.debug("update: a null pointer exception occured", e);
+                            if (log().isDebugEnabled())
+                                log().debug("update: a null pointer exception occured", e);
                         }
 
                         break;
@@ -194,8 +197,30 @@ public final class SNMPCollectorEntry extends java.util.TreeMap {
                 }
             }
         } catch (Throwable t) {
-            if (log.isEnabledFor(Priority.WARN))
-                log.warn("update: unexpected exception: ", t);
+            if (log().isEnabledFor(Priority.WARN))
+                log().warn("update: unexpected exception: ", t);
         }
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+    
+    private MibObject findMibObjectWitOid(SnmpObjId base) {
+        for (Iterator it = m_objList.iterator(); it.hasNext();) {
+            MibObject mibObj = (MibObject) it.next();
+            if (base.equals(mibObj.getSnmpObjId()))
+                return mibObj;
+        }
+        return null;
+    }
+    
+    public void storeResult(SnmpObjId base, SnmpInstId inst, Object val) {
+        MibObject mibObject = findMibObjectWitOid(base);
+        if (mibObject.getInstance().equals(MibObject.INSTANCE_IFINDEX))
+            put(IF_INDEX, inst);
+        String key = base.append(inst).toString();
+        put(key, val);
+        log().debug("storeResult: added oid:value pair: " + key + " : " + val);
     }
 }
