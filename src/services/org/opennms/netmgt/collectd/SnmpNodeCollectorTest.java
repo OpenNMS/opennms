@@ -32,11 +32,13 @@
 package org.opennms.netmgt.collectd;
 
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 
 import junit.framework.TestSuite;
 
 import org.opennms.netmgt.snmp.SnmpCollectorTestCase;
+import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.snmp.VersionSettingTestSuite;
 import org.opennms.protocols.snmp.SnmpSMI;
 
@@ -76,7 +78,10 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
     }
 
     private SnmpNodeCollector createNodeCollector(int maxVarsPerPdu) throws Exception, InterruptedException {
-        SnmpNodeCollector collector = new SnmpNodeCollector(getSession().getPeer().getPeer(), m_signaler, new ArrayList(m_objList), maxVarsPerPdu);
+        InetAddress address = getSession().getPeer().getPeer();
+        SnmpNodeCollector collector = new SnmpNodeCollector(address, new ArrayList(m_objList));
+        SnmpWalker walker = new SnmpWalker(address, m_signaler, "SnmpNodeCollector for "+address.getHostAddress(), maxVarsPerPdu, collector);
+        walker.start();
         waitForSignal();
         assertNotNull(collector.getEntry());
         return collector;

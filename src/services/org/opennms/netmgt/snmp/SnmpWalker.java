@@ -187,7 +187,7 @@ public class SnmpWalker {
     public SnmpWalker(final InetAddress address, Signaler signal, String name, int maxVarsPerPdu, CollectionTracker[] trackers) {
         this(address, signal, name, maxVarsPerPdu, new AggregateTracker(trackers) {
             protected void reportTooBigErr(String msg) {
-                log().info("Received tooBig response from "+address+". "+msg);
+                ThreadCategory.getInstance(SnmpWalker.class).info("Received tooBig response from "+address+". "+msg);
             }
         });
     }

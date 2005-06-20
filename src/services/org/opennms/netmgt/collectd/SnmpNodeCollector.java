@@ -47,7 +47,6 @@ import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpWalker;
-import org.opennms.netmgt.utils.Signaler;
 
 /**
  * The SnmpNodeCollector class is responsible for performing the actual SNMP
@@ -86,27 +85,15 @@ public class SnmpNodeCollector extends AggregateTracker {
      * store by the object. When all the data has been collected the passed
      * signaler object is <EM>notified</EM> using the notifyAll() method.
      * @param address TODO
-     * @param signaler
-     *            The object signaled when data collection is done.
      * @param objList
      *            The list of object id's to be collected.
-     * @param maxVarsPerPdu
-     *            Max number of vars permitted in a single PDU
      */
-    public SnmpNodeCollector(InetAddress address, Signaler signaler, List objList, int maxVarsPerPdu) {
+    public SnmpNodeCollector(InetAddress address, List objList) {
         super(MibObject.getCollectionTrackers(objList));
         
         m_primaryIf = address.getHostAddress();
-
         m_collectorEntry = new SNMPCollectorEntry(objList);
 
-        // Process parameters
-        //
-        if (log().isDebugEnabled())
-            log().debug("SnmpNodeCollector: totalOids=" + objList.size() + " maxVarsPerPdu=" + maxVarsPerPdu);
-
-        m_walker = new SnmpWalker(address, signaler, "SnmpNodeCollector for "+address.getHostAddress(), maxVarsPerPdu, this);
-        m_walker.start();
 
     }
 

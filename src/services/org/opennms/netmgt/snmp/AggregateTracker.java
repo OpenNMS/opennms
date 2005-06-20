@@ -298,7 +298,7 @@ public class AggregateTracker extends CollectionTracker {
         return new ChildTrackerResponseProcessor(parentBuilder, builders, nonRepeaters, repeaters);
     }
 
-    protected Category log() {
+    private final Category log() {
         return ThreadCategory.getInstance(getClass());
     }
 

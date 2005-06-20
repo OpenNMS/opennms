@@ -41,6 +41,8 @@ package org.opennms.netmgt.capsd.snmp;
 
 import java.net.InetAddress;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -247,6 +249,10 @@ public final class SystemGroup extends AggregateTracker {
 
     protected void reportNoSuchNameErr(String msg) {
         log().error("Error retrieving systemGroup from "+m_address+". "+msg);
+    }
+
+    private final Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
 }

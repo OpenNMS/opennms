@@ -48,6 +48,7 @@ import org.opennms.protocols.snmp.SnmpInt32;
 import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpPeer;
+import org.opennms.protocols.snmp.SnmpSMI;
 import org.opennms.protocols.snmp.SnmpSession;
 import org.opennms.protocols.snmp.SnmpTimeTicks;
 
@@ -119,9 +120,10 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     protected SnmpObjId m_ifOutOctets;
     protected SnmpObjId m_invalid;
     
-    private int m_version = -1;
+    private int m_version = SnmpSMI.SNMPV1;
     
     public void setVersion(int version) {
+        super.setVersion(version);
         m_version = version;
     }
 
@@ -158,7 +160,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
 
     protected void assertMibObjectsPresent(SNMPCollectorEntry entry, List objList) {
         assertNotNull(entry);
-        assertEquals(objList.size(), getEntrySize(entry));
+        assertEquals("Unexpected size for "+entry, objList.size(), getEntrySize(entry));
         for (Iterator it = objList.iterator(); it.hasNext();) {
             MibObject mibObject = (MibObject) it.next();
             assertMibObjectPresent(entry, mibObject);

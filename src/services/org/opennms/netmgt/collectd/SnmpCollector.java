@@ -42,11 +42,11 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -67,16 +67,18 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.poller.monitors.NetworkInterface;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.snmp.CollectionTracker;
+import org.opennms.netmgt.snmp.SingleInstanceTracker;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.utils.AlphaNumeric;
 import org.opennms.netmgt.utils.BarrierSignaler;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.protocols.snmp.SnmpObjectId;
-import org.opennms.protocols.snmp.SnmpPeer;
-import org.opennms.protocols.snmp.SnmpSMI;
-import org.opennms.protocols.snmp.SnmpSession;
+import org.opennms.protocols.snmp.SnmpInt32;
 import org.opennms.protocols.snmp.SnmpSyntax;
 
 /**
@@ -89,6 +91,21 @@ import org.opennms.protocols.snmp.SnmpSyntax;
  * 
  */
 final class SnmpCollector implements ServiceCollector {
+    private final class IfNumberTracker extends SingleInstanceTracker {
+        int m_ifNumber = -1;
+        private IfNumberTracker() {
+            super(SnmpObjId.get(INTERFACES_IFNUMBER), SnmpInstId.INST_ZERO);
+        }
+
+        protected void storeResult(SnmpObjId base, SnmpInstId inst, Object val) {
+            m_ifNumber = ((SnmpInt32)val).getValue();
+        }
+        
+        public int getIfNumber() {
+            return m_ifNumber;
+        }
+    }
+
     /**
      * Name of monitored service.
      */
@@ -808,26 +825,8 @@ final class SnmpCollector implements ServiceCollector {
         if (log.isDebugEnabled())
             log.debug("initialize: address = " + ipAddr.getHostAddress() + ", nodeID = " + nodeID + ", ifIndex = " + primaryIfIndex + ", sysoid = " + sysoid);
 
-        // Determine if remote SNMP agent supports SNMPv2
-        //
-        boolean supportsSnmpV2 = testSnmpV2Support(ipAddr);
-
         // Instantiate new SnmpPeer object for this interface
         //
-        SnmpPeer peer = SnmpPeerFactory.getInstance().getPeer(ipAddr, supportsSnmpV2 ? SnmpSMI.SNMPV2 : SnmpSMI.SNMPV1);
-        if (log.isDebugEnabled()) {
-            String nl = System.getProperty("line.separator");
-            log.debug("initialize: SnmpPeer configuration: address: " + peer.getPeer() + nl + "      version: " + ((peer.getParameters().getVersion() == SnmpSMI.SNMPV1) ? "SNMPv1" : "SNMPv2") + nl + "      timeout: " + peer.getTimeout() + nl + "      retries: " + peer.getRetries() + nl + "      read commString: " + peer.getParameters().getReadCommunity() + nl + "      write commString: " + peer.getParameters().getWriteCommunity());
-        }
-
-        // Add the snmp config object as an attribute of the interface
-        //
-        iface.setAttribute(SNMP_PEER_KEY, peer);
-
-        // Retrieve interface count and it to the interface's attributes
-        // for retrieval during poll()
-        // 
-        iface.setAttribute(INTERFACE_COUNT_KEY, new Integer(getInterfaceCount(peer)));
 
         if (log.isDebugEnabled())
             log.debug("initialize: initialization completed for " + ipAddr.getHostAddress());
@@ -858,13 +857,6 @@ final class SnmpCollector implements ServiceCollector {
      */
     public int collect(NetworkInterface iface, EventProxy eproxy, Map parameters) {
         try {
-            // Retrieve this interface's SNMP peer object
-            //
-            SnmpPeer peer = getPeer(iface, parameters);
-            
-            // Establish SNMP session with interface
-            //
-            SnmpSession session = getSession(peer);
             
             // -----------------------------------------------------------
             // 
@@ -872,85 +864,43 @@ final class SnmpCollector implements ServiceCollector {
             //
             // -----------------------------------------------------------
             SnmpNodeCollector nodeCollector = null;
-            SnmpIfCollector ifCollector = null;
+            // construct the nodeCollector
+            if (!getNodeInfo(iface).getOidList().isEmpty()) {
+                nodeCollector = new SnmpNodeCollector(getInetAddress(iface), getNodeInfo(iface).getOidList());
+            }
             
-            // Need to be certain that we close the SNMP session when
-            // the poll() is completed...wrapping data collection code
-            // in a try/finally block
-            try {
-                // Any interface specific oids to be collected?
-                //
-                // If there are interface oids to be collected then we need to know
-                // how many interfaces are configured on the remote host so that we
-                // can efficiently collect data from the interface table (such as
-                // ifOctetsIn, ifOctetsOut...). Retrieve the value of the
-                // 'interface.ifNumber' MIB object for this purpose.
-                //
-                // NOTE: The last retrieved value of 'interface.ifNumber' is stored
-                // as an interface attribute using the key 'INTERFACE_COUNT_KEY'.
-                // If the newly retrieved count differs from the saved value then
-                // a forceRescan event will be sent via Eventd to Capsd. Capsd will
-                // rescan the node and update the database accordingly. As a result,
-                // a reinitializePrimarySnmpInterface or primarySnmpInterfaceChanged
-                // may be generated by Capsd.
-                int ifCount = -1;
+            IfNumberTracker ifNumber = null;
+            SnmpIfCollector ifCollector = null;
+            // construct the ifCollector
+            if (hasInterfaceOids(iface)) {
+                ifCollector = new SnmpIfCollector(getInetAddress(iface), getIfMap(iface));
+                ifNumber = new IfNumberTracker();
+            } 
+            
+
+            collectData(iface, ifNumber, nodeCollector, ifCollector);
+            
+            if (hasInterfaceOids(iface)) {
+                int savedIfCount = getSavedIfCount(iface);
                 
-                if (hasInterfaceOids(iface)) {
-                    int savedIfCount = getSavedIfCount(iface);
-                    
-                    ifCount = getCurrentIfCount(session, iface);
-                    
-                    saveIfCount(iface, ifCount);
-                    
-                    log().debug("collect: interface: " + getHostAddress(iface) + " ifCount: " + ifCount + " savedIfCount: " + savedIfCount);
-                    
-                    // If saved interface count differs from the newly retreived
-                    // interface count the following must occur:
-                    // 
-                    // 1. generate forceRescan event so Capsd will rescan the
-                    // node, update the database, and generate the appropriate
-                    // events back to the poller.
-                    // 
-                    // 2. Skip the data collection by returning COLLECTION_SUCCEEDED
-                    // immediately. We return COLLECTION_SUCCEEDED in this instance
-                    // since SNMP isn't actually down
-                    //
-                    if (savedIfCount != -1) {
-                        if (ifCount != savedIfCount) {
-                            log().info("Number of interfaces on primary SNMP interface " + getHostAddress(iface) + " has changed, generating 'ForceRescan' event. " + "Data collection will not be performed.");
-                            
-                            generateForceRescanEvent(getHostAddress(iface), eproxy);
-                            
-                            // FIXME: I don't like this... shouldn't we jus proceed with the collection anyway?
-                            return COLLECTION_SUCCEEDED;
-                        }
+                int ifCount = ifNumber.getIfNumber();
+                
+                saveIfCount(iface, ifCount);
+                
+                log().debug("collect: interface: " + getHostAddress(iface) + " ifCount: " + ifCount + " savedIfCount: " + savedIfCount);
+                
+                // If saved interface count differs from the newly retreived
+                // interface count the following must occur:
+                // 
+                // 1. generate forceRescan event so Capsd will rescan the
+                // node, update the database, and generate the appropriate
+                // events back to the poller.
+                // 
+                if (savedIfCount != -1) {
+                    if (ifCount != savedIfCount) {
+                        log().info("Number of interfaces on primary SNMP interface " + getHostAddress(iface) + " has changed, generating 'ForceRescan' event. ");
+                        generateForceRescanEvent(getHostAddress(iface), eproxy);
                     }
-                }
-                
-                // 
-                // Collect node data
-                //
-                if (!getNodeInfo(iface).getOidList().isEmpty()) {
-                    nodeCollector = collectNodeData(session, iface);
-                } // end if (hasNodeOids)
-                
-                // 
-                // Collect interface data
-                //
-                if (hasInterfaceOids(iface)) {
-                    ifCollector = collectIfData(session, iface, ifCount);
-                } // end if(hasInterfaceOids)
-            } finally {
-                //
-                // Regardless of what happens with
-                // the collection, close the session
-                // when we're finished collecting data.
-                //
-                try {
-                    session.close();
-                } catch (Exception e) {
-                    if (log().isEnabledFor(Priority.WARN))
-                        log().warn("collect: An error occured closing the SNMP session for " + getHostAddress(iface), e);
                 }
             }
             
@@ -977,47 +927,25 @@ final class SnmpCollector implements ServiceCollector {
             else
                 log().warn(e.getMessage(), e.getCause());
             return COLLECTION_FAILED;
-        }
-    }
-
-    private SnmpIfCollector collectIfData(SnmpSession session, NetworkInterface iface, int ifCount) throws CollectionWarning, CollectionError {
-        try {
-            BarrierSignaler blocker = new BarrierSignaler(1);
-            SnmpIfCollector ifCollector = new SnmpIfCollector(session, blocker, String.valueOf(getNodeInfo(iface).getPrimarySnmpIfIndex()), getIfMap(iface), ifCount, getMaxVarsPerPdu(iface));
-            
-            if (log().isDebugEnabled())
-                log().debug("collect: successfully instantiated SNMPIfCollector() for " + getHostAddress(iface));
-            
-            //
-            blocker.waitFor();
-            
-            if (log().isDebugEnabled())
-                log().debug("collect: interface SNMP query for address " + getHostAddress(iface) + " complete.");
-            
-            // Was the interface collection successful?
-            //
-            if (ifCollector.failed()) {
-                // Log error and return COLLECTION_FAILED
-                //
-                if (ifCollector.timedout() == true)
-                    throw new CollectionWarning("collect: interface collection timed out for " + getHostAddress(iface));
-                else
-                    throw new CollectionWarning("collect: interface collection had errors for " + getHostAddress(iface));
-            }
-            return ifCollector;
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); 
-            throw new CollectionWarning("collect: Collection of interface SNMP data for interface " + getHostAddress(iface) + " interrupted!", e);
         } catch (Throwable t) {
-            throw new CollectionError("Unexpected error during interface SNMP collection for " + getHostAddress(iface), t);
+            log().error("Unexpected error during node SNMP collection for " + getHostAddress(iface), t);
+            return COLLECTION_FAILED;
         }
     }
 
-    private SnmpNodeCollector collectNodeData(SnmpSession session, NetworkInterface iface) throws CollectionWarning, CollectionError {
+    private void collectData(NetworkInterface iface, CollectionTracker ifNumber, SnmpNodeCollector nodeCollector, SnmpIfCollector ifCollector) throws CollectionWarning {
         try {
             BarrierSignaler blocker = new BarrierSignaler(1);
-            SnmpNodeCollector nodeCollector = new SnmpNodeCollector(session.getPeer().getPeer(), blocker, getNodeInfo(iface).getOidList(), getMaxVarsPerPdu(iface));
+            InetAddress address = getInetAddress(iface);
+            List trackers = new ArrayList(3);
+            if (ifNumber != null) trackers.add(ifNumber);
+            if (nodeCollector != null) trackers.add(nodeCollector);
+            if (ifCollector != null) trackers.add(ifCollector);
             
+            // now collect the data
+            SnmpWalker walker = new SnmpWalker(address, blocker, "SnmpCollectors for "+address.getHostAddress(), getMaxVarsPerPdu(iface), (CollectionTracker[]) trackers.toArray(new CollectionTracker[trackers.size()]));
+            walker.start();
+
             if (log().isDebugEnabled())
                 log().debug("collect: successfully instantiated SnmpNodeCollector() for " + getHostAddress(iface));
             
@@ -1029,37 +957,22 @@ final class SnmpCollector implements ServiceCollector {
 
             // Was the node collection successful?
             //
-            if (nodeCollector.failed()) {
+            if (walker.failed()) {
                 // Log error and return COLLECTION_FAILED
                 //
-                if (nodeCollector.timedOut() == true)
-                    throw new CollectionWarning("collect: node collection timed out for " + getHostAddress(iface));
-                else
-                    throw new CollectionWarning("collect: node collection had errors for " + getHostAddress(iface));
+                throw new CollectionWarning("collect: collection failed for " + getHostAddress(iface));
                 
             }
-            return nodeCollector;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new CollectionWarning("collect: Collection of node SNMP data for interface " + getHostAddress(iface) + " interrupted!", e);
-        } catch (Throwable t) {
-            throw new CollectionError("Unexpected error during node SNMP collection for " + getHostAddress(iface), t);
         }
     }
-
+    
     private void saveIfCount(NetworkInterface iface, int ifCount) {
         // Add the interface count to the interface's attributes for
         // retrieval during poll()
         iface.setAttribute(INTERFACE_COUNT_KEY, new Integer(ifCount));
-    }
-
-    private int getCurrentIfCount(SnmpSession session, NetworkInterface iface) throws CollectionError {
-        int ifCount;
-        ifCount = getIfNumber(session);
-        if (ifCount < 1) {
-            throw new CollectionError("Failed to retrieve interface count from remote host " + getHostAddress(iface));
-        }
-        return ifCount;
     }
 
     private int getSavedIfCount(NetworkInterface iface) {
@@ -1099,36 +1012,6 @@ final class SnmpCollector implements ServiceCollector {
         return getInetAddress(iface).getHostAddress();
     }
 
-    private SnmpPeer getPeer(NetworkInterface iface, Map parameters) throws CollectionError {
-        SnmpPeer peer = (SnmpPeer) iface.getAttribute(SNMP_PEER_KEY);
-        {
-        if (peer == null)
-            throw new CollectionError("SnmpPeer object not available for interface " + getInetAddress(iface));
-        
-        // Get configuration parameters
-        //
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", peer.getTimeout());
-        int retries = ParameterMap.getKeyedInteger(parameters, "retries", peer.getRetries());
-        int port = ParameterMap.getKeyedInteger(parameters, "port", peer.getPort());
-        String oid = ParameterMap.getKeyedString(parameters, "oid", DEFAULT_OBJECT_IDENTIFIER);
-        
-        if (log().isDebugEnabled())
-            log().debug("collect: service= " + SERVICE_NAME + " address= " + peer.getPeer().getHostAddress() + " collectionName=" + getCollectionName(parameters) + " port= " + port + " oid=" + oid + " timeout= " + timeout + " retries= " + retries);
-        
-        // set port, timeout and retries on SNMP peer object
-        //
-        peer.setPort(port);
-        peer.setTimeout(timeout);
-        peer.setRetries(retries);
-        
-        if (log().isDebugEnabled()) {
-            String nl = System.getProperty("line.separator");
-            log().debug("collect: SnmpPeer configuration: address: " + peer.getPeer() + nl + "      version: " + ((peer.getParameters().getVersion() == SnmpSMI.SNMPV1) ? "SNMPv1" : "SNMPv2") + nl + "      timeout: " + peer.getTimeout() + nl + "      retries: " + peer.getRetries() + nl + "      read commString: " + peer.getParameters().getReadCommunity() + nl + "      write commString: " + peer.getParameters().getWriteCommunity());
-        }
-        }
-        return peer;
-    }
-
     private int getMaxVarsPerPdu(NetworkInterface iface) {
         int maxVarsPerPdu = ((Integer) iface.getAttribute(MAX_VARS_PER_PDU_STORAGE_KEY)).intValue();
         return maxVarsPerPdu;
@@ -1142,30 +1025,6 @@ final class SnmpCollector implements ServiceCollector {
     private String getCollectionName(Map parameters) {
         String collectionName = ParameterMap.getKeyedString(parameters, "collection", "default");
         return collectionName;
-    }
-
-    private SnmpSession getSession(SnmpPeer peer) throws CollectionError {
-        SnmpSession session = null;
-        try {
-            session = new SnmpSession(peer);
-        } catch (SocketException e) {
-            if (session != null) {
-                try {
-                    session.close();
-                } catch (Exception ex) {
-                    log().info("collect: an error occured closing the SNMP session", ex);
-                }
-            }
-            throw new CollectionError("collect: Error creating the SnmpSession to collect from " + peer.getPeer().getHostAddress(), e);
-        }
-        return session;
-    }
-
-    private int getIfNumber(SnmpSession session) {
-        int ifCount;
-        SnmpObjectId ifNumber = new SnmpObjectId(".1.3.6.1.2.1.2.1");
-        ifCount = SnmpSMI.toInt(session.getNext(ifNumber), -1);
-        return ifCount;
     }
 
     /**
@@ -1184,48 +1043,47 @@ final class SnmpCollector implements ServiceCollector {
      * @param ifCollector
      *            Interface level MIB data collected via SNMP for the polled
      *            interface
+     * @throws CollectionError 
      * 
      * @exception RuntimeException
      *                Thrown if the data source list for the interface is null.
      */
-    private boolean updateRRDs(String collectionName, NetworkInterface iface, SnmpNodeCollector nodeCollector, SnmpIfCollector ifCollector) {
+    private boolean updateRRDs(String collectionName, NetworkInterface iface, SnmpNodeCollector nodeCollector, SnmpIfCollector ifCollector) throws CollectionError {
         // Log4j category
         //
-        Category log = log();
-
         InetAddress ipaddr = getInetAddress(iface);
-
+        
         // Retrieve SNMP storage attribute
-        String snmpStorage = (String) iface.getAttribute(SNMP_STORAGE_KEY);
-
+        String snmpStorage = getSnmpStorage(iface);
+        
         // Get primary interface index from NodeInfo object
-        NodeInfo nodeInfo = (NodeInfo) iface.getAttribute(NODE_INFO_KEY);
-        Integer primaryIfIndex = new Integer(nodeInfo.getPrimarySnmpIfIndex());
-
+        NodeInfo nodeInfo = getNodeInfo(iface);
+        int primaryIfIndex = nodeInfo.getPrimarySnmpIfIndex();
+        
         // Retrieve interface map attribute
         //
-        Map ifMap = (Map) iface.getAttribute(IF_MAP_KEY);
-
+        Map ifMap = getIfMap(iface);
+        
         // Write relevant collected SNMP statistics to RRD database
         // 
         // First the node level RRD info will be updated.
         // Secondly the interface level RRD info will be updated.
         //
         boolean rrdError = false;
-
+        
         // -----------------------------------------------------------
         // Node data
         // -----------------------------------------------------------
         if (nodeCollector != null) {
-            log.debug("updateRRDs: processing node-level collection...");
-
+            log().debug("updateRRDs: processing node-level collection...");
+            
             // Build path to node RRD repository. createRRD() will make the
             // appropriate directories if they do not already exist.
             //
             String nodeRepository = m_rrdPath + File.separator + String.valueOf(nodeInfo.getNodeId());
-
+            
             SNMPCollectorEntry nodeEntry = nodeCollector.getEntry();
-
+            
             // Iterate over the node datasource list and issue RRD update
             // commands to update each datasource which has a corresponding
             // value in the collected SNMP data
@@ -1233,89 +1091,90 @@ final class SnmpCollector implements ServiceCollector {
             Iterator iter = nodeInfo.getDsList().iterator();
             while (iter.hasNext()) {
                 DataSource ds = (DataSource) iter.next();
-
+                
                 try {
-
+                    
                     String dsVal = getRRDValue(ds, nodeEntry);
                     if (dsVal == null) {
                         // Do nothing, no update is necessary
-                        if (log.isDebugEnabled())
-                            log.debug("updateRRDs: Skipping update, no data retrieved for nodeId: " + nodeInfo.getNodeId() + " datasource: " + ds.getName());
+                        if (log().isDebugEnabled())
+                            log().debug("updateRRDs: Skipping update, no data retrieved for nodeId: " + nodeInfo.getNodeId() + " datasource: " + ds.getName());
                     } else {
                         //createRRD(collectionName, ipaddr, nodeRepository, ds);
-			if(ds.performUpdate(collectionName, ipaddr.getHostAddress(), nodeRepository, ds.getName(), dsVal)) {
-	                    log.warn("updateRRDs: ds.performUpdate() failed for node: " + nodeInfo.getNodeId() + " datasource: " + ds.getName());
-			    rrdError = true;
-			}
+                        if(ds.performUpdate(collectionName, ipaddr.getHostAddress(), nodeRepository, ds.getName(), dsVal)) {
+                            log().warn("updateRRDs: ds.performUpdate() failed for node: " + nodeInfo.getNodeId() + " datasource: " + ds.getName());
+                            rrdError = true;
+                        }
                     }
                 } catch (IllegalArgumentException e) {
-                    log.warn("getRRDValue: " + e.getMessage());
+                    log().warn("getRRDValue: " + e.getMessage());
                     // Set rrdError flag
                     rrdError = true;
-                    log.warn("updateRRDs: call to getRRDValue() failed for node: " + nodeInfo.getNodeId() + " datasource: " + ds.getName());
+                    log().warn("updateRRDs: call to getRRDValue() failed for node: " + nodeInfo.getNodeId() + " datasource: " + ds.getName());
                 }
-
+                
             } // end while(more datasources)
         } // end if(nodeCollector != null)
-
+        
         // -----------------------------------------------------------
         // Interface-specific data
         // -----------------------------------------------------------
-
+        
         if (ifCollector != null) {
             // Retrieve list of SNMP collector entries generated for the
             // remote node's interfaces.
             //
             List snmpCollectorEntries = ifCollector.getEntries();
-            if (snmpCollectorEntries == null)
-                throw new RuntimeException("updateRRDs:  No data retrieved for the interface " + ipaddr.getHostAddress());
-
+            if (snmpCollectorEntries == null || snmpCollectorEntries.size() == 0) {
+                log().warn("updateRRDs:  No data retrieved for the interface " + ipaddr.getHostAddress());
+            }
+            
             // Iterate over the SNMP collector entries
             //
             Iterator iter = snmpCollectorEntries.iterator();
             while (iter.hasNext()) {
                 SNMPCollectorEntry ifEntry = (SNMPCollectorEntry) iter.next();
-
-                String ifIndex = (String) ifEntry.get(SNMPCollectorEntry.IF_INDEX);
-
+                
+                int ifIndex = Integer.parseInt((String) ifEntry.get(SNMPCollectorEntry.IF_INDEX));
+                
+                
                 // Are we storing SNMP data for all interfaces or primary
                 // interface only?
                 // If only storing for primary interface only proceed if current
                 // ifIndex is equal to the ifIndex of the primary SNMP interface
                 if (snmpStorage.equals(SNMP_STORAGE_PRIMARY)) {
-                    if (!ifIndex.equals(primaryIfIndex.toString())) {
-                        if (log.isDebugEnabled())
-                            log.debug("updateRRDs: only storing SNMP data for primary interface (" + primaryIfIndex + "), skipping ifIndex: " + ifIndex);
+                    if (ifIndex != primaryIfIndex) {
+                        if (log().isDebugEnabled())
+                            log().debug("updateRRDs: only storing SNMP data for primary interface (" + primaryIfIndex + "), skipping ifIndex: " + ifIndex);
                         continue;
                     }
                 }
-
-                IfInfo ifInfo = (IfInfo) ifMap.get(new Integer(ifIndex));
-
-                if (ifInfo.getCollType() == null){
-                        log.warn("updateRRDs: No SNMP info for ifIndex: " + ifIndex);
-                        continue;
-                }
-
-                if (snmpStorage.equals(SNMP_STORAGE_SELECT)) {
-                    if (ifInfo.getCollType() == null) {
-                        if (log.isDebugEnabled())
-                            log.debug("updateRRDs: selectively storing SNMP data for primary interface (" + primaryIfIndex + "), skipping ifIndex: " + ifIndex + " because collType = null");
-                        continue;
-                    }
-                    if (ifInfo.getCollType().equals("N")) {
-                        if (log.isDebugEnabled())
-                            log.debug("updateRRDs: selectively storing SNMP data for primary interface (" + primaryIfIndex + "), skipping ifIndex: " + ifIndex + " because collType = N");
-                        continue;
-                    }
-                }
-
+                
                 // Use ifIndex to lookup the IfInfo object from the interface
                 // map
                 //
+                IfInfo ifInfo = (IfInfo) ifMap.get(new Integer(ifIndex));
+                if (ifInfo == null) {
+                    // no data needed for this interface
+                    continue;
+                }
+                
+                if (ifInfo.getCollType() == null){
+                    log().warn("updateRRDs: No SNMP info for ifIndex: " + ifIndex);
+                    continue;
+                }
+                
+                if (snmpStorage.equals(SNMP_STORAGE_SELECT)) {
+                    if (ifInfo.getCollType() == null || ifInfo.getCollType().equals("N")) {
+                        if (log().isDebugEnabled())
+                            log().debug("updateRRDs: selectively storing SNMP data for primary interface (" + primaryIfIndex + "), skipping ifIndex: " + ifIndex + " because collType = "+ifInfo.getCollType());
+                        continue;
+                    }
+                }
+                
                 if (ifInfo.getDsList() == null)
                     throw new RuntimeException("Data Source list not available for primary IP addr " + ipaddr.getHostAddress() + " and ifIndex " + ifInfo.getIndex());
-
+                
                 // Iterate over the interface datasource list and issue RRD
                 // update
                 // commands to update each datasource which has a corresponding
@@ -1324,47 +1183,52 @@ final class SnmpCollector implements ServiceCollector {
                 Iterator i = ifInfo.getDsList().iterator();
                 while (i.hasNext()) {
                     DataSource ds = (DataSource) i.next();
-
+                    
                     // Build path to interface RRD repository. createRRD() will
                     // make the
                     // appropriate directories if they do not already exist.
                     //
                     String ifRepository = m_rrdPath + File.separator + String.valueOf(nodeInfo.getNodeId()) + File.separator + ifInfo.getLabel();
-
+                    
                     try {
-
+                        
                         String dsVal = getRRDValue(ds, ifEntry);
-
+                        
                         // Build RRD update command
                         //
                         if (dsVal == null) {
                             // Do nothing, no update is necessary
-                            if (log.isDebugEnabled())
-                                log.debug("updateRRDs: Skipping update, no data retrieved for node/ifindex: " + nodeInfo.getNodeId() + "/" + ifIndex + " datasource: " + ds.getName());
+                            if (log().isDebugEnabled())
+                                log().debug("updateRRDs: Skipping update, no data retrieved for node/ifindex: " + nodeInfo.getNodeId() + "/" + ifIndex + " datasource: " + ds.getName());
                         } else {
                             // Call createRRD() to create RRD if it doesn't
                             // already exist
                             //
                             //createRRD(collectionName, ipaddr, ifRepository, ds);
                             if(ds.performUpdate(collectionName, ipaddr.getHostAddress(), ifRepository, ds.getName(), dsVal)) {
-				log.warn("updateRRDs: ds.performUpdate() failed for node/ifindex: " + nodeInfo.getNodeId() + "/" + ifIndex + " datasource: " + ds.getName());
-				rrdError = true;
-			    }
-
+                                log().warn("updateRRDs: ds.performUpdate() failed for node/ifindex: " + nodeInfo.getNodeId() + "/" + ifIndex + " datasource: " + ds.getName());
+                                rrdError = true;
+                            }
+                            
                         }
                     } catch (IllegalArgumentException e) {
-                        log.warn("buildRRDUpdateCmd: " + e.getMessage());
+                        log().warn("buildRRDUpdateCmd: " + e.getMessage());
                         // Set rrdError flag
                         rrdError = true;
-                        log.warn("updateRRDs: call to buildRRDUpdateCmd() failed for node/ifindex: " + nodeInfo.getNodeId() + "/" + ifIndex + " datasource: " + ds.getName());
+                        log().warn("updateRRDs: call to buildRRDUpdateCmd() failed for node/ifindex: " + nodeInfo.getNodeId() + "/" + ifIndex + " datasource: " + ds.getName());
                     }
-
+                    
                 } // end while(more datasources)
             } // end while(more SNMP collector entries)
         } // end if(ifCollector != null)
         return rrdError;
     }
 
+    private String getSnmpStorage(NetworkInterface iface) {
+        String snmpStorage = (String) iface.getAttribute(SNMP_STORAGE_KEY);
+        return snmpStorage;
+    }
+    
     /**
      * @param ds
      * @param collectorEntry
@@ -1485,76 +1349,6 @@ final class SnmpCollector implements ServiceCollector {
             if (log.isEnabledFor(Priority.ERROR))
                 log.error("generateForceRescanEvent: Unable to send forceRescan event.", e);
         }
-    }
-
-    /**
-     * Responsible for testing the specified interface for SNMPv2 support.
-     * 
-     * @param addr
-     *            Interface to test.
-     * 
-     * @return true if remote SNMP agent supports SNMPv2, false otherwise.
-     */
-    private boolean testSnmpV2Support(InetAddress addr) {
-        boolean supportsV2 = false;
-
-        // Get SnmpPeer object for this interface
-        //
-        SnmpPeer peer = SnmpPeerFactory.getInstance().getPeer(addr);
-
-        // Force version to SNMPv2
-        peer.getParameters().setVersion(SnmpSMI.SNMPV2);
-
-        // Establish SNMP session with interface
-        //
-        SnmpSession session = null;
-        try {
-            session = new SnmpSession(peer);
-            SnmpSyntax[] results = session.getBulk(1, 0, new SnmpObjectId(DEFAULT_OBJECT_IDENTIFIER));
-            return (results != null);
-
-        } catch (SocketException e) {
-            log().error("testSnmpV2Support: Error creating the SnmpSession to collect from " + addr.getHostAddress(), e);
-            return false; // just assume SNMPv1
-
-        } finally {
-            try {
-                if (session != null) session.close();
-            } catch (Exception e) {
-                log().warn("testSnmpV2Support: An error occured closing the SNMP session for " + addr.getHostAddress(), e);
-            }
-        }
-    }
-
-    /**
-     * Retrieves ifNumber object from the MIB-II interfaces table which is the
-     * number of interfaces on the remote node and then returns this value.
-     * 
-     * @param peer
-     *            SnmpPeer object used to communicate with the remote SNMP
-     *            agent.
-     * 
-     * @return number of interfaces on the remote node.
-     */
-    private int getInterfaceCount(SnmpPeer peer) {
-        
-        SnmpSession session = null;
-        try {
-            session = new SnmpSession(peer);
-            return getIfNumber(session);
-            
-        } catch (SocketException e) {
-            log().error("getInterfaceCount: Error creating the SnmpSession to collect from " + peer.getPeer().getHostAddress(), e);
-            return -1;
-
-        } finally {
-            try {
-                if (session != null) session.close();
-            } catch (Exception e) {
-                log().warn("collect: An error occured closing the SNMP session for " + peer.getPeer().getHostAddress(), e);
-            }
-        }
-
     }
 
     private Category log() {

@@ -34,8 +34,16 @@ package org.opennms.netmgt.snmp;
 
 public abstract class CollectionTracker {
     
+    public static final int NO_ERR = 0;
+    public static final int TOO_BIG_ERR = 1;
+    public static final int NO_SUCH_NAME_ERR = 2;
+    public static final int GEN_ERR = 5;
+    public static final Object END_OF_MIB = new Object() { public String toString() { return "endOfMibView"; } };
+
     private CollectionTracker m_parent;
     private boolean m_failed;
+    private boolean m_timedOut;
+    
     
     public CollectionTracker() {
         this(null);
@@ -46,22 +54,6 @@ public abstract class CollectionTracker {
         m_failed = false;
     }
 
-    public abstract boolean isFinished();
-
-    public abstract ResponseProcessor buildNextPdu(PduBuilder pduBuilder);
-
-    public static final int NO_ERR = 0;
-    public static final int TOO_BIG_ERR = 1;
-    public static final int NO_SUCH_NAME_ERR = 2;
-    public static final int GEN_ERR = 5;
-    public static final Object END_OF_MIB = new Object() { public String toString() { return "endOfMibView"; } };
-    private boolean m_timedOut;
-    
-    protected void storeResult(SnmpObjId base, SnmpInstId inst, Object val) {
-        if (m_parent != null)
-            m_parent.storeResult(base, inst, val);
-    }
-    
     public void setParent(CollectionTracker parent) {
         m_parent = parent;
     }
@@ -82,6 +74,15 @@ public abstract class CollectionTracker {
         m_timedOut = timedOut;
     }
     
+    protected void storeResult(SnmpObjId base, SnmpInstId inst, Object val) {
+        if (m_parent != null)
+            m_parent.storeResult(base, inst, val);
+    }
+    
+    public abstract boolean isFinished();
+
+    public abstract ResponseProcessor buildNextPdu(PduBuilder pduBuilder);
+
     protected void reportTooBigErr(String msg) {
         if (m_parent != null)
             m_parent.reportTooBigErr(msg);
@@ -96,6 +97,5 @@ public abstract class CollectionTracker {
         if (m_parent != null)
             m_parent.reportNoSuchNameErr(msg);
     }
-
 
 }

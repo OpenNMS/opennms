@@ -46,6 +46,7 @@ import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.Eventd;
+import org.opennms.protocols.snmp.SnmpSMI;
 
 import junit.framework.TestCase;
 public class OpenNMSTestCase extends TestCase {
@@ -1289,7 +1290,8 @@ public class OpenNMSTestCase extends TestCase {
     /**
      * String representing snmp-config.xml
      */
-    protected static final String SNMP_CONFIG = "<?xml version=\"1.0\"?>\n" + 
+    public String getSnmpConfig() {
+        return "<?xml version=\"1.0\"?>\n" + 
                 "<snmp-config "+ 
                 " retry=\"3\" timeout=\"800\"\n" + 
                 " read-community=\"public\"" +
@@ -1298,7 +1300,7 @@ public class OpenNMSTestCase extends TestCase {
                 " version=\"v1\"\n" +
                 " max-request-size=\"484\">\n" +
                 "\n" +
-                "   <definition version=\"v3\" " +
+                "   <definition version=\""+myVersion()+"\" " +
                 "       security-name=\"opennmsUser\" \n" + 
                 "       auth-passphrase=\"0p3nNMSv3\" >\n" +
                 "       <specific>"+myLocalHost()+"</specific>\n" +
@@ -1332,6 +1334,7 @@ public class OpenNMSTestCase extends TestCase {
                 "   </definition>\n" + 
                 "\n" + 
                 "</snmp-config>";
+    }
 
     private boolean m_startEventd = true;
 
@@ -1340,7 +1343,7 @@ public class OpenNMSTestCase extends TestCase {
      * String to be used in the snmp-config.
      * @return
      */
-    protected static String myLocalHost() {
+    protected String myLocalHost() {
         
         try {
             return InetAddress.getLocalHost().getHostAddress();
@@ -1350,6 +1353,16 @@ public class OpenNMSTestCase extends TestCase {
         }
         
         return null;
+    }
+    
+    private String myVersion() {
+        return m_version == SnmpSMI.SNMPV1 ? "v1" : "v2c";
+    }
+
+    int m_version = SnmpSMI.SNMPV1;
+    
+    public void setVersion(int version) {
+        m_version = version;
     }
 
     protected void setUp() throws Exception {
@@ -1386,7 +1399,7 @@ public class OpenNMSTestCase extends TestCase {
             
             DatabaseConnectionFactory.setInstance(m_db);
 
-            Reader rdr = new StringReader(SNMP_CONFIG);
+            Reader rdr = new StringReader(getSnmpConfig());
             SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
             
             if (isStartEventd()) {
@@ -1424,5 +1437,6 @@ public class OpenNMSTestCase extends TestCase {
     protected boolean isStartEventd() {
         return m_startEventd;
     }
+
 
 }

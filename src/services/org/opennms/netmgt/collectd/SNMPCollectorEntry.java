@@ -95,6 +95,7 @@ public final class SNMPCollectorEntry extends java.util.TreeMap {
     }
     
     public SNMPCollectorEntry(List objList) {
+        if (objList == null) throw new NullPointerException("objList is null!");
         m_objList = objList;
     }
 
@@ -216,11 +217,12 @@ public final class SNMPCollectorEntry extends java.util.TreeMap {
     }
     
     public void storeResult(SnmpObjId base, SnmpInstId inst, Object val) {
-        MibObject mibObject = findMibObjectWitOid(base);
-        if (mibObject.getInstance().equals(MibObject.INSTANCE_IFINDEX))
-            put(IF_INDEX, inst);
         String key = base.append(inst).toString();
         put(key, val);
+        MibObject mibObject = findMibObjectWitOid(base);
+        if (mibObject == null) throw new IllegalArgumentException("Received result for unexpected oid ["+base+"].["+inst+"]");
+        if (mibObject.getInstance().equals(MibObject.INSTANCE_IFINDEX))
+            put(IF_INDEX, inst.toString());
         log().debug("storeResult: added oid:value pair: " + key + " : " + val);
     }
 }
