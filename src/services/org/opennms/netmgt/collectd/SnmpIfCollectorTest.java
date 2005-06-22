@@ -58,6 +58,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     }
 
     private Map m_ifMap;
+    private SnmpWalker m_walker;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -164,9 +165,13 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
 
     private SnmpIfCollector createSnmpIfCollector() throws UnknownHostException {
         SnmpIfCollector collector = new SnmpIfCollector(InetAddress.getLocalHost(), m_ifMap);
-        SnmpWalker m_walker = new SnmpWalker(InetAddress.getLocalHost(), m_signaler, "snmpIfCollector", 50, collector);
+        m_walker = SnmpWalker.create(InetAddress.getLocalHost(), "snmpIfCollector", 50, collector);
         m_walker.start();
         return collector;
+    }
+    
+    private void waitForSignal() throws InterruptedException {
+        m_walker.waitFor();
     }
 
     private IfInfo createIfInfo(int ifIndex, int ifType, String ifName, String ifCollType) {

@@ -47,7 +47,6 @@ import org.opennms.netmgt.capsd.snmp.IpAddrTable;
 import org.opennms.netmgt.capsd.snmp.SystemGroup;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpWalker;
-import org.opennms.netmgt.utils.BarrierSignaler;
 
 /**
  * This class is designed to collect the necessary SNMP information from the
@@ -291,15 +290,14 @@ final class IfSnmpCollector implements Runnable {
         m_ipAddrTable = new IpAddrTable(m_address);
         m_ifXTable = new IfXTable(m_address);
         
-        BarrierSignaler signaler = new BarrierSignaler(1);
-        SnmpWalker walker = new SnmpWalker(m_address, signaler, "system/ifTable/ifXTable/ipAddrTable", 50, new CollectionTracker[] { m_sysGroup, m_ifTable, m_ipAddrTable, m_ifXTable});
+        SnmpWalker walker = SnmpWalker.create(m_address, "system/ifTable/ifXTable/ipAddrTable", 50, new CollectionTracker[] { m_sysGroup, m_ifTable, m_ipAddrTable, m_ifXTable});
         walker.start();
 
         try {
             // wait a maximum of five minutes!
             //
             // FIXME: Why do we do this. If we are successfully processing responses shouldn't we keep going?
-            signaler.waitFor(300000);
+            walker.waitFor(300000);
         } catch (InterruptedException e) {
             m_sysGroup = null;
             m_ifTable = null;

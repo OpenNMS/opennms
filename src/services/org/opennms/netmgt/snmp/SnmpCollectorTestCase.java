@@ -141,10 +141,6 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         super.tearDown();
     }
     
-    protected void waitForSignal() throws InterruptedException {
-        m_signaler.waitFor();
-    }
-
     protected void assertMibObjectsPresent(SNMPCollectorEntry entry, List objList) {
         assertNotNull(entry);
         assertEquals("Unexpected size for "+entry, objList.size(), getEntrySize(entry));

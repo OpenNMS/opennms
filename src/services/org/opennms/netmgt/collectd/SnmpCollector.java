@@ -74,7 +74,6 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.utils.AlphaNumeric;
-import org.opennms.netmgt.utils.BarrierSignaler;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.netmgt.utils.ParameterMap;
@@ -934,7 +933,6 @@ final class SnmpCollector implements ServiceCollector {
 
     private void collectData(NetworkInterface iface, CollectionTracker ifNumber, SnmpNodeCollector nodeCollector, SnmpIfCollector ifCollector) throws CollectionWarning {
         try {
-            BarrierSignaler blocker = new BarrierSignaler(1);
             InetAddress address = getInetAddress(iface);
             List trackers = new ArrayList(3);
             if (ifNumber != null) trackers.add(ifNumber);
@@ -942,14 +940,14 @@ final class SnmpCollector implements ServiceCollector {
             if (ifCollector != null) trackers.add(ifCollector);
             
             // now collect the data
-            SnmpWalker walker = new SnmpWalker(address, blocker, "SnmpCollectors for "+address.getHostAddress(), getMaxVarsPerPdu(iface), (CollectionTracker[]) trackers.toArray(new CollectionTracker[trackers.size()]));
+            SnmpWalker walker = SnmpWalker.create(address, "SnmpCollectors for "+address.getHostAddress(), getMaxVarsPerPdu(iface), (CollectionTracker[]) trackers.toArray(new CollectionTracker[trackers.size()]));
             walker.start();
 
             if (log().isDebugEnabled())
                 log().debug("collect: successfully instantiated SnmpNodeCollector() for " + getHostAddress(iface));
             
             // wait for collection to finish
-            blocker.waitFor();
+            walker.waitFor();
             
             if (log().isDebugEnabled())
                 log().debug("collect: node SNMP query for address " + getHostAddress(iface) + " complete.");
@@ -962,12 +960,18 @@ final class SnmpCollector implements ServiceCollector {
                 throw new CollectionWarning("collect: collection failed for " + getHostAddress(iface));
                 
             }
+            setMaxVarsPdu(iface, walker.getMaxVarsPerPdu());
+            
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new CollectionWarning("collect: Collection of node SNMP data for interface " + getHostAddress(iface) + " interrupted!", e);
         }
     }
     
+    private void setMaxVarsPdu(NetworkInterface iface, int maxVarsPerPdu) {
+        iface.setAttribute(MAX_VARS_PER_PDU_STORAGE_KEY, new Integer(maxVarsPerPdu));
+    }
+
     private void saveIfCount(NetworkInterface iface, int ifCount) {
         // Add the interface count to the interface's attributes for
         // retrieval during poll()

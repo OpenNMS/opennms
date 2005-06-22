@@ -80,9 +80,9 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
     private SnmpNodeCollector createNodeCollector(int maxVarsPerPdu) throws Exception, InterruptedException {
         InetAddress address = InetAddress.getLocalHost();
         SnmpNodeCollector collector = new SnmpNodeCollector(address, new ArrayList(m_objList));
-        SnmpWalker walker = new SnmpWalker(address, m_signaler, "SnmpNodeCollector for "+address.getHostAddress(), maxVarsPerPdu, collector);
+        SnmpWalker walker = SnmpWalker.create(address, "SnmpNodeCollector for "+address.getHostAddress(), maxVarsPerPdu, collector);
         walker.start();
-        waitForSignal();
+        walker.waitFor();
         assertNotNull(collector.getEntry());
         return collector;
     }

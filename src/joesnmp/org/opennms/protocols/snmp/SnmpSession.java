@@ -674,6 +674,7 @@ public class SnmpSession extends Object {
      * 
      */
     public SnmpSession(SnmpPeer peer) throws SocketException {
+        System.err.println("Creating session to "+peer);
         m_requests = new LinkedList();
         m_timer = new SnmpTimer();
         m_defHandler = null;
@@ -971,6 +972,8 @@ public class SnmpSession extends Object {
      *                thread.
      */
     public void close() {
+        System.err.println("closing session to "+m_peer);
+
         synchronized (m_sync) {
             //
             // only allow close to be called once
