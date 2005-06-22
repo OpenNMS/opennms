@@ -151,7 +151,7 @@ public class Snmpv3PluginTest extends OpenNMSTestCase {
      * @throws UnknownHostException
      */
     public void testGetV3Target() throws UnknownHostException {
-        UserTarget target = (UserTarget)SnmpPeerFactory.getInstance().getTarget(InetAddress.getByName(myLocalHost()));
+        UserTarget target = (UserTarget)SnmpPeerFactory.getInstance().getTarget(InetAddress.getByName("192.168.3.3"));
         assertNotNull(target);
         assertEquals(target.getVersion(), SnmpConstants.version3);
         assertEquals("opennmsUser", target.getSecurityName().toString());

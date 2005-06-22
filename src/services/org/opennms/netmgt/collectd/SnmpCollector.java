@@ -71,6 +71,7 @@ import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SingleInstanceTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.utils.AlphaNumeric;
@@ -940,7 +941,7 @@ final class SnmpCollector implements ServiceCollector {
             if (ifCollector != null) trackers.add(ifCollector);
             
             // now collect the data
-            SnmpWalker walker = SnmpWalker.create(address, "SnmpCollectors for "+address.getHostAddress(), getMaxVarsPerPdu(iface), (CollectionTracker[]) trackers.toArray(new CollectionTracker[trackers.size()]));
+            SnmpWalker walker = SnmpUtils.create(address, "SnmpCollectors for "+address.getHostAddress(), getMaxVarsPerPdu(iface), (CollectionTracker[]) trackers.toArray(new CollectionTracker[trackers.size()]));
             walker.start();
 
             if (log().isDebugEnabled())

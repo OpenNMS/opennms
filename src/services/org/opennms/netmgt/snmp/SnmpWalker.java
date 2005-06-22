@@ -36,7 +36,6 @@ import java.net.SocketException;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.snmp.joesnmp.JoeSnmpWalker;
 import org.opennms.netmgt.utils.BarrierSignaler;
 
 
@@ -61,18 +60,6 @@ public abstract class SnmpWalker {
     private ResponseProcessor m_responseProcessor;
     private int m_maxVarsPerPdu;
     
-    public static SnmpWalker create(final InetAddress address, String name, int maxVarsPerPdu, CollectionTracker[] trackers) {
-        return new JoeSnmpWalker(address, name, maxVarsPerPdu, new AggregateTracker(trackers) {
-            protected void reportTooBigErr(String msg) {
-                ThreadCategory.getInstance(SnmpWalker.class).info("Received tooBig response from "+address+". "+msg);
-            }
-        });
-    }
-
-    public static SnmpWalker create(InetAddress address, String name, int maxVarsPerPdu, CollectionTracker tracker) {
-        return new JoeSnmpWalker(address, name, maxVarsPerPdu, tracker);
-    }
-
     protected SnmpWalker(InetAddress address, String name, int maxVarsPerPdu, CollectionTracker tracker) {
         m_address = address;
         m_signal = new BarrierSignaler(1);
