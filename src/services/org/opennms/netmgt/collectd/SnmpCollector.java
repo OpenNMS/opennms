@@ -950,6 +950,9 @@ final class SnmpCollector implements ServiceCollector {
             Iterator iter = ifMap.values().iterator();
             while (iter.hasNext() && !hasInterfaceOids) {
                 IfInfo ifInfo = (IfInfo) iter.next();
+                if (ifInfo.getType() < 1) {
+                    continue;
+                }
                 if (!ifInfo.getOidList().isEmpty())
                     hasInterfaceOids = true;
             }
