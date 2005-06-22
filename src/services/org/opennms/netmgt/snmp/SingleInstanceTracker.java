@@ -31,6 +31,9 @@
 //
 package org.opennms.netmgt.snmp;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+
 public class SingleInstanceTracker extends CollectionTracker {
 
     private SnmpObjId m_base;
@@ -57,14 +60,18 @@ public class SingleInstanceTracker extends CollectionTracker {
         if (pduBuilder.getMaxVarsPerPdu() < 1)
             throw new IllegalArgumentException("maxVarsPerPdu < 1");
         
-        pduBuilder.addOid(m_oid.decrement());
+        SnmpObjId requestOid = m_oid.decrement();
+        log().debug("Requesting oid following: "+requestOid);
+        pduBuilder.addOid(requestOid);
         pduBuilder.setNonRepeaters(1);
         pduBuilder.setMaxRepititions(1);
         
         ResponseProcessor rp = new ResponseProcessor() {
 
-            public void processResponse(SnmpObjId responseObjId, Object val) {
-                if (val == CollectionTracker.END_OF_MIB)
+            public void processResponse(SnmpObjId responseObjId, SnmpValue val) {
+                log().debug("Processing varBind: "+responseObjId+" = "+val);
+                
+                if (val.isEndOfMib())
                     receivedEndOfMib();
 
                 m_finished = true;
@@ -94,6 +101,10 @@ public class SingleInstanceTracker extends CollectionTracker {
         
         return rp;
 
+    }
+
+    protected Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
     protected void errorOccurred() {

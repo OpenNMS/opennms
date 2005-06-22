@@ -95,8 +95,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
-import org.opennms.protocols.snmp.SnmpInt32;
-import org.opennms.protocols.snmp.SnmpOctetString;
 
 /**
  * This class is designed to rescan all the managed interfaces for a specified
@@ -478,9 +476,9 @@ public final class RescanProcessor implements Runnable {
                 if (collectorWithSnmp.hasNonIpInterfaces()) {
                     iter = ((List) collectorWithSnmp.getNonIpInterfaces()).iterator();
                     while (iter.hasNext()) {
-                        SnmpInt32 ifIndex = (SnmpInt32) iter.next();
+                        Integer ifIndex = (Integer) iter.next();
 
-                        updateNonIpInterface(dbc, now, node, ifIndex.getValue(), snmpCollector);
+                        updateNonIpInterface(dbc, now, node, ifIndex.intValue(), snmpCollector);
                     }
                 }
             }

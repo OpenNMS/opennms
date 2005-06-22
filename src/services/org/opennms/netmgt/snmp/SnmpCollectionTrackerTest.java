@@ -43,7 +43,6 @@ import org.opennms.netmgt.snmp.mock.BulkPdu;
 import org.opennms.netmgt.snmp.mock.NextPdu;
 import org.opennms.netmgt.snmp.mock.RequestPdu;
 import org.opennms.netmgt.snmp.mock.ResponsePdu;
-import org.opennms.netmgt.snmp.mock.TestAgent;
 import org.opennms.netmgt.snmp.mock.TestPdu;
 import org.opennms.netmgt.snmp.mock.TestVarBind;
 
@@ -180,6 +179,8 @@ public class SnmpCollectionTrackerTest extends SnmpCollectorTestCase {
         assertNotNull(resp);
         assertEquals(2, resp.size());
         
+        assertEquals(CollectionTracker.NO_ERR, resp.getErrorStatus());
+        
         // create responses
         for (int i = 0; i < resp.size(); i++) {
             TestVarBind varBind = (TestVarBind)resp.getVarBindAt(i);
@@ -304,9 +305,8 @@ public class SnmpCollectionTrackerTest extends SnmpCollectorTestCase {
 
     }
 
-    private Object getVarBindValue(TestVarBind varBind) {
-        Object val = varBind.getValue();
-        return (val == TestAgent.END_OF_MIB ? SnmpCollectionTracker.END_OF_MIB : val);
+    private SnmpValue getVarBindValue(TestVarBind varBind) {
+        return varBind.getValue();
     }
 
     private TestPduBuilder getPduBuilder(int maxVarsPerPdu) {

@@ -46,6 +46,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
 
 /**
@@ -119,7 +120,7 @@ public class SnmpNodeCollector extends AggregateTracker {
         log().warn("noSuchName collecting data for node "+m_primaryIf+": "+msg);
     }
 
-    protected void storeResult(SnmpObjId base, SnmpInstId inst, Object val) {
+    protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         m_collectorEntry.storeResult(base, inst, val);
     }
 }

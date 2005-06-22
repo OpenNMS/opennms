@@ -38,7 +38,6 @@ public abstract class CollectionTracker {
     public static final int TOO_BIG_ERR = 1;
     public static final int NO_SUCH_NAME_ERR = 2;
     public static final int GEN_ERR = 5;
-    public static final Object END_OF_MIB = new Object() { public String toString() { return "endOfMibView"; } };
 
     private CollectionTracker m_parent;
     private boolean m_failed;
@@ -74,7 +73,7 @@ public abstract class CollectionTracker {
         m_timedOut = timedOut;
     }
     
-    protected void storeResult(SnmpObjId base, SnmpInstId inst, Object val) {
+    protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         if (m_parent != null)
             m_parent.storeResult(base, inst, val);
     }

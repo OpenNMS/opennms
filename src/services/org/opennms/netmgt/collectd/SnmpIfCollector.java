@@ -52,6 +52,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
  * The SnmpIfCollector class is responsible for performing the actual SNMP data
@@ -161,7 +162,7 @@ public class SnmpIfCollector extends AggregateTracker {
         log().error(m_primaryIf+": request tooBig. "+msg);
     }
 
-    protected void storeResult(SnmpObjId base, SnmpInstId inst, Object val) {
+    protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         SNMPCollectorEntry entry = (SNMPCollectorEntry)m_results.get(inst);
         if (entry == null) {
             entry = new SNMPCollectorEntry(m_objList);

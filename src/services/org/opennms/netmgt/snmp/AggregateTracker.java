@@ -161,7 +161,7 @@ public class AggregateTracker extends CollectionTracker {
             this.m_childPduBuilders = builders;
         }
     
-        public void processResponse(SnmpObjId snmpObjId, Object val) {
+        public void processResponse(SnmpObjId snmpObjId, SnmpValue val) {
             ChildTrackerPduBuilder childBuilder = getChildBuilder(m_currResponseIndex++);
             childBuilder.getResponseProcessor().processResponse(snmpObjId, val);
         }

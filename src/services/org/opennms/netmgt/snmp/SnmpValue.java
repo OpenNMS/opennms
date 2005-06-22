@@ -29,29 +29,24 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.snmp.mock;
+package org.opennms.netmgt.snmp;
 
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpValue;
+import java.net.InetAddress;
 
-public class TestVarBind {
-    private SnmpObjId m_oid;
-    private SnmpValue m_val;
-    
-    public TestVarBind(SnmpObjId oid) {
-        this(oid, null);
-    }
-    
-    public TestVarBind(SnmpObjId oid, SnmpValue val) {
-        m_oid = oid;
-        m_val = val;
-        
-    }
-    public SnmpObjId getObjId() {
-        return m_oid;
-    }
-    
-    public SnmpValue getValue() {
-        return m_val;
-    }
+public interface SnmpValue {
+
+    public abstract boolean isEndOfMib();
+
+    public abstract boolean isNumeric();
+
+    public abstract int toInt();
+
+    public abstract String toDisplayString();
+
+    public abstract InetAddress toInetAddress();
+
+    public abstract long toLong();
+
+    public abstract String toHexString();
+
 }

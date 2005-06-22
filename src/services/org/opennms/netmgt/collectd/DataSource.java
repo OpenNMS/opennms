@@ -35,7 +35,7 @@
 package org.opennms.netmgt.collectd;
 
 import org.opennms.netmgt.rrd.RRDDataSource;
-import org.opennms.protocols.snmp.SnmpSyntax;
+import org.opennms.netmgt.snmp.SnmpValue;
 
 
 /**
@@ -109,7 +109,7 @@ public abstract class DataSource {
 	/**
 	 * This method extracts from snmpVar a string which can be passed as the val parameter of performUpdate.
 	 */
-	public abstract String getStorableValue(SnmpSyntax snmpVar);
+	public abstract String getStorableValue(SnmpValue snmpVar);
 
 
 	protected String getFullOid(String ifIndex) {

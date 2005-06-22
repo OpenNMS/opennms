@@ -35,17 +35,13 @@
 package org.opennms.netmgt.rrd;
 import java.util.List;
 
-import org.opennms.netmgt.collectd.DataSource;
-import org.opennms.netmgt.collectd.MibObject;
-import org.opennms.netmgt.config.DataCollectionConfigFactory;
-
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.protocols.snmp.SnmpSMI;
-import org.opennms.protocols.snmp.SnmpSyntax;
-import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpTimeTicks;
+import org.opennms.netmgt.collectd.DataSource;
+import org.opennms.netmgt.collectd.MibObject;
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
+import org.opennms.netmgt.snmp.SnmpValue;
 
 
 /**
@@ -351,42 +347,7 @@ public class RRDDataSource extends DataSource {
 		return result;
 	}
 
-    public String getStorableValue(SnmpSyntax snmpVar) {
-        // RRD only supports the storage of integer data types. If we see a
-        // data type other than those listed below an error will be logged
-        // and no RRD update will take place.
-        // Am I missing any SNMP data types here?
-        switch (snmpVar.typeId()) {
-        case SnmpSMI.SMI_INTEGER:
-            return snmpVar.toString();
-        case SnmpSMI.SMI_COUNTER32:
-            return snmpVar.toString();
-        case SnmpSMI.SMI_COUNTER64:
-            return snmpVar.toString();
-        case SnmpSMI.SMI_GAUGE32:
-            return snmpVar.toString();
-        // *NOTE* Same as SnmpSMI.SMI_GAUGE32
-        // case SnmpSMI.SMI_UNSIGNED32:
-        // dsValue = ((SnmpUInt32)snmpVar).getValue();
-        // break;
-        case SnmpSMI.SMI_TIMETICKS:
-            return "" + (((SnmpTimeTicks) snmpVar).getValue());
-        case SnmpSMI.SMI_STRING:
-            String dsValue = ((SnmpOctetString) snmpVar).toString();
-
-            // Validate that the octet string value represents an
-            // integer/double value, otherwise it can't be stored in the RRD
-            // database
-            try {
-                new Double(dsValue);
-                return dsValue;
-            } catch (NumberFormatException nfE) {
-                throw new IllegalArgumentException("number format exception attempting to convert octet string value '" + dsValue + "' to a numeric value for data source '" + this.getName() + "'");
-
-            }
-        default:
-            throw new IllegalArgumentException("SNMP value of data source '" + this.getName() + "' is not one of the supported data types by RRD, invalid typeID: " + snmpVar.typeId() + " Valid RRD data types are:  COUNTER, GAUGE, DERIVE, & ABSOLUTE.  Please check content of 'DataCollection.xml' file.");
-        }
-
+    public String getStorableValue(SnmpValue snmpVar) {
+        return Long.toString(snmpVar.toLong());
     }
 }

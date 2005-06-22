@@ -57,8 +57,8 @@ public class ColumnTracker extends CollectionTracker {
         
         ResponseProcessor rp = new ResponseProcessor() {
 
-            public void processResponse(SnmpObjId responseObjId, Object val) {
-                if (val == CollectionTracker.END_OF_MIB)
+            public void processResponse(SnmpObjId responseObjId, SnmpValue val) {
+                if (val.isEndOfMib())
                     receivedEndOfMib();
 
                 m_last = responseObjId;

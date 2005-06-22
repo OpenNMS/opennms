@@ -32,7 +32,6 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Date;
 
 import org.apache.log4j.Category;

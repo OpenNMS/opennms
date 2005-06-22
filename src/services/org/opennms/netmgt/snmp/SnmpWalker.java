@@ -37,7 +37,11 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.utils.Signaler;
+import org.opennms.protocols.snmp.SnmpCounter64;
+import org.opennms.protocols.snmp.SnmpEndOfMibView;
 import org.opennms.protocols.snmp.SnmpHandler;
+import org.opennms.protocols.snmp.SnmpIPAddress;
+import org.opennms.protocols.snmp.SnmpInt32;
 import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpPduBulk;
 import org.opennms.protocols.snmp.SnmpPduPacket;
@@ -46,9 +50,85 @@ import org.opennms.protocols.snmp.SnmpPeer;
 import org.opennms.protocols.snmp.SnmpSMI;
 import org.opennms.protocols.snmp.SnmpSession;
 import org.opennms.protocols.snmp.SnmpSyntax;
+import org.opennms.protocols.snmp.SnmpUInt32;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
 public class SnmpWalker {
+    
+    private static class JoeSnmpValue implements SnmpValue {
+        SnmpSyntax m_value;
+        
+        JoeSnmpValue(SnmpSyntax value) {
+            m_value = value;
+        }
+
+        public boolean isEndOfMib() {
+            return m_value instanceof SnmpEndOfMibView;
+        }
+
+        public boolean isNumeric() {
+            switch (m_value.typeId()) {
+            case SnmpSMI.SMI_INTEGER:
+            case SnmpSMI.SMI_COUNTER32:
+            case SnmpSMI.SMI_COUNTER64:
+            case SnmpSMI.SMI_TIMETICKS:
+            case SnmpSMI.SMI_UNSIGNED32:
+                return true;
+            default:
+                return false;
+            }
+        }
+        
+        public int toInt() {
+            switch (m_value.typeId()) {
+            case SnmpSMI.SMI_COUNTER64:
+                return ((SnmpCounter64)m_value).getValue().intValue();
+            case SnmpSMI.SMI_INTEGER:
+                return ((SnmpInt32)m_value).getValue();
+            case SnmpSMI.SMI_COUNTER32:
+            case SnmpSMI.SMI_TIMETICKS:
+            case SnmpSMI.SMI_UNSIGNED32:
+                return (int)((SnmpUInt32)m_value).getValue();
+            default:
+                return Integer.parseInt(m_value.toString());
+            }
+        }
+        
+        public long toLong() {
+            switch (m_value.typeId()) {
+            case SnmpSMI.SMI_COUNTER64:
+                return ((SnmpCounter64)m_value).getValue().longValue();
+            case SnmpSMI.SMI_INTEGER:
+                return ((SnmpInt32)m_value).getValue();
+            case SnmpSMI.SMI_COUNTER32:
+            case SnmpSMI.SMI_TIMETICKS:
+            case SnmpSMI.SMI_UNSIGNED32:
+                return ((SnmpUInt32)m_value).getValue();
+            default:
+                return Long.parseLong(m_value.toString());
+            }
+        }
+
+        public String toDisplayString() {
+            return m_value.toString();
+        }
+
+        public InetAddress toInetAddress() {
+            switch (m_value.typeId()) {
+                case SnmpSMI.SMI_IPADDRESS:
+                    return SnmpIPAddress.toInetAddress((SnmpIPAddress)m_value);
+                default:
+                    throw new IllegalArgumentException("cannot convert "+m_value+" to an InetAddress"); 
+            }
+        }
+
+        public String toHexString() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+        
+        
+    }
     
     private static abstract class JoeSnmpPduBuilder extends PduBuilder {
         public JoeSnmpPduBuilder(int maxVarsPerPdu) {
@@ -132,7 +212,7 @@ public class SnmpWalker {
                     for(int i = 0; i < response.getLength(); i++) {
                         SnmpVarBind vb = response.getVarBindAt(i);
                         SnmpObjId receivedOid = SnmpObjId.get(vb.getName().getIdentifiers());
-                        Object val = vb.getValue();
+                        SnmpValue val = new JoeSnmpValue(vb.getValue());
                         m_responseProcessor.processResponse(receivedOid, val);
                     }
                 }

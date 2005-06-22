@@ -36,8 +36,6 @@ package org.opennms.netmgt.capsd.snmp;
 
 import java.net.InetAddress;
 
-import org.opennms.protocols.snmp.SnmpIPAddress;
-
 /**
  * <P>
  * The IpAddrTableEntry class is designed to hold all the MIB-II information for
@@ -142,8 +140,5 @@ public final class IpAddrTableEntry extends SnmpTableEntry {
         return getIPAddress(IpAddrTableEntry.IP_ADDR_ENT_BCASTADDR);
     }
 
-    private InetAddress getIPAddress(String key) {
-        return SnmpIPAddress.toInetAddress((SnmpIPAddress) get(key));
-    }
     
 }

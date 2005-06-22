@@ -46,6 +46,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
  * <P>
@@ -239,7 +240,7 @@ public final class SystemGroup extends AggregateTracker {
         return m_store.getDisplayString(SYS_CONTACT);
     }
 
-    protected void storeResult(SnmpObjId base, SnmpInstId inst, Object val) {
+    protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         m_store.storeResult(base, inst, val);
     }
 

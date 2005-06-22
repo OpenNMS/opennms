@@ -75,7 +75,7 @@ public class TestAgentTest extends TestCase {
     }
     
     private void addInstance(Properties agentData, String oid, int inst) {
-        agentData.put(oid+"."+inst, getValueFor(oid+"."+inst));
+        agentData.put(oid+"."+inst, getValueFor(oid+"."+inst).toString());
     }
 
     private Object getValueFor(String oid) {
@@ -83,13 +83,13 @@ public class TestAgentTest extends TestCase {
     }
     
     private Object getValueFor(SnmpObjId oid) {
-        return oid+"-value";
+        return new TestSnmpValue(oid+"-value");
     }
     
     public void testConstantObjects() {
-        assertEquals("TestPdu.noSuchObject", TestAgent.NO_SUCH_OBJECT.toString());
-        assertEquals("TestPdu.noSuchInstance", TestAgent.NO_SUCH_INSTANCE.toString());
-        assertEquals("TestPdu.endOfMibView", TestAgent.END_OF_MIB.toString());
+        assertEquals("noSuchObject", TestSnmpValue.NO_SUCH_OBJECT.toString());
+        assertEquals("noSuchInstance", TestSnmpValue.NO_SUCH_INSTANCE.toString());
+        assertEquals("endOfMibView", TestSnmpValue.END_OF_MIB.toString());
     }
     
     public void testEmptyAgent() {
@@ -109,7 +109,7 @@ public class TestAgentTest extends TestCase {
         TestAgent agent = new TestAgent();
         agent.loadSnmpTestData(getClass(), "loadSnmpDataTest.properties");
         SnmpObjId z1 = SnmpObjId.get(zeroInst1Base, "0");
-        assertEquals("TestData", agent.getValueFor(z1));
+        assertEquals("TestData", agent.getValueFor(z1).toString());
         
     }
     
@@ -313,7 +313,7 @@ public class TestAgentTest extends TestCase {
     public void testBulkWithGenErr() {
         m_agent.setBehaviorToV2();
         
-        m_agent.setAgentValue(SnmpObjId.get(zeroInst1Base, "1"), new RuntimeException());
+        m_agent.introduceGenErr(SnmpObjId.get(zeroInst1Base, "1"));
 
         BulkPdu get = TestPdu.getBulk();
         
@@ -381,7 +381,8 @@ public class TestAgentTest extends TestCase {
     public void testNextWithGenErrV1() {
         m_agent.setBehaviorToV1();
         
-        m_agent.setAgentValue(SnmpObjId.get(zeroInst1Base, "1"), new RuntimeException());
+        m_agent.introduceGenErr(SnmpObjId.get(zeroInst1Base, "1"));
+
 
         NextPdu get = TestPdu.getNext();
         
@@ -398,7 +399,8 @@ public class TestAgentTest extends TestCase {
     public void testNextWithGenErrV2() {
         m_agent.setBehaviorToV2();
         
-        m_agent.setAgentValue(SnmpObjId.get(zeroInst1Base, "1"), new RuntimeException());
+        m_agent.introduceGenErr(SnmpObjId.get(zeroInst1Base, "1"));
+
 
         NextPdu get = TestPdu.getNext();
         
@@ -428,7 +430,7 @@ public class TestAgentTest extends TestCase {
             return nextOid;
         } catch (AgentEndOfMibException e) {
             assertEquals(reqObjId, respVarBind.getObjId());
-            assertEquals(TestAgent.END_OF_MIB, respVarBind.getValue());
+            assertEquals(TestSnmpValue.END_OF_MIB, respVarBind.getValue());
             return reqObjId;
         }
     }
@@ -512,7 +514,7 @@ public class TestAgentTest extends TestCase {
     public void testBulkWithGenErrInNonRepeater() {
         m_agent.setBehaviorToV2();
         
-        m_agent.setAgentValue(SnmpObjId.get(zeroInst1Base, "1"), new RuntimeException());
+        m_agent.introduceGenErr(SnmpObjId.get(zeroInst1Base, "1"));
 
         BulkPdu pdu = TestPdu.getBulk();
         pdu.addVarBind(zeroInst1Base);
@@ -533,7 +535,8 @@ public class TestAgentTest extends TestCase {
     public void testBulkWithGenErrInRepeater() {
         m_agent.setBehaviorToV2();
         
-        m_agent.setAgentValue(SnmpObjId.get(col2Base, "2"), new RuntimeException());
+        m_agent.introduceGenErr(SnmpObjId.get(col2Base, "2"));
+
 
         BulkPdu pdu = TestPdu.getBulk();
         pdu.addVarBind(zeroInst1Base);
@@ -587,9 +590,9 @@ public class TestAgentTest extends TestCase {
         try {
             return m_agent.getValueFor(objId);
         } catch (AgentNoSuchInstanceException e) {
-            return TestAgent.NO_SUCH_INSTANCE;
+            return TestSnmpValue.NO_SUCH_INSTANCE;
         } catch (AgentNoSuchObjectException e) {
-            return TestAgent.NO_SUCH_OBJECT;
+            return TestSnmpValue.NO_SUCH_OBJECT;
         }
     }
 

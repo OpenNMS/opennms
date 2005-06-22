@@ -40,6 +40,8 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
+import org.opennms.netmgt.snmp.AbstractSnmpStore;
+
 
 /**
  * <P>
@@ -73,7 +75,7 @@ public final class IfTableEntry extends SnmpTableEntry {
     //
     // Lookup strings for specific table entries
     //
-    public final static String IF_INDEX = "ifIndex";
+    public final static String IF_INDEX = AbstractSnmpStore.IFINDEX;
 
     public final static String IF_DESCR = "ifDescr";
 
@@ -191,10 +193,6 @@ public final class IfTableEntry extends SnmpTableEntry {
      */
     public IfTableEntry() {
         super(ms_elemList);
-    }
-
-    public Integer getIfIndex() {
-        return getInt32(IfTableEntry.IF_INDEX);
     }
 
     public Integer getIfType() {

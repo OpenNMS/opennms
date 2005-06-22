@@ -40,7 +40,7 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
-import org.opennms.protocols.snmp.SnmpInt32;
+import org.opennms.netmgt.snmp.AbstractSnmpStore;
 
 /**
  * <P>
@@ -122,7 +122,7 @@ public final class IfXTableEntry extends SnmpTableEntry {
     // use the instance id from the returned ifName object identifier
     // as the ifIndex of the entry. This value will be stored
     // in the map along with the "ifIndex" lookup string as key.
-    public final static String IF_INDEX = "ifIndex";
+    public final static String IF_INDEX = AbstractSnmpStore.IFINDEX;
 
     /**
      * Number of object identfiers making up the interface extensions table
@@ -188,15 +188,12 @@ public final class IfXTableEntry extends SnmpTableEntry {
      *            The array of variable bindings.
      * 
      */
-    public IfXTableEntry(int ifIndex) {
+    public IfXTableEntry(final int ifIndex) {
         super(ms_elemList);
-        put(IF_INDEX, new SnmpInt32(ifIndex));
+        putIfIndex(ifIndex); 
+        
     }
 
-    public Integer getIfIndex() {
-        return getInt32(IfXTableEntry.IF_INDEX);
-    }
-    
     public String getIfName() {
         return getDisplayString(IfXTableEntry.IF_NAME);
     }

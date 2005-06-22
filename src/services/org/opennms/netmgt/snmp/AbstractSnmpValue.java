@@ -29,29 +29,38 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.snmp.mock;
+package org.opennms.netmgt.snmp;
 
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpValue;
+import java.net.InetAddress;
 
-public class TestVarBind {
-    private SnmpObjId m_oid;
-    private SnmpValue m_val;
-    
-    public TestVarBind(SnmpObjId oid) {
-        this(oid, null);
+public abstract class AbstractSnmpValue implements SnmpValue {
+
+    public boolean isEndOfMib() {
+        return false;
     }
-    
-    public TestVarBind(SnmpObjId oid, SnmpValue val) {
-        m_oid = oid;
-        m_val = val;
-        
+
+    public String toDisplayString() {
+        return toString();
     }
-    public SnmpObjId getObjId() {
-        return m_oid;
+
+    public boolean isNumeric() {
+        return false;
     }
-    
-    public SnmpValue getValue() {
-        return m_val;
+
+    public int toInt() {
+        return (int)toLong();
     }
+
+    public InetAddress toInetAddress() {
+        throw new IllegalArgumentException("Unable to convert " + this + " to an IpAddress");
+    }
+
+    public long toLong() {
+        throw new IllegalArgumentException("Unable to convert " + this + " to a number");
+    }
+
+    public String toHexString() {
+        throw new IllegalArgumentException("Unable to convert " + this + " to a hex string");
+    }
+
 }

@@ -42,12 +42,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.snmp.AbstractSnmpStore;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.protocols.snmp.SnmpObjectId;
-import org.opennms.protocols.snmp.SnmpVarBind;
+import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
  * <P>
@@ -65,143 +64,18 @@ import org.opennms.protocols.snmp.SnmpVarBind;
  * @author <A>Jon Whetzel </A>
  * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
  */
-public final class SNMPCollectorEntry extends java.util.TreeMap {
+public final class SNMPCollectorEntry extends AbstractSnmpStore {
     /**
      * The list of MIBObjects that will used for associating the the data within
      * the map.
      */
     private java.util.List m_objList;
 
-    /**
-     * Key that will be used in the map for returning the ifIndex of particular
-     * interface.
-     */
-    public static final String IF_INDEX = "ifIndex";
-
-    /**
-     * <P>
-     * Creates a default instance of the SNMPCollector entry map. The map
-     * represents a singular instance from the MibObject. Each column in the
-     * table for the loaded instance may be retrieved through its OID from the
-     * MIBObject.
-     * </P>
-     * 
-     * <P>
-     * The initial table is constructed with zero elements in the map.
-     * </P>
-     */
-    public SNMPCollectorEntry() {
-        this(null);
-    }
-    
     public SNMPCollectorEntry(List objList) {
         if (objList == null) throw new NullPointerException("objList is null!");
         m_objList = objList;
     }
 
-    /**
-     * <P>
-     * The class constructor used to initialize the object to its initial state.
-     * Although the object's member variables can change after an instance is
-     * created, this constructor will initialize all the variables as per their
-     * named variable from the passed array of SNMP varbinds.
-     * </P>
-     * 
-     * <P>
-     * If the information in the object should not be modified then a <EM>final
-     * </EM> modifier can be applied to the created object.
-     * </P>
-     * 
-     * @param vars
-     *            The array of collected SNMP variable bindings
-     * @param objList
-     *            List of MibObject objects representing each of of the oid's
-     *            configured for collection.
-     * @param ifIndex
-     *            The ifIndex (as a String) of the interface for which the
-     *            collected SNMP data is relevant. NOTE: NULL if the collected
-     *            SNMP data is for the node.
-     */
-    public SNMPCollectorEntry(SnmpVarBind[] vars, List objList, String ifIndex) {
-        this(objList);
-
-        // Store the ifIndex to which the varbind list pertains
-        // within the map. This provides an easy mechanism for
-        // determining which interface a particular SNMPCollectorEntry
-        // applies to.
-        if (ifIndex != null)
-            put(IF_INDEX, ifIndex);
-
-        // Store the collected data within this entry's map.
-        update(vars, ifIndex);
-    }
-
-    /**
-     * <P>
-     * This method is used to update this entry's map with the current
-     * information from the agent.
-     * 
-     * </P>
-     * This does not clear out any column in the actual row that does not have a
-     * definition.
-     * </P>
-     * 
-     * @param vars
-     *            Array of SnmpVarBind objects containing all the SNMP data
-     *            collected for a particular interface.
-     * @param ifIndex
-     *            The ifIndex (as a String) of the interface for which the
-     *            collected SNMP data is relevant.
-     * 
-     */
-    public void update(SnmpVarBind[] vars, String ifIndex) {
-        // Log4j category
-        //
-        if (log().isDebugEnabled())
-            log().debug("update: updating SNMPCollectorEntry map for ifIndex: " + ifIndex);
-
-        try {
-            // Iterate over the list of MibObjects representing the
-            // objects configured for collection. For each MIB object
-            // iterate over the SnmpVarBind array looking for the matching
-            // variable. If a match is found, insert the SNMP-retrieved value
-            // into the entry's map indexed by its object identifier.
-            //
-            for (int x = 0; x < m_objList.size(); x++) {
-                MibObject mibObject = (MibObject) m_objList.get(x);
-
-                // Build fullOid.
-                //
-                String instance = null;
-                if (mibObject.getInstance().equals(MibObject.INSTANCE_IFINDEX))
-                    instance = ifIndex;
-                else
-                    instance = mibObject.getInstance();
-
-                String fullOid = mibObject.getOid() + "." + instance;
-
-                SnmpObjectId id = new SnmpObjectId(fullOid);
-
-                for (int y = 0; y < vars.length; y++) {
-                    if (vars[y] != null && id.isRootOf(vars[y].getName())) {
-                        try {
-                            put(fullOid, vars[y].getValue());
-                            if (log().isDebugEnabled())
-                                log().debug("update: added oid:value pair: " + fullOid + " : " + vars[y].getValue());
-                        } catch (NullPointerException e) {
-                            if (log().isDebugEnabled())
-                                log().debug("update: a null pointer exception occured", e);
-                        }
-
-                        break;
-                    }
-                }
-            }
-        } catch (Throwable t) {
-            if (log().isEnabledFor(Priority.WARN))
-                log().warn("update: unexpected exception: ", t);
-        }
-    }
 
     private Category log() {
         return ThreadCategory.getInstance(getClass());
@@ -216,13 +90,13 @@ public final class SNMPCollectorEntry extends java.util.TreeMap {
         return null;
     }
     
-    public void storeResult(SnmpObjId base, SnmpInstId inst, Object val) {
+    public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         String key = base.append(inst).toString();
-        put(key, val);
+        putValue(key, val);
         MibObject mibObject = findMibObjectWitOid(base);
         if (mibObject == null) throw new IllegalArgumentException("Received result for unexpected oid ["+base+"].["+inst+"]");
         if (mibObject.getInstance().equals(MibObject.INSTANCE_IFINDEX))
-            put(IF_INDEX, inst.toString());
-        log().debug("storeResult: added oid:value pair: " + key + " : " + val);
+            putIfIndex(inst.toInt());
+        log().debug("storeResult: added value for "+mibObject.getAlias()+": ["+base+"].["+inst+"] = "+val);
     }
 }

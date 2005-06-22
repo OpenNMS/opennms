@@ -31,7 +31,6 @@
 //
 package org.opennms.netmgt.snmp;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -42,21 +41,12 @@ import org.opennms.netmgt.collectd.SNMPCollectorEntry;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.snmp.mock.TestAgent;
 import org.opennms.netmgt.utils.BarrierSignaler;
-import org.opennms.protocols.snmp.SnmpCounter32;
-import org.opennms.protocols.snmp.SnmpGauge32;
-import org.opennms.protocols.snmp.SnmpInt32;
-import org.opennms.protocols.snmp.SnmpObjectId;
-import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpPeer;
 import org.opennms.protocols.snmp.SnmpSMI;
-import org.opennms.protocols.snmp.SnmpSession;
-import org.opennms.protocols.snmp.SnmpTimeTicks;
 
 public class SnmpCollectorTestCase extends OpenNMSTestCase {
 
     protected BarrierSignaler m_signaler;
     protected List m_objList;
-    protected SnmpPeer m_peer;
     private TreeMap m_mibObjectMap;
     public TestAgent m_agent = new TestAgent();
     
@@ -130,8 +120,6 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     protected void setUp() throws Exception {
         setStartEventd(false);
         super.setUp();
-        m_peer = new SnmpPeer(InetAddress.getLocalHost());
-        m_peer.getParameters().setVersion(m_version);
         m_signaler = new BarrierSignaler(1);
         m_objList = new ArrayList();
         m_mibObjectMap = new TreeMap();
@@ -150,7 +138,6 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     }
     
     protected void tearDown() throws Exception {
-        getSession().close();
         super.tearDown();
     }
     
@@ -168,35 +155,39 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     }
 
     private int getEntrySize(SNMPCollectorEntry entry) {
-        return entry.size() - (entry.get(SNMPCollectorEntry.IF_INDEX) == null ? 0 : 1);
+        return entry.size() - (entry.getIfIndex() == null ? 0 : 1);
     }
 
     private void assertMibObjectPresent(SNMPCollectorEntry entry, MibObject mibObject) {
         String inst = getObjectInstance(entry, mibObject);
-        Object value = entry.get(mibObject.getOid()+"."+inst);
+        SnmpValue value = entry.getValue(mibObject.getOid()+"."+inst);
         assertNotNull(value);
-        assertEquals(getClassForType(mibObject.getType()), value.getClass());
+        assertExpectedType(mibObject, value);
+    }
+
+    private void assertExpectedType(MibObject mibObject, SnmpValue value) {
+        assertEquals(expectNumeric(mibObject.getType()), value.isNumeric());
     }
 
     private String getObjectInstance(SNMPCollectorEntry entry, MibObject mibObject) {
-        return (mibObject.getInstance() == "ifIndex" ? (String)entry.get(SNMPCollectorEntry.IF_INDEX) : mibObject.getInstance());
+        return (mibObject.getInstance() == "ifIndex" ? entry.getIfIndex().toString() : mibObject.getInstance());
     }
 
-    private Class getClassForType(String type) {
+    private boolean expectNumeric(String type) {
         if ("string".equals(type)) {
-            return SnmpOctetString.class;
+            return false;
         } else if ("timeTicks".equals(type)) {
-            return SnmpTimeTicks.class;
+            return true;
         } else if ("objectid".equals(type)) {
-            return SnmpObjectId.class;
+            return false;
         } else if ("integer".equals(type)) {
-            return SnmpInt32.class;
+            return true;
         } else if ("counter".equals(type)) {
-            return SnmpCounter32.class;
+            return true;
         } else if ("gauge".equals(type)) {
-            return SnmpGauge32.class;
+            return true;
         }
-        return Void.class;
+        return false;
     }
 
     protected MibObject defineMibObject(String alias, String oid, String instance, String type) {
@@ -213,10 +204,6 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         mibObj.setType(type);
         mibObj.setInstance(instance);
         return mibObj;
-    }
-
-    protected SnmpSession getSession() throws Exception {
-        return new SnmpSession(m_peer);
     }
 
     protected void addIfNumber() {

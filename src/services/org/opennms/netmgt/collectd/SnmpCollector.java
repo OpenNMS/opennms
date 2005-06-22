@@ -71,6 +71,7 @@ import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SingleInstanceTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.utils.AlphaNumeric;
 import org.opennms.netmgt.utils.BarrierSignaler;
@@ -78,8 +79,6 @@ import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.protocols.snmp.SnmpInt32;
-import org.opennms.protocols.snmp.SnmpSyntax;
 
 /**
  * <P>
@@ -97,8 +96,8 @@ final class SnmpCollector implements ServiceCollector {
             super(SnmpObjId.get(INTERFACES_IFNUMBER), SnmpInstId.INST_ZERO);
         }
 
-        protected void storeResult(SnmpObjId base, SnmpInstId inst, Object val) {
-            m_ifNumber = ((SnmpInt32)val).getValue();
+        protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+            m_ifNumber = val.toInt();
         }
         
         public int getIfNumber() {
@@ -1135,7 +1134,8 @@ final class SnmpCollector implements ServiceCollector {
             while (iter.hasNext()) {
                 SNMPCollectorEntry ifEntry = (SNMPCollectorEntry) iter.next();
                 
-                int ifIndex = Integer.parseInt((String) ifEntry.get(SNMPCollectorEntry.IF_INDEX));
+                int ifIndex = ifEntry.getIfIndex().intValue();
+                
                 
                 
                 // Are we storing SNMP data for all interfaces or primary
@@ -1247,13 +1247,13 @@ final class SnmpCollector implements ServiceCollector {
 
         String instance = null;
         if (ds.getInstance().equals(MibObject.INSTANCE_IFINDEX))
-            instance = (String) collectorEntry.get(SNMPCollectorEntry.IF_INDEX);
+            instance = collectorEntry.getIfIndex().toString();
         else
             instance = ds.getInstance();
 
         String fullOid = ds.getOid() + "." + instance;
 
-        SnmpSyntax snmpVar = (SnmpSyntax) collectorEntry.get(fullOid);
+        SnmpValue snmpVar = collectorEntry.getValue(fullOid);
         if (snmpVar == null)
             // No value retrieved matching this oid
             return null;

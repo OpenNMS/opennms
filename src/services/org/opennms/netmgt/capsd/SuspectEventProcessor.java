@@ -83,9 +83,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
-import org.opennms.protocols.snmp.SnmpInt32;
-import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpUInt32;
 
 /**
  * This class is designed to scan/capability check a suspect interface, update
@@ -679,7 +676,7 @@ final class SuspectEventProcessor implements Runnable {
                 if (collector.hasNonIpInterfaces()) {
                     iter = ((List) collector.getNonIpInterfaces()).iterator();
                     while (iter.hasNext()) {
-                        SnmpInt32 ifindex = (SnmpInt32) iter.next();
+                        Integer ifindex = (Integer) iter.next();
 
                         DbIpInterfaceEntry xipIfEntry = null;
                         try {
@@ -690,9 +687,9 @@ final class SuspectEventProcessor implements Runnable {
                         xipIfEntry.setLastPoll(now);
                         xipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_UNMANAGED);
 
-                        xipIfEntry.setIfIndex(ifindex.getValue());
+                        xipIfEntry.setIfIndex(ifindex.intValue());
                         
-                        int status = snmpc.getAdminStatus(ifindex.getValue());
+                        int status = snmpc.getAdminStatus(ifindex.intValue());
                         if (status != -1)
                             xipIfEntry.setStatus(status);
 

@@ -33,20 +33,16 @@
 
 package org.opennms.netmgt.capsd.snmp;
 
-import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.snmp.AbstractSnmpStore;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.protocols.snmp.SnmpInt32;
-import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpUInt32;
+import org.opennms.netmgt.snmp.SnmpValue;
 
-public class SnmpStore {
-
-    private Map m_responseMap = new TreeMap();
+public class SnmpStore extends AbstractSnmpStore {
+    
     /**
      * <P>
      * The keys that will be supported by default from the TreeMap base class.
@@ -56,10 +52,6 @@ public class SnmpStore {
      * </P>
      */
     protected NamedSnmpVar[] ms_elemList = null;
-
-    protected Category log() {
-        return ThreadCategory.getInstance(getClass());
-    }
 
     public SnmpStore(NamedSnmpVar[] list) {
         super();
@@ -78,42 +70,18 @@ public class SnmpStore {
     public NamedSnmpVar[] getElements() {
         return ms_elemList;
     }
-
-    public Integer getInt32(String key) {
-        return SnmpInt32.toInteger((SnmpInt32) get(key));
+    
+    protected Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
-    public Long getUInt32(String key) {
-        return SnmpUInt32.toLong((SnmpUInt32) get(key));
-    }
-
-    public String getDisplayString(String key) {
-        return SnmpOctetString.toDisplayString((SnmpOctetString) get(key));
-    }
-
-    public String getHexString(String key) {
-        return SnmpOctetString.toHexString((SnmpOctetString) get(key));
-    }
-
-    public String getObjectID(String key) {
-        return (get(key) == null ? null : get(key).toString());
-    }
-
-    protected Object get(String key) {
-        return m_responseMap.get(key);
-    }
-
-    protected void put(String key, Object value) {
-        m_responseMap.put(key, value);
-    }
-
-    public void storeResult(SnmpObjId base, SnmpInstId inst, Object val) {
-        put(base.toString(), val);
+    public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+        putValue(base.toString(), val);
         for(int i = 0; i < ms_elemList.length; i++) {
             NamedSnmpVar var = ms_elemList[i];
             if (base.equals(var.getSnmpObjId())) {
                 log().debug("Storing Result: alias: "+var.getAlias()+" ["+base+"].["+inst+"] = "+val);
-                put(var.getAlias(), val);
+                putValue(var.getAlias(), val);
             }
         }
     }

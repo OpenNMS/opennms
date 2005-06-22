@@ -85,8 +85,8 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         assertNotNull(entries);
         for (Iterator it = entries.iterator(); it.hasNext();) {
             SNMPCollectorEntry entry = (SNMPCollectorEntry) it.next();
-            String ifIndex = (String)entry.get(SNMPCollectorEntry.IF_INDEX);
-            IfInfo info = (IfInfo)m_ifMap.get(Integer.decode(ifIndex));
+            int ifIndex = entry.getIfIndex().intValue();
+            IfInfo info = (IfInfo)m_ifMap.get(new Integer(ifIndex));
             if (info == null) continue;
             assertMibObjectsPresent(entry, m_objList);
         }
@@ -101,12 +101,11 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     }
 
     private SNMPCollectorEntry findEntryWithIfIndex(int index, List entries) {
-        String indexStr = Integer.toString(index);
         assertNotNull(entries);
         for (Iterator it = entries.iterator(); it.hasNext();) {
             SNMPCollectorEntry entry = (SNMPCollectorEntry) it.next();
-            String ifIndex = (String)entry.get(SNMPCollectorEntry.IF_INDEX);
-            if (ifIndex.equals(indexStr)) return entry;
+            int ifIndex = entry.getIfIndex().intValue();
+            if (ifIndex == index) return entry;
         }
         return null;
     }

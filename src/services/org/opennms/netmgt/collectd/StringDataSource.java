@@ -42,9 +42,7 @@ import java.util.Properties;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpSMI;
-import org.opennms.protocols.snmp.SnmpSyntax;
+import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
  * @author craig.miskell@agresearch.co.nz
@@ -116,14 +114,8 @@ public class StringDataSource extends DataSource {
 		return buffer.toString();
 	}
 
-    public String getStorableValue(SnmpSyntax snmpVar) {
-	String dsValue;
-	if(snmpVar.typeId()==SnmpSMI.SMI_STRING) {
-		dsValue = ((SnmpOctetString) snmpVar).toString();
-	} else {
-		dsValue = snmpVar.toString();
-	}
-	return dsValue;
+    public String getStorableValue(SnmpValue snmpVar) {
+        return snmpVar.toString();
     }
 
 }

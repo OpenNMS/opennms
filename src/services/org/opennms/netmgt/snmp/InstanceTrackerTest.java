@@ -31,15 +31,16 @@
 //
 package org.opennms.netmgt.snmp;
 
-public class InstanceTrackerTest extends SnmpCollectorTestCase {
+import org.opennms.netmgt.snmp.mock.TestSnmpValue;
 
+public class InstanceTrackerTest extends SnmpCollectorTestCase {
 
     public class MyColumnTracker extends ColumnTracker {
 
         private boolean m_expectsStorageCall;
         private boolean m_storageCalled;
 
-        protected void storeResult(SnmpObjId base, SnmpInstId inst, Object val) {
+        protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
             m_storageCalled = true;
             assertTrue(m_expectsStorageCall);
         }
@@ -114,7 +115,7 @@ public class InstanceTrackerTest extends SnmpCollectorTestCase {
         assertEquals(expectedOids.length, builder.getCount());
         rp.processErrors(0, 0);
         for(int i = 0; i < receivedOids.length; i++)
-            rp.processResponse(receivedOids[i], "Value");
+            rp.processResponse(receivedOids[i], new TestSnmpValue("Value"));
         
         
     }

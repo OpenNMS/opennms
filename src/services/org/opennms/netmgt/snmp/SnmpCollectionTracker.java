@@ -67,7 +67,7 @@ public class SnmpCollectionTracker extends AggregateTracker {
         super(createCollectionTrackers(objList));
     }
     
-    protected void storeResult(SnmpObjId base, SnmpInstId inst, Object val) {
+    protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         System.err.println("Storing result ["+base+"].["+inst+"] = "+val);
         super.storeResult(base, inst, val);
         Map resultsForInstance = (Map)m_instanceMaps.get(inst);
