@@ -181,7 +181,8 @@ your distribution.
     <pathelement path="${packaged.lib.dir}/ldap.jar"/>
     <pathelement path="${packaged.lib.dir}/catalina.jar"/>
   	<pathelement path="${packaged.lib.dir}/castor-0.9.6.jar"/>
-    <pathelement path="${packaged.lib.dir}/fop0203.jar"/>
+    <pathelement path="${packaged.lib.dir}/fop0205.jar"/>
+    <pathelement path="${packaged.lib.dir}/avalon-framework-cvs-20020806.jar"/>
     <pathelement path="${packaged.lib.dir}/batik.jar"/>
     <pathelement path="${packaged.lib.dir}/mx4j.jar"/>
     <pathelement path="${packaged.lib.dir}/jdhcp.jar"/>
@@ -310,6 +311,8 @@ your distribution.
     <include name="*.jar" />
     <exclude name="ant*.jar" />
     <exclude name="fop0170.jar" />
+    <exclude name="fop0203.jar" />
+    <exclude name="avalon-framework-4.0.jar" />
     <exclude name="jakarta-regexp*.jar" />
     <exclude name="pylib*.jar" />
     <exclude name="sablecc*.jar" />
@@ -320,7 +323,7 @@ your distribution.
        Note: opennms_*.jar from ${build.jar.dir} is also copied.  -->
   <patternset id="web.jars">
     <include name="castor*.jar" />
-    <include name="fop0203.jar" />
+    <include name="fop0205.jar" />
     <include name="jms*.jar" />
     <include name="log4j*.jar" />
     <include name="${postgresql.jar}" />
@@ -329,7 +332,7 @@ your distribution.
   	<!--- Remove this for 1.4 since it is included in the JVM
     <include name="xalan231.jar" />
     -->
-    <include name="avalon-framework-4.0.jar" />
+    <include name="avalon-framework-cvs-20020806.jar" />
     <include name="logkit-1.0.jar" />
     <include name="batik.jar" />
     <include name="jcifs.jar" />
@@ -372,9 +375,9 @@ your distribution.
 
   <taskdef name="fop" classname="org.apache.fop.tools.anttasks.Fop">
     <classpath>
-      <pathelement location="${packaged.lib.dir}/fop0203.jar"/>
+      <pathelement location="${packaged.lib.dir}/fop0205.jar"/>
       <pathelement location="${packaged.lib.dir}/logkit-1.0.jar"/>
-      <pathelement location="${packaged.lib.dir}/avalon-framework-4.0.jar"/>
+      <pathelement location="${packaged.lib.dir}/avalon-framework-cvs-20020806.jar"/>
       <pathelement location="${packaged.lib.dir}/batik.jar"/>
       <pathelement location="${packaged.lib.dir}/xercesImpl-2.6.2.jar"/>
     </classpath>
