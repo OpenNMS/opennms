@@ -203,7 +203,7 @@ div.dataValue { width:50px, font-size:90%; font-weight:bold; margin:4px auto; te
           </xsl:when>
           <xsl:otherwise>
             <td class="empty">
-              <div class="dataValue normal">&#xA0</div>
+              <div class="dataValue normal">&#xA0;</div>
             </td>
           </xsl:otherwise>
         </xsl:choose>
