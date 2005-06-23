@@ -47,7 +47,7 @@ public abstract class PduBuilder {
 
     public abstract void setNonRepeaters(int numNonRepeaters);
     
-    public abstract void setMaxRepititions(int maxRepititions);
+    public abstract void setMaxRepetitions(int maxRepetitions);
 
     public int getMaxVarsPerPdu() {
         return m_maxVarsPerPdu;

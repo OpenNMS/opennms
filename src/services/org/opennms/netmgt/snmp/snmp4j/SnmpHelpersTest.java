@@ -31,7 +31,7 @@
 //
 // Tab Size = 8
 
-package org.opennms.netmgt.utils;
+package org.opennms.netmgt.snmp.snmp4j;
 
 import java.io.IOException;
 import java.net.UnknownHostException;

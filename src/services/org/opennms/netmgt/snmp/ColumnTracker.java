@@ -53,7 +53,7 @@ public class ColumnTracker extends CollectionTracker {
         
         pduBuilder.addOid(m_last);
         pduBuilder.setNonRepeaters(0);
-        pduBuilder.setMaxRepititions(getMaxRepititions());
+        pduBuilder.setMaxRepetitions(getMaxRepititions());
         
         ResponseProcessor rp = new ResponseProcessor() {
 

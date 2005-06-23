@@ -67,7 +67,7 @@ public class AggregateTracker extends CollectionTracker {
             return size() - getNonRepeaters();
         }
     
-        public void setMaxRepititions(int maxRepititions) {
+        public void setMaxRepetitions(int maxRepititions) {
             m_maxRepititions = maxRepititions;
         }
         
@@ -291,7 +291,7 @@ public class AggregateTracker extends CollectionTracker {
         
         // set the non repeaters and max repititions
         parentBuilder.setNonRepeaters(nonRepeaters);
-        parentBuilder.setMaxRepititions(maxRepititions == Integer.MAX_VALUE ? 1 : maxRepititions);
+        parentBuilder.setMaxRepetitions(maxRepititions == Integer.MAX_VALUE ? 1 : maxRepititions);
         
         // construct a response processor that tracks the changes and informs the response processors
         // for the child trackers

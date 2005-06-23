@@ -131,7 +131,9 @@ public class JoeSnmpWalker extends SnmpWalker {
             return null;
         }
         
-        
+        public String toString() {
+            return toDisplayString();
+        }
     }
     
     static public abstract class JoeSnmpPduBuilder extends WalkerPduBuilder {
@@ -167,7 +169,7 @@ public class JoeSnmpWalker extends SnmpWalker {
         public void setNonRepeaters(int numNonRepeaters) {
         }
 
-        public void setMaxRepititions(int maxRepititions) {
+        public void setMaxRepetitions(int maxRepetitions) {
         }
 
     }
@@ -198,8 +200,8 @@ public class JoeSnmpWalker extends SnmpWalker {
             m_bulkPdu.setNonRepeaters(numNonRepeaters);
         }
 
-        public void setMaxRepititions(int maxRepititions) {
-            m_bulkPdu.setMaxRepititions(maxRepititions);
+        public void setMaxRepetitions(int maxRepetitions) {
+            m_bulkPdu.setMaxRepititions(maxRepetitions);
         }
         
     }

@@ -31,8 +31,8 @@
 //
 package org.opennms.netmgt.snmp;
 
+import java.io.IOException;
 import java.net.InetAddress;
-import java.net.SocketException;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -89,7 +89,7 @@ public abstract class SnmpWalker {
         return (m_pduBuilder == null ? m_maxVarsPerPdu : m_pduBuilder.getMaxVarsPerPdu());
     }
 
-    protected void buildAndSendNextPdu() throws SocketException {
+    protected void buildAndSendNextPdu() throws IOException {
         if (m_tracker.isFinished())
             handleDone();
         else {
@@ -99,7 +99,7 @@ public abstract class SnmpWalker {
         }
     }
 
-    protected abstract void sendNextPdu(WalkerPduBuilder pduBuilder) throws SocketException;
+    protected abstract void sendNextPdu(WalkerPduBuilder pduBuilder) throws IOException;
 
     /**
      * <P>
@@ -118,11 +118,15 @@ public abstract class SnmpWalker {
     }
 
     private void finish() {
-        close();
         signal();
+        try {
+            close();
+        } catch (IOException e) {
+            log().error(getName()+": Unexpected Error occured closing snmp session for: "+m_address, e);
+        }
     }
 
-    protected abstract void close();
+    protected abstract void close() throws IOException;
     
     public String getName() {
         return m_name;

@@ -83,7 +83,7 @@ public class SnmpUtils {
     }
     
     private static String getWalkerClassName() {
-        return getConfig().getProperty("org.opennms.snmp.walkerClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpWalker");
+        return getConfig().getProperty("org.opennms.snmp.walkerClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JWalker");
     }
 
 }

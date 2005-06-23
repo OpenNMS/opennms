@@ -83,7 +83,7 @@ public class SnmpCollectionTrackerTest extends SnmpCollectorTestCase {
         public void setNonRepeaters(int numNonRepeaters) {
         }
 
-        public void setMaxRepititions(int maxRepititions) {
+        public void setMaxRepetitions(int maxRepititions) {
         }
 
     }
@@ -114,7 +114,7 @@ public class SnmpCollectionTrackerTest extends SnmpCollectorTestCase {
             assertEquals(m_nonRepeaters, numNonRepeaters);
         }
 
-        public void setMaxRepititions(int maxRepititions) {
+        public void setMaxRepetitions(int maxRepititions) {
             m_bulkPdu.setMaxRepititions(maxRepititions);
             assertTrue(maxRepititions >= 1);
         }

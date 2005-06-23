@@ -96,7 +96,7 @@ public class InstanceTrackerTest extends SnmpCollectorTestCase {
                 assertEquals(nonRepeaters, numNonRepeaters);
             }
 
-            public void setMaxRepititions(int maxRepititions) {
+            public void setMaxRepetitions(int maxRepititions) {
                 assertTrue("MaxRepititions must be positive", maxRepititions > 0);
             }
             

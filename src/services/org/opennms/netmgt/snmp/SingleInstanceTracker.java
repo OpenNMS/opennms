@@ -64,7 +64,7 @@ public class SingleInstanceTracker extends CollectionTracker {
         log().debug("Requesting oid following: "+requestOid);
         pduBuilder.addOid(requestOid);
         pduBuilder.setNonRepeaters(1);
-        pduBuilder.setMaxRepititions(1);
+        pduBuilder.setMaxRepetitions(1);
         
         ResponseProcessor rp = new ResponseProcessor() {
 

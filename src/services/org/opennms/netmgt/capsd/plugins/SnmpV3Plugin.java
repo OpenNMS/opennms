@@ -43,8 +43,8 @@ import java.util.Map;
 
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.snmp.snmp4j.SnmpHelpers;
 import org.opennms.netmgt.utils.ParameterMap;
-import org.opennms.netmgt.utils.SnmpHelpers;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.Target;

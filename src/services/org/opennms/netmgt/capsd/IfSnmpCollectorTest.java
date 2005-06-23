@@ -37,17 +37,29 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import junit.framework.TestSuite;
+
 import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IpAddrTable;
 import org.opennms.netmgt.capsd.snmp.SystemGroup;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.snmp.VersionSettingTestSuite;
+import org.opennms.protocols.snmp.SnmpSMI;
 
 public class IfSnmpCollectorTest extends OpenNMSTestCase {
     
     private IfSnmpCollector m_ifSnmpc;
     private boolean m_run = true;
     private boolean m_hasRun = false;
+
+    public static TestSuite suite() {
+        Class testClass = IfSnmpCollectorTest.class;
+        TestSuite suite = new TestSuite(testClass.getName());
+        suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv1 Tests", SnmpSMI.SNMPV1));
+        suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv2 Tests", SnmpSMI.SNMPV2));
+        return suite;
+    }
 
     protected void setUp() throws Exception {
         super.setUp();

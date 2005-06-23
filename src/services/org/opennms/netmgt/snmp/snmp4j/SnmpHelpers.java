@@ -29,7 +29,7 @@
 //
 // Tab Size = 8
 
-package org.opennms.netmgt.utils;
+package org.opennms.netmgt.snmp.snmp4j;
 
 import java.io.IOException;
 
@@ -61,6 +61,10 @@ public class SnmpHelpers {
         else
             request = new PDU();
         return request;
+    }
+    
+    public static PDU createPDU() {
+        return createPDU(SnmpConstants.version1);
     }
 
     
