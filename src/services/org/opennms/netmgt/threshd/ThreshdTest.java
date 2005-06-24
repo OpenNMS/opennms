@@ -24,7 +24,7 @@ public class ThreshdTest extends TestCase {
         super.tearDown();
     }
 
-    public void testthreshd() {
+    public void xtestthreshd() {
         Threshd threshd = new Threshd();
         
         threshd.init();

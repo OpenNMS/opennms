@@ -75,7 +75,7 @@ public class TestAgentTest extends TestCase {
     }
     
     private void addInstance(Properties agentData, String oid, int inst) {
-        agentData.put(oid+"."+inst, getValueFor(oid+"."+inst).toString());
+        agentData.put(oid+"."+inst, "STRING: "+getValueFor(oid+"."+inst).toString());
     }
 
     private Object getValueFor(String oid) {
