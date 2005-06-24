@@ -35,6 +35,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
@@ -84,6 +85,22 @@ public final class OpennmsServerConfigFactory {
 
         m_config = (LocalServer) Unmarshaller.unmarshal(LocalServer.class, new InputStreamReader(cfgIn));
         cfgIn.close();
+
+    }
+    
+    /**
+     * Private constructor
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     */
+    public OpennmsServerConfigFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
+
+        m_config = (LocalServer) Unmarshaller.unmarshal(LocalServer.class, rdr);
 
     }
 
@@ -142,6 +159,11 @@ public final class OpennmsServerConfigFactory {
             throw new IllegalStateException("The factory has not been initialized");
 
         return m_singleton;
+    }
+    
+    public static synchronized void setInstance(OpennmsServerConfigFactory instance) {
+        m_singleton = instance;
+        m_loaded = true;
     }
 
     /**

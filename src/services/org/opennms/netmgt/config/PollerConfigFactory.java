@@ -44,32 +44,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringWriter;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.TreeMap;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.config.poller.ExcludeRange;
-import org.opennms.netmgt.config.poller.IncludeRange;
-import org.opennms.netmgt.config.poller.Monitor;
-import org.opennms.netmgt.config.poller.PollerConfiguration;
-import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.filter.Filter;
-import org.opennms.netmgt.poller.monitors.ServiceMonitor;
-import org.opennms.netmgt.utils.IPSorter;
-import org.opennms.netmgt.utils.IpListFromUrl;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -87,7 +66,7 @@ import org.opennms.netmgt.utils.IpListFromUrl;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class PollerConfigFactory implements PollerConfig {
+public final class PollerConfigFactory extends PollerConfigManager {
     /**
      * The singleton instance of this factory
      */
@@ -99,64 +78,6 @@ public final class PollerConfigFactory implements PollerConfig {
     private static boolean m_loaded = false;
 
     /**
-     * The config class loaded from the config file
-     */
-    private PollerConfiguration m_config;
-
-    /**
-     * A mapping of the configured URLs to a list of the specific IPs configured
-     * in each - so as to avoid file reads
-     */
-    private Map m_urlIPMap;
-
-    /**
-     * A mapping of the configured package to a list of IPs selected via filter
-     * rules, so as to avoid repetetive database access.
-     */
-    private Map m_pkgIpMap;
-
-    /**
-     * A mapp of service names to service monitors. Constructed based on data in
-     * the configuration file.
-     */
-    private Map m_svcMonitors = Collections.synchronizedMap(new TreeMap());
-
-    /**
-     * A boolean flag to indicate If a filter rule agaist the local OpenNMS
-     * server has to be used.
-     */
-    private static boolean m_verifyServer;
-
-    /**
-     * The name of the local OpenNMS server
-     */
-    private static String m_localServer;
-
-    /**
-     * Go through the poller configuration and build a mapping of each
-     * configured URL to a list of IPs configured in that URL - done at init()
-     * time so that repeated file reads can be avoided
-     */
-    private void createUrlIpMap() {
-        m_urlIPMap = new HashMap();
-
-        Enumeration pkgEnum = m_config.enumeratePackage();
-        while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.poller.Package pkg = (org.opennms.netmgt.config.poller.Package) pkgEnum.nextElement();
-
-            Enumeration urlEnum = pkg.enumerateIncludeUrl();
-            while (urlEnum.hasMoreElements()) {
-                String urlname = (String) urlEnum.nextElement();
-
-                java.util.List iplist = IpListFromUrl.parse(urlname);
-                if (iplist.size() > 0) {
-                    m_urlIPMap.put(urlname, iplist);
-                }
-            }
-        }
-    }
-
-    /**
      * Private constructor
      * 
      * @exception java.io.IOException
@@ -166,19 +87,8 @@ public final class PollerConfigFactory implements PollerConfig {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
-    private PollerConfigFactory(OpennmsServerConfigFactory serverConfig, Reader reader) throws IOException, MarshalException, ValidationException {
-
-        reloadXML(serverConfig, reader);
-    }
-
-    private void reloadXML(OpennmsServerConfigFactory serverConfig, Reader reader) throws MarshalException, ValidationException, IOException {
-        m_config = (PollerConfiguration) Unmarshaller.unmarshal(PollerConfiguration.class, reader);
-        reader.close();
-        createUrlIpMap();
-        m_verifyServer = serverConfig.verifyServer();
-        m_localServer = serverConfig.getServerName();
-        createPackageIpListMap();
-        createServiceMonitors();
+    public PollerConfigFactory(Reader reader, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
+        super(reader, localServer, verifyServer);
     }
 
     /**
@@ -200,12 +110,15 @@ public final class PollerConfigFactory implements PollerConfig {
         }
 
         OpennmsServerConfigFactory.init();
+        OpennmsServerConfigFactory onmsSvrConfig = OpennmsServerConfigFactory.getInstance();
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
 
         ThreadCategory.getInstance(PollerConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
 
-        m_singleton = new PollerConfigFactory(OpennmsServerConfigFactory.getInstance(), new FileReader(cfgFile));
+        FileReader reader = new FileReader(cfgFile);
+        m_singleton = new PollerConfigFactory(reader, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
+        reader.close();
 
         m_loaded = true;
     }
@@ -225,25 +138,14 @@ public final class PollerConfigFactory implements PollerConfig {
         getInstance().update();
     }
 
-    /**
-     * Saves the current in-memory configuration to disk and reloads
-     */
-    public synchronized void saveCurrent() throws MarshalException, IOException, ValidationException {
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
-
-        // marshall to a string first, then write the string to the file. This
-        // way the original config
-        // isn't lost if the xml from the marshall is hosed.
-        StringWriter stringWriter = new StringWriter();
-        Marshaller.marshal(m_config, stringWriter);
-        if (stringWriter.toString() != null) {
+    protected void saveXml(String xml) throws IOException {
+        if (xml != null) {
+            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
             FileWriter fileWriter = new FileWriter(cfgFile);
-            fileWriter.write(stringWriter.toString());
+            fileWriter.write(xml);
             fileWriter.flush();
             fileWriter.close();
         }
-
-        update();
     }
 
     /**
@@ -260,571 +162,10 @@ public final class PollerConfigFactory implements PollerConfig {
 
         return m_singleton;
     }
-
-    /**
-     * Return the poller configuration object.
-     */
-    public synchronized PollerConfiguration getConfiguration() {
-        return m_config;
-    }
-
-    public synchronized org.opennms.netmgt.config.poller.Package getPackage(String name) {
-        Enumeration packageEnum = m_config.enumeratePackage();
-        while (packageEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.poller.Package thisPackage = (org.opennms.netmgt.config.poller.Package) packageEnum.nextElement();
-            if (thisPackage.getName().equals(name)) {
-                return thisPackage;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * This method is used to determine if the named interface is included in
-     * the passed package's url includes. If the interface is found in any of
-     * the URL files, then a value of true is returned, else a false value is
-     * returned.
-     * 
-     * <pre>
-     * 
-     *  The file URL is read and each entry in this file checked. Each line
-     *   in the URL file can be one of -
-     *   &lt;IP&gt;&lt;space&gt;#&lt;comments&gt;
-     *   or
-     *   &lt;IP&gt;
-     *   or
-     *   #&lt;comments&gt;
-     *  
-     *   Lines starting with a '#' are ignored and so are characters after
-     *   a '&lt;space&gt;#' in a line.
-     *  
-     * </pre>
-     * 
-     * @param addr
-     *            The interface to test against the package's URL
-     * @param url
-     *            The url file to read
-     * 
-     * @return True if the interface is included in the url, false otherwise.
-     */
-    private boolean interfaceInUrl(String addr, String url) {
-        boolean bRet = false;
-
-        // get list of IPs in this URL
-        java.util.List iplist = (java.util.List) m_urlIPMap.get(url);
-        if (iplist != null && iplist.size() > 0) {
-            bRet = iplist.contains(addr);
-        }
-
-        return bRet;
-    }
-
-    /**
-     * This method returns the boolean flag xmlrpc to indicate if notification
-     * to external xmlrpc server is needed.
-     * 
-     * @return true if need to notify an external xmlrpc server
-     */
-    public synchronized boolean getXmlrpc() {
-        String flag = m_config.getXmlrpc();
-        if (flag.equals("true"))
-            return true;
-        else
-            return false;
-    }
-
-    /**
-     * This method returns the configured critical service name.
-     * 
-     * @return the name of the configured critical service, or null if none is
-     *         present
-     */
-    public synchronized String getCriticalService() {
-        return m_config.getNodeOutage().getCriticalService().getName();
-    }
-
-    /**
-     * This method returns the configured value of the
-     * 'pollAllIfNoCriticalServiceDefined' flag.
-     * 
-     * A value of true causes the poller's node outage code to poll all the
-     * services on an interface if a status change has occurred and there is no
-     * critical service defined on the interface.
-     * 
-     * A value of false causes the poller's node outage code to not poll all the
-     * services on an interface in this situation.
-     * </p>
-     * 
-     * @return true or false based on configured value
-     */
-    public synchronized boolean pollAllIfNoCriticalServiceDefined() {
-        String flag = m_config.getNodeOutage().getPollAllIfNoCriticalServiceDefined();
-        if (flag.equals("true"))
-            return true;
-        else
-            return false;
-    }
-
-    /**
-     * Returns true if node outage processing is enabled.
-     */
-    public synchronized boolean nodeOutageProcessingEnabled() {
-        String status = m_config.getNodeOutage().getStatus();
-        if (status.equals("on"))
-            return true;
-        else
-            return false;
-    }
-
-    /**
-     * Returns true if serviceUnresponsive behavior is enabled. If enabled a
-     * serviceUnresponsive event is generated for TCP-based services if the
-     * service monitor is able to connect to the designated port but times out
-     * before receiving the expected response. If disabled, an outage will be
-     * generated in this scenario.
-     */
-    public synchronized boolean serviceUnresponsiveEnabled() {
-        String enabled = m_config.getServiceUnresponsiveEnabled();
-        if (enabled.equals("true"))
-            return true;
-        else
-            return false;
-    }
-
-    /**
-     * This method is used to establish package agaist iplist mapping, with
-     * which, the iplist is selected per package via the configured filter rules
-     * from the database.
-     */
-    private void createPackageIpListMap() {
-        Category log = ThreadCategory.getInstance(this.getClass());
-
-        m_pkgIpMap = new HashMap();
-
-        Enumeration pkgEnum = m_config.enumeratePackage();
-        while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.poller.Package pkg = (org.opennms.netmgt.config.poller.Package) pkgEnum.nextElement();
-
-            //
-            // Get a list of ipaddress per package agaist the filter rules from
-            // database and populate the package, IP list map.
-            //
-            Filter filter = new Filter();
-            StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
-
-            try {
-                if (m_verifyServer) {
-                    filterRules.append(" & (serverName == ");
-                    filterRules.append('\"');
-                    filterRules.append(m_localServer);
-                    filterRules.append('\"');
-                    filterRules.append(")");
-                }
-
-                if (log.isDebugEnabled())
-                    log.debug("createPackageIpMap: package is " + pkg.getName() + ". filer rules are  " + filterRules.toString());
-
-                List ipList = filter.getIPList(filterRules.toString());
-                if (log.isDebugEnabled())
-                    log.debug("createPackageIpMap: package " + pkg.getName() + ": ipList size =  " + ipList.size());
-
-                if (ipList.size() > 0) {
-                    if (log.isDebugEnabled())
-                        log.debug("createPackageIpMap: package " + pkg.getName() + ". IpList size is " + ipList.size());
-                    m_pkgIpMap.put(pkg, ipList);
-                }
-            } catch (Throwable t) {
-                if (log.isEnabledFor(Priority.ERROR)) {
-                    log.error("createPackageIpMap: failed to map package: " + pkg.getName() + " to an IP List", t);
-                }
-            }
-        }
-    }
-
-    /**
-     * This method is used to rebuild the package agaist iplist mapping when
-     * needed. When a node gained service event occurs, poller has to determine
-     * which package the ip/service combination is in, but if the interface is a
-     * newly added one, the package iplist should be rebuilt so that poller
-     * could know which package this ip/service pair is in.
-     */
-    public synchronized void rebuildPackageIpListMap() {
-        createPackageIpListMap();
-    }
-
-    /**
-     * This method is used to determine if the named interface is included in
-     * the passed package definition. If the interface belongs to the package
-     * then a value of true is returned. If the interface does not belong to the
-     * package a false value is returned.
-     * 
-     * <strong>Note: </strong>Evaluation of the interface against a package
-     * filter will only work if the IP is already in the database.
-     * 
-     * @param iface
-     *            The interface to test against the package.
-     * @param pkg
-     *            The package to check for the inclusion of the interface.
-     * 
-     * @return True if the interface is included in the package, false
-     *         otherwise.
-     */
-    public synchronized boolean interfaceInPackage(String iface, org.opennms.netmgt.config.poller.Package pkg) {
-        Category log = ThreadCategory.getInstance(this.getClass());
-
-        boolean filterPassed = false;
-
-        // get list of IPs in this package
-        java.util.List ipList = (java.util.List) m_pkgIpMap.get(pkg);
-        if (ipList != null && ipList.size() > 0) {
-            filterPassed = ipList.contains(iface);
-        }
-
-        if (log.isDebugEnabled())
-            log.debug("interfaceInPackage: Interface " + iface + " passed filter for package " + pkg.getName() + "?: " + filterPassed);
-
-        if (!filterPassed)
-            return false;
-
-        //
-        // Ensure that the interface is in the specific list or
-        // that it is in the include range and is not excluded
-        //
-        boolean has_specific = false;
-        boolean has_range_include = false;
-        boolean has_range_exclude = false;
-
-        long addr = IPSorter.convertToLong(iface);
-        Enumeration eincs = pkg.enumerateIncludeRange();
-        while (!has_range_include && eincs.hasMoreElements()) {
-            IncludeRange rng = (IncludeRange) eincs.nextElement();
-            long start = IPSorter.convertToLong(rng.getBegin());
-            if (addr > start) {
-                long end = IPSorter.convertToLong(rng.getEnd());
-                if (addr <= end) {
-                    has_range_include = true;
-                }
-            } else if (addr == start) {
-                has_range_include = true;
-            }
-        }
-
-        Enumeration espec = pkg.enumerateSpecific();
-        while (!has_specific && espec.hasMoreElements()) {
-            long speca = IPSorter.convertToLong(espec.nextElement().toString());
-            if (speca == addr)
-                has_specific = true;
-        }
-
-        Enumeration eurl = pkg.enumerateIncludeUrl();
-        while (!has_specific && eurl.hasMoreElements()) {
-            has_specific = interfaceInUrl(iface, (String) eurl.nextElement());
-        }
-
-        Enumeration eex = pkg.enumerateExcludeRange();
-        while (!has_range_exclude && !has_specific && eex.hasMoreElements()) {
-            ExcludeRange rng = (ExcludeRange) eex.nextElement();
-            long start = IPSorter.convertToLong(rng.getBegin());
-            if (addr > start) {
-                long end = IPSorter.convertToLong(rng.getEnd());
-                if (addr <= end) {
-                    has_range_exclude = true;
-                }
-            } else if (addr == start) {
-                has_range_exclude = true;
-            }
-        }
-
-        return has_specific || (has_range_include && !has_range_exclude);
-    }
-
-    /**
-     * Returns true if the service is part of the package and the status of the
-     * service is set to "on". Returns false if the service is not in the
-     * package or it is but the status of the service is set to "off".
-     * 
-     * @param svcName
-     *            The service name to lookup.
-     * @param pkg
-     *            The package to lookup up service.
-     */
-    public synchronized boolean serviceInPackageAndEnabled(String svcName, org.opennms.netmgt.config.poller.Package pkg) {
-        Category log = ThreadCategory.getInstance(this.getClass());
-
-        if (pkg == null) {
-            log.warn("serviceInPackageAndEnabled:  pkg argument is NULL!!");
-            return false;
-        } else {
-            if (log.isDebugEnabled())
-                log.debug("serviceInPackageAndEnabled: svcName=" + svcName + " pkg=" + pkg.getName());
-        }
-
-        boolean result = false;
-
-        Enumeration esvcs = pkg.enumerateService();
-        while (result == false && esvcs.hasMoreElements()) {
-            Service tsvc = (Service) esvcs.nextElement();
-            if (tsvc.getName().equalsIgnoreCase(svcName)) {
-                // Ok its in the package. Now check the
-                // status of the service
-                String status = tsvc.getStatus();
-                if (status.equals("on"))
-                    result = true;
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Returns true if the service has a monitor configured, false otherwise.
-     * 
-     * @param svcName
-     *            The service name to lookup.
-     */
-    public synchronized boolean serviceMonitored(String svcName) {
-        boolean result = false;
-
-        Enumeration monitorEnum = m_config.enumerateMonitor();
-        while (monitorEnum.hasMoreElements()) {
-            Monitor monitor = (Monitor) monitorEnum.nextElement();
-            if (monitor.getService().equals(svcName)) {
-                result = true;
-                break;
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the first package that the ip belongs to, null if none.
-     * 
-     * <strong>Note: </strong>Evaluation of the interface against a package
-     * filter will only work if the IP is alrady in the database.
-     * 
-     * @param ipaddr
-     *            the interface to check
-     * 
-     * @return the first package that the ip belongs to, null if none
-     */
-    public synchronized org.opennms.netmgt.config.poller.Package getFirstPackageMatch(String ipaddr) {
-        Enumeration pkgEnum = m_config.enumeratePackage();
-        while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.poller.Package pkg = (org.opennms.netmgt.config.poller.Package) pkgEnum.nextElement();
-
-            boolean inPkg = interfaceInPackage(ipaddr, pkg);
-            if (inPkg)
-                return pkg;
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns a list of package names that the ip belongs to, null if none.
-     *                
-     * <strong>Note: </strong>Evaluation of the interface against a package
-     * filter will only work if the IP is alrady in the database.
-     *
-     * @param ipaddr
-     *            the interface to check
-     *
-     * @return a list of package names that the ip belongs to, null if none
-     */
-    public synchronized List getAllPackageMatches(String ipaddr) {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        Enumeration pkgEnum = m_config.enumeratePackage();
-        List matchingPkgs = new ArrayList();
-        while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.poller.Package pkg = (org.opennms.netmgt.config.poller.Package) pkgEnum.nextElement();
-            String pkgName = pkg.getName();
-            boolean inPkg = interfaceInPackage(ipaddr, pkg);
-            if (inPkg) {
-                matchingPkgs.add(pkgName);
-            }
-        }
-
-        return matchingPkgs;
-    }
-
-
-    /**
-     * Returns true if the ip is part of atleast one package.
-     * 
-     * <strong>Note: </strong>Evaluation of the interface against a package
-     * filter will only work if the IP is alrady in the database.
-     * 
-     * @param ipaddr
-     *            the interface to check
-     * 
-     * @return true if the ip is part of atleast one package, false otherwise
-     */
-    public synchronized boolean isPolled(String ipaddr) {
-        Enumeration pkgEnum = m_config.enumeratePackage();
-        while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.poller.Package pkg = (org.opennms.netmgt.config.poller.Package) pkgEnum.nextElement();
-
-            boolean inPkg = interfaceInPackage(ipaddr, pkg);
-            if (inPkg)
-                return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns true if this package has the service enabled and if there is a
-     * monitor for this service.
-     * 
-     * <strong>Note: </strong>Evaluation of the interface against a package
-     * filter will only work if the IP is alrady in the database.
-     * 
-     * @param svcName
-     *            the service to check
-     * @param pkg
-     *            the package to check
-     * 
-     * @return true if the ip is part of atleast one package and the service is
-     *         enabled in this package and monitored, false otherwise
-     */
-    public synchronized boolean isPolled(String svcName, org.opennms.netmgt.config.poller.Package pkg) {
-        // Check if the service is enabled for this package and
-        // if there is a monitor for that service
-        //
-        boolean svcInPkg = serviceInPackageAndEnabled(svcName, pkg);
-        if (svcInPkg) {
-            return serviceMonitored(svcName);
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns true if the ip is part of atleast one package and if this package
-     * has the service enabled and if there is a monitor for this service.
-     * 
-     * <strong>Note: </strong>Evaluation of the interface against a package
-     * filter will only work if the IP is alrady in the database.
-     * 
-     * @param ipaddr
-     *            the interface to check
-     * @param svcName
-     *            the service to check
-     * 
-     * @return true if the ip is part of atleast one package and the service is
-     *         enabled in this package and monitored, false otherwise
-     */
-    public synchronized boolean isPolled(String ipaddr, String svcName) {
-        // First make sure there is a service monitor for this service!
-        if (!serviceMonitored(svcName)) {
-            return false;
-        }
-
-        Enumeration pkgEnum = m_config.enumeratePackage();
-        while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.poller.Package pkg = (org.opennms.netmgt.config.poller.Package) pkgEnum.nextElement();
-
-            //
-            // Check if interface is in a package and if the service
-            // is enabled for that package
-            //
-            boolean ipInPkg = interfaceInPackage(ipaddr, pkg);
-            if (ipInPkg) {
-                boolean svcInPkg = serviceInPackageAndEnabled(svcName, pkg);
-                if (svcInPkg) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Retrieves configured RRD step size.
-     * 
-     * @param pkg
-     *            Name of the data collection
-     * 
-     * @return RRD step size for the specified collection
-     */
-    public int getStep(org.opennms.netmgt.config.poller.Package pkg) {
-        return pkg.getRrd().getStep();
-    }
-
-    /**
-     * Retrieves configured list of RoundRobin Archive statements.
-     * 
-     * @param pkg
-     *            Name of the data collection
-     * 
-     * @return list of RRA strings.
-     */
-    public List getRRAList(org.opennms.netmgt.config.poller.Package pkg) {
-        return (List) pkg.getRrd().getRraCollection();
-
-    }
-
-    public Enumeration enumeratePackage() {
-        return getConfiguration().enumeratePackage();
-    }
-
-    public Enumeration enumerateMonitor() {
-        return getConfiguration().enumerateMonitor();
-    }
-
-    public int getThreads() {
-        return getConfiguration().getThreads();
-    }
-
-    /**
-     * @param poller
-     * @return
-     */
-    private void createServiceMonitors() {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        // Load up an instance of each monitor from the config
-        // so that the event processor will have them for
-        // new incomming events to create pollable service objects.
-        //
-        log.debug("start: Loading monitors");
-
-        Enumeration eiter = enumerateMonitor();
-        while (eiter.hasMoreElements()) {
-            Monitor monitor = (Monitor) eiter.nextElement();
-            try {
-                if (log.isDebugEnabled()) {
-                    log.debug("start: Loading monitor " + monitor.getService() + ", classname " + monitor.getClassName());
-                }
-                Class mc = Class.forName(monitor.getClassName());
-                ServiceMonitor sm = (ServiceMonitor) mc.newInstance();
-
-                // Attempt to initialize the service monitor
-                //
-                Map properties = null; // properties not currently used
-                sm.initialize(this, properties);
-
-                m_svcMonitors.put(monitor.getService(), sm);
-            } catch (Throwable t) {
-                if (log.isEnabledFor(Priority.WARN)) {
-                    log.warn("start: Failed to load monitor " + monitor.getClassName() + " for service " + monitor.getService(), t);
-                }
-            }
-        }
-    }
-
-    public Map getServiceMonitors() {
-        return m_svcMonitors;
-    }
-
-    public ServiceMonitor getServiceMonitor(String svcName) {
-        return (ServiceMonitor) getServiceMonitors().get(svcName);
-    }
-
-    public String getNextOutageIdSql() {
-        return m_config.getNextOutageId();
+    
+    public static synchronized void setInstance(PollerConfigFactory instance) {
+        m_singleton = instance;
+        m_loaded = true;
     }
 
     public void update() throws IOException, MarshalException, ValidationException {
@@ -832,6 +173,6 @@ public final class PollerConfigFactory implements PollerConfig {
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
 
         ThreadCategory.getInstance(PollerConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
-        reloadXML(OpennmsServerConfigFactory.getInstance(), new FileReader(cfgFile));
+        reloadXML(new FileReader(cfgFile));
     }
 }

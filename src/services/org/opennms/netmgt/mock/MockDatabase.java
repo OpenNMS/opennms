@@ -110,7 +110,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
                 "ipAddr varchar(16) not null, " +
 		        "snmpIpAdEntNetMask varchar(16), " +
 		        "snmpPhysAddr char(12)," +
-                "ifIndex integer," +
+                "snmpIfIndex integer," +
                 "snmpIfDesc varchar(256)," +
                 "snmpIfType integer," +
                 "snmpIfName varchar(32)," +
@@ -259,6 +259,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
         update("CREATE UNIQUE INDEX alarm_reductionkey_idx ON alarms(reductionKey)");
         update("create sequence outageNxtId start with 1");
         update("create sequence eventNxtId start with 1");
+        update("create sequence serviceNxtId start with 1");
         update("create sequence alarmNxtId start with 1");
         update("create sequence notifNxtId start with 1");
         update("create table seqQueryTable (row integer)");
@@ -346,6 +347,8 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
         String svcName = svc.getName();
         if (!serviceDefined(svcName)) {
             Object[] svcValues = { new Integer(svc.getId()), svcName };
+            //Object[] svcValues = { getNextServiceId(), svcName };
+            getNextServiceId();
             update("insert into service (serviceID, serviceName) values (?, ?)", svcValues);
         }
         
@@ -390,6 +393,14 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     
     public Integer getNextEventId() {
         return getNextId(getNextEventIdStatement());
+    }
+    
+    public String getNextServiceIdStatement() {
+        return "select next value for serviceNxtId from seqQueryTable";
+    }
+    
+    public Integer getNextServiceId() {
+        return getNextId(getNextServiceIdStatement());
     }
     
     public Integer getServiceID(String serviceName) {

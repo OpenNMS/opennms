@@ -175,7 +175,7 @@ public class Capsd extends ServiceDaemon {
         // Initialize the Capsd configuration factory.
         //
         try {
-            CapsdConfigFactory.reload();
+            CapsdConfigFactory.init();
         } catch (MarshalException ex) {
             log.error("Failed to load Capsd configuration", ex);
             throw new UndeclaredThrowableException(ex);
@@ -190,7 +190,7 @@ public class Capsd extends ServiceDaemon {
         // Initialize the poller configuration factory.
         //
         try {
-            PollerConfigFactory.reload();
+            PollerConfigFactory.init();
         } catch (MarshalException ex) {
             log.error("Failed to load poller configuration", ex);
             throw new UndeclaredThrowableException(ex);
@@ -205,7 +205,7 @@ public class Capsd extends ServiceDaemon {
         // Initialize the collectd configuration factory.
         //
         try {
-            CollectdConfigFactory.reload();
+            CollectdConfigFactory.init();
         } catch (MarshalException ex) {
             log.error("Failed to load collectd configuration", ex);
             throw new UndeclaredThrowableException(ex);
@@ -238,7 +238,7 @@ public class Capsd extends ServiceDaemon {
         // Initialize the SNMP Peer Factory
         //
         try {
-            SnmpPeerFactory.reload();
+            SnmpPeerFactory.init();
         } catch (MarshalException ex) {
             log.error("Failed to load SNMP configuration", ex);
             throw new UndeclaredThrowableException(ex);

@@ -81,6 +81,10 @@ public class RrdUtils {
             throw new IllegalStateException("RrdUtils not initiailzed");
         return m_rrdStrategy;
     }
+    
+    public static void setStrategy(RrdStrategy strategy) {
+        m_rrdStrategy = strategy;
+    }
 
     /**
      * Initializes the underlying round robin system and sets up the appropriate

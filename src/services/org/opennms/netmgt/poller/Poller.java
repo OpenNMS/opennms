@@ -116,9 +116,6 @@ public class Poller extends ServiceDaemon {
         // set the DbConnectionFactory in the QueryManager
         m_queryMgr.setDbConnectionFactory(m_dbConnectionFactory);
 
-        // create service name to id maps
-        createServiceMaps();
-
         // serviceUnresponsive behavior enabled/disabled?
         log.debug("init: serviceUnresponsive behavior: " + (getPollerConfig().serviceUnresponsiveEnabled() ? "enabled" : "disabled"));
 
@@ -213,14 +210,6 @@ public class Poller extends ServiceDaemon {
             log.fatal("init: Failed to create poller scheduler", e);
             throw e;
         }
-    }
-
-    /**
-     * 
-     */
-    private void createServiceMaps() {
-        // load the serviceId to serviceName tables
-        getQueryMgr().buildServiceNameToIdMaps(m_svcNameToId, m_svcIdToName);
     }
 
     public synchronized void start() {
@@ -552,15 +541,6 @@ public class Poller extends ServiceDaemon {
      */
     private Map getServiceMonitors() {
         return getPollerConfig().getServiceMonitors();
-    }
-
-    int getServiceIdByName(String svcName) {
-        Integer id = (Integer) m_svcNameToId.get(svcName);
-        return (id == null ? -1 : id.intValue());
-    }
-
-    String getServiceNameById(int svcId) {
-        return (String) m_svcIdToName.get(new Integer(svcId));
     }
 
     /**

@@ -183,7 +183,8 @@ your distribution.
   	<pathelement path="${packaged.lib.dir}/castor-0.9.6.jar"/>
     <pathelement path="${packaged.lib.dir}/fop0203.jar"/>
     <pathelement path="${packaged.lib.dir}/batik.jar"/>
-    <pathelement path="${packaged.lib.dir}/mx4j.jar"/>
+    <pathelement path="${packaged.lib.dir}/mx4j-3.0.1.jar"/>
+    <pathelement path="${packaged.lib.dir}/mx4j-tools-3.0.1.jar"/>
     <pathelement path="${packaged.lib.dir}/jdhcp.jar"/>
     <pathelement path="${packaged.lib.dir}/jcifs.jar"/>
     <pathelement path="${packaged.lib.dir}/bsf220.jar"/>
@@ -201,6 +202,8 @@ your distribution.
     <pathelement path="${packaged.lib.dir}/activation.jar"/>
     <pathelement path="${packaged.lib.dir}/jmta.jar"/>
   	<pathelement path="${packaged.lib.dir}/SNMP4J.jar"/>
+  	<pathelement path="${packaged.lib.dir}/cglib-nodep-2.1.jar"/> 
+  	<pathelement path="${packaged.lib.dir}/spring-1.2.1.jar"/>
     <pathelement path="/System/Library/Java"/>
   </path>
 
@@ -271,6 +274,8 @@ your distribution.
     <pathelement location="${packaged.lib.dir}/hsqldb.jar"/>
     <pathelement location="${packaged.lib.dir}/SNMP4J.jar"/>
     <pathelement location="${packaged.lib.dir}/${postgresql.jar}"/>
+    <pathelement location="${dev.lib.dir}/jmock-1.0.1.jar"/>
+    <pathelement location="${dev.lib.dir}/jmock-cglib-1.0.1.jar"/>
   </path>
 
   <path id="test.path">
@@ -1201,6 +1206,9 @@ OpenNMS as part of the post-install.
   <copy todir="${build.classes.dir}">
    <fileset dir="${build.sablecc.source.dir}">
     <include name="**/*.dat"/>
+   </fileset>
+   <fileset dir="src/services">
+    <include name="**/*-context.xml"/>
    </fileset>
   </copy>
  </target>

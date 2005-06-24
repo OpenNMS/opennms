@@ -112,10 +112,10 @@ public class DefaultPollContext implements PollContext, EventListener {
     public void openOutage(PollableService svc, final PollEvent svcLostEvent) {
         final int nodeId = svc.getNodeId();
         final String ipAddr = svc.getIpAddr();
-        final int serviceId = m_poller.getServiceIdByName(svc.getSvcName());
+        final String svcName = svc.getSvcName();
         Runnable r = new Runnable() {
             public void run() {
-                m_poller.getQueryMgr().openOutage(m_poller.getPollerConfig().getNextOutageIdSql(), nodeId, ipAddr, serviceId, svcLostEvent.getEventId(), EventConstants.formatToString(svcLostEvent.getDate()));
+                m_poller.getQueryMgr().openOutage(m_poller.getPollerConfig().getNextOutageIdSql(), nodeId, ipAddr, svcName, svcLostEvent.getEventId(), EventConstants.formatToString(svcLostEvent.getDate()));
             }
         };
         if (svcLostEvent instanceof PendingPollEvent) {
@@ -133,10 +133,10 @@ public class DefaultPollContext implements PollContext, EventListener {
     public void resolveOutage(PollableService svc, final PollEvent svcRegainEvent) {
         final int nodeId = svc.getNodeId();
         final String ipAddr = svc.getIpAddr();
-        final int serviceId = m_poller.getServiceIdByName(svc.getSvcName());
+        final String svcName = svc.getSvcName();
         Runnable r = new Runnable() {
             public void run() {
-                m_poller.getQueryMgr().resolveOutage(nodeId, ipAddr, serviceId, svcRegainEvent.getEventId(), EventConstants.formatToString(svcRegainEvent.getDate()));
+                m_poller.getQueryMgr().resolveOutage(nodeId, ipAddr, svcName, svcRegainEvent.getEventId(), EventConstants.formatToString(svcRegainEvent.getDate()));
             }
         };
         if (svcRegainEvent instanceof PendingPollEvent) {

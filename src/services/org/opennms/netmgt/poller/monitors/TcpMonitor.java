@@ -177,7 +177,7 @@ final public class TcpMonitor extends IPv4LatencyMonitor {
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = SERVICE_UNRESPONSIVE;
 
-                if (strBannerMatch == null || strBannerMatch.equals("*")) {
+                if (strBannerMatch == null || strBannerMatch.length() == 0 || strBannerMatch.equals("*")) {
                     serviceStatus = SERVICE_AVAILABLE;
                     // Store response time in RRD
                     if (responseTime >= 0 && rrdPath != null) {

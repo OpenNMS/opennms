@@ -48,10 +48,8 @@
 		<complexType>
                         
 			<!--- hostname of an XMLRPC server -->
-			<attribute name="hostname" type="string" use="required"/>
+			<attribute name="url" type="string" use="required"/>
 			
-                        <!--- port number of an XMLRPC server -->
-			<attribute name="port" type="positiveInteger" use="required"/>
 		</complexType>
 	</element>
 

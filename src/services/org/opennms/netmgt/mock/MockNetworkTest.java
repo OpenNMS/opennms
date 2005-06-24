@@ -39,7 +39,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -204,7 +203,7 @@ public class MockNetworkTest extends TestCase {
         
         m_eventMgr = new MockEventIpcManager();
 
-        m_pollerConfig = new MockPollerConfig();
+        m_pollerConfig = new MockPollerConfig(m_network);
         m_pollerConfig.addPackage("TestPackage");
         m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
         m_pollerConfig.setDefaultPollInterval(1000L);
@@ -474,14 +473,7 @@ public class MockNetworkTest extends TestCase {
         assertTrue(queryManager.activeServiceExists("Test", 1, "192.168.1.1", "ICMP"));
         assertFalse(queryManager.activeServiceExists("Test", 1, "192.168.1.17", "ICMP"));
 
-        Map nameToIdMap = new HashMap();
-        Map idToNameMap = new HashMap();
-        queryManager.buildServiceNameToIdMaps(nameToIdMap, idToNameMap);
-
         MockService service = m_network.getService(1, "192.168.1.1", "SMTP");
-        int serviceId = service.getId();
-        assertEquals(service.getName(), idToNameMap.get(new Integer(serviceId)));
-        assertEquals(serviceId, ((Integer) nameToIdMap.get(service.getName())).intValue());
 
         MockInterface iface = m_network.getInterface(1, "192.168.1.2");
         Collection expectedSvcs = iface.getServices();
