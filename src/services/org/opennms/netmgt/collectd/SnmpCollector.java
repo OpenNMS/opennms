@@ -941,7 +941,7 @@ final class SnmpCollector implements ServiceCollector {
             if (ifCollector != null) trackers.add(ifCollector);
             
             // now collect the data
-            SnmpWalker walker = SnmpUtils.create(address, "SnmpCollectors for "+address.getHostAddress(), getMaxVarsPerPdu(iface), (CollectionTracker[]) trackers.toArray(new CollectionTracker[trackers.size()]));
+            SnmpWalker walker = SnmpUtils.createWalker(address, "SnmpCollectors for "+address.getHostAddress(), getMaxVarsPerPdu(iface), (CollectionTracker[]) trackers.toArray(new CollectionTracker[trackers.size()]));
             walker.start();
 
             if (log().isDebugEnabled())

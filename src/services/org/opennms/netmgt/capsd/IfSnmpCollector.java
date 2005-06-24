@@ -291,7 +291,7 @@ final class IfSnmpCollector implements Runnable {
         m_ipAddrTable = new IpAddrTable(m_address);
         m_ifXTable = new IfXTable(m_address);
         
-        SnmpWalker walker = SnmpUtils.create(m_address, "system/ifTable/ifXTable/ipAddrTable", 50, new CollectionTracker[] { m_sysGroup, m_ifTable, m_ipAddrTable, m_ifXTable});
+        SnmpWalker walker = SnmpUtils.createWalker(m_address, "system/ifTable/ifXTable/ipAddrTable", 50, new CollectionTracker[] { m_sysGroup, m_ifTable, m_ipAddrTable, m_ifXTable});
         walker.start();
 
         try {

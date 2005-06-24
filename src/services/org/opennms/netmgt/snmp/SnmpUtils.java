@@ -31,7 +31,6 @@
 //
 package org.opennms.netmgt.snmp;
 
-import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.util.Properties;
 
@@ -55,35 +54,41 @@ public class SnmpUtils {
         }
     }
 
-    public static SnmpWalker create(final InetAddress address, String name, int maxVarsPerPdu, CollectionTracker[] trackers) {
-        return create(address, name, maxVarsPerPdu, new TooBigReportingAggregator(trackers, address));
+    public static SnmpWalker createWalker(final InetAddress address, String name, int maxVarsPerPdu, CollectionTracker[] trackers) {
+        return createWalker(address, name, maxVarsPerPdu, new TooBigReportingAggregator(trackers, address));
     }
 
-    public static SnmpWalker create(InetAddress address, String name, int maxVarsPerPdu, CollectionTracker tracker) {
-        try {
-            Class walkerClass = Class.forName(getWalkerClassName());
-            Constructor constructor = walkerClass.getConstructor(new Class[] { InetAddress.class, String.class, Integer.TYPE, CollectionTracker.class});
-            return (SnmpWalker)constructor.newInstance(new Object[] { address, name, new Integer(maxVarsPerPdu), tracker});
-        } catch (Exception e) {
-            log().fatal("Failed to create SnmpWalker!", e);
-            throw new RuntimeException("Failed to create SnmpWalker!", e);
-        }
+    public static SnmpWalker createWalker(InetAddress address, String name, int maxVarsPerPdu, CollectionTracker tracker) {
+        return getStrategy().createWalker(address, name, maxVarsPerPdu, tracker);
     }
 
     private static Category log() {
         return ThreadCategory.getInstance(SnmpUtils.class);
     }
 
-    private static Properties getConfig() {
-        return (sm_config == null ? new Properties() : sm_config);
+    public static Properties getConfig() {
+        return (sm_config == null ? System.getProperties() : sm_config);
     }
     
     public static void setConfig(Properties config) {
         sm_config = config;
     }
     
-    private static String getWalkerClassName() {
-        return getConfig().getProperty("org.opennms.snmp.walkerClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JWalker");
+    public static SnmpStrategy getStrategy() {
+        String strategyClass = getStrategyClassName();
+        try {
+            return (SnmpStrategy)Class.forName(strategyClass).newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to instantiate class "+strategyClass, e);
+        }
+    }
+    
+    private static String getStrategyClassName() {
+        return getConfig().getProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy");
+    }
+    
+    public static SnmpConfig createConfig(InetAddress address) {
+        return getStrategy().createSnmpConfig(address);
     }
 
 }
