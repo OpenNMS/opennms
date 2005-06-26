@@ -54,12 +54,25 @@ public class SnmpUtils {
         }
     }
 
-    public static SnmpWalker createWalker(final InetAddress address, String name, int maxVarsPerPdu, CollectionTracker[] trackers) {
-        return createWalker(address, name, maxVarsPerPdu, new TooBigReportingAggregator(trackers, address));
+    //TODO: got too many walkers start fixing by making some private
+    public static SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker[] trackers) {
+        return createWalker(agentConfig, name, new TooBigReportingAggregator(trackers, agentConfig.getAddress()));
+    }
+    
+    public static SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker) {
+        return getStrategy().createWalker(agentConfig, name, tracker);
+        
+    }
+    public static SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, ColumnTracker tracker) {
+        return createWalker(agentConfig, name, agentConfig.getMaxVarsPerPdu(), tracker);
     }
 
-    public static SnmpWalker createWalker(InetAddress address, String name, int maxVarsPerPdu, CollectionTracker tracker) {
-        return getStrategy().createWalker(address, name, maxVarsPerPdu, tracker);
+    private static SnmpWalker createWalker(final SnmpAgentConfig agentConfig, String name, int maxVarsPerPdu, CollectionTracker[] trackers) {
+        return createWalker(agentConfig, name, maxVarsPerPdu, new TooBigReportingAggregator(trackers, agentConfig.getAddress()));
+    }
+
+    private static SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, int maxVarsPerPdu, CollectionTracker tracker) {
+        return getStrategy().createWalker(agentConfig, name, tracker);
     }
 
     private static Category log() {
@@ -85,10 +98,15 @@ public class SnmpUtils {
     
     private static String getStrategyClassName() {
         return getConfig().getProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy");
+//        return getConfig().getProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy");
     }
     
-    public static SnmpConfig createConfig(InetAddress address) {
-        return getStrategy().createSnmpConfig(address);
+    public static SnmpAgentConfig createAgentConfig(InetAddress address) {
+        return new SnmpAgentConfig(address);
+    }
+
+    public static SnmpAgentConfig createAgentConfig() {
+        return new SnmpAgentConfig();
     }
 
 }

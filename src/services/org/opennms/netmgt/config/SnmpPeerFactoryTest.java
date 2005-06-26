@@ -37,11 +37,13 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.snmp4j.CommunityTarget;
 
 public class SnmpPeerFactoryTest extends OpenNMSTestCase {
 
     protected void setUp() throws Exception {
+        super.setVersion(SnmpAgentConfig.VERSION2C);
         super.setUp();
         m_runSupers = false;
     }
@@ -101,5 +103,10 @@ public class SnmpPeerFactoryTest extends OpenNMSTestCase {
         //should be default community because of 0
         target = (CommunityTarget)SnmpPeerFactory.getInstance().getTarget(InetAddress.getByName("77.6.0.255"));
         assertEquals("public", target.getCommunity().toString());
+    }
+    
+    public void testGetSnmpAgentConfig() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(myLocalHost()));
+        assertEquals(SnmpAgentConfig.VERSION2C, agentConfig.getVersion());
     }
 }

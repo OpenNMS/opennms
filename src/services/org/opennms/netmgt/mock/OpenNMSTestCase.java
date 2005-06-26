@@ -38,6 +38,8 @@ import java.io.StringReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import junit.framework.TestCase;
+
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -46,9 +48,7 @@ import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.Eventd;
-import org.opennms.protocols.snmp.SnmpSMI;
-
-import junit.framework.TestCase;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 public class OpenNMSTestCase extends TestCase {
 
     /*
@@ -1361,10 +1361,19 @@ public class OpenNMSTestCase extends TestCase {
     }
     
     private String myVersion() {
-        return m_version == SnmpSMI.SNMPV1 ? "v1" : "v2c";
+        switch (m_version) {
+        case SnmpAgentConfig.VERSION1 :
+            return "v1";
+        case SnmpAgentConfig.VERSION2C :
+            return "v2c";
+        case SnmpAgentConfig.VERSION3 :
+            return "v3";
+        default :
+            return "v1";
+        }
     }
 
-    int m_version = SnmpSMI.SNMPV1;
+    int m_version = SnmpAgentConfig.VERSION1;
     
     public void setVersion(int version) {
         m_version = version;

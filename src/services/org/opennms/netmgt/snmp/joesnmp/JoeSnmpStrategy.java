@@ -31,21 +31,15 @@
 //
 package org.opennms.netmgt.snmp.joesnmp;
 
-import java.net.InetAddress;
-
 import org.opennms.netmgt.snmp.CollectionTracker;
-import org.opennms.netmgt.snmp.SnmpConfig;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpStrategy;
 import org.opennms.netmgt.snmp.SnmpWalker;
 
 public class JoeSnmpStrategy implements SnmpStrategy {
 
-    public SnmpWalker createWalker(InetAddress address, String name, int maxVarsPerPdu, CollectionTracker tracker) {
-        return new JoeSnmpWalker(address, name, maxVarsPerPdu, tracker);
-    }
-
-    public SnmpConfig createSnmpConfig(InetAddress address) {
-        return new JoeSnmpConfig();
+    public SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker) {
+        return new JoeSnmpWalker(agentConfig, name, tracker);
     }
 
 }

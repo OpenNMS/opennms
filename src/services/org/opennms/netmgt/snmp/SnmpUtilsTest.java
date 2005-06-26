@@ -36,6 +36,7 @@ import java.net.UnknownHostException;
 
 import junit.framework.TestSuite;
 
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 
 public class SnmpUtilsTest extends OpenNMSTestCase {
@@ -58,16 +59,33 @@ public class SnmpUtilsTest extends OpenNMSTestCase {
         super.tearDown();
     }
     
-    public void testCreateWalker() throws UnknownHostException {
+    public void testCreateSnmpAgentConfig() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = SnmpUtils.createAgentConfig();
+        assertNull(agentConfig.getAddress());
+        assertSnmpAgentConfigDefaults(agentConfig);
+        
+        agentConfig = SnmpUtils.createAgentConfig(InetAddress.getLocalHost());
+        assertNotNull(agentConfig.getAddress());
+        assertEquals(InetAddress.getLocalHost().getHostAddress(), agentConfig.getAddress().getHostAddress());
+        assertSnmpAgentConfigDefaults(agentConfig);
+    }
+
+
+    private void assertSnmpAgentConfigDefaults(SnmpAgentConfig agentConfig) {
+        assertEquals(SnmpAgentConfig.DEFAULT_PORT, agentConfig.getPort());
+        assertEquals(SnmpAgentConfig.DEFAULT_TIMEOUT, agentConfig.getTimeout());
+        assertEquals(SnmpAgentConfig.DEFAULT_VERSION, agentConfig.getVersion());
+    }
+    
+/*    public void testCreateWalker() throws UnknownHostException {
         SnmpWalker walker = SnmpUtils.createWalker(InetAddress.getLocalHost(), "Test", 5, new ColumnTracker(SnmpObjId.get(".1.2.3.4")));
         assertNotNull(walker);
     }
-    
-    public void testCreateConfig() throws UnknownHostException {
-        SnmpConfig config = SnmpUtils.createConfig(InetAddress.getLocalHost());
-        assertNotNull(config);
-        config.setRetries(4);
-        assertEquals(4, config.getRetries());
+*/    
+    public void testCreateWalkerWithAgentConfig() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getLocalHost());
+        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "Test", new ColumnTracker(SnmpObjId.get("1.2.3.4")));
+        assertNotNull(walker);
     }
     
     public void testGetStrategy() {
@@ -76,6 +94,4 @@ public class SnmpUtilsTest extends OpenNMSTestCase {
         assertEquals(System.getProperty("org.opennms.snmp.strategyClass"), strategy.getClass().getName());
     }
     
-    
-
 }

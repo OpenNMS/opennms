@@ -69,6 +69,7 @@ import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SingleInstanceTracker;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -940,8 +941,10 @@ final class SnmpCollector implements ServiceCollector {
             if (nodeCollector != null) trackers.add(nodeCollector);
             if (ifCollector != null) trackers.add(ifCollector);
             
+            SnmpAgentConfig agentConfig = SnmpUtils.createAgentConfig(address);
+            
             // now collect the data
-            SnmpWalker walker = SnmpUtils.createWalker(address, "SnmpCollectors for "+address.getHostAddress(), getMaxVarsPerPdu(iface), (CollectionTracker[]) trackers.toArray(new CollectionTracker[trackers.size()]));
+            SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "SnmpCollectors for "+address.getHostAddress(), (CollectionTracker[]) trackers.toArray(new CollectionTracker[trackers.size()]));
             walker.start();
 
             if (log().isDebugEnabled())

@@ -36,8 +36,8 @@ import java.net.SocketException;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.CollectionTracker;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -243,12 +243,23 @@ public class JoeSnmpWalker extends SnmpWalker {
     private SnmpPeer m_peer;
     private SnmpSession m_session;
 
-    public JoeSnmpWalker(InetAddress address, String name, int maxVarsPerPdu, CollectionTracker tracker) {
-        super(address, name, maxVarsPerPdu, tracker);
-        m_peer = SnmpPeerFactory.getInstance().getPeer(address);
+    public JoeSnmpWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker) {
+        super(agentConfig.getAddress(), name, agentConfig.getMaxVarsPerPdu(), tracker);
+        m_peer = getPeer(agentConfig);
         m_handler = new JoeSnmpResponseHandler();
     }
     
+    private SnmpPeer getPeer(SnmpAgentConfig agentConfig) {
+        SnmpPeer peer = new SnmpPeer(agentConfig.getAddress());
+        peer.getParameters().setVersion(agentConfig.getVersion());
+        peer.getParameters().setReadCommunity(agentConfig.getReadCommunity());
+        peer.getParameters().setVersion(agentConfig.getVersion());
+        peer.setPort(agentConfig.getPort());
+        peer.setRetries(agentConfig.getRetries());
+        peer.setTimeout(agentConfig.getTimeout());
+        return peer;        
+    }
+
     public void start() {
         log().debug("Walking "+getName()+" for "+getAddress()+" using version "+SnmpSMI.getVersionString(getVersion()));
         super.start();

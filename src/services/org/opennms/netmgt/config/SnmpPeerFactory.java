@@ -64,6 +64,8 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.capsd.Definition;
 import org.opennms.netmgt.config.capsd.Range;
 import org.opennms.netmgt.config.capsd.SnmpConfig;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.protocols.ip.IPv4Address;
 import org.opennms.protocols.snmp.SnmpParameters;
 import org.opennms.protocols.snmp.SnmpPeer;
@@ -814,6 +816,99 @@ public final class SnmpPeerFactory {
         //
         return peer;
     }
+    
+    public synchronized SnmpAgentConfig getAgentConfig(InetAddress agentAddress) {
+        return getAgentConfig(agentAddress, VERSION_UNSPECIFIED);
+    }
+    
+    public synchronized SnmpAgentConfig getAgentConfig(InetAddress agentInetAddress, int requestedSnmpVersion) {
+        String transportAddress = null;
+        //String transportAddress = inetAddress.getHostAddress() + "/" + DEFAULT_PORT;
+        Address targetAddress = null;
+        //Address targetAddress = new UdpAddress(transportAddress);
+        
+
+        if (m_config == null) {
+            SnmpAgentConfig target = SnmpUtils.createAgentConfig(agentInetAddress);
+            if (requestedSnmpVersion == VERSION_UNSPECIFIED) {
+                target.setVersion(SnmpAgentConfig.DEFAULT_VERSION);
+            } else {
+                target.setVersion(requestedSnmpVersion);
+            }
+            
+            return target;
+        }
+        
+        SnmpAgentConfig target = SnmpUtils.createAgentConfig(agentInetAddress);
+
+        // Attempt to locate the node
+        //
+        Enumeration edef = m_config.enumerateDefinition();
+        DEFLOOP: while (edef.hasMoreElements()) {
+            Definition def = (Definition) edef.nextElement();
+
+            // check the specifics first
+            //
+            Enumeration espec = def.enumerateSpecific();
+            while (espec.hasMoreElements()) {
+                String saddr = (String) espec.nextElement();
+                try {
+                    InetAddress addr = InetAddress.getByName(saddr);
+                    if (addr.equals(target.getAddress())) {
+                        setSnmpAgentConfig(target, def, requestedSnmpVersion);
+                        break DEFLOOP;
+                    }
+                } catch (UnknownHostException e) {
+                    Category log = ThreadCategory.getInstance(getClass());
+                    log.warn("SnmpPeerFactory: could not convert host " + saddr + " to InetAddress", e);
+                }
+            }
+
+            // check the ranges
+            //
+            long lhost = toLong(target.getAddress());
+            Enumeration erange = def.enumerateRange();
+            while (erange.hasMoreElements()) {
+                Range rng = (Range) erange.nextElement();
+                try {
+                    InetAddress begin = InetAddress.getByName(rng.getBegin());
+                    InetAddress end = InetAddress.getByName(rng.getEnd());
+
+                    long start = toLong(begin);
+                    long stop = toLong(end);
+
+                    if (start <= lhost && lhost <= stop) {
+                        setSnmpAgentConfig(target, def, requestedSnmpVersion);
+                        break DEFLOOP;
+                    }
+                } catch (UnknownHostException e) {
+                    Category log = ThreadCategory.getInstance(getClass());
+                    log.warn("SnmpPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
+                }
+            }
+            
+            // check the matching ip expressions
+            //
+            Enumeration eMatch = def.enumerateIpMatch();
+            while (eMatch.hasMoreElements()) {
+                String ipMatch = (String)eMatch.nextElement();
+                if (verifyIpMatch(agentInetAddress.getHostAddress(), ipMatch)) {
+                    setSnmpAgentConfig(target, def, requestedSnmpVersion);
+                    break DEFLOOP;
+                }
+            }
+            
+        } // end DEFLOOP
+
+        if (target == null) {
+
+            Definition def = new Definition();
+            setSnmpAgentConfig(target, def, requestedSnmpVersion);
+        }
+
+        return target;
+
+    }
 
     /**
      * This method is used by the Capabilities poller to lookup the SNMP peer
@@ -1102,6 +1197,26 @@ public final class SnmpPeerFactory {
      * @param requestedSnmpVersion
      * @return
      */
+    private void setSnmpAgentConfig(SnmpAgentConfig agentConfig, Definition def, int requestedSnmpVersion) {
+        
+        int version = determineVersion(def, requestedSnmpVersion);
+        
+        setCommonAgentConfigAttributes(agentConfig, def, version);
+        agentConfig.setSecurityLevel(determineSercurityLevel(def));
+        agentConfig.setSecurityName(determineAgentConfigSecurityName(def));
+        agentConfig.setReadCommunity(determineAgentConfigCommunity(def));
+    }
+
+    
+    /**
+     * A convenience method for created an SNMP4J SNMP target.  If version 3
+     * is requested, then a UserTarget is return, otherwise, a
+     * CommunityTarget is returned.
+     * @param addr
+     * @param def
+     * @param requestedSnmpVersion
+     * @return
+     */
     private Target createTarget(InetAddress addr, Definition def, int requestedSnmpVersion) {
         
         int version = determineVersion(def, requestedSnmpVersion);
@@ -1127,6 +1242,20 @@ public final class SnmpPeerFactory {
      * @param target
      * @param def
      * @param version
+     */
+    private void setCommonAgentConfigAttributes(SnmpAgentConfig target, Definition def, int version) {
+        target.setVersion(version);
+        target.setRetries(determineRetries(def));
+        target.setTimeout((int)determineTimeout(def));
+        target.setMaxRequestSize(determineMaxRequestSize(def));
+    }
+
+    /**
+     * This is a helper method to set all the common attributes for a
+     * Target (CommunityTarget or UserTarget)
+     * @param target
+     * @param def
+     * @param version
      * @param addr
      */
     private void setCommonAttributes(Target target, Definition def, int version, InetAddress addr) {
@@ -1135,6 +1264,16 @@ public final class SnmpPeerFactory {
         target.setTimeout(determineTimeout(def));
         target.setAddress(determineAddress(def, addr));
         target.setMaxSizeRequestPDU(determineMaxRequestSize(def));
+    }
+
+    /**
+     * Helper method to search the snmp-config for the appropriate read
+     * community string.
+     * @param def
+     * @return
+     */
+    private String determineAgentConfigCommunity(Definition def) {
+        return (def.getReadCommunity() == null ? (m_config.getReadCommunity() == null ? "public" :m_config.getReadCommunity()) : def.getReadCommunity());
     }
 
     /**
@@ -1155,6 +1294,21 @@ public final class SnmpPeerFactory {
      */
     private int determineMaxRequestSize(Definition def) {
         return (def.getMaxRequestSize() == 0 ? (m_config.getMaxRequestSize() == 0 ? DEFAULT_MAX_REQUEST_SIZE : m_config.getMaxRequestSize()) : DEFAULT_MAX_REQUEST_SIZE);
+    }
+
+    /**
+     * Helper method to find a security name to use in the snmp-config.  If v3 has
+     * been specified and one can't be found, then a default is used for this
+     * is a required option for v3 operations.
+     * @param def
+     * @return
+     */
+    private String determineAgentConfigSecurityName(Definition def) {
+        String securityName = (def.getSecurityName() == null ? m_config.getSecurityName() : def.getSecurityName() );
+        if (securityName == null) {
+            securityName = DEFAULT_SECURITY_NAME;
+        }
+        return securityName;
     }
 
     /**
@@ -1259,7 +1413,7 @@ public final class SnmpPeerFactory {
      */
     private int determineVersion(Definition def, int requestedSnmpVersion) {
         
-        int version = SnmpConstants.version1;
+        int version = SnmpAgentConfig.VERSION1;
         
         String cfgVersion = "v1";
         if (requestedSnmpVersion == VERSION_UNSPECIFIED) {
@@ -1277,11 +1431,11 @@ public final class SnmpPeerFactory {
         }
         
         if (cfgVersion.equals("v1")) {
-            version = SnmpConstants.version1;
+            version = SnmpAgentConfig.VERSION1;
         } else if (cfgVersion.equals("v2c")) {
-            version = SnmpConstants.version2c;
+            version = SnmpAgentConfig.VERSION2C;
         } else if (cfgVersion.equals("v3")) {
-            version = SnmpConstants.version3;
+            version = SnmpAgentConfig.VERSION3;
         }
         
         return version;
@@ -1297,5 +1451,5 @@ public final class SnmpPeerFactory {
     public Target getTarget(InetAddress inetAddress) {
         return getTarget(inetAddress, VERSION_UNSPECIFIED);
     }
-        
+
 }

@@ -31,12 +31,9 @@
 //
 package org.opennms.netmgt.snmp;
 
-import java.net.InetAddress;
 
 public interface SnmpStrategy {
 
-    SnmpWalker createWalker(InetAddress address, String name, int maxVarsPerPdu, CollectionTracker tracker);
-
-    SnmpConfig createSnmpConfig(InetAddress address);
+    SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker);
 
 }
