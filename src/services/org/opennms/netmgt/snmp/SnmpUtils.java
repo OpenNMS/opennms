@@ -54,7 +54,6 @@ public class SnmpUtils {
         }
     }
 
-    //TODO: got too many walkers start fixing by making some private
     public static SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker[] trackers) {
         return createWalker(agentConfig, name, new TooBigReportingAggregator(trackers, agentConfig.getAddress()));
     }
@@ -64,14 +63,6 @@ public class SnmpUtils {
         
     }
     public static SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, ColumnTracker tracker) {
-        return createWalker(agentConfig, name, agentConfig.getMaxVarsPerPdu(), tracker);
-    }
-
-    private static SnmpWalker createWalker(final SnmpAgentConfig agentConfig, String name, int maxVarsPerPdu, CollectionTracker[] trackers) {
-        return createWalker(agentConfig, name, maxVarsPerPdu, new TooBigReportingAggregator(trackers, agentConfig.getAddress()));
-    }
-
-    private static SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, int maxVarsPerPdu, CollectionTracker tracker) {
         return getStrategy().createWalker(agentConfig, name, tracker);
     }
 
