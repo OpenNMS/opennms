@@ -116,7 +116,7 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
         }
     }
 
-    public final void testGetSystemGroup() throws UnknownHostException {
+/*    public final void testGetSystemGroup() throws UnknownHostException {
         if(m_run) {
 
             if(!m_hasRun)
@@ -128,7 +128,7 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
             assertEquals("brozow.local", sg.getSysName());
         }        
     }
-
+*/
     public final void testHasIfTable() {
         if(m_run) {
 

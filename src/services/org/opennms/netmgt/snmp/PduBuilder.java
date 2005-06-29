@@ -36,7 +36,7 @@ public abstract class PduBuilder {
     private int m_maxVarsPerPdu;
     
     public PduBuilder() {
-        this(50);
+        this(SnmpAgentConfig.DEFAULT_MAX_VARS_PER_PDU);
     }
 
     public PduBuilder(int maxVarsPerPdu) {
@@ -56,7 +56,5 @@ public abstract class PduBuilder {
     public void setMaxVarsPerPdu(int maxVarsPerPdu) {
         m_maxVarsPerPdu = maxVarsPerPdu;
     }
-    
-    
 
 }

@@ -33,6 +33,7 @@ package org.opennms.netmgt.snmp.snmp4j;
 
 import java.io.IOException;
 
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
@@ -54,6 +55,41 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
  */
 public class SnmpHelpers {
     
+    /**
+     * Creates an SNMP4J PDU based on version and PDU type
+     * set in the agentConfig parameter
+     * 
+     * @param agentConfig
+     * @return
+     */
+    public static PDU createPDU(SnmpAgentConfig agentConfig) {
+        
+        //TODO: need to do something better here.
+        if (!agentConfig.isAdapted()) {
+            return null;
+        }
+        
+        PDU request = createPDU(agentConfig.getVersion());
+        request.setType((agentConfig.getPduType()));
+        return request;
+    }
+    
+    /**
+     * Creates an SNMP4J PDU using the OpenNMS default version constant
+     * 
+     * @return
+     */
+    public static PDU createPDU() {
+        return createPDU(SnmpConstants.version1);
+    }
+
+    /**
+     * Creates an SNMP4J PDU based on the SNMP4J version constants.
+     * A v3 request requires a ScopedPDU.
+     * 
+     * @param version
+     * @return
+     */
     public static PDU createPDU(int version) {
         PDU request;
         if (version == SnmpConstants.version3)
@@ -62,11 +98,6 @@ public class SnmpHelpers {
             request = new PDU();
         return request;
     }
-    
-    public static PDU createPDU() {
-        return createPDU(SnmpConstants.version1);
-    }
-
     
     public static Snmp createSnmpSession() throws IOException {
         TransportMapping transport = new DefaultUdpTransportMapping();

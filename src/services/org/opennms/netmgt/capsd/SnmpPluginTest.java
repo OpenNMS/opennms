@@ -1,0 +1,145 @@
+//
+// This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included code and modified
+// code that was published under the GNU General Public License. Copyrights for modified 
+// and included code are below.
+//
+// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.                                                            
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+//    
+// For more information contact: 
+//   OpenNMS Licensing       <license@opennms.org>
+//   http://www.opennms.org/
+//   http://www.opennms.com/
+//
+// Tab Size = 8
+
+package org.opennms.netmgt.capsd;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
+
+import junit.framework.TestSuite;
+
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.capsd.plugins.SnmpPlugin;
+import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.snmp.PropertySettingTestSuite;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpUtilsTest;
+
+public class SnmpPluginTest extends OpenNMSTestCase {
+
+    /*
+     * Set this flag to false before checking in code.  Use this flag to
+     * test against a v3 compatible agent running on the localhost
+     * until the MockAgent code is finished.
+     */
+    private boolean m_runAssertions = true;
+    SnmpPlugin m_plugin = null;
+    
+    public static TestSuite suite() {
+        Class testClass = SnmpUtilsTest.class;
+        TestSuite suite = new TestSuite(testClass.getName());
+        suite.addTest(new PropertySettingTestSuite(testClass, "JoeSnmp Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy"));
+        suite.addTest(new PropertySettingTestSuite(testClass, "Snmp4J Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy"));
+        return suite;
+    }
+
+    /**
+     * Required method for TestCase
+     */
+    protected void setUp() throws Exception {
+        super.setUp();
+        if (m_plugin == null) {
+            m_plugin = new SnmpPlugin();
+        }
+        m_runSupers = false;
+    }
+
+    /**
+     * Required method for TestCase
+     */
+    protected void tearDown() throws Exception {
+        super.tearDown();
+    }
+            
+    /**
+     * This test works against a live v1/2c compatible agent until
+     * the MockAgent code is completed.
+     * @throws UnknownHostException 
+     */
+    public void testIsForcedV1ProtocolSupported() throws UnknownHostException {
+        InetAddress address = InetAddress.getByName(myLocalHost());
+        Map map = new HashMap();
+        map.put("forced version", "snmpv1");
+        
+        if(m_runAssertions)
+            assertTrue(m_plugin.isProtocolSupported(address, map));
+    }
+
+    /**
+     * This test works against a live v1/2c compatible agent until
+     * the MockAgent code is completed.
+     * @throws UnknownHostException 
+     */
+    public void testIsExpectedValue() throws UnknownHostException {
+        InetAddress address = InetAddress.getByName(myLocalHost());
+        Map map = new HashMap();
+        map.put("vbvalue", "1\\.3\\.6\\.1\\.4\\.1.*");
+        
+        if(m_runAssertions)
+            assertTrue(m_plugin.isProtocolSupported(address, map));
+    }
+    
+    /*
+     * Class under test for boolean isProtocolSupported(InetAddress)
+     */
+    public final void testIsProtocolSupportedInetAddress() throws UnknownHostException {
+        assertTrue(m_plugin.isProtocolSupported(InetAddress.getByName(myLocalHost())));
+    }
+    
+    public final void testIsV3ProtocolSupported() throws ValidationException, IOException, IOException, MarshalException {
+        setVersion(SnmpAgentConfig.VERSION3);
+        Reader rdr = new StringReader(getSnmpConfig());
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
+
+        assertTrue(m_plugin.isProtocolSupported(InetAddress.getByName(myLocalHost())));
+    }
+
+    public final void testIsV3ForcedToV1Supported() throws ValidationException, IOException, IOException, MarshalException {
+        setVersion(SnmpAgentConfig.VERSION3);
+        Reader rdr = new StringReader(getSnmpConfig());
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
+        
+        Map qualifiers = new HashMap();
+        qualifiers.put("force version", "snmpv1");
+
+        assertTrue(m_plugin.isProtocolSupported(InetAddress.getByName(myLocalHost()), qualifiers));
+    }
+
+}

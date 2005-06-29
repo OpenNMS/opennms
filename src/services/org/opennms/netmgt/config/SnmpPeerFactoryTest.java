@@ -38,7 +38,6 @@ import java.net.UnknownHostException;
 
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.snmp4j.CommunityTarget;
 
 public class SnmpPeerFactoryTest extends OpenNMSTestCase {
 
@@ -90,23 +89,76 @@ public class SnmpPeerFactoryTest extends OpenNMSTestCase {
 
     public void testGetTargetFromPatterns() throws UnknownHostException {
         //pattern in config is "77.5-12,15.1-255.255"
-        CommunityTarget target = (CommunityTarget)SnmpPeerFactory.getInstance().getTarget(InetAddress.getByName("77.5.5.255"));
-        assertEquals("ipmatch", target.getCommunity().toString());
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("77.5.5.255"));
+        assertEquals("ipmatch", agentConfig.getReadCommunity());
         
-        target = (CommunityTarget)SnmpPeerFactory.getInstance().getTarget(InetAddress.getByName("77.15.80.255"));
-        assertEquals("ipmatch", target.getCommunity().toString());
+        agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("77.15.80.255"));
+        assertEquals("ipmatch", agentConfig.getReadCommunity());
         
-        //should be default community "public" because fo 4
-        target = (CommunityTarget)SnmpPeerFactory.getInstance().getTarget(InetAddress.getByName("77.4.5.255"));
-        assertEquals("public", target.getCommunity().toString());
+        //should be default community "public" because of 4
+        agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("77.4.5.255"));
+        assertEquals("public", agentConfig.getReadCommunity());
         
         //should be default community because of 0
-        target = (CommunityTarget)SnmpPeerFactory.getInstance().getTarget(InetAddress.getByName("77.6.0.255"));
-        assertEquals("public", target.getCommunity().toString());
+        agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("77.6.0.255"));
+        assertEquals("public", agentConfig.getReadCommunity());
     }
     
     public void testGetSnmpAgentConfig() throws UnknownHostException {
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(myLocalHost()));
         assertEquals(SnmpAgentConfig.VERSION2C, agentConfig.getVersion());
     }
+    
+    /**
+     * This tests getting an SnmpAgentConfig
+     * @throws UnknownHostException
+     */
+    public void testGetConfig() throws UnknownHostException {
+        assertNotNull(SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getLocalHost()));
+    }
+    
+    /**
+     * This tests for ranges configured for a v2 node and community string
+     * @throws UnknownHostException
+     */
+    public void testGetv2cInRange() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("10.7.23.100"));
+        assertNotNull(agentConfig);
+        assertEquals(SnmpAgentConfig.VERSION2C, agentConfig.getVersion());
+        assertEquals("rangev2c", agentConfig.getReadCommunity());
+    }
+    
+    /**
+     * This tests for ranges configured for v3 node and security name
+     * @throws UnknownHostException 
+     */
+    public void testGetv3ConfigInRange() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("1.1.1.50"));
+        assertNotNull(agentConfig);
+        assertEquals(SnmpAgentConfig.VERSION3, agentConfig.getVersion());
+        assertEquals("opennmsRangeUser", agentConfig.getSecurityName());
+    }
+    
+    /**
+     * This tests getting a v1 config
+     * @throws UnknownHostException
+     */
+    public void testGetV1Config() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("10.0.0.1"));
+        assertNotNull(agentConfig);
+        assertTrue(agentConfig.getVersion() == SnmpAgentConfig.VERSION1);
+        assertEquals("specificv1", agentConfig.getReadCommunity());
+    }
+    
+    /**
+     * This tests for a specifically defined v2c agentConfig
+     * @throws UnknownHostException
+     */
+    public void testGetV2cConfig() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("192.168.0.50"));
+        assertNotNull(agentConfig);
+        assertEquals(agentConfig.getVersion(), SnmpAgentConfig.VERSION2C);
+        assertEquals("specificv2c", agentConfig.getReadCommunity());
+    }
+
 }

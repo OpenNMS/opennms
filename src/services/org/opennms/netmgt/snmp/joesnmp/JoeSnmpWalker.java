@@ -59,7 +59,7 @@ import org.opennms.protocols.snmp.SnmpVarBind;
 
 public class JoeSnmpWalker extends SnmpWalker {
     
-    private static class JoeSnmpValue implements SnmpValue {
+    protected static class JoeSnmpValue implements SnmpValue {
         SnmpSyntax m_value;
         
         JoeSnmpValue(SnmpSyntax value) {
@@ -245,6 +245,7 @@ public class JoeSnmpWalker extends SnmpWalker {
 
     public JoeSnmpWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker) {
         super(agentConfig.getAddress(), name, agentConfig.getMaxVarsPerPdu(), tracker);
+        JoeSnmpStrategy.adaptConfig(agentConfig);
         m_peer = getPeer(agentConfig);
         m_handler = new JoeSnmpResponseHandler();
     }

@@ -35,5 +35,11 @@ package org.opennms.netmgt.snmp;
 public interface SnmpStrategy {
 
     SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker);
+    
+    SnmpValue get(SnmpAgentConfig agentConfig, SnmpObjId oid);
 
+    SnmpValue getNext(SnmpAgentConfig agentConfig, SnmpObjId oid);
+    
+    SnmpValue[] getBulk(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
+    
 }

@@ -155,16 +155,14 @@ public final class SnmpPeerFactory {
 
         m_config = (SnmpConfig) Unmarshaller.unmarshal(SnmpConfig.class, new InputStreamReader(cfgIn));
         cfgIn.close();
-        addConfigUsersToSecurityModel();
 
     }
     
     public SnmpPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
         m_config = (SnmpConfig) Unmarshaller.unmarshal(SnmpConfig.class, rdr);
-        addConfigUsersToSecurityModel();
     }
 
-    private void addConfigUsersToSecurityModel() {
+    public void addConfigUsersToSecurityModel() {
         
         Definition def = new Definition();
         
@@ -283,6 +281,7 @@ public final class SnmpPeerFactory {
         return version;
     }
     
+    //TODO: fix these to use SnmpAgentConfig constants
     private String versionInt2String(int version) {
         switch (version) {
         case SnmpConstants.version1:
@@ -839,7 +838,7 @@ public final class SnmpPeerFactory {
             return target;
         }
         
-        SnmpAgentConfig target = SnmpUtils.createAgentConfig(agentInetAddress);
+        SnmpAgentConfig agentConfig = SnmpUtils.createAgentConfig(agentInetAddress);
 
         // Attempt to locate the node
         //
@@ -854,8 +853,8 @@ public final class SnmpPeerFactory {
                 String saddr = (String) espec.nextElement();
                 try {
                     InetAddress addr = InetAddress.getByName(saddr);
-                    if (addr.equals(target.getAddress())) {
-                        setSnmpAgentConfig(target, def, requestedSnmpVersion);
+                    if (addr.equals(agentConfig.getAddress())) {
+                        setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
@@ -866,7 +865,7 @@ public final class SnmpPeerFactory {
 
             // check the ranges
             //
-            long lhost = toLong(target.getAddress());
+            long lhost = toLong(agentConfig.getAddress());
             Enumeration erange = def.enumerateRange();
             while (erange.hasMoreElements()) {
                 Range rng = (Range) erange.nextElement();
@@ -878,7 +877,7 @@ public final class SnmpPeerFactory {
                     long stop = toLong(end);
 
                     if (start <= lhost && lhost <= stop) {
-                        setSnmpAgentConfig(target, def, requestedSnmpVersion);
+                        setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
                         break DEFLOOP;
                     }
                 } catch (UnknownHostException e) {
@@ -893,20 +892,20 @@ public final class SnmpPeerFactory {
             while (eMatch.hasMoreElements()) {
                 String ipMatch = (String)eMatch.nextElement();
                 if (verifyIpMatch(agentInetAddress.getHostAddress(), ipMatch)) {
-                    setSnmpAgentConfig(target, def, requestedSnmpVersion);
+                    setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
                     break DEFLOOP;
                 }
             }
             
         } // end DEFLOOP
 
-        if (target == null) {
+        if (agentConfig == null) {
 
             Definition def = new Definition();
-            setSnmpAgentConfig(target, def, requestedSnmpVersion);
+            setSnmpAgentConfig(agentConfig, def, requestedSnmpVersion);
         }
 
-        return target;
+        return agentConfig;
 
     }
 
@@ -1204,7 +1203,15 @@ public final class SnmpPeerFactory {
         setCommonAgentConfigAttributes(agentConfig, def, version);
         agentConfig.setSecurityLevel(determineSercurityLevel(def));
         agentConfig.setSecurityName(determineAgentConfigSecurityName(def));
-        agentConfig.setReadCommunity(determineAgentConfigCommunity(def));
+        agentConfig.setAuthProtocol(determineAuthProtocol(def));
+        agentConfig.setAuthPassPhrase(determineAuthPassPhrase(def));
+        agentConfig.setAuthPrivProtocol(determinePrivProtocol(def));
+        agentConfig.setReadCommunity(determineAgentConfigReadCommunity(def));
+        agentConfig.setWriteCommunity(determineAgentConfigWriteCommunity(def));
+        
+        //TODO: need to work on the Proxy flag.  Probalby should add a proxy host field
+        //to the SnmpAgentConfig.
+        
     }
 
     
@@ -1272,8 +1279,18 @@ public final class SnmpPeerFactory {
      * @param def
      * @return
      */
-    private String determineAgentConfigCommunity(Definition def) {
-        return (def.getReadCommunity() == null ? (m_config.getReadCommunity() == null ? "public" :m_config.getReadCommunity()) : def.getReadCommunity());
+    private String determineAgentConfigReadCommunity(Definition def) {
+        return (def.getReadCommunity() == null ? (m_config.getReadCommunity() == null ? SnmpAgentConfig.DEFAULT_READ_COMMUNITY :m_config.getReadCommunity()) : def.getReadCommunity());
+    }
+
+    /**
+     * Helper method to search the snmp-config for the appropriate write
+     * community string.
+     * @param def
+     * @return
+     */
+    private String determineAgentConfigWriteCommunity(Definition def) {
+        return (def.getWriteCommunity() == null ? (m_config.getWriteCommunity() == null ? SnmpAgentConfig.DEFAULT_WRITE_COMMUNITY :m_config.getWriteCommunity()) : def.getWriteCommunity());
     }
 
     /**
@@ -1309,6 +1326,51 @@ public final class SnmpPeerFactory {
             securityName = DEFAULT_SECURITY_NAME;
         }
         return securityName;
+    }
+
+    /**
+     * Helper method to find a security name to use in the snmp-config.  If v3 has
+     * been specified and one can't be found, then a default is used for this
+     * is a required option for v3 operations.
+     * @param def
+     * @return
+     */
+    private String determineAuthProtocol(Definition def) {
+        String authProtocol = (def.getAuthProtocol() == null ? m_config.getAuthProtocol() : def.getAuthProtocol());
+        if (authProtocol == null) {
+            authProtocol = SnmpAgentConfig.DEFAULT_AUTH_PROTOCOL;
+        }
+        return authProtocol;
+    }
+    
+    /**
+     * Helper method to find a security name to use in the snmp-config.  If v3 has
+     * been specified and one can't be found, then a default is used for this
+     * is a required option for v3 operations.
+     * @param def
+     * @return
+     */
+    private String determineAuthPassPhrase(Definition def) {
+        String authPassPhrase = (def.getAuthPassphrase() == null ? m_config.getAuthPassphrase() : def.getAuthPassphrase());
+        if (authPassPhrase == null) {
+            authPassPhrase = SnmpAgentConfig.DEFAULT_AUTH_PASS_PHRASE;
+        }
+        return authPassPhrase;
+    }
+
+    /**
+     * Helper method to find a security name to use in the snmp-config.  If v3 has
+     * been specified and one can't be found, then a default is used for this
+     * is a required option for v3 operations.
+     * @param def
+     * @return
+     */
+    private String determinePrivProtocol(Definition def) {
+        String authPrivProtocol = (def.getPrivacyProtocol() == null ? m_config.getPrivacyProtocol() : def.getPrivacyProtocol());
+        if (authPrivProtocol == null) {
+            authPrivProtocol = SnmpAgentConfig.DEFAULT_AUTH_PRIV_PROTOCOL;
+        }
+        return authPrivProtocol;
     }
 
     /**
@@ -1450,6 +1512,14 @@ public final class SnmpPeerFactory {
      */
     public Target getTarget(InetAddress inetAddress) {
         return getTarget(inetAddress, VERSION_UNSPECIFIED);
+    }
+
+    public static SnmpConfig getSnmpConfig() {
+        return m_config;
+    }
+
+    public static synchronized void setSnmpConfig(SnmpConfig m_config) {
+        SnmpPeerFactory.m_config = m_config;
     }
 
 }

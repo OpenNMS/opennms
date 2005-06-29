@@ -41,30 +41,25 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
-import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.Target;
-import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.event.ResponseListener;
 import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.security.SecurityLevel;
-import org.snmp4j.smi.Address;
 import org.snmp4j.smi.Counter64;
 import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.IpAddress;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.SMIConstants;
-import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.UnsignedInteger32;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 
 public class Snmp4JWalker extends SnmpWalker {
     
-    private static class Snmp4JValue implements SnmpValue {
+    protected static class Snmp4JValue implements SnmpValue {
         Variable m_value;
         
         Snmp4JValue(Variable value) {
@@ -143,7 +138,7 @@ public class Snmp4JWalker extends SnmpWalker {
         public String toString() {
             return toDisplayString();
         }
-        
+
     }
     
     static public abstract class Snmp4JPduBuilder extends WalkerPduBuilder {
@@ -262,64 +257,14 @@ public class Snmp4JWalker extends SnmpWalker {
 
     public Snmp4JWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker) {
         super(agentConfig.getAddress(), name, agentConfig.getMaxVarsPerPdu(), tracker);
-        m_tgt = getTarget(agentConfig);
+        
+        if(!agentConfig.isAdapted())
+            Snmp4JStrategy.adaptConfig(agentConfig);
+        
+        m_tgt = Snmp4JStrategy.getTarget(agentConfig);
         m_listener = new Snmp4JResponseListener();
     }
     
-    private Target getTarget(SnmpAgentConfig agentConfig) {
-
-        Target target = null;
-        int requestedSnmpVersion = agentConfig.getVersion();
-
-        if (requestedSnmpVersion == SnmpAgentConfig.VERSION3) {
-            target = new UserTarget();
-            target.setVersion(SnmpConstants.version3);
-            ((UserTarget)target).setSecurityLevel(adaptSecurityLevel(agentConfig));
-            ((UserTarget)target).setSecurityName(adaptSecurityName(agentConfig));
-        } else if (requestedSnmpVersion == SnmpAgentConfig.VERSION1){
-            target = new CommunityTarget();
-            target.setVersion(SnmpConstants.version1);
-            ((CommunityTarget)target).setCommunity(adaptCommunity(agentConfig));
-        } else if (requestedSnmpVersion == SnmpAgentConfig.VERSION2C) {
-            target = new CommunityTarget();
-            target.setVersion(SnmpConstants.version2c);
-            ((CommunityTarget)target).setCommunity(adaptCommunity(agentConfig));
-        }
-
-        target.setVersion(agentConfig.getVersion());
-        target.setRetries(agentConfig.getRetries());
-        target.setTimeout(agentConfig.getTimeout());
-        target.setAddress(determineAddress(agentConfig));
-        target.setMaxSizeRequestPDU(agentConfig.getMaxRequestSize());
-            
-        return target;
-    }
-    
-    private OctetString adaptCommunity(SnmpAgentConfig agentConfig) {
-        return new OctetString(agentConfig.getReadCommunity());
-    }
-
-    
-    private OctetString adaptSecurityName(SnmpAgentConfig agentConfig) {
-        return new OctetString(agentConfig.getSecurityName());
-    }
-
-    private int adaptSecurityLevel(SnmpAgentConfig agentConfig) {
-        
-        int securityLevel = SecurityLevel.NOAUTH_NOPRIV;
-
-        switch (agentConfig.getSecurityLevel()) {
-        case SnmpAgentConfig.AUTH_NOPRIV :
-            securityLevel = SecurityLevel.AUTH_NOPRIV;
-        case SnmpAgentConfig.AUTH_PRIV :
-            securityLevel = SecurityLevel.AUTH_PRIV;
-        case SnmpAgentConfig.NOAUTH_NO_PRIV :
-            securityLevel = SecurityLevel.NOAUTH_NOPRIV;
-        }
-        
-        return securityLevel;
-    }
-
     public void start() {
         log().debug("Walking "+getName()+" for "+getAddress()+" using version "+SnmpHelpers.versionString(getVersion()));
         super.start();
@@ -351,16 +296,6 @@ public class Snmp4JWalker extends SnmpWalker {
             m_session.close();
             m_session = null;
         }
-    }
-
-    //TODO: This needs to be updated when the protocol flag is added to the definition
-    //so that UDP or TCP can be used in v3 operations.
-    private Address determineAddress(SnmpAgentConfig agentConfig) {
-        String transportAddress = agentConfig.getAddress().getHostAddress();
-        int port = agentConfig.getPort();
-        transportAddress += "/" + port;
-        Address targetAddress = new UdpAddress(transportAddress);
-        return targetAddress;
     }
 
     private final Category log() {

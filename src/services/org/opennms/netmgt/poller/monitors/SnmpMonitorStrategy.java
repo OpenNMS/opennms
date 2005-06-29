@@ -40,16 +40,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.protocols.snmp.SnmpCounter64;
-import org.opennms.protocols.snmp.SnmpInt32;
-import org.opennms.protocols.snmp.SnmpSMI;
-import org.opennms.protocols.snmp.SnmpSyntax;
-import org.opennms.protocols.snmp.SnmpUInt32;
-import org.snmp4j.asn1.BER;
-import org.snmp4j.smi.Counter64;
-import org.snmp4j.smi.Integer32;
-import org.snmp4j.smi.UnsignedInteger32;
-import org.snmp4j.smi.Variable;
+import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
  * @author david
@@ -72,59 +63,6 @@ abstract public class SnmpMonitorStrategy extends IPv4Monitor {
 
     abstract public int poll(NetworkInterface iface, Map parameters, Package pkg) ;
     
-    public boolean meetsCriteria(Variable result, String operator, String operand) {
-
-        Boolean retVal = null;
-        
-        retVal = isCriteriaNull(result, operator, operand);
-        
-        if (retVal == null) {
-            String value = result.toString();
-            retVal = checkStringCriteria(operator, operand, value);
-            
-            if (retVal == null) {
-                
-                BigInteger val = null;
-                
-                int vbType = result.getSyntax();
-
-                switch (vbType) {
-                case BER.INTEGER :
-                    val = BigInteger.valueOf(((Integer32) result).getValue());
-                    break;
-                case BER.COUNTER64:
-                    val = BigInteger.valueOf(((Counter64) result).getValue());
-                    break;
-                case BER.GAUGE32:
-                case BER.TIMETICKS:
-                case BER.COUNTER32:
-                    val = BigInteger.valueOf(((UnsignedInteger32) result).getValue());
-                    break;
-                default:
-                    val = new BigInteger(result.toString());
-                break;
-                }
-                
-                BigInteger intOperand = new BigInteger(operand);
-                if (LESS_THAN.equals(operator)) {
-                    return val.compareTo(intOperand) < 0;
-                } else if (LESS_THAN_EQUALS.equals(operator)) {
-                    return val.compareTo(intOperand) <= 0;
-                } else if (GREATER_THAN.equals(operator)) {
-                    return val.compareTo(intOperand) > 0;
-                } else if (GREATER_THAN_EQUALS.equals(operator)) {
-                    return val.compareTo(intOperand) >= 0;
-                } else {
-                    throw new IllegalArgumentException("operator " + operator + " is unknown");
-                }
-            }
-        } else if (retVal.booleanValue()) {
-            return true;
-        }
-        
-        return retVal.booleanValue();
-    }
-
     /**
      * Verifies that the result of the SNMP query meets the criteria specified
      * by the operator and the operand from the configuartion file.
@@ -134,7 +72,7 @@ abstract public class SnmpMonitorStrategy extends IPv4Monitor {
      * @param operand
      * @return
      */
-    public boolean meetsCriteria(SnmpSyntax result, String operator, String operand) {        
+    public boolean meetsCriteria(SnmpValue result, String operator, String operand) {
 
         Boolean retVal = null;
         
@@ -146,26 +84,7 @@ abstract public class SnmpMonitorStrategy extends IPv4Monitor {
             
             if (retVal == null) {
                 
-                BigInteger val = null;
-                
-                byte vbType = result.typeId();
-
-                switch (vbType) {
-                case SnmpSMI.SMI_INTEGER:
-                    val = BigInteger.valueOf(((SnmpInt32) result).getValue());
-                    break;
-                case SnmpSMI.SMI_COUNTER64:
-                    val = ((SnmpCounter64) result).getValue();
-                    break;
-                case SnmpSMI.SMI_GAUGE32:
-                case SnmpSMI.SMI_TIMETICKS:
-                case SnmpSMI.SMI_COUNTER32:
-                    val = BigInteger.valueOf(((SnmpUInt32) result).getValue());
-                    break;
-                default:
-                    val = new BigInteger(result.toString());
-                break;
-                }
+                BigInteger val = BigInteger.valueOf(result.toLong());
                 
                 BigInteger intOperand = new BigInteger(operand);
                 if (LESS_THAN.equals(operator)) {
@@ -185,7 +104,6 @@ abstract public class SnmpMonitorStrategy extends IPv4Monitor {
         }
         
         return retVal.booleanValue();
-    
     }
 
     /**

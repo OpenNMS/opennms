@@ -65,7 +65,18 @@ public class SnmpUtils {
     public static SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, ColumnTracker tracker) {
         return getStrategy().createWalker(agentConfig, name, tracker);
     }
-
+    
+    public static SnmpValue get(SnmpAgentConfig agentConfig, SnmpObjId oid) {
+        return getStrategy().get(agentConfig, oid);
+    }
+    public static SnmpValue getNext(SnmpAgentConfig agentConfig, SnmpObjId oid) {
+        return getStrategy().getNext(agentConfig, oid);
+    }
+    
+    public static SnmpValue[] getBulk(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
+        return getStrategy().getBulk(agentConfig, oids);
+    }
+    
     private static Category log() {
         return ThreadCategory.getInstance(SnmpUtils.class);
     }

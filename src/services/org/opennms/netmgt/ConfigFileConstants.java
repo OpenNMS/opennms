@@ -196,6 +196,11 @@ public final class ConfigFileConstants {
      */
     public static final int XMPP_CONFIG_FILE_NAME;
     
+    /**
+     * JFree Chart configuration file
+     */
+    public static final int CHART_CONFIG_FILE_NAME;
+    
     //
     // End services config files
     //
@@ -447,9 +452,11 @@ public final class ConfigFileConstants {
 
         XMPP_CONFIG_FILE_NAME = 54;
         
+        CHART_CONFIG_FILE_NAME = 55;
+        
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[55];
+        FILE_ID_TO_NAME = new String[56];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -522,6 +529,8 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[VACUUMD_CONFIG_FILE_NAME] = "vacuumd-configuration.xml";
 
         FILE_ID_TO_NAME[XMPP_CONFIG_FILE_NAME] = "xmpp-configuration.properties";
+        
+        FILE_ID_TO_NAME[CHART_CONFIG_FILE_NAME] = "chart-configuration.xml";
 
     }
 

@@ -43,7 +43,6 @@ package org.opennms.netmgt.poller.monitors;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.util.Map;
 
 import org.apache.log4j.Category;
@@ -53,12 +52,11 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.utils.ParameterMap;
-import org.opennms.protocols.snmp.SnmpObjectId;
-import org.opennms.protocols.snmp.SnmpPeer;
-import org.opennms.protocols.snmp.SnmpSMI;
-import org.opennms.protocols.snmp.SnmpSession;
-import org.opennms.protocols.snmp.SnmpSyntax;
 
 /**
  * <P>
@@ -89,16 +87,16 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
     /**
      * Default object to collect if "oid" property not available.
      */
-    private static final String DEFAULT_OBJECT_IDENTIFIER = ".1.3.6.1.2.1.1.2"; // MIB-II
+    private static final String DEFAULT_OBJECT_IDENTIFIER = ".1.3.6.1.2.1.1.2.0"; // MIB-II
                                                                                 // System
                                                                                 // Object
                                                                                 // Id
 
     /**
-     * Interface attribute key used to store the interface's JoeSNMP SnmpPeer
+     * Interface attribute key used to store the interface's SnmpAgentConfig
      * object.
      */
-    static final String SNMP_PEER_KEY = "org.opennms.netmgt.collectd.SnmpCollector.SnmpPeer";
+    static final String SNMP_AGENTCONFIG_KEY = "org.opennms.netmgt.snmp.SnmpAgentConfig";
 
     /**
      * <P>
@@ -180,10 +178,12 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
         //
         // Instantiate new SnmpPeer object for this interface
         //
-        SnmpPeer peer = SnmpPeerFactory.getInstance().getPeer(ipAddr, SnmpSMI.SNMPV1);
+        //TODO: is this version thing what we want here?  Probably not.
+//        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipAddr, SnmpAgentConfig.VERSION1);
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipAddr);
         if (log.isDebugEnabled()) {
             String nl = System.getProperty("line.separator");
-            log.debug("initialize: SnmpPeer configuration: address: " + peer.getPeer() + nl + "      version: " + SnmpSMI.getVersionString(peer.getParameters().getVersion()) + nl + "      timeout: " + peer.getTimeout() + nl + "      retries: " + peer.getRetries() + nl + "      read commString: " + peer.getParameters().getReadCommunity() + nl + "      write commString: " + peer.getParameters().getWriteCommunity());
+            log.debug("initialize: SnmpAgentConfig address: " + agentConfig);
         }
 
         // Add the snmp config object as an attribute of the interface
@@ -191,9 +191,9 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
         if (log.isDebugEnabled())
             log.debug("initialize: setting SNMP peer attribute for interface " + ipAddr.getHostAddress());
 
-        iface.setAttribute(SNMP_PEER_KEY, peer);
+        iface.setAttribute(SNMP_AGENTCONFIG_KEY, agentConfig);
 
-        log.debug("initialize: interface: " + ipAddr.getHostAddress() + " initialized.");
+        log.debug("initialize: interface: " + agentConfig.getAddress() + " initialized.");
 
         return;
     }
@@ -223,18 +223,17 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
 
         int status = ServiceMonitor.SERVICE_UNAVAILABLE;
         InetAddress ipaddr = (InetAddress) iface.getAddress();
-        SnmpSession session = null;
 
         // Retrieve this interface's SNMP peer object
         //
-        SnmpPeer peer = (SnmpPeer) iface.getAttribute(SNMP_PEER_KEY);
-        if (peer == null)
-            throw new RuntimeException("SnmpPeer object not available for interface " + ipaddr);
+        SnmpAgentConfig agentConfig = (SnmpAgentConfig) iface.getAttribute(SNMP_AGENTCONFIG_KEY);
+        if (agentConfig == null)
+            throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
 
         // Get configuration parameters
         //
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", peer.getTimeout());
-        int retries = ParameterMap.getKeyedInteger(parameters, "retries", peer.getRetries());
+        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout());
+        int retries = ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries());
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
         String oid = ParameterMap.getKeyedString(parameters, "oid", DEFAULT_OBJECT_IDENTIFIER);
         String operator = ParameterMap.getKeyedString(parameters, "operator", null);
@@ -242,25 +241,24 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
 
         // set timeout and retries on SNMP peer object
         //
-        peer.setTimeout(timeout);
-        peer.setRetries(retries);
+        agentConfig.setTimeout(timeout);
+        agentConfig.setRetries(retries);
+        agentConfig.setPort(port);
 
         if (log.isDebugEnabled())
-            log.debug("poll: service= SNMP address= " + ipaddr.getHostAddress() + " port= " + port + " oid=" + oid + " timeout= " + timeout + " retries= " + retries + " operator = " + operator + " operand = " + operand);
+            log.debug("poll: service= SNMP address= " + agentConfig);
 
         // Establish SNMP session with interface
         //
         try {
-            peer.setPort(port);
             if (log.isDebugEnabled()) {
                 String nl = System.getProperty("line.separator");
-                log.debug("SnmpMonitor.poll: SnmpPeer configuration: address: " + peer.getPeer() + nl + "      version: " + SnmpSMI.getVersionString(peer.getParameters().getVersion()) + nl + "      timeout: " + peer.getTimeout() + nl + "      retries: " + peer.getRetries() + nl + "      read commString: " + peer.getParameters().getReadCommunity() + nl + "      write commString: " + peer.getParameters().getWriteCommunity());
+                log.debug("SnmpMonitor.poll: SnmpAgentConfig address: " +agentConfig);
             }
-            session = new SnmpSession(peer);
-            SnmpObjectId snmpObjectId = new SnmpObjectId(oid);
+            SnmpObjId snmpObjectId = new SnmpObjId(oid);
             
             // TODO: Someday this should be changed to GET rather than GETNEXT
-            SnmpSyntax result = session.getNext(snmpObjectId);
+            SnmpValue result = SnmpUtils.get(agentConfig, snmpObjectId);
 
             if (result != null) {
                 log.debug("poll: SNMP poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
@@ -276,18 +274,9 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
         } catch (IllegalArgumentException e) {
             log.error("Invalid Snmp Criteria: " + e.getMessage());
             status = ServiceMonitor.SERVICE_UNAVAILABLE;
-        } catch (SocketException e) {
-            log.error("poll: Error creating the SnmpSession to collect from " + ipaddr.getHostAddress(), e);
-            return ServiceMonitor.SERVICE_UNAVAILABLE;
         } catch (Throwable t) {
             log.warn("poll: Unexpected exception during SNMP poll of interface " + ipaddr.getHostAddress(), t);
             status = ServiceMonitor.SERVICE_UNAVAILABLE;
-        } finally {
-            try {
-                if (session != null) session.close();
-            } catch (Exception e) {
-                log.warn("collect: An error occured closing the SNMP session for " + ipaddr.getHostAddress(), e);
-            }
         }
 
         return status;

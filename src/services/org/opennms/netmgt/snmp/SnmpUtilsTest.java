@@ -37,6 +37,7 @@ import java.net.UnknownHostException;
 import junit.framework.TestSuite;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 
 public class SnmpUtilsTest extends OpenNMSTestCase {
@@ -69,7 +70,21 @@ public class SnmpUtilsTest extends OpenNMSTestCase {
         assertEquals(InetAddress.getLocalHost().getHostAddress(), agentConfig.getAddress().getHostAddress());
         assertSnmpAgentConfigDefaults(agentConfig);
     }
-
+    
+    //TODO: this test is broke... it passed without an agent
+    public void testGetNext() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = SnmpUtils.createAgentConfig(InetAddress.getLocalHost());
+        SnmpValue val = SnmpUtils.getNext(agentConfig, new SnmpObjId(".1.3.6.1.2.1.1.1"));
+        assertNotNull(val);
+    }
+    
+    public void testGet() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = SnmpUtils.createAgentConfig(InetAddress.getLocalHost());
+        SnmpValue val = SnmpUtils.get(agentConfig, new SnmpObjId(".1.3.6.1.2.1.1.2.0"));
+        MockUtil.resetLogLevel();
+        MockUtil.println("SnmpValue is: "+val);
+        assertNotNull(val);
+    }
 
     private void assertSnmpAgentConfigDefaults(SnmpAgentConfig agentConfig) {
         assertEquals(SnmpAgentConfig.DEFAULT_PORT, agentConfig.getPort());

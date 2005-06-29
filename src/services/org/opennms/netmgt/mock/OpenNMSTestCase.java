@@ -1293,7 +1293,7 @@ public class OpenNMSTestCase extends TestCase {
     public String getSnmpConfig() {
         return "<?xml version=\"1.0\"?>\n" + 
                 "<snmp-config "+ 
-                " retry=\"3\" timeout=\"800\"\n" + 
+                " retry=\"3\" timeout=\"3000\"\n" + 
                 " read-community=\"public\"" +
                 " write-community=\"private\"\n" + 
                 " port=\"161\"\n" +

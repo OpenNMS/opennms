@@ -48,7 +48,7 @@ public class SnmpObjId implements Comparable {
         this(ids, true);
     }
 
-    protected SnmpObjId(String oid) {
+    public SnmpObjId(String oid) {
         this(convertStringToInts(oid), false);
     }
     
