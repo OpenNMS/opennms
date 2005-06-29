@@ -1,19 +1,19 @@
 <VacuumdConfiguration period="86400000" >
-	<statement>
-	    <!-- this deletes all the nodes that have been marked as deleted - it relies on cascading deletes -->
-		DELETE FROM node WHERE node.nodeType = 'D';
-	</statement>
-	<statement>
-	    <!-- this deletes all the interfaces that have been marked as deleted - it relies on cascading deletes -->
-	    DELETE FROM ipInterface WHERE ipInterface.isManaged = 'D';
-	</statement>
-	<statement>
-	   <!-- this deletes all the services that have been marked as deleted - it relies on cascading deletes -->
-	   DELETE FROM ifServices WHERE ifServices.status = 'D';
-	</statement>
+   <statement>
+       <!-- this deletes all the nodes that have been marked as deleted - it relies on cascading deletes -->
+       DELETE FROM node WHERE node.nodeType = 'D';
+   </statement>
+   <statement>
+       <!-- this deletes all the interfaces that have been marked as deleted - it relies on cascading deletes -->
+       DELETE FROM ipInterface WHERE ipInterface.isManaged = 'D';
+   </statement>
+   <statement>
+      <!-- this deletes all the services that have been marked as deleted - it relies on cascading deletes -->
+      DELETE FROM ifServices WHERE ifServices.status = 'D';
+   </statement>
     <statement>
        <!-- this deletes any events that are not associated with outages - Thanks to Chris Fedde for this -->
-	   DELETE FROM events WHERE NOT EXISTS 
+      DELETE FROM events WHERE NOT EXISTS 
           (SELECT svclosteventid FROM outages WHERE svclosteventid = events.eventid  
         UNION 
           SELECT svcregainedeventid FROM outages WHERE svcregainedeventid = events.eventid 
@@ -22,26 +22,34 @@
        AND eventtime &lt; now() - interval '6 weeks';
     </statement>
     <automations>
-    		<automation name="auto1" interval="60000" trigger-name="all-alarms" action-name="escalate" active="true" />
-    		<automation name="auto2" interval="90000" trigger-name="all-reduced-alarms" action-name="action2" active="true" />
+           <automation name="autoEscalate" interval="10000" trigger-name="selectWithCounter" auto-event-name="escalationEvent" action-name="escalate" active="true" />
+           <automation name="cleanUpAlarms" interval="300000" action-name="deleteDayOldAlarms" active="true" />
     </automations>
-    <!-- Sample triggers -->
     <triggers>
-    		<trigger name="all-alarms" row-count="1" operator="&gt;">
-    			<statement>SELECT alarmid FROM alarms</statement>
-    		</trigger>
-    		<trigger name="all-reduced-alarms" >
-    			<statement>SELECT alarmid FROM alarms WHERE counter &gt; 2</statement>
-    		</trigger>
+           <trigger name="selectAll" operator="&gt;=" row-count="1" >
+               <statement>SELECT * FROM alarms</statement>
+           </trigger>
+           <trigger name="selectWithCounter" >
+               <statement>SELECT alarmid FROM alarms WHERE counter &gt;= 2</statement>
+           </trigger>
     </triggers>
-    <!-- Sample actions -->
     <actions>
-    		<action name="delete-selected" >
-    			<statement>DELETE FROM alarms WHERE alarmid = ${alarmid}</statement>
-    		</action>
-    		<action name="escalate" >
-    			<!-- use the least function to prevent escalation above highest supported OpenNMS serverity (Critical = 7) -->
-    			<statement>UPDATE alarms SET severity = least(7,severity+1) WHERE alarmid = ${alarmid} and alarmAckUser is null</statement>
-    		</action>
+           <action name="clear" >
+               <statement>UPDATE alarms SET severity=2 WHERE alarmid = ${alarmid}</statement>
+           </action>
+           <action name="escalate" >
+               <statement>UPDATE alarms SET severity = least(7,severity+1) WHERE alarmid = ${alarmid} and alarmAckUser is null</statement>
+           </action>
+           <action name="delete" >
+               <statement>DELETE FROM alarms WHERE nodeid = ${nodeid} and eventuei = ${eventuei}</statement>
+           </action>
+           <action name="deleteDayOldAlarms" >
+               <statement>DELETE FROM alarms WHERE alarmAckUser IS NOT NULL AND lastEventTime &lt; CURRENT_TIMESTAMP</statement>
+           </action>
     </actions>
+    <auto-events>
+        <auto-event name="escalationEvent" >
+            <uei>uei.opennms.org/vacuumd/alarmEscalated</uei>
+        </auto-event>
+    </auto-events>
 </VacuumdConfiguration>
