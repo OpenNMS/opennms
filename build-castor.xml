@@ -146,6 +146,7 @@
 		<castor-gen file="${castor.xsd.dir}/availability_report.xsd" srcpackage="org.opennms.report.availability" />
 		<castor-gen file="${castor.config.dir}/capsd-configuration.xsd" srcpackage="org.opennms.netmgt.config.capsd" />
 		<castor-gen file="${castor.config.dir}/categories.xsd" srcpackage="org.opennms.netmgt.config.categories" />
+		<castor-gen file="${castor.config.dir}/chart-configuration.xsd" srcpackage="org.opennms.netmgt.config.charts" />
 		<castor-gen file="${castor.config.dir}/destinationPaths.xsd" srcpackage="org.opennms.netmgt.config.destinationPaths" />
 		<castor-gen file="${castor.config.dir}/dhcpd-configuration.xsd" srcpackage="org.opennms.netmgt.config.dhcpd" />
 		<castor-gen file="${castor.config.dir}/discovery-configuration.xsd" srcpackage="org.opennms.netmgt.config.discovery" />

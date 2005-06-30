@@ -123,12 +123,14 @@ interface RrdStrategy {
      * 
      * @param rrd
      *            an rrd object created using openFile
+     * @param owner
+     *            the owner of the rrd
      * @param data
      *            a string of the form <timestamp>: <datavalue>
      * @throws Exception
      *             if an error occurs updating the file
      */
-    void updateFile(Object rrd, String data) throws Exception;
+    void updateFile(Object rrd, String owner, String data) throws Exception;
 
     /**
      * This closes the supplied round robin database

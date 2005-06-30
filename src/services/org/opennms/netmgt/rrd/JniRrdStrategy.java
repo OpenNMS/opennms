@@ -157,7 +157,7 @@ class JniRrdStrategy implements RrdStrategy {
      * possibility of getting performance benefit by doing more than one write
      * per open. The updates are all performed at once in the closeFile method.
      */
-    public void updateFile(Object rrd, String data) throws Exception {
+    public void updateFile(Object rrd, String owner, String data) throws Exception {
         checkState("updateFile");
         StringBuffer cmd = (StringBuffer) rrd;
         cmd.append(' ');

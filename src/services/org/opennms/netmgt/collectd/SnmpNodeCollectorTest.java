@@ -81,7 +81,7 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
 
     private SnmpNodeCollector createNodeCollector(int maxVarsPerPdu) throws Exception, InterruptedException {
         InetAddress address = InetAddress.getLocalHost();
-        SnmpAgentConfig agentConfig = SnmpUtils.createAgentConfig(address);
+        SnmpAgentConfig agentConfig = SnmpUtils.getAgentConfig(address);
         SnmpNodeCollector collector = new SnmpNodeCollector(address, new ArrayList(m_objList));
         SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "SnmpNodeCollector for "+address.getHostAddress(), collector);
         walker.start();

@@ -74,6 +74,8 @@ public class RrdUtils {
 
     private static final boolean USE_JNI = RrdConfig.getProperty("org.opennms.rrd.usejni", true);
 
+    private static final boolean USE_K5 = RrdConfig.getProperty("org.opennms.rrd.k5systems.usek5", false);
+
     private static RrdStrategy m_rrdStrategy = null;
 
     private static RrdStrategy getStrategy() throws RrdException {
@@ -117,10 +119,17 @@ public class RrdUtils {
     private static void createStrategy() {
         if (m_rrdStrategy == null) {
             RrdStrategy rrdStategy = (USE_JNI ? (RrdStrategy) new JniRrdStrategy() : (RrdStrategy) new JRobinRrdStrategy());
+
             if (USE_QUEUE) {
                 rrdStategy = new QueuingRrdStrategy(rrdStategy);
             }
-            m_rrdStrategy = rrdStategy;
+
+            // would like to have this be queued as well, but queueing seems too
+            //   implementation-specific at the moment
+/*            if (USE_K5) {
+                rrdStategy = new K5RrdStrategy(rrdStategy);
+            }
+*/            m_rrdStrategy = rrdStategy;
         }
     }
 
@@ -214,7 +223,7 @@ public class RrdUtils {
         Object rrd = null;
         try {
             rrd = getStrategy().openFile(rrdFile);
-            getStrategy().updateFile(rrd, updateVal);
+            getStrategy().updateFile(rrd, owner, updateVal);
         } catch (Exception e) {
             log.error("Error updating rrdFile " + rrdFile + " with value: " + updateVal, e);
             throw new org.opennms.netmgt.rrd.RrdException("Error updating rrdFile " + rrdFile + " with value: " + updateVal, e);

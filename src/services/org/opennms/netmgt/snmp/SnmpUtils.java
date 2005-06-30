@@ -69,8 +69,17 @@ public class SnmpUtils {
     public static SnmpValue get(SnmpAgentConfig agentConfig, SnmpObjId oid) {
         return getStrategy().get(agentConfig, oid);
     }
+    
+    public static SnmpValue[] get(SnmpAgentConfig agentConfig, SnmpObjId oids[]) {
+        return getStrategy().get(agentConfig, oids);
+    }
+
     public static SnmpValue getNext(SnmpAgentConfig agentConfig, SnmpObjId oid) {
         return getStrategy().getNext(agentConfig, oid);
+    }
+    
+    public static SnmpValue[] getNext(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
+        return getStrategy().getNext(agentConfig, oids);
     }
     
     public static SnmpValue[] getBulk(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
@@ -103,7 +112,7 @@ public class SnmpUtils {
 //        return getConfig().getProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy");
     }
     
-    public static SnmpAgentConfig createAgentConfig(InetAddress address) {
+    public static SnmpAgentConfig getAgentConfig(InetAddress address) {
         return new SnmpAgentConfig(address);
     }
 

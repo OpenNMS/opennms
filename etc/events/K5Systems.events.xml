@@ -1,0 +1,35 @@
+<events>
+<!-- Start of K5 Systems -->
+	<event>
+		<uei>uei.k5systems.com/analysis/outOfBounds</uei>
+		<event-label>K5-Systems-defined predictive analysis: outOfBounds</event-label>
+		<descr>
+			&lt;p&gt;Services are failing on node %nodelabel%
+			&lt;/p&gt; &lt;p&gt;This event is generated when the K5 engine
+			determines that the applications and its services on a node 
+			have reached an out of bounds condition &lt;/p&gt; &lt;p&gt;
+			See operator instructions.&lt;/p&gt;
+		</descr>
+		<logmsg dest='logndisplay'>
+			Node %nodelabel% is failing.
+		</logmsg>
+		<severity>Minor</severity>
+		<reductionKey>%uei%:%dpname%:%nodeid%</reductionKey>
+	</event>
+	<event>
+		<uei>uei.k5systems.com/analysis/inBounds</uei>
+		<event-label>K5-Systems-defined predictive analysis: inBounds</event-label>
+		<descr>
+			&lt;p&gt;Services are no longer failing on node %nodelabel%
+			&lt;/p&gt; &lt;p&gt;This event is generated when the K5 engine
+			determines that the applications and its services on a node 
+			have been restored from an out of bounds condition &lt;/p&gt; &lt;p&gt;
+			See operator instructions.&lt;/p&gt;
+		</descr>
+		<logmsg dest='logndisplay'>
+			Node %nodelabel% is no longer failing.
+		</logmsg>
+		<severity>Normal</severity>
+		<reductionKey>%uei%:%dpname%:%nodeid%</reductionKey>
+	</event>
+</events>

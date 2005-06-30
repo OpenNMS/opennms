@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://xmlns.opennms.org/xsd/users"
-	xmlns:typ="http://xmlns.opennms.org/xsd/types"
+	xmlns:type="http://xmlns.opennms.org/xsd/types"
 	xmlns:this="http://xmlns.opennms.org/xsd/users">
 	
 	<import namespace="http://xmlns.opennms.org/xsd/types" schemaLocation="types.xsd" />
@@ -53,7 +53,7 @@
 	<element name="oncall-schedule">
 		<complexType>
 		  <complexContent>
-		    <extension base="typ:basicSchedule">
+		    <extension base="type:basicSchedule">
 <!--                <attribute name="role" use="required" type="string"/> -->
 			</extension>
 			</complexContent>

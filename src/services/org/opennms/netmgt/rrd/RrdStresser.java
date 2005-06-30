@@ -307,7 +307,7 @@ class RrdStresser {
     }
 
     private static void rrdUpdateFile(Object rrdFile, String data) throws Exception {
-        rrd.updateFile(rrdFile, data);
+        rrd.updateFile(rrdFile, "", data);
 
     }
 

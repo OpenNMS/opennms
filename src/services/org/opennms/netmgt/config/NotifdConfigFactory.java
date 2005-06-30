@@ -114,6 +114,8 @@ public class NotifdConfigFactory extends NotifdConfigManager {
 
         Reader reader = new InputStreamReader(configIn);
         parseXml(reader);
+        reader.close();
+        configIn.close();
     }
 
     /**

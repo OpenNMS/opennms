@@ -31,7 +31,7 @@
 //
 // Tab Size = 8
 
-package org.opennms.netmgt.capsd;
+package org.opennms.netmgt.capsd.plugins;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -45,7 +45,6 @@ import junit.framework.TestSuite;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.capsd.plugins.SnmpPlugin;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.snmp.PropertySettingTestSuite;

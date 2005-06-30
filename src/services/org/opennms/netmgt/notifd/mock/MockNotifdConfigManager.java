@@ -66,6 +66,7 @@ public class MockNotifdConfigManager extends NotifdConfigManager {
         Reader reader = new StringReader(configString);
         m_configString = configString;
         parseXml(reader);
+        reader.close();
     }
 
     /* (non-Javadoc)

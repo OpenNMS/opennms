@@ -287,7 +287,7 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
             try {
                 // process the update
-                m_delegate.updateFile(rrd, update);
+                m_delegate.updateFile(rrd, "", update);
             } catch (Exception e) {
                 throw new Exception("Error processing update for file " + getFileName() + ": " + update, e);
             }
@@ -331,7 +331,7 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
                 String update = ts + ":0";
                 try {
                     // process the update
-                    m_delegate.updateFile(rrd, update);
+                    m_delegate.updateFile(rrd, "", update);
                 } catch (Exception e) {
                     throw new Exception("Error processing update " + i + " for file " + getFileName() + ": " + update, e);
                 }
@@ -411,7 +411,7 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
         return new CreateOperation(fileName, rrdDef);
     }
 
-    public Operation makeUpdateOperation(String fileName, String update) {
+    public Operation makeUpdateOperation(String fileName, String owner, String update) {
         try {
             int colon = update.indexOf(':');
             if ((colon >= 0) && (Double.parseDouble(update.substring(colon + 1)) == 0.0)) {
@@ -708,10 +708,10 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
     /*
      * (non-Javadoc)
      * 
-     * @see RrdStrategy#updateFile(java.lang.Object, java.lang.String)
+     * @see RrdStrategy#updateFile(java.lang.Object, java.lang.String, java.lang.String)
      */
-    public void updateFile(Object rrdFile, String data) throws Exception {
-        addOperation(makeUpdateOperation((String) rrdFile, data));
+    public void updateFile(Object rrdFile, String owner, String data) throws Exception {
+        addOperation(makeUpdateOperation((String) rrdFile, owner, data));
     }
 
     public Double fetchLastValue(String rrdFile, int interval) throws NumberFormatException, RrdException {

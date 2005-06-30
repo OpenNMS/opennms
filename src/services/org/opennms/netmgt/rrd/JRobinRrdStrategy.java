@@ -124,7 +124,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
     /**
      * Creates a sample from the JRobin RrdDb and passes in the data provided.
      */
-    public void updateFile(Object rrdFile, String data) throws Exception {
+    public void updateFile(Object rrdFile, String owner, String data) throws Exception {
         Sample sample = ((RrdDb) rrdFile).createSample();
         sample.setAndUpdate(data);
     }

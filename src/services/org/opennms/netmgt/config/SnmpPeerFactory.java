@@ -828,7 +828,7 @@ public final class SnmpPeerFactory {
         
 
         if (m_config == null) {
-            SnmpAgentConfig target = SnmpUtils.createAgentConfig(agentInetAddress);
+            SnmpAgentConfig target = SnmpUtils.getAgentConfig(agentInetAddress);
             if (requestedSnmpVersion == VERSION_UNSPECIFIED) {
                 target.setVersion(SnmpAgentConfig.DEFAULT_VERSION);
             } else {
@@ -838,7 +838,7 @@ public final class SnmpPeerFactory {
             return target;
         }
         
-        SnmpAgentConfig agentConfig = SnmpUtils.createAgentConfig(agentInetAddress);
+        SnmpAgentConfig agentConfig = SnmpUtils.getAgentConfig(agentInetAddress);
 
         // Attempt to locate the node
         //

@@ -74,7 +74,6 @@ public abstract class NotifdConfigManager {
      */
     public synchronized void parseXml(Reader reader) throws MarshalException, ValidationException, IOException {
         configuration = (NotifdConfiguration) Unmarshaller.unmarshal(NotifdConfiguration.class, reader);
-        reader.close();
     }
 
     /**

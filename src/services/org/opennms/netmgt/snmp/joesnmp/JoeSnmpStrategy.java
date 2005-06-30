@@ -54,11 +54,16 @@ public class JoeSnmpStrategy implements SnmpStrategy {
     public SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker) {
         return new JoeSnmpWalker(agentConfig, name, tracker);
     }
-
+    
     public SnmpValue get(SnmpAgentConfig agentConfig, SnmpObjId oid) {
+        SnmpObjId[] oids = { oid };
+        return get(agentConfig, oids)[0];
+    }
+
+    public SnmpValue[] get(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
         adaptConfig(agentConfig);
         SnmpSession session = null;
-        JoeSnmpValue value = null;
+        SnmpValue[] values = { null };
         
         try {
             SnmpPeer peer = createPeer(agentConfig);
@@ -70,45 +75,91 @@ public class JoeSnmpStrategy implements SnmpStrategy {
             configurePeer(peer, agentConfig);
             
             session = new SnmpSession(peer);
-            SnmpSyntax result = session.get(new SnmpObjectId(oid.toString()));
-            value = new JoeSnmpValue(result);
+            SnmpObjectId[] jOids = convertOids(oids);
+            SnmpSyntax[] results = session.get(jOids);
+            values = convertSnmpSyntaxs(results);
         } catch (SocketException e) {
             log().error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
         } finally {
             session.close();
         }
-        return value;
+        return values;
+    }
+    
+    public SnmpValue getNext(SnmpAgentConfig agentConfig, SnmpObjId oid) {
+        SnmpObjId[] oids = { oid };
+        return getNext(agentConfig, oids)[0];
+    }
+
+    public SnmpValue[] getNext(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
+        adaptConfig(agentConfig);
+        SnmpSession session = null;
+        SnmpValue[] values = { null };
+        
+        try {
+            SnmpPeer peer = createPeer(agentConfig);
+
+            SnmpParameters params = new SnmpParameters();
+            setParameters(agentConfig, params);
+            peer.setParameters(params);
+            
+            configurePeer(peer, agentConfig);
+            
+            session = new SnmpSession(peer);
+            SnmpObjectId[] jOids = convertOids(oids);
+            
+            SnmpSyntax[] results = session.getNext(jOids);
+            values = convertSnmpSyntaxs(results);
+        } catch (SocketException e) {
+            log().error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
+        } finally {
+            session.close();
+        }
+        return values;
+    }
+
+    /**
+     * Convert JoeSnmp SnmpSyntax array to OpenNMS SnmpValue array
+     * 
+     * @param results
+     * @return
+     *        values as an OpenNMS SnmpValue array
+     */
+    private SnmpValue[] convertSnmpSyntaxs(SnmpSyntax[] results) {
+        
+        SnmpValue[] values = { null };
+        
+        if (results == null || results[0] == null || results.length == 0)
+            return values;
+            
+        values = new JoeSnmpValue[results.length];
+        for (int i=0; i<results.length; i++) {
+            values[i] = new JoeSnmpValue(results[i]);
+        }
+        return values;
+    }
+
+    /**
+     * Convert the OpenNMS Generic SnmpObjId[] array to a JoeSnmp SnmpObjectId[]
+     * 
+     * @param oids
+     * @return
+     *        An array of JoeSnmp SnmpObjectIds
+     */
+    private SnmpObjectId[] convertOids(SnmpObjId[] oids) {
+        
+        SnmpObjectId[] jOids = new SnmpObjectId[oids.length];
+        for (int i=0; i<oids.length; i++) {
+            jOids[i] = new SnmpObjectId(oids[i].toString());
+        }
+        
+        return jOids;
     }
 
     private void configurePeer(SnmpPeer peer, SnmpAgentConfig agentConfig) {
         peer.setPort(agentConfig.getPort());
         peer.setRetries(agentConfig.getRetries());
         peer.setTimeout(agentConfig.getTimeout());
-    }
-
-    public SnmpValue getNext(SnmpAgentConfig agentConfig, SnmpObjId oid) {
-        adaptConfig(agentConfig);
-        SnmpSession session = null;
-        JoeSnmpValue value = null;
-        
-        try {
-            SnmpPeer peer = createPeer(agentConfig);
-
-            SnmpParameters params = new SnmpParameters();
-            setParameters(agentConfig, params);
-            peer.setParameters(params);
-            
-            configurePeer(peer, agentConfig);
-            
-            session = new SnmpSession(peer);
-            SnmpSyntax result = session.get(new SnmpObjectId(oid.toString()));
-            value = new JoeSnmpValue(result);
-        } catch (SocketException e) {
-            log().error("Could not create JoeSNMP session using AgentConfig: "+agentConfig);
-        } finally {
-            session.close();
-        }
-        return value;
     }
 
     private SnmpPeer createPeer(SnmpAgentConfig agentConfig) {
