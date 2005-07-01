@@ -36,7 +36,6 @@ import java.net.UnknownHostException;
 
 import junit.framework.TestSuite;
 
-import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 
 public class SnmpUtilsTest extends OpenNMSTestCase {
@@ -60,32 +59,49 @@ public class SnmpUtilsTest extends OpenNMSTestCase {
     }
     
     public void testCreateSnmpAgentConfig() throws UnknownHostException {
-        SnmpAgentConfig agentConfig = SnmpUtils.createAgentConfig();
+        SnmpAgentConfig agentConfig = new SnmpAgentConfig();
         assertNull(agentConfig.getAddress());
         assertSnmpAgentConfigDefaults(agentConfig);
         
-        agentConfig = SnmpUtils.getAgentConfig(InetAddress.getLocalHost());
+        agentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
         assertNotNull(agentConfig.getAddress());
         assertEquals(InetAddress.getLocalHost().getHostAddress(), agentConfig.getAddress().getHostAddress());
         assertSnmpAgentConfigDefaults(agentConfig);
     }
     
     public void testGet() throws UnknownHostException {
-        SnmpAgentConfig agentConfig = SnmpUtils.getAgentConfig(InetAddress.getLocalHost());
+        SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
         SnmpValue val = SnmpUtils.get(agentConfig, new SnmpObjId(".1.3.6.1.2.1.1.2.0"));
         assertNotNull(val);
     }
     
     public void testBadGet() throws UnknownHostException {
-        SnmpAgentConfig agentConfig = SnmpUtils.getAgentConfig(InetAddress.getLocalHost());
+        SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
         SnmpValue val = SnmpUtils.get(agentConfig, new SnmpObjId(".1.3.6.1.2.1.1.2"));
         assertEquals(null, val);
     }
     
+    public void getMultipleVarbinds() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
+        SnmpObjId[] oids = { new SnmpObjId(".1.3.6.1.2.1.1.2.0"), new SnmpObjId(".1.3.6.1.2.1.1.3.0") };
+        SnmpValue[] vals = SnmpUtils.get(agentConfig, oids);
+        assertNotNull(vals);
+        assertEquals(2, vals.length);
+    }
+    
     public void testGetNext() throws UnknownHostException {
-        SnmpAgentConfig agentConfig = SnmpUtils.getAgentConfig(InetAddress.getLocalHost());
+        SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
         SnmpValue val = SnmpUtils.getNext(agentConfig, new SnmpObjId(".1.3.6.1.2.1.1"));
         assertNotNull(val);
+    }
+    
+    public void testGetNextMultipleVarbinds() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
+        SnmpObjId[] oids = { new SnmpObjId(".1.3.6.1.2.1.1.2.0"), new SnmpObjId(".1.3.6.1.2.1.1.3.0") };
+        SnmpValue[] vals = SnmpUtils.getNext(agentConfig, oids);
+        assertNotNull(vals);
+        assertEquals(2, vals.length);
+        assertNotNull(vals);
     }
     
     private void assertSnmpAgentConfigDefaults(SnmpAgentConfig agentConfig) {
@@ -100,7 +116,7 @@ public class SnmpUtilsTest extends OpenNMSTestCase {
     }
 */    
     public void testCreateWalkerWithAgentConfig() throws UnknownHostException {
-        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getLocalHost());
+        SnmpAgentConfig agentConfig = new SnmpAgentConfig(InetAddress.getLocalHost());
         SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "Test", new ColumnTracker(SnmpObjId.get("1.2.3.4")));
         assertNotNull(walker);
     }

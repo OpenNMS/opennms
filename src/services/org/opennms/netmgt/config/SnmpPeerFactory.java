@@ -65,7 +65,6 @@ import org.opennms.netmgt.config.capsd.Definition;
 import org.opennms.netmgt.config.capsd.Range;
 import org.opennms.netmgt.config.capsd.SnmpConfig;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.protocols.ip.IPv4Address;
 import org.opennms.protocols.snmp.SnmpParameters;
 import org.opennms.protocols.snmp.SnmpPeer;
@@ -828,17 +827,17 @@ public final class SnmpPeerFactory {
         
 
         if (m_config == null) {
-            SnmpAgentConfig target = SnmpUtils.getAgentConfig(agentInetAddress);
+            SnmpAgentConfig agentConfig = new SnmpAgentConfig(agentInetAddress);
             if (requestedSnmpVersion == VERSION_UNSPECIFIED) {
-                target.setVersion(SnmpAgentConfig.DEFAULT_VERSION);
+                agentConfig.setVersion(SnmpAgentConfig.DEFAULT_VERSION);
             } else {
-                target.setVersion(requestedSnmpVersion);
+                agentConfig.setVersion(requestedSnmpVersion);
             }
             
-            return target;
+            return agentConfig;
         }
         
-        SnmpAgentConfig agentConfig = SnmpUtils.getAgentConfig(agentInetAddress);
+        SnmpAgentConfig agentConfig = new SnmpAgentConfig(agentInetAddress);
 
         // Attempt to locate the node
         //
@@ -1501,17 +1500,6 @@ public final class SnmpPeerFactory {
         }
         
         return version;
-    }
-
-    /**
-     * Helper method.  Calls overloaded partner with the version unspecified
-     * value.  In effect this sets the target to the default version if one isn't
-     * found in the snmp-config or in a definition within the snmp-config.
-     * @param inetAddress
-     * @return
-     */
-    public Target getTarget(InetAddress inetAddress) {
-        return getTarget(inetAddress, VERSION_UNSPECIFIED);
     }
 
     public static SnmpConfig getSnmpConfig() {

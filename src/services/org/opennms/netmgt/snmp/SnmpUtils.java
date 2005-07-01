@@ -112,12 +112,4 @@ public class SnmpUtils {
 //        return getConfig().getProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy");
     }
     
-    public static SnmpAgentConfig getAgentConfig(InetAddress address) {
-        return new SnmpAgentConfig(address);
-    }
-
-    public static SnmpAgentConfig createAgentConfig() {
-        return new SnmpAgentConfig();
-    }
-
 }

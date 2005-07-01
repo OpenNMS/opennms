@@ -41,6 +41,7 @@ import java.util.TreeMap;
 
 import junit.framework.TestSuite;
 
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpCollectorTestCase;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -167,7 +168,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
 
     private SnmpIfCollector createSnmpIfCollector() throws UnknownHostException {
         SnmpIfCollector collector = new SnmpIfCollector(InetAddress.getLocalHost(), m_ifMap);
-        SnmpAgentConfig agentConfig = SnmpUtils.getAgentConfig(InetAddress.getLocalHost());
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getLocalHost());
         m_walker = SnmpUtils.createWalker(agentConfig, "snmpIfCollector", collector);
         m_walker.start();
         return collector;

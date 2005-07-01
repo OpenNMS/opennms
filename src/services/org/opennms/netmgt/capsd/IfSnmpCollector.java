@@ -45,6 +45,7 @@ import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IfXTable;
 import org.opennms.netmgt.capsd.snmp.IpAddrTable;
 import org.opennms.netmgt.capsd.snmp.SystemGroup;
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -292,7 +293,7 @@ final class IfSnmpCollector implements Runnable {
         m_ipAddrTable = new IpAddrTable(m_address);
         m_ifXTable = new IfXTable(m_address);
         
-        SnmpAgentConfig agentConfig = SnmpUtils.getAgentConfig(m_address);
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(m_address);
         agentConfig.setMaxVarsPerPdu(50);
         SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "system/ifTable/ifXTable/ipAddrTable", new CollectionTracker[] { m_sysGroup, m_ifTable, m_ipAddrTable, m_ifXTable});
         walker.start();

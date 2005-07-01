@@ -37,6 +37,7 @@ import java.util.ArrayList;
 
 import junit.framework.TestSuite;
 
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpCollectorTestCase;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -81,7 +82,7 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
 
     private SnmpNodeCollector createNodeCollector(int maxVarsPerPdu) throws Exception, InterruptedException {
         InetAddress address = InetAddress.getLocalHost();
-        SnmpAgentConfig agentConfig = SnmpUtils.getAgentConfig(address);
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(address);
         SnmpNodeCollector collector = new SnmpNodeCollector(address, new ArrayList(m_objList));
         SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "SnmpNodeCollector for "+address.getHostAddress(), collector);
         walker.start();
