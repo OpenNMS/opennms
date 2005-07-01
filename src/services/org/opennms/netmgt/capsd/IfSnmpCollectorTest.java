@@ -41,11 +41,10 @@ import junit.framework.TestSuite;
 
 import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IpAddrTable;
-import org.opennms.netmgt.capsd.snmp.SystemGroup;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.VersionSettingTestSuite;
-import org.opennms.protocols.snmp.SnmpSMI;
 
 public class IfSnmpCollectorTest extends OpenNMSTestCase {
     
@@ -56,8 +55,8 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
     public static TestSuite suite() {
         Class testClass = IfSnmpCollectorTest.class;
         TestSuite suite = new TestSuite(testClass.getName());
-        suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv1 Tests", SnmpSMI.SNMPV1));
-        suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv2 Tests", SnmpSMI.SNMPV2));
+        suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv1 Tests", SnmpAgentConfig.VERSION1));
+        suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv2 Tests", SnmpAgentConfig.VERSION2C));
         return suite;
     }
 
