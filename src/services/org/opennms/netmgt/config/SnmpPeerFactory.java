@@ -66,29 +66,6 @@ import org.opennms.netmgt.config.capsd.Range;
 import org.opennms.netmgt.config.capsd.SnmpConfig;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.protocols.ip.IPv4Address;
-import org.opennms.protocols.snmp.SnmpParameters;
-import org.opennms.protocols.snmp.SnmpPeer;
-import org.opennms.protocols.snmp.SnmpSMI;
-import org.snmp4j.CommunityTarget;
-import org.snmp4j.Target;
-import org.snmp4j.UserTarget;
-import org.snmp4j.mp.MPv3;
-import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.security.AuthMD5;
-import org.snmp4j.security.AuthSHA;
-import org.snmp4j.security.PrivAES128;
-import org.snmp4j.security.PrivAES192;
-import org.snmp4j.security.PrivAES256;
-import org.snmp4j.security.PrivDES;
-import org.snmp4j.security.SecurityLevel;
-import org.snmp4j.security.SecurityModels;
-import org.snmp4j.security.SecurityProtocols;
-import org.snmp4j.security.USM;
-import org.snmp4j.security.UsmUser;
-import org.snmp4j.smi.Address;
-import org.snmp4j.smi.OID;
-import org.snmp4j.smi.OctetString;
-import org.snmp4j.smi.UdpAddress;
 
 /**
  * This class is the main respository for SNMP configuration information used by
@@ -125,20 +102,6 @@ public final class SnmpPeerFactory {
 
     private static final int VERSION_UNSPECIFIED = -1;
 
-    private static final int DEFAULT_MAX_REQUEST_SIZE = SnmpConstants.MIN_PDU_LENGTH;
-
-    private static final int DEFAULT_VERSION = SnmpConstants.version1;
-
-    private static final String DEFAULT_CONFIG_VERSION = "v1";
-    
-    private static final OID DEFAULT_AUTH_PROTOCOL = AuthMD5.ID;
-
-    private static final OID DEFAULT_PRIV_PROTOCOL = PrivDES.ID;
-
-    private USM m_usm;
-
-    private static final String DEFAULT_SECURITY_NAME = "opennmsUser";
-
     /**
      * Private constructor
      * 
@@ -160,141 +123,7 @@ public final class SnmpPeerFactory {
     public SnmpPeerFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
         m_config = (SnmpConfig) Unmarshaller.unmarshal(SnmpConfig.class, rdr);
     }
-
-    public void addConfigUsersToSecurityModel() {
-        
-        Definition def = new Definition();
-        
-        if (m_config.getVersion() == null)
-            m_config.setVersion(DEFAULT_CONFIG_VERSION);
-        
-        if (versionString2Int(m_config.getVersion()) == SnmpConstants.version3) {
-            def.setSecurityName(m_config.getSecurityName());
-            def.setAuthPassphrase(m_config.getAuthPassphrase());
-            def.setAuthProtocol(m_config.getAuthProtocol());
-            def.setPrivacyPassphrase(m_config.getPrivacyPassphrase());
-            def.setPrivacyProtocol(m_config.getPrivacyProtocol());
-            addUserToSecurityModel(def);
-        }
-        
-        Enumeration edef = m_config.enumerateDefinition();
-        while (edef.hasMoreElements()) {
-            def = (Definition) edef.nextElement();
-            
-            if (def.getVersion() == null)
-                def.setVersion(m_config.getVersion());
-            
-            if (versionString2Int(def.getVersion()) == SnmpConstants.version3)
-                addUserToSecurityModel(def);
-        }
-    }
-
-    /**
-     * This method will add the v3 Users to the USM in the SNMP4J library.
-     * @param def
-     */
-    private void addUserToSecurityModel(Definition def) {
-        OID authProtocol;
-        OID privProtocol;
-        OctetString authPassphrase;
-        OctetString privPassphrase;
-        OctetString securityName;
-        securityName = null;
-        authPassphrase = null;
-        authProtocol = null;
-        privPassphrase = null;
-        privProtocol = null;
-        
-        if (def.getSecurityName() != null) {
-            
-            //Work on Authorization
-            securityName = createOctetString(def.getSecurityName());
-            if (def.getAuthPassphrase() != null) {
-                authPassphrase = createOctetString(def.getAuthPassphrase());
-                authProtocol = DEFAULT_AUTH_PROTOCOL;
-                if (def.getAuthProtocol() != null) {
-                    if (def.getAuthProtocol().equals("MD5")) {
-                        authProtocol = AuthMD5.ID;
-                    } else if (def.getAuthProtocol().equals("SHA")) {
-                        authProtocol = AuthSHA.ID;
-                    } else {
-                        throw new IllegalArgumentException("Authentication protocol unsupported: " + def.getAuthProtocol());
-                    }
-                }
-            }
-            
-            //Work on Privacy
-            if (def.getPrivacyPassphrase() != null) {
-                privPassphrase = createOctetString(def.getPrivacyPassphrase());
-                privProtocol = DEFAULT_PRIV_PROTOCOL;
-                if (def.getPrivacyProtocol() != null) {
-                    if (def.getPrivacyProtocol().equals("DES")) {
-                        privProtocol = PrivDES.ID;
-                    } else if ((def.getPrivacyProtocol().equals("AES128")) || (def.getPrivacyProtocol().equals("AES"))) {
-                        privProtocol = PrivAES128.ID;
-                    } else if (def.getPrivacyProtocol().equals("AES192")) {
-                        privProtocol = PrivAES192.ID;
-                    } else if (def.getPrivacyProtocol().equals("AES256")) {
-                        privProtocol = PrivAES256.ID;
-                    } else {
-                        throw new IllegalArgumentException("Privacy protocol " + def.getPrivacyProtocol() + " not supported");
-                    }
-                }
-            }
-            
-            if (m_usm == null) {
-                m_usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
-                SecurityModels.getInstance().addSecurityModel(m_usm);
-            }
-            UsmUser user = new UsmUser(securityName, authProtocol, authPassphrase, privProtocol, privPassphrase);
-            m_usm.addUser(securityName, user);
-        }
-    }
     
-    private static OctetString createOctetString(String s) {
-        OctetString octetString;
-        if (s.startsWith("0x")) {
-            octetString = OctetString.fromHexString(s.substring(2), ':');
-        } else {
-            octetString = new OctetString(s);
-        }
-        return octetString;
-    }
-
-
-    private int versionString2Int(String strVersion) {
-
-        int version = DEFAULT_VERSION;
-        
-        if (strVersion == null)
-            return version;
-
-        if (strVersion.equals("v3")) {
-            version = SnmpConstants.version3;
-        } else if (strVersion.equals("v2c")) { 
-            version = SnmpConstants.version2c;
-        } else if (strVersion.equals("v1")) {
-            version = SnmpConstants.version1;
-        }
-        
-        return version;
-    }
-    
-    //TODO: fix these to use SnmpAgentConfig constants
-    private String versionInt2String(int version) {
-        switch (version) {
-        case SnmpConstants.version1:
-            return "v1";
-        case SnmpConstants.version2c:
-            return "v2c";
-        case SnmpConstants.version3:
-            return "v3";
-        default:
-            throw new IllegalArgumentException("Cannot convert "+version+" to an SNMP version string");    
-        }
-        
-    }
-
     /**
      * Load the config from the default config file and create the singleton
      * instance of this factory.
@@ -696,135 +525,11 @@ public final class SnmpPeerFactory {
         m_config.setDefinitionCollection(definitions);
     }
     
-    public void addVersionForSpecific(InetAddress addr, int version) {
-        Definition def = new Definition();
-        def.addSpecific(addr.getHostAddress());
-        def.setVersion(versionInt2String(version));
-        m_config.addDefinition(0, def);
-    }
-
-    /**
-     * this method uses the passed address and definition to construct an
-     * appropriate SNMP peer object for use by an SnmpSession.
-     * 
-     * @param addr
-     *            The address to construct the snmp peer instance.
-     * @param def
-     *            The definition containing the appropriate information.
-     * 
-     * @return The SnmpPeer matching for the passed address.
-     */
-    private SnmpPeer create(InetAddress addr, Definition def) {
-        return create(addr, def, -1);
-    }
-
-    /**
-     * this method uses the passed address and definition to construct an
-     * appropriate SNMP peer object for use by an SnmpSession.
-     * 
-     * @param addr
-     *            The address to construct the snmp peer instance.
-     * @param def
-     *            The definition containing the appropriate information.
-     * @param supportedSnmpVersion
-     *            SNMP version to associate with the peer object if SNMP version
-     *            has not been explicitly configured.
-     * 
-     * @return The SnmpPeer matching for the passed address.
-     */
-    private SnmpPeer create(InetAddress addr, Definition def, int supportedSnmpVersion) {
-        // Allocate a new SNMP parameters
-        //
-        InetAddress snmpHost = addr;
-        SnmpParameters parms = new SnmpParameters();
-
-        // get the version information, if any
-        //
-        // If version information is provided it will be used...
-        // if not then the passed supportedSnmpVersion variable
-        // will be used to set the peer's SNMP version.
-        //
-        if (def.getVersion() != null) {
-            if (def.getVersion().equals("v1"))
-                parms.setVersion(SnmpSMI.SNMPV1);
-            else if (def.getVersion().equals("v2c"))
-                parms.setVersion(SnmpSMI.SNMPV2);
-        } else {
-            // Verify valid SNMP version provided
-            if (supportedSnmpVersion == SnmpSMI.SNMPV1 || supportedSnmpVersion == SnmpSMI.SNMPV2)
-                parms.setVersion(supportedSnmpVersion);
-            else
-                parms.setVersion(SnmpSMI.SNMPV1);
-        }
-
-        // setup the read community
-        //
-        if (def.getReadCommunity() != null) {
-            parms.setReadCommunity(def.getReadCommunity());
-        } else if (m_config.getReadCommunity() != null) {
-            parms.setReadCommunity(m_config.getReadCommunity());
-        }
-
-        // setup the write community
-        //
-        if (def.getWriteCommunity() != null) {
-            parms.setWriteCommunity(def.getWriteCommunity());
-        } else if (m_config.getWriteCommunity() != null) {
-            parms.setWriteCommunity(m_config.getWriteCommunity());
-        }
-
-        if (def.getProxyHost() != null) {
-            try {
-                snmpHost = InetAddress.getByName(def.getProxyHost());
-            }
-            catch (UnknownHostException e) {
-                Category log = ThreadCategory.getInstance(getClass());
-                log.error("SnmpPeerFactory: could not convert host " + def.getProxyHost() + " to InetAddress", e);
-            }
-        }
-        
-        // Allocate a peer for this address
-        // and set the parameters
-        //
-        SnmpPeer peer = new SnmpPeer(snmpHost);
-        peer.setParameters(parms);
-
-        // setup the retries
-        //
-        if (def.hasRetry()) {
-            peer.setRetries(def.getRetry());
-        } else if (m_config.hasRetry()) {
-            peer.setRetries(m_config.getRetry());
-        }
-
-        // setup the timeout
-        //
-        if (def.hasTimeout()) {
-            peer.setTimeout(def.getTimeout());
-        } else if (m_config.hasTimeout()) {
-            peer.setTimeout(m_config.getTimeout());
-        }
-
-        // check for port changes
-        //
-        if (def.hasPort())
-            peer.setPort(def.getPort());
-
-        // return the peer
-        //
-        return peer;
-    }
-    
     public synchronized SnmpAgentConfig getAgentConfig(InetAddress agentAddress) {
         return getAgentConfig(agentAddress, VERSION_UNSPECIFIED);
     }
     
     public synchronized SnmpAgentConfig getAgentConfig(InetAddress agentInetAddress, int requestedSnmpVersion) {
-        String transportAddress = null;
-        //String transportAddress = inetAddress.getHostAddress() + "/" + DEFAULT_PORT;
-        Address targetAddress = null;
-        //Address targetAddress = new UdpAddress(transportAddress);
-        
 
         if (m_config == null) {
             SnmpAgentConfig agentConfig = new SnmpAgentConfig(agentInetAddress);
@@ -907,230 +612,6 @@ public final class SnmpPeerFactory {
         return agentConfig;
 
     }
-
-    /**
-     * This method is used by the Capabilities poller to lookup the SNMP peer
-     * information associated with the passed host. If there is no specific
-     * information available then a default SnmpPeer instance is returned to the
-     * caller.
-     * 
-     * @param host
-     *            The host for locating the SnmpPeer information.
-     * 
-     * @return The configured SnmpPeer information.
-     * 
-     */
-    public synchronized SnmpPeer getPeer(InetAddress host) {
-        return getPeer(host, -1);
-    }
-
-    /**
-     * This method is used by the Capabilities poller to lookup the SNMP peer
-     * information associated with the passed host. If there is no specific
-     * information available then a default SnmpPeer instance is returned to the
-     * caller.
-     * 
-     * @param host
-     *            The host for locating the SnmpPeer information.
-     * @param supportedSnmpVersion
-     *            SNMP version to associate with the peer object if SNMP version
-     *            has not been explicitly configured.
-     * 
-     * @return The configured SnmpPeer information.
-     * 
-     */
-    public synchronized SnmpPeer getPeer(InetAddress host, int supportedSnmpVersion) {
-        // Verify configuration information present!
-        //
-        if (m_config == null) {
-            SnmpPeer peer = new SnmpPeer(host);
-
-            // Verify valid SNMP version provided
-            if (supportedSnmpVersion == SnmpSMI.SNMPV1 || supportedSnmpVersion == SnmpSMI.SNMPV2) {
-                peer.getParameters().setVersion(supportedSnmpVersion);
-            }
-
-            return peer;
-        }
-
-        SnmpPeer peer = null;
-
-        // Attempt to locate the node
-        //
-        Enumeration edef = m_config.enumerateDefinition();
-        DEFLOOP: while (edef.hasMoreElements()) {
-            Definition def = (Definition) edef.nextElement();
-
-            // check the specifics first
-            //
-            Enumeration espec = def.enumerateSpecific();
-            while (espec.hasMoreElements()) {
-                String saddr = (String) espec.nextElement();
-                try {
-                    InetAddress addr = InetAddress.getByName(saddr);
-                    if (addr.equals(host)) {
-                        // get the information
-                        peer = create(addr, def, supportedSnmpVersion);
-                        break DEFLOOP;
-                    }
-                } catch (UnknownHostException e) {
-                    Category log = ThreadCategory.getInstance(getClass());
-                    log.warn("SnmpPeerFactory: could not convert host " + saddr + " to InetAddress", e);
-                }
-            }
-
-            // check the ranges
-            //
-            long lhost = toLong(host);
-            Enumeration erange = def.enumerateRange();
-            while (erange.hasMoreElements()) {
-                Range rng = (Range) erange.nextElement();
-                try {
-                    InetAddress begin = InetAddress.getByName(rng.getBegin());
-                    InetAddress end = InetAddress.getByName(rng.getEnd());
-
-                    long start = toLong(begin);
-                    long stop = toLong(end);
-
-                    if (start <= lhost && lhost <= stop) {
-                        peer = create(host, def, supportedSnmpVersion);
-                        break DEFLOOP;
-                    }
-                } catch (UnknownHostException e) {
-                    Category log = ThreadCategory.getInstance(getClass());
-                    log.warn("SnmpPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
-                }
-            }
-        } // end DEFLOOP
-
-        if (peer == null) {
-            // try defaults!
-            //
-            peer = new SnmpPeer(host);
-
-            // Verify valid SNMP version provided
-            if (supportedSnmpVersion == SnmpSMI.SNMPV1 || supportedSnmpVersion == SnmpSMI.SNMPV2) {
-                peer.getParameters().setVersion(supportedSnmpVersion);
-            }
-
-            if (m_config.getReadCommunity() != null || m_config.getWriteCommunity() != null) {
-                if (m_config.getReadCommunity() != null)
-                    peer.getParameters().setReadCommunity(m_config.getReadCommunity());
-
-                if (m_config.getWriteCommunity() != null)
-                    peer.getParameters().setWriteCommunity(m_config.getWriteCommunity());
-            }
-
-            if (m_config.hasRetry())
-                peer.setRetries(m_config.getRetry());
-
-            if (m_config.hasTimeout())
-                peer.setTimeout(m_config.getTimeout());
-        }
-
-        return peer;
-
-    } // end getPeer();
-    
-    /**
-     * This method returns a target based on the snmp-config for use with the
-     * SNMP4J SNMP protocol stack.
-     * @param inetAddress
-     * @param requestedSnmpVersion
-     * @return
-     */
-    public Target getTarget(InetAddress inetAddress, int requestedSnmpVersion) {
-        
-        String transportAddress = null;
-        //String transportAddress = inetAddress.getHostAddress() + "/" + DEFAULT_PORT;
-        Address targetAddress = null;
-        //Address targetAddress = new UdpAddress(transportAddress);
-        
-        Target target = null;
-
-        if (m_config == null) {
-            if (requestedSnmpVersion == SnmpConstants.version3) {
-                target = new UserTarget();
-                target.setVersion(SnmpConstants.version3);
-            } else if (requestedSnmpVersion == SnmpConstants.version1){
-                target = new CommunityTarget();
-                target.setVersion(SnmpConstants.version1);
-            } else if (requestedSnmpVersion == SnmpConstants.version2c) {
-                target = new CommunityTarget();
-                target.setVersion(SnmpConstants.version2c);
-            }
-            
-            return target;
-        }
-
-        // Attempt to locate the node
-        //
-        Enumeration edef = m_config.enumerateDefinition();
-        DEFLOOP: while (edef.hasMoreElements()) {
-            Definition def = (Definition) edef.nextElement();
-
-            // check the specifics first
-            //
-            Enumeration espec = def.enumerateSpecific();
-            while (espec.hasMoreElements()) {
-                String saddr = (String) espec.nextElement();
-                try {
-                    InetAddress addr = InetAddress.getByName(saddr);
-                    if (addr.equals(inetAddress)) {
-                        target = createTarget(addr, def, requestedSnmpVersion);
-                        break DEFLOOP;
-                    }
-                } catch (UnknownHostException e) {
-                    Category log = ThreadCategory.getInstance(getClass());
-                    log.warn("SnmpPeerFactory: could not convert host " + saddr + " to InetAddress", e);
-                }
-            }
-
-            // check the ranges
-            //
-            long lhost = toLong(inetAddress);
-            Enumeration erange = def.enumerateRange();
-            while (erange.hasMoreElements()) {
-                Range rng = (Range) erange.nextElement();
-                try {
-                    InetAddress begin = InetAddress.getByName(rng.getBegin());
-                    InetAddress end = InetAddress.getByName(rng.getEnd());
-
-                    long start = toLong(begin);
-                    long stop = toLong(end);
-
-                    if (start <= lhost && lhost <= stop) {
-                        target = createTarget(inetAddress, def, requestedSnmpVersion);
-                        break DEFLOOP;
-                    }
-                } catch (UnknownHostException e) {
-                    Category log = ThreadCategory.getInstance(getClass());
-                    log.warn("SnmpPeerFactory: could not convert host(s) " + rng.getBegin() + " - " + rng.getEnd() + " to InetAddress", e);
-                }
-            }
-            
-            // check the matching ip expressions
-            //
-            Enumeration eMatch = def.enumerateIpMatch();
-            while (eMatch.hasMoreElements()) {
-                String ipMatch = (String)eMatch.nextElement();
-                if (verifyIpMatch(inetAddress.getHostAddress(), ipMatch)) {
-                    target = createTarget(inetAddress, def, requestedSnmpVersion);
-                    break DEFLOOP;
-                }
-            }
-            
-        } // end DEFLOOP
-
-        if (target == null) {
-
-            Definition def = new Definition();
-            target = createTarget(inetAddress, def, requestedSnmpVersion);
-        }
-
-        return target;
-
-    }
     
     public static boolean verifyIpMatch(String hostAddress, String ipMatch) {
         
@@ -1186,90 +667,36 @@ public final class SnmpPeerFactory {
         return charCount;
     }
 
-    /**
-     * A convenience method for created an SNMP4J SNMP target.  If version 3
-     * is requested, then a UserTarget is return, otherwise, a
-     * CommunityTarget is returned.
-     * @param addr
-     * @param def
-     * @param requestedSnmpVersion
-     * @return
-     */
     private void setSnmpAgentConfig(SnmpAgentConfig agentConfig, Definition def, int requestedSnmpVersion) {
         
         int version = determineVersion(def, requestedSnmpVersion);
         
-        setCommonAgentConfigAttributes(agentConfig, def, version);
-        agentConfig.setSecurityLevel(determineSercurityLevel(def));
-        agentConfig.setSecurityName(determineAgentConfigSecurityName(def));
+        setCommonAttributes(agentConfig, def, version);
+        agentConfig.setSecurityLevel(determineSecurityLevel(def));
+        agentConfig.setSecurityName(determineSecurityName(def));
         agentConfig.setAuthProtocol(determineAuthProtocol(def));
         agentConfig.setAuthPassPhrase(determineAuthPassPhrase(def));
         agentConfig.setAuthPrivProtocol(determinePrivProtocol(def));
-        agentConfig.setReadCommunity(determineAgentConfigReadCommunity(def));
-        agentConfig.setWriteCommunity(determineAgentConfigWriteCommunity(def));
+        agentConfig.setReadCommunity(determineReadCommunity(def));
+        agentConfig.setWriteCommunity(determineWriteCommunity(def));
         
         //TODO: need to work on the Proxy flag.  Probalby should add a proxy host field
         //to the SnmpAgentConfig.
         
     }
-
     
     /**
-     * A convenience method for created an SNMP4J SNMP target.  If version 3
-     * is requested, then a UserTarget is return, otherwise, a
-     * CommunityTarget is returned.
-     * @param addr
-     * @param def
-     * @param requestedSnmpVersion
-     * @return
-     */
-    private Target createTarget(InetAddress addr, Definition def, int requestedSnmpVersion) {
-        
-        int version = determineVersion(def, requestedSnmpVersion);
-        
-        if (version == SnmpConstants.version3) {
-            UserTarget target = new UserTarget();
-            setCommonAttributes(target, def, version, addr);
-            target.setSecurityLevel(determineSercurityLevel(def));
-            target.setSecurityName(determineSecurityName(def));
-            return target;
-        } else {
-            CommunityTarget target = new CommunityTarget();
-            setCommonAttributes(target, def, version, addr);
-            target.setCommunity(determineCommunity(def));
-            return target;
-        }
-
-    }
-    
-    /**
-     * This is a helper method to set all the common attributes for a
-     * Target (CommunityTarget or UserTarget)
-     * @param target
+     * This is a helper method to set all the common attributes in the agentConfig.
+     * 
+     * @param agentConfig
      * @param def
      * @param version
      */
-    private void setCommonAgentConfigAttributes(SnmpAgentConfig target, Definition def, int version) {
-        target.setVersion(version);
-        target.setRetries(determineRetries(def));
-        target.setTimeout((int)determineTimeout(def));
-        target.setMaxRequestSize(determineMaxRequestSize(def));
-    }
-
-    /**
-     * This is a helper method to set all the common attributes for a
-     * Target (CommunityTarget or UserTarget)
-     * @param target
-     * @param def
-     * @param version
-     * @param addr
-     */
-    private void setCommonAttributes(Target target, Definition def, int version, InetAddress addr) {
-        target.setVersion(version);
-        target.setRetries(determineRetries(def));
-        target.setTimeout(determineTimeout(def));
-        target.setAddress(determineAddress(def, addr));
-        target.setMaxSizeRequestPDU(determineMaxRequestSize(def));
+    private void setCommonAttributes(SnmpAgentConfig agentConfig, Definition def, int version) {
+        agentConfig.setVersion(version);
+        agentConfig.setRetries(determineRetries(def));
+        agentConfig.setTimeout((int)determineTimeout(def));
+        agentConfig.setMaxRequestSize(determineMaxRequestSize(def));
     }
 
     /**
@@ -1278,7 +705,7 @@ public final class SnmpPeerFactory {
      * @param def
      * @return
      */
-    private String determineAgentConfigReadCommunity(Definition def) {
+    private String determineReadCommunity(Definition def) {
         return (def.getReadCommunity() == null ? (m_config.getReadCommunity() == null ? SnmpAgentConfig.DEFAULT_READ_COMMUNITY :m_config.getReadCommunity()) : def.getReadCommunity());
     }
 
@@ -1288,18 +715,8 @@ public final class SnmpPeerFactory {
      * @param def
      * @return
      */
-    private String determineAgentConfigWriteCommunity(Definition def) {
+    private String determineWriteCommunity(Definition def) {
         return (def.getWriteCommunity() == null ? (m_config.getWriteCommunity() == null ? SnmpAgentConfig.DEFAULT_WRITE_COMMUNITY :m_config.getWriteCommunity()) : def.getWriteCommunity());
-    }
-
-    /**
-     * Helper method to search the snmp-config for the appropriate read
-     * community string.
-     * @param def
-     * @return
-     */
-    private OctetString determineCommunity(Definition def) {
-        return new OctetString((def.getReadCommunity() == null ? (m_config.getReadCommunity() == null ? "public" :m_config.getReadCommunity()) : def.getReadCommunity()));
     }
 
     /**
@@ -1309,7 +726,7 @@ public final class SnmpPeerFactory {
      * @return
      */
     private int determineMaxRequestSize(Definition def) {
-        return (def.getMaxRequestSize() == 0 ? (m_config.getMaxRequestSize() == 0 ? DEFAULT_MAX_REQUEST_SIZE : m_config.getMaxRequestSize()) : DEFAULT_MAX_REQUEST_SIZE);
+        return (def.getMaxRequestSize() == 0 ? (m_config.getMaxRequestSize() == 0 ? SnmpAgentConfig.DEFAULT_MAX_REQUEST_SIZE : m_config.getMaxRequestSize()) : SnmpAgentConfig.DEFAULT_MAX_REQUEST_SIZE);
     }
 
     /**
@@ -1319,10 +736,10 @@ public final class SnmpPeerFactory {
      * @param def
      * @return
      */
-    private String determineAgentConfigSecurityName(Definition def) {
+    private String determineSecurityName(Definition def) {
         String securityName = (def.getSecurityName() == null ? m_config.getSecurityName() : def.getSecurityName() );
         if (securityName == null) {
-            securityName = DEFAULT_SECURITY_NAME;
+            securityName = SnmpAgentConfig.DEFAULT_SECURITY_NAME;
         }
         return securityName;
     }
@@ -1373,21 +790,6 @@ public final class SnmpPeerFactory {
     }
 
     /**
-     * Helper method to find a security name to use in the snmp-config.  If v3 has
-     * been specified and one can't be found, then a default is used for this
-     * is a required option for v3 operations.
-     * @param def
-     * @return
-     */
-    private OctetString determineSecurityName(Definition def) {
-        String securityName = (def.getSecurityName() == null ? m_config.getSecurityName() : def.getSecurityName() );
-        if (securityName == null) {
-            securityName = DEFAULT_SECURITY_NAME;
-        }
-        return new OctetString(securityName);
-    }
-
-    /**
      * Helper method to set the security level in v3 operations.  The default is
      * noAuthNoPriv if there is no authentication passphrase.  From there, if
      * there is a privacy passphrase supplied, then the security level is set to
@@ -1397,43 +799,24 @@ public final class SnmpPeerFactory {
      * @param def
      * @return
      */
-    private int determineSercurityLevel(Definition def) {
+    private int determineSecurityLevel(Definition def) {
 
-        int securityLevel = SecurityLevel.NOAUTH_NOPRIV;
+        int securityLevel = SnmpAgentConfig.NOAUTH_NOPRIV;
 
         String authPassPhrase = (def.getAuthPassphrase() == null ? m_config.getAuthPassphrase() : def.getAuthPassphrase());
         String privPassPhrase = (def.getPrivacyPassphrase() == null ? m_config.getPrivacyPassphrase() : def.getPrivacyPassphrase());
         
         if (authPassPhrase == null) {
-            securityLevel = SecurityLevel.NOAUTH_NOPRIV;
+            securityLevel = SnmpAgentConfig.NOAUTH_NOPRIV;
         } else {
             if (privPassPhrase == null) {
-                securityLevel = SecurityLevel.AUTH_NOPRIV;
+                securityLevel = SnmpAgentConfig.AUTH_NOPRIV;
             } else {
-                securityLevel = SecurityLevel.AUTH_PRIV;
+                securityLevel = SnmpAgentConfig.AUTH_PRIV;
             }
         }
         
         return securityLevel;
-    }
-
-    /**
-     * Helper method to create an Address object that is compatible
-     * with the SNMP4J SNMP stack.
-     *
-     * @param def
-     * @param addr
-     * @return
-     */
-    
-    //TODO: This needs to be updated when the protocol flag is added to the definition
-    //so that UDP or TCP can be used in v3 operations.
-    private Address determineAddress(Definition def, InetAddress addr) {
-        String transportAddress = addr.getHostAddress();
-        int port = determinePort(def);
-        transportAddress += "/" + port;
-        Address targetAddress = new UdpAddress(transportAddress);
-        return targetAddress;
     }
 
     /**
@@ -1452,22 +835,23 @@ public final class SnmpPeerFactory {
      * @return
      */
     private long determineTimeout(Definition def) {
-        long timeout = 3;
+        long timeout = SnmpAgentConfig.DEFAULT_TIMEOUT;
         return (long)(def.getTimeout() == 0 ? (m_config.getTimeout() == 0 ? timeout : m_config.getTimeout()) : timeout);
     }
 
     private int determineRetries(Definition def) {        
-        int retries = 3;
+        int retries = SnmpAgentConfig.DEFAULT_RETRIES;
         return (def.getRetry() == 0 ? (m_config.getRetry() == 0 ? retries : m_config.getRetry()) : retries);
     }
 
     /**
-     * This method determines the appropriate value for an SNMP4J target.  If
+     * This method determines the configured SNMP version.
      * the order of operations is:
      * 1st: return a valid requested version
      * 2nd: return a valid version defined in a definition within the snmp-config
      * 3rd: return a valid version in the snmp-config
      * 4th: return the default version
+     * 
      * @param def
      * @param requestedSnmpVersion
      * @return

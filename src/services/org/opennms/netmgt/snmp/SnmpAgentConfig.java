@@ -53,14 +53,14 @@ public class SnmpAgentConfig {
     public static final int SET_PDU = 4;
     public static final int DEFAULT_RETRIES = 1;
     public static final int DEFAULT_MAX_REQUEST_SIZE = 65535;
-    public static final int NOAUTH_NO_PRIV = 1;
+    public static final int NOAUTH_NOPRIV = 1;
     public static final int AUTH_NOPRIV = 2;
     public static final int AUTH_PRIV = 3;
     public static final String DEFAULT_READ_COMMUNITY = "public";
     public static final int DEFAULT_MAX_VARS_PER_PDU = 50;
     public static final int DEFAULT_PDU_TYPE = GET_PDU;
     public static final String DEFAULT_WRITE_COMMUNITY = "private";
-    public static final int DEFAULT_SECURITY_LEVEL = NOAUTH_NO_PRIV;
+    public static final int DEFAULT_SECURITY_LEVEL = NOAUTH_NOPRIV;
     public static final String DEFAULT_SECURITY_NAME = "opennmsUser";
     public static final String DEFAULT_AUTH_PASS_PHRASE = "0p3nNMSv3";
     public static final String DEFAULT_AUTH_PROTOCOL = "MD5";

@@ -376,7 +376,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
             securityLevel = SecurityLevel.AUTH_NOPRIV;
         case SnmpAgentConfig.AUTH_PRIV :
             securityLevel = SecurityLevel.AUTH_PRIV;
-        case SnmpAgentConfig.NOAUTH_NO_PRIV :
+        case SnmpAgentConfig.NOAUTH_NOPRIV :
             securityLevel = SecurityLevel.NOAUTH_NOPRIV;
         default :
            securityLevel = SecurityLevel.NOAUTH_NOPRIV;
