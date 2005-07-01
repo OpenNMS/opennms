@@ -73,7 +73,6 @@ import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
-import org.opennms.protocols.snmp.SnmpSession;
 
 /**
  * <P>
@@ -444,7 +443,6 @@ final class SnmpThresholder implements ServiceThresholder {
 
         int thresholdingStatus = THRESHOLDING_UNKNOWN;
         InetAddress primary = (InetAddress) iface.getAddress();
-        SnmpSession session = null;
 
         // Get configuration parameters
         //

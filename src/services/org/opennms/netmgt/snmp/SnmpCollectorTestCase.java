@@ -41,7 +41,6 @@ import org.opennms.netmgt.collectd.SNMPCollectorEntry;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.snmp.mock.TestAgent;
 import org.opennms.netmgt.utils.BarrierSignaler;
-import org.opennms.protocols.snmp.SnmpSMI;
 
 public class SnmpCollectorTestCase extends OpenNMSTestCase {
 
@@ -110,7 +109,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     protected SnmpObjId m_ifOutOctets;
     protected SnmpObjId m_invalid;
     
-    private int m_version = SnmpSMI.SNMPV1;
+    private int m_version = SnmpAgentConfig.VERSION1;
     
     public void setVersion(int version) {
         super.setVersion(version);

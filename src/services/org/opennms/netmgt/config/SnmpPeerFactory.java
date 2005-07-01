@@ -71,7 +71,7 @@ import org.opennms.protocols.ip.IPv4Address;
  * This class is the main respository for SNMP configuration information used by
  * the capabilities daemon. When this class is loaded it reads the snmp
  * configuration into memory, and uses the configuration to find the
- * {@link org.opennms.protocols.snmp.SnmpPeer SnmpPeer}objects for specific
+ * {@link org.opennms.netmgt.snmp.SnmpAgentConfig SnmpAgentConfig} objects for specific
  * addresses. If an address cannot be located in the configuration then a
  * default peer instance is returned to the caller.
  * 
@@ -79,6 +79,7 @@ import org.opennms.protocols.ip.IPv4Address;
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
  * 
+ * @author <a href="mailto:david@opennms.org">David Hustace </a>
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
