@@ -1,31 +1,47 @@
-<?xml version="1.0"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema"
-	xmlns:this="http://xmlns.opennms.org/xsd/viewsdisplay"
-	targetNamespace="http://xmlns.opennms.org/xsd/viewsdisplay">
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/viewsdisplay"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/viewsdisplay"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <annotation>
+    <documentation>XML Schema for the viewsdisplay.xml configuration file.
+    Version: $Id$</documentation>
+  </annotation>
 
-	<element name="viewinfo">
-		<complexType>
-			<sequence>
-				<element ref="this:view" minOccurs="0" maxOccurs="unbounded"/>
-			</sequence>
-		</complexType>
-	</element>
+  <element name="viewinfo">
+    <annotation>
+      <documentation>Top-level element for the viewsdisplay.xml configuration
+      file.</documentation>
+    </annotation>
 
-	<element name="view">
-		<complexType>
-			<sequence>
-				<element name="view-name" type="string" minOccurs="1" maxOccurs="1"/>
-				<element ref="this:section" minOccurs="1" maxOccurs="unbounded"/>
-			</sequence>
-		</complexType>
-	</element>
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:view"/>
+      </sequence>
+    </complexType>
+  </element>
 
-	<element name="section">
-		<complexType>
-			<sequence>
-				<element name="section-name" type="string" minOccurs="1" maxOccurs="1"/>
-				<element name="category" type="string" minOccurs="1" maxOccurs="unbounded"/>
-			</sequence>
-		</complexType>
-	</element>
+  <element name="view">
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="view-name" type="string"/>
+
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:section"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="section">
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="section-name" type="string"/>
+
+        <element maxOccurs="unbounded" minOccurs="1" name="category"
+                 type="string"/>
+      </sequence>
+    </complexType>
+  </element>
 </schema>

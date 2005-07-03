@@ -1,250 +1,393 @@
-<?xml version="1.0"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://xmlns.opennms.org/xsd/config/capsd" xmlns:this="http://xmlns.opennms.org/xsd/config/capsd">
-	
-		<!-- include SNMP configuration -->
-	<include schemaLocation="snmp-config.xsd"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/capsd"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:typ="http://xmlns.opennms.org/xsd/types"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/capsd"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <annotation>
+    <documentation>XML Schema for the capsd-configuration.xml configuration
+    file. Version: $Id$.</documentation>
+  </annotation>
 
-	<element name="capsd-configuration">
-		<complexType>
-			<sequence>
-				<!-- a protocol/service plugin -->
-				<element ref="this:protocol-plugin" minOccurs="0" maxOccurs="unbounded"/>
-				
-				<!-- SMB protocol configuration (primarily for SMB authentication) -->
-				<element ref="this:smb-config" minOccurs="0" maxOccurs="1"/>
-				
-				<!-- managed/unmanaged IP addresses and ranges. -->
-				<element ref="this:ip-management" minOccurs="0" maxOccurs="unbounded"/>
-			</sequence>
-			<!-- interval (in milliseconds) between IP address re-scans -->
-			<attribute name="rescan-frequency" type="long" use="optional"/>
-			
-			<!-- interval (in milliseconds) between Capsd startup and the start of
-				 rescan processing. 
-			-->
-			<attribute name="initial-sleep-time" type="long" use="optional"/>
-			
-			<!-- max number of threads available for processing 'newSuspect' events
-				 from discovery.
-			-->
-			<attribute name="max-suspect-thread-pool-size" type="positiveInteger" use="required"/>
-			
-			<!-- max number of threads available for rescanning managed interfaces -->
-			<attribute name="max-rescan-thread-pool-size" type="positiveInteger" use="required"/>
-			
-			<!-- default management policy -->
-			<attribute name="management-policy" use="optional">
-				<simpleType>
-					<restriction base="string">
-						<pattern value="(managed|unmanaged)"/>
-					</restriction>
-				</simpleType>
-			</attribute>
-			
-			<!-- Flag which determines Capsd's behavior in the event that a NoRouteToHost
-				 exception is generated during a protocol plugin scan of an interface.  
-				 If true, Capsd will abort the protocol scanning process for the interface.
-			-->
-			<attribute name="abort-protocol-scans-if-no-route" use="optional">
-				<simpleType>
-					<restriction base="string">
-						<pattern value="(true|false)"/>
-					</restriction>
-				</simpleType>
-			</attribute>
-			
-			<!-- Determine if deleting an service propagates to deleting the interface
-				 if the service is the only one remaining on the interface. Likewise for 
-				 the only interface on a node.
-		 	-->
-			<attribute name="delete-propagation-enabled" use="required">
-				<simpleType>
-					<restriction base="string">
-						<pattern value="(true|false)"/>
-					</restriction>
-				</simpleType>
-			</attribute>
-			
-			
-			<!-- Flag which indicates if an external XMLRPC server has to be notified with
-                             any event process errors
-                        -->
-			<attribute name="xmlrpc" use="optional" default="false">
-				<simpleType>
-					<restriction base="string">
-						<pattern value="(true|false)"/>
-					</restriction>
-				</simpleType>
-			</attribute>
-		</complexType>
-	</element>
+  <import namespace="http://xmlns.opennms.org/xsd/types"
+          schemaLocation="types.xsd"/>
 
-	<!-- protocol plugin definition -->
-	<element name="protocol-plugin">
-		<complexType>
-			<sequence>
-				<!-- IP address/range specific protocol configuration -->
-				<element ref="this:protocol-configuration" minOccurs="0" maxOccurs="unbounded"/>
-				
-				<!-- key/value pair passed in to the plugin -->
-				<element ref="this:property" minOccurs="0" maxOccurs="unbounded"/>
-			</sequence>
-			<!-- protocol name -->
-			<attribute name="protocol" type="string" use="required"/>
-			
-			<!-- Java class name of the plugin capable of testing the protocol -->
-			<attribute name="class-name" type="string" use="required"/>
-			
-			<!-- controls whether or not protocol is actually scanned by Capsd -->
-			<attribute name="scan" use="optional">
-				<simpleType>
-					<restriction base="string">
-						<pattern value="(on|off)"/>
-					</restriction>
-				</simpleType>
-			</attribute>
-			
-			<!-- specifies if the protocol was added by the user via the UI -->
-			<attribute name="user-defined" use="optional">
-				<simpleType>
-					<restriction base="string">
-						<pattern value="(true|false)"/>
-					</restriction>
-				</simpleType>
-			</attribute>
-		</complexType>
-	</element>
+  <element name="capsd-configuration">
+    <annotation>
+      <documentation>Top-level element for the capsd-configuration.xml
+      configuration file.</documentation>
+    </annotation>
 
-	<!-- IP address/range specific protocol configuration -->
-	<element name="protocol-configuration">
-		<complexType>
-			<sequence>
-				<!-- IP address to which the protocol configuration applies -->
-				<element name="specific" type="string" minOccurs="0" maxOccurs="unbounded"/>
-				
-				<!-- IP address range to which the protocol configuration applies --> 
-				<element ref="this:range" minOccurs="0" maxOccurs="unbounded"/> 
-				
-				<!-- key/value pair passed in to the plugin -->
-				<element ref="this:property" minOccurs="0" maxOccurs="unbounded"/>
-			</sequence>
-			
-			<!-- controls whether or not the protocol is actually scanned by Capsd
-				 
-				 NOTE:  Value of 'enable' causes the protocol to be added as supported 
-				 without performing the protocol scan.
-			-->
-			<attribute name="scan" use="optional">
-				<simpleType>
-					<restriction base="string">
-						<pattern value="(on|off|enable)"/>
-					</restriction>
-				</simpleType>
-			</attribute>
-			
-			<!-- specifies if the protocol was added by the user via the UI -->
-			<attribute name="user-defined" use="required">
-				<simpleType>
-				
-					<restriction base="string">
-						<pattern value="(true|false)"/>
-					</restriction>
-				</simpleType>
-			</attribute>
-		</complexType>
-	</element>
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0"
+                 ref="this:protocol-plugin">
+          <annotation>
+            <documentation>A protocol/service plugin.</documentation>
+          </annotation>
+        </element>
 
-	<!-- key/value pair -->
-	<element name="property">
-		<complexType>
-			<!-- key -->
-			<attribute name="key" type="string" use="required"/>
-			<!-- value -->
-			<attribute name="value" type="string" use="required"/>
-		</complexType>
-	</element>
+        <element maxOccurs="1" minOccurs="0" ref="this:smb-config">
+          <annotation>
+            <documentation>SMB protocol configuration (primarily for SMB
+            authentication).</documentation>
+          </annotation>
+        </element>
 
-	<!-- SMB configuration -->
-	<element name="smb-config">
-		<complexType>
-			<sequence>
-				<!-- SMB authentication -->
-				<element ref="this:smb-auth" minOccurs="1" maxOccurs="unbounded"/>
-			</sequence>
-		</complexType>
-	</element>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:ip-management">
+          <annotation>
+            <documentation>Managed/unmanaged IP addresses and address
+            ranges.</documentation>
+          </annotation>
+        </element>
+      </sequence>
 
-	<!-- SMB authentication 
-	
-		 SMB authentication is not required by jCIFS in order to determine the
-		 NetBIOS name for a remote host which supports SMB.  However it may
-		 be required in order to enumerate the hosts's list of file shares.  It
-		 is during this enumeration that we are able to determine the operating 
-		 system and MAC address of the remote system.
-		 
-		 SMB urls (for enumerating file shares) are formatted as follows:
-		 
-		 If no matching SmbAuth object url has format:
-			smb://<netbios_name>
-		 
-		 For server authentication url has format:
-			smb://<userid>:<password>@<netbios_name>
-		
-		 For domain authentication url has format:
-			smb://<domain>;<userid>:<password>@<netbios_name>
-	-->
-	<element name="smb-auth">
-		<complexType>
-			<!-- content of smb-auth is the NetBIOS (domain or server) name -->
-			<simpleContent>
-				<extension base="string">
-					<!-- user id -->
-					<attribute name="user" use="required" type="string"/>
-					
-					<!-- password -->
-					<attribute name="password" use="required" type="string"/>
-					
-					<!-- authentication type -->
-					<attribute name="type" use="required">
-						<simpleType>
-							<restriction base="string">
-								<pattern value="(domain|server)"/>
-							</restriction>
-						</simpleType>
-					</attribute>
-				</extension>
-			</simpleContent>
-		</complexType>
-	</element>
+      <attribute default="0" name="rescan-frequency" type="long"
+                 use="optional">
+        <annotation>
+          <documentation>Interval (in milliseconds) between IP address
+          re-scans.</documentation>
+        </annotation>
+      </attribute>
 
-	<!-- IP Management 
-	
-		 Overrides default IP management policy for the specified set of IP addresses
-	-->
-	<element name="ip-management">
-		<complexType>
-			<sequence>
-				<!-- Specific IP address -->
-				<element name="specific" type="string" minOccurs="0" maxOccurs="unbounded"/>
-				
-				<!-- IP address range -->
-				<element ref="this:range" minOccurs="0" maxOccurs="unbounded"/>
-				
-				<!-- url of text file containing list of IP addresses (one IP address
-				     per line).
-				-->
-				<element name="include-url" type="string" minOccurs="0" maxOccurs="unbounded"/>
-			</sequence>
-			<!-- Management policy -->
-			<attribute name="policy" use="optional">
-				<simpleType>
-					<restriction base="string">
-						<pattern value="(managed|unmanaged)"/>
-					</restriction>
-				</simpleType>
-			</attribute>
-		</complexType>
-	</element>
+      <attribute default="0" name="initial-sleep-time" type="long"
+                 use="optional">
+        <annotation>
+          <documentation>Interval (in milliseconds) between Capsd startup and
+          the start of rescan processing.</documentation>
+        </annotation>
+      </attribute>
 
+      <attribute name="max-suspect-thread-pool-size" type="positiveInteger"
+                 use="required">
+        <annotation>
+          <documentation>Maximum number of threads available for processing
+          'newSuspect' events from discovery.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="max-rescan-thread-pool-size" type="positiveInteger"
+                 use="required">
+        <annotation>
+          <documentation>Maximum number of threads available for rescanning
+          managed interfaces.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute default="managed" name="management-policy" use="optional">
+        <annotation>
+          <documentation>Default management policy.</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(managed|unmanaged)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute default="false" name="abort-protocol-scans-if-no-route"
+                 use="optional">
+        <annotation>
+          <documentation>Flag which determines Capsd's behavior in the event
+          that a NoRouteToHost exception is generated during a protocol plugin
+          scan of an interface. If true, Capsd will abort the protocol
+          scanning process for the interface.</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(true|false)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute name="delete-propagation-enabled" use="required">
+        <annotation>
+          <documentation>Determine if deleting an service propagates to
+          deleting the interface if the service is the only one remaining on
+          the interface. Likewise for the only interface on a
+          node.</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(true|false)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute default="false" name="xmlrpc" use="optional">
+        <annotation>
+          <documentation>Flag which indicates if an external XMLRPC server has
+          to be notified with any event process errors.</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(true|false)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="protocol-plugin">
+    <annotation>
+      <documentation>protocol plugin definition</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0"
+                 ref="this:protocol-configuration">
+          <annotation>
+            <documentation>IP address/range specific protocol
+            configuration</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:property">
+          <annotation>
+            <documentation>key/value pair passed in to the
+            plugin</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute name="protocol" type="string" use="required">
+        <annotation>
+          <documentation>protocol name</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="class-name" type="string" use="required">
+        <annotation>
+          <documentation>Java class name of the plugin used for testing this
+          protocol.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute default="on" name="scan" use="optional">
+        <annotation>
+          <documentation>Controls whether this protocol is scanned by Capsd.
+          The default is 'on'.</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(on|off)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute name="user-defined" use="required">
+        <annotation>
+          <documentation>Specifies if the protocol was added by the user via
+          the UI.</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(true|false)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="protocol-configuration">
+    <annotation>
+      <documentation>IP address/range-specific protocol
+      configuration.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" name="specific"
+                 type="string">
+          <annotation>
+            <documentation>IP address to which the protocol configuration
+            applies.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="typ:range">
+          <annotation>
+            <appinfo>IP address range to which the protocol configuration
+            applies.</appinfo>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:property">
+          <annotation>
+            <documentation>Key/value pair passed in to the
+            plugin.</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute default="on" name="scan" use="optional">
+        <annotation>
+          <documentation>Controls whether this protocol is scanned by Capsd.
+          Value of 'enable' causes the protocol to be added as supported
+          without performing the protocol scan.</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(on|off|enable)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute name="user-defined" use="required">
+        <annotation>
+          <documentation>Specifies if the protocol was added by the user via
+          the UI.</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(true|false)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="property">
+    <annotation>
+      <documentation>Key/value pair</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="key" type="string" use="required">
+        <annotation>
+          <documentation>Key</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="value" type="string" use="required">
+        <annotation>
+          <documentation>Value</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="smb-config">
+    <annotation>
+      <documentation>SMB configuration</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:smb-auth">
+          <annotation>
+            <documentation>SMB authentication</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="smb-auth">
+    <annotation>
+      <documentation>SMB authentication. SMB authentication is not required by
+      jCIFS in order to determine the NetBIOS name for a remote host which
+      supports SMB. However it may be required in order to enumerate the
+      hosts's list of file shares. It is during this enumeration that we are
+      able to determine the operating system and MAC address of the remote
+      system. SMB URLs (for enumerating file shares) are formatted as follows:
+      If no matching SmbAuth, object URL has format:
+      "smb://&lt;netbios_name&gt;". For server authentication, URL has format:
+      "smb://&lt;userid&gt;:&lt;password&gt;@&lt;netbios_name&gt;". For domain
+      authentication, URL has format:
+      "smb://&lt;domain&gt;;&lt;userid&gt;:&lt;password&gt;@&lt;netbios_name&gt;"</documentation>
+    </annotation>
+
+    <complexType>
+      <annotation>
+        <documentation>Content of smb-auth is the NetBIOS (domain or server)
+        name.</documentation>
+      </annotation>
+
+      <simpleContent>
+        <extension base="string">
+          <attribute name="user" type="string" use="required">
+            <annotation>
+              <documentation>User ID</documentation>
+            </annotation>
+          </attribute>
+
+          <attribute name="password" type="string" use="required">
+            <annotation>
+              <documentation>Password</documentation>
+            </annotation>
+          </attribute>
+
+          <attribute name="type" use="required">
+            <annotation>
+              <documentation>Authentication type</documentation>
+            </annotation>
+
+            <simpleType>
+              <restriction base="string">
+                <pattern value="(domain|server)"/>
+              </restriction>
+            </simpleType>
+          </attribute>
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+
+  <element name="ip-management">
+    <annotation>
+      <documentation>IP Management. Overrides default IP management policy for
+      the specified set of IP addresses</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" name="specific"
+                 type="string">
+          <annotation>
+            <documentation>Specific IP address</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="typ:range">
+          <annotation>
+            <documentation>IP address range</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" name="include-url"
+                 type="string">
+          <annotation>
+            <documentation>URL of a file containing list of IP addresses. The
+            file should be a plain text file with one IP address listed per
+            line.</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute default="managed" name="policy" use="optional">
+        <annotation>
+          <documentation>Management policy</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(managed|unmanaged)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+    </complexType>
+  </element>
 </schema>

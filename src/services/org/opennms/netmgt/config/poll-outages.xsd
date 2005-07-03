@@ -1,57 +1,92 @@
-<?xml version="1.0"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://xmlns.opennms.org/xsd/config/poller/outages"
-	xmlns:typ="http://xmlns.opennms.org/xsd/types"
-	xmlns:this="http://xmlns.opennms.org/xsd/config/poller/outages">
-	
-	<import namespace="http://xmlns.opennms.org/xsd/types" schemaLocation="types.xsd" />
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/poller/outages"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:typ="http://xmlns.opennms.org/xsd/types"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/poller/outages"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <annotation>
+    <documentation>XML Schema for the poll-outages.xml configuration file.
+    Version: $Id$</documentation>
+  </annotation>
 
-	<element name="outages">
-		<complexType>
-			<sequence>
-				<!-- a scheduled outage -->
-				<element ref="this:outage" minOccurs="0" maxOccurs="unbounded"/>
-			</sequence>
-		</complexType>
-	</element>
+  <import namespace="http://xmlns.opennms.org/xsd/types"
+          schemaLocation="types.xsd"/>
 
-	<!-- a scheduled outage -->
-	<element name="outage">
-		<complexType>
-		  <complexContent>
-		    <extension base="typ:basicSchedule">
-			<sequence>
-				<!-- list of interfaces to which the outage applies -->
-				<element ref="this:interface" minOccurs="0" maxOccurs="unbounded"/>
-				
-				<!-- list of nodes to which the outage applies -->
-				<element ref="this:node" minOccurs="0" maxOccurs="unbounded"/>
-			</sequence>
-			</extension>
-			</complexContent>
-		</complexType>
-	</element>
+  <element name="outages">
+    <annotation>
+      <documentation>Top-level element for the poll-outages.xml configuration
+      file.</documentation>
+    </annotation>
 
-	<!-- interface to which the outage applies -->
-	<element name="interface">
-		<complexType>
-			<!-- IP address -->
-			<attribute name="address" use="required">
-				<simpleType>
-					<restriction base="string">
-						<!-- Requires valid IP address -->
-						<pattern value="^([01]?[0-9][0-9]?|2[0-4][0-9]|25[0-5])(\.([01]?[0-9][0-9]?|2[0-4][0-9]|25[0-5])){3}|(match-any)"/>
-					</restriction>
-				</simpleType>
-			</attribute>
-		</complexType>
-	</element>
-	
-	<element name="node">
-		<complexType>
-			<attribute name="id" type="integer" use="required">
-			</attribute>
-		</complexType>
-	</element>
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:outage">
+          <annotation>
+            <documentation>A scheduled outage</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
 
+  <element name="outage">
+    <annotation>
+      <documentation>a scheduled outage</documentation>
+    </annotation>
+
+    <complexType>
+      <complexContent>
+        <extension base="typ:basicSchedule">
+          <sequence>
+            <element maxOccurs="unbounded" minOccurs="0" ref="this:interface">
+              <annotation>
+                <documentation>List of interfaces to which the outage
+                applies.</documentation>
+              </annotation>
+            </element>
+
+            <element maxOccurs="unbounded" minOccurs="0" ref="this:node">
+              <annotation>
+                <documentation>List of nodes to which the outage
+                applies.</documentation>
+              </annotation>
+            </element>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+
+  <element name="interface">
+    <annotation>
+      <documentation>Interface to which the outage applies.</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="address" use="required">
+        <annotation>
+          <documentation>IP address</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="^([01]?[0-9][0-9]?|2[0-4][0-9]|25[0-5])(\.([01]?[0-9][0-9]?|2[0-4][0-9]|25[0-5])){3}|(match-any)">
+              <annotation>
+                <documentation>Requires valid IP address.</documentation>
+              </annotation>
+            </pattern>
+          </restriction>
+        </simpleType>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="node">
+    <complexType>
+      <attribute name="id" type="integer" use="required"/>
+    </complexType>
+  </element>
 </schema>

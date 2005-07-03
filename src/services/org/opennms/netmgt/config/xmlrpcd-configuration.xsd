@@ -1,66 +1,130 @@
-<schema	xmlns="http://www.w3.org/2001/XMLSchema"
-	xmlns:this="http://xmlns.opennms.org/xsd/config/xmlrpcd"
-	targetNamespace="http://xmlns.opennms.org/xsd/config/xmlrpcd">
-	<element name="xmlrpcd-configuration">
-		<complexType>
-                        <sequence>
-                                <!-- Configuration of external XMLRPC servers -->
-                                <element ref="this:external-servers" minOccurs="1" maxOccurs="1"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/xmlrpcd"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/xmlrpcd"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <annotation>
+    <documentation>XML Schema for the xmlrpcd-configuration.xml configuration
+    file. Version: $Id$</documentation>
+  </annotation>
 
-                                <!-- Events subscribed by the external XMLRPC servers -->
-                                <element ref="this:subscription" minOccurs="1" maxOccurs="1"/>
-                        </sequence>
-                        
-			<!--- the max size of the event queue -->
-			<attribute name="max-event-queue-size" type="positiveInteger" use="optional"/>
-		</complexType>
-	</element>
-	
-        <!-- defines a main XMLRPC server and a set of backup XMLRPC servers -->
-        <element name="external-servers">
-		<complexType>
-                        <sequence>
-                                <!-- Configuration of xmlrpc server -->
-                                <element ref="this:xmlrpc-server" minOccurs="1" maxOccurs="unbounded"/>
-                        </sequence>
-                        
-			<!--- retries to set up communication with an XMLRPC server -->
-			<attribute name="retries" type="positiveInteger" use="required"/>
-			
-                        <!--- elapse time between retries -->
-			<attribute name="elapse-time" type="positiveInteger" use="required"/>
-		</complexType>
-	</element>
+  <element name="xmlrpcd-configuration">
+    <annotation>
+      <documentation>Top-level element for the xmlrpcd-configuration.xml
+      configuration file.</documentation>
+    </annotation>
 
-        <!-- subscription defines a set of events that an external XMLRPC server interested, and
-             need OpenNMS to give notification via XMLRPC protocol -->
-	<element name="subscription">
-		<complexType>
-                        <sequence>
-                                <!-- Events subscribed by the external XMLRPC servers -->
-                                <element ref="this:subscribed-event" minOccurs="1" maxOccurs="unbounded"/>
-                        </sequence>
-		</complexType>
-	</element>
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" ref="this:external-servers">
+          <annotation>
+            <documentation>Configuration of external XMLRPC
+            servers</documentation>
+          </annotation>
+        </element>
 
-        <!-- XMLRPC server information including hostname and port number -->
-	<element name="xmlrpc-server">
-		<complexType>
-                        
-			<!--- hostname of an XMLRPC server -->
-			<attribute name="hostname" type="string" use="required"/>
-			
-                        <!--- port number of an XMLRPC server -->
-			<attribute name="port" type="positiveInteger" use="required"/>
-		</complexType>
-	</element>
+        <element maxOccurs="1" minOccurs="1" ref="this:subscription">
+          <annotation>
+            <documentation>Events subscribed by the external XMLRPC
+            servers</documentation>
+          </annotation>
+        </element>
+      </sequence>
 
-        <!-- Event info -->
-	<element name="subscribed-event">
-		<complexType>
-                        
-			<!--- the uei of an event -->
-			<attribute name="uei" type="string" use="required"/>
-		</complexType>
-	</element>
+      <attribute name="max-event-queue-size" type="positiveInteger"
+                 use="optional">
+        <annotation>
+          <documentation>Maximum size of the event queue</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="external-servers">
+    <annotation>
+      <documentation>Defines a main XMLRPC server and a set of backup XMLRPC
+      servers</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:xmlrpc-server">
+          <annotation>
+            <documentation>Configuration of xmlrpc server</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute name="retries" type="positiveInteger" use="required">
+        <annotation>
+          <documentation>Retries to set up communication with an XMLRPC
+          server</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="elapse-time" type="positiveInteger" use="required">
+        <annotation>
+          <documentation>Elapsed time between retries</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="subscription">
+    <annotation>
+      <documentation>Subscription defines a set of events that an external
+      XMLRPC server interested, and need OpenNMS to give notification via
+      XMLRPC protocol</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1"
+                 ref="this:subscribed-event">
+          <annotation>
+            <documentation>Events subscribed by the external XMLRPC
+            servers</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="xmlrpc-server">
+    <annotation>
+      <documentation>XMLRPC server information including hostname and port
+      number</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="hostname" type="string" use="required">
+        <annotation>
+          <documentation>Hostname of an XMLRPC server</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="port" type="positiveInteger" use="required">
+        <annotation>
+          <documentation>Port number of an XMLRPC server</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="subscribed-event">
+    <annotation>
+      <documentation>Event info</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="uei" type="string" use="required">
+        <annotation>
+          <documentation>The UEI of an event</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
 </schema>

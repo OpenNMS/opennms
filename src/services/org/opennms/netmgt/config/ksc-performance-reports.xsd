@@ -1,36 +1,54 @@
-<?xml version="1.0"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema"
-	xmlns:this="http://xmlns.opennms.org/xsd/config/kscReports"
-	targetNamespace="http://xmlns.opennms.org/xsd/config/kscReports">
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/kscReports"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/kscReports"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <annotation>
+    <documentation>XML Schema for the ksc-performance-reports.xml
+    configuration file. Version: $Id$. </documentation>
+  </annotation>
 
-	<element name="ReportsList">
-		<complexType>
-                      <sequence>
-		           <element ref="this:Report" minOccurs="0" maxOccurs="unbounded"/>
-                      </sequence>
-		</complexType>
-	</element>
+  <element name="ReportsList">
+    <annotation>
+      <documentation>Top-level element for the ksc-performance-reports.xml
+      configuration file. </documentation>
+    </annotation>
 
-	<element name="Report">
-		<complexType>
-                    <sequence>
-			<element ref="this:Graph" minOccurs="0" maxOccurs="unbounded"/>
-		    </sequence>
-                    <attribute name="title" type="string" use="required"/>
-                    <attribute name="show_timespan_button" type="boolean" use="optional"/>
-                    <attribute name="show_graphtype_button" type="boolean" use="optional"/>
-		</complexType>
-	</element>
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:Report"/>
+      </sequence>
+    </complexType>
+  </element>
 
-        <element name="Graph">
-		<complexType>
-			<attribute name="title" type="string" use="required"/>
-			<attribute name="nodeId" type="string" use="required"/>
-			<attribute name="interfaceId" type="string" use="required"/>
-			<attribute name="timespan" type="string" use="required"/>
-			<attribute name="graphtype" type="string" use="required"/>
-		</complexType>
-	</element>
+  <element name="Report">
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:Graph"/>
+      </sequence>
 
+      <attribute name="title" type="string" use="required"/>
+
+      <attribute name="show_timespan_button" type="boolean" use="optional"/>
+
+      <attribute name="show_graphtype_button" type="boolean" use="optional"/>
+    </complexType>
+  </element>
+
+  <element name="Graph">
+    <complexType>
+      <attribute name="title" type="string" use="required"/>
+
+      <attribute name="nodeId" type="string" use="required"/>
+
+      <attribute name="interfaceId" type="string" use="required"/>
+
+      <attribute name="timespan" type="string" use="required"/>
+
+      <attribute name="graphtype" type="string" use="required"/>
+    </complexType>
+  </element>
 </schema>
-

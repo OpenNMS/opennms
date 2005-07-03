@@ -1,13 +1,36 @@
-<?xml version="1.0"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://xmlns.opennms.org/xsd/config/trapd">
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/trapd"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/trapd"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <annotation>
+    <documentation>XML Schema for the trapd-configuration.xml configuration
+    file. Version: $Id$</documentation>
+  </annotation>
 
-	<element name="trapd-configuration">
-		<complexType>
-			<!--- the port on which traps are listened to, default value is 162 -->
-			<attribute name="snmp-trap-port" type="positiveInteger" use="required"/>
-			<!--- whether traps from unknown devices should generate newSuspect events -->
-			<attribute name="new-suspect-on-trap" type="boolean" use="required"/>
-		</complexType>
-	</element>
+  <element name="trapd-configuration">
+    <annotation>
+      <documentation>Top-level element for the trapd-configuration.xml
+      configuration file.</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="snmp-trap-port" type="positiveInteger" use="required">
+        <annotation>
+          <documentation>The port on which trapd listens for SNMP traps. The
+          standard port is 162.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="new-suspect-on-trap" type="boolean" use="required">
+        <annotation>
+          <documentation>Whether traps from devices unknown to OpenNMS should
+          generate newSuspect events.</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
 </schema>

@@ -43,6 +43,7 @@ your distribution.
   <property name="build.rpm.dir" value="${build.dir}/rpm"/>
   <property name="build.filter.docs.dir" value="${build.dir}/docs.filter"/>
   <property name="build.api.dir" value="${build.docs.dir}/javadoc"/>
+  <property name="build.xsddoc.dir" value="${build.docs.dir}/xsddoc"/>
   <property name="build.classes.dir" value="${build.dir}/opennms/classes"/>
   <property name="build.tests.dir" value="${build.dir}/opennms/tests"/>
   <property name="build.jar.dir" value="${build.dir}/jar"/>
@@ -406,6 +407,12 @@ your distribution.
   <taskdef resource="net/sf/antcontrib/antlib.xml">
     <classpath>
       <pathelement location="${dev.lib.dir}/ant-contrib.jar"/>
+    </classpath>
+  </taskdef>
+
+  <taskdef classname="net.sf.xframe.xsddoc.Task" name="xsddoc">
+    <classpath>
+      <pathelement location="${dev.lib.dir}/xsddoc.jar"/>
     </classpath>
   </taskdef>
 
@@ -1524,7 +1531,7 @@ OpenNMS as part of the post-install.
  </target>
 
  <!-- DOCS targets -->
- <target name="docs" depends="javadoc.docs, html.docs, pdf.docs"
+ <target name="docs" depends="javadoc.docs, xsddoc.docs, html.docs, pdf.docs"
 	 description="Build javadoc and manuals"/>
  
  <target name="javadoc.docs" depends="prep,sources,javadoc.docs.uptodate"
@@ -1587,6 +1594,43 @@ OpenNMS as part of the post-install.
   </dependset>
   <condition property="javadoc.docs.uptodate">
    <available file="${build.api.dir}/index.html" type="file"/>
+  </condition>
+ </target>
+
+ <target name="xsddoc.docs" depends="prep,sources,xsddoc.docs.uptodate"
+	 unless="xsddoc.docs.uptodate">
+  <mkdir dir="${build.xsddoc.dir}"/>
+  <xsddoc out="${build.xsddoc.dir}"
+	  doctitle="XML Schema for OpenNMS"
+	  failonerror="true">
+    <fileset dir="${castor.xsd.dir}">
+      <include name="*.xsd"/>
+    </fileset>
+    <fileset dir="${castor.config.dir}">
+      <include name="types.xsd"/>
+    </fileset>
+    <fileset dir="${castor.config.dir}">
+      <include name="*.xsd"/>
+      <exclude name="types.xsd"/>
+    </fileset>
+  </xsddoc>
+ </target>
+
+ <target name="xsddoc.docs.uptodate" depends="prep,sources">
+  <dependset>
+   <srcfileset dir="${castor.xsd.dir}">
+    <include name="**/*.xsd"/>
+   </srcfileset>
+   <srcfileset dir="${castor.config.dir}">
+    <include name="**/*.xsd"/>
+   </srcfileset>
+   <targetfileset dir="${build.xsddoc.dir}">
+    <include name="**/*.html"/>
+    <include name="stylesheet.css"/>
+   </targetfileset>
+  </dependset>
+  <condition property="xsddoc.docs.uptodate">
+   <available file="${build.xsddoc.dir}/index.html" type="file"/>
   </condition>
  </target>
 

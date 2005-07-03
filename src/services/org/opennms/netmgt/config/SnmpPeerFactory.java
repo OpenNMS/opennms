@@ -61,9 +61,9 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.config.capsd.Definition;
-import org.opennms.netmgt.config.capsd.Range;
-import org.opennms.netmgt.config.capsd.SnmpConfig;
+import org.opennms.netmgt.config.common.Range;
+import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.protocols.ip.IPv4Address;
 

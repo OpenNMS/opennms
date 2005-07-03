@@ -1,30 +1,76 @@
-<schema xmlns="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://xmlns.opennms.org/xsd/config/eventd">
-	<element name="EventdConfiguration">
- 		<complexType>
-			<!--- the port on which eventd listens for TCP connections -->
-  			<attribute name="TCPPort" type="positiveInteger" use="required"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/eventd"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/eventd"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <annotation>
+    <documentation>XML Schema for the eventd-configuration.xml configuration
+    file. Version: $Id$. </documentation>
+  </annotation>
 
-			<!--- the port on which eventd listens for UDP data -->
-  			<attribute name="UDPPort" type="positiveInteger" use="required"/>
+  <element name="EventdConfiguration">
+    <annotation>
+      <documentation>Top-level element for the eventd-configuration.xml
+      configuration file. </documentation>
+    </annotation>
 
-			<!--- the max number of threads reading and processing the events -->
-  			<attribute name="receivers" type="positiveInteger" use="required"/>
+    <complexType>
+      <attribute name="TCPPort" type="positiveInteger" use="required">
+        <annotation>
+          <documentation>The port on which eventd listens for TCP connections.
+          The standard port is 5817.</documentation>
+        </annotation>
+      </attribute>
 
-			<!--- the query to get next value of the 'nodeNxtId' database sequence - to make the access database independant -->
-  			<attribute name="getNextEventID" type="string" use="required"/>
-  			
-  			<!-- query to get the next sequence for the alarms table serial number -->
-  			<attribute name="getNextAlarmID" type="string" use="required"/>
+      <attribute name="UDPPort" type="positiveInteger" use="required">
+        <annotation>
+          <documentation>The port on which eventd listens for UDP data. The
+          standard port is 5817.</documentation>
+        </annotation>
+      </attribute>
 
-			<!--- the next two attributes are related to socket communication. In Linux,
-			      the close() system call is not preemptive. Setting the 'socketSoTimeoutRequired'
-			      to 'yes', causes the 'socketSoTimeoutPeriod' to be set on sockets to mimic
-			      non-blocking socket I/O
-			-->
-  			<attribute name="socketSoTimeoutRequired" type="string" use="required"/>
-  			<attribute name="socketSoTimeoutPeriod" type="positiveInteger" use="optional"/>
- 		</complexType>
-	</element>
+      <attribute name="receivers" type="positiveInteger" use="required">
+        <annotation>
+          <documentation>The maximum number of threads used for reading and
+          processing of incoming events.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="getNextEventID" type="string" use="required">
+        <annotation>
+          <documentation>SQL query to get next value of the 'nodeNxtId'
+          database sequence. This is used to make the access database
+          independant.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="getNextAlarmID" type="string" use="required">
+        <annotation>
+          <documentation>SQL query to get the next sequence for the alarms
+          table serial number.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="socketSoTimeoutRequired" type="string" use="required">
+        <annotation>
+          <documentation>Set the socket timeout value. In Linux, the close()
+          system call is not preemptive. Setting this attribute to to 'yes'
+          causes the socketSoTimeoutPeriod attribute to be set on sockets to
+          mimic non-blocking socket I/O.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="socketSoTimeoutPeriod" type="positiveInteger"
+                 use="optional">
+        <annotation>
+          <documentation>Socket timeout, in milliseconds. This is only set on
+          eventd's sockets if socketSoTimeoutRequired is set to
+          'yes'.</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
 </schema>
-

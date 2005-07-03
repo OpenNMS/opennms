@@ -59,12 +59,13 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.collectd.MibObject;
-import org.opennms.netmgt.config.collectd.DatacollectionConfig;
-import org.opennms.netmgt.config.collectd.Group;
-import org.opennms.netmgt.config.collectd.Groups;
-import org.opennms.netmgt.config.collectd.MibObj;
-import org.opennms.netmgt.config.collectd.SystemDef;
-import org.opennms.netmgt.config.collectd.SystemDefChoice;
+import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
+import org.opennms.netmgt.config.datacollection.Group;
+import org.opennms.netmgt.config.datacollection.Groups;
+import org.opennms.netmgt.config.datacollection.MibObj;
+import org.opennms.netmgt.config.datacollection.SnmpCollection;
+import org.opennms.netmgt.config.datacollection.SystemDef;
+import org.opennms.netmgt.config.datacollection.SystemDefChoice;
 
 /**
  * This class is the main respository for SNMP data collection configuration
@@ -147,7 +148,7 @@ public final class DataCollectionConfigFactory {
         java.util.Collection collections = m_config.getSnmpCollectionCollection();
         Iterator citer = collections.iterator();
         while (citer.hasNext()) {
-            org.opennms.netmgt.config.collectd.SnmpCollection collection = (org.opennms.netmgt.config.collectd.SnmpCollection) citer.next();
+            SnmpCollection collection = (SnmpCollection) citer.next();
 
             // Build group map for this collection
             Map groupMap = new HashMap();
@@ -274,7 +275,7 @@ public final class DataCollectionConfigFactory {
 
         // Retrieve the appropriate Collection object
         // 
-        org.opennms.netmgt.config.collectd.SnmpCollection collection = (org.opennms.netmgt.config.collectd.SnmpCollection) m_collectionMap.get(cName);
+        SnmpCollection collection = (SnmpCollection) m_collectionMap.get(cName);
         if (collection == null) {
             return new ArrayList();
         }
@@ -617,7 +618,7 @@ public final class DataCollectionConfigFactory {
      * @return RRD step size for the specified collection
      */
     public int getStep(String cName) {
-        org.opennms.netmgt.config.collectd.SnmpCollection collection = (org.opennms.netmgt.config.collectd.SnmpCollection) m_collectionMap.get(cName);
+        SnmpCollection collection = (SnmpCollection) m_collectionMap.get(cName);
         if (collection != null)
             return collection.getRrd().getStep();
         else
@@ -633,7 +634,7 @@ public final class DataCollectionConfigFactory {
      * @return list of RRA strings.
      */
     public List getRRAList(String cName) {
-        org.opennms.netmgt.config.collectd.SnmpCollection collection = (org.opennms.netmgt.config.collectd.SnmpCollection) m_collectionMap.get(cName);
+        SnmpCollection collection = (SnmpCollection) m_collectionMap.get(cName);
         if (collection != null)
             return (List) collection.getRrd().getRraCollection();
         else
@@ -650,7 +651,7 @@ public final class DataCollectionConfigFactory {
      * @return SNMP storage flag
      */
     public String getSnmpStorageFlag(String cName) {
-        org.opennms.netmgt.config.collectd.SnmpCollection collection = (org.opennms.netmgt.config.collectd.SnmpCollection) m_collectionMap.get(cName);
+        SnmpCollection collection = (SnmpCollection) m_collectionMap.get(cName);
         if (collection != null)
             return collection.getSnmpStorageFlag();
         else
@@ -667,7 +668,7 @@ public final class DataCollectionConfigFactory {
      * @return max number of variables per pdu or -1 upon error
      */
     public int getMaxVarsPerPdu(String cName) {
-        org.opennms.netmgt.config.collectd.SnmpCollection collection = (org.opennms.netmgt.config.collectd.SnmpCollection) m_collectionMap.get(cName);
+        SnmpCollection collection = (SnmpCollection) m_collectionMap.get(cName);
         if (collection != null)
             return collection.getMaxVarsPerPdu();
         else

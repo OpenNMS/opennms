@@ -1,26 +1,43 @@
-<?xml version="1.0"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema"
-	xmlns:this="http://xmlns.opennms.org/xsd/config/vmmgr"
-  targetNamespace="http://xmlns.opennms.org/xsd/config/vmmgr">
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/vmmgr"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/vmmgr"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <annotation>
+    <documentation>XML Schema for the service-configuration.xml configuration
+    file. Version: $Id$</documentation>
+  </annotation>
 
   <element name="service-configuration">
+    <annotation>
+      <documentation>Top-level element for the service-configuration.xml
+      configuration file.</documentation>
+    </annotation>
+
     <complexType>
       <sequence>
-        <element ref="this:service" minOccurs="1" maxOccurs="unbounded"/>
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:service"/>
       </sequence>
     </complexType>
   </element>
 
-  <!--
-     - service to be launched by the manager
-   -->
   <element name="service">
+    <annotation>
+      <documentation>Service to be launched by the manager.</documentation>
+    </annotation>
+
     <complexType>
       <sequence>
-        <element name="name" type="string" minOccurs="1" maxOccurs="1"/>
-        <element name="class-name" type="string" minOccurs="1" maxOccurs="1"/>
-        <element ref="this:attribute" minOccurs="0" maxOccurs="unbounded"/>
-        <element ref="this:invoke" minOccurs="0" maxOccurs="unbounded"/>
+        <element maxOccurs="1" minOccurs="1" name="name" type="string"/>
+
+        <element maxOccurs="1" minOccurs="1" name="class-name" type="string"/>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:attribute"/>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:invoke"/>
       </sequence>
     </complexType>
   </element>
@@ -28,8 +45,9 @@
   <element name="attribute">
     <complexType>
       <sequence>
-        <element name="name" type="string" minOccurs="1" maxOccurs="1"/>
-        <element ref="this:value" minOccurs="1" maxOccurs="1"/>
+        <element maxOccurs="1" minOccurs="1" name="name" type="string"/>
+
+        <element maxOccurs="1" minOccurs="1" ref="this:value"/>
       </sequence>
     </complexType>
   </element>
@@ -47,11 +65,14 @@
   <element name="invoke">
     <complexType>
       <sequence>
-        <element ref="this:argument" minOccurs="0" maxOccurs="unbounded"/>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:argument"/>
       </sequence>
+
       <attribute name="method" type="string" use="required"/>
-      <attribute name="pass" type="int" use="optional" default="0"/>
-      <attribute name="at" use="optional" default="start">
+
+      <attribute default="0" name="pass" type="int" use="optional"/>
+
+      <attribute default="start" name="at" use="optional">
         <simpleType>
           <restriction base="string">
             <pattern value="(start|stop|status)"/>
@@ -70,9 +91,4 @@
       </simpleContent>
     </complexType>
   </element>
-
 </schema>
-<!--
-  - vim:expandtab:ts=2:shiftwidth=2
- -->
-

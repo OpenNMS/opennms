@@ -1,79 +1,102 @@
-<?xml version="1.0"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema"
-	xmlns:this="http://xmlns.opennms.org/xsd/config/filter"
-	targetNamespace="http://xmlns.opennms.org/xsd/config/filter">
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/filter"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/filter"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <annotation>
+    <documentation>XML Schema for the database-schema.xml configuration file.
+    Version: $Id$. </documentation>
+  </annotation>
 
-	<element name="database-schema">
-		<complexType>
-			<sequence>
-				<element ref="this:table" minOccurs="0" maxOccurs="unbounded"/>
-			</sequence>
-		</complexType>
-	</element>
+  <element name="database-schema">
+    <annotation>
+      <documentation>Top-level element for the database-schema.xml
+      configuration file.</documentation>
+    </annotation>
 
-	<element name="table">
-		<complexType>
-			<sequence>
-				<element ref="this:column" minOccurs="1" maxOccurs="unbounded"/>
-				<element ref="this:join" minOccurs="0" maxOccurs="unbounded"/>
-			</sequence>
-			<attribute name="visable" use="optional" default="true">
-				<simpleType>
-					<restriction base="string">
-						<pattern value="(true|false)"/>
-					</restriction>
-				</simpleType>
-			</attribute>
-			<attribute name="name" use="required" type="string"/>
-			<attribute name="key" use="optional" default="secondary">
-				<simpleType>
-					<restriction base="string">
-						<pattern value="(primary|secondary)"/>
-					</restriction>
-				</simpleType>
-			</attribute>
-		</complexType>
-	</element>
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:table"/>
+      </sequence>
+    </complexType>
+  </element>
 
-	<element name="column">
-		<complexType>
-			<sequence>
-				<element ref="this:alias" minOccurs="0" maxOccurs="unbounded"/>
-				<element ref="this:constraint" minOccurs="0" maxOccurs="unbounded"/>
-			</sequence>
-			<attribute name="name" type="string" use="required"/>
-			<attribute name="sql-type" type="string" use="optional"/>
-			<attribute name="java-type" type="string" use="optional"/>
-			<attribute name="visable" use="optional" default="true">
-				<simpleType>
-					<restriction base="string">
-						<pattern value="(true|false)"/>
-					</restriction>
-				</simpleType>
-			</attribute>
-		</complexType>
-	</element>
+  <element name="table">
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:column"/>
 
-	<element name="alias">
-		<complexType>
-			<attribute name="name" type="string" use="required"/>
-			<attribute name="value" type="string" use="required"/>
-		</complexType>
-	</element>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:join"/>
+      </sequence>
 
-	<element name="constraint">
-		<complexType>
-			<attribute name="sql" type="string" use="required"/>
-		</complexType>
-	</element>
+      <attribute default="true" name="visable" use="optional">
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(true|false)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
 
-	<element name="join">
-		<complexType>
-			<attribute name="column" type="string" use="required"/>
-			<attribute name="table" type="string" use="required"/>
-			<attribute name="table-column" type="string" use="required"/>
-		</complexType>
-	</element>
+      <attribute name="name" type="string" use="required"/>
 
+      <attribute default="secondary" name="key" use="optional">
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(primary|secondary)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="column">
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:alias"/>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:constraint"/>
+      </sequence>
+
+      <attribute name="name" type="string" use="required"/>
+
+      <attribute name="sql-type" type="string" use="optional"/>
+
+      <attribute name="java-type" type="string" use="optional"/>
+
+      <attribute default="true" name="visable" use="optional">
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(true|false)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="alias">
+    <complexType>
+      <attribute name="name" type="string" use="required"/>
+
+      <attribute name="value" type="string" use="required"/>
+    </complexType>
+  </element>
+
+  <element name="constraint">
+    <complexType>
+      <attribute name="sql" type="string" use="required"/>
+    </complexType>
+  </element>
+
+  <element name="join">
+    <complexType>
+      <attribute name="column" type="string" use="required"/>
+
+      <attribute name="table" type="string" use="required"/>
+
+      <attribute name="table-column" type="string" use="required"/>
+    </complexType>
+  </element>
 </schema>
-
