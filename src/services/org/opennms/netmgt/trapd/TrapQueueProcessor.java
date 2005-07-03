@@ -350,31 +350,27 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 
 		// time-stamp
 		long timeVal;
-		switch (pdu.getVarBindAt(SNMP_SYSUPTIME_OID_INDEX).getValue()
-				.typeId()) {
+		switch (pdu.getVarBindAt(SNMP_SYSUPTIME_OID_INDEX).getValue().typeId()) {
 		case SnmpSMI.SMI_TIMETICKS:
 				timeVal = ((SnmpTimeTicks) pdu.getVarBindAt(
 						SNMP_SYSUPTIME_OID_INDEX).getValue()).getValue();
-			log
-					.debug("V2 trap first varbind value is of type TIMETICKS (correct)");
+			log.debug("V2 trap first varbind value is of type TIMETICKS (correct)");
 			break;
 		case SnmpSMI.SMI_INTEGER:
 			timeVal = ((SnmpInt32) pdu.getVarBindAt(
 					SNMP_SYSUPTIME_OID_INDEX).getValue()).getValue();
-			log
-					.debug("V2 trap first varbind value is of type INTEGER, casting to TIMETICKS");
+			log.debug("V2 trap first varbind value is of type INTEGER, casting to TIMETICKS");
 			break;
 		default:
-			log
-					.info("V2 trap does not have the required first varbind as TIMETICKS - cannot process trap");
+			log.info("V2 trap does not have the required first varbind as TIMETICKS - cannot process trap");
 			return;
 		}
 
 		snmpInfo.setTimeStamp(timeVal);
 
 		// Get the value for the snmpTrapOID
-		SnmpObjectId snmpTrapOid = (SnmpObjectId) pdu.getVarBindAt(
-				SNMP_TRAP_OID_INDEX).getValue();
+		SnmpObjectId snmpTrapOid = (SnmpObjectId)
+			pdu.getVarBindAt(SNMP_TRAP_OID_INDEX).getValue();
 		String snmpTrapOidValue = snmpTrapOid.toString();
 
 		// Force leading "." (dot) if not present
