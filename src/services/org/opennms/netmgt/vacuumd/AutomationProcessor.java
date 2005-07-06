@@ -359,6 +359,7 @@ public class AutomationProcessor implements ReadyRunnable {
     }
 
     private String getTriggerSQL(Automation auto) {
+        // FIXME: This throws an exception for an automation with no trigger
         return VacuumdConfigFactory.getInstance().getTrigger(auto.getTriggerName()).getStatement().getContent();
     }
 
