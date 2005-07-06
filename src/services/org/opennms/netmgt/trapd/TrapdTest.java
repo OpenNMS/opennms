@@ -4,10 +4,8 @@
 
 package org.opennms.netmgt.trapd;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.net.UnknownHostException;
 
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.TrapdConfigFactory;
@@ -22,7 +20,6 @@ import org.snmp4j.Snmp;
 import org.snmp4j.Target;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.smi.Address;
 import org.snmp4j.smi.IpAddress;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.UdpAddress;
@@ -49,12 +46,13 @@ public class TrapdTest extends OpenNMSTestCase {
 	public void tearDown() throws Exception {
 		m_trapd.stop();
 		m_trapd = null;
+        super.tearDown();
 	}
 
-	public void testSnmpV1TrapSend() throws UnknownHostException, IOException {
+	public void testSnmpV1TrapSend() throws Exception {
 
 
-        Address address = new UdpAddress(myLocalHost()+"/"+m_port);
+        UdpAddress address = new UdpAddress(myLocalHost()+"/"+m_port);
         TransportMapping transport = new DefaultUdpTransportMapping();
         
         Target target = new CommunityTarget();
@@ -64,7 +62,7 @@ public class TrapdTest extends OpenNMSTestCase {
         target.setVersion(SnmpConstants.version1);
         
         Snmp snmp = new Snmp(transport);
-        snmp.listen();
+        //snmp.listen();
 
         PDUv1 trapPdu = new PDUv1();
         trapPdu.setType(PDU.V1TRAP);
@@ -72,7 +70,8 @@ public class TrapdTest extends OpenNMSTestCase {
         trapPdu.setEnterprise(eOID);
         trapPdu.setGenericTrap(1);
         trapPdu.setSpecificTrap(0);
-        trapPdu.setAgentAddress((IpAddress)address);
+        trapPdu.setAgentAddress(new IpAddress(address.getInetAddress()));
+        System.err.println(trapPdu.getBERLength());
         
         Event e = new Event();
         e.setUei("uei.opennms.org/default/trap");
@@ -91,6 +90,7 @@ public class TrapdTest extends OpenNMSTestCase {
         snmp.send(trapPdu, target);
         
         assertEquals(1, ea.waitForAnticipated(1000).size());
+        Thread.sleep(2000);
         assertEquals(0, ea.unanticipatedEvents().size());
 
 	}

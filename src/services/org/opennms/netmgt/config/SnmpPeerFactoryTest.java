@@ -33,6 +33,8 @@
 
 package org.opennms.netmgt.config;
 
+import java.io.Reader;
+import java.io.StringReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -43,14 +45,14 @@ public class SnmpPeerFactoryTest extends OpenNMSTestCase {
 
     protected void setUp() throws Exception {
         super.setVersion(SnmpAgentConfig.VERSION2C);
-        super.setUp();
-        m_runSupers = false;
-    }
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
+        Reader rdr = new StringReader(getSnmpConfig());
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
     }
     
+    protected void tearDown() {
+        
+    }
+
     public void testCountChar() {
         assertEquals(2, SnmpPeerFactory.countChar('-', "test-this-please"));
         assertEquals(3, SnmpPeerFactory.countChar('-', "test-this-please-"));

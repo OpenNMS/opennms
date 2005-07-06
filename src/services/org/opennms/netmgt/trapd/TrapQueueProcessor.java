@@ -46,7 +46,6 @@ package org.opennms.netmgt.trapd;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 
 import org.apache.log4j.Category;
 import org.opennms.core.fiber.PausableFiber;
@@ -57,11 +56,8 @@ import org.opennms.netmgt.eventd.EventConfigurationManager;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
-import org.opennms.protocols.ip.IPv4Address;
 import org.opennms.protocols.snmp.SnmpCounter32;
 import org.opennms.protocols.snmp.SnmpCounter64;
 import org.opennms.protocols.snmp.SnmpGauge32;
@@ -71,9 +67,6 @@ import org.opennms.protocols.snmp.SnmpNull;
 import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpOpaque;
-import org.opennms.protocols.snmp.SnmpPduPacket;
-import org.opennms.protocols.snmp.SnmpPduTrap;
-import org.opennms.protocols.snmp.SnmpSMI;
 import org.opennms.protocols.snmp.SnmpSyntax;
 import org.opennms.protocols.snmp.SnmpTimeTicks;
 
@@ -93,53 +86,28 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 	/**
 	 * The sysUpTimeOID, which should be the first varbind in a V2 trap
 	 */
-	private static final String SNMP_SYSUPTIME_OID = ".1.3.6.1.2.1.1.3.0";
+	static final String SNMP_SYSUPTIME_OID = ".1.3.6.1.2.1.1.3.0";
 
 	/**
 	 * The sysUpTimeOID, which should be the first varbind in a V2 trap, but in
 	 * the case of Extreme Networks only mostly
 	 */
-	private static final String EXTREME_SNMP_SYSUPTIME_OID = ".1.3.6.1.2.1.1.3";
+	static final String EXTREME_SNMP_SYSUPTIME_OID = ".1.3.6.1.2.1.1.3";
 
 	/**
 	 * The snmpTrapOID, which should be the second varbind in a V2 trap
 	 */
-	private static final String SNMP_TRAP_OID = ".1.3.6.1.6.3.1.1.4.1.0";
-
-	/**
-	 * The snmp trap enterprise OID, which if present in a V2 trap is the last
-	 * varbind.
-	 * 
-	 * ref - book 'SNMP, SNMPv2, SNMPv3..' by William Stallings, third edition,
-	 * section 13.1.3
-	 */
-	private static final String SNMP_TRAP_ENTERPRISE_ID = ".1.3.6.1.6.3.1.1.4.3.0";
-
-	/**
-	 * The snmpTraps value to be used in case a standard trap comes in without
-	 * the SNMP_TRAP_ENTERPRISE_ID as the last varbind.
-	 */
-	private static final String SNMP_TRAPS = ".1.3.6.1.6.3.1.1.5";
-
-	/**
-	 * The standard traps list
-	 */
-	private static final ArrayList GENERIC_TRAPS;
+	static final String SNMP_TRAP_OID = ".1.3.6.1.6.3.1.1.4.1.0";
 
 	/**
 	 * The snmp sysUpTime OID is the first varbind
 	 */
-	private static final int SNMP_SYSUPTIME_OID_INDEX = 0;
+	static final int SNMP_SYSUPTIME_OID_INDEX = 0;
 
 	/**
 	 * The snmp trap OID is the second varbind
 	 */
-	private static final int SNMP_TRAP_OID_INDEX = 1;
-
-	/**
-	 * The dot separator in an OID
-	 */
-	private static final char DOT_CHAR = '.';
+	static final int SNMP_TRAP_OID_INDEX = 1;
 
 	/**
 	 * The input queue
@@ -172,18 +140,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 	
 	private SyntaxToEvent[] m_syntaxToEvents;
 	
-	/**
-	 * Create the standard traps list - used in v2 processing
-	 */
-	static {
-		GENERIC_TRAPS = new ArrayList();
-		GENERIC_TRAPS.add(new SnmpObjectId("1.3.6.1.6.3.1.1.5.1")); // coldStart
-		GENERIC_TRAPS.add(new SnmpObjectId("1.3.6.1.6.3.1.1.5.2")); // warmStart
-		GENERIC_TRAPS.add(new SnmpObjectId("1.3.6.1.6.3.1.1.5.3")); // linkDown
-		GENERIC_TRAPS.add(new SnmpObjectId("1.3.6.1.6.3.1.1.5.4")); // linkUp
-		GENERIC_TRAPS.add(new SnmpObjectId("1.3.6.1.6.3.1.1.5.5")); // authenticationFailure
-		GENERIC_TRAPS.add(new SnmpObjectId("1.3.6.1.6.3.1.1.5.6")); // egpNeighborLoss
-	}
+    
 	
 	/**
 	 * Process a V2 trap and convert it to an event for transmission.
@@ -255,310 +212,24 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 	 * @param info
 	 *            V2 trap
 	 */
-	private void process(V2TrapInformation info) {
-		Category log = ThreadCategory.getInstance(getClass());
-
-		SnmpPduPacket pdu = info.getPdu();
-		InetAddress agent = info.getAgent();
-
-		//
-		// verify the type
-		//
-		if (pdu.typeId() != (byte) (SnmpPduPacket.V2TRAP)) {
-			// if not V2 trap, do nothing
-			log.warn("Received not SNMPv2 Trap from host "
-					+ agent.getHostAddress());
-			log.warn("PDU Type = " + pdu.getCommand());
-			return;
-		}
-
-		//
-		// get the address converted
-		//
-		IPv4Address addr = new IPv4Address(agent);
-		String trapInterface = addr.toString();
-
-		Event event = new Event();
-		event.setSource("trapd");
-		event.setHost(trapInterface);
-		event.setSnmphost(trapInterface);
-		event.setInterface(trapInterface);
-		event.setTime(org.opennms.netmgt.EventConstants
-				.formatToString(new java.util.Date()));
-
-		String ipNodeId = TrapdIPMgr.getNodeId(trapInterface);
-
-		if (ipNodeId != null) {
-			int intNodeId = Integer.parseInt(ipNodeId);
-			event.setNodeid((long) intNodeId);
-		}
-
-		if (log.isDebugEnabled()) {
-			log.debug("V2 trap - trapInterface: " + trapInterface);
-		}
-
-		//
-		// set the information
-		//
-		int numVars = pdu.getLength();
-		if (log.isDebugEnabled()) {
-			log.debug("V2 trap numVars or pdu length: " + numVars);
-		}
-		
-		if (numVars < 2) // check number of varbinds
-		{
-			log.info("V2 trap from " + trapInterface + 
-					" IGNORED due to not having the required varbinds.  Have " +
-					numVars + ", needed 2");
-			return;
-		}
-		
-		//
-		// The first varbind has the sysUpTime
-		// Modify the sysUpTime varbind to add the trailing 0 if it is
-		// missing
-		// The second varbind has the snmpTrapOID
-		// Confirm that these two are present
-		//
-		String varBindName0 = pdu.getVarBindAt(0).getName().toString();
-		String varBindName1 = pdu.getVarBindAt(1).getName().toString();
-		if (varBindName0.equals(EXTREME_SNMP_SYSUPTIME_OID)) {
-			log
-					.info("V2 trap from "
-							+ trapInterface
-							+ " has been corrected due to the sysUptime.0 varbind not having been sent with a trailing 0.\n\tVarbinds received are : "
-							+ varBindName0 + " and " + varBindName1);
-			varBindName0 = SNMP_SYSUPTIME_OID;
-		}
-
-		if ((!(varBindName0.equals(SNMP_SYSUPTIME_OID)))
-				|| (!(varBindName1.equals(SNMP_TRAP_OID)))) {
-			log
-					.info("V2 trap from "
-							+ trapInterface
-							+ " IGNORED due to not having the required varbinds.\n\tThe first varbind must be sysUpTime.0 and the second snmpTrapOID.0\n\tVarbinds received are : "
-							+ varBindName0 + " and " + varBindName1);
-			return;
-		}
-
-		Snmp snmpInfo = new Snmp();
-
-		if (log.isDebugEnabled()) {
-			log.debug("V2 trap first varbind value: "
-					+ pdu.getVarBindAt(0).getValue().toString());
-		}
-
-		// time-stamp
-		long timeVal;
-		switch (pdu.getVarBindAt(SNMP_SYSUPTIME_OID_INDEX).getValue().typeId()) {
-		case SnmpSMI.SMI_TIMETICKS:
-				timeVal = ((SnmpTimeTicks) pdu.getVarBindAt(
-						SNMP_SYSUPTIME_OID_INDEX).getValue()).getValue();
-			log.debug("V2 trap first varbind value is of type TIMETICKS (correct)");
-			break;
-		case SnmpSMI.SMI_INTEGER:
-			timeVal = ((SnmpInt32) pdu.getVarBindAt(
-					SNMP_SYSUPTIME_OID_INDEX).getValue()).getValue();
-			log.debug("V2 trap first varbind value is of type INTEGER, casting to TIMETICKS");
-			break;
-		default:
-			log.info("V2 trap does not have the required first varbind as TIMETICKS - cannot process trap");
-			return;
-		}
-
-		snmpInfo.setTimeStamp(timeVal);
-
-		// Get the value for the snmpTrapOID
-		SnmpObjectId snmpTrapOid = (SnmpObjectId)
-			pdu.getVarBindAt(SNMP_TRAP_OID_INDEX).getValue();
-		String snmpTrapOidValue = snmpTrapOid.toString();
-
-		// Force leading "." (dot) if not present
-		if (!snmpTrapOidValue.startsWith(".")) {
-			snmpTrapOidValue = "." + snmpTrapOidValue;
-		}
-
-		if (log.isDebugEnabled()) {
-			log.debug("snmpTrapOID: " + snmpTrapOidValue);
-		}
-
-		// get the last subid
-		int length = snmpTrapOidValue.length();
-		int lastIndex = snmpTrapOidValue.lastIndexOf(DOT_CHAR);
-
-		String lastSubIdStr = snmpTrapOidValue.substring(lastIndex + 1);
-		int lastSubId = -1;
-		try {
-			lastSubId = Integer.parseInt(lastSubIdStr);
-		} catch (NumberFormatException nfe) {
-			lastSubId = -1;
-		}
-
-		// Check if standard trap
-		if (GENERIC_TRAPS.contains(snmpTrapOid)) {
-			// set generic
-			snmpInfo.setGeneric(lastSubId - 1);
-
-			// set specific to zero
-			snmpInfo.setSpecific(0);
-
-			// if present, the 'snmpTrapEnterprise' OID occurs as
-			// the last OID
-			// Check the last varbind to see if it is the enterprise ID
-			String varBindName = pdu.getVarBindAt(numVars - 1).getName()
-					.toString();
-			if (varBindName.equals(SNMP_TRAP_ENTERPRISE_ID)) {
-				// if present, set the value of the varbind as the
-				// enterprise id
-				snmpInfo.setId(pdu.getVarBindAt(numVars - 1).getValue()
-						.toString());
-			} else {
-				// if not present, set the value of the varbind as the
-				// snmpTraps value defined as in RFC 1907
-				snmpInfo.setId(SNMP_TRAPS
-						+ "."
-						+ snmpTrapOidValue
-								.charAt(snmpTrapOidValue.length() - 1));
-			}
-
-		} else // not standard trap
-		{
-			// set generic to 6
-			snmpInfo.setGeneric(6);
-
-			// set specific to lastsubid
-			snmpInfo.setSpecific(lastSubId);
-
-			// get the next to last subid
-			int nextToLastIndex = snmpTrapOidValue.lastIndexOf(DOT_CHAR,
-					lastIndex - 1);
-			// check if value is zero
-			String nextToLastSubIdStr = snmpTrapOidValue.substring(
-					nextToLastIndex + 1, lastIndex);
-			if (nextToLastSubIdStr.equals("0")) {
-				// set enterprise value to trap oid minus the
-				// the last two subids
-				snmpInfo.setId(snmpTrapOidValue.substring(0,
-						nextToLastIndex));
-			} else {
-				snmpInfo.setId(snmpTrapOidValue.substring(0, lastIndex));
-			}
-		}
-
-		if (log.isDebugEnabled()) {
-			log.debug("snmp specific/generic/eid: "
-					+ snmpInfo.getSpecific() + "/" + snmpInfo.getGeneric()
-					+ "/" + snmpInfo.getId());
-		}
-
-		// version
-		snmpInfo.setVersion("v2");
-
-		// community
-		snmpInfo.setCommunity(new String(info.getCommunity().getString()));
-
-		event.setSnmp(snmpInfo);
-
-		Parms parms = new Parms();
-
-		for (int i = 0; i < pdu.getLength(); i++) {
-			String name = pdu.getVarBindAt(i).getName().toString();
-			SnmpSyntax obj = pdu.getVarBindAt(i).getValue();
-
-			parms.addParm(processSyntax(name, obj));
-		} // end for loop
-
-		event.setParms(parms);
-
-		processTrapEvent(event, trapInterface, ipNodeId);
+	private void process(TrapInformation info) {
+        
+        try {
+            Event event = info.getEventForTrap(this);
+            processTrapEvent(event, info.getTrapInterface(), info.getNodeId(info.getTrapInterface()));
+        } catch (IllegalArgumentException e) {
+            log().info(e.getMessage());
+        }
 	}
+    
 
-	/**
-	 * Process a V1 trap and convert it to an event. Once the event is
-	 * formatted, send it to eventd.
-	 * 
-	 * @param info
-	 *            V1 trap
-	 */
-	private void process(V1TrapInformation info) {
-		Category log = ThreadCategory.getInstance(getClass());
 
-		SnmpPduTrap pdu = info.getPdu();
-		InetAddress agent = info.getAgent();
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 
-		IPv4Address addr = new IPv4Address(agent);
-		// XXX Why do we get the trapInterface from the PDU here, whereas for V2, we get it from
-		// the agent address?
-		String trapInterface = pdu.getAgentAddress().toString();
-		// I've changed it to match the way that we do things in V2 so that my test for V1 succeeds.
-		//String trapInterface = addr.toString();
-
-		Event event = new Event();
-		event.setSource("trapd");
-		event.setHost(addr.toString());
-		event.setSnmphost(trapInterface);
-		event.setInterface(trapInterface);
-		event.setTime(org.opennms.netmgt.EventConstants
-				.formatToString(new java.util.Date()));
-
-		String ipNodeId = TrapdIPMgr.getNodeId(trapInterface);
-
-		if (ipNodeId != null) {
-			int intNodeId = Integer.parseInt(ipNodeId);
-			event.setNodeid((long) intNodeId);
-		}
-
-		if (log.isDebugEnabled()) {
-			log.debug("V1 trap - trapInterface: " + trapInterface);
-		}
-
-		//
-		// set the snmp information
-		//
-		Snmp snmpInfo = new Snmp();
-
-		// id
-		// 
-		// NOTE: Force leading "." (dot) on all id's
-		String entId = pdu.getEnterprise().toString();
-		if (!entId.startsWith(".")) {
-			entId = "." + entId;
-		}
-		snmpInfo.setId(entId);
-
-		// version
-		snmpInfo.setVersion("v1");
-
-		// specific
-		snmpInfo.setSpecific(pdu.getSpecific());
-
-		// generic
-		snmpInfo.setGeneric(pdu.getGeneric());
-
-		// community
-		snmpInfo.setCommunity(new String(info.getCommunity().getString()));
-
-		// time-stamp
-		snmpInfo.setTimeStamp(pdu.getTimeStamp());
-
-		event.setSnmp(snmpInfo);
-
-		Parms parms = new Parms();
-
-		for (int i = 0; i < pdu.getLength(); i++) {
-			String name = pdu.getVarBindAt(i).getName().toString();
-			SnmpSyntax obj = pdu.getVarBindAt(i).getValue();
-
-			parms.addParm(processSyntax(name, obj));
-		} // end for loop
-
-		event.setParms(parms);
-		
-		processTrapEvent(event, trapInterface, ipNodeId);
-	}
-	
-	public Parm processSyntax(String name, SnmpSyntax obj) {
-		Category log = ThreadCategory.getInstance(getClass());
+    public Parm processSyntax(String name, SnmpSyntax obj) {
+		Category log = log();
 		Value val = new Value();
 
 		if (obj instanceof SnmpOctetString) {
@@ -616,11 +287,10 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 
 		return parm;
 	}
-	
-	public void processTrapEvent(Event event, String trapInterface, String ipNodeId) {
-		Category log = ThreadCategory.getInstance(getClass());
-		
-		org.opennms.netmgt.xml.eventconf.Event econf = EventConfigurationManager.get(event);
+    
+    public void processTrapEvent(Event event, String trapInterface, long nodeId) {
+
+        org.opennms.netmgt.xml.eventconf.Event econf = EventConfigurationManager.get(event);
 		if (econf == null || econf.getUei() == null) {
 			event.setUei("uei.opennms.org/default/trap");
 		} else {
@@ -632,7 +302,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 			if (logmsg != null) {
 				String dest = logmsg.getDest();
 				if ("discardtraps".equals(dest)) {
-					log.debug("Trap discarded due to matching event having logmsg dest == discardtraps");
+					log().debug("Trap discarded due to matching event having logmsg dest == discardtraps");
 					return;
 				}
 			}
@@ -641,13 +311,13 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 		// send the event to eventd
 		m_eventMgr.sendNow(event);
 
-		log.debug("Trap successfully converted and sent to eventd");
+		log().debug("Trap successfully converted and sent to eventd");
 
-		if (ipNodeId == null && m_newSuspect) {
+		if (nodeId == -1 && m_newSuspect) {
 			sendNewSuspectEvent(trapInterface);
 
-			if (log.isDebugEnabled()) {
-				log.debug("Sent newSuspectEvent for interface: "
+			if (log().isDebugEnabled()) {
+				log().debug("Sent newSuspectEvent for interface: "
 						+ trapInterface);
 			}
 		}
@@ -681,7 +351,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 	 *  
 	 */
 	private synchronized boolean statusOK() {
-		Category log = ThreadCategory.getInstance(getClass());
+		Category log = log();
 
 		//
 		// Loop until there is a new client or we are shutdown
@@ -735,7 +405,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 		try {
 			m_localAddr = InetAddress.getLocalHost().getHostName();
 		} catch (UnknownHostException uhE) {
-			Category log = ThreadCategory.getInstance(getClass());
+			Category log = log();
 			m_localAddr = "localhost";
 			log.error("<ctor>: Error looking up local hostname", uhE);
 		}
@@ -774,7 +444,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 	 *  
 	 */
 	public synchronized void start() {
-		Category log = ThreadCategory.getInstance(getClass());
+		Category log = log();
 
 		if (m_worker != null)
 			throw new IllegalStateException(
@@ -857,16 +527,16 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 	 * out
 	 */
 	public void run() {
-		Category log = ThreadCategory.getInstance(getClass());
+		Category log = log();
 
 		synchronized (this) {
 			m_status = RUNNING;
 		}
 
 		while (statusOK()) {
-			Object o = null;
+			TrapInformation o = null;
 			try {
-				o = m_backlogQ.remove(1000);
+				o = (TrapInformation)m_backlogQ.remove(1000);
 			} catch (InterruptedException iE) {
 				log.debug("Trapd.QueueProcessor: caught interrupted exception");
 
@@ -883,21 +553,11 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 			}
 
 			if (o != null && statusOK()) {
-				if (o instanceof V1TrapInformation) {
-					V1TrapInformation v1 = (V1TrapInformation) o;
-					try {
-						process(v1);
-					} catch (Throwable t) {
-						log.error("Unexpected error processing V1 trap", t);
-					}
-				} else {
-					V2TrapInformation v2 = (V2TrapInformation) o;
-					try {
-						process(v2);
-					} catch (Throwable t) {
-						log.error("Unexpected error processing V2 trap", t);
-					}
-				}
+                try {
+                    process(o);
+                } catch (Throwable t) {
+                    log.error("Unexpected error processing trap", t);
+                }
 			}
 		}
 	}

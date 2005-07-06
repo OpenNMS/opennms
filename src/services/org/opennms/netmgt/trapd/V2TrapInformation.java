@@ -39,29 +39,25 @@
 
 package org.opennms.netmgt.trapd;
 
+
 import java.net.InetAddress;
 
-import org.opennms.protocols.snmp.SnmpOctetString;
+import org.opennms.protocols.snmp.SnmpInt32;
+import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpPduPacket;
+import org.opennms.protocols.snmp.SnmpSMI;
+import org.opennms.protocols.snmp.SnmpSyntax;
+import org.opennms.protocols.snmp.SnmpTimeTicks;
+import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
  * V2 Trap information object for processing by the queue reader
  */
-public class V2TrapInformation {
+public class V2TrapInformation extends TrapInformation {
 	/**
 	 * The received PDU
 	 */
 	private SnmpPduPacket m_pdu;
-
-	/**
-	 * The internet address of the sending agent
-	 */
-	private InetAddress m_agent;
-
-	/**
-	 * The community string from the actual SNMP packet
-	 */
-	private SnmpOctetString m_community;
 
 	/**
 	 * Constructs a new trap information instance that contains the sending
@@ -75,32 +71,92 @@ public class V2TrapInformation {
 	 *            The encapsulated Protocol Data Unit.
 	 * 
 	 */
-	public V2TrapInformation(InetAddress agent, SnmpOctetString community,
-			SnmpPduPacket pdu) {
-		m_pdu = pdu;
-		m_agent = agent;
-		m_community = community;
+	public V2TrapInformation(InetAddress agent, String community, SnmpPduPacket pdu) {
+		super(agent, community);
+        
+        m_pdu = pdu;
 	}
 
-	/**
-	 * Returns the sending agent's internet address
-	 */
-	public InetAddress getAgent() {
-		return m_agent;
-	}
-
-	/**
+    /**
 	 * Returns the Protocol Data Unit that was encapsulated within the SNMP
 	 * Trap message
 	 */
-	public SnmpPduPacket getPdu() {
+	private SnmpPduPacket getPdu() {
 		return m_pdu;
 	}
 
-	/**
-	 * Returns the SNMP community string from the received packet.
-	 */
-	public SnmpOctetString getCommunity() {
-		return m_community;
-	}
+	protected int getPduLength() {
+        return getPdu().getLength();
+    }
+    
+    protected long getTimeStamp() {
+
+        if (log().isDebugEnabled()) {
+            log().debug("V2 trap first varbind value: " + getPdu().getVarBindAt(0).getValue().toString());
+        }
+
+        switch (getPdu().getVarBindAt(TrapQueueProcessor.SNMP_SYSUPTIME_OID_INDEX).getValue().typeId()) {
+        case SnmpSMI.SMI_TIMETICKS:
+            log().debug("V2 trap first varbind value is of type TIMETICKS (correct)");
+            return ((SnmpTimeTicks) getPdu().getVarBindAt(TrapQueueProcessor.SNMP_SYSUPTIME_OID_INDEX).getValue()).getValue();
+        case SnmpSMI.SMI_INTEGER:
+            log().debug("V2 trap first varbind value is of type INTEGER, casting to TIMETICKS");
+            return ((SnmpInt32) getPdu().getVarBindAt(TrapQueueProcessor.SNMP_SYSUPTIME_OID_INDEX).getValue()).getValue();
+        default:
+            throw new IllegalArgumentException("V2 trap does not have the required first varbind as TIMETICKS - cannot process trap");
+        }
+    }
+
+    protected TrapIdentity getTrapIdentity() {
+        // Get the value for the snmpTrapOID
+        SnmpObjectId snmpTrapOid = (SnmpObjectId) getPdu().getVarBindAt(TrapQueueProcessor.SNMP_TRAP_OID_INDEX).getValue();
+        SnmpObjectId lastVarBindOid = getPdu().getVarBindAt(getPduLength() - 1).getName();
+        SnmpSyntax lastVarBindValue = getPdu().getVarBindAt(getPduLength() - 1).getValue();
+        TrapIdentity trapIdentity = new TrapIdentity(snmpTrapOid, lastVarBindOid, lastVarBindValue);
+        return trapIdentity;
+    }
+
+    public String getTrapInterface() {
+        return getAgentAddress();
+    }
+
+    protected SnmpVarBind getVarBindAt(int index) {
+        return getPdu().getVarBindAt(index);
+    }
+
+    protected String getVersion() {
+        return "v2";
+    }
+
+    protected void validate() {
+        //
+        // verify the type
+        //
+        if (getPdu().typeId() != (byte) (SnmpPduPacket.V2TRAP)) {
+            // if not V2 trap, do nothing
+            throw new IllegalArgumentException("Received not SNMPv2 Trap from host " + getTrapInterface() + "PDU Type = " + getPdu().getCommand());
+        }
+        if (log().isDebugEnabled()) {
+            log().debug("V2 trap numVars or pdu length: " + getPduLength());
+        }
+        if (getPduLength() < 2) // check number of varbinds
+        {
+            throw new IllegalArgumentException("V2 trap from " + getTrapInterface() + " IGNORED due to not having the required varbinds.  Have " + getPduLength() + ", needed 2");
+        }
+        // The first varbind has the sysUpTime
+        // Modify the sysUpTime varbind to add the trailing 0 if it is
+        // missing
+        // The second varbind has the snmpTrapOID
+        // Confirm that these two are present
+        //
+        String varBindName0 = getPdu().getVarBindAt(0).getName().toString();
+        String varBindName1 = getPdu().getVarBindAt(1).getName().toString();
+        if (varBindName0.equals(TrapQueueProcessor.EXTREME_SNMP_SYSUPTIME_OID)) {
+            log().info("V2 trap from " + getTrapInterface() + " has been corrected due to the sysUptime.0 varbind not having been sent with a trailing 0.\n\tVarbinds received are : " + varBindName0 + " and " + varBindName1);
+            varBindName0 = TrapQueueProcessor.SNMP_SYSUPTIME_OID;
+        }
+        if ((!(varBindName0.equals(TrapQueueProcessor.SNMP_SYSUPTIME_OID))) || (!(varBindName1.equals(TrapQueueProcessor.SNMP_TRAP_OID)))) {
+            throw new IllegalArgumentException("V2 trap from " + getTrapInterface() + " IGNORED due to not having the required varbinds.\n\tThe first varbind must be sysUpTime.0 and the second snmpTrapOID.0\n\tVarbinds received are : " + varBindName0 + " and " + varBindName1);
+        }
+    }
 }

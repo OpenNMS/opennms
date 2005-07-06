@@ -41,28 +41,18 @@ package org.opennms.netmgt.trapd;
 
 import java.net.InetAddress;
 
-import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpPduTrap;
+import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
  * V1 trap element for processing by the queue reader
  */
 
-public class V1TrapInformation {
+public class V1TrapInformation extends TrapInformation {
     /**
      * The received PDU
      */
     private SnmpPduTrap m_pdu;
-
-    /**
-     * The internet address of the sending agent
-     */
-    private InetAddress m_agent;
-
-    /**
-     * The community string from the actual SNMP packet
-     */
-    private SnmpOctetString m_community;
 
     /**
      * Constructs a new trap information instance that contains the sending
@@ -76,31 +66,51 @@ public class V1TrapInformation {
      *            The encapsulated Protocol Data Unit.
      * 
      */
-    public V1TrapInformation(InetAddress agent, SnmpOctetString community, SnmpPduTrap pdu) {
-        m_pdu = pdu;
-        m_agent = agent;
-        m_community = community;
-    }
+    public V1TrapInformation(InetAddress agent, String community, SnmpPduTrap pdu) {
+        super(agent, community);
 
-    /**
-     * Returns the sending agent's internet address
-     */
-    public InetAddress getAgent() {
-        return m_agent;
+        m_pdu = pdu;
+
+
+
     }
 
     /**
      * Returns the Protocol Data Unit that was encapsulated within the SNMP
      * Trap message
      */
-    public SnmpPduTrap getPdu() {
+    private SnmpPduTrap getPdu() {
         return m_pdu;
     }
 
-    /**
-     * Returns the SNMP community string from the received packet.
-     */
-    public SnmpOctetString getCommunity() {
-        return m_community;
+    protected int getPduLength() {
+        return getPdu().getLength();
     }
+
+    protected long getTimeStamp() {
+        long timeStamp = getPdu().getTimeStamp();
+        return timeStamp;
+    }
+
+    protected TrapIdentity getTrapIdentity() {
+        String entId = getPdu().getEnterprise().toString();
+        if (!entId.startsWith(".")) {
+            entId = "." + entId;
+        }
+        TrapIdentity trapIdentity = new TrapIdentity(entId, getPdu().getGeneric(), getPdu().getSpecific());
+        return trapIdentity;
+    }
+
+    public String getTrapInterface() {
+        return getPdu().getAgentAddress().toString();
+    }
+
+    protected SnmpVarBind getVarBindAt(int index) {
+        return getPdu().getVarBindAt(index);
+    }
+
+    protected String getVersion() {
+        return "v1";
+    }
+
 }

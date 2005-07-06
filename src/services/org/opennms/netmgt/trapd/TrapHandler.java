@@ -176,7 +176,7 @@ public class TrapHandler implements SnmpTrapHandler, PausableFiber {
 	 */
 	public void snmpReceivedTrap(SnmpTrapSession session, InetAddress agent,
 			int port, SnmpOctetString community, SnmpPduPacket pdu) {
-		addTrap(new V2TrapInformation(agent, community, pdu));
+		addTrap(new V2TrapInformation(agent, new String(community.getString()), pdu));
 	}
 
 	/**
@@ -199,7 +199,7 @@ public class TrapHandler implements SnmpTrapHandler, PausableFiber {
 	 */
 	public void snmpReceivedTrap(SnmpTrapSession session, InetAddress agent,
 			int port, SnmpOctetString community, SnmpPduTrap pdu) {
-		addTrap(new V1TrapInformation(agent, community, pdu));
+		addTrap(new V1TrapInformation(agent, new String(community.getString()), pdu));
 	}
 
 	private void addTrap(Object o) {
