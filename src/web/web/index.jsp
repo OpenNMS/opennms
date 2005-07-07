@@ -96,7 +96,7 @@
       
       <!-- KSC Reports box -->    
       <jsp:include page="/includes/ksc-box.jsp" flush="false" />
-
+      
         <br>
 
         <!-- security box -->    
@@ -104,12 +104,14 @@
         Commenting out the security box include until it is functional
         <jsp:include page="/includes/security-box.jsp" flush="false" />
       --%>
+
     </td>
     
     <td>&nbsp;</td>   
   </tr>
 </table>
 <br>
+<jsp:include page="/includes/charts.jsp" flush="false" />
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 

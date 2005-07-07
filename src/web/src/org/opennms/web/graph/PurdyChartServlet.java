@@ -33,16 +33,19 @@
 
 package org.opennms.web.graph;
 
-import java.awt.Color;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.sql.SQLException;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
+import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.charts.ChartUtils;
 /**
  * @author david
  *
@@ -61,22 +64,72 @@ public class PurdyChartServlet extends HttpServlet {
         super();
     }
     
+/*    public void init() {
+        try {
+            ChartConfigFactory.init();
+            DatabaseConnectionFactory.init();
+        } catch (MarshalException e) {
+            log().error("init: Error marshalling chart-configuration.xml: ",e);
+        } catch (ValidationException e) {
+            log().error("init: Error validating chart-configuration.xml: ",e);
+        } catch (IOException e) {
+            log().error("init: Error reading chart-configuration.xml: ",e);
+        } catch (ClassNotFoundException e) {
+            log().error("init: Error initializing database connection factory: ",e);
+        }
+    }
+*/    
+
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        /*
-         * To do it:
-         * 
-         * 
-         */
+        String chartName = request.getParameter("chart-name");
+        String buffered = request.getParameter("buffered");
         
-        Color c = Color.white;
+        if (chartName == null) {
+            log().warn("doGet: request doesn't contain a chart-name parameter.");
+            return;
+        }
+        
+        if (buffered == null) {
+            buffered = "0";
+        }
+
+/*        response.setContentType("text/html");
+        PrintWriter pw = response.getWriter();
+        pw.println("<html>");
+        pw.println("<body>");
+        pw.println("<h1>"+chartName+"</h1>");
+        pw.close();
+*/
+        response.setContentType("image/jpeg");
         OutputStream out = response.getOutputStream();
         
-        JFreeChart chart = PurdyChartServletTest.sampleSeverityChart();
-        response.setContentType("image/png");
+        log().debug("doGet: displaying chart: "+chartName);
         
-        ChartUtilities.writeChartAsPNG(out, chart, 400, 300);
+        try {
+                ChartUtils.getBarChart(chartName, out);
+        } catch (MarshalException e) {
+            log().error("Error marshalling chart-configuration.xml: ",e);
+        } catch (ValidationException e) {
+            log().error("Error validating chart-configuration.xml: ",e);
+        } catch (IOException e) {
+            log().error("Error reading chart-configuration.xml: ",e);
+        } catch (SQLException e) {
+            log().error("Error in SQL for chart: "+chartName,e);
+        }
+
+        out.flush();
         out.close();
+        
+/*        pw = response.getWriter();
+        response.setContentType("text/html");
+        pw.println("</body>");
+        pw.println("</html>");
+*/        
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance();
     }
     
 

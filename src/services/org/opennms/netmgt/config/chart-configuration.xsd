@@ -77,7 +77,7 @@ TODO: XYDataSets
     			<sequence>
     				<element ref="this:jdbc-data-set" minOccurs="1" maxOccurs="1" />
     				<element ref="this:title" minOccurs="1" maxOccurs="1" />
-    				<element ref="this:image-size" minOccurs="0" maxOccurs="0" />
+    				<element ref="this:image-size" minOccurs="1" maxOccurs="1" />
     				<element ref="this:sub-title" minOccurs="0" maxOccurs="unbounded" />
     				<element ref="this:grid-lines" minOccurs="0" maxOccurs="1" />
     				<element ref="this:series-def" minOccurs="0" maxOccurs="unbounded" />
@@ -136,7 +136,7 @@ TODO: XYDataSets
     <element name="sub-title" >
     		<complexType>
     			<sequence>
-    				<element ref="this:title" minOccurs="1" maxOccurs="unbounded"/>
+    				<element ref="this:title" minOccurs="1" maxOccurs="1"/>
     			</sequence>
     			<attribute name="position" use="optional" >
     				<simpleType>
@@ -209,7 +209,7 @@ TODO: XYDataSets
     
     <element name="rgb-color" >
     		<simpleType>
-    			<restriction base="positiveInteger" >
+    			<restriction base="nonNegativeInteger" >
     				<maxInclusive value="255" />
     			</restriction>
     		</simpleType>

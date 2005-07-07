@@ -33,15 +33,20 @@
 
 package org.opennms.netmgt.charts;
 
+import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.sql.SQLException;
 
+import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.jfree.chart.JFreeChart;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ChartConfigFactory;
 import org.opennms.netmgt.config.charts.BarChart;
 import org.opennms.netmgt.config.charts.ChartConfiguration;
@@ -57,10 +62,19 @@ public class ChartUtilsTest extends OpenNMSTestCase {
             "  <tns:bar-chart name=\"sample-bar-chart\" variation=\"2d\" domain-axis-label=\"domain label\" show-legend=\"true\" plot-orientation=\"vertical\" draw-bar-outline=\"true\" range-axis-label=\"range label\" show-urls=\"false\"\n" + 
             "      show-tool-tips=\"false\">\n" + 
             "      \n" + 
-            "      <tns:jdbc-data-set db-name=\"opennms\" sql=\"select severity, count(*) as count from alarms group by severity order by count desc\" />\n" + 
+            "      <tns:jdbc-data-set db-name=\"opennms\" sql=\"select severity, count(*) from alarms group by severity\" />\n" + 
             "      \n" + 
             "      <tns:title font=\"SansSerif\" style=\"\" value=\"Sample Bar Chart\" pitch=\"12\" />\n" + 
             "      \n" + 
+            "      <tns:image-size>\n" + 
+            "        <tns:hz-size>\n" + 
+            "          <tns:pixels>300</tns:pixels>\n" + 
+            "        </tns:hz-size>\n" + 
+            "        <tns:vt-size>\n" + 
+            "          <tns:pixels>300</tns:pixels>\n" + 
+            "        </tns:vt-size>\n" + 
+            "      </tns:image-size>\n" + 
+            "      \n" +
             "      <tns:sub-title position=\"top\" horizontal-alignment=\"center\">\n" + 
             "          <tns:title font=\"SansSerif\" style=\"\" value=\"Sample SubTitle\" pitch=\"10\" />\n" + 
             "      </tns:sub-title>\n" + 
@@ -79,6 +93,46 @@ public class ChartUtilsTest extends OpenNMSTestCase {
             "          </tns:rgb>\n" + 
             "      </tns:grid-lines>\n" + 
             "      \n" + 
+            "    <tns:series-def number=\"1\">\n" + 
+            "      <tns:rgb>\n" + 
+            "        <tns:red>\n" + 
+            "          <tns:rgb-color>255</tns:rgb-color>\n" + 
+            "        </tns:red>\n" + 
+            "        <tns:green>\n" + 
+            "          <tns:rgb-color>0</tns:rgb-color>\n" + 
+            "        </tns:green>\n" + 
+            "        <tns:blue>\n" + 
+            "          <tns:rgb-color>0</tns:rgb-color>\n" + 
+            "        </tns:blue>\n" + 
+            "      </tns:rgb>\n" + 
+            "    </tns:series-def>\n" + 
+            "    <tns:series-def number=\"2\">\n" + 
+            "      <tns:rgb>\n" + 
+            "        <tns:red>\n" + 
+            "          <tns:rgb-color>255</tns:rgb-color>\n" + 
+            "        </tns:red>\n" + 
+            "        <tns:green>\n" + 
+            "          <tns:rgb-color>200</tns:rgb-color>\n" + 
+            "        </tns:green>\n" + 
+            "        <tns:blue>\n" + 
+            "          <tns:rgb-color>0</tns:rgb-color>\n" + 
+            "        </tns:blue>\n" + 
+            "      </tns:rgb>\n" + 
+            "    </tns:series-def>\n" + 
+            "    <tns:series-def number=\"3\">\n" + 
+            "      <tns:rgb>\n" + 
+            "        <tns:red>\n" + 
+            "          <tns:rgb-color>255</tns:rgb-color>\n" + 
+            "        </tns:red>\n" + 
+            "        <tns:green>\n" + 
+            "          <tns:rgb-color>255</tns:rgb-color>\n" + 
+            "        </tns:green>\n" + 
+            "        <tns:blue>\n" + 
+            "          <tns:rgb-color>0</tns:rgb-color>\n" + 
+            "        </tns:blue>\n" + 
+            "      </tns:rgb>\n" + 
+            "    </tns:series-def>\n" + 
+            "" +
             "  </tns:bar-chart>\n" + 
             "</tns:chart-configuration>\n" + 
             "";
@@ -100,9 +154,33 @@ public class ChartUtilsTest extends OpenNMSTestCase {
     }
     
     public void testGetBarChart() throws MarshalException, ValidationException, IOException, SQLException {
-        assertNotNull(ChartUtils.getBarChart("sample-bar-chart"));
-        assertTrue(ChartUtils.getBarChart("sample-bar-chart").getSubtitleCount() == 1);
+        JFreeChart barChart = ChartUtils.getBarChart("sample-bar-chart");
+        assertNotNull(barChart);
+        //SubTitle count includes "LegendTitle"
+        assertEquals(2, barChart.getSubtitleCount());
+        assertEquals("Sample SubTitle", barChart.getSubtitle(1));
+    }
+
+    public void testGetChartWithInvalidChartName() throws MarshalException, ValidationException, IOException, SQLException {
         
+        JFreeChart chart = null;
+        try {
+            chart = ChartUtils.getBarChart("opennms-rules!");
+        } catch (IllegalArgumentException e) {
+            log().debug("testGetChartWithInvalidChartName: Good, this test is working.");
+        }
+        assertNull(chart);
+    }
+
+    public void testGetChartAsFileOutputStream() throws FileNotFoundException, IOException, SQLException, ValidationException, MarshalException {
+        OutputStream stream = new FileOutputStream("//tmp//sample-bar-chart.png");
+        ChartUtils.getBarChart("sample-bar-chart", stream);
+        stream.close();
+    }
+    
+    public void testGetChartAsBufferedImage() throws MarshalException, ValidationException, IOException, SQLException {
+        BufferedImage bi = ChartUtils.getChartAsBufferedImage("sample-bar-chart");
+        assertEquals(400, bi.getHeight());
     }
 
     private void initalizeChartFactory() throws MarshalException, ValidationException, IOException {
@@ -112,29 +190,9 @@ public class ChartUtilsTest extends OpenNMSTestCase {
         rdr.close();        
         m_config = ChartConfigFactory.getInstance().getConfiguration();
     }
-    
-    public void testGetChart() {
-        
-        JFreeChart chart = null;
-        try {
-            chart = ChartUtils.getBarChart("bar-chart-test");
-        } catch (MarshalException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ValidationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        assertNotNull(chart);
-    }
 
-    public void testGetChartAsStream() {
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
 }

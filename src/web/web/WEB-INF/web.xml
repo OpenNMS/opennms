@@ -833,6 +833,15 @@
   	<servlet-class>org.opennms.web.admin.schedule.ScheduleEditorServlet</servlet-class>
   </servlet>
   
+  <servlet>
+  	<servlet-name>purdyChart</servlet-name>
+  	<servlet-class>org.opennms.web.graph.PurdyChartServlet</servlet-class>
+  	<init-param>
+  		<param-name>chart-name</param-name>
+  		<param-value>sample-bar-chart</param-value>
+  	</init-param>
+  </servlet>
+  
   <!-- python servlet for testing purposes - ->
   <servlet>
       <servlet-name>PyServlet</servlet-name>
@@ -850,6 +859,11 @@
 
   <!-- desktop graph servlet mapping -->
   <!-- desktop survey report servlet mapping -->  
+  
+  <servlet-mapping>
+  	<servlet-name>purdyChart</servlet-name>
+  	<url-pattern>/charts</url-pattern>
+  </servlet-mapping>
   
   <servlet-mapping>
   	<servlet-name>scheduleEditor</servlet-name>

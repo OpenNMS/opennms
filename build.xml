@@ -203,8 +203,8 @@ your distribution.
     <pathelement path="${packaged.lib.dir}/activation.jar"/>
     <pathelement path="${packaged.lib.dir}/jmta.jar"/>
   	<pathelement path="${packaged.lib.dir}/SNMP4J-1.5.jar"/>
-  	<pathelement path="${packaged.lib.dir}/charts/jfree-chart/jfreechart-1.0.0-rc1.jar" />
-  	<pathelement path="${packaged.lib.dir}/charts/jfree-chart/jcommon-1.0.0-rc1.jar" />
+  	<pathelement path="${packaged.lib.dir}/jfreechart-1.0.0-rc1.jar" />
+  	<pathelement path="${packaged.lib.dir}/jcommon-1.0.0-rc1.jar" />
     <pathelement path="/System/Library/Java"/>
   </path>
 

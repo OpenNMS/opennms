@@ -99,7 +99,7 @@ public class ChartConfigFactory extends ChartConfigManager {
     /**
      * 
      */
-    protected void update() throws IOException, MarshalException, ValidationException {
+    public void update() throws IOException, MarshalException, ValidationException {
         if (m_lastModified != m_chartConfigFile.lastModified()) {
             NotifdConfigFactory.getInstance().reload();
         }
