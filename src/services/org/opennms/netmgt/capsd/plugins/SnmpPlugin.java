@@ -94,7 +94,6 @@ public final class SnmpPlugin extends AbstractPlugin {
         try {
             SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(address);
             agentConfig.setPduType(SnmpAgentConfig.GET_PDU);
-            getValue(agentConfig, DEFAULT_OID);
             return (getValue(agentConfig, DEFAULT_OID) != null);
 
         } catch (Throwable t) {
