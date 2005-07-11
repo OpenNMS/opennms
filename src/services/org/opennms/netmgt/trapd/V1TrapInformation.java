@@ -41,6 +41,7 @@ package org.opennms.netmgt.trapd;
 
 import java.net.InetAddress;
 
+import org.opennms.protocols.snmp.SnmpIPAddress;
 import org.opennms.protocols.snmp.SnmpPduTrap;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
@@ -64,49 +65,32 @@ public class V1TrapInformation extends TrapInformation {
      *            The community string from the SNMP packet.
      * @param pdu
      *            The encapsulated Protocol Data Unit.
+     * @param trapProcessor The trap processor used to process the trap data
      * 
      */
-    public V1TrapInformation(InetAddress agent, String community, SnmpPduTrap pdu) {
-        super(agent, community);
-
+    public V1TrapInformation(InetAddress agent, String community, SnmpPduTrap pdu, TrapProcessor trapProcessor) {
+        super(agent, community, trapProcessor);
         m_pdu = pdu;
-
-
-
-    }
-
-    /**
-     * Returns the Protocol Data Unit that was encapsulated within the SNMP
-     * Trap message
-     */
-    private SnmpPduTrap getPdu() {
-        return m_pdu;
     }
 
     protected int getPduLength() {
-        return getPdu().getLength();
+        return m_pdu.getLength();
     }
 
     protected long getTimeStamp() {
-        long timeStamp = getPdu().getTimeStamp();
-        return timeStamp;
+        return m_pdu.getTimeStamp();
     }
 
     protected TrapIdentity getTrapIdentity() {
-        String entId = getPdu().getEnterprise().toString();
-        if (!entId.startsWith(".")) {
-            entId = "." + entId;
-        }
-        TrapIdentity trapIdentity = new TrapIdentity(entId, getPdu().getGeneric(), getPdu().getSpecific());
-        return trapIdentity;
+        return new TrapIdentity(m_pdu.getEnterprise().toString(), m_pdu.getGeneric(), m_pdu.getSpecific());
     }
 
-    public String getTrapInterface() {
-        return getPdu().getAgentAddress().toString();
+    protected InetAddress getTrapAddress() {
+        return SnmpIPAddress.toInetAddress(m_pdu.getAgentAddress());
     }
 
     protected SnmpVarBind getVarBindAt(int index) {
-        return getPdu().getVarBindAt(index);
+        return m_pdu.getVarBindAt(index);
     }
 
     protected String getVersion() {

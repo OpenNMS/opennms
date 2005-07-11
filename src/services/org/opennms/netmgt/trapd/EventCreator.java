@@ -31,6 +31,94 @@
 //
 package org.opennms.netmgt.trapd;
 
-public class EventCreator {
+import java.net.InetAddress;
+
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Snmp;
+import org.opennms.protocols.snmp.SnmpObjectId;
+import org.opennms.protocols.snmp.SnmpSyntax;
+
+public class EventCreator implements TrapProcessor {
+    
+    private Event m_event;
+    private Snmp m_snmpInfo;
+    private Parms m_parms;
+
+    
+    EventCreator() {
+        m_event = new Event();
+        m_event.setSource("trapd");
+        m_event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
+
+        m_snmpInfo = new Snmp();
+        m_event.setSnmp(m_snmpInfo);
+
+        m_parms = new Parms();
+        m_event.setParms(m_parms);
+        
+    }
+    
+    public void setCommunity(String community) {
+        m_snmpInfo.setCommunity(community);
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        m_snmpInfo.setTimeStamp(timeStamp);
+    }
+
+    public void setVersion(String version) {
+        m_snmpInfo.setVersion(version);
+    }
+
+    private void setGeneric(int generic) {
+        m_snmpInfo.setGeneric(generic);
+    }
+
+    private void setSpecific(int specific) {
+        m_snmpInfo.setSpecific(specific);
+    }
+
+    private void setEnterpriseId(String enterpriseId) {
+        m_snmpInfo.setId(enterpriseId);
+    }
+
+    public void setAgentAddress(InetAddress agentAddress) {
+        m_event.setHost(agentAddress.getHostAddress());
+    }
+
+    public void processVarBind(SnmpObjectId name, SnmpSyntax obj) {
+        m_parms.addParm(SyntaxToEvent.processSyntax(name.toString(), obj));
+    }
+
+    public void setTrapAddress(InetAddress trapAddress) {
+        String trapInterface = trapAddress.getHostAddress();
+        m_event.setSnmphost(trapInterface);
+        m_event.setInterface(trapInterface);
+        long nodeId = TrapdIPMgr.getNodeId(trapInterface);
+        if (nodeId != -1)
+            m_event.setNodeid(nodeId);
+    }
+
+    public void setTrapIdentity(TrapIdentity trapIdentity) {
+        setGeneric(trapIdentity.getGeneric());
+        setSpecific(trapIdentity.getSpecific());
+        setEnterpriseId(trapIdentity.getEnterpriseId());
+    
+        if (log().isDebugEnabled()) {
+            log().debug("snmp trap "+trapIdentity);
+        }
+    
+    }
+
+    Event getEvent() {
+        return m_event;
+    }
+    
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 
 }

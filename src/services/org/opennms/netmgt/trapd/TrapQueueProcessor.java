@@ -55,20 +55,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.EventConfigurationManager;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Value;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
-import org.opennms.protocols.snmp.SnmpCounter32;
-import org.opennms.protocols.snmp.SnmpCounter64;
-import org.opennms.protocols.snmp.SnmpGauge32;
-import org.opennms.protocols.snmp.SnmpIPAddress;
-import org.opennms.protocols.snmp.SnmpInt32;
-import org.opennms.protocols.snmp.SnmpNull;
-import org.opennms.protocols.snmp.SnmpObjectId;
-import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpOpaque;
-import org.opennms.protocols.snmp.SnmpSyntax;
-import org.opennms.protocols.snmp.SnmpTimeTicks;
 
 /**
  * The TrapQueueProcessor handles the conversion of V1 and V2 traps to events
@@ -83,32 +70,6 @@ import org.opennms.protocols.snmp.SnmpTimeTicks;
  *  
  */
 class TrapQueueProcessor implements Runnable, PausableFiber {
-	/**
-	 * The sysUpTimeOID, which should be the first varbind in a V2 trap
-	 */
-	static final String SNMP_SYSUPTIME_OID = ".1.3.6.1.2.1.1.3.0";
-
-	/**
-	 * The sysUpTimeOID, which should be the first varbind in a V2 trap, but in
-	 * the case of Extreme Networks only mostly
-	 */
-	static final String EXTREME_SNMP_SYSUPTIME_OID = ".1.3.6.1.2.1.1.3";
-
-	/**
-	 * The snmpTrapOID, which should be the second varbind in a V2 trap
-	 */
-	static final String SNMP_TRAP_OID = ".1.3.6.1.6.3.1.1.4.1.0";
-
-	/**
-	 * The snmp sysUpTime OID is the first varbind
-	 */
-	static final int SNMP_SYSUPTIME_OID_INDEX = 0;
-
-	/**
-	 * The snmp trap OID is the second varbind
-	 */
-	static final int SNMP_TRAP_OID_INDEX = 1;
-
 	/**
 	 * The input queue
 	 */
@@ -137,10 +98,6 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 	private boolean m_newSuspect;
 
 	private EventIpcManager m_eventMgr;
-	
-	private SyntaxToEvent[] m_syntaxToEvents;
-	
-    
 	
 	/**
 	 * Process a V2 trap and convert it to an event for transmission.
@@ -212,11 +169,10 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 	 * @param info
 	 *            V2 trap
 	 */
-	private void process(TrapInformation info) {
+	private void process(TrapNotification info) {
         
         try {
-            Event event = info.getEventForTrap(this);
-            processTrapEvent(event, info.getTrapInterface(), info.getNodeId(info.getTrapInterface()));
+            processTrapEvent(((EventCreator)info.getTrapProcessor()).getEvent());
         } catch (IllegalArgumentException e) {
             log().info(e.getMessage());
         }
@@ -228,67 +184,8 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
         return ThreadCategory.getInstance(getClass());
     }
 
-    public Parm processSyntax(String name, SnmpSyntax obj) {
-		Category log = log();
-		Value val = new Value();
-
-		if (obj instanceof SnmpOctetString) {
-			//
-			// check for non-printable characters. If they
-			// exist then print the string out as hexidecimal
-			//
-			boolean asHex = false;
-			byte[] data = ((SnmpOctetString) obj).getString();
-			for (int x = 0; x < data.length; x++) {
-				byte b = data[x];
-				if ((b < 32 && b != 9 && b != 10 && b != 13 && b != 0) || b == 127) {
-					asHex = true;
-					break;
-				}
-			}
-
-			data = null;
-
-			String encoding = asHex ? EventConstants.XML_ENCODING_BASE64
-				: EventConstants.XML_ENCODING_TEXT;
-
-			val.setType(EventConstants.TYPE_SNMP_OCTET_STRING);
-			val.setEncoding(encoding);
-			val.setContent(EventConstants.toString(encoding, obj));
-
-			// DEBUG
-			if (!asHex && log.isDebugEnabled()) {
-				log.debug("snmpReceivedTrap: string varbind: "
-					+ (((SnmpOctetString) obj).toString()));
-			}
-		} else {
-			boolean found = false;
-			for (int i = 0; i < m_syntaxToEvents.length; i++) {
-				if (m_syntaxToEvents[i].getClassMatch() == null ||
-						m_syntaxToEvents[i].m_classMatch.isInstance(obj)) {
-					val.setType(m_syntaxToEvents[i].getType());
-					val.setEncoding(m_syntaxToEvents[i].getEncoding());
-					val.setContent(EventConstants.toString(
-						m_syntaxToEvents[i].getType(), obj));
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				throw new IllegalStateException("Internal error: fell through the " +
-						"bottom of the loop.  The syntax-to-events array might not have a " +
-						"catch-all for Object");
-			}
-		}
-
-		Parm parm = new Parm();
-		parm.setParmName(name);
-		parm.setValue(val);
-
-		return parm;
-	}
-    
-    public void processTrapEvent(Event event, String trapInterface, long nodeId) {
+    public void processTrapEvent(Event event) {
+        String trapInterface = event.getInterface();
 
         org.opennms.netmgt.xml.eventconf.Event econf = EventConfigurationManager.get(event);
 		if (econf == null || econf.getUei() == null) {
@@ -313,12 +210,11 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 
 		log().debug("Trap successfully converted and sent to eventd");
 
-		if (nodeId == -1 && m_newSuspect) {
+		if (!event.hasNodeid() && m_newSuspect) {
 			sendNewSuspectEvent(trapInterface);
 
 			if (log().isDebugEnabled()) {
-				log().debug("Sent newSuspectEvent for interface: "
-						+ trapInterface);
+				log().debug("Sent newSuspectEvent for interface: " + trapInterface);
 			}
 		}
 	}
@@ -334,12 +230,10 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 		// construct event with 'trapd' as source
 		Event event = new Event();
 		event.setSource("trapd");
-		event
-				.setUei(org.opennms.netmgt.EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
+		event.setUei(org.opennms.netmgt.EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
 		event.setHost(m_localAddr);
 		event.setInterface(trapInterface);
-		event.setTime(org.opennms.netmgt.EventConstants
-				.formatToString(new java.util.Date()));
+		event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
 
 		// send the event to eventd
 		m_eventMgr.sendNow(event);
@@ -397,8 +291,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 	/**
 	 * The constructor
 	 */
-	TrapQueueProcessor(FifoQueue backlog, boolean newSuspect,
-			EventIpcManager eventMgr) {
+	TrapQueueProcessor(FifoQueue backlog, boolean newSuspect, EventIpcManager eventMgr) {
 		m_backlogQ = backlog;
 		m_newSuspect = newSuspect;
 		m_eventMgr = eventMgr;
@@ -410,31 +303,11 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 			log.error("<ctor>: Error looking up local hostname", uhE);
 		}
 		
-		m_syntaxToEvents = new SyntaxToEvent[] {
-			new SyntaxToEvent(SnmpInt32.class, EventConstants.TYPE_SNMP_INT32,
-				EventConstants.XML_ENCODING_TEXT),
-			new SyntaxToEvent(SnmpNull.class, EventConstants.TYPE_SNMP_NULL,
-				EventConstants.XML_ENCODING_TEXT),
-			new SyntaxToEvent(SnmpObjectId.class, EventConstants.TYPE_SNMP_OBJECT_IDENTIFIER,
-				EventConstants.XML_ENCODING_TEXT),
-			new SyntaxToEvent(SnmpIPAddress.class, EventConstants.TYPE_SNMP_IPADDRESS,
-				EventConstants.XML_ENCODING_TEXT),
-			new SyntaxToEvent(SnmpTimeTicks.class, EventConstants.TYPE_SNMP_TIMETICKS,
-				EventConstants.XML_ENCODING_TEXT),
-			new SyntaxToEvent(SnmpCounter32.class, EventConstants.TYPE_SNMP_COUNTER32,
-				EventConstants.XML_ENCODING_TEXT),
-			new SyntaxToEvent(SnmpGauge32.class, EventConstants.TYPE_SNMP_GAUGE32,
-				EventConstants.XML_ENCODING_TEXT),
-			new SyntaxToEvent(SnmpOpaque.class, EventConstants.TYPE_SNMP_OPAQUE,
-				EventConstants.XML_ENCODING_BASE64),
-			new SyntaxToEvent(SnmpCounter64.class, EventConstants.TYPE_SNMP_COUNTER64,
-				EventConstants.XML_ENCODING_TEXT),
-			new SyntaxToEvent(Object.class, EventConstants.TYPE_STRING,
-				EventConstants.XML_ENCODING_TEXT)
-		};
 	}
 
-	/**
+
+
+    /**
 	 * Starts the current fiber. If the fiber has already been started,
 	 * regardless of it's current state, then an IllegalStateException is
 	 * thrown.
@@ -534,9 +407,9 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 		}
 
 		while (statusOK()) {
-			TrapInformation o = null;
+			TrapNotification o = null;
 			try {
-				o = (TrapInformation)m_backlogQ.remove(1000);
+				o = (TrapNotification)m_backlogQ.remove(1000);
 			} catch (InterruptedException iE) {
 				log.debug("Trapd.QueueProcessor: caught interrupted exception");
 
@@ -559,30 +432,6 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
                     log.error("Unexpected error processing trap", t);
                 }
 			}
-		}
-	}
-	
-	public class SyntaxToEvent {
-		private Class m_classMatch;
-		private String m_type;
-		private String m_encoding;
-		
-		public SyntaxToEvent(Class classMatch, String type, String encoding) {
-			m_classMatch = classMatch;
-			m_type = type;
-			m_encoding = encoding;
-		}
-		
-		public Class getClassMatch() {
-			return m_classMatch;
-		}
-		
-		public String getType() {
-			return m_type;
-		}
-		
-		public String getEncoding() {
-			return m_encoding;
 		}
 	}
 }

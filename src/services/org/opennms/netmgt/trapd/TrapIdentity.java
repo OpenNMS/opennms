@@ -175,6 +175,10 @@ class TrapIdentity {
     private void setEnterpriseId(String enterpriseId) {
         m_enterpriseId = enterpriseId;
     }
+
+    public String toString() {
+        return "[Generic="+getGeneric()+", Specific="+getSpecific()+", EnterpriseId="+getEnterpriseId()+"]";
+    }
     
     
 }

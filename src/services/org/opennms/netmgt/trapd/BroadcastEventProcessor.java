@@ -101,7 +101,7 @@ final class BroadcastEventProcessor implements EventListener {
         if (eventUei.equals(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)) {
             // add to known nodes
             if (Long.toString(event.getNodeid()) != null && event.getInterface() != null) {
-                TrapdIPMgr.setNodeId(event.getInterface(), Long.toString(event.getNodeid()));
+                TrapdIPMgr.setNodeId(event.getInterface(), event.getNodeid());
             }
             if (log.isDebugEnabled())
                 log.debug("Added " + event.getInterface() + " to known node list");
@@ -115,7 +115,7 @@ final class BroadcastEventProcessor implements EventListener {
         } else if (eventUei.equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
             // add to known nodes
             if (Long.toString(event.getNodeid()) != null && event.getInterface() != null) {
-                TrapdIPMgr.setNodeId(event.getInterface(), Long.toString(event.getNodeid()));
+                TrapdIPMgr.setNodeId(event.getInterface(), event.getNodeid());
             }
             if (log.isDebugEnabled())
                 log.debug("Reparented " + event.getInterface() + " to known node list");

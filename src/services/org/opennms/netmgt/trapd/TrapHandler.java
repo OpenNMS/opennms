@@ -55,7 +55,6 @@ import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpPduPacket;
 import org.opennms.protocols.snmp.SnmpPduTrap;
-import org.opennms.protocols.snmp.SnmpTrapHandler;
 import org.opennms.protocols.snmp.SnmpTrapSession;
 
 /**
@@ -83,7 +82,7 @@ import org.opennms.protocols.snmp.SnmpTrapSession;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  * 
  */
-public class TrapHandler implements SnmpTrapHandler, PausableFiber {
+public class TrapHandler implements PausableFiber, TrapNotificationListener {
 	/**
 	 * The name of the logging category for Trapd.
 	 */
@@ -139,6 +138,8 @@ public class TrapHandler implements SnmpTrapHandler, PausableFiber {
 	 */
 	private BroadcastEventProcessor m_eventReader;
 
+    private JoeSnmpTrapNotifier m_trapHandler;
+
 	/**
 	 * <P>
 	 * Constructs a new Trapd object that receives and forwards trap messages
@@ -156,53 +157,35 @@ public class TrapHandler implements SnmpTrapHandler, PausableFiber {
 		m_trapdConfig = trapdConfig;
 	}
 	
-	/**
-	 * <P>
-	 * Process the recieved SNMP v2c trap that was received by the underlying
-	 * trap session.
-	 * </P>
-	 * 
-	 * @param session
-	 *            The trap session that received the datagram.
-	 * @param agent
-	 *            The remote agent that sent the datagram.
-	 * @param port
-	 *            The remmote port the trap was sent from.
-	 * @param community
-	 *            The community string contained in the message.
-	 * @param pdu
-	 *            The protocol data unit containing the data
-	 * 
-	 */
-	public void snmpReceivedTrap(SnmpTrapSession session, InetAddress agent,
-			int port, SnmpOctetString community, SnmpPduPacket pdu) {
-		addTrap(new V2TrapInformation(agent, new String(community.getString()), pdu));
-	}
+    private void registerForTraps(TrapNotificationListener listener, int snmpTrapPort) throws SocketException {
+        
+        m_trapHandler = new JoeSnmpTrapNotifier(this);
+        // Initialize the trapd session
+        m_trapSession = new SnmpTrapSession(m_trapHandler, snmpTrapPort);
+    }
+    
+    private void unregisterForTraps(TrapNotificationListener handler, int snmpTrapPort) {
+        m_trapSession.close();
+    }
 
-	/**
-	 * <P>
-	 * Process the recieved SNMP v1 trap that was received by the underlying
-	 * trap session.
-	 * </P>
-	 * 
-	 * @param session
-	 *            The trap session that received the datagram.
-	 * @param agent
-	 *            The remote agent that sent the datagram.
-	 * @param port
-	 *            The remmote port the trap was sent from.
-	 * @param community
-	 *            The community string contained in the message.
-	 * @param pdu
-	 *            The protocol data unit containing the data
-	 * 
-	 */
-	public void snmpReceivedTrap(SnmpTrapSession session, InetAddress agent,
-			int port, SnmpOctetString community, SnmpPduTrap pdu) {
-		addTrap(new V1TrapInformation(agent, new String(community.getString()), pdu));
-	}
 
-	private void addTrap(Object o) {
+    public void snmpReceivedTrap(SnmpTrapSession session, InetAddress agent, int port, SnmpOctetString community, SnmpPduPacket pdu) {
+        m_trapHandler.snmpReceivedTrap(session, agent, port, community, pdu);
+    }
+    
+    public void snmpReceivedTrap(SnmpTrapSession session, InetAddress agent, int port, SnmpOctetString community, SnmpPduTrap pdu) {
+        m_trapHandler.snmpReceivedTrap(session, agent, port, community, pdu);
+    }
+    
+    public TrapProcessor createTrapProcessor() {
+        return new EventCreator();
+    }
+
+    public void trapReceived(TrapNotification trapNotification) {
+        addTrap(trapNotification);
+    }
+
+	private void addTrap(TrapNotification o) {
 		try {
 			m_backlogQ.add(o);
 		} catch (InterruptedException ie) {
@@ -212,20 +195,6 @@ public class TrapHandler implements SnmpTrapHandler, PausableFiber {
 			Category log = ThreadCategory.getInstance(getClass());
 			log.warn("snmpReceivedTrap: Error adding trap to queue", qe);
 		}
-	}
-
-	/**
-	 * <P>
-	 * Processes an error condition that occurs in the SnmpTrapSession. The
-	 * errors are logged and ignored by the trapd class.
-	 * </P>
-	 */
-	public void snmpTrapSessionError(SnmpTrapSession session, int error,
-			Object ref) {
-		Category log = ThreadCategory.getInstance(getClass());
-
-		log.warn("Error Processing Received Trap: error = " + error
-				+ (ref != null ? ", ref = " + ref.toString() : ""));
 	}
 
 	public synchronized void init() {
@@ -242,10 +211,8 @@ public class TrapHandler implements SnmpTrapHandler, PausableFiber {
 			m_processor = new TrapQueueProcessor(m_backlogQ, m_newSuspect, m_eventMgr);
 
 			log.debug("start: Creating the trap queue processor");
-
-			// Initialize the trapd session
-			m_trapSession = new SnmpTrapSession(this, m_trapdConfig
-					.getSnmpTrapPort());
+            
+            registerForTraps(this, m_trapdConfig.getSnmpTrapPort());
 
 			log.debug("start: Creating the trap session");
 		} catch (SocketException e) {
@@ -265,7 +232,7 @@ public class TrapHandler implements SnmpTrapHandler, PausableFiber {
 		*/
 	}
 
-	/**
+    /**
 	 * Create the SNMP trap session and create the JSDT communication channel to
 	 * communicate with eventd.
 	 * 
@@ -352,7 +319,7 @@ public class TrapHandler implements SnmpTrapHandler, PausableFiber {
 		try {
 			log.debug("stop: Closing SNMP trap session.");
 
-			m_trapSession.close();
+            unregisterForTraps(this, m_trapdConfig.getSnmpTrapPort());
 
 			log.debug("stop: SNMP trap session closed.");
 		} catch (IllegalStateException e) {
@@ -369,7 +336,7 @@ public class TrapHandler implements SnmpTrapHandler, PausableFiber {
 		log.debug("stop: Trapd stopped");
 	}
 
-	/**
+    /**
 	 * Returns the current status of the service.
 	 * 
 	 * @return The service's status.
@@ -401,5 +368,11 @@ public class TrapHandler implements SnmpTrapHandler, PausableFiber {
 
     public void setEventManager(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;
+    }
+
+    public void trapError(int error, String msg) {
+        Category log = ThreadCategory.getInstance(getClass());
+        log.warn("Error Processing Received Trap: error = " + error
+                + (msg != null ? ", ref = " + msg : ""));
     }
 }

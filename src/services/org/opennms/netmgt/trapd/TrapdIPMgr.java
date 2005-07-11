@@ -107,8 +107,8 @@ final class TrapdIPMgr {
                 m_knownips.clear();
                 while (rs.next()) {
                     String ipstr = rs.getString(1);
-                    String ipnodeid = rs.getString(2);
-                    m_knownips.put(ipstr, ipnodeid);
+                    long ipnodeid = rs.getLong(2);
+                    m_knownips.put(ipstr, new Long(ipnodeid));
                 }
                 rs.close();
             }
@@ -132,10 +132,10 @@ final class TrapdIPMgr {
      * @return The node ID of the IP Address if known.
      * 
      */
-    static synchronized String getNodeId(String addr) {
+    static synchronized long getNodeId(String addr) {
         if (addr == null)
-            return null;
-        return (String) m_knownips.get(addr);
+            return -1;
+        return longValue((Long)m_knownips.get(addr));
     }
 
     /**
@@ -149,11 +149,11 @@ final class TrapdIPMgr {
      * @return The nodeid if it existed in the map.
      * 
      */
-    static synchronized String setNodeId(String addr, String nodeid) {
-        if (addr == null || nodeid == null)
-            return null;
-        else
-            return (String) m_knownips.put(addr, nodeid);
+    static synchronized long setNodeId(String addr, long nodeid) {
+        if (addr == null || nodeid == -1)
+            return -1;
+        
+        return longValue((Long) m_knownips.put(addr, new Long(nodeid)));
     }
 
     /**
@@ -165,10 +165,15 @@ final class TrapdIPMgr {
      * @return The nodeid that was in the map.
      * 
      */
-    static String removeNodeId(String addr) {
+    static long removeNodeId(String addr) {
         if (addr == null)
-            return null;
-        return (String) m_knownips.remove(addr);
+            return -1;
+        return longValue((Long) m_knownips.remove(addr));
     }
+
+    private static long longValue(Long result) {
+        return (result == null ? -1 : result.longValue());
+    }
+
 
 } // end TrapdIPMgr

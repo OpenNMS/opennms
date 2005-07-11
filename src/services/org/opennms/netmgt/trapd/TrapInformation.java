@@ -35,15 +35,11 @@ import java.net.InetAddress;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Snmp;
-import org.opennms.protocols.ip.IPv4Address;
 import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpSyntax;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
-public abstract class TrapInformation {
+public abstract class TrapInformation implements TrapNotification {
 
     /**
      * The internet address of the sending agent
@@ -53,121 +49,47 @@ public abstract class TrapInformation {
      * The community string from the actual SNMP packet
      */
     private String m_community;
-    protected Event m_event;
-    private Snmp m_snmpInfo;
-    protected Parms m_parms;
+    TrapProcessor m_trapProcessor;
 
-    protected TrapInformation(InetAddress agent, String community) {
+    protected TrapInformation(InetAddress agent, String community, TrapProcessor trapProcessor) {
         m_agent = agent;
         m_community = community;
+        m_trapProcessor = trapProcessor;
         
-        m_event = new Event();
-        m_event.setSource("trapd");
-        m_event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
-
-        m_snmpInfo = new Snmp();
-        m_event.setSnmp(m_snmpInfo);
-
-        m_parms = new Parms();
-        m_event.setParms(m_parms);
     }
 
-    protected abstract String getTrapInterface();
+    protected abstract InetAddress getTrapAddress();
 
     /**
      * Returns the sending agent's internet address
      */
-    public InetAddress getAgent() {
+    protected InetAddress getAgent() {
         return m_agent;
     }
 
     /**
      * Returns the SNMP community string from the received packet.
      */
-    public String getCommunity() {
+    protected String getCommunity() {
         return m_community;
     }
 
-    protected void setTimeStamp(long timeStamp) {
-        m_snmpInfo.setTimeStamp(timeStamp);
-    }
-
-    protected void setCommunity(String community) {
-        m_snmpInfo.setCommunity(community);
-    }
-
-    protected void setTrapIdentity(TrapIdentity trapIdentity) {
-        setGeneric(trapIdentity.getGeneric());
-        setSpecific(trapIdentity.getSpecific());
-        setEnterpriseId(trapIdentity.getEnterpriseId());
-    
-        if (log().isDebugEnabled()) {
-            log().debug("snmp specific/generic/eid: " + m_snmpInfo.getSpecific() + "/" + m_snmpInfo.getGeneric() + "/" + m_snmpInfo.getId());
-        }
-    
-    
-    }
-
-    protected void setVersion(String version) {
-        m_snmpInfo.setVersion(version);
-    }
-
-    private void setGeneric(int generic) {
-        m_snmpInfo.setGeneric(generic);
-    }
-
-    private void setSpecific(int specific) {
-        m_snmpInfo.setSpecific(specific);
-    }
-
-    private void setEnterpriseId(String enterpriseId) {
-        m_snmpInfo.setId(enterpriseId);
-    }
-
-    protected void setTrapAddress(String trapInterface) {
-        m_event.setSnmphost(trapInterface);
-        m_event.setInterface(trapInterface);
-        if (getNodeId(trapInterface) != -1)
-            m_event.setNodeid(getNodeId(trapInterface));
-    }
-
-    protected void setAgentAddress(String agentAddress) {
-        m_event.setHost(agentAddress);
-    }
-
     protected void validate() {
-        // TODO Auto-generated method stub
-        
+        // by default we do nothing;
     }
     
     protected Category log() {
         return ThreadCategory.getInstance(getClass());
     }
 
-    protected void processVarBind(TrapQueueProcessor processor, SnmpObjectId name, SnmpSyntax obj) {
-        m_parms.addParm(processor.processSyntax(name.toString(), obj));
+    protected InetAddress getAgentAddress() {
+        return getAgent();
     }
-
-    protected String getAgentAddress() {
-        InetAddress agent = getAgent();
-        String agentAddr = new IPv4Address(agent).toString();
-        return agentAddr;
-    }
-
-    public Event getEventForTrap(TrapQueueProcessor processor) {
-        processTrap(processor);
-        return m_event;
-    }
-
-    public long getNodeId(String trapInterface) {
-        
-        // FIXME: cache this nodeId once it is computed
-        String ipNodeId = TrapdIPMgr.getNodeId(trapInterface);
-        long nodeId = -1L;
-        if (ipNodeId != null) {
-            nodeId = Long.parseLong(ipNodeId);
-        }
-        return nodeId;
+    
+    public TrapProcessor getTrapProcessor() {
+        // We do this here to processing of the data is delayed until it is requested.
+        processTrap();
+        return m_trapProcessor;
     }
 
     protected abstract String getVersion();
@@ -180,29 +102,29 @@ public abstract class TrapInformation {
 
     protected abstract TrapIdentity getTrapIdentity();
 
-    protected void processTrap(TrapQueueProcessor processor) {
+    protected void processTrap() {
         
         validate();
         
-        setVersion(getVersion());
-        setCommunity(getCommunity());
-        setAgentAddress(getAgentAddress());
-        setTrapAddress(getTrapInterface());
+        m_trapProcessor.setVersion(getVersion());
+        m_trapProcessor.setCommunity(getCommunity());
+        m_trapProcessor.setAgentAddress(getAgentAddress());
+        m_trapProcessor.setTrapAddress(getTrapAddress());
     
         if (log().isDebugEnabled()) {
-            log().debug(getVersion()+" trap - trapInterface: " + getTrapInterface());
+            log().debug(getVersion()+" trap - trapInterface: " + getTrapAddress());
         }
         
         // time-stamp
-        setTimeStamp(getTimeStamp());
+        m_trapProcessor.setTimeStamp(getTimeStamp());
     
-        setTrapIdentity(getTrapIdentity());
+        m_trapProcessor.setTrapIdentity(getTrapIdentity());
         
         for (int i = 0; i < getPduLength(); i++) {
             SnmpObjectId name = getVarBindAt(i).getName();
             SnmpSyntax obj = getVarBindAt(i).getValue();
             
-            processVarBind(processor, name, obj);
+            m_trapProcessor.processVarBind(name, obj);
         } // end for loop
     }
 
