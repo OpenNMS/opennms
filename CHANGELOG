@@ -76,6 +76,20 @@
 
 1.2.2 to 1.2.3
 ----------------------------------------------------------------------
+- A few small documentation fixes, including bug 1204 (thanks Chris)
+  and bug 1185.
+- Change the $echo variable in opennms.sh to $opennms_echo.  This should
+  take care of problems people were seeing on Mandrake.
+- Added data collections for TCP stats.
+- Modified isReady for PollableService as a work around for hung polling.
+- Added some SNMP Informant collections, reports and thresholds.
+- Added NORTEL Contivity events. Bug 1223. Thx Julian
+- Added some new Foundry event definitions. Bug 1234. Thx Ted
+- Added the --color attribute to jRobin graphs. Bug 1239. Thx Gerald
+- Tweaked the availability report format from suggestions from the
+  list.
+- Removed the possibility that 0.0.0.0 would show up as the IP
+  address for a service in the ifservices table. Thx Bill
 - Applied final version of poll outage editor. Bug 1116. Thx Craig
 
 1.2.1 to 1.2.2

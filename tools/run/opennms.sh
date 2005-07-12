@@ -80,6 +80,9 @@ RUNJAVA_OPTIONS=""
 # URL that this script uses to communicate with a running OpenNMS daemon.
 INVOKE_URL="http://localhost:8181/invoke?objectname=OpenNMS:Name=FastExit"
 
+# Unset http_proxy.  If people have it set, it will likely break wget/curl
+# when it tries to connect to localhost.
+unset http_proxy
 
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
 #### Create $OPENNMS_HOME/etc/opennms.conf and put overrides in there. ####
@@ -249,7 +252,7 @@ doStart(){
 	date >> "$REDIRECT"
 	echo "begin ulimit settings:" >> "$REDIRECT"
 	ulimit -a >> "$REDIRECT"
-	echo "end ulimit settings:" >> "$REDIRECT"
+	echo "end ulimit settings" >> "$REDIRECT"
 	CMD="$JAVA_CMD -classpath $APP_CLASSPATH $APP_VM_PARMS $APP_CLASS $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER"
 	echo "Executing command: $CMD" >> "$REDIRECT"
 	$CMD >>"$REDIRECT" 2>&1 &
@@ -259,7 +262,7 @@ doStart(){
 
     if [ $START_TIMEOUT -eq 0 ]; then
 	# don't wait for OpenNMS to startup
-	$echo "(not waiting for startup) \c"
+	$opennms_echo "(not waiting for startup) \c"
 	return 0
     fi
 
@@ -395,9 +398,9 @@ else
 fi
 
 if [ `echo "\000\c" | wc -c` -eq 1 ]; then
-    echo="echo"
+    opennms_echo="echo"
 elif [ `echo -e "\000\c" | wc -c` -eq 1 ]; then
-    echo="echo -e"
+    opennms_echo="echo -e"
 else
     echo "ERROR: could not get 'echo' to emit just a null character" >&2
     exit 1
@@ -514,7 +517,7 @@ fi
 
 case "$COMMAND" in
     start|spawn)
-	$echo "Starting OpenNMS: \c"
+	$opennms_echo "Starting OpenNMS: \c"
 
 	if [ -f /etc/SuSE-release ]; then
 	    doStart
@@ -543,7 +546,7 @@ case "$COMMAND" in
 	;;
 
     stop)
-	$echo "Stopping OpenNMS: \c"
+	$opennms_echo "Stopping OpenNMS: \c"
 	if [ -f /etc/SuSE-release ]; then
 	    doStop
 
@@ -590,7 +593,7 @@ case "$COMMAND" in
 
     status)
 	if [ -f /etc/SuSE-release ]; then
-	    $echo "Checking for OpenNMS: \c"
+	    $opennms_echo "Checking for OpenNMS: \c"
 	    if [ $VERBOSE -gt 0 ]; then
 		echo ""
 	    fi

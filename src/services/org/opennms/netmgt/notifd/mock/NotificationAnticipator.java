@@ -54,7 +54,7 @@ public class NotificationAnticipator {
 	List m_earlyArrival = new ArrayList();
 	List m_lateBloomers = new ArrayList();
 
-	long m_expectedDiff = 500;
+	long m_expectedDiff = 1000;;
 
 	/**
 	 */
