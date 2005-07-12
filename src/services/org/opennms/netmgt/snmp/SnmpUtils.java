@@ -32,10 +32,15 @@
 package org.opennms.netmgt.snmp;
 
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.Properties;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.protocols.snmp.SnmpOctetString;
+import org.opennms.protocols.snmp.SnmpPduPacket;
+import org.opennms.protocols.snmp.SnmpPduTrap;
+import org.opennms.protocols.snmp.SnmpTrapSession;
 
 public class SnmpUtils {
 
@@ -112,4 +117,20 @@ public class SnmpUtils {
         return getConfig().getProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy");
     }
     
+    public static void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort) throws SocketException {
+        getStrategy().registerForTraps(listener, processorFactory, snmpTrapPort);
+    }
+    
+    public static void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) {
+        getStrategy().unregisterForTraps(listener, snmpTrapPort);
+    }
+    
+    public static void snmpReceivedTrap(TrapNotificationListener listener, SnmpTrapSession session, InetAddress agent, int port, SnmpOctetString community, SnmpPduPacket pdu) {
+        getStrategy().snmpReceivedTrap(listener, session, agent, port, community, pdu);
+    }
+
+    public static void snmpReceivedTrap(TrapNotificationListener listener, SnmpTrapSession session, InetAddress agent, int port, SnmpOctetString community, SnmpPduTrap pdu) {
+        getStrategy().snmpReceivedTrap(listener, session, agent, port, community, pdu);
+    }
+
 }

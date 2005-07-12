@@ -15,6 +15,7 @@ import org.opennms.netmgt.mock.EventWrapper;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockTrapdConfig;
 import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.protocols.snmp.SnmpIPAddress;
 import org.opennms.protocols.snmp.SnmpObjectId;
@@ -299,8 +300,8 @@ public class TrapHandlerTest extends TestCase {
 		pdu.setSpecific(specific);
 		pdu.setTimeStamp(System.currentTimeMillis());
 		pdu.setAgentAddress(new SnmpIPAddress(m_localhost));
-		m_trapHandler.snmpReceivedTrap(null, m_localhost, m_port,
-				new SnmpOctetString("public".getBytes()), pdu);
+		SnmpUtils.snmpReceivedTrap(m_trapHandler, null, m_localhost,
+				m_port, new SnmpOctetString("public".getBytes()), pdu);
 	}
 		
 	public void sendV2Trap(String enterprise, int specific) {
@@ -322,7 +323,7 @@ public class TrapHandlerTest extends TestCase {
 			pdu.addVarBindAt(2, new SnmpVarBind(".1.3.6.1.6.3.1.1.4.3.0",
 					new SnmpObjectId(enterprise)));
 		}
-		m_trapHandler.snmpReceivedTrap(null, m_localhost, m_port,
-				new SnmpOctetString("public".getBytes()), pdu);
+		SnmpUtils.snmpReceivedTrap(m_trapHandler, null, m_localhost,
+				m_port, new SnmpOctetString("public".getBytes()), pdu);
 	}
 }

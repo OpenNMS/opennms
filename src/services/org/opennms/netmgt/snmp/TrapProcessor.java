@@ -8,8 +8,6 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -29,10 +27,27 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.trapd;
+package org.opennms.netmgt.snmp;
 
-public interface TrapNotification {
+import java.net.InetAddress;
 
-    public abstract TrapProcessor getTrapProcessor();
+import org.opennms.protocols.snmp.SnmpObjectId;
+import org.opennms.protocols.snmp.SnmpSyntax;
+
+public interface TrapProcessor {
+
+    public abstract void setCommunity(String community);
+
+    public abstract void setTimeStamp(long timeStamp);
+
+    public abstract void setVersion(String version);
+
+    public abstract void setAgentAddress(InetAddress agentAddress);
+
+    public abstract void processVarBind(SnmpObjectId name, SnmpSyntax obj);
+
+    public abstract void setTrapAddress(InetAddress trapAddress);
+
+    public abstract void setTrapIdentity(TrapIdentity trapIdentity);
 
 }

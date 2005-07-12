@@ -33,6 +33,7 @@ package org.opennms.netmgt.snmp.snmp4j;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.SocketException;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -42,7 +43,13 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpStrategy;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
+import org.opennms.netmgt.snmp.TrapNotificationListener;
+import org.opennms.netmgt.snmp.TrapProcessorFactory;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JWalker.Snmp4JValue;
+import org.opennms.protocols.snmp.SnmpOctetString;
+import org.opennms.protocols.snmp.SnmpPduPacket;
+import org.opennms.protocols.snmp.SnmpPduTrap;
+import org.opennms.protocols.snmp.SnmpTrapSession;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
@@ -457,6 +464,26 @@ public class Snmp4JStrategy implements SnmpStrategy {
             octetString = new OctetString(s);
         }
         return octetString;
+    }
+
+    public void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort) throws SocketException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void snmpReceivedTrap(TrapNotificationListener listener, SnmpTrapSession session, InetAddress agent, int port, SnmpOctetString community, SnmpPduTrap pdu) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void snmpReceivedTrap(TrapNotificationListener listener, SnmpTrapSession session, InetAddress agent, int port, SnmpOctetString community, SnmpPduPacket pdu) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

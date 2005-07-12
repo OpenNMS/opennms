@@ -29,12 +29,15 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.trapd;
+package org.opennms.netmgt.snmp.joesnmp;
 
 import java.net.InetAddress;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.snmp.TrapIdentity;
+import org.opennms.netmgt.snmp.TrapNotification;
+import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpSyntax;
 import org.opennms.protocols.snmp.SnmpVarBind;

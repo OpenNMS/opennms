@@ -29,7 +29,7 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.trapd;
+package org.opennms.netmgt.snmp;
 
 public interface TrapNotificationListener {
 

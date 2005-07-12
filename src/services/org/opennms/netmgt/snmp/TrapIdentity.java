@@ -29,7 +29,7 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.trapd;
+package org.opennms.netmgt.snmp;
 
 import java.util.ArrayList;
 
@@ -38,7 +38,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpSyntax;
 
-class TrapIdentity {
+public class TrapIdentity {
     
     int m_generic;
     int m_specific;
@@ -80,7 +80,7 @@ class TrapIdentity {
     
 
     
-    TrapIdentity(SnmpObjectId snmpTrapOid, SnmpObjectId lastVarBindOid, SnmpSyntax lastVarBindValue) {
+    public TrapIdentity(SnmpObjectId snmpTrapOid, SnmpObjectId lastVarBindOid, SnmpSyntax lastVarBindValue) {
         String snmpTrapOidValue = snmpTrapOid.toString();
         // Force leading "." (dot) if not present
         if (!snmpTrapOidValue.startsWith(".")) {

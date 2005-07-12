@@ -54,6 +54,7 @@ import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.eventd.EventConfigurationManager;
 import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 

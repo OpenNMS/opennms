@@ -37,10 +37,12 @@
 //
 //
 
-package org.opennms.netmgt.trapd;
+package org.opennms.netmgt.snmp.joesnmp;
 
 import java.net.InetAddress;
 
+import org.opennms.netmgt.snmp.TrapIdentity;
+import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.protocols.snmp.SnmpIPAddress;
 import org.opennms.protocols.snmp.SnmpPduTrap;
 import org.opennms.protocols.snmp.SnmpVarBind;

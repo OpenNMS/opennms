@@ -40,7 +40,6 @@
 package org.opennms.netmgt.trapd;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Map;
 
@@ -52,10 +51,11 @@ import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpPduPacket;
-import org.opennms.protocols.snmp.SnmpPduTrap;
-import org.opennms.protocols.snmp.SnmpTrapSession;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.TrapNotification;
+import org.opennms.netmgt.snmp.TrapNotificationListener;
+import org.opennms.netmgt.snmp.TrapProcessor;
+import org.opennms.netmgt.snmp.TrapProcessorFactory;
 
 /**
  * <p>
@@ -82,7 +82,7 @@ import org.opennms.protocols.snmp.SnmpTrapSession;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  * 
  */
-public class TrapHandler implements PausableFiber, TrapNotificationListener {
+public class TrapHandler implements PausableFiber, TrapProcessorFactory, TrapNotificationListener {
 	/**
 	 * The name of the logging category for Trapd.
 	 */
@@ -102,11 +102,6 @@ public class TrapHandler implements PausableFiber, TrapNotificationListener {
 	 * Event manager
 	 */
 	private EventIpcManager m_eventMgr;
-
-	/**
-	 * The trap session used by Trapd to receive traps
-	 */
-	private SnmpTrapSession m_trapSession;
 
 	/**
 	 * The name of this service.
@@ -138,8 +133,6 @@ public class TrapHandler implements PausableFiber, TrapNotificationListener {
 	 */
 	private BroadcastEventProcessor m_eventReader;
 
-    private JoeSnmpTrapNotifier m_trapHandler;
-
 	/**
 	 * <P>
 	 * Constructs a new Trapd object that receives and forwards trap messages
@@ -156,26 +149,6 @@ public class TrapHandler implements PausableFiber, TrapNotificationListener {
 	public void setTrapdConfig(TrapdConfig trapdConfig) {
 		m_trapdConfig = trapdConfig;
 	}
-	
-    private void registerForTraps(TrapNotificationListener listener, int snmpTrapPort) throws SocketException {
-        
-        m_trapHandler = new JoeSnmpTrapNotifier(this);
-        // Initialize the trapd session
-        m_trapSession = new SnmpTrapSession(m_trapHandler, snmpTrapPort);
-    }
-    
-    private void unregisterForTraps(TrapNotificationListener handler, int snmpTrapPort) {
-        m_trapSession.close();
-    }
-
-
-    public void snmpReceivedTrap(SnmpTrapSession session, InetAddress agent, int port, SnmpOctetString community, SnmpPduPacket pdu) {
-        m_trapHandler.snmpReceivedTrap(session, agent, port, community, pdu);
-    }
-    
-    public void snmpReceivedTrap(SnmpTrapSession session, InetAddress agent, int port, SnmpOctetString community, SnmpPduTrap pdu) {
-        m_trapHandler.snmpReceivedTrap(session, agent, port, community, pdu);
-    }
     
     public TrapProcessor createTrapProcessor() {
         return new EventCreator();
@@ -212,7 +185,7 @@ public class TrapHandler implements PausableFiber, TrapNotificationListener {
 
 			log.debug("start: Creating the trap queue processor");
             
-            registerForTraps(this, m_trapdConfig.getSnmpTrapPort());
+            SnmpUtils.registerForTraps(this, this, m_trapdConfig.getSnmpTrapPort());
 
 			log.debug("start: Creating the trap session");
 		} catch (SocketException e) {
@@ -319,7 +292,7 @@ public class TrapHandler implements PausableFiber, TrapNotificationListener {
 		try {
 			log.debug("stop: Closing SNMP trap session.");
 
-            unregisterForTraps(this, m_trapdConfig.getSnmpTrapPort());
+            SnmpUtils.unregisterForTraps(this, m_trapdConfig.getSnmpTrapPort());
 
 			log.debug("stop: SNMP trap session closed.");
 		} catch (IllegalStateException e) {

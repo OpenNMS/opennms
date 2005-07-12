@@ -31,7 +31,10 @@
 //
 package org.opennms.netmgt.snmp.joesnmp;
 
+import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -41,15 +44,23 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpStrategy;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
+import org.opennms.netmgt.snmp.TrapNotificationListener;
+import org.opennms.netmgt.snmp.TrapProcessorFactory;
 import org.opennms.netmgt.snmp.joesnmp.JoeSnmpWalker.JoeSnmpValue;
 import org.opennms.protocols.snmp.SnmpObjectId;
+import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpParameters;
+import org.opennms.protocols.snmp.SnmpPduPacket;
+import org.opennms.protocols.snmp.SnmpPduTrap;
 import org.opennms.protocols.snmp.SnmpPeer;
 import org.opennms.protocols.snmp.SnmpSMI;
 import org.opennms.protocols.snmp.SnmpSession;
 import org.opennms.protocols.snmp.SnmpSyntax;
+import org.opennms.protocols.snmp.SnmpTrapSession;
 
 public class JoeSnmpStrategy implements SnmpStrategy {
+
+    public static Map m_registrations = new HashMap();
 
     public SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker) {
         return new JoeSnmpWalker(agentConfig, name, tracker);
@@ -192,6 +203,79 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         default :
             return SnmpSMI.SNMPV1;
         }
+    }
+    
+    public static class RegistrationInfo {
+        public TrapNotificationListener m_listener;
+        int m_trapPort;
+        
+        SnmpTrapSession m_trapSession;
+        JoeSnmpTrapNotifier m_trapHandler;
+        
+        RegistrationInfo(TrapNotificationListener listener, int trapPort) {
+            if (listener == null) throw new NullPointerException("listener is null");
+    
+            m_listener = listener;
+            m_trapPort = trapPort;
+        }
+    
+        public boolean equals(Object obj) {
+            if (obj instanceof RegistrationInfo) {
+                RegistrationInfo info = (RegistrationInfo) obj;
+                return (m_listener == info.m_listener) && (m_trapPort == info.m_trapPort);
+            }
+            return false;
+        }
+    
+        public int hashCode() {
+            return (m_listener.hashCode() ^ m_trapPort);
+        }
+        
+        public void setSession(SnmpTrapSession trapSession) {
+            m_trapSession = trapSession;
+        }
+        
+        public SnmpTrapSession getSession() {
+            return m_trapSession;
+        }
+        
+        public void setHandler(JoeSnmpTrapNotifier trapHandler) {
+            m_trapHandler = trapHandler;
+        }
+        
+        public JoeSnmpTrapNotifier getHandler() {
+            return m_trapHandler;
+        }
+        
+        
+    }
+
+
+
+    public void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort) throws SocketException {
+        RegistrationInfo info = new RegistrationInfo(listener, snmpTrapPort);
+        
+        JoeSnmpTrapNotifier m_trapHandler = new JoeSnmpTrapNotifier(listener, processorFactory);
+        info.setHandler(m_trapHandler);
+        SnmpTrapSession m_trapSession = new SnmpTrapSession(m_trapHandler, snmpTrapPort);
+        info.setSession(m_trapSession);
+        
+        JoeSnmpStrategy.m_registrations.put(listener, info);
+    }
+
+    public void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) {
+        RegistrationInfo info = (RegistrationInfo)JoeSnmpStrategy.m_registrations.remove(listener);
+        info.getSession().close();
+    }
+
+    public void snmpReceivedTrap(TrapNotificationListener listener, SnmpTrapSession session, InetAddress agent, int port, SnmpOctetString community, SnmpPduPacket pdu) {
+        RegistrationInfo info = (RegistrationInfo)JoeSnmpStrategy.m_registrations.get(listener);
+        info.getHandler().snmpReceivedTrap(session, agent, port, community, pdu);
+    }
+
+    public void snmpReceivedTrap(TrapNotificationListener listener, SnmpTrapSession session, InetAddress agent, int port, SnmpOctetString community, SnmpPduTrap pdu) {
+        RegistrationInfo info = (RegistrationInfo)JoeSnmpStrategy.m_registrations.get(listener);
+        info.getHandler().snmpReceivedTrap(session, agent, port, community, pdu);
     }
 
 }
