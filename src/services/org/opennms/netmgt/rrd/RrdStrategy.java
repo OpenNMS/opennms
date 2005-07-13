@@ -47,7 +47,7 @@ import java.util.List;
  * Defines an abstract strategy for manipulating round robin database file. This
  * is used by the RrdUtils to implement the appropriate behaviour
  */
-interface RrdStrategy {
+public interface RrdStrategy {
 
     /**
      * Initialize the appropriate round robin system

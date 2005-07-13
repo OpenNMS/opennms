@@ -1053,30 +1053,22 @@ final class BroadcastEventProcessor implements EventListener {
         }
     }
 
-    /**
-     * FIXME: finish the doc here
-     * 
-     * @param dbConn
-     * @param nodeLabel
-     * @param ipaddr
-     * @param action
-     * @param hostName
-     * @param txNo
-     * @throws SQLException
-     */
-    private List doUpdateServer(Connection dbConn, String nodeLabel, String ipaddr, String action, String hostName, long txNo) throws SQLException {
+    private List doUpdateServer(Connection dbConn, String nodeLabel, String ipaddr, String action, String hostName, long txNo) throws SQLException, FailedOperationException {
 
         Category log = ThreadCategory.getInstance(getClass());
 
         boolean exists = existsInServerMap(dbConn, hostName, ipaddr);
 
-        if (exists && "DELETE".equalsIgnoreCase(action)) {
+        if ("DELETE".equalsIgnoreCase(action)) {
             return doDeleteInterfaceMappings(dbConn, nodeLabel, ipaddr, hostName, txNo);
-        } else if (!exists && "ADD".equalsIgnoreCase(action)) {
-            return doCreateInterfaceMappings(dbConn, nodeLabel, ipaddr, hostName, txNo);
+        } else if ("ADD".equalsIgnoreCase(action)) {
+            if (exists)
+                throw new FailedOperationException("Could not add interface "+ipaddr+" to NMS server: "+hostName+" because it already exists!");
+            else
+                return doCreateInterfaceMappings(dbConn, nodeLabel, ipaddr, hostName, txNo);
         } else {
-            log.error("updateServerHandler: could not process interface: " + ipaddr + " on NMS server: " + hostName);
-            return Collections.EMPTY_LIST;
+            log.error("updateServerHandler: could not process interface: " + ipaddr + " on NMS server: " + hostName+": action "+action+" unknown");
+            throw new FailedOperationException("Undefined operation "+action+" for updateServer event!");
         }
     }
 
@@ -1092,9 +1084,10 @@ final class BroadcastEventProcessor implements EventListener {
      * @throws SQLException
      * @throws FailedOperationException
      */
-    private List doUpdateService(Connection dbConn, String ipaddr, String serviceName, String action, long txNo) throws SQLException, FailedOperationException {
+    private List doUpdateService(Connection dbConn, String nodeLabel, String ipaddr, String serviceName, String action, long txNo) throws SQLException, FailedOperationException {
         List eventsToSend;
         verifyServiceExists(dbConn, serviceName);
+        verifyInterfaceExists(dbConn, nodeLabel, ipaddr);
 
         boolean mapExists = serviceMappingExists(dbConn, ipaddr, serviceName);
 
@@ -1826,6 +1819,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         EventUtils.checkInterface(event);
         EventUtils.checkService(event);
+        EventUtils.requireParm(event, EventConstants.PARM_NODE_LABEL);
         EventUtils.requireParm(event, EventConstants.PARM_ACTION);
         if (isXmlRpcEnabled()) {
             EventUtils.requireParm(event, EventConstants.PARM_TRANSACTION_NO);
@@ -1833,6 +1827,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
         String action = EventUtils.getParm(event, EventConstants.PARM_ACTION);
+        String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
 
         Category log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled())
@@ -1844,7 +1839,7 @@ final class BroadcastEventProcessor implements EventListener {
             dbConn = DatabaseConnectionFactory.getInstance().getConnection();
             dbConn.setAutoCommit(false);
 
-            eventsToSend = doUpdateService(dbConn, event.getInterface(), event.getService(), action, txNo);
+            eventsToSend = doUpdateService(dbConn, nodeLabel, event.getInterface(), event.getService(), action, txNo);
 
         } catch (SQLException sqlE) {
             log.error("SQLException during handleUpdateService on database.", sqlE);
@@ -2391,6 +2386,13 @@ final class BroadcastEventProcessor implements EventListener {
             }
         }
     }
+    
+    private void verifyInterfaceExists(Connection dbConn, String nodeLabel, String ipaddr) throws SQLException, FailedOperationException {
+        if (!interfaceExists(dbConn, nodeLabel, ipaddr))
+            throw new FailedOperationException("Interface "+ipaddr+" does not exist on a node with nodeLabel "+nodeLabel);
+    }
+
+
 
 } // end class
 

@@ -23,8 +23,6 @@
 	<classpathentry kind="lib" path="lib/jta101.jar"/>
 	<classpathentry kind="lib" path="lib/ldap.jar"/>
 	<classpathentry kind="lib" path="lib/logkit-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/mx4j.jar"/>
-	<classpathentry kind="lib" path="lib/mx4j-tools.jar"/>
 	<classpathentry kind="lib" path="lib/oro204.jar"/>
 	<classpathentry kind="lib" path="lib/pylib152e.jar"/>
 	<classpathentry kind="lib" path="lib/regexp120.jar"/>
@@ -55,6 +53,12 @@
 	<classpathentry kind="lib" path="lib/xml-apis-2.6.2.jar"/>
 	<classpathentry kind="lib" path="lib/xercesImpl-2.6.2.jar"/>
 	<classpathentry kind="lib" path="devlib/httpunit-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/mx4j-tools-3.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/mx4j-3.0.1.jar"/>
+	<classpathentry kind="lib" path="devlib/jmock-cglib-1.0.1.jar"/>
+	<classpathentry kind="lib" path="devlib/jmock-1.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/cglib-nodep-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/spring-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/avalon-framework-cvs-20020806.jar"/>
 	<classpathentry kind="lib" path="lib/fop0205.jar"/>
 	<classpathentry kind="lib" path="lib/jcommon-1.0.0-rc1.jar"/>

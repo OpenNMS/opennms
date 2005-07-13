@@ -44,7 +44,7 @@
     public void saveFactory() throws ServletException {    
       try {
           this.reportFactory.unloadWorkingReport();  // first copy working report into report arrays
-          this.reportFactory.saveCurrent();          // Now unmarshal array to file
+          this.reportFactory.save();          // Now unmarshal array to file
       }   
       catch( Exception e ) {
           throw new ServletException ( "Couldn't save KSC_PerformanceReportFactory.", e );

@@ -9,7 +9,6 @@ package org.opennms.netmgt.poller;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.opennms.netmgt.config.DbConnectionFactory;
 
@@ -28,13 +27,6 @@ public interface QueryManager {
      * @return
      */
     public boolean activeServiceExists(String whichEvent, int nodeId, String ipAddr, String serviceName);
-
-    /**
-     * @param nameToId
-     * @param idToName
-     * @return
-     */
-    public void buildServiceNameToIdMaps(Map nameToId, Map idToName);
 
     /**
      * @param ipaddr
@@ -88,20 +80,20 @@ public interface QueryManager {
     /**
      * @param nodeId
      * @param ipAddr
-     * @param serviceId
+     * @param svcName TODO
      * @param dbid
      * @param time
      */
-    public void openOutage(String outageIdSQL, int nodeId, String ipAddr, int serviceId, int dbid, String time);
+    public void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbid, String time);
 
     /**
      * @param nodeId
      * @param ipAddr
-     * @param serviceId
+     * @param svcName TODO
      * @param dbid
      * @param time
      */
-    public void resolveOutage(int nodeId, String ipAddr, int serviceId, int dbid, String time);
+    public void resolveOutage(int nodeId, String ipAddr, String svcName, int dbid, String time);
 
     /**
      * @param ipAddr

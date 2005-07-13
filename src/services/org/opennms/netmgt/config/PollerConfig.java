@@ -32,11 +32,15 @@
 
 package org.opennms.netmgt.config;
 
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.poller.monitors.ServiceMonitor;
 
 /**
@@ -134,6 +138,15 @@ public interface PollerConfig {
     public abstract boolean serviceInPackageAndEnabled(String svcName, org.opennms.netmgt.config.poller.Package pkg);
 
     /**
+     * Return the Service object with the given name from the give Package.
+     * 
+     * @param svcName the service name to lookup
+     * @param pkg the packe to lookup the the service in
+     * @return the Service object from the package with the give name, null if its not in the pkg
+     */
+    public abstract Service getServiceInPackage(String svcName, Package pkg);
+
+    /**
      * Returns true if the service has a monitor configured, false otherwise.
      * 
      * @param svcName
@@ -222,7 +235,7 @@ public interface PollerConfig {
     public abstract List getRRAList(Package pkg);
     
     public abstract String getNextOutageIdSql();
-
+    
     public Enumeration enumeratePackage();
     
     public Package getPackage(String pkgName);
@@ -233,5 +246,12 @@ public interface PollerConfig {
 
     public ServiceMonitor getServiceMonitor(String svcName);
     
-    public void update() throws Exception;
+    public void update() throws IOException, MarshalException, ValidationException;
+    
+    public void save() throws MarshalException, IOException, ValidationException;
+
+    
+    public abstract void addPackage(Package pkg);
+    
+    public abstract void addMonitor(String svcName, String className);
 }

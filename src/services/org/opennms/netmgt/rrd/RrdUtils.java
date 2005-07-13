@@ -74,14 +74,16 @@ public class RrdUtils {
 
     private static final boolean USE_JNI = RrdConfig.getProperty("org.opennms.rrd.usejni", true);
 
-    private static final boolean USE_K5 = RrdConfig.getProperty("org.opennms.rrd.k5systems.usek5", false);
-
     private static RrdStrategy m_rrdStrategy = null;
 
     private static RrdStrategy getStrategy() throws RrdException {
         if (m_rrdStrategy == null)
             throw new IllegalStateException("RrdUtils not initiailzed");
         return m_rrdStrategy;
+    }
+    
+    public static void setStrategy(RrdStrategy strategy) {
+        m_rrdStrategy = strategy;
     }
 
     /**

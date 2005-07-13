@@ -52,7 +52,7 @@ if(deleteName!=null) {
 	NotifdConfigFactory.getInstance().saveCurrent();
 	ThreshdConfigFactory.getInstance().saveCurrent();
 	CollectdConfigFactory.getInstance().saveCurrent();
-	PollerConfigFactory.getInstance().saveCurrent();
+	PollerConfigFactory.getInstance().save();
 	sendOutagesChangedEvent();
 }
 %>

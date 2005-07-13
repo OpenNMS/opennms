@@ -50,7 +50,7 @@ import org.opennms.netmgt.ConfigFileConstants;
 /**
  * Provides access to the rrd configuration data.
  */
-class RrdConfig {
+public class RrdConfig {
 
     private static Properties m_properties = null;
 
@@ -71,6 +71,11 @@ class RrdConfig {
         }
         return m_properties;
 
+    }
+    
+    
+    public static synchronized void setProperties(Properties properties) {
+        m_properties = properties;
     }
 
     /**

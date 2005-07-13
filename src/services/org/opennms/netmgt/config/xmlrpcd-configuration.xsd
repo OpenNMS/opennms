@@ -100,15 +100,9 @@
     </annotation>
 
     <complexType>
-      <attribute name="hostname" type="string" use="required">
-        <annotation>
-          <documentation>Hostname of an XMLRPC server</documentation>
-        </annotation>
-      </attribute>
-
-      <attribute name="port" type="positiveInteger" use="required">
-        <annotation>
-          <documentation>Port number of an XMLRPC server</documentation>
+      <attribute name="url" type="string" use="required">
+		<annotation>
+          <documentation>URL of an XMLRPC server</documentation>
         </annotation>
       </attribute>
     </complexType>

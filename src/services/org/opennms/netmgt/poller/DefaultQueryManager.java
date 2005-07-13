@@ -33,7 +33,6 @@
 //
 package org.opennms.netmgt.poller;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -44,13 +43,12 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DbConnectionFactory;
+import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.netmgt.utils.Updater;
 
 /**
@@ -139,54 +137,6 @@ public class DefaultQueryManager implements QueryManager {
 
     private Connection getConnection() throws SQLException {
         return m_dbConnectionFactory.getConnection();
-    }
-
-    /**
-     * @param nameToId
-     * @param idToName
-     * @return
-     */
-    public void buildServiceNameToIdMaps(Map nameToId, Map idToName) {
-        Category log = ThreadCategory.getInstance(getClass());
-        java.sql.Connection ctest = null;
-        ResultSet rs = null;
-        try {
-            ctest = getConnection();
-
-            PreparedStatement loadStmt = ctest.prepareStatement(DefaultQueryManager.SQL_RETRIEVE_SERVICE_IDS);
-
-            // go ahead and load the service table
-            //
-            rs = loadStmt.executeQuery();
-            while (rs.next()) {
-                Integer id = new Integer(rs.getInt(1));
-                String name = rs.getString(2);
-
-                nameToId.put(name, id);
-                idToName.put(id, name);
-            }
-        } catch (SQLException sqlE) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Error accessing database.", sqlE);
-            throw new UndeclaredThrowableException(sqlE);
-        } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (Exception e) {
-                    if (log.isInfoEnabled())
-                        log.info("start: an error occured closing the result set", e);
-                }
-            }
-            if (ctest != null) {
-                try {
-                    ctest.close();
-                } catch (Exception e) {
-                    if (log.isInfoEnabled())
-                        log.info("start: an error occured closing the SQL connection", e);
-                }
-            }
-        }
     }
 
     /**
@@ -472,10 +422,12 @@ public class DefaultQueryManager implements QueryManager {
 
 
     
-    public void openOutage(String outageIdSQL, int nodeId, String ipAddr, int serviceId, int dbId, String time) {
+    public void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbId, String time) {
+        
         try {
-            ThreadCategory.getInstance(getClass()).info("opening outage for "+nodeId+":"+ipAddr+":"+serviceId+" with cause "+dbId+":"+time);
-
+            ThreadCategory.getInstance(getClass()).info("opening outage for "+nodeId+":"+ipAddr+":"+svcName+" with cause "+dbId+":"+time);
+            int serviceId = getServiceID(svcName);
+            
             String sql = "insert into outages (outageId, svcLostEventId, nodeId, ipAddr, serviceId, ifLostService) values (" +
             "("+outageIdSQL+"), " +
             "?, ?, ?, ?, ?)";
@@ -490,13 +442,14 @@ public class DefaultQueryManager implements QueryManager {
             Updater updater = new Updater(m_dbConnectionFactory, sql);
             updater.execute(values);
         } catch (Exception e) {
-            ThreadCategory.getInstance(getClass()).fatal(" Error opening outage for "+nodeId+":"+ipAddr+":"+serviceId, e);
+            ThreadCategory.getInstance(getClass()).fatal(" Error opening outage for "+nodeId+":"+ipAddr+":"+svcName, e);
         }
     }
-    
-    public void resolveOutage(int nodeId, String ipAddr, int serviceId, int dbId, String time) {
+
+    public void resolveOutage(int nodeId, String ipAddr, String svcName, int dbId, String time) {
         try {
-            ThreadCategory.getInstance(getClass()).info("resolving outage for "+nodeId+":"+ipAddr+":"+serviceId+" with resolution "+dbId+":"+time);
+            ThreadCategory.getInstance(getClass()).info("resolving outage for "+nodeId+":"+ipAddr+":"+svcName+" with resolution "+dbId+":"+time);
+            int serviceId = getServiceID(svcName);
 
             String sql = "update outages set svcRegainedEventId=?, ifRegainedService=? where nodeId = ? and ipAddr = ? and serviceId = ? and ifRegainedService is null";
             
@@ -510,7 +463,7 @@ public class DefaultQueryManager implements QueryManager {
             Updater updater = new Updater(m_dbConnectionFactory, sql);
             updater.execute(values);
         } catch (Exception e) {
-            ThreadCategory.getInstance(getClass()).fatal(" Error resolving outage for "+nodeId+":"+ipAddr+":"+serviceId, e);
+            ThreadCategory.getInstance(getClass()).fatal(" Error resolving outage for "+nodeId+":"+ipAddr+":"+svcName, e);
         }
     }
     
@@ -530,5 +483,13 @@ public class DefaultQueryManager implements QueryManager {
             ThreadCategory.getInstance(getClass()).fatal(" Error reparenting outage for "+oldNodeId+":"+ipAddr+" to "+newNodeId, e);
         }
         
+    }
+
+    public int getServiceID(String serviceName) {
+        if (serviceName == null) return -1;
+        SingleResultQuerier querier = new SingleResultQuerier(m_dbConnectionFactory, "select serviceId from service where serviceName = ?");
+        querier.execute(serviceName);
+        final Integer result = (Integer)querier.getResult();
+        return result == null ? -1 : result.intValue();
     }
 }

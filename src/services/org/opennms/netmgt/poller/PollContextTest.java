@@ -111,7 +111,7 @@ public class PollContextTest extends TestCase {
         DefaultQueryManager qm = new DefaultQueryManager();
         qm.setDbConnectionFactory(m_db);
         
-        m_pollerConfig = new MockPollerConfig();
+        m_pollerConfig = new MockPollerConfig(m_mNetwork);
         m_pollerConfig.setNodeOutageProcessingEnabled(true);
         m_pollerConfig.setCriticalService("ICMP");
         m_pollerConfig.addPackage("TestPackage");

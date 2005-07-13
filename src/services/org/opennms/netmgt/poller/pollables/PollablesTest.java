@@ -200,7 +200,7 @@ public class PollablesTest extends TestCase {
         m_pollContext.setEventMgr(m_eventMgr);
         m_pollContext.setMockNetwork(m_mockNetwork);
         
-        m_pollerConfig = new MockPollerConfig();
+        m_pollerConfig = new MockPollerConfig(m_mockNetwork);
         m_pollerConfig.setNodeOutageProcessingEnabled(true);
         m_pollerConfig.setCriticalService("ICMP");
         m_pollerConfig.addPackage("TestPackage");

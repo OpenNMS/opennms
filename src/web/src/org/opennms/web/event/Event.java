@@ -241,14 +241,14 @@ public class Event extends Object {
      * parameters.
      */
     public Event(int id, String uei, Date time, String dpName, Date createTime, int severity, String snmp, String host, String snmphost, String parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime) {
-        this(id, uei, time, dpName, createTime, severity, snmp, host, snmphost, parms, nodeID, serviceID, ipAddr, description, logMessage, logGroup, operatorInstruction, autoAction, operatorAction, operatorActionMenuText, notification, troubleTicket, troubleTicketState, forward, mouseOverText, acknowledgeUser, acknowledgeTime, null, null);
+        this(id, uei, time, dpName, createTime, severity, snmp, host, snmphost, parms, nodeID, serviceID, ipAddr, description, logMessage, logGroup, operatorInstruction, autoAction, operatorAction, operatorActionMenuText, notification, troubleTicket, troubleTicketState, forward, mouseOverText, acknowledgeUser, acknowledgeTime, null, null, null);
     }
 
     /**
      * Create an event that represents a real network event with all the
      * parameters.
      */
-    public Event(int id, String uei, Date time, String dpName, Date createTime, int severity, String snmp, String host, String snmphost, String parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime, String nodeLabel, String serviceName) {
+    public Event(int id, String uei, Date time, String dpName, Date createTime, int severity, String snmp, String host, String snmphost, String parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime, String nodeLabel, String serviceName, Integer alarmId) {
 
         if (uei == null || time == null || dpName == null || createTime == null) {
             throw new IllegalArgumentException("Cannot take null values for the following parameters: uei, time, dpName, createTime.");

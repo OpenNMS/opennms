@@ -45,6 +45,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.io.FileWriter;
 import java.net.InetAddress;
@@ -232,12 +233,36 @@ public final class CollectdConfigFactory {
         m_config = (CollectdConfiguration) Unmarshaller.unmarshal(CollectdConfiguration.class, new InputStreamReader(cfgIn));
         cfgIn.close();
 
-        createUrlIpMap();
+        finishConstruction();
+    }
 
+    /**
+     * Public constructor
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     */
+    public CollectdConfigFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
+    
+        m_config = (CollectdConfiguration) Unmarshaller.unmarshal(CollectdConfiguration.class, rdr);
+    
+        finishConstruction();
+    }
+
+    /**
+     * @throws IOException
+     * @throws MarshalException
+     * @throws ValidationException
+     */
+    private void finishConstruction() throws IOException, MarshalException, ValidationException {
+        createUrlIpMap();
         OpennmsServerConfigFactory.init();
         m_verifyServer = OpennmsServerConfigFactory.getInstance().verifyServer();
         m_localServer = OpennmsServerConfigFactory.getInstance().getServerName();
-
         createPackageIpListMap();
     }
 
@@ -321,6 +346,11 @@ public final class CollectdConfigFactory {
             throw new IllegalStateException("The factory has not been initialized");
 
         return m_singleton;
+    }
+    
+    public static synchronized void setInstance(CollectdConfigFactory instance) {
+        m_singleton = instance;
+        m_loaded = true;
     }
 
     /**
@@ -679,4 +709,5 @@ private boolean hasIncludeRange(long addr, Enumeration eincs) {
                     + filterPassed);
         return filterPassed;
     }
+
 }
