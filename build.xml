@@ -1212,7 +1212,8 @@ OpenNMS as part of the post-install.
    </src>
    <include name="**/*.java"/>
    <exclude name="**/*Test.java"/>
-   <exclude name="**/*TestCase.java"/>
+    <exclude name="**/*TestCase.java"/>
+    <exclude name="**/*TestSuite.java"/>
    <exclude name="**/mock/*.java"/>
    <exclude name="**/*tests//*.java"/>
    <exclude name="**/*Growl*" unless="apple.apis.present"/>
@@ -1355,6 +1356,7 @@ OpenNMS as part of the post-install.
    </src>
     <include name="**/*Test.java"/>
     <include name="**/*TestCase.java"/>
+    <include name="**/*TestSuite.java"/>
     <include name="**/mock/*.java"/>
     <include name="**/*tests/*.java"/>
    <classpath>
