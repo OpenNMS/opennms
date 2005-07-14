@@ -1248,7 +1248,7 @@ OpenNMS as part of the post-install.
       </compiler>
       <linker name="gcc"/>
       <fileset dir="${build.jicmp.dir}" includes="IcmpSocket.c"/>
-      <includepath path="${java.home}/include"/>
+      <includepath path="${java.home}/include"/> 
       <includepath path="${java.home}/include${build.java.jnimd.dir}"/>
       <!-- XXX hack -->
       <includepath path="${java.home}/../include"/>
