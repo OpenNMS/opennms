@@ -38,7 +38,7 @@
                <statement>UPDATE alarms SET severity=2 WHERE alarmid = ${alarmid}</statement>
            </action>
            <action name="escalate" >
-               <statement>UPDATE alarms SET severity = least(7,severity+1) WHERE alarmid = ${alarmid} and alarmAckUser is null</statement>
+               <statement>UPDATE alarms SET severity = severity+1 WHERE alarmid = ${alarmid} and severity &lt; 7 and alarmAckUser is null</statement>
            </action>
            <action name="delete" >
                <statement>DELETE FROM alarms WHERE nodeid = ${nodeid} and eventuei = ${eventuei}</statement>
