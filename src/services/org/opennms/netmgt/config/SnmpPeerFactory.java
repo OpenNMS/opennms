@@ -241,7 +241,7 @@ public final class SnmpPeerFactory {
             for (Iterator specificsIterator =
                      definition.getSpecificCollection().iterator();
                  specificsIterator.hasNext();) {
-                String specific = (String) specificsIterator.next();
+                String specific = ((String) specificsIterator.next()).trim();
                 specificsMap.put(new Integer(new IPv4Address(specific).getAddress()),
                                  specific);
             }
@@ -555,7 +555,7 @@ public final class SnmpPeerFactory {
             //
             Enumeration espec = def.enumerateSpecific();
             while (espec.hasMoreElements()) {
-                String saddr = (String) espec.nextElement();
+                String saddr = ((String) espec.nextElement()).trim();
                 try {
                     InetAddress addr = InetAddress.getByName(saddr);
                     if (addr.equals(agentConfig.getAddress())) {
