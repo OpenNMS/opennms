@@ -140,6 +140,7 @@ public class ChartUtilsTest extends OpenNMSTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
+        System.setProperty("java.awt.headless", "true");
         initalizeChartFactory();
     }
 
