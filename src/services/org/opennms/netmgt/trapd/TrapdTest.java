@@ -7,6 +7,7 @@ package org.opennms.netmgt.trapd;
 import java.io.Reader;
 import java.io.StringReader;
 
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
@@ -36,6 +37,7 @@ public class TrapdTest extends OpenNMSTestCase {
 	protected void setUp() throws Exception {
         super.setUp();
 
+        assertNotNull(DatabaseConnectionFactory.getInstance());
         Reader rdr = new StringReader(TRAPD_CONFIG);
         TrapdConfigFactory.setInstance(new TrapdConfigFactory(rdr));
         m_trapd = new Trapd();
