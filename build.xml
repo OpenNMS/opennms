@@ -1368,7 +1368,7 @@ OpenNMS as part of the post-install.
 	
  <target name="test.resources" unless="skip.tests">
  	  <copy todir="${build.tests.dir}">
- 	   <fileset dir="etc">
+ 	   <fileset dir="src/services">
  	    <include name="**/mock/*.properties"/>
  	   </fileset>
  	  </copy>
