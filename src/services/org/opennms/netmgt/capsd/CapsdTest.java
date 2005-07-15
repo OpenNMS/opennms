@@ -62,7 +62,7 @@ public class CapsdTest extends OpenNMSTestCase {
             "    delete-propagation-enabled=\"true\" \n" + 
             "    xmlrpc=\"false\">\n" + 
             "\n" + 
-            "    <protocol-plugin protocol=\"MOCK\" class-name=\"org.opennms.netmgt.capsd.plugins.MockPlugin\" scan=\"on\" user-defined=\"false\">\n" + 
+            "    <protocol-plugin protocol=\"MOCK\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\" scan=\"on\" user-defined=\"false\">\n" + 
             "        <property key=\"timeout\" value=\"2000\" />\n" + 
             "        <property key=\"retry\" value=\"2\" />\n" + 
             "    </protocol-plugin>\n"+
@@ -117,7 +117,7 @@ public class CapsdTest extends OpenNMSTestCase {
             "\n" + 
             "   </package>\n" + 
             "\n" + 
-            "   <monitor service=\"MOCK\"   class-name=\"org.opennms.netmgt.poller.monitors.MockMonitor\"/>\n" + 
+            "   <monitor service=\"MOCK\"   class-name=\"org.opennms.netmgt.poller.monitors.LdapMonitor\"/>\n" + 
             "</poller-configuration>\n" + 
             "\n" + 
             "";
@@ -251,6 +251,10 @@ public class CapsdTest extends OpenNMSTestCase {
         CollectdConfigFactory.setInstance(new CollectdConfigFactory(new StringReader(COLLECTD_CONFIG)));
         
         CapsdConfigFactory.getInstance().setNextSvcIdSql(m_db.getNextServiceIdStatement());
+    }
+
+    protected void tearDown() throws Exception {
+        super.tearDown();
     }
 
 /*    public final void testPause() {

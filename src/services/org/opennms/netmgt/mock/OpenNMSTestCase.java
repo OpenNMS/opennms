@@ -1443,6 +1443,8 @@ public class OpenNMSTestCase extends TestCase {
             m_db.drop();
             super.tearDown();
         }
+        assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
+        
     }
 
     protected void setStartEventd(boolean startEventd) {
