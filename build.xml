@@ -1365,8 +1365,16 @@ OpenNMS as part of the post-install.
    </classpath>
   </javac>
  </target>
+	
+ <target name="test.resources" unless="skip.tests">
+ 	  <copy todir="${build.tests.dir}">
+ 	   <fileset dir="etc">
+ 	    <include name="**/mock/*.properties"/>
+ 	   </fileset>
+ 	  </copy>
+ </target>
 
- <target name="test" depends="test.prep, java.compile, junit.compile"
+ <target name="test" depends="test.prep, java.compile, junit.compile, test.resources"
 	 description="Run all the unit tests on the opennms service code"
 	 unless="skip.tests">
    <junit fork="yes" forkMode="perBatch" errorProperty="test.failed" failureProperty="test.failed">
