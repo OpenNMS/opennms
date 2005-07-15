@@ -11,7 +11,6 @@ import junit.framework.TestSuite;
 
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.snmp.PropertySettingTestSuite;
-import org.opennms.netmgt.snmp.SnmpUtilsTest;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
@@ -25,7 +24,7 @@ public class SnmpMonitorTest extends TestCase {
     SnmpMonitorStrategy monitor;
 
     public static TestSuite suite() {
-        Class testClass = SnmpUtilsTest.class;
+        Class testClass = SnmpMonitorTest.class;
         TestSuite suite = new TestSuite(testClass.getName());
         suite.addTest(new PropertySettingTestSuite(testClass, "JoeSnmp Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy"));
         suite.addTest(new PropertySettingTestSuite(testClass, "Snmp4J Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy"));
@@ -39,15 +38,8 @@ public class SnmpMonitorTest extends TestCase {
     public void tearDown() {
         monitor = null;
     }
-
+    
     public void testMeetsCriteriaWithNullResult() {
-        monitor = new SnmpMonitor();
-        assertNotNull(monitor);
-        SnmpValue result = null;
-        assertFalse(monitor.meetsCriteria(result, null, null));
-    }
-
-    public void testV3MeetsCriteriaWithNullResult() {
         monitor = new SnmpMonitor();
         assertNotNull(monitor);
         SnmpValue result = null;
