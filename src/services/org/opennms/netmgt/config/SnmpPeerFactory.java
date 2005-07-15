@@ -544,6 +544,9 @@ public final class SnmpPeerFactory {
         }
         
         SnmpAgentConfig agentConfig = new SnmpAgentConfig(agentInetAddress);
+        
+        //Now set the defaults from the m_config
+        setSnmpAgentConfig(agentConfig, new Definition(), requestedSnmpVersion);
 
         // Attempt to locate the node
         //
@@ -695,6 +698,7 @@ public final class SnmpPeerFactory {
      */
     private void setCommonAttributes(SnmpAgentConfig agentConfig, Definition def, int version) {
         agentConfig.setVersion(version);
+        agentConfig.setPort(determinePort(def));
         agentConfig.setRetries(determineRetries(def));
         agentConfig.setTimeout((int)determineTimeout(def));
         agentConfig.setMaxRequestSize(determineMaxRequestSize(def));
