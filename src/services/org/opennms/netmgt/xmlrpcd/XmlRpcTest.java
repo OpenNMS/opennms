@@ -65,12 +65,6 @@ public class XmlRpcTest extends MockObjectTestCase {
         Provisioner bean = (Provisioner)m_mockProvisioner.proxy();
         
         m_proxy = createRemoteProxy(bean);
-//       m_proxy = createLocalProxy(bean);
-        
-//        m_proxy = createRemoteProxy(new OpenNMSProvisioner());
-//        m_proxy = createRemoteProxy("http://onms1.opennms.com:9192/RPC2");
-        
-        //Thread.sleep(600000);
 
     }
     
@@ -86,6 +80,8 @@ public class XmlRpcTest extends MockObjectTestCase {
         m_exporter.setService(bean);
         m_exporter.setWebServer(m_webServer);
         m_exporter.afterPropertiesSet();
+        
+        Thread.sleep(1000);
         
         return createRemoteProxy("http://localhost:9192/RPC2");
     }
@@ -106,6 +102,7 @@ public class XmlRpcTest extends MockObjectTestCase {
             wsf.setSecure(false);
             wsf.afterPropertiesSet();
             m_webServer = (WebServer)wsf.getObject();
+            Thread.sleep(1000);
         }
     }
     
