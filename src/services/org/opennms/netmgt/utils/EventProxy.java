@@ -34,8 +34,6 @@
 
 package org.opennms.netmgt.utils;
 
-import java.lang.reflect.UndeclaredThrowableException;
-
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 

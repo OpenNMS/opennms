@@ -18,10 +18,6 @@ import javax.mail.internet.MimeMessage;
 
 import alt.dev.jmta.JMTA;
 */
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-import org.apache.log4j.Category;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 
 /**

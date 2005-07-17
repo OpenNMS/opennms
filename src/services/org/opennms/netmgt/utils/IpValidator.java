@@ -31,7 +31,6 @@
 package org.opennms.netmgt.utils;
 
 import java.lang.NumberFormatException;
-import java.net.UnknownHostException;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Category;
