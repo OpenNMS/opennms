@@ -79,13 +79,22 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 public class Snmp4JStrategy implements SnmpStrategy {
     
     private Snmp4JValueFactory m_valueFactory;
+    
+    static private boolean m_initialized = false;
 
     //Initialize for v3 communications
-    static {
-        LogFactory.setLogFactory(new Log4jLogFactory());
-        MPv3.setEnterpriseID(5813);
-        USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
-        SecurityModels.getInstance().addSecurityModel(usm);
+    private static void initialize() {
+        if (!m_initialized) {
+            LogFactory.setLogFactory(new Log4jLogFactory());
+            MPv3.setEnterpriseID(5813);
+            USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
+            SecurityModels.getInstance().addSecurityModel(usm);
+            m_initialized = true;
+        }
+    }
+    
+    public Snmp4JStrategy() {
+        Snmp4JStrategy.initialize();
     }
     
     /**
