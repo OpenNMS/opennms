@@ -70,7 +70,7 @@ public final class PollerConfigFactory extends PollerConfigManager {
     /**
      * The singleton instance of this factory
      */
-    private static PollerConfigFactory m_singleton = null;
+    private static PollerConfig m_singleton = null;
 
     /**
      * This member is set to true if the configuration file has been loaded.
@@ -156,14 +156,14 @@ public final class PollerConfigFactory extends PollerConfigManager {
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
-    public static synchronized PollerConfigFactory getInstance() {
+    public static synchronized PollerConfig getInstance() {
         if (!m_loaded)
             throw new IllegalStateException("The factory has not been initialized");
 
         return m_singleton;
     }
     
-    public static synchronized void setInstance(PollerConfigFactory instance) {
+    public static synchronized void setInstance(PollerConfig instance) {
         m_singleton = instance;
         m_loaded = true;
     }

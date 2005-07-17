@@ -17,7 +17,6 @@
 	<bean id="capsdConfig"
 		class="org.opennms.netmgt.config.CapsdConfigFactory"
 		depends-on="capsdConfigFactory-init"
-		init-method="init"
 		factory-method="getInstance"/>
 
 	<bean id="provisioner" class="org.opennms.netmgt.xmlrpcd.OpenNMSProvisioner">

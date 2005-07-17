@@ -34,6 +34,7 @@ package org.opennms.netmgt.mock;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -54,6 +55,7 @@ import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
+import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.poller.monitors.ServiceMonitor;
 
@@ -411,6 +413,15 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     
     public void addPackage(Package pkg) {
         m_pkgs.add(pkg);
+    }
+
+    public PollerConfiguration getConfiguration() {
+        // FIXME: need to actually implement this
+        return null;
+    }
+
+    public List getAllPackageMatches(String ipAddr) {
+        return Collections.EMPTY_LIST;
     }
 
 

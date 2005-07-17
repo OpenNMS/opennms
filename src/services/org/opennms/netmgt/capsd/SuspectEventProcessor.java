@@ -73,9 +73,11 @@ import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
 import org.opennms.netmgt.capsd.snmp.IpAddrTable;
 import org.opennms.netmgt.capsd.snmp.SystemGroup;
+import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.utils.IPSorter;
@@ -489,8 +491,8 @@ final class SuspectEventProcessor implements Runnable {
         
         Category log = ThreadCategory.getInstance(getClass());
 
-        CapsdConfigFactory cFactory = CapsdConfigFactory.getInstance();
-        PollerConfigFactory pollerCfgFactory = PollerConfigFactory.getInstance();
+        CapsdConfig cFactory = CapsdConfigFactory.getInstance();
+        PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
 
         Date now = new Date();
 
@@ -1213,7 +1215,7 @@ final class SuspectEventProcessor implements Runnable {
     public void run() {
         Category log = ThreadCategory.getInstance(getClass());
 
-        CapsdConfigFactory cFactory = CapsdConfigFactory.getInstance();
+        CapsdConfig cFactory = CapsdConfigFactory.getInstance();
 
         // Convert interface InetAddress object
         //

@@ -40,6 +40,7 @@ import java.util.Map;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.poller.monitors.ServiceMonitor;
 
@@ -234,6 +235,8 @@ public interface PollerConfig {
      */
     public abstract List getRRAList(Package pkg);
     
+    public abstract List getAllPackageMatches(String ipAddr);
+    
     public abstract String getNextOutageIdSql();
     
     public Enumeration enumeratePackage();
@@ -254,4 +257,6 @@ public interface PollerConfig {
     public abstract void addPackage(Package pkg);
     
     public abstract void addMonitor(String svcName, String className);
+
+    public abstract PollerConfiguration getConfiguration();
 }

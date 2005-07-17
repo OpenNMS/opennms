@@ -57,7 +57,9 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.BundleLists;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CapsdConfigFactory;
+import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.capsd.CapsdConfiguration;
 import org.opennms.netmgt.config.capsd.ProtocolPlugin;
@@ -92,9 +94,9 @@ public class AddPollerConfigServlet extends HttpServlet {
 
     Properties props = new Properties();
 
-    PollerConfigFactory pollerFactory = null;
+    PollerConfig pollerFactory = null;
 
-    CapsdConfigFactory capsdFactory = null;
+    CapsdConfig capsdFactory = null;
 
     boolean errorflag = false;
 

@@ -742,7 +742,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
         PreparedStatement svcUpdateStmt = conn.prepareStatement(SQL_DB_UPDATE_SERVICE_FOR_NIP);
     
         // get a handle to the PollerConfigFactory
-        PollerConfigFactory pollerCfgFactory = PollerConfigFactory.getInstance();
+        PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
     
         try {
             // Loop through interface list and determine if there has been a

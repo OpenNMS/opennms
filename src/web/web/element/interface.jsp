@@ -41,7 +41,7 @@
 
 -->
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.netmgt.config.PollerConfigFactory,org.opennms.web.element.*,java.util.*,org.opennms.web.event.*,org.opennms.web.performance.*,org.opennms.netmgt.utils.IfLabel,org.opennms.web.response.*" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.netmgt.config.PollerConfigFactory,org.opennms.netmgt.config.PollerConfig,org.opennms.web.element.*,java.util.*,org.opennms.web.event.*,org.opennms.web.performance.*,org.opennms.netmgt.utils.IfLabel,org.opennms.web.response.*" %>
 
 <%!
     protected int telnetServiceId;
@@ -150,7 +150,7 @@
         httpIp = ipAddr;
     }
     PollerConfigFactory.init();
-    PollerConfigFactory pollerCfgFactory = PollerConfigFactory.getInstance();
+    PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
     pollerCfgFactory.rebuildPackageIpListMap();
 
 %>

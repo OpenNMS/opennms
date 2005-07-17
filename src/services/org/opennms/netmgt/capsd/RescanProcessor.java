@@ -86,9 +86,11 @@ import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IfTableEntry;
 import org.opennms.netmgt.capsd.snmp.IpAddrTable;
 import org.opennms.netmgt.capsd.snmp.SystemGroup;
+import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.xml.event.Event;
@@ -421,7 +423,7 @@ public final class RescanProcessor implements Runnable {
         // efficient to just do it once here.
         if (log.isDebugEnabled())
             log.debug("updateInterfaces: Rebuilding PackageIpListMap");
-        PollerConfigFactory pollerCfgFactory = PollerConfigFactory.getInstance();
+        PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
         pollerCfgFactory.rebuildPackageIpListMap();
 
         // List of update interfaces
@@ -1035,8 +1037,8 @@ public final class RescanProcessor implements Runnable {
     private void updateInterfaceInfo(Connection dbc, Date now, DbNodeEntry node, DbIpInterfaceEntry dbIpIfEntry, IfSnmpCollector snmpc, boolean isNewIpEntry, boolean isReparented, boolean doesSnmp) throws SQLException {
         Category log = ThreadCategory.getInstance(getClass());
 
-        CapsdConfigFactory cFactory = CapsdConfigFactory.getInstance();
-        PollerConfigFactory pollerCfgFactory = PollerConfigFactory.getInstance();
+        CapsdConfig cFactory = CapsdConfigFactory.getInstance();
+        PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
 
         DbIpInterfaceEntry currIpIfEntry;
 
@@ -1213,8 +1215,8 @@ public final class RescanProcessor implements Runnable {
     private void updateServiceInfo(Connection dbc, DbNodeEntry node, DbIpInterfaceEntry dbIpIfEntry, boolean isNewIpEntry, List protocols) throws SQLException {
         Category log = ThreadCategory.getInstance(getClass());
 
-        CapsdConfigFactory cFactory = CapsdConfigFactory.getInstance();
-        PollerConfigFactory pollerCfgFactory = PollerConfigFactory.getInstance();
+        CapsdConfig cFactory = CapsdConfigFactory.getInstance();
+        PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
         org.opennms.netmgt.config.poller.Package ipPkg = null;
 
         InetAddress ifaddr = dbIpIfEntry.getIfAddress();
@@ -1342,8 +1344,8 @@ public final class RescanProcessor implements Runnable {
         // status changed?
 
         Category log = ThreadCategory.getInstance(getClass());
-        PollerConfigFactory pollerCfgFactory = PollerConfigFactory.getInstance();
-        CapsdConfigFactory cFactory = CapsdConfigFactory.getInstance();
+        PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
+        CapsdConfig cFactory = CapsdConfigFactory.getInstance();
         InetAddress ifaddr = dbIpIfEntry.getIfAddress();
         org.opennms.netmgt.config.poller.Package ipPkg = null;
 

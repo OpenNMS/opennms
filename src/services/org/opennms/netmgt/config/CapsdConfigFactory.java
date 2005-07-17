@@ -79,7 +79,7 @@ public final class CapsdConfigFactory extends CapsdConfigManager {
     /**
      * The singleton instance of this factory
      */
-    private static CapsdConfigFactory m_singleton = null;
+    private static CapsdConfig m_singleton = null;
 
     /**
      * Constructs a new CapsdConfigFactory object for access to the Capsd
@@ -194,14 +194,14 @@ public final class CapsdConfigFactory extends CapsdConfigManager {
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
-    public static synchronized CapsdConfigFactory getInstance() {
+    public static synchronized CapsdConfig getInstance() {
         if (!m_loaded)
             throw new IllegalStateException("The factory has not been initialized");
 
         return m_singleton;
     }
     
-    public static synchronized void setInstance(CapsdConfigFactory instance) {
+    public static synchronized void setInstance(CapsdConfig instance) {
         m_singleton = instance;
         m_loaded = true;
     }

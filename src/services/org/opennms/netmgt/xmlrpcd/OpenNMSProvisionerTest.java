@@ -39,13 +39,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Vector;
 
+import org.apache.xmlrpc.XmlRpc;
+import org.apache.xmlrpc.XmlRpcClient;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
+import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CapsdConfigManager;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.PollerConfigManager;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
@@ -54,6 +59,7 @@ import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.xmlrpcd.jmx.Provisioner;
 
 public class OpenNMSProvisionerTest extends MockObjectTestCase {
 
@@ -134,6 +140,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
         
         m_capsdConfig = new TestCapsdConfigManager(CAPSD_CONFIG);
         m_capsdConfig.setNextSvcIdSql(db.getNextServiceIdStatement());
+        CapsdConfigFactory.setInstance(m_capsdConfig);
         
         Connection conn = db.getConnection();
         try {
@@ -143,6 +150,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
         }
         
         m_pollerConfig = new TestPollerConfigManager(POLLER_CONFIG, "localhost", false);
+        PollerConfigFactory.setInstance(m_pollerConfig);
         
         m_provisioner.setCapsdConfig(m_capsdConfig);
         m_provisioner.setPollerConfig(m_pollerConfig);
@@ -360,6 +368,35 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
         m_provisioner.addServiceTCP("MyTCP", 5, 55, 555, 5555, 55555, 505, "AHOY");
         checkTCPConfiguration("MyTCP", "MyTCP", 5, 55, 555, 5555, 55555, 505, "AHOY");
     }
+    
+    public void testStartingAndStopping() throws Exception {
+        MockUtil.setupLogging();
+        XmlRpc.debug = true;
+        
+        Provisioner provisioner = new Provisioner();
+        provisioner.init();
+        provisioner.start();
+        
+        XmlRpcClient client = new XmlRpcClient("http://localhost:9192/RPC2");
+        Vector parms = new Vector();
+        parms.add("default");
+        parms.add("ICMP");
+        Map map = (Map)client.execute("getServiceConfiguration", parms);
+        
+        assertEquals("ICMP", map.get("serviceid"));
+        
+        provisioner.stop();
+        
+        try {
+            Map map2 = (Map)client.execute("getServiceConfiguration", parms);
+            fail("Expected the server to be stopped.");
+        } catch (Exception e) {
+            
+        }
+
+
+    }
+
     
     // TODO: If a service is not in capsd it gets deleted at startup.. test that
     // adding one adds it to casd as well

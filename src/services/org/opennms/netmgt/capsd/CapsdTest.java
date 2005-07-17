@@ -244,13 +244,14 @@ public class CapsdTest extends OpenNMSTestCase {
         super.setUp();
         m_capsd = Capsd.getInstance();
         DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(new StringReader(DB_SCHEMA_CONFIG)));
-        CapsdConfigFactory.setInstance(new CapsdConfigFactory(new StringReader(CAPSD_CONFIG)));
+        CapsdConfigFactory capsdConfigFactory = new CapsdConfigFactory(new StringReader(CAPSD_CONFIG));
+        capsdConfigFactory.setNextSvcIdSql(m_db.getNextServiceIdStatement());
+        CapsdConfigFactory.setInstance(capsdConfigFactory);
+        
         OpennmsServerConfigFactory onmsSvrConfig = new OpennmsServerConfigFactory(new StringReader(SVR_CONFIG));
         OpennmsServerConfigFactory.setInstance(onmsSvrConfig);
         PollerConfigFactory.setInstance(new PollerConfigFactory(new StringReader(POLLER_CONFIG), onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer()));
         CollectdConfigFactory.setInstance(new CollectdConfigFactory(new StringReader(COLLECTD_CONFIG)));
-        
-        CapsdConfigFactory.getInstance().setNextSvcIdSql(m_db.getNextServiceIdStatement());
     }
 
     protected void tearDown() throws Exception {

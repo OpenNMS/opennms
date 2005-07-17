@@ -39,7 +39,7 @@
 
 -->
 
-<%@page language="java" contentType="text/html" session="true" import="java.io.File,java.util.*,org.opennms.netmgt.config.capsd.*,org.opennms.netmgt.config.poller.*,org.opennms.netmgt.config.PollerConfigFactory, org.opennms.netmgt.config.CapsdConfigFactory,org.opennms.core.resource.Vault,org.opennms.core.utils.BundleLists,org.opennms.netmgt.ConfigFileConstants,java.io.FileInputStream" %>
+<%@page language="java" contentType="text/html" session="true" import="java.io.File,java.util.*,org.opennms.netmgt.config.capsd.*,org.opennms.netmgt.config.poller.*,org.opennms.netmgt.config.PollerConfigFactory, org.opennms.netmgt.config.PollerConfig, org.opennms.netmgt.config.CapsdConfigFactory,org.opennms.core.resource.Vault,org.opennms.core.utils.BundleLists,org.opennms.netmgt.ConfigFileConstants,java.io.FileInputStream" %>
 <%
 	HashMap scanablePlugin = new HashMap();
 	HashMap scanableUserPlugin = new HashMap();
@@ -54,7 +54,7 @@
         String[] protocols = BundleLists.parseBundleList( this.props.getProperty( "services" ));
  
 	java.util.List polledPlugins = new ArrayList();
-	PollerConfigFactory pollerFactory = null;
+	PollerConfig pollerFactory = null;
 	PollerConfiguration pollerConfig = null;
 	try
 	{
