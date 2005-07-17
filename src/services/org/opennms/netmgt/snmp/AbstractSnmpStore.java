@@ -86,22 +86,8 @@ public abstract class AbstractSnmpStore {
         return getInt32(IFINDEX);
     }
 
-    protected void putIfIndex(final int ifIndex) {
-        SnmpValue ifIndexValue = new AbstractSnmpValue() {
-            public boolean isNumeric() {
-                return true;
-            }
-            public int toInt() {
-                return ifIndex;
-            }
-            public long toLong() {
-                return ifIndex;
-            }
-            public String toString() {
-                return Integer.toString(ifIndex);
-            }
-        };
-        putValue(IFINDEX, ifIndexValue);
+    protected void putIfIndex(int ifIndex) {
+        putValue(IFINDEX, SnmpUtils.getValueFactory().getInt32(ifIndex));
     }
     
     public int size() {

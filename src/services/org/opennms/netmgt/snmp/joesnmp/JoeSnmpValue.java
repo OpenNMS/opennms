@@ -29,16 +29,23 @@
 //
 package org.opennms.netmgt.snmp.joesnmp;
 
+import java.math.BigInteger;
 import java.net.InetAddress;
 
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.protocols.snmp.SnmpCounter32;
 import org.opennms.protocols.snmp.SnmpCounter64;
 import org.opennms.protocols.snmp.SnmpEndOfMibView;
 import org.opennms.protocols.snmp.SnmpIPAddress;
 import org.opennms.protocols.snmp.SnmpInt32;
+import org.opennms.protocols.snmp.SnmpNull;
+import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpOctetString;
+import org.opennms.protocols.snmp.SnmpOpaque;
 import org.opennms.protocols.snmp.SnmpSMI;
 import org.opennms.protocols.snmp.SnmpSyntax;
+import org.opennms.protocols.snmp.SnmpTimeTicks;
 import org.opennms.protocols.snmp.SnmpUInt32;
 
 class JoeSnmpValue implements SnmpValue {
@@ -47,6 +54,80 @@ class JoeSnmpValue implements SnmpValue {
     JoeSnmpValue(SnmpSyntax value) {
         m_value = value;
     }
+    
+    JoeSnmpValue(int typeId, byte[] bytes) {
+        switch(typeId) {
+        case SnmpSMI.SMI_COUNTER64: {
+            BigInteger val = new BigInteger(bytes);
+            m_value = new SnmpCounter64(val);
+            break;
+        }
+        case SnmpSMI.SMI_INTEGER: {
+            BigInteger val = new BigInteger(bytes);
+            m_value = new SnmpInt32(val.intValue());
+            break;
+        }
+        case SnmpSMI.SMI_COUNTER32: {
+            BigInteger val = new BigInteger(bytes);
+            m_value = new SnmpCounter32(val.longValue());
+            break;
+        }
+        case SnmpSMI.SMI_TIMETICKS: {
+            BigInteger val = new BigInteger(bytes);
+            m_value = new SnmpTimeTicks(val.longValue());
+            break;
+        }
+        case SnmpSMI.SMI_UNSIGNED32: {
+            BigInteger val = new BigInteger(bytes);
+            m_value = new SnmpUInt32(val.longValue());
+            break;
+        }
+        case SnmpSMI.SMI_IPADDRESS: {
+            m_value = new SnmpIPAddress(bytes);
+            break;
+        }
+        case SnmpSMI.SMI_OBJECTID: {
+            m_value = new SnmpObjectId(new String(bytes));
+            break;
+        }
+        case SnmpSMI.SMI_OPAQUE: {
+            m_value = new SnmpOpaque(bytes);
+            break;
+        }
+        case SnmpSMI.SMI_STRING: {
+            m_value = new SnmpOctetString(bytes);
+            break;
+        }
+        case SnmpSMI.SMI_NULL: {
+            m_value = new SnmpNull();
+            break;
+        }
+        default:
+            throw new IllegalArgumentException("invaldi type id "+typeId);
+        }    
+    }
+    
+    public byte[] getBytes() {
+        switch (m_value.typeId()) {
+        case SnmpSMI.SMI_COUNTER64:
+        case SnmpSMI.SMI_INTEGER:
+        case SnmpSMI.SMI_COUNTER32:
+        case SnmpSMI.SMI_TIMETICKS:
+        case SnmpSMI.SMI_UNSIGNED32:
+            return toBigInteger().toByteArray();
+        case SnmpSMI.SMI_IPADDRESS:
+            return toInetAddress().getAddress();
+        case SnmpSMI.SMI_OBJECTID:
+            return ((SnmpObjectId)m_value).toString().getBytes();
+        case SnmpSMI.SMI_OPAQUE:
+        case SnmpSMI.SMI_STRING:
+            return ((SnmpOctetString)m_value).getString();
+        case SnmpSMI.SMI_NULL:
+            return new byte[0];
+        default:
+            throw new IllegalArgumentException("cannot convert "+m_value+" to a byte array");
+        }
+    }        
 
     public boolean isEndOfMib() {
         return m_value instanceof SnmpEndOfMibView;
@@ -94,6 +175,10 @@ class JoeSnmpValue implements SnmpValue {
             return Long.parseLong(m_value.toString());
         }
     }
+    
+    public int getType() {
+        return m_value.typeId();
+    }
 
     public String toDisplayString() {
         return m_value.toString();
@@ -120,4 +205,56 @@ class JoeSnmpValue implements SnmpValue {
     public String toString() {
         return toDisplayString();
     }
+
+    public BigInteger toBigInteger() {
+        switch (m_value.typeId()) {
+        case SnmpSMI.SMI_COUNTER64:
+            return ((SnmpCounter64)m_value).getValue();
+        case SnmpSMI.SMI_INTEGER:
+            return BigInteger.valueOf(((SnmpInt32)m_value).getValue());
+        case SnmpSMI.SMI_COUNTER32:
+        case SnmpSMI.SMI_TIMETICKS:
+        case SnmpSMI.SMI_UNSIGNED32:
+            return BigInteger.valueOf(((SnmpUInt32)m_value).getValue());
+        default:
+            return new BigInteger(m_value.toString());
+        }
+    }
+
+    public SnmpObjId toSnmpObjId() {
+        switch (m_value.typeId()) {
+        case SnmpSMI.SMI_OBJECTID:
+            return SnmpObjId.get(((SnmpObjectId)m_value).getIdentifiers());
+        default:
+            throw new IllegalArgumentException("cannt convert "+m_value+" to a SnmpObjId");
+        }
+    }
+
+    public boolean isDisplayable() {
+        if (isNumeric())
+            return true;
+        
+        if (getType() == SnmpValue.SNMP_OBJECT_IDENTIFIER || getType() == SnmpValue.SNMP_IPADDRESS)
+            return true;
+        
+        if (getType() == SnmpValue.SNMP_OCTET_STRING) {
+            byte[] bytes = getBytes();
+        
+            for(int i = 0; i > bytes.length; i++) {
+                byte b = bytes[i];
+                if ((b < 32 && b != 9 && b != 10 && b != 13 && b != 0) || b == 127)
+                    return false;
+            }
+            return true;
+        }
+        
+        return false;
+    }
+
+    public boolean isNull() {
+        return getType() == SnmpValue.SNMP_NULL;
+    }
+    
+    
+    
 }

@@ -31,9 +31,16 @@
 //
 package org.opennms.netmgt.snmp;
 
+import java.math.BigInteger;
 import java.net.InetAddress;
 
 public abstract class AbstractSnmpValue implements SnmpValue {
+    
+    private int m_type;
+    
+    public AbstractSnmpValue(int type) {
+        m_type = type;
+    }
 
     public boolean isEndOfMib() {
         return false;
@@ -52,7 +59,7 @@ public abstract class AbstractSnmpValue implements SnmpValue {
     }
 
     public InetAddress toInetAddress() {
-        throw new IllegalArgumentException("Unable to convert " + this + " to an IpAddress");
+        throw new IllegalArgumentException("Unable to convert " + this + " to an InetAddress");
     }
 
     public long toLong() {
@@ -62,5 +69,18 @@ public abstract class AbstractSnmpValue implements SnmpValue {
     public String toHexString() {
         throw new IllegalArgumentException("Unable to convert " + this + " to a hex string");
     }
+
+    public int getType() {
+        return m_type;
+    }
+
+    public BigInteger toBigInteger() {
+        throw new IllegalArgumentException("Unable to convert " + this + " to a big integer");
+    }
+
+    public SnmpObjId toSnmpObjId() {
+        throw new IllegalArgumentException("Unable to convert " + this + " to an SnmpObjId");
+    }
+
 
 }

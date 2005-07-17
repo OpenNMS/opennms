@@ -32,7 +32,6 @@
 package org.opennms.netmgt.snmp.snmp4j;
 
 import java.io.IOException;
-import java.net.InetAddress;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -47,99 +46,10 @@ import org.snmp4j.Target;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.event.ResponseListener;
 import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.smi.Counter64;
-import org.snmp4j.smi.Integer32;
-import org.snmp4j.smi.IpAddress;
 import org.snmp4j.smi.OID;
-import org.snmp4j.smi.OctetString;
-import org.snmp4j.smi.SMIConstants;
-import org.snmp4j.smi.UnsignedInteger32;
-import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 
 public class Snmp4JWalker extends SnmpWalker {
-    
-    protected static class Snmp4JValue implements SnmpValue {
-        Variable m_value;
-        
-        Snmp4JValue(Variable value) {
-            m_value = value;
-        }
-        
-        public boolean isEndOfMib() {
-            return m_value.getSyntax() == SMIConstants.EXCEPTION_END_OF_MIB_VIEW;
-        }
-
-        public boolean isNumeric() {
-            switch (m_value.getSyntax()) {
-            case SMIConstants.SYNTAX_INTEGER:
-            case SMIConstants.SYNTAX_COUNTER32:
-            case SMIConstants.SYNTAX_COUNTER64:
-            case SMIConstants.SYNTAX_TIMETICKS:
-            case SMIConstants.SYNTAX_UNSIGNED_INTEGER32:
-                return true;
-            default:
-                return false;
-            }
-        }
-        
-        public int toInt() {
-            switch (m_value.getSyntax()) {
-            case SMIConstants.SYNTAX_COUNTER64:
-                return (int)((Counter64)m_value).getValue();
-            case SMIConstants.SYNTAX_INTEGER:
-                return ((Integer32)m_value).getValue();
-            case SMIConstants.SYNTAX_COUNTER32:
-            case SMIConstants.SYNTAX_TIMETICKS:
-            case SMIConstants.SYNTAX_UNSIGNED_INTEGER32:
-                return (int)((UnsignedInteger32)m_value).getValue();
-            default:
-                return Integer.parseInt(m_value.toString());
-            }
-        }
-        
-        public long toLong() {
-            switch (m_value.getSyntax()) {
-            case SMIConstants.SYNTAX_COUNTER64:
-                return ((Counter64)m_value).getValue();
-            case SMIConstants.SYNTAX_INTEGER:
-                return ((Integer32)m_value).getValue();
-            case SMIConstants.SYNTAX_COUNTER32:
-            case SMIConstants.SYNTAX_TIMETICKS:
-            case SMIConstants.SYNTAX_UNSIGNED_INTEGER32:
-                return ((UnsignedInteger32)m_value).getValue();
-            default:
-                return Integer.parseInt(m_value.toString());
-            }
-        }
-
-        public String toDisplayString() {
-            return m_value.toString();
-        }
-
-        public InetAddress toInetAddress() {
-            switch (m_value.getSyntax()) {
-                case SMIConstants.SYNTAX_IPADDRESS:
-                    return ((IpAddress)m_value).getInetAddress();
-                default:
-                    throw new IllegalArgumentException("cannot convert "+m_value+" to an InetAddress"); 
-            }
-        }
-
-        public String toHexString() {
-            switch (m_value.getSyntax()) {
-            case SMIConstants.SYNTAX_OCTET_STRING:
-                return ((OctetString)m_value).toHexString();
-            default:
-                    throw new IllegalArgumentException("cannot convert "+m_value+" to a HexString");
-            }
-        }
-            
-        public String toString() {
-            return toDisplayString();
-        }
-
-    }
     
     static public abstract class Snmp4JPduBuilder extends WalkerPduBuilder {
         public Snmp4JPduBuilder(int maxVarsPerPdu) {

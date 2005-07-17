@@ -34,11 +34,6 @@ package org.opennms.netmgt.snmp;
 import java.net.InetAddress;
 import java.net.SocketException;
 
-import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpPduPacket;
-import org.opennms.protocols.snmp.SnmpPduTrap;
-import org.opennms.protocols.snmp.SnmpTrapSession;
-
 
 public interface SnmpStrategy {
 
@@ -56,8 +51,10 @@ public interface SnmpStrategy {
 
     void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort);
 
-    void snmpReceivedTrap(TrapNotificationListener listener, SnmpTrapSession session, InetAddress agent, int port, SnmpOctetString community, SnmpPduTrap pdu);
+    SnmpValueFactory getValueFactory();
 
-    void snmpReceivedTrap(TrapNotificationListener listener, SnmpTrapSession session, InetAddress agent, int port, SnmpOctetString community, SnmpPduPacket pdu);
-    
+    void sendV1TestTrap(InetAddress agentAddress, int port, String community, SnmpObjId enterpriseId, int generic, int specific, long timeStamp);
+
+    void sendV2TestTrap(InetAddress agentAddress, int port, String community, SnmpObjId enterpriseId, int specific, long timeStamp);
+
 }

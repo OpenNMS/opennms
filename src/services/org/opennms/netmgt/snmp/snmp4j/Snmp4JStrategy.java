@@ -42,14 +42,10 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpStrategy;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
 import org.opennms.netmgt.snmp.TrapProcessorFactory;
-import org.opennms.netmgt.snmp.snmp4j.Snmp4JWalker.Snmp4JValue;
-import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpPduPacket;
-import org.opennms.protocols.snmp.SnmpPduTrap;
-import org.opennms.protocols.snmp.SnmpTrapSession;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
@@ -82,6 +78,8 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 public class Snmp4JStrategy implements SnmpStrategy {
     
+    private Snmp4JValueFactory m_valueFactory;
+
     //Initialize for v3 communications
     static {
         LogFactory.setLogFactory(new Log4jLogFactory());
@@ -476,12 +474,18 @@ public class Snmp4JStrategy implements SnmpStrategy {
         
     }
 
-    public void snmpReceivedTrap(TrapNotificationListener listener, SnmpTrapSession session, InetAddress agent, int port, SnmpOctetString community, SnmpPduTrap pdu) {
+    public SnmpValueFactory getValueFactory() {
+        if (m_valueFactory == null)
+            m_valueFactory = new Snmp4JValueFactory();
+        return m_valueFactory;
+    }
+
+    public void sendV1TestTrap(InetAddress agentAddress, int port, String community, SnmpObjId enterpriseId, int generic, int specific, long timeStamp) {
         // TODO Auto-generated method stub
         
     }
 
-    public void snmpReceivedTrap(TrapNotificationListener listener, SnmpTrapSession session, InetAddress agent, int port, SnmpOctetString community, SnmpPduPacket pdu) {
+    public void sendV2TestTrap(InetAddress agentAddress, int port, String community, SnmpObjId enterpriseId, int specific, long timeStamp) {
         // TODO Auto-generated method stub
         
     }

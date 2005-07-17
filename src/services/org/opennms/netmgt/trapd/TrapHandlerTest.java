@@ -9,24 +9,29 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 
 import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.EventWrapper;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockTrapdConfig;
 import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.snmp.PropertySettingTestSuite;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.protocols.snmp.SnmpIPAddress;
-import org.opennms.protocols.snmp.SnmpObjectId;
-import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpPduPacket;
-import org.opennms.protocols.snmp.SnmpPduRequest;
-import org.opennms.protocols.snmp.SnmpPduTrap;
-import org.opennms.protocols.snmp.SnmpTimeTicks;
-import org.opennms.protocols.snmp.SnmpVarBind;
 
 public class TrapHandlerTest extends TestCase {
+    
+    public static TestSuite suite() {
+        Class testClass = TrapHandlerTest.class;
+        TestSuite suite = new TestSuite(testClass.getName());
+        suite.addTest(new PropertySettingTestSuite(testClass, "JoeSnmp Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy"));
+        //suite.addTest(new PropertySettingTestSuite(testClass, "Snmp4J Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy"));
+        return suite;
+    }
+
+
 	TrapHandler m_trapHandler = null;
 
 	EventAnticipator m_anticipator = null;
@@ -180,75 +185,75 @@ public class TrapHandlerTest extends TestCase {
 		}
 	}
 
-	public void testV1TrapNoNewSuspect() {
+	public void testV1TrapNoNewSuspect() throws Exception {
 		anticipateAndSend(false, "uei.opennms.org/default/trap", "v1", null, 6, 1);
 	}
 	
-	public void testV2TrapNoNewSuspect() {
+	public void testV2TrapNoNewSuspect() throws Exception {
 		anticipateAndSend(false, "uei.opennms.org/default/trap", "v2c", null, 6, 1);
 	}
 	
-	public void testV1TrapNewSuspect() {
+	public void testV1TrapNewSuspect() throws Exception {
 		anticipateAndSend(true, "uei.opennms.org/default/trap", "v1", null, 6, 1);
 	}
 	
-	public void testV2TrapNewSuspect() {
+	public void testV2TrapNewSuspect() throws Exception {
 		anticipateAndSend(true, "uei.opennms.org/default/trap", "v2c", null, 6, 1);
 	}
 	
-	public void testV1EnterpriseIdAndGenericMatch() {
+	public void testV1EnterpriseIdAndGenericMatch() throws Exception {
 		anticipateAndSend(false, "uei.opennms.org/IETF/BGP/traps/bgpEstablished", "v1",
 				".1.3.6.1.2.1.15.7", 6, 1);
 	}
 	
-	public void testV2EnterpriseIdAndGenericAndSpecificMatch() {
+	public void testV2EnterpriseIdAndGenericAndSpecificMatch() throws Exception {
 		anticipateAndSend(false, "uei.opennms.org/IETF/BGP/traps/bgpEstablished", "v2c",
 				".1.3.6.1.2.1.15.7", 6, 1);
 	}
 
-	public void testV2EnterpriseIdAndGenericAndSpecificMatchWithZero() {
+	public void testV2EnterpriseIdAndGenericAndSpecificMatchWithZero() throws Exception {
 		anticipateAndSend(false, "uei.opennms.org/IETF/BGP/traps/bgpEstablished", "v2c",
 				".1.3.6.1.2.1.15.7.0", 6, 1);
 	}
 	
-	public void testV2EnterpriseIdAndGenericAndSpecificMissWithExtraZeros() {
+	public void testV2EnterpriseIdAndGenericAndSpecificMissWithExtraZeros() throws Exception {
 		anticipateAndSend(false, "uei.opennms.org/default/trap", "v2c",
 				".1.3.6.1.2.1.15.7.0.0", 6, 1);
 	}
 
-	public void testV1EnterpriseIdAndGenericAndSpecificMissWithWrongGeneric() {
+	public void testV1EnterpriseIdAndGenericAndSpecificMissWithWrongGeneric() throws Exception {
 		anticipateAndSend(false, "uei.opennms.org/default/trap", "v1",
 				".1.3.6.1.2.1.15.7", 5, 1);
 	}
 	
-	public void testV1EnterpriseIdAndGenericAndSpecificMissWithWrongSpecific() {
+	public void testV1EnterpriseIdAndGenericAndSpecificMissWithWrongSpecific() throws Exception {
 		anticipateAndSend(false, "uei.opennms.org/default/trap", "v1",
 				".1.3.6.1.2.1.15.7", 6, 50);
 	}
 
-	public void testV1GenericMatch() {
+	public void testV1GenericMatch() throws Exception {
 		anticipateAndSend(false, "uei.opennms.org/generic/traps/SNMP_Cold_Start",
 				"v1", null, 0, 0);
 	}
 	
-	public void testV2GenericMatch() {
+	public void testV2GenericMatch() throws Exception {
 		anticipateAndSend(false, "uei.opennms.org/generic/traps/SNMP_Cold_Start",
 				"v2c", ".1.3.6.1.6.3.1.1.5.1", 0, 0);
 	}
 	
-	public void testV1TrapDroppedEvent() {
+	public void testV1TrapDroppedEvent() throws Exception {
 		anticipateAndSend(false, null, "v1", ".1.3.6.1.2.1.15.7", 6, 2);
 	}
 	
-	public void testV2TrapDroppedEvent() {
+	public void testV2TrapDroppedEvent() throws Exception {
 		anticipateAndSend(false, null, "v2c", ".1.3.6.1.2.1.15.7", 6, 2);
 	}
 	
-	public void testV1TrapDefaultEvent() {
+	public void testV1TrapDefaultEvent() throws Exception {
 		anticipateAndSend(false, "uei.opennms.org/default/trap", "v1", null, 6, 1);
 	}
 	
-	public void testV2TrapDefaultEvent() {
+	public void testV2TrapDefaultEvent() throws Exception {
 		anticipateAndSend(false, "uei.opennms.org/default/trap", "v2c", null, 6, 1);
 	}
 	
@@ -263,7 +268,7 @@ public class TrapHandlerTest extends TestCase {
 
 	
 	public void anticipateAndSend(boolean newSuspectOnTrap, String event,
-			String version, String enterprise, int generic, int specific) {
+			String version, String enterprise, int generic, int specific) throws Exception {
 		setUpTrapHandler(newSuspectOnTrap);
 		
 		if (newSuspectOnTrap) {
@@ -279,7 +284,7 @@ public class TrapHandlerTest extends TestCase {
 		finishUp();
 	}
 
-	public void	sendTrap(String version, String enterprise, int generic, int specific) {
+	public void	sendTrap(String version, String enterprise, int generic, int specific) throws Exception {
 		if (enterprise == null) {
 			enterprise = ".0.0";
 		}
@@ -294,36 +299,10 @@ public class TrapHandlerTest extends TestCase {
 	}
 
 	public void sendV1Trap(String enterprise, int generic, int specific) {
-		SnmpPduTrap pdu = new SnmpPduTrap();
-		pdu.setEnterprise(enterprise);
-		pdu.setGeneric(generic);
-		pdu.setSpecific(specific);
-		pdu.setTimeStamp(System.currentTimeMillis());
-		pdu.setAgentAddress(new SnmpIPAddress(m_localhost));
-		SnmpUtils.snmpReceivedTrap(m_trapHandler, null, m_localhost,
-				m_port, new SnmpOctetString("public".getBytes()), pdu);
+        SnmpUtils.sendV1TestTrap(m_localhost, m_port, "public", SnmpObjId.get(enterprise), generic, specific, System.currentTimeMillis());
 	}
 		
 	public void sendV2Trap(String enterprise, int specific) {
-		boolean isGeneric = false;
-		String trapOID;
-		if (enterprise.startsWith(".1.3.6.1.6.3.1.1.5")) {
-			isGeneric = true;
-			trapOID = enterprise;
-		} else {
-			trapOID = enterprise + "." + specific;
-			// XXX or should it be this
-			// trap OID = enterprise + ".0." + specific;
-		}
-		SnmpPduRequest pdu = new SnmpPduRequest(SnmpPduPacket.V2TRAP);
-		pdu.addVarBindAt(0, new SnmpVarBind(".1.3.6.1.2.1.1.3.0", new SnmpTimeTicks(0)));
-		pdu.addVarBindAt(1, new SnmpVarBind(".1.3.6.1.6.3.1.1.4.1.0",
-				new SnmpObjectId(trapOID)));
-		if (isGeneric) {
-			pdu.addVarBindAt(2, new SnmpVarBind(".1.3.6.1.6.3.1.1.4.3.0",
-					new SnmpObjectId(enterprise)));
-		}
-		SnmpUtils.snmpReceivedTrap(m_trapHandler, null, m_localhost,
-				m_port, new SnmpOctetString("public".getBytes()), pdu);
+        SnmpUtils.sendV2TestTrap(m_localhost, m_port, "public", SnmpObjId.get(enterprise), specific, System.currentTimeMillis());
 	}
 }

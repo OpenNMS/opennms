@@ -38,6 +38,7 @@ import junit.framework.TestCase;
 
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpValue;
 
 public class TestAgentTest extends TestCase {
     
@@ -83,7 +84,7 @@ public class TestAgentTest extends TestCase {
     }
     
     private Object getValueFor(SnmpObjId oid) {
-        return new TestSnmpValue(oid+"-value");
+        return new TestSnmpValue(SnmpValue.SNMP_OCTET_STRING, oid+"-value");
     }
     
     public void testConstantObjects() {

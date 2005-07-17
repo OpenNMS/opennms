@@ -35,58 +35,28 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 
 
-public interface SnmpValue {
-    // These values match the ASN.1 constants
-    public final static int SNMP_INT32 = (0x02);
+public interface SnmpValueFactory {
 
-    public final static int SNMP_OCTET_STRING = (0x04);
+    SnmpValue getOctetString(byte[] bytes);
 
-    public final static int SNMP_NULL = (0x05);
+    SnmpValue getCounter32(long val);
 
-    public final static int SNMP_OBJECT_IDENTIFIER = (0x06);
+    SnmpValue getCounter64(BigInteger val);
 
-    public final static int SNMP_IPADDRESS = (0x40);
+    SnmpValue getGauge32(long val);
 
-    public final static int SNMP_COUNTER32 = (0x41);
+    SnmpValue getInt32(int val);
 
-    public final static int SNMP_GAUGE32 = (0x42);
+    SnmpValue getIpAddress(InetAddress val);
 
-    public final static int SNMP_TIMETICKS = (0x43);
+    SnmpValue getObjectId(SnmpObjId objId);
 
-    public final static int SNMP_OPAQUE = (0x44);
+    SnmpValue getTimeTicks(long val);
 
-    public final static int SNMP_COUNTER64 = (0x46);
-    
-    public final static int SNMP_NO_SUCH_OBJECT = (0x80);
-    
-    public final static int SNMP_NO_SUCH_INSTANCE = (0x81);
+    SnmpValue getValue(int type, byte[] bytes);
 
-    public final static int SNMP_END_OF_MIB = (0x82);
-    
-    public abstract boolean isEndOfMib();
-    
-    public abstract boolean isNull();
+    SnmpValue getNull();
 
-    public abstract boolean isDisplayable();
-
-    public abstract boolean isNumeric();
-
-    public abstract int toInt();
-
-    public abstract String toDisplayString();
-
-    public abstract InetAddress toInetAddress();
-
-    public abstract long toLong();
-    
-    public abstract BigInteger toBigInteger();
-
-    public abstract String toHexString();
-    
-    public abstract int getType();
-    
-    public abstract byte[] getBytes();
-
-    public abstract SnmpObjId toSnmpObjId();
+    SnmpValue getOpaque(byte[] bs);
 
 }

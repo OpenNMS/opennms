@@ -31,8 +31,10 @@
 //
 package org.opennms.netmgt.snmp.mock;
 
+import java.math.BigInteger;
 import java.net.InetAddress;
 
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 public class TestSnmpValue implements SnmpValue {
@@ -40,7 +42,11 @@ public class TestSnmpValue implements SnmpValue {
     public static class NetworkAddressSnmpValue extends TestSnmpValue {
 
         public NetworkAddressSnmpValue(String value) {
-            super(value);
+            super(SnmpValue.SNMP_OCTET_STRING, value);
+        }
+
+        public boolean isDisplayable() {
+            return false;
         }
 
     }
@@ -48,19 +54,23 @@ public class TestSnmpValue implements SnmpValue {
     public static class HexStringSnmpValue extends TestSnmpValue {
 
         public HexStringSnmpValue(String value) {
-            super(value);
+            super(SnmpValue.SNMP_OCTET_STRING, value);
         }
 
         public String toHexString() {
             return toString();
         }
         
+        public boolean isDisplayable() {
+            return false;
+        }
+
     }
 
     public static class IpAddressSnmpValue extends TestSnmpValue {
 
         public IpAddressSnmpValue(String value) {
-            super(value);
+            super(SnmpValue.SNMP_IPADDRESS, value);
         }
 
         public InetAddress toInetAddress() {
@@ -71,12 +81,20 @@ public class TestSnmpValue implements SnmpValue {
             }
         }
         
+        public byte[] getBytes() {
+            return toInetAddress().getAddress();
+        }
+        
+        public boolean isDisplayable() {
+            return true;
+        }
+
     }
 
     public static class NumberSnmpValue extends TestSnmpValue {
 
-        public NumberSnmpValue(String value) {
-            super(value);
+        public NumberSnmpValue(int type, String value) {
+            super(type, value);
         }
         
         public boolean isNumeric() {
@@ -84,19 +102,53 @@ public class TestSnmpValue implements SnmpValue {
         }
         
         public int toInt() {
-            return Integer.parseInt(toString());
+            return Integer.parseInt(getNumberString());
         }
         
         public long toLong() {
-            return Long.parseLong(toString());
+            return Long.parseLong(getNumberString());
+        }
+        
+        public BigInteger toBigInteger() {
+            return new BigInteger(getNumberString());
+        }
+        
+        public String getNumberString() {
+            return toString();
+        }
+        
+        public byte[] getBytes() {
+            return toBigInteger().toByteArray();
+        }
+
+        public boolean isDisplayable() {
+            return true;
+        }
+
+
+    }
+    
+    public static class TimeticksSnmpValue extends NumberSnmpValue {
+
+        // Format of string is '(numTicks) HH:mm:ss.hh'
+        public TimeticksSnmpValue(String value) {
+            super(SnmpValue.SNMP_TIMETICKS, value);
+        }
+
+        public String getNumberString() {
+            String str = toString();
+            int end = str.indexOf(')');
+            return str.substring(1, end);
         }
 
     }
 
+
+
     public static class StringSnmpValue extends TestSnmpValue {
 
         public StringSnmpValue(String value) {
-            super(value);
+            super(SnmpValue.SNMP_OCTET_STRING, value);
         }
         
         public int toInt() {
@@ -108,50 +160,51 @@ public class TestSnmpValue implements SnmpValue {
             
         }
 
-    }
-
-    public static class TimeticksSnmpValue extends TestSnmpValue {
-
-        // Format of string is '(numTicks) HH:mm:ss.hh'
-        public TimeticksSnmpValue(String value) {
-            super(value);
-        }
-
-        public boolean isNumeric() {
+        public boolean isDisplayable() {
             return true;
         }
-        
-        public int toInt() {
-            String str = toString();
-            int end = str.indexOf(')');
-            return Integer.parseInt(toString().substring(1, end));
-        }
 
-    }
+   }
 
     public static class OidSnmpValue extends TestSnmpValue {
 
         public OidSnmpValue(String value) {
-            super(value);
+            super(SnmpValue.SNMP_OBJECT_IDENTIFIER, value);
         }
+
+        public SnmpObjId toSnmpObjId() {
+            return SnmpObjId.get(toString());
+        }
+
+        public boolean isDisplayable() {
+            return true;
+        }
+
 
     }
 
-
-    String m_value;
-    public static final SnmpValue NULL_VALUE = new TestSnmpValue(null);
-    public static final SnmpValue NO_SUCH_INSTANCE = new TestSnmpValue("noSuchInstance");
-    public static final SnmpValue NO_SUCH_OBJECT = new TestSnmpValue("noSuchObject");
-    public static final SnmpValue END_OF_MIB = new TestSnmpValue("endOfMibView") {
-        public boolean isEndOfMib() { return true; }
+    private int m_type;
+    private String m_value;
+    public static final SnmpValue NULL_VALUE = new TestSnmpValue(SnmpValue.SNMP_NULL, null) {
+        public boolean isNull() {
+            return true;
+        }
     };
+    public static final SnmpValue NO_SUCH_INSTANCE = new TestSnmpValue(SnmpValue.SNMP_NO_SUCH_INSTANCE, "noSuchInstance");
+    public static final SnmpValue NO_SUCH_OBJECT = new TestSnmpValue(SnmpValue.SNMP_NO_SUCH_OBJECT, "noSuchObject");
+    public static final SnmpValue END_OF_MIB = new TestSnmpValue(SnmpValue.SNMP_END_OF_MIB, "endOfMibView");
     
-    public TestSnmpValue(String value) {
+    public TestSnmpValue(int type, String value) {
+        m_type = type;
         m_value = value;
     }
 
     public boolean isEndOfMib() {
-        return false;
+        return getType() == SnmpValue.SNMP_END_OF_MIB;
+    }
+    
+    public int getType() {
+        return m_type;
     }
     
     public String toDisplayString() { return toString(); }
@@ -183,11 +236,11 @@ public class TestSnmpValue implements SnmpValue {
         else if (mibVal.startsWith("STRING:"))
             return new StringSnmpValue(mibVal.substring("STRING:".length()).trim());
         else if (mibVal.startsWith("INTEGER:"))
-            return new NumberSnmpValue(mibVal.substring("INTEGER:".length()).trim());
+            return new NumberSnmpValue(SnmpValue.SNMP_INT32, mibVal.substring("INTEGER:".length()).trim());
         else if (mibVal.startsWith("Gauge32:"))
-            return new NumberSnmpValue(mibVal.substring("Gauge32:".length()).trim());
+            return new NumberSnmpValue(SnmpValue.SNMP_GAUGE32, mibVal.substring("Gauge32:".length()).trim());
         else if (mibVal.startsWith("Counter32:"))
-            return new NumberSnmpValue(mibVal.substring("Counter32:".length()).trim());
+            return new NumberSnmpValue(SnmpValue.SNMP_COUNTER32, mibVal.substring("Counter32:".length()).trim());
         else if (mibVal.startsWith("IpAddress:"))
             return new IpAddressSnmpValue(mibVal.substring("IpAddress:".length()).trim());
         else if (mibVal.startsWith("Hex-STRING:"))
@@ -205,7 +258,7 @@ public class TestSnmpValue implements SnmpValue {
     }
 
     public InetAddress toInetAddress() {
-        throw new IllegalArgumentException("Unable to convert "+this+" to an IpAddress");
+        throw new IllegalArgumentException("Unable to convert "+this+" to an InetAddress");
     }
 
     public long toLong() {
@@ -215,5 +268,26 @@ public class TestSnmpValue implements SnmpValue {
     public String toHexString() {
         throw new IllegalArgumentException("Unable to convert "+this+" to a hex string");
     }
-    
+
+    public BigInteger toBigInteger() {
+        throw new IllegalArgumentException("Unable to convert "+this+" to a hex string");
+    }
+
+    public SnmpObjId toSnmpObjId() {
+        throw new IllegalArgumentException("Unable to convert "+this+" to an SnmpObjId");
+    }
+
+    public byte[] getBytes() {
+        return toString().getBytes();
+    }
+
+    public boolean isDisplayable() {
+        return false;
+    }
+
+    public boolean isNull() {
+        return false;
+    }
+
+ 
 }

@@ -115,7 +115,7 @@ public class InstanceTrackerTest extends SnmpCollectorTestCase {
         assertEquals(expectedOids.length, builder.getCount());
         rp.processErrors(0, 0);
         for(int i = 0; i < receivedOids.length; i++)
-            rp.processResponse(receivedOids[i], new TestSnmpValue("Value"));
+            rp.processResponse(receivedOids[i], new TestSnmpValue(SnmpValue.SNMP_OCTET_STRING, "Value"));
         
         
     }

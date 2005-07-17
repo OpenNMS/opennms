@@ -37,10 +37,6 @@ import java.util.Properties;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpPduPacket;
-import org.opennms.protocols.snmp.SnmpPduTrap;
-import org.opennms.protocols.snmp.SnmpTrapSession;
 
 public class SnmpUtils {
 
@@ -125,12 +121,16 @@ public class SnmpUtils {
         getStrategy().unregisterForTraps(listener, snmpTrapPort);
     }
     
-    public static void snmpReceivedTrap(TrapNotificationListener listener, SnmpTrapSession session, InetAddress agent, int port, SnmpOctetString community, SnmpPduPacket pdu) {
-        getStrategy().snmpReceivedTrap(listener, session, agent, port, community, pdu);
+    public static SnmpValueFactory getValueFactory() {
+        return getStrategy().getValueFactory();
+    }
+    
+    public static void sendV1TestTrap(InetAddress agentAddress, int port, String community, SnmpObjId enterpriseId, int generic, int specific, long timeStamp) {
+        getStrategy().sendV1TestTrap(agentAddress, port, community, enterpriseId, generic, specific, timeStamp);
     }
 
-    public static void snmpReceivedTrap(TrapNotificationListener listener, SnmpTrapSession session, InetAddress agent, int port, SnmpOctetString community, SnmpPduTrap pdu) {
-        getStrategy().snmpReceivedTrap(listener, session, agent, port, community, pdu);
+    public static void sendV2TestTrap(InetAddress agentAddress, int port, String community, SnmpObjId enterpriseId, int specific, long timeStamp) {
+        getStrategy().sendV2TestTrap(agentAddress, port, community, enterpriseId, specific, timeStamp);
     }
 
 }

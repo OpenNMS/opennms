@@ -35,13 +35,13 @@ import java.net.InetAddress;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TrapIdentity;
 import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Snmp;
-import org.opennms.protocols.snmp.SnmpObjectId;
-import org.opennms.protocols.snmp.SnmpSyntax;
 
 public class EventCreator implements TrapProcessor {
     
@@ -91,8 +91,8 @@ public class EventCreator implements TrapProcessor {
         m_event.setHost(agentAddress.getHostAddress());
     }
 
-    public void processVarBind(SnmpObjectId name, SnmpSyntax obj) {
-        m_parms.addParm(SyntaxToEvent.processSyntax(name.toString(), obj));
+    public void processVarBind(SnmpObjId name, SnmpValue value) {
+        m_parms.addParm(SyntaxToEvent.processSyntax(name.toString(), value));
     }
 
     public void setTrapAddress(InetAddress trapAddress) {

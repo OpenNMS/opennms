@@ -33,26 +33,14 @@ package org.opennms.netmgt.trapd;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
-import org.opennms.protocols.snmp.SnmpCounter32;
-import org.opennms.protocols.snmp.SnmpCounter64;
-import org.opennms.protocols.snmp.SnmpGauge32;
-import org.opennms.protocols.snmp.SnmpIPAddress;
-import org.opennms.protocols.snmp.SnmpInt32;
-import org.opennms.protocols.snmp.SnmpNull;
-import org.opennms.protocols.snmp.SnmpObjectId;
-import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpOpaque;
-import org.opennms.protocols.snmp.SnmpSyntax;
-import org.opennms.protocols.snmp.SnmpTimeTicks;
 
 public class SyntaxToEvent {
-    Class m_classMatch;
+    int m_typeId;
 
     String m_type;
-
-    String m_encoding;
 
     public static SyntaxToEvent[] m_syntaxToEvents;
 
@@ -60,84 +48,52 @@ public class SyntaxToEvent {
         setupSyntax();
     }
 
-    public SyntaxToEvent(Class classMatch, String type, String encoding) {
-        m_classMatch = classMatch;
+    public SyntaxToEvent(int typeId, String type) {
+        m_typeId = typeId;
         m_type = type;
-        m_encoding = encoding;
     }
 
-    public Class getClassMatch() {
-        return m_classMatch;
+    public int getTypeId() {
+        return m_typeId;
     }
 
     public String getType() {
         return m_type;
     }
 
-    public String getEncoding() {
-        return m_encoding;
-    }
-
     public static void setupSyntax() {
         m_syntaxToEvents = new SyntaxToEvent[] { 
-                new SyntaxToEvent(SnmpInt32.class, EventConstants.TYPE_SNMP_INT32, EventConstants.XML_ENCODING_TEXT),
-                new SyntaxToEvent(SnmpNull.class, EventConstants.TYPE_SNMP_NULL, EventConstants.XML_ENCODING_TEXT), 
-                new SyntaxToEvent(SnmpObjectId.class, EventConstants.TYPE_SNMP_OBJECT_IDENTIFIER, EventConstants.XML_ENCODING_TEXT), 
-                new SyntaxToEvent(SnmpIPAddress.class, EventConstants.TYPE_SNMP_IPADDRESS, EventConstants.XML_ENCODING_TEXT), 
-                new SyntaxToEvent(SnmpTimeTicks.class, EventConstants.TYPE_SNMP_TIMETICKS, EventConstants.XML_ENCODING_TEXT), 
-                new SyntaxToEvent(SnmpCounter32.class, EventConstants.TYPE_SNMP_COUNTER32, EventConstants.XML_ENCODING_TEXT),
-                new SyntaxToEvent(SnmpGauge32.class, EventConstants.TYPE_SNMP_GAUGE32, EventConstants.XML_ENCODING_TEXT), 
-                new SyntaxToEvent(SnmpOpaque.class, EventConstants.TYPE_SNMP_OPAQUE, EventConstants.XML_ENCODING_BASE64), 
-                new SyntaxToEvent(SnmpCounter64.class, EventConstants.TYPE_SNMP_COUNTER64, EventConstants.XML_ENCODING_TEXT),
-                new SyntaxToEvent(Object.class, EventConstants.TYPE_STRING, EventConstants.XML_ENCODING_TEXT) 
+                new SyntaxToEvent(SnmpValue.SNMP_INT32,             EventConstants.TYPE_SNMP_INT32),
+                new SyntaxToEvent(SnmpValue.SNMP_NULL,              EventConstants.TYPE_SNMP_NULL), 
+                new SyntaxToEvent(SnmpValue.SNMP_OBJECT_IDENTIFIER, EventConstants.TYPE_SNMP_OBJECT_IDENTIFIER), 
+                new SyntaxToEvent(SnmpValue.SNMP_IPADDRESS,         EventConstants.TYPE_SNMP_IPADDRESS), 
+                new SyntaxToEvent(SnmpValue.SNMP_TIMETICKS,         EventConstants.TYPE_SNMP_TIMETICKS), 
+                new SyntaxToEvent(SnmpValue.SNMP_COUNTER32,         EventConstants.TYPE_SNMP_COUNTER32),
+                new SyntaxToEvent(SnmpValue.SNMP_GAUGE32,           EventConstants.TYPE_SNMP_GAUGE32), 
+                new SyntaxToEvent(SnmpValue.SNMP_OCTET_STRING,      EventConstants.TYPE_SNMP_OCTET_STRING), 
+                new SyntaxToEvent(SnmpValue.SNMP_OPAQUE,            EventConstants.TYPE_SNMP_OPAQUE), 
+                new SyntaxToEvent(SnmpValue.SNMP_COUNTER64,         EventConstants.TYPE_SNMP_COUNTER64),
+                new SyntaxToEvent(-1,                               EventConstants.TYPE_STRING) 
         };
     }
 
-    public static Parm processSyntax(String name, SnmpSyntax obj) {
+    public static Parm processSyntax(String name, SnmpValue value) {
         Category log = ThreadCategory.getInstance(SyntaxToEvent.class);
         Value val = new Value();
 
-        if (obj instanceof SnmpOctetString) {
-            //
-            // check for non-printable characters. If they
-            // exist then print the string out as hexidecimal
-            //
-            boolean asHex = false;
-            byte[] data = ((SnmpOctetString) obj).getString();
-            for (int x = 0; x < data.length; x++) {
-                byte b = data[x];
-                if ((b < 32 && b != 9 && b != 10 && b != 13 && b != 0) || b == 127) {
-                    asHex = true;
-                    break;
-                }
+        boolean found = false;
+        for (int i = 0; i < m_syntaxToEvents.length; i++) {
+            if (m_syntaxToEvents[i].getTypeId() == -1 || m_syntaxToEvents[i].getTypeId()== value.getType()) {
+                val.setType(m_syntaxToEvents[i].getType());
+                String encoding = value.isDisplayable() ? EventConstants.XML_ENCODING_TEXT : EventConstants.XML_ENCODING_BASE64;
+                val.setEncoding(encoding);
+                val.setContent(EventConstants.toString(encoding, value));
+                found = true;
+                break;
             }
-
-            data = null;
-
-            String encoding = asHex ? EventConstants.XML_ENCODING_BASE64 : EventConstants.XML_ENCODING_TEXT;
-
-            val.setType(EventConstants.TYPE_SNMP_OCTET_STRING);
-            val.setEncoding(encoding);
-            val.setContent(EventConstants.toString(encoding, obj));
-
-            // DEBUG
-            if (!asHex && log.isDebugEnabled()) {
-                log.debug("snmpReceivedTrap: string varbind: " + (((SnmpOctetString) obj).toString()));
-            }
-        } else {
-            boolean found = false;
-            for (int i = 0; i < m_syntaxToEvents.length; i++) {
-                if (m_syntaxToEvents[i].getClassMatch() == null || m_syntaxToEvents[i].m_classMatch.isInstance(obj)) {
-                    val.setType(m_syntaxToEvents[i].getType());
-                    val.setEncoding(m_syntaxToEvents[i].getEncoding());
-                    val.setContent(EventConstants.toString(m_syntaxToEvents[i].getType(), obj));
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                throw new IllegalStateException("Internal error: fell through the " + "bottom of the loop.  The syntax-to-events array might not have a " + "catch-all for Object");
-            }
+        }
+        if (!found) {
+            throw new IllegalStateException("Internal error: fell through the " + "bottom of the loop.  The syntax-to-events array might not have a " + "catch-all for Object");
         }
 
         Parm parm = new Parm();

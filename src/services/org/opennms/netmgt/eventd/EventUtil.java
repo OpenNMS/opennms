@@ -53,17 +53,12 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.DbConnectionFactory;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
-import org.opennms.protocols.snmp.SnmpCounter64;
-import org.opennms.protocols.snmp.SnmpIPAddress;
-import org.opennms.protocols.snmp.SnmpInt32;
-import org.opennms.protocols.snmp.SnmpObjectId;
-import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpUInt32;
 
 /**
  * EventUtil is used primarily for the event parm expansion - has methods used
@@ -276,75 +271,24 @@ public final class EventUtil {
 				result = (String) value;
 			else if (value instanceof Number)
 				result = value.toString();
-			else if (value instanceof SnmpInt32)
-				result = Integer.toString(((SnmpInt32) value).getValue());
-			else if (value instanceof SnmpUInt32)
-				result = Long.toString(((SnmpUInt32) value).getValue());
-			else if (value instanceof SnmpCounter64)
-				result = ((SnmpCounter64) value).getValue().toString();
-			else if (value instanceof SnmpIPAddress)
-				result = value.toString();
-			else if (value instanceof SnmpOctetString)
-				result = new String(((SnmpOctetString) value).getString());
-			else if (value instanceof SnmpObjectId)
-				result = value.toString();
+            else if (value instanceof SnmpValue)
+                result = value.toString();
 		} else if (encoding.equals("base64")) {
 			if (value instanceof String)
 				result = new String(Base64.encodeBase64(((String) value)
 						.getBytes()));
 			else if (value instanceof Number) {
 				byte[] ibuf = null;
-				if (value instanceof Short) {
-					ibuf = new byte[2];
-					ibuf[0] = (byte) ((((Number) value).shortValue() >> 8) & 0xff);
-					ibuf[1] = (byte) (((Number) value).shortValue() & 0xff);
-				} else if (value instanceof Integer) {
-					ibuf = new byte[4];
-					ibuf[0] = (byte) ((((Number) value).intValue() >> 24) & 0xff);
-					ibuf[1] = (byte) ((((Number) value).intValue() >> 16) & 0xff);
-					ibuf[2] = (byte) ((((Number) value).intValue() >> 8) & 0xff);
-					ibuf[3] = (byte) (((Number) value).intValue() & 0xff);
-				} else if (value instanceof Long) {
-					ibuf = new byte[8];
-					ibuf[0] = (byte) ((((Number) value).longValue() >> 56) & 0xffL);
-					ibuf[1] = (byte) ((((Number) value).longValue() >> 48) & 0xffL);
-					ibuf[2] = (byte) ((((Number) value).longValue() >> 40) & 0xffL);
-					ibuf[3] = (byte) ((((Number) value).longValue() >> 32) & 0xffL);
-					ibuf[4] = (byte) ((((Number) value).longValue() >> 24) & 0xffL);
-					ibuf[5] = (byte) ((((Number) value).longValue() >> 16) & 0xffL);
-					ibuf[6] = (byte) ((((Number) value).longValue() >> 8) & 0xffL);
-					ibuf[7] = (byte) (((Number) value).longValue() & 0xffL);
-				} else if (value instanceof BigInteger) {
+				if (value instanceof BigInteger) {
 					ibuf = ((BigInteger) value).toByteArray();
-				}
+				} else {
+                    ibuf = BigInteger.valueOf(((Number) value).longValue()).toByteArray();
+                }
 				result = new String(Base64.encodeBase64(ibuf));
-			} else if (value instanceof SnmpInt32) {
-				byte[] ibuf = new byte[4];
-				ibuf[0] = (byte) ((((SnmpInt32) value).getValue() >> 24) & 0xff);
-				ibuf[1] = (byte) ((((SnmpInt32) value).getValue() >> 16) & 0xff);
-				ibuf[2] = (byte) ((((SnmpInt32) value).getValue() >> 8) & 0xff);
-				ibuf[3] = (byte) (((SnmpInt32) value).getValue() & 0xff);
-
-				result = new String(Base64.encodeBase64(ibuf));
-			} else if (value instanceof SnmpUInt32) {
-				byte[] ibuf = new byte[4];
-				ibuf[0] = (byte) ((((SnmpUInt32) value).getValue() >> 24) & 0xffL);
-				ibuf[1] = (byte) ((((SnmpUInt32) value).getValue() >> 16) & 0xffL);
-				ibuf[2] = (byte) ((((SnmpUInt32) value).getValue() >> 8) & 0xffL);
-				ibuf[3] = (byte) (((SnmpUInt32) value).getValue() & 0xffL);
-
-				result = new String(Base64.encodeBase64(ibuf));
-			} else if (value instanceof SnmpCounter64) {
-				byte[] ibuf = ((SnmpCounter64) value).getValue().toByteArray();
-				result = new String(Base64.encodeBase64(ibuf));
-			} else if (value instanceof SnmpOctetString) {
-				result = new String(Base64
-						.encodeBase64(((SnmpOctetString) value).getString()));
-			} else if (value instanceof SnmpObjectId) {
-				result = new String(Base64.encodeBase64(value.toString()
-						.getBytes()));
-			}
-		}
+			} else if (value instanceof SnmpValue) {
+                result = new String(Base64.encodeBase64(((SnmpValue) value).getBytes()));
+             }
+        }
 
 		return (result == null ? null : result.trim());
 

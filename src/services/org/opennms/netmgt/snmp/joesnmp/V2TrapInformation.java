@@ -42,6 +42,7 @@ package org.opennms.netmgt.snmp.joesnmp;
 
 import java.net.InetAddress;
 
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.TrapIdentity;
 import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.protocols.snmp.SnmpInt32;
@@ -135,7 +136,7 @@ public class V2TrapInformation extends TrapInformation {
         SnmpObjectId snmpTrapOid = (SnmpObjectId) getPdu().getVarBindAt(V2TrapInformation.SNMP_TRAP_OID_INDEX).getValue();
         SnmpObjectId lastVarBindOid = getPdu().getVarBindAt(getPduLength() - 1).getName();
         SnmpSyntax lastVarBindValue = getPdu().getVarBindAt(getPduLength() - 1).getValue();
-        return new TrapIdentity(snmpTrapOid, lastVarBindOid, lastVarBindValue);
+        return new TrapIdentity(SnmpObjId.get(snmpTrapOid.getIdentifiers()), SnmpObjId.get(lastVarBindOid.getIdentifiers()), new JoeSnmpValue(lastVarBindValue));
     }
 
     public InetAddress getTrapAddress() {

@@ -34,32 +34,40 @@ package org.opennms.netmgt.snmp.joesnmp;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpStrategy;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
 import org.opennms.netmgt.snmp.TrapProcessorFactory;
+import org.opennms.protocols.snmp.SnmpIPAddress;
 import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpParameters;
 import org.opennms.protocols.snmp.SnmpPduPacket;
+import org.opennms.protocols.snmp.SnmpPduRequest;
 import org.opennms.protocols.snmp.SnmpPduTrap;
 import org.opennms.protocols.snmp.SnmpPeer;
 import org.opennms.protocols.snmp.SnmpSMI;
 import org.opennms.protocols.snmp.SnmpSession;
 import org.opennms.protocols.snmp.SnmpSyntax;
+import org.opennms.protocols.snmp.SnmpTimeTicks;
 import org.opennms.protocols.snmp.SnmpTrapSession;
+import org.opennms.protocols.snmp.SnmpVarBind;
 
 public class JoeSnmpStrategy implements SnmpStrategy {
 
     public static Map m_registrations = new HashMap();
+    private JoeSnmpValueFactory m_valueFactory;
 
     public SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker) {
         return new JoeSnmpWalker(agentConfig, name, tracker);
@@ -245,6 +253,10 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         public JoeSnmpTrapNotifier getHandler() {
             return m_trapHandler;
         }
+
+        public int getPort() {
+            return m_trapPort;
+        }
         
         
     }
@@ -267,14 +279,53 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         info.getSession().close();
     }
 
-    public void snmpReceivedTrap(TrapNotificationListener listener, SnmpTrapSession session, InetAddress agent, int port, SnmpOctetString community, SnmpPduPacket pdu) {
-        RegistrationInfo info = (RegistrationInfo)JoeSnmpStrategy.m_registrations.get(listener);
-        info.getHandler().snmpReceivedTrap(session, agent, port, community, pdu);
+    public SnmpValueFactory getValueFactory() {
+        if (m_valueFactory == null)
+            m_valueFactory = new JoeSnmpValueFactory();
+        
+        return m_valueFactory;
     }
 
-    public void snmpReceivedTrap(TrapNotificationListener listener, SnmpTrapSession session, InetAddress agent, int port, SnmpOctetString community, SnmpPduTrap pdu) {
-        RegistrationInfo info = (RegistrationInfo)JoeSnmpStrategy.m_registrations.get(listener);
-        info.getHandler().snmpReceivedTrap(session, agent, port, community, pdu);
+    public void sendV1TestTrap(InetAddress agentAddress, int port, String community, SnmpObjId enterpriseId, int generic, int specific, long timeStamp) {
+        SnmpPduTrap pdu = new SnmpPduTrap();
+        pdu.setEnterprise(new SnmpObjectId(enterpriseId.getIds()));
+        pdu.setGeneric(generic);
+        pdu.setSpecific(specific);
+        pdu.setTimeStamp(timeStamp);
+        pdu.setAgentAddress(new SnmpIPAddress(agentAddress));
+        
+        for (Iterator it = m_registrations.values().iterator(); it.hasNext();) {
+            RegistrationInfo info = (RegistrationInfo) it.next();
+            if (port == info.getPort())
+                info.getHandler().snmpReceivedTrap(info.getSession(), agentAddress, port, new SnmpOctetString(community.getBytes()), pdu);
+        }
     }
+
+    public void sendV2TestTrap(InetAddress agentAddress, int port, String community, SnmpObjId enterpriseId, int specific, long timeStamp) {
+        boolean isGeneric = false;
+        SnmpObjId trapOID;
+        if (SnmpObjId.get(".1.3.6.1.6.3.1.1.5").isPrefixOf(enterpriseId)) {
+            isGeneric = true;
+            trapOID = enterpriseId;
+        } else {
+            trapOID = SnmpObjId.get(enterpriseId, new SnmpInstId(specific));
+            // XXX or should it be this
+            // trap OID = enterprise + ".0." + specific;
+        }
+        SnmpPduRequest pdu = new SnmpPduRequest(SnmpPduPacket.V2TRAP);
+        pdu.addVarBindAt(0, new SnmpVarBind(".1.3.6.1.2.1.1.3.0", new SnmpTimeTicks(0)));
+        pdu.addVarBindAt(1, new SnmpVarBind(".1.3.6.1.6.3.1.1.4.1.0", new SnmpObjectId(trapOID.getIds())));
+        if (isGeneric) {
+            pdu.addVarBindAt(2, new SnmpVarBind(".1.3.6.1.6.3.1.1.4.3.0", new SnmpObjectId(enterpriseId.getIds())));
+        }
+
+        for (Iterator it = m_registrations.values().iterator(); it.hasNext();) {
+            RegistrationInfo info = (RegistrationInfo) it.next();
+            if (port == info.getPort())
+                info.getHandler().snmpReceivedTrap(info.getSession(), agentAddress, port, new SnmpOctetString(community.getBytes()), pdu);
+        }
+
+    }
+
 
 }

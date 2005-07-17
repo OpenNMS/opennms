@@ -31,8 +31,7 @@ package org.opennms.netmgt.snmp;
 
 import java.net.InetAddress;
 
-import org.opennms.protocols.snmp.SnmpObjectId;
-import org.opennms.protocols.snmp.SnmpSyntax;
+import org.opennms.netmgt.snmp.SnmpValue;
 
 public interface TrapProcessor {
 
@@ -44,7 +43,7 @@ public interface TrapProcessor {
 
     public abstract void setAgentAddress(InetAddress agentAddress);
 
-    public abstract void processVarBind(SnmpObjectId name, SnmpSyntax obj);
+    public abstract void processVarBind(SnmpObjId name, SnmpValue value);
 
     public abstract void setTrapAddress(InetAddress trapAddress);
 

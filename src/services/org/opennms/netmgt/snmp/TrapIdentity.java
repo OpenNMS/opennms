@@ -35,8 +35,6 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.protocols.snmp.SnmpObjectId;
-import org.opennms.protocols.snmp.SnmpSyntax;
 
 public class TrapIdentity {
     
@@ -70,25 +68,23 @@ public class TrapIdentity {
      */
     static {
         GENERIC_TRAPS = new ArrayList();
-        GENERIC_TRAPS.add(new SnmpObjectId("1.3.6.1.6.3.1.1.5.1")); // coldStart
-        GENERIC_TRAPS.add(new SnmpObjectId("1.3.6.1.6.3.1.1.5.2")); // warmStart
-        GENERIC_TRAPS.add(new SnmpObjectId("1.3.6.1.6.3.1.1.5.3")); // linkDown
-        GENERIC_TRAPS.add(new SnmpObjectId("1.3.6.1.6.3.1.1.5.4")); // linkUp
-        GENERIC_TRAPS.add(new SnmpObjectId("1.3.6.1.6.3.1.1.5.5")); // authenticationFailure
-        GENERIC_TRAPS.add(new SnmpObjectId("1.3.6.1.6.3.1.1.5.6")); // egpNeighborLoss
+        GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.1")); // coldStart
+        GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.2")); // warmStart
+        GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.3")); // linkDown
+        GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.4")); // linkUp
+        GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.5")); // authenticationFailure
+        GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.6")); // egpNeighborLoss
     }
     
 
     
-    public TrapIdentity(SnmpObjectId snmpTrapOid, SnmpObjectId lastVarBindOid, SnmpSyntax lastVarBindValue) {
+    public TrapIdentity(SnmpObjId snmpTrapOid, SnmpObjId lastVarBindOid, SnmpValue lastVarBindValue) {
         String snmpTrapOidValue = snmpTrapOid.toString();
-        // Force leading "." (dot) if not present
-        if (!snmpTrapOidValue.startsWith(".")) {
-            snmpTrapOidValue = "." + snmpTrapOidValue;
-        }
+        
         if (log().isDebugEnabled()) {
             log().debug("snmpTrapOID: " + snmpTrapOidValue);
         }
+
         // get the last subid
         int length = snmpTrapOidValue.length();
         int lastIndex = snmpTrapOidValue.lastIndexOf(TrapIdentity.DOT_CHAR);

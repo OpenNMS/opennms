@@ -31,6 +31,7 @@
 //
 package org.opennms.netmgt.snmp;
 
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -125,6 +126,71 @@ public class SnmpUtilsTest extends OpenNMSTestCase {
         SnmpStrategy strategy = SnmpUtils.getStrategy();
         assertNotNull(strategy);
         assertEquals(System.getProperty("org.opennms.snmp.strategyClass"), strategy.getClass().getName());
+    }
+    
+    public void testGetValueFactory() throws UnknownHostException {
+        SnmpValueFactory valueFactory = SnmpUtils.getValueFactory();
+        assertNotNull(valueFactory);
+        
+        // SnmpValue.SNMP_OCTET_STRING;
+        SnmpValue octetString = valueFactory.getOctetString("mystring".getBytes());
+        assertEquals("Expect an octectString", SnmpValue.SNMP_OCTET_STRING, octetString.getType());
+        assertEquals("mystring", octetString.toDisplayString());
+        assertEquals("mystring", new String(octetString.getBytes()));
+        
+        // SnmpValue.SNMP_COUNTER32;
+        SnmpValue counter32 = valueFactory.getCounter32(0xF7654321L);
+        assertEquals("Expected a counter32", SnmpValue.SNMP_COUNTER32, counter32.getType());
+        assertEquals(0xF7654321L, counter32.toLong());
+        assertEquals(0xF7654321L, valueFactory.getValue(SnmpValue.SNMP_COUNTER32, BigInteger.valueOf(0xF7654321L).toByteArray()).toLong());
+        assertEquals(counter32.toBigInteger(), new BigInteger(counter32.getBytes()));
+                
+        // SnmpValue.SNMP_COUNTER64;
+        BigInteger maxLongPlusSome = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.valueOf(16));
+        SnmpValue counter64 = valueFactory.getCounter64(maxLongPlusSome);
+        assertEquals("Expected a counter64", SnmpValue.SNMP_COUNTER64, counter64.getType());
+        assertEquals(maxLongPlusSome, counter64.toBigInteger());
+        assertEquals(maxLongPlusSome, valueFactory.getValue(SnmpValue.SNMP_COUNTER64, maxLongPlusSome.toByteArray()).toBigInteger());
+        assertEquals(counter64.toBigInteger(), new BigInteger(counter64.getBytes()));
+
+        // SnmpValue.SNMP_GAUGE32;
+        SnmpValue gauge32 = valueFactory.getGauge32(0xF7654321L);
+        assertEquals("Expected a gauge32", SnmpValue.SNMP_GAUGE32, gauge32.getType());
+        assertEquals(0xF7654321L, gauge32.toLong());
+        assertEquals(0xF7654321L, valueFactory.getValue(SnmpValue.SNMP_GAUGE32, BigInteger.valueOf(0xF7654321L).toByteArray()).toLong());
+        assertEquals(gauge32.toBigInteger(), new BigInteger(gauge32.getBytes()));
+                
+        // SnmpValue.SNMP_INT32;
+        SnmpValue int32 = valueFactory.getInt32(0x77654321);
+        assertEquals("Expected a int32", SnmpValue.SNMP_INT32, int32.getType());
+        assertEquals(0x77654321, int32.toInt());
+        assertEquals(0x77654321L, valueFactory.getValue(SnmpValue.SNMP_INT32, BigInteger.valueOf(0x77654321L).toByteArray()).toLong());
+        assertEquals(int32.toBigInteger(), new BigInteger(int32.getBytes()));
+
+        // SnmpValue.SNMP_IPADDRESS;
+        InetAddress addr = InetAddress.getLocalHost();
+        SnmpValue ipAddr = valueFactory.getIpAddress(addr);
+        assertEquals("Expected an ipAddress", SnmpValue.SNMP_IPADDRESS, ipAddr.getType());
+        assertEquals(addr, ipAddr.toInetAddress());
+        assertEquals(addr, valueFactory.getValue(SnmpValue.SNMP_IPADDRESS, addr.getAddress()).toInetAddress());
+        assertEquals(addr, InetAddress.getByAddress(ipAddr.getBytes()));
+        
+        // SnmpValue.SNMP_OBJECT_IDENTIFIER;
+        SnmpObjId objId = SnmpObjId.get(".1.3.6.1.2.1.1.3.0");
+        SnmpValue objVal = valueFactory.getObjectId(objId);
+        assertEquals("Expected an object identifier", SnmpValue.SNMP_OBJECT_IDENTIFIER, objVal.getType());
+        assertEquals(objId, objVal.toSnmpObjId());
+        assertEquals(objId, valueFactory.getValue(SnmpValue.SNMP_OBJECT_IDENTIFIER, objId.toString().getBytes()).toSnmpObjId());
+        assertEquals(objId, SnmpObjId.get(new String(objVal.getBytes())));
+
+        // SnmpValue.SNMP_TIMETICKS;
+        long ticks = 4700;
+        SnmpValue timeTicks = valueFactory.getTimeTicks(ticks);
+        assertEquals("Expected an timeticks object", SnmpValue.SNMP_TIMETICKS, timeTicks.getType());
+        assertEquals(ticks, timeTicks.toLong());
+        assertEquals(ticks, valueFactory.getValue(SnmpValue.SNMP_TIMETICKS, BigInteger.valueOf(ticks).toByteArray()).toLong());
+        assertEquals(timeTicks.toBigInteger(), new BigInteger(timeTicks.getBytes()));
+        
     }
     
 }

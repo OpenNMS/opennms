@@ -35,10 +35,10 @@ import java.net.InetAddress;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.TrapIdentity;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.TrapProcessor;
-import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpSyntax;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
@@ -124,10 +124,10 @@ public abstract class TrapInformation implements TrapNotification {
         m_trapProcessor.setTrapIdentity(getTrapIdentity());
         
         for (int i = 0; i < getPduLength(); i++) {
-            SnmpObjectId name = getVarBindAt(i).getName();
+            SnmpObjId name = SnmpObjId.get(getVarBindAt(i).getName().getIdentifiers());
             SnmpSyntax obj = getVarBindAt(i).getValue();
             
-            m_trapProcessor.processVarBind(name, obj);
+            m_trapProcessor.processVarBind(name, new JoeSnmpValue(obj));
         } // end for loop
     }
 
