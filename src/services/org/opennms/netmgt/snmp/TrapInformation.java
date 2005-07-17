@@ -29,18 +29,12 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.snmp.joesnmp;
+package org.opennms.netmgt.snmp;
 
 import java.net.InetAddress;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.TrapIdentity;
-import org.opennms.netmgt.snmp.TrapNotification;
-import org.opennms.netmgt.snmp.TrapProcessor;
-import org.opennms.protocols.snmp.SnmpSyntax;
-import org.opennms.protocols.snmp.SnmpVarBind;
 
 public abstract class TrapInformation implements TrapNotification {
 
@@ -52,7 +46,7 @@ public abstract class TrapInformation implements TrapNotification {
      * The community string from the actual SNMP packet
      */
     private String m_community;
-    TrapProcessor m_trapProcessor;
+    private TrapProcessor m_trapProcessor;
 
     protected TrapInformation(InetAddress agent, String community, TrapProcessor trapProcessor) {
         m_agent = agent;
@@ -99,8 +93,6 @@ public abstract class TrapInformation implements TrapNotification {
 
     protected abstract int getPduLength();
 
-    protected abstract SnmpVarBind getVarBindAt(int index);
-
     protected abstract long getTimeStamp();
 
     protected abstract TrapIdentity getTrapIdentity();
@@ -124,11 +116,14 @@ public abstract class TrapInformation implements TrapNotification {
         m_trapProcessor.setTrapIdentity(getTrapIdentity());
         
         for (int i = 0; i < getPduLength(); i++) {
-            SnmpObjId name = SnmpObjId.get(getVarBindAt(i).getName().getIdentifiers());
-            SnmpSyntax obj = getVarBindAt(i).getValue();
-            
-            m_trapProcessor.processVarBind(name, new JoeSnmpValue(obj));
+            processVarBindAt(i);
         } // end for loop
+    }
+
+    protected abstract void processVarBindAt(int i);
+
+    protected void processVarBind(SnmpObjId name, SnmpValue value) {
+        m_trapProcessor.processVarBind(name, value);
     }
 
 }

@@ -41,7 +41,10 @@ package org.opennms.netmgt.snmp.joesnmp;
 
 import java.net.InetAddress;
 
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TrapIdentity;
+import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.protocols.snmp.SnmpIPAddress;
 import org.opennms.protocols.snmp.SnmpPduTrap;
@@ -97,6 +100,12 @@ public class V1TrapInformation extends TrapInformation {
 
     protected String getVersion() {
         return "v1";
+    }
+
+    protected void processVarBindAt(int i) {
+        SnmpObjId name = SnmpObjId.get(getVarBindAt(i).getName().getIdentifiers());
+        SnmpValue value = new JoeSnmpValue(getVarBindAt(i).getValue());
+        processVarBind(name, value);
     }
 
 }

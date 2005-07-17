@@ -43,7 +43,9 @@ package org.opennms.netmgt.snmp.joesnmp;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TrapIdentity;
+import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.protocols.snmp.SnmpInt32;
 import org.opennms.protocols.snmp.SnmpObjectId;
@@ -181,5 +183,11 @@ public class V2TrapInformation extends TrapInformation {
         if ((!(varBindName0.equals(V2TrapInformation.SNMP_SYSUPTIME_OID))) || (!(varBindName1.equals(V2TrapInformation.SNMP_TRAP_OID)))) {
             throw new IllegalArgumentException("V2 trap from " + getTrapAddress() + " IGNORED due to not having the required varbinds.\n\tThe first varbind must be sysUpTime.0 and the second snmpTrapOID.0\n\tVarbinds received are : " + varBindName0 + " and " + varBindName1);
         }
+    }
+
+    protected void processVarBindAt(int i) {
+        SnmpObjId name = SnmpObjId.get(getVarBindAt(i).getName().getIdentifiers());
+        SnmpValue value = new JoeSnmpValue(getVarBindAt(i).getValue());
+        processVarBind(name, value);
     }
 }
