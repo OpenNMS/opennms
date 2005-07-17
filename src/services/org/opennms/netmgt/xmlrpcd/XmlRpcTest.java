@@ -64,11 +64,11 @@ public class XmlRpcTest extends MockObjectTestCase {
         m_mockProvisioner = mock(Provisioner.class);
         Provisioner bean = (Provisioner)m_mockProvisioner.proxy();
         
-//        m_proxy = createRemoteProxyFor(bean);
-//       m_proxy = createLocalProxyFor(bean);
+        m_proxy = createRemoteProxy(bean);
+//       m_proxy = createLocalProxy(bean);
         
-//        m_proxy = createRemoteProxyFor(new OpenNMSProvisioner());
-        m_proxy = createRemoteProxy("http://onms1.opennms.com:9192/RPC2");
+//        m_proxy = createRemoteProxy(new OpenNMSProvisioner());
+//        m_proxy = createRemoteProxy("http://onms1.opennms.com:9192/RPC2");
         
         //Thread.sleep(600000);
 
