@@ -30,10 +30,6 @@
 
 package org.opennms.web.event.filter;
 
-import java.sql.SQLException;
-
-import org.opennms.web.element.NetworkElementFactory;
-
 /** Encapsulates all node filtering functionality. */
 public class AlarmIDFilter extends Object implements Filter {
     public static final String TYPE = "alarm";

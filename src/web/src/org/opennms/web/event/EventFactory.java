@@ -47,7 +47,6 @@ import org.opennms.web.event.filter.InterfaceFilter;
 import org.opennms.web.event.filter.NodeFilter;
 import org.opennms.web.event.filter.ServiceFilter;
 import org.opennms.web.event.filter.SeverityFilter;
-import org.opennms.web.event.filter.AlarmIDFilter;
 
 /**
  * Encapsulates all querying functionality for events.

@@ -31,25 +31,9 @@
 //
 package org.opennms.web.webtests;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.StringBufferInputStream;
-import java.util.Arrays;
-import java.util.List;
 
-import net.sourceforge.jwebunit.ExpectedCell;
-import net.sourceforge.jwebunit.ExpectedRow;
-import net.sourceforge.jwebunit.ExpectedTable;
-import net.sourceforge.jwebunit.WebTestCase;
-
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import org.opennms.netmgt.config.common.BasicSchedule;
-import org.opennms.netmgt.config.common.Time;
-import org.opennms.netmgt.config.poller.Outage;
-import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventConfigManager;
@@ -57,7 +41,6 @@ import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockUtil;
 
-import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebTable;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;

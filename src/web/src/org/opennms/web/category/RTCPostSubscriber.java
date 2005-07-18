@@ -33,7 +33,6 @@
 package org.opennms.web.category;
 
 import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;

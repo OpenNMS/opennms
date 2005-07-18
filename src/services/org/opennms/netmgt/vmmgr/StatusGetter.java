@@ -1,7 +1,6 @@
 package org.opennms.netmgt.vmmgr;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.Authenticator;
