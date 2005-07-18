@@ -245,11 +245,11 @@ public final class SystemGroup extends AggregateTracker {
     }
 
     protected void reportGenErr(String msg) {
-        log().error("Error retrieving systemGroup from "+m_address+". "+msg);
+        log().warn("Error retrieving systemGroup from "+m_address+". "+msg);
     }
 
     protected void reportNoSuchNameErr(String msg) {
-        log().error("Error retrieving systemGroup from "+m_address+". "+msg);
+        log().info("Error retrieving systemGroup from "+m_address+". "+msg);
     }
 
     private final Category log() {

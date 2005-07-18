@@ -117,7 +117,7 @@ public class SnmpNodeCollector extends AggregateTracker {
     }
 
     protected void reportNoSuchNameErr(String msg) {
-        log().warn("noSuchName collecting data for node "+m_primaryIf+": "+msg);
+        log().info("noSuchName collecting data for node "+m_primaryIf+": "+msg);
     }
 
     protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {

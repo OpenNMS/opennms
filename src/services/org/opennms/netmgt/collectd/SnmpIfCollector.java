@@ -151,15 +151,15 @@ public class SnmpIfCollector extends AggregateTracker {
     }
 
     protected void reportGenErr(String msg) {
-        log().error(m_primaryIf+": genErr collecting ifData. "+msg);
+        log().warn(m_primaryIf+": genErr collecting ifData. "+msg);
     }
 
     protected void reportNoSuchNameErr(String msg) {
-        log().error(m_primaryIf+": noSuchName collecting ifData. "+msg);
+        log().info(m_primaryIf+": noSuchName collecting ifData. "+msg);
     }
 
     protected void reportTooBigErr(String msg) {
-        log().error(m_primaryIf+": request tooBig. "+msg);
+        log().info(m_primaryIf+": request tooBig. "+msg);
     }
 
     protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {

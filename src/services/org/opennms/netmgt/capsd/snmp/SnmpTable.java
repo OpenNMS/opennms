@@ -72,11 +72,11 @@ abstract public class SnmpTable  extends AggregateTracker {
         return new ArrayList(m_results.values());
     }
     protected void reportGenErr(String msg) {
-        log().error("Error retrieving "+m_tableName+" from "+m_address+". "+msg);
+        log().warn("Error retrieving "+m_tableName+" from "+m_address+". "+msg);
     }
 
     protected void reportNoSuchNameErr(String msg) {
-        log().error("Error retrieving "+m_tableName+" from "+m_address+". "+msg);
+        log().info("Error retrieving "+m_tableName+" from "+m_address+". "+msg);
     }
     
     private final Category log() {
