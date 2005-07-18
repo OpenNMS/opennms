@@ -33,7 +33,9 @@ package org.opennms.netmgt.snmp.snmp4j;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.SocketException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -41,20 +43,28 @@ import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpStrategy;
+import org.opennms.netmgt.snmp.SnmpTrapBuilder;
+import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
 import org.opennms.netmgt.snmp.TrapProcessorFactory;
+import org.snmp4j.CommandResponderEvent;
 import org.snmp4j.CommunityTarget;
+import org.snmp4j.MessageDispatcher;
 import org.snmp4j.PDU;
+import org.snmp4j.PDUv1;
 import org.snmp4j.Snmp;
 import org.snmp4j.Target;
+import org.snmp4j.TransportMapping;
 import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.log.Log4jLogFactory;
 import org.snmp4j.log.LogFactory;
 import org.snmp4j.mp.MPv3;
+import org.snmp4j.mp.MessageProcessingModel;
+import org.snmp4j.mp.PduHandle;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.security.AuthMD5;
 import org.snmp4j.security.AuthSHA;
@@ -63,12 +73,14 @@ import org.snmp4j.security.PrivAES192;
 import org.snmp4j.security.PrivAES256;
 import org.snmp4j.security.PrivDES;
 import org.snmp4j.security.SecurityLevel;
+import org.snmp4j.security.SecurityModel;
 import org.snmp4j.security.SecurityModels;
 import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
+import org.snmp4j.smi.IpAddress;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.SMIConstants;
@@ -77,10 +89,12 @@ import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 public class Snmp4JStrategy implements SnmpStrategy {
-    
+
+    public static Map m_registrations = new HashMap();
     private Snmp4JValueFactory m_valueFactory;
     
     static private boolean m_initialized = false;
+    private static Snmp sm_session;
 
     //Initialize for v3 communications
     private static void initialize() {
@@ -473,30 +487,138 @@ public class Snmp4JStrategy implements SnmpStrategy {
         return octetString;
     }
 
-    public void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort) throws SocketException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) {
-        // TODO Auto-generated method stub
-        
-    }
-
     public SnmpValueFactory getValueFactory() {
         if (m_valueFactory == null)
             m_valueFactory = new Snmp4JValueFactory();
         return m_valueFactory;
     }
 
-    public void sendV1TestTrap(InetAddress agentAddress, int port, String community, SnmpObjId enterpriseId, int generic, int specific, long timeStamp) {
-        // TODO Auto-generated method stub
+    public static class RegistrationInfo {
+        public TrapNotificationListener m_listener;
+        int m_trapPort;
+        
+        Snmp m_trapSession;
+        Snmp4JTrapNotifier m_trapHandler;
+        private TransportMapping m_transportMapping;
+        
+        RegistrationInfo(TrapNotificationListener listener, int trapPort) {
+            if (listener == null) throw new NullPointerException("listener is null");
+    
+            m_listener = listener;
+            m_trapPort = trapPort;
+        }
+    
+        public boolean equals(Object obj) {
+            if (obj instanceof RegistrationInfo) {
+                RegistrationInfo info = (RegistrationInfo) obj;
+                return (m_listener == info.m_listener) && (m_trapPort == info.m_trapPort);
+            }
+            return false;
+        }
+    
+        public int hashCode() {
+            return (m_listener.hashCode() ^ m_trapPort);
+        }
+        
+        public void setSession(Snmp trapSession) {
+            m_trapSession = trapSession;
+        }
+        
+        public Snmp getSession() {
+            return m_trapSession;
+        }
+        
+        public void setHandler(Snmp4JTrapNotifier trapHandler) {
+            m_trapHandler = trapHandler;
+        }
+        
+        public Snmp4JTrapNotifier getHandler() {
+            return m_trapHandler;
+        }
+
+        public int getPort() {
+            return m_trapPort;
+        }
+
+        public void setTransportMapping(TransportMapping transport) {
+            m_transportMapping = transport;
+        }
+        
+        public TransportMapping getTransportMapping() {
+            return m_transportMapping;
+        }
+        
         
     }
 
-    public void sendV2TestTrap(InetAddress agentAddress, int port, String community, SnmpObjId enterpriseId, int specific, long timeStamp) {
-        // TODO Auto-generated method stub
+
+
+    public void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort) throws IOException {
+        RegistrationInfo info = new RegistrationInfo(listener, snmpTrapPort);
         
+        Snmp4JTrapNotifier m_trapHandler = new Snmp4JTrapNotifier(listener, processorFactory);
+        info.setHandler(m_trapHandler);
+
+        TransportMapping transport = new DefaultUdpTransportMapping(new UdpAddress(snmpTrapPort));
+        info.setTransportMapping(transport);
+        Snmp snmp = new Snmp(transport);
+        snmp.addCommandResponder(m_trapHandler);
+        info.setSession(snmp);
+        
+        m_registrations.put(listener, info);
+        
+        snmp.listen();
+    }
+
+    public void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) throws IOException {
+        RegistrationInfo info = (RegistrationInfo)m_registrations.remove(listener);
+        info.getSession().close();
+    }
+
+    public SnmpV1TrapBuilder getV1TrapBuilder() {
+        return new Snmp4JV1TrapBuilder();
+    }
+
+    public SnmpTrapBuilder getV2TrapBuilder() {
+        return new Snmp4JV2TrapBuilder();
+    }
+    
+    public static void send(String agentAddress, int port, String community, PDU pdu) throws Exception {
+        
+        Snmp snmp = getSession();
+        
+        Address targetAddress = GenericAddress.parse("udp:"+agentAddress+"/"+port);
+        CommunityTarget target = new CommunityTarget(targetAddress, new OctetString(community.getBytes()));
+        target.setVersion(pdu instanceof PDUv1 ? SnmpConstants.version1 : SnmpConstants.version2c);
+        
+        snmp.send(pdu, target);
+    }
+
+    private static Snmp getSession() throws IOException {
+        if (sm_session == null) {
+            sm_session = new Snmp(new DefaultUdpTransportMapping());
+        }
+        return sm_session;
+    }
+
+    public static void sendTest(String agentAddress, int port, String community, PDU pdu) {
+        for (Iterator it = m_registrations.values().iterator(); it.hasNext();) {
+            RegistrationInfo info = (RegistrationInfo) it.next();
+            if (port == info.getPort()) {
+                Snmp snmp = info.getSession();
+                MessageDispatcher dispatcher = snmp.getMessageDispatcher();
+                TransportMapping transport = info.getTransportMapping();
+                
+                int securityModel = (pdu instanceof PDUv1 ? SecurityModel.SECURITY_MODEL_SNMPv1 :SecurityModel.SECURITY_MODEL_SNMPv2c);
+                int messageModel = (pdu instanceof PDUv1 ? MessageProcessingModel.MPv1 : MessageProcessingModel.MPv2c);
+                CommandResponderEvent e = new CommandResponderEvent(dispatcher, transport, new IpAddress(agentAddress), messageModel, 
+                                                                    securityModel, community.getBytes(), 
+                                                                    SecurityLevel.NOAUTH_NOPRIV, new PduHandle(), pdu, 1000, null);
+
+                info.getHandler().processPdu(e);
+            }
+        }
+
     }
 
 }

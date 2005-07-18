@@ -4,7 +4,7 @@
 
 	<start-script language="beanshell">
 
-		import org.opennms.protocols.snmp.SnmpPduTrap;
+		import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 
 		log = bsf.lookupBean("log");
 		snmpTrapHelper = new org.opennms.netmgt.scriptd.helper.SnmpTrapHelper();
@@ -30,7 +30,7 @@
 
 		log.debug("Forwarding an OpenNMS event.");
 
-		SnmpPduTrap trap = snmpTrapHelper.createV1Trap(".1.3.6.1.4.1.5813.1", "10.1.1.16", 6, 1, 0);
+		SnmpTrapBuilder trap = snmpTrapHelper.createV1Trap(".1.3.6.1.4.1.5813.1", "10.1.1.16", 6, 1, 0);
 
 		t_dbid = new Integer(event.dbid).toString();
 		if (t_dbid != null)
@@ -100,7 +100,7 @@
 		else
 			snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.20", "OctetString", "text", "null");
 
-		snmpTrapHelper.sendTrap("public", trap, "10.1.1.15", 162);
+		snmpTrapHelper.sendTrap("10.1.1.15", 162, "public", trap);
 
 		}
 

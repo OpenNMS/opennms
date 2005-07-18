@@ -39,8 +39,67 @@ import junit.framework.TestSuite;
 
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 
-public class SnmpUtilsTest extends OpenNMSTestCase {
+public class SnmpUtilsTest extends OpenNMSTestCase implements TrapProcessorFactory {
     
+    private TestTrapListener m_trapListener;
+
+    private final class TestTrapProcessor implements TrapProcessor {
+        public void setCommunity(String community) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        public void setTimeStamp(long timeStamp) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        public void setVersion(String version) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        public void setAgentAddress(InetAddress agentAddress) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        public void processVarBind(SnmpObjId name, SnmpValue value) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        public void setTrapAddress(InetAddress trapAddress) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        public void setTrapIdentity(TrapIdentity trapIdentity) {
+            // TODO Auto-generated method stub
+            
+        }
+    }
+
+    private static final class TestTrapListener implements TrapNotificationListener {
+        private boolean m_error = false;
+        private int m_receivedTrapCount = 0;
+
+        public void trapReceived(TrapNotification trapNotification) {
+            m_receivedTrapCount++;
+        }
+
+        public void trapError(int error, String msg) {
+            m_error = true;
+        }
+        
+        public boolean hasError() {
+            return m_error;
+        }
+        public int getReceivedTrapCount() {
+            return m_receivedTrapCount;
+        }
+    }
+
     public static TestSuite suite() {
         Class testClass = SnmpUtilsTest.class;
         TestSuite suite = new TestSuite(testClass.getName());
@@ -53,9 +112,14 @@ public class SnmpUtilsTest extends OpenNMSTestCase {
     protected void setUp() throws Exception {
         super.setStartEventd(false);
         super.setUp();
+        
+        m_trapListener = new TestTrapListener();
+        SnmpUtils.registerForTraps(m_trapListener, this, 9162);
+
     }
 
     protected void tearDown() throws Exception {
+        SnmpUtils.unregisterForTraps(m_trapListener, 9162);
         super.tearDown();
     }
     
@@ -126,6 +190,59 @@ public class SnmpUtilsTest extends OpenNMSTestCase {
         SnmpStrategy strategy = SnmpUtils.getStrategy();
         assertNotNull(strategy);
         assertEquals(System.getProperty("org.opennms.snmp.strategyClass"), strategy.getClass().getName());
+    }
+    
+    public void testSendV1Trap() throws Exception {
+        SnmpV1TrapBuilder trap = SnmpUtils.getV1TrapBuilder();
+        trap.setAgentAddress(InetAddress.getLocalHost());
+        trap.setEnterprise(SnmpObjId.get(".0.0"));
+        trap.setGeneric(6);
+        trap.setSpecific(1);
+        trap.setTimeStamp(8640000);
+        trap.send(InetAddress.getLocalHost().getHostAddress(), 9162, "public");
+        Thread.sleep(1000);
+        assertEquals("Unexpected number of traps Received", 1, m_trapListener.getReceivedTrapCount());
+    }
+    
+    public void testSendV2Trap() throws Exception {
+        SnmpObjId enterpriseId = SnmpObjId.get(".0.0");
+        SnmpObjId trapOID = SnmpObjId.get(enterpriseId, new SnmpInstId(1));
+        
+        SnmpTrapBuilder pdu = SnmpUtils.getV2TrapBuilder();
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(trapOID));
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(enterpriseId));
+
+        pdu.send(InetAddress.getLocalHost().getHostAddress(), 9162, "public");
+        Thread.sleep(1000);
+        assertEquals("Unexpected number of traps Received", 1, m_trapListener.getReceivedTrapCount());
+    }
+    public TrapProcessor createTrapProcessor() {
+        return new TestTrapProcessor();
+    }
+    
+    public void testSendV1TestTrap() throws Exception {
+        SnmpV1TrapBuilder trap = SnmpUtils.getV1TrapBuilder();
+        trap.setAgentAddress(InetAddress.getLocalHost());
+        trap.setEnterprise(SnmpObjId.get(".0.0"));
+        trap.setGeneric(6);
+        trap.setSpecific(1);
+        trap.setTimeStamp(8640000);
+        trap.sendTest(InetAddress.getLocalHost().getHostAddress(), 9162, "public");
+        assertEquals("Unexpected number of traps Received", 1, m_trapListener.getReceivedTrapCount());
+    }
+    
+    public void testSendV2TestTrap() throws Exception {
+        SnmpObjId enterpriseId = SnmpObjId.get(".0.0");
+        SnmpObjId trapOID = SnmpObjId.get(enterpriseId, new SnmpInstId(1));
+        
+        SnmpTrapBuilder pdu = SnmpUtils.getV2TrapBuilder();
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(trapOID));
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(enterpriseId));
+
+        pdu.sendTest(InetAddress.getLocalHost().getHostAddress(), 9162, "public");
+        assertEquals("Unexpected number of traps Received", 1, m_trapListener.getReceivedTrapCount());
     }
     
     public void testGetValueFactory() throws UnknownHostException {

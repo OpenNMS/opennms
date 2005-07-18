@@ -31,29 +31,18 @@
 //
 package org.opennms.netmgt.snmp;
 
-import java.io.IOException;
+import java.net.InetAddress;
 
-
-public interface SnmpStrategy {
-
-    SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker);
+public interface SnmpV1TrapBuilder extends SnmpTrapBuilder {
     
-    SnmpValue get(SnmpAgentConfig agentConfig, SnmpObjId oid);
-    SnmpValue[] get(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
+    void setEnterprise(SnmpObjId enterpriseId);
 
-    SnmpValue getNext(SnmpAgentConfig agentConfig, SnmpObjId oid);
-    SnmpValue[] getNext(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
-    
-    SnmpValue[] getBulk(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
+    void setAgentAddress(InetAddress agentAddress);
 
-    void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort) throws IOException;
+    void setGeneric(int generic);
 
-    void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) throws IOException;
+    void setSpecific(int specific);
 
-    SnmpValueFactory getValueFactory();
-
-    SnmpV1TrapBuilder getV1TrapBuilder();
-    
-    SnmpTrapBuilder getV2TrapBuilder();
+    void setTimeStamp(long timeStamp);
 
 }

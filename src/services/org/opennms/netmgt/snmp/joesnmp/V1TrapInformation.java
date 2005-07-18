@@ -87,7 +87,7 @@ public class V1TrapInformation extends TrapInformation {
     }
 
     protected TrapIdentity getTrapIdentity() {
-        return new TrapIdentity(m_pdu.getEnterprise().toString(), m_pdu.getGeneric(), m_pdu.getSpecific());
+        return new TrapIdentity(SnmpObjId.get(m_pdu.getEnterprise().getIdentifiers()), m_pdu.getGeneric(), m_pdu.getSpecific());
     }
 
     protected InetAddress getTrapAddress() {

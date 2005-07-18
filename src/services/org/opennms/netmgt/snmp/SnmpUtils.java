@@ -31,8 +31,8 @@
 //
 package org.opennms.netmgt.snmp;
 
+import java.io.IOException;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.util.Properties;
 
 import org.apache.log4j.Category;
@@ -113,11 +113,11 @@ public class SnmpUtils {
         return getConfig().getProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy");
     }
     
-    public static void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort) throws SocketException {
+    public static void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort) throws IOException {
         getStrategy().registerForTraps(listener, processorFactory, snmpTrapPort);
     }
     
-    public static void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) {
+    public static void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) throws IOException {
         getStrategy().unregisterForTraps(listener, snmpTrapPort);
     }
     
@@ -125,12 +125,12 @@ public class SnmpUtils {
         return getStrategy().getValueFactory();
     }
     
-    public static void sendV1TestTrap(InetAddress agentAddress, int port, String community, SnmpObjId enterpriseId, int generic, int specific, long timeStamp) {
-        getStrategy().sendV1TestTrap(agentAddress, port, community, enterpriseId, generic, specific, timeStamp);
+    public static SnmpV1TrapBuilder getV1TrapBuilder() {
+        return getStrategy().getV1TrapBuilder();
     }
-
-    public static void sendV2TestTrap(InetAddress agentAddress, int port, String community, SnmpObjId enterpriseId, int specific, long timeStamp) {
-        getStrategy().sendV2TestTrap(agentAddress, port, community, enterpriseId, specific, timeStamp);
+    
+    public static SnmpTrapBuilder getV2TrapBuilder() {
+        return getStrategy().getV2TrapBuilder();
     }
 
 }

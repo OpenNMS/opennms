@@ -39,8 +39,8 @@
 
 package org.opennms.netmgt.trapd;
 
+import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.SocketException;
 import java.util.Map;
 
 import org.apache.log4j.Category;
@@ -188,7 +188,7 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory, TrapNot
             SnmpUtils.registerForTraps(this, this, m_trapdConfig.getSnmpTrapPort());
 
 			log.debug("start: Creating the trap session");
-		} catch (SocketException e) {
+		} catch (IOException e) {
 			log.error("Failed to setup SNMP trap port", e);
 			throw new UndeclaredThrowableException(e);
 		}
@@ -295,6 +295,8 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory, TrapNot
             SnmpUtils.unregisterForTraps(this, m_trapdConfig.getSnmpTrapPort());
 
 			log.debug("stop: SNMP trap session closed.");
+        } catch (IOException e) {
+            log.warn("stop: exception occurred closing session", e);
 		} catch (IllegalStateException e) {
 			log.debug("stop: The SNMP session was already closed");
 		}

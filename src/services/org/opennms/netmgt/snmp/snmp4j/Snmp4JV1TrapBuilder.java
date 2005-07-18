@@ -29,31 +29,46 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.snmp;
+package org.opennms.netmgt.snmp.snmp4j;
 
-import java.io.IOException;
+import java.net.InetAddress;
 
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
+import org.snmp4j.PDUv1;
+import org.snmp4j.smi.IpAddress;
+import org.snmp4j.smi.OID;
 
-public interface SnmpStrategy {
-
-    SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker);
+public class Snmp4JV1TrapBuilder extends Snmp4JV2TrapBuilder implements SnmpV1TrapBuilder {
     
-    SnmpValue get(SnmpAgentConfig agentConfig, SnmpObjId oid);
-    SnmpValue[] get(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
-
-    SnmpValue getNext(SnmpAgentConfig agentConfig, SnmpObjId oid);
-    SnmpValue[] getNext(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
+    Snmp4JV1TrapBuilder() {
+        super(new PDUv1(), PDUv1.V1TRAP);
+        
+    }
     
-    SnmpValue[] getBulk(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
-
-    void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort) throws IOException;
-
-    void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) throws IOException;
-
-    SnmpValueFactory getValueFactory();
-
-    SnmpV1TrapBuilder getV1TrapBuilder();
+    PDUv1 getPDUv1() {
+        return (PDUv1)getPDU();
+    }
     
-    SnmpTrapBuilder getV2TrapBuilder();
+    public void setEnterprise(SnmpObjId enterpriseId) {
+        getPDUv1().setEnterprise(new OID(enterpriseId.getIds()));
+    }
+
+    public void setAgentAddress(InetAddress agentAddress) {
+        getPDUv1().setAgentAddress(new IpAddress(agentAddress));
+    }
+
+    public void setGeneric(int generic) {
+        getPDUv1().setGenericTrap(generic);
+    }
+
+    public void setSpecific(int specific) {
+        getPDUv1().setSpecificTrap(specific);
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        getPDUv1().setTimestamp(timeStamp);
+    }
+
 
 }

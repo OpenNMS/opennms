@@ -254,6 +254,10 @@ class JoeSnmpValue implements SnmpValue {
     public boolean isNull() {
         return getType() == SnmpValue.SNMP_NULL;
     }
+
+    public SnmpSyntax getSnmpSyntax() {
+        return m_value;
+    }
     
     
     

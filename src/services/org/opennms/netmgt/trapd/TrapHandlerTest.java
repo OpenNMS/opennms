@@ -17,8 +17,11 @@ import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockTrapdConfig;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.snmp.PropertySettingTestSuite;
+import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
 public class TrapHandlerTest extends TestCase {
@@ -27,7 +30,7 @@ public class TrapHandlerTest extends TestCase {
         Class testClass = TrapHandlerTest.class;
         TestSuite suite = new TestSuite(testClass.getName());
         suite.addTest(new PropertySettingTestSuite(testClass, "JoeSnmp Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy"));
-        //suite.addTest(new PropertySettingTestSuite(testClass, "Snmp4J Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy"));
+        suite.addTest(new PropertySettingTestSuite(testClass, "Snmp4J Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy"));
         return suite;
     }
 
@@ -298,11 +301,37 @@ public class TrapHandlerTest extends TestCase {
 		}
 	}
 
-	public void sendV1Trap(String enterprise, int generic, int specific) {
-        SnmpUtils.sendV1TestTrap(m_localhost, m_port, "public", SnmpObjId.get(enterprise), generic, specific, System.currentTimeMillis());
+	public void sendV1Trap(String enterprise, int generic, int specific) throws Exception {
+        SnmpV1TrapBuilder pdu = SnmpUtils.getV1TrapBuilder();
+        pdu.setEnterprise(SnmpObjId.get(enterprise));
+        pdu.setGeneric(generic);
+        pdu.setSpecific(specific);
+        pdu.setTimeStamp(0);
+        pdu.setAgentAddress(m_localhost);
+        
+        pdu.send(m_localhost.getHostAddress(), m_port, "public");
 	}
 		
-	public void sendV2Trap(String enterprise, int specific) {
-        SnmpUtils.sendV2TestTrap(m_localhost, m_port, "public", SnmpObjId.get(enterprise), specific, System.currentTimeMillis());
+	public void sendV2Trap(String enterprise, int specific) throws Exception {
+        SnmpObjId enterpriseId = SnmpObjId.get(enterprise);
+        boolean isGeneric = false;
+        SnmpObjId trapOID;
+        if (SnmpObjId.get(".1.3.6.1.6.3.1.1.5").isPrefixOf(enterpriseId)) {
+            isGeneric = true;
+            trapOID = enterpriseId;
+        } else {
+            trapOID = SnmpObjId.get(enterpriseId, new SnmpInstId(specific));
+            // XXX or should it be this
+            // trap OID = enterprise + ".0." + specific;
+        }
+        
+        SnmpTrapBuilder pdu = SnmpUtils.getV2TrapBuilder();
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(trapOID));
+        if (isGeneric) {
+            pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(enterpriseId));
+        }
+
+        pdu.send(m_localhost.getHostAddress(), m_port, "public");
 	}
 }

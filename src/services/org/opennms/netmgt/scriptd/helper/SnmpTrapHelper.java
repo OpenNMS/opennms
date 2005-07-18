@@ -34,40 +34,21 @@
 
 package org.opennms.netmgt.scriptd.helper;
 
-import java.io.IOException;
+import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.Base64;
-import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpTrapBuilder;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
 import org.opennms.netmgt.trapd.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
-import org.opennms.protocols.ip.IPv4Address;
-import org.opennms.protocols.snmp.SnmpBadConversionException;
-import org.opennms.protocols.snmp.SnmpCounter32;
-import org.opennms.protocols.snmp.SnmpCounter64;
-import org.opennms.protocols.snmp.SnmpGauge32;
-import org.opennms.protocols.snmp.SnmpIPAddress;
-import org.opennms.protocols.snmp.SnmpInt32;
-import org.opennms.protocols.snmp.SnmpNull;
-import org.opennms.protocols.snmp.SnmpObjectId;
-import org.opennms.protocols.snmp.SnmpOctetString;
-import org.opennms.protocols.snmp.SnmpOpaque;
-import org.opennms.protocols.snmp.SnmpParameters;
-import org.opennms.protocols.snmp.SnmpPduEncodingException;
-import org.opennms.protocols.snmp.SnmpPduPacket;
-import org.opennms.protocols.snmp.SnmpPduRequest;
-import org.opennms.protocols.snmp.SnmpPduTrap;
-import org.opennms.protocols.snmp.SnmpPeer;
-import org.opennms.protocols.snmp.SnmpTimeTicks;
-import org.opennms.protocols.snmp.SnmpTrapHandler;
-import org.opennms.protocols.snmp.SnmpTrapSession;
-import org.opennms.protocols.snmp.SnmpVarBind;
-import org.opennms.protocols.snmp.asn1.AsnEncodingException;
 
 /**
  * This "helper" class provides a convenience interface for generating and
@@ -80,7 +61,7 @@ import org.opennms.protocols.snmp.asn1.AsnEncodingException;
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
  * 
  */
-public class SnmpTrapHelper implements SnmpTrapHandler {
+public class SnmpTrapHelper {
 
     /**
      * The sysUpTimeOID, which should be the first varbind in a V2 trap
@@ -125,27 +106,11 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
     private HashMap m_factoryMap;
 
     /**
-     * Trap session for sending traps
-     */
-    private SnmpTrapSession m_trapSession;
-
-    /**
      * Constructs a new SNMPTrapHelper.
      */
     public SnmpTrapHelper() {
 
         // create the trap session
-
-        try {
-            // The port -1 tells SnmpPortal to find any unused port on
-            // the system.
-            m_trapSession = new SnmpTrapSession(this, -1);
-        }
-
-        catch (Exception e) {
-            Category log = ThreadCategory.getInstance(SnmpTrapHelper.class);
-            log.error("SnmpTrapHelper failed to open trap session: " + e.getMessage());
-        }
 
         // create and populate the factory map
 
@@ -168,29 +133,7 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
      * session is stopped.
      */
     public void stop() {
-        if (m_trapSession != null) {
-            m_trapSession.close();
-        }
     }
-
-    // BEGIN: Implement SnmpTrapHandler
-
-    public void snmpReceivedTrap(SnmpTrapSession session, InetAddress agent, int port, SnmpOctetString community, SnmpPduPacket pdu) {
-        Category log = ThreadCategory.getInstance(SnmpTrapHelper.class);
-        log.error("SnmpTrapHelper received unexpected trap");
-    }
-
-    public void snmpReceivedTrap(SnmpTrapSession session, InetAddress agent, int port, SnmpOctetString community, SnmpPduTrap pdu) {
-        Category log = ThreadCategory.getInstance(SnmpTrapHelper.class);
-        log.error("SnmpTrapHelper received unexpected trap");
-    }
-
-    public void snmpTrapSessionError(SnmpTrapSession session, int error, Object ref) {
-        Category log = ThreadCategory.getInstance(SnmpTrapHelper.class);
-        log.error("Trap session error in SnmpTrapHelper");
-    }
-
-    // END: Implement SnmpTrapHandler
 
     /**
      * Common interface for all variabe binding factories
@@ -200,7 +143,7 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          * Constructs a new SnmpVarBind with the specified name and value. The
          * value is assumed to have been encoded with the specified encoding
          * (i.e. XML_ENCODING_TEXT, or XML_ENCODING_BASE64).
-         * 
+         * @param trap TODO
          * @param name
          *            The name (a.k.a. "id") of the variable binding to be
          *            created
@@ -216,7 +159,7 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          *                be created for any reason (e.g. encoding not
          *                supported, invalid value, etc.).
          */
-        public SnmpVarBind getVarBind(String name, String encoding, String value) throws SnmpTrapHelperException;
+        public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException;
     }
 
     /**
@@ -228,7 +171,6 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          * value will be encoded as an SnmpOctetString. The value is assumed to
          * have been encoded with the specified encoding (i.e.
          * XML_ENCODING_TEXT, or XML_ENCODING_BASE64).
-         * 
          * @param name
          *            The name (a.k.a. "id") of the variable binding to be
          *            created
@@ -244,15 +186,17 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          *                be created for any reason (e.g. encoding not
          *                supported, invalid value, etc.).
          */
-        public SnmpVarBind getVarBind(String name, String encoding, String value) throws SnmpTrapHelperException {
+        public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException {
 
+            byte[] contents;
             if (EventConstants.XML_ENCODING_TEXT.equals(encoding)) {
-                return new SnmpVarBind(name, new SnmpOctetString(value.getBytes()));
+                contents = value.getBytes();
             } else if (EventConstants.XML_ENCODING_BASE64.equals(encoding)) {
-                return new SnmpVarBind(name, new SnmpOctetString(Base64.decodeBase64(value.toCharArray())));
+                contents = Base64.decodeBase64(value.toCharArray());
             } else {
                 throw new SnmpTrapHelperException("Encoding " + encoding + "is invalid for SnmpOctetString");
             }
+            trap.addVarBind(SnmpObjId.get(name), SnmpUtils.getValueFactory().getOctetString(contents));
         }
     }
 
@@ -265,7 +209,6 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          * value will be encoded as an SnmpInt32. The value is assumed to have
          * been encoded with the specified encoding (only XML_ENCODING_TEXT is
          * supported).
-         * 
          * @param name
          *            The name (a.k.a. "id") of the variable binding to be
          *            created
@@ -281,11 +224,11 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          *                be created for any reason (e.g. encoding not
          *                supported, invalid value, etc.).
          */
-        public SnmpVarBind getVarBind(String name, String encoding, String value) throws SnmpTrapHelperException {
+        public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException {
 
             if (EventConstants.XML_ENCODING_TEXT.equals(encoding)) {
                 try {
-                    return new SnmpVarBind(name, new SnmpInt32(value));
+                    trap.addVarBind(SnmpObjId.get(name), SnmpUtils.getValueFactory().getInt32(Integer.parseInt(value)));
                 }
 
                 catch (NumberFormatException e) {
@@ -309,7 +252,6 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          * Constructs a new SnmpVarBind with the specified name and value. The
          * value will be encoded as an SnmpNull.The value and encoding
          * parameters are ignored.
-         * 
          * @param name
          *            The name (a.k.a. "id") of the variable binding to be
          *            created
@@ -320,8 +262,8 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          * 
          * @return The newly-created variable binding
          */
-        public SnmpVarBind getVarBind(String name, String encoding, String value) {
-            return new SnmpVarBind(name, new SnmpNull());
+        public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) {
+            trap.addVarBind(SnmpObjId.get(name), SnmpUtils.getValueFactory().getNull());
         }
     }
 
@@ -334,7 +276,6 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          * value will be encoded as an SnmpObjectId. The value is assumed to
          * have been encoded with the specified encoding (only XML_ENCODING_TEXT
          * is supported).
-         * 
          * @param name
          *            The name (a.k.a. "id") of the variable binding to be
          *            created
@@ -350,10 +291,10 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          *                be created for any reason (e.g. encoding not
          *                supported, invalid value, etc.).
          */
-        public SnmpVarBind getVarBind(String name, String encoding, String value) throws SnmpTrapHelperException {
+        public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException {
 
             if (EventConstants.XML_ENCODING_TEXT.equals(encoding)) {
-                return new SnmpVarBind(name, new SnmpObjectId(value));
+                trap.addVarBind(SnmpObjId.get(name), SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(value)));
             } else {
                 throw new SnmpTrapHelperException("Encoding " + encoding + "is invalid for SnmpObjectId");
             }
@@ -369,7 +310,6 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          * value will be encoded as an SnmpIPAddress. The value is assumed to
          * have been encoded with the specified encoding (only XML_ENCODING_TEXT
          * is supported).
-         * 
          * @param name
          *            The name (a.k.a. "id") of the variable binding to be
          *            created
@@ -385,14 +325,14 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          *                be created for any reason (e.g. encoding not
          *                supported, invalid value, etc.).
          */
-        public SnmpVarBind getVarBind(String name, String encoding, String value) throws SnmpTrapHelperException {
+        public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException {
 
             if (EventConstants.XML_ENCODING_TEXT.equals(encoding)) {
                 try {
-                    return new SnmpVarBind(name, new SnmpIPAddress(value));
+                    trap.addVarBind(SnmpObjId.get(name), SnmpUtils.getValueFactory().getIpAddress(InetAddress.getByName(value)));
                 }
 
-                catch (SnmpBadConversionException e) {
+                catch (UnknownHostException e) {
                     throw new SnmpTrapHelperException("Value " + value + "is invalid, or host unknown for SnmpIPAddress");
                 }
             } else {
@@ -410,7 +350,6 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          * value will be encoded as an SnmpTimeTicks. The value is assumed to
          * have been encoded with the specified encoding (only XML_ENCODING_TEXT
          * is supported).
-         * 
          * @param name
          *            The name (a.k.a. "id") of the variable binding to be
          *            created
@@ -426,11 +365,15 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          *                be created for any reason (e.g. encoding not
          *                supported, invalid value, etc.).
          */
-        public SnmpVarBind getVarBind(String name, String encoding, String value) throws SnmpTrapHelperException {
+        public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException {
 
             if (EventConstants.XML_ENCODING_TEXT.equals(encoding)) {
                 try {
-                    return new SnmpVarBind(name, new SnmpTimeTicks(value));
+                    trap.addVarBind(SnmpObjId.get(name), SnmpUtils.getValueFactory().getTimeTicks(Long.parseLong(value)));
+                }
+                
+                catch (NumberFormatException e) {
+                    throw new SnmpTrapHelperException("Value " + value + "is invalid for SnmpTimeTicks");
                 }
 
                 catch (IllegalArgumentException e) {
@@ -455,7 +398,6 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          * value will be encoded as an SnmpCounter32. The value is assumed to
          * have been encoded with the specified encoding (only XML_ENCODING_TEXT
          * is supported).
-         * 
          * @param name
          *            The name (a.k.a. "id") of the variable binding to be
          *            created
@@ -471,11 +413,15 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          *                be created for any reason (e.g. encoding not
          *                supported, invalid value, etc.).
          */
-        public SnmpVarBind getVarBind(String name, String encoding, String value) throws SnmpTrapHelperException {
+        public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException {
 
             if (EventConstants.XML_ENCODING_TEXT.equals(encoding)) {
                 try {
-                    return new SnmpVarBind(name, new SnmpCounter32(value));
+                    trap.addVarBind(SnmpObjId.get(name), SnmpUtils.getValueFactory().getCounter32(Long.parseLong(value)));
+                }
+                
+                catch (NumberFormatException e) {
+                    throw new SnmpTrapHelperException("Value " + value + "is invalid for SnmpCounter32");
                 }
 
                 catch (IllegalArgumentException e) {
@@ -500,7 +446,6 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          * value will be encoded as an SnmpGuage32. The value is assumed to have
          * been encoded with the specified encoding (only XML_ENCODING_TEXT is
          * supported).
-         * 
          * @param name
          *            The name (a.k.a. "id") of the variable binding to be
          *            created
@@ -516,11 +461,15 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          *                be created for any reason (e.g. encoding not
          *                supported, invalid value, etc.).
          */
-        public SnmpVarBind getVarBind(String name, String encoding, String value) throws SnmpTrapHelperException {
+        public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException {
 
             if (EventConstants.XML_ENCODING_TEXT.equals(encoding)) {
                 try {
-                    return new SnmpVarBind(name, new SnmpGauge32(value));
+                    trap.addVarBind(SnmpObjId.get(name), SnmpUtils.getValueFactory().getGauge32(Long.parseLong(value)));
+                }
+                
+                catch (NumberFormatException e) {
+                    throw new SnmpTrapHelperException("Value " + value + "is invalid for SnmpGauge32");
                 }
 
                 catch (IllegalArgumentException e) {
@@ -545,7 +494,6 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          * value will be encoded as an SnmpOpaque. The value is assumed to have
          * been encoded with the specified encoding (only XML_ENCODING_BASE64 is
          * supported).
-         * 
          * @param name
          *            The name (a.k.a. "id") of the variable binding to be
          *            created
@@ -561,10 +509,10 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          *                be created for any reason (e.g. encoding not
          *                supported, invalid value, etc.).
          */
-        public SnmpVarBind getVarBind(String name, String encoding, String value) throws SnmpTrapHelperException {
+        public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException {
 
             if (EventConstants.XML_ENCODING_BASE64.equals(encoding)) {
-                return new SnmpVarBind(name, new SnmpOpaque(Base64.decodeBase64(value.toCharArray())));
+                trap.addVarBind(SnmpObjId.get(name), SnmpUtils.getValueFactory().getOpaque(Base64.decodeBase64(value.toCharArray())));
             } else {
                 throw new SnmpTrapHelperException("Encoding " + encoding + "is invalid for SnmpOpaque");
             }
@@ -580,7 +528,6 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          * value will be encoded as an SnmpCounter64. The value is assumed to
          * have been encoded with the specified encoding (only XML_ENCODING_TEXT
          * is supported).
-         * 
          * @param name
          *            The name (a.k.a. "id") of the variable binding to be
          *            created
@@ -596,11 +543,11 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
          *                be created for any reason (e.g. encoding not
          *                supported, invalid value, etc.).
          */
-        public SnmpVarBind getVarBind(String name, String encoding, String value) throws SnmpTrapHelperException {
+        public void addVarBind(SnmpTrapBuilder trap, String name, String encoding, String value) throws SnmpTrapHelperException {
 
             if (EventConstants.XML_ENCODING_TEXT.equals(encoding)) {
                 try {
-                    return new SnmpVarBind(name, new SnmpCounter64(value));
+                    trap.addVarBind(SnmpObjId.get(name), SnmpUtils.getValueFactory().getCounter64(new BigInteger(value)));
                 }
 
                 catch (IllegalArgumentException e) {
@@ -613,86 +560,6 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
             } else {
                 throw new SnmpTrapHelperException("Encoding " + encoding + "is invalid for SnmpCounter64");
             }
-        }
-    }
-
-    /**
-     * Send the specified SNMP V1 trap to the specified address and port, with
-     * the specified community string.
-     * 
-     * @param community
-     *            The community string to be used.
-     * @param trap
-     *            The trap to be sent.
-     * @param destAddr
-     *            The IP address to which the trap should be sent.
-     * @param destPort
-     *            The port to which the trap should be sent.
-     * 
-     * @exception Throws
-     *                SnmpTrapHelperException if the trap cannot be sent for any
-     *                reason.
-     */
-    public void sendTrap(String community, SnmpPduTrap trap, String destAddr, int destPort) throws SnmpTrapHelperException {
-
-        try {
-            if (m_trapSession != null) {
-                SnmpPeer peer = new SnmpPeer(InetAddress.getByName(destAddr), destPort);
-                peer.setParameters(new SnmpParameters(community));
-                m_trapSession.send(peer, trap);
-            }
-        }
-
-        catch (SnmpPduEncodingException e) {
-            throw new SnmpTrapHelperException("Failed to send trap", e);
-        }
-
-        catch (AsnEncodingException e) {
-            throw new SnmpTrapHelperException("Failed to send trap", e);
-        }
-
-        catch (IOException e) {
-            throw new SnmpTrapHelperException("Failed to send trap", e);
-        }
-    }
-
-    /**
-     * Send the specified SNMP V2 trap to the specified address and port, with
-     * the specified community string.
-     * 
-     * @param community
-     *            The community string to be used.
-     * @param packet
-     *            The trap to be sent.
-     * @param destAddr
-     *            The IP address to which the trap should be sent.
-     * @param destPort
-     *            The port to which the trap should be sent.
-     * 
-     * @exception Throws
-     *                SnmpTrapHelperException if the trap cannot be sent for any
-     *                reason.
-     */
-    public void sendTrap(String community, SnmpPduPacket packet, String destAddr, int destPort) throws SnmpTrapHelperException {
-
-        try {
-            if (m_trapSession != null) {
-                SnmpPeer peer = new SnmpPeer(InetAddress.getByName(destAddr), destPort);
-                peer.setParameters(new SnmpParameters(community));
-                m_trapSession.send(peer, packet);
-            }
-        }
-
-        catch (SnmpPduEncodingException e) {
-            throw new SnmpTrapHelperException("Failed to send trap", e);
-        }
-
-        catch (AsnEncodingException e) {
-            throw new SnmpTrapHelperException("Failed to send trap", e);
-        }
-
-        catch (IOException e) {
-            throw new SnmpTrapHelperException("Failed to send trap", e);
         }
     }
 
@@ -712,13 +579,13 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
      *            The time stamp for the trap.
      * 
      * @return The newly-created trap.
+     * @throws UnknownHostException 
      */
-    public SnmpPduTrap createV1Trap(String entId, String agentAddr, int generic, int specific, long timeStamp) {
+    public SnmpV1TrapBuilder createV1Trap(String entId, String agentAddr, int generic, int specific, long timeStamp) throws UnknownHostException {
 
-        SnmpPduTrap trap = new SnmpPduTrap();
-        trap.setEnterprise(entId);
-        IPv4Address ipv4AgentAddr = new IPv4Address(agentAddr);
-        trap.setAgentAddress(new SnmpIPAddress(ipv4AgentAddr.getAddressBytes()));
+        SnmpV1TrapBuilder trap = SnmpUtils.getV1TrapBuilder();
+        trap.setEnterprise(SnmpObjId.get(entId));
+        trap.setAgentAddress(InetAddress.getByName(agentAddr));
         trap.setGeneric(generic);
         trap.setSpecific(specific);
         trap.setTimeStamp(timeStamp);
@@ -740,9 +607,9 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
      *                SnmpTrapHelperException if the trap cannot be created for
      *                any reason.
      */
-    public SnmpPduPacket createV2Trap(String trapOid, String sysUpTime) throws SnmpTrapHelperException {
+    public SnmpTrapBuilder createV2Trap(String trapOid, String sysUpTime) throws SnmpTrapHelperException {
 
-        SnmpPduRequest packet = new SnmpPduRequest();
+        SnmpTrapBuilder packet = SnmpUtils.getV2TrapBuilder();
 
         addVarBinding(packet, SNMP_SYSUPTIME_OID, EventConstants.TYPE_SNMP_TIMETICKS, sysUpTime);
         addVarBinding(packet, SNMP_TRAP_OID, EventConstants.TYPE_SNMP_OBJECT_IDENTIFIER, trapOid);
@@ -767,7 +634,7 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
      *                SnmpTrapHelperException if the variable binding cannot be
      *                added to the trap for any reason.
      */
-    public void addVarBinding(SnmpPduTrap trap, String name, String type, String value) throws SnmpTrapHelperException {
+    public void addVarBinding(SnmpTrapBuilder trap, String name, String type, String value) throws SnmpTrapHelperException {
         addVarBinding(trap, name, type, EventConstants.XML_ENCODING_TEXT, value);
     }
 
@@ -790,7 +657,7 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
      *                SnmpTrapHelperException if the variable binding cannot be
      *                added to the trap for any reason.
      */
-    public void addVarBinding(SnmpPduTrap trap, String name, String type, String encoding, String value) throws SnmpTrapHelperException {
+    public void addVarBinding(SnmpTrapBuilder trap, String name, String type, String encoding, String value) throws SnmpTrapHelperException {
 
         if (name == null) {
             throw new SnmpTrapHelperException("Name is null");
@@ -802,62 +669,7 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
             throw new SnmpTrapHelperException("Type " + type + " is invalid or not implemented");
         }
 
-        trap.addVarBind(factory.getVarBind(name, encoding, value));
-    }
-
-    /**
-     * Crate a new variable binding and add it to the specified SNMP V2 trap.
-     * The value encoding is assumed to be XML_ENCODING_TEXT.
-     * 
-     * @param packet
-     *            The trap to which the variable binding should be added.
-     * @param name
-     *            The name (a.k.a. "id") of the variable binding to be created
-     * @param type
-     *            The type of variable binding to be created
-     * @param value
-     *            The variable binding value
-     * 
-     * @exception Throws
-     *                SnmpTrapHelperException if the variable binding cannot be
-     *                added to the trap for any reason.
-     */
-    public void addVarBinding(SnmpPduPacket packet, String name, String type, String value) throws SnmpTrapHelperException {
-        addVarBinding(packet, name, type, EventConstants.XML_ENCODING_TEXT, value);
-    }
-
-    /**
-     * Crate a new variable binding and add it to the specified SNMP V2 trap.
-     * 
-     * @param packet
-     *            The trap to which the variable binding should be added.
-     * @param name
-     *            The name (a.k.a. "id") of the variable binding to be created
-     * @param type
-     *            The type of variable binding to be created
-     * @param encoding
-     *            Describes the way in which the value content has been encoded
-     *            (i.e. XML_ENCODING_TEXT, or XML_ENCODING_BASE64)
-     * @param value
-     *            The variable binding value
-     * 
-     * @exception Throws
-     *                SnmpTrapHelperException if the variable binding cannot be
-     *                added to the trap for any reason.
-     */
-    public void addVarBinding(SnmpPduPacket packet, String name, String type, String encoding, String value) throws SnmpTrapHelperException {
-
-        if (name == null) {
-            throw new SnmpTrapHelperException("Name is null");
-        }
-
-        VarBindFactory factory = (VarBindFactory) m_factoryMap.get(type);
-
-        if (factory == null) {
-            throw new SnmpTrapHelperException("Type " + type + " is invalid or not implemented");
-        }
-
-        packet.addVarBind(factory.getVarBind(name, encoding, value));
+        factory.addVarBind(trap, name, encoding, value);
     }
 
     /**
@@ -872,6 +684,7 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
      *            The address to which the trap should be forwarded
      * @param destPort
      *            The port to which the trap should be forwarded
+     * @throws  
      * 
      * @exception Throws
      *                SnmpTrapHelperException if the variable binding cannot be
@@ -885,19 +698,26 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
         if (snmpInfo == null) {
             throw new SnmpTrapHelperException("Cannot forward an event with no SNMP info: " + event.getUei());
         }
+        
 
         // check the version of the original trap
 
         String version = snmpInfo.getVersion();
 
-        SnmpPduTrap trap = new SnmpPduTrap();
+        SnmpV1TrapBuilder trap = SnmpUtils.getV1TrapBuilder();
 
         if ("v1".equals(version)) {
 
-            trap.setEnterprise(snmpInfo.getId());
+            trap.setEnterprise(SnmpObjId.get(snmpInfo.getId()));
 
-            IPv4Address addr = new IPv4Address(event.getSnmphost());
-            trap.setAgentAddress(new SnmpIPAddress(addr.getAddressBytes()));
+            InetAddress agentAddress;
+            try {
+                agentAddress = InetAddress.getByName(event.getSnmphost());
+            } catch (UnknownHostException e) {
+                throw new SnmpTrapHelperException("Invalid ip address: "+e.getMessage(), e);
+            }
+
+            trap.setAgentAddress(agentAddress);
 
             trap.setGeneric(snmpInfo.getGeneric());
 
@@ -925,26 +745,33 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
 
             // converting V2 trap to V1 (see RFC2576)
 
-            trap.setEnterprise(snmpInfo.getId());
+            trap.setEnterprise(SnmpObjId.get(snmpInfo.getId()));
 
             Parm[] parms = event.getParms().getParm();
-
-            IPv4Address addr = null;
+            
+            String addr = null;
 
             for (int i = 0; i < parms.length; i++) {
                 Parm parm = parms[i];
 
                 if (SNMP_TRAP_ADDRESS_OID.equals(parm.getParmName())) {
-                    addr = new IPv4Address(parm.getValue().getContent());
+                    addr = parm.getValue().getContent();
                     break;
                 }
             }
 
             if (addr == null) {
-                addr = new IPv4Address("0.0.0.0");
+                addr = "0.0.0.0";
+            }
+            
+            InetAddress agentAddress;
+            try {
+                agentAddress = InetAddress.getByName(addr);
+            } catch (UnknownHostException e) {
+                throw new SnmpTrapHelperException("Invalid ip address: "+e.getMessage(), e);
             }
 
-            trap.setAgentAddress(new SnmpIPAddress(addr.getAddressBytes()));
+            trap.setAgentAddress(agentAddress);
 
             trap.setGeneric(snmpInfo.getGeneric());
 
@@ -977,8 +804,16 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
         }
 
         // send the trap
+        
+        sendTrap(destAddr, destPort, snmpInfo.getCommunity(), trap);
+    }
 
-        sendTrap(snmpInfo.getCommunity(), trap, destAddr, destPort);
+    private void sendTrap(String destAddr, int destPort, String community, SnmpTrapBuilder trap) throws SnmpTrapHelperException {
+        try {
+            trap.send(destAddr, destPort, community);
+        } catch (Exception e) {
+            throw new SnmpTrapHelperException("Failed to send trap "+e.getMessage(), e);
+        }
     }
 
     /**
@@ -1012,7 +847,7 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
 
         String version = snmpInfo.getVersion();
 
-        SnmpPduRequest packet = new SnmpPduRequest(SnmpPduPacket.V2TRAP);
+        SnmpTrapBuilder packet = SnmpUtils.getV2TrapBuilder();
 
         if ("v1".equals(version)) {
 
@@ -1093,7 +928,7 @@ public class SnmpTrapHelper implements SnmpTrapHandler {
 
         // send the trap
 
-        sendTrap(snmpInfo.getCommunity(), packet, destAddr, destPort);
+        sendTrap(destAddr, destPort, snmpInfo.getCommunity(), packet);
     }
 
     /**

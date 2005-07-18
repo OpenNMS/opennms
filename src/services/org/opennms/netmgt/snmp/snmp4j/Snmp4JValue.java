@@ -268,5 +268,9 @@ class Snmp4JValue implements SnmpValue {
         return getType() == SnmpValue.SNMP_NULL;
     }
 
+    public Variable getVariable() {
+        return m_value;
+    }
+
 
 }

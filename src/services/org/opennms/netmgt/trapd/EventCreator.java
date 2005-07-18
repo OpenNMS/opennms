@@ -107,7 +107,7 @@ public class EventCreator implements TrapProcessor {
     public void setTrapIdentity(TrapIdentity trapIdentity) {
         setGeneric(trapIdentity.getGeneric());
         setSpecific(trapIdentity.getSpecific());
-        setEnterpriseId(trapIdentity.getEnterpriseId());
+        setEnterpriseId(trapIdentity.getEnterpriseId().toString());
     
         if (log().isDebugEnabled()) {
             log().debug("snmp trap "+trapIdentity);

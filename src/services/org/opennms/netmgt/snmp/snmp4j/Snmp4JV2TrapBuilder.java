@@ -29,31 +29,45 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.snmp;
+package org.opennms.netmgt.snmp.snmp4j;
 
-import java.io.IOException;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpTrapBuilder;
+import org.opennms.netmgt.snmp.SnmpValue;
+import org.snmp4j.PDU;
+import org.snmp4j.smi.OID;
+import org.snmp4j.smi.Variable;
+import org.snmp4j.smi.VariableBinding;
 
-
-public interface SnmpStrategy {
-
-    SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker);
+public class Snmp4JV2TrapBuilder implements SnmpTrapBuilder {
     
-    SnmpValue get(SnmpAgentConfig agentConfig, SnmpObjId oid);
-    SnmpValue[] get(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
-
-    SnmpValue getNext(SnmpAgentConfig agentConfig, SnmpObjId oid);
-    SnmpValue[] getNext(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
+    PDU m_pdu;
     
-    SnmpValue[] getBulk(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
-
-    void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort) throws IOException;
-
-    void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) throws IOException;
-
-    SnmpValueFactory getValueFactory();
-
-    SnmpV1TrapBuilder getV1TrapBuilder();
+    Snmp4JV2TrapBuilder(PDU pdu, int type) {
+        m_pdu = pdu;
+        m_pdu.setType(type);
+    }
     
-    SnmpTrapBuilder getV2TrapBuilder();
+    Snmp4JV2TrapBuilder() {
+        this(new PDU(), PDU.TRAP);
+    }
+    
+    protected PDU getPDU() {
+        return m_pdu;
+    }
+
+    public void send(String destAddr, int destPort, String community) throws Exception {
+        Snmp4JStrategy.send(destAddr, destPort, community, m_pdu);
+    }
+
+    public void addVarBind(SnmpObjId name, SnmpValue value) {
+        OID oid = new OID(name.getIds());
+        Variable val = ((Snmp4JValue) value).getVariable();
+        m_pdu.add(new VariableBinding(oid, val));
+    }
+
+    public void sendTest(String destAddr, int destPort, String community) throws Exception {
+        Snmp4JStrategy.sendTest(destAddr, destPort, community, m_pdu);
+    }
 
 }

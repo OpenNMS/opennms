@@ -29,31 +29,33 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.snmp;
+package org.opennms.netmgt.snmp.joesnmp;
 
-import java.io.IOException;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpTrapBuilder;
+import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.protocols.snmp.SnmpObjectId;
+import org.opennms.protocols.snmp.SnmpPduPacket;
+import org.opennms.protocols.snmp.SnmpPduRequest;
+import org.opennms.protocols.snmp.SnmpSyntax;
+import org.opennms.protocols.snmp.SnmpVarBind;
 
+public class JoeSnmpV2TrapBuilder implements SnmpTrapBuilder {
 
-public interface SnmpStrategy {
-
-    SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker);
+    SnmpPduRequest m_pdu = new SnmpPduRequest(SnmpPduPacket.V2TRAP);
     
-    SnmpValue get(SnmpAgentConfig agentConfig, SnmpObjId oid);
-    SnmpValue[] get(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
+    public void send(String destAddr, int destPort, String community) throws Exception {
+        JoeSnmpStrategy.send(destAddr, destPort, community, m_pdu);
+    }
 
-    SnmpValue getNext(SnmpAgentConfig agentConfig, SnmpObjId oid);
-    SnmpValue[] getNext(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
+    public void sendTest(String destAddr, int destPort, String community) throws Exception {
+        JoeSnmpStrategy.sendTest(destAddr, destPort, community, m_pdu);
+    }
     
-    SnmpValue[] getBulk(SnmpAgentConfig agentConfig, SnmpObjId[] oids);
+    public void addVarBind(SnmpObjId name, SnmpValue value) {
+        SnmpSyntax val = ((JoeSnmpValue) value).getSnmpSyntax();
+        m_pdu.addVarBind(new SnmpVarBind(new SnmpObjectId(name.getIds()), val));
+    }
 
-    void registerForTraps(TrapNotificationListener listener, TrapProcessorFactory processorFactory, int snmpTrapPort) throws IOException;
-
-    void unregisterForTraps(TrapNotificationListener listener, int snmpTrapPort) throws IOException;
-
-    SnmpValueFactory getValueFactory();
-
-    SnmpV1TrapBuilder getV1TrapBuilder();
-    
-    SnmpTrapBuilder getV2TrapBuilder();
 
 }

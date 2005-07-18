@@ -138,8 +138,8 @@ public class TrapIdentity {
         }
     }
     
-    public TrapIdentity(String entId, int generic, int specific) {
-        m_enterpriseId = entId;
+    public TrapIdentity(SnmpObjId entId, int generic, int specific) {
+        m_enterpriseId = entId.toString();
         m_generic = generic;
         m_specific = specific;
     }
