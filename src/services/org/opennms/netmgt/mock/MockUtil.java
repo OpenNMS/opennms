@@ -224,14 +224,19 @@ public class MockUtil {
             String level = System.getProperty("mock.logLevel", "DEBUG");
             Properties logConfig = new Properties();
 
-            String consoleAppender = (toConsole ? ", POLLER" : "");
+            String consoleAppender = (toConsole ? ", CONSOLE" : "");
+
+            
+            logConfig.put("log4j.appender.CONSOLE", "org.apache.log4j.ConsoleAppender");
+            logConfig.put("log4j.appender.CONSOLE.layout", "org.apache.log4j.PatternLayout");
+            logConfig.put("log4j.appender.CONSOLE.layout.ConversionPattern", "%d %-5p [%t] %c: %m%n");
+            logConfig.put("log4j.appender.MOCK", "org.opennms.netmgt.mock.MockLogAppender");
 
             logConfig.put("log4j.rootCategory", level+consoleAppender+", MOCK");
-            logConfig.put("log4j.appender.POLLER", "org.apache.log4j.ConsoleAppender");
-            logConfig.put("log4j.appender.POLLER.layout", "org.apache.log4j.PatternLayout");
-            logConfig.put("log4j.appender.POLLER.layout.ConversionPattern", "%d %-5p [%t] %c: %m%n");
-            logConfig.put("log4j.appender.MOCK", "org.opennms.netmgt.mock.MockLogAppender");
+            logConfig.put("log4j.org.snmp4j", "ERROR"+consoleAppender+", MOCK");
+        
             PropertyConfigurator.configure(logConfig);
+
         }
     }
     
