@@ -1377,7 +1377,7 @@ OpenNMS as part of the post-install.
  <target name="test" depends="test.prep, java.compile, junit.compile, test.resources"
 	 description="Run all the unit tests on the opennms service code"
 	 unless="skip.tests">
-   <junit dir="${basedir}" fork="yes" forkMode="perTest" errorProperty="test.failed" failureProperty="test.failed">
+   <junit dir="${basedir}" fork="yes" forkmode="perTest" errorProperty="test.failed" failureProperty="test.failed">
      <classpath refid="test.path"/>
      <formatter type="brief" usefile="false" />
      <formatter type="xml" />
@@ -1417,7 +1417,7 @@ OpenNMS as part of the post-install.
      You need to define the test.class property to indicate which test
      to run.  See README.build for details on setting properties.
    </fail>
-   <junit errorProperty="test.failed" failureProperty="test.failed">
+   <junit showoutput="yes" fork="yes" forkmode="perTest" errorProperty="test.failed" failureProperty="test.failed">
      <classpath refid="test.path"/>
      <formatter type="plain" usefile="false" />
      <test name="${test.class}"/>

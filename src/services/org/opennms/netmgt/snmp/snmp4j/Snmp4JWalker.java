@@ -130,7 +130,7 @@ public class Snmp4JWalker extends SnmpWalker {
         public void processResponse(PDU response) {
             
             try {
-                log().debug("Received a tracker pdu from "+getAddress()+" of size "+response.size()+" errorStatus = "+response.getErrorStatusText()+" errorIndex = "+response.getErrorIndex());
+                log().debug("Received a tracker pdu of type "+PDU.getTypeString(response.getType())+" from "+getAddress()+" of size "+response.size()+" errorStatus = "+response.getErrorStatusText()+" errorIndex = "+response.getErrorIndex());
                 
                 if (!processErrors(response.getErrorStatus(), response.getErrorIndex())) {
                     for(int i = 0; i < response.size(); i++) {
