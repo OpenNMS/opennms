@@ -80,8 +80,8 @@ your distribution.
 
   <!-- test results directory -->
   <property name="test.xml.dir" value="${build.dir}/test-results" />
-  <property name="mock.logLevel" value="DEBUG" />
-  <property name="mock.debug" value="true" />
+  <property name="mock.logLevel" value="WARN" />
+  <property name="mock.debug" value="false" />
   <property name="mock.rundbtests" value="false" />
 
   <!-- docs source directory -->
