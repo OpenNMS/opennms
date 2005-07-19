@@ -150,13 +150,15 @@ public class Snmp4JWalker extends SnmpWalker {
         }
 
         public void onResponse(ResponseEvent responseEvent) {
-            PDU response = responseEvent.getResponse();
-            if (response == null) {
+            if (responseEvent.getError() instanceof InterruptedException) {
+                log().debug("Interruption event.  We have probably tried to close the session due to an error");
+            } 
+            else if (responseEvent.getResponse() == null) {
                 handleTimeout(getName()+": snmpTimeoutError for: " + getAddress());
             } else if (responseEvent.getError() != null){
                 handleError(getName()+": snmpInternalError: " + responseEvent.getError() + " for: " + getAddress());
             } else {
-                processResponse(response);
+                processResponse(responseEvent.getResponse());
             }
             
         }
