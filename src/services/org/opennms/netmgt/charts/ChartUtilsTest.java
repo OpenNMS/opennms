@@ -159,7 +159,6 @@ public class ChartUtilsTest extends OpenNMSTestCase {
         assertNotNull(barChart);
         //SubTitle count includes "LegendTitle"
         assertEquals(2, barChart.getSubtitleCount());
-        assertEquals("Sample SubTitle", barChart.getSubtitle(1));
     }
 
     public void testGetChartWithInvalidChartName() throws MarshalException, ValidationException, IOException, SQLException {
@@ -181,7 +180,7 @@ public class ChartUtilsTest extends OpenNMSTestCase {
     
     public void testGetChartAsBufferedImage() throws MarshalException, ValidationException, IOException, SQLException {
         BufferedImage bi = ChartUtils.getChartAsBufferedImage("sample-bar-chart");
-        assertEquals(400, bi.getHeight());
+        assertEquals(300, bi.getHeight());
     }
 
     private void initalizeChartFactory() throws MarshalException, ValidationException, IOException {
