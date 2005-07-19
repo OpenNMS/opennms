@@ -122,6 +122,7 @@ abstract public class SnmpMonitorStrategy extends IPv4Monitor {
         if (operand.startsWith(".")) {
             operand = operand.substring(1);
         }
+        
         if (EQUALS.equals(operator))
             retVal = new Boolean(operand.equals(value));
         else if (NOT_EQUAL.equals(operator))

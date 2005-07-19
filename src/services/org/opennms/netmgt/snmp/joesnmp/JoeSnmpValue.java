@@ -181,7 +181,13 @@ class JoeSnmpValue implements SnmpValue {
     }
 
     public String toDisplayString() {
-        return m_value.toString();
+        
+        switch (m_value.typeId()) {
+        case SnmpSMI.SMI_TIMETICKS :
+            return Long.toString(toLong());
+        default :
+            return m_value.toString();
+        }
     }
 
     public InetAddress toInetAddress() {

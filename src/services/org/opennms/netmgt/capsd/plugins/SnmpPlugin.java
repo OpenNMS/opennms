@@ -42,6 +42,7 @@ package org.opennms.netmgt.capsd.plugins;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.opennms.netmgt.capsd.AbstractPlugin;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -174,7 +175,7 @@ public final class SnmpPlugin extends AbstractPlugin {
             String retrievedValue = getValue(agentConfig, oid);
             
             if (retrievedValue != null && expectedValue != null) {
-                return retrievedValue.matches(expectedValue);
+                return (Pattern.compile(expectedValue).matcher(retrievedValue).find());
             } else {
                 return (retrievedValue != null);
                 

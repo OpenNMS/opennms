@@ -189,7 +189,14 @@ class Snmp4JValue implements SnmpValue {
     }
 
     public String toDisplayString() {
-        return m_value.toString();
+        switch (m_value.getSyntax()) {
+        case SMIConstants.SYNTAX_OBJECT_IDENTIFIER :
+            return SnmpObjId.get(((OID)m_value).getValue()).toString();
+        case SMIConstants.SYNTAX_TIMETICKS :
+            return Long.toString(toLong());
+        default :
+            return m_value.toString();
+        }
     }
 
     public InetAddress toInetAddress() {

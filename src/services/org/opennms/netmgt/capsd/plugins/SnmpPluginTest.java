@@ -108,7 +108,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
     public void testIsExpectedValue() throws UnknownHostException {
         InetAddress address = InetAddress.getByName(myLocalHost());
         Map map = new HashMap();
-        map.put("vbvalue", "1\\.3\\.6\\.1\\.4\\.1.*");
+        map.put("vbvalue", "\\.1\\.3\\.6\\.1\\.4\\.1.*");
         
         if(m_runAssertions)
             assertTrue(m_plugin.isProtocolSupported(address, map));
