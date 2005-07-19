@@ -128,8 +128,8 @@ public class JoeSnmpWalker extends SnmpWalker {
         public void snmpReceivedPdu(SnmpSession session, int command, SnmpPduPacket pdu) {
             
             try {
-                log().debug("Received a tracker pdu from "+getAddress()+" of size "+pdu.getLength());
                 SnmpPduRequest response = (SnmpPduRequest)pdu;
+                log().debug("Received a tracker pdu from "+getAddress()+" of size "+pdu.getLength()+" errorStatus ="+response.getErrorStatus()+", errorIndex = "+response.getErrorIndex());
                 if (!processErrors(response.getErrorStatus(), response.getErrorIndex())) {
                     for(int i = 0; i < response.getLength(); i++) {
                         SnmpVarBind vb = response.getVarBindAt(i);
