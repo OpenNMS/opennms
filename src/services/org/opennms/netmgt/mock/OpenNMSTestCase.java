@@ -1313,7 +1313,7 @@ public class OpenNMSTestCase extends TestCase {
                 "   <definition version=\"v3\" " +
                 "       security-name=\"opennmsUser\" \n" + 
                 "       auth-passphrase=\"0p3nNMSv3\" >\n" +
-                "       <specific>192.168.3.3</specific>\n" +
+                "       <specific>20.20.20.20</specific>\n" +
                 "   </definition>\n" + 
                 "   <definition version=\"v3\" " +
                 "       security-name=\"opennmsRangeUser\" \n" + 

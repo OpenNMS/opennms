@@ -41,8 +41,10 @@ import junit.framework.TestSuite;
 
 import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IpAddrTable;
+import org.opennms.netmgt.capsd.snmp.SystemGroup;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.snmp.PropertySettingTestSuite;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.VersionSettingTestSuite;
 
@@ -55,14 +57,25 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
     public static TestSuite suite() {
         Class testClass = IfSnmpCollectorTest.class;
         TestSuite suite = new TestSuite(testClass.getName());
-        suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv1 Tests", SnmpAgentConfig.VERSION1));
-        suite.addTest(new VersionSettingTestSuite(testClass, "SNMPv2 Tests", SnmpAgentConfig.VERSION2C));
+        TestSuite joeSuite = new PropertySettingTestSuite("JoeSnmp Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy");
+        joeSuite.addTest(new VersionSettingTestSuite(testClass, "SNMPv1 Tests", SnmpAgentConfig.VERSION1));
+        joeSuite.addTest(new VersionSettingTestSuite(testClass, "SNMPv2 Tests", SnmpAgentConfig.VERSION2C));
+        joeSuite.addTest(new VersionSettingTestSuite(testClass, "SNMPv3 Tests", SnmpAgentConfig.VERSION3));
+        suite.addTest(joeSuite);
+
+        TestSuite snmp4jSuite = new PropertySettingTestSuite("SNMP4J Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy");
+        snmp4jSuite.addTest(new VersionSettingTestSuite(testClass, "SNMPv1 Tests", SnmpAgentConfig.VERSION1));
+        snmp4jSuite.addTest(new VersionSettingTestSuite(testClass, "SNMPv2 Tests", SnmpAgentConfig.VERSION2C));
+        snmp4jSuite.addTest(new VersionSettingTestSuite(testClass, "SNMPv3 Tests", SnmpAgentConfig.VERSION3));
+        suite.addTest(snmp4jSuite);
+        
         return suite;
     }
 
     protected void setUp() throws Exception {
+        
         super.setUp();
-        m_runSupers = false;
+        m_runSupers = true;
         
         InetAddress addr = InetAddress.getByName(myLocalHost());
         m_ifSnmpc = new IfSnmpCollector(addr);
@@ -115,7 +128,7 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
         }
     }
 
-/*    public final void testGetSystemGroup() throws UnknownHostException {
+    public final void testGetSystemGroup() throws UnknownHostException {
         if(m_run) {
 
             if(!m_hasRun)
@@ -124,10 +137,10 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
             SystemGroup sg = m_ifSnmpc.getSystemGroup();
             assertNotNull(sg);
             assertFalse(sg.failed());
-            assertEquals("brozow.local", sg.getSysName());
+//            assertEquals("brozow.local", sg.getSysName());
         }        
     }
-*/
+
     public final void testHasIfTable() {
         if(m_run) {
 

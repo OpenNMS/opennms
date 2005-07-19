@@ -99,7 +99,8 @@ public class Snmp4JStrategy implements SnmpStrategy {
     //Initialize for v3 communications
     private static void initialize() {
         if (!m_initialized) {
-            LogFactory.setLogFactory(new Log4jLogFactory());
+//            LogFactory.setLogFactory(new Log4jLogFactory());
+            
             MPv3.setEnterpriseID(5813);
             USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
             SecurityModels.getInstance().addSecurityModel(usm);
@@ -215,10 +216,13 @@ public class Snmp4JStrategy implements SnmpStrategy {
     }
 
     
-    /*
-     * TODO: make send take a target and a pdu so that this can be called
-     * from getBulk after the pdu is built
-     * TODO: Write tests for null SnmpValues
+    /**
+     * Sends and SNMP4J request pdu.  The attributes in SnmpAgentConfig should have been
+     * adapted from default SnmpAgentConfig values to those compatible with the SNMP4J library.
+     * 
+     * @param agentConfig
+     * @param oids
+     * @return
      */
     private SnmpValue[] send(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
         
@@ -226,7 +230,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         Snmp session = null;
         
         try {
-            Address targetAddress = GenericAddress.parse("udp:"+agentConfig.getAddress().getHostAddress()+"/"+agentConfig.getPort());
+            session = SnmpHelpers.createSnmpSession(agentConfig);
             session = new Snmp(new DefaultUdpTransportMapping());
             session.listen();
             
@@ -234,7 +238,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
                     new UsmUser(createOctetString(agentConfig.getSecurityName()),
                             convertAuthProtocol(agentConfig.getAuthProtocol()),
                             createOctetString(agentConfig.getAuthPassPhrase()),
-                            convertPrivProtocol(agentConfig.getAuthPrivProtocol()),
+                            convertPrivProtocol(agentConfig.getPrivProtocol()),
                             createOctetString(agentConfig.getPrivPassPhrase())));
             
             Target target = getTarget(agentConfig);
@@ -296,20 +300,26 @@ public class Snmp4JStrategy implements SnmpStrategy {
         
     }
 
-    private OID convertAuthProtocol(String authProtocol) {
+    static OID convertAuthProtocol(String authProtocol) {
+        
+        //Returning null here is okay because the SNMP4J library supports
+        //this value as null when creating the Snmp session.
         if (authProtocol == null)
             return null;
         
-            if (authProtocol.equals("MD5")) {
-                return AuthMD5.ID;
-            } else if (authProtocol.equals("SHA")) {
-                return AuthSHA.ID;
-            } else {
-                throw new IllegalArgumentException("Authentication protocol unsupported: " + authProtocol);
-            }            
+        if (authProtocol.equals("MD5")) {
+            return AuthMD5.ID;
+        } else if (authProtocol.equals("SHA")) {
+            return AuthSHA.ID;
+        } else {
+            throw new IllegalArgumentException("Authentication protocol unsupported: " + authProtocol);
+        }            
     }
 
-    private OID convertPrivProtocol(String privProtocol) {
+    static OID convertPrivProtocol(String privProtocol) {
+
+        //Returning null here is okay because the SNMP4J library supports
+        //this value as null when creating the Snmp session.
         if (privProtocol == null)
             return null;
         
@@ -402,10 +412,13 @@ public class Snmp4JStrategy implements SnmpStrategy {
         switch (securityLevel) {
         case SnmpAgentConfig.AUTH_NOPRIV :
             securityLevel = SecurityLevel.AUTH_NOPRIV;
+            break;
         case SnmpAgentConfig.AUTH_PRIV :
             securityLevel = SecurityLevel.AUTH_PRIV;
+            break;
         case SnmpAgentConfig.NOAUTH_NOPRIV :
             securityLevel = SecurityLevel.NOAUTH_NOPRIV;
+            break;
         default :
            securityLevel = SecurityLevel.NOAUTH_NOPRIV;
         }
@@ -461,7 +474,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
         
         if (agentConfig.getVersion() == SnmpConstants.version3) {
             target = new UserTarget();
-            ((UserTarget)target).setSecurityLevel(agentConfig.getVersion());
+            ((UserTarget)target).setSecurityLevel(agentConfig.getSecurityLevel());
             ((UserTarget)target).setSecurityName(convertSecurityName(agentConfig.getSecurityName()));
         } else {
             target = new CommunityTarget();
@@ -477,7 +490,12 @@ public class Snmp4JStrategy implements SnmpStrategy {
         return target;
     }
     
-    private static OctetString createOctetString(String s) {
+    static OctetString createOctetString(String s) {
+        
+        if (s == null) {
+            return null;
+        }
+        
         OctetString octetString;
         if (s.startsWith("0x")) {
             octetString = OctetString.fromHexString(s.substring(2), ':');

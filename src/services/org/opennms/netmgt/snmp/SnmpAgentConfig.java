@@ -64,7 +64,7 @@ public class SnmpAgentConfig {
     public static final String DEFAULT_SECURITY_NAME = "opennmsUser";
     public static final String DEFAULT_AUTH_PASS_PHRASE = "0p3nNMSv3";
     public static final String DEFAULT_AUTH_PROTOCOL = "MD5";
-    public static final String DEFAULT_AUTH_PRIV_PROTOCOL = "DES";
+    public static final String DEFAULT_PRIV_PROTOCOL = "DES";
     public static final String DEFAULT_PRIV_PASS_PHRASE = DEFAULT_AUTH_PASS_PHRASE;
     
     private InetAddress m_address;
@@ -82,7 +82,7 @@ public class SnmpAgentConfig {
     private String m_writeCommunity;
     private String m_authPassPhrase;
     private String m_authProtocol;
-    private String m_authPrivProtocol;
+    private String m_PrivProtocol;
     private String m_privPassPhrase;
     
     public SnmpAgentConfig() {
@@ -104,7 +104,7 @@ public class SnmpAgentConfig {
         m_securityName = DEFAULT_SECURITY_NAME;
         m_authPassPhrase = DEFAULT_AUTH_PASS_PHRASE;
         m_authProtocol = DEFAULT_AUTH_PROTOCOL;
-        m_authPrivProtocol = DEFAULT_AUTH_PRIV_PROTOCOL;
+        m_PrivProtocol = DEFAULT_PRIV_PROTOCOL;
         m_privPassPhrase = DEFAULT_PRIV_PASS_PHRASE;
         m_readCommunity = DEFAULT_READ_COMMUNITY;
         m_maxVarsPerPdu = DEFAULT_MAX_VARS_PER_PDU;
@@ -256,12 +256,12 @@ public class SnmpAgentConfig {
         m_authPassPhrase = authPassPhrase;
     }
 
-    public String getAuthPrivProtocol() {
-        return m_authPrivProtocol;
+    public String getPrivProtocol() {
+        return m_PrivProtocol;
     }
 
-    public void setAuthPrivProtocol(String authPrivProtocol) {
-        m_authPrivProtocol = authPrivProtocol;
+    public void setPrivProtocol(String authPrivProtocol) {
+        m_PrivProtocol = authPrivProtocol;
     }
 
     public String getAuthProtocol() {
@@ -271,7 +271,7 @@ public class SnmpAgentConfig {
     public void setAuthProtocol(String authProtocol) {
         m_authProtocol = authProtocol;
     }
-
+    
     public String getPrivPassPhrase() {
         return m_privPassPhrase;
     }

@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Properties;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 
 public class SnmpUtils {
@@ -87,10 +86,6 @@ public class SnmpUtils {
         return getStrategy().getBulk(agentConfig, oids);
     }
     
-    private static Category log() {
-        return ThreadCategory.getInstance(SnmpUtils.class);
-    }
-
     public static Properties getConfig() {
         return (sm_config == null ? System.getProperties() : sm_config);
     }

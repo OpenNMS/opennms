@@ -680,7 +680,7 @@ public final class SnmpPeerFactory {
         agentConfig.setSecurityName(determineSecurityName(def));
         agentConfig.setAuthProtocol(determineAuthProtocol(def));
         agentConfig.setAuthPassPhrase(determineAuthPassPhrase(def));
-        agentConfig.setAuthPrivProtocol(determinePrivProtocol(def));
+        agentConfig.setPrivProtocol(determinePrivProtocol(def));
         agentConfig.setReadCommunity(determineReadCommunity(def));
         agentConfig.setWriteCommunity(determineWriteCommunity(def));
         
@@ -789,7 +789,7 @@ public final class SnmpPeerFactory {
     private String determinePrivProtocol(Definition def) {
         String authPrivProtocol = (def.getPrivacyProtocol() == null ? m_config.getPrivacyProtocol() : def.getPrivacyProtocol());
         if (authPrivProtocol == null) {
-            authPrivProtocol = SnmpAgentConfig.DEFAULT_AUTH_PRIV_PROTOCOL;
+            authPrivProtocol = SnmpAgentConfig.DEFAULT_PRIV_PROTOCOL;
         }
         return authPrivProtocol;
     }

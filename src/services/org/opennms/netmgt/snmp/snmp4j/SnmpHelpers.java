@@ -37,16 +37,9 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
-import org.snmp4j.Target;
 import org.snmp4j.TransportMapping;
-import org.snmp4j.UserTarget;
-import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.security.SecurityModels;
-import org.snmp4j.security.SecurityProtocols;
-import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
-import org.snmp4j.smi.OctetString;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 /**
@@ -105,17 +98,22 @@ public class SnmpHelpers {
         return snmp;
     }
     
-    public static Snmp createSnmpSession(Target target) throws IOException {
-        Snmp snmp = createSnmpSession();
-        if (target.getVersion() == SnmpConstants.version3) {
-            UserTarget userTarget = (UserTarget)target;
-            USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
-            SecurityModels.getInstance().addSecurityModel(usm);
-//            UsmUser user = new UsmUser(DEFAULT_SECURITY_NAME, DEFAULT_AUTH_PROTOCOL, DEFAULT_AUTH_PASSPHRASE, DEFAULT_PRIV_PROTOCOL, DEFAULT_PRIV_PASSPHRASE);
-            UsmUser user = new UsmUser(userTarget.getSecurityName(), null, null, null, null);
-            snmp.getUSM().addUser(userTarget.getSecurityName(), user);
+    public static Snmp createSnmpSession(SnmpAgentConfig agentConfig) throws IOException {
+        if (!agentConfig.isAdapted()) {
+            throw new IllegalArgumentException("Error creating SNMP session... agentConfig has not been adapted to SNMP4J.");
         }
-        return snmp;
+        
+        Snmp session = createSnmpSession();
+        if (agentConfig.getVersion() == SnmpConstants.version3) {
+            session.getUSM().addUser((Snmp4JStrategy.createOctetString(agentConfig.getSecurityName())),
+                    new UsmUser(Snmp4JStrategy.createOctetString(agentConfig.getSecurityName()),
+                            Snmp4JStrategy.convertAuthProtocol(agentConfig.getAuthProtocol()),
+                            Snmp4JStrategy.createOctetString(agentConfig.getAuthPassPhrase()),
+                            Snmp4JStrategy.convertPrivProtocol(agentConfig.getPrivProtocol()),
+                            Snmp4JStrategy.createOctetString(agentConfig.getPrivPassPhrase())));
+
+        }
+        return session;
     }
 
 

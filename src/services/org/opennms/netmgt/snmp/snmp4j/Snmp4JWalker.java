@@ -164,19 +164,24 @@ public class Snmp4JWalker extends SnmpWalker {
     private Snmp m_session;
     private Target m_tgt;
     private ResponseListener m_listener;
+    private SnmpAgentConfig m_agentConfig;
 
     public Snmp4JWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker) {
         super(agentConfig.getAddress(), name, agentConfig.getMaxVarsPerPdu(), tracker);
         
         if(!agentConfig.isAdapted())
             Snmp4JStrategy.adaptConfig(agentConfig);
+        m_agentConfig = agentConfig;
         
         m_tgt = Snmp4JStrategy.getTarget(agentConfig);
         m_listener = new Snmp4JResponseListener();
     }
     
     public void start() {
-        log().debug("Walking "+getName()+" for "+getAddress()+" using version "+SnmpHelpers.versionString(getVersion()));
+        
+        if (log().isDebugEnabled())
+            log().debug("Walking "+getName()+" for "+getAddress()+" using version "+SnmpHelpers.versionString(getVersion())+" with config: "+m_agentConfig);
+            
         super.start();
     }
 
@@ -189,7 +194,7 @@ public class Snmp4JWalker extends SnmpWalker {
     protected void sendNextPdu(WalkerPduBuilder pduBuilder) throws IOException {
         Snmp4JPduBuilder snmp4JPduBuilder = (Snmp4JPduBuilder)pduBuilder;
         if (m_session == null) {
-            m_session = SnmpHelpers.createSnmpSession(m_tgt);
+            m_session = SnmpHelpers.createSnmpSession(m_agentConfig);
             m_session.listen();
         }
         
