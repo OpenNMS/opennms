@@ -43,8 +43,8 @@ import org.opennms.core.fiber.Fiber;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Action;
+import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
-import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
@@ -94,7 +94,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         "               <statement>UPDATE alarms SET severity=2 WHERE alarmid = ${alarmid}</statement>\n" + 
         "           </action>\n" + 
         "           <action name=\"escalate\" >\n" + 
-        "               <statement>UPDATE alarms SET severity = least(7,severity+1) WHERE alarmid = ${alarmid} and alarmAckUser is null</statement>\n" + 
+        "               <statement>UPDATE alarms SET severity = severity+1 WHERE alarmid = ${alarmid} and alarmAckUser is null and severity &lt; 7</statement>\n" + 
         "           </action>\n" + 
         "           <action name=\"delete\" >\n" + 
         "               <statement>DELETE FROM alarms WHERE nodeid = ${nodeid} and eventuei = ${eventuei}</statement>\n" + 
@@ -112,9 +112,9 @@ public class VacuumdTest extends OpenNMSTestCase {
         "</VacuumdConfiguration>";
     
     private Vacuumd m_vacuumd;
-    private VacuumdConfiguration m_config;
 
     protected void setUp() throws Exception {
+        
         super.setUp();
         Reader rdr = new StringReader(VACUUMD_CONFIG);
         VacuumdConfigFactory.setConfigReader(rdr);
@@ -124,12 +124,14 @@ public class VacuumdTest extends OpenNMSTestCase {
         
         //The rdr is closed by init, too, but doesn't hurt
         rdr.close();
-        //Get an alarm in the db
-        MockNode node = m_network.getNode(1);
-        m_eventd.processEvent(node.createDownEvent());
-        Thread.sleep(1000);
+
         MockUtil.println("------------ Finished setup for: "+getName()+" --------------------------");
         
+    }
+
+    private void bringNodeDownCreatingEvent() {
+        MockNode node = m_network.getNode(1);
+        m_eventd.processEvent(node.createDownEvent());
     }
 
     protected void tearDown() throws Exception {
@@ -153,7 +155,7 @@ public class VacuumdTest extends OpenNMSTestCase {
          * Testing the start
          */
         m_vacuumd.start();
-        assertEquals(Fiber.STARTING, m_vacuumd.getStatus());
+        assertTrue(m_vacuumd.getStatus() >= 1);
         Thread.sleep(200);
         assertEquals(Fiber.RUNNING, m_vacuumd.getStatus());
         assertEquals(Fiber.RUNNING, m_vacuumd.getScheduler().getStatus());
@@ -166,6 +168,16 @@ public class VacuumdTest extends OpenNMSTestCase {
         assertEquals(PausableFiber.PAUSED, m_vacuumd.getStatus());
         assertEquals(PausableFiber.PAUSED, m_vacuumd.getScheduler().getStatus());
 
+
+        m_vacuumd.resume();
+        Thread.sleep(200);
+        assertEquals(PausableFiber.RUNNING, m_vacuumd.getStatus());
+        assertEquals(PausableFiber.RUNNING, m_vacuumd.getScheduler().getStatus());
+
+        
+        //Get an alarm in the db
+        bringNodeDownCreatingEvent();
+        Thread.sleep(500);
         /*
          * Changes to the automations to the VACUUMD_CONFIG will
          * probably affect this.  There should be one node down
@@ -173,22 +185,13 @@ public class VacuumdTest extends OpenNMSTestCase {
          */
         assertEquals(1, verifyInitialAlarmState());
 
-        /*
-         * Send in another alarm for reduction and increased count
-         * that so we can verify the escalation automation.
-         */
-        MockNode node = m_network.getNode(1);
-        m_eventd.processEvent(node.createDownEvent());
 
-        m_vacuumd.resume();
-        Thread.sleep(200);
-        assertEquals(PausableFiber.RUNNING, m_vacuumd.getStatus());
-        assertEquals(PausableFiber.RUNNING, m_vacuumd.getScheduler().getStatus());
-        
+        //Create another node down event
+        bringNodeDownCreatingEvent();
         /*
          * Sleep and wait for the alarm to be written
          */
-        Thread.sleep(200);
+        Thread.sleep(500);
         assertEquals(2, alarmDeDuplicated());
         
         /*
@@ -268,10 +271,14 @@ public class VacuumdTest extends OpenNMSTestCase {
 
         Querier q = null;
 
-        MockUtil.println("Running trigger query: "+((Trigger)triggers.get(0)).getStatement().getContent());
-        q = new Querier(m_db, ((Trigger)triggers.get(0)).getStatement().getContent());
+        Trigger trigger = VacuumdConfigFactory.getInstance().getTrigger("selectAll");
+        String triggerSql = trigger.getStatement().getContent();
+        MockUtil.println("Running trigger query: "+triggerSql);
+        q = new Querier(m_db, triggerSql);
         q.execute();
-        assertEquals(1, q.getCount());
+        assertFalse("Testing the result rows:"+q.getCount()+" with the trigger operator "+trigger.getOperator()+" against the required rows:"+trigger.getRowCount(),
+                AutomationProcessor.triggerRowCheck(trigger.getRowCount(), trigger.getOperator(), q.getCount()));
+        assertEquals(0, q.getCount());
         
     }
 
@@ -284,25 +291,28 @@ public class VacuumdTest extends OpenNMSTestCase {
 
         final int major = 6;
         
+        bringNodeDownCreatingEvent();
+        Thread.sleep(500);
+        
         assertEquals(1, verifyInitialAlarmState());
         assertEquals(major, getSingleResultSeverity());
 
-        /*
-         * Send in another alarm for reduction and increased count
-         * that so we can verify the escalation automation.
-         */
-        MockNode node = m_network.getNode(1);
-        m_eventd.processEvent(node.createDownEvent());
+        bringNodeDownCreatingEvent();
+        Thread.sleep(500);
 
         AutomationProcessor ap = new AutomationProcessor();
         ap.setAutomation(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate"));
         Thread.sleep(500);
         assertTrue(ap.runAutomation(VacuumdConfigFactory.getInstance().getAutomation("autoEscalate")));        
         assertEquals(major+1, getSingleResultSeverity());
-
+        
     }
     
     public final void testRunAutomationWithNoTrigger() throws InterruptedException, SQLException {
+        
+        bringNodeDownCreatingEvent();
+        Thread.sleep(500);
+        
         assertEquals(1, verifyInitialAlarmState());
 
         AutomationProcessor ap = new AutomationProcessor();
@@ -397,5 +407,12 @@ public class VacuumdTest extends OpenNMSTestCase {
         srq.execute();
         int severity = ((Integer)srq.getResult()).intValue();
         return severity;
+    }
+    
+    public final void testGetTriggerSqlWithNoTriggerDefined() {
+        Automation auto = VacuumdConfigFactory.getInstance().getAutomation("cleanUpAlarms");
+        assertEquals(null, AutomationProcessor.getTriggerSQL(auto));
+        
     }    
+
 }

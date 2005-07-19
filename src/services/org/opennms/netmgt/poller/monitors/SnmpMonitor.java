@@ -174,15 +174,8 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
 
         InetAddress ipAddr = (InetAddress) iface.getAddress();
 
-        // Retrieve configured SNMP parms for this interface
-        //
-        // Instantiate new SnmpPeer object for this interface
-        //
-        //TODO: is this version thing what we want here?  Probably not.
-//        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipAddr, SnmpAgentConfig.VERSION1);
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipAddr);
         if (log.isDebugEnabled()) {
-            String nl = System.getProperty("line.separator");
             log.debug("initialize: SnmpAgentConfig address: " + agentConfig);
         }
 
@@ -252,12 +245,10 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
         //
         try {
             if (log.isDebugEnabled()) {
-                String nl = System.getProperty("line.separator");
                 log.debug("SnmpMonitor.poll: SnmpAgentConfig address: " +agentConfig);
             }
             SnmpObjId snmpObjectId = new SnmpObjId(oid);
             
-            // TODO: Someday this should be changed to GET rather than GETNEXT
             SnmpValue result = SnmpUtils.get(agentConfig, snmpObjectId);
 
             if (result != null) {

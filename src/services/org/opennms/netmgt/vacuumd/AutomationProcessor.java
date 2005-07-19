@@ -51,7 +51,6 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Automation;
-import org.opennms.netmgt.config.vacuumd.Uei;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.xml.event.Event;
@@ -127,7 +126,7 @@ public class AutomationProcessor implements ReadyRunnable {
      * @param trigOp
      * @param resultRows
      */
-    public boolean triggerRowCheck(int trigRowCount, String trigOp, int resultRows) {
+    public static boolean triggerRowCheck(int trigRowCount, String trigOp, int resultRows) {
         
         if (trigRowCount == 0 || trigOp == null) {
             if (log().isDebugEnabled())
@@ -186,8 +185,10 @@ public class AutomationProcessor implements ReadyRunnable {
         setTriggerInAutomation(hasTrigger(auto));
 
         if (log().isDebugEnabled()) {
-            log().debug("runAutomation: "+auto.getName()+" trigger statement is: "+getTriggerSQL(auto));
-            log().debug("runAutomation: "+auto.getName()+" action statement is: "+getAutomationSQL(auto));
+            if (isTriggerInAutomation())
+                log().debug("runAutomation: "+auto.getName()+" trigger statement is: "+ getTriggerSQL(auto));
+            
+            log().debug("runAutomation: "+auto.getName()+" action statement is: "+getActionSQL(auto));
         }
 
         setFields(auto);
@@ -227,7 +228,9 @@ public class AutomationProcessor implements ReadyRunnable {
             log().debug("runAutomation: Closing trigger resultset.");
             if (isTriggerInAutomation()) {
                 log().debug("runAutomation: Closing trigger statement.");
-                getTriggerResultSet().close();
+                //Just in case, check for null
+                if (getTriggerResultSet() != null)
+                    getTriggerResultSet().close();
             }
             log().debug("runAutomation: Closing database connection.");
             getConn().close();
@@ -247,17 +250,17 @@ public class AutomationProcessor implements ReadyRunnable {
             
             //Loop through the select results
             while (getTriggerResultSet().next()) {                        
-                processActionStatement(getAutomationSQL(auto), getTriggerResultSet());            
+                processActionStatement(getActionSQL(auto), getTriggerResultSet());            
                 sendAutoEvent(auto);
             }
             setActionSuccessful(true);
         } else {
             //No trigger defined, just running the action.
-            if (getTokenCount(getAutomationSQL(auto)) != 0) {
+            if (getTokenCount(getActionSQL(auto)) != 0) {
                 log().info("runAutomation: not running action: "+auto.getActionName()+".  Action contains tokens in an automation ("+auto.getName()+") with no trigger.");
                 setActionSuccessful(false);
             } else {
-                processActionStatement(getAutomationSQL(auto), getTriggerResultSet());
+                processActionStatement(getActionSQL(auto), getTriggerResultSet());
                 sendAutoEvent(auto);
                 setActionSuccessful(true);
             }
@@ -278,39 +281,42 @@ public class AutomationProcessor implements ReadyRunnable {
             } else {
                 setTriggerSuccessful(true);
             }
+        } else {
+            setTriggerSuccessful(true);
         }
     }
 
     private void setFields(Automation auto) {
-        setActionColumns(getTokenizedColumns(getAutomationSQL(auto)));
+        setActionColumns(getTokenizedColumns(getActionSQL(auto)));
         setConn(null);
         setTriggerStatement(null);
         setTriggerResultSet(null);
     }
 
     private void sendAutoEvent(Automation auto) {
+
         if (log().isDebugEnabled())
             log().debug("runAutomation: Sending any possible configured event for automation: "+auto.getName());
-        String uei = getUei(auto);
-        if (uei != null) {             
-             //create and send event
-             if (log().isDebugEnabled())
-                 log().debug("runAutomation: Sending event: "+uei+" for automation: "+auto.getName());
-             
-             Event e = createEvent("Automation", uei);
-             Vacuumd.getSingleton().getEventManager().sendNow(e);
-         } else {
-             if (log().isDebugEnabled())
-                 log().debug("runAutomation: No event configured automation: "+auto.getName());             
-         }
+        
+        if (hasEvent(auto)) {
+            String uei = getUei(auto);
+            //create and send event
+            if (log().isDebugEnabled())
+                log().debug("runAutomation: Sending event: "+uei+" for automation: "+auto.getName());
+            
+            Event e = createEvent("Automation", uei);
+            Vacuumd.getSingleton().getEventManager().sendNow(e);
+        } else {
+            if (log().isDebugEnabled())
+                log().debug("runAutomation: No event configured automation: "+auto.getName());             
+        }
     }
 
     private String getUei(Automation auto) {
-        Uei uei = VacuumdConfigFactory.getInstance().getAutoEvent(auto.getAutoEventName()).getUei();
-        if (uei == null) {
-            return null;
-        } else {
+        if (hasEvent(auto)) {
             return VacuumdConfigFactory.getInstance().getAutoEvent(auto.getAutoEventName()).getUei().getContent();
+        } else {
+            return null;
         }
     }
 
@@ -354,17 +360,24 @@ public class AutomationProcessor implements ReadyRunnable {
         actionStatement.executeUpdate();
     }
 
-    private String getAutomationSQL(Automation auto) {
+    private String getActionSQL(Automation auto) {
         return VacuumdConfigFactory.getInstance().getAction(auto.getActionName()).getStatement().getContent();
     }
 
-    private String getTriggerSQL(Automation auto) {
-        // FIXME: This throws an exception for an automation with no trigger
-        return VacuumdConfigFactory.getInstance().getTrigger(auto.getTriggerName()).getStatement().getContent();
+    public static String getTriggerSQL(Automation auto) {
+        if (hasTrigger(auto)) {
+            return VacuumdConfigFactory.getInstance().getTrigger(auto.getTriggerName()).getStatement().getContent();
+        } else {
+            return null;
+        }
     }
 
-    private boolean hasTrigger(Automation auto) {
+    private static boolean hasTrigger(Automation auto) {
         return auto.getTriggerName() != null;
+    }
+    
+    private static boolean hasEvent(Automation auto) {
+        return auto.getAutoEventName() != null;
     }
 
     /**
@@ -500,7 +513,6 @@ public class AutomationProcessor implements ReadyRunnable {
         ArrayList actionColumns = (ArrayList)getTokenizedColumns(actionSQL);        
         Iterator it = actionColumns.iterator();
         String actionColumnName = null;
-        int colType;
         int i=0;
         while (it.hasNext()) {
             actionColumnName = (String)it.next();
@@ -535,7 +547,6 @@ public class AutomationProcessor implements ReadyRunnable {
     }
 
     public boolean isReady() {
-        // TODO Auto-generated method stub
         return m_ready;
     }
 
@@ -554,8 +565,8 @@ public class AutomationProcessor implements ReadyRunnable {
         m_schedule = schedule;
     }
     
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());        
+    private static Category log() {
+        return ThreadCategory.getInstance(AutomationProcessor.class);        
     }
 
     private void setActionSuccessful(boolean actionStatus) {
