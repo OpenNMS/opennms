@@ -49,7 +49,6 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.snmp.PropertySettingTestSuite;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpUtilsTest;
 
 public class SnmpPluginTest extends OpenNMSTestCase {
 
@@ -62,7 +61,7 @@ public class SnmpPluginTest extends OpenNMSTestCase {
     SnmpPlugin m_plugin = null;
     
     public static TestSuite suite() {
-        Class testClass = SnmpUtilsTest.class;
+        Class testClass = SnmpPluginTest.class;
         TestSuite suite = new TestSuite(testClass.getName());
         suite.addTest(new PropertySettingTestSuite(testClass, "JoeSnmp Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy"));
         suite.addTest(new PropertySettingTestSuite(testClass, "Snmp4J Tests", "org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy"));
