@@ -131,16 +131,19 @@ public class Snmp4JWalker extends SnmpWalker {
             
             try {
                 log().debug("Received a tracker pdu of type "+PDU.getTypeString(response.getType())+" from "+getAddress()+" of size "+response.size()+" errorStatus = "+response.getErrorStatusText()+" errorIndex = "+response.getErrorIndex());
-                
-                if (!processErrors(response.getErrorStatus(), response.getErrorIndex())) {
-                    for(int i = 0; i < response.size(); i++) {
-                        VariableBinding vb = response.get(i);
-                        SnmpObjId receivedOid = SnmpObjId.get(vb.getOid().getValue());
-                        SnmpValue val = new Snmp4JValue(vb.getVariable());
-                        Snmp4JWalker.this.processResponse(receivedOid, val);
+                if (response.getType() != PDU.REPORT) {
+                    if (!processErrors(response.getErrorStatus(), response.getErrorIndex())) {
+                        for(int i = 0; i < response.size(); i++) {
+                            VariableBinding vb = response.get(i);
+                            SnmpObjId receivedOid = SnmpObjId.get(vb.getOid().getValue());
+                            SnmpValue val = new Snmp4JValue(vb.getVariable());
+                            Snmp4JWalker.this.processResponse(receivedOid, val);
+                        }
                     }
+                    buildAndSendNextPdu();
+                } else {
+                    handleAuthError("A REPORT Pdu was returned from the agent.  This is most likely an authentication problem.  Please check the config");
                 }
-                buildAndSendNextPdu();
             } catch (Throwable e) {
                 handleFatalError(e);
             }
