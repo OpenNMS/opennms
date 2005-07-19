@@ -116,6 +116,13 @@ public abstract class SnmpWalker {
         log().error(getName()+": Unexpected Error occurred processing "+getName()+" for "+m_address, e);
         finish();
     }
+    
+    protected void handleAuthError(String msg) {
+        m_error = true;
+        m_tracker.setFailed(true);
+        log().info(getName()+": Authentication error processing "+getName()+" for "+m_address);
+        finish();
+    }
 
     private void finish() {
         signal();
