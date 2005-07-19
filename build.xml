@@ -182,6 +182,7 @@ your distribution.
     <pathelement path="${packaged.lib.dir}/castor-0.9.3.9.jar"/>
     <pathelement path="${packaged.lib.dir}/fop0203.jar"/>
     <pathelement path="${packaged.lib.dir}/batik.jar"/>
+    <pathelement path="${packaged.lib.dir}/mx4j-rjmx.jar"/>
     <pathelement path="${packaged.lib.dir}/mx4j.jar"/>
     <pathelement path="${packaged.lib.dir}/jdhcp.jar"/>
     <pathelement path="${packaged.lib.dir}/jcifs.jar"/>
@@ -196,6 +197,7 @@ your distribution.
 <!--  	<pathelement path="${packaged.lib.dir}/pop3.jar"/> -->
     <pathelement path="${packaged.lib.dir}/activation.jar"/>
     <pathelement path="${packaged.lib.dir}/jmta.jar"/>
+    <pathelement path="${packaged.lib.dir}/jboss/jbossall-client.jar"/>
   </path>
 
   <!-- The jars listed for Class-Path in the MANIFEST.MF for the installer's
@@ -939,6 +941,7 @@ your distribution.
 
  <target name="install.lib" depends="prep,compile,jar">
   <mkdir dir="${install.prefix}${install.dir}/lib"/>
+  <mkdir dir="${install.prefix}${install.dir}/lib/jboss"/>
   <mkdir dir="${install.prefix}${install.dir}/lib/updates"/>
   <echo file="${install.prefix}${install.dir}/lib/updates/README.updates">
 
@@ -964,6 +967,15 @@ OpenNMS as part of the post-install.
     <include name="*.jar"/>
    </fileset>
   </chmod>
+ 	
+  <copy todir="${install.prefix}${install.dir}/lib/jboss">
+    <fileset dir="${packaged.lib.dir}/jboss" includes="*.jar" />
+  </copy>
+  <chmod perm="0664">
+    <fileset dir="${install.prefix}${install.dir}/lib/jboss">
+      <include name="*.jar"/>
+    </fileset>
+   </chmod>
 
   <copy todir="${install.prefix}${install.dir}/lib">
    <fileset dir="${build.jicmp.dir}" includes="libjicmp.${build.jniext}"/>

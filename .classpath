@@ -1,55 +1,212 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="**/classlist" kind="src" path="src/core"/>
-	<classpathentry excluding="**/classlist" kind="src" path="src/install"/>
-	<classpathentry excluding="**/classlist" kind="src" path="src/joesnmp"/>
-	<classpathentry excluding="**/classlist" kind="src" path="src/report"/>
-	<classpathentry excluding="**/classlist" kind="src" path="src/services"/>
-	<classpathentry excluding="**/classlist" kind="src" path="src/web/src"/>
-	<classpathentry kind="src" path="work/castor"/>
-	<classpathentry kind="src" path="work/sablecc"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/log4j.jar"/>
-	<classpathentry kind="lib" path="lib/castor-0.9.3.9.jar"/>
-	<classpathentry kind="lib" path="lib/fop0203.jar"/>
-	<classpathentry kind="lib" path="lib/avalon-framework-4.0.jar"/>
-	<classpathentry kind="lib" path="lib/batik.jar"/>
-	<classpathentry kind="lib" path="lib/bsf220.jar"/>
-	<classpathentry kind="lib" path="lib/bsh-1.2b7.jar"/>
-	<classpathentry kind="lib" path="lib/castor-0.9.3.9-xml.jar"/>
-	<classpathentry kind="lib" path="lib/catalina.jar"/>
-	<classpathentry kind="lib" path="lib/commons-jxpath-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/fop0170.jar"/>
-	<classpathentry kind="lib" path="lib/getopt.jar"/>
-	<classpathentry kind="lib" path="lib/jakarta-regexp-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/jcifs.jar"/>
-	<classpathentry kind="lib" path="lib/jdhcp.jar"/>
-	<classpathentry kind="lib" path="lib/jimi100.jar"/>
-	<classpathentry kind="lib" path="lib/jta101.jar"/>
-	<classpathentry kind="lib" path="lib/ldap.jar"/>
-	<classpathentry kind="lib" path="lib/logkit-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/mx4j.jar"/>
-	<classpathentry kind="lib" path="lib/mx4j-tools.jar"/>
-	<classpathentry kind="lib" path="lib/oro204.jar"/>
-	<classpathentry kind="lib" path="lib/pylib152e.jar"/>
-	<classpathentry kind="lib" path="lib/regexp120.jar"/>
-	<classpathentry kind="lib" path="lib/sablecc-2.17.2.jar"/>
-	<classpathentry kind="lib" path="lib/w3c.jar"/>
-	<classpathentry kind="lib" path="lib/xalan122.jar"/>
-	<classpathentry kind="lib" path="lib/xalan231.jar"/>
-	<classpathentry kind="lib" path="lib/xerces201.jar"/>
-	<classpathentry kind="lib" path="lib/xml-apis231.jar"/>
-	<classpathentry kind="lib" path="lib/xmlrpc-1.2-b1.jar"/>
-	<classpathentry kind="lib" path="lib/jrobin-1.4.0.jar"/>
-	<classpathentry kind="lib" path="lib/smtp.jar"/>
-	<classpathentry kind="lib" path="lib/pop3.jar"/>
-	<classpathentry kind="lib" path="lib/mailapi.jar"/>
-	<classpathentry kind="lib" path="lib/imap.jar"/>
-	<classpathentry kind="lib" path="lib/activation.jar"/>
-	<classpathentry sourcepath="ECLIPSE_HOME/plugins/org.eclipse.jdt.source_3.0.0/src/org.junit_3.8.1/junitsrc.zip" kind="var" path="JUNIT_HOME/junit.jar"/>
-	<classpathentry kind="lib" path="lib/hsqldb.jar"/>
-	<classpathentry kind="lib" path="lib/jradius-client.jar"/>
-	<classpathentry kind="lib" path="lib/jmta.jar"/>
-	<classpathentry kind="lib" path="devlib/servlet.jar"/>
+	<classpathentry excluding="**/classlist" kind="src" path="src/core">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="**/classlist" kind="src" path="src/install">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="**/classlist" kind="src" path="src/joesnmp">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="**/classlist" kind="src" path="src/report">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="**/classlist" kind="src" path="src/services">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="**/classlist" kind="src" path="src/web/src">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="work/castor">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="work/sablecc">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/log4j.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/castor-0.9.3.9.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/fop0203.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/avalon-framework-4.0.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/batik.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/bsf220.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/bsh-1.2b7.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/castor-0.9.3.9-xml.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/catalina.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/commons-jxpath-1.1.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/fop0170.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/getopt.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jakarta-regexp-1.1.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jcifs.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jdhcp.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jimi100.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jta101.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/ldap.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/logkit-1.0.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/mx4j.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/mx4j-tools.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/oro204.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/pylib152e.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/regexp120.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/sablecc-2.17.2.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/w3c.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/xalan122.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/xalan231.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/xerces201.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/xml-apis231.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/xmlrpc-1.2-b1.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jrobin-1.4.0.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/smtp.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/pop3.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/mailapi.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/imap.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/activation.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry sourcepath="ECLIPSE_HOME/plugins/org.eclipse.jdt.source_3.0.0/src/org.junit_3.8.1/junitsrc.zip" kind="var" path="JUNIT_HOME/junit.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/hsqldb.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jradius-client.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jmta.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="devlib/servlet.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/mx4j-remote.jar">
+		<attributes>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="work/opennms/classes"/>
 </classpath>

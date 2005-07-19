@@ -109,6 +109,8 @@ Build file for OpenNMS' castor-generated Java files.
    destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
   <castor file="${castor.config.dir}/datacollection-config.xsd" srcpackage="org.opennms.netmgt.config.collectd"
    destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
+  <castor file="${castor.config.dir}/jmx-datacollection-config.xsd" srcpackage="org.opennms.netmgt.config.collectd"
+   destination="${build.castor.source.dir}" typefactory="${castor.typefactory}"/>
  </target>
  <target name="castor.destinationPaths.sources.generate" depends="castor.sources.uptodate"
   unless="castor.destinationPaths.sources.uptodate">
@@ -302,6 +304,7 @@ Build file for OpenNMS' castor-generated Java files.
   <dependset>
    <srcfilelist dir="${castor.config.dir}" files="collectd-configuration.xsd"/>
    <srcfilelist dir="${castor.config.dir}" files="datacollection-config.xsd"/>
+   <srcfilelist dir="${castor.config.dir}" files="jmx-datacollection-config.xsd"/>
    <targetfileset dir="${build.castor.source.dir}/org/opennms/netmgt/config/collectd" includes="*.java"/>
   </dependset>
   <condition property="castor.collectd.sources.uptodate">

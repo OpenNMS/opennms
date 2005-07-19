@@ -8,6 +8,39 @@
 	abort-protocol-scans-if-no-route = "false"
 	delete-propagation-enabled = "true"
         xmlrpc="false">
+        
+    <protocol-plugin protocol="JBoss4" class-name="org.opennms.netmgt.capsd.JBossPlugin" scan="on" user-defined="false">
+          <property key="version" value="4"/>
+          <property key="port" value="1099"/>
+          <property key="retry" value="2"/>
+          <property key="timeout" value="2000"/>
+          <property key="factory" value="RMI"/>
+          <!-- if you set the factory to HTTP (necessary when monitoring through a firewall) then you 
+               need to ensure the port matches the port specified in the InvokerURLSuffix for the Naming Service entry in 
+              <jboss-home>/server/default/deploy/http-invoker/META-INF/jboss-service.xml
+               The default port is 8080
+          -->
+        </protocol-plugin>
+        <protocol-plugin protocol="JBoss32" class-name="org.opennms.netmgt.capsd.JBossPlugin" scan="on" user-defined="false">
+          <property key="version" value="32"/>
+          <property key="port" value="1099"/>
+          <property key="retry" value="2"/>
+          <property key="timeout" value="2000"/>
+          <property key="factory" value="RMI"/>
+          <!-- if you set the factory to HTTP (necessary when monitoring through a firewall) then you 
+               need to ensure the port matches the port specified in the InvokerURLSuffix for the Naming Service entry in 
+               <jboss-home>/server/default/deploy/http-invoker/META-INF/jboss-service.xml
+               The default port is 8080
+          -->
+        </protocol-plugin>
+        <protocol-plugin protocol="JVM" class-name="org.opennms.netmgt.capsd.Jsr160Plugin" scan="on" user-defined="false">
+                <property key="port" value="9003"/>
+                <property key="type" value="default"/>
+                <property key="protocol" value="rmi"/>
+                <property key="urlPath" value="/jmxrmi"/>
+                <property key="retry" value="2"/>
+                <property key="timeout" value="2000"/>
+        </protocol-plugin>
 	<protocol-plugin protocol="ICMP" class-name="org.opennms.netmgt.capsd.IcmpPlugin" scan="on" user-defined="false">
 		<property key="timeout" value="2000"/>
 		<property key="retry" value="2"/>

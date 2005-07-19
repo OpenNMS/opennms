@@ -190,6 +190,11 @@ public final class ConfigFileConstants {
 
     public static final int JAVA_MAIL_CONFIG_FILE_NAME;
 
+    /**
+     * The config file for specifying JMX MBeans
+     */
+    public static final int JMX_DATA_COLLECTION_CONF_FILE_NAME;
+
     //
     // End services config files
     //
@@ -438,10 +443,11 @@ public final class ConfigFileConstants {
 
         JAVA_MAIL_CONFIG_FILE_NAME = 52;
         VACUUMD_CONFIG_FILE_NAME = 53;
+        JMX_DATA_COLLECTION_CONF_FILE_NAME = 54;
 
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[54];
+        FILE_ID_TO_NAME = new String[55];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -512,6 +518,7 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[RRD_CONFIG_FILE_NAME] = "rrd-configuration.properties";
         FILE_ID_TO_NAME[JAVA_MAIL_CONFIG_FILE_NAME] = "javamail-configuration.properties";
         FILE_ID_TO_NAME[VACUUMD_CONFIG_FILE_NAME] = "vacuumd-configuration.xml";
+        FILE_ID_TO_NAME[JMX_DATA_COLLECTION_CONF_FILE_NAME] = "jmx-datacollection-config.xml";
     }
 
     /**
