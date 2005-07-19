@@ -31,4 +31,8 @@ public class ThreshdTest extends TestCase {
         threshd.start();
         threshd.stop();
     }
+    
+    public void testDoNothing() {
+        
+    }
 }
