@@ -22,8 +22,10 @@
        AND eventtime &lt; now() - interval '6 weeks';
     </statement>
     <automations>
+<!-- Remark thise for now until I get them right.
            <automation name="autoEscalate" interval="10000" trigger-name="selectWithCounter" auto-event-name="escalationEvent" action-name="escalate" active="true" />
            <automation name="cleanUpAlarms" interval="300000" action-name="deleteDayOldAlarms" active="true" />
+-->
     </automations>
     <triggers>
            <trigger name="selectAll" operator="&gt;=" row-count="1" >
