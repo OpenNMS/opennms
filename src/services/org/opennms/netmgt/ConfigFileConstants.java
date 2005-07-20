@@ -454,15 +454,16 @@ public final class ConfigFileConstants {
 
         JAVA_MAIL_CONFIG_FILE_NAME = 52;
         VACUUMD_CONFIG_FILE_NAME = 53;
-        JMX_DATA_COLLECTION_CONF_FILE_NAME = 54;
 
         XMPP_CONFIG_FILE_NAME = 54;
         
         CHART_CONFIG_FILE_NAME = 55;
+
+        JMX_DATA_COLLECTION_CONF_FILE_NAME = 56;
         
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[56];
+        FILE_ID_TO_NAME = new String[57];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
