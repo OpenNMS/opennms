@@ -49,6 +49,16 @@
                 <rule><![CDATA[isHTTP | isHTTPS | isHTTP-8000 | isHTTP-8080]]></rule>
             </category>
             <category>
+                <label><![CDATA[JMX Servers]]></label>
+                <comment>This category includes all managed interfaces which are running JMX servers.</comment>
+                <normal>99</normal>
+                <warning>97</warning>
+                <service>JBoss4</service>
+                <service>JBoss32</service>
+                <service>JVM</service>
+                <rule><![CDATA[isJBoss4 | isJBoss32 | isJVM]]></rule>
+            </category>
+            <category>
                 <label><![CDATA[DNS & DHCP Servers]]></label>
                 <comment>This category includes all managed interfaces which are running either DNS (name resolution) servers or DHCP servers.</comment>
                 <normal>99</normal>

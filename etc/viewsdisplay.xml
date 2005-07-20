@@ -10,6 +10,7 @@
 			<category><![CDATA[Email Servers]]></category>
 			<category><![CDATA[DNS & DHCP Servers]]></category>                    
 			<category><![CDATA[Database Servers]]></category>
+			<category><![CDATA[JMX Servers]]></category>
 			<category><![CDATA[Other Servers]]></category>
 		</section>
 		<section>

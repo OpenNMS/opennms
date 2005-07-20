@@ -51,6 +51,12 @@
                 <threshold type="high" ds-name="cim5MinCpuUtilPct"  ds-type="node" value="90" rearm="50" trigger="3"/>
         </group>
 
+        <!--group name="jboss"
+                rrdRepository = "@install.share.dir@/rrd/snmp/">
+                <threshold type="high" ds-name="portal-core_hits"  ds-type="node" value="10" rearm="5" trigger="3"/>
+                <threshold type="high" ds-name="portal-core_access"   ds-type="node" value="10" rearm="7" trigger="3"/>
+        </group-->
+
 	<group name="icmp-latency"
                 rrdRepository = "@install.share.dir@/rrd/response/">
                 <threshold type="high" ds-name="icmp"  ds-type="if" value="75000" rearm="25000" trigger="3"/>
