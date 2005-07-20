@@ -136,6 +136,7 @@
 		</castor-gen>
 		<castor-gen srcpackage="org.opennms.netmgt.config.collectd">
 			<pathelement path="${castor.config.dir}/collectd-configuration.xsd" />
+			<pathelement path="${castor.config.dir}/jmx-datacollection-config.xsd" />
 			<pathelement path="${castor.config.dir}/datacollection-config.xsd" />
 		</castor-gen>
 		<castor-gen srcpackage="org.opennms.netmgt.config.poller">
