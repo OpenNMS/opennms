@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://xmlns.opennms.org/xsd/config/collectd" xmlns:this="http://xmlns.opennms.org/xsd/config/collectd">
+	targetNamespace="http://xmlns.opennms.org/xsd/config/jmx-datacollection" xmlns:this="http://xmlns.opennms.org/xsd/config/jmx-datacollection">
 
 	<element name="jmx-datacollection-config">
 		<complexType>
