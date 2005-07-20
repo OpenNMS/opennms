@@ -41,7 +41,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -400,6 +400,7 @@ public abstract class JMXCollector implements ServiceCollector {
         } finally {
             try {
                 stmt.close();
+                dbConn.close();
             } catch (Exception e) {
                 // Ignore
             }
@@ -736,7 +737,7 @@ public abstract class JMXCollector implements ServiceCollector {
                     }
                 }
                 try {
-                    Thread.currentThread().sleep(1100);
+                    Thread.sleep(1100);
                 }catch (Exception te) {
                     
                 }
