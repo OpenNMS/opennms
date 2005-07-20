@@ -426,7 +426,7 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
                 } catch (Throwable t) {
                     Category log = ThreadCategory.getInstance(this.getClass());
                     if (log.isDebugEnabled())
-                        log.debug("run: an unexpected error occured during fiber run, calling error liseners", t);
+                        log.debug("run: an unexpected error occured during fiber run, calling error liseners");
 
                     // call a listener to handle errors?
                     // or should it be logged
@@ -435,6 +435,8 @@ public class RunnableConsumerThreadPool extends Object implements Fiber {
                     synchronized (m_errorListeners) {
                         list = m_errorListeners.toArray();
                     }
+                    if (list.length == 0)
+                        log.error("No error listeners defined for for unexpected error ", t);
                     for (int i = 0; list != null && i < list.length; i++) {
                         ((RunnableErrorListener) list[i]).onRunnableError(obj, t);
                     }

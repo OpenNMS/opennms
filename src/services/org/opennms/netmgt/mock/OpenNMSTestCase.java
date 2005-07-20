@@ -1441,10 +1441,11 @@ public class OpenNMSTestCase extends TestCase {
         if(m_runSupers) {
             if (isStartEventd()) m_eventd.stop();
             m_db.drop();
-            super.tearDown();
         }
         assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
-        
+        MockUtil.println("------------ End Test "+getName()+" --------------------------");
+
+        super.tearDown();
     }
 
     protected void setStartEventd(boolean startEventd) {
@@ -1456,5 +1457,13 @@ public class OpenNMSTestCase extends TestCase {
     }
 
     public void testDoNothing() {}
+
+    protected void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+        }
+    }
+
 
 }

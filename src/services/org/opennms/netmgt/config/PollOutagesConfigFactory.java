@@ -93,6 +93,10 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
         cfgIn.close();
 
     }
+    
+    public PollOutagesConfigFactory(Reader rdr) throws MarshalException, ValidationException {
+        setConfig((Outages) Unmarshaller.unmarshal(Outages.class, rdr));
+    }
 
     /**
      * Load the config from the default config file and create the singleton
@@ -130,6 +134,7 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
      *                Thrown if the contents do not match the required schema.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+        init();
         getInstance().update();
     }
 
@@ -146,6 +151,12 @@ public final class PollOutagesConfigFactory extends PollOutagesConfigManager {
             throw new IllegalStateException("The factory has not been initialized");
 
         return m_singleton;
+    }
+    
+    public static synchronized void setInstance(PollOutagesConfigFactory instance) {
+        m_loaded = true;
+        m_singleton = instance;
+
     }
     
     protected void saveXML(String xmlString) throws IOException, MarshalException, ValidationException {

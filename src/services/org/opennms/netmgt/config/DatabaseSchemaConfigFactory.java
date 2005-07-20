@@ -35,10 +35,8 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -108,26 +106,19 @@ public final class DatabaseSchemaConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private DatabaseSchemaConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
+        FileReader cfgIn = new FileReader(configFile);
 
-        m_config = (DatabaseSchema) Unmarshaller.unmarshal(DatabaseSchema.class, new InputStreamReader(cfgIn));
+        parseXML(cfgIn);
+
+
         cfgIn.close();
-
-        finishConstruction();
-
+	}
+    
+    public DatabaseSchemaConfigFactory(Reader reader) throws IOException, MarshalException, ValidationException {
+        parseXML(reader);
     }
 
-    /**
-     * Public constructor
-     * 
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     */
-    public DatabaseSchemaConfigFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
+    private void parseXML(Reader rdr) throws IOException, MarshalException, ValidationException {
     
         m_config = (DatabaseSchema) Unmarshaller.unmarshal(DatabaseSchema.class, rdr);
     

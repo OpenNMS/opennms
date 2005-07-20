@@ -39,10 +39,9 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -102,11 +101,20 @@ public final class ThresholdingConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private ThresholdingConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
+        FileReader cfgIn = new FileReader(configFile);
 
-        m_config = (ThresholdingConfig) Unmarshaller.unmarshal(ThresholdingConfig.class, new InputStreamReader(cfgIn));
+        parseXML(cfgIn);
+
         cfgIn.close();
 
+    }
+    
+    public ThresholdingConfigFactory(Reader reader) throws MarshalException, ValidationException {
+        parseXML(reader);
+    }
+
+    private void parseXML(Reader cfgIn) throws MarshalException, ValidationException {
+        m_config = (ThresholdingConfig) Unmarshaller.unmarshal(ThresholdingConfig.class, cfgIn);
         // Build map of org.opennms.netmgt.config.threshd.Group objects
         // indexed by group name.
         //
@@ -114,7 +122,6 @@ public final class ThresholdingConfigFactory {
         // faster processing at run-timne.
         // 
         m_groupMap = new HashMap();
-
         Iterator iter = m_config.getGroupCollection().iterator();
         while (iter.hasNext()) {
             Group group = (Group) iter.next();
@@ -181,6 +188,10 @@ public final class ThresholdingConfigFactory {
         return m_singleton;
     }
 
+    public static synchronized void setInstance(ThresholdingConfigFactory instance) {
+        m_loaded=true;
+        m_singleton = instance;
+    }
     /**
      * Retrieves the configured path to the RRD file repository for the
      * specified thresholding group.
@@ -194,11 +205,14 @@ public final class ThresholdingConfigFactory {
      *             if group name does not exist in the group map.
      */
     public String getRrdRepository(String groupName) {
+        return getGroup(groupName).getRrdRepository();
+    }
+
+    public Group getGroup(String groupName) {
         Group group = (Group) m_groupMap.get(groupName);
         if (group == null)
             throw new IllegalArgumentException("Group does not exist.");
-
-        return group.getRrdRepository();
+        return group;
     }
 
     /**
@@ -216,10 +230,6 @@ public final class ThresholdingConfigFactory {
      *             if group name does not exist in the group map.
      */
     public Collection getThresholds(String groupName) {
-        Group group = (Group) m_groupMap.get(groupName);
-        if (group == null)
-            throw new IllegalArgumentException("Group does not exist.");
-
-        return group.getThresholdCollection();
+        return getGroup(groupName).getThresholdCollection();
     }
 }

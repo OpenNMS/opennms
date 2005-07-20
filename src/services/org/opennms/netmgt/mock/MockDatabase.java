@@ -333,14 +333,15 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     }
 
     public void writeInterface(MockInterface iface) {
-        Object[] values = { new Integer(iface.getNodeId()), iface.getIpAddr() };
-        update("insert into ipInterface (nodeID, ipAddr) values (?, ?)", values);
-        writeSnmpInterface(iface);
+        int ifIndex = writeSnmpInterface(iface);
+		Object[] values = { new Integer(iface.getNodeId()), iface.getIpAddr(), new Integer(ifIndex), (ifIndex == 1 ? "P" : "N") };
+        update("insert into ipInterface (nodeID, ipAddr, ifIndex, isSnmpPrimary) values (?, ?, ?, ?)", values);
     }
 
-    public void writeSnmpInterface(MockInterface iface) {
+    public int writeSnmpInterface(MockInterface iface) {
         Object[] values = { new Integer(iface.getNodeId()), iface.getIpAddr(), iface.getIfAlias() };
         update("insert into snmpInterface (nodeID, ipAddr, snmpifAlias) values (?, ?, ?)", values);
+		return 1;
     }
 
     public void writeService(MockService svc) {

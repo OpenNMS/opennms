@@ -40,7 +40,10 @@ import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
+import org.opennms.netmgt.config.ThresholdingConfigFactory;
+
 
 public class Threshd implements ThreshdMBean {
     /**
@@ -71,6 +74,44 @@ public class Threshd implements ThreshdMBean {
                 log.fatal("start: Failed to load threshd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
+        
+        // Load threshd configuration file
+        //
+        try {
+            ThresholdingConfigFactory.reload();
+        } catch (MarshalException ex) {
+            if (log.isEnabledFor(Priority.FATAL))
+                log.fatal("start: Failed to load threshd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (ValidationException ex) {
+            if (log.isEnabledFor(Priority.FATAL))
+                log.fatal("start: Failed to load threshd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (IOException ex) {
+            if (log.isEnabledFor(Priority.FATAL))
+                log.fatal("start: Failed to load threshd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
+        
+        // Load up the configuration for the scheduled outages.
+        //
+        try {
+            PollOutagesConfigFactory.reload();
+        } catch (MarshalException ex) {
+            if (log.isEnabledFor(Priority.FATAL))
+                log.fatal("start: Failed to load poll-outage configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (ValidationException ex) {
+            if (log.isEnabledFor(Priority.FATAL))
+                log.fatal("start: Failed to load poll-outage configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (IOException ex) {
+            if (log.isEnabledFor(Priority.FATAL))
+                log.fatal("start: Failed to load poll-outage configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
+
+
         
         org.opennms.netmgt.threshd.Threshd.getInstance().setThreshdConfig(ThreshdConfigFactory.getInstance());
 

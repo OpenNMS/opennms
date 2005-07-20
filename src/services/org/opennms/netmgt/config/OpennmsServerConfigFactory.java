@@ -31,17 +31,13 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.config.server.LocalServer;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -54,16 +50,11 @@ import org.opennms.netmgt.config.server.LocalServer;
  * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class OpennmsServerConfigFactory {
+public final class OpennmsServerConfigFactory extends OpennmsServerConfigManager {
     /**
      * The singleton instance of this factory
      */
     private static OpennmsServerConfigFactory m_singleton = null;
-
-    /**
-     * The config class loaded from the config file
-     */
-    private LocalServer m_config;
 
     /**
      * This member is set to true if the configuration file has been loaded.
@@ -80,27 +71,8 @@ public final class OpennmsServerConfigFactory {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
-    private OpennmsServerConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
-
-        m_config = (LocalServer) Unmarshaller.unmarshal(LocalServer.class, new InputStreamReader(cfgIn));
-        cfgIn.close();
-
-    }
-    
-    /**
-     * Private constructor
-     * 
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     */
     public OpennmsServerConfigFactory(Reader rdr) throws IOException, MarshalException, ValidationException {
-
-        m_config = (LocalServer) Unmarshaller.unmarshal(LocalServer.class, rdr);
+        super(rdr);
 
     }
 
@@ -124,7 +96,9 @@ public final class OpennmsServerConfigFactory {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_SERVER_CONFIG_FILE_NAME);
 
-        m_singleton = new OpennmsServerConfigFactory(cfgFile.getPath());
+        FileReader cfgIn = new FileReader(cfgFile);
+        m_singleton = new OpennmsServerConfigFactory(cfgIn);
+        cfgIn.close();
 
         m_loaded = true;
     }
@@ -164,29 +138,6 @@ public final class OpennmsServerConfigFactory {
     public static synchronized void setInstance(OpennmsServerConfigFactory instance) {
         m_singleton = instance;
         m_loaded = true;
-    }
-
-    /**
-     * Return the local opennms server name.
-     * 
-     * @return the name of the local opennms server
-     */
-    public synchronized String getServerName() {
-        return m_config.getServerName();
-    }
-
-    /**
-     * Return the boolean flag verify server to determine if poller what to use
-     * server to restrict services to poll.
-     * 
-     * @return boolean flag
-     */
-    public synchronized boolean verifyServer() {
-        String flag = m_config.getVerifyServer();
-        if (flag.equals("true"))
-            return true;
-        else
-            return false;
     }
 
 }

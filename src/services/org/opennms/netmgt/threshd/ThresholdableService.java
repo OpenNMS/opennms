@@ -48,8 +48,8 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
+import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.Parameter;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.threshd.Service;
 import org.opennms.netmgt.poller.monitors.IPv4NetworkInterface;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
@@ -75,7 +75,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements ReadyRu
     /**
      * The package information for this interface/service pair
      */
-    private org.opennms.netmgt.config.threshd.Package m_package;
+    private Package m_package;
 
     /**
      * The service informaion for this interface/service pair
@@ -136,6 +136,8 @@ final class ThresholdableService extends IPv4NetworkInterface implements ReadyRu
      */
     private static Map SVC_PROP_MAP = Collections.synchronizedMap(new TreeMap());
 
+    private Threshd m_threshd;
+
     /**
      * Constructs a new instance of a ThresholdableService object.
      * 
@@ -149,15 +151,16 @@ final class ThresholdableService extends IPv4NetworkInterface implements ReadyRu
      *            The package containing parms for this collectable service.
      * 
      */
-    ThresholdableService(int dbNodeId, InetAddress address, String svcName, org.opennms.netmgt.config.threshd.Package pkg) {
+    ThresholdableService(Threshd threshd, int dbNodeId, InetAddress address, String svcName, org.opennms.netmgt.config.threshd.Package pkg) {
         super(address);
         m_nodeId = dbNodeId;
         m_package = pkg;
         m_status = ServiceThresholder.THRESHOLDING_SUCCEEDED;
 
-        m_proxy = Threshd.getInstance().getEventProxy();
-        m_scheduler = Threshd.getInstance().getScheduler();
-        m_thresholder = Threshd.getInstance().getServiceThresholder(svcName);
+        m_threshd = threshd;
+        m_proxy = threshd.getEventProxy();
+        m_scheduler = threshd.getScheduler();
+        m_thresholder = threshd.getServiceThresholder(svcName);
         m_updates = new ThresholderUpdates();
 
         // Initialize last scheduled threshold check and last threshold
@@ -239,7 +242,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements ReadyRu
     * Should be called when the threshd config has been reloaded.
     */
     public void refreshPackage() {
-	org.opennms.netmgt.config.threshd.Package refreshedPackage=ThreshdConfigFactory.getInstance().getPackage(this.getPackageName());
+	Package refreshedPackage=m_threshd.getPackage(getPackageName());
 	if(refreshedPackage!=null) {
 		this.m_package=refreshedPackage;
 	}
@@ -261,7 +264,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements ReadyRu
     public boolean isReady() {
         boolean ready = false;
 
-        if (!Threshd.getInstance().isSchedulingCompleted())
+        if (!m_threshd.isSchedulingCompleted())
             return false;
 
         if (m_service.getInterval() < 1) {

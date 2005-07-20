@@ -37,9 +37,16 @@
 
 package org.opennms.netmgt.threshd;
 
+import java.io.File;
+import java.util.Date;
+
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.threshd.Threshold;
+import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.xml.event.Events;
 
 /**
  * Wraps the castor created org.opennms.netmgt.config.threshd.Threshold class
@@ -393,4 +400,72 @@ final class ThresholdEntity implements Cloneable {
         else
             return NONE_TRIGGERED;
     }
+	
+	private final Category log() {
+		return ThreadCategory.getInstance(ThresholdEntity.class);
+	}
+
+	Double fetchLastValue(LatencyInterface latIface, LatencyParameters latParms) throws ThresholdingException {
+		String datasource = getDatasourceName();
+		// Use RRD JNI interface to "fetch" value of the
+	    // datasource from the RRD file
+	    //
+	    Double dsValue = null;
+	    try {
+	        if (getDatasourceType().equals("if")) {
+	            log().debug("Fetching last value from dataSource '" + datasource + "'");
+	            
+	            File rrdFile = new  File(latIface.getLatencyDir(), datasource+".rrd");
+	            if (!rrdFile.exists()) {
+	                log().info("rrd file "+rrdFile+" does not exist");
+	                return null;
+	            }
+	            
+	            if (!rrdFile.canRead()) {
+	               log().error("Unable to read existing rrd file "+rrdFile);
+	                return null;
+	            }
+	            
+	            
+	            dsValue = RrdUtils.fetchLastValue(rrdFile.getAbsolutePath(), latParms.getInterval());
+	        } else {
+	           throw new ThresholdingException("expr types not yet implemented", LatencyThresholder.THRESHOLDING_FAILED);
+	        }
+	        log().debug("Last value from dataSource '" + datasource + "' was "+dsValue);
+	    } catch (NumberFormatException nfe) {
+	        log().warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
+	    } catch (RrdException e) {
+	        log().error("An error occurred retriving the last value for datasource '" + datasource + "'", e);
+	    }
+	    return dsValue;
+	}
+
+	void evaluateThreshold(Double dsValue, Events events, Date date, LatencyInterface latIface) throws ThresholdingException {
+	    if (dsValue != null && !dsValue.isNaN()) {
+	        // Evaluate the threshold
+	        // 
+	        // ThresholdEntity.evaluate() returns an integer value
+	        // which indicates which threshold values were
+	        // triggered and require an event to be generated (if any).
+	        // 
+	        int result = evaluate(dsValue.doubleValue());
+	        if (result != ThresholdEntity.NONE_TRIGGERED) {
+	            if (result == ThresholdEntity.HIGH_AND_LOW_TRIGGERED || result == ThresholdEntity.HIGH_TRIGGERED) {
+	                events.addEvent(latIface.createEvent(dsValue.doubleValue(), getHighThreshold(), EventConstants.HIGH_THRESHOLD_EVENT_UEI, date));
+	            }
+	
+	            if (result == ThresholdEntity.HIGH_AND_LOW_TRIGGERED || result == ThresholdEntity.LOW_TRIGGERED) {
+	                events.addEvent(latIface.createEvent(dsValue.doubleValue(), getLowThreshold(), EventConstants.LOW_THRESHOLD_EVENT_UEI, date));
+	            }
+	
+	            if (result == ThresholdEntity.HIGH_AND_LOW_REARMED || result == ThresholdEntity.HIGH_REARMED) {
+	                events.addEvent(latIface.createEvent(dsValue.doubleValue(), getHighThreshold(), EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, date));
+	            }
+	
+	            if (result == ThresholdEntity.HIGH_AND_LOW_REARMED || result == ThresholdEntity.LOW_REARMED) {
+	                events.addEvent(latIface.createEvent(dsValue.doubleValue(), getLowThreshold(), EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, date));
+	            }
+	        }
+	    }
+	}
 }

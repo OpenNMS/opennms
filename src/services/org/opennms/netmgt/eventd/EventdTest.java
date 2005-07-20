@@ -185,12 +185,5 @@ public class EventdTest extends OpenNMSTestCase {
         m_eventd.processEvent(e);
     }
     
-    private void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-        }
-    }
-
 
 }

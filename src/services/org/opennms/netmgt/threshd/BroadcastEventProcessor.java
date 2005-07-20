@@ -48,7 +48,6 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.EventListener;
@@ -79,6 +78,8 @@ final class BroadcastEventProcessor implements EventListener {
      */
     private List m_thresholdableServices;
 
+    private Threshd m_threshd;
+
     /**
      * This constructor is called to initilize the JMS event receiver. A
      * connection to the message server is opened and this instance is setup as
@@ -90,13 +91,14 @@ final class BroadcastEventProcessor implements EventListener {
      *            thresholding.
      * 
      */
-    BroadcastEventProcessor(List thresholdableServices) {
+    BroadcastEventProcessor(Threshd threshd, List thresholdableServices) {
         Category log = ThreadCategory.getInstance(getClass());
 
         // Set the configuration for this event
         // receiver.
         //
-        m_scheduler = Threshd.getInstance().getScheduler();
+        m_threshd = threshd;
+        m_scheduler = m_threshd.getScheduler();
         m_thresholdableServices = thresholdableServices;
 
         // Create the jms message selector
@@ -192,14 +194,7 @@ final class BroadcastEventProcessor implements EventListener {
             log.debug("received event, uei = " + event.getUei());
         }
 	if(event.getUei().equals(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
-		log.warn("Reloading Threshd config factory");
-		try {
-			ThreshdConfigFactory.reload();
-		} catch (Exception e) {
-			e.printStackTrace();
-			log.error("Failed to reload ThreshdConfigFactory because "+e.getMessage());
-		}
-		Threshd.getInstance().refreshServicePackages();
+		m_threshd.refreshServicePackages();
 	} else if(!event.hasNodeid()) {
 	    // For all other events, if the event doesn't have a nodeId it can't be processed.
             log.info("no database node id found, discarding event");
@@ -347,7 +342,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         // Schedule the new service...
         //
-        Threshd.getInstance().scheduleInterface((int) event.getNodeid(), event.getInterface(), event.getService(), false);
+        m_threshd.scheduleInterface((int) event.getNodeid(), event.getInterface(), event.getService(), false);
     }
 
     /**
@@ -445,7 +440,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         // Now we can schedule the new service...
         //
-        Threshd.getInstance().scheduleInterface((int) event.getNodeid(), event.getInterface(), event.getService(), false);
+        m_threshd.scheduleInterface((int) event.getNodeid(), event.getInterface(), event.getService(), false);
 
         if (log.isDebugEnabled())
             log.debug("primarySnmpInterfaceChangedHandler: processing of primarySnmpInterfaceChanged event for nodeid " + event.getNodeid() + " completed.");

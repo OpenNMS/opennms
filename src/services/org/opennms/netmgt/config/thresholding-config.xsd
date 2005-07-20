@@ -40,6 +40,11 @@
             <documentation>Threshold definition</documentation>
           </annotation>
         </element>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:expression">
+          <annotation>
+            <documentation>Expression definition</documentation>
+          </annotation>
+        </element>
       </sequence>
 
       <attribute name="name" type="string" use="required">
@@ -56,6 +61,26 @@
       </attribute>
     </complexType>
   </element>
+
+  <!-- Expression definitions -->
+	<element name="expression">
+		<annotation>
+          <documentation>Currently unused, this will be for doing mathematical 
+          operations on thresholds</documentation>
+        </annotation>
+		<complexType>
+			<attribute name="ds-name" type="string" use="required">
+               <annotation>
+                 <documentation>RRD datasource name.</documentation>
+               </annotation>
+            </attribute>
+			<attribute name="formula" type="string" use="required">
+               <annotation>
+                 <documentation>Formula to be applied to the ds</documentation>
+               </annotation>
+            </attribute>
+		</complexType>
+    </element>
 
   <element name="threshold">
     <annotation>

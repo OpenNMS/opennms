@@ -70,9 +70,11 @@ import org.opennms.core.utils.ThreadCategory;
  */
 public class RrdUtils {
 
+    private static final String DEFAULT_RRD_STRATEGY_CLASSNAME = "org.opennms.netmgt.rrd.JniRrdStrategy";
+
     private static final boolean USE_QUEUE = RrdConfig.getProperty("org.opennms.rrd.usequeue", true);
 
-    private static final boolean USE_JNI = RrdConfig.getProperty("org.opennms.rrd.usejni", true);
+    private static final String RRD_STRATEGY_CLASSNAME = RrdConfig.getProperty("org.opennms.rrd.strategyClass", DEFAULT_RRD_STRATEGY_CLASSNAME);
 
     private static RrdStrategy m_rrdStrategy = null;
 
@@ -117,11 +119,11 @@ public class RrdUtils {
 
     /**
      * Create the appropriate RrdStrategy object based on the configuration
+     * @throws RrdException 
      */
-    private static void createStrategy() {
+    private static void createStrategy() throws RrdException {
         if (m_rrdStrategy == null) {
-            RrdStrategy rrdStategy = (USE_JNI ? (RrdStrategy) new JniRrdStrategy() : (RrdStrategy) new JRobinRrdStrategy());
-
+            RrdStrategy rrdStategy = constructStrategyInstance();
             if (USE_QUEUE) {
                 rrdStategy = new QueuingRrdStrategy(rrdStategy);
             }
@@ -133,6 +135,16 @@ public class RrdUtils {
             }
 */            m_rrdStrategy = rrdStategy;
         }
+    }
+
+    private static RrdStrategy constructStrategyInstance() throws RrdException {
+        try {
+            return (RrdStrategy) Class.forName(RRD_STRATEGY_CLASSNAME).newInstance();
+        } catch (Exception e) {
+            log().error("Unable to load RrdStrategyClass "+RRD_STRATEGY_CLASSNAME, e);
+            throw new RrdException("Unable to construct RrdStrategy: "+RRD_STRATEGY_CLASSNAME, e);
+        }
+        
     }
 
     /**
@@ -161,12 +173,10 @@ public class RrdUtils {
      * @return true if the file was actually created, false otherwise
      */
     public static boolean createRRD(String creator, String directory, String dsName, int step, String dsType, int dsHeartbeat, String dsMin, String dsMax, List rraList) throws RrdException {
-        Category log = ThreadCategory.getInstance(RrdUtils.class);
-
         String fileName = dsName + ".rrd";
 
-        if (log.isDebugEnabled())
-            log.debug("createRRD: rrd path and file name to create: " + directory + File.separator + fileName);
+        if (log().isDebugEnabled())
+            log().debug("createRRD: rrd path and file name to create: " + directory + File.separator + fileName);
 
         String completePath = directory + File.separator + fileName;
 
@@ -190,9 +200,13 @@ public class RrdUtils {
             getStrategy().createFile(def);
             return true;
         } catch (Exception e) {
-            log.debug("An error occured creating rrdfile " + completePath, e);
+            log().debug("An error occured creating rrdfile " + completePath, e);
             throw new org.opennms.netmgt.rrd.RrdException("An error occured creating rrdfile " + completePath, e);
         }
+    }
+
+    private static Category log() {
+        return ThreadCategory.getInstance(RrdUtils.class);
     }
 
     /**
@@ -211,23 +225,21 @@ public class RrdUtils {
      * @throws RrdException
      */
     public static void updateRRD(String owner, String repositoryDir, String dsName, String val) throws RrdException {
-        Category log = ThreadCategory.getInstance(RrdUtils.class);
-
         // Issue the RRD update
         String rrdFile = repositoryDir + File.separator + dsName + ".rrd";
         long time = (System.currentTimeMillis() + 500L) / 1000L;
 
         String updateVal = Long.toString(time) + ":" + val;
 
-        if (log.isDebugEnabled())
-            log.debug("updateRRD:updating RRD file: " + rrdFile + " with value: " + updateVal);
+        if (log().isDebugEnabled())
+            log().debug("updateRRD:updating RRD file: " + rrdFile + " with value: " + updateVal);
 
         Object rrd = null;
         try {
             rrd = getStrategy().openFile(rrdFile);
             getStrategy().updateFile(rrd, owner, updateVal);
         } catch (Exception e) {
-            log.error("Error updating rrdFile " + rrdFile + " with value: " + updateVal, e);
+            log().error("Error updating rrdFile " + rrdFile + " with value: " + updateVal, e);
             throw new org.opennms.netmgt.rrd.RrdException("Error updating rrdFile " + rrdFile + " with value: " + updateVal, e);
         } finally {
             try {
@@ -238,8 +250,8 @@ public class RrdUtils {
             }
         }
 
-        if (log.isDebugEnabled())
-            log.debug("updateRRD: RRD update command completed.");
+        if (log().isDebugEnabled())
+            log().debug("updateRRD: RRD update command completed.");
     }
 
     /**

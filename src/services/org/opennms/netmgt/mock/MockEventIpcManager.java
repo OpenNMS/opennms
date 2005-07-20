@@ -92,6 +92,8 @@ public class MockEventIpcManager implements EventIpcManager {
 
     private int m_pendingEvents;
 
+    private int m_eventDelay = 0;
+
     public MockEventIpcManager() {
         m_anticipator = new EventAnticipator();
     }
@@ -140,6 +142,10 @@ public class MockEventIpcManager implements EventIpcManager {
     public void removeEventListener(EventListener listener, String uei) {
         m_listeners.remove(new ListenerKeeper(listener, Collections.singleton(uei)));
     }
+    
+    public void setEventDelay(int millis) {
+        m_eventDelay  = millis;
+    }
 
     /**
      * @param event
@@ -158,7 +164,7 @@ public class MockEventIpcManager implements EventIpcManager {
         Runnable r = new Runnable() {
             public void run() {
                 try {
-                    try { Thread.sleep(2000); } catch (InterruptedException e) {}
+                    try { Thread.sleep(m_eventDelay); } catch (InterruptedException e) {}
                     m_eventWriter.writeEvent(event);
                     broadcastNow(event);
                     m_anticipator.eventProcessed(event);

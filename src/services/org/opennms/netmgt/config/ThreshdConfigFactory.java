@@ -35,33 +35,15 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
-import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.config.threshd.ExcludeRange;
-import org.opennms.netmgt.config.threshd.IncludeRange;
-import org.opennms.netmgt.config.threshd.Service;
-import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
-import org.opennms.netmgt.filter.Filter;
-import org.opennms.netmgt.utils.IPSorter;
-import org.opennms.netmgt.utils.IpListFromUrl;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -91,114 +73,6 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
     private static boolean m_loaded = false;
 
     /**
-     * The config class loaded from the config file
-     */
-    private ThreshdConfiguration m_config;
-
-    /**
-     * A mapping of the configured URLs to a list of the specific IPs configured
-     * in each - so as to avoid file reads
-     */
-    private Map m_urlIPMap;
-
-    /**
-     * A mapping of the configured package to a list of IPs selected via filter
-     * rules, so as to avoid repetetive database access.
-     */
-    private Map m_pkgIpMap;
-
-    /**
-     * A boolean flag to indicate If a filter rule agaist the local OpenNMS
-     * server has to be used.
-     */
-    private static boolean m_verifyServer;
-
-    /**
-     * The name of the local OpenNMS server
-     */
-    private static String m_localServer;
-
-    /**
-     * Go through the configuration and build a mapping of each configured URL
-     * to a list of IPs configured in that URL - done at init() time so that
-     * repeated file reads can be avoided
-     */
-    private void createUrlIpMap() {
-        m_urlIPMap = new HashMap();
-
-        Enumeration pkgEnum = m_config.enumeratePackage();
-        while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.threshd.Package pkg = (org.opennms.netmgt.config.threshd.Package) pkgEnum.nextElement();
-
-            Enumeration urlEnum = pkg.enumerateIncludeUrl();
-            while (urlEnum.hasMoreElements()) {
-                String urlname = (String) urlEnum.nextElement();
-
-                java.util.List iplist = IpListFromUrl.parse(urlname);
-                if (iplist.size() > 0) {
-                    m_urlIPMap.put(urlname, iplist);
-                }
-            }
-        }
-    }
-
-    /**
-     * This method is used to establish package agaist an iplist iplist mapping,
-     * with which, the iplist is selected per package via the configured filter
-     * rules from the database.
-     */
-    private void createPackageIpListMap() {
-        Category log = ThreadCategory.getInstance(this.getClass());
-
-        m_pkgIpMap = new HashMap();
-
-        Enumeration pkgEnum = m_config.enumeratePackage();
-        while (pkgEnum.hasMoreElements()) {
-            org.opennms.netmgt.config.threshd.Package pkg = (org.opennms.netmgt.config.threshd.Package) pkgEnum.nextElement();
-
-            //
-            // Get a list of ipaddress per package agaist the filter rules from
-            // database and populate the package, IP list map.
-            //
-            Filter filter = new Filter();
-            StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
-
-            try {
-                if (m_verifyServer) {
-                    filterRules.append(" & (serverName == ");
-                    filterRules.append('\"');
-                    filterRules.append(m_localServer);
-                    filterRules.append('\"');
-                    filterRules.append(")");
-                }
-
-                if (log.isDebugEnabled())
-                    log.debug("createPackageIpMap: package is " + pkg.getName() + ". filer rules are  " + filterRules.toString());
-
-                List ipList = filter.getIPList(filterRules.toString());
-                if (ipList.size() > 0) {
-                    m_pkgIpMap.put(pkg, ipList);
-                }
-            } catch (Throwable t) {
-                if (log.isEnabledFor(Priority.ERROR)) {
-                    log.error("createPackageIpMap: failed to map package: " + pkg.getName() + " to an IP List", t);
-                }
-            }
-        }
-    }
-
-    /**
-     * This nethod is used to rebuild the package agaist iplist mapping when
-     * needed. When a node gained service event occurs, threshd has to determine
-     * which package the ip/service combination is in, but if the interface is a
-     * newly added one, the package iplist should be rebuilt so that threshd
-     * could know which package this ip/service pair is in.
-     */
-    public synchronized void rebuildPackageIpListMap() {
-        createPackageIpListMap();
-    }
-
-    /**
      * Private constructor
      * 
      * @exception java.io.IOException
@@ -208,20 +82,10 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
-    private ThreshdConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
+    private ThreshdConfigFactory(Reader rdr, String localServer, boolean verifyServer) throws IOException, MarshalException, ValidationException {
+        super(rdr, localServer, verifyServer);
 
-        m_config = (ThreshdConfiguration) Unmarshaller.unmarshal(ThreshdConfiguration.class, new InputStreamReader(cfgIn));
-        cfgIn.close();
-
-        createUrlIpMap();
-
-        OpennmsServerConfigFactory.init();
-        m_verifyServer = OpennmsServerConfigFactory.getInstance().verifyServer();
-        m_localServer = OpennmsServerConfigFactory.getInstance().getServerName();
-
-        createPackageIpListMap();
-    }
+}
 
     /**
      * Load the config from the default config file and create the singleton
@@ -240,13 +104,23 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
             // to reload, reload() will need to be called
             return;
         }
+        
+        OpennmsServerConfigFactory.init();
+        boolean verifyServer = OpennmsServerConfigFactory.getInstance().verifyServer();
+        String localServer = OpennmsServerConfigFactory.getInstance().getServerName();
+
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
 
         ThreadCategory.getInstance(ThreshdConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
 
-        m_singleton = new ThreshdConfigFactory(cfgFile.getPath());
-        m_loaded = true;
+        FileReader rdr = new FileReader(cfgFile);
+        try {
+            m_singleton = new ThreshdConfigFactory(rdr, localServer, verifyServer);
+            m_loaded = true;
+        } finally {
+            rdr.close();
+        }
     }
 
     /**
@@ -266,28 +140,20 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
         init();
     }
 
-         /**
-          * Saves the current in-memory configuration to disk and reloads
-          */
-         public synchronized void saveCurrent()
-                 throws MarshalException, IOException, ValidationException
-         {
-                 File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
+         public void reloadXML() throws IOException, MarshalException, ValidationException {
+             /* FIXME: THIS IS WAY WRONG! Should only reload the xml not recreate the instance
+              otherwise references to the old instance will still linger */
+            reload();
+        }
 
-                 //marshall to a string first, then write the string to the file. This way the original config
-                 //isn't lost if the xml from the marshall is hosed.
-                 StringWriter stringWriter = new StringWriter();
-                 Marshaller.marshal(m_config, stringWriter);
-                 if (stringWriter.toString()!=null)
-                 {
-                         FileWriter fileWriter = new FileWriter(cfgFile);
-                         fileWriter.write(stringWriter.toString());
-                         fileWriter.flush();
-                         fileWriter.close();
-                 }
-
-                 reload();
-         }
+        protected void saveXML(String xmlString) throws IOException {
+            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
+            FileWriter fileWriter = new FileWriter(cfgFile);
+            fileWriter.write(xmlString);
+            fileWriter.flush();
+            fileWriter.close();
+        }
+         
 
 
     /**
@@ -303,176 +169,5 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
             throw new IllegalStateException("The factory has not been initialized");
 
         return m_singleton;
-    }
-
-    /**
-     * Return the threshd configuration object.
-     */
-    public synchronized ThreshdConfiguration getConfiguration() {
-        return m_config;
-    }
-
-         public synchronized  org.opennms.netmgt.config.threshd.Package getPackage(String name) {
-                 Enumeration packageEnum=m_config.enumeratePackage();
-                 while(packageEnum.hasMoreElements()) {
-                         org.opennms.netmgt.config.threshd.Package thisPackage=( org.opennms.netmgt.config.threshd.Package)packageEnum.nextElement();
-                         if(thisPackage.getName().equals(name)) {
-                                 return thisPackage;
-                         }
-                 }
-                 return null;
-         }
-
-
-
-    /**
-     * This method is used to determine if the named interface is included in
-     * the passed package's url includes. If the interface is found in any of
-     * the URL files, then a value of true is returned, else a false value is
-     * returned.
-     * 
-     * <pre>
-     * The file URL is read and each entry in this file checked. Each line
-     *  in the URL file can be one of -
-     *  &lt;IP&gt;&lt;space&gt;#&lt;comments&gt;
-     *  or
-     *  &lt;IP&gt;
-     *  or
-     *  #&lt;comments&gt;
-     * 
-     *  Lines starting with a '#' are ignored and so are characters after
-     *  a '&lt;space&gt;#' in a line.
-     * </pre>
-     * 
-     * @param addr
-     *            The interface to test against the package's URL
-     * @param url
-     *            The url file to read
-     * 
-     * @return True if the interface is included in the url, false otherwise.
-     */
-    private boolean interfaceInUrl(String addr, String url) {
-        boolean bRet = false;
-
-        // get list of IPs in this URL
-        java.util.List iplist = (java.util.List) m_urlIPMap.get(url);
-        if (iplist != null && iplist.size() > 0) {
-            bRet = iplist.contains(addr);
-        }
-
-        return bRet;
-    }
-
-    /**
-     * This method is used to determine if the named interface is included in
-     * the passed package definition. If the interface belongs to the package
-     * then a value of true is returned. If the interface does not belong to the
-     * package a false value is returned.
-     * 
-     * <strong>Note: </strong>Evaluation of the interface against a package
-     * filter will only work if the IP is already in the database.
-     * 
-     * @param iface
-     *            The interface to test against the package.
-     * @param pkg
-     *            The package to check for the inclusion of the interface.
-     * 
-     * @return True if the interface is included in the package, false
-     *         otherwise.
-     */
-    public synchronized boolean interfaceInPackage(String iface, org.opennms.netmgt.config.threshd.Package pkg) {
-        Category log = ThreadCategory.getInstance(this.getClass());
-
-        boolean filterPassed = false;
-
-        // get list of IPs in this package
-        java.util.List ipList = (java.util.List) m_pkgIpMap.get(pkg);
-        if (ipList != null && ipList.size() > 0) {
-            filterPassed = ipList.contains(iface);
-        }
-
-        if (log.isDebugEnabled())
-            log.debug("interfaceInPackage: Interface " + iface + " passed filter for package " + pkg.getName() + "?: " + filterPassed);
-
-        if (!filterPassed)
-            return false;
-
-        //
-        // Ensure that the interface is in the specific list or
-        // that it is in the include range and is not excluded
-        //
-        boolean has_specific = false;
-        boolean has_range_include = false;
-        boolean has_range_exclude = false;
-
-        long addr = IPSorter.convertToLong(iface);
-        Enumeration eincs = pkg.enumerateIncludeRange();
-        while (!has_range_include && eincs.hasMoreElements()) {
-            IncludeRange rng = (IncludeRange) eincs.nextElement();
-            long start = IPSorter.convertToLong(rng.getBegin());
-            if (addr > start) {
-                long end = IPSorter.convertToLong(rng.getEnd());
-                if (addr <= end) {
-                    has_range_include = true;
-                }
-            } else if (addr == start) {
-                has_range_include = true;
-            }
-        }
-
-        Enumeration espec = pkg.enumerateSpecific();
-        while (!has_specific && espec.hasMoreElements()) {
-            long speca = IPSorter.convertToLong(espec.nextElement().toString());
-            if (speca == addr)
-                has_specific = true;
-        }
-
-        Enumeration eurl = pkg.enumerateIncludeUrl();
-        while (!has_specific && eurl.hasMoreElements()) {
-            has_specific = interfaceInUrl(iface, (String) eurl.nextElement());
-        }
-
-        Enumeration eex = pkg.enumerateExcludeRange();
-        while (!has_range_exclude && !has_specific && eex.hasMoreElements()) {
-            ExcludeRange rng = (ExcludeRange) eex.nextElement();
-            long start = IPSorter.convertToLong(rng.getBegin());
-            if (addr > start) {
-                long end = IPSorter.convertToLong(rng.getEnd());
-                if (addr <= end) {
-                    has_range_exclude = true;
-                }
-            } else if (addr == start) {
-                has_range_exclude = true;
-            }
-        }
-
-        return has_specific || (has_range_include && !has_range_exclude);
-    }
-
-    /**
-     * Returns true if the service is part of the package and the status of the
-     * service is set to "on". Returns false if the service is not in the
-     * package or it is but the status of the service is set to "off".
-     * 
-     * @param svcName
-     *            The service name to lookup.
-     * @param pkg
-     *            The package to lookup up service.
-     */
-    public synchronized boolean serviceInPackageAndEnabled(String svcName, org.opennms.netmgt.config.threshd.Package pkg) {
-        boolean result = false;
-
-        Enumeration esvcs = pkg.enumerateService();
-        while (result == false && esvcs.hasMoreElements()) {
-            Service tsvc = (Service) esvcs.nextElement();
-            if (tsvc.getName().equalsIgnoreCase(svcName)) {
-                // Ok its in the package. Now check the
-                // status of the service
-                String status = tsvc.getStatus();
-                if (status.equals("on"))
-                    result = true;
-            }
-        }
-        return result;
     }
 }

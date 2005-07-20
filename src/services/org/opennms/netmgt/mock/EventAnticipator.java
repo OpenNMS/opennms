@@ -39,6 +39,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -47,7 +48,7 @@ import org.opennms.netmgt.xml.event.Event;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class EventAnticipator {
+public class EventAnticipator implements EventListener {
 
     List m_anticipatedEvents = new ArrayList();
 
@@ -177,5 +178,13 @@ public class EventAnticipator {
 
 		return b.toString();
 	}
+
+    public String getName() {
+        return "eventAnticipator";
+    }
+
+    public void onEvent(Event e) {
+        eventReceived(e);
+    }
 
 }

@@ -163,7 +163,7 @@ final class SnmpThresholder implements ServiceThresholder {
     public void initialize(Map parameters) {
         // Log4j category
         //
-        Category log = ThreadCategory.getInstance(getClass());
+		Category log = log();
 
         // Get local host name (used when generating threshold events)
         //
@@ -208,7 +208,7 @@ final class SnmpThresholder implements ServiceThresholder {
      * 
      */
     public void initialize(NetworkInterface iface, Map parameters) {
-        Category log = ThreadCategory.getInstance(getClass());
+		Category log = log();
 
         // Get interface address from NetworkInterface
         //
@@ -439,7 +439,7 @@ final class SnmpThresholder implements ServiceThresholder {
      *            belongs.
      */
     public int check(NetworkInterface iface, EventProxy eproxy, Map parameters) {
-        Category log = ThreadCategory.getInstance(getClass());
+		Category log = log();;
 
         int thresholdingStatus = THRESHOLDING_UNKNOWN;
         InetAddress primary = (InetAddress) iface.getAddress();
@@ -561,7 +561,7 @@ final class SnmpThresholder implements ServiceThresholder {
      *             if path parameter is not a directory.
      */
     private void checkNodeDir(File directory, Integer nodeId, InetAddress primary, int interval, Date date, Map thresholdMap, Events events) throws IllegalArgumentException {
-        Category log = ThreadCategory.getInstance(getClass());
+		Category log = log();
 
         // Sanity Check
         if (directory == null || nodeId == null || primary == null || date == null || thresholdMap == null || events == null) {
@@ -659,7 +659,7 @@ final class SnmpThresholder implements ServiceThresholder {
      *             if path parameter is not a directory.
      */
     private void checkIfDir(File directory, Integer nodeId, InetAddress primary, int interval, Date date, Map baseIfThresholdMap, Map allIfThresholdMap, Events events) throws IllegalArgumentException {
-        Category log = ThreadCategory.getInstance(getClass());
+		Category log = log();
 
         // Sanity Check
         if (directory == null || nodeId == null || primary == null || date == null || baseIfThresholdMap == null || allIfThresholdMap == null || events == null) {
@@ -868,7 +868,7 @@ final class SnmpThresholder implements ServiceThresholder {
      * @return new threshold event to be sent to Eventd
      */
     private Event createEvent(Integer nodeId, InetAddress primary, Map ifDataMap, double dsValue, Threshold threshold, String uei, java.util.Date date) {
-        Category log = ThreadCategory.getInstance(getClass());
+		Category log = log();
 
         if (nodeId == null || primary == null || threshold == null)
             throw new IllegalArgumentException("nodeid, primary, and threshold cannot be null.");
@@ -993,4 +993,8 @@ final class SnmpThresholder implements ServiceThresholder {
 
         return newEvent;
     }
+
+	private Category log() {
+	    return ThreadCategory.getInstance(getClass());
+	}
 }

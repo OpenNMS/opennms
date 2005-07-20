@@ -37,7 +37,6 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -52,7 +51,6 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.Threshold;
@@ -62,13 +60,8 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.netmgt.utils.ParameterMap;
-import org.opennms.netmgt.utils.RrdFileConstants;
-import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
 
 /**
  * <P>
@@ -89,7 +82,7 @@ final class LatencyThresholder implements ServiceThresholder {
      * Default thresholding interval (in milliseconds).
      * 
      */
-    private static final int DEFAULT_INTERVAL = 300000; // 300s or 5m
+    static final int DEFAULT_INTERVAL = 300000; // 300s or 5m
 
     /**
      * Interface attribute key used to store the interface's node id
@@ -146,7 +139,7 @@ final class LatencyThresholder implements ServiceThresholder {
     public void initialize(Map parameters) {
         // Log4j category
         //
-        Category log = ThreadCategory.getInstance(getClass());
+        Category log = log();
 
         // Service name
         //
@@ -197,17 +190,13 @@ final class LatencyThresholder implements ServiceThresholder {
      * 
      */
     public void initialize(NetworkInterface iface, Map parameters) {
-        Category log = ThreadCategory.getInstance(getClass());
+        Category log = log();
 
         // Get interface address from NetworkInterface
         //
         if (iface.getType() != NetworkInterface.TYPE_IPV4)
             throw new RuntimeException("Unsupported interface type, only TYPE_IPV4 currently supported");
-
         InetAddress ipAddr = (InetAddress) iface.getAddress();
-
-        // Retrieve the name of the thresholding group associated
-        // with this interface.
         String groupName = ParameterMap.getKeyedString(parameters, "thresholding-group", "default");
 
         // Get the threshold group's RRD repository path
@@ -320,7 +309,7 @@ final class LatencyThresholder implements ServiceThresholder {
                 // All latency thresholds are per interface so confirm that
                 // the datasource type is set to "if"
                 //
-                if (!thresh.getDsType().equals("if")) {
+                if (!thresh.getDsType().equals("if") && !thresh.getDsType().equals("expr")) {
                     log.warn("initialize: invalid datasource type, latency thresholder only supports interface level datasources.");
                     continue; // continue with the next threshold...
                 }
@@ -395,91 +384,56 @@ final class LatencyThresholder implements ServiceThresholder {
      *            belongs.
      */
     public int check(NetworkInterface iface, EventProxy eproxy, Map parameters) {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        InetAddress ipAddr = (InetAddress) iface.getAddress();
-        int thresholdingStatus = THRESHOLDING_UNKNOWN;
-
-        // Get configuration parameters
-        //
-        String groupName = ParameterMap.getKeyedString(parameters, "thresholding-group", "default");
-        int interval = ParameterMap.getKeyedInteger(parameters, "interval", DEFAULT_INTERVAL);
-
-        // NodeId attribute
-        int nodeId = -1;
-        Integer tmp = (Integer) iface.getAttribute(NODE_ID_KEY);
-        if (tmp != null)
-            nodeId = tmp.intValue();
-        if (nodeId == -1) {
-            log.error("Threshold checking failed for " + m_svcName + "/" + ipAddr.getHostAddress() + ", missing nodeId.");
-            return THRESHOLDING_FAILED;
-        }
-
-        if (log.isDebugEnabled())
-            log.debug("check: service= " + m_svcName + " interface= " + ipAddr.getHostAddress() + " nodeId= " + nodeId + " thresholding-group=" + groupName + " interval=" + interval + "ms");
-
-        // RRD Repository attribute
-        //
-        String repository = (String) iface.getAttribute(RRD_REPOSITORY_KEY);
-        if (log.isDebugEnabled())
-            log.debug("check: rrd repository=" + repository);
-
-        // ThresholdEntity map attributes
-        //
-        Map thresholdMap = (Map) iface.getAttribute(THRESHOLD_MAP_KEY);
-
-        // Get File object representing the
-        // '/opt/OpenNMS/share/rrd/<svc_name>/<ipAddress>/' directory
-        File latencyDir = new File(repository + File.separator + ipAddr.getHostAddress());
-        if (!latencyDir.exists()) {
-            log.error("Latency directory for " + m_svcName + "/" + ipAddr.getHostAddress() + " does not exist.");
-            log.error("Threshold checking failed for " + ipAddr.getHostAddress());
-            return THRESHOLDING_FAILED;
-        } else if (!RrdFileConstants.isValidRRDLatencyDir(latencyDir)) {
-            log.error("Latency directory for " + m_svcName + "/" + ipAddr.getHostAddress() + " is not a valid RRD latency directory.");
-            log.error("Threshold checking failed for " + ipAddr.getHostAddress());
-            return THRESHOLDING_FAILED;
-        }
-
-        // Create empty Events object to hold any threshold
-        // events generated during the thresholding check...
-        Events events = new Events();
-
+		LatencyInterface latIface = new LatencyInterface(iface, m_svcName);
+		LatencyParameters latParms = new LatencyParameters(parameters, m_svcName);
+        
         try {
-            checkRrdDir(latencyDir, nodeId, ipAddr, interval, new Date(), // time
-                                                                            // stamp
-                                                                            // for
-                                                                            // outgoing
-                                                                            // events
-                        thresholdMap, events);
-        } catch (IllegalArgumentException e) {
-            log.error("check: Threshold checking failed for " + m_svcName + "/" + ipAddr.getHostAddress(), e);
+            
+            // Get configuration parameters
+            //
+            // NodeId attribute
+            if (log().isDebugEnabled())
+                log().debug("check: service= " + m_svcName + " interface= " + latIface.getHostName() + " nodeId= " + latIface.getNodeId() + " thresholding-group=" + latParms.getGroupName() + " interval=" + latParms.getInterval() + "ms");
+            
+            // RRD Repository attribute
+            //
+            // Create empty Events object to hold any threshold
+            // events generated during the thresholding check...
+            Events events = checkRrdDir(latIface, latParms);
+            
+            // Send created events
+            //
+            sendEvents(eproxy, events);
+            
+            // return the status of the threshold check
+            //
+            return THRESHOLDING_SUCCEEDED;
+            
+        } catch(ThresholdingException e) {
+            log().error(e.getMessage());
+            return e.getFailureCode();
+        } catch (EventProxyException e) {
+            log().error("check: Failed sending threshold events via event proxy...", e);
             return THRESHOLDING_FAILED;
         }
+    }
 
-        // Send created events
-        //
-        if (events.getEventCount() > 0) {
-            try {
-                Log eventLog = new Log();
-                eventLog.setEvents(events);
-                eproxy.send(eventLog);
-            } catch (EventProxyException e) {
-                log.error("check: Failed sending threshold events via event proxy...", e);
-                return THRESHOLDING_FAILED;
-            }
+	private void sendEvents(EventProxy eproxy, Events events) throws EventProxyException {
+        if (events != null && events.getEventCount() > 0) {
+            Log eventLog = new Log();
+            eventLog.setEvents(events);
+            eproxy.send(eventLog);
         }
-
-        // return the status of the threshold check
-        //
-        return THRESHOLDING_SUCCEEDED;
     }
 
     /**
      * Performs threshold checking on an directory which contains one or more
      * RRD files containing latency/response time information. ThresholdEntity
      * objects are stored for performing threshold checking.
-     * 
+     * @param latIface TODO
+     * @param latParms TODO
+     * @param parameters 
+     * @param iface 
      * @param directory
      *            RRD repository directory
      * @param nodeId
@@ -496,184 +450,35 @@ final class LatencyThresholder implements ServiceThresholder {
      * @param events
      *            Castor events object containing any events to be generated as
      *            a result of threshold checking.
-     * 
      * @throws IllegalArgumentException
      *             if path parameter is not a directory.
+     * @throws ThresholdingException 
      */
-    private void checkRrdDir(File directory, int nodeId, InetAddress ipAddr, int interval, Date date, Map thresholdMap, Events events) throws IllegalArgumentException {
-        Category log = ThreadCategory.getInstance(getClass());
+    Events checkRrdDir(LatencyInterface latIface, LatencyParameters latParms) throws IllegalArgumentException, ThresholdingException {
+		Map thresholdMap = latIface.getThresholdMap();
 
         // Sanity Check
-        if (directory == null || ipAddr == null || date == null || thresholdMap == null || events == null) {
-            throw new IllegalArgumentException("Null parameters not permitted.");
+        if (latIface.getInetAddress() == null || thresholdMap == null) {
+            throw new ThresholdingException("check: Threshold checking failed for " + m_svcName + "/" + latIface.getHostName(), THRESHOLDING_FAILED);
         }
+        
+        Events events = new Events();
+        Date date = new Date();
 
-        if (log.isDebugEnabled())
-            log.debug("checkPerformanceDir: threshold checking dir: " + directory.getAbsolutePath());
-
-        // Iterate over directory contents and threshold
-        // check any RRD files which represent datasources
-        // in the threshold maps.
-        //
-        File[] files = directory.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
-
-        if (files == null)
-            return;
-
-        for (int i = 0; i < files.length; i++) {
-            // File name has format: <datsource>.rrd
-            // Must strip off ".rrd" portion.
-            String filename = files[i].getName();
-            String datasource = filename.substring(0, filename.indexOf(".rrd"));
-
-            // Lookup the ThresholdEntity object corresponding
-            // to this datasource.
-            //
+        for (Iterator it = thresholdMap.keySet().iterator(); it.hasNext();) {
+            String datasource = (String) it.next();
             ThresholdEntity threshold = (ThresholdEntity) thresholdMap.get(datasource);
             if (threshold != null) {
-                // Use RRD JNI interface to "fetch" value of the
-                // datasource from the RRD file
-                //
-                Double dsValue = null;
-                try {
-                    dsValue = RrdUtils.fetchLastValue(files[i].getAbsolutePath(), interval);
-                } catch (NumberFormatException nfe) {
-                    log.warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
-                } catch (RrdException e) {
-                    log.error("An error occurred retriving the last value for datasource '" + datasource + "'", e);
-                }
+                Double dsValue = threshold.fetchLastValue(latIface, latParms);
 
-                if (dsValue != null && !dsValue.isNaN()) {
-                    // Evaluate the threshold
-                    // 
-                    // ThresholdEntity.evaluate() returns an integer value
-                    // which indicates which threshold values were
-                    // triggered and require an event to be generated (if any).
-                    // 
-                    int result = threshold.evaluate(dsValue.doubleValue());
-                    if (result != ThresholdEntity.NONE_TRIGGERED) {
-                        if (result == ThresholdEntity.HIGH_AND_LOW_TRIGGERED || result == ThresholdEntity.HIGH_TRIGGERED) {
-                            events.addEvent(createEvent(nodeId, ipAddr, dsValue.doubleValue(), threshold.getHighThreshold(), EventConstants.HIGH_THRESHOLD_EVENT_UEI, date));
-                        }
-
-                        if (result == ThresholdEntity.HIGH_AND_LOW_TRIGGERED || result == ThresholdEntity.LOW_TRIGGERED) {
-                            events.addEvent(createEvent(nodeId, ipAddr, dsValue.doubleValue(), threshold.getLowThreshold(), EventConstants.LOW_THRESHOLD_EVENT_UEI, date));
-                        }
-
-                        if (result == ThresholdEntity.HIGH_AND_LOW_REARMED || result == ThresholdEntity.HIGH_REARMED) {
-                            events.addEvent(createEvent(nodeId, ipAddr, dsValue.doubleValue(), threshold.getHighThreshold(), EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, date));
-                        }
-
-                        if (result == ThresholdEntity.HIGH_AND_LOW_REARMED || result == ThresholdEntity.LOW_REARMED) {
-                            events.addEvent(createEvent(nodeId, ipAddr, dsValue.doubleValue(), threshold.getLowThreshold(), EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, date));
-                        }
-                    }
-                }
+                threshold.evaluateThreshold(dsValue, events, date, latIface);
             }
         }
+
+        return events;
     }
 
-    /**
-     * Creates a new threshold event from the specified parms.
-     * 
-     * @param nodeId
-     *            Node identifier of the affected interface
-     * @param ipAddr
-     *            IP address of the affected interface
-     * @param dsValue
-     *            Data source value which triggered the threshold event
-     * @param threshold
-     *            Configured threshold
-     * @param uei
-     *            Event identifier
-     * @param date
-     *            source of event's timestamp
-     * 
-     * @return new threshold event to be sent to Eventd
-     */
-    private Event createEvent(int nodeId, InetAddress ipAddr, double dsValue, Threshold threshold, String uei, java.util.Date date) {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        if (threshold == null)
-            throw new IllegalArgumentException("threshold cannot be null.");
-
-        if (log.isDebugEnabled()) {
-            log.debug("createEvent: ds=" + threshold.getDsName() + " uei=" + uei);
-        }
-
-        // create the event to be sent
-        Event newEvent = new Event();
-        newEvent.setUei(uei);
-        newEvent.setNodeid((long) nodeId);
-        newEvent.setInterface(ipAddr.getHostAddress());
-        newEvent.setService(this.serviceName());
-
-        // set the source of the event to the datasource name
-        newEvent.setSource("OpenNMS.Threshd:" + threshold.getDsName());
-
-        // Set event host
-        //
-        try {
-            newEvent.setHost(InetAddress.getLocalHost().getHostName());
-        } catch (UnknownHostException uhE) {
-            newEvent.setHost("unresolved.host");
-            log.warn("Failed to resolve local hostname", uhE);
-        }
-
-        // Set event time
-        newEvent.setTime(EventConstants.formatToString(date));
-
-        // Add appropriate parms
-        //
-        Parms eventParms = new Parms();
-        Parm eventParm = null;
-        Value parmValue = null;
-
-        // Add datasource name
-        eventParm = new Parm();
-        eventParm.setParmName("ds");
-        parmValue = new Value();
-        parmValue.setContent(threshold.getDsName());
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add last known value of the datasource
-        // fetched from its RRD file
-        //
-        eventParm = new Parm();
-        eventParm.setParmName("value");
-        parmValue = new Value();
-        parmValue.setContent(Double.toString(dsValue));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add configured threshold value
-        eventParm = new Parm();
-        eventParm.setParmName("threshold");
-        parmValue = new Value();
-        parmValue.setContent(Double.toString(threshold.getValue()));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add configured trigger value
-        eventParm = new Parm();
-        eventParm.setParmName("trigger");
-        parmValue = new Value();
-        parmValue.setContent(Integer.toString(threshold.getTrigger()));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add configured rearm value
-        eventParm = new Parm();
-        eventParm.setParmName("rearm");
-        parmValue = new Value();
-        parmValue.setContent(Double.toString(threshold.getRearm()));
-        eventParm.setValue(parmValue);
-        eventParms.addParm(eventParm);
-
-        // Add Parms to the event
-        newEvent.setParms(eventParms);
-
-        return newEvent;
+    public final Category log() {
+        return ThreadCategory.getInstance(LatencyThresholder.class);
     }
 }

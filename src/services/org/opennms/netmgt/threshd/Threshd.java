@@ -38,7 +38,6 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -58,13 +57,10 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import org.opennms.netmgt.config.PollOutagesConfigFactory;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.ThreshdConfigManager;
+import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.config.threshd.Thresholder;
 import org.opennms.netmgt.daemon.ServiceDaemon;
@@ -122,6 +118,8 @@ public final class Threshd extends ServiceDaemon {
      */
     private static Map m_svcThresholders;
 
+    private ThreshdConfigManager m_threshdConfig;
+
     /**
      * Constructor.
      */
@@ -150,42 +148,6 @@ public final class Threshd extends ServiceDaemon {
             log.debug("start: Initializing thresholding daemon");
 
 
-        // Initialize the ThresholdingConfigFactory
-        //
-        try {
-            ThresholdingConfigFactory.init();
-
-        } catch (MarshalException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to load thresholding configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to load thresholding configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to load thresholding configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-
-        // Load up the configuration for the scheduled outages.
-        //
-        try {
-            PollOutagesConfigFactory.init();
-        } catch (MarshalException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to load poll-outage configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to load poll-outage configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to load poll-outage configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
 
 
         if (log.isDebugEnabled())
@@ -193,8 +155,7 @@ public final class Threshd extends ServiceDaemon {
 
         // Threshd configuration
         //
-        ThreshdConfigFactory cfgFactory = ThreshdConfigFactory.getInstance();
-        ThreshdConfiguration config = cfgFactory.getConfiguration();
+        ThreshdConfiguration config = m_threshdConfig.getConfiguration();
 
         // Load up an instance of each thresholder from the config
         // so that the event processor will have them for
@@ -276,7 +237,7 @@ public final class Threshd extends ServiceDaemon {
             if (log.isDebugEnabled())
                 log.debug("start: Creating event broadcast event processor");
 
-            m_receiver = new BroadcastEventProcessor(m_thresholdableServices);
+            m_receiver = new BroadcastEventProcessor(this, m_thresholdableServices);
         } catch (Throwable t) {
             if (log.isEnabledFor(Priority.FATAL))
                 log.fatal("start: Failed to initialized the broadcast event receiver", t);
@@ -511,8 +472,7 @@ public final class Threshd extends ServiceDaemon {
     void scheduleInterface(int nodeId, String ipAddress, String svcName, boolean existing) {
         Category log = ThreadCategory.getInstance(getClass());
 
-        ThreshdConfigFactory cfgFactory = ThreshdConfigFactory.getInstance();
-        ThreshdConfiguration config = cfgFactory.getConfiguration();
+        ThreshdConfiguration config = m_threshdConfig.getConfiguration();
         Enumeration epkgs = config.enumeratePackage();
 
         // Compare interface/service pair against each threshd package
@@ -525,7 +485,7 @@ public final class Threshd extends ServiceDaemon {
             // Make certain the the current service is in the package
             // and enabled!
             //
-            if (!cfgFactory.serviceInPackageAndEnabled(svcName, pkg)) {
+            if (!m_threshdConfig.serviceInPackageAndEnabled(svcName, pkg)) {
                 if (log.isDebugEnabled())
                     log.debug("scheduleInterface: address/service: " + ipAddress + "/" + svcName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
                 continue;
@@ -534,13 +494,13 @@ public final class Threshd extends ServiceDaemon {
             // Is the interface in the package?
             //
             log.debug("scheduleInterface: checking ipaddress " + ipAddress + " for inclusion in pkg " + pkg.getName());
-            boolean foundInPkg = cfgFactory.interfaceInPackage(ipAddress, pkg);
+            boolean foundInPkg = m_threshdConfig.interfaceInPackage(ipAddress, pkg);
             if (!foundInPkg && existing == false) {
                 // The interface might be a newly added one, rebuild the package
                 // to ipList mapping and again to verify if the interface is in
                 // the package.
-                cfgFactory.rebuildPackageIpListMap();
-                foundInPkg = cfgFactory.interfaceInPackage(ipAddress, pkg);
+                m_threshdConfig.rebuildPackageIpListMap();
+                foundInPkg = m_threshdConfig.interfaceInPackage(ipAddress, pkg);
             }
             if (!foundInPkg) {
                 if (log.isDebugEnabled())
@@ -578,7 +538,7 @@ public final class Threshd extends ServiceDaemon {
                 // interface,
                 // service and package pairing
                 //
-                tSvc = new ThresholdableService(nodeId, InetAddress.getByName(ipAddress), svcName, pkg);
+                tSvc = new ThresholdableService(this, nodeId, InetAddress.getByName(ipAddress), svcName, pkg);
 
                 // Initialize the thresholder with the service.
                 //
@@ -602,7 +562,7 @@ public final class Threshd extends ServiceDaemon {
             } catch (UnknownHostException ex) {
                 log.error("scheduleInterface: Failed to schedule interface " + ipAddress + " for service " + svcName + ", illegal address", ex);
             } catch (RuntimeException rE) {
-                log.warn("scheduleInterface: Unable to schedule " + ipAddress + " for service " + svcName + ", reason: " + rE.getMessage());
+                log.warn("scheduleInterface: Unable to schedule " + ipAddress + " for service " + svcName + ", reason: " + rE.getMessage(), rE);
             } catch (Throwable t) {
                 log.error("scheduleInterface: Uncaught exception, failed to schedule interface " + ipAddress + " for service " + svcName, t);
             }
@@ -655,8 +615,11 @@ public final class Threshd extends ServiceDaemon {
 	}
     }
 
-    public void setThreshdConfig(ThreshdConfigFactory instance) {
-        // TODO Auto-generated method stub
-        
+    public void setThreshdConfig(ThreshdConfigManager threshdConfig) {
+        m_threshdConfig = threshdConfig;
+    }
+
+    public Package getPackage(String name) {
+        return m_threshdConfig.getPackage(name);
     }
 }
