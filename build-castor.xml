@@ -128,6 +128,7 @@
 
 	<!-- this target processes each xsd -->
 
+	<!-- NOTE:  You must change devlib/castorbuilder.properties if you change the namespace or packages for these files -->
 	<target name="castor.sources.generate" depends="castor.setup">
 		<castor-gen file="${castor.config.dir}/types.xsd" srcpackage="org.opennms.netmgt.config.common" />
 		<castor-gen srcpackage="org.opennms.netmgt.config.threshd">
@@ -137,8 +138,8 @@
 		<castor-gen srcpackage="org.opennms.netmgt.config.collectd">
 			<pathelement path="${castor.config.dir}/collectd-configuration.xsd" />
 			<pathelement path="${castor.config.dir}/jmx-datacollection-config.xsd" />
-			<pathelement path="${castor.config.dir}/datacollection-config.xsd" />
 		</castor-gen>
+		<castor-gen file="${castor.config.dir}/datacollection-config.xsd" srcpackage="org.opennms.netmgt.config.datacollection" />
 		<castor-gen srcpackage="org.opennms.netmgt.config.poller">
 			<pathelement path="${castor.config.dir}/poller-configuration.xsd" />
 			<pathelement path="${castor.config.dir}/poll-outages.xsd" />
