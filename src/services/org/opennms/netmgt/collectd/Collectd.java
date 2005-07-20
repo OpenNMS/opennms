@@ -535,7 +535,7 @@ public final class Collectd extends ServiceDaemon {
                 // this event does not already exist in the collectable services
                 // list.
                 //
-                if (alreadyScheduled(ipAddress, pkg.getName())) {
+                if (alreadyScheduled(ipAddress, pkg.getName(), svcName)) {
                     if (log.isDebugEnabled()) {
                         log.debug("scheduleInterface: ipAddr/pkgName " + ipAddress + "/" + pkg.getName() + " already in collectable service list, skipping.");
                     }
@@ -584,7 +584,7 @@ public final class Collectd extends ServiceDaemon {
      * Returns true if specified address/pkg pair is already represented in the
      * collectable services list. False otherwise.
      */
-    private boolean alreadyScheduled(String ipAddress, String pkgName) {
+    private boolean alreadyScheduled(String ipAddress, String pkgName, String svcName) {
         synchronized (m_collectableServices) {
             CollectableService cSvc = null;
             Iterator iter = m_collectableServices.iterator();
@@ -592,7 +592,7 @@ public final class Collectd extends ServiceDaemon {
                 cSvc = (CollectableService) iter.next();
 
                 InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (addr.getHostAddress().equals(ipAddress) && cSvc.getPackageName().equals(pkgName)) {
+                if (addr.getHostAddress().equals(ipAddress) && cSvc.getPackageName().equals(pkgName) && cSvc.getServiceName().equals(svcName)) {
                     return true;
                 }
             }

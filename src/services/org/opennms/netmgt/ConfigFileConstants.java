@@ -201,6 +201,11 @@ public final class ConfigFileConstants {
      */
     public static final int CHART_CONFIG_FILE_NAME;
     
+    /**
+     * The config file for specifying JMX MBeans
+     */
+    public static final int JMX_DATA_COLLECTION_CONF_FILE_NAME;
+
     //
     // End services config files
     //
@@ -449,6 +454,7 @@ public final class ConfigFileConstants {
 
         JAVA_MAIL_CONFIG_FILE_NAME = 52;
         VACUUMD_CONFIG_FILE_NAME = 53;
+        JMX_DATA_COLLECTION_CONF_FILE_NAME = 54;
 
         XMPP_CONFIG_FILE_NAME = 54;
         
@@ -532,6 +538,7 @@ public final class ConfigFileConstants {
         
         FILE_ID_TO_NAME[CHART_CONFIG_FILE_NAME] = "chart-configuration.xml";
 
+        FILE_ID_TO_NAME[JMX_DATA_COLLECTION_CONF_FILE_NAME] = "jmx-datacollection-config.xml";
     }
 
     /**

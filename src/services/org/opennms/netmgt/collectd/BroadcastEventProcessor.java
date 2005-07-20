@@ -353,15 +353,6 @@ p     * ensures that the <code>close</code> method is called <em>at least</em>
      * 
      */
     private void nodeGainedServiceHandler(Event event) {
-        Category log = ThreadCategory.getInstance(getClass());
-        // Currently only support SNMP data collection.
-        //
-        if (!event.getService().equals("SNMP")) {
-            if (log.isDebugEnabled())
-                log.debug("nodeGainedServiceHandler: Datacollection not scheduled for service "+event.getService() +", currently only supporting SNMP service for collection.");
-            return;
-        }
-
         // Schedule the interface
         //
         scheduleForCollection(event);
