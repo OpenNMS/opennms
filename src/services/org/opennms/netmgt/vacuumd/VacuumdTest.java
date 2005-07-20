@@ -112,6 +112,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         "</VacuumdConfiguration>";
     
     private Vacuumd m_vacuumd;
+    private long m_tearDownWaitMillis = 1000;
 
     protected void setUp() throws Exception {
         
@@ -137,6 +138,8 @@ public class VacuumdTest extends OpenNMSTestCase {
     protected void tearDown() throws Exception {
         assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
         super.tearDown();
+        MockUtil.println("Sleeping for "+m_tearDownWaitMillis+" millis in tearDown...");
+        Thread.sleep(m_tearDownWaitMillis);
     }
     
     /**
