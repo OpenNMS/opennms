@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://xmlns.opennms.org/xsd/config/collectd">
+	targetNamespace="http://xmlns.opennms.org/xsd/config/collectd" xmlns:this="http://xmlns.opennms.org/xsd/config/collectd">
 
 	<element name="jmx-datacollection-config">
 		<complexType>
 			<sequence>
 				<!-- JMX data collection element -->
-				<element ref="jmx-collection" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="this:jmx-collection" minOccurs="1" maxOccurs="unbounded"/>
 			</sequence>
 			<!-- full path to the RRD repository for collected JMX data -->
 			<attribute name="rrdRepository" type="string" use="required"/>
@@ -20,10 +20,10 @@
 		<complexType>
 			<sequence>
 				<!-- RRD parms -->
-				<element ref="rrd" minOccurs="1" maxOccurs="1"/>
+				<element ref="this:rrd" minOccurs="1" maxOccurs="1"/>
 				
 				<!-- JMX object groups -->
-				<element ref="mbeans" minOccurs="1" maxOccurs="1"/>
+				<element ref="this:mbeans" minOccurs="1" maxOccurs="1"/>
 
 				<!--element ref="jmx-systems" minOccurs="1" maxOccurs="1"/-->
 
@@ -65,7 +65,7 @@
 		<complexType>
 			<sequence>
 				<!-- a JMX object group -->
-				<element ref="mbean" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="this:mbean" minOccurs="1" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -75,7 +75,7 @@
 		<complexType>
 			<sequence>
 				<!-- a JMX object -->
-				<element ref="attrib" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:attrib" minOccurs="0" maxOccurs="unbounded"/>
 				
 				<!-- sub group -->
 				<element name="includeMbean" type="string" minOccurs="0" maxOccurs="unbounded"/>
@@ -98,7 +98,7 @@
 			
 			<attribute name="alias" type="string" use="required"/>
 			
-			<attribute name="type" type="string" use="required">
+			<attribute name="type" use="required">
 				<simpleType>
 					<restriction base="string">
 						<pattern value="^([Cc](ounter|OUNTER)(32|64)?|[Gg](auge|UAGE)(32|64)?|[Tt](ime|IME)[Tt](icks|ICKS)|[Ii](nteger|NTEGER)(32|64)?|[Oo](ctet|CTET)[Ss](tring|TRING))$"/>
