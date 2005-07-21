@@ -10,7 +10,8 @@
   <annotation>
     <documentation>XML Schema for the eventconf.xml configuration file. This
     schema is also used for files that are included in eventconf.xml by the
-    "event-file" element. Version: $Id$. </documentation>
+    "event-file" element. Version: $Id: eventconf.xsd,v 1.9 2005/07/03
+    02:54:11 djgregor Exp $.</documentation>
   </annotation>
 
   <element name="events">
@@ -185,10 +186,8 @@
   <element name="mask">
     <annotation>
       <documentation>The Mask for event configuration: The mask contains one
-      or more 'maskelements' which uniquely identify an event - can only
-      include elements from the following subset: uei, source, host, snmphost,
-      nodeid, interface, service, id(SNMP EID), specific, generic,
-      community</documentation>
+      or more 'maskelements' which uniquely identify an event. XXX need to add
+      information about varbind</documentation>
     </annotation>
 
     <complexType>
@@ -209,15 +208,32 @@
       <sequence>
         <element maxOccurs="1" minOccurs="1" name="mename" type="string">
           <annotation>
-            <documentation>The mask element name can only be one of those
-            specified above</documentation>
+            <documentation>The mask element name. Must be from the following
+            subset: "uei" (the OpenNMS Universal Event Identifier), "source"
+            (source of the event; "trapd" for received SNMP traps; warning:
+            these aren't that standardized), "host" (host related to the
+            event; for SNMP traps this is the IP source address of the host
+            that sent the trap to OpenNMS, "snmphost" (SNMP host related to
+            the event; for SNMPv1 traps this is IP address reported in the
+            trap; for SNMPv2 traps and later this is the same as "host"),
+            "nodeid" (the OpenNMS node identifier for the node related to this
+            event), "interface" (interface related to the event; for SNMP
+            traps this is the same as "snmphost"), "service", "id" (enterprise
+            ID in an SNMP trap), "specific" (specific value in an SNMP trap),
+            "generic" (generic value in an SNMP trap), or "community"
+            (community string in an SNMP trap).</documentation>
           </annotation>
         </element>
 
         <element maxOccurs="unbounded" minOccurs="1" name="mevalue"
                  type="string">
           <annotation>
-            <documentation>The mask element value</documentation>
+            <documentation>The mask element value. A case-sensitive, exact
+            match is performed. If the mask value has a "%" as the last
+            character, it will match zero or more characters at the end of the
+            string being matched. The mask element value matching is performed
+            by
+            org.opennms.netmgt.eventd.datablock.EventConfData#eventValuePassesMaskValue.</documentation>
           </annotation>
         </element>
       </sequence>
