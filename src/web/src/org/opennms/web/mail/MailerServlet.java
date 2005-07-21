@@ -46,8 +46,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Category;
+import org.opennms.netmgt.utils.StreamUtils;
 import org.opennms.web.MissingParameterException;
-import org.opennms.web.Util;
 
 /**
  * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
@@ -116,7 +116,7 @@ public class MailerServlet extends HttpServlet {
         if (err.ready()) {
             // get the error message
             StringWriter tempErr = new StringWriter();
-            Util.streamToStream(err, tempErr);
+            StreamUtils.streamToStream(err, tempErr);
             String errorMessage = tempErr.toString();
 
             // log the error message
@@ -125,7 +125,7 @@ public class MailerServlet extends HttpServlet {
             // send the error message to the client
             response.setContentType("text/plain");
             PrintWriter out = response.getWriter();
-            Util.streamToStream(new StringReader(errorMessage), out);
+            StreamUtils.streamToStream(new StringReader(errorMessage), out);
             out.close();
         } else {
             response.sendRedirect(this.redirectSuccess);

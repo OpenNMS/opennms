@@ -34,11 +34,6 @@
 
 package org.opennms.web;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -47,7 +42,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -497,159 +491,6 @@ public abstract class Util extends Object {
         }
 
         return orderedMap;
-    }
-
-    /**
-     * Convenience method for reading data from a <code>Reader</code> and then
-     * immediately writing that data to a <code>Writer</code> with a default
-     * buffer size of one kilobyte (1,024 chars).
-     * 
-     * @param in
-     *            a data source
-     * @param out
-     *            a data sink
-     */
-    public static void streamToStream(Reader in, Writer out) throws IOException {
-        streamToStream(in, out, 1024);
-    }
-
-    /**
-     * Convenience method for reading data from a <code>Reader</code> and then
-     * immediately writing that data to a <code>Writer</code>.
-     * 
-     * @param in
-     *            a data source
-     * @param out
-     *            a data sink
-     * @param bufferSize
-     *            the size of the <code>char</code> buffer to use for each
-     *            read/write
-     */
-    public static void streamToStream(Reader in, Writer out, int bufferSize) throws IOException {
-        if (in == null || out == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        if (bufferSize < 1) {
-            throw new IllegalArgumentException("Cannot take negative buffer size.");
-        }
-
-        char[] b = new char[bufferSize];
-        int length;
-
-        while ((length = in.read(b)) != -1) {
-            out.write(b, 0, length);
-        }
-    }
-
-    /**
-     * Convenience method for reading data from an <code>InputStream</code>
-     * and then immediately writing that data to an <code>OutputStream</code>
-     * with a default buffer size of one kilobyte (1,024 bytes).
-     * 
-     * @param in
-     *            a data source
-     * @param out
-     *            a data sink
-     */
-    public static void streamToStream(InputStream in, OutputStream out) throws IOException {
-        streamToStream(in, out, 1024);
-    }
-
-    /**
-     * Convenience method for reading data from an <code>InputStream</code>
-     * and then immediately writing that data to an <code>OutputStream</code>.
-     * 
-     * @param in
-     *            a data source
-     * @param out
-     *            a data sink
-     * @param bufferSize
-     *            the size of the <code>byte</code> buffer to use for each
-     *            read/write
-     */
-    public static void streamToStream(InputStream in, OutputStream out, int bufferSize) throws IOException {
-        byte[] b = new byte[bufferSize];
-        int length;
-
-        while ((length = in.read(b)) != -1) {
-            out.write(b, 0, length);
-        }
-    }
-
-    /**
-     * Convenience method for creating arrays of strings suitable for use as
-     * command-line parameters when executing an external process.
-     * 
-     * <p>
-     * The default {@link Runtime#exec Runtime.exec}method will split a single
-     * string based on spaces, but it does not respect spaces within quotation
-     * marks, and it will leave the quotation marks in the resulting substrings.
-     * This method solves those problems by replacing all in-quote spaces with
-     * the given delimiter, removes the quotes, and then splits the resulting
-     * string by the remaining out-of-quote spaces. It then goes through each
-     * substring and replaces the delimiters with spaces.
-     * </p>
-     * 
-     * <p>
-     * <em>Caveat:</em> This method does not respect escaped quotes! It will
-     * simply remove them and leave the stray escape characters.
-     * </p>
-     * 
-     * @param s
-     *            the string to split
-     * @param delim
-     *            a char that does not already exist in <code>s</code>
-     * @return An array of strings split by spaces outside of quotes.
-     * @throws IllegalArgumentException
-     *             If <code>s</code> is null or if <code>delim</code>
-     *             already exists in <code>s</code>.
-     */
-    public static String[] createCommandArray(String s, char delim) {
-        if (s == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        if (s.indexOf(delim) != -1) {
-            throw new IllegalArgumentException("String parameter cannot already contain delimiter character: " + delim);
-        }
-
-        char[] chars = s.toCharArray();
-        boolean inquote = false;
-        StringBuffer buffer = new StringBuffer();
-
-        // append each char to a StringBuffer, but
-        // leave out quote chars and replace spaces
-        // inside quotes with the delim char
-        for (int i = 0; i < chars.length; i++) {
-            if (chars[i] == '"') {
-                inquote = (inquote) ? false : true;
-            } else if (inquote && chars[i] == ' ') {
-                buffer.append(delim);
-            } else {
-                buffer.append(chars[i]);
-            }
-        }
-
-        s = buffer.toString();
-
-        // split the new string by the whitespaces that were not in quotes
-        ArrayList arrayList = new ArrayList();
-        StringTokenizer tokenizer = new StringTokenizer(s);
-
-        while (tokenizer.hasMoreTokens()) {
-            arrayList.add(tokenizer.nextElement());
-        }
-
-        // put the strings in the arraylist into a string[]
-        String[] list = (String[]) arrayList.toArray(new String[arrayList.size()]);
-
-        // change all the delim characters back to spaces
-        for (int i = 0; i < list.length; i++) {
-            list[i] = list[i].replace(delim, ' ');
-        }
-
-        return list;
     }
 
     public static String htmlify(String input) {

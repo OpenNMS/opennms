@@ -46,6 +46,7 @@ import org.opennms.core.utils.JavaMailer;
 import org.opennms.core.utils.JavaMailerException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.utils.StreamUtils;
 import org.opennms.report.availability.AvailabilityReport;
 
 /**
@@ -259,7 +260,7 @@ public class ReportMailer extends Object implements Runnable {
         if (err.ready()) {
             // get the error message
             StringWriter tempErr = new StringWriter();
-            Util.streamToStream(err, tempErr);
+            StreamUtils.streamToStream(err, tempErr);
             String errorMessage = tempErr.toString();
 
             // log the error message

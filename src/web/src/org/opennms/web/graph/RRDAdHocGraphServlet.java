@@ -50,7 +50,7 @@ import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.RrdFileConstants;
-import org.opennms.web.Util;
+import org.opennms.netmgt.utils.StreamUtils;
 
 /**
  * A servlet that creates a custom graph of network performance data using the
@@ -124,7 +124,7 @@ public class RRDAdHocGraphServlet extends HttpServlet {
 
         if (rrdDir == null || start == null || end == null) {
             response.setContentType("image/png");
-            Util.streamToStream(this.getServletContext().getResourceAsStream("/images/rrd/missingparams.png"), response.getOutputStream());
+            StreamUtils.streamToStream(this.getServletContext().getResourceAsStream("/images/rrd/missingparams.png"), response.getOutputStream());
             return;
         }
 
@@ -138,7 +138,7 @@ public class RRDAdHocGraphServlet extends HttpServlet {
 
         if (command == null) {
             response.setContentType("image/png");
-            Util.streamToStream(this.getServletContext().getResourceAsStream("/images/rrd/missingparams.png"), response.getOutputStream());
+            StreamUtils.streamToStream(this.getServletContext().getResourceAsStream("/images/rrd/missingparams.png"), response.getOutputStream());
             return;
         }
 
@@ -154,12 +154,12 @@ public class RRDAdHocGraphServlet extends HttpServlet {
         } catch (RrdException e) {
             this.log("Read from stderr: " + e.getMessage());
             response.setContentType("image/png");
-            Util.streamToStream(this.getServletContext().getResourceAsStream("/images/rrd/error.png"), out);
+            StreamUtils.streamToStream(this.getServletContext().getResourceAsStream("/images/rrd/error.png"), out);
         }
 
         if (tempIn != null) {
             response.setContentType(this.mimeType);
-            Util.streamToStream(tempIn, out);
+            StreamUtils.streamToStream(tempIn, out);
 
             tempIn.close();
         }

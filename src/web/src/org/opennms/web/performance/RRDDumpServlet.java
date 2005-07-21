@@ -46,8 +46,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.netmgt.utils.StreamUtils;
 import org.opennms.web.MissingParameterException;
-import org.opennms.web.Util;
 
 /**
  * A servlet that creates an XML dump of network performance data using the <a
@@ -104,7 +104,7 @@ public class RRDDumpServlet extends HttpServlet {
         this.log(command);
 
         // parse the command into an array and fork a process for it
-        String[] commandArray = Util.createCommandArray(command, '@');
+        String[] commandArray = StreamUtils.createCommandArray(command, '@');
         Process process = Runtime.getRuntime().exec(commandArray, null, new File(this.workDir));
 
         PrintWriter out = response.getWriter();
@@ -113,7 +113,7 @@ public class RRDDumpServlet extends HttpServlet {
         if (err.ready()) {
             // get the error message
             StringWriter tempErr = new StringWriter();
-            Util.streamToStream(err, tempErr);
+            StreamUtils.streamToStream(err, tempErr);
             String errorMessage = tempErr.toString();
 
             // log the error message
@@ -121,12 +121,12 @@ public class RRDDumpServlet extends HttpServlet {
 
             // send the error message to the client
             response.setContentType("text/plain");
-            Util.streamToStream(new StringReader(errorMessage), out);
+            StreamUtils.streamToStream(new StringReader(errorMessage), out);
         } else {
             // get the XML output and send it to the client
             BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
             response.setContentType("text/xml");
-            Util.streamToStream(in, out);
+            StreamUtils.streamToStream(in, out);
         }
 
         out.close();

@@ -52,7 +52,7 @@ import java.util.List;
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.web.Util;
+import org.opennms.netmgt.utils.StreamUtils;
 
 /**
  * Provides an rrdtool based implementation of RrdStrategy. It uses the existing
@@ -277,13 +277,13 @@ class JniRrdStrategy implements RrdStrategy {
      */
     public InputStream createGraph(String command, File workDir) throws IOException, RrdException {
         InputStream tempIn;
-        String[] commandArray = Util.createCommandArray(command, '@');
+        String[] commandArray = StreamUtils.createCommandArray(command, '@');
         Process process = Runtime.getRuntime().exec(commandArray, null, workDir);
 
         ByteArrayOutputStream tempOut = new ByteArrayOutputStream();
         BufferedInputStream in = new BufferedInputStream(process.getInputStream());
 
-        Util.streamToStream(in, tempOut);
+        StreamUtils.streamToStream(in, tempOut);
 
         in.close();
         tempOut.close();
