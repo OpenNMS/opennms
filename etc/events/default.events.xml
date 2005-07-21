@@ -143,12 +143,16 @@
 		</mask>
 		<uei>uei.opennms.org/generic/traps/EnterpriseDefault</uei>
 		<event-label>OpenNMS-defined trap event: EnterpriseDefault</event-label>
-		<descr>
-			&lt;p&gt;This is the default event format used when an
-			enterprise specific event (trap) is received for which no
-			format has been configured (i.e. no event definition
-			exists).&lt;/p&gt;
-		</descr>
+                <descr>
+                        &lt;p&gt;This is the default event format used when an
+                        enterprise specific event (trap) is received for which no
+                        format has been configured (i.e. no event definition
+                        exists).&lt;/p&gt;
+                        &lt;p&gt;The total number of arguments received with the 
+                        trap: %parm[##]%.&lt;/p&gt;
+                        &lt;p&gt;They were:&lt;p&gt;
+                        &lt;p&gt;%parm[all]%&lt;p&gt;
+                </descr>
 		<logmsg dest='logndisplay'>
 			Received unformatted enterprise event (enterprise:%id% generic:%generic%
 			specific:%specific%). %parm[##]%

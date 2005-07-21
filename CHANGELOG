@@ -1,5 +1,6 @@
 1.2.3 to 1.2.4
 ----------------------------------------------------------------------
+- Listed all the parameters in an unformatted event.
 - Added SystemEdge and Fujitsu-Seimens events, as well as new MGE-UPS
   event definitions.
 - Added MGE UPS collections and reports.
