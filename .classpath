@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="**/classlist" kind="src" path="src/core"/>
+	<classpathentry excluding="**/classlist" output=".deployables/opennms/WEB-INF/classes" kind="src" path="src/core"/>
 	<classpathentry excluding="**/classlist|org/opennms/install/MANIFEST.MF|org/opennms/install/installer.properties" kind="src" path="src/install"/>
 	<classpathentry excluding="**/classlist" kind="src" path="src/joesnmp"/>
-	<classpathentry excluding="**/classlist" kind="src" path="src/report"/>
-	<classpathentry excluding="**/Growl*.java|**/classlist" kind="src" path="src/services"/>
-	<classpathentry excluding="**/classlist" kind="src" path="src/web/src"/>
-	<classpathentry kind="src" path="work/castor"/>
-	<classpathentry kind="src" path="work/sablecc"/>
+	<classpathentry excluding="**/classlist" output=".deployables/opennms/WEB-INF/classes" kind="src" path="src/report"/>
+	<classpathentry excluding="**/Growl*.java|**/classlist" output=".deployables/opennms/WEB-INF/classes" kind="src" path="src/services"/>
+	<classpathentry excluding="**/classlist" output=".deployables/opennms/WEB-INF/classes" kind="src" path="src/web/src"/>
+	<classpathentry output=".deployables/opennms/WEB-INF/classes" kind="src" path="work/castor"/>
+	<classpathentry output=".deployables/opennms/WEB-INF/classes" kind="src" path="work/sablecc"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/log4j.jar"/>
 	<classpathentry kind="lib" path="lib/batik.jar"/>

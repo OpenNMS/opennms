@@ -6,6 +6,7 @@
 
 
 <web-app>
+  <display-name>opennms</display-name>
   <context-param>
     <param-name>opennms.home</param-name>
     <param-value>@install.dir@/</param-value>
