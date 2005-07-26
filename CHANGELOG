@@ -1,5 +1,6 @@
 1.2.3 to 1.2.4
 ----------------------------------------------------------------------
+- Corrected an error with BGP4 standard events.
 - Added Netgear events.
 - Listed all the parameters in an unformatted event.
 - Added SystemEdge and Fujitsu-Seimens events, as well as new MGE-UPS
