@@ -146,7 +146,7 @@
       <h3>Admin Options</h3>
 
       <p>
-        <a href="admin/userGroupView/index.jsp">Configure Users and Groups</a>
+        <a href="admin/userGroupView/index.jsp">Configure Users, Groups and Roles</a>
         <!-- <p>
           <a HREF="admin/eventconf/list.jsp">Configure Events</a> -->
       <p>

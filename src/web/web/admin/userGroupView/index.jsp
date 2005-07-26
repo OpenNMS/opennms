@@ -73,6 +73,9 @@
       <p>
         <a HREF="admin/userGroupView/groups/list.jsp">Configure Groups</a>
       </p>
+      <p>
+        <a HREF="admin/userGroupView/roles/list.jsp">Configure Roles</a>
+      </p>
       <!--
       <p>
         <a HREF="admin/userGroupView/views/list.jsp">Configure Views</a>
@@ -93,6 +96,10 @@
         Assign and unassign <em>Users</em> to <em>Groups</em>.
       </p>
 
+      <h3>Roles</h3>
+      <p>
+        Configure Roles that define On Call schedules for users.
+      </p>
       <!--
       <h3>Views</h3>
       <p>

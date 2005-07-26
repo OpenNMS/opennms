@@ -1711,6 +1711,15 @@ OpenNMS as part of the post-install.
 	extension=".fot"
 	 />
  </target>
+	
+<target name="deploy-web.xml" depends="prep">
+	<mkdir dir="${install.prefix}${install.servlet.dir}/WEB-INF"/>
+	<copy todir="${install.prefix}${install.servlet.dir}/WEB-INF" filtering="yes" overwrite="${filter.overwrite}">
+		<fileset dir="src/web/etc">
+				<include name="web.xml"/>
+		</fileset>
+	</copy>
+</target>
 
 
  <!-- The directories in the <fop> targets need to match the includes
@@ -1723,7 +1732,7 @@ OpenNMS as part of the post-install.
  </target>
  
  <!-- copy web UI JSPs to the webapp directory -->
- <target name="install.jsp" depends="prep">
+ <target name="install.jsp" depends="prep, deploy-web.xml">
   <mkdir dir="${install.prefix}${install.webapps.dir}"/>
   <copy todir="${install.prefix}${install.webapps.dir}" filtering="yes"
 	overwrite="${filter.overwrite}">

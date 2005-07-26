@@ -14,9 +14,9 @@
         <wb-resource source-path="/src/report" deploy-path="/WEB-INF/classes"/>
         <wb-resource source-path="/src/web/web" deploy-path="/"/>
         <wb-resource source-path="/src/web/src" deploy-path="/WEB-INF/classes"/>
-        <wb-resource deploy-path="/WEB-INF/web.xml" source-path="src/web/web/WEB-INF/web.xml"/>
-        <wb-resource deploy-path="/WEB-INF" source-path="src/web/web/WEB-INF"/>
-        <wb-resource deploy-path="/WEB-INF/lib" source-path="/lib"/>
+        <wb-resource source-path="/work/deploy/webapps/opennms/WEB-INF/web.xml" deploy-path="/WEB-INF/web.xml" />
+        <wb-resource source-path="/src/web/web/WEB-INF" deploy-path="/WEB-INF" />
+        <wb-resource source-path="/lib" deploy-path="/WEB-INF/lib" />
 <!-- 
         <wb-resource deploy-path="/WEB-INF/webservicesclient.xml" source-path="WebContent/WEB-INF/webservicesclient.xml"/>
         <wb-resource deploy-path="/KSC/custom_view.jsp" source-path="WebContent/KSC/custom_view.jsp"/>
