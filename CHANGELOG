@@ -1,5 +1,6 @@
 1.2.3 to 1.2.4
 ----------------------------------------------------------------------
+- Added HC counters.
 - Corrected an error with BGP4 standard events.
 - Added Netgear events.
 - Listed all the parameters in an unformatted event.
