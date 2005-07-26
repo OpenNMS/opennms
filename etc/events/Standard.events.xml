@@ -15,7 +15,7 @@
                         <mevalue>1</mevalue>
                 </maskelement>
         </mask>
-        <uei>uei.opennms.org/mib2opennms/bgpEstablished</uei>
+        <uei>uei.opennms.org/IETF/BGP/traps/bgpEstablished</uei>
         <event-label>BGP4-MIB defined trap event: bgpEstablished</event-label>
         <descr>
 &lt;p&gt;The BGP Established event is generated when
@@ -58,7 +58,7 @@ the BGP FSM enters the ESTABLISHED state.&lt;/p&gt;&lt;table&gt;
                         <mevalue>2</mevalue>
                 </maskelement>
         </mask>
-        <uei>uei.opennms.org/mib2opennms/bgpBackwardTransition</uei>
+        <uei>uei.opennms.org/IETF/BGP/traps/bgpBackwardTransition</uei>
         <event-label>BGP4-MIB defined trap event: bgpBackwardTransition</event-label>
         <descr>
 &lt;p&gt;The BGPBackwardTransition Event is generated
