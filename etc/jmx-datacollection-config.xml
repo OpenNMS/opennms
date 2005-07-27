@@ -56,18 +56,9 @@
               <attrib name="AllSubscriptionsCount"       alias="ST_AllSub"      type="gauge"/> 
           </mbean-->  
 
-          <!-- an example of a Servlet -->
-          <mbean name="ServletStatus" objectname="jboss.web:name=Status Servlet,J2EEServer=none,J2EEApplication=none,j2eeType=Servlet,WebModule=//localhost/">  
-              <attrib name="processingTime"   alias="SS_processTime"   type="counter"/> 
-              <attrib name="minTime"          alias="SS_minTime"       type="counter"/> 
-              <attrib name="maxTime"          alias="SS_maxTime"       type="counter"/> 
-              <attrib name="requestCount"     alias="SS_requests"      type="counter"/> 
-              <attrib name="errorCount"       alias="SS_errors"        type="counter"/> 
-          </mbean>
-  
           <!-- Global Request Processor -->
           <mbean name="GlobalRequestProcessor" 
-                 objectname="jboss.web:type=GlobalRequestProcessor,name=http-0.0.0.0-80">
+                 objectname="jboss.web:type=GlobalRequestProcessor,name=http-0.0.0.0-8080">
               <attrib name="requestCount"     alias="GRP_requests"     type="counter"/> 
               <attrib name="maxTime"          alias="GRP_maxTime"      type="gauge"/> 
               <attrib name="bytesSent"        alias="GRP_bytesSent"    type="counter"/> 
@@ -77,7 +68,7 @@
           </mbean>  
 
           <!-- Thread Pool -->
-          <mbean name="ThreadPool" objectname="jboss.web:type=ThreadPool,name=http-0.0.0.0-80">
+          <mbean name="ThreadPool" objectname="jboss.web:type=ThreadPool,name=http-0.0.0.0-8080">
               <attrib name="currentThreadsBusy"   alias="BusyThreads"      type="gauge"/> 
               <attrib name="currentThreadCount"   alias="Threads"          type="gauge"/> 
               <attrib name="minSpareThreads"      alias="MinSpareThreads"  type="gauge"/> 
