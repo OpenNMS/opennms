@@ -69,6 +69,11 @@
 				</dictionary>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.jst.j2ee.ejb.annotations.xdoclet.xdocletbuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.springframework.ide.eclipse.beans.core.beansnature</nature>

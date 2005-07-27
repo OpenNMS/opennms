@@ -497,6 +497,11 @@
   </servlet>
   
   <servlet>
+  	<servlet-name>roles</servlet-name>
+  	<servlet-class>org.opennms.web.admin.roles.RoleServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
     <!-- servlet for passing parameters to the view modify jsp -->
     <servlet-name>modifyView</servlet-name>
     <servlet-class>org.opennms.web.admin.views.ModifyViewServlet</servlet-class>
@@ -1098,6 +1103,11 @@
   </servlet-mapping>
   <!-- end of group configuration servlets -->
   
+  <servlet-mapping>
+    <servlet-name>roles</servlet-name>
+    <url-pattern>/admin/userGroupView/roles</url-pattern>
+  </servlet-mapping>
+
   <!-- view configuration servlets -->
   <servlet-mapping>
     <servlet-name>modifyView</servlet-name>
