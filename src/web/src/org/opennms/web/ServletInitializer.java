@@ -38,6 +38,7 @@
 
 package org.opennms.web;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -116,19 +117,20 @@ public class ServletInitializer extends Object {
 
         if (factory == null) {
             try {
-                String homeDir = context.getInitParameter("opennms.home");
-
-                if (homeDir == null) {
-                    throw new ServletException("The opennms.home context parameter must be set.");
-                }
-
                 // read the OpenNMS properties
                 Properties properties = new Properties(System.getProperties());
+                properties.load(context.getResourceAsStream("/WEB-INF/configuration.properties"));
 
                 Enumeration initParamNames = context.getInitParameterNames();
                 while (initParamNames.hasMoreElements()) {
                     String name = (String) initParamNames.nextElement();
                     properties.put(name, context.getInitParameter(name));
+                }
+
+                String homeDir = properties.getProperty("opennms.home");
+
+                if (homeDir == null) {
+                    throw new ServletException("The opennms.home context parameter must be set.");
                 }
 
                 Vault.setProperties(properties);
@@ -146,7 +148,7 @@ public class ServletInitializer extends Object {
 
                 // set the database connection pool manager (if one is set in
                 // the context)
-                String dbMgrClass = context.getInitParameter("opennms.db.poolman");
+                String dbMgrClass = properties.getProperty("opennms.db.poolman");
 
                 if (dbMgrClass != null) {
                     Class clazz = Class.forName(dbMgrClass);
@@ -162,6 +164,8 @@ public class ServletInitializer extends Object {
                 throw new ServletException("Could not instantiate the opennms.db.poolman class", e);
             } catch (SQLException e) {
                 throw new ServletException("Could not initialize a database connection pool", e);
+            } catch (IOException e) {
+                throw new ServletException("Could not load configuration.properties", e);
             }
         }
     }

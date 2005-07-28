@@ -58,6 +58,10 @@ public class PropertiesUtilsTest extends TestCase {
 
     protected void tearDown() throws Exception {
     }
+    
+    public void testNull() {
+        assertNull(PropertiesUtils.substitute(null, m_props));
+    }
 
     public void testNoSubstitution() {
         assertEquals("nosubst", PropertiesUtils.substitute("nosubst", m_props));

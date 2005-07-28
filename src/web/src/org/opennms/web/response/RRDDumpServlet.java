@@ -50,6 +50,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.utils.StreamUtils;
 import org.opennms.web.MissingParameterException;
 
@@ -82,8 +84,8 @@ public class RRDDumpServlet extends HttpServlet {
     public void init() throws ServletException {
         ServletConfig config = this.getServletConfig();
 
-        this.workDir = config.getInitParameter("rrd-directory");
-        this.commandPrefix = config.getInitParameter("rrd-dump-command");
+        this.workDir = PropertiesUtils.substitute(config.getInitParameter("rrd-directory"), Vault.getProperties());
+        this.commandPrefix = PropertiesUtils.substitute(config.getInitParameter("rrd-dump-command"), Vault.getProperties());
 
         if (this.workDir == null || this.commandPrefix == null) {
             throw new ServletException("Did not get all required init params. rrd-directory and rrd-dump-command are both required.  Please check your web.xml.");

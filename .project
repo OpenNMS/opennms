@@ -25,7 +25,7 @@
 			<arguments>
 				<dictionary>
 					<key>LaunchConfigHandle</key>
-					<value>&lt;project&gt;/.externalToolBuilders/Filtering Deployer.launch</value>
+					<value>&lt;project&gt;/.externalToolBuilders/FilteringDeployer.launch</value>
 				</dictionary>
 			</arguments>
 		</buildCommand>
@@ -35,7 +35,7 @@
 			<arguments>
 				<dictionary>
 					<key>LaunchConfigHandle</key>
-					<value>&lt;project&gt;/.externalToolBuilders/Web.xml Deployer.launch</value>
+					<value>&lt;project&gt;/.externalToolBuilders/WebEtcDeployer.launch</value>
 				</dictionary>
 			</arguments>
 		</buildCommand>

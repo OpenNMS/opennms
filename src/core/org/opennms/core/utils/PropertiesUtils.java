@@ -50,6 +50,8 @@ public class PropertiesUtils {
     }
 
     private static String substitute(String initialString, Properties properties, List list) {
+        if (initialString == null) return null;
+        
         StringBuffer result = new StringBuffer(initialString);
         
         int startIndex = 0;

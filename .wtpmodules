@@ -14,7 +14,7 @@
         <wb-resource source-path="/src/report" deploy-path="/WEB-INF/classes"/>
         <wb-resource source-path="/src/web/web" deploy-path="/"/>
         <wb-resource source-path="/src/web/src" deploy-path="/WEB-INF/classes"/>
-        <wb-resource source-path="/work/deploy/webapps/opennms/WEB-INF/web.xml" deploy-path="/WEB-INF/web.xml" />
+        <wb-resource source-path="/work/deploy/webapps/opennms/WEB-INF" deploy-path="/WEB-INF" />
         <wb-resource source-path="/src/web/web/WEB-INF" deploy-path="/WEB-INF" />
         <wb-resource source-path="/lib" deploy-path="/WEB-INF/lib" />
 <!-- 

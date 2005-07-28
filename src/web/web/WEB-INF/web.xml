@@ -7,11 +7,6 @@
 
 <web-app>
   <display-name>opennms</display-name>
-  <context-param>
-    <param-name>opennms.home</param-name>
-    <param-value>@install.dir@/</param-value>
-  </context-param>
-  
   <!-- Set this for JRobin graphs and Availablity Reporting -->
   <context-param>
   	<param-name>java.awt.headless</param-name>
@@ -23,24 +18,7 @@
     <param-name>opennms.db.poolman</param-name>
     <param-value>org.opennms.core.resource.db.SimpleDbConnectionFactory</param-value>
   </context-param>
-  <context-param>
-    <param-name>opennms.db.driver</param-name>
-    <param-value>@install.database.driver@</param-value>
-  </context-param>
-  <context-param>
-    <param-name>opennms.db.url</param-name>
-    <param-value>@install.database.url@@install.database.name@?compatible=7.1</param-value>
-  </context-param>
-  <context-param>
-    <param-name>opennms.db.user</param-name>
-    <param-value>@install.database.user@</param-value>
-  </context-param>
-  <context-param>
-    <param-name>opennms.db.password</param-name>
-    <param-value>@install.database.password@</param-value>
-  </context-param>
 
-  
   <!-- RTC Subscription parameters -->  
   <context-param>
     <param-name>opennms.rtc-client.http-post.username</param-name>
@@ -166,11 +144,11 @@
     <servlet-class>org.opennms.web.performance.RRDDumpServlet</servlet-class>
     <init-param>
       <param-name>rrd-directory</param-name>
-      <param-value>@install.share.dir@/rrd/snmp/</param-value>
+      <param-value>${rrd.base.dir}/snmp/</param-value>
     </init-param>
     <init-param>
       <param-name>rrd-dump-command</param-name>
-      <param-value>@install.rrdtool.bin@ dump</param-value>
+      <param-value>${rrd.binary} dump</param-value>
     </init-param>    
   </servlet>
   <servlet>
@@ -198,11 +176,11 @@
     <servlet-class>org.opennms.web.response.RRDDumpServlet</servlet-class>
     <init-param>
       <param-name>rt-rrd-directory</param-name>
-      <param-value>@install.share.dir@/rrd/snmp/</param-value>
+      <param-value>${rrd.base.dir}/response/</param-value>
     </init-param>
     <init-param>
       <param-name>rt-rrd-dump-command</param-name>
-      <param-value>@install.rrdtool.bin@ dump</param-value>
+      <param-value>${rrd.binary} dump</param-value>
     </init-param>
   </servlet>
   <servlet>
@@ -236,7 +214,7 @@
     <servlet-class>org.opennms.web.availability.AvailabilityServlet</servlet-class>
     <init-param>
       <param-name>report.logo</param-name>
-      <param-value>@install.servlet.dir@/images/logo.png</param-value>
+      <param-value>/images/logo.png</param-value>
     </init-param>
     <init-param>
       <param-name>xslt.filename</param-name>
@@ -267,12 +245,12 @@
     </init-param>
     <init-param>
       <param-name>script.generateReport</param-name>
-      <param-value>@install.bin.dir@/report.sh</param-value>
+      <param-value>${opennms.bin.dir}/report.sh</param-value>
       <description>Use this script to generate an Availability report on the command line.</description>
     </init-param>
     <init-param>
       <param-name>script.mailReport</param-name>
-      <param-value>@install.bin.dir@/webreport.pl</param-value>
+      <param-value>${opennms.bin.dir}/webreport.pl</param-value>
       <description>Use this script to mail a file to a user from the command line.</description>
     </init-param>
     <init-param>
@@ -847,7 +825,6 @@
   		<param-value>sample-bar-chart</param-value>
   	</init-param>
   </servlet>
-  
   <!-- python servlet for testing purposes - ->
   <servlet>
       <servlet-name>PyServlet</servlet-name>

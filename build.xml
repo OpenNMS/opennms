@@ -359,6 +359,7 @@ your distribution.
   	<include name="standard.jar" />
   	<include name="jfree*.jar" />
   	<include name="jcommon*.jar" />
+  	<include name="commons-*.jar" />
   </patternset>
 
   <!-- The includes in this patternset need to match the directories in
@@ -1712,11 +1713,12 @@ OpenNMS as part of the post-install.
 	 />
  </target>
 	
-<target name="deploy-web.xml" depends="prep">
+<target name="install.webetc" depends="prep">
 	<mkdir dir="${install.prefix}${install.servlet.dir}/WEB-INF"/>
 	<copy todir="${install.prefix}${install.servlet.dir}/WEB-INF" filtering="yes" overwrite="${filter.overwrite}">
 		<fileset dir="src/web/etc">
 				<include name="web.xml"/>
+				<include name="configuration.properties"/>
 		</fileset>
 	</copy>
 </target>
@@ -1732,7 +1734,7 @@ OpenNMS as part of the post-install.
  </target>
  
  <!-- copy web UI JSPs to the webapp directory -->
- <target name="install.jsp" depends="prep, deploy-web.xml">
+ <target name="install.jsp" depends="prep, install.webetc">
   <mkdir dir="${install.prefix}${install.webapps.dir}"/>
   <copy todir="${install.prefix}${install.webapps.dir}" filtering="yes"
 	overwrite="${filter.overwrite}">

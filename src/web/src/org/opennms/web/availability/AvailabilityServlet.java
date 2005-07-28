@@ -89,6 +89,7 @@ public class AvailabilityServlet extends HttpServlet {
         this.scriptMailReport = config.getInitParameter("script.mailReport");
         this.useScript = config.getInitParameter("script.useScript");
         this.logo = config.getInitParameter("report.logo");
+        this.logo = getServletContext().getRealPath(this.logo);
 
         if (this.redirectSuccess == null) {
             throw new ServletException("Missing required init parameter: redirect.success");
@@ -137,7 +138,6 @@ public class AvailabilityServlet extends HttpServlet {
 		String monthFormat = request.getParameter("monthformat");
         String category = request.getParameter("category");
         String username = request.getRemoteUser();
-        ServletConfig config = this.getServletConfig();
 
         if (view == null) {
             throw new MissingParameterException("view");
