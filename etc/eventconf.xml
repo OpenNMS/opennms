@@ -30,7 +30,7 @@
         <event-file>@install.etc.dir@/events/DellOpenManage.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Fore.events.xml</event-file>
         <event-file>@install.etc.dir@/events/FoundryNetworks.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/FujitsuSeimens.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/FujitsuSiemens.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Groupwise.events.xml</event-file>
         <event-file>@install.etc.dir@/events/HP.events.xml</event-file>
         <event-file>@install.etc.dir@/events/IBM.events.xml</event-file>
