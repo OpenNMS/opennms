@@ -36,113 +36,115 @@ import java.util.Map;
 
 
 public interface Provisioner {
-    
 
-//    def AddServiceICMP( self,
-//                        serviceid,
-//                        retries,
-//                        timeout,
-//                        interval,
-//                        downtime_interval,
-//                        downtime_duration ):
-//       """
-//       AddServiceICMP function
-//       """
-//       return True
-    
+    /**
+     * This method defines a new package and ICMP service using the <code>serviceId</code> as the name of the
+     * polling package and service name within that package.  If the same <code>serviceId</code> is used again,
+     * it redefines the service.
+     * 
+     * To add an interface to this newly defined ICMP service,
+     * send an <code>EventConstants.UPDATE_SERVICE_EVENT_UEI</code> <code>Event</code>.
+     * 
+     * @param serviceId <code>String</code> is used to define a polling package and a service name in that polling package.
+     * @param retries <code>int</code> number of retries for this service
+     * @param timeout <code>int</code> time in milliseconds to wait during each <code>retries</code>
+     * @param interval <code>int</code> the standard polling interval in milliseconds 
+     * @param downTimeInterval <code>int</code> the downtime polling interval in milliseconds(downtime model)
+     * @param downTimeDuration <code>int</> the amount of time in milliseconds the downtime polling interval is in effect
+     * @return Always returns true.  Check for XML-RPC exception.
+     */
     boolean addServiceICMP(String serviceId, int retries, int timeout, int interval, int downTimeInterval, int downTimeDuration);
 
-//    def AddServiceDNS( self,
-//                       serviceid,
-//                       retries,
-//                       timeout,
-//                       interval, 
-//                       downtime_interval,
-//                       downtime_duration,
-//                       port,
-//                       hostname ):
-//        """
-//        AddServiceDNS function
-//        """
-//        return True
-
+    /**
+     * This method defines a new package and DNS service using the <code>serviceId</code> as the name of the
+     * polling package and service name within that package.  If the same <code>serviceId</code> is used again,
+     * it redefines the service.
+     * 
+     * To add an interface to this newly defined DNS service,
+     * send an <code>EventConstants.UPDATE_SERVICE_EVENT_UEI</code> <code>Event</code>.
+     * 
+     * @param serviceId <code>String</code> is used to define a polling package and a service name in that polling package.
+     * @param retries <code>int</code> number of retries for this service
+     * @param timeout <code>int</code> time in milliseconds to wait during each <code>retries</code>
+     * @param interval <code>int</code> the standard polling interval in milliseconds 
+     * @param downTimeInterval <code>int</code> the downtime polling interval in milliseconds(downtime model)
+     * @param downTimeDuration <code>int</> the amount of time in milliseconds the downtime polling interval is in effect
+     * @return Always returns true.  Check for XML-RPC exception.
+     */
     boolean addServiceDNS(String serviceId, int retries, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, String hostname);
 
-    
-//    def AddServiceTCP( self,
-//                       serviceid, 
-//                       retries, 
-//                       timeout, 
-//                       interval, 
-//                       downtime_interval,
-//                       downtime_duration, 
-//                       port, 
-//                       content_check ):
-//        """
-//        AddServiceTCP function
-//        """
-//        return True
-
+    /**
+     * This method defines a new package and TCP service using the <code>serviceId</code> as the name of the
+     * polling package and service name within that package.  If the same <code>serviceId</code> is used again,
+     * it redefines the service.
+     * 
+     * To add an interface to this newly defined TCP service,
+     * send an <code>EventConstants.UPDATE_SERVICE_EVENT_UEI</code> <code>Event</code>.
+     * 
+     * @param serviceId <code>String</code> is used to define a polling package and a service name in that polling package.
+     * @param retries <code>int</code> number of retries for this service
+     * @param timeout <code>int</code> time in milliseconds to wait during each <code>retries</code>
+     * @param interval <code>int</code> the standard polling interval in milliseconds 
+     * @param downTimeInterval <code>int</code> the downtime polling interval in milliseconds(downtime model)
+     * @param downTimeDuration <code>int</> the amount of time in milliseconds the downtime polling interval is in effect
+     * @return Always returns true.  Check for XML-RPC exception.
+     */
     boolean addServiceTCP(String serviceId, int retries, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, String contentCheck);
 
-//    def AddServiceHTTP( self, 
-//                        serviceid, 
-//                        retries, 
-//                        timeout, 
-//                        interval, 
-//                        downtime_interval,
-//                        downtime_dutation, 
-//                        port, 
-//                        response_code, 
-//                        content_check, 
-//                        url ):
-//        """
-//        AddServiceHTTP function
-//        """
-//        return True
-
+    /**
+     * This method defines a new package and HTTP service using the <code>serviceId</code> as the name of the
+     * polling package and service name within that package.  If the same <code>serviceId</code> is used again,
+     * it redefines the service.
+     * 
+     * To add an interface to this newly defined HTTP service,
+     * send an <code>EventConstants.UPDATE_SERVICE_EVENT_UEI</code> <code>Event</code>.
+     * 
+     * @param serviceId <code>String</code> is used to define a polling package and a service name in that polling package.
+     * @param retries <code>int</code> number of retries for this service
+     * @param timeout <code>int</code> time in milliseconds to wait during each <code>retries</code>
+     * @param interval <code>int</code> the standard polling interval in milliseconds 
+     * @param downTimeInterval <code>int</code> the downtime polling interval in milliseconds(downtime model)
+     * @param downTimeDuration <code>int</> the amount of time in milliseconds the downtime polling interval is in effect
+     * @return Always returns true.  Check for XML-RPC exception.
+     */
     boolean addServiceHTTP(String serviceId, int retries, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, int responseCode, String contentCheck, String url) throws MalformedURLException;
 
-//    def AddServiceHTTPS( self,
-//                         serviceid, 
-//                         retries, 
-//                         timeout, 
-//                         interval,
-//                         downtime_interval,
-//                         downtime_dutation, 
-//                         port, 
-//                         response_code, 
-//                         content_check, 
-//                         url ):
-//        """
-//        AddServiceHTTPS function
-//        """
-//        return True
-
+    /**
+     * This method defines a new package and HTTPS service using the <code>serviceId</code> as the name of the
+     * polling package and service name within that package.  If the same <code>serviceId</code> is used again,
+     * it redefines the service.
+     * 
+     * To add an interface to this newly defined HTTPS service,
+     * send an <code>EventConstants.UPDATE_SERVICE_EVENT_UEI</code> <code>Event</code>.
+     * 
+     * @param serviceId <code>String</code> is used to define a polling package and a service name in that polling package.
+     * @param retries <code>int</code> number of retries for this service
+     * @param timeout <code>int</code> time in milliseconds to wait during each <code>retries</code>
+     * @param interval <code>int</code> the standard polling interval in milliseconds 
+     * @param downTimeInterval <code>int</code> the downtime polling interval in milliseconds(downtime model)
+     * @param downTimeDuration <code>int</> the amount of time in milliseconds the downtime polling interval is in effect
+     * @return Always returns true.  Check for XML-RPC exception.
+     */
     boolean addServiceHTTPS(String serviceId, int retries, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, int responseCode, String contentCheck, String url) throws MalformedURLException;
 
-//    def AddServiceDatabse( self, 
-//                           serviceid, 
-//                           retries, 
-//                           timeout, 
-//                           interval,
-//                           downtime_interval,
-//                           downtime_duration, 
-//                           username, 
-//                           password,
-//                           driver, 
-//                           url ):
-//        """
-//        AddServiceDatabase function
-//        """
-//        return True
-
+    /**
+     * This method defines a new package and Database(JDBC) service using the <code>serviceId</code> as the name of the
+     * polling package and service name within that package.  If the same <code>serviceId</code> is used again,
+     * it redefines the service.
+     * 
+     * To add an interface to this newly defined Database(JDBC) service,
+     * send an <code>EventConstants.UPDATE_SERVICE_EVENT_UEI</code> <code>Event</code>.
+     * 
+     * @param serviceId <code>String</code> is used to define a polling package and a service name in that polling package.
+     * @param retries <code>int</code> number of retries for this service
+     * @param timeout <code>int</code> time in milliseconds to wait during each <code>retries</code>
+     * @param interval <code>int</code> the standard polling interval in milliseconds 
+     * @param downTimeInterval <code>int</code> the downtime polling interval in milliseconds(downtime model)
+     * @param downTimeDuration <code>int</> the amount of time in milliseconds the downtime polling interval is in effect
+     * @return Always returns true.  Check for XML-RPC exception.
+     */
     boolean addServiceDatabase(String serviceId, int retries, int timeout, int interval, int downTimeInterval, int downTimeDuration, String username, String password, String driver, String url);
-
     
-    
-    Map getServiceConfiguration(String pkName, String serviceId);
-    
-    
+    Map getServiceConfiguration(String pkName, String serviceId);    
 
 }
