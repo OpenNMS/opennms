@@ -87,6 +87,8 @@ public class PollerTest extends TestCase {
     //
 
     public void setUp() {
+        System.setProperty("mock.logLevel", "DEBUG");
+        System.setProperty("mock.debug", "true");
         MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
         MockUtil.setupLogging();
         MockUtil.resetLogLevel();
@@ -390,7 +392,6 @@ public class PollerTest extends TestCase {
         MockNode node1 = m_network.getNode(1);
         MockNode node2 = m_network.getNode(2);
 
-        MockInterface dotOne = m_network.getInterface(1, "192.168.1.1");
         MockInterface dotTwo = m_network.getInterface(1, "192.168.1.2");
         MockInterface dotThree = m_network.getInterface(2, "192.168.1.3");
         
@@ -728,7 +729,6 @@ public class PollerTest extends TestCase {
     }
 
     public void testSuspendPollingResumeService() {
-        long start = System.currentTimeMillis();
 
         MockService svc = m_network.getService(1, "192.168.1.2", "SMTP");
 
@@ -817,10 +817,6 @@ public class PollerTest extends TestCase {
             m_anticipator.anticipateEvent(event);
             m_outageAnticipator.anticipateOutageOpened(element, event);
         }
-    }
-    
-    private void anticipateDownEvent(MockElement element) {
-        m_anticipator.anticipateEvent(element.createDownEvent());
     }
     
     private void anticipateServicesUp(MockElement node) {
